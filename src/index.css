@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
+@import 'tailwindcss';
+
+@theme inline {
+  --color-ink: #0B0D0F;
+  --color-orange: #F36B21;
+  --color-warm-white: #F8F6F2;
+  --color-sand: #EEE9E1;
+  --color-slate: #667078;
+  /* Extended neutral scale for restrained surfaces / hairlines */
+  --color-ink-2: #14171A;
+  --color-ink-3: #1D2126;
+  --color-line: rgba(11, 13, 15, 0.08);
+  --color-line-strong: rgba(11, 13, 15, 0.14);
+}
+
+:root {
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+
+  /* ── Skylent Glass System ───────────────────────────────────────────────── */
+  /* Glass 01 — Navigation / floating controls */
+  --glass-01-bg: rgba(11,13,15,0.72);
+  --glass-01-border: rgba(255,255,255,0.09);
+  --glass-01-blur: blur(20px);
+  --glass-01-shadow: 0 4px 24px rgba(0,0,0,0.18);
+
+  /* Glass 02 — Cards / side panels */
+  --glass-02-bg: rgba(255,255,255,0.055);
+  --glass-02-border: rgba(255,255,255,0.10);
+  --glass-02-blur: blur(14px);
+  --glass-02-shadow: 0 8px 40px rgba(0,0,0,0.22);
+
+  /* Glass 03 — Deep product surfaces / LMS hero */
+  --glass-03-bg: rgba(255,255,255,0.04);
+  --glass-03-border: rgba(255,255,255,0.08);
+  --glass-03-blur: blur(28px);
+  --glass-03-shadow: 0 24px 80px rgba(0,0,0,0.40);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: #F8F6F2;
+  color: #0B0D0F;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Hide scrollbar by default, show while scrolling */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+*:hover {
+  scrollbar-color: rgba(102, 112, 120, 0.3) transparent;
+}
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+}
+*:hover::-webkit-scrollbar-thumb {
+  background: rgba(102, 112, 120, 0.3);
+}
