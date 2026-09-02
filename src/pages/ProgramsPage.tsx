@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
-import { Button, T } from '../components/ui'
+import { Button, T, PageHero } from '../components/ui'
 import { programs } from '../data'
 import type { Program, ProgramType } from '../data'
-import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
+import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO, PHOTO } from '../media'
 
 const TYPE_LABELS: Record<ProgramType, string> = {
   PROFESSIONAL: 'Professional Program',
@@ -111,19 +111,13 @@ export default function ProgramsPage() {
 
   return (
     <PageShell>
-      <section style={{ background: C.ink, padding: '100px 32px 56px' }}>
-        <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-          <FadeIn>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 18 }}>CATALOG</div>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px, 5vw, 60px)', fontWeight: 600, color: C.white, letterSpacing: '-0.03em', lineHeight: 1.04, margin: '0 0 16px' }}>
-              Find the right program.
-            </h1>
-            <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 17, lineHeight: 1.7, maxWidth: 520, margin: 0 }}>
-              Filter by what you are actually looking for — education, skills, exams, or career. Only options that exist in the catalog are shown.
-            </p>
-          </FadeIn>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Catalog"
+        photo={PHOTO.workshop}
+        photoAlt="Learners in a professional program session"
+        title={<>Find the right<br />program.</>}
+        lead="Filter by education, skills, exams, or career. Only options that exist in the catalog are shown."
+      />
 
       <section style={{ background: C.warmWhite, padding: '32px 32px 80px', minHeight: '60vh' }}>
         <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>

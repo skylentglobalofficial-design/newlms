@@ -47,29 +47,33 @@ export default function CareerOSPage() {
 
   return (
     <PageShell>
-      <section style={{ background: C.ink, padding: '96px 32px 0' }}>
+      <section style={{ background: C.ink, padding: '88px 32px 0' }}>
         <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-          <FadeIn>
-            <div style={{ marginBottom: 18 }}><Badge tone="dark" accent>Career OS</Badge></div>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(40px, 5.6vw, 72px)', fontWeight: 600, color: C.white, letterSpacing: '-0.035em', lineHeight: 0.98, margin: '0 0 18px' }}>
-              Your career,<br />as a product.
-            </h1>
-            <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 17, lineHeight: 1.72, maxWidth: 540, margin: '0 0 28px' }}>
-              Interview preparation and a job board in one operating system. Access unlocks when you complete a Professional Program. Personal scores stay empty until they are yours.
-            </p>
-          </FadeIn>
-          <FadeIn delay={80}>
-            <div style={{ maxWidth: 780, marginBottom: 36 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 40, alignItems: 'end', marginBottom: 36 }} className="two-col">
+            <div>
+              <Badge tone="dark" accent>Career OS</Badge>
+              <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px, 5vw, 60px)', fontWeight: 600, color: C.white, letterSpacing: '-0.035em', lineHeight: 0.98, margin: '16px 0 14px' }}>
+                Your career,<br />as a product.
+              </h1>
+              <p style={{ color: 'rgba(255,255,255,0.58)', fontSize: 16, lineHeight: 1.7, maxWidth: 500, margin: '0 0 24px' }}>
+                Interview prep and a job board in one workspace. Unlocks after a Professional Program. Personal scores stay empty until they are yours.
+              </p>
               <FlowStrip tone="dark" steps={[
                 { label: 'Professional Program' },
                 { label: 'Career OS', highlight: true },
-                { label: 'Jobs & applications' },
+                { label: 'Jobs' },
               ]} />
             </div>
-          </FadeIn>
+            <div style={{ background: '#14181c', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: 16 }}>
+              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 12 }}>WORKSPACE</div>
+              {['Career Readiness', 'Profile · Resume · Skills', 'Interview Preparation', 'Job Board · Applications'].map(row => (
+                <div key={row} style={{ padding: '10px 12px', marginBottom: 8, background: 'rgba(255,255,255,0.04)', borderRadius: 8, color: 'rgba(255,255,255,0.78)', fontSize: 13 }}>{row}</div>
+              ))}
+            </div>
+          </div>
           <div style={{ display: 'flex', gap: 2, overflowX: 'auto' }}>
             {tabs.map(t => (
-              <button key={t.id} onClick={() => setTab(t.id)} style={{ background: tab === t.id ? C.warmWhite : 'transparent', border: 'none', borderRadius: '8px 8px 0 0', padding: '12px 18px', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', color: tab === t.id ? C.ink : 'rgba(255,255,255,0.45)', fontWeight: tab === t.id ? 600 : 400, whiteSpace: 'nowrap' }}>{t.label}</button>
+              <button key={t.id} onClick={() => setTab(t.id)} style={{ background: tab === t.id ? C.warmWhite : 'transparent', border: 'none', borderRadius: '8px 8px 0 0', padding: '12px 18px', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', color: tab === t.id ? C.ink : 'rgba(255,255,255,0.5)', fontWeight: tab === t.id ? 600 : 400, whiteSpace: 'nowrap' }}>{t.label}</button>
             ))}
           </div>
         </div>

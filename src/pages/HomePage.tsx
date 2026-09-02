@@ -19,48 +19,44 @@ const TYPE_LABELS: Record<ProgramType, string> = {
 function Hero() {
   const navigate = useNavigate()
   return (
-    <section style={{ background: C.ink, minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: 64 }}>
-      <img
-        src={PHOTO.hero}
-        alt="Students walking together on a university campus"
-        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.38, display: 'block' }}
-      />
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(105deg, rgba(11,13,15,0.94) 0%, rgba(11,13,15,0.72) 48%, rgba(11,13,15,0.35) 100%)' }} />
-      <div style={{ position: 'relative', maxWidth: T.maxW, margin: '0 auto', padding: `clamp(72px,10vw,120px) ${T.gutter}`, width: '100%' }}>
-        <div style={{ maxWidth: 720 }}>
-          <FadeIn>
+    <section style={{ background: C.ink, minHeight: '92vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: 64 }}>
+      <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `clamp(48px,7vw,88px) ${T.gutter}`, width: '100%' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(28px,5vw,56px)', alignItems: 'center' }} className="hero-grid">
+          <div>
             <Eyebrow tone="dark">Education · Skills · Career</Eyebrow>
-          </FadeIn>
-          <FadeIn delay={80}>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(36px, 6.5vw, 72px)', lineHeight: 0.97, color: C.white, margin: '24px 0 22px', letterSpacing: '-0.04em' }}>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(40px, 6vw, 76px)', lineHeight: 0.96, color: C.white, margin: '22px 0 20px', letterSpacing: '-0.04em' }}>
               From education<br />to <span style={{ color: C.orange }}>employability.</span>
             </h1>
-          </FadeIn>
-          <FadeIn delay={160}>
-            <p style={{ color: 'rgba(255,255,255,0.62)', fontSize: 'clamp(16px,2vw,19px)', lineHeight: 1.75, maxWidth: 520, margin: '0 0 40px' }}>
-              Skylent is the operating system for learning and careers — academic pathways, credentialed skills, and a dedicated Career OS. Built for students, parents, and institutions.
+            <p style={{ color: 'rgba(255,255,255,0.64)', fontSize: 'clamp(16px,2vw,18px)', lineHeight: 1.75, maxWidth: 500, margin: '0 0 32px' }}>
+              One platform for academic learning, credentialed skills, and Career OS — for students, parents, and institutions.
             </p>
-          </FadeIn>
-          <FadeIn delay={240}>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Programs</Button>
               <Button variant="secondary" size="lg" onClick={() => navigate('/institutions')}>Partner With Us</Button>
             </div>
-          </FadeIn>
-          <FadeIn delay={340}>
-            <div style={{ display: 'flex', gap: 'clamp(24px,4vw,48px)', marginTop: 56, paddingTop: 32, borderTop: '1px solid rgba(255,255,255,0.12)', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 'clamp(20px,4vw,40px)', marginTop: 44, paddingTop: 28, borderTop: '1px solid rgba(255,255,255,0.12)', flexWrap: 'wrap' }}>
               {[
                 { label: 'Education', sub: 'School · UG · PG · Exams' },
-                { label: 'Skills', sub: 'Webinars to Professional Programs' },
-                { label: 'Career OS', sub: 'Interview prep + Job Board' },
+                { label: 'Skills', sub: 'Webinars to Professional' },
+                { label: 'Career OS', sub: 'Interview prep + Jobs' },
               ].map(({ label, sub }) => (
                 <div key={label}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.white, letterSpacing: '-0.02em' }}>{label}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.42)', fontSize: 12, marginTop: 5 }}>{sub}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white }}>{label}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.42)', fontSize: 12, marginTop: 4 }}>{sub}</div>
                 </div>
               ))}
             </div>
-          </FadeIn>
+          </div>
+          <div style={{ position: 'relative', borderRadius: T.rCard, overflow: 'hidden', aspectRatio: '4/5', maxHeight: 640, background: '#1a1f24' }} className="hero-visual">
+            <img
+              src={PHOTO.hero}
+              alt="Students collaborating on campus"
+              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
+            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '18px 20px', background: 'linear-gradient(to top, rgba(11,13,15,0.72), transparent)' }}>
+              <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: 13, fontWeight: 500 }}>Campus · classroom · career — one journey</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

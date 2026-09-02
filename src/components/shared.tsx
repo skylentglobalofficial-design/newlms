@@ -664,7 +664,7 @@ export const globalCSS = `
     .edu-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
     .dash-grid { grid-template-columns: 1fr !important; }
     .hero-float { display: none !important; }
-    .hero-visual { overflow: hidden !important; padding-bottom: 0 !important; }
+    .hero-visual { aspect-ratio: 4/3 !important; max-height: 380px !important; }
     .hero-visual img { transform: none !important; }
   }
   @media (max-width: 640px) {

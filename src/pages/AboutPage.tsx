@@ -1,5 +1,5 @@
 import { C, FadeIn, PageShell } from '../components/shared'
-import { Section, Eyebrow, Button, T } from '../components/ui'
+import { Section, Eyebrow, Button, T, PageHero } from '../components/ui'
 import { PHOTO } from '../media'
 import { useNavigate } from 'react-router-dom'
 
@@ -14,21 +14,13 @@ export default function AboutPage() {
 
   return (
     <PageShell>
-      <section style={{ background: C.ink, position: 'relative', overflow: 'hidden', minHeight: 520 }}>
-        <img src={PHOTO.campus} alt="Campus" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.32, display: 'block' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(11,13,15,0.95), rgba(11,13,15,0.55))' }} />
-        <div style={{ position: 'relative', maxWidth: T.maxW, margin: '0 auto', padding: 'clamp(120px,16vw,180px) clamp(20px,5vw,32px) 80px' }}>
-          <FadeIn>
-            <Eyebrow tone="dark">Company</Eyebrow>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px, 6vw, 72px)', fontWeight: 600, color: C.white, letterSpacing: '-0.035em', lineHeight: 0.98, margin: '22px 0 20px', maxWidth: 820 }}>
-              Why Skylent exists.
-            </h1>
-            <p style={{ color: 'rgba(255,255,255,0.58)', fontSize: 18, lineHeight: 1.7, maxWidth: 560, margin: 0 }}>
-              Education should not end when the class ends. Skylent connects academic learning, practical capability, and career opportunity in one operating system.
-            </p>
-          </FadeIn>
-        </div>
-      </section>
+      <PageHero
+        eyebrow="Company"
+        photo={PHOTO.campus}
+        photoAlt="University campus"
+        title={<>Why Skylent exists.</>}
+        lead="Education should not end when the class ends. Skylent connects academic learning, practical capability, and career opportunity in one operating system."
+      />
 
       <Section bg={C.warmWhite}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,72px)' }} className="two-col">

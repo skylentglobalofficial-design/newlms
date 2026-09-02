@@ -288,23 +288,26 @@ export function PageHero({
   photoAlt?: string
 }) {
   return (
-    <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `clamp(96px, 12vw, 140px) ${T.gutter} clamp(56px, 7vw, 88px)` }}>
-      {photo && (
-        <>
-          <img src={photo} alt={photoAlt ?? ''} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.45, display: 'block' }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(11,13,15,0.88) 0%, rgba(11,13,15,0.62) 52%, rgba(11,13,15,0.4) 100%)' }} />
-        </>
-      )}
+    <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `clamp(88px, 10vw, 120px) ${T.gutter} clamp(48px, 6vw, 72px)` }}>
       <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative' }}>
-        <div style={{ marginBottom: 22 }}><Eyebrow tone={tone} accent>{eyebrow}</Eyebrow></div>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(34px, 5.6vw, 72px)', lineHeight: 0.98, letterSpacing: '-0.035em', color: tone === 'dark' ? C.white : C.ink, margin: 0, maxWidth: 900 }}>
-          {title}
-        </h1>
-        {lead && (
-          <p style={{ color: tone === 'dark' ? 'rgba(255,255,255,0.58)' : C.slate, fontSize: 'clamp(16px, 2vw, 19px)', lineHeight: 1.7, margin: '22px 0 0', maxWidth: 560 }}>{lead}</p>
-        )}
-        {actions && <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 36 }}>{actions}</div>}
-        {children}
+        <div style={{ display: 'grid', gridTemplateColumns: photo ? '1.05fr 0.95fr' : '1fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }} className="two-col">
+          <div>
+            <div style={{ marginBottom: 20 }}><Eyebrow tone={tone} accent>{eyebrow}</Eyebrow></div>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(34px, 5.2vw, 64px)', lineHeight: 0.98, letterSpacing: '-0.035em', color: tone === 'dark' ? C.white : C.ink, margin: 0, maxWidth: 720 }}>
+              {title}
+            </h1>
+            {lead && (
+              <p style={{ color: tone === 'dark' ? 'rgba(255,255,255,0.62)' : C.slate, fontSize: 'clamp(16px, 2vw, 18px)', lineHeight: 1.7, margin: '20px 0 0', maxWidth: 520 }}>{lead}</p>
+            )}
+            {actions && <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 32 }}>{actions}</div>}
+            {children}
+          </div>
+          {photo && (
+            <div style={{ borderRadius: T.rCard, overflow: 'hidden', aspectRatio: '4/3', background: '#1a1f24', position: 'relative' }}>
+              <img src={photo} alt={photoAlt ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            </div>
+          )}
+        </div>
       </div>
     </section>
   )

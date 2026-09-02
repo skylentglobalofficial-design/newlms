@@ -339,29 +339,19 @@ export default function ProgramPage() {
       {/* ── HERO ────────────────────────────────────────────────────────────── */}
       <section id="program-hero" style={{ background: C.ink, padding: '88px clamp(16px,4vw,32px) 0' }}>
         <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-          {/* Back */}
-          <FadeIn>
-            <button
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 'clamp(32px,5vw,64px)', alignItems: 'start', paddingBottom: 48 }} className="program-detail-grid">
+            <div>
+              <button
               onClick={() => navigate('/programs')}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.3)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 28, padding: 0, transition: 'color 0.15s', letterSpacing: '0.06em' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 24, padding: 0, letterSpacing: '0.06em' }}
             >
               ← ALL PROGRAMS
             </button>
-          </FadeIn>
-
-          {/* Hero grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 'clamp(32px,5vw,64px)', alignItems: 'start', paddingBottom: 48 }} className="program-detail-grid">
-            {/* LEFT: program identity */}
-            <div>
-              <FadeIn>
-                {/* Badge row */}
-                <div style={{ display: 'flex', gap: 8, marginBottom: 22, flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 18, flexWrap: 'wrap', alignItems: 'center' }}>
                   <span style={{ background: 'rgba(243,107,33,0.14)', border: '1px solid rgba(243,107,33,0.3)', borderRadius: 6, padding: '4px 12px', color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.06em' }}>
                     {typeLabel.toUpperCase()}
                   </span>
-                  <span style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '4px 12px', color: 'rgba(255,255,255,0.45)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>
+                  <span style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '4px 12px', color: 'rgba(255,255,255,0.55)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>
                     {program.level}
                   </span>
                   {isCareerOS && (
@@ -370,22 +360,21 @@ export default function ProgramPage() {
                     </span>
                   )}
                   {enrollStatus === 'coming_soon' && (
-                    <span style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '4px 12px', color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>
+                    <span style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '4px 12px', color: 'rgba(255,255,255,0.45)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>
                       COMING SOON
                     </span>
                   )}
                 </div>
 
-            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(34px,5vw,60px)', color: C.white, letterSpacing: '-0.03em', lineHeight: 1.03, margin: '0 0 16px' }}>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(34px,5vw,56px)', color: C.white, letterSpacing: '-0.03em', lineHeight: 1.03, margin: '0 0 14px' }}>
                   {program.name}
                 </h1>
-                <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 17, lineHeight: 1.72, maxWidth: 560, margin: '0 0 22px' }}>
+                <p style={{ color: 'rgba(255,255,255,0.62)', fontSize: 16, lineHeight: 1.72, maxWidth: 560, margin: '0 0 20px' }}>
                   {program.desc}
                 </p>
-                <div style={{ borderRadius: 12, overflow: 'hidden', aspectRatio: '16/8', marginBottom: 28, maxWidth: 560 }}>
+                <div style={{ borderRadius: 12, overflow: 'hidden', aspectRatio: '16/9', marginBottom: 24, maxWidth: 560 }}>
                   <img src={heroPhoto} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                 </div>
-              </FadeIn>
 
               {/* Key outcomes — top 4 */}
               {program.whatYouWillLearn && program.whatYouWillLearn.length > 0 && (
