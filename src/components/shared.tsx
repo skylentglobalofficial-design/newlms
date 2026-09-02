@@ -22,15 +22,22 @@ export const IMG = {
 }
 
 // ─── HOOKS ────────────────────────────────────────────────────────────────────
-export function useFadeIn(threshold = 0.15) {
+export function useFadeIn(threshold = 0.08) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
   useEffect(() => {
     const el = ref.current
     if (!el) return
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } }, { threshold })
+    const reveal = () => setVisible(true)
+    const rect = el.getBoundingClientRect()
+    if (rect.top < window.innerHeight * 0.98 && rect.bottom > 0) {
+      reveal()
+      return
+    }
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { reveal(); obs.disconnect() } }, { threshold, rootMargin: '80px 0px' })
     obs.observe(el)
-    return () => obs.disconnect()
+    const fallback = window.setTimeout(reveal, 700)
+    return () => { obs.disconnect(); window.clearTimeout(fallback) }
   }, [threshold])
   return { ref, visible }
 }
@@ -68,9 +75,8 @@ export function useCountUp(target: number, inView: boolean, duration = 1600) {
 
 // ─── FADE IN COMPONENT ────────────────────────────────────────────────────────
 export function FadeIn({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
-  const { ref, visible } = useFadeIn()
   return (
-    <div ref={ref} className={className} style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', filter: visible ? 'none' : 'blur(4px)', transition: `opacity 0.55s ${delay}ms ease, transform 0.55s ${delay}ms ease, filter 0.55s ${delay}ms ease` }}>
+    <div className={className} style={{ animation: `fadeUp 0.5s ${delay}ms ease both` }}>
       {children}
     </div>
   )

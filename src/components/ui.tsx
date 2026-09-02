@@ -288,28 +288,22 @@ export function PageHero({
   photoAlt?: string
 }) {
   return (
-    <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `clamp(100px, 14vw, 160px) ${T.gutter} clamp(64px, 8vw, 100px)` }}>
+    <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `clamp(96px, 12vw, 140px) ${T.gutter} clamp(56px, 7vw, 88px)` }}>
       {photo && (
         <>
-          <img src={photo} alt={photoAlt ?? ''} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.28, display: 'block' }} />
-          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(11,13,15,0.94) 0%, rgba(11,13,15,0.78) 55%, rgba(11,13,15,0.55) 100%)' }} />
+          <img src={photo} alt={photoAlt ?? ''} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: 0.45, display: 'block' }} />
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(11,13,15,0.88) 0%, rgba(11,13,15,0.62) 52%, rgba(11,13,15,0.4) 100%)' }} />
         </>
       )}
       <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative' }}>
-        <FadeIn>
-          <div style={{ marginBottom: 26 }}><Eyebrow tone={tone} accent>{eyebrow}</Eyebrow></div>
-        </FadeIn>
-        <FadeIn delay={80}>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(36px, 6vw, 80px)', lineHeight: 0.98, letterSpacing: '-0.035em', color: tone === 'dark' ? C.white : C.ink, margin: 0, maxWidth: 900 }}>
-            {title}
-          </h1>
-        </FadeIn>
+        <div style={{ marginBottom: 22 }}><Eyebrow tone={tone} accent>{eyebrow}</Eyebrow></div>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(34px, 5.6vw, 72px)', lineHeight: 0.98, letterSpacing: '-0.035em', color: tone === 'dark' ? C.white : C.ink, margin: 0, maxWidth: 900 }}>
+          {title}
+        </h1>
         {lead && (
-          <FadeIn delay={160}>
-            <p style={{ color: tone === 'dark' ? 'rgba(255,255,255,0.55)' : C.slate, fontSize: 'clamp(16px, 2vw, 19px)', lineHeight: 1.7, margin: '28px 0 0', maxWidth: 560 }}>{lead}</p>
-          </FadeIn>
+          <p style={{ color: tone === 'dark' ? 'rgba(255,255,255,0.58)' : C.slate, fontSize: 'clamp(16px, 2vw, 19px)', lineHeight: 1.7, margin: '22px 0 0', maxWidth: 560 }}>{lead}</p>
         )}
-        {actions && <FadeIn delay={240}><div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 40 }}>{actions}</div></FadeIn>}
+        {actions && <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 36 }}>{actions}</div>}
         {children}
       </div>
     </section>

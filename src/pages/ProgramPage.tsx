@@ -376,7 +376,7 @@ export default function ProgramPage() {
                   )}
                 </div>
 
-                <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(34px,5vw,60px)', fontWeight: 600, color: C.white, letterSpacing: '-0.03em', lineHeight: 1.03, margin: '0 0 16px' }}>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(34px,5vw,60px)', color: C.white, letterSpacing: '-0.03em', lineHeight: 1.03, margin: '0 0 16px' }}>
                   {program.name}
                 </h1>
                 <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 17, lineHeight: 1.72, maxWidth: 560, margin: '0 0 22px' }}>

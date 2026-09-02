@@ -32,7 +32,7 @@ function Hero() {
             <Eyebrow tone="dark">Education · Skills · Career</Eyebrow>
           </FadeIn>
           <FadeIn delay={80}>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(44px, 7vw, 84px)', lineHeight: 0.96, color: C.white, margin: '28px 0 26px', letterSpacing: '-0.04em' }}>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(36px, 6.5vw, 72px)', lineHeight: 0.97, color: C.white, margin: '24px 0 22px', letterSpacing: '-0.04em' }}>
               From education<br />to <span style={{ color: C.orange }}>employability.</span>
             </h1>
           </FadeIn>
