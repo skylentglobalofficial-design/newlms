@@ -1,0 +1,672 @@
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import type { Job } from '../data'
+import { useAuth } from '../context/AuthContext'
+import type { UserRole } from '../context/AuthContext'
+
+// ─── COLOUR TOKENS ────────────────────────────────────────────────────────────
+export const C = {
+  ink: '#0B0D0F',
+  orange: '#F36B21',
+  warmWhite: '#F8F6F2',
+  sand: '#EEE9E1',
+  slate: '#667078',
+  white: '#FFFFFF',
+  black: '#050505',
+}
+
+// ─── IMAGE URLS ───────────────────────────────────────────────────────────────
+export const IMG = {
+  studentsLecture: 'https://images.unsplash.com/photo-1758270704534-fd9715bffc0e?w=1400&h=900&fit=crop&auto=format',
+  groupTech: 'https://images.unsplash.com/photo-1782388716252-d598f84ea62f?w=1400&h=900&fit=crop&auto=format',
+}
+
+// ─── HOOKS ────────────────────────────────────────────────────────────────────
+export function useFadeIn(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect() } }, { threshold })
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [threshold])
+  return { ref, visible }
+}
+
+export function useInView() {
+  const ref = useRef<HTMLDivElement>(null)
+  const [inView, setInView] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect() } }, { threshold: 0.1 })
+    obs.observe(el)
+    return () => obs.disconnect()
+  }, [])
+  return { ref, inView }
+}
+
+export function useCountUp(target: number, inView: boolean, duration = 1600) {
+  const [val, setVal] = useState(0)
+  useEffect(() => {
+    if (!inView) return
+    let start: number | null = null
+    let raf: number
+    const tick = (ts: number) => {
+      if (!start) start = ts
+      const p = Math.min((ts - start) / duration, 1)
+      setVal(Math.round(p * target))
+      if (p < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [inView, target, duration])
+  return val
+}
+
+// ─── FADE IN COMPONENT ────────────────────────────────────────────────────────
+export function FadeIn({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const { ref, visible } = useFadeIn()
+  return (
+    <div ref={ref} className={className} style={{ opacity: visible ? 1 : 0, transform: visible ? 'none' : 'translateY(20px)', filter: visible ? 'none' : 'blur(4px)', transition: `opacity 0.55s ${delay}ms ease, transform 0.55s ${delay}ms ease, filter 0.55s ${delay}ms ease` }}>
+      {children}
+    </div>
+  )
+}
+
+// ─── ENROLLMENT MODAL (separate from job apply) ───────────────────────────────
+type EnrollItem = { id: string; title: string; price: number; type: 'course' | 'program' | 'workshop' }
+
+export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: () => void }) {
+  const { user } = useAuth()
+  const [plan, setPlan] = useState(0)
+  const [payMethod, setPayMethod] = useState<'upi' | 'card' | 'netbanking' | 'emi'>('upi')
+  const navigate = useNavigate()
+  const orderId = `SKY-${Date.now().toString().slice(-8)}`
+  const txnId = `TXN${Math.random().toString(36).substring(2, 10).toUpperCase()}`
+
+  const plans = item.type === 'program'
+    ? [{ name: 'Self-paced', price: item.price }, { name: 'Pro', price: Math.round(item.price * 1.5) }, { name: 'Career', price: Math.round(item.price * 2) }]
+    : [{ name: 'Standard', price: item.price }]
+
+  const selectedPrice = plans[plan]?.price ?? item.price
+  // Skip 'Account' step (index 1) if user is already logged in
+  const allSteps = ['Plan', 'Account', 'Details', 'Order', 'Payment', 'Success']
+  const steps = user ? allSteps.filter(s => s !== 'Account') : allSteps
+  const [step, setStep] = useState(0)
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
+  return (
+    <>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.6)', zIndex: 500, backdropFilter: 'blur(6px)' }} />
+      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.white, borderRadius: 18, padding: '36px 40px', width: 540, maxWidth: '94vw', zIndex: 501, boxShadow: '0 40px 120px rgba(0,0,0,0.32)', overflowY: 'auto', maxHeight: '92vh' }}>
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+          <div>
+            <div style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 3 }}>ENROLLMENT</div>
+            <div style={{ color: C.ink, fontSize: 16, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{item.title}</div>
+          </div>
+          <button onClick={onClose} style={{ background: C.sand, border: 'none', borderRadius: 7, padding: '7px 13px', cursor: 'pointer', color: C.slate, fontSize: 14 }}>✕</button>
+        </div>
+        {/* Step indicator */}
+        <div style={{ display: 'flex', gap: 4, marginBottom: 28 }}>
+          {steps.map((s, i) => (
+            <div key={s} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= step ? C.orange : 'rgba(11,13,15,0.1)', transition: 'background 0.3s' }} />
+          ))}
+        </div>
+        <div style={{ fontSize: 10, color: C.slate, fontFamily: 'var(--font-mono)', marginBottom: 20 }}>STEP {step + 1} OF {steps.length} — {steps[step].toUpperCase()}</div>
+
+        {/* Step content — keyed by step name to handle auth-aware step skipping */}
+        {steps[step] === 'Plan' && (
+          <div>
+            <div style={{ marginBottom: 20 }}>
+              {plans.map((p, i) => (
+                <div key={p.name} onClick={() => setPlan(i)} style={{ border: `1px solid ${plan === i ? C.orange : 'rgba(11,13,15,0.12)'}`, borderRadius: 10, padding: '14px 18px', marginBottom: 8, cursor: 'pointer', background: plan === i ? 'rgba(243,107,33,0.04)' : 'transparent', transition: 'all 0.2s' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ color: C.ink, fontSize: 14, fontWeight: 600 }}>{p.name}</div>
+                      <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{item.type === 'program' && i === 1 ? 'Most popular' : item.type === 'program' && i === 2 ? 'Best for placement' : 'Access all content'}</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, color: C.ink, fontWeight: 600 }}>₹{p.price.toLocaleString('en-IN')}</div>
+                      {plan === i && <div style={{ width: 18, height: 18, borderRadius: '50%', background: C.orange, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: 'white' }}>✓</div>}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        {steps[step] === 'Account' && (
+          <div>
+            <div style={{ display: 'grid', gap: 12 }}>
+              {[['Email', 'arjun@email.com'], ['Create password', '••••••••']].map(([l, v]) => (
+                <div key={l}><div style={{ color: C.slate, fontSize: 11, marginBottom: 5 }}>{l}</div><div style={{ background: C.sand, borderRadius: 7, padding: '11px 14px', fontSize: 14, color: C.ink }}>{v}</div></div>
+              ))}
+            </div>
+            <div style={{ marginTop: 14, padding: '10px 14px', background: 'rgba(243,107,33,0.06)', border: '1px solid rgba(243,107,33,0.18)', borderRadius: 7, color: C.slate, fontSize: 12 }}>Demo mode — no real account is created.</div>
+          </div>
+        )}
+        {steps[step] === 'Details' && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            {[['Full Name', user?.name ?? 'Arjun Sharma'], ['Phone', '+91 98765 43210'], ['City', 'Bengaluru'], ['Highest Qualification', 'B.Com']].map(([l, v]) => (
+              <div key={l}><div style={{ color: C.slate, fontSize: 11, marginBottom: 5 }}>{l}</div><div style={{ background: C.sand, borderRadius: 7, padding: '11px 14px', fontSize: 13, color: C.ink }}>{v}</div></div>
+            ))}
+          </div>
+        )}
+        {steps[step] === 'Order' && (
+          <div>
+            <div style={{ background: C.sand, borderRadius: 10, padding: 18, marginBottom: 14 }}>
+              <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 12 }}>ORDER SUMMARY</div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                <span style={{ color: C.ink, fontSize: 14 }}>{item.title} — {plans[plan].name}</span>
+              </div>
+              {[['GST (18%)', `₹${Math.round(selectedPrice * 0.18).toLocaleString('en-IN')}`], ['Total', `₹${Math.round(selectedPrice * 1.18).toLocaleString('en-IN')}`]].map(([l, v]) => (
+                <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderTop: '1px solid rgba(11,13,15,0.08)' }}>
+                  <span style={{ color: C.slate, fontSize: 13 }}>{l}</span>
+                  <span style={{ color: l === 'Total' ? C.ink : C.slate, fontSize: 13, fontWeight: l === 'Total' ? 600 : 400, fontFamily: 'var(--font-mono)' }}>{v}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ color: C.slate, fontSize: 11 }}>Order ID: {orderId}</div>
+          </div>
+        )}
+        {steps[step] === 'Payment' && (
+          <div>
+            <div style={{ display: 'flex', gap: 6, marginBottom: 18 }}>
+              {(['upi', 'card', 'netbanking', 'emi'] as const).map(m => (
+                <button key={m} onClick={() => setPayMethod(m)} style={{ flex: 1, padding: '9px 4px', borderRadius: 7, border: `1px solid ${payMethod === m ? C.ink : 'rgba(11,13,15,0.15)'}`, background: payMethod === m ? C.ink : 'transparent', color: payMethod === m ? C.white : C.slate, fontSize: 11, cursor: 'pointer', fontFamily: 'var(--font-mono)', transition: 'all 0.2s', textTransform: 'uppercase' }}>{m}</button>
+              ))}
+            </div>
+            {payMethod === 'upi' && (
+              <div>
+                <div style={{ color: C.slate, fontSize: 11, marginBottom: 6 }}>UPI ID</div>
+                <div style={{ background: C.sand, borderRadius: 7, padding: '11px 14px', fontSize: 14, color: C.ink, marginBottom: 14 }}>arjun@okaxis</div>
+                <div style={{ background: 'rgba(243,107,33,0.06)', border: '1px solid rgba(243,107,33,0.18)', borderRadius: 8, padding: 14, textAlign: 'center' }}>
+                  <div style={{ color: C.slate, fontSize: 11, marginBottom: 6 }}>DEMO — No real payment is processed</div>
+                  <div style={{ color: C.ink, fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 600 }}>₹{Math.round(selectedPrice * 1.18).toLocaleString('en-IN')}</div>
+                </div>
+              </div>
+            )}
+            {payMethod === 'card' && (
+              <div style={{ display: 'grid', gap: 10 }}>
+                {[['Card Number', '4242 4242 4242 4242'], ['Name on card', 'ARJUN SHARMA'], ['Expiry', '12/28'], ['CVV', '•••']].map(([l, v]) => (
+                  <div key={l}><div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>{l}</div><div style={{ background: C.sand, borderRadius: 7, padding: '10px 14px', fontSize: 13, color: C.ink }}>{v}</div></div>
+                ))}
+              </div>
+            )}
+            {(payMethod === 'netbanking' || payMethod === 'emi') && (
+              <div style={{ background: C.sand, borderRadius: 10, padding: 18, color: C.slate, fontSize: 13, textAlign: 'center' }}>{payMethod === 'emi' ? 'EMI options available at checkout. Demo only.' : 'Select your bank and proceed. Demo only — no payment is processed.'}</div>
+            )}
+          </div>
+        )}
+        {steps[step] === 'Success' && (
+          <div style={{ textAlign: 'center', padding: '12px 0' }}>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: `linear-gradient(135deg, ${C.orange}, #ff9a3c)`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 22, color: 'white', fontWeight: 700 }}>✓</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, color: C.ink, fontWeight: 700, marginBottom: 8 }}>Enrollment Successful</div>
+            <div style={{ color: C.slate, fontSize: 14, marginBottom: 24 }}>{item.title} has been added to your learning dashboard.</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, background: C.sand, borderRadius: 10, padding: 14, marginBottom: 24, fontSize: 12 }}>
+              {[['Order ID', orderId], ['Transaction', txnId], ['Amount', `₹${Math.round(selectedPrice * 1.18).toLocaleString('en-IN')}`], ['Status', 'Confirmed']].map(([l, v]) => (
+                <div key={l as string}><div style={{ color: C.slate, fontFamily: 'var(--font-mono)', marginBottom: 2, fontSize: 9 }}>{(l as string).toUpperCase()}</div><div style={{ color: C.ink, fontWeight: 500, fontSize: 12 }}>{v as string}</div></div>
+              ))}
+            </div>
+            <div style={{ background: 'rgba(11,13,15,0.04)', borderRadius: 8, padding: 10, color: C.slate, fontSize: 11, marginBottom: 20 }}>Demo enrollment — no real payment was processed.</div>
+            <button onClick={() => { onClose(); navigate('/dashboard/student') }} style={{ width: '100%', background: C.orange, border: 'none', color: C.white, borderRadius: 9, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Go to Student Dashboard →</button>
+          </div>
+        )}
+
+        {/* Navigation */}
+        {steps[step] !== 'Success' && (
+          <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
+            {step > 0 && <button onClick={() => setStep(s => s - 1)} style={{ flex: 1, background: C.sand, border: 'none', color: C.ink, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>← Back</button>}
+            <button onClick={() => setStep(s => s + 1)} style={{ flex: 2, background: steps[step] === 'Payment' ? '#16a34a' : C.orange, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.2s' }}>{steps[step] === 'Payment' ? 'Confirm Payment →' : steps[step] === 'Plan' ? `Enroll — ₹${selectedPrice.toLocaleString('en-IN')}` : 'Continue →'}</button>
+          </div>
+        )}
+      </div>
+    </>
+  )
+}
+
+// ─── APPLY MODAL (job application — separate from enrollment) ─────────────────
+export function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) {
+  const [step, setStep] = useState(0)
+  const steps = ['Profile', 'Resume', 'Screening', 'Interview', 'Result']
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
+  return (
+    <>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.55)', zIndex: 500, backdropFilter: 'blur(5px)' }} />
+      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.white, borderRadius: 16, padding: 40, width: 520, maxWidth: '92vw', zIndex: 501, boxShadow: '0 32px 100px rgba(0,0,0,0.35)', overflowY: 'auto', maxHeight: '90vh' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 28 }}>
+          <div>
+            <div style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>JOB APPLICATION</div>
+            <div style={{ color: C.ink, fontSize: 16, fontWeight: 600 }}>{job.role} · {job.company}</div>
+          </div>
+          <button onClick={onClose} style={{ background: C.sand, border: 'none', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', color: C.slate, fontSize: 15 }}>✕</button>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 28 }}>
+          {steps.map((s, i) => (
+            <div key={s} style={{ display: 'flex', alignItems: 'center', flex: i < steps.length - 1 ? 1 : 'none' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 44 }}>
+                <div style={{ width: 30, height: 30, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, background: i < step ? C.orange : i === step ? C.ink : C.sand, color: i <= step ? C.white : C.slate, marginBottom: 5, transition: 'all 0.3s' }}>{i < step ? '✓' : i + 1}</div>
+                <span style={{ fontSize: 9, color: i === step ? C.ink : C.slate, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>{s}</span>
+              </div>
+              {i < steps.length - 1 && <div style={{ flex: 1, height: 1, background: i < step ? C.orange : 'rgba(11,13,15,0.12)', marginBottom: 18, transition: 'background 0.3s' }} />}
+            </div>
+          ))}
+        </div>
+        <div style={{ background: C.sand, borderRadius: 10, padding: 22, marginBottom: 20, minHeight: 130 }}>
+          {step === 0 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 14 }}>YOUR PROFILE</div><div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>{[['Full Name', 'Arjun Sharma'], ['Email', 'arjun@email.com'], ['Phone', '+91 98765 43210'], ['City', 'Bengaluru']].map(([l, v]) => <div key={l}><div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{l.toUpperCase()}</div><div style={{ background: C.white, borderRadius: 6, padding: '8px 12px', fontSize: 13, color: C.ink }}>{v}</div></div>)}</div></div>}
+          {step === 1 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 14 }}>RESUME</div><div style={{ background: C.white, borderRadius: 8, padding: 14, display: 'flex', alignItems: 'center', gap: 12 }}><div style={{ width: 38, height: 38, borderRadius: 6, background: 'rgba(243,107,33,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.orange, fontSize: 18 }}>⬛</div><div><div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>Arjun_Sharma_Resume.pdf</div><div style={{ color: C.slate, fontSize: 11 }}>Skylent-reviewed · ATS optimised</div></div><div style={{ marginLeft: 'auto', color: '#16a34a', fontSize: 10, fontFamily: 'var(--font-mono)' }}>READY</div></div></div>}
+          {step === 2 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 12 }}>SCREENING QUESTION</div><div style={{ color: C.ink, fontSize: 14, lineHeight: 1.65, marginBottom: 10 }}>Why are you interested in this role?</div><div style={{ background: C.white, borderRadius: 6, padding: '10px 14px', color: C.slate, fontSize: 13, lineHeight: 1.6 }}>I am passionate about using data to drive decisions and have completed 4 industry projects during my Skylent program...</div></div>}
+          {step === 3 && <div style={{ textAlign: 'center', paddingTop: 8 }}><div style={{ fontSize: 30, marginBottom: 10 }}>🗓</div><div style={{ color: C.ink, fontSize: 15, fontWeight: 600, marginBottom: 5 }}>Interview Scheduled</div><div style={{ color: C.slate, fontSize: 13 }}>Thursday, 15 August · 11:00 AM</div><div style={{ color: C.slate, fontSize: 13 }}>Technical + HR · 60 minutes</div></div>}
+          {step === 4 && <div style={{ textAlign: 'center', paddingTop: 4 }}><div style={{ width: 48, height: 48, borderRadius: '50%', background: `linear-gradient(135deg, ${C.orange}, #ff9a3c)`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 20, color: 'white', fontWeight: 700 }}>✓</div><div style={{ color: C.ink, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Application Submitted</div><div style={{ color: C.slate, fontSize: 13 }}>Demo application — no real submission was made.</div></div>}
+        </div>
+        <div style={{ display: 'flex', gap: 10 }}>
+          {step > 0 && step < 4 && <button onClick={() => setStep(s => s - 1)} style={{ flex: 1, background: C.sand, border: 'none', color: C.ink, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>← Back</button>}
+          {step < 4 && <button onClick={() => setStep(s => s + 1)} style={{ flex: 2, background: C.orange, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>{step === 3 ? 'View Result' : 'Continue →'}</button>}
+          {step === 4 && <button onClick={onClose} style={{ flex: 1, background: C.ink, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Close</button>}
+        </div>
+      </div>
+    </>
+  )
+}
+
+// ─── JOB DRAWER ───────────────────────────────────────────────────────────────
+export function JobDrawer({ job, onClose, onApply }: { job: Job; onClose: () => void; onApply: () => void }) {
+  return (
+    <>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.5)', zIndex: 400, backdropFilter: 'blur(4px)' }} />
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 480, maxWidth: '95vw', background: C.white, zIndex: 401, padding: 36, overflowY: 'auto', boxShadow: '-16px 0 60px rgba(0,0,0,0.2)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
+          <div>
+            <h3 style={{ color: C.ink, fontSize: 21, fontFamily: 'var(--font-display)', fontWeight: 600, margin: '0 0 4px' }}>{job.role}</h3>
+            <div style={{ color: C.slate, fontSize: 13 }}>{job.company} · {job.location}</div>
+          </div>
+          <button onClick={onClose} style={{ background: C.sand, border: 'none', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', color: C.slate, fontSize: 15 }}>✕</button>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 22 }}>
+          {[['Salary', job.salary], ['Experience', job.exp], ['Mode', job.mode], ['Location', job.location.split('/')[0].trim()]].map(([l, v]) => (
+            <div key={l} style={{ background: C.sand, borderRadius: 8, padding: 13 }}><div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 3 }}>{l.toUpperCase()}</div><div style={{ color: C.ink, fontSize: 13, fontWeight: 600 }}>{v}</div></div>
+          ))}
+        </div>
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 8 }}>ABOUT THE ROLE</div>
+          <p style={{ color: C.ink, fontSize: 14, lineHeight: 1.75, margin: 0 }}>{job.desc}</p>
+        </div>
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 10 }}>REQUIRED SKILLS</div>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {job.skills.map(s => <span key={s} style={{ background: 'rgba(243,107,33,0.08)', border: '1px solid rgba(243,107,33,0.2)', borderRadius: 6, padding: '5px 12px', color: C.ink, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{s}</span>)}
+          </div>
+        </div>
+        <button onClick={onApply} style={{ width: '100%', background: C.orange, border: 'none', color: C.white, borderRadius: 8, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Apply Now →</button>
+      </div>
+    </>
+  )
+}
+
+// ─── NAV (with mega menu) ─────────────────────────────────────────────────────
+const megaMenu = [
+  {
+    label: 'Education',
+    to: '/education',
+    tagline: 'From schooling to postgraduate & exams',
+    items: [
+      { label: 'Schooling', sub: 'Foundational academic learning', to: '/education#schooling' },
+      { label: 'Undergraduate', sub: 'Degree-aligned programs', to: '/education#undergraduate' },
+      { label: 'Postgraduate', sub: 'Advanced specialisation', to: '/education#postgraduate' },
+      { label: 'Competitive Exams', sub: 'JEE · NEET · CAT & more', to: '/education#competitive-exams' },
+    ],
+  },
+  {
+    label: 'Skills',
+    to: '/skills',
+    tagline: 'From learning to employability',
+    items: [
+      { label: 'Webinars', sub: 'Live expert-led sessions', to: '/workshops' },
+      { label: 'Certificate Programs', sub: 'Focused, credentialed skills', to: '/programs' },
+      { label: 'Professional Programs', sub: 'Career-ready — unlocks Career OS', to: '/programs' },
+      { label: 'Job Assistance', sub: 'Placement & readiness support', to: '/skills#job-assistance' },
+    ],
+  },
+  {
+    label: 'Career OS',
+    to: '/career-os',
+    tagline: 'Your career, as an operating system',
+    items: [
+      { label: 'Interview Preparation', sub: 'Mock interviews & practice', to: '/career-os' },
+      { label: 'Job Board', sub: 'Curated opportunities', to: '/career-os' },
+    ],
+  },
+  {
+    label: 'For Institutions',
+    to: '/institutions',
+    tagline: 'Education + career infrastructure',
+    items: [
+      { label: 'Schools', sub: 'Student learning & teacher tools', to: '/institutions' },
+      { label: 'Colleges', sub: 'Academic programs & career readiness', to: '/institutions' },
+      { label: 'Universities', sub: 'Curriculum, LMS & student lifecycle', to: '/institutions' },
+      { label: 'Skill Institutions', sub: 'Programs, batches & certification', to: '/institutions' },
+    ],
+  },
+]
+
+function dashRoute(role: UserRole): string {
+  switch (role) {
+    case 'student': return '/dashboard/student'
+    case 'faculty': return '/dashboard/faculty'
+    case 'organisation': return '/dashboard/organisation'
+    case 'recruiter': return '/dashboard/recruiter'
+    case 'superadmin': return '/dashboard/admin'
+  }
+}
+
+export function Nav() {
+  const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [activeMenu, setActiveMenu] = useState<string | null>(null)
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const searchRef = useRef<HTMLInputElement>(null)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const isHome = location.pathname === '/'
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    if (searchOpen) searchRef.current?.focus()
+  }, [searchOpen])
+
+  function handleSearch(e: React.FormEvent) {
+    e.preventDefault()
+    const q = searchQuery.trim()
+    if (!q) return
+    setSearchOpen(false)
+    setSearchQuery('')
+    navigate(`/courses?q=${encodeURIComponent(q)}`)
+  }
+  const { user, logout } = useAuth()
+
+  useEffect(() => {
+    const h = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', h, { passive: true })
+    return () => window.removeEventListener('scroll', h)
+  }, [])
+  useEffect(() => { setMenuOpen(false); setActiveMenu(null) }, [location.pathname])
+
+  const showDark = scrolled || !isHome
+
+  const handleMenuEnter = useCallback((label: string) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    setActiveMenu(label)
+  }, [])
+
+  const handleMenuLeave = useCallback(() => {
+    closeTimer.current = setTimeout(() => setActiveMenu(null), 120)
+  }, [])
+
+  const simpleLinks = [
+    { label: 'Stories', to: '/stories' },
+    { label: 'About', to: '/about' },
+  ]
+
+  return (
+    <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: showDark ? 'rgba(11,13,15,0.92)' : 'transparent', backdropFilter: showDark ? 'blur(20px)' : 'none', borderBottom: showDark ? '1px solid rgba(255,255,255,0.07)' : 'none', transition: 'background 0.4s, backdrop-filter 0.4s, border-color 0.4s' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
+        {/* Logo */}
+        <button onClick={() => navigate('/')} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: C.white, background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '-0.02em', padding: 0, flexShrink: 0 }}>
+          Skylent<span style={{ color: C.orange }}>.</span>
+        </button>
+
+        {/* Desktop links */}
+        <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          {megaMenu.map(group => (
+            <div key={group.label} style={{ position: 'relative' }} onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave}>
+              <button onClick={() => navigate(group.to)} style={{ background: 'none', border: 'none', color: activeMenu === group.label ? C.white : 'rgba(255,255,255,0.6)', fontSize: 13.5, cursor: 'pointer', padding: '8px 13px', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-body)', transition: 'color 0.2s', letterSpacing: '-0.01em' }}>
+                {group.label}
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{ opacity: 0.5, transform: activeMenu === group.label ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l5 6 5-6z"/></svg>
+              </button>
+              {activeMenu === group.label && (
+                <div onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: 'rgba(11,13,15,0.97)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 14, padding: 8, minWidth: 288, boxShadow: '0 28px 70px rgba(0,0,0,0.5)', zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
+                  <Link to={group.to} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px 13px', borderRadius: 10, textDecoration: 'none', marginBottom: 4, borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                  >
+                    <div>
+                      <div style={{ color: C.white, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
+                      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{group.tagline}</div>
+                    </div>
+                    <span style={{ color: C.orange, fontSize: 15 }}>→</span>
+                  </Link>
+                  {group.items.map(item => (
+                    <Link key={item.to + item.label} to={item.to} style={{ display: 'block', padding: '9px 14px', borderRadius: 9, textDecoration: 'none', transition: 'background 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.06)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <div style={{ color: 'rgba(255,255,255,0.88)', fontSize: 13, fontWeight: 500 }}>{item.label}</div>
+                      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 1 }}>{item.sub}</div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+          {simpleLinks.map(l => (
+            <Link key={l.to} to={l.to} style={{ color: location.pathname === l.to ? C.white : 'rgba(255,255,255,0.55)', fontSize: 13, textDecoration: 'none', padding: '8px 12px', transition: 'color 0.2s', whiteSpace: 'nowrap' }}
+              onMouseEnter={e => (e.currentTarget.style.color = C.white)}
+              onMouseLeave={e => (e.currentTarget.style.color = location.pathname === l.to ? C.white : 'rgba(255,255,255,0.55)')}
+            >{l.label}</Link>
+          ))}
+        </div>
+
+        {/* Global search */}
+        <div className="nav-links" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+          {searchOpen ? (
+            <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 7, overflow: 'hidden' }}>
+              <input
+                ref={searchRef}
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Search courses, programs, jobs..."
+                onKeyDown={e => e.key === 'Escape' && setSearchOpen(false)}
+                style={{ background: 'transparent', border: 'none', outline: 'none', color: C.white, fontSize: 13, padding: '7px 12px', width: 220, fontFamily: 'var(--font-body)' }}
+              />
+              <button type="submit" style={{ background: 'none', border: 'none', color: C.orange, padding: '7px 10px', cursor: 'pointer' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </button>
+              <button type="button" onClick={() => setSearchOpen(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', padding: '7px 10px', cursor: 'pointer', fontSize: 13 }}>✕</button>
+            </form>
+          ) : (
+            <button onClick={() => setSearchOpen(true)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: 7, transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = C.white)}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
+              title="Search"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+          )}
+        </div>
+
+        {/* CTAs */}
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          {user ? (
+            <>
+              {/* Avatar chip */}
+              <div className="nav-links" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, padding: '5px 10px' }}>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: C.orange, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: C.white, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>{user.avatar}</div>
+                <span style={{ color: C.white, fontSize: 12, fontWeight: 500, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name.length > 14 ? user.name.slice(0, 14) + '...' : user.name}</span>
+                <span style={{ background: 'rgba(243,107,33,0.18)', border: '1px solid rgba(243,107,33,0.35)', borderRadius: 4, padding: '1px 6px', fontSize: 9, color: C.orange, fontFamily: 'var(--font-mono)', letterSpacing: '0.05em', flexShrink: 0 }}>{user.role}</span>
+              </div>
+              <Link to={dashRoute(user.role)} className="nav-links" style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: C.white, borderRadius: 7, padding: '7px 14px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'border-color 0.2s', whiteSpace: 'nowrap' }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
+              >Dashboard</Link>
+              <button className="nav-links" onClick={() => { logout(); navigate('/') }} style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)', borderRadius: 7, padding: '7px 14px', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+                onMouseEnter={e => { e.currentTarget.style.color = C.white; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)' }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)' }}
+              >Sign Out</button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="nav-links" style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: C.white, borderRadius: 7, padding: '7px 16px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'border-color 0.2s', whiteSpace: 'nowrap' }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)')}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
+              >Sign In</Link>
+              <Link to="/programs" style={{ background: C.orange, border: 'none', color: C.white, borderRadius: 7, padding: '8px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#ff7d33' }}
+                onMouseLeave={e => { e.currentTarget.style.background = C.orange }}
+              >Explore Programs</Link>
+            </>
+          )}
+          <button className="show-mobile" onClick={() => setMenuOpen(o => !o)} style={{ background: 'none', border: 'none', color: C.white, cursor: 'pointer', padding: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <span style={{ display: 'block', width: 20, height: 2, background: C.white, borderRadius: 1 }} />
+            <span style={{ display: 'block', width: 20, height: 2, background: C.white, borderRadius: 1 }} />
+            <span style={{ display: 'block', width: 20, height: 2, background: C.white, borderRadius: 1 }} />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      {menuOpen && (
+        <div style={{ background: C.ink, borderTop: '1px solid rgba(255,255,255,0.07)', padding: '12px 24px 20px', maxHeight: '80vh', overflowY: 'auto' }}>
+          {megaMenu.map(group => (
+            <div key={group.label} style={{ marginBottom: 8 }}>
+              <Link to={group.to} onClick={() => setMenuOpen(false)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', padding: '12px 0 6px', textDecoration: 'none' }}>{group.label.toUpperCase()}<span style={{ opacity: 0.7 }}>→</span></Link>
+              {group.items.map(item => (
+                <Link key={item.label} to={item.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '9px 0', color: 'rgba(255,255,255,0.7)', fontSize: 14, textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{item.label}</Link>
+              ))}
+            </div>
+          ))}
+          {simpleLinks.map(l => (
+            <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '10px 0', color: 'rgba(255,255,255,0.7)', fontSize: 14, textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{l.label}</Link>
+          ))}
+          <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+            {user ? (
+              <button onClick={() => { logout(); navigate('/'); setMenuOpen(false) }} style={{ flex: 1, textAlign: 'center', padding: '11px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, color: C.white, background: 'none', textDecoration: 'none', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Sign Out</button>
+            ) : (
+              <Link to="/login" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13 }}>Sign In</Link>
+            )}
+            <Link to="/programs" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', background: C.orange, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>Explore Programs</Link>
+          </div>
+        </div>
+      )}
+    </nav>
+  )
+}
+
+// ─── FOOTER ───────────────────────────────────────────────────────────────────
+export function Footer() {
+  const cols = [
+    { heading: 'Education', links: [['Overview', '/education'], ['Schooling', '/education#schooling'], ['Undergraduate', '/education#undergraduate'], ['Postgraduate', '/education#postgraduate']] },
+    { heading: 'Skills', links: [['Overview', '/skills'], ['Webinars', '/workshops'], ['Certificate Programs', '/programs'], ['Professional Programs', '/programs'], ['Job Assistance', '/skills#job-assistance']] },
+    { heading: 'Career OS', links: [['Overview', '/career-os'], ['Interview Prep', '/career-os'], ['Job Board', '/career-os'], ['Skylent OS', '/os']] },
+    { heading: 'Company', links: [['About', '/about'], ['For Institutions', '/institutions'], ['Stories', '/stories'], ['Blog', '/blog'], ['Contact', '/contact']] },
+  ]
+  return (
+    <footer style={{ background: C.black, padding: '72px 32px 32px' }}>
+      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.7fr repeat(4, 1fr)', gap: 40, marginBottom: 56 }} className="footer-grid">
+          <div>
+            <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.white, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
+            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>One ecosystem — from education to employability. Building the infrastructure for the future of learning and careers.</p>
+            <div style={{ display: 'flex', gap: 10 }}>
+              {['in', 'tw', 'yt', 'ig'].map(s => (<div key={s} style={{ width: 32, height: 32, borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{s}</div>))}
+            </div>
+          </div>
+          {cols.map(col => (
+            <div key={col.heading}>
+              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 14 }}>{col.heading.toUpperCase()}</div>
+              {col.links.map(([label, to]) => (
+                <div key={label} style={{ marginBottom: 8 }}>
+                  <Link to={to} style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, textDecoration: 'none', transition: 'color 0.2s' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = C.white)}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.42)')}
+                  >{label}</Link>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+          <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>© 2026 Skylent Global. All rights reserved.</div>
+          <div style={{ display: 'flex', gap: 20 }}>{['Privacy', 'Terms', 'Cookies'].map(l => <span key={l} style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{l}</span>)}</div>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+// ─── PAGE SHELL ───────────────────────────────────────────────────────────────
+export function PageShell({ children }: { children: React.ReactNode }) {
+  useEffect(() => { window.scrollTo(0, 0) }, [])
+  return (
+    <div style={{ paddingTop: 64 }}>
+      <Nav />
+      {children}
+      <Footer />
+    </div>
+  )
+}
+
+// ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
+export const globalCSS = `
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+  @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.35 } }
+  @keyframes spin { to { transform: rotate(360deg) } }
+
+  * { box-sizing: border-box; }
+
+  .nav-links { display: flex !important; }
+  .show-mobile { display: none !important; }
+
+  @media (max-width: 1100px) {
+    .nav-links { display: none !important; }
+    .show-mobile { display: flex !important; }
+    .hero-grid, .two-col { grid-template-columns: 1fr !important; gap: 32px !important; }
+    .three-col { grid-template-columns: 1fr 1fr !important; }
+    .programs-grid { grid-template-columns: 1fr 1fr !important; }
+    .intent-grid { grid-template-columns: 1fr 1fr !important; }
+    .process-grid { grid-template-columns: repeat(3, 1fr) !important; }
+    .career-grid { grid-template-columns: repeat(4, 1fr) !important; }
+    .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
+    .edu-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+    .dash-grid { grid-template-columns: 1fr !important; }
+    .hero-float { display: none !important; }
+    .hero-visual { overflow: hidden !important; padding-bottom: 0 !important; }
+    .hero-visual img { transform: none !important; }
+  }
+  @media (max-width: 640px) {
+    .three-col { grid-template-columns: 1fr !important; }
+    .programs-grid { grid-template-columns: 1fr !important; }
+    .intent-grid { grid-template-columns: 1fr 1fr !important; }
+    .process-grid { grid-template-columns: 1fr 1fr !important; }
+    .career-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .footer-grid { grid-template-columns: 1fr 1fr !important; }
+    .edu-grid { grid-template-columns: 1fr !important; }
+    .flow-strip { flex-direction: column !important; }
+    .flow-strip > div { width: 100% !important; }
+    .flow-arrow { transform: rotate(90deg); padding: 8px 0 !important; }
+    .pillar-grid { grid-template-columns: 1fr !important; }
+    .skills-grid { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 900px) {
+    .flow-strip { flex-wrap: wrap; }
+    .pillar-grid { grid-template-columns: 1fr !important; }
+    .skills-grid { grid-template-columns: 1fr !important; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+`

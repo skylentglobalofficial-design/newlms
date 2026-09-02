@@ -1,0 +1,11 @@
+{
+  "name": "Skylent LMS",
+  "install": "pnpm install --frozen-lockfile",
+  "terminals": [
+    {
+      "name": "vite",
+      "command": "pnpm run dev"
+    }
+  ],
+  "ports": [8443]
+}
