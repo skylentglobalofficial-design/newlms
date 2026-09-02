@@ -30,14 +30,16 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      // Bind all interfaces so localhost, 127.0.0.1, and LAN IPs can connect.
+      // Figma Make injects PORT (typically 8443); locally use Vite's default 5173.
       host: '0.0.0.0',
-      port: parseInt(process.env.PORT || '8443'),
+      port: parseInt(process.env.PORT || '5173', 10),
       strictPort: true,
       watch: { ignored: ['**/.figma/**'] },
     },
     preview: {
       host: '0.0.0.0',
-      port: parseInt(process.env.PORT || '8443'),
+      port: parseInt(process.env.PORT || '5173', 10),
     },
   }
 })
