@@ -3,6 +3,8 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { C } from '../components/shared'
 import { courses } from '../data'
 import type { CourseLesson, CourseModule } from '../data'
+import { useAuth } from '../context/AuthContext'
+import { createEnrollment, getEnrollments, getLessonProgress, saveLessonProgress } from '../persistence/lmsPersistence'
 
 // ─── LESSON STATE ──────────────────────────────────────────────────────────────
 type LessonState = {
@@ -313,6 +315,7 @@ function LabTab({ slug, labLaunched, labComplete, onLaunch, onMarkComplete }: { 
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   const course = courses.find(c => c.slug === slug)
 
@@ -340,6 +343,7 @@ export default function LearnPage() {
   const [showCertificate, setShowCertificate] = useState(false)
   const [labLaunched, setLabLaunched] = useState(false)
   const [labComplete, setLabComplete] = useState(false)
+  const [enrollmentId, setEnrollmentId] = useState<string | null>(null)
 
   // Sync URL when lesson changes
   useEffect(() => {
@@ -354,6 +358,36 @@ export default function LearnPage() {
       setSelectedLessonId(lessonId)
     }
   }, [])
+
+  // Resolve (or create) this user's enrollment for the course, then hydrate
+  // any persisted lesson progress on top of the local state. Anonymous
+  // visitors are left untouched — no userId is invented, and their progress
+  // stays local/ephemeral exactly as before this change.
+  useEffect(() => {
+    if (!user || !course) return
+
+    const existing = getEnrollments(user.id).find(e => e.courseId === course.slug && e.status !== 'cancelled')
+    const enrollment = existing ?? createEnrollment(user.id, { courseId: course.slug, status: 'active' })
+    setEnrollmentId(enrollment.id)
+
+    const progress = getLessonProgress(user.id).filter(p => p.enrollmentId === enrollment.id)
+    if (progress.length === 0) return
+
+    setLessonStates(prev => {
+      const next = { ...prev }
+      progress.forEach(p => {
+        const current = next[p.lessonId] ?? defaultState()
+        next[p.lessonId] = {
+          videoWatched: current.videoWatched || Boolean(p.startedAt),
+          quizPassed: current.quizPassed || p.quizScorePercentage !== undefined,
+          assignmentSubmitted: current.assignmentSubmitted || Boolean(p.assignmentSubmittedAt),
+          complete: current.complete || Boolean(p.completedAt),
+        }
+      })
+      return next
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, course?.slug])
 
   if (!course) {
     return (
@@ -401,6 +435,9 @@ export default function LearnPage() {
 
   function handleVideoWatched() {
     updateLesson(selectedLessonId, { videoWatched: true })
+    if (user && enrollmentId) {
+      saveLessonProgress(user.id, { lessonId: selectedLessonId, enrollmentId, startedAt: new Date().toISOString() })
+    }
     if (selectedLesson?.type === 'notes') {
       setActiveTab('notes')
     } else {
@@ -410,11 +447,18 @@ export default function LearnPage() {
 
   function handleQuizPass() {
     updateLesson(selectedLessonId, { quizPassed: true })
+    if (user && enrollmentId) {
+      saveLessonProgress(user.id, { lessonId: selectedLessonId, enrollmentId, quizScorePercentage: 100 })
+    }
     setTimeout(() => setActiveTab('assignment'), 600)
   }
 
   function handleAssignmentSubmit() {
     updateLesson(selectedLessonId, { assignmentSubmitted: true, complete: true })
+    if (user && enrollmentId) {
+      const now = new Date().toISOString()
+      saveLessonProgress(user.id, { lessonId: selectedLessonId, enrollmentId, assignmentSubmittedAt: now, completedAt: now })
+    }
     // Check if all complete
     const remaining = allLessons.filter(l => l.id !== selectedLessonId && !(lessonStates[l.id]?.complete))
     if (remaining.length === 0) {

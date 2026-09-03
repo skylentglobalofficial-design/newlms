@@ -2,8 +2,93 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { C } from '../components/shared'
 import { useAuth } from '../context/AuthContext'
+import { courses } from '../data'
+import { getEnrollments, getLessonProgress } from '../persistence/lmsPersistence'
 
 const NAV_ITEMS = ['Overview', 'My Learning', 'Courses', 'Assignments', 'Career OS', 'Settings']
+
+// ─── PROGRESS HELPERS (derived from real persisted enrollment/lesson data) ────
+type EnrolledCourseSummary = {
+  slug: string
+  title: string
+  totalLessons: number
+  completedLessons: number
+  percentComplete: number
+  totalModules: number
+  moduleIndex: number
+  moduleTitle: string | null
+  nextLessonTitle: string | null
+  totalAssignments: number
+  completedAssignments: number
+  lastActivityAt: string
+}
+
+// Only course enrollments are summarised here — programs in data.ts have no
+// module/lesson data to compute real progress from, so we do not fabricate
+// a number for them (see src/types/lms.ts CourseProgress).
+function getEnrolledCourseSummaries(userId: string): EnrolledCourseSummary[] {
+  const enrollments = getEnrollments(userId).filter(e => e.courseId && e.status !== 'cancelled')
+  const progress = getLessonProgress(userId)
+
+  return enrollments.flatMap((enrollment): EnrolledCourseSummary[] => {
+    const course = courses.find(c => c.slug === enrollment.courseId)
+    if (!course) return []
+
+    const lessons = course.modules.flatMap(m => m.lessons)
+    const progressByLessonId = new Map(
+      progress.filter(p => p.enrollmentId === enrollment.id).map(p => [p.lessonId, p]),
+    )
+
+    const completedLessons = lessons.filter(l => progressByLessonId.get(l.id)?.completedAt).length
+    const nextLesson = lessons.find(l => !progressByLessonId.get(l.id)?.completedAt) ?? null
+    const nextModule = nextLesson ? course.modules.find(m => m.lessons.some(l => l.id === nextLesson.id)) : undefined
+    const assignments = lessons.filter(l => l.type === 'assignment')
+    const completedAssignments = assignments.filter(l => progressByLessonId.get(l.id)?.completedAt).length
+
+    const activityDates = [...progressByLessonId.values()]
+      .flatMap(p => [p.startedAt, p.completedAt])
+      .filter((d): d is string => Boolean(d))
+      .sort()
+    const lastActivityAt = activityDates[activityDates.length - 1] ?? enrollment.enrolledAt
+
+    return [{
+      slug: course.slug,
+      title: course.title,
+      totalLessons: lessons.length,
+      completedLessons,
+      percentComplete: lessons.length > 0 ? Math.round((completedLessons / lessons.length) * 100) : 0,
+      totalModules: course.modules.length,
+      moduleIndex: nextModule ? course.modules.indexOf(nextModule) : Math.max(course.modules.length - 1, 0),
+      moduleTitle: nextModule?.title ?? null,
+      nextLessonTitle: nextLesson?.title ?? null,
+      totalAssignments: assignments.length,
+      completedAssignments,
+      lastActivityAt,
+    }]
+  })
+}
+
+// Honest "current streak" derived from real activity timestamps — counts
+// consecutive days (ending today) that have at least one lesson-progress
+// event. Returns 0 when there is no persisted activity, rather than a
+// fabricated number.
+function computeLearningStreakDays(userId: string): number {
+  const progress = getLessonProgress(userId)
+  const activeDates = new Set<string>()
+  progress.forEach(p => {
+    if (p.startedAt) activeDates.add(p.startedAt.slice(0, 10))
+    if (p.completedAt) activeDates.add(p.completedAt.slice(0, 10))
+  })
+  if (activeDates.size === 0) return 0
+
+  let streak = 0
+  const cursor = new Date()
+  while (activeDates.has(cursor.toISOString().slice(0, 10))) {
+    streak += 1
+    cursor.setDate(cursor.getDate() - 1)
+  }
+  return streak
+}
 
 function Sidebar({ active, setActive }: { active: string; setActive: (s: string) => void }) {
   const { user, logout } = useAuth()
@@ -110,6 +195,14 @@ export default function DashboardStudentPage() {
 
   if (!user) return null
 
+  const enrolledCourses = getEnrolledCourseSummaries(user.id)
+  const primaryCourse = enrolledCourses.length > 0
+    ? enrolledCourses.reduce((a, b) => (a.lastActivityAt >= b.lastActivityAt ? a : b))
+    : null
+  const streakDays = computeLearningStreakDays(user.id)
+  const totalAssignments = enrolledCourses.reduce((sum, c) => sum + c.totalAssignments, 0)
+  const completedAssignments = enrolledCourses.reduce((sum, c) => sum + c.completedAssignments, 0)
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#0e1012', fontFamily: 'var(--font-body)' }}>
       <Sidebar active={active} setActive={setActive} />
@@ -142,28 +235,38 @@ export default function DashboardStudentPage() {
           {/* Demo banner */}
           <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 10, padding: '10px 20px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 10 }}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>DEMO DATA — Progress, streaks and activity below are illustrative only</span>
+            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>DEMO DATA — Career Readiness scores below are illustrative; your course progress and streak reflect real activity</span>
           </div>
 
           {/* Next Action Banner */}
           <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderLeft: `4px solid ${C.orange}`, borderRadius: 12, padding: '20px 24px', marginBottom: 28, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
             <div>
-              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 6 }}>CONTINUE WHERE YOU LEFT OFF</div>
-              <div style={{ color: C.white, fontSize: 15, fontWeight: 600 }}>SQL for Data Analytics — Module 3, Lesson 2</div>
-              <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginTop: 3 }}>Introduction to SQL · 20:00 remaining</div>
+              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 6 }}>
+                {primaryCourse ? 'CONTINUE WHERE YOU LEFT OFF' : 'GET STARTED'}
+              </div>
+              <div style={{ color: C.white, fontSize: 15, fontWeight: 600 }}>
+                {primaryCourse
+                  ? `${primaryCourse.title}${primaryCourse.nextLessonTitle ? ` — ${primaryCourse.nextLessonTitle}` : ''}`
+                  : 'You are not enrolled in a course yet'}
+              </div>
+              <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginTop: 3 }}>
+                {primaryCourse
+                  ? (primaryCourse.nextLessonTitle ? `${primaryCourse.completedLessons} of ${primaryCourse.totalLessons} lessons complete` : 'All lessons complete')
+                  : 'Browse courses to begin your first lesson'}
+              </div>
             </div>
-            <Link to="/learn/data-analytics" style={{ background: C.orange, color: C.white, textDecoration: 'none', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', transition: 'opacity 0.2s' }}
+            <Link to={primaryCourse ? `/learn/${primaryCourse.slug}` : '/courses'} style={{ background: C.orange, color: C.white, textDecoration: 'none', padding: '10px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap', transition: 'opacity 0.2s' }}
               onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
               onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-            >Resume Learning →</Link>
+            >{primaryCourse ? 'Resume Learning →' : 'Browse Courses →'}</Link>
           </div>
 
           {/* Stats row */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 28 }}>
             {[
-              { label: 'Overall Progress', value: '72%', sub: 'Data Science & AI Program' },
-              { label: 'Learning Streak', value: '14', unit: 'days', sub: 'Keep it up!' },
-              { label: 'Projects Completed', value: '3', unit: 'of 6', sub: '3 remaining in program' },
+              { label: 'Overall Progress', value: primaryCourse ? `${primaryCourse.percentComplete}%` : '0%', sub: primaryCourse ? primaryCourse.title : 'Not enrolled yet' },
+              { label: 'Learning Streak', value: String(streakDays), unit: 'days', sub: streakDays > 0 ? 'Keep it up!' : 'No activity yet' },
+              { label: 'Projects Completed', value: String(completedAssignments), unit: `of ${totalAssignments}`, sub: totalAssignments > 0 ? `${totalAssignments - completedAssignments} remaining` : 'Enroll in a course to start' },
             ].map(stat => (
               <div key={stat.label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '20px 24px' }}>
                 <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 10 }}>{stat.label.toUpperCase()}</div>
@@ -180,35 +283,46 @@ export default function DashboardStudentPage() {
             {/* Continue Learning */}
             <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '24px' }}>
               <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 20 }}>CONTINUE LEARNING</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
-                <div>
-                  <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 4 }}>Data Science & AI</div>
-                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>Module 3 of 18 — SQL for Analysis</div>
-                </div>
-                <Link to="/learn/data-analytics" style={{ background: 'rgba(243,107,33,0.15)', border: '1px solid rgba(243,107,33,0.3)', color: C.orange, textDecoration: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap' }}>Open Course</Link>
-              </div>
-              {/* Progress bar */}
-              <div style={{ marginBottom: 8 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                  <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>Progress</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.orange }}>72%</span>
-                </div>
-                <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 4, height: 6, overflow: 'hidden' }}>
-                  <div style={{ background: `linear-gradient(90deg, ${C.orange}, #ff9a3c)`, width: '72%', height: '100%', borderRadius: 4 }} />
-                </div>
-              </div>
-              <div style={{ marginTop: 20, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
-                {[
-                  { label: 'Lessons Done', value: '34' },
-                  { label: 'Hours Spent', value: '48h' },
-                  { label: 'Next Up', value: 'SQL Joins' },
-                ].map(m => (
-                  <div key={m.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px' }}>
-                    <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{m.label.toUpperCase()}</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', color: C.white, fontSize: 14, fontWeight: 600 }}>{m.value}</div>
+              {primaryCourse ? (
+                <>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16, flexWrap: 'wrap', gap: 12 }}>
+                    <div>
+                      <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{primaryCourse.title}</div>
+                      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>
+                        {primaryCourse.moduleTitle ? `Module ${primaryCourse.moduleIndex + 1} of ${primaryCourse.totalModules} — ${primaryCourse.moduleTitle}` : `All ${primaryCourse.totalModules} modules complete`}
+                      </div>
+                    </div>
+                    <Link to={`/learn/${primaryCourse.slug}`} style={{ background: 'rgba(243,107,33,0.15)', border: '1px solid rgba(243,107,33,0.3)', color: C.orange, textDecoration: 'none', padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap' }}>Open Course</Link>
                   </div>
-                ))}
-              </div>
+                  {/* Progress bar */}
+                  <div style={{ marginBottom: 8 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                      <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>Progress</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.orange }}>{primaryCourse.percentComplete}%</span>
+                    </div>
+                    <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 4, height: 6, overflow: 'hidden' }}>
+                      <div style={{ background: `linear-gradient(90deg, ${C.orange}, #ff9a3c)`, width: `${primaryCourse.percentComplete}%`, height: '100%', borderRadius: 4 }} />
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 20, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+                    {[
+                      { label: 'Lessons Done', value: String(primaryCourse.completedLessons) },
+                      { label: 'Lessons Left', value: String(primaryCourse.totalLessons - primaryCourse.completedLessons) },
+                      { label: 'Next Up', value: primaryCourse.nextLessonTitle ?? 'All done' },
+                    ].map(m => (
+                      <div key={m.label} style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: '12px' }}>
+                        <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{m.label.toUpperCase()}</div>
+                        <div style={{ fontFamily: 'var(--font-mono)', color: C.white, fontSize: 14, fontWeight: 600 }}>{m.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '24px 0' }}>
+                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginBottom: 14 }}>You have not enrolled in a course yet.</div>
+                  <Link to="/courses" style={{ color: C.orange, fontSize: 13, textDecoration: 'none', fontFamily: 'var(--font-mono)' }}>Browse Courses →</Link>
+                </div>
+              )}
             </div>
 
             {/* Upcoming */}
@@ -260,7 +374,7 @@ export default function DashboardStudentPage() {
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
               </div>
               <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13 }}>Complete a course to earn your first certificate</div>
-              <Link to="/learn/data-analytics" style={{ display: 'inline-block', marginTop: 14, color: C.orange, fontSize: 12, textDecoration: 'none', fontFamily: 'var(--font-mono)' }}>Continue Learning →</Link>
+              <Link to={primaryCourse ? `/learn/${primaryCourse.slug}` : '/courses'} style={{ display: 'inline-block', marginTop: 14, color: C.orange, fontSize: 12, textDecoration: 'none', fontFamily: 'var(--font-mono)' }}>{primaryCourse ? 'Continue Learning →' : 'Browse Courses →'}</Link>
             </div>
           </div>
 
