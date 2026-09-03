@@ -113,6 +113,7 @@ export default function ProgramsPage() {
     <PageShell>
       <PageHero
         eyebrow="Catalog"
+        domain="skills"
         photo={PHOTO.workshop}
         photoAlt="Learners in a professional program session"
         title={<>Find the right<br />program.</>}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, Footer } from '../components/shared'
-import { Section, Eyebrow, Button, Badge, FlowStrip, CTABand, T } from '../components/ui'
+import { Section, Eyebrow, Button, Badge, FlowStrip, CTABand, T, Aurora } from '../components/ui'
 import { stories, programs } from '../data'
 import type { Program, ProgramType } from '../data'
 import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
@@ -20,7 +20,8 @@ function Hero() {
   const navigate = useNavigate()
   return (
     <section style={{ background: C.ink, minHeight: '92vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: 64 }}>
-      <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `clamp(48px,7vw,88px) ${T.gutter}`, width: '100%' }}>
+      <Aurora domain="home" />
+      <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `clamp(48px,7vw,88px) ${T.gutter}`, width: '100%', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(28px,5vw,56px)', alignItems: 'center' }} className="hero-grid">
           <div>
             <Eyebrow tone="dark">Education · Skills · Career</Eyebrow>

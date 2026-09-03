@@ -265,6 +265,20 @@ export function Glow({ x = '50%', y = '30%', size = 560, color = C.orange, stren
   return <div style={{ position: 'absolute', left: x, top: y, width: size, height: size, transform: 'translate(-50%,-50%)', background: `radial-gradient(circle, ${color}${strength} 0%, transparent 65%)`, pointerEvents: 'none' }} />
 }
 
+// ── Aurora (atmospheric layer for dark surfaces) ──────────────────────────────
+// Deterministic, CSS-only — no animation loop. `domain` selects the accent
+// pair via the `[data-domain]` tokens in index.css (falls back to the brand
+// orange/graphite default when omitted). Place as the first child of a
+// `position: relative; overflow: hidden` dark section, behind real content.
+export function Aurora({ domain }: { domain?: string }) {
+  return (
+    <div className="sk-aurora" data-domain={domain} aria-hidden="true">
+      <div className="sk-aurora__blob sk-aurora__blob--a" />
+      <div className="sk-aurora__blob sk-aurora__blob--b" />
+    </div>
+  )
+}
+
 // ── Page hero (shared editorial hero for interior pages) ─────────────────────
 export function PageHero({
   eyebrow,
@@ -276,6 +290,7 @@ export function PageHero({
   children,
   photo,
   photoAlt,
+  domain,
 }: {
   eyebrow: string
   title: React.ReactNode
@@ -286,10 +301,13 @@ export function PageHero({
   children?: React.ReactNode
   photo?: string
   photoAlt?: string
+  /** Selects the Aurora accent pair for this surface (see index.css `[data-domain]` tokens). Only rendered when tone is 'dark'. */
+  domain?: string
 }) {
   return (
     <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `clamp(88px, 10vw, 120px) ${T.gutter} clamp(48px, 6vw, 72px)` }}>
-      <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative' }}>
+      {tone === 'dark' && <Aurora domain={domain} />}
+      <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'grid', gridTemplateColumns: photo ? '1.05fr 0.95fr' : '1fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }} className="two-col">
           <div>
             <div style={{ marginBottom: 20 }}><Eyebrow tone={tone} accent>{eyebrow}</Eyebrow></div>

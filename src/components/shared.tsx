@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import type { Job } from '../data'
 import { useAuth } from '../context/AuthContext'
 import type { UserRole } from '../context/AuthContext'
+import { createEnrollment, getEnrollments } from '../persistence/lmsPersistence'
 
 // ─── COLOUR TOKENS ────────────────────────────────────────────────────────────
 export const C = {
@@ -102,11 +103,34 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
   const allSteps = ['Plan', 'Account', 'Details', 'Order', 'Payment', 'Success']
   const steps = user ? allSteps.filter(s => s !== 'Account') : allSteps
   const [step, setStep] = useState(0)
+  const enrollmentPersistedRef = useRef(false)
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
   }, [])
+
+  // Persist a real Enrollment record once the demo flow reaches "Success".
+  // Demo payment/labels above are unchanged — this only records that the
+  // signed-in user enrolled. If nobody is signed in, we do not invent a
+  // userId; the demo "Success" screen still shows as before, just without
+  // persistence. Guarded so re-renders/navigation never create duplicates.
+  useEffect(() => {
+    if (steps[step] !== 'Success' || enrollmentPersistedRef.current) return
+    enrollmentPersistedRef.current = true
+    if (!user) return
+    // Enrollment (see src/types/lms.ts) only models course/program
+    // enrollments today — workshops have no matching field, so their demo
+    // registrations are not persisted here.
+    if (item.type === 'course') {
+      const alreadyEnrolled = getEnrollments(user.id).some(e => e.courseId === item.id && e.status !== 'cancelled')
+      if (!alreadyEnrolled) createEnrollment(user.id, { courseId: item.id, status: 'active' })
+    } else if (item.type === 'program') {
+      const alreadyEnrolled = getEnrollments(user.id).some(e => e.programId === item.id && e.status !== 'cancelled')
+      if (!alreadyEnrolled) createEnrollment(user.id, { programId: item.id, status: 'active' })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [step])
 
   return (
     <>
@@ -428,7 +452,10 @@ export function Nav() {
   ]
 
   return (
-    <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: showDark ? 'rgba(11,13,15,0.92)' : 'transparent', backdropFilter: showDark ? 'blur(20px)' : 'none', borderBottom: showDark ? '1px solid rgba(255,255,255,0.07)' : 'none', transition: 'background 0.4s, backdrop-filter 0.4s, border-color 0.4s' }}>
+    <nav
+      className={showDark ? 'sk-glass-01' : undefined}
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: showDark ? undefined : 'transparent', borderBottom: showDark ? undefined : 'none', borderLeft: 'none', borderRight: 'none', borderTop: 'none', borderRadius: 0, transition: 'background 0.4s, backdrop-filter 0.4s, border-color 0.4s' }}
+    >
       <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
         {/* Logo */}
         <button onClick={() => navigate('/')} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: C.white, background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '-0.02em', padding: 0, flexShrink: 0 }}>

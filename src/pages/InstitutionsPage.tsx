@@ -126,6 +126,7 @@ export default function InstitutionsPage() {
     <PageShell>
       <PageHero
         eyebrow="For Institutions"
+        domain="institutions"
         photo={PHOTO.university}
         photoAlt="University campus"
         title={<>Enterprise software<br />for <span style={{ color: C.orange }}>education.</span></>}

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { C, FadeIn, PageShell, JobDrawer, ApplyModal } from '../components/shared'
-import { Badge, FlowStrip, T } from '../components/ui'
+import { Badge, FlowStrip, T, Aurora } from '../components/ui'
 import { jobs } from '../data'
 import type { Job } from '../data'
 
@@ -47,8 +47,9 @@ export default function CareerOSPage() {
 
   return (
     <PageShell>
-      <section style={{ background: C.ink, padding: '88px 32px 0' }}>
-        <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
+      <section style={{ background: C.ink, padding: '88px 32px 0', position: 'relative', overflow: 'hidden' }}>
+        <Aurora domain="career-os" />
+        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 40, alignItems: 'end', marginBottom: 36 }} className="two-col">
             <div>
               <Badge tone="dark" accent>Career OS</Badge>

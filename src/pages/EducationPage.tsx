@@ -474,6 +474,7 @@ export default function EducationPage() {
     <PageShell>
       <PageHero
         eyebrow="Education"
+        domain="education"
         photo={PHOTOS.schooling}
         photoAlt="Students in a classroom"
         title={<>Four products.<br /><span style={{ color: C.orange }}>Not one card.</span></>}

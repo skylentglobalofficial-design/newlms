@@ -14,6 +14,7 @@ export default function SkillsPage() {
     <PageShell>
       <PageHero
         eyebrow="Skills"
+        domain="skills"
         photo={PHOTO.workshop}
         photoAlt="Professionals in a live learning session"
         title={<>Capability that can<br />become a <span style={{ color: C.orange }}>career.</span></>}
