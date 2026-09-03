@@ -27,6 +27,8 @@ import DashboardOrgPage from './pages/DashboardOrgPage'
 import DashboardRecruiterPage from './pages/DashboardRecruiterPage'
 import DashboardAdminPage from './pages/DashboardAdminPage'
 import LearnPage from './pages/LearnPage'
+import LabDetailPage from './pages/LabDetailPage'
+import ExperimentPage from './pages/ExperimentPage'
 
 function AppRoutes() {
   return (
@@ -60,6 +62,8 @@ function AppRoutes() {
       <Route path="/career" element={<Navigate to="/career-os" replace />} />
       <Route path="/universities" element={<UniversitiesPage />} />
       <Route path="/labs" element={<LabsPage />} />
+      <Route path="/labs/:labId" element={<LabDetailPage />} />
+      <Route path="/labs/:labId/:experimentId" element={<ExperimentPage />} />
       <Route path="/jobs" element={<Navigate to="/career-os" replace />} />
       <Route path="/jobs/:id" element={<Navigate to="/career-os" replace />} />
       <Route path="*" element={<><Nav /><div style={{ paddingTop: 120, textAlign: 'center', background: C.warmWhite, minHeight: '100vh' }}><h2 style={{ fontFamily: 'var(--font-display)', color: C.ink }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></>} />

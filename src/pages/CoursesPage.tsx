@@ -94,11 +94,12 @@ export default function CoursesPage() {
                         </div>
                       ))}
                     </div>
+                    {/* No star rating / review count shown here — Skylent has not yet
+                        delivered courses to real students, so a rating would be fabricated.
+                        See Course.rating/reviews in data.ts for details. */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 16 }}>
-                      <div style={{ display: 'flex', gap: 2 }}>
-                        {[1,2,3,4,5].map(s => <div key={s} style={{ width: 10, height: 10, background: s <= Math.round(course.rating) ? C.orange : C.sand, clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' }} />)}
-                      </div>
-                      <span style={{ fontSize: 12, color: C.slate, fontFamily: 'var(--font-mono)' }}>{course.rating} ({course.reviews})</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.orange} strokeWidth="1.8"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+                      <span style={{ fontSize: 12, color: C.slate }}>Certificate on completion</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div>
