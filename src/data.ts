@@ -1,4 +1,18 @@
-// Centralized Skylent demo data — replace with Supabase/API in production
+// Centralized Skylent SAMPLE/DEMO data — replace with a real API in production.
+//
+// Everything exported from this file is illustrative content for building
+// and previewing the UI. Skylent is pre-launch: there are zero real
+// students, courses delivered, institutional/employer partners, faculty,
+// testimonials, ratings, or placements. Do not treat any array here as real
+// traction, and do not remove the "SAMPLE"/"DEMO" disclaimers on individual
+// exports below.
+//
+// The shapes in this file (Course, Program, Workshop, Job, ...) are the
+// current *sample content* contracts consumed directly by pages today. The
+// target *domain model* for a real backend — User, Enrollment,
+// LessonProgress, CourseProgress, Certificate, etc. — lives separately in
+// `src/types/lms.ts` and is not wired into these pages yet (see the Phase 1
+// report for migration notes).
 
 // ─── COURSES ─────────────────────────────────────────────────────────────────
 export type CourseLesson = {
@@ -24,7 +38,12 @@ export type Course = {
   mode: string
   lessons: number
   projects: number
+  /** SAMPLE FIELD — illustrative only. Skylent has not yet delivered this
+   * course to real students, so no real rating exists. Do not render this
+   * as if it were a genuine review score; see CoursesPage for the current
+   * (non-rendering) treatment of this field. */
   rating: number
+  /** SAMPLE FIELD — see `rating` above. */
   reviews: number
   price: number
   originalPrice: number
@@ -795,7 +814,11 @@ export const programs: Program[] = [
   },
 ]
 
-// ─── WORKSHOPS ────────────────────────────────────────────────────────────────
+// ─── WORKSHOPS ───────────────────────────────────────────────────────────────────
+// SAMPLE DATA — illustrative workshop listings for UI development. Skylent
+// has not run these sessions or taken real registrations. WorkshopDetailPage
+// already discloses this to users; `seats`/`seatsLeft` below are fabricated
+// counts for the seat-availability UI, not real signups.
 export type Workshop = {
   slug: string
   title: string
@@ -1023,7 +1046,11 @@ That is the difference between a career service and a career system.`,
   },
 ]
 
-// ─── JOBS (used across career OS) ─────────────────────────────────────────────
+// ─── JOBS (used across career OS) ──────────────────────────────────────────────────
+// SAMPLE DATA — illustrative job board listings for UI development. Skylent
+// has zero real employer partners at this stage; these companies, salaries,
+// and posting dates are fabricated placeholders, not live openings. The
+// Career OS job board UI (CareerOSPage) labels this tab as a sample board.
 export type Job = {
   id: string
   role: string
@@ -1045,14 +1072,23 @@ export const jobs: Job[] = [
   { id: 'ai-intern', role: 'AI Research Intern', company: 'Cognosphere Labs', salary: '₹3–5 LPA', location: 'Bengaluru / Hybrid', mode: 'Hybrid', skills: ['Python', 'PyTorch', 'NLP', 'Research'], exp: 'Fresher', desc: 'Contribute to applied NLP research projects and help deploy language models to production environments.', postedDays: 7 },
 ]
 
-// ─── SUCCESS STORIES ──────────────────────────────────────────────────────────
+// ─── SUCCESS STORIES ───────────────────────────────────────────────────
+// SAMPLE DATA — illustrative learner narratives, not verified outcomes.
+// Skylent is pre-launch and has not graduated or placed real students yet.
+// StoriesPage renders these behind explicit "Sample" / "not verified
+// outcomes or salary claims" labels — keep that labelling if this data is
+// ever consumed elsewhere.
 export const stories = [
   { name: 'Ananya Krishnan', initials: 'AK', before: 'Commerce graduate. No technical background. No clear path into tech.', provided: 'Data Analytics program + 4 industry projects + career mentorship + placement prep.', outcome: 'Data Analyst', salary: '₹7.2 LPA', duration: '6 months', program: 'Data Analytics with Gen AI' },
   { name: 'Rohan Mehta', initials: 'RM', before: 'Mechanical engineer. 3 years experience. No tech growth path.', provided: 'Full Stack program + 5 live projects + resume rebuild + 6 mock interviews.', outcome: 'Full Stack Developer', salary: '₹12 LPA', duration: '9 months', program: 'Full Stack Development' },
   { name: 'Priya Nair', initials: 'PN', before: 'Recent graduate. Strong academics. No industry exposure or portfolio.', provided: 'Data Science & AI + Skylent Labs AI bootcamp + career support.', outcome: 'ML Engineer', salary: '₹14 LPA', duration: '11 months', program: 'Data Science & AI' },
 ]
 
-// ─── DEMO USERS (for role dashboard switcher) ─────────────────────────────────
+// ─── DEMO USERS (for role dashboard switcher) ───────────────────────────
+// DEMO ACCOUNTS — used by LoginPage's "select a role to explore" demo mode.
+// `students`/`totalUsers`/`programs` counts below are fabricated to make the
+// faculty/organisation/superadmin dashboards feel populated; they are not
+// real Skylent user or institution counts (Skylent currently has zero).
 export const demoUsers = [
   { role: 'student' as const, name: 'Arjun Sharma', email: 'arjun@demo.skylent.in', avatar: 'AS', program: 'Data Science & AI', progress: 72 },
   { role: 'faculty' as const, name: 'Dr. Priya Nair', email: 'priya@demo.skylent.in', avatar: 'PN', course: 'Data Science & AI', students: 128 },

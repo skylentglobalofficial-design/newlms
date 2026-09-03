@@ -46,20 +46,31 @@ function LessonIcon({ type, size = 14 }: { type: CourseLesson['type']; size?: nu
   return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
 }
 
+// Renders the video surface for a lesson. Today every lesson only has a
+// placeholder (no real video hosting is wired up yet — see src/types/lms.ts
+// `VideoLessonContent.videoUrl`). Keeping this as its own component means a
+// future real player (e.g. an embed for a hosted video URL) can be swapped
+// in here without touching VideoTab, the tab-unlock logic, or any other
+// lesson type.
+function LessonVideoPlayer({ lesson }: { lesson: CourseLesson }) {
+  return (
+    <div style={{ background: '#000', borderRadius: 12, aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #0a0c0e 0%, #141820 100%)' }} />
+      <div style={{ position: 'relative', textAlign: 'center' }}>
+        <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(243,107,33,0.15)', border: '2px solid rgba(243,107,33,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', cursor: 'pointer' }}>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill={C.orange}><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+        <div style={{ color: C.white, fontSize: 15, fontWeight: 600 }}>{lesson.title}</div>
+        {lesson.duration && <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginTop: 6, fontFamily: 'var(--font-mono)' }}>{lesson.duration}</div>}
+      </div>
+    </div>
+  )
+}
+
 function VideoTab({ lesson, lessonState, onWatched }: { lesson: CourseLesson; lessonState: LessonState; onWatched: () => void }) {
   return (
     <div>
-      {/* Video placeholder */}
-      <div style={{ background: '#000', borderRadius: 12, aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24, position: 'relative', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.06)' }}>
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, #0a0c0e 0%, #141820 100%)' }} />
-        <div style={{ position: 'relative', textAlign: 'center' }}>
-          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(243,107,33,0.15)', border: '2px solid rgba(243,107,33,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', cursor: 'pointer' }}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill={C.orange}><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          </div>
-          <div style={{ color: C.white, fontSize: 15, fontWeight: 600 }}>{lesson.title}</div>
-          {lesson.duration && <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginTop: 6, fontFamily: 'var(--font-mono)' }}>{lesson.duration}</div>}
-        </div>
-      </div>
+      <LessonVideoPlayer lesson={lesson} />
       <div style={{ marginBottom: 20 }}>
         <div style={{ color: C.white, fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{lesson.title}</div>
         <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, lineHeight: 1.7 }}>

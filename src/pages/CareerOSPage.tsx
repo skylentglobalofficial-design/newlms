@@ -101,7 +101,7 @@ export default function CareerOSPage() {
                   {[
                     { label: 'Complete a Professional Program', tab: 'jobs' as OSTab, hint: 'Unlocks this OS' },
                     { label: 'Practice interview rounds', tab: 'interview' as OSTab, hint: 'No score stored yet' },
-                    { label: 'Browse open roles', tab: 'jobs' as OSTab, hint: 'Live job board' },
+                    { label: 'Browse open roles', tab: 'jobs' as OSTab, hint: 'Sample job board' },
                   ].map(a => (
                     <button key={a.label} type="button" onClick={() => setTab(a.tab)} style={{ textAlign: 'left', background: C.sand, border: 'none', borderRadius: 10, padding: 16, cursor: 'pointer' }}>
                       <div style={{ fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 6 }}>{a.label}</div>
@@ -189,7 +189,10 @@ export default function CareerOSPage() {
 
           {tab === 'jobs' && (
             <FadeIn>
-              <div style={{ marginBottom: 16, color: C.slate, fontSize: 13 }}>{jobs.length} open roles in the board</div>
+              <div style={{ background: C.sand, borderRadius: 12, padding: '12px 16px', marginBottom: 16, fontSize: 13, color: C.slate }}>
+                Sample job board — Skylent has not yet onboarded verified employer partners. These listings are illustrative, not live openings.
+              </div>
+              <div style={{ marginBottom: 16, color: C.slate, fontSize: 13 }}>{jobs.length} sample role{jobs.length !== 1 ? 's' : ''} shown</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {jobs.map(job => (
                   <div key={job.id} onClick={() => setDrawerJob(job)} style={{ background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: '18px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12, cursor: 'pointer' }}

@@ -96,6 +96,12 @@ export default function DashboardOrgPage() {
 
         <div style={{ padding: '32px' }}>
 
+          {/* Demo banner */}
+          <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 10, padding: '10px 20px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>DEMO DATA — Cohorts, students and figures are illustrative only</span>
+          </div>
+
           {/* Operational Alerts */}
           <div style={{ marginBottom: 28, display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[
