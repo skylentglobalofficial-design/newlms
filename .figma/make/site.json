@@ -1,0 +1,11 @@
+{
+  "title": "demo",
+  "description": "Streamline your workflow with a user-friendly platform that allows teams to collaborate, manage tasks, and track project progress efficiently.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
