@@ -131,11 +131,38 @@ body {
   .skylent-display-xl {
     letter-spacing: -0.03em;
   }
+  .home-hero-visual {
+    min-height: 0 !important;
+  }
+  .programs-result-featured .two-col {
+    grid-template-columns: 1fr !important;
+  }
 }
 
-/* Prevent horizontal overflow on mobile */
 html, body {
   overflow-x: hidden;
+}
+
+/* Product visual frames inside MediaImage */
+.skylent-product-visual-frame {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.skylent-product-visual-frame > * {
+  flex: 1;
+  min-height: 0;
+}
+
+@media (max-width: 768px) {
+  .skylent-page-hero .skylent-product-visual-frame,
+  .home-hero-visual .skylent-hero-visual {
+    min-height: clamp(280px, 42vh, 380px) !important;
+  }
+  .education-discovery {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 @media (max-width: 1100px) {

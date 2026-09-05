@@ -13,10 +13,10 @@ const navAccent = getDomainAccent('general')
 // Re-export color tokens for backward compatibility
 export { C } from '../tokens'
 
-// ─── IMAGE URLS ───────────────────────────────────────────────────────────────
+// ─── PRODUCT VISUAL REFS (no remote URLs) ─────────────────────────────────────
 export const IMG = {
-  studentsLecture: 'https://images.unsplash.com/photo-1758270704534-fd9715bffc0e?w=1400&h=900&fit=crop&auto=format',
-  groupTech: 'https://images.unsplash.com/photo-1782388716252-d598f84ea62f?w=1400&h=900&fit=crop&auto=format',
+  studentsLecture: 'skylent:schooling-classroom',
+  groupTech: 'skylent:fullstack-workspace',
 }
 
 // ─── HOOKS ────────────────────────────────────────────────────────────────────

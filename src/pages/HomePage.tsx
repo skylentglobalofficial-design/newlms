@@ -5,6 +5,7 @@ import {
   Section, Eyebrow, Button, CTABand, T, SectionHeader, FlowStrip, Heading,
 } from '../components/ui'
 import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
+import { ProductVisual } from '../components/product/ProductVisuals'
 import { getDomainAccent } from '../aurora-themes'
 import { programs, jobs } from '../data'
 import type { Program, ProgramType } from '../data'
@@ -34,22 +35,20 @@ function EcosystemHeroVisual() {
   const careerAccent = getDomainAccent('career')
 
   return (
-    <div className="home-hero-visual" style={{ position: 'relative', minHeight: 'clamp(320px, 52vh, 480px)' }}>
-      <div style={{ position: 'relative', zIndex: 2 }}>
-        <MediaImage
-          src={PHOTO.classroomWarm}
-          alt="Students learning in a classroom"
-          aspect="4/5"
-          overlay="full"
-          objectPosition="center 25%"
+    <div className="home-hero-visual" style={{ position: 'relative', minHeight: 'clamp(360px, 52vh, 520px)' }}>
+      <div style={{ position: 'relative', zIndex: 2, height: '100%' }}>
+        <ProductVisual
+          id="ecosystem-flow"
+          themeId="general"
           className="skylent-hero-visual"
+          style={{ minHeight: 'clamp(320px, 48vh, 460px)' }}
         />
         <GlassSurface
           level={2}
-          padding="16px 18px"
-          style={{ position: 'absolute', top: 16, left: 16, right: 16, maxWidth: 280 }}
+          padding="14px 16px"
+          style={{ position: 'absolute', top: 16, left: 16, right: 16, maxWidth: 260 }}
         >
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 12 }}>Product flow</div>
+          <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Product flow</div>
           <FlowStrip
             tone="dark"
             steps={[
@@ -287,7 +286,7 @@ function EducationSection() {
                 }}
               >
                 <div style={{ width: 48, height: 48, borderRadius: 8, overflow: 'hidden', background: C.ink3 }}>
-                  <img src={stage.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  <MediaImage src={stage.photo} alt="" aspect="1/1" radius={8} />
                 </div>
                 <div>
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 3 }}>{stage.label}</div>
@@ -686,7 +685,7 @@ function ProgramDiscoverySection() {
                   }}
                 >
                   <div style={{ width: 64, height: 48, borderRadius: 8, overflow: 'hidden', background: C.ink3 }}>
-                    <img src={photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <MediaImage src={photo} alt="" aspect="4/3" radius={8} />
                   </div>
                   <div>
                     <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{program.name}</div>

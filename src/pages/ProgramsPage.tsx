@@ -509,7 +509,7 @@ function ProgramResultRow({ program, prominent }: { program: Program; prominent?
               </div>
             </div>
             <div style={{ minHeight: 200, position: 'relative' }}>
-              <img src={photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', minHeight: 200 }} />
+              <MediaImage src={photo} alt={program.name} aspect="4/3" radius={0} />
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 26px', borderTop: `1px solid ${T.lineDark}` }}>
@@ -520,7 +520,7 @@ function ProgramResultRow({ program, prominent }: { program: Program; prominent?
       ) : (
         <>
           <div style={{ width: 88, height: 66, borderRadius: 8, overflow: 'hidden', background: C.ink3, borderLeft: `2px solid ${typeAccent.primary}` }}>
-            <img src={photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+            <MediaImage src={photo} alt="" aspect="4/3" radius={8} />
           </div>
           <div style={{ minWidth: 0 }}>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 6 }}>

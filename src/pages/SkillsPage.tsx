@@ -663,7 +663,7 @@ function ProgramDiscoverySection() {
                   }}
                 >
                   <div style={{ width: 64, height: 48, borderRadius: 8, overflow: 'hidden', background: C.ink3 }}>
-                    <img src={photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                    <MediaImage src={photo} alt="" aspect="4/3" radius={8} />
                   </div>
                   <div>
                     <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 3, letterSpacing: '0.06em' }}>{typeLabel}</div>

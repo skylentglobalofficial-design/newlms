@@ -3,6 +3,8 @@ import { useLocation, useParams } from 'react-router-dom'
 import { programs } from '../data'
 import { getAuroraTheme, getDomainAccent, resolveAuroraTheme, type AuroraThemeId } from '../aurora-themes'
 import { C, T, glass, type GlassLevel } from '../tokens'
+import { parseSkylentVisualRef, isSkylentVisualRef } from '../media'
+import { ProductVisual } from './product/ProductVisuals'
 
 // ─── Aurora ───────────────────────────────────────────────────────────────────
 // Lightweight CSS radial gradients — atmospheric, low-cost, readable.
@@ -178,6 +180,7 @@ export function MediaImage({
   radius = T.rCard,
   overlay = 'none',
   overlayText,
+  themeId,
   className,
   style,
   imgStyle,
@@ -189,10 +192,12 @@ export function MediaImage({
   radius?: number
   overlay?: 'none' | 'bottom' | 'full'
   overlayText?: string
+  themeId?: AuroraThemeId
   className?: string
   style?: React.CSSProperties
   imgStyle?: React.CSSProperties
 }) {
+  const autoTheme = useAuroraTheme()
   const overlayGrad =
     overlay === 'bottom'
       ? 'linear-gradient(to top, rgba(5,5,5,0.75) 0%, transparent 55%)'
@@ -200,9 +205,14 @@ export function MediaImage({
         ? 'linear-gradient(to top, rgba(5,5,5,0.55) 0%, rgba(5,5,5,0.12) 50%, transparent 100%)'
         : undefined
 
+  const visualId = isSkylentVisualRef(src) ? parseSkylentVisualRef(src) : null
+  const resolvedTheme = themeId ?? autoTheme
+
   return (
     <div
       className={className}
+      role={visualId ? 'img' : undefined}
+      aria-label={visualId ? alt : undefined}
       style={{
         position: 'relative',
         borderRadius: radius,
@@ -212,21 +222,27 @@ export function MediaImage({
         ...style,
       }}
     >
-      <img
-        src={src}
-        alt={alt}
-        loading="lazy"
-        decoding="async"
-        className="skylent-media-img"
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          objectPosition,
-          display: 'block',
-          ...imgStyle,
-        }}
-      />
+      {visualId ? (
+        <div className="skylent-product-visual-frame" style={{ width: '100%', height: '100%', minHeight: 0 }}>
+          <ProductVisual id={visualId} themeId={resolvedTheme} style={{ height: '100%' }} />
+        </div>
+      ) : (
+        <img
+          src={src}
+          alt={alt}
+          loading="lazy"
+          decoding="async"
+          className="skylent-media-img"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            objectPosition,
+            display: 'block',
+            ...imgStyle,
+          }}
+        />
+      )}
       {overlayGrad && (
         <div
           aria-hidden
