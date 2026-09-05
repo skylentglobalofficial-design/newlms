@@ -400,7 +400,7 @@ export function Nav() {
   const { user, logout } = useAuth()
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 40)
+    const h = () => { setScrolled(window.scrollY > 40); setActiveMenu(null) }
     window.addEventListener('scroll', h, { passive: true })
     return () => window.removeEventListener('scroll', h)
   }, [])
@@ -444,7 +444,7 @@ export function Nav() {
                 <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{ opacity: 0.5, transform: activeMenu === group.label ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l5 6 5-6z"/></svg>
               </button>
               {activeMenu === group.label && (
-                <div onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)', WebkitBackdropFilter: 'var(--glass-01-blur)', border: '1px solid var(--glass-01-border)', borderRadius: 14, padding: 8, minWidth: 288, boxShadow: '0 28px 70px rgba(0,0,0,0.5)', zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
+                <div className="nav-mega-dropdown" onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)', WebkitBackdropFilter: 'var(--glass-01-blur)', border: '1px solid var(--glass-01-border)', borderRadius: 14, padding: 8, minWidth: 288, boxShadow: '0 28px 70px rgba(0,0,0,0.5)', zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
                   <Link to={group.to} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px 13px', borderRadius: 10, textDecoration: 'none', marginBottom: 4, borderBottom: '1px solid rgba(255,255,255,0.07)' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
