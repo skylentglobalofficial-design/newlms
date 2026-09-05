@@ -31,9 +31,10 @@ const SUPPORTING_PROGRAMS = programs
 
 function EcosystemHeroVisual() {
   const sampleJob = jobs[0]
+  const careerAccent = getDomainAccent('career')
 
   return (
-    <div className="home-hero-visual" style={{ position: 'relative', minHeight: 480 }}>
+    <div className="home-hero-visual" style={{ position: 'relative', minHeight: 'clamp(320px, 52vh, 480px)' }}>
       <div style={{ position: 'relative', zIndex: 2 }}>
         <MediaImage
           src={PHOTO.classroomWarm}
@@ -87,7 +88,7 @@ function EcosystemHeroVisual() {
               <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 3 }}>OPPORTUNITY</div>
               <div style={{ color: C.white, fontSize: 12, fontWeight: 600 }}>{sampleJob.role}</div>
             </div>
-            <div style={{ background: C.orange, color: C.white, borderRadius: 5, padding: '6px 10px', fontSize: 10, fontWeight: 600, flexShrink: 0 }}>
+            <div style={{ background: careerAccent.primary, color: C.white, borderRadius: 5, padding: '6px 10px', fontSize: 10, fontWeight: 600, flexShrink: 0 }}>
               Apply
             </div>
           </div>
@@ -138,7 +139,7 @@ function HeroSection() {
               <span style={{ color: accent.text }}>Build a career.</span>
             </h1>
             <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 32px' }}>
-              One ecosystem for education, credentialed skills, and Career OS — from schooling through professional programs to interview prep and jobs.
+              Programs, credentials, and Career OS in one workspace — from school through professional hire.
             </p>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Programs</Button>
@@ -440,7 +441,7 @@ function CareerSection() {
                     <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{sampleJob.role}</div>
                     <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>{sampleJob.company} · {sampleJob.mode}</div>
                   </div>
-                  <div style={{ background: C.orange, color: C.white, borderRadius: 6, padding: '8px 14px', fontSize: 11, fontWeight: 600 }}>Apply</div>
+                  <div style={{ background: careerAccent.primary, color: C.white, borderRadius: 6, padding: '8px 14px', fontSize: 11, fontWeight: 600 }}>Apply</div>
                 </div>
               )}
             </div>

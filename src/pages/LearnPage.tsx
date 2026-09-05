@@ -75,7 +75,7 @@ function VideoTab({ lesson, lessonState, onWatched, tabAccent, roleAccent }: {
       <div style={{ marginBottom: 20 }}>
         <div style={{ color: C.white, fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{lesson.title}</div>
         <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.7, maxWidth: 640 }}>
-          In this lesson, you will learn the core concepts behind {lesson.title.toLowerCase()}. Follow along with the examples and practice with the provided exercises before moving on to the quiz.
+          In this lesson, you will learn the core concepts behind {lesson.title.replace(/\?$/, '').toLowerCase()}. Follow along with the examples and practice with the provided exercises before moving on to the quiz.
         </div>
       </div>
       {!lessonState.videoWatched ? (

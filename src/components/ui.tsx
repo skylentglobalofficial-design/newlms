@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { FadeIn } from './shared'
 import { C, T, type } from '../tokens'
 import { Aurora, GridField, MediaImage } from './foundation'
-import type { AuroraThemeId } from '../aurora-themes'
+import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
+
+const brandAccent = getDomainAccent('general')
 
 // Re-export tokens for backward compatibility
 export { T } from '../tokens'
@@ -62,7 +64,7 @@ export function Section({
 
 // ── Eyebrow (mono label) ─────────────────────────────────────────────────────
 export function Eyebrow({ children, tone = 'light', accent }: { children: React.ReactNode; tone?: Tone; accent?: boolean }) {
-  const color = accent ? C.orange : tone === 'light' ? C.slate : 'rgba(255,255,255,0.42)'
+  const color = accent ? brandAccent.text : tone === 'light' ? C.slate : 'rgba(255,255,255,0.42)'
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
       <span style={{ width: 20, height: 1, background: 'currentColor', opacity: 0.5 }} />
@@ -154,7 +156,7 @@ export function Button({
     width: full ? '100%' : undefined, whiteSpace: 'nowrap', letterSpacing: '-0.01em',
   }
   const variants: Record<BtnVariant, React.CSSProperties> = {
-    primary: { background: C.orange, color: C.white },
+    primary: { background: brandAccent.primary, color: C.white },
     secondary: { background: 'transparent', color: C.white, borderColor: T.lineDarkStrong },
     ghost: { background: 'transparent', color: C.ink, borderColor: T.lineStrong },
     dark: { background: C.ink, color: C.white },
@@ -167,7 +169,7 @@ export function Button({
       style={{ ...base, ...variants[variant], ...style }}
       onMouseEnter={e => {
         const t = e.currentTarget
-        if (variant === 'primary') { t.style.background = '#ff7d33'; t.style.transform = 'translateY(-1px)' }
+        if (variant === 'primary') { t.style.background = brandAccent.secondary; t.style.transform = 'translateY(-1px)' }
         else if (variant === 'dark') { t.style.opacity = '0.85'; t.style.transform = 'translateY(-1px)' }
         else if (variant === 'light') { t.style.transform = 'translateY(-1px)'; t.style.boxShadow = '0 10px 30px rgba(0,0,0,0.14)' }
         else if (variant === 'secondary') t.style.borderColor = 'rgba(255,255,255,0.4)'
@@ -175,7 +177,7 @@ export function Button({
       }}
       onMouseLeave={e => {
         const t = e.currentTarget
-        if (variant === 'primary') { t.style.background = C.orange; t.style.transform = 'none' }
+        if (variant === 'primary') { t.style.background = brandAccent.primary; t.style.transform = 'none' }
         else if (variant === 'dark') { t.style.opacity = '1'; t.style.transform = 'none' }
         else if (variant === 'light') { t.style.transform = 'none'; t.style.boxShadow = 'none' }
         else if (variant === 'secondary') t.style.borderColor = T.lineDarkStrong
@@ -200,7 +202,7 @@ export function TextLink({ children, onClick, tone = 'light' }: { children: Reac
 // ── Badge / pill ─────────────────────────────────────────────────────────────
 export function Badge({ children, tone = 'light', accent }: { children: React.ReactNode; tone?: Tone; accent?: boolean }) {
   const styles: React.CSSProperties = accent
-    ? { background: 'rgba(243,107,33,0.1)', border: '1px solid rgba(243,107,33,0.24)', color: C.orange }
+    ? { background: brandAccent.subtle, border: `1px solid ${brandAccent.border}`, color: brandAccent.text }
     : tone === 'dark'
       ? { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.7)' }
       : { background: C.white, border: `1px solid ${T.lineStrong}`, color: C.slate }
@@ -345,8 +347,8 @@ export function FlowStrip({ steps, tone = 'dark' }: { steps: { label: string; su
     <div className="flow-strip" style={{ display: 'flex', alignItems: 'stretch', gap: 0, flexWrap: 'wrap' }}>
       {steps.map((s, i) => (
         <div key={s.label} style={{ display: 'flex', alignItems: 'center', flex: '1 1 auto', minWidth: 0 }}>
-          <div style={{ flex: 1, minWidth: 130, padding: '18px 20px', borderRadius: 12, background: s.highlight ? 'rgba(243,107,33,0.1)' : tone === 'dark' ? 'rgba(255,255,255,0.04)' : C.white, border: `1px solid ${s.highlight ? 'rgba(243,107,33,0.3)' : tone === 'dark' ? T.lineDark : T.lineLight}` }}>
-            <div style={{ color: s.highlight ? C.orange : tone === 'dark' ? C.white : C.ink, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{s.label}</div>
+          <div style={{ flex: 1, minWidth: 130, padding: '18px 20px', borderRadius: 12, background: s.highlight ? brandAccent.subtle : tone === 'dark' ? 'rgba(255,255,255,0.04)' : C.white, border: `1px solid ${s.highlight ? brandAccent.border : tone === 'dark' ? T.lineDark : T.lineLight}` }}>
+            <div style={{ color: s.highlight ? brandAccent.text : tone === 'dark' ? C.white : C.ink, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{s.label}</div>
             {s.sub && <div style={{ color: tone === 'dark' ? 'rgba(255,255,255,0.4)' : C.slate, fontSize: 11.5, marginTop: 4 }}>{s.sub}</div>}
           </div>
           {i < steps.length - 1 && <div className="flow-arrow" style={{ color: tone === 'dark' ? 'rgba(255,255,255,0.28)' : C.slate, padding: '0 10px', fontSize: 16, flexShrink: 0 }}>→</div>}
