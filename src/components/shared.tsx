@@ -697,6 +697,8 @@ export const globalCSS = `
     .program-project-featured { grid-template-columns: 1fr !important; }
     .program-reviews-grid { grid-template-columns: 1fr !important; }
     .program-workflow-panels { grid-template-columns: 1fr !important; }
+    .program-artifact-panels { grid-template-columns: 1fr !important; }
+    .program-cert-split { grid-template-columns: 1fr !important; }
     .program-sticky-nav-scroll { -webkit-overflow-scrolling: touch; }
   }
   @media (max-width: 375px) {

@@ -20,6 +20,8 @@ export const T = {
   rPill: 100,
   section: 'clamp(88px, 12vw, 140px)',
   sectionSm: 'clamp(64px, 8vw, 96px)',
+  sectionTight: 'clamp(48px, 6vw, 72px)',
+  sectionCompact: 'clamp(40px, 5vw, 60px)',
   gutter: 'clamp(20px, 5vw, 32px)',
   maxW: 1240,
   navH: 64,

@@ -27,7 +27,7 @@ export type AuroraTheme = {
 
 export const AURORA_THEMES: Record<AuroraThemeId, AuroraTheme> = {
   general: { id: 'general', primary: '#6366F1', secondary: '#3B82F6', strength: '18' },
-  'data-science': { id: 'data-science', primary: '#8B5CF6', secondary: '#6366F1', strength: '20' },
+  'data-science': { id: 'data-science', primary: '#8B5CF6', secondary: '#6366F1', strength: '28' },
   'data-analytics': { id: 'data-analytics', primary: '#06B6D4', secondary: '#3B82F6', strength: '20' },
   'full-stack': { id: 'full-stack', primary: '#10B981', secondary: '#14B8A6', strength: '20' },
   jee: { id: 'jee', primary: '#F59E0B', secondary: '#F97316', strength: '18' },
@@ -113,4 +113,18 @@ export function resolveAuroraTheme(pathname: string, programSlug?: string, progr
 
 export function getAuroraTheme(id: AuroraThemeId): AuroraTheme {
   return AURORA_THEMES[id]
+}
+
+/** Domain accent tokens derived from Aurora theme — use for nav, workflow, selected states. */
+export function getDomainAccent(themeId: AuroraThemeId) {
+  const t = AURORA_THEMES[themeId]
+  return {
+    primary: t.primary,
+    secondary: t.secondary,
+    subtle: `${t.primary}1A`,
+    subtleStrong: `${t.primary}28`,
+    border: `${t.primary}45`,
+    text: t.primary,
+    textMuted: `${t.primary}CC`,
+  }
 }

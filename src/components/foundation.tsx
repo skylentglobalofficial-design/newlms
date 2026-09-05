@@ -6,9 +6,11 @@ import { C, T, glass, type GlassLevel } from '../tokens'
 // ─── Aurora ───────────────────────────────────────────────────────────────────
 // Lightweight CSS radial gradients — atmospheric, low-cost, readable.
 
-export function Aurora({ themeId = 'general' }: { themeId?: AuroraThemeId }) {
+export function Aurora({ themeId = 'general', variant = 'default' }: { themeId?: AuroraThemeId; variant?: 'default' | 'hero' }) {
   const theme = getAuroraTheme(themeId)
-  const s = theme.strength
+  const base = Number(theme.strength)
+  const s = String(variant === 'hero' ? Math.min(base + 6, 34) : base)
+  const s2 = String(Math.max(Number(s) - 3, 12))
 
   return (
     <div
@@ -19,10 +21,10 @@ export function Aurora({ themeId = 'general' }: { themeId?: AuroraThemeId }) {
       <div
         style={{
           position: 'absolute',
-          top: '-18%',
+          top: variant === 'hero' ? '-22%' : '-18%',
           left: '5%',
-          width: 'min(72vw, 900px)',
-          height: 'min(55vh, 520px)',
+          width: variant === 'hero' ? 'min(80vw, 980px)' : 'min(72vw, 900px)',
+          height: variant === 'hero' ? 'min(62vh, 580px)' : 'min(55vh, 520px)',
           background: `radial-gradient(ellipse at center, ${theme.primary}${s} 0%, transparent 68%)`,
         }}
       />
@@ -30,10 +32,10 @@ export function Aurora({ themeId = 'general' }: { themeId?: AuroraThemeId }) {
         style={{
           position: 'absolute',
           top: '2%',
-          right: '-8%',
-          width: 'min(58vw, 720px)',
-          height: 'min(48vh, 460px)',
-          background: `radial-gradient(ellipse at center, ${theme.secondary}${Math.max(Number(s) - 4, 10)} 0%, transparent 65%)`,
+          right: variant === 'hero' ? '-12%' : '-8%',
+          width: variant === 'hero' ? 'min(64vw, 800px)' : 'min(58vw, 720px)',
+          height: variant === 'hero' ? 'min(52vh, 500px)' : 'min(48vh, 460px)',
+          background: `radial-gradient(ellipse at center, ${theme.secondary}${s2} 0%, transparent 65%)`,
         }}
       />
       <div
@@ -43,7 +45,7 @@ export function Aurora({ themeId = 'general' }: { themeId?: AuroraThemeId }) {
           left: '28%',
           width: 'min(50vw, 640px)',
           height: 'min(40vh, 380px)',
-          background: `radial-gradient(ellipse at center, ${theme.primary}0A 0%, transparent 70%)`,
+          background: `radial-gradient(ellipse at center, ${theme.primary}12 0%, transparent 70%)`,
         }}
       />
     </div>
