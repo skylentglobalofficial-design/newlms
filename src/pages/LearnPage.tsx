@@ -73,7 +73,7 @@ function VideoTab({ lesson, lessonState, onWatched, tabAccent, roleAccent }: {
         </div>
       </div>
       <div style={{ marginBottom: 20 }}>
-        <div style={{ color: C.white, fontSize: 18, fontWeight: 600, marginBottom: 8 }}>{lesson.title}</div>
+        <div className="skylent-label" style={{ color: tabAccent.primary, marginBottom: 10 }}>Lesson overview</div>
         <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.7, maxWidth: 640 }}>
           In this lesson, you will learn the core concepts behind {lesson.title.replace(/\?$/, '').toLowerCase()}. Follow along with the examples and practice with the provided exercises before moving on to the quiz.
         </div>
@@ -147,7 +147,16 @@ function QuizTab({ lesson, lessonState, onPass, tabAccent, roleAccent }: {
 }) {
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [submitted, setSubmitted] = useState(false)
+  const [elapsed, setElapsed] = useState(0)
   const correct = quizQuestions.filter((q, i) => answers[i] === q.correct).length
+
+  useEffect(() => {
+    if (lessonState.quizPassed) return
+    const id = window.setInterval(() => setElapsed(s => s + 1), 1000)
+    return () => window.clearInterval(id)
+  }, [lessonState.quizPassed])
+
+  const timerLabel = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`
 
   function handleSubmit() {
     setSubmitted(true)
@@ -168,7 +177,16 @@ function QuizTab({ lesson, lessonState, onPass, tabAccent, roleAccent }: {
 
   return (
     <div>
-      <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>{lesson.title} — Quiz</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 6, flexWrap: 'wrap' }}>
+        <div style={{ color: C.white, fontSize: 16, fontWeight: 600 }}>{lesson.title} — Quiz</div>
+        <div style={{
+          fontFamily: 'var(--font-mono)', fontSize: 12, color: tabAccent.primary,
+          background: tabAccent.subtle, border: `1px solid ${tabAccent.border}`,
+          borderRadius: T.rPill, padding: '5px 12px', letterSpacing: '0.04em',
+        }}>
+          {timerLabel}
+        </div>
+      </div>
       <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginBottom: 8 }}>Answer all {quizQuestions.length} questions correctly to unlock the assignment.</div>
       <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
         {quizQuestions.map((_, i) => (
@@ -614,9 +632,10 @@ export default function LearnPage() {
                       onClick={() => available && setActiveTab(tab.key)}
                       disabled={!available}
                       style={{
-                        padding: '10px 18px', background: 'none', border: 'none', flexShrink: 0,
+                        padding: '10px 18px', background: isActive ? accent.subtle : 'none', border: 'none', flexShrink: 0,
                         borderBottom: `2px solid ${isActive ? accent.primary : 'transparent'}`,
-                        color: isActive ? C.white : available ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.15)',
+                        borderRadius: isActive ? '6px 6px 0 0' : 0,
+                        color: isActive ? accent.primary : available ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.15)',
                         fontSize: 13, fontWeight: isActive ? 600 : 400,
                         cursor: available ? 'pointer' : 'not-allowed', fontFamily: 'var(--font-body)', marginBottom: -1,
                       }}
@@ -628,6 +647,13 @@ export default function LearnPage() {
                 })}
               </div>
 
+              <div style={{
+                border: `1px solid ${tabAccent.border}`,
+                borderLeft: `3px solid ${tabAccent.primary}`,
+                borderRadius: T.rCard,
+                background: 'rgba(255,255,255,0.015)',
+                padding: 'clamp(20px, 3vw, 28px)',
+              }}>
               {activeTab === 'video' && <VideoTab lesson={selectedLesson} lessonState={selectedState} onWatched={handleVideoWatched} tabAccent={tabAccent} roleAccent={roleAccent} />}
               {activeTab === 'notes' && tabsAvailable.notes && <NotesTab lesson={selectedLesson} tabAccent={tabAccent} />}
               {activeTab === 'quiz' && tabsAvailable.quiz && <QuizTab lesson={selectedLesson} lessonState={selectedState} onPass={handleQuizPass} tabAccent={tabAccent} roleAccent={roleAccent} />}
@@ -635,6 +661,7 @@ export default function LearnPage() {
               {activeTab === 'lab' && tabsAvailableWithLab.lab && slug && (
                 <LabTab slug={slug} labLaunched={labLaunched} labComplete={labComplete} onLaunch={() => setLabLaunched(true)} onMarkComplete={() => setLabComplete(true)} tabAccent={tabAccent} />
               )}
+              </div>
             </>
           ) : (
             <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.3)' }}>Select a lesson from the curriculum to begin.</div>

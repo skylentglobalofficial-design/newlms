@@ -754,6 +754,10 @@ export const globalCSS = `
     .program-cert-split { grid-template-columns: 1fr !important; }
     .program-sticky-nav-scroll { -webkit-overflow-scrolling: touch; }
   }
+  @media (max-width: 900px) {
+    .career-journey > div { grid-template-columns: repeat(3, 1fr) !important; gap: 24px !important; }
+    .career-journey-line { display: none !important; }
+  }
   @media (max-width: 375px) {
     .program-tools-strip > div { padding: 12px 16px !important; font-size: 13px !important; }
     .program-pricing-wrap { margin-left: -4px; margin-right: -4px; }
