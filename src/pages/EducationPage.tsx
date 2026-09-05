@@ -1,25 +1,20 @@
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
-import { Section, PageHero, Button, Eyebrow, CTABand, T } from '../components/ui'
+import {
+  Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader, FlowStrip,
+} from '../components/ui'
+import { Aurora, MediaImage } from '../components/foundation'
+import { getDomainAccent } from '../aurora-themes'
+import { programs } from '../data'
+import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
 
-// ─── PHOTOS ───────────────────────────────────────────────────────────────────
-const PHOTOS = {
-  schooling: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1000&h=760&fit=crop&auto=format',
-  schoolingAlt: 'https://images.unsplash.com/photo-1588072432836-e10032774350?w=600&h=460&fit=crop&auto=format',
-  undergraduate: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1000&h=760&fit=crop&auto=format',
-  undergraduate2: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600&h=460&fit=crop&auto=format',
-  postgraduate: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=460&fit=crop&auto=format',
-  postgraduate2: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600&h=460&fit=crop&auto=format',
-  examPrep: 'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=600&h=460&fit=crop&auto=format',
-}
+// ─── EXAM DATA (preserved) ────────────────────────────────────────────────────
 
-// ─── EXAM DATA ────────────────────────────────────────────────────────────────
 const JEE_NEET_EXAMS = [
   {
     name: 'JEE',
     full: 'Joint Entrance Examination',
     target: 'IITs · NITs · Top Engineering',
-    type: 'subject-oriented',
     subjects: [
       { name: 'Physics', color: '#60a5fa', topics: ['Mechanics', 'Electromagnetism', 'Optics', 'Modern Physics'] },
       { name: 'Chemistry', color: '#34d399', topics: ['Organic', 'Inorganic', 'Physical Chemistry'] },
@@ -31,7 +26,6 @@ const JEE_NEET_EXAMS = [
     name: 'NEET',
     full: 'National Eligibility cum Entrance Test',
     target: 'MBBS · BDS · Allied Health',
-    type: 'subject-oriented',
     subjects: [
       { name: 'Biology', color: '#4ade80', topics: ['Botany', 'Zoology', 'Genetics', 'Ecology'] },
       { name: 'Chemistry', color: '#34d399', topics: ['Organic', 'Inorganic', 'Physical Chemistry'] },
@@ -45,7 +39,6 @@ const CAT_SECTION = {
   name: 'CAT',
   full: 'Common Admission Test',
   target: 'IIMs · Top B-Schools',
-  type: 'section-oriented',
   sections: [
     { label: 'Verbal Ability & Reading Comprehension', abbr: 'VARC', weight: '34%', color: '#a78bfa' },
     { label: 'Data Interpretation & Logical Reasoning', abbr: 'DILR', weight: '33%', color: '#f59e0b' },
@@ -56,7 +49,199 @@ const CAT_SECTION = {
 
 const OTHER_EXAMS = ['CUET', 'CLAT', 'GMAT', 'GRE', 'UPSC', 'Bank PO']
 
-// ─── SCHOOLING SECTION ───────────────────────────────────────────────────────
+const EXAM_PROGRAMS = programs.filter(p => p.programType === 'EXAM_PREP')
+const FEATURED_PROGRAM = EXAM_PROGRAMS.find(p => p.slug === 'jee-advanced-prep') ?? EXAM_PROGRAMS[0]
+const SUPPORTING_PROGRAMS = EXAM_PROGRAMS.filter(p => p.slug !== FEATURED_PROGRAM?.slug)
+
+const accent = getDomainAccent('schooling')
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+
+function scrollToId(id: string) {
+  const el = document.getElementById(id)
+  if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - (T.navH + 16), behavior: 'smooth' })
+}
+
+// ─── HERO PROGRESSION VISUAL ──────────────────────────────────────────────────
+
+function HeroProgressionVisual() {
+  const stages = [
+    { label: 'Schooling', sub: 'Grades 1–12', photo: PHOTO.classroomWarm, position: 'center 20%' },
+    { label: 'Undergraduate', sub: 'Degree years', photo: PHOTO.college, position: 'center' },
+    { label: 'Postgraduate', sub: 'Specialisation', photo: PHOTO.research, position: 'center 30%' },
+  ]
+
+  return (
+    <div className="education-hero-visual" style={{ position: 'relative', minHeight: 420 }}>
+      {stages.map((stage, i) => (
+        <div
+          key={stage.label}
+          className={`education-hero-stage education-hero-stage-${i + 1}`}
+          style={{
+            position: 'absolute',
+            width: i === 1 ? '58%' : '52%',
+            zIndex: 3 - i,
+            ...(i === 0 ? { top: 0, left: 0 } : {}),
+            ...(i === 1 ? { top: '28%', right: 0 } : {}),
+            ...(i === 2 ? { bottom: 0, left: '12%' } : {}),
+          }}
+        >
+          <MediaImage
+            src={stage.photo}
+            alt={`${stage.label} learning environment`}
+            aspect="4/3"
+            overlay="bottom"
+            objectPosition={stage.position}
+            imgStyle={{ opacity: 0.92 }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              top: 12,
+              left: 12,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              background: 'rgba(5,5,5,0.55)',
+              border: `1px solid ${accent.border}`,
+              borderRadius: 8,
+              padding: '6px 10px',
+            }}
+          >
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: accent.text, letterSpacing: '0.08em' }}>
+              {String(i + 1).padStart(2, '0')}
+            </span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: C.white }}>{stage.label}</span>
+          </div>
+        </div>
+      ))}
+      <div
+        aria-hidden
+        style={{
+          position: 'absolute',
+          inset: '8% 6%',
+          border: `1px dashed ${accent.border}`,
+          borderRadius: T.rCard,
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+    </div>
+  )
+}
+
+// ─── EDUCATION JOURNEY ────────────────────────────────────────────────────────
+
+function EducationJourneySection() {
+  const stages = [
+    {
+      num: '01',
+      title: 'Schooling',
+      desc: 'Foundational academic learning from primary through senior secondary.',
+      anchor: 'schooling',
+      photo: PHOTO.schoolBuilding,
+    },
+    {
+      num: '02',
+      title: 'Undergraduate',
+      desc: 'Degree-aligned programs with projects, skills, and career direction.',
+      anchor: 'undergraduate',
+      photo: PHOTO.collab,
+    },
+    {
+      num: '03',
+      title: 'Postgraduate',
+      desc: 'Specialisation, cases, and professional outcomes.',
+      anchor: 'postgraduate',
+      photo: PHOTO.university,
+    },
+  ]
+
+  return (
+    <Section tone="canvas" divider style={{ paddingTop: T.sectionTight }}>
+      <FadeIn>
+        <SectionHeader
+          tone="dark"
+          eyebrow="Education journey"
+          title="One path. Three distinct stages."
+          lead="Schooling, undergraduate, and postgraduate are different audiences and different curriculum models — connected as one academic progression."
+        />
+      </FadeIn>
+
+      <div className="education-journey" style={{ marginTop: 48, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, position: 'relative' }}>
+        <div
+          aria-hidden
+          className="education-journey-line"
+          style={{
+            position: 'absolute',
+            top: 28,
+            left: '16%',
+            right: '16%',
+            height: 1,
+            background: `linear-gradient(90deg, transparent, ${accent.border}, ${accent.border}, transparent)`,
+          }}
+        />
+        {stages.map((stage, i) => (
+          <FadeIn key={stage.anchor} delay={i * 80}>
+            <button
+              type="button"
+              onClick={() => scrollToId(stage.anchor)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                textAlign: 'left',
+                padding: '0 20px 0 0',
+                width: '100%',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+                <div
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: '50%',
+                    background: accent.subtle,
+                    border: `1px solid ${accent.border}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 11,
+                    color: accent.text,
+                    flexShrink: 0,
+                  }}
+                >
+                  {stage.num}
+                </div>
+                {i < stages.length - 1 && (
+                  <span className="education-journey-arrow" style={{ color: accent.textMuted, fontSize: 18, opacity: 0.6 }}>→</span>
+                )}
+              </div>
+              <div style={{ borderRadius: T.rCard, overflow: 'hidden', marginBottom: 18, aspectRatio: '16/10' }}>
+                <img
+                  src={stage.photo}
+                  alt={stage.title}
+                  loading="lazy"
+                  className="skylent-media-img"
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                />
+              </div>
+              <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 8px', fontSize: 'clamp(22px, 2.5vw, 28px)' }}>
+                {stage.title}
+              </h3>
+              <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14, lineHeight: 1.65, margin: 0, maxWidth: 280 }}>
+                {stage.desc}
+              </p>
+            </button>
+          </FadeIn>
+        ))}
+      </div>
+    </Section>
+  )
+}
+
+// ─── SCHOOLING ────────────────────────────────────────────────────────────────
 
 function SchoolingSection() {
   const navigate = useNavigate()
@@ -68,91 +253,101 @@ function SchoolingSection() {
   ]
 
   return (
-    <Section id="schooling" bg={C.warmWhite}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(36px,6vw,80px)', alignItems: 'start' }} className="two-col">
-        {/* Left: photo + grade cards */}
+    <Section id="schooling" tone="canvas" divider>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col">
         <FadeIn>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            {/* Main photo */}
-            <div style={{ borderRadius: T.rCard, overflow: 'hidden', aspectRatio: '4/3', background: '#fef3c7' }}>
-              <img src={PHOTOS.schooling} alt="Students learning in a classroom" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-            </div>
-            {/* Grade band cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
-              {gradeBands.map(({ band, grades, color }) => (
-                <div key={band} style={{ background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 10, padding: '12px 10px', textAlign: 'center' }}>
-                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, margin: '0 auto 6px' }} />
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 13, fontWeight: 600, color: C.ink, marginBottom: 2 }}>{band}</div>
-                  <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>Gr {grades}</div>
-                </div>
-              ))}
-            </div>
+          <MediaImage
+            src={PHOTO.classroomWarm}
+            alt="Students learning in an Indian classroom"
+            aspect="4/3"
+            overlay="full"
+            objectPosition="center 25%"
+          />
+          <div style={{ display: 'flex', gap: 0, marginTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
+            {gradeBands.map(({ band, grades, color }, i) => (
+              <div
+                key={band}
+                style={{
+                  flex: 1,
+                  padding: '14px 8px',
+                  textAlign: 'center',
+                  borderRight: i < gradeBands.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                }}
+              >
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, margin: '0 auto 6px' }} />
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 600, color: C.white }}>{band}</div>
+                <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2 }}>Gr {grades}</div>
+              </div>
+            ))}
           </div>
         </FadeIn>
 
-        {/* Right: content */}
-        <FadeIn delay={100}>
-          <div>
-            <Eyebrow>Schooling</Eyebrow>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(28px,3.6vw,44px)', fontWeight: 600, letterSpacing: '-0.03em', color: C.ink, margin: '22px 0 16px', lineHeight: 1.1 }}>
-              Learning that builds<br />confidence.
-            </h2>
-            <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 460 }}>
-              For school students and their parents. Programs built around the actual curriculum — from foundational concepts in primary school to board-level mastery in senior secondary.
-            </p>
+        <FadeIn delay={80}>
+          <Eyebrow tone="dark">Schooling</Eyebrow>
+          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
+            Learning that builds confidence.
+          </Heading>
+          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 480 }}>
+            For school students and their parents. Programs built around the actual curriculum — from foundational concepts in primary school to board-level mastery in senior secondary.
+          </p>
 
-            {/* Grade bands detail */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 32 }}>
-              {gradeBands.map(({ band, grades, color, subjects }, i) => (
-                <div key={band} style={{ display: 'flex', gap: 14, padding: '14px 0', borderBottom: i < gradeBands.length - 1 ? `1px solid ${T.lineLight}` : 'none', alignItems: 'flex-start' }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 8, background: `${color}18`, border: `1px solid ${color}44`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: color }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 32 }}>
+            {gradeBands.map(({ band, grades, color, subjects }, i) => (
+              <div
+                key={band}
+                style={{
+                  display: 'flex',
+                  gap: 14,
+                  padding: '14px 0',
+                  borderBottom: i < gradeBands.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  alignItems: 'flex-start',
+                }}
+              >
+                <div
+                  style={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: 6,
+                    background: `${color}18`,
+                    border: `1px solid ${color}44`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: color }} />
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white }}>{band}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>Grade {grades}</span>
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.ink }}>{band}</span>
-                      <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>Grade {grades}</span>
-                    </div>
-                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                      {subjects.map(s => (
-                        <span key={s} style={{ background: C.sand, borderRadius: 4, padding: '2px 8px', color: C.slate, fontSize: 11 }}>{s}</span>
-                      ))}
-                    </div>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {subjects.map(s => (
+                      <span key={s} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>{s}</span>
+                    ))}
                   </div>
                 </div>
-              ))}
-            </div>
-
-            {/* Audience + journey */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 24 }} className="two-col-sm">
-              {[
-                { t: 'Parents', d: 'See progress, assessments, and what happens after class.' },
-                { t: 'Teachers', d: 'Lessons, activities, and assessments in one academic flow.' },
-              ].map(x => (
-                <div key={x.t} style={{ background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 10, padding: '14px 14px' }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{x.t}</div>
-                  <div style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.5 }}>{x.d}</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Curriculum model */}
-            <div style={{ background: C.sand, borderRadius: 10, padding: '14px 16px', marginBottom: 28 }}>
-              <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 8 }}>LEARNING JOURNEY</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 12, color: C.ink, fontWeight: 500 }}>
-                {['Grade', 'Subject', 'Chapter', 'Lesson', 'Activity', 'Assessment', 'Progress'].map((s, i, arr) => (
-                  <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ background: C.white, borderRadius: 6, padding: '4px 8px' }}>{s}</span>
-                    {i < arr.length - 1 && <span style={{ color: C.slate }}>→</span>}
-                  </span>
-                ))}
               </div>
-            </div>
+            ))}
+          </div>
 
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <Button variant="dark" onClick={() => navigate('/institutions')}>For Schools →</Button>
-              <Button variant="ghost" onClick={() => navigate('/programs')}>Browse Programs</Button>
+          <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
+            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 12 }}>Learning journey</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 12, color: 'rgba(255,255,255,0.65)' }}>
+              {['Grade', 'Subject', 'Chapter', 'Lesson', 'Activity', 'Assessment', 'Progress'].map((s, i, arr) => (
+                <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                  <span>{s}</span>
+                  {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
+                </span>
+              ))}
             </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <Button variant="primary" onClick={() => navigate('/institutions')}>For Schools →</Button>
+            <Button variant="secondary" onClick={() => navigate('/programs')}>Browse Programs</Button>
           </div>
         </FadeIn>
       </div>
@@ -160,7 +355,7 @@ function SchoolingSection() {
   )
 }
 
-// ─── UNDERGRADUATE SECTION ────────────────────────────────────────────────────
+// ─── UNDERGRADUATE ────────────────────────────────────────────────────────────
 
 function UndergraduateSection() {
   const navigate = useNavigate()
@@ -175,68 +370,81 @@ function UndergraduateSection() {
   ]
 
   return (
-    <Section id="undergraduate" bg={C.ink}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(36px,6vw,80px)', alignItems: 'start' }} className="two-col">
+    <Section id="undergraduate" tone="canvas" divider>
+      <div style={{ display: 'grid', gridTemplateColumns: '0.95fr 1.05fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col education-ug-grid">
         <FadeIn>
-          <div>
-            <Eyebrow tone="dark">Undergraduate</Eyebrow>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(28px,3.6vw,44px)', fontWeight: 600, letterSpacing: '-0.03em', color: C.white, margin: '22px 0 16px', lineHeight: 1.1 }}>
-              Academic depth.<br />Industry direction.
-            </h2>
-            <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 460 }}>
-              For college students and degree institutions. Programs that sit alongside the academic calendar — building applied skills, projects, and career readiness from the first year.
-            </p>
+          <Eyebrow tone="dark">Undergraduate</Eyebrow>
+          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
+            Academic depth. Industry direction.
+          </Heading>
+          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 480 }}>
+            For college students and degree institutions. Programs that sit alongside the academic calendar — building applied skills, projects, and career readiness from the first year.
+          </p>
 
-            {/* Journey flow — horizontal */}
-            <div style={{ marginBottom: 32 }}>
-              <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 16 }}>PROGRAM STRUCTURE</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                {journey.map(({ step, desc }, i) => (
-                  <div key={step} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                    {/* Connector */}
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 20, flexShrink: 0 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: i === journey.length - 1 ? C.orange : 'rgba(255,255,255,0.28)', border: `1px solid ${i === journey.length - 1 ? C.orange : 'rgba(255,255,255,0.18)'}`, marginTop: 13, flexShrink: 0, zIndex: 1 }} />
-                      {i < journey.length - 1 && (
-                        <div style={{ width: 1, flex: 1, minHeight: 20, background: 'rgba(255,255,255,0.1)', marginTop: 3 }} />
-                      )}
-                    </div>
-                    <div style={{ paddingBottom: i < journey.length - 1 ? 12 : 0, paddingTop: 8 }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: i === journey.length - 1 ? C.orange : C.white }}>{step}</span>
-                      </div>
-                      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, marginTop: 2 }}>{desc}</div>
-                    </div>
+          <div style={{ marginBottom: 32 }}>
+            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 16 }}>Program structure</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+              {journey.map(({ step, desc }, i) => (
+                <div key={step} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: 20, flexShrink: 0 }}>
+                    <div
+                      style={{
+                        width: 8,
+                        height: 8,
+                        borderRadius: '50%',
+                        background: i === journey.length - 1 ? C.orange : accent.primary,
+                        opacity: i === journey.length - 1 ? 1 : 0.5,
+                        marginTop: 13,
+                        flexShrink: 0,
+                      }}
+                    />
+                    {i < journey.length - 1 && (
+                      <div style={{ width: 1, flex: 1, minHeight: 20, background: T.lineDark, marginTop: 3 }} />
+                    )}
                   </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <Button variant="primary" onClick={() => navigate('/skills')}>Explore Skills →</Button>
-              <Button variant="secondary" onClick={() => navigate('/institutions')}>For Colleges</Button>
-            </div>
-          </div>
-        </FadeIn>
-
-        {/* Right: photos */}
-        <FadeIn delay={100}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ borderRadius: T.rCard, overflow: 'hidden', aspectRatio: '4/3', background: '#1a2330' }}>
-              <img src={PHOTOS.undergraduate} alt="University students in a collaborative workshop" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', opacity: 0.88 }} />
-            </div>
-            {/* Stats strip */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
-              {[
-                { value: 'Sem-aligned', label: 'Schedule' },
-                { value: 'Projects', label: 'Portfolio ready' },
-                { value: 'Career OS', label: 'Path unlocked' },
-              ].map(({ value, label }) => (
-                <div key={label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '14px 12px', textAlign: 'center' }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{value}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>{label}</div>
+                  <div style={{ paddingBottom: i < journey.length - 1 ? 12 : 0, paddingTop: 8 }}>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: i === journey.length - 1 ? C.orange : C.white }}>
+                      {step}
+                    </span>
+                    <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginTop: 2 }}>{desc}</div>
+                  </div>
                 </div>
               ))}
             </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <Button variant="primary" onClick={() => navigate('/skills')}>Explore Skills →</Button>
+            <Button variant="secondary" onClick={() => navigate('/institutions')}>For Colleges</Button>
+          </div>
+        </FadeIn>
+
+        <FadeIn delay={80}>
+          <MediaImage
+            src={PHOTO.collab}
+            alt="University students in a collaborative workshop"
+            aspect="4/3"
+            overlay="full"
+            objectPosition="center"
+          />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, marginTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
+            {[
+              { value: 'Sem-aligned', label: 'Schedule' },
+              { value: 'Projects', label: 'Portfolio ready' },
+              { value: 'Career OS', label: 'Path unlocked' },
+            ].map(({ value, label }, i) => (
+              <div
+                key={label}
+                style={{
+                  padding: '16px 12px',
+                  textAlign: 'center',
+                  borderRight: i < 2 ? `1px solid ${T.lineDark}` : 'none',
+                }}
+              >
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{value}</div>
+                <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>{label}</div>
+              </div>
+            ))}
           </div>
         </FadeIn>
       </div>
@@ -244,7 +452,7 @@ function UndergraduateSection() {
   )
 }
 
-// ─── POSTGRADUATE SECTION ─────────────────────────────────────────────────────
+// ─── POSTGRADUATE ─────────────────────────────────────────────────────────────
 
 function PostgraduateSection() {
   const navigate = useNavigate()
@@ -256,55 +464,58 @@ function PostgraduateSection() {
   ]
 
   return (
-    <Section id="postgraduate" bg={C.sand}>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(36px,6vw,80px)', alignItems: 'start' }} className="two-col">
-        {/* Left: photo */}
+    <Section id="postgraduate" tone="canvas" divider>
+      <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col">
         <FadeIn>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{ borderRadius: T.rCard, overflow: 'hidden', aspectRatio: '4/3', background: C.warmWhite }}>
-              <img src={PHOTOS.postgraduate2} alt="Professional working on advanced coursework" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-            </div>
-            {/* Specialization chips */}
-            <div style={{ background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: T.rCard, padding: '18px 20px' }}>
-              <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 12 }}>PROGRAM STRUCTURE</div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate, letterSpacing: '0.03em', lineHeight: 2 }}>
-                Program → Specialization → Advanced Modules → Cases → Projects → Professional Outcomes
-              </div>
-            </div>
+          <Eyebrow tone="dark">Postgraduate</Eyebrow>
+          <h2 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 24px', lineHeight: 1.02 }}>
+            Specialisation.<br />Mastery.<br />Leadership.
+          </h2>
+          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 420 }}>
+            For advanced learners, working professionals, and researchers. Deep, case-driven programs designed around professional outcomes — not just academic completion.
+          </p>
+          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 12 }}>Program structure</div>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.03em', lineHeight: 1.9, margin: '0 0 28px' }}>
+            Program → Specialization → Advanced Modules → Cases → Projects → Professional Outcomes
+          </p>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <Button variant="primary" onClick={() => navigate('/programs')}>Explore Professional Programs →</Button>
+            <Button variant="secondary" onClick={() => navigate('/institutions')}>For Universities</Button>
           </div>
         </FadeIn>
 
-        {/* Right: content */}
-        <FadeIn delay={100}>
-          <div>
-            <Eyebrow>Postgraduate</Eyebrow>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(28px,3.6vw,44px)', fontWeight: 600, letterSpacing: '-0.03em', color: C.ink, margin: '22px 0 16px', lineHeight: 1.1 }}>
-              Specialisation.<br />Mastery. Leadership.
-            </h2>
-            <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 460 }}>
-              For advanced learners, working professionals, and researchers. Deep, case-driven programs designed around professional outcomes — not just academic completion.
-            </p>
-
-            {/* Specialization tracks */}
-            <div style={{ marginBottom: 32 }}>
-              <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 14 }}>SPECIALIZATION TRACKS</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {tracks.map(({ name, desc }) => (
-                  <div key={name} style={{ display: 'flex', gap: 14, alignItems: 'flex-start', padding: '13px 16px', background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 10 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.ink, flexShrink: 0, marginTop: 6, opacity: 0.4 }} />
-                    <div>
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 2 }}>{name}</div>
-                      <div style={{ color: C.slate, fontSize: 12.5 }}>{desc}</div>
-                    </div>
-                  </div>
-                ))}
+        <FadeIn delay={80}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 16 }}>Specialization tracks</div>
+            {tracks.map(({ name, desc }, i) => (
+              <div
+                key={name}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '48px 1fr',
+                  gap: 16,
+                  padding: '20px 0',
+                  borderBottom: i < tracks.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  alignItems: 'start',
+                }}
+              >
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: accent.text, paddingTop: 2 }}>
+                  {String(i + 1).padStart(2, '0')}
+                </div>
+                <div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 4 }}>{name}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.55 }}>{desc}</div>
+                </div>
               </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              <Button variant="dark" onClick={() => navigate('/programs')}>Explore Professional Programs →</Button>
-              <Button variant="ghost" onClick={() => navigate('/institutions')}>For Universities</Button>
-            </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 28 }}>
+            <MediaImage
+              src={PHOTO.research}
+              alt="Advanced research and postgraduate study"
+              aspect="21/9"
+              objectPosition="center 40%"
+            />
           </div>
         </FadeIn>
       </div>
@@ -312,84 +523,220 @@ function PostgraduateSection() {
   )
 }
 
-// ─── COMPETITIVE EXAMS SECTION ────────────────────────────────────────────────
+// ─── HOW LEARNING WORKS ───────────────────────────────────────────────────────
+
+function HowLearningWorksSection() {
+  const steps = [
+    { label: 'Explore', sub: 'Browse pathways and programs' },
+    { label: 'Enrol', sub: 'Join a batch or register interest' },
+    { label: 'Learn', sub: 'Curriculum-aligned lessons' },
+    { label: 'Practice', sub: 'Activities, tests, and mocks' },
+    { label: 'Progress', sub: 'Track outcomes and analytics' },
+  ]
+
+  return (
+    <Section tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
+      <FadeIn>
+        <SectionHeader
+          tone="dark"
+          eyebrow="How learning works"
+          title="From discovery to measurable progress."
+          lead="Every education pathway on Skylent follows the same academic rhythm — structured content, deliberate practice, and visible progress."
+        />
+        <div style={{ marginTop: 40 }}>
+          <FlowStrip steps={steps} tone="dark" />
+        </div>
+      </FadeIn>
+    </Section>
+  )
+}
+
+// ─── PROGRAM DISCOVERY ────────────────────────────────────────────────────────
+
+function ProgramDiscoverySection() {
+  const navigate = useNavigate()
+  if (!FEATURED_PROGRAM) return null
+
+  const featuredPhoto = PROGRAM_PHOTO[FEATURED_PROGRAM.slug] ?? DEFAULT_PROGRAM_PHOTO
+  const lowestPrice = Math.min(...FEATURED_PROGRAM.pricing.map(p => p.price))
+
+  return (
+    <Section tone="canvas" divider>
+      <FadeIn>
+        <SectionHeader
+          tone="dark"
+          eyebrow="Program discovery"
+          title="Exam preparation, structured."
+          lead="Programs built around exam patterns, subject mastery, and performance analytics — not generic course bundles."
+        />
+      </FadeIn>
+
+      <div className="education-discovery" style={{ marginTop: 48, display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }}>
+        <FadeIn>
+          <div>
+            <Link to={`/programs/${FEATURED_PROGRAM.slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+              <div style={{ position: 'relative' }}>
+                <MediaImage
+                  src={featuredPhoto}
+                  alt={FEATURED_PROGRAM.name}
+                  aspect="16/9"
+                  overlay="full"
+                />
+                <div style={{ position: 'absolute', top: 16, left: 16 }}>
+                  <span
+                    style={{
+                      background: accent.subtleStrong,
+                      border: `1px solid ${accent.border}`,
+                      borderRadius: 6,
+                      padding: '4px 10px',
+                      fontSize: 10,
+                      fontFamily: 'var(--font-mono)',
+                      color: accent.text,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    Featured
+                  </span>
+                </div>
+              </div>
+              <div style={{ paddingTop: 24 }}>
+                <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Exam Preparation</div>
+                <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 12px' }}>{FEATURED_PROGRAM.name}</h3>
+                <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>
+                  {FEATURED_PROGRAM.desc}
+                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 20 }}>
+                  {[
+                    { k: 'Duration', v: FEATURED_PROGRAM.duration },
+                    { k: 'Format', v: FEATURED_PROGRAM.format },
+                    { k: 'Outcome', v: FEATURED_PROGRAM.outcome },
+                    { k: 'From', v: `₹${lowestPrice.toLocaleString('en-IN')}` },
+                  ].map(({ k, v }) => (
+                    <div key={k}>
+                      <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>{k}</div>
+                      <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Link>
+            <Button variant="primary" onClick={() => navigate(`/programs/${FEATURED_PROGRAM.slug}`)}>
+              View Program →
+            </Button>
+          </div>
+        </FadeIn>
+
+        <FadeIn delay={80}>
+          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 20 }}>More programs</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {SUPPORTING_PROGRAMS.map((program, i) => {
+              const photo = PROGRAM_PHOTO[program.slug] ?? DEFAULT_PROGRAM_PHOTO
+              const price = Math.min(...program.pricing.map(p => p.price))
+              return (
+                <Link
+                  key={program.slug}
+                  to={`/programs/${program.slug}`}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '72px 1fr auto',
+                    gap: 16,
+                    alignItems: 'center',
+                    padding: '18px 0',
+                    borderBottom: i < SUPPORTING_PROGRAMS.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                  }}
+                >
+                  <div style={{ width: 72, height: 54, borderRadius: 8, overflow: 'hidden', background: C.ink3 }}>
+                    <img src={photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 4 }}>{program.name}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{program.duration} · {program.outcome}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
+                    <div style={{ color: accent.textMuted, fontSize: 11, marginTop: 2 }}>→</div>
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+          <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
+            <Button variant="secondary" onClick={() => navigate('/programs')}>Browse all programs</Button>
+          </div>
+        </FadeIn>
+      </div>
+    </Section>
+  )
+}
+
+// ─── COMPETITIVE EXAMS ────────────────────────────────────────────────────────
 
 function CompetitiveExamsSection() {
   const navigate = useNavigate()
 
   return (
-    <Section id="competitive-exams" bg={C.ink}>
+    <Section id="competitive-exams" tone="canvas" divider>
       <FadeIn>
-        <div style={{ marginBottom: 56 }}>
+        <div style={{ marginBottom: 48 }}>
           <Eyebrow tone="dark" accent>Competitive Exams</Eyebrow>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,4vw,56px)', alignItems: 'end', marginTop: 20 }} className="two-col">
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(28px,3.6vw,44px)', fontWeight: 600, letterSpacing: '-0.03em', color: C.white, margin: 0, lineHeight: 1.1 }}>
-              Structured.<br />Performance-first.
-            </h2>
-            <div>
-              <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.78, margin: '0 0 16px' }}>
-                Exam preparation is not a course. It is a performance system — built around exam patterns, subject mastery, and analytics.
-              </p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                {['Batches', 'Topics', 'Practice', 'Mock tests', 'Analytics', 'Doubt support'].map(f => (
-                  <span key={f} style={{ background: 'rgba(243,107,33,0.1)', border: '1px solid rgba(243,107,33,0.22)', borderRadius: 6, padding: '4px 10px', color: C.orange, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{f}</span>
-                ))}
-              </div>
-            </div>
+            <Heading tone="dark" size="md">Structured. Performance-first.</Heading>
+            <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.78, margin: 0 }}>
+              Exam preparation is not a course. It is a performance system — built around exam patterns, subject mastery, and analytics.
+            </p>
           </div>
         </div>
       </FadeIn>
 
       <FadeIn>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 36, alignItems: 'center' }}>
-          <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)', marginRight: 8 }}>PREP SYSTEM</span>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 40, alignItems: 'center' }}>
+          <span className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginRight: 8 }}>Prep system</span>
           {['Exam', 'Subject / Section', 'Topic', 'Practice', 'Test', 'Mock', 'Analytics'].map((s, i, arr) => (
-            <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: C.white, fontSize: 12 }}>
-              <span style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 6, padding: '5px 10px' }}>{s}</span>
-              {i < arr.length - 1 && <span style={{ color: 'rgba(255,255,255,0.25)' }}>→</span>}
+            <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'rgba(255,255,255,0.65)', fontSize: 12 }}>
+              <span>{s}</span>
+              {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
             </span>
           ))}
         </div>
       </FadeIn>
 
-      {/* JEE + NEET: subject-oriented layout */}
-      <div style={{ marginBottom: 16 }}>
-        <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 14 }}>ENGINEERING & MEDICAL — SUBJECT-ORIENTED</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }} className="programs-grid">
+      <div style={{ marginBottom: 32 }}>
+        <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 20 }}>Engineering & medical — subject-oriented</div>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(20px,3vw,32px)' }} className="two-col">
           {JEE_NEET_EXAMS.map((exam, ei) => (
             <FadeIn key={exam.name} delay={ei * 70}>
-              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: T.rCard, padding: '26px 28px', display: 'flex', flexDirection: 'column' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
-                  <div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 700, color: C.white, letterSpacing: '-0.03em', lineHeight: 1 }}>{exam.name}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 4 }}>{exam.full}</div>
-                  </div>
+              <div style={{ padding: '28px 0', borderTop: `1px solid ${T.lineDark}` }}>
+                <div style={{ marginBottom: 20 }}>
+                  <div className="skylent-display-sm" style={{ color: C.white, margin: '0 0 4px' }}>{exam.name}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{exam.full}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)', marginTop: 6 }}>{exam.target}</div>
                 </div>
-                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)', marginBottom: 20 }}>{exam.target}</div>
 
-                {/* Subject breakdown — visual blocks */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                   {exam.subjects.map(({ name, color, topics }) => (
-                    <div key={name} style={{ background: `${color}0D`, border: `1px solid ${color}28`, borderRadius: 10, padding: '12px 14px' }}>
+                    <div key={name} style={{ padding: '14px 0', borderBottom: `1px solid ${T.lineDark}` }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: color, flexShrink: 0 }} />
+                        <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0 }} />
                         <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{name}</span>
                       </div>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                         {topics.map(t => (
-                          <span key={t} style={{ background: `${color}14`, borderRadius: 4, padding: '2px 8px', color: `${color}CC`, fontSize: 11 }}>{t}</span>
+                          <span key={t} style={{ color: 'rgba(255,255,255,0.42)', fontSize: 12 }}>{t}</span>
                         ))}
                       </div>
                     </div>
                   ))}
                 </div>
 
-                <div style={{ borderTop: '1px solid rgba(255,255,255,0.07)', paddingTop: 14, display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                <div style={{ paddingTop: 16, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
                   {exam.features.map(f => (
-                    <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ width: 4, height: 4, borderRadius: '50%', background: C.orange, opacity: 0.7 }} />
-                      <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>{f}</span>
-                    </div>
+                    <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span style={{ width: 4, height: 4, borderRadius: '50%', background: C.orange, opacity: 0.7 }} />
+                      {f}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -398,67 +745,186 @@ function CompetitiveExamsSection() {
         </div>
       </div>
 
-      {/* CAT: section-oriented layout — different visual treatment */}
-      <FadeIn delay={140}>
-        <div style={{ marginBottom: 16 }}>
-          <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 14 }}>MBA ENTRANCE — SECTION-ORIENTED</div>
-          <div style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: T.rCard, padding: '28px 32px' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 'clamp(24px,4vw,48px)', alignItems: 'start' }} className="two-col-sm">
-              {/* CAT identity */}
-              <div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 48, fontWeight: 700, color: C.white, letterSpacing: '-0.04em', lineHeight: 1, marginBottom: 4 }}>CAT</div>
-                <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{CAT_SECTION.full}</div>
-                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)', marginBottom: 16 }}>{CAT_SECTION.target}</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {CAT_SECTION.features.map(f => (
-                    <div key={f} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ width: 4, height: 4, borderRadius: '50%', background: C.orange, opacity: 0.7 }} />
-                      <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>{f}</span>
-                    </div>
-                  ))}
-                </div>
+      <FadeIn delay={100}>
+        <div style={{ marginBottom: 32 }}>
+          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 20 }}>MBA entrance — section-oriented</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 'clamp(24px,4vw,48px)', alignItems: 'start' }} className="two-col-sm education-cat-grid">
+            <div>
+              <div className="skylent-display-md" style={{ color: C.white, margin: '0 0 4px', fontSize: 'clamp(36px,4vw,48px)' }}>CAT</div>
+              <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{CAT_SECTION.full}</div>
+              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)', marginBottom: 16 }}>{CAT_SECTION.target}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {CAT_SECTION.features.map(f => (
+                  <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span style={{ width: 4, height: 4, borderRadius: '50%', background: C.orange, opacity: 0.7 }} />
+                    {f}
+                  </span>
+                ))}
               </div>
+            </div>
 
-              {/* Section breakdown — progress bar style */}
-              <div>
-                <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 14 }}>SECTION BREAKDOWN</div>
-                {/* Weight bar */}
-                <div style={{ display: 'flex', height: 8, borderRadius: 4, overflow: 'hidden', marginBottom: 18 }}>
-                  {CAT_SECTION.sections.map(({ abbr, weight, color }) => (
-                    <div key={abbr} style={{ flex: parseFloat(weight), background: color }} />
-                  ))}
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {CAT_SECTION.sections.map(({ label, abbr, weight, color }) => (
-                    <div key={abbr} style={{ display: 'flex', gap: 14, alignItems: 'flex-start', padding: '12px 14px', background: `${color}0D`, border: `1px solid ${color}24`, borderRadius: 10 }}>
-                      <div style={{ flexShrink: 0 }}>
-                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600, color }}>
-                          {abbr}
-                        </div>
-                        <div style={{ color: `${color}88`, fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2 }}>{weight}</div>
-                      </div>
-                      <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, lineHeight: 1.45, paddingTop: 2 }}>{label}</div>
-                    </div>
-                  ))}
-                </div>
+            <div>
+              <div style={{ display: 'flex', height: 6, borderRadius: 3, overflow: 'hidden', marginBottom: 20 }}>
+                {CAT_SECTION.sections.map(({ abbr, weight, color }) => (
+                  <div key={abbr} style={{ flex: parseFloat(weight), background: color, opacity: 0.85 }} />
+                ))}
               </div>
+              {CAT_SECTION.sections.map(({ label, abbr, weight, color }) => (
+                <div
+                  key={abbr}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '56px 1fr',
+                    gap: 16,
+                    padding: '14px 0',
+                    borderBottom: `1px solid ${T.lineDark}`,
+                    alignItems: 'start',
+                  }}
+                >
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600, color }}>{abbr}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2 }}>{weight}</div>
+                  </div>
+                  <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, lineHeight: 1.45 }}>{label}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       </FadeIn>
 
-      {/* Other exams */}
-      <FadeIn delay={200}>
-        <div style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: T.rCard, padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+      <FadeIn delay={140}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
           <div>
-            <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 8 }}>MORE EXAMS — COMING SOON</div>
+            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 10 }}>More exams — coming soon</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {OTHER_EXAMS.map(e => (
-                <span key={e} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '4px 10px', color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{e}</span>
+                <span key={e} style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{e}</span>
               ))}
             </div>
           </div>
           <Button variant="secondary" onClick={() => navigate('/institutions')}>For Coaching Institutes →</Button>
+        </div>
+      </FadeIn>
+    </Section>
+  )
+}
+
+// ─── INSTITUTION / LEARNER VALUE ──────────────────────────────────────────────
+
+function ValueSection() {
+  const navigate = useNavigate()
+  const audiences = [
+    {
+      title: 'Learners',
+      desc: 'Structured pathways from schooling through postgraduate — with clear curriculum models, assessments, and progress visibility at every stage.',
+      points: ['Curriculum-aligned content', 'Activities and assessments', 'Performance tracking', 'Path to Skills and Career OS'],
+    },
+    {
+      title: 'Parents',
+      desc: 'Visibility into what your child is learning, how they are progressing, and what comes next in their academic journey.',
+      points: ['Progress and assessment visibility', 'Grade-to-grade continuity', 'Clear learning journey', 'Connection to future pathways'],
+    },
+    {
+      title: 'Institutions',
+      desc: 'Schools, colleges, universities, and coaching institutes — one platform for academic delivery, assessment, and learner management.',
+      points: ['Schooling workflow', 'Degree-aligned programs', 'Exam prep infrastructure', 'Institution dashboards'],
+    },
+  ]
+
+  return (
+    <Section tone="canvas" divider>
+      <FadeIn>
+        <SectionHeader
+          tone="dark"
+          eyebrow="Built for every stakeholder"
+          title="Learners, parents, and institutions."
+          lead="Education on Skylent serves the full academic ecosystem — not just individual students in isolation."
+        />
+      </FadeIn>
+
+      <div style={{ marginTop: 48, display: 'flex', flexDirection: 'column', gap: 0 }}>
+        {audiences.map(({ title, desc, points }, i) => (
+          <FadeIn key={title} delay={i * 60}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '220px 1fr',
+                gap: 'clamp(24px,4vw,48px)',
+                padding: '32px 0',
+                borderBottom: i < audiences.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                alignItems: 'start',
+              }}
+              className="education-value-row"
+            >
+              <div>
+                <h3 className="skylent-display-sm" style={{ color: C.white, margin: 0, fontSize: 'clamp(22px, 2.5vw, 28px)' }}>{title}</h3>
+              </div>
+              <div>
+                <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 16px', maxWidth: 560 }}>{desc}</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 20px' }}>
+                  {points.map(p => (
+                    <span key={p} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, flexShrink: 0 }} />
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+        ))}
+      </div>
+
+      <FadeIn delay={120}>
+        <div style={{ marginTop: 48, paddingTop: 40, borderTop: `1px solid ${T.lineDark}` }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }} className="two-col">
+            <div>
+              <Eyebrow tone="dark">One journey</Eyebrow>
+              <Heading tone="dark" size="sm" style={{ margin: '18px 0 14px' }}>
+                Education is only the beginning.
+              </Heading>
+              <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 15, lineHeight: 1.75, margin: '0 0 24px', maxWidth: 440 }}>
+                Every Education pathway connects into Skills and Career OS — one continuous ecosystem with no gap between learning and employment.
+              </p>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <Button variant="primary" onClick={() => navigate('/skills')}>Explore Skills →</Button>
+                <Button variant="secondary" onClick={() => navigate('/career-os')}>Explore Career OS</Button>
+              </div>
+            </div>
+            <div>
+              {[
+                { name: 'Education', desc: 'Academic foundations across all levels', to: '/education', current: true },
+                { name: 'Skills', desc: 'Practical, credentialed upskilling', to: '/skills' },
+                { name: 'Career OS', desc: 'Interview prep, jobs, placement support', to: '/career-os' },
+              ].map(({ name, desc, to, current }, i) => (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => !current && navigate(to)}
+                  style={{
+                    display: 'flex',
+                    gap: 16,
+                    padding: '16px 0',
+                    background: 'none',
+                    border: 'none',
+                    borderBottom: `1px solid ${T.lineDark}`,
+                    cursor: current ? 'default' : 'pointer',
+                    width: '100%',
+                    textAlign: 'left',
+                    alignItems: 'center',
+                  }}
+                >
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: current ? accent.primary : 'rgba(255,255,255,0.25)', flexShrink: 0 }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: current ? accent.text : C.white }}>{name}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginTop: 2 }}>{desc}</div>
+                  </div>
+                  {!current && <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 16 }}>→</span>}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </FadeIn>
     </Section>
@@ -471,72 +937,47 @@ export default function EducationPage() {
   const navigate = useNavigate()
 
   return (
-    <PageShell>
-      <PageHero
-        eyebrow="Education"
-        photo={PHOTOS.schooling}
-        photoAlt="Students in a classroom"
-        title={<>Four products.<br /><span style={{ color: C.orange }}>Not one card.</span></>}
-        lead="Schooling, undergraduate, postgraduate, and competitive exams are different audiences and different curriculum models. Explore each on its own terms."
-        actions={<>
-          <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Programs</Button>
-          <Button variant="secondary" size="lg" onClick={() => navigate('/institutions')}>For Institutions</Button>
-        </>}
-      />
+    <PageShell auroraTheme="schooling">
+      {/* ── HERO ──────────────────────────────────────────────────────────── */}
+      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
+        <Aurora themeId="schooling" variant="hero" />
+        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'center' }} className="two-col skylent-page-hero">
+            <FadeIn>
+              <Eyebrow tone="dark" accent>Education</Eyebrow>
+              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
+                The academic side<br />of the ecosystem.
+              </h1>
+              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
+                Schooling, undergraduate, postgraduate, and competitive exams are different audiences and different curriculum models. Explore each on its own terms.
+              </p>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Programs</Button>
+                <Button variant="secondary" size="lg" onClick={() => navigate('/institutions')}>For Institutions</Button>
+              </div>
+            </FadeIn>
+            <FadeIn delay={80}>
+              <HeroProgressionVisual />
+            </FadeIn>
+          </div>
+        </div>
+      </section>
 
+      <EducationJourneySection />
       <SchoolingSection />
       <UndergraduateSection />
       <PostgraduateSection />
+      <HowLearningWorksSection />
+      <ProgramDiscoverySection />
       <CompetitiveExamsSection />
-
-      {/* Journey connection */}
-      <Section bg={C.warmWhite}>
-        <FadeIn>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }} className="two-col">
-            <div>
-              <Eyebrow>One journey</Eyebrow>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 'clamp(26px,3.2vw,40px)', letterSpacing: '-0.025em', color: C.ink, margin: '20px 0 16px', lineHeight: 1.1 }}>
-                Education is only the beginning.
-              </h2>
-              <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.78, margin: '0 0 28px', maxWidth: 440 }}>
-                Every Education pathway connects into Skills and Career OS — one continuous ecosystem with no gap between learning and employment.
-              </p>
-              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                <Button variant="dark" size="lg" onClick={() => navigate('/skills')}>Explore Skills →</Button>
-                <Button variant="ghost" size="lg" onClick={() => navigate('/career-os')}>Explore Career OS</Button>
-              </div>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-              {[
-                { name: 'Education', desc: 'Academic foundations across all levels', to: '/education' },
-                { name: 'Skills', desc: 'Practical, credentialed upskilling', to: '/skills', accent: true },
-                { name: 'Career OS', desc: 'Interview prep, jobs, placement support', to: '/career-os' },
-              ].map(({ name, desc, to, accent }, i) => (
-                <div
-                  key={name}
-                  onClick={() => navigate(to)}
-                  style={{ display: 'flex', gap: 16, padding: '18px 0', borderBottom: `1px solid ${T.lineLight}`, cursor: 'pointer', transition: 'opacity 0.15s', alignItems: 'center' }}
-                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.72')}
-                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                >
-                  <div style={{ width: 7, height: 7, borderRadius: '50%', background: accent ? C.orange : C.ink, opacity: accent ? 1 : 0.3, flexShrink: 0 }} />
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink }}>{name}</div>
-                    <div style={{ color: C.slate, fontSize: 13, marginTop: 2 }}>{desc}</div>
-                  </div>
-                  <span style={{ color: C.slate, fontSize: 16, opacity: 0.4 }}>→</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </FadeIn>
-      </Section>
+      <ValueSection />
 
       <CTABand
         eyebrow="Get started"
         title={<>From foundation<br />to employability.</>}
         primary={{ label: 'Explore Programs', to: '/programs' }}
         secondary={{ label: 'Partner With Us', to: '/institutions' }}
+        auroraTheme="schooling"
       />
     </PageShell>
   )
