@@ -202,9 +202,9 @@ export default function LoginPage() {
 
   const submitStyle: CSSProperties = {
     width: '100%',
-    background: submitting ? 'rgba(243,107,33,0.55)' : C.orange,
+    background: submitting ? `${accent.primary}99` : accent.primary,
     border: 'none',
-    color: C.white,
+    color: C.black,
     borderRadius: T.rControl,
     padding: '13px',
     fontSize: 14,
@@ -260,11 +260,11 @@ export default function LoginPage() {
         <div className="login-page-editorial">
           <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 28 }}>
             <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.white, letterSpacing: '-0.02em' }}>
-              Skylent<span style={{ color: C.orange }}>.</span>
+              Skylent<span style={{ color: accent.primary }}>.</span>
             </span>
           </Link>
 
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: C.orange, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 20 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
             <span style={{ width: 20, height: 1, background: 'currentColor', opacity: 0.5 }} />
             Sign in
           </div>
@@ -405,7 +405,7 @@ export default function LoginPage() {
 
                 <p style={{ textAlign: 'center', marginTop: 20, color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>
                   New to Skylent?{' '}
-                  <button type="button" onClick={() => { setTab('signup'); setError(null) }} style={{ background: 'none', border: 'none', color: C.orange, cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)', padding: 0 }}>
+                  <button type="button" onClick={() => { setTab('signup'); setError(null) }} style={{ background: 'none', border: 'none', color: accent.text, cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)', padding: 0 }}>
                     Create account →
                   </button>
                 </p>
@@ -472,7 +472,7 @@ export default function LoginPage() {
 
                 <p style={{ textAlign: 'center', marginTop: 20, color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>
                   Already have an account?{' '}
-                  <button type="button" onClick={() => { setTab('signin'); setError(null) }} style={{ background: 'none', border: 'none', color: C.orange, cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)', padding: 0 }}>
+                  <button type="button" onClick={() => { setTab('signin'); setError(null) }} style={{ background: 'none', border: 'none', color: accent.text, cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)', padding: 0 }}>
                     Sign in →
                   </button>
                 </p>
@@ -505,7 +505,7 @@ export default function LoginPage() {
                       textAlign: 'center',
                     }}
                   >
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? C.orange : 'rgba(255,255,255,0.08)', color: isActive ? C.white : 'rgba(255,255,255,0.5)', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px', fontFamily: 'var(--font-mono)' }}>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? accent.primary : 'rgba(255,255,255,0.08)', color: isActive ? C.black : 'rgba(255,255,255,0.5)', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px', fontFamily: 'var(--font-mono)' }}>
                       {demo.avatar}
                     </div>
                     <div style={{ color: isActive ? C.white : 'rgba(255,255,255,0.55)', fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{ROLE_LABELS[demo.role]}</div>

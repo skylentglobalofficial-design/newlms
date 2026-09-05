@@ -23,7 +23,7 @@ export function AuroraBand({ themeId = 'general' }: { themeId?: AuroraThemeId })
           left: '-8%',
           width: 'min(92%, 720px)',
           height: 'min(140%, 420px)',
-          background: `radial-gradient(ellipse 75% 55% at 28% 35%, ${theme.primary}42 0%, transparent 72%)`,
+          background: `radial-gradient(ellipse 75% 55% at 28% 35%, ${theme.primary}48 0%, transparent 72%)`,
         }}
       />
       <div
@@ -33,7 +33,7 @@ export function AuroraBand({ themeId = 'general' }: { themeId?: AuroraThemeId })
           right: '-12%',
           width: 'min(58%, 520px)',
           height: 'min(120%, 360px)',
-          background: `radial-gradient(ellipse at center, ${theme.secondary}30 0%, transparent 68%)`,
+          background: `radial-gradient(ellipse at center, ${theme.secondary}38 0%, transparent 68%)`,
         }}
       />
     </div>

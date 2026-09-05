@@ -45,10 +45,10 @@
   --glass-01-blur: blur(20px);
   --glass-01-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
 
-  --glass-02-bg: rgba(255, 255, 255, 0.055);
-  --glass-02-border: rgba(255, 255, 255, 0.10);
-  --glass-02-blur: blur(14px);
-  --glass-02-shadow: 0 8px 40px rgba(0, 0, 0, 0.22);
+  --glass-02-bg: rgba(255, 255, 255, 0.068);
+  --glass-02-border: rgba(255, 255, 255, 0.12);
+  --glass-02-blur: blur(16px);
+  --glass-02-shadow: 0 8px 48px rgba(0, 0, 0, 0.28);
 
   --glass-03-bg: rgba(255, 255, 255, 0.04);
   --glass-03-border: rgba(255, 255, 255, 0.08);
@@ -138,10 +138,18 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Login page — auth first on mobile */
+@media (max-width: 1100px) {
+  .home-hero-visual {
+    min-height: 0 !important;
+  }
+}
+
 @media (max-width: 900px) {
   .login-page-editorial {
     display: none;
+  }
+  .login-page-grid {
+    padding-top: clamp(72px, 10vh, 96px) !important;
   }
 }
 

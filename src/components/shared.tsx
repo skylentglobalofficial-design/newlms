@@ -5,7 +5,9 @@ import { useAuth } from '../context/AuthContext'
 import type { UserRole } from '../context/AuthContext'
 import { C, T } from '../tokens'
 import { PublicCanvas, useAuroraTheme } from './foundation'
-import type { AuroraThemeId } from '../aurora-themes'
+import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
+
+const navAccent = getDomainAccent('general')
 
 // Re-export color tokens for backward compatibility
 export { C } from '../tokens'
@@ -453,7 +455,7 @@ export function Nav() {
                       <div style={{ color: C.white, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
                       <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{group.tagline}</div>
                     </div>
-                    <span style={{ color: C.orange, fontSize: 15 }}>→</span>
+                    <span style={{ color: navAccent.text, fontSize: 15 }}>→</span>
                   </Link>
                   {group.items.map(item => (
                     <Link key={item.to + item.label} to={item.to} style={{ display: 'block', padding: '9px 14px', borderRadius: 9, textDecoration: 'none', transition: 'background 0.15s' }}
@@ -488,7 +490,7 @@ export function Nav() {
                 onKeyDown={e => e.key === 'Escape' && setSearchOpen(false)}
                 style={{ background: 'transparent', border: 'none', outline: 'none', color: C.white, fontSize: 13, padding: '7px 12px', width: 220, fontFamily: 'var(--font-body)' }}
               />
-              <button type="submit" style={{ background: 'none', border: 'none', color: C.orange, padding: '7px 10px', cursor: 'pointer' }}>
+              <button type="submit" style={{ background: 'none', border: 'none', color: navAccent.text, padding: '7px 10px', cursor: 'pointer' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
               <button type="button" onClick={() => setSearchOpen(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', padding: '7px 10px', cursor: 'pointer', fontSize: 13 }}>✕</button>
@@ -510,9 +512,9 @@ export function Nav() {
             <>
               {/* Avatar chip */}
               <div className="nav-links" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, padding: '5px 10px' }}>
-                <div style={{ width: 26, height: 26, borderRadius: '50%', background: C.orange, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: C.white, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>{user.avatar}</div>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: navAccent.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: C.white, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>{user.avatar}</div>
                 <span style={{ color: C.white, fontSize: 12, fontWeight: 500, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name.length > 14 ? user.name.slice(0, 14) + '...' : user.name}</span>
-                <span style={{ background: 'rgba(243,107,33,0.18)', border: '1px solid rgba(243,107,33,0.35)', borderRadius: 4, padding: '1px 6px', fontSize: 9, color: C.orange, fontFamily: 'var(--font-mono)', letterSpacing: '0.05em', flexShrink: 0 }}>{user.role}</span>
+                <span style={{ background: navAccent.subtle, border: `1px solid ${navAccent.border}`, borderRadius: 4, padding: '1px 6px', fontSize: 9, color: navAccent.text, fontFamily: 'var(--font-mono)', letterSpacing: '0.05em', flexShrink: 0 }}>{user.role}</span>
               </div>
               <Link to={dashRoute(user.role)} className="nav-links" style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: C.white, borderRadius: 7, padding: '7px 14px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'border-color 0.2s', whiteSpace: 'nowrap' }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)')}
@@ -529,9 +531,9 @@ export function Nav() {
                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)')}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
               >Sign In</Link>
-              <Link to="/programs" style={{ background: C.orange, border: 'none', color: C.white, borderRadius: 7, padding: '8px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#ff7d33' }}
-                onMouseLeave={e => { e.currentTarget.style.background = C.orange }}
+              <Link to="/programs" style={{ background: navAccent.primary, border: 'none', color: C.white, borderRadius: 7, padding: '8px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+                onMouseEnter={e => { e.currentTarget.style.background = navAccent.secondary }}
+                onMouseLeave={e => { e.currentTarget.style.background = navAccent.primary }}
               >Explore Programs</Link>
             </>
           )}
@@ -548,7 +550,7 @@ export function Nav() {
         <div style={{ background: C.ink, borderTop: '1px solid rgba(255,255,255,0.07)', padding: '12px 24px 20px', maxHeight: '80vh', overflowY: 'auto' }}>
           {megaMenu.map(group => (
             <div key={group.label} style={{ marginBottom: 8 }}>
-              <Link to={group.to} onClick={() => setMenuOpen(false)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', padding: '12px 0 6px', textDecoration: 'none' }}>{group.label.toUpperCase()}<span style={{ opacity: 0.7 }}>→</span></Link>
+              <Link to={group.to} onClick={() => setMenuOpen(false)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: navAccent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', padding: '12px 0 6px', textDecoration: 'none' }}>{group.label.toUpperCase()}<span style={{ opacity: 0.7 }}>→</span></Link>
               {group.items.map(item => (
                 <Link key={item.label} to={item.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '9px 0', color: 'rgba(255,255,255,0.7)', fontSize: 14, textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{item.label}</Link>
               ))}
@@ -563,7 +565,7 @@ export function Nav() {
             ) : (
               <Link to="/login" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13 }}>Sign In</Link>
             )}
-            <Link to="/programs" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', background: C.orange, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>Explore Programs</Link>
+            <Link to="/programs" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', background: navAccent.primary, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>Explore Programs</Link>
           </div>
         </div>
       )}

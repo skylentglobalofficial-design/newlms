@@ -75,7 +75,7 @@ function CareerHeroVisual() {
                 <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{sampleJob.role}</div>
                 <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>{sampleJob.company} · {sampleJob.mode}</div>
               </div>
-              <div style={{ background: C.orange, color: C.white, borderRadius: 6, padding: '8px 14px', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-body)' }}>
+              <div style={{ background: accent.primary, color: C.white, borderRadius: 6, padding: '8px 14px', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-body)' }}>
                 Apply
               </div>
             </div>
@@ -471,7 +471,7 @@ function JobBoardSection({
                 onClick={e => { e.stopPropagation(); onApply(job) }}
                 style={{
                   flexShrink: 0,
-                  background: C.orange,
+                  background: accent.primary,
                   border: 'none',
                   color: C.white,
                   borderRadius: T.rControl,
