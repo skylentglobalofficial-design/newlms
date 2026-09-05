@@ -346,7 +346,7 @@ const megaMenu = [
   {
     label: 'Career OS',
     to: '/career-os',
-    tagline: 'Your career, as an operating system',
+    tagline: 'Profile, jobs, and applications',
     items: [
       { label: 'Interview Preparation', sub: 'Mock interviews & practice', to: '/career-os' },
       { label: 'Job Board', sub: 'Curated opportunities', to: '/career-os' },
@@ -355,7 +355,7 @@ const megaMenu = [
   {
     label: 'For Institutions',
     to: '/institutions',
-    tagline: 'Education + career infrastructure',
+    tagline: 'Dashboards for schools and colleges',
     items: [
       { label: 'Schools', sub: 'Student learning & teacher tools', to: '/institutions' },
       { label: 'Colleges', sub: 'Academic programs & career readiness', to: '/institutions' },
@@ -757,6 +757,7 @@ export const globalCSS = `
   @media (max-width: 900px) {
     .career-journey > div { grid-template-columns: repeat(3, 1fr) !important; gap: 24px !important; }
     .career-journey-line { display: none !important; }
+    .career-ecosystem > div { grid-template-columns: repeat(3, 1fr) !important; gap: 24px !important; }
   }
   @media (max-width: 375px) {
     .program-tools-strip > div { padding: 12px 16px !important; font-size: 13px !important; }

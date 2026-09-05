@@ -10,7 +10,7 @@ const accent = getDomainAccent('institution')
 
 const INSTITUTION_NAV_ITEMS: ContextualNavItem[] = [
   { id: 'institution-types', label: 'Institution Types', sub: 'Six partnership models' },
-  { id: 'ecosystem', label: 'Ecosystem', sub: 'Education → Skills → Career' },
+  { id: 'ecosystem', label: 'Product coverage', sub: 'Education → Skills → Career' },
   { id: 'partnership', label: 'Partnership', sub: 'How it works' },
   { id: 'enquiries', label: 'Enquiries', sub: 'Get in touch' },
 ]
@@ -246,9 +246,9 @@ function EcosystemSection() {
       <FadeIn>
         <SectionHeader
           tone="dark"
-          eyebrow="The ecosystem"
-          title="Education → Skills → Career OS, delivered."
-          lead="Regardless of institution type, Skylent delivers the full connected ecosystem — with the depth and scope appropriate to each partnership."
+          eyebrow="Product coverage"
+          title="Education, Skills, and Career OS for partners."
+          lead="Schools, colleges, and training partners choose which products to run. Each ships with the workflows that match their learners."
         />
       </FadeIn>
 
@@ -413,7 +413,7 @@ export default function InstitutionsPage() {
         title={<>Bring Skylent OS<br />to your institution.</>}
         lead="Let's map your needs and co-design a program that moves your learners from education to employability."
         primary={{ label: 'Partner With Skylent', to: '/contact' }}
-        secondary={{ label: 'Explore the ecosystem', to: '/os' }}
+        secondary={{ label: 'View Skylent OS', to: '/os' }}
         auroraTheme="institution"
       />
     </PageShell>

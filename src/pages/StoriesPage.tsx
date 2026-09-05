@@ -130,7 +130,7 @@ function PublishingSection() {
     { label: 'Program experiences', desc: 'What a Professional Program or exam prep track actually involved — curriculum, projects, cohort.', accent: skillsAccent },
     { label: 'Learning & projects', desc: 'Work produced during programs — artifacts, not invented before/after claims.', accent: getDomainAccent('schooling') },
     { label: 'Career preparation', desc: 'How Career OS was used — only when the learner agrees to share.', accent: careerAccent },
-    { label: 'Institution stories', desc: 'How a partner institution delivers the ecosystem — verified, not promotional.', accent: instAccent },
+    { label: 'Institution stories', desc: 'How a partner institution runs programs on Skylent — verified, not promotional.', accent: instAccent },
   ]
 
   return (

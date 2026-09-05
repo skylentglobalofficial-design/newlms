@@ -27,7 +27,7 @@ export default function WorkshopsPage() {
           <FadeIn>
             <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 20 }}>SKYLENT WORKSHOPS</div>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(38px, 5vw, 68px)', fontWeight: 700, color: C.white, letterSpacing: '-0.03em', lineHeight: 1.02, margin: '0 0 20px' }}>
-              Intensive. Practical.<br /><span style={{ color: C.orange }}>Transformative.</span>
+              Intensive. Practical.<br /><span style={{ color: C.orange }}>Hands-on.</span>
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 17, lineHeight: 1.75, maxWidth: 480, margin: 0 }}>Short-form, high-impact sessions led by industry practitioners. Learn a focused skill in hours, not months.</p>
           </FadeIn>

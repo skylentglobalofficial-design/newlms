@@ -169,9 +169,9 @@ function EducationJourneySection() {
       <FadeIn>
         <SectionHeader
           tone="dark"
-          eyebrow="Education journey"
-          title="One path. Three distinct stages."
-          lead="Schooling, undergraduate, and postgraduate are different audiences and different curriculum models — connected as one academic progression."
+          eyebrow="Academic stages"
+          title="Schooling, undergraduate, postgraduate."
+          lead="Three audiences, three curriculum models. Each section below covers format, subjects, and how progress is tracked."
         />
       </FadeIn>
 
@@ -222,7 +222,7 @@ function EducationJourneySection() {
                   {stage.num}
                 </div>
                 {i < stages.length - 1 && (
-                  <span className="education-journey-arrow" style={{ color: accent.textMuted, fontSize: 18, opacity: 0.6 }}>→</span>
+                  <span className="education-journey-arrow" style={{ color: accent.textMuted, fontSize: 14, opacity: 0.35, display: 'none' }} aria-hidden>·</span>
                 )}
               </div>
               <div style={{ borderRadius: T.rCard, overflow: 'hidden', marginBottom: 18, aspectRatio: '16/10' }}>
@@ -560,7 +560,7 @@ function HowLearningWorksSection() {
         <SectionHeader
           tone="dark"
           eyebrow="How learning works"
-          title="From discovery to measurable progress."
+          title="From browsing to assessed progress."
           lead="Every education pathway on Skylent follows the same academic rhythm — structured content, deliberate practice, and visible progress."
         />
         <div style={{ marginTop: 40 }}>
@@ -859,7 +859,7 @@ function ValueSection() {
           tone="dark"
           eyebrow="Built for every stakeholder"
           title="Learners, parents, and institutions."
-          lead="Education on Skylent serves the full academic ecosystem — not just individual students in isolation."
+          lead="Schools, parents, and institutions each need different views of the same programs — progress, assessments, and next steps."
         />
       </FadeIn>
 
@@ -900,15 +900,15 @@ function ValueSection() {
         <div style={{ marginTop: 48, paddingTop: 40, borderTop: `1px solid ${T.lineDark}` }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }} className="two-col">
             <div>
-              <Eyebrow tone="dark">One journey</Eyebrow>
+              <Eyebrow tone="dark">After education</Eyebrow>
               <Heading tone="dark" size="sm" style={{ margin: '18px 0 14px' }}>
-                Education is only the beginning.
+                Skills and Career OS come next.
               </Heading>
               <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 15, lineHeight: 1.75, margin: '0 0 24px', maxWidth: 440 }}>
-                Every Education pathway connects into Skills and Career OS — one continuous ecosystem with no gap between learning and employment.
+                When academic work is done, learners move into credentialed skills programs. Professional Programs open Career OS — profile, jobs, and applications.
               </p>
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                <Button variant="primary" onClick={() => navigate('/skills')}>Explore Skills →</Button>
+                <Button variant="primary" onClick={() => navigate('/skills')}>Explore Skills</Button>
                 <Button variant="secondary" onClick={() => navigate('/career-os')}>Explore Career OS</Button>
               </div>
             </div>
@@ -967,7 +967,7 @@ export default function EducationPage() {
             <FadeIn>
               <Eyebrow tone="dark" accent>Education</Eyebrow>
               <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
-                The academic side<br />of the ecosystem.
+                The academic products<br />on Skylent.
               </h1>
               <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
                 Schooling, undergraduate, postgraduate, and competitive exams are different audiences and different curriculum models. Explore each on its own terms.

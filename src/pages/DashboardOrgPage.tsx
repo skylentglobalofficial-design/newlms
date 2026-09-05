@@ -138,7 +138,7 @@ function InstitutionWorkspace({
 
         <div className="org-workspace-inner" style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 4vw, 36px)' }}>
           <div className="skylent-label" style={{ color: accent.text, marginBottom: 12, fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-            Academic operations
+            Institution workspace
           </div>
           <h1 className="skylent-display-md" style={{ color: C.white, margin: '0 0 12px', maxWidth: 680, lineHeight: 1.08 }}>
             {institutionName}
