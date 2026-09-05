@@ -692,6 +692,16 @@ export const globalCSS = `
   @media (max-width: 768px) {
     .skylent-page-hero { gap: 28px !important; }
     .skylent-display-lg { font-size: clamp(30px, 8vw, 44px) !important; }
+    .program-overview-split { grid-template-columns: 1fr !important; }
+    .program-who-split { grid-template-columns: 1fr !important; }
+    .program-project-featured { grid-template-columns: 1fr !important; }
+    .program-reviews-grid { grid-template-columns: 1fr !important; }
+    .program-workflow-panels { grid-template-columns: 1fr !important; }
+    .program-sticky-nav-scroll { -webkit-overflow-scrolling: touch; }
+  }
+  @media (max-width: 375px) {
+    .program-tools-strip > div { padding: 12px 16px !important; font-size: 13px !important; }
+    .program-pricing-wrap { margin-left: -4px; margin-right: -4px; }
   }
   @media (max-width: 640px) {
     .three-col { grid-template-columns: 1fr !important; }
