@@ -3,7 +3,7 @@ import { C, FadeIn, PageShell } from '../components/shared'
 import {
   Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader, FlowStrip,
 } from '../components/ui'
-import { Aurora, MediaImage } from '../components/foundation'
+import { Aurora, MediaImage, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { programs } from '../data'
 import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
@@ -54,6 +54,13 @@ const FEATURED_PROGRAM = EXAM_PROGRAMS.find(p => p.slug === 'jee-advanced-prep')
 const SUPPORTING_PROGRAMS = EXAM_PROGRAMS.filter(p => p.slug !== FEATURED_PROGRAM?.slug)
 
 const accent = getDomainAccent('schooling')
+
+const EDUCATION_NAV_ITEMS: ContextualNavItem[] = [
+  { id: 'schooling', label: 'Schooling', sub: 'Grades 1–12' },
+  { id: 'undergraduate', label: 'Undergraduate', sub: 'Degree-aligned' },
+  { id: 'postgraduate', label: 'Postgraduate', sub: 'Specialisation' },
+  { id: 'competitive-exams', label: 'Competitive Exams', sub: 'JEE · NEET · CAT' },
+]
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -935,6 +942,7 @@ function ValueSection() {
 
 export default function EducationPage() {
   const navigate = useNavigate()
+  const activeSection = useSectionSpy(EDUCATION_NAV_ITEMS.map(i => i.id))
 
   return (
     <PageShell auroraTheme="schooling">
@@ -942,7 +950,7 @@ export default function EducationPage() {
       <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
         <Aurora themeId="schooling" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'center' }} className="two-col skylent-page-hero">
+          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero">
             <FadeIn>
               <Eyebrow tone="dark" accent>Education</Eyebrow>
               <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
@@ -957,11 +965,21 @@ export default function EducationPage() {
               </div>
             </FadeIn>
             <FadeIn delay={80}>
-              <HeroProgressionVisual />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <ContextualNavPanel
+                  items={EDUCATION_NAV_ITEMS}
+                  themeId="schooling"
+                  title="Education"
+                  activeId={activeSection}
+                />
+                <HeroProgressionVisual />
+              </div>
             </FadeIn>
           </div>
         </div>
       </section>
+
+      <ContextualNavBar items={EDUCATION_NAV_ITEMS} themeId="schooling" activeId={activeSection} />
 
       <EducationJourneySection />
       <SchoolingSection />

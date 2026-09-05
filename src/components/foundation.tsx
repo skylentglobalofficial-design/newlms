@@ -1,6 +1,7 @@
+import { useState, useEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { programs } from '../data'
-import { getAuroraTheme, resolveAuroraTheme, type AuroraThemeId } from '../aurora-themes'
+import { getAuroraTheme, getDomainAccent, resolveAuroraTheme, type AuroraThemeId } from '../aurora-themes'
 import { C, T, glass, type GlassLevel } from '../tokens'
 
 // ─── Aurora ───────────────────────────────────────────────────────────────────
@@ -251,5 +252,205 @@ export function GridField({ opacity = 0.025, size = 64 }: { opacity?: number; si
         pointerEvents: 'none',
       }}
     />
+  )
+}
+
+// ─── Contextual navigation ─────────────────────────────────────────────────────
+// Reusable secondary nav for long-form product/landing pages.
+
+export type ContextualNavItem = {
+  id: string
+  label: string
+  sub?: string
+}
+
+export function scrollToSection(id: string, offset = T.navH + 16) {
+  const el = document.getElementById(id)
+  if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - offset, behavior: 'smooth' })
+}
+
+export function useSectionSpy(sectionIds: string[]) {
+  const [activeId, setActiveId] = useState(sectionIds[0] ?? '')
+
+  useEffect(() => {
+    const observers: IntersectionObserver[] = []
+    sectionIds.forEach(id => {
+      const el = document.getElementById(id)
+      if (!el) return
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActiveId(id) },
+        { rootMargin: '-18% 0px -65% 0px', threshold: 0 },
+      )
+      obs.observe(el)
+      observers.push(obs)
+    })
+    return () => observers.forEach(o => o.disconnect())
+  }, [sectionIds.join('|')])
+
+  return activeId
+}
+
+function NavButton({
+  item,
+  active,
+  accent,
+  compact,
+  onClick,
+}: {
+  item: ContextualNavItem
+  active: boolean
+  accent: ReturnType<typeof getDomainAccent>
+  compact?: boolean
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        display: 'block',
+        width: '100%',
+        textAlign: 'left',
+        background: active ? accent.subtle : 'transparent',
+        border: 'none',
+        borderLeft: `2px solid ${active ? accent.primary : 'transparent'}`,
+        padding: compact ? '10px 14px' : '11px 16px',
+        cursor: 'pointer',
+        fontFamily: 'var(--font-body)',
+        transition: 'background 0.15s, border-color 0.15s',
+        flexShrink: 0,
+      }}
+    >
+      <div style={{ fontSize: compact ? 12.5 : 13.5, fontWeight: active ? 600 : 400, color: active ? C.white : 'rgba(255,255,255,0.55)', lineHeight: 1.35 }}>
+        {item.label}
+      </div>
+      {item.sub && !compact && (
+        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3, lineHeight: 1.4 }}>{item.sub}</div>
+      )}
+    </button>
+  )
+}
+
+/** Vertical glass panel — desktop / hero right column */
+export function ContextualNavPanel({
+  items,
+  themeId,
+  title = 'In this workspace',
+  activeId,
+}: {
+  items: ContextualNavItem[]
+  themeId: AuroraThemeId
+  title?: string
+  activeId: string
+}) {
+  const accent = getDomainAccent(themeId)
+  if (!items.length) return null
+
+  return (
+    <GlassSurface level={2} padding="0" className="contextual-nav-panel" style={{ overflow: 'hidden' }}>
+      <div style={{ padding: '16px 18px 12px', borderBottom: `1px solid ${T.lineDark}` }}>
+        <div className="skylent-label" style={{ color: accent.text }}>{title}</div>
+      </div>
+      <nav aria-label={title} style={{ display: 'flex', flexDirection: 'column', padding: '6px 0' }}>
+        {items.map(item => (
+          <NavButton
+            key={item.id}
+            item={item}
+            active={activeId === item.id}
+            accent={accent}
+            onClick={() => scrollToSection(item.id)}
+          />
+        ))}
+      </nav>
+    </GlassSurface>
+  )
+}
+
+/** Horizontal scroll bar — tablet / mobile */
+export function ContextualNavBar({
+  items,
+  themeId,
+  activeId,
+}: {
+  items: ContextualNavItem[]
+  themeId: AuroraThemeId
+  activeId: string
+}) {
+  const accent = getDomainAccent(themeId)
+  if (!items.length) return null
+
+  return (
+    <div
+      className="contextual-nav-bar"
+      style={{
+        position: 'sticky',
+        top: T.navH,
+        zIndex: 70,
+        background: 'var(--glass-01-bg)',
+        backdropFilter: 'var(--glass-01-blur)',
+        WebkitBackdropFilter: 'var(--glass-01-blur)',
+        borderBottom: `1px solid ${T.lineDark}`,
+      }}
+    >
+      <div
+        className="contextual-nav-bar-scroll"
+        style={{
+          maxWidth: T.maxW,
+          margin: '0 auto',
+          padding: `0 ${T.gutter}`,
+          display: 'flex',
+          gap: 0,
+          overflowX: 'auto',
+          scrollbarWidth: 'none',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
+        {items.map(item => {
+          const active = activeId === item.id
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => scrollToSection(item.id)}
+              style={{
+                flexShrink: 0,
+                background: 'none',
+                border: 'none',
+                borderBottom: `2px solid ${active ? accent.primary : 'transparent'}`,
+                padding: '12px 14px',
+                color: active ? accent.text : 'rgba(255,255,255,0.42)',
+                fontSize: 12.5,
+                fontWeight: active ? 600 : 400,
+                cursor: 'pointer',
+                fontFamily: 'var(--font-body)',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {item.label}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+/** Renders panel (desktop) + sticky bar (mobile) */
+export function PageContextualNav({
+  items,
+  themeId,
+  title,
+  activeId,
+}: {
+  items: ContextualNavItem[]
+  themeId: AuroraThemeId
+  title?: string
+  activeId: string
+}) {
+  return (
+    <>
+      <ContextualNavPanel items={items} themeId={themeId} title={title} activeId={activeId} />
+      <ContextualNavBar items={items} themeId={themeId} activeId={activeId} />
+    </>
   )
 }
