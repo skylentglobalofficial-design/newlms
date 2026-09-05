@@ -646,7 +646,7 @@ function EcosystemSection() {
           tone="dark"
           eyebrow="How the system connects"
           title="What happens after learning."
-          lead="Career OS exists because employability is not a separate product — it is the continuation of the learning journey."
+          lead="Program work becomes proof. Career OS picks up at profile, applications, interviews, and outcomes."
         />
       </FadeIn>
 

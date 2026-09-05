@@ -138,7 +138,7 @@ function SkillsPathSection() {
           tone="dark"
           eyebrow="Skills path"
           title="Learning → proof → career."
-          lead="Webinars, certificate programs, professional programs, and job assistance are different products — connected as one skills journey."
+          lead="Webinars, certificates, and professional programs are separate products. Professional Programs include Career OS."
         />
       </FadeIn>
 
@@ -611,7 +611,7 @@ function ProgramDiscoverySection() {
           tone="dark"
           eyebrow="Program discovery"
           title="Find the right depth."
-          lead="From a single webinar to a full professional program with Career OS — each product has a clear place in the skills journey."
+          lead="Each listing shows duration, format, price, and outcome — from a single webinar to a full professional program."
         />
       </FadeIn>
 

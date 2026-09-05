@@ -13,7 +13,7 @@ const accent = getDomainAccent('general')
 const ABOUT_NAV_ITEMS: ContextualNavItem[] = [
   { id: 'story', label: 'Story', sub: 'What Skylent is' },
   { id: 'gap', label: 'The gap', sub: 'What we address' },
-  { id: 'ecosystem', label: 'Ecosystem', sub: 'What connects' },
+  { id: 'ecosystem', label: 'Products', sub: 'What connects' },
   { id: 'journey', label: 'Journey', sub: 'How it works' },
   { id: 'who-we-serve', label: 'Who we serve', sub: 'Learners & partners' },
   { id: 'institutions', label: 'Institutions', sub: 'Beyond individuals' },
@@ -223,8 +223,8 @@ function EcosystemSection() {
         <SectionHeader
           tone="dark"
           eyebrow="What Skylent connects"
-          title="Four products. One operating system."
-          lead="Education builds foundation. Skills turn it into capability. Career OS turns capability into opportunity. Institutions deliver it at scale."
+          title="Four products that connect."
+          lead="Education, Skills, Career OS, and Institutions are separate products with separate pages — designed to work together when a learner is ready to move on."
         />
       </FadeIn>
 
@@ -266,7 +266,7 @@ function EcosystemSection() {
                 </div>
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.white, marginBottom: 10 }}>{item.label}</div>
                 <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14, lineHeight: 1.65, margin: '0 0 14px' }}>{item.body}</p>
-                <span style={{ color: item.accent.text, fontSize: 13, fontWeight: 600 }}>Explore →</span>
+                <span style={{ color: item.accent.text, fontSize: 13, fontWeight: 600 }}>View</span>
               </button>
             </FadeIn>
           ))}
@@ -573,7 +573,7 @@ export default function AboutPage() {
 
       <CTABand
         eyebrow="Get in touch"
-        title={<>Education → Skills → Career.<br />One ecosystem, built to scale.</>}
+        title={<>Education, Skills, Career.<br />Built as connected products.</>}
         lead="Explore programs, partner as an institution, or contact us to learn what Skylent can support today."
         primary={{ label: 'Explore Programs', to: '/programs' }}
         secondary={{ label: 'For Institutions', to: '/institutions' }}

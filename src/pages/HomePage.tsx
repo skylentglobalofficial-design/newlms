@@ -49,7 +49,7 @@ function EcosystemHeroVisual() {
           padding="16px 18px"
           style={{ position: 'absolute', top: 16, left: 16, right: 16, maxWidth: 280 }}
         >
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 12 }}>The journey</div>
+          <div className="skylent-label" style={{ color: accent.text, marginBottom: 12 }}>Product flow</div>
           <FlowStrip
             tone="dark"
             steps={[
@@ -64,6 +64,7 @@ function EcosystemHeroVisual() {
       <GlassSurface
         level={2}
         padding="14px 16px"
+        className="home-hero-proof"
         style={{
           position: 'absolute',
           bottom: 0,
@@ -85,7 +86,7 @@ function EcosystemHeroVisual() {
         {sampleJob && (
           <div style={{ paddingTop: 12, borderTop: `1px solid ${T.lineDark}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
             <div>
-              <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 3 }}>OPPORTUNITY</div>
+              <div style={{ fontSize: 11, color: accent.text, marginBottom: 3 }}>Open role</div>
               <div style={{ color: C.white, fontSize: 12, fontWeight: 600 }}>{sampleJob.role}</div>
             </div>
             <div style={{ background: careerAccent.primary, color: C.white, borderRadius: 5, padding: '6px 10px', fontSize: 10, fontWeight: 600, flexShrink: 0 }}>
@@ -94,18 +95,6 @@ function EcosystemHeroVisual() {
           </div>
         )}
       </GlassSurface>
-
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: '-6% -4%',
-          border: `1px dashed ${accent.border}`,
-          borderRadius: T.rCard,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
     </div>
   )
 }
@@ -185,7 +174,7 @@ function CoverageSection() {
     {
       label: 'Institutions',
       sub: 'Schools · Colleges · Universities · Training',
-      desc: 'Enterprise workflows for partners who deliver the ecosystem.',
+      desc: 'Dashboards for schools, colleges, universities, and training partners.',
       to: '/institutions',
       theme: getDomainAccent('institution'),
     },
@@ -197,8 +186,8 @@ function CoverageSection() {
         <SectionHeader
           tone="dark"
           eyebrow="What Skylent covers"
-          title="Four products. One connected journey."
-          lead="Education builds foundation. Skills turn it into capability. Career OS turns capability into opportunity. Institutions deliver it at scale."
+          title="Education, Skills, Career, Institutions."
+          lead="Each product has its own pages, curriculum, and workflows. They connect when a learner moves from school to hire."
         />
       </FadeIn>
 
@@ -230,7 +219,7 @@ function CoverageSection() {
                 </div>
                 <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 14, lineHeight: 1.45 }}>{pillar.sub}</div>
                 <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13.5, lineHeight: 1.65, margin: '0 0 16px', maxWidth: 240 }}>{pillar.desc}</p>
-                <span style={{ color: pillar.theme.text, fontSize: 13, fontWeight: 600 }}>Explore →</span>
+                <span style={{ color: pillar.theme.text, fontSize: 13, fontWeight: 600 }}>View</span>
               </button>
             </FadeIn>
           ))}
@@ -304,7 +293,7 @@ function EducationSection() {
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 3 }}>{stage.label}</div>
                   <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{stage.sub}</div>
                 </div>
-                <span style={{ color: eduAccent.text, fontSize: 16 }}>→</span>
+                <span style={{ color: eduAccent.text, fontSize: 13, fontWeight: 500 }}>View</span>
               </button>
             ))}
           </div>
@@ -406,10 +395,9 @@ function CareerSection() {
   const journey = [
     { label: 'Profile', sub: 'Identity, skills, resume' },
     { label: 'Proof', sub: 'Projects from programs' },
-    { label: 'Discover', sub: 'Job board roles' },
-    { label: 'Apply', sub: 'Screening workflow' },
-    { label: 'Prepare', sub: 'Interview rounds' },
-    { label: 'Track', sub: 'Application status' },
+    { label: 'Application', sub: 'Submit from job board' },
+    { label: 'Interview', sub: 'Prep and practice' },
+    { label: 'Outcome', sub: 'Offers and status' },
   ]
 
   return (
@@ -420,15 +408,15 @@ function CareerSection() {
             <div className="skylent-label" style={{ color: careerAccent.text, marginBottom: 16 }}>Career OS workspace</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {[
-                { tag: 'PROFILE', title: 'Your professional profile', sub: 'Identity · Skills · Portfolio' },
-                { tag: 'PROOF', title: 'Program projects', sub: 'Portfolio links from coursework' },
+                { label: 'Profile', title: 'Your professional profile', sub: 'Identity · Skills · Portfolio' },
+                { label: 'Proof', title: 'Program projects', sub: 'Portfolio links from coursework' },
               ].map(row => (
-                <div key={row.tag} style={{ display: 'grid', gridTemplateColumns: '56px 1fr', gap: 14, padding: '14px 0', borderBottom: `1px solid ${T.lineDark}`, alignItems: 'center' }}>
-                  <div style={{ width: 44, height: 44, borderRadius: row.tag === 'PROFILE' ? '50%' : 8, background: careerAccent.subtle, border: `1px solid ${careerAccent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontFamily: 'var(--font-mono)', color: careerAccent.text }}>
-                    {row.tag === 'PROFILE' ? '—' : 'PRJ'}
+                <div key={row.label} style={{ display: 'grid', gridTemplateColumns: '56px 1fr', gap: 14, padding: '14px 0', borderBottom: `1px solid ${T.lineDark}`, alignItems: 'center' }}>
+                  <div style={{ width: 44, height: 44, borderRadius: row.label === 'Profile' ? '50%' : 8, background: careerAccent.subtle, border: `1px solid ${careerAccent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontFamily: 'var(--font-mono)', color: careerAccent.text }}>
+                    {row.label === 'Profile' ? '—' : 'PRJ'}
                   </div>
                   <div>
-                    <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)', marginBottom: 3 }}>{row.tag}</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', marginBottom: 3 }}>{row.label}</div>
                     <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{row.title}</div>
                     <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>{row.sub}</div>
                   </div>
@@ -437,7 +425,7 @@ function CareerSection() {
               {sampleJob && (
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, padding: '14px 0', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: careerAccent.text, marginBottom: 3 }}>OPPORTUNITY</div>
+                    <div style={{ fontSize: 11, color: careerAccent.text, marginBottom: 3 }}>Open role</div>
                     <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{sampleJob.role}</div>
                     <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>{sampleJob.company} · {sampleJob.mode}</div>
                   </div>
@@ -455,16 +443,11 @@ function CareerSection() {
           <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 480 }}>
             Interview preparation, a job board, and application tracking in one workspace. Unlocks when you complete a Professional Program.
           </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 0', marginBottom: 28 }}>
-            {journey.map((step, i) => (
-              <div key={step.label} style={{ display: 'flex', alignItems: 'center', flex: '1 1 140px', minWidth: 0 }}>
-                <div style={{ padding: '12px 0', minWidth: 0 }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{step.label}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 3 }}>{step.sub}</div>
-                </div>
-                {i < journey.length - 1 && (
-                  <span style={{ color: 'rgba(255,255,255,0.2)', padding: '0 8px', fontSize: 14, flexShrink: 0 }}>→</span>
-                )}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px 16px', marginBottom: 28 }}>
+            {journey.map((step) => (
+              <div key={step.label} style={{ padding: '12px 0', minWidth: 0 }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{step.label}</div>
+                <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 3 }}>{step.sub}</div>
               </div>
             ))}
           </div>
@@ -572,7 +555,7 @@ function EcosystemConnectionSection() {
           tone="dark"
           eyebrow="How it connects"
           title="From learning<br />to hire."
-          lead="Each stage feeds the next. Institutions run the same connected journey with workflows that match their model."
+          lead="Learners finish coursework, build proof, and move into Career OS. Institutions run the same sequence with their own dashboards."
           align="center"
         />
       </FadeIn>
@@ -587,13 +570,11 @@ function EcosystemConnectionSection() {
                   <div style={{ width: 1, flex: 1, minHeight: 48, background: `linear-gradient(180deg, ${step.accent.border}, transparent)`, marginTop: 8 }} />
                 )}
               </div>
-              <div style={{ paddingBottom: i < steps.length - 1 ? 36 : 0, flex: 1 }}>
-                <GlassSurface level={1} padding="18px 22px" style={{ borderLeft: `2px solid ${step.accent.primary}` }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(18px, 2.2vw, 24px)', fontWeight: 600, color: C.white, marginBottom: 6 }}>
-                    {step.label}
-                  </div>
-                  <div style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14, lineHeight: 1.6 }}>{step.sub}</div>
-                </GlassSurface>
+              <div style={{ paddingBottom: i < steps.length - 1 ? 36 : 0, flex: 1, borderLeft: `2px solid ${step.accent.primary}`, paddingLeft: 22 }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(18px, 2.2vw, 24px)', fontWeight: 600, color: C.white, marginBottom: 6 }}>
+                  {step.label}
+                </div>
+                <div style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14, lineHeight: 1.6 }}>{step.sub}</div>
               </div>
             </div>
           </FadeIn>
