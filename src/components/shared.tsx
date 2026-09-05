@@ -672,9 +672,16 @@ export const globalCSS = `
     margin: 0 auto;
   }
 
+  .contextual-nav-panel { display: block; }
+  .contextual-nav-bar { display: none; }
+  .contextual-nav-bar-scroll::-webkit-scrollbar { display: none; }
+
   @media (max-width: 1100px) {
     .nav-links { display: none !important; }
     .show-mobile { display: flex !important; }
+    .contextual-nav-panel { display: none !important; }
+    .contextual-nav-bar { display: block !important; }
+    .career-hero-visual-wrap { display: block !important; }
     .hero-grid, .two-col, .two-col-sm, .skylent-page-hero { grid-template-columns: 1fr !important; gap: 32px !important; }
     .program-detail-grid { grid-template-columns: 1fr !important; }
     .three-col { grid-template-columns: 1fr 1fr !important; }
@@ -737,6 +744,11 @@ export const globalCSS = `
     .career-job-row { grid-template-columns: 1fr auto !important; gap: 12px !important; }
     .career-support-row { grid-template-columns: 1fr !important; gap: 8px !important; }
     .career-hero-visual { min-height: 340px !important; }
+    .institution-type-grid { grid-template-columns: 1fr !important; }
+    .institution-ecosystem-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+    .institution-ecosystem-grid > div { border-right: none !important; padding: 0 !important; }
+    .institution-partnership-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+    .institution-partnership-line { display: none !important; }
   }
   @media (max-width: 640px) {
     .three-col { grid-template-columns: 1fr !important; }

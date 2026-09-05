@@ -3,7 +3,7 @@ import { C, FadeIn, PageShell } from '../components/shared'
 import {
   Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader,
 } from '../components/ui'
-import { Aurora, MediaImage, GlassSurface } from '../components/foundation'
+import { Aurora, MediaImage, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { programs, workshops } from '../data'
 import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
@@ -18,6 +18,13 @@ const FEATURED_WORKSHOP = workshops[0]
 const OTHER_WORKSHOPS = workshops.slice(1, 4)
 
 const accent = getDomainAccent('professional')
+
+const SKILLS_NAV_ITEMS: ContextualNavItem[] = [
+  { id: 'webinars', label: 'Webinars', sub: 'Live sessions' },
+  { id: 'certificate', label: 'Certificate Programs', sub: 'Credentials' },
+  { id: 'professional', label: 'Professional Programs', sub: 'Career products' },
+  { id: 'job-assistance', label: 'Job Assistance', sub: 'Career support' },
+]
 
 // ─── HERO VISUAL ──────────────────────────────────────────────────────────────
 
@@ -670,13 +677,14 @@ function ProgramDiscoverySection() {
 
 export default function SkillsPage() {
   const navigate = useNavigate()
+  const activeSection = useSectionSpy(SKILLS_NAV_ITEMS.map(i => i.id))
 
   return (
     <PageShell auroraTheme="professional">
       <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
         <Aurora themeId="professional" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'center' }} className="two-col skylent-page-hero">
+          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero">
             <FadeIn>
               <Eyebrow tone="dark" accent>Skills</Eyebrow>
               <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
@@ -691,11 +699,21 @@ export default function SkillsPage() {
               </div>
             </FadeIn>
             <FadeIn delay={80}>
-              <SkillsHeroVisual />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <ContextualNavPanel
+                  items={SKILLS_NAV_ITEMS}
+                  themeId="professional"
+                  title="Skills"
+                  activeId={activeSection}
+                />
+                <SkillsHeroVisual />
+              </div>
             </FadeIn>
           </div>
         </div>
       </section>
+
+      <ContextualNavBar items={SKILLS_NAV_ITEMS} themeId="professional" activeId={activeSection} />
 
       <SkillsPathSection />
       <WebinarsSection />

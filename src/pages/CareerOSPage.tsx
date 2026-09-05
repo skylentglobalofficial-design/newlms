@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell, JobDrawer, ApplyModal } from '../components/shared'
 import { Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader } from '../components/ui'
-import { Aurora, GlassSurface } from '../components/foundation'
+import { Aurora, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { jobs, programs } from '../data'
 import type { Job } from '../data'
@@ -26,6 +26,14 @@ const mockQuestions = [
 
 const accent = getDomainAccent('career')
 const careerPrograms = programs.filter(p => p.careerSupport)
+
+const CAREER_NAV_ITEMS: ContextualNavItem[] = [
+  { id: 'profile', label: 'Profile & Resume', sub: 'Identity, skills, portfolio' },
+  { id: 'interview', label: 'Interview Preparation', sub: 'Practice rounds & mocks' },
+  { id: 'jobs', label: 'Job Board', sub: 'Open roles to apply' },
+  { id: 'tracker', label: 'Applications', sub: 'Track submissions' },
+  { id: 'career-support', label: 'Career Support', sub: 'Workflow & guidance' },
+]
 
 // ─── HERO VISUAL ──────────────────────────────────────────────────────────────
 
@@ -583,7 +591,7 @@ function CareerSupportSection() {
   ]
 
   return (
-    <Section tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
+    <Section id="career-support" tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
       <FadeIn>
         <SectionHeader
           tone="dark"
@@ -718,13 +726,14 @@ export default function CareerOSPage() {
   const [mockDone, setMockDone] = useState(false)
   const [drawerJob, setDrawerJob] = useState<Job | null>(null)
   const [applyJob, setApplyJob] = useState<Job | null>(null)
+  const activeSection = useSectionSpy(CAREER_NAV_ITEMS.map(i => i.id))
 
   return (
     <PageShell auroraTheme="career">
       <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
         <Aurora themeId="career" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'center' }} className="two-col skylent-page-hero">
+          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero">
             <FadeIn>
               <Eyebrow tone="dark" accent>Career OS</Eyebrow>
               <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
@@ -741,11 +750,23 @@ export default function CareerOSPage() {
               </div>
             </FadeIn>
             <FadeIn delay={80}>
-              <CareerHeroVisual />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <ContextualNavPanel
+                  items={CAREER_NAV_ITEMS}
+                  themeId="career"
+                  title="Career OS"
+                  activeId={activeSection}
+                />
+                <div className="career-hero-visual-wrap">
+                  <CareerHeroVisual />
+                </div>
+              </div>
             </FadeIn>
           </div>
         </div>
       </section>
+
+      <ContextualNavBar items={CAREER_NAV_ITEMS} themeId="career" activeId={activeSection} />
 
       <CareerJourneySection />
       <ProfileResumeSection />
