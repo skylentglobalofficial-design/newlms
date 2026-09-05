@@ -1,10 +1,15 @@
-import { useState, useEffect, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { C, FadeIn, EnrollmentModal, PageShell } from '../components/shared'
-import { T } from '../components/ui'
-import { programs, stories } from '../data'
+import {
+  T, Section, SectionHeader, Eyebrow, Button, FlowStrip, Badge,
+} from '../components/ui'
+import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
+import { resolveAuroraTheme, getDomainAccent, type AuroraThemeId } from '../aurora-themes'
+import ProgramWorkflowVisual from '../components/program/ProgramWorkflowVisual'
+import { programs } from '../data'
 import type { ProgramType, EnrollmentStatus } from '../data'
-import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
+import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO, PHOTO } from '../media'
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
@@ -34,94 +39,58 @@ const CURRICULUM_MODEL: Record<ProgramType, string> = {
   WEBINAR: 'Session → Topic → Live / Recorded',
 }
 
-const DEFAULT_PHOTO = DEFAULT_PROGRAM_PHOTO
+type NavSection = { id: string; label: string }
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
-function MonoLabel({ children, tone = 'light' }: { children: React.ReactNode; tone?: 'light' | 'dark' }) {
+function CheckItem({ label, accent }: { label: string; accent?: string }) {
+  const color = accent ?? C.orange
   return (
-    <div style={{
-      color: tone === 'dark' ? 'rgba(255,255,255,0.3)' : C.slate,
-      fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.14em',
-      marginBottom: 14, textTransform: 'uppercase',
-    }}>
-      {children}
+    <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
+        <rect width="16" height="16" rx="4" fill={`${color}22`} stroke={`${color}55`} strokeWidth="0.8" />
+        <path d="M4.5 8.5L7 11L11.5 5.5" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+      <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: 14, lineHeight: 1.55 }}>{label}</span>
     </div>
   )
 }
 
-function CheckItem({ label, dark }: { label: string; dark?: boolean }) {
-  return (
-    <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
-        <rect width="16" height="16" rx="4" fill={dark ? 'rgba(243,107,33,0.15)' : 'rgba(243,107,33,0.1)'} stroke="rgba(243,107,33,0.3)" strokeWidth="0.8" />
-        <path d="M4.5 8.5L7 11L11.5 5.5" stroke={C.orange} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-      <span style={{ color: dark ? 'rgba(255,255,255,0.72)' : C.ink, fontSize: 13.5, lineHeight: 1.55 }}>{label}</span>
-    </div>
-  )
+function scrollToSection(id: string) {
+  const el = document.getElementById(id)
+  if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 120, behavior: 'smooth' })
 }
 
 // ─── STICKY SECTION NAV ───────────────────────────────────────────────────────
 
-type NavSection = { id: string; label: string }
-
 function StickyProgramNav({
-  sections,
-  activeId,
-  ctaLabel,
-  onCTA,
+  sections, activeId, ctaLabel, onCTA, accent,
 }: {
   sections: NavSection[]
   activeId: string
   ctaLabel: string
   onCTA: () => void
+  accent: ReturnType<typeof getDomainAccent>
 }) {
   return (
     <nav style={{
-      position: 'sticky',
-      top: 64,
-      zIndex: 80,
-      background: 'rgba(11,13,15,0.97)',
-      backdropFilter: 'blur(20px)',
-      borderBottom: '1px solid rgba(255,255,255,0.08)',
+      position: 'sticky', top: T.navH, zIndex: 80,
+      background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)',
+      WebkitBackdropFilter: 'var(--glass-01-blur)', borderBottom: '1px solid var(--glass-01-border)',
     }}>
-      <div style={{
-        maxWidth: T.maxW,
-        margin: '0 auto',
-        padding: '0 clamp(16px,4vw,32px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: 16,
-      }}>
-        <div style={{ display: 'flex', overflowX: 'auto', scrollbarWidth: 'none' }}>
+      <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div className="program-sticky-nav-scroll" style={{ display: 'flex', overflowX: 'auto', scrollbarWidth: 'none' }}>
           {sections.map(s => (
             <button
               key={s.id}
-              onClick={() => {
-                const el = document.getElementById(s.id)
-                if (el) {
-                  const y = el.getBoundingClientRect().top + window.scrollY - 120
-                  window.scrollTo({ top: y, behavior: 'smooth' })
-                }
-              }}
+              onClick={() => scrollToSection(s.id)}
               style={{
-                background: 'none',
-                border: 'none',
-                borderBottom: `2px solid ${activeId === s.id ? C.orange : 'transparent'}`,
-                padding: '14px 14px',
-                color: activeId === s.id ? C.orange : 'rgba(255,255,255,0.42)',
-                fontSize: 12.5,
-                fontFamily: 'var(--font-body)',
-                fontWeight: activeId === s.id ? 600 : 400,
-                cursor: 'pointer',
-                transition: 'color 0.2s, border-color 0.2s',
-                whiteSpace: 'nowrap',
-                flexShrink: 0,
+                background: 'none', border: 'none',
+                borderBottom: `2px solid ${activeId === s.id ? accent.primary : 'transparent'}`,
+                padding: '14px 14px', color: activeId === s.id ? accent.text : 'rgba(255,255,255,0.42)',
+                fontSize: 12.5, fontFamily: 'var(--font-body)', fontWeight: activeId === s.id ? 600 : 400,
+                cursor: 'pointer', transition: 'color 0.2s, border-color 0.2s', whiteSpace: 'nowrap', flexShrink: 0,
               }}
-              onMouseEnter={e => { if (activeId !== s.id) e.currentTarget.style.color = 'rgba(255,255,255,0.72)' }}
-              onMouseLeave={e => { if (activeId !== s.id) e.currentTarget.style.color = 'rgba(255,255,255,0.42)' }}
             >
               {s.label}
             </button>
@@ -130,20 +99,10 @@ function StickyProgramNav({
         <button
           onClick={onCTA}
           style={{
-            flexShrink: 0,
-            background: C.orange,
-            border: 'none',
-            color: C.white,
-            borderRadius: 7,
-            padding: '8px 18px',
-            fontSize: 12.5,
-            fontWeight: 600,
-            cursor: 'pointer',
-            fontFamily: 'var(--font-body)',
-            transition: 'opacity 0.2s',
+            flexShrink: 0, background: C.orange, border: 'none', color: C.white,
+            borderRadius: T.rControl, padding: '8px 18px', fontSize: 12.5, fontWeight: 600,
+            cursor: 'pointer', fontFamily: 'var(--font-body)',
           }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '0.82')}
-          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
         >
           {ctaLabel} →
         </button>
@@ -152,123 +111,65 @@ function StickyProgramNav({
   )
 }
 
-// ─── ENROLLMENT CARD (hero right panel) ───────────────────────────────────────
+// ─── ENROLLMENT PANEL ─────────────────────────────────────────────────────────
 
-function EnrollmentCard({
-  program,
-  status,
-  ctaLabel,
-  onCTA,
+function EnrollmentPanel({
+  program, status, ctaLabel, onCTA,
 }: {
-  program: ReturnType<typeof programs.find> & object
+  program: NonNullable<ReturnType<typeof programs.find>>
   status: EnrollmentStatus
   ctaLabel: string
   onCTA: () => void
 }) {
-  if (!program) return null
   const lowestPrice = Math.min(...program.pricing.map(p => p.price))
   const isCareerOS = !!program.careerSupport
 
   return (
-    <div style={{
-      background: C.white,
-      borderRadius: T.rCard,
-      overflow: 'hidden',
-      boxShadow: '0 24px 80px rgba(0,0,0,0.35)',
-      border: '1px solid rgba(255,255,255,0.12)',
-    }}>
-      {/* Price band */}
-      <div style={{ padding: '22px 24px 18px', borderBottom: `1px solid ${T.lineLight}` }}>
-        <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 6 }}>STARTING FROM</div>
+    <GlassSurface level={2} padding="0" style={{ position: 'sticky', top: T.navH + 72 }}>
+      <div style={{ padding: '22px 24px 18px', borderBottom: `1px solid ${T.lineDark}` }}>
+        <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Starting from</div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 30, fontWeight: 700, color: C.ink, lineHeight: 1 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 30, fontWeight: 700, color: C.white, lineHeight: 1 }}>
             ₹{lowestPrice.toLocaleString('en-IN')}
           </div>
           {program.pricing[0]?.originalPrice > lowestPrice && (
-            <div style={{ color: C.slate, fontSize: 13, textDecoration: 'line-through', fontFamily: 'var(--font-mono)' }}>
+            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, textDecoration: 'line-through', fontFamily: 'var(--font-mono)' }}>
               ₹{program.pricing[0].originalPrice.toLocaleString('en-IN')}
             </div>
           )}
         </div>
         {program.pricing.length > 1 && (
-          <div style={{ color: C.slate, fontSize: 11, marginTop: 4 }}>Multiple plans available below</div>
+          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 4 }}>Multiple plans below</div>
         )}
       </div>
 
-      {/* Key facts */}
-      <div style={{ padding: '16px 24px 4px', borderBottom: `1px solid ${T.lineLight}` }}>
+      <div style={{ padding: '16px 24px', borderBottom: `1px solid ${T.lineDark}` }}>
         {[
-          {
-            icon: (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.slate} strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
-            ),
-            text: `${status === 'coming_soon' ? 'Planned: ' : 'Next batch: '}${program.upcomingBatch}`,
-          },
-          {
-            icon: (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.slate} strokeWidth="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            ),
-            text: `${program.duration} · ${program.format}`,
-          },
-          {
-            icon: (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.slate} strokeWidth="1.8"><circle cx="12" cy="8" r="6"/><path d="M8.5 14.5L6 22l6-2 6 2-2.5-7.5"/></svg>
-            ),
-            text: program.cert,
-          },
-          ...(isCareerOS ? [{
-            icon: (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.orange} strokeWidth="1.8"><path d="M20 7H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><polyline points="16 21 12 17 8 21"/><path d="M12 3v14"/></svg>
-            ),
-            text: 'Unlocks Career OS on completion',
-            accent: true,
-          }] : []),
-        ].map(({ icon, text, accent }, i) => (
+          { text: `${status === 'coming_soon' ? 'Planned: ' : 'Next batch: '}${program.upcomingBatch}` },
+          { text: `${program.duration} · ${program.format}` },
+          { text: program.cert },
+          ...(isCareerOS ? [{ text: 'Unlocks Career OS on completion', accent: true }] : []),
+        ].map(({ text, accent }, i) => (
           <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 12 }}>
-            <span style={{ flexShrink: 0, marginTop: 1 }}>{icon}</span>
-            <span style={{ color: (accent as boolean | undefined) ? C.orange : C.ink, fontSize: 13, lineHeight: 1.45, fontWeight: (accent as boolean | undefined) ? 500 : 400 }}>{text}</span>
+            <div style={{ width: 4, height: 4, borderRadius: '50%', background: accent ? C.orange : 'rgba(255,255,255,0.25)', flexShrink: 0, marginTop: 6 }} />
+            <span style={{ color: accent ? C.orange : 'rgba(255,255,255,0.72)', fontSize: 13, lineHeight: 1.45 }}>{text}</span>
           </div>
         ))}
       </div>
 
-      {/* CTAs */}
       <div style={{ padding: '18px 24px 22px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <button
-          onClick={onCTA}
-          style={{
-            width: '100%',
-            background: status === 'coming_soon' ? C.ink : C.orange,
-            border: 'none',
-            color: C.white,
-            borderRadius: 9,
-            padding: '13px 0',
-            fontSize: 14.5,
-            fontWeight: 600,
-            cursor: 'pointer',
-            fontFamily: 'var(--font-body)',
-            transition: 'opacity 0.2s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-        >
+        <Button variant="primary" full onClick={onCTA}>
           {ctaLabel} →
-        </button>
-        <a
-          href="/contact"
-          style={{ display: 'block', textAlign: 'center', color: C.slate, fontSize: 13, textDecoration: 'none', padding: '6px 0', transition: 'color 0.15s' }}
-          onMouseEnter={e => (e.currentTarget.style.color = C.ink)}
-          onMouseLeave={e => (e.currentTarget.style.color = C.slate)}
-        >
+        </Button>
+        <Link to="/contact" style={{ display: 'block', textAlign: 'center', color: 'rgba(255,255,255,0.45)', fontSize: 13, textDecoration: 'none', padding: '6px 0' }}>
           Talk to an advisor
-        </a>
+        </Link>
       </div>
 
-      {/* Trust strip */}
-      <div style={{ background: C.sand, padding: '10px 24px', display: 'flex', alignItems: 'center', gap: 8 }}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={C.slate} strokeWidth="1.8"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span style={{ color: C.slate, fontSize: 11 }}>Secure enrollment · Verified certificate</span>
+      <div style={{ padding: '10px 24px', borderTop: `1px solid ${T.lineDark}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11 }}>Secure enrollment · Verified certificate</span>
       </div>
-    </div>
+    </GlassSurface>
   )
 }
 
@@ -283,15 +184,17 @@ export default function ProgramPage() {
   const [faqOpen, setFaqOpen] = useState<string | null>(null)
   const [applyOpen, setApplyOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('overview')
+  const [featuredProject, setFeaturedProject] = useState(0)
 
   const isExamPrep = program?.programType === 'EXAM_PREP'
   const isCareerOS = !!program?.careerSupport
   const enrollStatus = (program?.enrollmentStatus ?? 'open') as EnrollmentStatus
   const typeLabel = program ? TYPE_LABELS[program.programType] : ''
-  const heroPhoto = program ? (PROGRAM_PHOTO[program.slug] ?? DEFAULT_PHOTO) : DEFAULT_PHOTO
+  const heroPhoto = program ? (PROGRAM_PHOTO[program.slug] ?? DEFAULT_PROGRAM_PHOTO) : DEFAULT_PROGRAM_PHOTO
   const ctaLabel = program?.programType === 'PROFESSIONAL' && enrollStatus === 'open' ? 'Apply Now' : CTA_LABEL[enrollStatus]
+  const auroraTheme: AuroraThemeId = program ? resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType) : 'general'
+  const domainAccent = getDomainAccent(auroraTheme)
 
-  // Build nav sections based on available data
   const navSections: NavSection[] = program ? [
     { id: 'overview', label: 'Overview' },
     ...(program.curriculumDetail?.length ? [{ id: 'curriculum', label: 'Curriculum' }] : []),
@@ -302,9 +205,9 @@ export default function ProgramPage() {
     ...(isCareerOS ? [{ id: 'career', label: 'Career' }] : []),
     ...(!isExamPrep ? [{ id: 'reviews', label: 'Reviews' }] : []),
     ...(program.faqs?.length ? [{ id: 'faq', label: 'FAQs' }] : []),
+    { id: 'pricing', label: 'Pricing' },
   ] : []
 
-  // Track active section via IntersectionObserver
   useEffect(() => {
     const observers: IntersectionObserver[] = []
     navSections.forEach(s => {
@@ -322,109 +225,85 @@ export default function ProgramPage() {
 
   if (!program) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: C.warmWhite }}>
-        <div style={{ textAlign: 'center' }}>
-          <h2 style={{ fontFamily: 'var(--font-display)', color: C.ink, fontSize: 28 }}>Program not found</h2>
-          <button onClick={() => navigate('/programs')} style={{ marginTop: 16, background: C.orange, border: 'none', color: C.white, borderRadius: 7, padding: '10px 22px', fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>← All Programs</button>
+      <PageShell>
+        <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center' }}>
+            <h2 className="skylent-display-md" style={{ color: C.white }}>Program not found</h2>
+            <Button variant="primary" onClick={() => navigate('/programs')} style={{ marginTop: 20 }}>← All Programs</Button>
+          </div>
         </div>
-      </div>
+      </PageShell>
     )
   }
 
-  const lowestPrice = Math.min(...program.pricing.map(p => p.price))
   const highlightTier = program.pricing.find(p => p.highlight) ?? program.pricing[0]
+  const allPricingFeatures = Array.from(new Set(program.pricing.flatMap(p => p.features)))
 
   return (
-    <PageShell>
-      {/* ── HERO ────────────────────────────────────────────────────────────── */}
-      <section id="program-hero" style={{ background: C.ink, padding: '88px clamp(16px,4vw,32px) 0' }}>
-        <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 'clamp(32px,5vw,64px)', alignItems: 'start', paddingBottom: 48 }} className="program-detail-grid">
+    <PageShell auroraTheme={auroraTheme}>
+      {/* ── HERO ──────────────────────────────────────────────────────────── */}
+      <section id="program-hero" style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 32}px ${T.gutter} 0` }}>
+        <Aurora themeId={auroraTheme} variant="hero" />
+        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <button
+            onClick={() => navigate('/programs')}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 24, padding: 0, letterSpacing: '0.06em' }}
+          >
+            ← ALL PROGRAMS
+          </button>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr min(340px, 32%)', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }} className="program-detail-grid">
             <div>
-              <button
-              onClick={() => navigate('/programs')}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 24, padding: 0, letterSpacing: '0.06em' }}
-            >
-              ← ALL PROGRAMS
-            </button>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 18, flexWrap: 'wrap', alignItems: 'center' }}>
-                  <span style={{ background: 'rgba(243,107,33,0.14)', border: '1px solid rgba(243,107,33,0.3)', borderRadius: 6, padding: '4px 12px', color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.06em' }}>
-                    {typeLabel.toUpperCase()}
-                  </span>
-                  <span style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '4px 12px', color: 'rgba(255,255,255,0.55)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>
-                    {program.level}
-                  </span>
-                  {isCareerOS && (
-                    <span style={{ background: 'rgba(243,107,33,0.1)', border: '1px solid rgba(243,107,33,0.25)', borderRadius: 6, padding: '4px 12px', color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)' }}>
-                      + CAREER OS
-                    </span>
-                  )}
-                  {enrollStatus === 'coming_soon' && (
-                    <span style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '4px 12px', color: 'rgba(255,255,255,0.45)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>
-                      COMING SOON
-                    </span>
-                  )}
-                </div>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+                <Badge tone="dark" accent>{typeLabel}</Badge>
+                <Badge tone="dark">{program.level}</Badge>
+                {isCareerOS && <Badge tone="dark" accent>+ Career OS</Badge>}
+                {enrollStatus === 'coming_soon' && <Badge tone="dark">Coming Soon</Badge>}
+              </div>
 
-            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(34px,5vw,56px)', color: C.white, letterSpacing: '-0.03em', lineHeight: 1.03, margin: '0 0 14px' }}>
-                  {program.name}
-                </h1>
-                <p style={{ color: 'rgba(255,255,255,0.62)', fontSize: 16, lineHeight: 1.72, maxWidth: 560, margin: '0 0 20px' }}>
-                  {program.desc}
-                </p>
-                <div style={{ borderRadius: 12, overflow: 'hidden', aspectRatio: '16/9', marginBottom: 24, maxWidth: 560 }}>
-                  <img src={heroPhoto} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-                </div>
+              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '0 0 16px', maxWidth: 640 }}>
+                {program.name}
+              </h1>
+              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
+                {program.desc}
+              </p>
 
-              {/* Key outcomes — top 4 */}
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 28 }}>
+                <Button variant="primary" size="lg" onClick={() => setApplyOpen(true)}>{ctaLabel} →</Button>
+                <Button
+                  variant="secondary"
+                  size="lg"
+                  onClick={() => scrollToSection(program.curriculumDetail?.length ? 'curriculum' : 'overview')}
+                >
+                  {isExamPrep ? 'View Subjects' : 'View Curriculum'}
+                </Button>
+              </div>
+
+              {/* Domain-native workflow — primary visual anchor */}
+              <FadeIn delay={60}>
+                <div style={{ marginTop: 4 }}>
+                  <ProgramWorkflowVisual slug={program.slug} programType={program.programType} programName={program.name} />
+                </div>
+              </FadeIn>
+
               {program.whatYouWillLearn && program.whatYouWillLearn.length > 0 && (
-                <FadeIn delay={80}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 24px', marginBottom: 32 }} className="two-col-sm">
+                <FadeIn delay={100}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 28px', marginTop: 28 }} className="two-col-sm">
                     {program.whatYouWillLearn.slice(0, 4).map((item, i) => (
-                      <CheckItem key={i} label={item} dark />
+                      <CheckItem key={i} label={item} accent={domainAccent.primary} />
                     ))}
                   </div>
                 </FadeIn>
               )}
-
-              <FadeIn delay={140}>
-                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                  <button
-                    onClick={() => setApplyOpen(true)}
-                    style={{ background: enrollStatus === 'coming_soon' ? 'rgba(255,255,255,0.1)' : C.orange, border: 'none', color: C.white, borderRadius: 9, padding: '13px 28px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.2s' }}
-                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.82')}
-                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                  >
-                    {ctaLabel} →
-                  </button>
-                  <button
-                    onClick={() => {
-                      const el = document.getElementById('curriculum')
-                      if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 120, behavior: 'smooth' })
-                    }}
-                    style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.18)', color: 'rgba(255,255,255,0.75)', borderRadius: 9, padding: '13px 24px', fontSize: 15, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'border-color 0.2s' }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.45)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.18)')}
-                  >
-                    {isExamPrep ? 'View Subjects' : 'View Curriculum'}
-                  </button>
-                </div>
-              </FadeIn>
             </div>
 
-            {/* RIGHT: enrollment card */}
-            <FadeIn delay={100}>
-              <EnrollmentCard
-                program={program}
-                status={enrollStatus}
-                ctaLabel={ctaLabel}
-                onCTA={() => setApplyOpen(true)}
-              />
+            <FadeIn delay={80}>
+              <EnrollmentPanel program={program} status={enrollStatus} ctaLabel={ctaLabel} onCTA={() => setApplyOpen(true)} />
             </FadeIn>
           </div>
 
           {/* Quick facts strip */}
-          <div style={{ paddingTop: 28, paddingBottom: 32, borderTop: '1px solid rgba(255,255,255,0.08)', display: 'flex', gap: 'clamp(20px,4vw,48px)', flexWrap: 'wrap' }}>
+          <div style={{ paddingTop: 28, paddingBottom: 28, marginTop: 4, borderTop: `1px solid ${T.lineDark}`, display: 'flex', gap: 'clamp(20px,4vw,48px)', flexWrap: 'wrap' }}>
             {[
               { label: 'Duration', value: program.duration },
               { label: 'Format', value: program.format },
@@ -434,537 +313,581 @@ export default function ProgramPage() {
                 : [
                     ...(program.modules ? [{ label: 'Modules', value: String(program.modules) }] : []),
                     ...(program.projects ? [{ label: 'Projects', value: String(program.projects) }] : []),
-                  ]
-              ),
+                  ]),
               { label: 'Certificate', value: program.cert },
               { label: enrollStatus === 'coming_soon' ? 'Planned Batch' : 'Next Batch', value: program.upcomingBatch },
             ].filter(f => f.value).map(({ label, value }) => (
               <div key={label}>
-                <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 5, textTransform: 'uppercase' }}>{label}</div>
-                <div style={{ color: C.white, fontSize: 13.5, fontWeight: 500 }}>{value}</div>
+                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 5 }}>{label}</div>
+                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{value}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── STICKY SECTION NAV ──────────────────────────────────────────────── */}
-      <StickyProgramNav
-        sections={navSections}
-        activeId={activeSection}
-        ctaLabel={ctaLabel}
-        onCTA={() => setApplyOpen(true)}
-      />
+      <StickyProgramNav sections={navSections} activeId={activeSection} ctaLabel={ctaLabel} onCTA={() => setApplyOpen(true)} accent={domainAccent} />
 
-      {/* ── MAIN CONTENT ────────────────────────────────────────────────────── */}
-
-      {/* OVERVIEW: what you'll learn + who it's for */}
-      <section id="overview" style={{ background: C.warmWhite, padding: 'clamp(48px,8vw,80px) clamp(16px,4vw,32px)' }}>
-        <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-          <FadeIn>
-            <div id="why" style={{ marginBottom: 56, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(24px,4vw,48px)' }} className="two-col">
-              <div>
-                <MonoLabel>Why this program</MonoLabel>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(24px,3vw,36px)', fontWeight: 600, color: C.ink, margin: '0 0 14px', letterSpacing: '-0.025em' }}>
-                  {program.outcome}
-                </h2>
-                <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, margin: 0 }}>{program.desc}</p>
-              </div>
-              <div style={{ background: C.sand, borderRadius: T.rCard, padding: '24px 26px' }}>
-                <div style={{ fontSize: 12, color: C.slate, fontFamily: 'var(--font-mono)', marginBottom: 12 }}>AT A GLANCE</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  {[
-                    ['Type', typeLabel],
-                    ['Duration', program.duration],
-                    ['Mode', program.format],
-                    ['Certification', program.cert],
-                    ...(isCareerOS ? [['Career support', 'Career OS on completion']] : []),
-                  ].map(([k, v]) => (
-                    <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, borderBottom: `1px solid ${T.lineLight}`, paddingBottom: 8 }}>
-                      <span style={{ color: C.slate, fontSize: 13 }}>{k}</span>
-                      <span style={{ color: C.ink, fontSize: 13, fontWeight: 600, textAlign: 'right' }}>{v}</span>
-                    </div>
-                  ))}
+      {/* ── OVERVIEW ──────────────────────────────────────────────────────── */}
+      <Section id="overview" tone="canvas" divider>
+        <FadeIn>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'start', marginBottom: 48 }} className="two-col program-overview-split">
+            <div>
+              <Eyebrow tone="dark">Why this program</Eyebrow>
+              <h2 className="skylent-display-md" style={{ color: C.white, margin: '18px 0 16px' }}>
+                {program.outcome}
+              </h2>
+              <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: 0, maxWidth: 520 }}>
+                {program.desc}
+              </p>
+            </div>
+            <div>
+              <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 16 }}>At a glance</div>
+              {[
+                ['Type', typeLabel],
+                ['Duration', program.duration],
+                ['Mode', program.format],
+                ['Certification', program.cert],
+                ...(isCareerOS ? [['Career support', 'Career OS on completion']] : []),
+              ].map(([k, v], i, arr) => (
+                <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '12px 0', borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>{k}</span>
+                  <span style={{ color: C.white, fontSize: 13, fontWeight: 600, textAlign: 'right' }}>{v}</span>
                 </div>
+              ))}
+            </div>
+          </div>
+        </FadeIn>
+
+        {program.whatYouWillLearn && program.whatYouWillLearn.length > 0 && (
+          <FadeIn>
+            <SectionHeader
+              tone="dark"
+              eyebrow="What you will learn"
+              title={isExamPrep ? 'Topics and concepts covered' : program.programType === 'PROFESSIONAL' ? 'Skills and knowledge you will build' : 'What this program covers'}
+            />
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px 36px', marginTop: 32 }} className="two-col-sm">
+              {program.whatYouWillLearn.map((item, i) => (
+                <CheckItem key={i} label={item} accent={domainAccent.primary} />
+              ))}
+            </div>
+          </FadeIn>
+        )}
+
+        {program.whoIsItFor && program.whoIsItFor.length > 0 && (
+          <FadeIn>
+            <div style={{ marginTop: 48, display: 'grid', gridTemplateColumns: '240px 1fr', gap: 'clamp(24px,4vw,56px)', alignItems: 'start' }} className="program-who-split">
+              <div>
+                <Eyebrow tone="dark">Who is this for</Eyebrow>
+                <h3 className="skylent-display-sm" style={{ color: C.white, margin: '16px 0 0' }}>
+                  Built for the right learner.
+                </h3>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                {program.whoIsItFor.map((who, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', padding: '16px 0', borderBottom: i < program.whoIsItFor!.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: domainAccent.primary, flexShrink: 0, marginTop: 7 }} />
+                    <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: 15, lineHeight: 1.65 }}>{who}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </FadeIn>
-          {program.whatYouWillLearn && program.whatYouWillLearn.length > 0 && (
-            <FadeIn>
-              <div style={{ marginBottom: 56 }}>
-                <MonoLabel>What you will learn</MonoLabel>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(24px,3vw,36px)', fontWeight: 600, color: C.ink, margin: '0 0 28px', letterSpacing: '-0.025em' }}>
-                  {isExamPrep ? 'Topics and concepts covered' : program.programType === 'PROFESSIONAL' ? 'Skills and knowledge you will build' : 'What this program covers'}
-                </h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px 32px' }} className="two-col-sm">
-                  {program.whatYouWillLearn.map((item, i) => (
-                    <CheckItem key={i} label={item} />
-                  ))}
-                </div>
-              </div>
-            </FadeIn>
-          )}
+        )}
+      </Section>
 
-          {program.whoIsItFor && program.whoIsItFor.length > 0 && (
-            <FadeIn>
-              <div style={{ background: C.sand, borderRadius: T.rCard, padding: 'clamp(24px,4vw,40px)', display: 'grid', gridTemplateColumns: '280px 1fr', gap: 'clamp(24px,4vw,48px)', alignItems: 'start' }} className="two-col-sm">
-                <div>
-                  <MonoLabel>Who is this for</MonoLabel>
-                  <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(22px,2.4vw,28px)', fontWeight: 600, color: C.ink, margin: 0, letterSpacing: '-0.02em', lineHeight: 1.2 }}>
-                    Built for the right person.
-                  </h3>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                  {program.whoIsItFor.map((who, i) => (
-                    <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-                      <div style={{ width: 22, height: 22, borderRadius: 6, background: C.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                        <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.orange }} />
-                      </div>
-                      <span style={{ color: C.ink, fontSize: 15, lineHeight: 1.6 }}>{who}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </FadeIn>
-          )}
-        </div>
-      </section>
-
-      {/* CURRICULUM */}
+      {/* ── CURRICULUM PATH ───────────────────────────────────────────────── */}
       {program.curriculumDetail && program.curriculumDetail.length > 0 && (
-        <section id="curriculum" style={{ background: C.white, padding: 'clamp(48px,8vw,80px) clamp(16px,4vw,32px)', borderTop: `1px solid ${T.lineLight}` }}>
-          <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-            <FadeIn>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 16, alignItems: 'end', marginBottom: 40 }} className="two-col-sm">
-                <div>
-                  <MonoLabel>{isExamPrep ? 'Subjects & sections' : 'Curriculum'}</MonoLabel>
-                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(24px,3vw,36px)', fontWeight: 600, color: C.ink, margin: 0, letterSpacing: '-0.025em' }}>
-                    {isExamPrep ? 'Subject and section coverage' : 'What you will study'}
-                  </h2>
-                  <div style={{ marginTop: 12, color: C.slate, fontSize: 13 }}>{CURRICULUM_MODEL[program.programType]}</div>
-                </div>
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 2 }}>{program.curriculumDetail.length} {isExamPrep ? 'sections' : 'modules'}</div>
-                  {program.duration && <div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>{program.duration}</div>}
-                </div>
+        <Section id="curriculum" tone="canvas" divider style={{ paddingTop: T.sectionSm }}>
+          <FadeIn>
+            <SectionHeader
+              tone="dark"
+              eyebrow={isExamPrep ? 'Subjects & sections' : 'Curriculum'}
+              title={isExamPrep ? 'Subject and section coverage' : 'What you will study'}
+              lead={CURRICULUM_MODEL[program.programType]}
+            />
+            {isExamPrep && program.examSections && (
+              <div style={{ display: 'flex', gap: 8, marginTop: 24, flexWrap: 'wrap' }}>
+                {program.examSections.map(s => <Badge key={s} tone="dark" accent>{s}</Badge>)}
               </div>
-              {isExamPrep && program.examSections && (
-                <div style={{ display: 'flex', gap: 8, marginBottom: 28, flexWrap: 'wrap' }}>
-                  {program.examSections.map(s => (
-                    <span key={s} style={{ background: 'rgba(243,107,33,0.08)', border: '1px solid rgba(243,107,33,0.2)', borderRadius: 6, padding: '6px 14px', color: C.orange, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{s}</span>
-                  ))}
-                </div>
-              )}
-            </FadeIn>
-            <div>
-              {program.curriculumDetail.map((mod, i) => {
-                const isOpen = curriculumOpen === mod.number
-                return (
-                  <FadeIn key={mod.number} delay={i * 40}>
-                    <div style={{ borderBottom: `1px solid ${T.lineLight}` }}>
+            )}
+          </FadeIn>
+
+          <div style={{ marginTop: 48, position: 'relative' }}>
+            {program.curriculumDetail.map((mod, i) => {
+              const isOpen = curriculumOpen === mod.number
+              const isLast = i === program.curriculumDetail!.length - 1
+              return (
+                <FadeIn key={mod.number} delay={i * 30}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '48px 1fr', gap: '0 24px', position: 'relative' }} className="program-curriculum-row">
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <div style={{
+                        width: 36, height: 36, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        background: isOpen ? domainAccent.subtleStrong : 'rgba(255,255,255,0.04)',
+                        border: `1px solid ${isOpen ? domainAccent.border : T.lineDark}`,
+                        fontFamily: 'var(--font-mono)', fontSize: 11, color: isOpen ? domainAccent.text : 'rgba(255,255,255,0.4)',
+                      }}>
+                        {mod.number}
+                      </div>
+                      {!isLast && <div style={{ width: 1, flex: 1, minHeight: 24, background: T.lineDark, margin: '6px 0' }} />}
+                    </div>
+                    <div style={{ paddingBottom: isLast ? 0 : 28, borderBottom: isLast ? 'none' : `1px solid ${T.lineDark}` }}>
                       <button
                         onClick={() => setCurriculumOpen(isOpen ? null : mod.number)}
-                        style={{ width: '100%', display: 'flex', gap: 18, padding: '22px 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', alignItems: 'flex-start' }}
+                        style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: '4px 0 0' }}
                       >
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.orange, width: 28, flexShrink: 0, paddingTop: 3, letterSpacing: '0.04em' }}>{mod.number}</span>
                         <div style={{ flex: 1 }}>
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16 }}>
-                            <span style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.ink, lineHeight: 1.3 }}>{mod.title}</span>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-                              <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{mod.duration}</span>
-                              <span style={{ color: C.orange, fontSize: 18, display: 'inline-block', transform: isOpen ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s' }}>+</span>
-                            </div>
+                          <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(17px,2vw,20px)', fontWeight: 600, color: C.white, lineHeight: 1.3, marginBottom: 6 }}>
+                            {mod.title}
                           </div>
-                          {!isOpen && <div style={{ color: C.slate, fontSize: 13.5, lineHeight: 1.6, marginTop: 5 }}>{mod.description}</div>}
+                          {!isOpen && <div style={{ color: 'rgba(255,255,255,0.42)', fontSize: 14, lineHeight: 1.65 }}>{mod.description}</div>}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0, paddingTop: 4 }}>
+                          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{mod.duration}</span>
+                          <span style={{ color: domainAccent.text, fontSize: 18, transform: isOpen ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s' }}>+</span>
                         </div>
                       </button>
                       {isOpen && (
-                        <div style={{ paddingLeft: 46, paddingBottom: 24 }}>
-                          <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.75, margin: '0 0 16px' }}>{mod.description}</p>
+                        <div style={{ paddingTop: 12, paddingBottom: 8 }}>
+                          <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14, lineHeight: 1.75, margin: '0 0 16px' }}>{mod.description}</p>
                           {mod.topics && mod.topics.length > 0 && (
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                               {mod.topics.map(topic => (
-                                <span key={topic} style={{ background: C.sand, border: `1px solid ${T.lineLight}`, borderRadius: 5, padding: '5px 11px', color: C.ink, fontSize: 12 }}>{topic}</span>
+                                <span key={topic} style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, padding: '4px 0', borderBottom: `1px solid ${T.lineDark}` }}>{topic}</span>
                               ))}
                             </div>
                           )}
                         </div>
                       )}
                     </div>
-                  </FadeIn>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* PROJECTS */}
-      {program.projectsDetail && program.projectsDetail.length > 0 && (
-        <section id="projects" style={{ background: C.sand, padding: 'clamp(48px,8vw,80px) clamp(16px,4vw,32px)' }}>
-          <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-            <FadeIn>
-              <MonoLabel>Projects</MonoLabel>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(24px,4vw,48px)', alignItems: 'end', marginBottom: 36 }} className="two-col-sm">
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(24px,3vw,36px)', fontWeight: 600, color: C.ink, margin: 0, letterSpacing: '-0.025em' }}>
-                  What you will build.
-                </h2>
-                <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: 0 }}>
-                  Real-world projects reviewed by industry mentors — each one portfolio-ready on completion.
-                </p>
-              </div>
-            </FadeIn>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: 16 }}>
-              {program.projectsDetail.map((proj, i) => {
-                const diffColor = proj.difficulty === 'Beginner' ? '#4ade80' : proj.difficulty === 'Intermediate' ? '#fbbf24' : '#f87171'
-                return (
-                  <FadeIn key={i} delay={i * 60}>
-                    <div style={{ background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: T.rCard, padding: '24px 26px', display: 'flex', flexDirection: 'column', height: '100%' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.slate, letterSpacing: '0.06em' }}>PROJECT {String(i + 1).padStart(2, '0')}</span>
-                        <span style={{ background: `${diffColor}16`, border: `1px solid ${diffColor}40`, borderRadius: 4, padding: '3px 9px', color: diffColor, fontSize: 10, fontFamily: 'var(--font-mono)' }}>
-                          {proj.difficulty.toUpperCase()}
-                        </span>
-                      </div>
-                      <h4 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, margin: '0 0 10px', letterSpacing: '-0.015em', lineHeight: 1.3 }}>{proj.title}</h4>
-                      <p style={{ color: C.slate, fontSize: 13.5, lineHeight: 1.65, margin: '0 0 16px', flex: 1 }}>{proj.what}</p>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, paddingTop: 14, borderTop: `1px solid ${T.lineLight}` }}>
-                        {proj.skills.map(s => (
-                          <span key={s} style={{ background: C.sand, borderRadius: 5, padding: '4px 10px', color: C.ink, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{s}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </FadeIn>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {program.projectsDetail && program.projectsDetail.length > 0 && (
-        <section id="tools" style={{ background: C.warmWhite, padding: 'clamp(36px,6vw,56px) clamp(16px,4vw,32px)' }}>
-          <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-            <MonoLabel>Tools & technologies</MonoLabel>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(22px,2.8vw,32px)', fontWeight: 600, color: C.ink, margin: '0 0 20px' }}>What you will work with</h2>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {Array.from(new Set(program.projectsDetail.flatMap(p => p.skills))).map(t => (
-                <span key={t} style={{ background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 8, padding: '8px 14px', fontSize: 13, color: C.ink }}>{t}</span>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* LEARNING EXPERIENCE */}
-      {program.learningExperience && program.learningExperience.length > 0 && (
-        <section id="experience" style={{ background: C.warmWhite, padding: 'clamp(48px,8vw,80px) clamp(16px,4vw,32px)', borderTop: `1px solid ${T.lineLight}` }}>
-          <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-            <FadeIn>
-              <MonoLabel>Learning experience</MonoLabel>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(24px,3vw,36px)', fontWeight: 600, color: C.ink, margin: '0 0 36px', letterSpacing: '-0.025em' }}>
-                {isExamPrep ? 'How preparation is structured' : 'How this program is delivered'}
-              </h2>
-            </FadeIn>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 14 }}>
-              {program.learningExperience.map((item, i) => (
-                <FadeIn key={i} delay={i * 50}>
-                  <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start', padding: '18px 20px', background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
-                    <div style={{ width: 32, height: 32, borderRadius: 10, background: 'rgba(243,107,33,0.1)', border: '1px solid rgba(243,107,33,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: C.orange }} />
-                    </div>
-                    <span style={{ color: C.ink, fontSize: 14, lineHeight: 1.6 }}>{item}</span>
                   </div>
                 </FadeIn>
-              ))}
-            </div>
+              )
+            })}
+          </div>
+        </Section>
+      )}
 
-            {/* Community / activities strip — Professional programs */}
-            {program.programType === 'PROFESSIONAL' && (
-              <FadeIn delay={200}>
-                <div style={{ marginTop: 40, borderRadius: T.rCard, overflow: 'hidden', position: 'relative', height: 200 }}>
-                  <img
-                    src="https://images.unsplash.com/photo-1573164574511-73c773193279?w=1200&h=400&fit=crop&auto=format"
-                    alt="Community workshop event"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                  />
-                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(11,13,15,0.82) 0%, rgba(11,13,15,0.5) 50%, rgba(11,13,15,0.3) 100%)' }} />
-                  <div style={{ position: 'absolute', inset: 0, padding: '28px 36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 24, flexWrap: 'wrap' }}>
-                    <div>
-                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 6 }}>COMMUNITY & ACTIVITIES</div>
-                      <div style={{ color: C.white, fontFamily: 'var(--font-display)', fontSize: 'clamp(18px,2.4vw,26px)', fontWeight: 600, letterSpacing: '-0.02em' }}>Live sessions. Expert workshops. Cohort events.</div>
+      {/* ── PROJECTS ──────────────────────────────────────────────────────── */}
+      {program.projectsDetail && program.projectsDetail.length > 0 && (
+        <Section id="projects" tone="canvas" divider>
+          <FadeIn>
+            <SectionHeader
+              tone="dark"
+              eyebrow="Projects"
+              title="What you will build."
+              lead="Portfolio-ready work reviewed by industry mentors — not placeholder exercises."
+            />
+          </FadeIn>
+
+          {/* Featured project artifact */}
+          {program.projectsDetail[featuredProject] && (() => {
+            const proj = program.projectsDetail![featuredProject]
+            const diffColor = proj.difficulty === 'Beginner' ? '#4ade80' : proj.difficulty === 'Intermediate' ? '#fbbf24' : '#f87171'
+            return (
+              <FadeIn delay={40}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'center', marginTop: 36 }} className="two-col program-project-featured">
+                  <GlassSurface level={3} padding="22px 24px">
+                    <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Project pipeline</div>
+                    {program.slug === 'data-science-ai' ? (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }} className="program-artifact-panels">
+                        <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: 12, border: `1px solid ${T.lineDark}` }}>
+                          <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: domainAccent.text, marginBottom: 8, letterSpacing: '0.06em' }}>DATASET</div>
+                          {['id', 'feature', 'label'].map(h => (
+                            <div key={h} style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.35)', padding: '2px 0', borderBottom: `1px solid ${T.lineDark}` }}>{h}</div>
+                          ))}
+                        </div>
+                        <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: 12, border: `1px solid ${T.lineDark}` }}>
+                          <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: domainAccent.text, marginBottom: 8, letterSpacing: '0.06em' }}>MODEL</div>
+                          {['precision', 'recall', 'f1'].map((m, i) => (
+                            <div key={m} style={{ marginBottom: 5 }}>
+                              <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
+                                <div style={{ height: '100%', width: `${[78, 72, 75][i]}%`, background: domainAccent.primary, borderRadius: 2, opacity: 0.7 }} />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div style={{ background: domainAccent.subtle, borderRadius: 8, padding: 12, border: `1px solid ${domainAccent.border}` }}>
+                          <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: domainAccent.textMuted, marginBottom: 8, letterSpacing: '0.06em' }}>RESULT</div>
+                          <div style={{ fontSize: 10, color: C.white, lineHeight: 1.45 }}>Segment flagged for review</div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: 14, minHeight: 72 }}>
+                          <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 8 }}>INPUT</div>
+                          <div style={{ height: 5, width: '70%', background: 'rgba(255,255,255,0.1)', borderRadius: 2 }} />
+                        </div>
+                        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: 14, minHeight: 72 }}>
+                          <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 8 }}>OUTPUT</div>
+                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>Deliverable ready</div>
+                        </div>
+                      </div>
+                    )}
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 14 }}>
+                      {proj.skills.join(' · ')}
                     </div>
-                    <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                      {['Expert Sessions', 'Live Workshops', 'Hackathons', 'Peer Groups'].map(tag => (
-                        <span key={tag} style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 6, padding: '6px 14px', color: 'rgba(255,255,255,0.8)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{tag}</span>
-                      ))}
+                  </GlassSurface>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
+                      <span className="skylent-label" style={{ color: 'rgba(255,255,255,0.3)' }}>Project {String(featuredProject + 1).padStart(2, '0')}</span>
+                      <span style={{ color: diffColor, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.06em' }}>{proj.difficulty}</span>
                     </div>
+                    <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 14px' }}>{proj.title}</h3>
+                    <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: 0 }}>{proj.what}</p>
                   </div>
                 </div>
               </FadeIn>
-            )}
-          </div>
-        </section>
+            )
+          })()}
+
+          {/* Project selector list */}
+          {program.projectsDetail.length > 1 && (
+            <div style={{ marginTop: 40, display: 'flex', flexDirection: 'column', gap: 0 }}>
+              {program.projectsDetail.map((proj, i) => (
+                <button
+                  key={i}
+                  onClick={() => setFeaturedProject(i)}
+                  style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16,
+                    padding: '18px 0', background: 'none', border: 'none', borderTop: `1px solid ${T.lineDark}`,
+                    cursor: 'pointer', textAlign: 'left', width: '100%',
+                  }}
+                >
+                  <div>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: featuredProject === i ? domainAccent.text : 'rgba(255,255,255,0.3)' }}>
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span style={{ color: featuredProject === i ? C.white : 'rgba(255,255,255,0.55)', fontSize: 15, fontWeight: featuredProject === i ? 600 : 400, marginLeft: 14 }}>
+                      {proj.title}
+                    </span>
+                  </div>
+                  <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 13, fontFamily: 'var(--font-mono)' }}>{proj.difficulty}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </Section>
       )}
 
-      {/* FACULTY */}
+      {/* ── TOOLS STACK ───────────────────────────────────────────────────── */}
+      {program.projectsDetail && program.projectsDetail.length > 0 && (
+        <Section id="tools" tone="canvas" divider style={{ paddingTop: T.sectionSm, paddingBottom: T.sectionSm }}>
+          <Eyebrow tone="dark">Tools & technologies</Eyebrow>
+          <h2 className="skylent-display-sm" style={{ color: C.white, margin: '16px 0 28px' }}>What you will work with</h2>
+          <div className="program-tools-strip" style={{ display: 'flex', flexWrap: 'wrap', gap: 0, borderTop: `1px solid ${T.lineDark}`, borderLeft: `1px solid ${T.lineDark}` }}>
+            {Array.from(new Set(program.projectsDetail.flatMap(p => p.skills))).map((tool, i, arr) => (
+              <div
+                key={tool}
+                style={{
+                  padding: '14px 22px', fontSize: 14, color: 'rgba(255,255,255,0.65)',
+                  borderRight: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}`,
+                  fontFamily: i === 0 ? 'var(--font-display)' : 'var(--font-body)',
+                  fontWeight: i === 0 ? 600 : 400,
+                }}
+              >
+                {tool}
+              </div>
+            ))}
+          </div>
+        </Section>
+      )}
+
+      {/* ── LEARNING EXPERIENCE ───────────────────────────────────────────── */}
+      {program.learningExperience && program.learningExperience.length > 0 && (
+        <Section id="experience" tone="canvas" divider>
+          <FadeIn>
+            <SectionHeader
+              tone="dark"
+              eyebrow="Learning experience"
+              title={isExamPrep ? 'How preparation is structured' : 'How this program is delivered'}
+            />
+            <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 0 }}>
+              {program.learningExperience.map((item, i) => (
+                <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', gap: 20, padding: '16px 0', borderBottom: i < program.learningExperience!.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: domainAccent.text, paddingTop: 2 }}>{String(i + 1).padStart(2, '0')}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 15, lineHeight: 1.65 }}>{item}</div>
+                </div>
+              ))}
+            </div>
+          </FadeIn>
+
+          {program.programType === 'PROFESSIONAL' && (
+            <FadeIn delay={120}>
+              <div style={{ marginTop: 32 }}>
+                <MediaImage
+                  src={PHOTO.workshop}
+                  alt="Learners in a workshop session"
+                  aspect="21/9"
+                  overlay="full"
+                  overlayText="Live sessions · Expert workshops · Cohort events"
+                  objectPosition="center 40%"
+                />
+              </div>
+            </FadeIn>
+          )}
+        </Section>
+      )}
+
+      {/* ── FACULTY ───────────────────────────────────────────────────────── */}
       {program.faculty && program.faculty.length > 0 && (
-        <section id="faculty" style={{ background: C.white, padding: 'clamp(48px,8vw,80px) clamp(16px,4vw,32px)', borderTop: `1px solid ${T.lineLight}` }}>
-          <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-            <FadeIn>
-              <MonoLabel>{isExamPrep ? 'Subject experts' : 'Faculty'}</MonoLabel>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(24px,3vw,36px)', fontWeight: 600, color: C.ink, margin: '0 0 8px', letterSpacing: '-0.025em' }}>
-                {isExamPrep ? 'Who leads this preparation' : 'Who teaches this program'}
-              </h2>
-              {program.faculty.some(f => f.placeholder) && (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: C.sand, borderRadius: 6, padding: '5px 12px', marginBottom: 28, marginTop: 8 }}>
-                  <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>Faculty profiles published when enrollment opens</span>
-                </div>
-              )}
-            </FadeIn>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 16, marginTop: 28 }}>
-              {program.faculty.map((f, i) => (
-                <FadeIn key={i} delay={i * 70}>
-                  <div style={{ background: C.sand, borderRadius: T.rCard, padding: '24px 24px', display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                    <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'rgba(243,107,33,0.12)', border: '2px solid rgba(243,107,33,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 18, fontWeight: 700, color: C.orange, fontFamily: 'var(--font-display)' }}>
-                      {f.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.ink, marginBottom: 2 }}>{f.name}</div>
-                      <div style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 6, letterSpacing: '0.04em' }}>{f.role.toUpperCase()}</div>
-                      <div style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.55 }}>{f.expertise}</div>
-                    </div>
-                  </div>
-                </FadeIn>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* CAREER SUPPORT (Professional programs) */}
-      {isCareerOS && (
-        <section id="career" style={{ background: C.ink, padding: 'clamp(48px,8vw,80px) clamp(16px,4vw,32px)' }}>
-          <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-            <FadeIn>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }} className="two-col">
-                <div>
-                  <div style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 14 }}>CAREER OS</div>
-                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(26px,3vw,40px)', fontWeight: 600, color: C.white, margin: '0 0 16px', letterSpacing: '-0.025em', lineHeight: 1.1 }}>
-                    Your career support,<br />included on completion.
-                  </h2>
-                  <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 440 }}>
-                    Completing this Professional Program activates Career OS: resume, interview preparation, job board, and applications. Not a vague “career support” line.
-                  </p>
-                  {/* Activation flow */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 28, flexWrap: 'wrap' }}>
-                    {['Complete Program', 'Access Granted', 'Career OS Active'].map((step, i, arr) => (
-                      <div key={step} style={{ display: 'flex', alignItems: 'center' }}>
-                        <div style={{ background: i === 1 ? C.orange : 'rgba(255,255,255,0.06)', border: `1px solid ${i === 1 ? C.orange : 'rgba(255,255,255,0.12)'}`, borderRadius: 7, padding: '8px 16px' }}>
-                          <div style={{ color: i === 1 ? C.white : 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: i === 1 ? 600 : 400 }}>{step}</div>
-                        </div>
-                        {i < arr.length - 1 && <div style={{ width: 20, height: 1, background: 'rgba(255,255,255,0.12)', flexShrink: 0 }} />}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                {/* Career features grid */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                  {[
-                    { label: 'Resume & Profile', desc: 'Build and review a professional profile from program work' },
-                    { label: 'Interview Prep', desc: 'Role-specific preparation and mock interviews' },
-                    { label: 'Job Board', desc: 'Openings you can inspect and apply to' },
-                    { label: 'Applications', desc: 'Track submissions you actually send' },
-                    { label: 'Career Readiness', desc: 'Recommended actions once you have real progress' },
-                    { label: 'Career OS', desc: 'The product that opens on program completion' },
-                  ].map(({ label, desc }) => (
-                    <div key={label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, padding: '16px 18px' }}>
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 4 }}>{label}</div>
-                      <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, lineHeight: 1.5 }}>{desc}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </FadeIn>
-          </div>
-        </section>
-      )}
-
-      {/* REVIEWS / STORIES */}
-      {!isExamPrep && (
-        <section id="reviews" style={{ background: C.warmWhite, padding: 'clamp(48px,8vw,80px) clamp(16px,4vw,32px)', borderTop: `1px solid ${T.lineLight}` }}>
-          <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-            <FadeIn>
-              <MonoLabel>Learner outcomes</MonoLabel>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 8, flexWrap: 'wrap', gap: 12 }}>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(24px,3vw,36px)', fontWeight: 600, color: C.ink, margin: 0, letterSpacing: '-0.025em' }}>
-                  Real people. Real outcomes.
-                </h2>
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: C.sand, borderRadius: 6, padding: '5px 12px' }}>
-                  <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>Sample content — verified stories will appear here</span>
-                </div>
-              </div>
-            </FadeIn>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16, marginTop: 28 }}>
-              {stories.slice(0, 3).map((s, i) => (
-                <FadeIn key={s.name} delay={i * 70}>
-                  <div style={{ background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: T.rCard, padding: '26px 24px', display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ fontSize: 28, color: C.orange, fontFamily: 'var(--font-display)', lineHeight: 1, marginBottom: 14, opacity: 0.6 }}>"</div>
-                    <p style={{ color: C.ink, fontSize: 14, lineHeight: 1.72, margin: '0 0 22px', flex: 1 }}>{s.provided}</p>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 18, borderTop: `1px solid ${T.lineLight}` }}>
-                      <div style={{ width: 38, height: 38, borderRadius: '50%', background: 'rgba(243,107,33,0.1)', border: '1px solid rgba(243,107,33,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.orange, fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{s.initials}</div>
-                      <div>
-                        <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, color: C.ink, fontWeight: 600 }}>{s.name}</div>
-                        <div style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2, letterSpacing: '0.04em' }}>{s.outcome}</div>
-                      </div>
-                    </div>
-                  </div>
-                </FadeIn>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* CERTIFICATION */}
-      <section style={{ background: C.sand, padding: 'clamp(36px,6vw,56px) clamp(16px,4vw,32px)', borderTop: `1px solid ${T.lineLight}` }}>
-        <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
+        <Section id="faculty" tone="canvas" divider>
           <FadeIn>
-            <div style={{ display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
-              <div style={{ width: 56, height: 56, borderRadius: 14, background: `linear-gradient(135deg, ${C.orange} 0%, #ff9a3c 100%)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="8" r="6"/><path d="M8.5 14.5L6 22l6-2 6 2-2.5-7.5"/></svg>
-              </div>
-              <div style={{ flex: 1 }}>
-                <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>CERTIFICATE</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{program.cert}</div>
-                <div style={{ color: C.slate, fontSize: 13.5 }}>Issued by Skylent on successful completion. Includes a verifiable credential ID.{enrollStatus === 'coming_soon' ? ' Available when enrollment opens.' : ''}</div>
-              </div>
-            </div>
+            <SectionHeader
+              tone="dark"
+              eyebrow={isExamPrep ? 'Subject experts' : 'Faculty'}
+              title={isExamPrep ? 'Who leads this preparation' : 'Who teaches this program'}
+              lead={program.faculty.some(f => f.placeholder) ? 'Faculty profiles published when enrollment opens.' : undefined}
+            />
           </FadeIn>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      {program.faqs && program.faqs.length > 0 && (
-        <section id="faq" style={{ background: C.white, padding: 'clamp(48px,8vw,80px) clamp(16px,4vw,32px)', borderTop: `1px solid ${T.lineLight}` }}>
-          <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-            <FadeIn>
-              <MonoLabel>FAQs</MonoLabel>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(24px,3vw,36px)', fontWeight: 600, color: C.ink, margin: '0 0 32px', letterSpacing: '-0.025em' }}>Common questions</h2>
-            </FadeIn>
-            <div style={{ maxWidth: 780 }}>
-              {program.faqs.map((faq, i) => {
-                const isOpen = faqOpen === faq.q
-                return (
-                  <FadeIn key={i} delay={i * 40}>
-                    <div style={{ borderBottom: i < program.faqs!.length - 1 ? `1px solid ${T.lineLight}` : 'none' }}>
-                      <button
-                        onClick={() => setFaqOpen(isOpen ? null : faq.q)}
-                        style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, padding: '20px 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
-                      >
-                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink, lineHeight: 1.4 }}>{faq.q}</span>
-                        <span style={{ color: C.orange, fontSize: 20, display: 'inline-block', transform: isOpen ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>+</span>
-                      </button>
-                      {isOpen && (
-                        <div style={{ paddingBottom: 20 }}>
-                          <p style={{ color: C.slate, fontSize: 14.5, lineHeight: 1.78, margin: 0 }}>{faq.a}</p>
-                        </div>
-                      )}
-                    </div>
-                  </FadeIn>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* ── PRICING TIERS ────────────────────────────────────────────────────── */}
-      <section style={{ background: C.ink, padding: 'clamp(48px,8vw,80px) clamp(16px,4vw,32px)' }}>
-        <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-          <FadeIn>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'end', marginBottom: 44 }} className="two-col-sm">
-              <div>
-                <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 12 }}>FEES & ENROLLMENT</div>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(26px,3.4vw,40px)', fontWeight: 600, color: C.white, margin: 0, letterSpacing: '-0.025em' }}>Choose your plan</h2>
-              </div>
-              <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 14, margin: 0, maxWidth: 280, textAlign: 'right' }}>Every plan includes the full curriculum and Skylent certificate.</p>
-            </div>
-          </FadeIn>
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(program.pricing.length, 3)}, 1fr)`, gap: 16 }} className="three-col">
-            {program.pricing.map((tier, i) => (
-              <FadeIn key={tier.name} delay={i * 60}>
-                <div style={{ background: tier.highlight ? 'rgba(243,107,33,0.08)' : 'rgba(255,255,255,0.03)', border: `1px solid ${tier.highlight ? 'rgba(243,107,33,0.35)' : 'rgba(255,255,255,0.08)'}`, borderRadius: T.rCard, padding: '32px 26px', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-                  {tier.highlight && (
-                    <div style={{ position: 'absolute', top: -11, left: '50%', transform: 'translateX(-50%)', background: C.orange, color: C.white, fontSize: 10, fontFamily: 'var(--font-mono)', padding: '4px 14px', borderRadius: 12, letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>RECOMMENDED</div>
-                  )}
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: tier.highlight ? C.orange : C.white, marginBottom: 16 }}>{tier.name}</div>
-                  <div style={{ marginBottom: 22 }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 30, fontWeight: 700, color: C.white, lineHeight: 1 }}>₹{tier.price.toLocaleString('en-IN')}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.22)', fontSize: 12.5, textDecoration: 'line-through', marginTop: 4, fontFamily: 'var(--font-mono)' }}>₹{tier.originalPrice.toLocaleString('en-IN')}</div>
+          <div style={{ marginTop: 40, display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {program.faculty.map((f, i) => (
+              <FadeIn key={i} delay={i * 50}>
+                <div style={{ display: 'grid', gridTemplateColumns: '56px 1fr', gap: 20, alignItems: 'start', padding: '24px 0', borderBottom: i < program.faculty!.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
+                  <div style={{
+                    width: 52, height: 52, borderRadius: '50%', background: 'rgba(243,107,33,0.1)',
+                    border: '1px solid rgba(243,107,33,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 16, fontWeight: 700, color: C.orange, fontFamily: 'var(--font-display)',
+                  }}>
+                    {f.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                   </div>
-                  <div style={{ flex: 1, marginBottom: 24 }}>
-                    {tier.features.map(f => (
-                      <div key={f} style={{ display: 'flex', gap: 9, alignItems: 'flex-start', marginBottom: 9 }}>
-                        <svg width="13" height="13" viewBox="0 0 12 12" fill="none" style={{ flexShrink: 0, marginTop: 2 }}><path d="M2 6.5L5 9.5L10 3" stroke={tier.highlight ? C.orange : 'rgba(255,255,255,0.35)'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                        <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.5 }}>{f}</span>
-                      </div>
-                    ))}
+                  <div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 4 }}>{f.name}</div>
+                    <div className="skylent-label" style={{ color: C.orange, marginBottom: 8 }}>{f.role}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.6 }}>{f.expertise}</div>
                   </div>
-                  <button
-                    onClick={() => setApplyOpen(true)}
-                    style={{ background: tier.highlight ? C.orange : 'transparent', border: `1px solid ${tier.highlight ? C.orange : 'rgba(255,255,255,0.18)'}`, color: tier.highlight ? C.white : 'rgba(255,255,255,0.55)', borderRadius: 8, padding: '12px 0', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', width: '100%', transition: 'opacity 0.18s' }}
-                    onMouseEnter={e => (e.currentTarget.style.opacity = '0.82')}
-                    onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                  >
-                    {ctaLabel}
-                  </button>
                 </div>
               </FadeIn>
             ))}
           </div>
-        </div>
-      </section>
+        </Section>
+      )}
 
-      {/* ── FINAL CTA ────────────────────────────────────────────────────────── */}
-      <section style={{ background: C.warmWhite, padding: 'clamp(48px,8vw,80px) clamp(16px,4vw,32px)', borderTop: `1px solid ${T.lineLight}` }}>
-        <div style={{ maxWidth: 760, margin: '0 auto', textAlign: 'center' }}>
+      {/* ── CAREER OS ─────────────────────────────────────────────────────── */}
+      {isCareerOS && (
+        <Section id="career" tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
           <FadeIn>
-            {/* Photo strip */}
-            <div style={{ borderRadius: T.rCard, overflow: 'hidden', aspectRatio: '21/6', marginBottom: 44, position: 'relative' }}>
-              <img
-                src={heroPhoto}
-                alt="Learning environment"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-              />
-              <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(11,13,15,0.08), rgba(11,13,15,0.5))' }} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }} className="two-col">
+              <div>
+                <Eyebrow tone="dark" accent>Career OS</Eyebrow>
+                <h2 className="skylent-display-md" style={{ color: C.white, margin: '18px 0 16px' }}>
+                  From program completion to job applications.
+                </h2>
+                <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.75, margin: '0 0 32px', maxWidth: 440 }}>
+                  Completing this Professional Program activates Career OS: profile, interview preparation, job board, and application tracking.
+                </p>
+                <FlowStrip
+                  tone="dark"
+                  steps={[
+                    { label: 'Complete Program', sub: 'Finish curriculum & projects' },
+                    { label: 'Access Granted', sub: 'Career OS unlocks', highlight: true },
+                    { label: 'Apply & Track', sub: 'Jobs & interviews' },
+                  ]}
+                />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                {[
+                  { label: 'Resume & Profile', desc: 'Build a profile from program work' },
+                  { label: 'Interview Prep', desc: 'Role-specific preparation and mocks' },
+                  { label: 'Job Board', desc: 'Openings you can inspect and apply to' },
+                  { label: 'Applications', desc: 'Track submissions you send' },
+                ].map(({ label, desc }, i, arr) => (
+                  <div key={label} style={{ padding: '18px 0', borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 4 }}>{label}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 13, lineHeight: 1.5 }}>{desc}</div>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 20, textTransform: 'uppercase' }}>Get started</div>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(28px,4vw,44px)', fontWeight: 600, color: C.ink, margin: '0 0 16px', letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+          </FadeIn>
+        </Section>
+      )}
+
+      {/* ── REVIEWS — honest empty state ──────────────────────────────────── */}
+      {!isExamPrep && (
+        <Section id="reviews" tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
+          <FadeIn>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'center' }} className="two-col">
+              <div>
+                <Eyebrow tone="dark">Learner outcomes</Eyebrow>
+                <h2 className="skylent-display-sm" style={{ color: C.white, margin: '16px 0 12px' }}>
+                  Stories from this program
+                </h2>
+                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 440 }}>
+                  Verified learner stories will be published here when available. Sample content is not shown as testimonials.
+                </p>
+              </div>
+              <div style={{ padding: '28px 32px', borderLeft: `2px solid ${domainAccent.border}`, borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}` }}>
+                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 12 }}>Status</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.white, marginBottom: 8 }}>Not yet published</div>
+                <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 13, lineHeight: 1.6 }}>
+                  Outcome stories require verification before they appear on this page.
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+        </Section>
+      )}
+
+      {/* ── CERTIFICATION + FAQ transition ────────────────────────────────── */}
+      <Section tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionCompact }}>
+        <FadeIn>
+          <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'center' }} className="program-cert-split">
+            <GlassSurface level={2} padding="24px 22px" style={{ textAlign: 'center' }}>
+              <div style={{
+                width: 56, height: 56, borderRadius: 14, margin: '0 auto 16px',
+                background: `linear-gradient(135deg, ${domainAccent.primary}, ${domainAccent.secondary})`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="8" r="6"/><path d="M8.5 14.5L6 22l6-2 6 2-2.5-7.5"/></svg>
+              </div>
+              <div className="skylent-label" style={{ color: domainAccent.textMuted, marginBottom: 6 }}>Credential</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, lineHeight: 1.3 }}>{program.cert}</div>
+              <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${T.lineDark}`, fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)' }}>
+                Verifiable on completion
+              </div>
+            </GlassSurface>
+            <div>
+              <Eyebrow tone="dark">Certificate</Eyebrow>
+              <h2 className="skylent-display-sm" style={{ color: C.white, margin: '14px 0 12px' }}>
+                Credential issued on successful completion
+              </h2>
+              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 520 }}>
+                Issued by Skylent when you complete the program and pass the final assessment. Each certificate includes a verifiable credential reference.
+                {enrollStatus === 'coming_soon' ? ' Available when enrollment opens.' : ''}
+              </p>
+            </div>
+          </div>
+        </FadeIn>
+      </Section>
+
+      {/* ── FAQ ───────────────────────────────────────────────────────────── */}
+      {program.faqs && program.faqs.length > 0 && (
+        <Section id="faq" tone="canvas" divider style={{ paddingTop: T.sectionCompact, paddingBottom: T.sectionTight }}>
+          <FadeIn>
+            <SectionHeader tone="dark" eyebrow="FAQs" title="Common questions" />
+          </FadeIn>
+          <div style={{ maxWidth: 780, marginTop: 28 }}>
+            {program.faqs.map((faq, i) => {
+              const isOpen = faqOpen === faq.q
+              return (
+                <FadeIn key={i} delay={i * 30}>
+                  <div style={{ borderBottom: `1px solid ${T.lineDark}` }}>
+                    <button
+                      onClick={() => setFaqOpen(isOpen ? null : faq.q)}
+                      style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, padding: '22px 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
+                    >
+                      <span style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(15px,2vw,17px)', fontWeight: 600, color: C.white, lineHeight: 1.4 }}>{faq.q}</span>
+                      <span style={{ color: domainAccent.text, fontSize: 20, transform: isOpen ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>+</span>
+                    </button>
+                    {isOpen && (
+                      <div style={{ paddingBottom: 22 }}>
+                        <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 15, lineHeight: 1.78, margin: 0 }}>{faq.a}</p>
+                      </div>
+                    )}
+                  </div>
+                </FadeIn>
+              )
+            })}
+          </div>
+        </Section>
+      )}
+
+      {/* ── PRICING COMPARISON ────────────────────────────────────────────── */}
+      <Section id="pricing" tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
+        <FadeIn>
+          <SectionHeader
+            tone="dark"
+            eyebrow="Fees & enrollment"
+            title="Choose your plan"
+            lead="Every plan includes the full curriculum and Skylent certificate."
+          />
+        </FadeIn>
+
+        <div style={{ marginTop: 32, overflowX: 'auto' }} className="program-pricing-wrap">
+          <div style={{ minWidth: 560 }}>
+            {/* Tier headers */}
+            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${program.pricing.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
+              <div style={{ padding: '16px 0', color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>Plan</div>
+              {program.pricing.map(tier => (
+                <div key={tier.name} style={{ padding: '16px 20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? domainAccent.subtle : 'transparent' }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: tier.highlight ? domainAccent.text : C.white }}>{tier.name}</div>
+                  {tier.highlight && <div className="skylent-label" style={{ color: domainAccent.text, fontSize: 9, marginTop: 4 }}>Recommended</div>}
+                </div>
+              ))}
+            </div>
+            {/* Prices */}
+            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${program.pricing.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
+              <div style={{ padding: '20px 0', color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>Price</div>
+              {program.pricing.map(tier => (
+                <div key={tier.name} style={{ padding: '20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? `${domainAccent.subtle}` : 'transparent' }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 24, fontWeight: 700, color: C.white }}>₹{tier.price.toLocaleString('en-IN')}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.22)', fontSize: 12, textDecoration: 'line-through', marginTop: 4 }}>₹{tier.originalPrice.toLocaleString('en-IN')}</div>
+                </div>
+              ))}
+            </div>
+            {/* Feature rows */}
+            {allPricingFeatures.map((feature, fi) => (
+              <div key={feature} style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${program.pricing.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
+                <div style={{ padding: '14px 0', color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.4 }}>{feature}</div>
+                {program.pricing.map(tier => (
+                  <div key={tier.name} style={{ padding: '14px 20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? `${domainAccent.subtle}` : 'transparent' }}>
+                    {tier.features.includes(feature) ? (
+                      <span style={{ color: tier.highlight ? domainAccent.text : 'rgba(255,255,255,0.5)', fontSize: 14 }}>✓</span>
+                    ) : (
+                      <span style={{ color: 'rgba(255,255,255,0.12)', fontSize: 14 }}>—</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
+            {/* CTA row */}
+            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${program.pricing.length}, 1fr)`, gap: 0, paddingTop: 24 }}>
+              <div />
+              {program.pricing.map(tier => (
+                <div key={tier.name} style={{ padding: '0 12px', borderLeft: `1px solid ${T.lineDark}` }}>
+                  <Button
+                    variant={tier.highlight ? 'primary' : 'secondary'}
+                    full
+                    size="sm"
+                    onClick={() => setApplyOpen(true)}
+                  >
+                    {ctaLabel}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* ── FINAL CTA ─────────────────────────────────────────────────────── */}
+      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.sectionTight} ${T.gutter}` }}>
+        <Aurora themeId={auroraTheme} />
+        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+          <FadeIn>
+            <MediaImage
+              src={heroPhoto}
+              alt={`${program.name} learning environment`}
+              aspect="21/9"
+              overlay="full"
+              style={{ marginBottom: 32 }}
+              objectPosition="center 35%"
+            />
+            <Eyebrow tone="dark" accent>Get started</Eyebrow>
+            <h2 className="skylent-display-md" style={{ color: C.white, margin: '20px 0 16px' }}>
               {enrollStatus === 'coming_soon'
-                ? `Be the first to know when ${program.name} opens`
+                ? `Be notified when ${program.name} opens`
                 : `Ready to begin ${program.name}?`}
             </h2>
-            <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, margin: '0 0 36px' }}>
+            <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.75, margin: '0 0 36px' }}>
               {enrollStatus === 'coming_soon'
                 ? 'Register your interest and we will notify you when enrollment opens.'
-                : `Next batch starts ${program.upcomingBatch}. Applications close when the cohort fills.`}
+                : `Next batch starts ${program.upcomingBatch}.`}
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <button
-                onClick={() => setApplyOpen(true)}
-                style={{ background: enrollStatus === 'coming_soon' ? C.ink : C.orange, border: 'none', color: C.white, borderRadius: 9, padding: '14px 36px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
-                onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-              >
-                {ctaLabel} →
-              </button>
-              <a href="/contact" style={{ display: 'inline-block', background: 'transparent', border: `1px solid ${T.lineLight}`, color: C.ink, borderRadius: 9, padding: '14px 28px', fontSize: 15, textDecoration: 'none', transition: 'border-color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = C.orange)}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = T.lineLight)}
-              >
-                Talk to an advisor
-              </a>
+              <Button variant="primary" size="lg" onClick={() => setApplyOpen(true)}>{ctaLabel} →</Button>
+              <Button variant="secondary" size="lg" onClick={() => navigate('/contact')}>Talk to an advisor</Button>
             </div>
           </FadeIn>
         </div>

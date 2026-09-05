@@ -1,53 +1,68 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { C, FadeIn } from './shared'
+import { FadeIn } from './shared'
+import { C, T, type } from '../tokens'
+import { Aurora, GridField, MediaImage } from './foundation'
+import type { AuroraThemeId } from '../aurora-themes'
+
+// Re-export tokens for backward compatibility
+export { T } from '../tokens'
+export { MediaImage } from './foundation'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Skylent shared design-system primitives.
 // Restrained, editorial, technology-forward. Orange is a scarce accent.
-// Built on the existing token object `C` and the fade-in hooks from shared.tsx.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const T = {
-  // radius scale
-  rControl: 8,
-  rCard: 16,
-  rPill: 100,
-  // section rhythm
-  section: 'clamp(88px, 12vw, 140px)',
-  gutter: 'clamp(20px, 5vw, 32px)',
-  maxW: 1240,
-  // hairlines
-  lineLight: 'rgba(11,13,15,0.08)',
-  lineStrong: 'rgba(11,13,15,0.14)',
-  lineDark: 'rgba(255,255,255,0.09)',
-  lineDarkStrong: 'rgba(255,255,255,0.16)',
-} as const
-
-type Tone = 'light' | 'dark'
+type Tone = 'light' | 'dark' | 'canvas'
 
 // ── Section wrapper ──────────────────────────────────────────────────────────
+function sectionBg(tone: Tone, bg?: string): string {
+  if (bg) return bg
+  if (tone === 'canvas') return C.canvas
+  if (tone === 'dark') return C.ink
+  return C.warmWhite
+}
+
 export function Section({
   children,
-  bg = C.warmWhite,
+  bg,
+  tone = 'light',
   style,
   id,
+  divider,
 }: {
   children: React.ReactNode
   bg?: string
+  tone?: Tone
   style?: React.CSSProperties
   id?: string
+  divider?: boolean
 }) {
+  const background = sectionBg(tone, bg)
+  const textColor = tone === 'light' ? C.ink : C.white
   return (
-    <section id={id} style={{ background: bg, padding: `${T.section} ${T.gutter}`, ...style }}>
-      <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>{children}</div>
-    </section>
+    <>
+      {divider && <div className="skylent-section-divider" />}
+      <section
+        id={id}
+        style={{
+          background,
+          color: textColor,
+          padding: `${T.section} ${T.gutter}`,
+          position: 'relative',
+          ...style,
+        }}
+      >
+        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative' }}>{children}</div>
+      </section>
+    </>
   )
 }
 
 // ── Eyebrow (mono label) ─────────────────────────────────────────────────────
 export function Eyebrow({ children, tone = 'light', accent }: { children: React.ReactNode; tone?: Tone; accent?: boolean }) {
-  const color = accent ? C.orange : tone === 'dark' ? 'rgba(255,255,255,0.42)' : C.slate
+  const color = accent ? C.orange : tone === 'light' ? C.slate : 'rgba(255,255,255,0.42)'
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
       <span style={{ width: 20, height: 1, background: 'currentColor', opacity: 0.5 }} />
@@ -75,7 +90,7 @@ export function Heading({
     xl: 'clamp(40px, 6vw, 84px)',
   }
   return (
-    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: sizes[size], lineHeight: 1.04, letterSpacing: '-0.03em', color: tone === 'dark' ? C.white : C.ink, margin: 0, ...style }}>
+    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: sizes[size], lineHeight: 1.04, letterSpacing: '-0.03em', color: tone === 'light' ? C.ink : C.white, margin: 0, ...style }}>
       {children}
     </h2>
   )
@@ -103,7 +118,7 @@ export function SectionHeader({
         {eyebrow && <div style={{ marginBottom: 22 }}><Eyebrow tone={tone}>{eyebrow}</Eyebrow></div>}
         <Heading tone={tone}>{title}</Heading>
         {lead && (
-          <p style={{ color: tone === 'dark' ? 'rgba(255,255,255,0.5)' : C.slate, fontSize: 17, lineHeight: 1.7, margin: '22px 0 0', maxWidth: 560, ...(align === 'center' ? { marginLeft: 'auto', marginRight: 'auto' } : {}) }}>{lead}</p>
+          <p style={{ color: tone === 'light' ? C.slate : 'rgba(255,255,255,0.5)', fontSize: type.bodyLg, lineHeight: 1.7, margin: '22px 0 0', maxWidth: 560, ...(align === 'center' ? { marginLeft: 'auto', marginRight: 'auto' } : {}) }}>{lead}</p>
         )}
       </div>
       {action}
@@ -235,9 +250,13 @@ export function Card({
 
 // ── Product surface (dark glass, for UI mockups) ─────────────────────────────
 export function ProductSurface({ children, style, depth = 2 }: { children: React.ReactNode; style?: React.CSSProperties; depth?: 1 | 2 | 3 }) {
-  const shadow = depth === 3 ? '0 40px 100px rgba(0,0,0,0.55)' : depth === 1 ? '0 8px 30px rgba(0,0,0,0.25)' : '0 24px 70px rgba(0,0,0,0.4)'
+  const level = depth as 1 | 2 | 3
+  const glassVar = level === 3 ? 'var(--glass-03-bg)' : level === 1 ? 'var(--glass-01-bg)' : 'var(--glass-02-bg)'
+  const borderVar = level === 3 ? 'var(--glass-03-border)' : level === 1 ? 'var(--glass-01-border)' : 'var(--glass-02-border)'
+  const blurVar = level === 3 ? 'var(--glass-03-blur)' : level === 1 ? 'var(--glass-01-blur)' : 'var(--glass-02-blur)'
+  const shadowVar = level === 3 ? 'var(--glass-03-shadow)' : level === 1 ? 'var(--glass-01-shadow)' : 'var(--glass-02-shadow)'
   return (
-    <div style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, backdropFilter: 'blur(20px)', borderRadius: 18, boxShadow: shadow, ...style }}>
+    <div style={{ background: glassVar, border: `1px solid ${borderVar}`, backdropFilter: blurVar, WebkitBackdropFilter: blurVar, borderRadius: 18, boxShadow: shadowVar, ...style }}>
       {children}
     </div>
   )
@@ -254,11 +273,7 @@ export function Stat({ value, label, tone = 'light' }: { value: string; label: s
 }
 
 // ── Grid background overlay (subtle technical texture for dark sections) ──────
-export function GridField({ opacity = 0.02, size = 64 }: { opacity?: number; size?: number }) {
-  return (
-    <div style={{ position: 'absolute', inset: 0, backgroundImage: `linear-gradient(rgba(255,255,255,${opacity}) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,${opacity}) 1px, transparent 1px)`, backgroundSize: `${size}px ${size}px`, pointerEvents: 'none' }} />
-  )
-}
+export { GridField } from './foundation'
 
 // ── Glow (single restrained radial accent) ───────────────────────────────────
 export function Glow({ x = '50%', y = '30%', size = 560, color = C.orange, strength = '16' }: { x?: string; y?: string; size?: number; color?: string; strength?: string }) {
@@ -276,6 +291,8 @@ export function PageHero({
   children,
   photo,
   photoAlt,
+  auroraTheme,
+  photoAspect = '4/3',
 }: {
   eyebrow: string
   title: React.ReactNode
@@ -286,26 +303,35 @@ export function PageHero({
   children?: React.ReactNode
   photo?: string
   photoAlt?: string
+  auroraTheme?: AuroraThemeId
+  photoAspect?: '4/3' | '16/9' | '4/5' | '3/2'
 }) {
+  const isDark = tone !== 'light'
   return (
     <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `clamp(88px, 10vw, 120px) ${T.gutter} clamp(48px, 6vw, 72px)` }}>
-      <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: photo ? '1.05fr 0.95fr' : '1fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }} className="two-col">
+      {isDark && auroraTheme && <Aurora themeId={auroraTheme} />}
+      {isDark && <GridField opacity={0.02} />}
+      <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: photo ? '1.05fr 0.95fr' : '1fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }} className="two-col skylent-page-hero">
           <div>
             <div style={{ marginBottom: 20 }}><Eyebrow tone={tone} accent>{eyebrow}</Eyebrow></div>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(34px, 5.2vw, 64px)', lineHeight: 0.98, letterSpacing: '-0.035em', color: tone === 'dark' ? C.white : C.ink, margin: 0, maxWidth: 720 }}>
+            <h1 className="skylent-display-lg" style={{ color: isDark ? C.white : C.ink, margin: 0, maxWidth: 720 }}>
               {title}
             </h1>
             {lead && (
-              <p style={{ color: tone === 'dark' ? 'rgba(255,255,255,0.62)' : C.slate, fontSize: 'clamp(16px, 2vw, 18px)', lineHeight: 1.7, margin: '20px 0 0', maxWidth: 520 }}>{lead}</p>
+              <p className="skylent-body-lg" style={{ color: isDark ? 'rgba(255,255,255,0.62)' : C.slate, margin: '20px 0 0', maxWidth: 520 }}>{lead}</p>
             )}
             {actions && <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 32 }}>{actions}</div>}
             {children}
           </div>
           {photo && (
-            <div style={{ borderRadius: T.rCard, overflow: 'hidden', aspectRatio: '4/3', background: '#1a1f24', position: 'relative' }}>
-              <img src={photo} alt={photoAlt ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-            </div>
+            <MediaImage
+              src={photo}
+              alt={photoAlt ?? ''}
+              aspect={photoAspect}
+              className="skylent-hero-visual"
+              overlay="bottom"
+            />
           )}
         </div>
       </div>
@@ -339,6 +365,7 @@ export function CTABand({
   secondary,
   bg = C.ink,
   tone = 'dark',
+  auroraTheme,
 }: {
   eyebrow?: string
   title: React.ReactNode
@@ -347,18 +374,21 @@ export function CTABand({
   secondary?: { label: string; to: string }
   bg?: string
   tone?: Tone
+  auroraTheme?: AuroraThemeId
 }) {
   const navigate = useNavigate()
+  const isDark = tone !== 'light'
   return (
     <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `${T.section} ${T.gutter}` }}>
-      <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center', position: 'relative' }}>
+      {isDark && auroraTheme && <Aurora themeId={auroraTheme} />}
+      <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <FadeIn>
           {eyebrow && <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'center' }}><Eyebrow tone={tone} accent>{eyebrow}</Eyebrow></div>}
           <Heading tone={tone} size="lg" style={{ textAlign: 'center' }}>{title}</Heading>
-          {lead && <p style={{ color: tone === 'dark' ? 'rgba(255,255,255,0.55)' : C.slate, fontSize: 19, lineHeight: 1.6, margin: '24px auto 0', maxWidth: 560 }}>{lead}</p>}
+          {lead && <p style={{ color: isDark ? 'rgba(255,255,255,0.55)' : C.slate, fontSize: 19, lineHeight: 1.6, margin: '24px auto 0', maxWidth: 560 }}>{lead}</p>}
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginTop: 44 }}>
             <Button variant="primary" size="lg" onClick={() => navigate(primary.to)}>{primary.label} →</Button>
-            {secondary && <Button variant={tone === 'dark' ? 'secondary' : 'ghost'} size="lg" onClick={() => navigate(secondary.to)}>{secondary.label}</Button>}
+            {secondary && <Button variant={isDark ? 'secondary' : 'ghost'} size="lg" onClick={() => navigate(secondary.to)}>{secondary.label}</Button>}
           </div>
         </FadeIn>
       </div>

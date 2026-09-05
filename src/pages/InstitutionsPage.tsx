@@ -1,8 +1,19 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
-import { Section, SectionHeader, PageHero, Eyebrow, Button, Badge, CTABand, T } from '../components/ui'
+import { Section, SectionHeader, Button, Eyebrow, CTABand, T, Heading } from '../components/ui'
+import { Aurora, MediaImage, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
+import { getDomainAccent } from '../aurora-themes'
 import { PHOTO } from '../media'
+
+const accent = getDomainAccent('institution')
+
+const INSTITUTION_NAV_ITEMS: ContextualNavItem[] = [
+  { id: 'institution-types', label: 'Institution Types', sub: 'Six partnership models' },
+  { id: 'ecosystem', label: 'Ecosystem', sub: 'Education → Skills → Career' },
+  { id: 'partnership', label: 'Partnership', sub: 'How it works' },
+  { id: 'enquiries', label: 'Enquiries', sub: 'Get in touch' },
+]
 
 const institutionTypes = [
   {
@@ -20,7 +31,6 @@ const institutionTypes = [
       'Faculty development resources',
     ],
     photo: PHOTO.schoolBuilding,
-    color: '#1a2418',
   },
   {
     id: 'colleges',
@@ -37,7 +47,6 @@ const institutionTypes = [
       'Placement preparation workflow',
     ],
     photo: PHOTO.college,
-    color: '#161820',
   },
   {
     id: 'universities',
@@ -54,7 +63,6 @@ const institutionTypes = [
       'Postgraduate specialisation tracks',
     ],
     photo: PHOTO.university,
-    color: '#1c1614',
   },
   {
     id: 'skill-institutions',
@@ -71,7 +79,6 @@ const institutionTypes = [
       'Job board connection',
     ],
     photo: PHOTO.training,
-    color: '#16141f',
   },
   {
     id: 'assessment',
@@ -88,7 +95,6 @@ const institutionTypes = [
       'Exam-prep product collaboration',
     ],
     photo: PHOTO.assessment,
-    color: '#13201c',
   },
   {
     id: 'industry',
@@ -105,7 +111,6 @@ const institutionTypes = [
       'Hiring pathway into Career OS jobs',
     ],
     photo: PHOTO.industry,
-    color: '#1c1420',
   },
 ]
 
@@ -117,198 +122,291 @@ const partnershipSteps = [
   { n: '05', label: 'Outcomes', desc: 'Graduate career readiness, placements, and continuous improvement.' },
 ]
 
-export default function InstitutionsPage() {
+function InstitutionTypesSection({
+  activeType,
+  setActiveType,
+}: {
+  activeType: string
+  setActiveType: (id: string) => void
+}) {
   const navigate = useNavigate()
-  const [activeType, setActiveType] = useState<string>('colleges')
   const active = institutionTypes.find(t => t.id === activeType) ?? institutionTypes[1]
 
   return (
-    <PageShell>
-      <PageHero
-        eyebrow="For Institutions"
-        photo={PHOTO.university}
-        photoAlt="University campus"
-        title={<>Enterprise software<br />for <span style={{ color: C.orange }}>education.</span></>}
-        lead="Not six marketing cards. Six workflows — schools, colleges, universities, training institutes, assessment partners, and industry — each with a distinct problem and operating model."
-        actions={<>
-          <Button variant="primary" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent</Button>
-          <Button variant="secondary" size="lg" onClick={() => navigate('/os')}>Explore Skylent OS</Button>
-        </>}
-      />
+    <Section id="institution-types" tone="canvas" divider>
+      <FadeIn>
+        <SectionHeader
+          tone="dark"
+          eyebrow="Institution types"
+          title="What can Skylent provide to your institution?"
+          lead="Every institution type has a distinct partnership model. Select yours to see what Skylent delivers."
+        />
+      </FadeIn>
 
-      {/* Institution Type Selector */}
-      <Section bg={C.warmWhite}>
+      <div style={{ marginTop: 48, display: 'grid', gridTemplateColumns: 'minmax(200px, 0.35fr) 1fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }} className="institution-type-grid">
         <FadeIn>
-          <SectionHeader
-            eyebrow="Institution types"
-            title={<>What can Skylent provide<br />to your institution?</>}
-            lead="Every institution type has a distinct partnership model. Select yours to see what Skylent delivers."
-          />
+          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Select type</div>
+          <nav aria-label="Institution types" style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {institutionTypes.map((t, i) => {
+              const selected = activeType === t.id
+              return (
+                <button
+                  key={t.id}
+                  type="button"
+                  onClick={() => setActiveType(t.id)}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'left',
+                    background: selected ? accent.subtle : 'transparent',
+                    border: 'none',
+                    borderLeft: `2px solid ${selected ? accent.primary : 'transparent'}`,
+                    borderBottom: i < institutionTypes.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                    padding: '14px 16px',
+                    cursor: 'pointer',
+                    fontFamily: 'var(--font-body)',
+                  }}
+                >
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: selected ? 600 : 400, color: selected ? C.white : 'rgba(255,255,255,0.55)' }}>
+                    {t.label}
+                  </div>
+                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3 }}>{t.sub}</div>
+                </button>
+              )
+            })}
+          </nav>
         </FadeIn>
 
-        {/* Type tabs */}
-        <FadeIn delay={80}>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 48, marginBottom: 32 }}>
-            {institutionTypes.map(t => (
-              <button
-                key={t.id}
-                onClick={() => setActiveType(t.id)}
-                style={{
-                  background: activeType === t.id ? C.ink : C.white,
-                  color: activeType === t.id ? C.white : C.slate,
-                  border: `1px solid ${activeType === t.id ? C.ink : T.lineLight}`,
-                  borderRadius: T.rPill,
-                  padding: '9px 18px',
-                  fontSize: 13.5,
-                  fontWeight: activeType === t.id ? 600 : 400,
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-body)',
-                  transition: 'all 0.18s',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {t.label}
-              </button>
-            ))}
+        <FadeIn delay={60}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(24px,4vw,40px)', alignItems: 'start' }} className="two-col">
+            <MediaImage src={active.photo} alt={active.label} aspect="4/3" overlay="full" />
+            <div>
+              <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{active.sub}</div>
+              <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 14px' }}>{active.label}</h3>
+              <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.75, margin: '0 0 12px' }}>
+                <strong style={{ color: C.white, fontWeight: 600 }}>Problem. </strong>{active.problem}
+              </p>
+              <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>{active.value}</p>
+              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.7, margin: '0 0 24px' }}>{active.description}</p>
+              <Button variant="primary" onClick={() => navigate('/contact')}>Enquire now →</Button>
+            </div>
           </div>
-        </FadeIn>
 
-        {/* Active type detail */}
-        <FadeIn delay={120}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(20px,4vw,40px)', alignItems: 'stretch' }} className="two-col">
-            <div style={{ background: active.color, borderRadius: T.rCard, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ height: 200, position: 'relative' }}>
-                <img src={active.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', opacity: 0.7 }} />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.55), transparent)' }} />
+          <div style={{ marginTop: 36, paddingTop: 28, borderTop: `1px solid ${T.lineDark}` }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(24px,4vw,48px)' }} className="two-col-sm">
+              <div>
+                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Workflow</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+                  {active.workflow.map((step, i, arr) => (
+                    <span key={step} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                      <span>{step}</span>
+                      {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
+                    </span>
+                  ))}
+                </div>
               </div>
-              <div style={{ padding: 'clamp(24px,3vw,36px)' }}>
-                <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 8 }}>{active.sub.toUpperCase()}</div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(24px,3vw,34px)', fontWeight: 600, color: C.white, margin: '0 0 12px' }}>{active.label}</h3>
-                <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, lineHeight: 1.7, margin: '0 0 16px' }}><strong style={{ color: C.white, fontWeight: 600 }}>Problem. </strong>{active.problem}</p>
-                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 15, lineHeight: 1.7, margin: 0 }}>{active.value}</p>
-                <div style={{ marginTop: 24 }}>
-                  <Button variant="primary" onClick={() => navigate('/contact')}>Enquire now</Button>
+              <div>
+                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Capability</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                  {active.offers.map((offer, i) => (
+                    <div key={offer} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: i < active.offers.length - 1 ? `1px solid ${T.lineDark}` : 'none', alignItems: 'flex-start' }}>
+                      <div style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, flexShrink: 0, marginTop: 7 }} />
+                      <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, lineHeight: 1.55 }}>{offer}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-            <div>
-              <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 14 }}>WORKFLOW</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 28 }}>
-                {active.workflow.map(step => (
-                  <span key={step} style={{ background: C.sand, borderRadius: 8, padding: '8px 12px', fontSize: 13, color: C.ink }}>{step}</span>
+          </div>
+        </FadeIn>
+      </div>
+    </Section>
+  )
+}
+
+function EcosystemSection() {
+  const columns = [
+    {
+      name: 'Education',
+      items: ['Schooling programs', 'Undergraduate tracks', 'Postgraduate pathways'],
+    },
+    {
+      name: 'Skills',
+      items: ['Webinars & workshops', 'Certificate programs', 'Professional programs', 'Job assistance'],
+      accent: true,
+    },
+    {
+      name: 'Career OS',
+      items: ['Interview preparation', 'Job Board access', 'Placement support'],
+    },
+  ]
+
+  return (
+    <Section id="ecosystem" tone="canvas" divider>
+      <FadeIn>
+        <SectionHeader
+          tone="dark"
+          eyebrow="The ecosystem"
+          title="Education → Skills → Career OS, delivered."
+          lead="Regardless of institution type, Skylent delivers the full connected ecosystem — with the depth and scope appropriate to each partnership."
+        />
+      </FadeIn>
+
+      <div style={{ marginTop: 48, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0 }} className="institution-ecosystem-grid">
+        {columns.map((col, i) => (
+          <FadeIn key={col.name} delay={i * 50}>
+            <div style={{ padding: '0 28px 0 0', borderRight: i < columns.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: col.accent ? accent.text : C.white, margin: '0 0 20px' }}>
+                {col.name}
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                {col.items.map((item, j) => (
+                  <div key={item} style={{ display: 'flex', gap: 10, padding: '12px 0', borderBottom: j < col.items.length - 1 ? `1px solid ${T.lineDark}` : 'none', alignItems: 'center' }}>
+                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: col.accent ? accent.primary : 'rgba(255,255,255,0.25)', flexShrink: 0 }} />
+                    <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14 }}>{item}</span>
+                  </div>
                 ))}
               </div>
-              <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 14 }}>CAPABILITY</div>
-              {active.offers.map((offer, i) => (
-                <div key={offer} style={{ display: 'flex', gap: 12, padding: '14px 0', borderBottom: i < active.offers.length - 1 ? `1px solid ${T.lineLight}` : 'none' }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.orange, marginTop: 7, flexShrink: 0 }} />
-                  <div style={{ color: C.ink, fontSize: 14.5, lineHeight: 1.55 }}>{offer}</div>
-                </div>
-              ))}
             </div>
-          </div>
-        </FadeIn>
-      </Section>
+          </FadeIn>
+        ))}
+      </div>
+    </Section>
+  )
+}
 
-      {/* Ecosystem delivery */}
-      <Section bg={C.sand}>
-        <FadeIn>
-          <SectionHeader
-            eyebrow="The ecosystem"
-            title={<>Education → Skills →<br />Career OS, delivered.</>}
-            lead="Regardless of institution type, Skylent delivers the full connected ecosystem — with the depth and scope appropriate to each partnership."
-          />
-        </FadeIn>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2, marginTop: 52 }} className="three-col">
-          {[
-            {
-              name: 'Education',
-              items: ['Schooling programs', 'Undergraduate tracks', 'Postgraduate pathways'],
-              bg: C.warmWhite,
-            },
-            {
-              name: 'Skills',
-              items: ['Webinars & workshops', 'Certificate programs', 'Professional programs', 'Job assistance'],
-              bg: C.ink,
-              dark: true,
-            },
-            {
-              name: 'Career OS',
-              items: ['Interview preparation', 'Job Board access', 'Placement support'],
-              bg: C.warmWhite,
-            },
-          ].map(col => (
-            <div key={col.name} style={{ background: col.bg, padding: 'clamp(28px,4vw,44px)', borderRadius: 4 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: col.dark ? C.orange : C.ink, marginBottom: 20 }}>{col.name}</div>
-              {col.items.map(item => (
-                <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderBottom: `1px solid ${col.dark ? 'rgba(255,255,255,0.08)' : T.lineLight}` }}>
-                  <div style={{ width: 5, height: 5, borderRadius: '50%', background: col.dark ? C.orange : C.ink, opacity: 0.5, flexShrink: 0 }} />
-                  <span style={{ color: col.dark ? 'rgba(255,255,255,0.65)' : C.slate, fontSize: 14 }}>{item}</span>
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
-      </Section>
+function PartnershipSection() {
+  return (
+    <Section id="partnership" tone="canvas" divider>
+      <FadeIn>
+        <SectionHeader
+          tone="dark"
+          eyebrow="How it works"
+          title="The partnership process."
+          lead="From the first conversation to a live program — a structured, collaborative approach."
+        />
+      </FadeIn>
 
-      {/* Partnership process */}
-      <Section bg={C.ink}>
-        <FadeIn>
-          <SectionHeader
-            tone="dark"
-            eyebrow="How it works"
-            title={<>The partnership process.</>}
-            lead="From the first conversation to a live program — a structured, collaborative approach."
-          />
-        </FadeIn>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 2, marginTop: 52 }} className="process-grid">
+      <div style={{ marginTop: 48, display: 'flex', flexDirection: 'column', gap: 0, position: 'relative' }}>
+        <div
+          aria-hidden
+          className="institution-partnership-line"
+          style={{
+            position: 'absolute',
+            top: 18,
+            left: '4%',
+            right: '4%',
+            height: 1,
+            background: `linear-gradient(90deg, transparent, ${accent.border}, ${accent.border}, transparent)`,
+          }}
+        />
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 0 }} className="institution-partnership-grid">
           {partnershipSteps.map((step, i) => (
-            <FadeIn key={step.n} delay={i * 60}>
-              <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: T.rCard, padding: 24, display: 'flex', flexDirection: 'column', minHeight: 200 }}>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.orange, letterSpacing: '0.1em', marginBottom: 16 }}>{step.n}</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.white, marginBottom: 10 }}>{step.label}</div>
-                <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13.5, lineHeight: 1.65, margin: 0, flex: 1 }}>{step.desc}</p>
+            <FadeIn key={step.n} delay={i * 50}>
+              <div style={{ padding: '0 16px 0 0' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, marginBottom: 14 }}>{step.n}</div>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, margin: '0 0 8px' }}>{step.label}</h3>
+                <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{step.desc}</p>
               </div>
             </FadeIn>
           ))}
         </div>
-      </Section>
+      </div>
+    </Section>
+  )
+}
 
-      {/* Trust row — placeholder ready for real data */}
-      <Section bg={C.warmWhite}>
-        <FadeIn>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 32 }}>
-            <div style={{ maxWidth: 480 }}>
-              <Eyebrow>Institution enquiries</Eyebrow>
-              <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(24px,3vw,36px)', letterSpacing: '-0.025em', color: C.ink, margin: '20px 0 16px' }}>
-                Ready to explore a partnership?
-              </h2>
-              <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, margin: '0 0 28px' }}>
-                Get in touch to discuss your institution's needs. We'll map a partnership that fits your learners, your curriculum, and your goals.
-              </p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 28 }}>
-                {['No long lock-ins', 'Co-designed programs', 'Full Skylent OS deployment', 'Ongoing support'].map(f => (
-                  <Badge key={f}>{f}</Badge>
-                ))}
-              </div>
-              <Button variant="dark" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent →</Button>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, minWidth: 280 }}>
-              {[
-                { label: 'Institution types', value: '6+' },
-                { label: 'Partnership scope', value: 'Full OS' },
-                { label: 'Support', value: 'Dedicated' },
-                { label: 'Programs', value: 'Co-designed' },
-              ].map(({ label, value }) => (
-                <div key={label} style={{ background: C.sand, borderRadius: T.rCard, padding: '20px 22px' }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 700, color: C.ink, marginBottom: 4 }}>{value}</div>
-                  <div style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{label}</div>
-                </div>
+function EnquiriesSection() {
+  const navigate = useNavigate()
+  const features = ['No long lock-ins', 'Co-designed programs', 'Full Skylent OS deployment', 'Ongoing support']
+
+  return (
+    <Section id="enquiries" tone="canvas" divider>
+      <FadeIn>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'start' }} className="two-col">
+          <div>
+            <Eyebrow tone="dark">Institution enquiries</Eyebrow>
+            <Heading tone="dark" size="sm" style={{ margin: '20px 0 16px' }}>
+              Ready to explore a partnership?
+            </Heading>
+            <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 480 }}>
+              Get in touch to discuss your institution's needs. We'll map a partnership that fits your learners, your curriculum, and your goals.
+            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 20px', marginBottom: 28 }}>
+              {features.map(f => (
+                <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary }} />
+                  {f}
+                </span>
               ))}
             </div>
+            <Button variant="primary" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent →</Button>
           </div>
-        </FadeIn>
-      </Section>
+          <GlassSurface level={2} padding="24px 26px">
+            <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Partnership scope</div>
+            {[
+              { k: 'Institution types', v: 'Schools through industry partners' },
+              { k: 'Delivery', v: 'Skylent OS deployment' },
+              { k: 'Programs', v: 'Co-designed with your faculty' },
+              { k: 'Support', v: 'Dedicated partnership team' },
+            ].map(({ k, v }, i, arr) => (
+              <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '12px 0', borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
+                <span style={{ color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>{k}</span>
+                <span style={{ color: C.white, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
+              </div>
+            ))}
+          </GlassSurface>
+        </div>
+      </FadeIn>
+    </Section>
+  )
+}
+
+export default function InstitutionsPage() {
+  const navigate = useNavigate()
+  const [activeType, setActiveType] = useState<string>('colleges')
+  const activeSection = useSectionSpy(INSTITUTION_NAV_ITEMS.map(i => i.id))
+
+  return (
+    <PageShell auroraTheme="institution">
+      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
+        <Aurora themeId="institution" variant="hero" />
+        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero">
+            <FadeIn>
+              <Eyebrow tone="dark" accent>For Institutions</Eyebrow>
+              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
+                Enterprise software<br />for education.
+              </h1>
+              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
+                Not six marketing cards. Six workflows — schools, colleges, universities, training institutes, assessment partners, and industry — each with a distinct problem and operating model.
+              </p>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <Button variant="primary" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent</Button>
+                <Button variant="secondary" size="lg" onClick={() => navigate('/os')}>Explore Skylent OS</Button>
+              </div>
+            </FadeIn>
+            <FadeIn delay={80}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                <ContextualNavPanel
+                  items={INSTITUTION_NAV_ITEMS}
+                  themeId="institution"
+                  title="Institutions"
+                  activeId={activeSection}
+                />
+                <MediaImage src={PHOTO.university} alt="University campus environment" aspect="4/3" overlay="full" objectPosition="center" />
+              </div>
+            </FadeIn>
+          </div>
+        </div>
+      </section>
+
+      <ContextualNavBar items={INSTITUTION_NAV_ITEMS} themeId="institution" activeId={activeSection} />
+
+      <InstitutionTypesSection activeType={activeType} setActiveType={setActiveType} />
+      <EcosystemSection />
+      <PartnershipSection />
+      <EnquiriesSection />
 
       <CTABand
         eyebrow="Get in touch"
@@ -316,6 +414,7 @@ export default function InstitutionsPage() {
         lead="Let's map your needs and co-design a program that moves your learners from education to employability."
         primary={{ label: 'Partner With Skylent', to: '/contact' }}
         secondary={{ label: 'Explore the ecosystem', to: '/os' }}
+        auroraTheme="institution"
       />
     </PageShell>
   )
