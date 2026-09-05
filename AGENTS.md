@@ -9,6 +9,13 @@ A Vite development server is **already running** on `$PORT` (default 8443). You 
 - Preview URL: The user can access the running app through the preview panel
 - Hot reload: Changes to source files are reflected immediately
 
+## Cloud Agent commands
+
+- Install dependencies: `corepack enable && corepack pnpm install --frozen-lockfile`
+- Development server: `PORT=8443 corepack pnpm run dev` (also started automatically via `.cursor/environment.json` terminals)
+- Production build: `corepack pnpm run build`
+- Format check: `corepack pnpm exec oxfmt --check .`
+
 ## Project Structure
 
 This is the canonical project structure. Start with task-relevant files below. Only follow imports or inspect other files when required, when a documented path is missing, or when the repository contradicts this guide.

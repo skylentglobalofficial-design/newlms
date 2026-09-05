@@ -1,0 +1,17 @@
+{
+  "name": "newlms",
+  "install": "corepack enable && corepack pnpm install --frozen-lockfile",
+  "terminals": [
+    {
+      "name": "vite",
+      "description": "Vite development server for the React + Tailwind app",
+      "command": "PORT=8443 corepack pnpm run dev"
+    }
+  ],
+  "ports": [
+    {
+      "name": "vite",
+      "port": 8443
+    }
+  ]
+}
