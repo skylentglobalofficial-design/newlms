@@ -7,6 +7,7 @@ const accent = getDomainAccent('professional')
 import { labSubjects } from '../data'
 import type { LabExperimentStatus, LabType } from '../data'
 import { useAuth } from '../context/AuthContext'
+import { useDemoState } from '../demo/DemoStateContext'
 
 const labTypeLabels: Record<LabType, string> = {
   coding: 'Coding',
@@ -33,16 +34,18 @@ export default function LabDetailPage() {
   const { labId } = useParams<{ labId: string }>()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const demo = useDemoState()
 
   useEffect(() => {
     if (!user) navigate('/login')
   }, [user, navigate])
 
   const subject = labSubjects.find(s => s.id === labId)
-  const [statuses, setStatuses] = useState<Record<string, LabExperimentStatus>>(() => {
-    const init: Record<string, LabExperimentStatus> = {}
-    subject?.experiments.forEach(e => { init[e.id] = 'not_started' })
-    return init
+  const labProgress = labId ? demo.getLabProgress(labId) : { launched: false, complete: false, experiments: {} }
+
+  const statuses: Record<string, LabExperimentStatus> = {}
+  subject?.experiments.forEach(e => {
+    statuses[e.id] = labProgress.experiments[e.id] ?? 'not_started'
   })
 
   if (!subject) {

@@ -6,15 +6,9 @@ import { Aurora, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionS
 import { getDomainAccent } from '../aurora-themes'
 import { jobs, programs } from '../data'
 import type { Job } from '../data'
+import { useDemoState } from '../demo/DemoStateContext'
 
-// ─── DATA / MODELS INSPECTED ──────────────────────────────────────────────────
-// Job: id, role, company, salary, location, mode, skills, exp, desc, postedDays
-// ApplyModal flow steps: Profile → Resume → Screening → Interview → Result
-// Tracker: empty until user applies (no status enum in data layer)
-// Interview rounds: technical | hr | managerial
-// Profile slots: Identity, Skills, Portfolio (empty until program data)
-
-const APPLY_STEPS = ['Profile', 'Resume', 'Screening', 'Interview', 'Result'] as const
+const APPLY_STEPS = ['Profile', 'Resume', 'Screening', 'Review', 'Applied'] as const
 
 const mockQuestions = [
   'Tell me about yourself and a project you are proud of.',
@@ -405,9 +399,11 @@ function InterviewPrepSection({
 function JobBoardSection({
   onInspect,
   onApply,
+  hasApplied,
 }: {
   onInspect: (job: Job) => void
   onApply: (job: Job) => void
+  hasApplied: (jobId: string) => boolean
 }) {
   return (
     <Section id="jobs" tone="canvas" divider>
@@ -467,21 +463,22 @@ function JobBoardSection({
               <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, fontFamily: 'var(--font-mono)' }}>{job.exp}</div>
               <button
                 type="button"
-                onClick={e => { e.stopPropagation(); onApply(job) }}
+                onClick={e => { e.stopPropagation(); if (!hasApplied(job.id)) onApply(job) }}
+                disabled={hasApplied(job.id)}
                 style={{
                   flexShrink: 0,
-                  background: accent.primary,
-                  border: 'none',
-                  color: C.white,
+                  background: hasApplied(job.id) ? accent.subtle : accent.primary,
+                  border: hasApplied(job.id) ? `1px solid ${accent.border}` : 'none',
+                  color: hasApplied(job.id) ? accent.text : C.white,
                   borderRadius: T.rControl,
                   padding: '8px 16px',
                   fontSize: 12.5,
                   fontWeight: 600,
-                  cursor: 'pointer',
+                  cursor: hasApplied(job.id) ? 'default' : 'pointer',
                   fontFamily: 'var(--font-body)',
                 }}
               >
-                Apply
+                {hasApplied(job.id) ? 'Applied' : 'Apply'}
               </button>
             </div>
           </FadeIn>
@@ -494,6 +491,7 @@ function JobBoardSection({
 // ─── APPLICATION TRACKING ─────────────────────────────────────────────────────
 
 function ApplicationTrackingSection() {
+  const demo = useDemoState()
   const scrollToJobs = () => {
     const el = document.getElementById('jobs')
     if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - (T.navH + 16), behavior: 'smooth' })
@@ -505,10 +503,12 @@ function ApplicationTrackingSection() {
         <FadeIn>
           <Eyebrow tone="dark">Application tracking</Eyebrow>
           <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
-            Nothing submitted yet — by design.
+            {demo.applications.length === 0 ? 'Nothing submitted yet — by design.' : 'Your demo applications.'}
           </Heading>
           <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 480 }}>
-            Applications you send from the job board will appear here. We do not invent companies, stages, or timelines.
+            {demo.applications.length === 0
+              ? 'Applications you send from the job board will appear here. We do not invent companies, stages, or timelines.'
+              : 'Local demo records only — status stays at Applied until a real backend exists.'}
           </p>
 
           <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Application flow</div>
@@ -527,6 +527,7 @@ function ApplicationTrackingSection() {
         <FadeIn delay={80}>
           <GlassSurface level={2} padding="24px 26px">
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 18 }}>Applications</div>
+            {demo.applications.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '32px 16px' }}>
               <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 12 }}>TRACKER</div>
               <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: C.white, margin: '0 0 10px' }}>No applications yet</h3>
@@ -534,6 +535,22 @@ function ApplicationTrackingSection() {
                 Apply from the job board above. Your submissions will be tracked here.
               </p>
             </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+                {demo.applications.map((app, i) => (
+                  <div key={app.jobId} style={{
+                    display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, alignItems: 'center',
+                    padding: '12px 0', borderBottom: i < demo.applications.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  }}>
+                    <div>
+                      <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{app.role}</div>
+                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>{app.company}</div>
+                    </div>
+                    <span style={{ color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{app.status}</span>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <div style={{ marginTop: 20, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
               <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Apply flow steps</div>
@@ -719,6 +736,7 @@ function EcosystemSection() {
 
 export default function CareerOSPage() {
   const navigate = useNavigate()
+  const demo = useDemoState()
   const [interviewRound, setInterviewRound] = useState<'technical' | 'hr' | 'managerial'>('technical')
   const [mockQ, setMockQ] = useState(0)
   const [mockStarted, setMockStarted] = useState(false)
@@ -782,6 +800,7 @@ export default function CareerOSPage() {
       <JobBoardSection
         onInspect={setDrawerJob}
         onApply={setApplyJob}
+        hasApplied={demo.hasApplied}
       />
       <ApplicationTrackingSection />
       <CareerSupportSection />
