@@ -486,16 +486,16 @@ function ClassesRail() {
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function DashboardFacultyPage() {
-  const { user } = useAuth()
+  const { user, ready } = useAuth()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
   const [nudgeSent, setNudgeSent] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
-    if (!user) navigate('/login')
-  }, [user, navigate])
+    if (ready && !user) navigate('/login')
+  }, [ready, user, navigate])
 
-  if (!user) return null
+  if (!ready || !user) return null
 
   const program = programs.find(p => p.slug === 'data-science-ai') ?? programs[0]
   const courseName = user.course || program?.name || 'Data Science & AI'

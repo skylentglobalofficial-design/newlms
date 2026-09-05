@@ -19,6 +19,7 @@ export type AuthUser = {
 
 type AuthContextValue = {
   user: AuthUser | null
+  ready: boolean
   login: (user: AuthUser) => void
   logout: () => void
 }
@@ -31,6 +32,7 @@ const STORAGE_KEY = 'skylent_user'
 // ─── PROVIDER ─────────────────────────────────────────────────────────────────
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
+  const [ready, setReady] = useState(false)
 
   useEffect(() => {
     try {
@@ -41,6 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // ignore corrupt storage
     }
+    setReady(true)
   }, [])
 
   function login(newUser: AuthUser) {
@@ -54,14 +57,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, ready, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
 }
 
 // ─── HOOK ─────────────────────────────────────────────────────────────────────
-const SAFE_DEFAULT: AuthContextValue = { user: null, login: () => {}, logout: () => {} }
+const SAFE_DEFAULT: AuthContextValue = { user: null, ready: true, login: () => {}, logout: () => {} }
 
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext)

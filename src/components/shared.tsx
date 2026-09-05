@@ -391,6 +391,13 @@ export function Nav() {
     if (searchOpen) searchRef.current?.focus()
   }, [searchOpen])
 
+  useEffect(() => {
+    if (!menuOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [menuOpen])
+
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
     const q = searchQuery.trim()
@@ -545,9 +552,22 @@ export function Nav() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — full-screen overlay so page content does not bleed through */}
       {menuOpen && (
-        <div style={{ background: C.ink, borderTop: '1px solid rgba(255,255,255,0.07)', padding: '12px 24px 20px', maxHeight: '80vh', overflowY: 'auto' }}>
+        <div
+          className="mobile-nav-overlay"
+          style={{
+            position: 'fixed',
+            inset: `${T.navH}px 0 0 0`,
+            zIndex: 250,
+            background: 'rgba(5, 5, 5, 0.98)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderTop: '1px solid rgba(255,255,255,0.07)',
+            padding: '12px 24px 28px',
+            overflowY: 'auto',
+          }}
+        >
           {megaMenu.map(group => (
             <div key={group.label} style={{ marginBottom: 8 }}>
               <Link to={group.to} onClick={() => setMenuOpen(false)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: navAccent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', padding: '12px 0 6px', textDecoration: 'none' }}>{group.label.toUpperCase()}<span style={{ opacity: 0.7 }}>→</span></Link>
@@ -587,7 +607,7 @@ export function Footer() {
         <div style={{ display: 'grid', gridTemplateColumns: '1.7fr repeat(4, 1fr)', gap: 40, marginBottom: 56 }} className="footer-grid">
           <div>
             <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.white, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
-            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>One ecosystem — from education to employability. Building the infrastructure for the future of learning and careers.</p>
+            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Education, skills, and career workflows on one platform — for learners and institutions.</p>
             <div style={{ display: 'flex', gap: 10 }}>
               {['in', 'tw', 'yt', 'ig'].map(s => (<div key={s} style={{ width: 32, height: 32, borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{s}</div>))}
             </div>

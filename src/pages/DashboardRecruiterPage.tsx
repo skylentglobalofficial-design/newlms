@@ -67,7 +67,7 @@ function Sidebar({ active, setActive }: { active: string; setActive: (s: string)
 }
 
 export default function DashboardRecruiterPage() {
-  const { user } = useAuth()
+  const { user, ready } = useAuth()
   const navigate = useNavigate()
   const [active, setActive] = useState('Talent Pool')
   const [shortlistedSet, setShortlistedSet] = useState<Set<string>>(new Set())
@@ -75,10 +75,10 @@ export default function DashboardRecruiterPage() {
   const [readinessFilter, setReadinessFilter] = useState('All')
 
   useEffect(() => {
-    if (!user) navigate('/login')
-  }, [user, navigate])
+    if (ready && !user) navigate('/login')
+  }, [ready, user, navigate])
 
-  if (!user) return null
+  if (!ready || !user) return null
 
   const skillOptions = ['All', 'SQL', 'Python', 'React', 'Power BI', 'ML']
 

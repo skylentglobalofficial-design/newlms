@@ -105,15 +105,15 @@ function AdminWorkspace() {
 }
 
 export default function DashboardAdminPage() {
-  const { user } = useAuth()
+  const { user, ready } = useAuth()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
 
   useEffect(() => {
-    if (!user) navigate('/login')
-  }, [user, navigate])
+    if (ready && !user) navigate('/login')
+  }, [ready, user, navigate])
 
-  if (!user) return null
+  if (!ready || !user) return null
 
   const maxEnrollment = topCourses[0].enrollments
 
