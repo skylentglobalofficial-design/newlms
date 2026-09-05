@@ -41,58 +41,29 @@ const ROLE_LABELS: Record<UserRole, string> = {
 // ─── ENTRY VISUAL ─────────────────────────────────────────────────────────────
 
 function EntryVisual() {
-  const flow = [
-    { label: 'Learn', sub: 'Programs & curriculum', theme: getDomainAccent('schooling') },
-    { label: 'Build', sub: 'Projects & skills', theme: getDomainAccent('professional') },
-    { label: 'Career', sub: 'Profile & opportunities', theme: getDomainAccent('career') },
-  ]
-
   return (
-    <div style={{ position: 'relative' }}>
-      <GlassSurface level={2} padding="0" style={{ overflow: 'hidden' }}>
-        <div style={{ padding: '18px 22px', borderBottom: `1px solid ${T.lineDark}` }}>
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Skylent workspace</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white }}>
-            Enter the ecosystem
-          </div>
-          <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 12.5, lineHeight: 1.6, margin: '8px 0 0' }}>
-            Your account opens the learner, faculty, institution, or recruiter workspace matched to your role.
-          </p>
-        </div>
-        {flow.map((step, i) => (
-          <div
-            key={step.label}
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '28px 1fr',
-              gap: 14,
-              padding: '14px 22px',
-              borderBottom: i < flow.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-              borderLeft: `2px solid ${step.theme.primary}`,
-              background: step.theme.subtle,
-            }}
-          >
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: step.theme.text, paddingTop: 2 }}>
-              {String(i + 1).padStart(2, '0')}
-            </div>
-            <div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 2 }}>{step.label}</div>
-              <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 11.5 }}>{step.sub}</div>
-            </div>
+    <div style={{ position: 'relative', maxWidth: 420 }}>
+      <div style={{
+        padding: '28px 0',
+        borderTop: `1px solid ${T.lineDark}`,
+        borderBottom: `1px solid ${T.lineDark}`,
+      }}>
+        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 380 }}>
+          One account for learning, teaching, and institution operations. Sign in to continue where you left off.
+        </p>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginTop: 28 }}>
+        {[
+          { label: 'Programs', detail: 'Structured learning paths' },
+          { label: 'Learning', detail: 'Courses, labs & assessments' },
+          { label: 'Career OS', detail: 'Interview prep & opportunities' },
+        ].map(item => (
+          <div key={item.label} style={{ minWidth: 0 }}>
+            <div style={{ color: C.white, fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{item.label}</div>
+            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11.5, lineHeight: 1.5 }}>{item.detail}</div>
           </div>
         ))}
-      </GlassSurface>
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: '-4% -3%',
-          border: `1px dashed ${accent.border}`,
-          borderRadius: T.rCard,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
+      </div>
     </div>
   )
 }
@@ -231,9 +202,9 @@ export default function LoginPage() {
 
   const submitStyle: CSSProperties = {
     width: '100%',
-    background: submitting ? 'rgba(243,107,33,0.55)' : C.orange,
+    background: submitting ? `${accent.primary}99` : accent.primary,
     border: 'none',
-    color: C.white,
+    color: C.black,
     borderRadius: T.rControl,
     padding: '13px',
     fontSize: 14,
@@ -289,20 +260,20 @@ export default function LoginPage() {
         <div className="login-page-editorial">
           <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 28 }}>
             <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.white, letterSpacing: '-0.02em' }}>
-              Skylent<span style={{ color: C.orange }}>.</span>
+              Skylent<span style={{ color: accent.primary }}>.</span>
             </span>
           </Link>
 
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: C.orange, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: 20 }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
             <span style={{ width: 20, height: 1, background: 'currentColor', opacity: 0.5 }} />
             Sign in
           </div>
 
           <h1 className="skylent-display-lg" style={{ color: C.white, margin: '0 0 16px', maxWidth: 520 }}>
-            Continue with Skylent.
+            Sign in to Skylent
           </h1>
           <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.58)', maxWidth: 480, margin: '0 0 32px' }}>
-            Sign in to access your learner, faculty, institution, or recruiter workspace — programs, learning, and Career OS where your account includes them.
+            Access your learner, faculty, or institution workspace — programs, learning, and Career OS where your account includes them.
           </p>
 
           <EntryVisual />
@@ -434,7 +405,7 @@ export default function LoginPage() {
 
                 <p style={{ textAlign: 'center', marginTop: 20, color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>
                   New to Skylent?{' '}
-                  <button type="button" onClick={() => { setTab('signup'); setError(null) }} style={{ background: 'none', border: 'none', color: C.orange, cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)', padding: 0 }}>
+                  <button type="button" onClick={() => { setTab('signup'); setError(null) }} style={{ background: 'none', border: 'none', color: accent.text, cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)', padding: 0 }}>
                     Create account →
                   </button>
                 </p>
@@ -501,7 +472,7 @@ export default function LoginPage() {
 
                 <p style={{ textAlign: 'center', marginTop: 20, color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>
                   Already have an account?{' '}
-                  <button type="button" onClick={() => { setTab('signin'); setError(null) }} style={{ background: 'none', border: 'none', color: C.orange, cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)', padding: 0 }}>
+                  <button type="button" onClick={() => { setTab('signin'); setError(null) }} style={{ background: 'none', border: 'none', color: accent.text, cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)', padding: 0 }}>
                     Sign in →
                   </button>
                 </p>
@@ -509,10 +480,10 @@ export default function LoginPage() {
             )}
           </GlassSurface>
 
-          {/* Demo mode — preserved behaviour */}
-          <div style={{ marginTop: 20 }}>
-            <div style={{ textAlign: 'center', color: 'rgba(255,255,255,0.28)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 12 }}>
-              DEMO MODE — select a role to explore
+          {/* Demo mode — visually separated from auth */}
+          <div style={{ marginTop: 24, padding: '18px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
+            <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 12 }}>
+              Explore workspaces
             </div>
             <div className="login-demo-grid" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {DEMO_USERS.map(demo => {
@@ -534,7 +505,7 @@ export default function LoginPage() {
                       textAlign: 'center',
                     }}
                   >
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? C.orange : 'rgba(255,255,255,0.08)', color: isActive ? C.white : 'rgba(255,255,255,0.5)', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px', fontFamily: 'var(--font-mono)' }}>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? accent.primary : 'rgba(255,255,255,0.08)', color: isActive ? C.black : 'rgba(255,255,255,0.5)', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px', fontFamily: 'var(--font-mono)' }}>
                       {demo.avatar}
                     </div>
                     <div style={{ color: isActive ? C.white : 'rgba(255,255,255,0.55)', fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{ROLE_LABELS[demo.role]}</div>

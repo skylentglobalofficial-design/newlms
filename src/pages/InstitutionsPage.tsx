@@ -10,7 +10,7 @@ const accent = getDomainAccent('institution')
 
 const INSTITUTION_NAV_ITEMS: ContextualNavItem[] = [
   { id: 'institution-types', label: 'Institution Types', sub: 'Six partnership models' },
-  { id: 'ecosystem', label: 'Ecosystem', sub: 'Education → Skills → Career' },
+  { id: 'ecosystem', label: 'Product coverage', sub: 'Education → Skills → Career' },
   { id: 'partnership', label: 'Partnership', sub: 'How it works' },
   { id: 'enquiries', label: 'Enquiries', sub: 'Get in touch' },
 ]
@@ -188,7 +188,7 @@ function InstitutionTypesSection({
               </p>
               <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>{active.value}</p>
               <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.7, margin: '0 0 24px' }}>{active.description}</p>
-              <Button variant="primary" onClick={() => navigate('/contact')}>Enquire now →</Button>
+              <Button variant="primary" themeId="institution" onClick={() => navigate('/contact')}>Enquire now →</Button>
             </div>
           </div>
 
@@ -246,9 +246,9 @@ function EcosystemSection() {
       <FadeIn>
         <SectionHeader
           tone="dark"
-          eyebrow="The ecosystem"
-          title="Education → Skills → Career OS, delivered."
-          lead="Regardless of institution type, Skylent delivers the full connected ecosystem — with the depth and scope appropriate to each partnership."
+          eyebrow="Product coverage"
+          title="Education, Skills, and Career OS for partners."
+          lead="Schools, colleges, and training partners choose which products to run. Each ships with the workflows that match their learners."
         />
       </FadeIn>
 
@@ -340,7 +340,7 @@ function EnquiriesSection() {
                 </span>
               ))}
             </div>
-            <Button variant="primary" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent →</Button>
+            <Button variant="primary" themeId="institution" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent →</Button>
           </div>
           <GlassSurface level={2} padding="24px 26px">
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Partnership scope</div>
@@ -382,7 +382,7 @@ export default function InstitutionsPage() {
                 Not six marketing cards. Six workflows — schools, colleges, universities, training institutes, assessment partners, and industry — each with a distinct problem and operating model.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Button variant="primary" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent</Button>
+                <Button variant="primary" themeId="institution" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent</Button>
                 <Button variant="secondary" size="lg" onClick={() => navigate('/os')}>Explore Skylent OS</Button>
               </div>
             </FadeIn>
@@ -413,7 +413,7 @@ export default function InstitutionsPage() {
         title={<>Bring Skylent OS<br />to your institution.</>}
         lead="Let's map your needs and co-design a program that moves your learners from education to employability."
         primary={{ label: 'Partner With Skylent', to: '/contact' }}
-        secondary={{ label: 'Explore the ecosystem', to: '/os' }}
+        secondary={{ label: 'View Skylent OS', to: '/os' }}
         auroraTheme="institution"
       />
     </PageShell>

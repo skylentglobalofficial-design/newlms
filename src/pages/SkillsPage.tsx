@@ -69,16 +69,30 @@ function SkillsHeroVisual() {
           zIndex: 3,
         }}
       >
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Project artifact</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 6, padding: 10, minHeight: 52 }}>
-            <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)', marginBottom: 6 }}>INPUT</div>
-            <div style={{ height: 4, width: '75%', background: 'rgba(255,255,255,0.12)', borderRadius: 2 }} />
-          </div>
-          <div style={{ background: accent.subtle, borderRadius: 6, padding: 10, minHeight: 52, border: `1px solid ${accent.border}` }}>
-            <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: accent.textMuted, marginBottom: 6 }}>OUTPUT</div>
-            <div style={{ fontSize: 10, color: C.white, lineHeight: 1.4 }}>Deliverable ready</div>
-          </div>
+        <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Skills pathway</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {[
+            { label: 'Module', sub: 'Structured unit' },
+            { label: 'Skill', sub: 'Hands-on practice' },
+            { label: 'Project', sub: 'Portfolio artifact' },
+            { label: 'Credential', sub: 'Certificate issued' },
+          ].map(({ label, sub }, i, arr) => (
+            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{
+                width: 22, height: 22, borderRadius: 5, flexShrink: 0,
+                background: i === arr.length - 1 ? accent.subtle : 'rgba(255,255,255,0.04)',
+                border: `1px solid ${i === arr.length - 1 ? accent.border : T.lineDark}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 8, fontFamily: 'var(--font-mono)', color: i === arr.length - 1 ? accent.text : 'rgba(255,255,255,0.35)',
+              }}>
+                {String(i + 1).padStart(2, '0')}
+              </div>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 600, color: i === arr.length - 1 ? accent.text : C.white }}>{label}</div>
+                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', fontFamily: 'var(--font-mono)' }}>{sub}</div>
+              </div>
+            </div>
+          ))}
         </div>
       </GlassSurface>
 
@@ -124,7 +138,7 @@ function SkillsPathSection() {
           tone="dark"
           eyebrow="Skills path"
           title="Learning → proof → career."
-          lead="Webinars, certificate programs, professional programs, and job assistance are different products — connected as one skills journey."
+          lead="Webinars, certificates, and professional programs are separate products. Professional Programs include Career OS."
         />
       </FadeIn>
 
@@ -391,7 +405,7 @@ function ProfessionalSection() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: 'rgba(255,255,255,0.65)' }}>
           {['Learning', 'Project', 'Assessment', 'Career Support'].map((s, i, arr) => (
             <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: i === arr.length - 1 ? C.orange : C.white }}>{s}</span>
+              <span style={{ color: i === arr.length - 1 ? accent.text : C.white }}>{s}</span>
               {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
             </span>
           ))}
@@ -597,7 +611,7 @@ function ProgramDiscoverySection() {
           tone="dark"
           eyebrow="Program discovery"
           title="Find the right depth."
-          lead="From a single webinar to a full professional program with Career OS — each product has a clear place in the skills journey."
+          lead="Each listing shows duration, format, price, and outcome — from a single webinar to a full professional program."
         />
       </FadeIn>
 

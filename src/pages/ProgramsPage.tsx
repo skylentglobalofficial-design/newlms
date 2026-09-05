@@ -11,6 +11,7 @@ import type { Program, ProgramType } from '../data'
 import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
 
 const accent = getDomainAccent('general')
+const careerAccent = getDomainAccent('career')
 
 const TYPE_LABELS: Record<ProgramType, string> = {
   PROFESSIONAL: 'Professional Program',
@@ -435,7 +436,7 @@ function FeaturedProgramSection({ program }: { program: Program }) {
               </span>
               <span style={{ color: status.color, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{status.text}</span>
               {program.careerSupport && (
-                <span style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)' }}>UNLOCKS CAREER OS</span>
+                <span style={{ color: careerAccent.text, fontSize: 10, fontFamily: 'var(--font-mono)' }}>Includes Career OS</span>
               )}
             </div>
             <div className="skylent-label" style={{ color: typeAccent.text, marginBottom: 8 }}>{TYPE_LABELS[program.programType]}</div>
@@ -525,7 +526,7 @@ function ProgramResultRow({ program, prominent }: { program: Program; prominent?
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 6 }}>
               <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: typeAccent.text }}>{TYPE_LABELS[program.programType]}</span>
               <span style={{ color: status.color, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{status.text}</span>
-              {program.careerSupport && <span style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)' }}>CAREER OS</span>}
+              {program.careerSupport && <span style={{ color: careerAccent.text, fontSize: 10, fontFamily: 'var(--font-mono)' }}>Career OS</span>}
             </div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 4 }}>{program.name}</div>
             <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, lineHeight: 1.55, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
@@ -615,7 +616,7 @@ function DecisionSupportSection() {
           tone="dark"
           eyebrow="Where to start"
           title="Not sure which path fits?"
-          lead="Use Skylent's ecosystem pages to orient before you filter the catalog."
+          lead="Start with Education, Skills, Exams, or Career — then filter programs by type, format, and outcome."
         />
       </FadeIn>
       <div style={{ marginTop: 36, display: 'flex', flexWrap: 'wrap', gap: 0 }}>

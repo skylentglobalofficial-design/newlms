@@ -45,10 +45,10 @@
   --glass-01-blur: blur(20px);
   --glass-01-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
 
-  --glass-02-bg: rgba(255, 255, 255, 0.055);
-  --glass-02-border: rgba(255, 255, 255, 0.10);
-  --glass-02-blur: blur(14px);
-  --glass-02-shadow: 0 8px 40px rgba(0, 0, 0, 0.22);
+  --glass-02-bg: rgba(255, 255, 255, 0.068);
+  --glass-02-border: rgba(255, 255, 255, 0.12);
+  --glass-02-blur: blur(16px);
+  --glass-02-shadow: 0 8px 48px rgba(0, 0, 0, 0.28);
 
   --glass-03-bg: rgba(255, 255, 255, 0.04);
   --glass-03-border: rgba(255, 255, 255, 0.08);
@@ -131,6 +131,50 @@ body {
   .skylent-display-xl {
     letter-spacing: -0.03em;
   }
+}
+
+/* Prevent horizontal overflow on mobile */
+html, body {
+  overflow-x: hidden;
+}
+
+@media (max-width: 1100px) {
+  .home-hero-visual {
+    min-height: 0 !important;
+  }
+  .home-hero-proof {
+    position: relative !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin-top: 16px !important;
+    bottom: auto !important;
+    right: auto !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .login-page-editorial {
+    display: none;
+  }
+  .login-page-grid {
+    padding-top: clamp(72px, 10vh, 96px) !important;
+  }
+}
+
+/* Nav mega menu — prevent awkward hero overlap */
+.nav-mega-dropdown {
+  max-height: min(70vh, 420px);
+  overflow-y: auto;
+}
+
+/* LMS responsive shell */
+.lms-shell {
+  overflow-x: hidden;
+}
+
+/* Public page section overflow guard */
+.skylent-public-canvas {
+  overflow-x: hidden;
 }
 
 /* Hide scrollbar by default, show while scrolling */

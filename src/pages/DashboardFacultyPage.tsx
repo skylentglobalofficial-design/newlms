@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { AuroraBand, GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
-import { getDomainAccent } from '../aurora-themes'
+import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
 import { programs } from '../data'
 
@@ -58,7 +58,7 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: 'settings', label: 'Settings', short: 'Settings', sectionId: 'faculty-settings' },
 ]
 
-const accent = getDomainAccent('data-analytics')
+const accent = getRoleAccent('faculty')
 
 const pendingCount = submissions.filter(s => s.status === 'Pending').length
 const reviewedCount = submissions.filter(s => s.status === 'Reviewed').length
@@ -486,16 +486,16 @@ function ClassesRail() {
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function DashboardFacultyPage() {
-  const { user } = useAuth()
+  const { user, ready } = useAuth()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
   const [nudgeSent, setNudgeSent] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
-    if (!user) navigate('/login')
-  }, [user, navigate])
+    if (ready && !user) navigate('/login')
+  }, [ready, user, navigate])
 
-  if (!user) return null
+  if (!ready || !user) return null
 
   const program = programs.find(p => p.slug === 'data-science-ai') ?? programs[0]
   const courseName = user.course || program?.name || 'Data Science & AI'

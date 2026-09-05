@@ -16,6 +16,7 @@ export type AuroraThemeId =
   | 'webinar'
   | 'career'
   | 'institution'
+  | 'superadmin'
 
 export type AuroraTheme = {
   id: AuroraThemeId
@@ -40,7 +41,8 @@ export const AURORA_THEMES: Record<AuroraThemeId, AuroraTheme> = {
   certificate: { id: 'certificate', primary: '#06B6D4', secondary: '#3B82F6', strength: '18' },
   webinar: { id: 'webinar', primary: '#EC4899', secondary: '#D946EF', strength: '18' },
   career: { id: 'career', primary: '#3B82F6', secondary: '#8B5CF6', strength: '20' },
-  institution: { id: 'institution', primary: '#14B8A6', secondary: '#3B82F6', strength: '18' },
+  institution: { id: 'institution', primary: '#14B8A6', secondary: '#10B981', strength: '18' },
+  superadmin: { id: 'superadmin', primary: '#2563EB', secondary: '#1D4ED8', strength: '16' },
 }
 
 const PROGRAM_SLUG_THEME: Record<string, AuroraThemeId> = {

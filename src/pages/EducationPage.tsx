@@ -169,9 +169,9 @@ function EducationJourneySection() {
       <FadeIn>
         <SectionHeader
           tone="dark"
-          eyebrow="Education journey"
-          title="One path. Three distinct stages."
-          lead="Schooling, undergraduate, and postgraduate are different audiences and different curriculum models — connected as one academic progression."
+          eyebrow="Academic stages"
+          title="Schooling, undergraduate, postgraduate."
+          lead="Three audiences, three curriculum models. Each section below covers format, subjects, and how progress is tracked."
         />
       </FadeIn>
 
@@ -222,7 +222,7 @@ function EducationJourneySection() {
                   {stage.num}
                 </div>
                 {i < stages.length - 1 && (
-                  <span className="education-journey-arrow" style={{ color: accent.textMuted, fontSize: 18, opacity: 0.6 }}>→</span>
+                  <span className="education-journey-arrow" style={{ color: accent.textMuted, fontSize: 14, opacity: 0.35, display: 'none' }} aria-hidden>·</span>
                 )}
               </div>
               <div style={{ borderRadius: T.rCard, overflow: 'hidden', marginBottom: 18, aspectRatio: '16/10' }}>
@@ -256,7 +256,7 @@ function SchoolingSection() {
     { band: 'Primary', grades: '1–5', color: '#fbbf24', subjects: ['Mathematics', 'Science', 'Language', 'Socials'] },
     { band: 'Middle', grades: '6–8', color: '#4ade80', subjects: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Language'] },
     { band: 'Secondary', grades: '9–10', color: '#60a5fa', subjects: ['Maths', 'Science', 'Social Studies', 'Language', 'IT'] },
-    { band: 'Senior', grades: '11–12', color: C.orange, subjects: ['Stream subjects', 'Advanced Maths', 'Electives', 'Practicals'] },
+    { band: 'Senior', grades: '11–12', color: accent.primary, subjects: ['Stream subjects', 'Advanced Maths', 'Electives', 'Practicals'] },
   ]
 
   return (
@@ -294,9 +294,22 @@ function SchoolingSection() {
           <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
             Learning that builds confidence.
           </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 480 }}>
+          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 24px', maxWidth: 480 }}>
             For school students and their parents. Programs built around the actual curriculum — from foundational concepts in primary school to board-level mastery in senior secondary.
           </p>
+
+          <div style={{ marginBottom: 32 }}>
+            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Lesson rhythm</div>
+            <FlowStrip
+              tone="dark"
+              steps={[
+                { label: 'Lesson', sub: 'Concept introduction' },
+                { label: 'Activity', sub: 'Guided practice' },
+                { label: 'Explanation', sub: 'Concept clarity' },
+                { label: 'Assessment', sub: 'Check mastery' },
+              ]}
+            />
+          </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 32 }}>
             {gradeBands.map(({ band, grades, color, subjects }, i) => (
@@ -399,7 +412,7 @@ function UndergraduateSection() {
                         width: 8,
                         height: 8,
                         borderRadius: '50%',
-                        background: i === journey.length - 1 ? C.orange : accent.primary,
+                        background: i === journey.length - 1 ? accent.primary : accent.primary,
                         opacity: i === journey.length - 1 ? 1 : 0.5,
                         marginTop: 13,
                         flexShrink: 0,
@@ -410,7 +423,7 @@ function UndergraduateSection() {
                     )}
                   </div>
                   <div style={{ paddingBottom: i < journey.length - 1 ? 12 : 0, paddingTop: 8 }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: i === journey.length - 1 ? C.orange : C.white }}>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: i === journey.length - 1 ? accent.text : C.white }}>
                       {step}
                     </span>
                     <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginTop: 2 }}>{desc}</div>
@@ -547,7 +560,7 @@ function HowLearningWorksSection() {
         <SectionHeader
           tone="dark"
           eyebrow="How learning works"
-          title="From discovery to measurable progress."
+          title="From browsing to assessed progress."
           lead="Every education pathway on Skylent follows the same academic rhythm — structured content, deliberate practice, and visible progress."
         />
         <div style={{ marginTop: 40 }}>
@@ -741,7 +754,7 @@ function CompetitiveExamsSection() {
                 <div style={{ paddingTop: 16, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
                   {exam.features.map(f => (
                     <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 4, height: 4, borderRadius: '50%', background: C.orange, opacity: 0.7 }} />
+                      <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, opacity: 0.7 }} />
                       {f}
                     </span>
                   ))}
@@ -763,7 +776,7 @@ function CompetitiveExamsSection() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {CAT_SECTION.features.map(f => (
                   <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ width: 4, height: 4, borderRadius: '50%', background: C.orange, opacity: 0.7 }} />
+                    <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, opacity: 0.7 }} />
                     {f}
                   </span>
                 ))}
@@ -846,7 +859,7 @@ function ValueSection() {
           tone="dark"
           eyebrow="Built for every stakeholder"
           title="Learners, parents, and institutions."
-          lead="Education on Skylent serves the full academic ecosystem — not just individual students in isolation."
+          lead="Schools, parents, and institutions each need different views of the same programs — progress, assessments, and next steps."
         />
       </FadeIn>
 
@@ -887,15 +900,15 @@ function ValueSection() {
         <div style={{ marginTop: 48, paddingTop: 40, borderTop: `1px solid ${T.lineDark}` }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }} className="two-col">
             <div>
-              <Eyebrow tone="dark">One journey</Eyebrow>
+              <Eyebrow tone="dark">After education</Eyebrow>
               <Heading tone="dark" size="sm" style={{ margin: '18px 0 14px' }}>
-                Education is only the beginning.
+                Skills and Career OS come next.
               </Heading>
               <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 15, lineHeight: 1.75, margin: '0 0 24px', maxWidth: 440 }}>
-                Every Education pathway connects into Skills and Career OS — one continuous ecosystem with no gap between learning and employment.
+                When academic work is done, learners move into credentialed skills programs. Professional Programs open Career OS — profile, jobs, and applications.
               </p>
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                <Button variant="primary" onClick={() => navigate('/skills')}>Explore Skills →</Button>
+                <Button variant="primary" onClick={() => navigate('/skills')}>Explore Skills</Button>
                 <Button variant="secondary" onClick={() => navigate('/career-os')}>Explore Career OS</Button>
               </div>
             </div>
@@ -954,7 +967,7 @@ export default function EducationPage() {
             <FadeIn>
               <Eyebrow tone="dark" accent>Education</Eyebrow>
               <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
-                The academic side<br />of the ecosystem.
+                The academic products<br />on Skylent.
               </h1>
               <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
                 Schooling, undergraduate, postgraduate, and competitive exams are different audiences and different curriculum models. Explore each on its own terms.

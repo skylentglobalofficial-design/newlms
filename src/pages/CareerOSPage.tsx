@@ -75,7 +75,7 @@ function CareerHeroVisual() {
                 <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{sampleJob.role}</div>
                 <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>{sampleJob.company} · {sampleJob.mode}</div>
               </div>
-              <div style={{ background: C.orange, color: C.white, borderRadius: 6, padding: '8px 14px', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-body)' }}>
+              <div style={{ background: accent.primary, color: C.white, borderRadius: 6, padding: '8px 14px', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-body)' }}>
                 Apply
               </div>
             </div>
@@ -104,10 +104,9 @@ function CareerJourneySection() {
   const steps = [
     { num: '01', label: 'Profile', desc: 'Structured professional identity' },
     { num: '02', label: 'Proof', desc: 'Projects and program work' },
-    { num: '03', label: 'Discover', desc: 'Browse open roles' },
-    { num: '04', label: 'Apply', desc: 'Submit from the job board' },
-    { num: '05', label: 'Prepare', desc: 'Interview practice rounds' },
-    { num: '06', label: 'Track', desc: 'Monitor your applications' },
+    { num: '03', label: 'Application', desc: 'Submit from the job board' },
+    { num: '04', label: 'Interview', desc: 'Prep rounds and mocks' },
+    { num: '05', label: 'Outcome', desc: 'Offers and placement status' },
   ]
 
   return (
@@ -116,7 +115,7 @@ function CareerJourneySection() {
         <SectionHeader
           tone="dark"
           eyebrow="Career journey"
-          title="Profile to application — one workflow."
+          title="Profile to outcome — one workflow."
           lead="Career OS connects your program work to a structured job-search process. Each step builds on the last."
         />
       </FadeIn>
@@ -134,7 +133,7 @@ function CareerJourneySection() {
             background: `linear-gradient(90deg, transparent, ${accent.border}, ${accent.border}, transparent)`,
           }}
         />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 0 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 0 }}>
           {steps.map((step, i) => (
             <FadeIn key={step.label} delay={i * 40}>
               <div style={{ padding: '0 10px 0 0' }}>
@@ -471,7 +470,7 @@ function JobBoardSection({
                 onClick={e => { e.stopPropagation(); onApply(job) }}
                 style={{
                   flexShrink: 0,
-                  background: C.orange,
+                  background: accent.primary,
                   border: 'none',
                   color: C.white,
                   borderRadius: T.rControl,
@@ -647,7 +646,7 @@ function EcosystemSection() {
           tone="dark"
           eyebrow="How the system connects"
           title="What happens after learning."
-          lead="Career OS exists because employability is not a separate product — it is the continuation of the learning journey."
+          lead="Program work becomes proof. Career OS picks up at profile, applications, interviews, and outcomes."
         />
       </FadeIn>
 

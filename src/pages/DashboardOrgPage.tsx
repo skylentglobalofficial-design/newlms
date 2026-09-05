@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, T } from '../tokens'
-import { AuroraBand, GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
-import { getDomainAccent } from '../aurora-themes'
+import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
 
 // ─── DEMO INSTITUTION DATA (preserved from prior dashboard) ───────────────────
@@ -60,10 +59,9 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: 'settings', label: 'Settings', short: 'Settings', sectionId: 'org-settings' },
 ]
 
-const accent = getDomainAccent('institution')
+const accent = getRoleAccent('organisation')
 
 const batchLearners = cohorts.reduce((sum, c) => sum + c.students, 0)
-const avgCompletion = Math.round(cohorts.reduce((sum, c) => sum + c.completion, 0) / cohorts.length)
 const totalAtRisk = cohorts.reduce((sum, c) => sum + c.atRisk, 0)
 const activePrograms = [...new Set(cohorts.map(c => c.program))].length
 const needsAttentionCohorts = cohorts.filter(c => c.status !== 'On Track')
@@ -108,107 +106,81 @@ function NavIcon({ id }: { id: string }) {
 function InstitutionWorkspace({
   institutionName,
   institutionLearners,
-  activeBatch,
-  activeProgram,
-  learnerCount,
-  completion,
-  atRisk,
+  criticalBatch,
   onAction,
 }: {
   institutionName: string
   institutionLearners: number
-  activeBatch: string
-  activeProgram: string
-  learnerCount: number
-  completion: number
-  atRisk: number
+  criticalBatch: typeof cohorts[0]
   onAction: () => void
 }) {
-  const inlineStats = [
-    { label: 'Active batches', value: String(cohorts.length) },
-    { label: 'Batch learners', value: String(batchLearners) },
-    { label: 'At-risk', value: String(totalAtRisk) },
-    { label: 'Faculty', value: String(facultyLoad.length) },
-  ]
-
   return (
     <div id="org-overview">
-      <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', position: 'relative' }}>
-        <AuroraBand themeId="institution" />
+      <div style={{ marginBottom: 28 }}>
+        <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Institution workspace</div>
+        <h1 className="skylent-display-md" style={{ color: C.white, margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>
+          {institutionName}
+        </h1>
+        <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, margin: 0 }}>
+          {institutionLearners.toLocaleString('en-IN')} learners · {cohorts.length} active batches · Academic Year 2025–26
+        </p>
+      </div>
 
-        <div className="org-workspace-inner" style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 4vw, 36px)' }}>
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 12, fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-            Academic operations
-          </div>
-          <h1 className="skylent-display-md" style={{ color: C.white, margin: '0 0 12px', maxWidth: 680, lineHeight: 1.08 }}>
-            {institutionName}
-          </h1>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 'clamp(15px, 2vw, 17px)', margin: '0 0 8px', lineHeight: 1.55, maxWidth: 560 }}>
-            Manage programs, cohorts and learner progress from one workspace.
-          </p>
-          <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, margin: '0 0 24px' }}>
-            {institutionLearners.toLocaleString('en-IN')} institution learners · {cohorts.length} active batches · Academic Year 2025–26
-          </p>
+      <div style={{
+        padding: '24px 0', marginBottom: 28,
+        borderTop: `1px solid ${T.lineDark}`,
+        borderBottom: `1px solid ${T.lineDark}`,
+        borderLeft: `3px solid ${statusColor[criticalBatch.status]}`,
+        paddingLeft: 20,
+      }}>
+        <div style={{ color: statusColor[criticalBatch.status], fontSize: 11, fontWeight: 500, marginBottom: 10 }}>
+          Needs attention
+        </div>
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(22px, 3vw, 28px)', fontWeight: 600, color: C.white, margin: '0 0 8px' }}>
+          {criticalBatch.name}
+        </h2>
+        <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, margin: '0 0 4px', lineHeight: 1.5 }}>
+          {criticalBatch.completion}% completion · {criticalBatch.atRisk} learners need attention
+        </p>
+        <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, margin: '0 0 20px' }}>
+          {criticalBatch.program} · Faculty: {criticalBatch.faculty}
+        </p>
+        <button
+          type="button"
+          onClick={onAction}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: 8,
+            background: accent.primary, color: C.black, border: 'none',
+            padding: '13px 24px', borderRadius: T.rControl,
+            fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-body)',
+            cursor: 'pointer',
+          }}
+        >
+          Review batch
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
 
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary }} />
-            <span style={{ color: accent.text, fontSize: 11, letterSpacing: '0.08em' }}>Active operations</span>
-          </div>
-          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 16, margin: '0 0 4px', lineHeight: 1.5 }}>
-            {activeProgram} · {activeBatch}
-          </p>
-          <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, margin: '0 0 20px' }}>
-            {activePrograms} programs · {offerings.length} offerings · {needsAttentionCohorts.length} batches need attention
-          </p>
-
-          <div style={{
-            display: 'flex', flexWrap: 'wrap', gap: '16px 24px', alignItems: 'center',
-            padding: '16px 0', marginBottom: 20,
-            borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}`,
-          }}>
-            {inlineStats.map(stat => (
-              <div key={stat.label} style={{ flex: '1 1 100px', minWidth: 0 }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.white, lineHeight: 1.1 }}>
-                  {stat.value}
+      {attentionLearners.length > 0 && (
+        <div style={{ marginBottom: 8 }}>
+          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, marginBottom: 14 }}>Other batches needing review</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+            {attentionLearners.filter(a => a.cohort !== criticalBatch.name).map((item, i, arr) => (
+              <div key={item.cohort} style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12,
+                padding: '12px 0',
+                borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+              }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ color: C.white, fontSize: 13, fontWeight: 500 }}>{item.cohort}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{item.issue}</div>
                 </div>
-                <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 11, marginTop: 4 }}>{stat.label}</div>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#f87171', flexShrink: 0 }}>{item.count} learners</span>
               </div>
             ))}
-            <div className="org-workspace-stat" style={{ flex: '1 1 100px', minWidth: 0 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.white, lineHeight: 1.1 }}>
-                {completion}%
-              </div>
-              <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 11, marginTop: 4 }}>avg completion</div>
-            </div>
-          </div>
-
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{ width: `${completion}%`, height: '100%', background: accent.primary, borderRadius: 2 }} />
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
-            <button
-              type="button"
-              onClick={onAction}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: 8,
-                background: accent.primary, color: C.black, border: 'none',
-                padding: '13px 24px', borderRadius: T.rControl,
-                fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-body)',
-                cursor: 'pointer',
-              }}
-            >
-              Review critical batch
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-            </button>
-            <span style={{ color: 'rgba(255,255,255,0.32)', fontSize: 13 }}>
-              Full Stack Batch 5 · {learnerCount} learners · {atRisk} at-risk
-            </span>
           </div>
         </div>
-      </GlassSurface>
+      )}
     </div>
   )
 }
@@ -532,15 +504,15 @@ function OrgContextRail() {
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function DashboardOrgPage() {
-  const { user } = useAuth()
+  const { user, ready } = useAuth()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
 
   useEffect(() => {
-    if (!user) navigate('/login')
-  }, [user, navigate])
+    if (ready && !user) navigate('/login')
+  }, [ready, user, navigate])
 
-  if (!user) return null
+  if (!ready || !user) return null
 
   const institutionName = user.institution || user.name || 'Apex College'
   const institutionLearners = user.students ?? batchLearners
@@ -568,11 +540,7 @@ export default function DashboardOrgPage() {
             <InstitutionWorkspace
               institutionName={institutionName}
               institutionLearners={institutionLearners}
-              activeBatch={criticalBatch.name}
-              activeProgram={criticalBatch.program}
-              learnerCount={criticalBatch.students}
-              completion={avgCompletion}
-              atRisk={criticalBatch.atRisk}
+              criticalBatch={criticalBatch}
               onAction={focusBatches}
             />
 

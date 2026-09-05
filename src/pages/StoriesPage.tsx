@@ -130,7 +130,7 @@ function PublishingSection() {
     { label: 'Program experiences', desc: 'What a Professional Program or exam prep track actually involved — curriculum, projects, cohort.', accent: skillsAccent },
     { label: 'Learning & projects', desc: 'Work produced during programs — artifacts, not invented before/after claims.', accent: getDomainAccent('schooling') },
     { label: 'Career preparation', desc: 'How Career OS was used — only when the learner agrees to share.', accent: careerAccent },
-    { label: 'Institution stories', desc: 'How a partner institution delivers the ecosystem — verified, not promotional.', accent: instAccent },
+    { label: 'Institution stories', desc: 'How a partner institution runs programs on Skylent — verified, not promotional.', accent: instAccent },
   ]
 
   return (
@@ -146,7 +146,7 @@ function PublishingSection() {
           </p>
           <div style={{ display: 'inline-flex', background: 'rgba(243,107,33,0.08)', border: '1px solid rgba(243,107,33,0.22)', borderRadius: 8, padding: '10px 14px' }}>
             <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12.5, lineHeight: 1.5 }}>
-              Sample narratives in the codebase are not displayed on this page. Editorial writing lives on the <Link to="/blog" style={{ color: C.orange, textDecoration: 'none' }}>blog</Link>.
+              Sample narratives in the codebase are not displayed on this page. Editorial writing lives on the <Link to="/blog" style={{ color: accent.text, textDecoration: 'none' }}>blog</Link>.
             </span>
           </div>
         </GlassSurface>
