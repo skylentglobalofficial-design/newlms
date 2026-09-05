@@ -138,6 +138,7 @@ export function Button({
   full,
   style,
   type = 'button',
+  themeId,
 }: {
   children: React.ReactNode
   onClick?: () => void
@@ -146,7 +147,9 @@ export function Button({
   full?: boolean
   style?: React.CSSProperties
   type?: 'button' | 'submit'
+  themeId?: AuroraThemeId
 }) {
+  const accent = themeId ? getDomainAccent(themeId) : brandAccent
   const pad = size === 'lg' ? '15px 32px' : size === 'sm' ? '9px 18px' : '13px 26px'
   const fontSize = size === 'lg' ? 16 : size === 'sm' ? 13 : 14.5
   const base: React.CSSProperties = {
@@ -156,7 +159,7 @@ export function Button({
     width: full ? '100%' : undefined, whiteSpace: 'nowrap', letterSpacing: '-0.01em',
   }
   const variants: Record<BtnVariant, React.CSSProperties> = {
-    primary: { background: brandAccent.primary, color: C.white },
+    primary: { background: accent.primary, color: C.white },
     secondary: { background: 'transparent', color: C.white, borderColor: T.lineDarkStrong },
     ghost: { background: 'transparent', color: C.ink, borderColor: T.lineStrong },
     dark: { background: C.ink, color: C.white },
@@ -169,7 +172,7 @@ export function Button({
       style={{ ...base, ...variants[variant], ...style }}
       onMouseEnter={e => {
         const t = e.currentTarget
-        if (variant === 'primary') { t.style.background = brandAccent.secondary; t.style.transform = 'translateY(-1px)' }
+        if (variant === 'primary') { t.style.background = accent.secondary; t.style.transform = 'translateY(-1px)' }
         else if (variant === 'dark') { t.style.opacity = '0.85'; t.style.transform = 'translateY(-1px)' }
         else if (variant === 'light') { t.style.transform = 'translateY(-1px)'; t.style.boxShadow = '0 10px 30px rgba(0,0,0,0.14)' }
         else if (variant === 'secondary') t.style.borderColor = 'rgba(255,255,255,0.4)'
@@ -177,7 +180,7 @@ export function Button({
       }}
       onMouseLeave={e => {
         const t = e.currentTarget
-        if (variant === 'primary') { t.style.background = brandAccent.primary; t.style.transform = 'none' }
+        if (variant === 'primary') { t.style.background = accent.primary; t.style.transform = 'none' }
         else if (variant === 'dark') { t.style.opacity = '1'; t.style.transform = 'none' }
         else if (variant === 'light') { t.style.transform = 'none'; t.style.boxShadow = 'none' }
         else if (variant === 'secondary') t.style.borderColor = T.lineDarkStrong

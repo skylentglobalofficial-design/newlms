@@ -483,7 +483,7 @@ export default function LoginPage() {
           {/* Demo mode — visually separated from auth */}
           <div style={{ marginTop: 24, padding: '18px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
             <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 12 }}>
-              DEMO — explore by role
+              Explore workspaces
             </div>
             <div className="login-demo-grid" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {DEMO_USERS.map(demo => {

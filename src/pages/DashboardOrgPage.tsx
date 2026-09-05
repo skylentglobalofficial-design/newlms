@@ -532,15 +532,15 @@ function OrgContextRail() {
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function DashboardOrgPage() {
-  const { user } = useAuth()
+  const { user, ready } = useAuth()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
 
   useEffect(() => {
-    if (!user) navigate('/login')
-  }, [user, navigate])
+    if (ready && !user) navigate('/login')
+  }, [ready, user, navigate])
 
-  if (!user) return null
+  if (!ready || !user) return null
 
   const institutionName = user.institution || user.name || 'Apex College'
   const institutionLearners = user.students ?? batchLearners

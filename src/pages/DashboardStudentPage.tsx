@@ -226,13 +226,13 @@ function ContextRail({ projectTitle, projectWhat }: { projectTitle: string; proj
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function DashboardStudentPage() {
-  const { user } = useAuth()
+  const { user, ready } = useAuth()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
 
   useEffect(() => {
-    if (!user) navigate('/login')
-  }, [user, navigate])
+    if (ready && !user) navigate('/login')
+  }, [ready, user, navigate])
 
   const program = programs.find(p => p.slug === 'data-science-ai') ?? programs[0]
   const programName = user?.program || program?.name || 'Data Science & AI'
@@ -242,7 +242,7 @@ export default function DashboardStudentPage() {
   const projectTitle = activeProject?.title ?? 'Capstone project'
   const projectWhat = activeProject?.what ?? 'Build a portfolio-ready project from your program.'
 
-  if (!user) return null
+  if (!ready || !user) return null
 
   return (
     <AuthDashboardShell

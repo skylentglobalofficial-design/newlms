@@ -571,8 +571,8 @@ function EcosystemConnectionSection() {
         <SectionHeader
           tone="dark"
           eyebrow="How it connects"
-          title="One ecosystem,<br />not four products."
-          lead="Each stage feeds the next. Institutions deliver the same connected journey at scale — with workflows appropriate to their model."
+          title="From learning<br />to hire."
+          lead="Each stage feeds the next. Institutions run the same connected journey with workflows that match their model."
           align="center"
         />
       </FadeIn>
@@ -744,8 +744,8 @@ export default function HomePage() {
       <ProgramDiscoverySection />
       <CTABand
         eyebrow="Get started"
-        title={<>The infrastructure for<br />education and careers.</>}
-        lead="Explore programs, education pathways, skills tracks, Career OS, or partner with Skylent as an institution."
+        title={<>Start with the path<br />that fits you.</>}
+        lead="Browse programs, education pathways, skills tracks, Career OS, or partner with Skylent as an institution."
         primary={{ label: 'Explore Programs', to: '/programs' }}
         secondary={{ label: 'For Institutions', to: '/institutions' }}
         auroraTheme="general"
