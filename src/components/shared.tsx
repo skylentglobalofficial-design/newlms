@@ -730,6 +730,13 @@ export const globalCSS = `
     .program-pricing-wrap { margin-left: -4px; margin-right: -4px; }
     .skills-proof-grid { grid-template-columns: 1fr !important; }
     .skills-path > div { min-width: 480px; }
+    .career-journey > div { grid-template-columns: repeat(3, 1fr) !important; gap: 28px !important; }
+    .career-journey-line { display: none !important; }
+    .career-ecosystem > div { grid-template-columns: repeat(2, 1fr) !important; gap: 24px !important; }
+    .career-job-header { display: none !important; }
+    .career-job-row { grid-template-columns: 1fr auto !important; gap: 12px !important; }
+    .career-support-row { grid-template-columns: 1fr !important; gap: 8px !important; }
+    .career-hero-visual { min-height: 340px !important; }
   }
   @media (max-width: 640px) {
     .three-col { grid-template-columns: 1fr !important; }
