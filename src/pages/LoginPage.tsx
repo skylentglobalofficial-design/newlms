@@ -1,6 +1,6 @@
 import { useState, useEffect, type CSSProperties, type FormEvent } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAuth, isAuthDemoMode } from '../context/AuthContext'
 import type { AuthUser, UserRole } from '../context/AuthContext'
 import { C, T } from '../tokens'
 import { Aurora, GlassSurface } from '../components/foundation'
@@ -89,9 +89,10 @@ function fieldStyle(focused: boolean, hasError?: boolean): CSSProperties {
 // ─── LOGIN PAGE ───────────────────────────────────────────────────────────────
 
 export default function LoginPage() {
-  const { login } = useAuth()
+  const { login, signup, loginDemo } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const demoMode = isAuthDemoMode()
 
   const [tab, setTab] = useState<'signin' | 'signup'>('signin')
 
@@ -115,6 +116,7 @@ export default function LoginPage() {
   }, [location.pathname])
 
   function handleDemoSelect(demo: DemoEntry) {
+    if (!demoMode) return
     setError(null)
     setActiveRole(demo.id)
     setSiEmail(demo.email)
@@ -124,13 +126,13 @@ export default function LoginPage() {
 
     setTimeout(() => {
       const { desc: _d, ...user } = demo
-      login(user)
+      loginDemo(user)
       navigate(roleRoute(demo.role))
       setSubmitting(false)
     }, 80)
   }
 
-  function handleSignIn(e: FormEvent) {
+  async function handleSignIn(e: FormEvent) {
     e.preventDefault()
     setError(null)
 
@@ -145,27 +147,17 @@ export default function LoginPage() {
 
     setSubmitting(true)
 
-    const found = DEMO_USERS.find(d => d.email === siEmail.trim().toLowerCase())
-    if (found) {
-      const { desc: _d, ...user } = found
-      login(user)
-      navigate(roleRoute(found.role))
-    } else {
-      const user: AuthUser = {
-        id: `u-${Date.now()}`,
-        name: siEmail.split('@')[0],
-        email: siEmail,
-        role: 'student',
-        avatar: siEmail.slice(0, 2).toUpperCase(),
-      }
-      login(user)
-      navigate('/dashboard/student')
+    try {
+      const role = await login(siEmail.trim(), siPassword)
+      navigate(roleRoute(role))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to sign in.')
+    } finally {
+      setSubmitting(false)
     }
-
-    setSubmitting(false)
   }
 
-  function handleSignUp(e: FormEvent) {
+  async function handleSignUp(e: FormEvent) {
     e.preventDefault()
     setError(null)
 
@@ -181,21 +173,21 @@ export default function LoginPage() {
       setError('Enter a password.')
       return
     }
+    if (suPassword.trim().length < 8) {
+      setError('Password must be at least 8 characters.')
+      return
+    }
 
     setSubmitting(true)
 
-    const user: AuthUser = {
-      id: `u-${Date.now()}`,
-      name: suName || 'New User',
-      email: suEmail,
-      role: 'student',
-      avatar: (suName || 'NU').slice(0, 2).toUpperCase(),
-      program: suGoal ?? undefined,
-      progress: 0,
+    try {
+      const role = await signup(suName.trim(), suEmail.trim(), suPassword)
+      navigate(roleRoute(role))
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to create account.')
+    } finally {
+      setSubmitting(false)
     }
-    login(user)
-    navigate('/dashboard/student')
-    setSubmitting(false)
   }
 
   const goals = ['Get a job', 'Build skills', 'Switch career', 'Professional growth']
@@ -480,10 +472,11 @@ export default function LoginPage() {
             )}
           </GlassSurface>
 
-          {/* Demo mode — visually separated from auth */}
+          {/* Demo mode — development only */}
+          {demoMode && (
           <div style={{ marginTop: 24, padding: '18px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
             <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 12 }}>
-              Explore workspaces
+              Explore workspaces (demo mode)
             </div>
             <div className="login-demo-grid" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {DEMO_USERS.map(demo => {
@@ -515,6 +508,7 @@ export default function LoginPage() {
               })}
             </div>
           </div>
+          )}
         </div>
       </div>
 

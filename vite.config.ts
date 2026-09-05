@@ -36,6 +36,18 @@ export default defineConfig(({ mode }) => {
       port: parseInt(process.env.PORT || '5173', 10),
       strictPort: true,
       watch: { ignored: ['**/.figma/**'] },
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+          configure: (proxy) => {
+            proxy.on('proxyReq', (proxyReq, req) => {
+              const proto = req.headers['x-forwarded-proto'] ?? 'https'
+              proxyReq.setHeader('x-forwarded-proto', proto)
+            })
+          },
+        },
+      },
     },
     preview: {
       host: '0.0.0.0',
