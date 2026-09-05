@@ -706,6 +706,16 @@ export const globalCSS = `
     .education-hero-stage-1 { left: 0 !important; top: 0 !important; }
     .education-hero-stage-2 { right: 0 !important; top: 22% !important; }
     .education-hero-stage-3 { left: 8% !important; bottom: 0 !important; width: 62% !important; }
+    .skills-path { overflow-x: auto; }
+    .skills-path > div { grid-template-columns: repeat(5, minmax(120px, 1fr)) !important; min-width: 560px; }
+    .skills-path-line { display: none !important; }
+    .skills-hero-visual { min-height: 360px !important; }
+    .skills-hero-career { right: 0 !important; width: 48% !important; }
+    .skills-discovery, .skills-pro-featured { grid-template-columns: 1fr !important; }
+    .skills-cert-grid > *:first-child { order: 1; }
+    .skills-cert-grid > *:last-child { order: 0; }
+    .skills-proof-grid { grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
+    .skills-proof-grid > div { border-right: none !important; padding: 0 !important; }
     .program-overview-split { grid-template-columns: 1fr !important; }
     .program-who-split { grid-template-columns: 1fr !important; }
     .program-project-featured { grid-template-columns: 1fr !important; }
@@ -718,6 +728,8 @@ export const globalCSS = `
   @media (max-width: 375px) {
     .program-tools-strip > div { padding: 12px 16px !important; font-size: 13px !important; }
     .program-pricing-wrap { margin-left: -4px; margin-right: -4px; }
+    .skills-proof-grid { grid-template-columns: 1fr !important; }
+    .skills-path > div { min-width: 480px; }
   }
   @media (max-width: 640px) {
     .three-col { grid-template-columns: 1fr !important; }
