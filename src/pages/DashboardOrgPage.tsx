@@ -4,6 +4,8 @@ import { C, T } from '../tokens'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
+import { useDemoState } from '../demo/DemoStateContext'
+import { BATCH_LEARNERS } from '../demo/seed'
 
 // ─── DEMO INSTITUTION DATA (preserved from prior dashboard) ───────────────────
 
@@ -501,12 +503,70 @@ function OrgContextRail() {
   )
 }
 
+// ─── BATCH REVIEW VIEW ────────────────────────────────────────────────────────
+
+function BatchDetailView({
+  batch,
+  onBack,
+}: {
+  batch: typeof cohorts[0]
+  onBack: () => void
+}) {
+  const learners = BATCH_LEARNERS[batch.name] ?? []
+
+  return (
+    <div id="org-batch-review">
+      <button type="button" onClick={onBack} style={{
+        background: 'none', border: 'none', color: 'rgba(255,255,255,0.45)',
+        fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', padding: 0, marginBottom: 24,
+      }}>
+        ← Back to overview
+      </button>
+
+      <div style={{ marginBottom: 28, paddingBottom: 24, borderBottom: `1px solid ${T.lineDark}` }}>
+        <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Batch review</div>
+        <h1 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 8px' }}>{batch.name}</h1>
+        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: '0 0 4px' }}>
+          {batch.program} · {batch.completion}% completion · {batch.atRisk} learners need attention
+        </p>
+        <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, margin: 0 }}>Faculty: {batch.faculty}</p>
+      </div>
+
+      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 16 }}>
+        Attention-needed learners · demo cohort data
+      </div>
+
+      <div className="org-batch-table-wrap" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 480 }}>
+          <thead>
+            <tr>
+              {['Learner', 'Completion', 'Attention reason'].map(h => (
+                <th key={h} style={{ textAlign: 'left', padding: '0 12px 12px 0', color: 'rgba(255,255,255,0.28)', fontSize: 10, fontFamily: 'var(--font-mono)', fontWeight: 500 }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {learners.map(l => (
+              <tr key={l.name} style={{ borderTop: `1px solid ${T.lineDark}` }}>
+                <td style={{ padding: '14px 12px 14px 0', color: C.white, fontSize: 13, fontWeight: 500 }}>{l.name}</td>
+                <td style={{ padding: '14px 12px 14px 0', fontFamily: 'var(--font-mono)', fontSize: 12, color: l.completion < 40 ? '#f87171' : 'rgba(255,255,255,0.55)' }}>{l.completion}%</td>
+                <td style={{ padding: '14px 0', color: 'rgba(255,255,255,0.45)', fontSize: 12, lineHeight: 1.5 }}>{l.issue}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function DashboardOrgPage() {
   const { user, ready } = useAuth()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
+  const [batchReview, setBatchReview] = useState<string | null>(null)
 
   useEffect(() => {
     if (ready && !user) navigate('/login')
@@ -523,6 +583,13 @@ export default function DashboardOrgPage() {
     document.getElementById('org-batch-operations')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
+  function openBatchReview(batchName: string) {
+    setBatchReview(batchName)
+    setActiveNav('batches')
+  }
+
+  const reviewBatch = batchReview ? cohorts.find(c => c.name === batchReview) : null
+
   return (
     <AuthDashboardShell
       themeId="institution"
@@ -536,12 +603,15 @@ export default function DashboardOrgPage() {
     >
       <AuthDashboardLayout
         primary={
+          batchReview && reviewBatch ? (
+            <BatchDetailView batch={reviewBatch} onBack={() => setBatchReview(null)} />
+          ) : (
           <>
             <InstitutionWorkspace
               institutionName={institutionName}
               institutionLearners={institutionLearners}
               criticalBatch={criticalBatch}
-              onAction={focusBatches}
+              onAction={() => openBatchReview(criticalBatch.name)}
             />
 
             <AcademicPipeline />
@@ -565,6 +635,7 @@ export default function DashboardOrgPage() {
               </p>
             </div>
           </>
+          )
         }
         rail={<OrgContextRail />}
       />

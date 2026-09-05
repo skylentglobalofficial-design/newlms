@@ -4,6 +4,7 @@ import { C, T } from '../tokens'
 import { AuthDashboardShell, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
+import { useDemoState } from '../demo/DemoStateContext'
 
 // ─── DEMO DATA (local workspace preview) ─────────────────────────────────────
 
@@ -220,7 +221,7 @@ function ReviewQueueSection({
   )
 }
 
-function ShortlistSection({ shortlistedSet }: { shortlistedSet: Set<string> }) {
+function ShortlistSection({ shortlistedSet, onScheduleNote }: { shortlistedSet: Set<string>; onScheduleNote: (name: string) => void }) {
   const list = candidates.filter(c => shortlistedSet.has(c.name) || c.status === 'shortlisted')
 
   return (
@@ -239,7 +240,7 @@ function ShortlistSection({ shortlistedSet }: { shortlistedSet: Set<string> }) {
                 <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{c.name}</div>
                 <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>{c.role} · {c.readiness}% readiness</div>
               </div>
-              <button type="button" style={{
+              <button type="button" onClick={() => onScheduleNote(c.name)} style={{
                 background: accent.subtle, border: `1px solid ${accent.border}`,
                 color: accent.text, padding: '8px 14px', borderRadius: T.rControl,
                 fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)',
@@ -285,11 +286,14 @@ function ApplicationsSection() {
 
 export default function DashboardRecruiterPage() {
   const { user, ready } = useAuth()
+  const demo = useDemoState()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('review')
-  const [shortlistedSet, setShortlistedSet] = useState<Set<string>>(new Set(['Rohan Mehta']))
   const [skillFilter, setSkillFilter] = useState('All')
   const [readinessFilter, setReadinessFilter] = useState('All')
+  const [scheduleNote, setScheduleNote] = useState<string | null>(null)
+
+  const shortlistedSet = new Set(demo.shortlist)
 
   useEffect(() => {
     if (ready && !user) navigate('/login')
@@ -306,12 +310,7 @@ export default function DashboardRecruiterPage() {
   })
 
   function toggleShortlist(name: string) {
-    setShortlistedSet(prev => {
-      const next = new Set(prev)
-      if (next.has(name)) next.delete(name)
-      else next.add(name)
-      return next
-    })
+    demo.toggleShortlist(name)
   }
 
   return (
@@ -334,6 +333,12 @@ export default function DashboardRecruiterPage() {
       }
     >
       <DemoBanner />
+      {scheduleNote && (
+        <div style={{ padding: '12px 16px', marginBottom: 20, borderLeft: `3px solid ${accent.border}`, background: accent.subtle }}>
+          <div style={{ color: accent.text, fontSize: 12, fontWeight: 500, marginBottom: 2 }}>Interview scheduling — demo only</div>
+          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13 }}>No calendar integration exists. Scheduling for {scheduleNote} is not persisted.</div>
+        </div>
+      )}
       <OpenRolesSection />
       <ReviewQueueSection
         filtered={filtered}
@@ -344,7 +349,7 @@ export default function DashboardRecruiterPage() {
         onShortlist={toggleShortlist}
         shortlistedSet={shortlistedSet}
       />
-      <ShortlistSection shortlistedSet={shortlistedSet} />
+      <ShortlistSection shortlistedSet={shortlistedSet} onScheduleNote={name => setScheduleNote(name)} />
       <ApplicationsSection />
 
       <style>{`
