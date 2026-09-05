@@ -692,6 +692,20 @@ export const globalCSS = `
   @media (max-width: 768px) {
     .skylent-page-hero { gap: 28px !important; }
     .skylent-display-lg { font-size: clamp(30px, 8vw, 44px) !important; }
+    .education-journey { grid-template-columns: 1fr !important; gap: 40px !important; }
+    .education-journey-line { display: none !important; }
+    .education-journey-arrow { display: none !important; }
+    .education-discovery { grid-template-columns: 1fr !important; }
+    .education-ug-grid { grid-template-columns: 1fr !important; }
+    .education-ug-grid > *:first-child { order: 1; }
+    .education-ug-grid > *:last-child { order: 0; }
+    .education-value-row { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .education-cat-grid { grid-template-columns: 1fr !important; }
+    .education-hero-visual { min-height: 340px !important; }
+    .education-hero-stage { width: 70% !important; }
+    .education-hero-stage-1 { left: 0 !important; top: 0 !important; }
+    .education-hero-stage-2 { right: 0 !important; top: 22% !important; }
+    .education-hero-stage-3 { left: 8% !important; bottom: 0 !important; width: 62% !important; }
     .program-overview-split { grid-template-columns: 1fr !important; }
     .program-who-split { grid-template-columns: 1fr !important; }
     .program-project-featured { grid-template-columns: 1fr !important; }
