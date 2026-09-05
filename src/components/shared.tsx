@@ -3,17 +3,12 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import type { Job } from '../data'
 import { useAuth } from '../context/AuthContext'
 import type { UserRole } from '../context/AuthContext'
+import { C, T } from '../tokens'
+import { PublicCanvas, useAuroraTheme } from './foundation'
+import type { AuroraThemeId } from '../aurora-themes'
 
-// ─── COLOUR TOKENS ────────────────────────────────────────────────────────────
-export const C = {
-  ink: '#0B0D0F',
-  orange: '#F36B21',
-  warmWhite: '#F8F6F2',
-  sand: '#EEE9E1',
-  slate: '#667078',
-  white: '#FFFFFF',
-  black: '#050505',
-}
+// Re-export color tokens for backward compatibility
+export { C } from '../tokens'
 
 // ─── IMAGE URLS ───────────────────────────────────────────────────────────────
 export const IMG = {
@@ -413,6 +408,11 @@ export function Nav() {
 
   const showDark = scrolled || !isHome
 
+  const navBg = showDark ? 'var(--glass-01-bg)' : 'transparent'
+  const navBlur = showDark ? 'var(--glass-01-blur)' : 'none'
+  const navBorder = showDark ? '1px solid var(--glass-01-border)' : 'none'
+  const navShadow = showDark ? 'var(--glass-01-shadow)' : 'none'
+
   const handleMenuEnter = useCallback((label: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current)
     setActiveMenu(label)
@@ -428,8 +428,8 @@ export function Nav() {
   ]
 
   return (
-    <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: showDark ? 'rgba(11,13,15,0.92)' : 'transparent', backdropFilter: showDark ? 'blur(20px)' : 'none', borderBottom: showDark ? '1px solid rgba(255,255,255,0.07)' : 'none', transition: 'background 0.4s, backdrop-filter 0.4s, border-color 0.4s' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
+    <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, backdropFilter: navBlur, WebkitBackdropFilter: navBlur, borderBottom: navBorder, boxShadow: navShadow, transition: 'background 0.4s, backdrop-filter 0.4s, border-color 0.4s, box-shadow 0.4s' }}>
+      <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH }}>
         {/* Logo */}
         <button onClick={() => navigate('/')} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: C.white, background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '-0.02em', padding: 0, flexShrink: 0 }}>
           Skylent<span style={{ color: C.orange }}>.</span>
@@ -444,7 +444,7 @@ export function Nav() {
                 <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{ opacity: 0.5, transform: activeMenu === group.label ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l5 6 5-6z"/></svg>
               </button>
               {activeMenu === group.label && (
-                <div onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: 'rgba(11,13,15,0.97)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 14, padding: 8, minWidth: 288, boxShadow: '0 28px 70px rgba(0,0,0,0.5)', zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
+                <div onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)', WebkitBackdropFilter: 'var(--glass-01-blur)', border: '1px solid var(--glass-01-border)', borderRadius: 14, padding: 8, minWidth: 288, boxShadow: '0 28px 70px rgba(0,0,0,0.5)', zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
                   <Link to={group.to} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px 13px', borderRadius: 10, textDecoration: 'none', marginBottom: 4, borderBottom: '1px solid rgba(255,255,255,0.07)' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -580,8 +580,8 @@ export function Footer() {
     { heading: 'Company', links: [['About', '/about'], ['For Institutions', '/institutions'], ['Stories', '/stories'], ['Blog', '/blog'], ['Contact', '/contact']] },
   ]
   return (
-    <footer style={{ background: C.black, padding: '72px 32px 32px' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+    <footer style={{ background: C.black, padding: `${T.sectionSm} ${T.gutter} 32px`, position: 'relative' }}>
+      <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1.7fr repeat(4, 1fr)', gap: 40, marginBottom: 56 }} className="footer-grid">
           <div>
             <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.white, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
@@ -614,15 +614,27 @@ export function Footer() {
 }
 
 // ─── PAGE SHELL ───────────────────────────────────────────────────────────────
-export function PageShell({ children }: { children: React.ReactNode }) {
+export function PageShell({
+  children,
+  aurora,
+  auroraTheme,
+}: {
+  children: React.ReactNode
+  aurora?: boolean
+  auroraTheme?: AuroraThemeId
+}) {
   const location = useLocation()
+  const autoTheme = useAuroraTheme()
+  const theme = auroraTheme ?? autoTheme
+  const showAurora = aurora ?? true
+
   useEffect(() => {
     if (location.hash) {
       const id = location.hash.replace('#', '')
       requestAnimationFrame(() => {
         const el = document.getElementById(id)
         if (el) {
-          const y = el.getBoundingClientRect().top + window.scrollY - 72
+          const y = el.getBoundingClientRect().top + window.scrollY - (T.navH + 8)
           window.scrollTo({ top: y, behavior: 'smooth' })
         }
       })
@@ -630,12 +642,15 @@ export function PageShell({ children }: { children: React.ReactNode }) {
       window.scrollTo(0, 0)
     }
   }, [location.pathname, location.hash])
+
   return (
-    <div style={{ paddingTop: 64 }}>
-      <Nav />
-      {children}
-      <Footer />
-    </div>
+    <PublicCanvas themeId={theme} aurora={showAurora}>
+      <div style={{ paddingTop: T.navH }}>
+        <Nav />
+        <main>{children}</main>
+        <Footer />
+      </div>
+    </PublicCanvas>
   )
 }
 
@@ -650,10 +665,17 @@ export const globalCSS = `
   .nav-links { display: flex !important; }
   .show-mobile { display: none !important; }
 
+  .skylent-section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.08) 80%, transparent 100%);
+    max-width: var(--max-w);
+    margin: 0 auto;
+  }
+
   @media (max-width: 1100px) {
     .nav-links { display: none !important; }
     .show-mobile { display: flex !important; }
-    .hero-grid, .two-col, .two-col-sm { grid-template-columns: 1fr !important; gap: 32px !important; }
+    .hero-grid, .two-col, .two-col-sm, .skylent-page-hero { grid-template-columns: 1fr !important; gap: 32px !important; }
     .program-detail-grid { grid-template-columns: 1fr !important; }
     .three-col { grid-template-columns: 1fr 1fr !important; }
     .programs-grid { grid-template-columns: 1fr 1fr !important; }
@@ -664,8 +686,12 @@ export const globalCSS = `
     .edu-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
     .dash-grid { grid-template-columns: 1fr !important; }
     .hero-float { display: none !important; }
-    .hero-visual { aspect-ratio: 4/3 !important; max-height: 380px !important; }
-    .hero-visual img { transform: none !important; }
+    .hero-visual, .skylent-hero-visual { aspect-ratio: 4/3 !important; max-height: 380px !important; }
+    .hero-visual img, .skylent-hero-visual img { transform: none !important; }
+  }
+  @media (max-width: 768px) {
+    .skylent-page-hero { gap: 28px !important; }
+    .skylent-display-lg { font-size: clamp(30px, 8vw, 44px) !important; }
   }
   @media (max-width: 640px) {
     .three-col { grid-template-columns: 1fr !important; }

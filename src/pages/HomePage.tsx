@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, Footer } from '../components/shared'
-import { Section, Eyebrow, Button, Badge, FlowStrip, CTABand, T } from '../components/ui'
+import { Section, Eyebrow, Button, Badge, FlowStrip, CTABand, T, MediaImage } from '../components/ui'
+import { Aurora } from '../components/foundation'
 import { stories, programs } from '../data'
 import type { Program, ProgramType } from '../data'
 import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
@@ -19,15 +20,16 @@ const TYPE_LABELS: Record<ProgramType, string> = {
 function Hero() {
   const navigate = useNavigate()
   return (
-    <section style={{ background: C.ink, minHeight: '92vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: 64 }}>
-      <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `clamp(48px,7vw,88px) ${T.gutter}`, width: '100%' }}>
+    <section style={{ background: C.ink, minHeight: '92vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', paddingTop: T.navH }}>
+      <Aurora themeId="general" />
+      <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `clamp(48px,7vw,88px) ${T.gutter}`, width: '100%', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(28px,5vw,56px)', alignItems: 'center' }} className="hero-grid">
           <div>
             <Eyebrow tone="dark">Education · Skills · Career</Eyebrow>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 'clamp(40px, 6vw, 76px)', lineHeight: 0.96, color: C.white, margin: '22px 0 20px', letterSpacing: '-0.04em' }}>
+            <h1 className="skylent-display-xl" style={{ color: C.white, margin: '22px 0 20px' }}>
               From education<br />to <span style={{ color: C.orange }}>employability.</span>
             </h1>
-            <p style={{ color: 'rgba(255,255,255,0.64)', fontSize: 'clamp(16px,2vw,18px)', lineHeight: 1.75, maxWidth: 500, margin: '0 0 32px' }}>
+            <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.64)', maxWidth: 500, margin: '0 0 32px' }}>
               One platform for academic learning, credentialed skills, and Career OS — for students, parents, and institutions.
             </p>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -47,16 +49,15 @@ function Hero() {
               ))}
             </div>
           </div>
-          <div style={{ position: 'relative', borderRadius: T.rCard, overflow: 'hidden', aspectRatio: '4/5', maxHeight: 640, background: '#1a1f24' }} className="hero-visual">
-            <img
-              src={PHOTO.hero}
-              alt="Students collaborating on campus"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            />
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '18px 20px', background: 'linear-gradient(to top, rgba(11,13,15,0.72), transparent)' }}>
-              <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: 13, fontWeight: 500 }}>Campus · classroom · career — one journey</div>
-            </div>
-          </div>
+          <MediaImage
+            src={PHOTO.hero}
+            alt="Students collaborating on campus"
+            aspect="4/5"
+            className="hero-visual skylent-hero-visual"
+            overlay="bottom"
+            overlayText="Campus · classroom · career — one journey"
+            style={{ maxHeight: 640 }}
+          />
         </div>
       </div>
     </section>
