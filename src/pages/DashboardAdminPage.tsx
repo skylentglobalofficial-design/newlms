@@ -1,40 +1,21 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { C } from '../components/shared'
+import { C, T } from '../tokens'
+import { AuroraBand, GlassSurface } from '../components/foundation'
+import { AuthDashboardShell, type AuthNavItem } from '../components/AuthDashboardShell'
+import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
 
-const NAV_ITEMS = ['Dashboard', 'Users', 'Organisations', 'Courses', 'Payments', 'Enrollments', 'Certificates', 'System']
+const NAV_ITEMS: AuthNavItem[] = [
+  { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'admin-overview' },
+  { id: 'users', label: 'Users', short: 'Users', sectionId: 'admin-users' },
+  { id: 'orgs', label: 'Organisations', short: 'Orgs', sectionId: 'admin-orgs' },
+  { id: 'courses', label: 'Courses', short: 'Courses', sectionId: 'admin-courses' },
+  { id: 'payments', label: 'Payments', short: 'Pay', sectionId: 'admin-payments' },
+  { id: 'system', label: 'System', short: 'System', sectionId: 'admin-system' },
+]
 
-function Sidebar({ active, setActive }: { active: string; setActive: (s: string) => void }) {
-  const { user, logout } = useAuth()
-  const navigate = useNavigate()
-  function handleLogout() { logout(); navigate('/login') }
-  return (
-    <div style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: 220, background: C.ink, borderRight: '1px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', zIndex: 100 }}>
-      <div style={{ padding: '24px 20px 20px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, fontWeight: 700, color: C.white, letterSpacing: '0.1em' }}>SKYLENT <span style={{ color: C.orange }}>OS</span></div>
-        <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9, fontFamily: 'var(--font-mono)', marginTop: 2, letterSpacing: '0.08em' }}>SUPER ADMIN</div>
-      </div>
-      <nav style={{ flex: 1, padding: '16px 10px', overflowY: 'auto' }}>
-        {NAV_ITEMS.map(item => (
-          <button key={item} onClick={() => setActive(item)} style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 12px', marginBottom: 2, borderRadius: 8, border: 'none', background: active === item ? 'rgba(243,107,33,0.1)' : 'transparent', borderLeft: active === item ? `3px solid ${C.orange}` : '3px solid transparent', color: active === item ? C.orange : 'rgba(255,255,255,0.5)', fontSize: 13, fontFamily: 'var(--font-body)', cursor: 'pointer', transition: 'all 0.15s', fontWeight: active === item ? 600 : 400 }}>
-            {item}
-          </button>
-        ))}
-      </nav>
-      <div style={{ padding: '16px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, padding: '10px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: 8 }}>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: `linear-gradient(135deg, ${C.orange}, #ff9a3c)`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: C.white, flexShrink: 0 }}>{user?.avatar || 'SA'}</div>
-          <div style={{ overflow: 'hidden' }}>
-            <div style={{ color: C.white, fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{user?.name || 'Skylent Admin'}</div>
-            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>Super Admin</div>
-          </div>
-        </div>
-        <button onClick={handleLogout} style={{ width: '100%', padding: '9px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 7, color: 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Sign Out</button>
-      </div>
-    </div>
-  )
-}
+const accent = getRoleAccent('superadmin')
 
 const recentEnrollments = [
   { user: 'Arjun Sharma', course: 'Data Science & AI — Pro', amount: '₹44,999', date: '11 Aug 2026', status: 'Confirmed' },
@@ -42,9 +23,6 @@ const recentEnrollments = [
   { user: 'Ravi Kumar', course: 'Data Analytics — Self-paced', amount: '₹19,999', date: '10 Aug 2026', status: 'Pending' },
   { user: 'Shruti Das', course: 'Generative AI — Pro', amount: '₹24,999', date: '10 Aug 2026', status: 'Confirmed' },
   { user: 'Karan Bhat', course: 'Power BI Masterclass', amount: '₹2,999', date: '9 Aug 2026', status: 'Confirmed' },
-  { user: 'Pooja Singh', course: 'Product Management — Career', amount: '₹37,999', date: '9 Aug 2026', status: 'Refunded' },
-  { user: 'Amit Verma', course: 'Python for Data Science', amount: '₹3,999', date: '8 Aug 2026', status: 'Confirmed' },
-  { user: 'Nisha Mohan', course: 'Data Science & AI — Career', amount: '₹59,999', date: '8 Aug 2026', status: 'Confirmed' },
 ]
 
 const topCourses = [
@@ -60,7 +38,6 @@ const orgs = [
   { name: 'TechBridge Institute', students: 880, programs: 3, lastPayment: '₹5.9L — Jul 2026' },
   { name: 'Innovate Academy', students: 640, programs: 2, lastPayment: '₹3.2L — Jul 2026' },
   { name: 'NovaTech University', students: 2100, programs: 6, lastPayment: '₹14.1L — Aug 2026' },
-  { name: 'Horizon Skills', students: 310, programs: 2, lastPayment: '₹1.8L — Jun 2026' },
 ]
 
 const systemHealth = [
@@ -82,10 +59,55 @@ const statusBgs: Record<string, string> = {
   Refunded: 'rgba(239,68,68,0.1)',
 }
 
+const canvasRow = {
+  padding: '22px 0',
+  borderBottom: `1px solid ${T.lineDark}`,
+} as const
+
+function NavIcon({ id }: { id: string }) {
+  const stroke = 'currentColor'
+  const s = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke, strokeWidth: 1.8 }
+  if (id === 'overview') return <svg {...s}><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  if (id === 'users') return <svg {...s}><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+  if (id === 'orgs') return <svg {...s}><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+  if (id === 'courses') return <svg {...s}><polygon points="12 2 2 7 12 12 22 7 12 2"/></svg>
+  if (id === 'payments') return <svg {...s}><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+  return <svg {...s}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+}
+
+function AdminWorkspace() {
+  const keyMetrics = [
+    { label: 'Total users', value: '12,450' },
+    { label: 'Organisations', value: '48' },
+    { label: 'Monthly enrollments', value: '2,847' },
+    { label: 'Revenue (MTD)', value: '₹42.8L' },
+  ]
+
+  return (
+    <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', position: 'relative' }}>
+      <AuroraBand themeId="superadmin" />
+      <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 3.5vw, 36px)' }}>
+        <h1 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 8px' }}>Platform overview</h1>
+        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: '0 0 24px' }}>
+          System-wide enrollment, revenue, and operational health.
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px 32px', padding: '16px 0', borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}` }}>
+          {keyMetrics.map(m => (
+            <div key={m.label} style={{ flex: '1 1 120px', minWidth: 0 }}>
+              <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 4 }}>{m.label}</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 600, color: accent.text }}>{m.value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </GlassSurface>
+  )
+}
+
 export default function DashboardAdminPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [active, setActive] = useState('Dashboard')
+  const [activeNav, setActiveNav] = useState('overview')
 
   useEffect(() => {
     if (!user) navigate('/login')
@@ -96,133 +118,108 @@ export default function DashboardAdminPage() {
   const maxEnrollment = topCourses[0].enrollments
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#0e1012', fontFamily: 'var(--font-body)' }}>
-      <Sidebar active={active} setActive={setActive} />
-
-      <div style={{ marginLeft: 220, flex: 1, overflowY: 'auto', minHeight: '100vh' }}>
-        {/* Top bar */}
-        <div style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(14,16,18,0.9)', backdropFilter: 'blur(12px)', borderBottom: '1px solid rgba(255,255,255,0.05)', padding: '0 32px', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ color: C.white, fontSize: 16, fontWeight: 600 }}>Admin Dashboard</div>
-          <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>Skylent Global · Platform Admin</div>
+    <AuthDashboardShell
+      themeId="superadmin"
+      workspaceLabel="Platform"
+      roleLabel="Super Admin"
+      navItems={NAV_ITEMS}
+      bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'users', 'orgs', 'payments', 'system'].includes(n.id))}
+      activeNav={activeNav}
+      onNavChange={setActiveNav}
+      renderNavIcon={id => <NavIcon id={id} />}
+    >
+      <div id="admin-overview">
+        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 20, padding: '10px 14px', background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rControl }}>
+          Demo data — figures are illustrative only.
         </div>
 
-        <div style={{ padding: '32px' }}>
+        <AdminWorkspace />
 
-          {/* Demo banner */}
-          <div style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 10, padding: '10px 20px', marginBottom: 24, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>DEMO DATA — Figures are illustrative only</span>
+        <div id="admin-users" style={{ ...canvasRow, marginTop: 32 }}>
+          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 16 }}>Recent enrollments</div>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 520 }}>
+              <thead>
+                <tr>
+                  {['User', 'Course', 'Amount', 'Date', 'Status'].map(h => (
+                    <th key={h} style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, textAlign: 'left', padding: '0 12px 12px 0', fontWeight: 500 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {recentEnrollments.map((row, i) => (
+                  <tr key={i}>
+                    <td style={{ padding: '11px 12px 11px 0', color: C.white, fontSize: 13 }}>{row.user}</td>
+                    <td style={{ padding: '11px 12px 11px 0', color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>{row.course}</td>
+                    <td style={{ padding: '11px 12px 11px 0', color: 'rgba(255,255,255,0.55)', fontSize: 12, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>{row.amount}</td>
+                    <td style={{ padding: '11px 12px 11px 0', color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{row.date}</td>
+                    <td style={{ padding: '11px 0' }}>
+                      <span style={{ background: statusBgs[row.status], color: statusColors[row.status], padding: '3px 10px', borderRadius: 20, fontSize: 11 }}>{row.status}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+        </div>
 
-          {/* Stats grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 28 }}>
-            {[
-              { label: 'Total Users', value: '12,450' },
-              { label: 'Organisations', value: '48' },
-              { label: 'Monthly Enrollments', value: '2,847' },
-              { label: 'Revenue (MTD)', value: '₹42.8L' },
-              { label: 'Certificates Issued', value: '3,891' },
-              { label: 'Active Courses', value: '134' },
-            ].map(stat => (
-              <div key={stat.label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '20px 24px' }}>
-                <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 10 }}>{stat.label.toUpperCase()}</div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 26, fontWeight: 700, color: C.white }}>{stat.value}</div>
+        <div id="admin-system" style={{ ...canvasRow }}>
+          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 16 }}>System health</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
+            {systemHealth.map(s => (
+              <div key={s.name} style={{ padding: '14px 0', borderBottom: `1px solid ${T.lineDark}` }}>
+                <div style={{ color: C.white, fontSize: 13, marginBottom: 4 }}>{s.name}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#22c55e' }} />
+                  <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>{s.status} · {s.uptime}</span>
+                </div>
               </div>
             ))}
           </div>
+        </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 20, marginBottom: 28 }}>
-            {/* Recent Enrollments */}
-            <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '24px' }}>
-              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 20 }}>RECENT ENROLLMENTS</div>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    {['User', 'Course / Plan', 'Amount', 'Date', 'Status'].map(h => (
-                      <th key={h} style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9, fontFamily: 'var(--font-mono)', textAlign: 'left', padding: '0 12px 12px 0', letterSpacing: '0.06em' }}>{h.toUpperCase()}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentEnrollments.map((row, i) => (
-                    <tr key={i} style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-                      <td style={{ padding: '11px 12px 11px 0', color: C.white, fontSize: 13 }}>{row.user}</td>
-                      <td style={{ padding: '11px 12px 11px 0', color: 'rgba(255,255,255,0.4)', fontSize: 12, maxWidth: 200 }}>{row.course}</td>
-                      <td style={{ padding: '11px 12px 11px 0', color: 'rgba(255,255,255,0.6)', fontSize: 12, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>{row.amount}</td>
-                      <td style={{ padding: '11px 12px 11px 0', color: 'rgba(255,255,255,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>{row.date}</td>
-                      <td style={{ padding: '11px 0' }}>
-                        <span style={{ background: statusBgs[row.status], border: `1px solid ${statusColors[row.status]}33`, color: statusColors[row.status], padding: '3px 10px', borderRadius: 20, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{row.status}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* System Health */}
-            <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '24px' }}>
-              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 20 }}>SYSTEM HEALTH</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {systemHealth.map((s, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 14px', background: 'rgba(34,197,94,0.04)', border: '1px solid rgba(34,197,94,0.12)', borderRadius: 8 }}>
-                    <div>
-                      <div style={{ color: C.white, fontSize: 13 }}>{s.name}</div>
-                      <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 2 }}>{s.uptime} uptime</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px rgba(34,197,94,0.6)' }} />
-                      <span style={{ color: '#22c55e', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{s.status}</span>
-                    </div>
-                  </div>
-                ))}
+        <div id="admin-courses" style={{ ...canvasRow }}>
+          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 16 }}>Top courses by enrollment</div>
+          {topCourses.map((c, i) => (
+            <div key={i} style={{ marginBottom: i < topCourses.length - 1 ? 14 : 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ color: C.white, fontSize: 13 }}>{c.name}</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{c.enrollments.toLocaleString()}</span>
+              </div>
+              <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 4, height: 4 }}>
+                <div style={{ background: accent.primary, width: `${(c.enrollments / maxEnrollment) * 100}%`, height: '100%', borderRadius: 4 }} />
               </div>
             </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
-            {/* Top Courses */}
-            <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '24px' }}>
-              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 20 }}>TOP COURSES BY ENROLLMENT</div>
-              {topCourses.map((c, i) => (
-                <div key={i} style={{ marginBottom: i < topCourses.length - 1 ? 14 : 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <span style={{ color: C.white, fontSize: 13 }}>{c.name}</span>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>{c.enrollments.toLocaleString()}</span>
-                  </div>
-                  <div style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 4, height: 5 }}>
-                    <div style={{ background: `linear-gradient(90deg, ${C.orange}, #ff9a3c)`, width: `${(c.enrollments / maxEnrollment) * 100}%`, height: '100%', borderRadius: 4 }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Org Overview */}
-            <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '24px' }}>
-              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 20 }}>ORGANISATION OVERVIEW</div>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <thead>
-                  <tr>
-                    {['Organisation', 'Students', 'Programs', 'Last Payment'].map(h => (
-                      <th key={h} style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9, fontFamily: 'var(--font-mono)', textAlign: 'left', padding: '0 0 12px', letterSpacing: '0.05em', paddingRight: 12 }}>{h.toUpperCase()}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {orgs.map((o, i) => (
-                    <tr key={i} style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}>
-                      <td style={{ padding: '10px 12px 10px 0', color: C.white, fontSize: 13 }}>{o.name}</td>
-                      <td style={{ padding: '10px 12px 10px 0', color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{o.students.toLocaleString()}</td>
-                      <td style={{ padding: '10px 12px 10px 0', color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{o.programs}</td>
-                      <td style={{ padding: '10px 0', color: 'rgba(255,255,255,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{o.lastPayment}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
+          ))}
         </div>
+
+        <div id="admin-orgs" style={{ paddingTop: 22 }}>
+          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 16 }}>Organisation overview</div>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 480 }}>
+              <thead>
+                <tr>
+                  {['Organisation', 'Students', 'Programs', 'Last payment'].map(h => (
+                    <th key={h} style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, textAlign: 'left', padding: '0 0 12px', fontWeight: 500 }}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {orgs.map((o, i) => (
+                  <tr key={i} style={{ borderTop: `1px solid ${T.lineDark}` }}>
+                    <td style={{ padding: '12px 12px 12px 0', color: C.white, fontSize: 13 }}>{o.name}</td>
+                    <td style={{ padding: '12px 12px 12px 0', color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{o.students.toLocaleString()}</td>
+                    <td style={{ padding: '12px 12px 12px 0', color: 'rgba(255,255,255,0.5)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{o.programs}</td>
+                    <td style={{ padding: '12px 0', color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{o.lastPayment}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="admin-payments" style={{ height: 1, marginTop: 32 }} aria-hidden />
       </div>
-    </div>
+    </AuthDashboardShell>
   )
 }

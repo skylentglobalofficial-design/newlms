@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { AuroraBand, GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
-import { getDomainAccent } from '../aurora-themes'
+import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
 import { programs } from '../data'
 
@@ -41,7 +41,7 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: 'settings', label: 'Settings', short: 'Settings', sectionId: 'student-certificates' },
 ]
 
-const accent = getDomainAccent('data-science')
+const accent = getRoleAccent('student')
 
 // ─── NAV ICONS ──────────────────────────────────────────────────────────────────
 

@@ -133,6 +133,34 @@ body {
   }
 }
 
+/* Prevent horizontal overflow on mobile */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Login page — auth first on mobile */
+@media (max-width: 900px) {
+  .login-page-editorial {
+    display: none;
+  }
+}
+
+/* Nav mega menu — prevent awkward hero overlap */
+.nav-mega-dropdown {
+  max-height: min(70vh, 420px);
+  overflow-y: auto;
+}
+
+/* LMS responsive shell */
+.lms-shell {
+  overflow-x: hidden;
+}
+
+/* Public page section overflow guard */
+.skylent-public-canvas {
+  overflow-x: hidden;
+}
+
 /* Hide scrollbar by default, show while scrolling */
 * {
   scrollbar-width: thin;

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { AuroraBand, GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
-import { getDomainAccent } from '../aurora-themes'
+import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
 
 // ─── DEMO INSTITUTION DATA (preserved from prior dashboard) ───────────────────
@@ -60,7 +60,7 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: 'settings', label: 'Settings', short: 'Settings', sectionId: 'org-settings' },
 ]
 
-const accent = getDomainAccent('institution')
+const accent = getRoleAccent('organisation')
 
 const batchLearners = cohorts.reduce((sum, c) => sum + c.students, 0)
 const avgCompletion = Math.round(cohorts.reduce((sum, c) => sum + c.completion, 0) / cohorts.length)
