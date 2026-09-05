@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell, EnrollmentModal } from '../components/shared'
+import { getDomainAccent } from '../aurora-themes'
 import { workshops } from '../data'
 import type { Workshop } from '../data'
+
+const accent = getDomainAccent('webinar')
 
 export default function WorkshopsPage() {
   const [category, setCategory] = useState('All')
@@ -27,7 +30,7 @@ export default function WorkshopsPage() {
           <FadeIn>
             <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 20 }}>SKYLENT WORKSHOPS</div>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(38px, 5vw, 68px)', fontWeight: 700, color: C.white, letterSpacing: '-0.03em', lineHeight: 1.02, margin: '0 0 20px' }}>
-              Intensive. Practical.<br /><span style={{ color: C.orange }}>Hands-on.</span>
+              Intensive. Practical.<br /><span style={{ color: accent.text }}>Hands-on.</span>
             </h1>
             <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 17, lineHeight: 1.75, maxWidth: 480, margin: 0 }}>Short-form, high-impact sessions led by industry practitioners. Learn a focused skill in hours, not months.</p>
           </FadeIn>
@@ -59,7 +62,7 @@ export default function WorkshopsPage() {
                   >
                     <div style={{ background: 'linear-gradient(135deg, #1a1e22 0%, #0f1114 100%)', padding: '28px 24px 22px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
-                        <span style={{ background: 'rgba(243,107,33,0.15)', border: '1px solid rgba(243,107,33,0.3)', borderRadius: 5, padding: '3px 10px', color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{w.category}</span>
+                        <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 5, padding: '3px 10px', color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{w.category}</span>
                         <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>{w.duration}</span>
                       </div>
                       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.white, letterSpacing: '-0.02em', lineHeight: 1.2, margin: 0 }}>{w.title}</h3>
@@ -80,14 +83,14 @@ export default function WorkshopsPage() {
                           <span style={{ color: C.slate, fontSize: 11 }}>{w.seatsLeft} seats left</span>
                           <span style={{ color: pct > 70 ? '#dc2626' : C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
                         </div>
-                        <div style={{ height: 4, background: C.sand, borderRadius: 2 }}><div style={{ width: `${pct}%`, height: '100%', background: pct > 70 ? '#dc2626' : C.orange, borderRadius: 2 }} /></div>
+                        <div style={{ height: 4, background: C.sand, borderRadius: 2 }}><div style={{ width: `${pct}%`, height: '100%', background: pct > 70 ? '#dc2626' : accent.primary, borderRadius: 2 }} /></div>
                       </div>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto' }}>
                         <div>
                           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 20, fontWeight: 700, color: C.ink }}>₹{w.price.toLocaleString('en-IN')}</span>
                           {w.originalPrice > w.price && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate, textDecoration: 'line-through', marginLeft: 7 }}>₹{w.originalPrice.toLocaleString('en-IN')}</span>}
                         </div>
-                        <button onClick={() => navigate(`/workshops/${w.slug}`)} style={{ background: C.orange, border: 'none', color: C.white, borderRadius: 7, padding: '9px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.2s' }}
+                        <button onClick={() => navigate(`/workshops/${w.slug}`)} style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 7, padding: '9px 16px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.2s' }}
                           onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
                           onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                         >Register Now</button>

@@ -82,8 +82,9 @@ export function FadeIn({ children, delay = 0, className }: { children: React.Rea
 // ─── ENROLLMENT MODAL (separate from job apply) ───────────────────────────────
 type EnrollItem = { id: string; title: string; price: number; type: 'course' | 'program' | 'workshop' }
 
-export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: () => void }) {
+export function EnrollmentModal({ item, onClose, themeId }: { item: EnrollItem; onClose: () => void; themeId?: AuroraThemeId }) {
   const { user } = useAuth()
+  const accent = getDomainAccent(themeId ?? (item.type === 'program' ? 'professional' : 'data-science'))
   const [plan, setPlan] = useState(0)
   const [payMethod, setPayMethod] = useState<'upi' | 'card' | 'netbanking' | 'emi'>('upi')
   const navigate = useNavigate()
@@ -112,7 +113,7 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
           <div>
-            <div style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 3 }}>ENROLLMENT</div>
+            <div style={{ color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 3 }}>Enrollment</div>
             <div style={{ color: C.ink, fontSize: 16, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{item.title}</div>
           </div>
           <button onClick={onClose} style={{ background: C.sand, border: 'none', borderRadius: 7, padding: '7px 13px', cursor: 'pointer', color: C.slate, fontSize: 14 }}>✕</button>
@@ -120,25 +121,25 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
         {/* Step indicator */}
         <div style={{ display: 'flex', gap: 4, marginBottom: 28 }}>
           {steps.map((s, i) => (
-            <div key={s} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= step ? C.orange : 'rgba(11,13,15,0.1)', transition: 'background 0.3s' }} />
+            <div key={s} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= step ? accent.primary : 'rgba(11,13,15,0.1)', transition: 'background 0.3s' }} />
           ))}
         </div>
-        <div style={{ fontSize: 10, color: C.slate, fontFamily: 'var(--font-mono)', marginBottom: 20 }}>STEP {step + 1} OF {steps.length} — {steps[step].toUpperCase()}</div>
+        <div style={{ fontSize: 10, color: C.slate, fontFamily: 'var(--font-mono)', marginBottom: 20 }}>Step {step + 1} of {steps.length} — {steps[step]}</div>
 
         {/* Step content — keyed by step name to handle auth-aware step skipping */}
         {steps[step] === 'Plan' && (
           <div>
             <div style={{ marginBottom: 20 }}>
               {plans.map((p, i) => (
-                <div key={p.name} onClick={() => setPlan(i)} style={{ border: `1px solid ${plan === i ? C.orange : 'rgba(11,13,15,0.12)'}`, borderRadius: 10, padding: '14px 18px', marginBottom: 8, cursor: 'pointer', background: plan === i ? 'rgba(243,107,33,0.04)' : 'transparent', transition: 'all 0.2s' }}>
+                <div key={p.name} onClick={() => setPlan(i)} style={{ border: `1px solid ${plan === i ? accent.primary : 'rgba(11,13,15,0.12)'}`, borderRadius: 10, padding: '14px 18px', marginBottom: 8, cursor: 'pointer', background: plan === i ? accent.subtle : 'transparent', transition: 'all 0.2s' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <div style={{ color: C.ink, fontSize: 14, fontWeight: 600 }}>{p.name}</div>
-                      <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{item.type === 'program' && i === 1 ? 'Most popular' : item.type === 'program' && i === 2 ? 'Best for placement' : 'Access all content'}</div>
+                      <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{item.type === 'program' && i === 1 ? 'Most popular' : item.type === 'program' && i === 2 ? 'Includes Career OS' : 'Access all content'}</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, color: C.ink, fontWeight: 600 }}>₹{p.price.toLocaleString('en-IN')}</div>
-                      {plan === i && <div style={{ width: 18, height: 18, borderRadius: '50%', background: C.orange, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: 'white' }}>✓</div>}
+                      {plan === i && <div style={{ width: 18, height: 18, borderRadius: '50%', background: accent.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: C.black }}>✓</div>}
                     </div>
                   </div>
                 </div>
@@ -153,7 +154,7 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
                 <div key={l}><div style={{ color: C.slate, fontSize: 11, marginBottom: 5 }}>{l}</div><div style={{ background: C.sand, borderRadius: 7, padding: '11px 14px', fontSize: 14, color: C.ink }}>{v}</div></div>
               ))}
             </div>
-            <div style={{ marginTop: 14, padding: '10px 14px', background: 'rgba(243,107,33,0.06)', border: '1px solid rgba(243,107,33,0.18)', borderRadius: 7, color: C.slate, fontSize: 12 }}>Demo mode — no real account is created.</div>
+            <div style={{ marginTop: 14, padding: '10px 14px', background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 7, color: C.slate, fontSize: 12 }}>Demo mode — no real account is created.</div>
           </div>
         )}
         {steps[step] === 'Details' && (
@@ -191,8 +192,8 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
               <div>
                 <div style={{ color: C.slate, fontSize: 11, marginBottom: 6 }}>UPI ID</div>
                 <div style={{ background: C.sand, borderRadius: 7, padding: '11px 14px', fontSize: 14, color: C.ink, marginBottom: 14 }}>arjun@okaxis</div>
-                <div style={{ background: 'rgba(243,107,33,0.06)', border: '1px solid rgba(243,107,33,0.18)', borderRadius: 8, padding: 14, textAlign: 'center' }}>
-                  <div style={{ color: C.slate, fontSize: 11, marginBottom: 6 }}>DEMO — No real payment is processed</div>
+                <div style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 8, padding: 14, textAlign: 'center' }}>
+                  <div style={{ color: C.slate, fontSize: 11, marginBottom: 6 }}>Demo — no real payment is processed</div>
                   <div style={{ color: C.ink, fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 600 }}>₹{Math.round(selectedPrice * 1.18).toLocaleString('en-IN')}</div>
                 </div>
               </div>
@@ -211,7 +212,7 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
         )}
         {steps[step] === 'Success' && (
           <div style={{ textAlign: 'center', padding: '12px 0' }}>
-            <div style={{ width: 56, height: 56, borderRadius: '50%', background: `linear-gradient(135deg, ${C.orange}, #ff9a3c)`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 22, color: 'white', fontWeight: 700 }}>✓</div>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: `linear-gradient(135deg, ${accent.primary}, ${accent.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 22, color: C.black, fontWeight: 700 }}>✓</div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, color: C.ink, fontWeight: 700, marginBottom: 8 }}>Enrollment Successful</div>
             <div style={{ color: C.slate, fontSize: 14, marginBottom: 24 }}>{item.title} has been added to your learning dashboard.</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, background: C.sand, borderRadius: 10, padding: 14, marginBottom: 24, fontSize: 12 }}>
@@ -220,7 +221,7 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
               ))}
             </div>
             <div style={{ background: 'rgba(11,13,15,0.04)', borderRadius: 8, padding: 10, color: C.slate, fontSize: 11, marginBottom: 20 }}>Demo enrollment — no real payment was processed.</div>
-            <button onClick={() => { onClose(); navigate('/dashboard/student') }} style={{ width: '100%', background: C.orange, border: 'none', color: C.white, borderRadius: 9, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Go to Student Dashboard →</button>
+            <button onClick={() => { onClose(); navigate('/dashboard/student') }} style={{ width: '100%', background: accent.primary, border: 'none', color: C.black, borderRadius: 9, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Go to student dashboard</button>
           </div>
         )}
 
@@ -228,7 +229,7 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
         {steps[step] !== 'Success' && (
           <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
             {step > 0 && <button onClick={() => setStep(s => s - 1)} style={{ flex: 1, background: C.sand, border: 'none', color: C.ink, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>← Back</button>}
-            <button onClick={() => setStep(s => s + 1)} style={{ flex: 2, background: steps[step] === 'Payment' ? '#16a34a' : C.orange, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.2s' }}>{steps[step] === 'Payment' ? 'Confirm Payment →' : steps[step] === 'Plan' ? `Enroll — ₹${selectedPrice.toLocaleString('en-IN')}` : 'Continue →'}</button>
+            <button onClick={() => setStep(s => s + 1)} style={{ flex: 2, background: steps[step] === 'Payment' ? '#16a34a' : accent.primary, border: 'none', color: steps[step] === 'Payment' ? C.white : C.black, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.2s' }}>{steps[step] === 'Payment' ? 'Confirm payment (demo)' : steps[step] === 'Plan' ? `Enroll — ₹${selectedPrice.toLocaleString('en-IN')}` : 'Continue'}</button>
           </div>
         )}
       </div>
@@ -240,6 +241,7 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
 export function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) {
   const [step, setStep] = useState(0)
   const steps = ['Profile', 'Resume', 'Screening', 'Interview', 'Result']
+  const accent = getDomainAccent('career')
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -252,7 +254,7 @@ export function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) 
       <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.white, borderRadius: 16, padding: 40, width: 520, maxWidth: '92vw', zIndex: 501, boxShadow: '0 32px 100px rgba(0,0,0,0.35)', overflowY: 'auto', maxHeight: '90vh' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 28 }}>
           <div>
-            <div style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>JOB APPLICATION</div>
+            <div style={{ color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>Job application</div>
             <div style={{ color: C.ink, fontSize: 16, fontWeight: 600 }}>{job.role} · {job.company}</div>
           </div>
           <button onClick={onClose} style={{ background: C.sand, border: 'none', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', color: C.slate, fontSize: 15 }}>✕</button>
@@ -261,23 +263,23 @@ export function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) 
           {steps.map((s, i) => (
             <div key={s} style={{ display: 'flex', alignItems: 'center', flex: i < steps.length - 1 ? 1 : 'none' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 44 }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, background: i < step ? C.orange : i === step ? C.ink : C.sand, color: i <= step ? C.white : C.slate, marginBottom: 5, transition: 'all 0.3s' }}>{i < step ? '✓' : i + 1}</div>
+                <div style={{ width: 30, height: 30, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, background: i < step ? accent.primary : i === step ? C.ink : C.sand, color: i <= step ? (i < step ? C.white : C.white) : C.slate, marginBottom: 5, transition: 'all 0.3s' }}>{i < step ? '✓' : i + 1}</div>
                 <span style={{ fontSize: 9, color: i === step ? C.ink : C.slate, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>{s}</span>
               </div>
-              {i < steps.length - 1 && <div style={{ flex: 1, height: 1, background: i < step ? C.orange : 'rgba(11,13,15,0.12)', marginBottom: 18, transition: 'background 0.3s' }} />}
+              {i < steps.length - 1 && <div style={{ flex: 1, height: 1, background: i < step ? accent.primary : 'rgba(11,13,15,0.12)', marginBottom: 18, transition: 'background 0.3s' }} />}
             </div>
           ))}
         </div>
         <div style={{ background: C.sand, borderRadius: 10, padding: 22, marginBottom: 20, minHeight: 130 }}>
           {step === 0 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 14 }}>YOUR PROFILE</div><div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>{[['Full Name', 'Arjun Sharma'], ['Email', 'arjun@email.com'], ['Phone', '+91 98765 43210'], ['City', 'Bengaluru']].map(([l, v]) => <div key={l}><div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{l.toUpperCase()}</div><div style={{ background: C.white, borderRadius: 6, padding: '8px 12px', fontSize: 13, color: C.ink }}>{v}</div></div>)}</div></div>}
-          {step === 1 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 14 }}>RESUME</div><div style={{ background: C.white, borderRadius: 8, padding: 14, display: 'flex', alignItems: 'center', gap: 12 }}><div style={{ width: 38, height: 38, borderRadius: 6, background: 'rgba(243,107,33,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.orange, fontSize: 18 }}>⬛</div><div><div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>Arjun_Sharma_Resume.pdf</div><div style={{ color: C.slate, fontSize: 11 }}>Skylent-reviewed · ATS optimised</div></div><div style={{ marginLeft: 'auto', color: '#16a34a', fontSize: 10, fontFamily: 'var(--font-mono)' }}>READY</div></div></div>}
+          {step === 1 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 14 }}>Resume</div><div style={{ background: C.white, borderRadius: 8, padding: 14, display: 'flex', alignItems: 'center', gap: 12 }}><div style={{ width: 38, height: 38, borderRadius: 6, background: accent.subtle, display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent.primary, fontSize: 18 }}>⬛</div><div><div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>Arjun_Sharma_Resume.pdf</div><div style={{ color: C.slate, fontSize: 11 }}>Sample resume · demo file</div></div><div style={{ marginLeft: 'auto', color: '#16a34a', fontSize: 10, fontFamily: 'var(--font-mono)' }}>Ready</div></div></div>}
           {step === 2 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 12 }}>SCREENING QUESTION</div><div style={{ color: C.ink, fontSize: 14, lineHeight: 1.65, marginBottom: 10 }}>Why are you interested in this role?</div><div style={{ background: C.white, borderRadius: 6, padding: '10px 14px', color: C.slate, fontSize: 13, lineHeight: 1.6 }}>I am passionate about using data to drive decisions and have completed 4 industry projects during my Skylent program...</div></div>}
           {step === 3 && <div style={{ textAlign: 'center', paddingTop: 8 }}><div style={{ fontSize: 30, marginBottom: 10 }}>🗓</div><div style={{ color: C.ink, fontSize: 15, fontWeight: 600, marginBottom: 5 }}>Interview Scheduled</div><div style={{ color: C.slate, fontSize: 13 }}>Thursday, 15 August · 11:00 AM</div><div style={{ color: C.slate, fontSize: 13 }}>Technical + HR · 60 minutes</div></div>}
-          {step === 4 && <div style={{ textAlign: 'center', paddingTop: 4 }}><div style={{ width: 48, height: 48, borderRadius: '50%', background: `linear-gradient(135deg, ${C.orange}, #ff9a3c)`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 20, color: 'white', fontWeight: 700 }}>✓</div><div style={{ color: C.ink, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Application Submitted</div><div style={{ color: C.slate, fontSize: 13 }}>Demo application — no real submission was made.</div></div>}
+          {step === 4 && <div style={{ textAlign: 'center', paddingTop: 4 }}><div style={{ width: 48, height: 48, borderRadius: '50%', background: `linear-gradient(135deg, ${accent.primary}, ${accent.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 20, color: C.white, fontWeight: 700 }}>✓</div><div style={{ color: C.ink, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Application submitted</div><div style={{ color: C.slate, fontSize: 13 }}>Demo application — no real submission was made.</div></div>}
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
           {step > 0 && step < 4 && <button onClick={() => setStep(s => s - 1)} style={{ flex: 1, background: C.sand, border: 'none', color: C.ink, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>← Back</button>}
-          {step < 4 && <button onClick={() => setStep(s => s + 1)} style={{ flex: 2, background: C.orange, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>{step === 3 ? 'View Result' : 'Continue →'}</button>}
+          {step < 4 && <button onClick={() => setStep(s => s + 1)} style={{ flex: 2, background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>{step === 3 ? 'View result' : 'Continue'}</button>}
           {step === 4 && <button onClick={onClose} style={{ flex: 1, background: C.ink, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Close</button>}
         </div>
       </div>
@@ -287,6 +289,7 @@ export function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) 
 
 // ─── JOB DRAWER ───────────────────────────────────────────────────────────────
 export function JobDrawer({ job, onClose, onApply }: { job: Job; onClose: () => void; onApply: () => void }) {
+  const careerAccent = getDomainAccent('career')
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.5)', zIndex: 400, backdropFilter: 'blur(4px)' }} />
@@ -313,7 +316,7 @@ export function JobDrawer({ job, onClose, onApply }: { job: Job; onClose: () => 
             {job.skills.map(s => <span key={s} style={{ background: 'rgba(243,107,33,0.08)', border: '1px solid rgba(243,107,33,0.2)', borderRadius: 6, padding: '5px 12px', color: C.ink, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{s}</span>)}
           </div>
         </div>
-        <button onClick={onApply} style={{ width: '100%', background: C.orange, border: 'none', color: C.white, borderRadius: 8, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Apply Now →</button>
+        <button onClick={onApply} style={{ width: '100%', background: careerAccent.primary, border: 'none', color: C.white, borderRadius: 8, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Apply now</button>
       </div>
     </>
   )

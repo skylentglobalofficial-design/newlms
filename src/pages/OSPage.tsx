@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { C, FadeIn, PageShell } from '../components/shared'
+import { getDomainAccent } from '../aurora-themes'
 import { demoUsers, courses } from '../data'
+
+const accent = getDomainAccent('general')
 
 type Role = 'student' | 'faculty' | 'organisation' | 'superadmin'
 type LMSView = 'video' | 'notes' | 'quiz' | 'assignment' | 'certificate'
@@ -46,8 +49,8 @@ function StudentLMS({ onBack }: { onBack: () => void }) {
                 {mod.lessons.map(lesson => {
                   const isActive = lesson.id === activeLesson.id
                   return (
-                    <div key={lesson.id} onClick={() => { setActiveModule(mod); setActiveLesson(lesson); setView(lesson.type as LMSView); setQuizAnswered(null); setAssignSubmitted(false) }} style={{ padding: '10px 16px', cursor: 'pointer', background: isActive ? 'rgba(243,107,33,0.12)' : 'transparent', borderLeft: `2px solid ${isActive ? C.orange : 'transparent'}`, display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <div style={{ width: 14, height: 14, borderRadius: '50%', background: lesson.completed ? C.orange : 'transparent', border: `1.5px solid ${lesson.completed ? C.orange : 'rgba(255,255,255,0.2)'}`, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div key={lesson.id} onClick={() => { setActiveModule(mod); setActiveLesson(lesson); setView(lesson.type as LMSView); setQuizAnswered(null); setAssignSubmitted(false) }} style={{ padding: '10px 16px', cursor: 'pointer', background: isActive ? 'rgba(243,107,33,0.12)' : 'transparent', borderLeft: `2px solid ${isActive ? accent.primary : 'transparent'}`, display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <div style={{ width: 14, height: 14, borderRadius: '50%', background: lesson.completed ? accent.primary : 'transparent', border: `1.5px solid ${lesson.completed ? accent.primary : 'rgba(255,255,255,0.2)'}`, flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {lesson.completed && <div style={{ width: 4, height: 4, borderRadius: '50%', background: C.white }} />}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
@@ -76,25 +79,25 @@ function StudentLMS({ onBack }: { onBack: () => void }) {
               <div>
                 <div style={{ background: C.ink, borderRadius: 12, aspectRatio: '16/9', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 20, position: 'relative' }}>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ width: 54, height: 54, borderRadius: '50%', border: `2px solid ${C.orange}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px', cursor: 'pointer' }}>
-                      <div style={{ width: 0, height: 0, borderTop: '9px solid transparent', borderBottom: '9px solid transparent', borderLeft: `16px solid ${C.orange}`, marginLeft: 4 }} />
+                    <div style={{ width: 54, height: 54, borderRadius: '50%', border: `2px solid ${accent.primary}`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px', cursor: 'pointer' }}>
+                      <div style={{ width: 0, height: 0, borderTop: '9px solid transparent', borderBottom: '9px solid transparent', borderLeft: `16px solid ${accent.primary}`, marginLeft: 4 }} />
                     </div>
                     <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>{activeLesson.title} {activeLesson.duration ? `· ${activeLesson.duration}` : ''}</div>
                   </div>
                 </div>
-                <button onClick={() => setView('notes')} style={{ background: C.orange, border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Continue to Notes</button>
+                <button onClick={() => setView('notes')} style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Continue to Notes</button>
               </div>
             )}
             {view === 'notes' && (
               <div>
                 <div style={{ background: C.white, border: '1px solid rgba(11,13,15,0.08)', borderRadius: 12, padding: 24, marginBottom: 20, color: C.ink, fontSize: 15, lineHeight: 1.85 }}>
                   <p style={{ marginTop: 0 }}>This reading material accompanies the video on <strong>{activeLesson.title}</strong>. Review key concepts, definitions, and formulas that will be tested in the quiz.</p>
-                  <div style={{ background: C.sand, borderLeft: `3px solid ${C.orange}`, borderRadius: '0 8px 8px 0', padding: '14px 18px', margin: '16px 0', fontSize: 14 }}>
+                  <div style={{ background: C.sand, borderLeft: `3px solid ${accent.primary}`, borderRadius: '0 8px 8px 0', padding: '14px 18px', margin: '16px 0', fontSize: 14 }}>
                     <strong>Key insight:</strong> Structured data analysis transforms raw information into decision-ready insights.
                   </div>
                   <p>Make sure you understand the core concepts before proceeding to the quiz.</p>
                 </div>
-                <button onClick={() => setView('quiz')} style={{ background: C.orange, border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Take Quiz</button>
+                <button onClick={() => setView('quiz')} style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Take Quiz</button>
               </div>
             )}
             {view === 'quiz' && (
@@ -116,7 +119,7 @@ function StudentLMS({ onBack }: { onBack: () => void }) {
                     <div style={{ padding: '10px 14px', borderRadius: 8, background: quizAnswered === 1 ? '#f0fdf4' : '#fef2f2', color: quizAnswered === 1 ? '#16a34a' : '#dc2626', fontSize: 13, marginBottom: 14 }}>
                       {quizAnswered === 1 ? 'Correct! Power BI is purpose-built for dashboards.' : 'The correct answer is Power BI.'}
                     </div>
-                    <button onClick={() => setView('assignment')} style={{ background: C.orange, border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Continue to Assignment</button>
+                    <button onClick={() => setView('assignment')} style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Continue to Assignment</button>
                   </div>
                 )}
               </div>
@@ -124,7 +127,7 @@ function StudentLMS({ onBack }: { onBack: () => void }) {
             {view === 'assignment' && (
               <div>
                 <div style={{ background: C.white, border: '1px solid rgba(11,13,15,0.08)', borderRadius: 12, padding: 24, marginBottom: 16 }}>
-                  <div style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 8 }}>ASSIGNMENT</div>
+                  <div style={{ color: accent.primary, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 8 }}>ASSIGNMENT</div>
                   <div style={{ color: C.ink, fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Build a Sales Dashboard in Power BI</div>
                   <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.75, margin: '0 0 18px' }}>Use the sample dataset provided. Create a dashboard with monthly trends, regional breakdown, and top products. Submit as PDF.</p>
                   {!assignSubmitted ? (
@@ -133,13 +136,13 @@ function StudentLMS({ onBack }: { onBack: () => void }) {
                         <div style={{ color: C.slate, fontSize: 14 }}>Drop your file here or browse</div>
                         <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 3 }}>PDF · PPTX · PBIX · Max 20 MB</div>
                       </div>
-                      <button onClick={() => setAssignSubmitted(true)} style={{ background: C.orange, border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Submit Assignment</button>
+                      <button onClick={() => setAssignSubmitted(true)} style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Submit Assignment</button>
                     </div>
                   ) : (
                     <div>
                       <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 8, padding: '12px 16px', color: '#16a34a', fontSize: 13, marginBottom: 14 }}>Submitted — under review.</div>
                       {currentIndex < allLessons.length - 1 ? (
-                        <button onClick={nextLesson} style={{ background: C.orange, border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Next Lesson</button>
+                        <button onClick={nextLesson} style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Next Lesson</button>
                       ) : (
                         <button onClick={() => setView('certificate')} style={{ background: '#16a34a', border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Get Certificate</button>
                       )}
@@ -155,9 +158,9 @@ function StudentLMS({ onBack }: { onBack: () => void }) {
                   <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.15em', marginBottom: 20 }}>SKYLENT GLOBAL — CERTIFICATE OF COMPLETION</div>
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 30, color: C.ink, fontWeight: 700, marginBottom: 4 }}>Arjun Sharma</div>
                   <div style={{ color: C.slate, fontSize: 14, marginBottom: 6 }}>has successfully completed</div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: C.orange, fontWeight: 600, marginBottom: 14 }}>{course.title}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: accent.primary, fontWeight: 600, marginBottom: 14 }}>{course.title}</div>
                   <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 22 }}>August 2026 · SKY-CERT-DA-2408</div>
-                  <button style={{ background: C.orange, border: 'none', color: C.white, borderRadius: 8, padding: '11px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Download Certificate</button>
+                  <button style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: '11px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Download Certificate</button>
                 </div>
                 {/* Learning proof */}
                 <div style={{ background: C.sand, borderRadius: 14, padding: 22 }}>
@@ -194,16 +197,16 @@ function StudentDash({ user, onOpenLMS }: { user: typeof demoUsers[0]; onOpenLMS
           <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>GOOD MORNING</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: C.ink }}>{user.name}</div>
         </div>
-        <div style={{ width: 42, height: 42, borderRadius: '50%', background: `linear-gradient(135deg, ${C.orange}, #ff9a3c)`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.white, fontSize: 14, fontWeight: 700 }}>{user.avatar}</div>
+        <div style={{ width: 42, height: 42, borderRadius: '50%', background: `linear-gradient(135deg, ${accent.primary}, ${accent.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.white, fontSize: 14, fontWeight: 700 }}>{user.avatar}</div>
       </div>
 
       {/* Next action — always visible */}
-      <div style={{ background: `linear-gradient(135deg, ${C.orange}18, ${C.orange}08)`, border: `1px solid ${C.orange}30`, borderRadius: 12, padding: '16px 20px', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+      <div style={{ background: `linear-gradient(135deg, ${accent.primary}18, ${accent.primary}08)`, border: `1px solid ${accent.primary}30`, borderRadius: 12, padding: '16px 20px', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <div style={{ color: C.orange, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>NEXT ACTION</div>
+          <div style={{ color: accent.primary, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>NEXT ACTION</div>
           <div style={{ color: C.ink, fontSize: 15, fontWeight: 600 }}>Complete the Foundations Quiz to unlock Module 2</div>
         </div>
-        <button onClick={onOpenLMS} style={{ background: C.orange, border: 'none', color: C.white, borderRadius: 7, padding: '9px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>Take Quiz →</button>
+        <button onClick={onOpenLMS} style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 7, padding: '9px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>Take Quiz →</button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 20 }} className="three-col">
@@ -219,17 +222,17 @@ function StudentDash({ user, onOpenLMS }: { user: typeof demoUsers[0]; onOpenLMS
         <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 8 }}>CONTINUE LEARNING</div>
         <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 10 }}>Data Analytics — Module 2: Excel</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-          <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 2 }}><div style={{ width: `${user.progress ?? 0}%`, height: '100%', background: C.orange, borderRadius: 2 }} /></div>
+          <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 2 }}><div style={{ width: `${user.progress ?? 0}%`, height: '100%', background: accent.primary, borderRadius: 2 }} /></div>
           <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{user.progress ?? 0}%</span>
         </div>
-        <button onClick={onOpenLMS} style={{ background: C.orange, border: 'none', color: C.white, borderRadius: 7, padding: '10px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Open Course →</button>
+        <button onClick={onOpenLMS} style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 7, padding: '10px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Open Course →</button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }} className="two-col">
         {[['Next Live Class', 'Tomorrow · 10:00 AM', false], ['Pending Assignments', '2 due this week', true], ['Career Readiness', '72% — needs attention', true], ['Certificates Earned', '1 of 5', false]].map(([l, v, warn]) => (
           <div key={l as string} style={{ background: C.white, border: `1px solid ${warn ? 'rgba(243,107,33,0.2)' : 'rgba(11,13,15,0.08)'}`, borderRadius: 10, padding: '14px 16px' }}>
             <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>{l as string}</div>
-            <div style={{ color: warn ? C.orange : C.ink, fontSize: 14, fontWeight: 600 }}>{v as string}</div>
+            <div style={{ color: warn ? accent.primary : C.ink, fontSize: 14, fontWeight: 600 }}>{v as string}</div>
           </div>
         ))}
       </div>
@@ -252,10 +255,10 @@ function FacultyDash({ user }: { user: typeof demoUsers[0] }) {
           { label: '12 assignments pending review', action: 'Review submissions', urgent: true },
           { label: 'Live class in 2 hours', action: 'Prepare session', urgent: false },
         ].map(a => (
-          <div key={a.label} style={{ background: a.urgent ? `${C.orange}10` : C.sand, border: `1px solid ${a.urgent ? `${C.orange}30` : 'transparent'}`, borderRadius: 10, padding: '14px 18px' }}>
-            <div style={{ color: a.urgent ? C.orange : C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 5 }}>{a.urgent ? 'NEEDS ATTENTION' : 'UPCOMING'}</div>
+          <div key={a.label} style={{ background: a.urgent ? `${accent.primary}10` : C.sand, border: `1px solid ${a.urgent ? `${accent.primary}30` : 'transparent'}`, borderRadius: 10, padding: '14px 18px' }}>
+            <div style={{ color: a.urgent ? accent.primary : C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 5 }}>{a.urgent ? 'NEEDS ATTENTION' : 'UPCOMING'}</div>
             <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{a.label}</div>
-            <button style={{ color: a.urgent ? C.orange : C.slate, background: 'none', border: 'none', fontSize: 12, cursor: 'pointer', fontWeight: 600, padding: 0, fontFamily: 'var(--font-body)' }}>{a.action} →</button>
+            <button style={{ color: a.urgent ? accent.primary : C.slate, background: 'none', border: 'none', fontSize: 12, cursor: 'pointer', fontWeight: 600, padding: 0, fontFamily: 'var(--font-body)' }}>{a.action} →</button>
           </div>
         ))}
       </div>
@@ -275,7 +278,7 @@ function FacultyDash({ user }: { user: typeof demoUsers[0] }) {
           <div key={s as string} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: '1px solid rgba(11,13,15,0.06)' }}>
             <div style={{ width: 28, height: 28, borderRadius: '50%', background: risk ? 'rgba(220,38,38,0.1)' : C.sand, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: risk ? '#dc2626' : C.slate, flexShrink: 0 }}>{(s as string)[0]}</div>
             <div style={{ color: C.ink, fontSize: 13, width: 80, flexShrink: 0 }}>{s as string}</div>
-            <div style={{ flex: 1, height: 4, background: C.sand, borderRadius: 2 }}><div style={{ width: `${pct as number}%`, height: '100%', background: (pct as number) < 60 ? '#dc2626' : (pct as number) > 80 ? '#16a34a' : C.orange, borderRadius: 2 }} /></div>
+            <div style={{ flex: 1, height: 4, background: C.sand, borderRadius: 2 }}><div style={{ width: `${pct as number}%`, height: '100%', background: (pct as number) < 60 ? '#dc2626' : (pct as number) > 80 ? '#16a34a' : accent.primary, borderRadius: 2 }} /></div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: risk ? '#dc2626' : C.ink, width: 34, textAlign: 'right' }}>{pct as number}%</div>
             {risk && <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: '#dc2626', background: 'rgba(220,38,38,0.08)', borderRadius: 4, padding: '2px 7px' }}>AT RISK</span>}
           </div>
@@ -320,7 +323,7 @@ function OrgDash({ user }: { user: typeof demoUsers[0] }) {
         {[['Cohort 2024-A', 91, false], ['Cohort 2024-B', 58, true], ['Cohort 2025-A', 74, false]].map(([c, pct, warn]) => (
           <div key={c as string} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 0', borderBottom: '1px solid rgba(11,13,15,0.06)' }}>
             <div style={{ color: warn ? '#dc2626' : C.ink, fontSize: 13, width: 120, flexShrink: 0, fontWeight: warn ? 600 : 400 }}>{c as string}</div>
-            <div style={{ flex: 1, height: 5, background: C.sand, borderRadius: 3 }}><div style={{ width: `${pct as number}%`, height: '100%', background: (pct as number) < 65 ? '#dc2626' : C.orange, borderRadius: 3 }} /></div>
+            <div style={{ flex: 1, height: 5, background: C.sand, borderRadius: 3 }}><div style={{ width: `${pct as number}%`, height: '100%', background: (pct as number) < 65 ? '#dc2626' : accent.primary, borderRadius: 3 }} /></div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: warn ? '#dc2626' : C.ink, width: 36, textAlign: 'right' }}>{pct as number}%</div>
             {warn && <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: '#dc2626', background: 'rgba(220,38,38,0.08)', borderRadius: 4, padding: '2px 7px', whiteSpace: 'nowrap' }}>BELOW TARGET</span>}
           </div>
@@ -409,17 +412,17 @@ export default function OSPage() {
       <section style={{ background: C.ink, minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '100px 32px 80px', position: 'relative', overflow: 'hidden' }}>
         {/* Grid background */}
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.016) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.016) 1px, transparent 1px)', backgroundSize: '56px 56px', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)', width: 600, height: 600, background: `radial-gradient(circle, ${C.orange}12 0%, transparent 65%)`, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: '20%', left: '50%', transform: 'translateX(-50%)', width: 600, height: 600, background: `radial-gradient(circle, ${accent.primary}12 0%, transparent 65%)`, pointerEvents: 'none' }} />
 
         <div style={{ maxWidth: 900, margin: '0 auto', width: '100%', position: 'relative', zIndex: 1 }}>
           <FadeIn>
             <div style={{ textAlign: 'center', marginBottom: 60 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(243,107,33,0.1)', border: '1px solid rgba(243,107,33,0.22)', borderRadius: 100, padding: '5px 16px', marginBottom: 28 }}>
-                <div style={{ width: 5, height: 5, borderRadius: '50%', background: C.orange, animation: 'pulse 2s infinite' }} />
-                <span style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em' }}>SKYLENT OS — DEMO ENVIRONMENT</span>
+                <div style={{ width: 5, height: 5, borderRadius: '50%', background: accent.primary, animation: 'pulse 2s infinite' }} />
+                <span style={{ color: accent.primary, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em' }}>SKYLENT OS — DEMO ENVIRONMENT</span>
               </div>
               <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 700, color: C.white, letterSpacing: '-0.03em', lineHeight: 1.05, margin: '0 0 16px' }}>
-                You are entering<br /><span style={{ color: C.orange }}>Skylent OS.</span>
+                You are entering<br /><span style={{ color: accent.primary }}>Skylent OS.</span>
               </h1>
               <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 16, lineHeight: 1.75, maxWidth: 440, margin: '0 auto' }}>A learning and career operating layer. Select a role to explore the full product experience.</p>
             </div>
@@ -430,11 +433,11 @@ export default function OSPage() {
             {demoUsers.map((u, i) => (
               <FadeIn key={u.role} delay={i * 70}>
                 <div onClick={() => setActiveRole(u.role as Role)} style={{ background: 'rgba(255,255,255,0.045)', border: '1px solid rgba(255,255,255,0.09)', backdropFilter: 'blur(14px)', borderRadius: 16, padding: '24px 26px', cursor: 'pointer', transition: 'background 0.2s, border-color 0.2s, transform 0.2s' }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLDivElement).style.borderColor = `${C.orange}55`; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.08)'; (e.currentTarget as HTMLDivElement).style.borderColor = `${accent.primary}55`; (e.currentTarget as HTMLDivElement).style.transform = 'translateY(-2px)' }}
                   onMouseLeave={e => { (e.currentTarget as HTMLDivElement).style.background = 'rgba(255,255,255,0.045)'; (e.currentTarget as HTMLDivElement).style.borderColor = 'rgba(255,255,255,0.09)'; (e.currentTarget as HTMLDivElement).style.transform = 'none' }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
-                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg, ${C.orange}, #ff9a3c)`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.white, fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{u.avatar}</div>
+                    <div style={{ width: 40, height: 40, borderRadius: '50%', background: `linear-gradient(135deg, ${accent.primary}, ${accent.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.white, fontSize: 13, fontWeight: 700, flexShrink: 0 }}>{u.avatar}</div>
                     <div>
                       <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{u.name}</div>
                       <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11 }}>{u.email}</div>
@@ -447,7 +450,7 @@ export default function OSPage() {
                     {u.role === 'organisation' && `${u.students?.toLocaleString('en-IN')} students · ${u.programs} programs`}
                     {u.role === 'superadmin' && `${(u.totalUsers ?? 0).toLocaleString('en-IN')} users · ${u.totalOrgs} organisations`}
                   </div>
-                  <div style={{ color: C.orange, fontSize: 12, fontWeight: 600 }}>Enter as this user →</div>
+                  <div style={{ color: accent.primary, fontSize: 12, fontWeight: 600 }}>Enter as this user →</div>
                 </div>
               </FadeIn>
             ))}
