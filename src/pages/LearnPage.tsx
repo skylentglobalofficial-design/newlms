@@ -42,8 +42,36 @@ function VideoTab({ lesson, lessonState, onWatched, tabAccent, roleAccent }: {
   tabAccent: ReturnType<typeof getLmsTabAccent>
   roleAccent: ReturnType<typeof getLmsRoleAccent>
 }) {
+  const statusLabel = lessonState.videoWatched ? 'Watched' : 'Not started'
+  const statusColor = lessonState.videoWatched ? '#22c55e' : tabAccent.primary
+
   return (
     <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
+        <div style={{ minWidth: 0 }}>
+          <h2 style={{ color: C.white, fontSize: 18, fontWeight: 600, margin: '0 0 8px', lineHeight: 1.3 }}>{lesson.title}</h2>
+          <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+            {lesson.duration && (
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{lesson.duration}</span>
+            )}
+            <span style={{
+              fontSize: 11, padding: '3px 10px', borderRadius: T.rPill,
+              background: lessonState.videoWatched ? 'rgba(34,197,94,0.1)' : tabAccent.subtle,
+              border: `1px solid ${lessonState.videoWatched ? 'rgba(34,197,94,0.3)' : tabAccent.border}`,
+              color: statusColor,
+            }}>
+              {statusLabel}
+            </span>
+          </div>
+        </div>
+        <div style={{ textAlign: 'right' }}>
+          <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, marginBottom: 4 }}>Next step</div>
+          <div style={{ color: lessonState.videoWatched ? '#22c55e' : 'rgba(255,255,255,0.55)', fontSize: 12 }}>
+            {lessonState.videoWatched ? 'Quiz unlocked' : 'Watch to unlock quiz'}
+          </div>
+        </div>
+      </div>
+
       <div className="lms-media-frame" style={{
         background: 'rgba(255,255,255,0.02)',
         borderRadius: T.rCard,
@@ -62,20 +90,22 @@ function VideoTab({ lesson, lessonState, onWatched, tabAccent, roleAccent }: {
             width: 64, height: 64, borderRadius: '50%',
             background: tabAccent.subtle, border: `2px solid ${tabAccent.border}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 16px', cursor: 'pointer',
+            margin: '0 auto', cursor: 'pointer',
           }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill={tabAccent.primary}><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </div>
-          <div style={{ color: C.white, fontSize: 15, fontWeight: 600 }}>{lesson.title}</div>
           {lesson.duration && (
-            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginTop: 6, fontFamily: 'var(--font-mono)' }}>{lesson.duration}</div>
+            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, marginTop: 14, fontFamily: 'var(--font-mono)' }}>{lesson.duration}</div>
           )}
         </div>
       </div>
       <div style={{ marginBottom: 20 }}>
         <div className="skylent-label" style={{ color: tabAccent.primary, marginBottom: 10 }}>Lesson overview</div>
-        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.7, maxWidth: 640 }}>
+        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.7, maxWidth: 640, marginBottom: 16 }}>
           In this lesson, you will learn the core concepts behind {lesson.title.replace(/\?$/, '').toLowerCase()}. Follow along with the examples and practice with the provided exercises before moving on to the quiz.
+        </div>
+        <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2, maxWidth: 320 }}>
+          <div style={{ width: lessonState.videoWatched ? '100%' : '0%', height: '100%', background: tabAccent.primary, borderRadius: 2, transition: 'width 0.3s ease' }} />
         </div>
       </div>
       {!lessonState.videoWatched ? (
@@ -134,6 +164,17 @@ function NotesTab({ lesson, tabAccent }: { lesson: CourseLesson; tabAccent: Retu
           return <div key={i} style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.7, marginBottom: 4 }}>{line}</div>
         })}
       </div>
+      <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
+        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 10 }}>References</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {['Course slides (PDF)', 'Skylent resource library', 'Practice exercise set'].map(ref => (
+            <span key={ref} style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, paddingLeft: 12, borderLeft: `2px solid ${tabAccent.border}` }}>{ref}</span>
+          ))}
+        </div>
+        <div style={{ marginTop: 16, color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>
+          Read through the notes before attempting the quiz.
+        </div>
+      </div>
     </div>
   )
 }
@@ -148,6 +189,8 @@ function QuizTab({ lesson, lessonState, onPass, tabAccent, roleAccent }: {
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [submitted, setSubmitted] = useState(false)
   const [elapsed, setElapsed] = useState(0)
+  const [currentQ, setCurrentQ] = useState(0)
+  const answeredCount = Object.keys(answers).length
   const correct = quizQuestions.filter((q, i) => answers[i] === q.correct).length
 
   useEffect(() => {
@@ -187,17 +230,28 @@ function QuizTab({ lesson, lessonState, onPass, tabAccent, roleAccent }: {
           {timerLabel}
         </div>
       </div>
-      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginBottom: 8 }}>Answer all {quizQuestions.length} questions correctly to unlock the assignment.</div>
+      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginBottom: 12 }}>Answer all {quizQuestions.length} questions correctly to unlock the assignment.</div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+        <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, maxWidth: 280 }}>
+          <div style={{ width: `${(answeredCount / quizQuestions.length) * 100}%`, height: '100%', background: tabAccent.primary, borderRadius: 2 }} />
+        </div>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{answeredCount}/{quizQuestions.length} answered</span>
+      </div>
       <div style={{ display: 'flex', gap: 8, marginBottom: 24, flexWrap: 'wrap' }}>
         {quizQuestions.map((_, i) => (
-          <span key={i} style={{
+          <button
+            key={i}
+            type="button"
+            onClick={() => !submitted && setCurrentQ(i)}
+            style={{
             fontSize: 11, fontFamily: 'var(--font-mono)', padding: '4px 10px', borderRadius: T.rPill,
-            background: answers[i] !== undefined ? tabAccent.subtle : 'rgba(255,255,255,0.04)',
-            color: answers[i] !== undefined ? tabAccent.primary : 'rgba(255,255,255,0.3)',
-            border: `1px solid ${answers[i] !== undefined ? tabAccent.border : T.lineDark}`,
+            background: currentQ === i ? tabAccent.subtle : answers[i] !== undefined ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
+            color: currentQ === i ? tabAccent.primary : answers[i] !== undefined ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.3)',
+            border: `1px solid ${currentQ === i ? tabAccent.border : answers[i] !== undefined ? T.lineDark : T.lineDark}`,
+            cursor: submitted ? 'default' : 'pointer',
           }}>
             Q{i + 1}
-          </span>
+          </button>
         ))}
       </div>
       {submitted && (
@@ -205,9 +259,12 @@ function QuizTab({ lesson, lessonState, onPass, tabAccent, roleAccent }: {
           {correct === quizQuestions.length ? `All ${correct} correct — quiz passed!` : `${correct} of ${quizQuestions.length} correct. Try again.`}
         </div>
       )}
-      {quizQuestions.map((q, qi) => (
+      {quizQuestions.filter((_, qi) => qi === currentQ).map((q, _) => {
+        const qi = currentQ
+        return (
         <div key={qi} style={{ marginBottom: 24 }}>
-          <div style={{ color: C.white, fontSize: 14, fontWeight: 500, marginBottom: 12 }}>Q{qi + 1}. {q.q}</div>
+          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 8 }}>Question {qi + 1} of {quizQuestions.length}</div>
+          <div style={{ color: C.white, fontSize: 16, fontWeight: 500, marginBottom: 16, lineHeight: 1.5 }}>{q.q}</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             {q.options.map((opt, oi) => {
               const selected = answers[qi] === oi
@@ -231,8 +288,17 @@ function QuizTab({ lesson, lessonState, onPass, tabAccent, roleAccent }: {
               )
             })}
           </div>
+          <div style={{ display: 'flex', gap: 10, marginTop: 20 }}>
+            {qi > 0 && !submitted && (
+              <button type="button" onClick={() => setCurrentQ(qi - 1)} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, color: C.white, padding: '10px 18px', borderRadius: T.rControl, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Previous</button>
+            )}
+            {qi < quizQuestions.length - 1 && !submitted && (
+              <button type="button" onClick={() => setCurrentQ(qi + 1)} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, color: C.white, padding: '10px 18px', borderRadius: T.rControl, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Next question</button>
+            )}
+          </div>
         </div>
-      ))}
+        )
+      })}
       {!submitted ? (
         <button
           type="button"
@@ -248,7 +314,7 @@ function QuizTab({ lesson, lessonState, onPass, tabAccent, roleAccent }: {
           Submit quiz
         </button>
       ) : correct < quizQuestions.length ? (
-        <button type="button" onClick={() => { setSubmitted(false); setAnswers({}) }} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, color: C.white, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Try again</button>
+        <button type="button" onClick={() => { setSubmitted(false); setAnswers({}); setCurrentQ(0) }} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, color: C.white, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Try again</button>
       ) : null}
     </div>
   )
@@ -288,7 +354,24 @@ function AssignmentTab({ lesson, lessonState, onSubmit, tabAccent }: {
     <div>
       <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>{lesson.title} — Assignment</div>
       <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginBottom: 24 }}>Complete the task below and submit. Your faculty will review and provide feedback.</div>
-      <div style={{ padding: '18px 0', marginBottom: 20, borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}` }}>
+
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 8 }}>Objective</div>
+        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.7, margin: 0, maxWidth: 640 }}>
+          Apply the concepts from this lesson to a practical exercise and document your approach clearly.
+        </p>
+      </div>
+
+      <div style={{ padding: '16px 0', marginBottom: 20, borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}` }}>
+        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 10 }}>Requirements</div>
+        <ul style={{ margin: 0, paddingLeft: 18, color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.8 }}>
+          <li>Explain your approach step by step</li>
+          <li>Include any code, queries, or calculations used</li>
+          <li>State assumptions where the brief is ambiguous</li>
+        </ul>
+      </div>
+
+      <div style={{ padding: '0 0 18px', marginBottom: 20 }}>
         <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 10 }}>Brief</div>
         <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.7, maxWidth: 640 }}>
           Apply the concepts from this lesson to complete the following exercise. Document your approach, show your work, and explain your reasoning in the text box below.
@@ -350,33 +433,61 @@ function LabTab({ slug, labLaunched, labComplete, onLaunch, onMarkComplete, tabA
     )
   }
 
+  const experiments = Array.from({ length: lab.expCount }, (_, i) => ({
+    num: i + 1,
+    title: i === 0 ? 'Setup & environment' : i === lab.expCount - 1 ? 'Capstone exercise' : `Exercise ${i + 1}`,
+    status: labLaunched && i === 0 ? 'in_progress' : 'not_started',
+  }))
+  const workspaceStatus = labComplete ? 'Complete' : labLaunched ? 'In progress' : 'Not started'
+
   return (
     <div>
-      <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Connected lab</div>
-      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, marginBottom: 24 }}>Complete the lab experiments linked to this lesson to reinforce your skills.</div>
-      <div style={{ background: tabAccent.subtle, border: `1px solid ${tabAccent.border}`, borderRadius: T.rCard, padding: '24px', marginBottom: 24 }}>
-        <div style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-          <div style={{ width: 44, height: 44, borderRadius: T.rControl, background: 'rgba(255,255,255,0.04)', border: `1px solid ${tabAccent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={tabAccent.primary} strokeWidth="1.8"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
+        <div>
+          <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 4 }}>{lab.labTitle}</div>
+          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, lineHeight: 1.6, maxWidth: 520 }}>{lab.labDesc}</div>
+        </div>
+        <span style={{ background: tabAccent.subtle, border: `1px solid ${tabAccent.border}`, color: tabAccent.primary, fontSize: 11, fontFamily: 'var(--font-mono)', padding: '4px 10px', borderRadius: 100, flexShrink: 0 }}>
+          {workspaceStatus}
+        </span>
+      </div>
+
+      <div className="lms-lab-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 200px) 1fr', gap: 16, marginBottom: 24 }}>
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rControl, padding: '12px 0', overflow: 'hidden' }}>
+          <div style={{ padding: '8px 14px', color: 'rgba(255,255,255,0.25)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em' }}>EXPERIMENTS</div>
+          {experiments.map(exp => (
+            <div key={exp.num} style={{ padding: '10px 14px', display: 'flex', alignItems: 'center', gap: 10, borderLeft: `2px solid ${exp.status === 'in_progress' ? tabAccent.primary : 'transparent'}` }}>
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: exp.status === 'in_progress' ? tabAccent.primary : 'transparent', border: `1px solid ${exp.status === 'in_progress' ? tabAccent.primary : 'rgba(255,255,255,0.2)'}`, flexShrink: 0 }} />
+              <div style={{ minWidth: 0 }}>
+                <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 9, fontFamily: 'var(--font-mono)' }}>Exp {String(exp.num).padStart(2, '0')}</div>
+                <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 12, lineHeight: 1.35, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{exp.title}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${tabAccent.border}`, borderRadius: T.rCard, padding: '20px', minWidth: 0 }}>
+          <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 12 }}>WORKSPACE</div>
+          <div style={{ background: C.ink, border: `1px solid ${T.lineDark}`, borderRadius: T.rControl, aspectRatio: '16/10', minHeight: 140, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 16 }}>
+            <div style={{ textAlign: 'center', padding: '0 20px' }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke={tabAccent.primary} strokeWidth="1.5" style={{ marginBottom: 10, opacity: 0.7 }}><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+              <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>Lab environment opens in a separate workspace</div>
+              <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 11, marginTop: 6 }}>{lab.expCount} experiments · local demo — no live execution</div>
+            </div>
           </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ color: C.white, fontSize: 15, fontWeight: 600, marginBottom: 6 }}>{lab.labTitle}</div>
-            <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, lineHeight: 1.65, marginBottom: 12 }}>{lab.labDesc}</div>
-            <div style={{ color: tabAccent.primary, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{lab.expCount} experiments</div>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            <a href={`/labs/${lab.labId}`} target="_blank" rel="noopener noreferrer" onClick={onLaunch} style={{ background: tabAccent.primary, border: 'none', color: C.black, padding: '11px 20px', borderRadius: T.rControl, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', textDecoration: 'none', display: 'inline-block' }}>
+              Launch lab →
+            </a>
+            {labLaunched && (
+              <button type="button" onClick={onMarkComplete} style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#22c55e', padding: '11px 20px', borderRadius: T.rControl, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+                Mark lab complete
+              </button>
+            )}
           </div>
+          {!labLaunched && <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 12, marginTop: 12 }}>Launch the lab first, then return here to mark it complete.</div>}
         </div>
       </div>
-      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-        <a href={`/labs/${lab.labId}`} target="_blank" rel="noopener noreferrer" onClick={onLaunch} style={{ background: tabAccent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', textDecoration: 'none', display: 'inline-block' }}>
-          Launch lab →
-        </a>
-        {labLaunched && (
-          <button type="button" onClick={onMarkComplete} style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#22c55e', padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
-            Mark lab complete
-          </button>
-        )}
-      </div>
-      {!labLaunched && <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 12, marginTop: 12 }}>Launch the lab first, then return here to mark it complete.</div>}
     </div>
   )
 }
@@ -682,6 +793,9 @@ export default function LearnPage() {
           .lms-menu-btn { display: flex !important; }
           .lms-header-lesson { display: none; }
           .lms-header-lesson-sep { display: none; }
+        }
+        @media (max-width: 768px) {
+          .lms-lab-grid { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 375px) {
           .lms-header-course { max-width: 120px; }

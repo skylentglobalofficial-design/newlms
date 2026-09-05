@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { C } from '../components/shared'
+import { getDomainAccent } from '../aurora-themes'
+
+const accent = getDomainAccent('professional')
 import { labSubjects } from '../data'
 import type { LabExperimentStatus, LabType } from '../data'
 import { useAuth } from '../context/AuthContext'
@@ -14,14 +17,14 @@ const labTypeLabels: Record<LabType, string> = {
 
 const labTypeColors: Record<LabType, { bg: string; text: string; border: string }> = {
   coding: { bg: 'rgba(59,130,246,0.15)', text: '#60a5fa', border: 'rgba(59,130,246,0.3)' },
-  data: { bg: 'rgba(243,107,33,0.15)', text: C.orange, border: 'rgba(243,107,33,0.3)' },
+  data: { bg: 'rgba(139,92,246,0.15)', text: '#a78bfa', border: 'rgba(139,92,246,0.3)' },
   business: { bg: 'rgba(34,197,94,0.15)', text: '#4ade80', border: 'rgba(34,197,94,0.3)' },
   simulation: { bg: 'rgba(168,85,247,0.15)', text: '#c084fc', border: 'rgba(168,85,247,0.3)' },
 }
 
 const statusColors: Record<LabExperimentStatus, { color: string; label: string }> = {
   not_started: { color: 'rgba(255,255,255,0.2)', label: 'Not Started' },
-  in_progress: { color: C.orange, label: 'In Progress' },
+  in_progress: { color: accent.primary, label: 'In Progress' },
   submitted: { color: '#60a5fa', label: 'Submitted' },
   completed: { color: '#4ade80', label: 'Completed' },
 }
@@ -46,7 +49,7 @@ export default function LabDetailPage() {
     return (
       <div style={{ minHeight: '100vh', background: C.ink, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, fontFamily: 'var(--font-body)' }}>
         <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>Lab not found</div>
-        <Link to="/labs" style={{ color: C.orange, textDecoration: 'none', fontSize: 14 }}>&larr; Back to Labs</Link>
+        <Link to="/labs" style={{ color: accent.text, textDecoration: 'none', fontSize: 14 }}>&larr; Back to Labs</Link>
       </div>
     )
   }
@@ -119,10 +122,10 @@ export default function LabDetailPage() {
           <div style={{ marginBottom: 48 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
               <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>Overall Progress</span>
-              <span style={{ color: C.orange, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{Math.round((completedCount / subject.experiments.length) * 100)}%</span>
+              <span style={{ color: accent.text, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{Math.round((completedCount / subject.experiments.length) * 100)}%</span>
             </div>
             <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 4, height: 6 }}>
-              <div style={{ background: C.orange, width: `${(completedCount / subject.experiments.length) * 100}%`, height: '100%', borderRadius: 4, transition: 'width 0.4s ease' }} />
+              <div style={{ background: accent.primary, width: `${(completedCount / subject.experiments.length) * 100}%`, height: '100%', borderRadius: 4, transition: 'width 0.4s ease' }} />
             </div>
           </div>
 
@@ -159,7 +162,7 @@ export default function LabDetailPage() {
                     <span style={{ color: sc.color, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{sc.label}</span>
                     <button
                       onClick={() => navigate(`/labs/${labId}/${exp.id}`)}
-                      style={{ background: status === 'completed' ? 'rgba(34,197,94,0.1)' : C.orange, border: status === 'completed' ? '1px solid rgba(34,197,94,0.3)' : 'none', color: status === 'completed' ? '#4ade80' : C.white, padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'opacity 0.15s' }}
+                      style={{ background: status === 'completed' ? 'rgba(34,197,94,0.1)' : accent.primary, border: status === 'completed' ? '1px solid rgba(34,197,94,0.3)' : 'none', color: status === 'completed' ? '#4ade80' : C.black, padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'opacity 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
                       onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                     >

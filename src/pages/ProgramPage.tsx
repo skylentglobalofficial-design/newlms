@@ -897,6 +897,7 @@ export default function ProgramPage() {
       {applyOpen && (
         <EnrollmentModal
           item={{ id: program.slug, title: program.name, price: highlightTier.price, type: 'program' }}
+          themeId={auroraTheme}
           onClose={() => setApplyOpen(false)}
         />
       )}

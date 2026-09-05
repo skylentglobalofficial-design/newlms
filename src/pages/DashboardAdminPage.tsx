@@ -77,10 +77,10 @@ function NavIcon({ id }: { id: string }) {
 
 function AdminWorkspace() {
   const keyMetrics = [
-    { label: 'Total users', value: '12,450' },
-    { label: 'Organisations', value: '48' },
-    { label: 'Monthly enrollments', value: '2,847' },
-    { label: 'Revenue (MTD)', value: '₹42.8L' },
+    { label: 'Total users (sample)', value: '12,450' },
+    { label: 'Organisations (sample)', value: '48' },
+    { label: 'Monthly enrollments (sample)', value: '2,847' },
+    { label: 'Revenue MTD (sample)', value: '₹42.8L' },
   ]
 
   return (
@@ -179,7 +179,7 @@ export default function DashboardAdminPage() {
         </div>
 
         <div id="admin-courses" style={{ ...canvasRow }}>
-          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 16 }}>Top courses by enrollment</div>
+          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 16 }}>Top courses by enrollment (sample)</div>
           {topCourses.map((c, i) => (
             <div key={i} style={{ marginBottom: i < topCourses.length - 1 ? 14 : 0 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
