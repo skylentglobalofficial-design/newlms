@@ -7,6 +7,39 @@ import { C, T, glass, type GlassLevel } from '../tokens'
 // ─── Aurora ───────────────────────────────────────────────────────────────────
 // Lightweight CSS radial gradients — atmospheric, low-cost, readable.
 
+/** Focused atmospheric band for primary workspace headers — not full-page. */
+export function AuroraBand({ themeId = 'general' }: { themeId?: AuroraThemeId }) {
+  const theme = getAuroraTheme(themeId)
+  return (
+    <div
+      aria-hidden
+      className="skylent-aurora-band"
+      style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}
+    >
+      <div
+        style={{
+          position: 'absolute',
+          top: '-45%',
+          left: '-8%',
+          width: 'min(92%, 720px)',
+          height: 'min(140%, 420px)',
+          background: `radial-gradient(ellipse 75% 55% at 28% 35%, ${theme.primary}42 0%, transparent 72%)`,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          top: '-25%',
+          right: '-12%',
+          width: 'min(58%, 520px)',
+          height: 'min(120%, 360px)',
+          background: `radial-gradient(ellipse at center, ${theme.secondary}30 0%, transparent 68%)`,
+        }}
+      />
+    </div>
+  )
+}
+
 export function Aurora({ themeId = 'general', variant = 'default' }: { themeId?: AuroraThemeId; variant?: 'default' | 'hero' }) {
   const theme = getAuroraTheme(themeId)
   const base = Number(theme.strength)
