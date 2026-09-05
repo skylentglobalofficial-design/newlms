@@ -4,6 +4,7 @@ import { C, T } from '../tokens'
 import { courses } from '../data'
 import type { CourseLesson, CourseModule } from '../data'
 import { useAuth } from '../context/AuthContext'
+import { useDemoState, EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
 import { getLmsRoleAccent, getLmsTabAccent, type LmsTabId } from '../role-themes'
 
 // ─── LESSON STATE ──────────────────────────────────────────────────────────────
@@ -18,7 +19,7 @@ type LessonState = {
 type AllLessonState = Record<string, LessonState>
 
 function defaultState(): LessonState {
-  return { videoWatched: false, quizPassed: false, assignmentSubmitted: false, complete: false }
+  return { ...EMPTY_LESSON_STATE }
 }
 
 const quizQuestions = [
@@ -505,31 +506,30 @@ export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const demo = useDemoState()
   const roleAccent = getLmsRoleAccent(user?.role)
 
   const course = courses.find(c => c.slug === slug)
   const allLessons = course ? course.modules.flatMap(m => m.lessons) : []
   const firstLessonId = allLessons[0]?.id ?? ''
 
-  const [lessonStates, setLessonStates] = useState<AllLessonState>(() => {
-    const init: AllLessonState = {}
-    if (course) {
-      course.modules.forEach(m => {
-        m.lessons.forEach(l => {
-          init[l.id] = l.completed
-            ? { videoWatched: true, quizPassed: true, assignmentSubmitted: true, complete: true }
-            : defaultState()
-        })
-      })
-    }
-    return init
-  })
+  const lessonStates = slug ? demo.getLessonStates(slug) : {}
+
+  const labMapEntry = slug ? ({
+    'data-analytics': 'data-centric-ai-preprocessing',
+    'python-programming': 'data-centric-ai-python',
+    'generative-ai': 'mcom-fintech-blockchain',
+    'full-stack-web': 'bca-fullstack-react',
+    'power-bi': 'mba-business-analytics',
+    'product-management': 'mba-operations-research',
+  } as Record<string, string>)[slug] ?? 'data-centric-ai-python' : ''
+  const labProgress = labMapEntry ? demo.getLabProgress(labMapEntry) : { launched: false, complete: false, experiments: {} }
+  const labLaunched = labProgress.launched
+  const labComplete = labProgress.complete
 
   const [selectedLessonId, setSelectedLessonId] = useState(lessonId ?? firstLessonId)
   const [activeTab, setActiveTab] = useState<LmsTabId>('video')
   const [showCertificate, setShowCertificate] = useState(false)
-  const [labLaunched, setLabLaunched] = useState(false)
-  const [labComplete, setLabComplete] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const tabAccent = getLmsTabAccent(activeTab)
@@ -575,12 +575,8 @@ export default function LearnPage() {
   const allComplete = completedCount === totalLessons
 
   function updateLesson(id: string, patch: Partial<LessonState>) {
-    setLessonStates(prev => {
-      const current = prev[id] ?? defaultState()
-      const updated = { ...current, ...patch }
-      if (updated.assignmentSubmitted) updated.complete = true
-      return { ...prev, [id]: updated }
-    })
+    if (!slug) return
+    demo.updateLesson(slug, id, patch)
   }
 
   function handleVideoWatched() {
@@ -770,7 +766,7 @@ export default function LearnPage() {
               {activeTab === 'quiz' && tabsAvailable.quiz && <QuizTab lesson={selectedLesson} lessonState={selectedState} onPass={handleQuizPass} tabAccent={tabAccent} roleAccent={roleAccent} />}
               {activeTab === 'assignment' && tabsAvailable.assignment && <AssignmentTab lesson={selectedLesson} lessonState={selectedState} onSubmit={handleAssignmentSubmit} tabAccent={tabAccent} />}
               {activeTab === 'lab' && tabsAvailableWithLab.lab && slug && (
-                <LabTab slug={slug} labLaunched={labLaunched} labComplete={labComplete} onLaunch={() => setLabLaunched(true)} onMarkComplete={() => setLabComplete(true)} tabAccent={tabAccent} />
+                <LabTab slug={slug} labLaunched={labLaunched} labComplete={labComplete} onLaunch={() => demo.setLabLaunched(labMapEntry)} onMarkComplete={() => demo.setLabComplete(labMapEntry)} tabAccent={tabAccent} />
               )}
               </div>
             </>

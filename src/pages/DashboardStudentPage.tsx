@@ -5,23 +5,10 @@ import { AuroraBand, GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
+import { useDemoState } from '../demo/DemoStateContext'
 import { programs } from '../data'
 
-// ─── DEMO LEARNING STATE ──────────────────────────────────────────────────────
-
 const LEARN_SLUG = 'data-analytics'
-const DEMO = {
-  moduleIndex: 3,
-  moduleTotal: 18,
-  moduleTitle: 'SQL for Analysis',
-  lessonTitle: 'Introduction to SQL',
-  lessonRemaining: '20:00',
-  overallProgress: 72,
-  moduleProgress: 48,
-  nextLesson: 'SQL Joins',
-  projectsCompleted: 3,
-  projectsTotal: 6,
-}
 
 const CURRICULUM_PATH = [
   { id: 'foundation', label: 'Foundation', status: 'complete' as const },
@@ -62,10 +49,22 @@ function LearningWorkspace({
   programName,
   progress,
   learnSlug,
+  moduleTitle,
+  moduleIndex,
+  moduleTotal,
+  lessonTitle,
+  nextLesson,
+  lessonId,
 }: {
   programName: string
   progress: number
   learnSlug: string
+  moduleTitle: string
+  moduleIndex: number
+  moduleTotal: number
+  lessonTitle: string
+  nextLesson: string | null
+  lessonId: string
 }) {
   return (
     <div id="student-learning">
@@ -77,10 +76,10 @@ function LearningWorkspace({
           Continue {programName}
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.58)', fontSize: 16, margin: '0 0 4px', lineHeight: 1.5 }}>
-          {DEMO.moduleTitle} · Module {DEMO.moduleIndex}
+          {moduleTitle} · Module {moduleIndex}
         </p>
         <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, margin: '0 0 24px' }}>
-          {DEMO.lessonTitle} · {DEMO.lessonRemaining} remaining
+          {lessonTitle}{nextLesson ? ` · Next: ${nextLesson}` : ''}
         </p>
 
         {/* Status row — embedded, not a separate metric rail */}
@@ -99,13 +98,13 @@ function LearningWorkspace({
             </div>
           </div>
           <div style={{ flexShrink: 0 }}>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 4 }}>Module {DEMO.moduleIndex} of {DEMO.moduleTotal}</div>
-            <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>Next: {DEMO.nextLesson}</div>
+            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 4 }}>Module {moduleIndex} of {moduleTotal}</div>
+            <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>{nextLesson ? `Next: ${nextLesson}` : 'All lessons complete'}</div>
           </div>
         </div>
 
         <Link
-          to={`/learn/${learnSlug}`}
+          to={lessonId ? `/learn/${learnSlug}/${lessonId}` : `/learn/${learnSlug}`}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             background: accent.primary, color: C.black, textDecoration: 'none',
@@ -171,13 +170,20 @@ function CurriculumPath() {
 
 // ─── CONTEXT RAIL (Level 0 — bare canvas) ─────────────────────────────────────
 
-function ContextRail({ projectTitle, projectWhat }: { projectTitle: string; projectWhat: string }) {
+function ContextRail({ projectTitle, projectWhat, learnSlug, lessonId, nextLesson, moduleTitle }: {
+  projectTitle: string
+  projectWhat: string
+  learnSlug: string
+  lessonId: string
+  nextLesson: string | null
+  moduleTitle: string
+}) {
   const items = [
     {
       label: 'Up next',
-      title: DEMO.nextLesson,
-      detail: `Next in ${DEMO.moduleTitle}`,
-      href: `/learn/${LEARN_SLUG}`,
+      title: nextLesson ?? 'Continue learning',
+      detail: nextLesson ? `Next in ${moduleTitle}` : 'Pick up where you left off',
+      href: lessonId ? `/learn/${learnSlug}/${lessonId}` : `/learn/${learnSlug}`,
     },
     {
       label: 'Assessment',
@@ -227,6 +233,7 @@ function ContextRail({ projectTitle, projectWhat }: { projectTitle: string; proj
 
 export default function DashboardStudentPage() {
   const { user, ready } = useAuth()
+  const demo = useDemoState()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
 
@@ -236,9 +243,10 @@ export default function DashboardStudentPage() {
 
   const program = programs.find(p => p.slug === 'data-science-ai') ?? programs[0]
   const programName = user?.program || program?.name || 'Data Science & AI'
-  const overallProgress = user?.progress ?? DEMO.overallProgress
+  const lms = demo.getLmsSummary(LEARN_SLUG)
+  const overallProgress = lms?.progressPct ?? user?.progress ?? 0
 
-  const activeProject = program?.projectsDetail?.[DEMO.projectsCompleted] ?? program?.projectsDetail?.[0]
+  const activeProject = program?.projectsDetail?.[Math.min(lms?.completedCount ?? 0, (program?.projectsDetail?.length ?? 1) - 1)] ?? program?.projectsDetail?.[0]
   const projectTitle = activeProject?.title ?? 'Capstone project'
   const projectWhat = activeProject?.what ?? 'Build a portfolio-ready project from your program.'
 
@@ -256,6 +264,9 @@ export default function DashboardStudentPage() {
       renderNavIcon={id => <NavIcon id={id} />}
     >
       <div id="student-overview">
+        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 20, padding: '10px 14px', background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rControl }}>
+          Demo workspace — progress is saved locally in this browser only, not on a server.
+        </div>
         <AuthDashboardLayout
           primary={
             <>
@@ -263,6 +274,12 @@ export default function DashboardStudentPage() {
                 programName={programName}
                 progress={overallProgress}
                 learnSlug={LEARN_SLUG}
+                moduleTitle={lms?.currentModuleTitle ?? 'Getting started'}
+                moduleIndex={lms?.moduleIndex ?? 1}
+                moduleTotal={lms?.moduleTotal ?? 1}
+                lessonTitle={lms?.currentLessonTitle ?? 'Start learning'}
+                nextLesson={lms?.nextLessonTitle ?? null}
+                lessonId={lms?.currentLessonId ?? ''}
               />
               <CurriculumPath />
               <div id="student-certificates" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
@@ -276,7 +293,14 @@ export default function DashboardStudentPage() {
               </div>
             </>
           }
-          rail={<ContextRail projectTitle={projectTitle} projectWhat={projectWhat} />}
+          rail={<ContextRail
+            projectTitle={projectTitle}
+            projectWhat={projectWhat}
+            learnSlug={LEARN_SLUG}
+            lessonId={lms?.currentLessonId ?? ''}
+            nextLesson={lms?.nextLessonTitle ?? null}
+            moduleTitle={lms?.currentModuleTitle ?? ''}
+          />}
         />
       </div>
     </AuthDashboardShell>
