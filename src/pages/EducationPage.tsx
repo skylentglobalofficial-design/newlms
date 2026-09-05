@@ -256,7 +256,7 @@ function SchoolingSection() {
     { band: 'Primary', grades: '1–5', color: '#fbbf24', subjects: ['Mathematics', 'Science', 'Language', 'Socials'] },
     { band: 'Middle', grades: '6–8', color: '#4ade80', subjects: ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Language'] },
     { band: 'Secondary', grades: '9–10', color: '#60a5fa', subjects: ['Maths', 'Science', 'Social Studies', 'Language', 'IT'] },
-    { band: 'Senior', grades: '11–12', color: C.orange, subjects: ['Stream subjects', 'Advanced Maths', 'Electives', 'Practicals'] },
+    { band: 'Senior', grades: '11–12', color: accent.primary, subjects: ['Stream subjects', 'Advanced Maths', 'Electives', 'Practicals'] },
   ]
 
   return (
@@ -294,9 +294,22 @@ function SchoolingSection() {
           <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
             Learning that builds confidence.
           </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 480 }}>
+          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 24px', maxWidth: 480 }}>
             For school students and their parents. Programs built around the actual curriculum — from foundational concepts in primary school to board-level mastery in senior secondary.
           </p>
+
+          <div style={{ marginBottom: 32 }}>
+            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Lesson rhythm</div>
+            <FlowStrip
+              tone="dark"
+              steps={[
+                { label: 'Lesson', sub: 'Concept introduction' },
+                { label: 'Activity', sub: 'Guided practice' },
+                { label: 'Explanation', sub: 'Concept clarity' },
+                { label: 'Assessment', sub: 'Check mastery' },
+              ]}
+            />
+          </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 32 }}>
             {gradeBands.map(({ band, grades, color, subjects }, i) => (
@@ -399,7 +412,7 @@ function UndergraduateSection() {
                         width: 8,
                         height: 8,
                         borderRadius: '50%',
-                        background: i === journey.length - 1 ? C.orange : accent.primary,
+                        background: i === journey.length - 1 ? accent.primary : accent.primary,
                         opacity: i === journey.length - 1 ? 1 : 0.5,
                         marginTop: 13,
                         flexShrink: 0,
@@ -410,7 +423,7 @@ function UndergraduateSection() {
                     )}
                   </div>
                   <div style={{ paddingBottom: i < journey.length - 1 ? 12 : 0, paddingTop: 8 }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: i === journey.length - 1 ? C.orange : C.white }}>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: i === journey.length - 1 ? accent.text : C.white }}>
                       {step}
                     </span>
                     <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginTop: 2 }}>{desc}</div>
@@ -741,7 +754,7 @@ function CompetitiveExamsSection() {
                 <div style={{ paddingTop: 16, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
                   {exam.features.map(f => (
                     <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <span style={{ width: 4, height: 4, borderRadius: '50%', background: C.orange, opacity: 0.7 }} />
+                      <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, opacity: 0.7 }} />
                       {f}
                     </span>
                   ))}
@@ -763,7 +776,7 @@ function CompetitiveExamsSection() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {CAT_SECTION.features.map(f => (
                   <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <span style={{ width: 4, height: 4, borderRadius: '50%', background: C.orange, opacity: 0.7 }} />
+                    <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, opacity: 0.7 }} />
                     {f}
                   </span>
                 ))}

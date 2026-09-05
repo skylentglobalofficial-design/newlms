@@ -43,8 +43,8 @@ type NavSection = { id: string; label: string }
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
-function CheckItem({ label, accent }: { label: string; accent?: string }) {
-  const color = accent ?? C.orange
+function CheckItem({ label, accent }: { label: string; accent: string }) {
+  const color = accent
   return (
     <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0, marginTop: 2 }}>
@@ -99,7 +99,7 @@ function StickyProgramNav({
         <button
           onClick={onCTA}
           style={{
-            flexShrink: 0, background: C.orange, border: 'none', color: C.white,
+            flexShrink: 0, background: accent.primary, border: 'none', color: C.black,
             borderRadius: T.rControl, padding: '8px 18px', fontSize: 12.5, fontWeight: 600,
             cursor: 'pointer', fontFamily: 'var(--font-body)',
           }}
@@ -114,12 +114,13 @@ function StickyProgramNav({
 // ─── ENROLLMENT PANEL ─────────────────────────────────────────────────────────
 
 function EnrollmentPanel({
-  program, status, ctaLabel, onCTA,
+  program, status, ctaLabel, onCTA, accent,
 }: {
   program: NonNullable<ReturnType<typeof programs.find>>
   status: EnrollmentStatus
   ctaLabel: string
   onCTA: () => void
+  accent: ReturnType<typeof getDomainAccent>
 }) {
   const lowestPrice = Math.min(...program.pricing.map(p => p.price))
   const isCareerOS = !!program.careerSupport
@@ -148,17 +149,17 @@ function EnrollmentPanel({
           { text: `${status === 'coming_soon' ? 'Planned: ' : 'Next batch: '}${program.upcomingBatch}` },
           { text: `${program.duration} · ${program.format}` },
           { text: program.cert },
-          ...(isCareerOS ? [{ text: 'Unlocks Career OS on completion', accent: true }] : []),
-        ].map(({ text, accent }, i) => (
+          ...(isCareerOS ? [{ text: 'Unlocks Career OS on completion', highlight: true }] : []),
+        ].map(({ text, highlight }, i) => (
           <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 12 }}>
-            <div style={{ width: 4, height: 4, borderRadius: '50%', background: accent ? C.orange : 'rgba(255,255,255,0.25)', flexShrink: 0, marginTop: 6 }} />
-            <span style={{ color: accent ? C.orange : 'rgba(255,255,255,0.72)', fontSize: 13, lineHeight: 1.45 }}>{text}</span>
+            <div style={{ width: 4, height: 4, borderRadius: '50%', background: highlight ? accent.primary : 'rgba(255,255,255,0.25)', flexShrink: 0, marginTop: 6 }} />
+            <span style={{ color: highlight ? accent.text : 'rgba(255,255,255,0.72)', fontSize: 13, lineHeight: 1.45 }}>{text}</span>
           </div>
         ))}
       </div>
 
       <div style={{ padding: '18px 24px 22px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <Button variant="primary" full onClick={onCTA}>
+        <Button variant="primary" full themeId={program.slug ? resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType) : undefined} onClick={onCTA}>
           {ctaLabel} →
         </Button>
         <Link to="/contact" style={{ display: 'block', textAlign: 'center', color: 'rgba(255,255,255,0.45)', fontSize: 13, textDecoration: 'none', padding: '6px 0' }}>
@@ -269,7 +270,7 @@ export default function ProgramPage() {
               </p>
 
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 28 }}>
-                <Button variant="primary" size="lg" onClick={() => setApplyOpen(true)}>{ctaLabel} →</Button>
+                <Button variant="primary" size="lg" themeId={auroraTheme} onClick={() => setApplyOpen(true)}>{ctaLabel} →</Button>
                 <Button
                   variant="secondary"
                   size="lg"
@@ -298,7 +299,7 @@ export default function ProgramPage() {
             </div>
 
             <FadeIn delay={80}>
-              <EnrollmentPanel program={program} status={enrollStatus} ctaLabel={ctaLabel} onCTA={() => setApplyOpen(true)} />
+              <EnrollmentPanel program={program} status={enrollStatus} ctaLabel={ctaLabel} onCTA={() => setApplyOpen(true)} accent={domainAccent} />
             </FadeIn>
           </div>
 
@@ -645,15 +646,15 @@ export default function ProgramPage() {
               <FadeIn key={i} delay={i * 50}>
                 <div style={{ display: 'grid', gridTemplateColumns: '56px 1fr', gap: 20, alignItems: 'start', padding: '24px 0', borderBottom: i < program.faculty!.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
                   <div style={{
-                    width: 52, height: 52, borderRadius: '50%', background: 'rgba(243,107,33,0.1)',
-                    border: '1px solid rgba(243,107,33,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 16, fontWeight: 700, color: C.orange, fontFamily: 'var(--font-display)',
+                    width: 52, height: 52, borderRadius: '50%', background: domainAccent.subtle,
+                    border: `1px solid ${domainAccent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 16, fontWeight: 700, color: domainAccent.primary, fontFamily: 'var(--font-display)',
                   }}>
                     {f.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                   </div>
                   <div>
                     <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 4 }}>{f.name}</div>
-                    <div className="skylent-label" style={{ color: C.orange, marginBottom: 8 }}>{f.role}</div>
+                    <div className="skylent-label" style={{ color: domainAccent.text, marginBottom: 8 }}>{f.role}</div>
                     <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.6 }}>{f.expertise}</div>
                   </div>
                 </div>
