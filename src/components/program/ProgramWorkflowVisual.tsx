@@ -28,17 +28,17 @@ const SLUG_WORKFLOW: Record<string, WorkflowStep[]> = {
     { label: 'Project', detail: 'Ship deliverable' },
   ],
   'jee-advanced-prep': [
-    { label: 'Question', detail: 'Exam-style prompt' },
+    { label: 'Question', detail: 'PCM prompt' },
     { label: 'Timer', detail: 'Timed attempt' },
     { label: 'Answer', detail: 'Your response' },
     { label: 'Solution', detail: 'Worked method' },
     { label: 'Score', detail: 'Performance log' },
   ],
   'cat-prep': [
-    { label: 'Question', detail: 'Passage or case' },
+    { label: 'Case', detail: 'Passage or DI set' },
     { label: 'Timer', detail: 'Section clock' },
+    { label: 'Reason', detail: 'Logic path' },
     { label: 'Answer', detail: 'Selected option' },
-    { label: 'Solution', detail: 'Reasoning path' },
     { label: 'Score', detail: 'Accuracy trend' },
   ],
   'generative-ai-program': [
@@ -223,11 +223,22 @@ function FullStackWorkspace({ accent }: { accent: Accent }) {
   )
 }
 
-function ExamPrepWorkspace({ accent }: { accent: Accent }) {
+function JeeExamWorkspace({ accent }: { accent: Accent }) {
+  const mathAccent = getDomainAccent('jee')
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 10 }} className="program-workflow-panels">
-      <Panel label="QUESTION" accent={accent}>
-        <div style={{ fontSize: 11, color: C.white, lineHeight: 1.5, marginBottom: 10 }}>A particle moves with velocity v(t) = 3t². Find displacement from t=0 to t=2.</div>
+      <Panel label="QUESTION · MATH" accent={accent}>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
+          {['Physics', 'Chemistry', 'Math'].map((s, i) => (
+            <span key={s} style={{
+              fontSize: 8, fontFamily: 'var(--font-mono)', padding: '3px 8px', borderRadius: 4,
+              background: i === 2 ? mathAccent.subtle : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${i === 2 ? mathAccent.border : T.lineDark}`,
+              color: i === 2 ? mathAccent.text : 'rgba(255,255,255,0.4)',
+            }}>{s}</span>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: C.white, lineHeight: 1.5, marginBottom: 10 }}>If ∫₀² 3t² dt = k, find k.</div>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {['A', 'B', 'C', 'D'].map(opt => (
             <span key={opt} style={{
@@ -242,10 +253,69 @@ function ExamPrepWorkspace({ accent }: { accent: Accent }) {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <Panel label="TIMER" accent={accent}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, color: accent.text, letterSpacing: '0.06em' }}>04:32</div>
-          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>Section 1 · Physics</div>
+          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>Q 14 · timed practice</div>
         </Panel>
         <Panel label="SOLUTION" accent={accent} highlight>
           <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>∫₀² 3t² dt = 8 units</div>
+        </Panel>
+      </div>
+    </div>
+  )
+}
+
+function NeetExamWorkspace({ accent }: { accent: Accent }) {
+  const bioAccent = getDomainAccent('neet')
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="program-workflow-panels">
+      <Panel label="BIOLOGY · DIAGRAM" accent={accent}>
+        <div style={{ height: 52, borderRadius: 6, border: `1px dashed ${bioAccent.border}`, background: bioAccent.subtle, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>
+          Cell · NCERT Fig 8.2
+        </div>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)' }}>Label organelles · guided practice</div>
+      </Panel>
+      <Panel label="MCQ · BOTANY" accent={accent} highlight>
+        <div style={{ fontSize: 11, color: C.white, lineHeight: 1.45, marginBottom: 10 }}>Which enzyme fixes CO₂ in C₄ plants?</div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+          {['PEP', 'RuBisCO', 'ATP'].map((o, i) => (
+            <span key={o} style={{
+              fontSize: 9, fontFamily: 'var(--font-mono)', padding: '4px 10px', borderRadius: 4,
+              background: i === 0 ? accent.subtleStrong : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${i === 0 ? accent.border : T.lineDark}`,
+              color: i === 0 ? accent.text : 'rgba(255,255,255,0.45)',
+            }}>{o}</span>
+          ))}
+        </div>
+      </Panel>
+    </div>
+  )
+}
+
+function CatExamWorkspace({ accent }: { accent: Accent }) {
+  const catAccent = getDomainAccent('cat')
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 10 }} className="program-workflow-panels">
+      <Panel label="CASE · DILR" accent={accent}>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
+          {['VARC', 'DILR', 'QA'].map((s, i) => (
+            <span key={s} style={{
+              fontSize: 8, fontFamily: 'var(--font-mono)', padding: '3px 8px', borderRadius: 4,
+              background: i === 1 ? catAccent.subtle : 'rgba(255,255,255,0.04)',
+              border: `1px solid ${i === 1 ? catAccent.border : T.lineDark}`,
+              color: i === 1 ? catAccent.text : 'rgba(255,255,255,0.4)',
+            }}>{s}</span>
+          ))}
+        </div>
+        <div style={{ fontSize: 11, color: C.white, lineHeight: 1.5, marginBottom: 10 }}>Should the brand enter Tier-2 cities this quarter?</div>
+        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.4)' }}>DI table · Region · revenue</div>
+      </Panel>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <Panel label="REASONING" accent={accent} highlight>
+          <div style={{ fontSize: 10, color: accent.text, marginBottom: 6 }}>Option B · margin analysis</div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>Expansion cost vs projected lift</div>
+        </Panel>
+        <Panel label="SECTION TIMER" accent={accent}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: accent.text }}>18:45</div>
+          <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', marginTop: 4 }}>DILR · sectional clock</div>
         </Panel>
       </div>
     </div>
@@ -299,9 +369,9 @@ function resolveWorkspace(slug: string, programType: ProgramType, accent: Accent
   if (slug === 'data-analytics-pro' || slug === 'sql-certificate') return <DataAnalyticsWorkspace accent={accent} />
   if (slug === 'full-stack') return <FullStackWorkspace accent={accent} />
   if (slug === 'product-management') return <MarketingWorkspace accent={accent} />
-  if (programType === 'EXAM_PREP' || slug.includes('jee') || slug.includes('cat') || slug.includes('neet')) {
-    return <ExamPrepWorkspace accent={accent} />
-  }
+  if (slug.includes('neet')) return <NeetExamWorkspace accent={accent} />
+  if (slug.includes('cat')) return <CatExamWorkspace accent={accent} />
+  if (slug.includes('jee') || programType === 'EXAM_PREP') return <JeeExamWorkspace accent={accent} />
   return <GenericWorkspace accent={accent} steps={steps} />
 }
 

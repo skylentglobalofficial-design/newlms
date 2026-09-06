@@ -765,16 +765,14 @@ export const globalCSS = `
     .education-ug-grid > *:last-child { order: 0; }
     .education-value-row { grid-template-columns: 1fr !important; gap: 12px !important; }
     .education-cat-grid { grid-template-columns: 1fr !important; }
-    .education-hero-visual { min-height: 340px !important; }
-    .education-hero-stage { width: 70% !important; }
-    .education-hero-stage-1 { left: 0 !important; top: 0 !important; }
-    .education-hero-stage-2 { right: 0 !important; top: 22% !important; }
-    .education-hero-stage-3 { left: 8% !important; bottom: 0 !important; width: 62% !important; }
+    .education-hero-visual-wrap,
+    .skills-hero-visual-wrap {
+      min-height: clamp(280px, 40vh, 360px) !important;
+    }
     .skills-path { overflow-x: auto; }
     .skills-path > div { grid-template-columns: repeat(5, minmax(120px, 1fr)) !important; min-width: 560px; }
     .skills-path-line { display: none !important; }
-    .skills-hero-visual { min-height: 360px !important; }
-    .skills-hero-career { right: 0 !important; width: 48% !important; }
+    .skills-hero-visual-wrap { min-height: clamp(280px, 40vh, 360px) !important; }
     .skills-discovery, .skills-pro-featured { grid-template-columns: 1fr !important; }
     .skills-cert-grid > *:first-child { order: 1; }
     .skills-cert-grid > *:last-child { order: 0; }

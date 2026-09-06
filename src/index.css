@@ -184,7 +184,9 @@ html, body {
   }
   .career-page-hero > *:last-child,
   .institution-page-hero > *:last-child,
-  .about-page-hero > *:last-child {
+  .about-page-hero > *:last-child,
+  .education-page-hero > *:last-child,
+  .skills-page-hero > *:last-child {
     min-height: clamp(300px, 42vh, 400px);
   }
 }
@@ -196,7 +198,9 @@ html, body {
   }
   .career-hero-visual,
   .institution-hero-visual-wrap,
-  .about-hero-visual {
+  .about-hero-visual,
+  .education-hero-visual-wrap,
+  .skills-hero-visual-wrap {
     min-height: clamp(280px, 40vh, 360px) !important;
   }
 }

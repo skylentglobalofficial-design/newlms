@@ -3,7 +3,8 @@ import { C, FadeIn, PageShell } from '../components/shared'
 import {
   Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader, FlowStrip,
 } from '../components/ui'
-import { Aurora, MediaImage, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
+import { Aurora, MediaImage, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
+import { ProductVisual } from '../components/product/ProductVisuals'
 import { getDomainAccent } from '../aurora-themes'
 import { programs } from '../data'
 import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
@@ -69,64 +70,17 @@ function scrollToId(id: string) {
   if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - (T.navH + 16), behavior: 'smooth' })
 }
 
-// ─── HERO PROGRESSION VISUAL ──────────────────────────────────────────────────
+// ─── HERO VISUAL ──────────────────────────────────────────────────────────────
 
-function HeroProgressionVisual() {
-  const stages = [
-    { label: 'Schooling', sub: 'Grades 1–12', photo: PHOTO.classroomWarm, position: 'center 20%' },
-    { label: 'Undergraduate', sub: 'Degree years', photo: PHOTO.college, position: 'center' },
-    { label: 'Postgraduate', sub: 'Specialisation', photo: PHOTO.research, position: 'center 30%' },
-  ]
-
+function EducationHeroVisual() {
   return (
-    <div className="education-hero-visual" style={{ position: 'relative', minHeight: 420 }}>
-      {stages.map((stage, i) => (
-        <div
-          key={stage.label}
-          className={`education-hero-stage education-hero-stage-${i + 1}`}
-          style={{
-            position: 'absolute',
-            width: i === 1 ? '58%' : '52%',
-            zIndex: 3 - i,
-            ...(i === 0 ? { top: 0, left: 0 } : {}),
-            ...(i === 1 ? { top: '28%', right: 0 } : {}),
-            ...(i === 2 ? { bottom: 0, left: '12%' } : {}),
-          }}
-        >
-          <MediaImage
-            src={stage.photo}
-            alt={`${stage.label} learning environment`}
-            aspect="4/3"
-            overlay="bottom"
-            objectPosition={stage.position}
-            imgStyle={{ opacity: 0.92 }}
-          />
-          <div
-            style={{
-              position: 'absolute',
-              top: 12,
-              left: 12,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 8,
-              background: 'rgba(5,5,5,0.55)',
-              border: `1px solid ${accent.border}`,
-              borderRadius: 8,
-              padding: '6px 10px',
-            }}
-          >
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: accent.text, letterSpacing: '0.08em' }}>
-              {String(i + 1).padStart(2, '0')}
-            </span>
-            <span style={{ fontSize: 12, fontWeight: 600, color: C.white }}>{stage.label}</span>
-          </div>
-        </div>
-      ))}
+    <div className="education-hero-visual-wrap" style={{ position: 'relative', minHeight: 'clamp(380px, 48vh, 520px)' }}>
+      <ProductVisual id="education-journey" themeId="schooling" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
       <div
         aria-hidden
         style={{
           position: 'absolute',
-          inset: '8% 6%',
+          inset: '-6% -5%',
           border: `1px dashed ${accent.border}`,
           borderRadius: T.rCard,
           pointerEvents: 'none',
@@ -735,6 +689,14 @@ function CompetitiveExamsSection() {
                   <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)', marginTop: 6 }}>{exam.target}</div>
                 </div>
 
+                <div style={{ marginBottom: 20, minHeight: 220 }}>
+                  <ProductVisual
+                    id={exam.name === 'JEE' ? 'jee-exam' : 'neet-exam'}
+                    themeId={exam.name === 'JEE' ? 'jee' : 'neet'}
+                    style={{ minHeight: 220 }}
+                  />
+                </div>
+
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                   {exam.subjects.map(({ name, color, topics }) => (
                     <div key={name} style={{ padding: '14px 0', borderBottom: `1px solid ${T.lineDark}` }}>
@@ -784,6 +746,9 @@ function CompetitiveExamsSection() {
             </div>
 
             <div>
+              <div style={{ marginBottom: 20, minHeight: 220 }}>
+                <ProductVisual id="cat-exam" themeId="cat" style={{ minHeight: 220 }} />
+              </div>
               <div style={{ display: 'flex', height: 6, borderRadius: 3, overflow: 'hidden', marginBottom: 20 }}>
                 {CAT_SECTION.sections.map(({ abbr, weight, color }) => (
                   <div key={abbr} style={{ flex: parseFloat(weight), background: color, opacity: 0.85 }} />
@@ -963,7 +928,7 @@ export default function EducationPage() {
       <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
         <Aurora themeId="schooling" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero">
+          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero education-page-hero">
             <FadeIn>
               <Eyebrow tone="dark" accent>Education</Eyebrow>
               <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
@@ -978,15 +943,7 @@ export default function EducationPage() {
               </div>
             </FadeIn>
             <FadeIn delay={80}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <ContextualNavPanel
-                  items={EDUCATION_NAV_ITEMS}
-                  themeId="schooling"
-                  title="Education"
-                  activeId={activeSection}
-                />
-                <HeroProgressionVisual />
-              </div>
+              <EducationHeroVisual />
             </FadeIn>
           </div>
         </div>

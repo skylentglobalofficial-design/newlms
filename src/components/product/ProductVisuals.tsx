@@ -33,6 +33,11 @@ export type ProductVisualId =
   | 'career-workspace'
   | 'institution-pipeline'
   | 'about-ecosystem'
+  | 'education-journey'
+  | 'skills-workspace'
+  | 'jee-exam'
+  | 'neet-exam'
+  | 'cat-exam'
   | 'generic-program'
 
 type Accent = ReturnType<typeof getDomainAccent>
@@ -164,10 +169,28 @@ function FullStackWorkspace({ accent }: { accent: Accent }) {
 }
 
 function ExamInterface({ accent }: { accent: Accent }) {
+  return <JeeExamInterface accent={accent} />
+}
+
+function JeeExamInterface({ accent }: { accent: Accent }) {
+  const mathAccent = getDomainAccent('jee')
   return (
     <div>
-      <div style={{ fontSize: 11, color: C.white, lineHeight: 1.5, marginBottom: 10 }}>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
+        {['Physics', 'Chemistry', 'Math'].map((s, i) => (
+          <span key={s} style={{
+            fontSize: 9, fontFamily: 'var(--font-mono)', padding: '3px 8px', borderRadius: 4,
+            background: i === 2 ? mathAccent.subtle : 'rgba(255,255,255,0.04)',
+            border: `1px solid ${i === 2 ? mathAccent.border : T.lineDark}`,
+            color: i === 2 ? mathAccent.text : 'rgba(255,255,255,0.4)',
+          }}>{s}</span>
+        ))}
+      </div>
+      <div style={{ fontSize: 11, color: C.white, lineHeight: 1.5, marginBottom: 8, fontFamily: 'var(--font-serif, Georgia, serif)' }}>
         If ∫₀² 3t² dt = k, find k.
+      </div>
+      <div style={{ padding: 8, background: 'rgba(0,0,0,0.25)', borderRadius: 6, marginBottom: 10, fontFamily: 'var(--font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.45)' }}>
+        v(t) = 3t² · displacement · t ∈ [0, 2]
       </div>
       <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
         {['A', 'B', 'C', 'D'].map(o => (
@@ -179,7 +202,133 @@ function ExamInterface({ accent }: { accent: Accent }) {
           }}>{o}</span>
         ))}
       </div>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, color: accent.text }}>04:32</div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, color: accent.text }}>04:32</div>
+        <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)' }}>Q 14 · timed practice</div>
+      </div>
+    </div>
+  )
+}
+
+function NeetExamInterface({ accent }: { accent: Accent }) {
+  const bioAccent = getDomainAccent('neet')
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+      <div style={{ padding: 10, background: bioAccent.subtle, border: `1px solid ${bioAccent.border}`, borderRadius: 8 }}>
+        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: bioAccent.text, marginBottom: 6 }}>Biology · Diagram</div>
+        <div style={{ height: 44, borderRadius: 6, border: `1px dashed ${bioAccent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: 'rgba(255,255,255,0.35)', marginBottom: 8 }}>
+          Cell · NCERT Fig 8.2
+        </div>
+        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)' }}>Label organelles · guided</div>
+      </div>
+      <div style={{ padding: 10, background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: 8 }}>
+        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 6 }}>MCQ · Botany</div>
+        <div style={{ fontSize: 10, color: C.white, lineHeight: 1.45, marginBottom: 8 }}>Which enzyme fixes CO₂ in C₄ plants?</div>
+        <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          {['PEP', 'RuBisCO'].map((o, i) => (
+            <span key={o} style={{ fontSize: 9, padding: '3px 8px', borderRadius: 4, background: i === 0 ? accent.subtle : 'rgba(255,255,255,0.04)', border: `1px solid ${i === 0 ? accent.border : T.lineDark}`, color: i === 0 ? accent.text : 'rgba(255,255,255,0.4)' }}>{o}</span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CatExamInterface({ accent }: { accent: Accent }) {
+  const catAccent = getDomainAccent('cat')
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
+        {['VARC', 'DILR', 'QA'].map((s, i) => (
+          <span key={s} style={{
+            fontSize: 9, fontFamily: 'var(--font-mono)', padding: '3px 8px', borderRadius: 4,
+            background: i === 1 ? catAccent.subtle : 'rgba(255,255,255,0.04)',
+            border: `1px solid ${i === 1 ? catAccent.border : T.lineDark}`,
+            color: i === 1 ? catAccent.text : 'rgba(255,255,255,0.4)',
+          }}>{s}</span>
+        ))}
+      </div>
+      <div style={{ fontSize: 10, color: accent.text, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>Case · Retail expansion</div>
+      <div style={{ fontSize: 11, color: C.white, lineHeight: 1.55, marginBottom: 10 }}>Should the brand enter Tier-2 cities this quarter?</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 10 }}>
+        <div style={{ padding: 8, background: 'rgba(255,255,255,0.03)', borderRadius: 6, fontSize: 9 }}>
+          <div style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>DI table</div>
+          <div style={{ fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.5)' }}>Region · revenue</div>
+        </div>
+        <div style={{ padding: 8, background: accent.subtle, borderRadius: 6, fontSize: 9, color: accent.text }}>
+          <div style={{ marginBottom: 4 }}>Reasoning</div>
+          <div>Option B · margin</div>
+        </div>
+      </div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 16, color: accent.text }}>Section timer · 18:45</div>
+    </div>
+  )
+}
+
+function EducationJourney({ accent }: { accent: Accent }) {
+  const ugAccent = getDomainAccent('undergraduate')
+  const pgAccent = getDomainAccent('postgraduate')
+  const examAccent = getDomainAccent('jee')
+  const stages = [
+    { label: 'Schooling', sub: 'Grades 1–12 · NCERT', theme: accent },
+    { label: 'Undergraduate', sub: 'Degree · semesters', theme: ugAccent },
+    { label: 'Postgraduate', sub: 'Specialisation', theme: pgAccent },
+    { label: 'Exams', sub: 'JEE · NEET · CAT', theme: examAccent },
+  ]
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+      {stages.map((stage, i) => (
+        <div key={stage.label} style={{
+          padding: 12, borderRadius: 8,
+          background: i === 0 ? stage.theme.subtle : 'rgba(255,255,255,0.03)',
+          border: `1px solid ${i === 0 ? stage.theme.border : T.lineDark}`,
+          gridColumn: i === 3 ? '1 / -1' : undefined,
+        }}>
+          <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: stage.theme.text, marginBottom: 4 }}>{String(i + 1).padStart(2, '0')}</div>
+          <div style={{ fontSize: 12, color: i === 0 ? C.white : 'rgba(255,255,255,0.6)', fontWeight: 600, marginBottom: 3 }}>{stage.label}</div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.4)' }}>{stage.sub}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function SkillsWorkspace({ accent }: { accent: Accent }) {
+  const careerAccent = getDomainAccent('career')
+  return (
+    <div style={{ display: 'grid', gridTemplateRows: 'auto 1fr', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 6 }}>
+        {[
+          { label: 'Webinar', active: false },
+          { label: 'Certificate', active: false },
+          { label: 'Professional', active: true },
+          { label: 'Career OS', active: false },
+        ].map(item => (
+          <div key={item.label} style={{
+            padding: '8px 6px', textAlign: 'center', borderRadius: 6, fontSize: 9,
+            background: item.active ? accent.subtle : 'rgba(255,255,255,0.03)',
+            border: `1px solid ${item.active ? accent.border : T.lineDark}`,
+            color: item.active ? accent.text : 'rgba(255,255,255,0.45)',
+          }}>
+            {item.label}
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 8 }}>
+        <div style={{ padding: 12, background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: 8 }}>
+          <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Professional Program</div>
+          <div style={{ fontSize: 11, color: C.white, marginBottom: 8 }}>Module 6 · SQL joins</div>
+          <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
+            <div style={{ width: '62%', height: '100%', background: accent.primary, borderRadius: 2, opacity: 0.8 }} />
+          </div>
+          <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.35)', marginTop: 8 }}>Project · portfolio artifact</div>
+        </div>
+        <div style={{ padding: 12, background: careerAccent.subtle, border: `1px solid ${careerAccent.border}`, borderRadius: 8 }}>
+          <div className="skylent-label" style={{ color: careerAccent.text, marginBottom: 8 }}>Career OS</div>
+          <div style={{ fontSize: 10, color: C.white, lineHeight: 1.5 }}>Unlocks on program completion</div>
+          <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.4)', marginTop: 8 }}>Profile → apply → track</div>
+        </div>
+      </div>
     </div>
   )
 }
@@ -400,31 +549,11 @@ function SkillsLadder({ accent }: { accent: Accent }) {
 }
 
 function NeetLab({ accent }: { accent: Accent }) {
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-      <div style={{ padding: 10, background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 8 }}>
-        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 6 }}>Biology · Diagram</div>
-        <div style={{ height: 36, borderRadius: 6, border: `1px dashed ${accent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: 'rgba(255,255,255,0.35)' }}>Cell structure</div>
-      </div>
-      <div style={{ padding: 10, background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: 8 }}>
-        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 6 }}>Practice</div>
-        <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.55)', lineHeight: 1.5 }}>MCQ · timed set</div>
-      </div>
-    </div>
-  )
+  return <NeetExamInterface accent={accent} />
 }
 
 function MbaCase({ accent }: { accent: Accent }) {
-  return (
-    <div>
-      <div style={{ fontSize: 10, color: accent.text, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>Case · Retail expansion</div>
-      <div style={{ fontSize: 11, color: C.white, lineHeight: 1.55, marginBottom: 10 }}>Should the brand enter Tier-2 cities this quarter?</div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, fontSize: 9, color: 'rgba(255,255,255,0.45)' }}>
-        <div style={{ padding: 8, background: 'rgba(255,255,255,0.03)', borderRadius: 6 }}>Revenue data</div>
-        <div style={{ padding: 8, background: accent.subtle, borderRadius: 6, color: accent.text }}>DI chart</div>
-      </div>
-    </div>
-  )
+  return <CatExamInterface accent={accent} />
 }
 
 function CampaignFunnel({ accent }: { accent: Accent }) {
@@ -479,6 +608,11 @@ const VISUAL_LABELS: Record<ProductVisualId, string> = {
   'analytics-workspace': 'Analytics · SQL + dashboard',
   'fullstack-workspace': 'Full Stack · API + DB',
   'exam-interface': 'Exam prep · timed practice',
+  'jee-exam': 'JEE · engineering practice',
+  'neet-exam': 'NEET · biology/science',
+  'cat-exam': 'CAT · case + DI',
+  'education-journey': 'Education · pathway',
+  'skills-workspace': 'Skills · progression',
   'schooling-classroom': 'Schooling · chapter view',
   'college-lab': 'Undergraduate · lab session',
   'research-desk': 'Postgraduate · research',
@@ -507,7 +641,12 @@ function resolveContent(id: ProductVisualId, accent: Accent, modules?: ModuleRai
     case 'data-workspace': return <DataWorkspace accent={accent} />
     case 'analytics-workspace': return <AnalyticsWorkspace accent={accent} />
     case 'fullstack-workspace': return <FullStackWorkspace accent={accent} />
-    case 'exam-interface': return <ExamInterface accent={accent} />
+    case 'exam-interface': return <JeeExamInterface accent={accent} />
+    case 'jee-exam': return <JeeExamInterface accent={accent} />
+    case 'neet-exam': return <NeetExamInterface accent={accent} />
+    case 'cat-exam': return <CatExamInterface accent={accent} />
+    case 'education-journey': return <EducationJourney accent={accent} />
+    case 'skills-workspace': return <SkillsWorkspace accent={accent} />
     case 'schooling-classroom': return <SchoolingClassroom accent={accent} />
     case 'college-lab': return <FullStackWorkspace accent={accent} />
     case 'research-desk': return <DataWorkspace accent={accent} />
@@ -533,9 +672,10 @@ export function resolveProgramVisualId(slug: string, programType?: ProgramType):
   if (slug === 'data-science-ai' || slug === 'generative-ai-program') return 'data-workspace'
   if (slug === 'data-analytics-pro' || slug === 'sql-certificate') return 'analytics-workspace'
   if (slug === 'full-stack' || slug === 'full-stack-web') return 'fullstack-workspace'
-  if (slug.includes('neet')) return 'neet-lab'
-  if (slug.includes('cat') || slug === 'product-management') return 'mba-case'
-  if (slug.includes('jee') || programType === 'EXAM_PREP') return 'exam-interface'
+  if (slug.includes('neet')) return 'neet-exam'
+  if (slug.includes('cat') || slug === 'product-management') return 'cat-exam'
+  if (slug.includes('jee')) return 'jee-exam'
+  if (programType === 'EXAM_PREP') return 'jee-exam'
   if (slug.includes('marketing') || slug.includes('digital')) return 'campaign-funnel'
   if (programType === 'SCHOOLING') return 'schooling-classroom'
   if (programType === 'UNDERGRADUATE') return 'college-lab'

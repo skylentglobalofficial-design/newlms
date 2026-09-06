@@ -3,7 +3,8 @@ import { C, FadeIn, PageShell } from '../components/shared'
 import {
   Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader,
 } from '../components/ui'
-import { Aurora, MediaImage, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
+import { Aurora, MediaImage, GlassSurface, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
+import { ProductVisual } from '../components/product/ProductVisuals'
 import { getDomainAccent } from '../aurora-themes'
 import { programs, workshops } from '../data'
 import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
@@ -30,92 +31,19 @@ const SKILLS_NAV_ITEMS: ContextualNavItem[] = [
 
 function SkillsHeroVisual() {
   return (
-    <div className="skills-hero-visual" style={{ position: 'relative', minHeight: 420 }}>
-      <div className="skills-hero-main" style={{ position: 'relative', zIndex: 2 }}>
-        <MediaImage
-          src={PHOTO.workshop}
-          alt="Professionals in a live learning session"
-          aspect="4/3"
-          overlay="full"
-          objectPosition="center"
-        />
-        <div
-          style={{
-            position: 'absolute',
-            top: 14,
-            left: 14,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            background: 'rgba(5,5,5,0.6)',
-            border: `1px solid ${accent.border}`,
-            borderRadius: 8,
-            padding: '6px 10px',
-          }}
-        >
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary, flexShrink: 0 }} />
-          <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: accent.text, letterSpacing: '0.06em' }}>LIVE SESSION</span>
-        </div>
-      </div>
-
-      <GlassSurface
-        level={2}
-        padding="14px 16px"
-        style={{
-          position: 'absolute',
-          bottom: '6%',
-          right: 0,
-          width: 'min(58%, 280px)',
-          zIndex: 3,
-        }}
-      >
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Skills pathway</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {[
-            { label: 'Module', sub: 'Structured unit' },
-            { label: 'Skill', sub: 'Hands-on practice' },
-            { label: 'Project', sub: 'Portfolio artifact' },
-            { label: 'Credential', sub: 'Certificate issued' },
-          ].map(({ label, sub }, i, arr) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{
-                width: 22, height: 22, borderRadius: 5, flexShrink: 0,
-                background: i === arr.length - 1 ? accent.subtle : 'rgba(255,255,255,0.04)',
-                border: `1px solid ${i === arr.length - 1 ? accent.border : T.lineDark}`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 8, fontFamily: 'var(--font-mono)', color: i === arr.length - 1 ? accent.text : 'rgba(255,255,255,0.35)',
-              }}>
-                {String(i + 1).padStart(2, '0')}
-              </div>
-              <div>
-                <div style={{ fontSize: 11, fontWeight: 600, color: i === arr.length - 1 ? accent.text : C.white }}>{label}</div>
-                <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.35)', fontFamily: 'var(--font-mono)' }}>{sub}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </GlassSurface>
-
+    <div className="skills-hero-visual-wrap" style={{ position: 'relative', minHeight: 'clamp(380px, 48vh, 520px)' }}>
+      <ProductVisual id="skills-workspace" themeId="professional" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
       <div
-        className="skills-hero-career"
+        aria-hidden
         style={{
           position: 'absolute',
-          top: '18%',
-          right: '-4%',
-          width: '42%',
-          zIndex: 1,
+          inset: '-6% -5%',
+          border: `1px dashed ${accent.border}`,
           borderRadius: T.rCard,
-          overflow: 'hidden',
-          border: `1px solid ${T.lineDark}`,
+          pointerEvents: 'none',
+          zIndex: 0,
         }}
-      >
-        <img
-          src={PHOTO.career}
-          alt="Career conversation"
-          loading="lazy"
-          style={{ width: '100%', aspectRatio: '4/3', objectFit: 'cover', display: 'block', opacity: 0.85 }}
-        />
-      </div>
+      />
     </div>
   )
 }
@@ -698,7 +626,7 @@ export default function SkillsPage() {
       <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
         <Aurora themeId="professional" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero">
+          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero skills-page-hero">
             <FadeIn>
               <Eyebrow tone="dark" accent>Skills</Eyebrow>
               <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
@@ -713,15 +641,7 @@ export default function SkillsPage() {
               </div>
             </FadeIn>
             <FadeIn delay={80}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <ContextualNavPanel
-                  items={SKILLS_NAV_ITEMS}
-                  themeId="professional"
-                  title="Skills"
-                  activeId={activeSection}
-                />
-                <SkillsHeroVisual />
-              </div>
+              <SkillsHeroVisual />
             </FadeIn>
           </div>
         </div>
