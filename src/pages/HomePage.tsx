@@ -2,9 +2,9 @@ import { useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { C, FadeIn, Footer } from '../components/shared'
 import {
-  Section, Eyebrow, Button, CTABand, T, SectionHeader, FlowStrip, Heading,
+  Section, Button, CTABand, T, SectionHeader, FlowStrip, MarketingHero,
 } from '../components/ui'
-import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
+import { GlassSurface, MediaImage } from '../components/foundation'
 import { ProductVisual } from '../components/product/ProductVisuals'
 import { getDomainAccent } from '../aurora-themes'
 import { programs, jobs } from '../data'
@@ -31,70 +31,13 @@ const SUPPORTING_PROGRAMS = programs
 // ─── HERO VISUAL ──────────────────────────────────────────────────────────────
 
 function EcosystemHeroVisual() {
-  const sampleJob = jobs[0]
-  const careerAccent = getDomainAccent('career')
-
   return (
-    <div className="home-hero-visual" style={{ position: 'relative', minHeight: 'clamp(360px, 52vh, 520px)' }}>
-      <div style={{ position: 'relative', zIndex: 2, height: '100%' }}>
-        <ProductVisual
-          id="ecosystem-flow"
-          themeId="general"
-          className="skylent-hero-visual"
-          style={{ minHeight: 'clamp(320px, 48vh, 460px)' }}
-        />
-        <GlassSurface
-          level={2}
-          padding="14px 16px"
-          style={{ position: 'absolute', top: 16, left: 16, right: 16, maxWidth: 260 }}
-        >
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>How it connects</div>
-          <FlowStrip
-            tone="dark"
-            steps={[
-              { label: 'Learn', sub: 'Education' },
-              { label: 'Build', sub: 'Skills', highlight: true },
-              { label: 'Career', sub: 'Career OS' },
-            ]}
-          />
-        </GlassSurface>
-      </div>
-
-      <GlassSurface
-        level={2}
-        padding="14px 16px"
-        className="home-hero-proof"
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          right: 0,
-          width: 'min(72%, 300px)',
-          zIndex: 3,
-        }}
-      >
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Sample application</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '48px 1fr', gap: 12, alignItems: 'center', marginBottom: 12 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 8, background: accent.subtle, border: `1px dashed ${accent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text }}>
-            PRJ
-          </div>
-          <div>
-            <div style={{ color: C.white, fontSize: 13, fontWeight: 600 }}>Program projects</div>
-            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11, marginTop: 2 }}>Portfolio from coursework</div>
-          </div>
-        </div>
-        {sampleJob && (
-          <div style={{ paddingTop: 12, borderTop: `1px solid ${T.lineDark}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-            <div>
-              <div style={{ fontSize: 11, color: accent.text, marginBottom: 3 }}>Open role</div>
-              <div style={{ color: C.white, fontSize: 12, fontWeight: 600 }}>{sampleJob.role}</div>
-            </div>
-            <div style={{ background: careerAccent.primary, color: C.white, borderRadius: 5, padding: '6px 10px', fontSize: 10, fontWeight: 600, flexShrink: 0 }}>
-              Apply
-            </div>
-          </div>
-        )}
-      </GlassSurface>
-    </div>
+    <ProductVisual
+      id="learning-loop"
+      themeId="general"
+      className="skylent-hero-visual"
+      style={{ minHeight: 'clamp(280px, 36vh, 400px)' }}
+    />
   )
 }
 
@@ -104,42 +47,21 @@ function HeroSection() {
   const navigate = useNavigate()
 
   return (
-    <section
-      style={{
-        position: 'relative',
-        overflow: 'hidden',
-        minHeight: 'min(92vh, 920px)',
-        display: 'flex',
-        alignItems: 'center',
-        padding: `${T.navH + 24}px ${T.gutter} clamp(48px, 6vw, 72px)`,
-      }}
-    >
-      <Aurora themeId="general" variant="hero" />
-      <div style={{ maxWidth: T.maxW, margin: '0 auto', width: '100%', position: 'relative', zIndex: 1 }}>
-        <div
-          style={{ display: 'grid', gridTemplateColumns: '1.08fr 0.92fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }}
-          className="hero-grid two-col skylent-page-hero"
-        >
-          <FadeIn>
-            <Eyebrow tone="dark" accent>Skylent</Eyebrow>
-            <h1 className="skylent-display-xl" style={{ color: C.white, margin: '22px 0 20px', maxWidth: 680 }}>
-              Learn. Build skills.<br />
-              <span style={{ color: accent.text }}>Build a career.</span>
-            </h1>
-            <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 32px' }}>
-              Programs, credentials, and Career OS in one workspace — from school through professional hire.
-            </p>
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Programs</Button>
-              <Button variant="secondary" size="lg" onClick={() => navigate('/education')}>Explore Education</Button>
-            </div>
-          </FadeIn>
-          <FadeIn delay={80}>
-            <EcosystemHeroVisual />
-          </FadeIn>
-        </div>
-      </div>
-    </section>
+    <MarketingHero
+      auroraTheme="general"
+      size="xl"
+      eyebrow="Skylent"
+      title={<>Learn. Build skills.<br /><span style={{ color: accent.text }}>Build a career.</span></>}
+      lead="Programs, credentials, and Career OS in one workspace — from school through professional hire."
+      actions={
+        <>
+          <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Programs</Button>
+          <Button variant="secondary" size="lg" onClick={() => navigate('/education')}>Explore Education</Button>
+        </>
+      }
+      visual={<EcosystemHeroVisual />}
+      visualMaxWidth={880}
+    />
   )
 }
 
@@ -244,24 +166,28 @@ function EducationSection() {
 
   return (
     <Section tone="canvas" divider id="education">
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 72px)', alignItems: 'center' }} className="two-col">
-        <FadeIn>
+      <FadeIn>
+        <SectionHeader
+          tone="dark"
+          align="center"
+          eyebrow="Education"
+          title={<>From schooling<br />to competitive exams.</>}
+          lead="Four distinct academic products — each with its own curriculum model, audience, and workflow. Not one generic course catalog."
+        />
+      </FadeIn>
+      <FadeIn delay={60}>
+        <div style={{ marginTop: 40 }}>
           <MediaImage
             src={PHOTO.lecture}
             alt="Students in a lecture environment"
-            aspect="4/3"
+            aspect="21/9"
             overlay="bottom"
             objectPosition="center"
           />
-        </FadeIn>
-        <FadeIn delay={80}>
-          <Eyebrow tone="dark">Education</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
-            From schooling<br />to competitive exams.
-          </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: '0 0 32px', maxWidth: 480 }}>
-            Four distinct academic products — each with its own curriculum model, audience, and workflow. Not one generic course catalog.
-          </p>
+        </div>
+      </FadeIn>
+      <FadeIn delay={80}>
+        <div style={{ marginTop: 40, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {stages.map((stage, i) => (
               <button
@@ -296,11 +222,11 @@ function EducationSection() {
               </button>
             ))}
           </div>
-          <div style={{ marginTop: 28 }}>
+          <div style={{ marginTop: 28, textAlign: 'center' }}>
             <Button variant="secondary" onClick={() => navigate('/education')}>Explore Education</Button>
           </div>
-        </FadeIn>
-      </div>
+        </div>
+      </FadeIn>
     </Section>
   )
 }
@@ -320,15 +246,27 @@ function SkillsSection() {
 
   return (
     <Section tone="canvas" divider id="skills">
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 72px)', alignItems: 'center' }} className="two-col">
-        <FadeIn>
-          <Eyebrow tone="dark">Skills</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
-            Events, credentials,<br />and career programs.
-          </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 480 }}>
-            A webinar is not a Professional Program. Each skills product has its own depth, format, and outcome — with Professional Programs as the bridge to Career OS.
-          </p>
+      <FadeIn>
+        <SectionHeader
+          tone="dark"
+          align="center"
+          eyebrow="Skills"
+          title={<>Events, credentials,<br />and career programs.</>}
+          lead="A webinar is not a Professional Program. Each skills product has its own depth, format, and outcome — with Professional Programs as the bridge to Career OS."
+        />
+      </FadeIn>
+      <FadeIn delay={60}>
+        <div style={{ marginTop: 40 }}>
+          <MediaImage
+            src={PHOTO.workshop}
+            alt="Professionals in a skills workshop"
+            aspect="21/9"
+            overlay="bottom"
+          />
+        </div>
+      </FadeIn>
+      <FadeIn delay={80}>
+        <div style={{ marginTop: 40, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {stages.map((stage, i) => (
               <button
@@ -360,26 +298,11 @@ function SkillsSection() {
               </button>
             ))}
           </div>
-          <div style={{ marginTop: 28 }}>
+          <div style={{ marginTop: 28, textAlign: 'center' }}>
             <Button variant="secondary" onClick={() => navigate('/skills')}>Explore Skills</Button>
           </div>
-        </FadeIn>
-        <FadeIn delay={80}>
-          <div style={{ position: 'relative' }}>
-            <MediaImage
-              src={PHOTO.workshop}
-              alt="Professionals in a skills workshop"
-              aspect="4/3"
-              overlay="full"
-            />
-            <GlassSurface level={2} padding="14px 16px" style={{ position: 'absolute', bottom: 20, left: 20, right: 20, maxWidth: 320 }}>
-              <div className="skylent-label" style={{ color: skillsAccent.text, marginBottom: 8 }}>Professional Program</div>
-              <div style={{ color: C.white, fontSize: 14, fontWeight: 600, marginBottom: 4 }}>Project-driven curriculum</div>
-              <div style={{ color: 'rgba(255,255,255,0.42)', fontSize: 12 }}>Modules → Projects → Certification → Career OS</div>
-            </GlassSurface>
-          </div>
-        </FadeIn>
-      </div>
+        </div>
+      </FadeIn>
     </Section>
   )
 }
@@ -401,8 +324,17 @@ function CareerSection() {
 
   return (
     <Section tone="canvas" divider id="career">
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 72px)', alignItems: 'center' }} className="two-col">
-        <FadeIn>
+      <FadeIn>
+        <SectionHeader
+          tone="dark"
+          align="center"
+          eyebrow="Career OS"
+          title={<>A career product,<br />not a slogan.</>}
+          lead="Interview preparation, a job board, and application tracking in one workspace. Available after you complete a Professional Program."
+        />
+      </FadeIn>
+      <FadeIn delay={60}>
+        <div style={{ marginTop: 40, maxWidth: 640, marginLeft: 'auto', marginRight: 'auto' }}>
           <GlassSurface level={2} padding="20px 22px">
             <div className="skylent-label" style={{ color: careerAccent.text, marginBottom: 16 }}>Career OS workspace</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -433,26 +365,23 @@ function CareerSection() {
               )}
             </div>
           </GlassSurface>
-        </FadeIn>
-        <FadeIn delay={80}>
-          <Eyebrow tone="dark" accent>Career OS</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
-            A career product,<br />not a slogan.
-          </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 480 }}>
-            Interview preparation, a job board, and application tracking in one workspace. Available after you complete a Professional Program.
-          </p>
+        </div>
+      </FadeIn>
+      <FadeIn delay={80}>
+        <div style={{ marginTop: 36, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px 16px', marginBottom: 28 }}>
             {journey.map((step) => (
-              <div key={step.label} style={{ padding: '12px 0', minWidth: 0 }}>
+              <div key={step.label} style={{ padding: '12px 0', minWidth: 0, textAlign: 'center' }}>
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{step.label}</div>
                 <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 3 }}>{step.sub}</div>
               </div>
             ))}
           </div>
-          <Button variant="primary" onClick={() => navigate('/career-os')}>Explore Career OS</Button>
-        </FadeIn>
-      </div>
+          <div style={{ textAlign: 'center' }}>
+            <Button variant="primary" onClick={() => navigate('/career-os')}>Explore Career OS</Button>
+          </div>
+        </div>
+      </FadeIn>
     </Section>
   )
 }
@@ -473,15 +402,28 @@ function InstitutionsSection() {
 
   return (
     <Section tone="canvas" divider id="institutions">
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 72px)', alignItems: 'center' }} className="two-col">
-        <FadeIn>
-          <Eyebrow tone="dark">For Institutions</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
-            Enterprise software<br />for education.
-          </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 480 }}>
-            Schools, colleges, universities, and training institutes each get a distinct workflow — programs, offerings, learners, faculty, and progress as shared infrastructure.
-          </p>
+      <FadeIn>
+        <SectionHeader
+          tone="dark"
+          align="center"
+          eyebrow="For Institutions"
+          title={<>Enterprise software<br />for education.</>}
+          lead="Schools, colleges, universities, and training institutes each get a distinct workflow — programs, offerings, learners, faculty, and progress as shared infrastructure."
+        />
+      </FadeIn>
+      <FadeIn delay={60}>
+        <div style={{ marginTop: 40 }}>
+          <MediaImage
+            src={PHOTO.schoolBuilding}
+            alt="School building"
+            aspect="21/9"
+            overlay="bottom"
+            objectPosition="center"
+          />
+        </div>
+      </FadeIn>
+      <FadeIn delay={80}>
+        <div style={{ marginTop: 40, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {workflow.map((step, i) => (
               <div
@@ -505,33 +447,11 @@ function InstitutionsSection() {
               </div>
             ))}
           </div>
-          <div style={{ marginTop: 28 }}>
+          <div style={{ marginTop: 28, textAlign: 'center' }}>
             <Button variant="secondary" onClick={() => navigate('/institutions')}>For Institutions</Button>
           </div>
-        </FadeIn>
-        <FadeIn delay={80}>
-          <div style={{ position: 'relative' }}>
-            <MediaImage
-              src={PHOTO.schoolBuilding}
-              alt="School building"
-              aspect="4/3"
-              overlay="full"
-              objectPosition="center"
-            />
-            <GlassSurface level={2} padding="16px 18px" style={{ position: 'absolute', bottom: 20, left: 20, right: 20 }}>
-              <div className="skylent-label" style={{ color: instAccent.text, marginBottom: 10 }}>Institution OS</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {['Education delivery', 'Skills integration', 'Career OS for graduates'].map(item => (
-                  <div key={item} style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: instAccent.primary, flexShrink: 0 }} />
-                    <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>{item}</span>
-                  </div>
-                ))}
-              </div>
-            </GlassSurface>
-          </div>
-        </FadeIn>
-      </div>
+        </div>
+      </FadeIn>
     </Section>
   )
 }

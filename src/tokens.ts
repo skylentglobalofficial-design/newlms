@@ -24,6 +24,8 @@ export const T = {
   sectionCompact: 'clamp(40px, 5vw, 60px)',
   gutter: 'clamp(20px, 5vw, 32px)',
   maxW: 1240,
+  maxWContent: 1080,
+  maxWReading: 720,
   navH: 64,
   lineLight: 'rgba(11,13,15,0.08)',
   lineStrong: 'rgba(11,13,15,0.14)',

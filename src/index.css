@@ -37,6 +37,8 @@
   --section-pad-sm: clamp(64px, 8vw, 96px);
   --gutter: clamp(20px, 5vw, 32px);
   --max-w: 1240px;
+  --max-w-content: 1080px;
+  --max-w-reading: 720px;
   --nav-h: 64px;
 
   /* ── Skylent Glass System ───────────────────────────────────────────────── */
@@ -45,10 +47,10 @@
   --glass-01-blur: blur(20px);
   --glass-01-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
 
-  --glass-02-bg: rgba(255, 255, 255, 0.068);
-  --glass-02-border: rgba(255, 255, 255, 0.12);
-  --glass-02-blur: blur(16px);
-  --glass-02-shadow: 0 8px 48px rgba(0, 0, 0, 0.28);
+  --glass-02-bg: rgba(255, 255, 255, 0.045);
+  --glass-02-border: rgba(255, 255, 255, 0.09);
+  --glass-02-blur: blur(12px);
+  --glass-02-shadow: 0 4px 32px rgba(0, 0, 0, 0.22);
 
   --glass-03-bg: rgba(255, 255, 255, 0.04);
   --glass-03-border: rgba(255, 255, 255, 0.08);
@@ -157,12 +159,47 @@ html, body {
 
 @media (max-width: 768px) {
   .skylent-page-hero .skylent-product-visual-frame,
-  .home-hero-visual .skylent-hero-visual {
+  .home-hero-visual .skylent-hero-visual,
+  .marketing-hero-visual .skylent-hero-visual,
+  .marketing-hero-visual .skylent-product-visual-frame {
     min-height: clamp(280px, 42vh, 380px) !important;
   }
   .education-discovery {
     grid-template-columns: 1fr !important;
   }
+  .marketing-hero-copy {
+    max-width: 100% !important;
+  }
+  .marketing-hero-footer {
+    max-width: 100% !important;
+  }
+}
+
+.marketing-hero-back {
+  margin-bottom: 24px;
+}
+
+.marketing-hero-visual {
+  width: 100%;
+  max-height: min(52vh, 480px);
+}
+
+.skylent-hero-visual {
+  width: 100%;
+  max-height: min(52vh, 480px);
+}
+
+.skylent-media-img,
+.skylent-product-visual-frame {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+}
+
+.marketing-hero-footer {
+  max-width: min(100%, 420px);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 @media (max-width: 1100px) {
@@ -310,6 +347,14 @@ html, body {
   text-overflow: ellipsis;
 }
 
+.lms-lesson-panel {
+  width: 100%;
+}
+
+.lms-lesson-header h1 {
+  max-width: 48ch;
+}
+
 .lms-header-progress {
   margin-left: auto;
   font-family: var(--font-mono);
@@ -322,6 +367,60 @@ html, body {
   overflow-y: auto;
   overflow-x: hidden;
   padding: clamp(20px, 3vw, 36px);
+}
+
+.lms-content-inner {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.skylent-content-container {
+  width: 100%;
+  max-width: var(--max-w);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+.skylent-content-standard {
+  width: 100%;
+  max-width: var(--max-w-content);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+.skylent-content-readable {
+  max-width: var(--max-w-reading);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.marketing-hero-inner {
+  max-width: var(--max-w-content);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+.marketing-hero-visual {
+  max-width: min(100%, var(--max-w-content));
+}
+
+.course-detail-stack {
+  max-width: var(--max-w-content);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.courses-result-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .lms-curriculum-rail {
@@ -383,6 +482,23 @@ html, body {
 }
 
 @media (max-width: 768px) {
+  .courses-result-row {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .courses-result-row > div:last-child {
+    text-align: left !important;
+  }
+  .courses-discovery-row {
+    grid-template-columns: 1fr !important;
+    gap: 14px !important;
+  }
+  .courses-discovery-row > div:last-child {
+    text-align: left !important;
+  }
+  .program-pricing-layout {
+    grid-template-columns: 1fr !important;
+  }
   .lms-content {
     padding: 16px;
   }

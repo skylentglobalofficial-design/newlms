@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { C, FadeIn, EnrollmentModal, PageShell } from '../components/shared'
+import { C, FadeIn, PageShell } from '../components/shared'
 import {
-  T, Section, SectionHeader, Eyebrow, Button, Badge,
+  T, Section, SectionHeader, Eyebrow, Button, Badge, MarketingHero,
 } from '../components/ui'
 import { Aurora, GlassSurface } from '../components/foundation'
 import { resolveAuroraTheme, getDomainAccent, type AuroraThemeId } from '../aurora-themes'
-import ProgramWorkflowVisual from '../components/program/ProgramWorkflowVisual'
 import {
   ProgramOutcomesSection,
   ProgramCurriculumRail,
@@ -16,6 +15,7 @@ import {
 import { ProductVisual, resolveProgramVisualId } from '../components/product/ProductVisuals'
 import { programs } from '../data'
 import type { ProgramType, EnrollmentStatus } from '../data'
+import { useCatalogEnrollment } from '../hooks/useCatalogEnrollment'
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
@@ -84,7 +84,7 @@ function StickyProgramNav({
       background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)',
       WebkitBackdropFilter: 'var(--glass-01-blur)', borderBottom: '1px solid var(--glass-01-border)',
     }}>
-      <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+      <div style={{ maxWidth: T.maxWContent, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div className="program-sticky-nav-scroll" style={{ display: 'flex', overflowX: 'auto', scrollbarWidth: 'none' }}>
           {sections.map(s => (
             <button
@@ -120,19 +120,20 @@ function StickyProgramNav({
 // ─── ENROLLMENT PANEL ─────────────────────────────────────────────────────────
 
 function EnrollmentPanel({
-  program, status, ctaLabel, onCTA, accent,
+  program, status, ctaLabel, onCTA, accent, sticky = false,
 }: {
   program: NonNullable<ReturnType<typeof programs.find>>
   status: EnrollmentStatus
   ctaLabel: string
   onCTA: () => void
   accent: ReturnType<typeof getDomainAccent>
+  sticky?: boolean
 }) {
   const lowestPrice = Math.min(...program.pricing.map(p => p.price))
   const isCareerOS = !!program.careerSupport
 
   return (
-    <GlassSurface level={2} padding="0" style={{ position: 'sticky', top: T.navH + 72 }}>
+    <GlassSurface level={2} padding="0" style={sticky ? { position: 'sticky', top: T.navH + 72 } : undefined}>
       <div style={{ padding: '22px 24px 18px', borderBottom: `1px solid ${T.lineDark}` }}>
         <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Starting from</div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
@@ -189,9 +190,9 @@ export default function ProgramPage() {
 
   const [curriculumOpen, setCurriculumOpen] = useState<string | null>(null)
   const [faqOpen, setFaqOpen] = useState<string | null>(null)
-  const [applyOpen, setApplyOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('overview')
   const [featuredProject, setFeaturedProject] = useState(0)
+  const { startProgramEnrollment, enrolling } = useCatalogEnrollment()
 
   const isExamPrep = program?.programType === 'EXAM_PREP'
   const isCareerOS = !!program?.careerSupport
@@ -200,6 +201,15 @@ export default function ProgramPage() {
   const ctaLabel = program?.programType === 'PROFESSIONAL' && enrollStatus === 'open' ? 'Apply Now' : CTA_LABEL[enrollStatus]
   const auroraTheme: AuroraThemeId = program ? resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType) : 'general'
   const domainAccent = getDomainAccent(auroraTheme)
+
+  function handleProgramApply() {
+    if (!program) return
+    if (enrollStatus !== 'open') {
+      navigate('/contact')
+      return
+    }
+    void startProgramEnrollment(program.slug)
+  }
 
   const navSections: NavSection[] = program ? [
     { id: 'overview', label: 'Overview' },
@@ -243,90 +253,93 @@ export default function ProgramPage() {
     )
   }
 
-  const highlightTier = program.pricing.find(p => p.highlight) ?? program.pricing[0]
   const allPricingFeatures = Array.from(new Set(program.pricing.flatMap(p => p.features)))
   const programVisualId = resolveProgramVisualId(program.slug, program.programType)
+  const lowestPrice = Math.min(...program.pricing.map(p => p.price))
 
   return (
     <PageShell auroraTheme={auroraTheme}>
-      {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <section id="program-hero" style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 32}px ${T.gutter} 0` }}>
-        <Aurora themeId={auroraTheme} variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+      <MarketingHero
+        id="program-hero"
+        auroraTheme={auroraTheme}
+        visualMaxWidth={900}
+        back={
           <button
             onClick={() => navigate('/programs')}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 24, padding: 0, letterSpacing: '0.06em' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 11, padding: 0, letterSpacing: '0.06em' }}
           >
             ← ALL PROGRAMS
           </button>
+        }
+        badges={
+          <>
+            <Badge tone="dark" accent>{typeLabel}</Badge>
+            <Badge tone="dark">{program.level}</Badge>
+            {isCareerOS && <Badge tone="dark" accent>+ Career OS</Badge>}
+            {enrollStatus === 'coming_soon' && <Badge tone="dark">Coming Soon</Badge>}
+          </>
+        }
+        title={program.name}
+        lead={
+          <span style={{ color: domainAccent.text, fontWeight: 500 }}>
+            {program.outcome}
+          </span>
+        }
+        actions={
+          <>
+            <Button variant="primary" size="lg" themeId={auroraTheme} onClick={handleProgramApply}>{enrolling ? 'Enrolling…' : `${ctaLabel} →`}</Button>
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={() => scrollToSection(program.curriculumDetail?.length ? 'curriculum' : 'outcomes')}
+            >
+              {isExamPrep ? 'View Subjects' : 'View Curriculum'}
+            </Button>
+          </>
+        }
+        visual={
+          <div className="program-hero-visual-col program-workflow-visual" style={{ minHeight: 'clamp(300px, 38vh, 440px)' }}>
+            <ProductVisual
+              id={programVisualId}
+              themeId={auroraTheme}
+              label={`${program.name} · workspace`}
+              style={{ minHeight: 'clamp(300px, 38vh, 440px)' }}
+            />
+          </div>
+        }
+      >
+        <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.58)', margin: '24px auto 0', maxWidth: 560, lineHeight: 1.75 }}>
+          {program.desc}
+        </p>
+        <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 13, margin: '16px 0 0', fontFamily: 'var(--font-mono)' }}>
+          From ₹{lowestPrice.toLocaleString('en-IN')} · {program.duration} · {program.format}
+        </p>
+      </MarketingHero>
 
-          <div className="program-hero-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 0.88fr) minmax(0, 1.12fr) minmax(260px, 0.72fr)', gap: 'clamp(24px,4vw,40px)', alignItems: 'start' }}>
-            <div>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
-                <Badge tone="dark" accent>{typeLabel}</Badge>
-                <Badge tone="dark">{program.level}</Badge>
-                {isCareerOS && <Badge tone="dark" accent>+ Career OS</Badge>}
-                {enrollStatus === 'coming_soon' && <Badge tone="dark">Coming Soon</Badge>}
-              </div>
-
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '0 0 12px', maxWidth: 560 }}>
-                {program.name}
-              </h1>
-              <p style={{ color: domainAccent.text, fontSize: 15, fontWeight: 500, margin: '0 0 14px', maxWidth: 520 }}>
-                Outcome: {program.outcome}
-              </p>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 24px' }}>
-                {program.desc}
-              </p>
-
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 0 }}>
-                <Button variant="primary" size="lg" themeId={auroraTheme} onClick={() => setApplyOpen(true)}>{ctaLabel} →</Button>
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  onClick={() => scrollToSection(program.curriculumDetail?.length ? 'curriculum' : 'outcomes')}
-                >
-                  {isExamPrep ? 'View Subjects' : 'View Curriculum'}
-                </Button>
-              </div>
+      <div style={{ maxWidth: T.maxWContent, margin: '0 auto', padding: `0 ${T.gutter} 28px`, borderBottom: `1px solid ${T.lineDark}` }}>
+        <div style={{ display: 'flex', gap: 'clamp(20px,4vw,48px)', flexWrap: 'wrap', justifyContent: 'center', textAlign: 'center' }}>
+          {[
+            { label: 'Duration', value: program.duration },
+            { label: 'Format', value: program.format },
+            { label: 'Level', value: program.level },
+            ...(isExamPrep
+              ? [{ label: 'Sections', value: program.examSections?.join(' · ') ?? '—' }]
+              : [
+                  ...(program.modules ? [{ label: 'Modules', value: String(program.modules) }] : []),
+                  ...(program.projects ? [{ label: 'Projects', value: String(program.projects) }] : []),
+                ]),
+            { label: 'Certificate', value: program.cert },
+            { label: enrollStatus === 'coming_soon' ? 'Planned Batch' : 'Next Batch', value: program.upcomingBatch },
+          ].filter(f => f.value).map(({ label, value }) => (
+            <div key={label}>
+              <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 5 }}>{label}</div>
+              <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{value}</div>
             </div>
-
-            <FadeIn delay={60}>
-              <div className="program-hero-visual-col" style={{ minHeight: 'clamp(360px, 48vh, 520px)' }}>
-                <ProgramWorkflowVisual slug={program.slug} programType={program.programType} programName={program.name} />
-              </div>
-            </FadeIn>
-
-            <FadeIn delay={80}>
-              <EnrollmentPanel program={program} status={enrollStatus} ctaLabel={ctaLabel} onCTA={() => setApplyOpen(true)} accent={domainAccent} />
-            </FadeIn>
-          </div>
-
-          {/* Quick facts strip */}
-          <div style={{ paddingTop: 28, paddingBottom: 28, marginTop: 4, borderTop: `1px solid ${T.lineDark}`, display: 'flex', gap: 'clamp(20px,4vw,48px)', flexWrap: 'wrap' }}>
-            {[
-              { label: 'Duration', value: program.duration },
-              { label: 'Format', value: program.format },
-              { label: 'Level', value: program.level },
-              ...(isExamPrep
-                ? [{ label: 'Sections', value: program.examSections?.join(' · ') ?? '—' }]
-                : [
-                    ...(program.modules ? [{ label: 'Modules', value: String(program.modules) }] : []),
-                    ...(program.projects ? [{ label: 'Projects', value: String(program.projects) }] : []),
-                  ]),
-              { label: 'Certificate', value: program.cert },
-              { label: enrollStatus === 'coming_soon' ? 'Planned Batch' : 'Next Batch', value: program.upcomingBatch },
-            ].filter(f => f.value).map(({ label, value }) => (
-              <div key={label}>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 5 }}>{label}</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{value}</div>
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
-      </section>
+      </div>
 
-      <StickyProgramNav sections={navSections} activeId={activeSection} ctaLabel={ctaLabel} onCTA={() => setApplyOpen(true)} accent={domainAccent} />
+      <StickyProgramNav sections={navSections} activeId={activeSection} ctaLabel={ctaLabel} onCTA={handleProgramApply} accent={domainAccent} />
 
       {/* ── OVERVIEW ──────────────────────────────────────────────────────── */}
       <Section id="overview" tone="canvas" divider>
@@ -714,7 +727,8 @@ export default function ProgramPage() {
           />
         </FadeIn>
 
-        <div style={{ marginTop: 32, overflowX: 'auto' }} className="program-pricing-wrap">
+        <div style={{ marginTop: 32, display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(280px, 340px)', gap: 'clamp(28px, 4vw, 48px)', alignItems: 'start' }} className="two-col program-pricing-layout">
+          <div style={{ overflowX: 'auto' }} className="program-pricing-wrap">
           <div style={{ minWidth: 560 }}>
             {/* Tier headers */}
             <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${program.pricing.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
@@ -760,21 +774,31 @@ export default function ProgramPage() {
                     variant={tier.highlight ? 'primary' : 'secondary'}
                     full
                     size="sm"
-                    onClick={() => setApplyOpen(true)}
+                    onClick={handleProgramApply}
                   >
                     {ctaLabel}
                   </Button>
                 </div>
               ))}
             </div>
+            </div>
           </div>
+          <FadeIn delay={60}>
+            <EnrollmentPanel
+              program={program}
+              status={enrollStatus}
+              ctaLabel={ctaLabel}
+              onCTA={handleProgramApply}
+              accent={domainAccent}
+            />
+          </FadeIn>
         </div>
       </Section>
 
       {/* ── FINAL CTA ─────────────────────────────────────────────────────── */}
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.sectionTight} ${T.gutter}` }}>
+      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.sectionTight} 0` }}>
         <Aurora themeId={auroraTheme} />
-        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: T.maxWContent, margin: '0 auto', padding: `0 ${T.gutter}`, textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <FadeIn>
             <ProductVisual
               id={programVisualId}
@@ -794,20 +818,13 @@ export default function ProgramPage() {
                 : `Next batch starts ${program.upcomingBatch}.`}
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Button variant="primary" size="lg" onClick={() => setApplyOpen(true)}>{ctaLabel} →</Button>
+              <Button variant="primary" size="lg" onClick={handleProgramApply}>{enrolling ? 'Enrolling…' : `${ctaLabel} →`}</Button>
               <Button variant="secondary" size="lg" onClick={() => navigate('/contact')}>Talk to an advisor</Button>
             </div>
           </FadeIn>
         </div>
       </section>
 
-      {applyOpen && (
-        <EnrollmentModal
-          item={{ id: program.slug, title: program.name, price: highlightTier.price, type: 'program' }}
-          themeId={auroraTheme}
-          onClose={() => setApplyOpen(false)}
-        />
-      )}
     </PageShell>
   )
 }

@@ -29,7 +29,7 @@ function sectionBg(tone: Tone, bg?: string): string {
 export function Section({
   children,
   bg,
-  tone = 'light',
+  tone = 'canvas',
   style,
   id,
   divider,
@@ -51,24 +51,26 @@ export function Section({
         style={{
           background,
           color: textColor,
-          padding: `${T.section} ${T.gutter}`,
+          padding: `${T.section} 0`,
           position: 'relative',
           ...style,
         }}
       >
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative' }}>{children}</div>
+        <div className="skylent-content-standard" style={{ position: 'relative' }}>{children}</div>
       </section>
     </>
   )
 }
 
 // ── Eyebrow (mono label) ─────────────────────────────────────────────────────
-export function Eyebrow({ children, tone = 'light', accent }: { children: React.ReactNode; tone?: Tone; accent?: boolean }) {
+export function Eyebrow({ children, tone = 'light', accent, centered }: { children: React.ReactNode; tone?: Tone; accent?: boolean; centered?: boolean }) {
   const color = accent ? brandAccent.text : tone === 'light' ? C.slate : 'rgba(255,255,255,0.42)'
+  const line = <span style={{ width: 20, height: 1, background: 'currentColor', opacity: 0.5, flexShrink: 0 }} />
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-      <span style={{ width: 20, height: 1, background: 'currentColor', opacity: 0.5 }} />
+      {line}
       {children}
+      {centered ? line : null}
     </div>
   )
 }
@@ -76,7 +78,7 @@ export function Eyebrow({ children, tone = 'light', accent }: { children: React.
 // ── Section heading ──────────────────────────────────────────────────────────
 export function Heading({
   children,
-  tone = 'light',
+  tone = 'canvas',
   size = 'lg',
   style,
 }: {
@@ -103,7 +105,7 @@ export function SectionHeader({
   eyebrow,
   title,
   lead,
-  tone = 'light',
+  tone = 'canvas',
   align = 'left',
   action,
 }: {
@@ -219,7 +221,7 @@ export function Badge({ children, tone = 'light', accent }: { children: React.Re
 // ── Card (light or dark, optional hover lift) ────────────────────────────────
 export function Card({
   children,
-  tone = 'light',
+  tone = 'canvas',
   hover = true,
   onClick,
   style,
@@ -285,6 +287,116 @@ export function Glow({ x = '50%', y = '30%', size = 560, color = C.orange, stren
   return <div style={{ position: 'absolute', left: x, top: y, width: size, height: size, transform: 'translate(-50%,-50%)', background: `radial-gradient(circle, ${color}${strength} 0%, transparent 65%)`, pointerEvents: 'none' }} />
 }
 
+// ── Marketing hero (centered, content-first public page hero) ────────────────
+export function MarketingHero({
+  eyebrow,
+  title,
+  lead,
+  tone = 'dark',
+  bg = C.ink,
+  actions,
+  back,
+  badges,
+  visual,
+  footer,
+  children,
+  auroraTheme,
+  size = 'lg',
+  id,
+  visualMaxWidth,
+}: {
+  eyebrow?: string
+  title: React.ReactNode
+  lead?: React.ReactNode
+  tone?: Tone
+  bg?: string
+  actions?: React.ReactNode
+  back?: React.ReactNode
+  badges?: React.ReactNode
+  visual?: React.ReactNode
+  footer?: React.ReactNode
+  children?: React.ReactNode
+  auroraTheme?: AuroraThemeId
+  size?: 'lg' | 'xl'
+  id?: string
+  visualMaxWidth?: number | string
+}) {
+  const isDark = tone !== 'light'
+  const headlineClass = size === 'xl' ? 'skylent-display-xl' : 'skylent-display-lg'
+  const copyMax = size === 'xl' ? T.maxWReading : 640
+  const leadMax = size === 'xl' ? 600 : 540
+  const defaultVisualMax = visualMaxWidth ?? T.maxWContent
+
+  return (
+    <section
+      id={id}
+      className="marketing-hero-section"
+      style={{
+        background: bg,
+        position: 'relative',
+        overflow: 'hidden',
+        padding: `${T.navH + 48}px 0 ${visual || footer ? T.sectionTight : 'clamp(48px, 6vw, 72px)'}`,
+      }}
+    >
+      {isDark && auroraTheme && <Aurora themeId={auroraTheme} variant="hero" />}
+      {isDark && <GridField opacity={0.02} />}
+      <div className="marketing-hero marketing-hero-inner" style={{ position: 'relative', zIndex: 1 }}>
+        {back && <div className="marketing-hero-back">{back}</div>}
+        <FadeIn>
+          <div className="marketing-hero-copy" style={{ textAlign: 'center', maxWidth: copyMax, margin: '0 auto' }}>
+            {eyebrow && (
+              <div style={{ marginBottom: 20, display: 'flex', justifyContent: 'center' }}>
+                <Eyebrow tone={tone} accent centered>{eyebrow}</Eyebrow>
+              </div>
+            )}
+            {badges && (
+              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 20 }}>
+                {badges}
+              </div>
+            )}
+            <h1 className={headlineClass} style={{ color: isDark ? C.white : C.ink, margin: 0 }}>
+              {title}
+            </h1>
+            {lead && (
+              <p className="skylent-body-lg" style={{ color: isDark ? 'rgba(255,255,255,0.62)' : C.slate, margin: '20px auto 0', maxWidth: leadMax }}>
+                {lead}
+              </p>
+            )}
+            {actions && (
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 28 }}>
+                {actions}
+              </div>
+            )}
+            {children}
+          </div>
+        </FadeIn>
+        {visual && (
+          <FadeIn delay={80}>
+            <div
+              className="marketing-hero-visual"
+              style={{
+                marginTop: 'clamp(40px, 5vw, 64px)',
+                maxWidth: defaultVisualMax,
+                marginLeft: 'auto',
+                marginRight: 'auto',
+              }}
+            >
+              {visual}
+            </div>
+          </FadeIn>
+        )}
+        {footer && (
+          <FadeIn delay={100}>
+            <div className="marketing-hero-footer" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
+              {footer}
+            </div>
+          </FadeIn>
+        )}
+      </div>
+    </section>
+  )
+}
+
 // ── Page hero (shared editorial hero for interior pages) ─────────────────────
 export function PageHero({
   eyebrow,
@@ -311,36 +423,27 @@ export function PageHero({
   auroraTheme?: AuroraThemeId
   photoAspect?: '4/3' | '16/9' | '4/5' | '3/2'
 }) {
-  const isDark = tone !== 'light'
   return (
-    <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `clamp(88px, 10vw, 120px) ${T.gutter} clamp(48px, 6vw, 72px)` }}>
-      {isDark && auroraTheme && <Aurora themeId={auroraTheme} />}
-      {isDark && <GridField opacity={0.02} />}
-      <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: photo ? '1.05fr 0.95fr' : '1fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }} className="two-col skylent-page-hero">
-          <div>
-            <div style={{ marginBottom: 20 }}><Eyebrow tone={tone} accent>{eyebrow}</Eyebrow></div>
-            <h1 className="skylent-display-lg" style={{ color: isDark ? C.white : C.ink, margin: 0, maxWidth: 720 }}>
-              {title}
-            </h1>
-            {lead && (
-              <p className="skylent-body-lg" style={{ color: isDark ? 'rgba(255,255,255,0.62)' : C.slate, margin: '20px 0 0', maxWidth: 520 }}>{lead}</p>
-            )}
-            {actions && <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 32 }}>{actions}</div>}
-            {children}
-          </div>
-          {photo && (
-            <MediaImage
-              src={photo}
-              alt={photoAlt ?? ''}
-              aspect={photoAspect}
-              className="skylent-hero-visual"
-              overlay="bottom"
-            />
-          )}
-        </div>
-      </div>
-    </section>
+    <MarketingHero
+      eyebrow={eyebrow}
+      title={title}
+      lead={lead}
+      tone={tone}
+      bg={bg}
+      actions={actions}
+      auroraTheme={auroraTheme}
+      visual={photo ? (
+        <MediaImage
+          src={photo}
+          alt={photoAlt ?? ''}
+          aspect={photoAspect}
+          className="skylent-hero-visual"
+          overlay="bottom"
+        />
+      ) : undefined}
+    >
+      {children}
+    </MarketingHero>
   )
 }
 
@@ -384,9 +487,9 @@ export function CTABand({
   const navigate = useNavigate()
   const isDark = tone !== 'light'
   return (
-    <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `${T.section} ${T.gutter}` }}>
+    <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `${T.section} 0` }}>
       {isDark && auroraTheme && <Aurora themeId={auroraTheme} />}
-      <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+      <div className="skylent-content-standard" style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <FadeIn>
           {eyebrow && <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'center' }}><Eyebrow tone={tone} accent>{eyebrow}</Eyebrow></div>}
           <Heading tone={tone} size="lg" style={{ textAlign: 'center' }}>{title}</Heading>
