@@ -110,19 +110,64 @@ export type CareerProfile = {
   updatedAt: string
 }
 
+export type EmployerSummary = {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  website: string | null
+  logoRef: string | null
+  location: string | null
+  verificationStatus: string
+}
+
 export type JobListing = {
   id: string
   employerId: string
+  employer?: EmployerSummary
   title: string
   slug: string
   description: string
   employmentType: CareerEmploymentType | null
   workMode: CareerWorkMode | null
   location: string | null
+  experienceMin: number | null
+  experienceMax: number | null
+  salaryMin: number | null
+  salaryMax: number | null
   skills: string[]
   category: string | null
   status: JobStatus
+  applicationUrl: string | null
+  postedAt: string | null
+  expiresAt: string | null
   saved?: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export type JobListParams = {
+  status?: JobStatus
+  category?: string
+  workMode?: CareerWorkMode
+  location?: string
+  employerId?: string
+  employmentType?: CareerEmploymentType
+  q?: string
+  limit?: string
+  offset?: string
+}
+
+export type JobListResult = {
+  jobs: JobListing[]
+  meta: { total: number; limit: number; offset: number }
+}
+
+export type SavedJobEntry = {
+  id: string
+  jobId: string
+  createdAt: string
+  job: JobListing
 }
 
 export type JobApplication = {
@@ -189,10 +234,35 @@ export async function updateCareerProfile(input: Partial<{
   return result.data
 }
 
-export async function listJobs(params?: Record<string, string>): Promise<JobListing[]> {
-  const query = params ? `?${new URLSearchParams(params).toString()}` : ""
-  const result = await careerGet<{ data: JobListing[] }>(`/career/jobs${query}`)
+export async function searchJobs(params?: JobListParams): Promise<JobListResult> {
+  const query = params ? `?${new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== "") as [string, string][]).toString()}` : ""
+  const result = await careerGet<{ data: JobListing[]; meta: { total: number; limit: number; offset: number } }>(`/career/jobs${query}`)
+  return { jobs: result.data, meta: result.meta }
+}
+
+export async function fetchJob(idOrSlug: string): Promise<JobListing> {
+  const result = await careerGet<{ data: JobListing }>(`/career/jobs/${encodeURIComponent(idOrSlug)}`)
   return result.data
+}
+
+/** @deprecated Use searchJobs for pagination meta */
+export async function listJobs(params?: Record<string, string>): Promise<JobListing[]> {
+  const result = await searchJobs(params as JobListParams)
+  return result.jobs
+}
+
+export async function listSavedJobs(): Promise<SavedJobEntry[]> {
+  const result = await careerGet<{ data: SavedJobEntry[] }>("/career/saved-jobs")
+  return result.data
+}
+
+export async function saveJob(jobId: string): Promise<SavedJobEntry> {
+  const result = await careerMutate<{ data: SavedJobEntry }>("/career/saved-jobs", "POST", { jobId })
+  return result.data
+}
+
+export async function unsaveJob(jobId: string): Promise<void> {
+  await careerMutate<{ data: { removed: boolean } }>(`/career/saved-jobs/${jobId}`, "DELETE")
 }
 
 export async function listApplications(): Promise<JobApplication[]> {

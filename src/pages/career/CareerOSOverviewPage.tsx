@@ -122,8 +122,8 @@ export default function CareerOSOverviewPage() {
                 <Link to="/career-os/profile" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
                   Edit profile
                 </Link>
-                <Link to="/career-os/jobs" style={{ color: "rgba(255,255,255,0.55)", fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}` }}>
-                  Browse jobs (coming next)
+                <Link to="/career-os/jobs" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                  Browse jobs
                 </Link>
                 <Link to="/career-os/applications" style={{ color: "rgba(255,255,255,0.55)", fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}` }}>
                   View applications (coming next)
