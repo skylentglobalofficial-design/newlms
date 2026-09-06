@@ -20,7 +20,10 @@ import CoursesPage from './pages/CoursesPage'
 import CourseDetailPage from './pages/CourseDetailPage'
 import WorkshopsPage from './pages/WorkshopsPage'
 import WorkshopDetailPage from './pages/WorkshopDetailPage'
-import CareerOSPage from './pages/CareerOSPage'
+import CareerOSLayout from './pages/career/CareerOSLayout'
+import CareerOSOverviewPage from './pages/career/CareerOSOverviewPage'
+import CareerOSProfilePage from './pages/career/CareerOSProfilePage'
+import CareerOSPlaceholderPage from './pages/career/CareerOSPlaceholderPage'
 import BlogPage from './pages/BlogPage'
 import BlogPostPage from './pages/BlogPostPage'
 import ContactPage from './pages/ContactPage'
@@ -38,7 +41,14 @@ function AppRoutes() {
       <Route path="/" element={<PublicCanvas themeId="general"><Nav /><HomePage /></PublicCanvas>} />
       <Route path="/education" element={<EducationPage />} />
       <Route path="/skills" element={<SkillsPage />} />
-      <Route path="/career-os" element={<CareerOSPage />} />
+      <Route path="/career-os" element={<CareerOSLayout />}>
+        <Route index element={<CareerOSOverviewPage />} />
+        <Route path="profile" element={<CareerOSProfilePage />} />
+        <Route path="jobs" element={<CareerOSPlaceholderPage area="jobs" />} />
+        <Route path="applications" element={<CareerOSPlaceholderPage area="applications" />} />
+        <Route path="interviews" element={<CareerOSPlaceholderPage area="interviews" />} />
+        <Route path="support" element={<CareerOSPlaceholderPage area="support" />} />
+      </Route>
       <Route path="/institutions" element={<InstitutionsPage />} />
       <Route path="/os" element={<OSPage />} />
       <Route path="/programs" element={<ProgramsPage />} />
