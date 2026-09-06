@@ -4,8 +4,8 @@ import { C, T } from '../tokens'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
-import { useDemoState } from '../demo/DemoStateContext'
 import { BATCH_LEARNERS } from '../demo/seed'
+import { ProductVisual } from '../components/product/ProductVisuals'
 
 // ─── DEMO INSTITUTION DATA (preserved from prior dashboard) ───────────────────
 
@@ -118,13 +118,17 @@ function InstitutionWorkspace({
 }) {
   return (
     <div id="org-overview">
+      <div className="org-institution-visual">
+        <ProductVisual id="institution-pipeline" themeId="institution" style={{ minHeight: 240 }} />
+      </div>
+
       <div style={{ marginBottom: 28 }}>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Institution workspace</div>
         <h1 className="skylent-display-md" style={{ color: C.white, margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>
           {institutionName}
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, margin: 0 }}>
-          {institutionLearners.toLocaleString('en-IN')} learners · {cohorts.length} active batches · Academic Year 2025–26
+          Academic operations workspace · demo cohort data where labeled
         </p>
       </div>
 
@@ -142,10 +146,10 @@ function InstitutionWorkspace({
           {criticalBatch.name}
         </h2>
         <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, margin: '0 0 4px', lineHeight: 1.5 }}>
-          {criticalBatch.completion}% completion · {criticalBatch.atRisk} learners need attention
+          {criticalBatch.program} · Faculty: {criticalBatch.faculty}
         </p>
         <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, margin: '0 0 20px' }}>
-          {criticalBatch.program} · Faculty: {criticalBatch.faculty}
+          Batch status: {criticalBatch.status} · demo cohort record
         </p>
         <button
           type="button"
@@ -458,7 +462,7 @@ function OrgContextRail() {
           Assessments & progress
         </div>
 
-        <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 12 }}>Completion by cohort</div>
+        <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 12 }}>Batch status</div>
         {assessmentItems.map((item, i) => (
           <div key={item.batch} style={{
             marginBottom: 12,
@@ -467,11 +471,9 @@ function OrgContextRail() {
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5, gap: 8 }}>
               <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.batch}</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: statusColor[item.status], flexShrink: 0 }}>{item.completion}%</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: statusColor[item.status], flexShrink: 0 }}>{item.status}</span>
             </div>
-            <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{ width: `${item.completion}%`, height: '100%', background: statusColor[item.status], borderRadius: 2 }} />
-            </div>
+            <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 10 }}>Completion analytics —</div>
           </div>
         ))}
       </div>
