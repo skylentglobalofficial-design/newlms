@@ -23,6 +23,7 @@ import WorkshopDetailPage from './pages/WorkshopDetailPage'
 import CareerOSLayout from './pages/career/CareerOSLayout'
 import CareerOSOverviewPage from './pages/career/CareerOSOverviewPage'
 import CareerOSProfilePage from './pages/career/CareerOSProfilePage'
+import CareerOSJobsPage from './pages/career/CareerOSJobsPage'
 import CareerOSPlaceholderPage from './pages/career/CareerOSPlaceholderPage'
 import BlogPage from './pages/BlogPage'
 import BlogPostPage from './pages/BlogPostPage'
@@ -44,7 +45,7 @@ function AppRoutes() {
       <Route path="/career-os" element={<CareerOSLayout />}>
         <Route index element={<CareerOSOverviewPage />} />
         <Route path="profile" element={<CareerOSProfilePage />} />
-        <Route path="jobs" element={<CareerOSPlaceholderPage area="jobs" />} />
+        <Route path="jobs" element={<CareerOSJobsPage />} />
         <Route path="applications" element={<CareerOSPlaceholderPage area="applications" />} />
         <Route path="interviews" element={<CareerOSPlaceholderPage area="interviews" />} />
         <Route path="support" element={<CareerOSPlaceholderPage area="support" />} />
