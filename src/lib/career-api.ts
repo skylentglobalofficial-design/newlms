@@ -209,3 +209,153 @@ export async function createApplication(input: {
   const result = await careerMutate<{ data: JobApplication }>("/career/applications", "POST", input)
   return result.data
 }
+
+export type CreateEducationInput = {
+  institution: string
+  degree: string
+  fieldOfStudy?: string | null
+  startDate?: string | null
+  endDate?: string | null
+  currentlyStudying?: boolean
+  grade?: string | null
+  sortOrder?: number
+}
+
+export type CreateExperienceInput = {
+  company: string
+  role: string
+  employmentType?: CareerEmploymentType | null
+  location?: string | null
+  startDate?: string | null
+  endDate?: string | null
+  currentlyWorking?: boolean
+  description?: string | null
+  sortOrder?: number
+}
+
+export type CreateSkillInput = {
+  name: string
+  category?: string | null
+  proficiency?: CareerSkillProficiency | null
+  sortOrder?: number
+}
+
+export type CreateProjectInput = {
+  title: string
+  description?: string | null
+  technologies?: string[]
+  projectUrl?: string | null
+  repositoryUrl?: string | null
+  outcome?: string | null
+  sortOrder?: number
+}
+
+export type CreateLinkInput = {
+  type: CareerLinkType
+  label?: string | null
+  url: string
+  sortOrder?: number
+}
+
+export type CreateResumeInput = {
+  label: string
+  version?: number
+  fileName?: string | null
+  mimeType?: string | null
+  byteSize?: number | null
+  storageProvider?: string | null
+  storageKey?: string | null
+  notes?: string | null
+  status?: "DRAFT" | "ACTIVE" | "ARCHIVED"
+  isPrimary?: boolean
+}
+
+export async function createEducation(input: CreateEducationInput): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerEducation; profile: CareerProfile }>("/career/profile/education", "POST", input)
+  return result.profile
+}
+
+export async function updateEducation(id: string, input: Partial<CreateEducationInput>): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>(`/career/profile/education/${id}`, "PATCH", input)
+  return result.data
+}
+
+export async function deleteEducation(id: string): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>(`/career/profile/education/${id}`, "DELETE")
+  return result.data
+}
+
+export async function createExperience(input: CreateExperienceInput): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>("/career/profile/experience", "POST", input)
+  return result.data
+}
+
+export async function updateExperience(id: string, input: Partial<CreateExperienceInput>): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>(`/career/profile/experience/${id}`, "PATCH", input)
+  return result.data
+}
+
+export async function deleteExperience(id: string): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>(`/career/profile/experience/${id}`, "DELETE")
+  return result.data
+}
+
+export async function createSkill(input: CreateSkillInput): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>("/career/profile/skills", "POST", input)
+  return result.data
+}
+
+export async function updateSkill(id: string, input: Partial<CreateSkillInput>): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>(`/career/profile/skills/${id}`, "PATCH", input)
+  return result.data
+}
+
+export async function deleteSkill(id: string): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>(`/career/profile/skills/${id}`, "DELETE")
+  return result.data
+}
+
+export async function createProject(input: CreateProjectInput): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>("/career/profile/projects", "POST", input)
+  return result.data
+}
+
+export async function updateProject(id: string, input: Partial<CreateProjectInput>): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>(`/career/profile/projects/${id}`, "PATCH", input)
+  return result.data
+}
+
+export async function deleteProject(id: string): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>(`/career/profile/projects/${id}`, "DELETE")
+  return result.data
+}
+
+export async function createLink(input: CreateLinkInput): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>("/career/profile/links", "POST", input)
+  return result.data
+}
+
+export async function updateLink(id: string, input: Partial<CreateLinkInput>): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>(`/career/profile/links/${id}`, "PATCH", input)
+  return result.data
+}
+
+export async function deleteLink(id: string): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>(`/career/profile/links/${id}`, "DELETE")
+  return result.data
+}
+
+export async function listResumes(): Promise<CareerResumeVersion[]> {
+  const result = await careerGet<{ data: CareerResumeVersion[] }>("/career/profile/resumes")
+  return result.data
+}
+
+export async function createResume(input: CreateResumeInput): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerResumeVersion; profile: CareerProfile }>("/career/profile/resumes", "POST", input)
+  return result.profile
+}
+
+export async function deleteResume(id: string): Promise<CareerProfile> {
+  const result = await careerMutate<{ data: CareerProfile }>(`/career/profile/resumes/${id}`, "DELETE")
+  return result.data
+}
