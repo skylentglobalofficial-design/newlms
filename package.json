@@ -20,7 +20,11 @@
     "db:seed": "prisma db seed",
     "test:auth": "tsx scripts/test-auth.ts",
     "test:lms": "tsx scripts/test-lms.ts",
-    "test:career": "tsx scripts/test-career.ts"
+    "test:career": "tsx scripts/test-career.ts",
+    "layout-qa": "tsx scripts/layout-qa.ts",
+    "ui-visual-qa": "tsx scripts/ui-visual-qa.ts",
+    "learner-lms-qa": "tsx scripts/learner-lms-qa.ts",
+    "multi-role-pov-qa": "tsx scripts/multi-role-pov-qa.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

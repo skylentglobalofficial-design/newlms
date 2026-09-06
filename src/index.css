@@ -551,6 +551,62 @@ html, body {
   cursor: wait;
 }
 
+.role-workspace-banner {
+  margin-bottom: 24px;
+  padding: 14px 16px;
+  border-left: 3px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+.role-workspace-banner__label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.role-workspace-banner__title {
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.role-workspace-banner__copy {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.role-section-empty {
+  padding: 4px 0;
+}
+
+.role-section-empty__title {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.role-section-empty__copy {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.role-section-shell {
+  margin-top: clamp(28px, 4vw, 40px);
+}
+
+.role-section-shell__label {
+  margin-bottom: 16px;
+}
+
 .lms-section-shell {
   margin-top: clamp(28px, 4vw, 40px);
   padding-top: 24px;
