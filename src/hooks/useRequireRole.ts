@@ -1,21 +1,7 @@
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth, type UserRole } from "../context/AuthContext"
-
-function roleRoute(role: UserRole): string {
-  switch (role) {
-    case "student":
-      return "/dashboard/student"
-    case "faculty":
-      return "/dashboard/faculty"
-    case "organisation":
-      return "/dashboard/organisation"
-    case "recruiter":
-      return "/dashboard/recruiter"
-    case "superadmin":
-      return "/dashboard/admin"
-  }
-}
+import { roleRoute } from "../lib/auth-routing"
 
 export function useRequireRole(expectedRole: UserRole) {
   const { user, ready } = useAuth()

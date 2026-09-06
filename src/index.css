@@ -1773,3 +1773,260 @@ html, body {
     animation: none;
   }
 }
+
+/* ── Unified auth (/login, /signup) ─────────────────────────────────────────── */
+
+.auth-page {
+  min-height: 100vh;
+  background: var(--color-canvas, #050505);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-skip-link {
+  position: absolute;
+  left: 16px;
+  top: 12px;
+  z-index: 3;
+  transform: translateY(-120%);
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: #fff;
+  color: #050505;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.auth-skip-link:focus {
+  transform: translateY(0);
+}
+
+.auth-back-link {
+  position: absolute;
+  top: 24px;
+  left: 28px;
+  z-index: 2;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  padding: 0;
+}
+
+.auth-back-link:focus-visible {
+  outline: 2px solid rgba(129, 140, 248, 0.85);
+  outline-offset: 2px;
+}
+
+.auth-page-main {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(88px, 14vh, 120px) clamp(20px, 4vw, 32px) clamp(48px, 8vh, 72px);
+}
+
+.auth-page-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-brand-link {
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 32px;
+}
+
+.auth-brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.auth-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 28px;
+  letter-spacing: -0.02em;
+}
+
+.auth-form {
+  margin: 0;
+}
+
+.auth-field-group {
+  margin-bottom: 16px;
+}
+
+.auth-label {
+  display: block;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-family: var(--font-body);
+  margin-bottom: 6px;
+}
+
+.auth-field {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: #fff;
+  font-size: 14px;
+  font-family: var(--font-body);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.auth-field.is-focused {
+  border-color: rgba(129, 140, 248, 0.85);
+}
+
+.auth-field.has-error {
+  border-color: rgba(239, 68, 68, 0.55);
+}
+
+.auth-field:focus-visible {
+  outline: 2px solid rgba(129, 140, 248, 0.85);
+  outline-offset: 2px;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 4px;
+  background: rgba(99, 102, 241, 0.95);
+  border: none;
+  color: #050505;
+  border-radius: 10px;
+  padding: 13px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.auth-submit:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.auth-submit:focus-visible {
+  outline: 2px solid rgba(129, 140, 248, 0.85);
+  outline-offset: 2px;
+}
+
+.auth-google-button {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.auth-google-button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.auth-google-button:focus-visible {
+  outline: 2px solid rgba(129, 140, 248, 0.85);
+  outline-offset: 2px;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.auth-divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.auth-divider-label {
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  text-transform: lowercase;
+}
+
+.auth-switch {
+  text-align: center;
+  margin: 20px 0 0;
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 13px;
+}
+
+.auth-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  border-radius: 10px;
+  padding: 12px 14px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+
+.auth-dev-panel {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-dev-label {
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+
+.auth-dev-copy {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0 0 10px;
+}
+
+.auth-dev-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-dev-list li {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.auth-dev-role {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.auth-dev-email {
+  font-family: var(--font-mono);
+}
+
