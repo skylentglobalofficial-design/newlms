@@ -100,7 +100,7 @@ async function grantRole(email: string, role: "faculty" | "organisation", organi
       create: { slug: organisationSlug, name: organisationSlug },
     })
     await prisma.organisationMembership.upsert({
-      where: { userId_organisationId: { userId: user.id, organisationId: org.id } },
+      where: { organisationId_userId: { organisationId: org.id, userId: user.id } },
       update: {},
       create: { userId: user.id, organisationId: org.id },
     })
