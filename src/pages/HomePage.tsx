@@ -536,58 +536,36 @@ function InstitutionsSection() {
   )
 }
 
-// ─── 7. ECOSYSTEM CONNECTION ──────────────────────────────────────────────────
+// ─── 7. CONNECTION BAND (compact) ─────────────────────────────────────────────
 
-function EcosystemConnectionSection() {
-  const steps = [
-    { label: 'Education / Skills', sub: 'Academic foundation and credentialed capability', accent: accent },
-    { label: 'Learning + Projects', sub: 'Structured coursework becomes portfolio artifacts', accent: getDomainAccent('professional') },
-    { label: 'Career Proof', sub: 'Projects, certifications, and program outcomes', accent: getDomainAccent('career') },
-    { label: 'Career OS', sub: 'Profile, interview prep, jobs, applications', accent: getDomainAccent('career') },
-    { label: 'Opportunities', sub: 'Roles to discover, apply, and track', accent: accent },
-  ]
+function ConnectionBand() {
+  const careerAccent = getDomainAccent('career')
+  const proAccent = getDomainAccent('professional')
 
   return (
-    <Section tone="canvas" divider>
+    <Section tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
       <FadeIn>
-        <SectionHeader
-          tone="dark"
-          eyebrow="How it connects"
-          title="From learning<br />to hire."
-          lead="Learners finish coursework, build proof, and move into Career OS. Institutions run the same sequence with their own dashboards."
-          align="center"
-        />
-      </FadeIn>
-
-      <div style={{ marginTop: 56, maxWidth: 640, marginLeft: 'auto', marginRight: 'auto' }}>
-        {steps.map((step, i) => (
-          <FadeIn key={step.label} delay={i * 70}>
-            <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flexShrink: 0, width: 28 }}>
-                <div style={{ width: 10, height: 10, borderRadius: '50%', background: step.accent.primary, border: `2px solid ${step.accent.border}`, flexShrink: 0 }} />
-                {i < steps.length - 1 && (
-                  <div style={{ width: 1, flex: 1, minHeight: 48, background: `linear-gradient(180deg, ${step.accent.border}, transparent)`, marginTop: 8 }} />
-                )}
-              </div>
-              <div style={{ paddingBottom: i < steps.length - 1 ? 36 : 0, flex: 1, borderLeft: `2px solid ${step.accent.primary}`, paddingLeft: 22 }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(18px, 2.2vw, 24px)', fontWeight: 600, color: C.white, marginBottom: 6 }}>
-                  {step.label}
-                </div>
-                <div style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14, lineHeight: 1.6 }}>{step.sub}</div>
-              </div>
-            </div>
-          </FadeIn>
-        ))}
-
-        <FadeIn delay={400}>
-          <div style={{ marginTop: 40, paddingTop: 28, borderTop: `1px solid ${T.lineDark}`, textAlign: 'center' }}>
-            <div className="skylent-label" style={{ color: getDomainAccent('institution').text, marginBottom: 10 }}>Institutions</div>
-            <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 480, marginLeft: 'auto', marginRight: 'auto' }}>
-              Partners deliver Education, Skills, and Career OS through institution-specific workflows — schools to universities to training centres.
-            </p>
+        <GlassSurface level={2} padding="clamp(24px, 4vw, 36px)">
+          <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>How it connects</div>
+          <FlowStrip
+            tone="dark"
+            steps={[
+              { label: 'Learn', sub: 'Education & skills' },
+              { label: 'Build', sub: 'Projects & proof', highlight: true },
+              { label: 'Career', sub: 'Career OS' },
+              { label: 'Hire', sub: 'Applications' },
+            ]}
+          />
+          <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.7, margin: '20px 0 0', maxWidth: 640 }}>
+            Institutions run the same sequence with their own dashboards — programs, learners, faculty, and progress in one place.
+          </p>
+          <div style={{ marginTop: 20, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 12, color: proAccent.text, fontFamily: 'var(--font-mono)' }}>Skills → Career OS</span>
+            <span style={{ fontSize: 12, color: careerAccent.text, fontFamily: 'var(--font-mono)' }}>Education → Exams</span>
+            <span style={{ fontSize: 12, color: getDomainAccent('institution').text, fontFamily: 'var(--font-mono)' }}>Institutions → Ops</span>
           </div>
-        </FadeIn>
-      </div>
+        </GlassSurface>
+      </FadeIn>
     </Section>
   )
 }
@@ -720,7 +698,7 @@ export default function HomePage() {
       <SkillsSection />
       <CareerSection />
       <InstitutionsSection />
-      <EcosystemConnectionSection />
+      <ConnectionBand />
       <ProgramDiscoverySection />
       <CTABand
         eyebrow="Get started"

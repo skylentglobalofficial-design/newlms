@@ -56,7 +56,7 @@ export const PROGRAM_PHOTO: Record<string, MediaRef> = {
   "data-analytics-pro": "skylent:analytics-workspace",
   "data-science-ai": "skylent:data-workspace",
   "full-stack": "skylent:fullstack-workspace",
-  "generative-ai-program": "skylent:data-workspace",
+  "generative-ai-program": "skylent:learning-loop",
   "product-management": "skylent:mba-case",
   "sql-certificate": "skylent:analytics-workspace",
   "digital-marketing": "skylent:campaign-funnel",
@@ -68,6 +68,21 @@ export const PROGRAM_PHOTO: Record<string, MediaRef> = {
   pg: "skylent:mba-case",
   mba: "skylent:mba-case",
 };
+
+/** Short-course catalog visuals — domain-native, no duplicate slugs within domain. */
+export const COURSE_PHOTO: Record<string, MediaRef> = {
+  "data-analytics": "skylent:analytics-workspace",
+  "python-programming": "skylent:skills-ladder",
+  "generative-ai": "skylent:learning-loop",
+  "power-bi": "skylent:analytics-workspace",
+  "product-management": "skylent:mba-case",
+  "full-stack-web": "skylent:fullstack-workspace",
+  "digital-marketing": "skylent:campaign-funnel",
+};
+
+export function coursePhoto(slug: string): MediaRef {
+  return COURSE_PHOTO[slug] ?? DEFAULT_PROGRAM_PHOTO;
+}
 
 export function programPhoto(slug: string): MediaRef {
   return PROGRAM_PHOTO[slug] ?? DEFAULT_PROGRAM_PHOTO;

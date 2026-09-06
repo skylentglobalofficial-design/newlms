@@ -80,9 +80,9 @@ export default function LabsPage() {
       {/* Filter bar */}
       <section style={{ background: C.canvas, borderBottom: `1px solid ${T.lineDark}`, position: 'sticky', top: T.navH, zIndex: 40 }}>
         <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}` }}>
-          <div style={{ display: 'flex', gap: 24, overflowX: 'auto', padding: '16px 0', flexWrap: 'nowrap', scrollbarWidth: 'none' }}>
+          <div className="labs-filter-bar" style={{ display: 'flex', gap: 16, flexWrap: 'wrap', padding: '16px 0' }}>
             {/* Program filter */}
-            <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flexShrink: 0 }}>
               {programs.map(p => (
                 <button
                   key={p}
@@ -95,7 +95,7 @@ export default function LabsPage() {
             </div>
             <div style={{ width: 1, background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
             {/* Semester filter */}
-            <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flexShrink: 0 }}>
               {semesters.map(s => (
                 <button
                   key={s}
@@ -108,7 +108,7 @@ export default function LabsPage() {
             </div>
             <div style={{ width: 1, background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
             {/* Type filter */}
-            <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flexShrink: 0 }}>
               {labTypes.map(t => {
                 const colors = t !== 'All' ? labTypeColors[t] : null
                 const active = selectedType === t

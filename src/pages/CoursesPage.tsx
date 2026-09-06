@@ -5,21 +5,9 @@ import { Button, Eyebrow, Section, SectionHeader, T } from '../components/ui'
 import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { courses } from '../data'
-import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
+import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO, coursePhoto } from '../media'
 
 const accent = getDomainAccent('professional')
-
-const COURSE_VISUAL: Record<string, string> = {
-  'data-analytics': 'skylent:analytics-workspace',
-  'python-programming': 'skylent:data-workspace',
-  'generative-ai': 'skylent:data-workspace',
-  'full-stack-web': 'skylent:fullstack-workspace',
-  'digital-marketing': 'skylent:campaign-funnel',
-}
-
-function courseVisual(slug: string) {
-  return COURSE_VISUAL[slug] ?? DEFAULT_PROGRAM_PHOTO
-}
 
 export default function CoursesPage() {
   const [searchParams] = useSearchParams()
@@ -146,7 +134,7 @@ export default function CoursesPage() {
                 <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <div style={{ position: 'relative', minHeight: 140, borderBottom: `1px solid ${T.lineDark}` }}>
                     <MediaImage
-                      src={courseVisual(course.slug)}
+                      src={coursePhoto(course.slug)}
                       alt={course.title}
                       style={{ minHeight: 140, height: 140 }}
                     />
