@@ -48,7 +48,7 @@ function EcosystemHeroVisual() {
           padding="14px 16px"
           style={{ position: 'absolute', top: 16, left: 16, right: 16, maxWidth: 260 }}
         >
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Product flow</div>
+          <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>How it connects</div>
           <FlowStrip
             tone="dark"
             steps={[
@@ -72,7 +72,7 @@ function EcosystemHeroVisual() {
           zIndex: 3,
         }}
       >
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Career proof</div>
+        <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Sample application</div>
         <div style={{ display: 'grid', gridTemplateColumns: '48px 1fr', gap: 12, alignItems: 'center', marginBottom: 12 }}>
           <div style={{ width: 40, height: 40, borderRadius: 8, background: accent.subtle, border: `1px dashed ${accent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text }}>
             PRJ
@@ -159,7 +159,7 @@ function CoverageSection() {
     {
       label: 'Skills',
       sub: 'Webinars · Certificates · Professional Programs',
-      desc: 'Credentialed upskilling. Professional Programs unlock Career OS.',
+      desc: 'Credentialed upskilling. Professional Programs include Career OS access.',
       to: '/skills',
       theme: getDomainAccent('professional'),
     },
@@ -314,7 +314,7 @@ function SkillsSection() {
   const stages = [
     { label: 'Webinars', sub: 'Live sessions · Register and attend', to: '/skills#webinars' },
     { label: 'Certificate Programs', sub: 'Structured credentials with assessment', to: '/skills#certificate' },
-    { label: 'Professional Programs', sub: 'Deep programs that unlock Career OS', to: '/skills#professional', highlight: true },
+    { label: 'Professional Programs', sub: 'Deep programs with Career OS access', to: '/skills#professional', highlight: true },
     { label: 'Job Assistance', sub: 'Resume, interviews, applications', to: '/skills#job-assistance' },
   ]
 
@@ -440,7 +440,7 @@ function CareerSection() {
             A career product,<br />not a slogan.
           </Heading>
           <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 480 }}>
-            Interview preparation, a job board, and application tracking in one workspace. Unlocks when you complete a Professional Program.
+            Interview preparation, a job board, and application tracking in one workspace. Available after you complete a Professional Program.
           </p>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px 16px', marginBottom: 28 }}>
             {journey.map((step) => (

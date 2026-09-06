@@ -31,7 +31,7 @@ export default function UniversitiesPage() {
           <FadeIn delay={60}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }} className="three-col">
               {[
-                { num: '01', title: 'Program Design', desc: 'University academic input aligned with industry-ready curriculum structure on Skylent.' },
+                { num: '01', title: 'Program Design', desc: 'University academic input aligned with a structured, practice-heavy curriculum on Skylent.' },
                 { num: '02', title: 'Delivery', desc: 'Faculty workflows, learner management, and LMS infrastructure on one platform.' },
                 { num: '03', title: 'Outcomes', desc: 'Certification tracking and Career OS support — documented when programs go live.' },
               ].map((col, i) => (

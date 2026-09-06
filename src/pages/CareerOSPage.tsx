@@ -670,7 +670,7 @@ function EcosystemSection() {
         <FadeIn delay={80}>
           <div style={{ marginTop: 40, paddingTop: 28, borderTop: `1px solid ${T.lineDark}` }}>
             <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 16 }}>
-              Unlocks with Professional Programs
+              Opens with Professional Programs
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 24px' }}>
               {careerPrograms.map(p => (
@@ -716,7 +716,7 @@ export default function CareerOSPage() {
                 Profile → proof → apply → track.
               </h1>
               <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
-                A career workspace with interview prep and a job board. Unlocks after a Professional Program. See what happens after you apply.
+                A career workspace with interview prep and a job board. Available after a Professional Program. See what happens after you apply.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Professional Programs</Button>
@@ -760,7 +760,7 @@ export default function CareerOSPage() {
       <CTABand
         eyebrow="Get started"
         title={<>Learning is the start.<br />Career OS is what comes next.</>}
-        lead="Complete a Professional Program to unlock Career OS — profile, interview prep, job board, and application tracking."
+        lead="Complete a Professional Program for Career OS access — profile, interview prep, job board, and application tracking."
         primary={{ label: 'Explore Professional Programs', to: '/programs' }}
         secondary={{ label: 'See Skills', to: '/skills' }}
         auroraTheme="career"

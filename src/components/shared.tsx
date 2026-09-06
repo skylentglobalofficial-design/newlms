@@ -371,7 +371,7 @@ const megaMenu = [
     items: [
       { label: 'Webinars', sub: 'Live expert-led sessions', to: '/workshops' },
       { label: 'Certificate Programs', sub: 'Focused, credentialed skills', to: '/programs' },
-      { label: 'Professional Programs', sub: 'Career-ready — unlocks Career OS', to: '/programs' },
+      { label: 'Professional Programs', sub: 'Career-ready — includes Career OS', to: '/programs' },
       { label: 'Job Assistance', sub: 'Placement & readiness support', to: '/skills#job-assistance' },
     ],
   },

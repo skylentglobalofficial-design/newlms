@@ -102,7 +102,7 @@ export default function DashboardStudentPage() {
         <div id="student-overview" style={{ maxWidth: 560 }}>
           <div style={{ color: C.white, fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, marginBottom: 12 }}>Start your learning journey</div>
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.7, margin: '0 0 20px' }}>
-            Enroll in a course to unlock your learner dashboard, curriculum progress, and resume learning.
+            Enroll in a course to open your learner dashboard, curriculum progress, and resume learning.
           </p>
           <button
             type="button"

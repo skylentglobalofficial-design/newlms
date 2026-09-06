@@ -400,7 +400,7 @@ html, body {
 
 @media (max-width: 375px) {
   .lms-header-course {
-    max-width: 100px;
+    max-width: min(140px, 38vw);
   }
   .lms-header {
     gap: 8px;
