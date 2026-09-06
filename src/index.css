@@ -1214,9 +1214,339 @@ html, body {
   align-self: center;
 }
 
+.career-workflow-hero-cta {
+  margin-top: 24px;
+}
+
+.career-workflow-flow-wrap {
+  margin-bottom: 32px;
+  max-width: 960px;
+}
+
+.career-workflow-explorer {
+  margin-top: 8px;
+}
+
+.career-workflow-tab-index {
+  flex-shrink: 0;
+  min-width: 28px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.14);
+  border: 1px solid rgba(129, 140, 248, 0.28);
+  color: rgba(196, 181, 253, 0.95);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 20px;
+  text-align: center;
+}
+
+.pathway-explorer-tab.is-selected .career-workflow-tab-index {
+  background: rgba(99, 102, 241, 0.22);
+  color: #fff;
+}
+
+.career-workflow-preview-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(196, 181, 253, 0.9);
+  border: 1px solid rgba(129, 140, 248, 0.28);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.career-workflow-preview-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.career-workflow-preview-card {
+  margin-bottom: 24px;
+}
+
+.career-workflow-profile-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.career-workflow-preview-name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 6px;
+}
+
+.career-workflow-preview-meta {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  margin: 0;
+}
+
+.career-workflow-profile-score {
+  text-align: right;
+}
+
+.career-workflow-profile-percent {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
+}
+
+.career-workflow-profile-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.career-workflow-progress {
+  height: 6px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  margin-bottom: 18px;
+}
+
+.career-workflow-progress-fill {
+  height: 100%;
+  border-radius: 100px;
+  background: linear-gradient(90deg, rgba(99, 102, 241, 0.95), rgba(168, 85, 247, 0.9));
+}
+
+.career-workflow-section-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.career-workflow-section-tile {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.career-workflow-section-label {
+  display: block;
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: rgba(255, 255, 255, 0.28);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.career-workflow-section-value {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+}
+
+.career-workflow-next-action {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.career-workflow-preview-copy {
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 0 0 14px;
+}
+
+.career-workflow-proof-list {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.career-workflow-proof-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+}
+
+.career-workflow-proof-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(129, 140, 248, 0.85);
+  flex-shrink: 0;
+}
+
+.career-workflow-filter-chips {
+  margin-bottom: 16px;
+}
+
+.career-workflow-job-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.career-workflow-job-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.career-workflow-job-row:last-child {
+  border-bottom: none;
+}
+
+.career-workflow-job-role {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 4px;
+}
+
+.career-workflow-job-meta {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  margin: 0 0 8px;
+}
+
+.career-workflow-job-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.career-workflow-job-action {
+  flex-shrink: 0;
+  font-size: 12px;
+  color: rgba(196, 181, 253, 0.9);
+}
+
+.career-workflow-status-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.career-workflow-status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.career-workflow-status-chip.is-muted {
+  color: rgba(196, 181, 253, 0.85);
+  border-color: rgba(129, 140, 248, 0.28);
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.career-workflow-empty-state {
+  padding: 20px 0 4px;
+  text-align: center;
+}
+
+.career-workflow-empty-state.is-compact {
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 16px;
+}
+
+.career-workflow-empty-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.career-workflow-empty-copy {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 0 auto;
+  max-width: 360px;
+}
+
+.career-workflow-interview-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.career-workflow-interview-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.career-workflow-interview-type {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 4px;
+}
+
+.career-workflow-interview-meta {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 12px;
+  margin: 0;
+}
+
+.career-workflow-preview-footnote {
+  margin: 12px 0 0;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: rgba(255, 255, 255, 0.32);
+  line-height: 1.5;
+}
+
+.career-workflow-support-list {
+  margin-bottom: 4px;
+}
+
 @media (max-width: 1024px) {
   .skills-explorer,
   .pathway-explorer,
+  .career-workflow-explorer,
   .ecosystem-map-grid,
   .career-workflow-hero-grid,
   .education-pathway-detail-grid {
@@ -1236,7 +1566,8 @@ html, body {
 
 @media (max-width: 768px) {
   .ecosystem-map-pillars,
-  .education-pathway-meta-grid {
+  .education-pathway-meta-grid,
+  .career-workflow-section-grid {
     grid-template-columns: 1fr;
   }
 
