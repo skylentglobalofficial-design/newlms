@@ -1168,6 +1168,90 @@ html, body {
   font-family: var(--font-body);
 }
 
+.ecosystem-map-intro {
+  margin-bottom: 28px;
+  max-width: 760px;
+}
+
+.ecosystem-map-flow-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  margin-bottom: 28px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.ecosystem-map-flow-banner-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ecosystem-map-flow-banner-label {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ecosystem-map-flow-banner-label.is-active {
+  color: #fff;
+  font-weight: 600;
+}
+
+.ecosystem-map-flow-banner-arrow {
+  color: rgba(129, 140, 248, 0.55);
+  font-size: 11px;
+}
+
+.ecosystem-map-explorer {
+  margin-top: 4px;
+}
+
+.ecosystem-map-flow-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.ecosystem-map-flow-connector {
+  padding: 4px 0 4px 28px;
+  font-size: 11px;
+  color: rgba(129, 140, 248, 0.45);
+  line-height: 1;
+}
+
+.ecosystem-map-pillar-tab {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border-left-width: 2px;
+  border-left-style: solid;
+}
+
+.ecosystem-map-pillar-step {
+  flex-shrink: 0;
+  width: 28px;
+  height: 22px;
+  margin-top: 2px;
+  border-radius: 999px;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(129, 140, 248, 0.22);
+  color: rgba(196, 181, 253, 0.9);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 20px;
+  text-align: center;
+}
+
+.ecosystem-map-action-list {
+  margin-top: 0;
+}
+
 .career-workflow-steps {
   display: flex;
   flex-direction: column;
@@ -1631,6 +1715,7 @@ html, body {
   .pathway-explorer,
   .career-workflow-explorer,
   .institution-type-explorer,
+  .ecosystem-map-explorer,
   .ecosystem-map-grid,
   .career-workflow-hero-grid,
   .education-pathway-detail-grid {
@@ -1649,6 +1734,16 @@ html, body {
 }
 
 @media (max-width: 768px) {
+  .ecosystem-map-flow-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .ecosystem-map-flow-banner-arrow {
+    display: none;
+  }
+
   .ecosystem-map-pillars,
   .education-pathway-meta-grid,
   .career-workflow-section-grid {
