@@ -58,6 +58,118 @@ enum CertificateStatus {
   issued
 }
 
+enum CareerWorkMode {
+  REMOTE
+  HYBRID
+  ONSITE
+  FLEXIBLE
+}
+
+enum CareerProfileVisibility {
+  PRIVATE
+  NETWORK
+  PUBLIC
+}
+
+enum CareerEmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  FREELANCE
+  OTHER
+}
+
+enum CareerLinkType {
+  LINKEDIN
+  GITHUB
+  PORTFOLIO
+  OTHER
+}
+
+enum CareerSkillProficiency {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum ResumeVersionStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+}
+
+enum EmployerVerificationStatus {
+  PENDING
+  VERIFIED
+  UNVERIFIED
+}
+
+enum JobStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  EXPIRED
+}
+
+enum JobApplicationStatus {
+  SAVED
+  APPLIED
+  SCREENING
+  INTERVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
+}
+
+enum InterviewRoundType {
+  TECHNICAL
+  HR
+  MANAGERIAL
+  OTHER
+}
+
+enum InterviewRoundStatus {
+  SCHEDULED
+  COMPLETED
+  CANCELLED
+  PENDING
+}
+
+enum InterviewQuestionDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum CareerSupportRequestType {
+  RESUME_REVIEW
+  INTERVIEW_PREP
+  JOB_SEARCH
+  GENERAL
+}
+
+enum CareerSupportRequestStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum CareerSupportPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum CareerSupportTaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
 model User {
   id                 String                   @id @default(uuid()) @db.Uuid
   email              String                   @unique
@@ -71,6 +183,12 @@ model User {
   enrollments        UserEnrollment[]
   quizAttempts       QuizAttempt[]
   assignmentProgress AssignmentProgress[]
+  careerProfile      CareerProfile?
+  savedJobs          SavedJob[]
+  jobApplications    JobApplication[]
+  interviewRounds    InterviewRound[]
+  interviewPractice  InterviewPractice[]
+  supportRequests    CareerSupportRequest[]
 }
 
 model Role {
@@ -364,4 +482,338 @@ model AssignmentAttachment {
   assignmentProgress AssignmentProgress @relation(fields: [assignmentProgressId], references: [id], onDelete: Cascade)
 
   @@index([assignmentProgressId])
+}
+
+model CareerProfile {
+  id                String                  @id @default(uuid()) @db.Uuid
+  userId            String                  @unique @db.Uuid
+  headline          String?
+  summary           String?                 @db.Text
+  location          String?
+  phone             String?
+  preferredRole     String?
+  preferredWorkMode CareerWorkMode?
+  profileVisibility CareerProfileVisibility @default(PRIVATE)
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  education      CareerEducation[]
+  experience     CareerExperience[]
+  skills         CareerSkill[]
+  projects       CareerProject[]
+  links          CareerLink[]
+  resumeVersions CareerResumeVersion[]
+
+  @@index([userId])
+}
+
+model CareerEducation {
+  id               String    @id @default(uuid()) @db.Uuid
+  profileId        String    @db.Uuid
+  institution      String
+  degree           String
+  fieldOfStudy     String?
+  startDate        DateTime?
+  endDate          DateTime?
+  currentlyStudying Boolean  @default(false)
+  grade            String?
+  sortOrder        Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  profile CareerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, sortOrder])
+}
+
+model CareerExperience {
+  id               String                @id @default(uuid()) @db.Uuid
+  profileId        String                @db.Uuid
+  company          String
+  role             String
+  employmentType   CareerEmploymentType?
+  location         String?
+  startDate        DateTime?
+  endDate          DateTime?
+  currentlyWorking Boolean               @default(false)
+  description      String?               @db.Text
+  sortOrder        Int                   @default(0)
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+
+  profile CareerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, sortOrder])
+}
+
+model CareerSkill {
+  id          String                 @id @default(uuid()) @db.Uuid
+  profileId   String                 @db.Uuid
+  name        String
+  category    String?
+  proficiency CareerSkillProficiency?
+  sortOrder   Int                    @default(0)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  profile CareerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, name])
+  @@index([profileId, sortOrder])
+}
+
+model CareerProject {
+  id            String   @id @default(uuid()) @db.Uuid
+  profileId     String   @db.Uuid
+  title         String
+  description   String?  @db.Text
+  technologies  String[]
+  projectUrl    String?
+  repositoryUrl String?
+  outcome       String?  @db.Text
+  sortOrder     Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  profile CareerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, sortOrder])
+}
+
+model CareerLink {
+  id        String         @id @default(uuid()) @db.Uuid
+  profileId String         @db.Uuid
+  type      CareerLinkType
+  label     String?
+  url       String
+  sortOrder Int            @default(0)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  profile CareerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, sortOrder])
+}
+
+model CareerResumeVersion {
+  id              String              @id @default(uuid()) @db.Uuid
+  profileId       String              @db.Uuid
+  label           String
+  version         Int                 @default(1)
+  fileName        String?
+  mimeType        String?
+  byteSize        Int?
+  storageProvider String?
+  storageKey      String?
+  notes           String?             @db.Text
+  status          ResumeVersionStatus @default(DRAFT)
+  isPrimary       Boolean             @default(false)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  profile CareerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId, isPrimary])
+  @@index([profileId, status])
+}
+
+model Employer {
+  id                 String                     @id @default(uuid()) @db.Uuid
+  name               String
+  slug               String                     @unique
+  description        String?                    @db.Text
+  website            String?
+  logoRef            String?
+  location           String?
+  verificationStatus EmployerVerificationStatus @default(PENDING)
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  jobs         Job[]
+  applications JobApplication[]
+
+  @@index([verificationStatus])
+  @@index([location])
+}
+
+model Job {
+  id              String               @id @default(uuid()) @db.Uuid
+  employerId      String               @db.Uuid
+  title           String
+  slug            String               @unique
+  description     String               @db.Text
+  employmentType  CareerEmploymentType?
+  workMode        CareerWorkMode?
+  location        String?
+  experienceMin   Int?
+  experienceMax   Int?
+  salaryMin       Int?
+  salaryMax       Int?
+  skills          String[]
+  category        String?
+  status          JobStatus            @default(DRAFT)
+  applicationUrl  String?
+  postedAt        DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  employer     Employer         @relation(fields: [employerId], references: [id], onDelete: Cascade)
+  savedBy      SavedJob[]
+  applications JobApplication[]
+
+  @@index([employerId])
+  @@index([status])
+  @@index([category])
+  @@index([workMode])
+  @@index([location])
+  @@index([postedAt])
+}
+
+model SavedJob {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  jobId     String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job  Job  @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([userId])
+  @@index([jobId])
+}
+
+model JobApplication {
+  id           String               @id @default(uuid()) @db.Uuid
+  userId       String               @db.Uuid
+  jobId        String?              @db.Uuid
+  employerId   String?              @db.Uuid
+  roleTitle    String?
+  status       JobApplicationStatus @default(APPLIED)
+  appliedAt    DateTime?
+  nextActionAt DateTime?
+  notes        String?              @db.Text
+  source       String?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  job             Job?               @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  employer        Employer?          @relation(fields: [employerId], references: [id], onDelete: SetNull)
+  events          ApplicationEvent[]
+  interviewRounds InterviewRound[]
+
+  @@index([userId, status])
+  @@index([jobId])
+  @@index([employerId])
+}
+
+model ApplicationEvent {
+  id            String   @id @default(uuid()) @db.Uuid
+  applicationId String   @db.Uuid
+  type          String
+  title         String
+  description   String?  @db.Text
+  occurredAt    DateTime
+  metadata      Json?
+  createdAt     DateTime @default(now())
+
+  application JobApplication @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([applicationId, occurredAt])
+}
+
+model InterviewRound {
+  id            String               @id @default(uuid()) @db.Uuid
+  userId        String               @db.Uuid
+  applicationId String?              @db.Uuid
+  type          InterviewRoundType
+  title         String
+  scheduledAt   DateTime?
+  status        InterviewRoundStatus @default(PENDING)
+  notes         String?              @db.Text
+  createdAt     DateTime             @default(now())
+  updatedAt     DateTime             @updatedAt
+
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  application JobApplication?     @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  practice    InterviewPractice[]
+
+  @@index([userId, status])
+  @@index([applicationId])
+}
+
+model InterviewQuestion {
+  id         String                      @id @default(uuid()) @db.Uuid
+  category   String
+  question   String                      @db.Text
+  difficulty InterviewQuestionDifficulty @default(MEDIUM)
+  roleTag    String?
+  active     Boolean                     @default(true)
+  createdAt  DateTime                    @default(now())
+  updatedAt  DateTime                    @updatedAt
+
+  practice InterviewPractice[]
+
+  @@index([category, active])
+  @@index([difficulty])
+  @@index([roleTag])
+}
+
+model InterviewPractice {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @db.Uuid
+  questionId       String?  @db.Uuid
+  interviewRoundId String?  @db.Uuid
+  answer           String?  @db.Text
+  score            Int?
+  practicedAt      DateTime @default(now())
+  feedback         String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question       InterviewQuestion? @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  interviewRound InterviewRound?  @relation(fields: [interviewRoundId], references: [id], onDelete: SetNull)
+
+  @@index([userId, practicedAt])
+  @@index([questionId])
+  @@index([interviewRoundId])
+}
+
+model CareerSupportRequest {
+  id          String                     @id @default(uuid()) @db.Uuid
+  userId      String                     @db.Uuid
+  type        CareerSupportRequestType
+  subject     String
+  description String                     @db.Text
+  status      CareerSupportRequestStatus @default(OPEN)
+  priority    CareerSupportPriority      @default(MEDIUM)
+  assignedTo  String?
+  createdAt   DateTime                   @default(now())
+  updatedAt   DateTime                   @updatedAt
+
+  user  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks CareerSupportTask[]
+
+  @@index([userId, status])
+  @@index([priority])
+}
+
+model CareerSupportTask {
+  id          String                  @id @default(uuid()) @db.Uuid
+  requestId   String                  @db.Uuid
+  title       String
+  description String?                 @db.Text
+  status      CareerSupportTaskStatus @default(PENDING)
+  dueAt       DateTime?
+  completedAt DateTime?
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+
+  request CareerSupportRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([requestId, status])
 }
