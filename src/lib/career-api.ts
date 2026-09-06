@@ -250,6 +250,36 @@ export type InterviewQuestionListResult = {
   meta: { total: number; limit: number; offset: number }
 }
 
+export type CareerSupportRequestType = "RESUME_REVIEW" | "INTERVIEW_PREP" | "JOB_SEARCH" | "GENERAL"
+export type CareerSupportRequestStatus = "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED"
+export type CareerSupportPriority = "LOW" | "MEDIUM" | "HIGH"
+export type CareerSupportTaskStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED"
+
+export type CareerSupportTask = {
+  id: string
+  requestId: string
+  title: string
+  description: string | null
+  status: CareerSupportTaskStatus
+  dueAt: string | null
+  completedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type CareerSupportRequest = {
+  id: string
+  type: CareerSupportRequestType
+  subject: string
+  description: string
+  status: CareerSupportRequestStatus
+  priority: CareerSupportPriority
+  assignedTo: string | null
+  tasks: CareerSupportTask[]
+  createdAt: string
+  updatedAt: string
+}
+
 async function parseJson<T>(response: Response): Promise<T> {
   const data = (await response.json()) as T | ApiError
   if (!response.ok) {
@@ -461,6 +491,39 @@ export async function createPracticeRecord(input: {
   feedback?: string | null
 }): Promise<InterviewPractice> {
   const result = await careerMutate<{ data: InterviewPractice }>("/career/practice", "POST", input)
+  return result.data
+}
+
+export async function listSupportRequests(): Promise<CareerSupportRequest[]> {
+  const result = await careerGet<{ data: CareerSupportRequest[] }>("/career/support")
+  return result.data
+}
+
+export async function fetchSupportRequest(id: string): Promise<CareerSupportRequest> {
+  const result = await careerGet<{ data: CareerSupportRequest }>(`/career/support/${id}`)
+  return result.data
+}
+
+export async function createSupportRequest(input: {
+  type: CareerSupportRequestType
+  subject: string
+  description: string
+  priority?: CareerSupportPriority
+}): Promise<CareerSupportRequest> {
+  const result = await careerMutate<{ data: CareerSupportRequest }>("/career/support", "POST", input)
+  return result.data
+}
+
+export async function updateSupportRequest(
+  id: string,
+  input: Partial<{
+    subject: string
+    description: string
+    status: CareerSupportRequestStatus
+    priority: CareerSupportPriority
+  }>,
+): Promise<CareerSupportRequest> {
+  const result = await careerMutate<{ data: CareerSupportRequest }>(`/career/support/${id}`, "PATCH", input)
   return result.data
 }
 

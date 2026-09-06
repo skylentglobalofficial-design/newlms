@@ -5,9 +5,10 @@ import { getDomainAccent } from "../../aurora-themes"
 import { GlassSurface } from "../../components/foundation"
 import { AuthDashboardLayout } from "../../components/AuthDashboardShell"
 import { useCareerProfile } from "../../hooks/useCareerProfile"
-import { listApplications, listInterviewRounds, type InterviewRound, type JobApplication } from "../../lib/career-api"
+import { listApplications, listInterviewRounds, listSupportRequests, type CareerSupportRequest, type InterviewRound, type JobApplication } from "../../lib/career-api"
 import { applicationEmployerName, applicationRoleTitle, formatStatusLabel } from "../../components/career/application-utils"
 import { formatInterviewDateTime, formatRoundStatus, formatRoundType, isUpcomingRound, sortRoundsBySchedule } from "../../components/career/interview-utils"
+import { countOpenTasks, formatRequestStatus, formatRequestType, getNextOpenTask, isActiveRequest } from "../../components/career/support-utils"
 import { LoadingBlock, FeedbackBanner } from "../../components/career/section-ui"
 
 const accent = getDomainAccent("career")
@@ -18,15 +19,17 @@ export default function CareerOSOverviewPage() {
   const [recentApplications, setRecentApplications] = useState<Awaited<ReturnType<typeof listApplications>>>([])
   const [appsError, setAppsError] = useState<string | null>(null)
   const [upcomingInterviews, setUpcomingInterviews] = useState<InterviewRound[]>([])
+  const [supportRequests, setSupportRequests] = useState<CareerSupportRequest[]>([])
 
   useEffect(() => {
     let cancelled = false
-    void Promise.all([listApplications(), listInterviewRounds()])
-      .then(([apps, rounds]) => {
+    void Promise.all([listApplications(), listInterviewRounds(), listSupportRequests()])
+      .then(([apps, rounds, support]) => {
         if (!cancelled) {
           setApplicationCount(apps.length)
           setRecentApplications(apps.slice(0, 3))
           setUpcomingInterviews(sortRoundsBySchedule(rounds.filter(isUpcomingRound)).slice(0, 3))
+          setSupportRequests(support)
         }
       })
       .catch(err => {
@@ -52,6 +55,9 @@ export default function CareerOSOverviewPage() {
 
   const displayName = profile.displayName || "Your profile"
   const nextAction = profile.completeness.nextRecommended
+  const activeSupport = supportRequests.filter(isActiveRequest)
+  const nextSupportTask = getNextOpenTask(supportRequests)
+  const openSupportTasks = countOpenTasks(activeSupport)
 
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0 }}>
@@ -141,8 +147,47 @@ export default function CareerOSOverviewPage() {
                 <Link to="/career-os/interviews" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
                   Interview prep
                 </Link>
+                <Link to="/career-os/support" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                  Career support
+                </Link>
               </div>
             </GlassSurface>
+
+            {activeSupport.length > 0 && (
+              <GlassSurface level={2} padding="18px">
+                <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Career support</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: C.white, marginBottom: 4 }}>{activeSupport.length} active request{activeSupport.length === 1 ? "" : "s"}</div>
+                <p style={{ margin: "0 0 10px", color: "rgba(255,255,255,0.42)", fontSize: 12.5 }}>
+                  {openSupportTasks > 0
+                    ? `${openSupportTasks} open task${openSupportTasks === 1 ? "" : "s"}`
+                    : nextSupportTask
+                      ? `Next: ${nextSupportTask.title}`
+                      : "Waiting on support team"}
+                </p>
+                <Link
+                  to={`/career-os/support/${activeSupport[0].id}`}
+                  style={{
+                    display: "block",
+                    textDecoration: "none",
+                    padding: "10px 12px",
+                    borderRadius: T.rControl,
+                    border: `1px solid ${T.lineDark}`,
+                    background: "rgba(255,255,255,0.02)",
+                    marginBottom: 8,
+                  }}
+                >
+                  <div style={{ color: C.white, fontSize: 13, fontWeight: 500, wordBreak: "break-word" }}>
+                    {activeSupport[0].subject}
+                  </div>
+                  <div style={{ color: "rgba(255,255,255,0.42)", fontSize: 12, marginTop: 2 }}>
+                    {[formatRequestType(activeSupport[0].type), formatRequestStatus(activeSupport[0].status)].join(" · ")}
+                  </div>
+                </Link>
+                <Link to="/career-os/support" style={{ display: "inline-block", color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
+                  Open career support →
+                </Link>
+              </GlassSurface>
+            )}
 
             {upcomingInterviews.length > 0 && (
               <GlassSurface level={2} padding="18px">
