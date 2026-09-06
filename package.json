@@ -19,7 +19,8 @@
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "test:auth": "tsx scripts/test-auth.ts",
-    "test:lms": "tsx scripts/test-lms.ts"
+    "test:lms": "tsx scripts/test-lms.ts",
+    "test:career": "tsx scripts/test-career.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
