@@ -2,6 +2,25 @@ const API_BASE = "/api/v1"
 
 export type ApiRole = "student" | "faculty" | "organisation" | "recruiter" | "superadmin"
 
+export type GoogleOAuthStartOptions = {
+  returnTo?: string
+  enrollTarget?: {
+    kind: "course" | "program"
+    slug: string
+  }
+}
+
+export function buildGoogleOAuthStartUrl(options: GoogleOAuthStartOptions = {}): string {
+  const params = new URLSearchParams()
+  if (options.returnTo) params.set("returnTo", options.returnTo)
+  if (options.enrollTarget) {
+    params.set("enrollKind", options.enrollTarget.kind)
+    params.set("enrollSlug", options.enrollTarget.slug)
+  }
+  const query = params.toString()
+  return `${API_BASE}/auth/google${query ? `?${query}` : ""}`
+}
+
 export type ApiAuthUser = {
   id: string
   email: string

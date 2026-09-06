@@ -2,7 +2,7 @@ import "dotenv/config"
 import { PrismaClient, RoleName } from "@prisma/client"
 
 const prisma = new PrismaClient()
-const API_BASE = process.env.API_BASE ?? "http://localhost:3001/api/v1"
+const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 
 type CookieJar = Map<string, string>
 

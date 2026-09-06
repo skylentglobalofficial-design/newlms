@@ -38,12 +38,15 @@ export default defineConfig(({ mode }) => {
       watch: { ignored: ['**/.figma/**'] },
       proxy: {
         '/api': {
-          target: 'http://localhost:3001',
+          target: 'http://localhost:3000',
           changeOrigin: true,
           configure: (proxy) => {
             proxy.on('proxyReq', (proxyReq, req) => {
-              const proto = req.headers['x-forwarded-proto'] ?? 'https'
-              proxyReq.setHeader('x-forwarded-proto', proto)
+              const forwarded = req.headers['x-forwarded-proto']
+              if (forwarded) {
+                const proto = String(forwarded).split(',')[0]?.trim()
+                if (proto) proxyReq.setHeader('x-forwarded-proto', proto)
+              }
             })
           },
         },

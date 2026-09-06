@@ -1,9 +1,15 @@
 import "dotenv/config"
 import crypto from "node:crypto"
-import { PrismaClient } from "@prisma/client"
+import { AuthProvider, RoleName, PrismaClient } from "@prisma/client"
+import { ensureRole } from "../server/src/lib/auth.js"
+import { resolveGoogleAccount, type GoogleIdTokenClaims } from "../server/src/lib/google-oauth.js"
+import {
+  createOAuthState,
+  verifySignedOAuthState,
+} from "../server/src/lib/oauth-state.js"
 
 const prisma = new PrismaClient()
-const API_BASE = process.env.API_BASE ?? "http://localhost:3001/api/v1"
+const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 
 type CookieJar = Map<string, string>
 
@@ -43,13 +49,22 @@ async function request(
     method: options.method ?? "GET",
     headers,
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
+    redirect: "manual",
   })
 
   const setCookie = response.headers.getSetCookie?.() ?? []
   parseSetCookie(setCookie, jar)
 
   const text = await response.text()
-  const data = text ? JSON.parse(text) : null
+  let data: unknown = null
+  if (text) {
+    const contentType = response.headers.get("content-type") ?? ""
+    if (contentType.includes("application/json")) {
+      data = JSON.parse(text)
+    } else {
+      data = text
+    }
+  }
   return { response, data }
 }
 
@@ -66,6 +81,18 @@ function assertNoSecrets(payload: unknown) {
   assert(!serialized.includes("passwordHash"), "Response leaked passwordHash")
   assert(!serialized.includes("secretHash"), "Response leaked secretHash")
   assert(!serialized.includes("tokenHash"), "Response leaked tokenHash")
+}
+
+function googleClaims(sub: string, email: string, name?: string): GoogleIdTokenClaims {
+  return {
+    sub,
+    email,
+    email_verified: true,
+    name,
+    iss: "https://accounts.google.com",
+    aud: process.env.GOOGLE_CLIENT_ID ?? "test-client-id",
+    exp: Math.floor(Date.now() / 1000) + 3600,
+  }
 }
 
 async function main() {
@@ -165,6 +192,66 @@ async function main() {
     body: { email, password },
   })
   assert(badCsrf.response.status === 403, "Invalid CSRF should be rejected")
+
+  console.log("7. Google OAuth start route")
+  const googleConfigured = Boolean(
+    process.env.GOOGLE_CLIENT_ID
+    && process.env.GOOGLE_CLIENT_SECRET
+    && process.env.GOOGLE_REDIRECT_URI,
+  )
+  const googleStart = await request(new Map(), "/auth/google")
+  if (googleConfigured) {
+    assert(googleStart.response.status === 302, "Google OAuth start should redirect")
+    const location = googleStart.response.headers.get("location") ?? ""
+    assert(location.includes("accounts.google.com/o/oauth2"), "Google OAuth redirect URL missing")
+  } else {
+    assert(googleStart.response.status === 503, "Google OAuth start should report missing config")
+  }
+
+  console.log("8. Invalid OAuth state rejected")
+  const badCallback = await request(new Map(), "/auth/google/callback?code=fake-code&state=invalid-state")
+  assert(badCallback.response.status === 302, "Invalid OAuth callback should redirect")
+  const badLocation = badCallback.response.headers.get("location") ?? ""
+  assert(badLocation.includes("error=oauth_state"), "Invalid OAuth state should redirect with oauth_state error")
+
+  console.log("9. OAuth callback provider error handled")
+  const deniedCallback = await request(new Map(), "/auth/google/callback?error=access_denied")
+  assert(deniedCallback.response.status === 302, "OAuth provider error should redirect")
+  const deniedLocation = deniedCallback.response.headers.get("location") ?? ""
+  assert(deniedLocation.includes("error=oauth_denied"), "OAuth provider error should redirect with oauth_denied")
+
+  console.log("10. OAuth state signing helpers")
+  const signed = createOAuthState({ returnTo: "/courses/data-analytics" })
+  const verified = verifySignedOAuthState(signed.signed)
+  assert(verified?.state === signed.state, "Signed OAuth state should verify")
+  assert(verified?.returnTo === "/courses/data-analytics", "OAuth returnTo should round-trip")
+
+  console.log("11. Google identity links existing email account")
+  const linkEmail = `google-link-${Date.now()}@example.com`
+  const studentRole = await ensureRole(RoleName.STUDENT)
+  const passwordUser = await prisma.user.create({
+    data: {
+      email: linkEmail,
+      displayName: "Password User",
+      passwordHash: "hashed-placeholder",
+      roles: { create: { roleId: studentRole.id } },
+    },
+  })
+  const linkedUser = await resolveGoogleAccount(googleClaims(`google-sub-${Date.now()}`, linkEmail, "Google User"))
+  assert(linkedUser.id === passwordUser.id, "Google identity should link to existing email account")
+  const identityCount = await prisma.userIdentity.count({
+    where: { userId: passwordUser.id, provider: AuthProvider.GOOGLE },
+  })
+  assert(identityCount === 1, "Google identity should be linked once")
+
+  console.log("12. Duplicate Google identity cannot create duplicate users")
+  const googleEmail = `google-only-${Date.now()}@example.com`
+  const googleSub = `google-sub-dup-${Date.now()}`
+  const firstGoogleUser = await resolveGoogleAccount(googleClaims(googleSub, googleEmail, "Google Only"))
+  const secondGoogleUser = await resolveGoogleAccount(googleClaims(googleSub, googleEmail, "Google Only"))
+  assert(firstGoogleUser.id === secondGoogleUser.id, "Same Google subject should resolve to one user")
+  const googleUserCount = await prisma.user.count({ where: { email: googleEmail } })
+  assert(googleUserCount === 1, "Duplicate Google login should not create duplicate users")
 
   console.log("All auth lifecycle checks passed.")
   await prisma.$disconnect()

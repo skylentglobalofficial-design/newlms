@@ -23,6 +23,26 @@ import {
   toSafeUser,
   type AuthenticatedRequest,
 } from "../lib/auth.js"
+import {
+  buildGoogleAuthorizationUrl,
+  exchangeGoogleAuthorizationCode,
+  getGoogleOAuthConfig,
+  resolveGoogleAccount,
+  verifyGoogleIdToken,
+} from "../lib/google-oauth.js"
+import {
+  clearOAuthStateCookie,
+  createOAuthState,
+  readOAuthStateCookie,
+  setOAuthStateCookie,
+  verifySignedOAuthState,
+} from "../lib/oauth-state.js"
+import {
+  oauthErrorRedirect,
+  oauthSuccessRedirect,
+  parseEnrollTarget,
+  sanitizeReturnTo,
+} from "../lib/safe-redirect.js"
 
 export const authRouter = Router()
 
@@ -56,6 +76,59 @@ authRouter.get("/csrf", (req, res) => {
   const csrfToken = generateCsrfToken()
   res.cookie(CSRF_COOKIE, csrfToken, csrfCookieOptions(req))
   res.json({ csrfToken })
+})
+
+authRouter.get("/google", (req, res) => {
+  const config = getGoogleOAuthConfig()
+  if (!config) {
+    return res.status(503).json({ error: "Google OAuth is not configured" })
+  }
+
+  try {
+    const returnTo = sanitizeReturnTo(req.query.returnTo)
+    const enrollTarget = parseEnrollTarget(req.query.enrollKind, req.query.enrollSlug)
+    const { state, nonce, signed } = createOAuthState({ returnTo, enrollTarget })
+    setOAuthStateCookie(res, req, signed)
+    const authorizationUrl = buildGoogleAuthorizationUrl({ state, nonce })
+    return res.redirect(authorizationUrl)
+  } catch (error) {
+    console.error("Google OAuth start failed:", error instanceof Error ? error.message : error)
+    return res.redirect(oauthErrorRedirect("oauth_start"))
+  }
+})
+
+authRouter.get("/google/callback", async (req, res) => {
+  const oauthError = typeof req.query.error === "string" ? req.query.error : null
+  if (oauthError) {
+    return res.redirect(oauthErrorRedirect("oauth_denied"))
+  }
+
+  const code = typeof req.query.code === "string" ? req.query.code : null
+  const state = typeof req.query.state === "string" ? req.query.state : null
+  const signedState = readOAuthStateCookie(req)
+  const payload = verifySignedOAuthState(signedState)
+
+  clearOAuthStateCookie(res, req)
+
+  if (!code || !state || !payload || payload.state !== state) {
+    return res.redirect(oauthErrorRedirect("oauth_state"))
+  }
+
+  try {
+    const { idToken } = await exchangeGoogleAuthorizationCode(code)
+    const claims = await verifyGoogleIdToken(idToken, payload.nonce)
+    const user = await resolveGoogleAccount(claims)
+    const { sessionToken, csrfToken } = await createSession(user.id)
+    setSessionCookies(res, req, sessionToken, csrfToken)
+
+    return res.redirect(oauthSuccessRedirect({
+      returnTo: payload.returnTo ?? null,
+      enrollTarget: payload.enrollTarget ?? null,
+    }))
+  } catch (error) {
+    console.error("Google OAuth callback failed:", error instanceof Error ? error.message : error)
+    return res.redirect(oauthErrorRedirect("oauth_failed"))
+  }
 })
 
 authRouter.post("/signup", requireCsrf, async (req, res) => {
