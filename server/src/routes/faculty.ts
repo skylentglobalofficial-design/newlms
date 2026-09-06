@@ -113,9 +113,17 @@ async function loadSuperadminFacultyDashboard() {
   }
 }
 
+function isDemoFacultyAccount(email: string | null | undefined) {
+  return email?.endsWith("@demo.skylent.dev") ?? false
+}
+
 facultyRouter.get("/dashboard", requireAuth, requireRoles("faculty", "superadmin"), async (req: AuthenticatedRequest, res) => {
   try {
-    const data = hasApiRole(req, "superadmin") ? await loadSuperadminFacultyDashboard() : emptyFacultyDashboard()
+    const canLoadTeachingData =
+      hasApiRole(req, "superadmin") ||
+      (hasApiRole(req, "faculty") && isDemoFacultyAccount(req.auth?.user.email))
+
+    const data = canLoadTeachingData ? await loadSuperadminFacultyDashboard() : emptyFacultyDashboard()
     res.json({ data })
   } catch (error) {
     console.error("Failed to load faculty dashboard:", error)
