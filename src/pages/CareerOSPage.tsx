@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell, JobDrawer, ApplyModal } from '../components/shared'
 import { Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader } from '../components/ui'
 import { Aurora, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
+import { ProductVisual } from '../components/product/ProductVisuals'
 import { getDomainAccent } from '../aurora-themes'
 import { jobs, programs } from '../data'
 import type { Job } from '../data'
@@ -32,56 +33,14 @@ const CAREER_NAV_ITEMS: ContextualNavItem[] = [
 // ─── HERO VISUAL ──────────────────────────────────────────────────────────────
 
 function CareerHeroVisual() {
-  const sampleJob = jobs[0]
-
   return (
-    <div className="career-hero-visual" style={{ position: 'relative', minHeight: 400 }}>
-      <GlassSurface level={2} padding="20px 22px" style={{ position: 'relative', zIndex: 2 }}>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Career OS workspace</div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '72px 1fr', gap: 14, padding: '14px 0', borderBottom: `1px solid ${T.lineDark}`, alignItems: 'center' }}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: accent.subtle, border: `1px solid ${accent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>
-              —
-            </div>
-            <div>
-              <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)', marginBottom: 4 }}>PROFILE</div>
-              <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>Your professional profile</div>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>Identity · Skills · Portfolio</div>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '72px 1fr', gap: 14, padding: '14px 0', borderBottom: `1px solid ${T.lineDark}`, alignItems: 'center' }}>
-            <div style={{ width: 48, height: 48, borderRadius: 8, background: 'rgba(255,255,255,0.04)', border: `1px dashed ${T.lineDarkStrong}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)' }}>
-              PRJ
-            </div>
-            <div>
-              <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)', marginBottom: 4 }}>PROOF</div>
-              <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>Program projects</div>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>Portfolio links from coursework</div>
-            </div>
-          </div>
-
-          {sampleJob && (
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, padding: '14px 0', alignItems: 'center' }}>
-              <div>
-                <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 4 }}>OPPORTUNITY</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{sampleJob.role}</div>
-                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>{sampleJob.company} · {sampleJob.mode}</div>
-              </div>
-              <div style={{ background: accent.primary, color: C.white, borderRadius: 6, padding: '8px 14px', fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-body)' }}>
-                Apply
-              </div>
-            </div>
-          )}
-        </div>
-      </GlassSurface>
-
+    <div className="career-hero-visual" style={{ position: 'relative', minHeight: 'clamp(380px, 48vh, 520px)' }}>
+      <ProductVisual id="career-workspace" themeId="career" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
       <div
         aria-hidden
         style={{
           position: 'absolute',
-          inset: '-8% -6%',
+          inset: '-6% -5%',
           border: `1px dashed ${accent.border}`,
           borderRadius: T.rCard,
           pointerEvents: 'none',
@@ -750,14 +709,14 @@ export default function CareerOSPage() {
       <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
         <Aurora themeId="career" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero">
+          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero career-page-hero">
             <FadeIn>
               <Eyebrow tone="dark" accent>Career OS</Eyebrow>
               <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
-                Your career,<br />as a product.
+                Profile → proof → apply → track.
               </h1>
               <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
-                Interview prep and a job board in one workspace. Unlocks after a Professional Program. Personal scores stay empty until they are yours.
+                A career workspace with interview prep and a job board. Unlocks after a Professional Program. See what happens after you apply.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Professional Programs</Button>
@@ -767,16 +726,8 @@ export default function CareerOSPage() {
               </div>
             </FadeIn>
             <FadeIn delay={80}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <ContextualNavPanel
-                  items={CAREER_NAV_ITEMS}
-                  themeId="career"
-                  title="Career OS"
-                  activeId={activeSection}
-                />
-                <div className="career-hero-visual-wrap">
-                  <CareerHeroVisual />
-                </div>
+              <div className="career-hero-visual-wrap">
+                <CareerHeroVisual />
               </div>
             </FadeIn>
           </div>

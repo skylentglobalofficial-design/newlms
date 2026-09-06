@@ -2,14 +2,20 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { C, FadeIn, EnrollmentModal, PageShell } from '../components/shared'
 import {
-  T, Section, SectionHeader, Eyebrow, Button, FlowStrip, Badge,
+  T, Section, SectionHeader, Eyebrow, Button, Badge,
 } from '../components/ui'
-import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
+import { Aurora, GlassSurface } from '../components/foundation'
 import { resolveAuroraTheme, getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 import ProgramWorkflowVisual from '../components/program/ProgramWorkflowVisual'
+import {
+  ProgramOutcomesSection,
+  ProgramCurriculumRail,
+  ProgramLearningSection,
+  ProgramCareerSection,
+} from '../components/program/ProgramSections'
+import { ProductVisual, resolveProgramVisualId } from '../components/product/ProductVisuals'
 import { programs } from '../data'
 import type { ProgramType, EnrollmentStatus } from '../data'
-import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO, PHOTO } from '../media'
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
@@ -191,13 +197,13 @@ export default function ProgramPage() {
   const isCareerOS = !!program?.careerSupport
   const enrollStatus = (program?.enrollmentStatus ?? 'open') as EnrollmentStatus
   const typeLabel = program ? TYPE_LABELS[program.programType] : ''
-  const heroPhoto = program ? (PROGRAM_PHOTO[program.slug] ?? DEFAULT_PROGRAM_PHOTO) : DEFAULT_PROGRAM_PHOTO
   const ctaLabel = program?.programType === 'PROFESSIONAL' && enrollStatus === 'open' ? 'Apply Now' : CTA_LABEL[enrollStatus]
   const auroraTheme: AuroraThemeId = program ? resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType) : 'general'
   const domainAccent = getDomainAccent(auroraTheme)
 
   const navSections: NavSection[] = program ? [
     { id: 'overview', label: 'Overview' },
+    { id: 'outcomes', label: 'Outcomes' },
     ...(program.curriculumDetail?.length ? [{ id: 'curriculum', label: 'Curriculum' }] : []),
     ...(program.projectsDetail?.length ? [{ id: 'projects', label: 'Projects' }] : []),
     ...(program.projectsDetail?.length ? [{ id: 'tools', label: 'Tools' }] : []),
@@ -239,6 +245,7 @@ export default function ProgramPage() {
 
   const highlightTier = program.pricing.find(p => p.highlight) ?? program.pricing[0]
   const allPricingFeatures = Array.from(new Set(program.pricing.flatMap(p => p.features)))
+  const programVisualId = resolveProgramVisualId(program.slug, program.programType)
 
   return (
     <PageShell auroraTheme={auroraTheme}>
@@ -253,7 +260,7 @@ export default function ProgramPage() {
             ← ALL PROGRAMS
           </button>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr min(340px, 32%)', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }} className="program-detail-grid">
+          <div className="program-hero-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 0.88fr) minmax(0, 1.12fr) minmax(260px, 0.72fr)', gap: 'clamp(24px,4vw,40px)', alignItems: 'start' }}>
             <div>
               <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
                 <Badge tone="dark" accent>{typeLabel}</Badge>
@@ -262,41 +269,33 @@ export default function ProgramPage() {
                 {enrollStatus === 'coming_soon' && <Badge tone="dark">Coming Soon</Badge>}
               </div>
 
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '0 0 16px', maxWidth: 640 }}>
+              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '0 0 12px', maxWidth: 560 }}>
                 {program.name}
               </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
+              <p style={{ color: domainAccent.text, fontSize: 15, fontWeight: 500, margin: '0 0 14px', maxWidth: 520 }}>
+                Outcome: {program.outcome}
+              </p>
+              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 24px' }}>
                 {program.desc}
               </p>
 
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 28 }}>
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 0 }}>
                 <Button variant="primary" size="lg" themeId={auroraTheme} onClick={() => setApplyOpen(true)}>{ctaLabel} →</Button>
                 <Button
                   variant="secondary"
                   size="lg"
-                  onClick={() => scrollToSection(program.curriculumDetail?.length ? 'curriculum' : 'overview')}
+                  onClick={() => scrollToSection(program.curriculumDetail?.length ? 'curriculum' : 'outcomes')}
                 >
                   {isExamPrep ? 'View Subjects' : 'View Curriculum'}
                 </Button>
               </div>
-
-              {/* Domain-native workflow — primary visual anchor */}
-              <FadeIn delay={60}>
-                <div style={{ marginTop: 4 }}>
-                  <ProgramWorkflowVisual slug={program.slug} programType={program.programType} programName={program.name} />
-                </div>
-              </FadeIn>
-
-              {program.whatYouWillLearn && program.whatYouWillLearn.length > 0 && (
-                <FadeIn delay={100}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px 28px', marginTop: 28 }} className="two-col-sm">
-                    {program.whatYouWillLearn.slice(0, 4).map((item, i) => (
-                      <CheckItem key={i} label={item} accent={domainAccent.primary} />
-                    ))}
-                  </div>
-                </FadeIn>
-              )}
             </div>
+
+            <FadeIn delay={60}>
+              <div className="program-hero-visual-col" style={{ minHeight: 'clamp(360px, 48vh, 520px)' }}>
+                <ProgramWorkflowVisual slug={program.slug} programType={program.programType} programName={program.name} />
+              </div>
+            </FadeIn>
 
             <FadeIn delay={80}>
               <EnrollmentPanel program={program} status={enrollStatus} ctaLabel={ctaLabel} onCTA={() => setApplyOpen(true)} accent={domainAccent} />
@@ -397,6 +396,8 @@ export default function ProgramPage() {
         )}
       </Section>
 
+      <ProgramOutcomesSection program={program} themeId={auroraTheme} accent={domainAccent} />
+
       {/* ── CURRICULUM PATH ───────────────────────────────────────────────── */}
       {program.curriculumDetail && program.curriculumDetail.length > 0 && (
         <Section id="curriculum" tone="canvas" divider style={{ paddingTop: T.sectionSm }}>
@@ -414,7 +415,16 @@ export default function ProgramPage() {
             )}
           </FadeIn>
 
-          <div style={{ marginTop: 48, position: 'relative' }}>
+          <div style={{ marginTop: 48, display: 'grid', gridTemplateColumns: 'minmax(220px, 0.85fr) 1fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }} className="two-col program-curriculum-layout">
+            {program.curriculumDetail && (
+              <FadeIn>
+                <ProgramCurriculumRail
+                  themeId={auroraTheme}
+                  modules={program.curriculumDetail.map(m => ({ number: m.number, title: m.title, duration: m.duration }))}
+                />
+              </FadeIn>
+            )}
+            <div style={{ position: 'relative' }}>
             {program.curriculumDetail.map((mod, i) => {
               const isOpen = curriculumOpen === mod.number
               const isLast = i === program.curriculumDetail!.length - 1
@@ -465,6 +475,7 @@ export default function ProgramPage() {
                 </FadeIn>
               )
             })}
+            </div>
           </div>
         </Section>
       )}
@@ -477,7 +488,7 @@ export default function ProgramPage() {
               tone="dark"
               eyebrow="Projects"
               title="What you will build."
-              lead="Portfolio-ready work reviewed by industry mentors — not placeholder exercises."
+              lead="Portfolio-ready work reviewed by mentors — applied deliverables, not placeholder exercises."
             />
           </FadeIn>
 
@@ -488,54 +499,22 @@ export default function ProgramPage() {
             return (
               <FadeIn delay={40}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'center', marginTop: 36 }} className="two-col program-project-featured">
-                  <GlassSurface level={3} padding="22px 24px">
-                    <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Project pipeline</div>
-                    {program.slug === 'data-science-ai' ? (
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }} className="program-artifact-panels">
-                        <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: 12, border: `1px solid ${T.lineDark}` }}>
-                          <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: domainAccent.text, marginBottom: 8, letterSpacing: '0.06em' }}>DATASET</div>
-                          {['id', 'feature', 'label'].map(h => (
-                            <div key={h} style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.35)', padding: '2px 0', borderBottom: `1px solid ${T.lineDark}` }}>{h}</div>
-                          ))}
-                        </div>
-                        <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: 12, border: `1px solid ${T.lineDark}` }}>
-                          <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: domainAccent.text, marginBottom: 8, letterSpacing: '0.06em' }}>MODEL</div>
-                          {['precision', 'recall', 'f1'].map((m, i) => (
-                            <div key={m} style={{ marginBottom: 5 }}>
-                              <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
-                                <div style={{ height: '100%', width: `${[78, 72, 75][i]}%`, background: domainAccent.primary, borderRadius: 2, opacity: 0.7 }} />
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        <div style={{ background: domainAccent.subtle, borderRadius: 8, padding: 12, border: `1px solid ${domainAccent.border}` }}>
-                          <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: domainAccent.textMuted, marginBottom: 8, letterSpacing: '0.06em' }}>RESULT</div>
-                          <div style={{ fontSize: 10, color: C.white, lineHeight: 1.45 }}>Segment flagged for review</div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-                        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: 14, minHeight: 72 }}>
-                          <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 8 }}>INPUT</div>
-                          <div style={{ height: 5, width: '70%', background: 'rgba(255,255,255,0.1)', borderRadius: 2 }} />
-                        </div>
-                        <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: 14, minHeight: 72 }}>
-                          <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 8 }}>OUTPUT</div>
-                          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)' }}>Deliverable ready</div>
-                        </div>
-                      </div>
-                    )}
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 14 }}>
-                      {proj.skills.join(' · ')}
-                    </div>
-                  </GlassSurface>
+                  <ProductVisual
+                    id={programVisualId}
+                    themeId={auroraTheme}
+                    style={{ minHeight: 240 }}
+                    label={`${proj.title} · workspace`}
+                  />
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
                       <span className="skylent-label" style={{ color: 'rgba(255,255,255,0.3)' }}>Project {String(featuredProject + 1).padStart(2, '0')}</span>
                       <span style={{ color: diffColor, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.06em' }}>{proj.difficulty}</span>
                     </div>
                     <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 14px' }}>{proj.title}</h3>
-                    <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: 0 }}>{proj.what}</p>
+                    <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 14px' }}>{proj.what}</p>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
+                      {proj.skills.join(' · ')}
+                    </div>
                   </div>
                 </div>
               </FadeIn>
@@ -595,40 +574,7 @@ export default function ProgramPage() {
       )}
 
       {/* ── LEARNING EXPERIENCE ───────────────────────────────────────────── */}
-      {program.learningExperience && program.learningExperience.length > 0 && (
-        <Section id="experience" tone="canvas" divider>
-          <FadeIn>
-            <SectionHeader
-              tone="dark"
-              eyebrow="Learning experience"
-              title={isExamPrep ? 'How preparation is structured' : 'How this program is delivered'}
-            />
-            <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 0 }}>
-              {program.learningExperience.map((item, i) => (
-                <div key={i} style={{ display: 'grid', gridTemplateColumns: '40px 1fr', gap: 20, padding: '16px 0', borderBottom: i < program.learningExperience!.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: domainAccent.text, paddingTop: 2 }}>{String(i + 1).padStart(2, '0')}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 15, lineHeight: 1.65 }}>{item}</div>
-                </div>
-              ))}
-            </div>
-          </FadeIn>
-
-          {program.programType === 'PROFESSIONAL' && (
-            <FadeIn delay={120}>
-              <div style={{ marginTop: 32 }}>
-                <MediaImage
-                  src={PHOTO.workshop}
-                  alt="Learners in a workshop session"
-                  aspect="21/9"
-                  overlay="full"
-                  overlayText="Live sessions · Expert workshops · Cohort events"
-                  objectPosition="center 40%"
-                />
-              </div>
-            </FadeIn>
-          )}
-        </Section>
-      )}
+      <ProgramLearningSection program={program} themeId={auroraTheme} accent={domainAccent} isExamPrep={isExamPrep} />
 
       {/* ── FACULTY ───────────────────────────────────────────────────────── */}
       {program.faculty && program.faculty.length > 0 && (
@@ -665,44 +611,7 @@ export default function ProgramPage() {
       )}
 
       {/* ── CAREER OS ─────────────────────────────────────────────────────── */}
-      {isCareerOS && (
-        <Section id="career" tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
-          <FadeIn>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }} className="two-col">
-              <div>
-                <Eyebrow tone="dark" accent>Career OS</Eyebrow>
-                <h2 className="skylent-display-md" style={{ color: C.white, margin: '18px 0 16px' }}>
-                  From program completion to job applications.
-                </h2>
-                <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.75, margin: '0 0 32px', maxWidth: 440 }}>
-                  Completing this Professional Program activates Career OS: profile, interview preparation, job board, and application tracking.
-                </p>
-                <FlowStrip
-                  tone="dark"
-                  steps={[
-                    { label: 'Complete Program', sub: 'Finish curriculum & projects' },
-                    { label: 'Access Granted', sub: 'Career OS unlocks', highlight: true },
-                    { label: 'Apply & Track', sub: 'Jobs & interviews' },
-                  ]}
-                />
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                {[
-                  { label: 'Resume & Profile', desc: 'Build a profile from program work' },
-                  { label: 'Interview Prep', desc: 'Role-specific preparation and mocks' },
-                  { label: 'Job Board', desc: 'Openings you can inspect and apply to' },
-                  { label: 'Applications', desc: 'Track submissions you send' },
-                ].map(({ label, desc }, i, arr) => (
-                  <div key={label} style={{ padding: '18px 0', borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 4 }}>{label}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 13, lineHeight: 1.5 }}>{desc}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </FadeIn>
-        </Section>
-      )}
+      {isCareerOS && <ProgramCareerSection themeId={auroraTheme} accent={domainAccent} />}
 
       {/* ── REVIEWS — honest empty state ──────────────────────────────────── */}
       {!isExamPrep && (
@@ -867,13 +776,11 @@ export default function ProgramPage() {
         <Aurora themeId={auroraTheme} />
         <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <FadeIn>
-            <MediaImage
-              src={heroPhoto}
-              alt={`${program.name} learning environment`}
-              aspect="21/9"
-              overlay="full"
-              style={{ marginBottom: 32 }}
-              objectPosition="center 35%"
+            <ProductVisual
+              id={programVisualId}
+              themeId={auroraTheme}
+              className="program-final-visual"
+              style={{ marginBottom: 32, minHeight: 220 }}
             />
             <Eyebrow tone="dark" accent>Get started</Eyebrow>
             <h2 className="skylent-display-md" style={{ color: C.white, margin: '20px 0 16px' }}>

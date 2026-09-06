@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
 import { Section, SectionHeader, Button, Eyebrow, CTABand, T, Heading } from '../components/ui'
 import { Aurora, MediaImage, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
+import { ProductVisual } from '../components/product/ProductVisuals'
 import { getDomainAccent } from '../aurora-themes'
 import { PHOTO } from '../media'
 
@@ -372,14 +373,14 @@ export default function InstitutionsPage() {
       <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
         <Aurora themeId="institution" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero">
+          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero institution-page-hero">
             <FadeIn>
               <Eyebrow tone="dark" accent>For Institutions</Eyebrow>
               <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
-                Enterprise software<br />for education.
+                Institution OS for education delivery.
               </h1>
               <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
-                Not six marketing cards. Six workflows — schools, colleges, universities, training institutes, assessment partners, and industry — each with a distinct problem and operating model.
+                Programs, batches, learners, assessment, and progress — operational workflows for schools, colleges, universities, and training partners.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <Button variant="primary" themeId="institution" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent</Button>
@@ -387,14 +388,8 @@ export default function InstitutionsPage() {
               </div>
             </FadeIn>
             <FadeIn delay={80}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <ContextualNavPanel
-                  items={INSTITUTION_NAV_ITEMS}
-                  themeId="institution"
-                  title="Institutions"
-                  activeId={activeSection}
-                />
-                <MediaImage src={PHOTO.university} alt="University campus environment" aspect="4/3" overlay="full" objectPosition="center" />
+              <div className="institution-hero-visual-wrap" style={{ minHeight: 'clamp(380px, 48vh, 520px)' }}>
+                <ProductVisual id="institution-pipeline" themeId="institution" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
               </div>
             </FadeIn>
           </div>

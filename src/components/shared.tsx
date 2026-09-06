@@ -738,6 +738,9 @@ export const globalCSS = `
     .career-hero-visual-wrap { display: block !important; }
     .hero-grid, .two-col, .two-col-sm, .skylent-page-hero { grid-template-columns: 1fr !important; gap: 32px !important; }
     .program-detail-grid { grid-template-columns: 1fr !important; }
+    .program-hero-layout { grid-template-columns: 1fr !important; }
+    .program-curriculum-layout { grid-template-columns: 1fr !important; }
+    .program-outcomes-split { grid-template-columns: 1fr !important; }
     .three-col { grid-template-columns: 1fr 1fr !important; }
     .programs-grid { grid-template-columns: 1fr 1fr !important; }
     .intent-grid { grid-template-columns: 1fr 1fr !important; }

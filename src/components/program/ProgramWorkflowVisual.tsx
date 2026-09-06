@@ -41,6 +41,18 @@ const SLUG_WORKFLOW: Record<string, WorkflowStep[]> = {
     { label: 'Solution', detail: 'Reasoning path' },
     { label: 'Score', detail: 'Accuracy trend' },
   ],
+  'generative-ai-program': [
+    { label: 'Prompt', detail: 'Task design' },
+    { label: 'Pipeline', detail: 'LLM workflow' },
+    { label: 'Evaluate', detail: 'Output quality' },
+    { label: 'Project', detail: 'Use case doc' },
+  ],
+  'sql-certificate': [
+    { label: 'Dataset', detail: 'Business tables' },
+    { label: 'SQL', detail: 'Query practice' },
+    { label: 'Result', detail: 'Answer set' },
+    { label: 'Assessment', detail: 'Timed test' },
+  ],
   'product-management': [
     { label: 'Campaign', detail: 'Goal & audience' },
     { label: 'Channel', detail: 'Touchpoints' },
@@ -283,8 +295,8 @@ function GenericWorkspace({ accent, steps }: { accent: Accent; steps: WorkflowSt
 }
 
 function resolveWorkspace(slug: string, programType: ProgramType, accent: Accent, steps: WorkflowStep[]) {
-  if (slug === 'data-science-ai') return <DataScienceWorkspace accent={accent} />
-  if (slug === 'data-analytics-pro') return <DataAnalyticsWorkspace accent={accent} />
+  if (slug === 'data-science-ai' || slug === 'generative-ai-program') return <DataScienceWorkspace accent={accent} />
+  if (slug === 'data-analytics-pro' || slug === 'sql-certificate') return <DataAnalyticsWorkspace accent={accent} />
   if (slug === 'full-stack') return <FullStackWorkspace accent={accent} />
   if (slug === 'product-management') return <MarketingWorkspace accent={accent} />
   if (programType === 'EXAM_PREP' || slug.includes('jee') || slug.includes('cat') || slug.includes('neet')) {

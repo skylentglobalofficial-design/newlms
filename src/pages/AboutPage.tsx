@@ -6,6 +6,7 @@ import {
 import {
   Aurora, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem,
 } from '../components/foundation'
+import { ProductVisual } from '../components/product/ProductVisuals'
 import { getDomainAccent } from '../aurora-themes'
 
 const accent = getDomainAccent('general')
@@ -23,50 +24,9 @@ const ABOUT_NAV_ITEMS: ContextualNavItem[] = [
 // ─── HERO VISUAL ──────────────────────────────────────────────────────────────
 
 function AboutHeroVisual() {
-  const pillars = [
-    { label: 'Education', sub: 'School · UG · PG · Exams', theme: getDomainAccent('schooling') },
-    { label: 'Skills', sub: 'Webinars · Certificates · Pro', theme: getDomainAccent('professional') },
-    { label: 'Career OS', sub: 'Profile · Jobs · Applications', theme: getDomainAccent('career') },
-    { label: 'Institutions', sub: 'Schools · Colleges · Training', theme: getDomainAccent('institution') },
-  ]
-
   return (
-    <div style={{ position: 'relative', minHeight: 420 }}>
-      <GlassSurface level={2} padding="0" style={{ overflow: 'hidden' }}>
-        <div style={{ padding: '16px 20px', borderBottom: `1px solid ${T.lineDark}` }}>
-          <div className="skylent-label" style={{ color: accent.text }}>Skylent OS</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.white, marginTop: 8 }}>
-            One operating system
-          </div>
-          <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 12.5, lineHeight: 1.6, margin: '8px 0 0' }}>
-            Academic learning, practical capability, and career opportunity — connected.
-          </p>
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          {pillars.map((pillar, i) => (
-            <div
-              key={pillar.label}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '28px 1fr',
-                gap: 14,
-                padding: '14px 20px',
-                borderBottom: i < pillars.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                borderLeft: `2px solid ${pillar.theme.primary}`,
-                background: pillar.theme.subtle,
-              }}
-            >
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: pillar.theme.text, paddingTop: 2 }}>
-                {String(i + 1).padStart(2, '0')}
-              </div>
-              <div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 3 }}>{pillar.label}</div>
-                <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 11.5 }}>{pillar.sub}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </GlassSurface>
+    <div className="about-hero-visual" style={{ position: 'relative', minHeight: 'clamp(380px, 48vh, 520px)' }}>
+      <ProductVisual id="about-ecosystem" themeId="general" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
       <div
         aria-hidden
         style={{
@@ -93,14 +53,14 @@ function HeroSection() {
       <section id="story" style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
         <Aurora themeId="general" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'start' }} className="two-col skylent-page-hero">
+          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'start' }} className="two-col skylent-page-hero about-page-hero">
             <FadeIn>
               <Eyebrow tone="dark" accent>About Skylent</Eyebrow>
               <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
-                Why Skylent exists.
+                Education → skills → career → institutions.
               </h1>
               <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 20px' }}>
-                Education should not end when the class ends. Skylent connects academic learning, practical capability, and career opportunity in one operating system.
+                Skylent connects academic learning, practical capability, and career opportunity in one operating system — with product depth, not marketing claims.
               </p>
               <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.75, maxWidth: 520, margin: '0 0 28px' }}>
                 We are building the infrastructure where students, parents, institutions, and employers can meet — with product depth, not marketing claims.
@@ -111,15 +71,7 @@ function HeroSection() {
               </div>
             </FadeIn>
             <FadeIn delay={80}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <ContextualNavPanel
-                  items={ABOUT_NAV_ITEMS}
-                  themeId="general"
-                  title="About"
-                  activeId={activeSection}
-                />
-                <AboutHeroVisual />
-              </div>
+              <AboutHeroVisual />
             </FadeIn>
           </div>
         </div>

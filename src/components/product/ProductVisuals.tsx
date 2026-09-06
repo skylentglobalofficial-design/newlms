@@ -28,6 +28,11 @@ export type ProductVisualId =
   | 'mba-case'
   | 'campaign-funnel'
   | 'curriculum-map'
+  | 'curriculum-rail'
+  | 'learning-loop'
+  | 'career-workspace'
+  | 'institution-pipeline'
+  | 'about-ecosystem'
   | 'generic-program'
 
 type Accent = ReturnType<typeof getDomainAccent>
@@ -218,13 +223,160 @@ function InstitutionDashboard({ accent }: { accent: Accent }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
       {[
-        { k: 'Batches', v: '12' },
-        { k: 'Active', v: '847' },
-        { k: 'At risk', v: '23' },
+        { k: 'Batches', v: 'Schedule view' },
+        { k: 'Learners', v: 'Roster' },
+        { k: 'Progress', v: 'Review queue' },
       ].map(({ k, v }) => (
         <div key={k} style={{ padding: 8, background: 'rgba(255,255,255,0.03)', borderRadius: 8, border: `1px solid ${T.lineDark}` }}>
           <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)' }}>{k}</div>
-          <div style={{ fontSize: 16, fontFamily: 'var(--font-mono)', color: k === 'At risk' ? accent.text : C.white }}>{v}</div>
+          <div style={{ fontSize: 11, color: k === 'Progress' ? accent.text : 'rgba(255,255,255,0.55)', marginTop: 4 }}>{v}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function CareerWorkspace({ accent }: { accent: Accent }) {
+  const sampleSteps = [
+    { label: 'Profile', detail: 'Identity · skills', active: false },
+    { label: 'Proof', detail: 'Program projects', active: false },
+    { label: 'Apply', detail: 'Data Analyst role', active: true },
+    { label: 'Track', detail: 'Application status', active: false },
+  ]
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 10 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        {sampleSteps.map(step => (
+          <div key={step.label} style={{
+            padding: '8px 10px', borderRadius: 6, fontSize: 10,
+            background: step.active ? accent.subtle : 'rgba(255,255,255,0.03)',
+            border: `1px solid ${step.active ? accent.border : T.lineDark}`,
+          }}>
+            <div style={{ color: step.active ? accent.text : 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-mono)', fontSize: 9, marginBottom: 3 }}>{step.label}</div>
+            <div style={{ color: step.active ? C.white : 'rgba(255,255,255,0.4)', fontSize: 10 }}>{step.detail}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ background: 'rgba(0,0,0,0.2)', border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: 12 }}>
+        <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Application</div>
+        <div style={{ fontSize: 11, color: C.white, marginBottom: 8 }}>Submitted · under review</div>
+        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.4)', lineHeight: 1.6 }}>
+          See what happens after you apply
+        </div>
+        <div style={{ marginTop: 12, padding: '8px 10px', background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, fontSize: 9, color: accent.text }}>
+          Prepare → interview round scheduled
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function InstitutionPipeline({ accent }: { accent: Accent }) {
+  const steps = ['Institution', 'Programs', 'Learners', 'Assessment', 'Progress', 'Outcomes']
+  return (
+    <div>
+      <div style={{ display: 'flex', gap: 4, overflowX: 'auto', paddingBottom: 10, marginBottom: 10 }}>
+        {steps.map((step, i) => (
+          <div key={step} style={{ flex: '1 0 64px', textAlign: 'center' }}>
+            <div style={{
+              height: 4, borderRadius: 2, marginBottom: 6,
+              background: i <= 2 ? accent.primary : 'rgba(255,255,255,0.08)',
+              opacity: i <= 2 ? 0.75 : 1,
+            }} />
+            <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: i === 2 ? accent.text : 'rgba(255,255,255,0.35)' }}>{step}</div>
+          </div>
+        ))}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+        <div style={{ padding: 10, background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: 8 }}>
+          <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 6 }}>Batch · Sem 4</div>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.5)' }}>Modules · assessments</div>
+        </div>
+        <div style={{ padding: 10, background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 8 }}>
+          <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 6 }}>Learner progress</div>
+          <div style={{ fontSize: 10, color: C.white }}>At-risk review · outcomes</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function LearningLoop({ accent }: { accent: Accent }) {
+  const phases = [
+    { label: 'Learn', sub: 'Instruction' },
+    { label: 'Practice', sub: 'Exercises' },
+    { label: 'Build', sub: 'Projects' },
+    { label: 'Review', sub: 'Feedback' },
+    { label: 'Prove', sub: 'Assessment' },
+  ]
+  return (
+    <div style={{ display: 'flex', gap: 6, overflowX: 'auto' }}>
+      {phases.map((phase, i) => (
+        <div key={phase.label} style={{ flex: '1 0 72px', textAlign: 'center' }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 8, margin: '0 auto 6px',
+            background: i === 2 ? accent.subtleStrong : 'rgba(255,255,255,0.04)',
+            border: `1px solid ${i === 2 ? accent.border : T.lineDark}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 9, fontFamily: 'var(--font-mono)', color: i === 2 ? accent.text : 'rgba(255,255,255,0.35)',
+          }}>
+            {String(i + 1).padStart(2, '0')}
+          </div>
+          <div style={{ fontSize: 10, color: i === 2 ? C.white : 'rgba(255,255,255,0.5)', fontWeight: i === 2 ? 600 : 400 }}>{phase.label}</div>
+          <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.3)', marginTop: 2 }}>{phase.sub}</div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+type ModuleRailItem = { number: string; title: string; duration?: string }
+
+function CurriculumRail({ accent, modules }: { accent: Accent; modules: ModuleRailItem[] }) {
+  const visible = modules.slice(0, 6)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      {visible.map((mod, i) => (
+        <div key={mod.number} style={{
+          display: 'grid', gridTemplateColumns: '36px 1fr auto', gap: 10, alignItems: 'center',
+          padding: '10px 0', borderBottom: i < visible.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+        }}>
+          <div style={{
+            width: 28, height: 28, borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: i === 1 ? accent.subtle : 'rgba(255,255,255,0.04)',
+            border: `1px solid ${i === 1 ? accent.border : T.lineDark}`,
+            fontSize: 9, fontFamily: 'var(--font-mono)', color: i === 1 ? accent.text : 'rgba(255,255,255,0.35)',
+          }}>
+            {mod.number}
+          </div>
+          <div style={{ fontSize: 11, color: i === 1 ? C.white : 'rgba(255,255,255,0.55)', lineHeight: 1.35 }}>{mod.title}</div>
+          {mod.duration && <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.28)' }}>{mod.duration}</div>}
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function AboutEcosystem({ accent }: { accent: Accent }) {
+  const pillars = [
+    { label: 'Education', theme: getDomainAccent('schooling') },
+    { label: 'Skills', theme: getDomainAccent('professional') },
+    { label: 'Career', theme: getDomainAccent('career') },
+    { label: 'Institutions', theme: getDomainAccent('institution') },
+    { label: 'Employers', theme: accent },
+  ]
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+      {pillars.map((pillar, i) => (
+        <div key={pillar.label} style={{
+          display: 'grid', gridTemplateColumns: '28px 1fr auto', gap: 10, alignItems: 'center',
+          padding: '10px 12px', borderRadius: 8,
+          background: i === 2 ? pillar.theme.subtle : 'rgba(255,255,255,0.03)',
+          border: `1px solid ${i === 2 ? pillar.theme.border : T.lineDark}`,
+        }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: pillar.theme.text }}>{String(i + 1).padStart(2, '0')}</div>
+          <div style={{ fontSize: 12, color: i === 2 ? C.white : 'rgba(255,255,255,0.6)', fontWeight: i === 2 ? 600 : 400 }}>{pillar.label}</div>
+          {i < pillars.length - 1 && <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.2)' }}>→</div>}
         </div>
       ))}
     </div>
@@ -339,10 +491,15 @@ const VISUAL_LABELS: Record<ProductVisualId, string> = {
   'mba-case': 'CAT/MBA · case study',
   'campaign-funnel': 'Marketing · campaign funnel',
   'curriculum-map': 'UG · curriculum map',
+  'curriculum-rail': 'Curriculum · module rail',
+  'learning-loop': 'Learning · workflow',
+  'career-workspace': 'Career OS · workspace',
+  'institution-pipeline': 'Institution OS · pipeline',
+  'about-ecosystem': 'Skylent · ecosystem',
   'generic-program': 'Program · workspace',
 }
 
-function resolveContent(id: ProductVisualId, accent: Accent) {
+function resolveContent(id: ProductVisualId, accent: Accent, modules?: ModuleRailItem[]) {
   switch (id) {
     case 'ecosystem-flow': return <EcosystemFlow accent={accent} />
     case 'career-pipeline': return <CareerPipeline accent={accent} />
@@ -358,11 +515,16 @@ function resolveContent(id: ProductVisualId, accent: Accent) {
     case 'workshop-session': return <SkillsLadder accent={accent} />
     case 'institution-dashboard': return <InstitutionDashboard accent={accent} />
     case 'institution-ops': return <InstitutionOps accent={accent} />
+    case 'institution-pipeline': return <InstitutionPipeline accent={accent} />
     case 'skills-ladder': return <SkillsLadder accent={accent} />
     case 'neet-lab': return <NeetLab accent={accent} />
     case 'mba-case': return <MbaCase accent={accent} />
     case 'campaign-funnel': return <CampaignFunnel accent={accent} />
     case 'curriculum-map': return <CurriculumMap accent={accent} />
+    case 'curriculum-rail': return <CurriculumRail accent={accent} modules={modules ?? []} />
+    case 'learning-loop': return <LearningLoop accent={accent} />
+    case 'career-workspace': return <CareerWorkspace accent={accent} />
+    case 'about-ecosystem': return <AboutEcosystem accent={accent} />
     default: return <AnalyticsWorkspace accent={accent} />
   }
 }
@@ -370,8 +532,11 @@ function resolveContent(id: ProductVisualId, accent: Accent) {
 export function resolveProgramVisualId(slug: string, programType?: ProgramType): ProductVisualId {
   if (slug === 'data-science-ai' || slug === 'generative-ai-program') return 'data-workspace'
   if (slug === 'data-analytics-pro' || slug === 'sql-certificate') return 'analytics-workspace'
-  if (slug === 'full-stack') return 'fullstack-workspace'
-  if (slug.includes('jee') || slug.includes('cat') || slug.includes('neet') || programType === 'EXAM_PREP') return 'exam-interface'
+  if (slug === 'full-stack' || slug === 'full-stack-web') return 'fullstack-workspace'
+  if (slug.includes('neet')) return 'neet-lab'
+  if (slug.includes('cat') || slug === 'product-management') return 'mba-case'
+  if (slug.includes('jee') || programType === 'EXAM_PREP') return 'exam-interface'
+  if (slug.includes('marketing') || slug.includes('digital')) return 'campaign-funnel'
   if (programType === 'SCHOOLING') return 'schooling-classroom'
   if (programType === 'UNDERGRADUATE') return 'college-lab'
   if (programType === 'POSTGRADUATE') return 'research-desk'
@@ -379,23 +544,27 @@ export function resolveProgramVisualId(slug: string, programType?: ProgramType):
   return 'generic-program'
 }
 
+export type { ModuleRailItem }
+
 export function ProductVisual({
   id,
   themeId = 'general',
   className,
   style,
   label,
+  modules,
 }: {
   id: ProductVisualId
   themeId?: AuroraThemeId
   className?: string
   style?: CSSProperties
   label?: string
+  modules?: ModuleRailItem[]
 }) {
   const accent = getDomainAccent(themeId)
   return (
     <Shell label={label ?? VISUAL_LABELS[id]} accent={accent} className={className} style={style}>
-      {resolveContent(id, accent)}
+      {resolveContent(id, accent, modules)}
     </Shell>
   )
 }

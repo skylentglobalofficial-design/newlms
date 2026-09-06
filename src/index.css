@@ -166,6 +166,42 @@ html, body {
 }
 
 @media (max-width: 1100px) {
+  .program-hero-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .program-hero-visual-col {
+    order: 2;
+    min-height: clamp(300px, 44vh, 420px) !important;
+  }
+  .program-hero-layout > :last-child {
+    order: 3;
+  }
+  .program-curriculum-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .program-outcomes-split > *:last-child {
+    min-height: 260px;
+  }
+  .career-page-hero > *:last-child,
+  .institution-page-hero > *:last-child,
+  .about-page-hero > *:last-child {
+    min-height: clamp(300px, 42vh, 400px);
+  }
+}
+
+@media (max-width: 768px) {
+  .program-hero-visual-col,
+  .program-workflow-visual {
+    min-height: clamp(280px, 40vh, 360px) !important;
+  }
+  .career-hero-visual,
+  .institution-hero-visual-wrap,
+  .about-hero-visual {
+    min-height: clamp(280px, 40vh, 360px) !important;
+  }
+}
+
+@media (max-width: 1100px) {
   .home-hero-visual {
     min-height: 0 !important;
   }
