@@ -5,8 +5,9 @@ import { getDomainAccent } from "../../aurora-themes"
 import { GlassSurface } from "../../components/foundation"
 import { AuthDashboardLayout } from "../../components/AuthDashboardShell"
 import { useCareerProfile } from "../../hooks/useCareerProfile"
-import { listApplications, type JobApplication } from "../../lib/career-api"
+import { listApplications, listInterviewRounds, type InterviewRound, type JobApplication } from "../../lib/career-api"
 import { applicationEmployerName, applicationRoleTitle, formatStatusLabel } from "../../components/career/application-utils"
+import { formatInterviewDateTime, formatRoundStatus, formatRoundType, isUpcomingRound, sortRoundsBySchedule } from "../../components/career/interview-utils"
 import { LoadingBlock, FeedbackBanner } from "../../components/career/section-ui"
 
 const accent = getDomainAccent("career")
@@ -16,14 +17,16 @@ export default function CareerOSOverviewPage() {
   const [applicationCount, setApplicationCount] = useState<number | null>(null)
   const [recentApplications, setRecentApplications] = useState<Awaited<ReturnType<typeof listApplications>>>([])
   const [appsError, setAppsError] = useState<string | null>(null)
+  const [upcomingInterviews, setUpcomingInterviews] = useState<InterviewRound[]>([])
 
   useEffect(() => {
     let cancelled = false
-    void listApplications()
-      .then(apps => {
+    void Promise.all([listApplications(), listInterviewRounds()])
+      .then(([apps, rounds]) => {
         if (!cancelled) {
           setApplicationCount(apps.length)
           setRecentApplications(apps.slice(0, 3))
+          setUpcomingInterviews(sortRoundsBySchedule(rounds.filter(isUpcomingRound)).slice(0, 3))
         }
       })
       .catch(err => {
@@ -135,8 +138,42 @@ export default function CareerOSOverviewPage() {
                 <Link to="/career-os/applications" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
                   View applications
                 </Link>
+                <Link to="/career-os/interviews" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                  Interview prep
+                </Link>
               </div>
             </GlassSurface>
+
+            {upcomingInterviews.length > 0 && (
+              <GlassSurface level={2} padding="18px">
+                <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Upcoming interviews</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  {upcomingInterviews.map(round => (
+                    <Link
+                      key={round.id}
+                      to={`/career-os/interviews/${round.id}`}
+                      style={{
+                        textDecoration: "none",
+                        padding: "10px 12px",
+                        borderRadius: T.rControl,
+                        border: `1px solid ${T.lineDark}`,
+                        background: "rgba(255,255,255,0.02)",
+                      }}
+                    >
+                      <div style={{ color: C.white, fontSize: 13, fontWeight: 500, wordBreak: "break-word" }}>
+                        {round.title}
+                      </div>
+                      <div style={{ color: "rgba(255,255,255,0.42)", fontSize: 12, marginTop: 2 }}>
+                        {[formatRoundType(round.type), formatRoundStatus(round.status), round.scheduledAt ? formatInterviewDateTime(round.scheduledAt) : null].filter(Boolean).join(" · ")}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+                <Link to="/career-os/interviews" style={{ display: "inline-block", marginTop: 10, color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
+                  Open interview prep →
+                </Link>
+              </GlassSurface>
+            )}
 
             <GlassSurface level={2} padding="18px">
               <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Applications</div>
