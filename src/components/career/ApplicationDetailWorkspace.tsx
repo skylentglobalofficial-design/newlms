@@ -3,11 +3,12 @@ import { Link, useNavigate } from "react-router-dom"
 import { C, T } from "../../tokens"
 import { getDomainAccent } from "../../aurora-themes"
 import { GlassSurface } from "../foundation"
-import type { ApplicationEvent, JobApplication, JobApplicationStatus } from "../../lib/career-api"
+import type { ApplicationEvent, InterviewRound, JobApplication, JobApplicationStatus } from "../../lib/career-api"
 import {
   deleteApplication,
   fetchApplication,
   listApplicationEvents,
+  listInterviewRounds,
   updateApplication,
 } from "../../lib/career-api"
 import ApplicationTimeline from "./ApplicationTimeline"
@@ -22,6 +23,7 @@ import {
   getNextStatuses,
 } from "./application-utils"
 import { formatWorkMode } from "./job-utils"
+import { formatInterviewDateTime, formatRoundStatus, formatRoundType } from "./interview-utils"
 import {
   FeedbackBanner,
   Field,
@@ -41,6 +43,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
   const navigate = useNavigate()
   const [application, setApplication] = useState<JobApplication | null>(null)
   const [events, setEvents] = useState<ApplicationEvent[]>([])
+  const [interviewRounds, setInterviewRounds] = useState<InterviewRound[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [statusPending, setStatusPending] = useState(false)
@@ -56,12 +59,14 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
     setLoading(true)
     setError(null)
     try {
-      const [app, evts] = await Promise.all([
+      const [app, evts, rounds] = await Promise.all([
         fetchApplication(applicationId),
         listApplicationEvents(applicationId),
+        listInterviewRounds(),
       ])
       setApplication(app)
       setEvents(evts)
+      setInterviewRounds(rounds.filter(r => r.applicationId === applicationId))
       setNotes(app.notes ?? "")
       setSource(app.source ?? "")
       setNextActionAt(app.nextActionAt ? app.nextActionAt.slice(0, 16) : "")
@@ -285,6 +290,42 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
             </p>
           </>
         )}
+      </GlassSurface>
+
+      <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
+        <h2 style={{ margin: "0 0 12px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white }}>
+          Interview rounds
+        </h2>
+        {interviewRounds.length === 0 ? (
+          <p style={{ margin: "0 0 10px", color: "rgba(255,255,255,0.45)", fontSize: 14 }}>
+            No interview rounds yet.
+          </p>
+        ) : (
+          interviewRounds.map(round => (
+            <Link
+              key={round.id}
+              to={`/career-os/interviews/${round.id}`}
+              style={{
+                display: "block",
+                textDecoration: "none",
+                padding: "12px 14px",
+                marginBottom: 8,
+                borderRadius: T.rControl,
+                border: `1px solid ${T.lineDark}`,
+                background: "rgba(255,255,255,0.02)",
+              }}
+            >
+              <div style={{ color: C.white, fontWeight: 600, fontSize: 14, wordBreak: "break-word" }}>{round.title}</div>
+              <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12.5, marginTop: 4 }}>
+                {formatRoundType(round.type)} · {formatRoundStatus(round.status)}
+                {round.scheduledAt ? ` · ${formatInterviewDateTime(round.scheduledAt)}` : ""}
+              </div>
+            </Link>
+          ))
+        )}
+        <Link to="/career-os/interviews" style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 13, textDecoration: "none" }}>
+          Open interview prep →
+        </Link>
       </GlassSurface>
 
       <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>

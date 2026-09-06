@@ -197,6 +197,59 @@ export type ApplicationEvent = {
   createdAt: string
 }
 
+export type InterviewRoundType = "TECHNICAL" | "HR" | "MANAGERIAL" | "OTHER"
+export type InterviewRoundStatus = "SCHEDULED" | "COMPLETED" | "CANCELLED" | "PENDING"
+export type InterviewQuestionDifficulty = "EASY" | "MEDIUM" | "HARD"
+
+export type InterviewRound = {
+  id: string
+  applicationId: string | null
+  type: InterviewRoundType
+  title: string
+  scheduledAt: string | null
+  status: InterviewRoundStatus
+  notes: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type InterviewQuestion = {
+  id: string
+  category: string
+  question: string
+  difficulty: InterviewQuestionDifficulty
+  roleTag: string | null
+  active: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export type InterviewPractice = {
+  id: string
+  questionId: string | null
+  interviewRoundId: string | null
+  answer: string | null
+  score: number | null
+  practicedAt: string
+  feedback: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type InterviewQuestionListParams = {
+  category?: string
+  difficulty?: InterviewQuestionDifficulty
+  roleTag?: string
+  active?: "true" | "false"
+  limit?: string
+  offset?: string
+}
+
+export type InterviewQuestionListResult = {
+  questions: InterviewQuestion[]
+  meta: { total: number; limit: number; offset: number }
+}
+
 async function parseJson<T>(response: Response): Promise<T> {
   const data = (await response.json()) as T | ApiError
   if (!response.ok) {
@@ -345,6 +398,69 @@ export async function createApplication(input: {
   source?: string | null
 }): Promise<JobApplication> {
   const result = await careerMutate<{ data: JobApplication }>("/career/applications", "POST", input)
+  return result.data
+}
+
+export async function listInterviewRounds(): Promise<InterviewRound[]> {
+  const result = await careerGet<{ data: InterviewRound[] }>("/career/interviews")
+  return result.data
+}
+
+export async function createInterviewRound(input: {
+  applicationId?: string | null
+  type: InterviewRoundType
+  title: string
+  scheduledAt?: string | null
+  status?: InterviewRoundStatus
+  notes?: string | null
+}): Promise<InterviewRound> {
+  const result = await careerMutate<{ data: InterviewRound }>("/career/interviews", "POST", input)
+  return result.data
+}
+
+export async function updateInterviewRound(
+  id: string,
+  input: Partial<{
+    applicationId: string | null
+    type: InterviewRoundType
+    title: string
+    scheduledAt: string | null
+    status: InterviewRoundStatus
+    notes: string | null
+  }>,
+): Promise<InterviewRound> {
+  const result = await careerMutate<{ data: InterviewRound }>(`/career/interviews/${id}`, "PATCH", input)
+  return result.data
+}
+
+export async function deleteInterviewRound(id: string): Promise<void> {
+  await careerMutate<{ data: { deleted: boolean } }>(`/career/interviews/${id}`, "DELETE")
+}
+
+export async function listInterviewQuestions(params?: InterviewQuestionListParams): Promise<InterviewQuestionListResult> {
+  const query = params
+    ? `?${new URLSearchParams(Object.entries(params).filter(([, v]) => v !== undefined && v !== "") as [string, string][]).toString()}`
+    : ""
+  const result = await careerGet<{ data: InterviewQuestion[]; meta: { total: number; limit: number; offset: number } }>(
+    `/career/questions${query}`,
+  )
+  return { questions: result.data, meta: result.meta }
+}
+
+export async function listPracticeRecords(): Promise<InterviewPractice[]> {
+  const result = await careerGet<{ data: InterviewPractice[] }>("/career/practice")
+  return result.data
+}
+
+export async function createPracticeRecord(input: {
+  questionId?: string | null
+  interviewRoundId?: string | null
+  answer?: string | null
+  score?: number | null
+  practicedAt?: string
+  feedback?: string | null
+}): Promise<InterviewPractice> {
+  const result = await careerMutate<{ data: InterviewPractice }>("/career/practice", "POST", input)
   return result.data
 }
 
