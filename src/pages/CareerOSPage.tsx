@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell, JobDrawer, ApplyModal } from '../components/shared'
-import { Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader } from '../components/ui'
+import { Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader, MarketingHero } from '../components/ui'
 import { Aurora, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
 import { ProductVisual } from '../components/product/ProductVisuals'
 import { getDomainAccent } from '../aurora-themes'
@@ -708,33 +708,26 @@ export default function CareerOSPage() {
 
   return (
     <PageShell auroraTheme="career">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
-        <Aurora themeId="career" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero career-page-hero">
-            <FadeIn>
-              <Eyebrow tone="dark" accent>Career OS</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
-                Profile → proof → apply → track.
-              </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
-                A career workspace with interview prep and a job board. Available after a Professional Program. See what happens after you apply.
-              </p>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Professional Programs</Button>
-                <Button variant="secondary" size="lg" onClick={() => { const el = document.getElementById('jobs'); if (el) el.scrollIntoView({ behavior: 'smooth' }) }}>
-                  Browse Jobs
-                </Button>
-              </div>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <div className="career-hero-visual-wrap">
-                <CareerHeroVisual />
-              </div>
-            </FadeIn>
+      <MarketingHero
+        auroraTheme="career"
+        eyebrow="Career OS"
+        title="Profile → proof → apply → track."
+        lead="A career workspace with interview prep and a job board. Available after a Professional Program. See what happens after you apply."
+        actions={
+          <>
+            <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Professional Programs</Button>
+            <Button variant="secondary" size="lg" onClick={() => navigate('/career-os/app')}>Open Career OS workspace</Button>
+            <Button variant="secondary" size="lg" onClick={() => { const el = document.getElementById('jobs'); if (el) el.scrollIntoView({ behavior: 'smooth' }) }}>
+              Browse Jobs
+            </Button>
+          </>
+        }
+        visual={
+          <div className="career-hero-visual-wrap">
+            <CareerHeroVisual />
           </div>
-        </div>
-      </section>
+        }
+      />
 
       <ContextualNavBar items={CAREER_NAV_ITEMS} themeId="career" activeId={activeSection} />
 

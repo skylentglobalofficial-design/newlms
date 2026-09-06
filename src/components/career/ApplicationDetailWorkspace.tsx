@@ -123,7 +123,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
     setFeedback(null)
     try {
       await deleteApplication(application.id)
-      navigate("/career-os/applications")
+      navigate("/career-os/app/applications")
     } catch (err) {
       setFeedback({ tone: "error", message: err instanceof Error ? err.message : "Failed to delete application" })
       setDeletePending(false)
@@ -140,7 +140,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
         <FeedbackBanner tone="error" message={error ?? "Application not found"} />
         <div style={{ display: "flex", gap: 10, marginTop: 12, flexWrap: "wrap" }}>
           <button type="button" onClick={() => void load()} style={secondaryButtonStyle}>Retry</button>
-          <Link to="/career-os/applications" style={{ color: accent.text, fontSize: 13, textDecoration: "none", alignSelf: "center" }}>
+          <Link to="/career-os/app/applications" style={{ color: accent.text, fontSize: 13, textDecoration: "none", alignSelf: "center" }}>
             Back to applications
           </Link>
         </div>
@@ -156,7 +156,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", minWidth: 0 }}>
-      <Link to="/career-os/applications" style={{ display: "inline-block", marginBottom: 16, color: accent.text, fontSize: 13, textDecoration: "none" }}>
+      <Link to="/career-os/app/applications" style={{ display: "inline-block", marginBottom: 16, color: accent.text, fontSize: 13, textDecoration: "none" }}>
         ← Applications
       </Link>
 
@@ -222,7 +222,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
             <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, marginTop: 4 }}>
               {[application.job.location, formatWorkMode(application.job.workMode)].filter(Boolean).join(" · ")}
             </div>
-            <Link to="/career-os/jobs" style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
+            <Link to="/career-os/app/jobs" style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
               View job board →
             </Link>
           </div>
@@ -304,7 +304,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
           interviewRounds.map(round => (
             <Link
               key={round.id}
-              to={`/career-os/interviews/${round.id}`}
+              to={`/career-os/app/interviews/${round.id}`}
               style={{
                 display: "block",
                 textDecoration: "none",
@@ -323,7 +323,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
             </Link>
           ))
         )}
-        <Link to="/career-os/interviews" style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 13, textDecoration: "none" }}>
+        <Link to="/career-os/app/interviews" style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 13, textDecoration: "none" }}>
           Open interview prep →
         </Link>
       </GlassSurface>

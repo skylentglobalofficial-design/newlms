@@ -100,7 +100,7 @@ export default function CareerOSApplicationsPage() {
         <>
           <EmptyBlock message="Nothing here yet. Apply to a role from Jobs and your application will appear here." />
           <Link
-            to="/career-os/jobs"
+            to="/career-os/app/jobs"
             style={{
               display: "inline-block",
               marginTop: 14,

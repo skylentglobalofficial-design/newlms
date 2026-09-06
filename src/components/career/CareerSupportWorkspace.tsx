@@ -194,7 +194,7 @@ export default function CareerSupportWorkspace() {
                           <p style={{ margin: "6px 0 0", color: accent.text, fontSize: 12.5 }}>Assigned to support</p>
                         )}
                       </div>
-                      <Link to={`/career-os/support/${selected.id}`} style={{ color: accent.text, fontSize: 13, textDecoration: "none", fontWeight: 600, flexShrink: 0 }}>
+                      <Link to={`/career-os/app/support/${selected.id}`} style={{ color: accent.text, fontSize: 13, textDecoration: "none", fontWeight: 600, flexShrink: 0 }}>
                         Open request →
                       </Link>
                     </div>

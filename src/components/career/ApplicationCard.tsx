@@ -30,7 +30,7 @@ export default function ApplicationCard({ application, selected }: Props) {
 
   return (
     <Link
-      to={`/career-os/applications/${application.id}`}
+      to={`/career-os/app/applications/${application.id}`}
       style={{
         display: "block",
         textDecoration: "none",

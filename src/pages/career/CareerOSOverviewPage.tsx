@@ -114,7 +114,7 @@ export default function CareerOSOverviewPage() {
               <div style={{ padding: "16px 18px", borderRadius: T.rControl, border: `1px solid ${accent.border}`, background: accent.subtle, marginBottom: 20 }}>
                 <div style={{ fontSize: 12, color: accent.text, marginBottom: 4 }}>Next action</div>
                 <div style={{ color: C.white, fontSize: 15, marginBottom: 12 }}>{nextAction}</div>
-                <Link to="/career-os/profile" style={{ color: accent.text, fontSize: 13, textDecoration: "none", fontWeight: 600 }}>
+                <Link to="/career-os/app/profile" style={{ color: accent.text, fontSize: 13, textDecoration: "none", fontWeight: 600 }}>
                   Open profile workspace →
                 </Link>
               </div>
@@ -135,19 +135,19 @@ export default function CareerOSOverviewPage() {
             <GlassSurface level={2} padding="18px">
               <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Quick actions</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <Link to="/career-os/profile" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                <Link to="/career-os/app/profile" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
                   Edit profile
                 </Link>
-                <Link to="/career-os/jobs" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                <Link to="/career-os/app/jobs" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
                   Browse jobs
                 </Link>
-                <Link to="/career-os/applications" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                <Link to="/career-os/app/applications" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
                   View applications
                 </Link>
-                <Link to="/career-os/interviews" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                <Link to="/career-os/app/interviews" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
                   Interview prep
                 </Link>
-                <Link to="/career-os/support" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                <Link to="/career-os/app/support" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
                   Career support
                 </Link>
               </div>
@@ -165,7 +165,7 @@ export default function CareerOSOverviewPage() {
                       : "Waiting on support team"}
                 </p>
                 <Link
-                  to={`/career-os/support/${activeSupport[0].id}`}
+                  to={`/career-os/app/support/${activeSupport[0].id}`}
                   style={{
                     display: "block",
                     textDecoration: "none",
@@ -183,7 +183,7 @@ export default function CareerOSOverviewPage() {
                     {[formatRequestType(activeSupport[0].type), formatRequestStatus(activeSupport[0].status)].join(" · ")}
                   </div>
                 </Link>
-                <Link to="/career-os/support" style={{ display: "inline-block", color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
+                <Link to="/career-os/app/support" style={{ display: "inline-block", color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
                   Open career support →
                 </Link>
               </GlassSurface>
@@ -196,7 +196,7 @@ export default function CareerOSOverviewPage() {
                   {upcomingInterviews.map(round => (
                     <Link
                       key={round.id}
-                      to={`/career-os/interviews/${round.id}`}
+                      to={`/career-os/app/interviews/${round.id}`}
                       style={{
                         textDecoration: "none",
                         padding: "10px 12px",
@@ -214,7 +214,7 @@ export default function CareerOSOverviewPage() {
                     </Link>
                   ))}
                 </div>
-                <Link to="/career-os/interviews" style={{ display: "inline-block", marginTop: 10, color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
+                <Link to="/career-os/app/interviews" style={{ display: "inline-block", marginTop: 10, color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
                   Open interview prep →
                 </Link>
               </GlassSurface>
@@ -233,7 +233,7 @@ export default function CareerOSOverviewPage() {
                   {recentApplications.map((app: JobApplication) => (
                     <Link
                       key={app.id}
-                      to={`/career-os/applications/${app.id}`}
+                      to={`/career-os/app/applications/${app.id}`}
                       style={{
                         textDecoration: "none",
                         padding: "10px 12px",

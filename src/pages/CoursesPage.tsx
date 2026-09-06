@@ -51,7 +51,7 @@ function CourseDiscoveryRow({ course }: { course: Course }) {
         <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(18px, 2.2vw, 22px)', fontWeight: 600, color: C.white, marginBottom: 6, lineHeight: 1.25 }}>
           {course.title}
         </div>
-        <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 13.5, lineHeight: 1.6, margin: 0, maxWidth: 560 }}>{course.desc}</p>
+        <p style={{ color: 'var(--text-secondary)', fontSize: 13.5, lineHeight: 1.6, margin: 0, maxWidth: 560 }}>{course.desc}</p>
         <div style={{ display: 'flex', gap: 14, marginTop: 10, flexWrap: 'wrap' }}>
           <span style={{ color: 'rgba(255,255,255,0.32)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{course.lessons} lessons</span>
           <span style={{ color: 'rgba(255,255,255,0.32)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{course.projects} projects</span>
@@ -110,9 +110,9 @@ export default function CoursesPage() {
     <PageShell auroraTheme="professional">
       <MarketingHero
         auroraTheme="professional"
-        eyebrow="Courses"
+        eyebrow="Catalog preview"
         title={<>Short courses with<br /><span style={{ color: accent.text }}>hands-on work.</span></>}
-        lead="Browse by subject area — each course lists duration, level, delivery mode, and what you build."
+        lead="Browse by subject area — each course lists duration, level, delivery mode, and what you build. Pricing and curriculum are catalog previews until launch."
         visualMaxWidth={880}
         visual={
           <MediaImage
@@ -146,7 +146,7 @@ export default function CoursesPage() {
         <FadeIn>
           <SectionHeader
             tone="dark"
-            eyebrow="Catalogue"
+            eyebrow="Catalog preview"
             title={`${filtered.length} course${filtered.length !== 1 ? 's' : ''} in catalog`}
             lead="For full programs with Career OS access, see Programs."
           />

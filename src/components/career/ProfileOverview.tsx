@@ -240,7 +240,7 @@ export default function ProfileOverview({ profile, onProfileUpdate }: Props) {
         <div style={{ padding: "14px 16px", borderRadius: T.rControl, border: `1px solid ${accent.border}`, background: accent.subtle }}>
           <div style={{ fontSize: 12, color: accent.text, marginBottom: 4 }}>Suggested next step</div>
           <div style={{ color: C.white, fontSize: 14 }}>{profile.completeness.nextRecommended}</div>
-          <Link to="/career-os/profile" style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 13, textDecoration: "none" }}>
+          <Link to="/career-os/app/profile" style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 13, textDecoration: "none" }}>
             Continue in profile →
           </Link>
         </div>

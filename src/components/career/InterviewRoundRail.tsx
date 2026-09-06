@@ -28,8 +28,8 @@ export default function InterviewRoundRail({ rounds, selectedId, onSelect }: Pro
           Your interview rounds will appear here.
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-          <Link to="/career-os/applications" style={{ color: accent.text, fontSize: 13, textDecoration: "none" }}>View applications →</Link>
-          <Link to="/career-os/jobs" style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, textDecoration: "none" }}>Browse jobs →</Link>
+          <Link to="/career-os/app/applications" style={{ color: accent.text, fontSize: 13, textDecoration: "none" }}>View applications →</Link>
+          <Link to="/career-os/app/jobs" style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, textDecoration: "none" }}>Browse jobs →</Link>
         </div>
       </div>
     )

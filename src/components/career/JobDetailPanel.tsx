@@ -219,7 +219,7 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
         )}
 
         {alreadyApplied && (
-          <Link to="/career-os/applications" style={{ alignSelf: "center", color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
+          <Link to="/career-os/app/applications" style={{ alignSelf: "center", color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
             View applications →
           </Link>
         )}

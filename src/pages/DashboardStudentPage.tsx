@@ -23,7 +23,7 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: 'courses', label: 'Courses', short: 'Courses', sectionId: 'student-curriculum' },
   { id: 'assignments', label: 'Assignments', short: 'Tasks', sectionId: 'student-rail' },
   { id: 'progress', label: 'Progress', short: 'Progress', sectionId: 'student-progress' },
-  { id: 'career', label: 'Career OS', short: 'Career', href: '/career-os' },
+  { id: 'career', label: 'Career OS', short: 'Career', href: '/career-os/app' },
   { id: 'settings', label: 'Settings', short: 'Settings', sectionId: 'student-certificates' },
 ]
 
@@ -47,6 +47,7 @@ export default function DashboardStudentPage() {
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
   const [enrolling, setEnrolling] = useState(false)
+  const [enrollError, setEnrollError] = useState<string | null>(null)
 
   useEffect(() => {
     if (ready && !user) navigate('/login')
@@ -74,6 +75,7 @@ export default function DashboardStudentPage() {
     return (
       <AuthDashboardShell
         themeId="data-science"
+      accent={accent}
         workspaceLabel="Learning"
         roleLabel="Learner"
         navItems={NAV_ITEMS}
@@ -91,6 +93,7 @@ export default function DashboardStudentPage() {
     return (
       <AuthDashboardShell
         themeId="data-science"
+      accent={accent}
         workspaceLabel="Learning"
         roleLabel="Learner"
         navItems={NAV_ITEMS}
@@ -104,13 +107,22 @@ export default function DashboardStudentPage() {
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.7, margin: '0 0 20px' }}>
             Enroll in a course to open your learner dashboard, curriculum progress, and resume learning.
           </p>
+          {enrollError && (
+            <p role="alert" style={{ color: 'rgba(255,255,255,0.72)', fontSize: 13, lineHeight: 1.6, margin: '0 0 16px' }}>
+              {enrollError} Please try again.
+            </p>
+          )}
           <button
             type="button"
             disabled={enrolling}
             onClick={() => {
+              setEnrollError(null)
               setEnrolling(true)
               void enrollInCourse('data-analytics')
                 .then(() => reload())
+                .catch((err: unknown) => {
+                  setEnrollError(err instanceof Error ? err.message : 'Enrollment failed')
+                })
                 .finally(() => setEnrolling(false))
             }}
             style={{ background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer', marginRight: 12 }}
@@ -139,6 +151,7 @@ export default function DashboardStudentPage() {
   return (
     <AuthDashboardShell
       themeId="data-science"
+      accent={accent}
       workspaceLabel="Learning"
       roleLabel="Learner"
       navItems={NAV_ITEMS}

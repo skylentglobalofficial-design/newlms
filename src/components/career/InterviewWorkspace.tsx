@@ -76,7 +76,7 @@ export default function InterviewWorkspace() {
                     </p>
                     {selectedRound.applicationId && (
                       <Link
-                        to={`/career-os/applications/${selectedRound.applicationId}`}
+                        to={`/career-os/app/applications/${selectedRound.applicationId}`}
                         style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 12.5, textDecoration: "none" }}
                       >
                         View linked application →
@@ -84,7 +84,7 @@ export default function InterviewWorkspace() {
                     )}
                   </div>
                   <Link
-                    to={`/career-os/interviews/${selectedRound.id}`}
+                    to={`/career-os/app/interviews/${selectedRound.id}`}
                     style={{ color: accent.text, fontSize: 13, textDecoration: "none", fontWeight: 600, flexShrink: 0 }}
                   >
                     Open round →

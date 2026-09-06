@@ -121,7 +121,7 @@ export function SupportRequestRowLink({ request }: { request: CareerSupportReque
   const updated = formatSupportDateTime(request.updatedAt)
   return (
     <Link
-      to={`/career-os/support/${request.id}`}
+      to={`/career-os/app/support/${request.id}`}
       style={{
         display: "block",
         textDecoration: "none",

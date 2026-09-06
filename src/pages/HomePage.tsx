@@ -36,7 +36,7 @@ function EcosystemHeroVisual() {
       id="learning-loop"
       themeId="general"
       className="skylent-hero-visual"
-      style={{ minHeight: 'clamp(280px, 36vh, 400px)' }}
+      style={{ minHeight: 'clamp(240px, 32vh, 360px)', maxHeight: 'min(46vh, 400px)' }}
     />
   )
 }
@@ -68,8 +68,6 @@ function HeroSection() {
 // ─── 2. WHAT SKYLENT COVERS ──────────────────────────────────────────────────
 
 function CoverageSection() {
-  const navigate = useNavigate()
-
   const pillars = [
     {
       label: 'Education',
@@ -116,9 +114,8 @@ function CoverageSection() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 0 }}>
           {pillars.map((pillar, i) => (
             <FadeIn key={pillar.label} delay={i * 60}>
-              <button
-                type="button"
-                onClick={() => navigate(pillar.to)}
+              <Link
+                to={pillar.to}
                 style={{
                   display: 'block',
                   flex: '1 1 min(240px, 100%)',
@@ -130,6 +127,8 @@ function CoverageSection() {
                   padding: '28px clamp(12px, 2vw, 24px)',
                   cursor: 'pointer',
                   fontFamily: 'var(--font-body)',
+                  textDecoration: 'none',
+                  color: 'inherit',
                 }}
               >
                 <div className="skylent-label" style={{ color: pillar.theme.text, marginBottom: 14 }}>
@@ -138,10 +137,10 @@ function CoverageSection() {
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(20px, 2.4vw, 28px)', fontWeight: 600, color: C.white, marginBottom: 8, letterSpacing: '-0.02em' }}>
                   {pillar.label}
                 </div>
-                <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 14, lineHeight: 1.45 }}>{pillar.sub}</div>
-                <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13.5, lineHeight: 1.65, margin: '0 0 16px', maxWidth: 240 }}>{pillar.desc}</p>
+                <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 14, lineHeight: 1.45 }}>{pillar.sub}</div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: 13.5, lineHeight: 1.65, margin: '0 0 16px', maxWidth: 240 }}>{pillar.desc}</p>
                 <span style={{ color: pillar.theme.text, fontSize: 13, fontWeight: 600 }}>View</span>
-              </button>
+              </Link>
             </FadeIn>
           ))}
         </div>
@@ -190,10 +189,9 @@ function EducationSection() {
         <div style={{ marginTop: 40, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {stages.map((stage, i) => (
-              <button
+              <Link
                 key={stage.label}
-                type="button"
-                onClick={() => navigate(`/education#${stage.anchor}`)}
+                to={`/education#${stage.anchor}`}
                 style={{
                   display: 'grid',
                   gridTemplateColumns: '56px 1fr auto',
@@ -209,6 +207,8 @@ function EducationSection() {
                   textAlign: 'left',
                   width: '100%',
                   fontFamily: 'var(--font-body)',
+                  textDecoration: 'none',
+                  color: 'inherit',
                 }}
               >
                 <div style={{ width: 48, height: 48, borderRadius: 8, overflow: 'hidden', background: C.ink3 }}>
@@ -216,10 +216,10 @@ function EducationSection() {
                 </div>
                 <div>
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 3 }}>{stage.label}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{stage.sub}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>{stage.sub}</div>
                 </div>
                 <span style={{ color: eduAccent.text, fontSize: 13, fontWeight: 500 }}>View</span>
-              </button>
+              </Link>
             ))}
           </div>
           <div style={{ marginTop: 28, textAlign: 'center' }}>
@@ -269,10 +269,9 @@ function SkillsSection() {
         <div style={{ marginTop: 40, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {stages.map((stage, i) => (
-              <button
+              <Link
                 key={stage.label}
-                type="button"
-                onClick={() => navigate(stage.to)}
+                to={stage.to}
                 style={{
                   display: 'flex',
                   gap: 14,
@@ -286,16 +285,18 @@ function SkillsSection() {
                   textAlign: 'left',
                   width: '100%',
                   fontFamily: 'var(--font-body)',
+                  textDecoration: 'none',
+                  color: 'inherit',
                 }}
               >
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: stage.highlight ? skillsAccent.text : 'rgba(255,255,255,0.28)', marginTop: 4, flexShrink: 0 }}>
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: stage.highlight ? skillsAccent.text : 'var(--text-muted)', marginTop: 4, flexShrink: 0 }}>
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <div>
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: stage.highlight ? skillsAccent.text : C.white, marginBottom: 4 }}>{stage.label}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, lineHeight: 1.55 }}>{stage.sub}</div>
+                  <div style={{ color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.55 }}>{stage.sub}</div>
                 </div>
-              </button>
+              </Link>
             ))}
           </div>
           <div style={{ marginTop: 28, textAlign: 'center' }}>
@@ -347,9 +348,9 @@ function CareerSection() {
                     {row.label === 'Profile' ? '—' : 'PRJ'}
                   </div>
                   <div>
-                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.38)', marginBottom: 3 }}>{row.label}</div>
+                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 3 }}>{row.label}</div>
                     <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{row.title}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>{row.sub}</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: 12, marginTop: 2 }}>{row.sub}</div>
                   </div>
                 </div>
               ))}
@@ -358,7 +359,7 @@ function CareerSection() {
                   <div>
                     <div style={{ fontSize: 11, color: careerAccent.text, marginBottom: 3 }}>Open role</div>
                     <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{sampleJob.role}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>{sampleJob.company} · {sampleJob.mode}</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: 12, marginTop: 2 }}>{sampleJob.company} · {sampleJob.mode}</div>
                   </div>
                   <div style={{ background: careerAccent.primary, color: C.white, borderRadius: 6, padding: '8px 14px', fontSize: 11, fontWeight: 600 }}>Apply</div>
                 </div>
@@ -373,7 +374,7 @@ function CareerSection() {
             {journey.map((step) => (
               <div key={step.label} style={{ padding: '12px 0', minWidth: 0, textAlign: 'center' }}>
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{step.label}</div>
-                <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 3 }}>{step.sub}</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: 11, marginTop: 3 }}>{step.sub}</div>
               </div>
             ))}
           </div>
@@ -442,7 +443,7 @@ function InstitutionsSection() {
                 </div>
                 <div>
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 3 }}>{step.label}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12.5 }}>{step.sub}</div>
+                  <div style={{ color: 'var(--text-muted)', fontSize: 12.5 }}>{step.sub}</div>
                 </div>
               </div>
             ))}
@@ -476,7 +477,7 @@ function ConnectionBand() {
               { label: 'Hire', sub: 'Applications' },
             ]}
           />
-          <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.7, margin: '20px 0 0', maxWidth: 640 }}>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.7, margin: '20px 0 0', maxWidth: 640 }}>
             Institutions run the same sequence with their own dashboards — programs, learners, faculty, and progress in one place.
           </p>
           <div style={{ marginTop: 20, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
@@ -530,7 +531,7 @@ function ProgramDiscoverySection() {
             <div style={{ paddingTop: 24 }}>
               <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{TYPE_LABELS[FEATURED_PROGRAM.programType]}</div>
               <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 12px' }}>{FEATURED_PROGRAM.name}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>{FEATURED_PROGRAM.desc}</p>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>{FEATURED_PROGRAM.desc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 20 }}>
                 {[
                   { k: 'Duration', v: FEATURED_PROGRAM.duration },
@@ -539,7 +540,7 @@ function ProgramDiscoverySection() {
                   { k: 'From', v: `₹${lowestPrice.toLocaleString('en-IN')}` },
                 ].map(({ k, v }) => (
                   <div key={k}>
-                    <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>{k}</div>
+                    <div className="skylent-label" style={{ color: 'var(--text-muted)', marginBottom: 4 }}>{k}</div>
                     <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
                   </div>
                 ))}
@@ -550,19 +551,19 @@ function ProgramDiscoverySection() {
         </FadeIn>
 
         <FadeIn delay={80}>
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 16 }}>By category</div>
+          <div className="skylent-label" style={{ color: 'var(--text-muted)', marginBottom: 16 }}>By category</div>
           {categories.map(cat => {
             const count = programs.filter(p => p.programType === cat.type).length
             if (!count) return null
             return (
               <div key={cat.label} style={{ padding: '14px 0', borderBottom: `1px solid ${T.lineDark}` }}>
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 4 }}>{cat.label}</div>
-                <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{count} program{count !== 1 ? 's' : ''} in catalog</div>
+                <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>{count} program{count !== 1 ? 's' : ''} in catalog</div>
               </div>
             )
           })}
 
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', margin: '28px 0 16px' }}>More programs</div>
+          <div className="skylent-label" style={{ color: 'var(--text-muted)', margin: '28px 0 16px' }}>More programs</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {SUPPORTING_PROGRAMS.map((program, i) => {
               const photo = PROGRAM_PHOTO[program.slug] ?? DEFAULT_PROGRAM_PHOTO
@@ -587,7 +588,7 @@ function ProgramDiscoverySection() {
                   </div>
                   <div>
                     <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{program.name}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 11.5 }}>{TYPE_LABELS[program.programType]} · {program.duration}</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: 11.5 }}>{TYPE_LABELS[program.programType]} · {program.duration}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>

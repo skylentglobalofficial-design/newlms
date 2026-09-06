@@ -4,22 +4,22 @@ import { AuthDashboardShell, type AuthNavItem } from "../AuthDashboardShell"
 import { AuroraBand } from "../foundation"
 
 const NAV_ITEMS: AuthNavItem[] = [
-  { id: "overview", label: "Overview", short: "Home", href: "/career-os" },
-  { id: "profile", label: "Profile", short: "Profile", href: "/career-os/profile" },
-  { id: "jobs", label: "Jobs", short: "Jobs", href: "/career-os/jobs" },
-  { id: "applications", label: "Applications", short: "Apps", href: "/career-os/applications" },
-  { id: "interviews", label: "Interviews", short: "Prep", href: "/career-os/interviews" },
-  { id: "support", label: "Support", short: "Help", href: "/career-os/support" },
+  { id: "overview", label: "Overview", short: "Home", href: "/career-os/app" },
+  { id: "profile", label: "Profile", short: "Profile", href: "/career-os/app/profile" },
+  { id: "jobs", label: "Jobs", short: "Jobs", href: "/career-os/app/jobs" },
+  { id: "applications", label: "Applications", short: "Apps", href: "/career-os/app/applications" },
+  { id: "interviews", label: "Interviews", short: "Prep", href: "/career-os/app/interviews" },
+  { id: "support", label: "Support", short: "Help", href: "/career-os/app/support" },
 ]
 
 const BOTTOM_NAV = NAV_ITEMS.filter(n => ["overview", "profile", "jobs", "applications", "support"].includes(n.id))
 
 function navIdFromPath(pathname: string): string {
-  if (pathname.startsWith("/career-os/profile")) return "profile"
-  if (pathname.startsWith("/career-os/jobs")) return "jobs"
-  if (pathname.startsWith("/career-os/applications")) return "applications"
-  if (pathname.startsWith("/career-os/interviews")) return "interviews"
-  if (pathname.startsWith("/career-os/support")) return "support"
+  if (pathname.startsWith("/career-os/app/profile")) return "profile"
+  if (pathname.startsWith("/career-os/app/jobs")) return "jobs"
+  if (pathname.startsWith("/career-os/app/applications")) return "applications"
+  if (pathname.startsWith("/career-os/app/interviews")) return "interviews"
+  if (pathname.startsWith("/career-os/app/support")) return "support"
   return "overview"
 }
 

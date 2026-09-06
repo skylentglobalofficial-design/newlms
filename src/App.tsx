@@ -20,6 +20,7 @@ import CoursesPage from './pages/CoursesPage'
 import CourseDetailPage from './pages/CourseDetailPage'
 import WorkshopsPage from './pages/WorkshopsPage'
 import WorkshopDetailPage from './pages/WorkshopDetailPage'
+import CareerOSPage from './pages/CareerOSPage'
 import CareerOSLayout from './pages/career/CareerOSLayout'
 import CareerOSOverviewPage from './pages/career/CareerOSOverviewPage'
 import CareerOSProfilePage from './pages/career/CareerOSProfilePage'
@@ -44,10 +45,11 @@ import LearnPage from './pages/LearnPage'
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<PublicCanvas themeId="general"><Nav /><HomePage /></PublicCanvas>} />
+      <Route path="/" element={<PublicCanvas themeId="general"><Nav /><main id="main-content"><HomePage /></main></PublicCanvas>} />
       <Route path="/education" element={<EducationPage />} />
       <Route path="/skills" element={<SkillsPage />} />
-      <Route path="/career-os" element={<CareerOSLayout />}>
+      <Route path="/career-os" element={<CareerOSPage />} />
+      <Route path="/career-os/app" element={<CareerOSLayout />}>
         <Route index element={<CareerOSOverviewPage />} />
         <Route path="profile" element={<CareerOSProfilePage />} />
         <Route path="jobs" element={<CareerOSJobsPage />} />
@@ -58,6 +60,14 @@ function AppRoutes() {
         <Route path="support" element={<CareerOSSupportPage />} />
         <Route path="support/:id" element={<CareerOSSupportDetailPage />} />
       </Route>
+      <Route path="/career-os/profile" element={<Navigate to="/career-os/app/profile" replace />} />
+      <Route path="/career-os/jobs" element={<Navigate to="/career-os/app/jobs" replace />} />
+      <Route path="/career-os/applications" element={<Navigate to="/career-os/app/applications" replace />} />
+      <Route path="/career-os/applications/:id" element={<Navigate to="/career-os/app/applications/:id" replace />} />
+      <Route path="/career-os/interviews" element={<Navigate to="/career-os/app/interviews" replace />} />
+      <Route path="/career-os/interviews/:id" element={<Navigate to="/career-os/app/interviews/:id" replace />} />
+      <Route path="/career-os/support" element={<Navigate to="/career-os/app/support" replace />} />
+      <Route path="/career-os/support/:id" element={<Navigate to="/career-os/app/support/:id" replace />} />
       <Route path="/institutions" element={<InstitutionsPage />} />
       <Route path="/os" element={<OSPage />} />
       <Route path="/programs" element={<ProgramsPage />} />
@@ -87,7 +97,7 @@ function AppRoutes() {
       <Route path="/labs/:labId/:experimentId" element={<ExperimentPage />} />
       <Route path="/jobs" element={<Navigate to="/career-os" replace />} />
       <Route path="/jobs/:id" element={<Navigate to="/career-os" replace />} />
-      <Route path="*" element={<PublicCanvas themeId="general"><Nav /><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md" style={{ color: C.white }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></PublicCanvas>} />
+      <Route path="*" element={<PublicCanvas themeId="general"><Nav /><main id="main-content"><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md" style={{ color: C.white }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></main></PublicCanvas>} />
     </Routes>
   )
 }

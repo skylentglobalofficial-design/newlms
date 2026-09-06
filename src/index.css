@@ -41,6 +41,11 @@
   --max-w-reading: 720px;
   --nav-h: 64px;
 
+  /* Readable text hierarchy on dark canvas */
+  --text-primary: rgba(255, 255, 255, 0.94);
+  --text-secondary: rgba(255, 255, 255, 0.72);
+  --text-muted: rgba(255, 255, 255, 0.56);
+
   /* ── Skylent Glass System ───────────────────────────────────────────────── */
   --glass-01-bg: rgba(11, 13, 15, 0.72);
   --glass-01-border: rgba(255, 255, 255, 0.09);
@@ -69,7 +74,7 @@ html {
 body {
   font-family: var(--font-body);
   background-color: var(--color-canvas);
-  color: #ffffff;
+  color: var(--text-primary);
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
@@ -110,6 +115,19 @@ body {
 .skylent-body-lg {
   font-size: var(--type-body-lg);
   line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.skylent-text-primary {
+  color: var(--text-primary);
+}
+
+.skylent-text-secondary {
+  color: var(--text-secondary);
+}
+
+.skylent-text-muted {
+  color: var(--text-muted);
 }
 
 .skylent-label {
@@ -181,12 +199,29 @@ html, body {
 
 .marketing-hero-visual {
   width: 100%;
-  max-height: min(52vh, 480px);
+  max-height: min(46vh, 420px);
 }
 
 .skylent-hero-visual {
   width: 100%;
-  max-height: min(52vh, 480px);
+  max-height: min(46vh, 420px);
+}
+
+.learning-loop-scroll {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-right: 8px;
+  mask-image: linear-gradient(to right, #000 88%, transparent 100%);
+}
+
+.learning-loop-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.course-detail-reading {
+  max-width: var(--max-w-reading);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .skylent-media-img,
@@ -194,6 +229,13 @@ html, body {
   width: 100%;
   height: 100%;
   max-width: 100%;
+  object-fit: cover;
+}
+
+.courses-discovery-row img,
+.courses-discovery-row .skylent-media-img {
+  object-fit: cover;
+  object-position: center;
 }
 
 .marketing-hero-footer {
@@ -332,7 +374,7 @@ html, body {
 }
 
 .lms-header-course {
-  color: rgba(255, 255, 255, 0.5);
+  color: var(--text-secondary);
   font-size: 13px;
   white-space: nowrap;
   overflow: hidden;
@@ -340,7 +382,7 @@ html, body {
 }
 
 .lms-header-lesson {
-  color: rgba(255, 255, 255, 0.35);
+  color: var(--text-muted);
   font-size: 13px;
   white-space: nowrap;
   overflow: hidden;

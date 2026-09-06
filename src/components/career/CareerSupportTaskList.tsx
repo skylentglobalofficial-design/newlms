@@ -115,7 +115,7 @@ function TaskCard({
         {[due ? `Due ${due}` : null, completed ? `Completed ${completed}` : null].filter(Boolean).join(" · ")}
       </div>
       {!requestSubject && requestId && (
-        <Link to={`/career-os/support/${requestId}`} style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
+        <Link to={`/career-os/app/support/${requestId}`} style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
           View request →
         </Link>
       )}

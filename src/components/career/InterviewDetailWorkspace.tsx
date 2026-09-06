@@ -137,7 +137,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
     setDeletePending(true)
     try {
       await deleteInterviewRound(round.id)
-      navigate("/career-os/interviews")
+      navigate("/career-os/app/interviews")
     } catch (err) {
       setFeedback({ tone: "error", message: err instanceof Error ? err.message : "Failed to delete round" })
       setDeletePending(false)
@@ -152,7 +152,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
     return (
       <div style={{ maxWidth: 520 }}>
         <FeedbackBanner tone="error" message={error ?? "Interview round not found"} />
-        <Link to="/career-os/interviews" style={{ display: "inline-block", marginTop: 12, color: accent.text, fontSize: 13, textDecoration: "none" }}>
+        <Link to="/career-os/app/interviews" style={{ display: "inline-block", marginTop: 12, color: accent.text, fontSize: 13, textDecoration: "none" }}>
           ← Back to interview prep
         </Link>
       </div>
@@ -161,7 +161,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
-      <Link to="/career-os/interviews" style={{ display: "inline-block", marginBottom: 16, color: accent.text, fontSize: 13, textDecoration: "none" }}>
+      <Link to="/career-os/app/interviews" style={{ display: "inline-block", marginBottom: 16, color: accent.text, fontSize: 13, textDecoration: "none" }}>
         ← Interview prep
       </Link>
 
@@ -193,7 +193,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
         {application && (
           <div style={{ marginTop: 16, padding: "12px 14px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.02)" }}>
             <div style={{ fontSize: 11, color: accent.text, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>Linked application</div>
-            <Link to={`/career-os/applications/${application.id}`} style={{ color: C.white, fontSize: 14, fontWeight: 600, textDecoration: "none", wordBreak: "break-word" }}>
+            <Link to={`/career-os/app/applications/${application.id}`} style={{ color: C.white, fontSize: 14, fontWeight: 600, textDecoration: "none", wordBreak: "break-word" }}>
               {applicationRoleTitle(application)}
             </Link>
           </div>

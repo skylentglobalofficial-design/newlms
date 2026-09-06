@@ -230,7 +230,7 @@ export function StudentActionRail({
         <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.32)', marginBottom: 8 }}>Project track</div>
         <div style={{ color: C.white, fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{projectTitle}</div>
         <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, lineHeight: 1.5, marginBottom: 12 }}>{projectWhat}</div>
-        <Link to="/career-os" style={{ color: accent.text, fontSize: 12, textDecoration: 'none' }}>Career OS →</Link>
+        <Link to="/career-os/app" style={{ color: accent.text, fontSize: 12, textDecoration: 'none' }}>Career OS →</Link>
       </div>
     </div>
   )

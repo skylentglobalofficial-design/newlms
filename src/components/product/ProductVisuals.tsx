@@ -186,7 +186,7 @@ function JeeExamInterface({ accent }: { accent: Accent }) {
           }}>{s}</span>
         ))}
       </div>
-      <div style={{ fontSize: 11, color: C.white, lineHeight: 1.5, marginBottom: 8, fontFamily: 'var(--font-serif, Georgia, serif)' }}>
+      <div style={{ fontSize: 11, color: C.white, lineHeight: 1.5, marginBottom: 8, fontFamily: 'var(--font-display)' }}>
         If ∫₀² 3t² dt = k, find k.
       </div>
       <div style={{ padding: 8, background: 'rgba(0,0,0,0.25)', borderRadius: 6, marginBottom: 10, fontFamily: 'var(--font-mono)', fontSize: 9, color: 'rgba(255,255,255,0.45)' }}>
@@ -459,7 +459,7 @@ function LearningLoop({ accent }: { accent: Accent }) {
     { label: 'Prove', sub: 'Assessment' },
   ]
   return (
-    <div style={{ display: 'flex', gap: 6, overflowX: 'auto' }}>
+    <div className="learning-loop-scroll" style={{ display: 'flex', gap: 6, overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
       {phases.map((phase, i) => (
         <div key={phase.label} style={{ flex: '1 0 72px', textAlign: 'center' }}>
           <div style={{

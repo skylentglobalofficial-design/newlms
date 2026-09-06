@@ -101,7 +101,7 @@ export default function CareerSupportDetailWorkspace({ requestId }: Props) {
     return (
       <div style={{ maxWidth: 520 }}>
         <FeedbackBanner tone="error" message={error ?? "Support request not found"} />
-        <Link to="/career-os/support" style={{ display: "inline-block", marginTop: 12, color: accent.text, fontSize: 13, textDecoration: "none" }}>
+        <Link to="/career-os/app/support" style={{ display: "inline-block", marginTop: 12, color: accent.text, fontSize: 13, textDecoration: "none" }}>
           ← Back to career support
         </Link>
       </div>
@@ -110,7 +110,7 @@ export default function CareerSupportDetailWorkspace({ requestId }: Props) {
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
-      <Link to="/career-os/support" style={{ display: "inline-block", marginBottom: 16, color: accent.text, fontSize: 13, textDecoration: "none" }}>
+      <Link to="/career-os/app/support" style={{ display: "inline-block", marginBottom: 16, color: accent.text, fontSize: 13, textDecoration: "none" }}>
         ← Career support
       </Link>
 
