@@ -1,4 +1,23 @@
-import { PrismaClient, CurriculumNodeType, EnrollmentStatus, ProgramType, RoleName, JobStatus, CareerEmploymentType, CareerWorkMode, CareerSkillProficiency } from '@prisma/client'
+import {
+  PrismaClient,
+  CurriculumNodeType,
+  EnrollmentStatus,
+  ProgramType,
+  RoleName,
+  JobStatus,
+  CareerEmploymentType,
+  CareerWorkMode,
+  CareerSkillProficiency,
+  CareerLinkType,
+  JobApplicationStatus,
+  InterviewQuestionDifficulty,
+  InterviewRoundType,
+  InterviewRoundStatus,
+  CareerSupportRequestType,
+  CareerSupportRequestStatus,
+  CareerSupportPriority,
+  CareerProfileVisibility,
+} from '@prisma/client'
 import bcrypt from 'bcrypt'
 
 import { courses, programs } from '../src/data.js'
@@ -6,6 +25,9 @@ import { courses, programs } from '../src/data.js'
 const prisma = new PrismaClient()
 const DEMO_PASSWORD = process.env.DEMO_USER_PASSWORD ?? 'DemoSkylent2026!'
 const BCRYPT_ROUNDS = 12
+const DEMO_ORG_SLUG = 'skylent-demo-college'
+const DEMO_COURSE_SLUG = 'data-analytics'
+const DEMO_PROGRAM_SLUG = 'data-science-ai'
 
 function enrollmentStatus(value: string | undefined): EnrollmentStatus | undefined {
   return value ? (value.toUpperCase() as EnrollmentStatus) : undefined
@@ -251,6 +273,34 @@ async function assignRole(userId: string, roleName: RoleName) {
   })
 }
 
+async function findCourseNode(courseSlug: string, sourceId: string) {
+  const course = await prisma.course.findUnique({ where: { slug: courseSlug }, select: { id: true } })
+  if (!course) return null
+  return prisma.curriculumNode.findFirst({
+    where: { sourceId, module: { courseId: course.id } },
+    select: { id: true, title: true, nodeType: true },
+  })
+}
+
+async function addOrganisationMember(organisationSlug: string, userId: string) {
+  const organisation = await prisma.organisation.findUnique({ where: { slug: organisationSlug } })
+  if (!organisation) return
+
+  await prisma.organisationMembership.upsert({
+    where: {
+      organisationId_userId: {
+        organisationId: organisation.id,
+        userId,
+      },
+    },
+    update: {},
+    create: {
+      organisationId: organisation.id,
+      userId,
+    },
+  })
+}
+
 async function seedDemoUser(config: {
   email: string
   displayName: string
@@ -303,8 +353,8 @@ async function seedDemoUser(config: {
 }
 
 async function seedLearnerWorkspace(userId: string) {
-  const course = await prisma.course.findUnique({ where: { slug: 'data-analytics' } })
-  const program = await prisma.program.findUnique({ where: { slug: 'data-science-ai' } })
+  const course = await prisma.course.findUnique({ where: { slug: DEMO_COURSE_SLUG } })
+  const program = await prisma.program.findUnique({ where: { slug: DEMO_PROGRAM_SLUG } })
   if (!course) return
 
   const enrollment = await prisma.userEnrollment.upsert({
@@ -323,19 +373,66 @@ async function seedLearnerWorkspace(userId: string) {
       nodeType: { not: CurriculumNodeType.TOPIC },
     },
     orderBy: [{ module: { order: 'asc' } }, { order: 'asc' }],
-    take: 3,
-    select: { id: true },
+    take: 5,
+    select: { id: true, sourceId: true },
   })
 
-  for (const node of lessonNodes) {
+  for (const [index, node] of lessonNodes.entries()) {
+    const completed = index < 3
     await prisma.lessonProgress.upsert({
       where: { enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: node.id } },
-      update: { completedAt: new Date(), lastAccessedAt: new Date() },
+      update: {
+        completedAt: completed ? new Date() : null,
+        lastAccessedAt: new Date(),
+      },
       create: {
         enrollmentId: enrollment.id,
         nodeId: node.id,
-        completedAt: new Date(),
+        completedAt: completed ? new Date() : null,
         lastAccessedAt: new Date(),
+      },
+    })
+  }
+
+  const quizNode = await findCourseNode(DEMO_COURSE_SLUG, 'l3')
+  if (quizNode) {
+    const existingAttempt = await prisma.quizAttempt.findFirst({
+      where: { userId, enrollmentId: enrollment.id, nodeId: quizNode.id, attemptNumber: 1 },
+    })
+    if (!existingAttempt) {
+      await prisma.quizAttempt.create({
+        data: {
+          userId,
+          enrollmentId: enrollment.id,
+          nodeId: quizNode.id,
+          attemptNumber: 1,
+          score: 2,
+          totalQuestions: 3,
+          passed: true,
+          answers: [1, 0, 1],
+        },
+      })
+    }
+  }
+
+  const assignmentNode = await findCourseNode(DEMO_COURSE_SLUG, 'l6')
+  if (assignmentNode) {
+    await prisma.assignmentProgress.upsert({
+      where: { enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: assignmentNode.id } },
+      update: {
+        status: 'submitted',
+        responseText:
+          'Completed the Excel assignment using pivot tables and conditional formatting on the provided retail dataset. All required charts are included.',
+        submittedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+      },
+      create: {
+        userId,
+        enrollmentId: enrollment.id,
+        nodeId: assignmentNode.id,
+        status: 'submitted',
+        responseText:
+          'Completed the Excel assignment using pivot tables and conditional formatting on the provided retail dataset. All required charts are included.',
+        submittedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
       },
     })
   }
@@ -356,18 +453,22 @@ async function seedLearnerWorkspace(userId: string) {
     where: { userId },
     update: {
       headline: 'Aspiring Data Analyst',
-      summary: 'Building analytics skills through Skylent programs and projects.',
+      summary:
+        'Demo learner profile for Skylent development. Building analytics skills through coursework, projects, and Career OS workflows.',
       location: 'Bengaluru, India',
       preferredRole: 'Data Analyst',
       preferredWorkMode: CareerWorkMode.HYBRID,
+      profileVisibility: CareerProfileVisibility.NETWORK,
     },
     create: {
       userId,
       headline: 'Aspiring Data Analyst',
-      summary: 'Building analytics skills through Skylent programs and projects.',
+      summary:
+        'Demo learner profile for Skylent development. Building analytics skills through coursework, projects, and Career OS workflows.',
       location: 'Bengaluru, India',
       preferredRole: 'Data Analyst',
       preferredWorkMode: CareerWorkMode.HYBRID,
+      profileVisibility: CareerProfileVisibility.NETWORK,
     },
   })
 
@@ -380,23 +481,228 @@ async function seedLearnerWorkspace(userId: string) {
           { profileId: profile.id, name: 'SQL', proficiency: CareerSkillProficiency.INTERMEDIATE, sortOrder: 0 },
           { profileId: profile.id, name: 'Python', proficiency: CareerSkillProficiency.INTERMEDIATE, sortOrder: 1 },
           { profileId: profile.id, name: 'Power BI', proficiency: CareerSkillProficiency.BEGINNER, sortOrder: 2 },
+          { profileId: profile.id, name: 'Excel', proficiency: CareerSkillProficiency.INTERMEDIATE, sortOrder: 3 },
         ],
       })
     }
 
     const projectCount = await prisma.careerProject.count({ where: { profileId: profile.id } })
     if (projectCount === 0) {
-      await prisma.careerProject.create({
+      await prisma.careerProject.createMany({
+        data: [
+          {
+            profileId: profile.id,
+            title: 'Sales Performance Dashboard',
+            description: 'Power BI dashboard built from a demo retail sales dataset.',
+            technologies: ['Power BI', 'DAX', 'SQL'],
+            sortOrder: 0,
+          },
+          {
+            profileId: profile.id,
+            title: 'Customer Churn Analysis',
+            description: 'Python notebook exploring churn drivers with logistic regression.',
+            technologies: ['Python', 'Pandas', 'Scikit-learn'],
+            sortOrder: 1,
+          },
+        ],
+      })
+    }
+
+    const educationCount = await prisma.careerEducation.count({ where: { profileId: profile.id } })
+    if (educationCount === 0) {
+      await prisma.careerEducation.create({
         data: {
           profileId: profile.id,
-          title: 'Sales Performance Dashboard',
-          description: 'Power BI dashboard built from a retail sales dataset.',
-          technologies: ['Power BI', 'DAX', 'SQL'],
+          institution: 'Demo Institute of Technology',
+          degree: 'B.Tech',
+          fieldOfStudy: 'Computer Science',
+          startDate: new Date('2021-07-01'),
+          endDate: new Date('2025-05-01'),
+          sortOrder: 0,
+        },
+      })
+    }
+
+    const experienceCount = await prisma.careerExperience.count({ where: { profileId: profile.id } })
+    if (experienceCount === 0) {
+      await prisma.careerExperience.create({
+        data: {
+          profileId: profile.id,
+          company: 'Demo Analytics Internship',
+          role: 'Data Analyst Intern',
+          employmentType: CareerEmploymentType.INTERNSHIP,
+          location: 'Bengaluru',
+          startDate: new Date('2025-01-01'),
+          endDate: new Date('2025-06-01'),
+          description: 'Supported reporting workflows and SQL queries for a demo analytics team.',
+          sortOrder: 0,
+        },
+      })
+    }
+
+    const linkCount = await prisma.careerLink.count({ where: { profileId: profile.id } })
+    if (linkCount === 0) {
+      await prisma.careerLink.create({
+        data: {
+          profileId: profile.id,
+          type: CareerLinkType.LINKEDIN,
+          label: 'LinkedIn',
+          url: 'https://linkedin.com/in/demo-learner-skylent',
           sortOrder: 0,
         },
       })
     }
   }
+}
+
+async function seedLearnerCareerPipeline(userId: string, jobId: string, employerId: string) {
+  await prisma.savedJob.upsert({
+    where: { userId_jobId: { userId, jobId } },
+    update: {},
+    create: { userId, jobId },
+  })
+
+  const existingApplication = await prisma.jobApplication.findFirst({
+    where: { userId, jobId },
+  })
+
+  const application = existingApplication
+    ?? await prisma.jobApplication.create({
+      data: {
+        userId,
+        jobId,
+        employerId,
+        roleTitle: 'Junior Data Analyst',
+        status: JobApplicationStatus.SCREENING,
+        appliedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+        source: 'skylent-demo',
+        notes: 'Demo application for development inspection of Career OS workflows.',
+      },
+    })
+
+  const eventCount = await prisma.applicationEvent.count({ where: { applicationId: application.id } })
+  if (eventCount === 0) {
+    await prisma.applicationEvent.createMany({
+      data: [
+        {
+          applicationId: application.id,
+          type: 'applied',
+          title: 'Application submitted',
+          description: 'Applied through the Skylent demo job board.',
+          occurredAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000),
+        },
+        {
+          applicationId: application.id,
+          type: 'screening',
+          title: 'Profile screening',
+          description: 'Demo recruiter moved the application to screening.',
+          occurredAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+        },
+      ],
+    })
+  }
+
+  const existingRound = await prisma.interviewRound.findFirst({
+    where: { userId, applicationId: application.id, type: InterviewRoundType.TECHNICAL },
+  })
+  if (!existingRound) {
+    await prisma.interviewRound.create({
+      data: {
+        userId,
+        applicationId: application.id,
+        type: InterviewRoundType.TECHNICAL,
+        title: 'Technical interview',
+        status: InterviewRoundStatus.PENDING,
+        scheduledAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        notes: 'Demo interview round for development preview.',
+      },
+    })
+  }
+
+  const supportCount = await prisma.careerSupportRequest.count({ where: { userId } })
+  if (supportCount === 0) {
+    await prisma.careerSupportRequest.create({
+      data: {
+        userId,
+        type: CareerSupportRequestType.RESUME_REVIEW,
+        subject: 'Resume review before demo interview',
+        description: 'Requesting feedback on the demo resume before the technical interview round.',
+        status: CareerSupportRequestStatus.OPEN,
+        priority: CareerSupportPriority.MEDIUM,
+      },
+    })
+  }
+}
+
+async function seedInstitutionWorkspace(learnerUserId: string) {
+  await addOrganisationMember(DEMO_ORG_SLUG, learnerUserId)
+}
+
+async function seedInterviewQuestionBank() {
+  const bank: Array<{
+    category: string
+    question: string
+    difficulty: InterviewQuestionDifficulty
+    roleTag: string
+  }> = [
+    {
+      category: 'SQL',
+      question: 'Explain the difference between INNER JOIN and LEFT JOIN with a simple example.',
+      difficulty: InterviewQuestionDifficulty.EASY,
+      roleTag: 'Data Analyst',
+    },
+    {
+      category: 'Analytics',
+      question: 'How would you measure the success of a product launch using metrics?',
+      difficulty: InterviewQuestionDifficulty.MEDIUM,
+      roleTag: 'Data Analyst',
+    },
+    {
+      category: 'Python',
+      question: 'When would you use a pandas groupby operation in an analytics workflow?',
+      difficulty: InterviewQuestionDifficulty.MEDIUM,
+      roleTag: 'Data Analyst',
+    },
+    {
+      category: 'Behavioral',
+      question: 'Describe a time you translated a business question into an analysis plan.',
+      difficulty: InterviewQuestionDifficulty.MEDIUM,
+      roleTag: 'General',
+    },
+  ]
+
+  for (const entry of bank) {
+    const existing = await prisma.interviewQuestion.findFirst({
+      where: { question: entry.question },
+    })
+    if (!existing) {
+      await prisma.interviewQuestion.create({ data: entry })
+    }
+  }
+}
+
+async function seedLearnerInterviewPractice(userId: string) {
+  const question = await prisma.interviewQuestion.findFirst({
+    where: { category: 'SQL', active: true },
+    orderBy: { createdAt: 'asc' },
+  })
+  if (!question) return
+
+  const existing = await prisma.interviewPractice.findFirst({
+    where: { userId, questionId: question.id },
+  })
+  if (existing) return
+
+  await prisma.interviewPractice.create({
+    data: {
+      userId,
+      questionId: question.id,
+      answer:
+        'INNER JOIN returns only matching rows from both tables, while LEFT JOIN keeps all rows from the left table and fills unmatched right-side columns with nulls.',
+      score: 4,
+      feedback: 'Clear demo answer covering the core distinction.',
+    },
+  })
 }
 
 async function seedDemoJobs() {
@@ -411,7 +717,7 @@ async function seedDemoJobs() {
     },
   })
 
-  await prisma.job.upsert({
+  const analystJob = await prisma.job.upsert({
     where: { slug: 'demo-junior-data-analyst' },
     update: {
       status: JobStatus.OPEN,
@@ -431,6 +737,29 @@ async function seedDemoJobs() {
       postedAt: new Date(),
     },
   })
+
+  await prisma.job.upsert({
+    where: { slug: 'demo-ml-engineer' },
+    update: {
+      status: JobStatus.OPEN,
+      postedAt: new Date(),
+    },
+    create: {
+      employerId: employer.id,
+      title: 'ML Engineer (Demo)',
+      slug: 'demo-ml-engineer',
+      description: 'Second development fixture role for recruiter workspace previews.',
+      employmentType: CareerEmploymentType.FULL_TIME,
+      workMode: CareerWorkMode.REMOTE,
+      location: 'Remote',
+      skills: ['Python', 'TensorFlow', 'MLOps'],
+      category: 'Engineering',
+      status: JobStatus.OPEN,
+      postedAt: new Date(),
+    },
+  })
+
+  return { employer, analystJob }
 }
 
 async function seedDemoUsers() {
@@ -458,7 +787,7 @@ async function seedDemoUsers() {
     email: 'institution@demo.skylent.dev',
     displayName: 'Demo Institution Admin',
     role: RoleName.ORGANISATION_ADMIN,
-    organisationSlug: 'skylent-demo-college',
+    organisationSlug: DEMO_ORG_SLUG,
     organisationName: 'Skylent Demo College',
   })
 
@@ -474,9 +803,18 @@ async function seedDemoUsers() {
     role: RoleName.ADMIN,
   })
 
-  await seedDemoJobs()
+  const { employer, analystJob } = await seedDemoJobs()
+  await seedInterviewQuestionBank()
+  await seedLearnerCareerPipeline(learner.id, analystJob.id, employer.id)
+  await seedLearnerInterviewPractice(learner.id)
+  await seedInstitutionWorkspace(learner.id)
 
   console.log('Demo users seeded (password via DEMO_USER_PASSWORD or DemoSkylent2026!).')
+  console.log('  learner@demo.skylent.dev      → student dashboard, LMS progress, Career OS profile')
+  console.log('  mentor@demo.skylent.dev       → faculty dashboard (teaching scope limited by schema)')
+  console.log('  institution@demo.skylent.dev  → organisation dashboard with member enrollments')
+  console.log('  recruiter@demo.skylent.dev    → recruiter workspace (UI preview data)')
+  console.log('  admin@demo.skylent.dev        → admin dashboard + superadmin faculty review access')
 }
 
 async function main() {
