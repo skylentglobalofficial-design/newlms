@@ -4,6 +4,7 @@ import {
   Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader, FlowStrip,
 } from '../components/ui'
 import { Aurora, MediaImage, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
+import EducationPathwayExplorer from '../components/education/EducationPathwayExplorer'
 import { ProductVisual } from '../components/product/ProductVisuals'
 import { getDomainAccent } from '../aurora-themes'
 import { programs } from '../data'
@@ -68,27 +69,6 @@ const EDUCATION_NAV_ITEMS: ContextualNavItem[] = [
 function scrollToId(id: string) {
   const el = document.getElementById(id)
   if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - (T.navH + 16), behavior: 'smooth' })
-}
-
-// ─── HERO VISUAL ──────────────────────────────────────────────────────────────
-
-function EducationHeroVisual() {
-  return (
-    <div className="education-hero-visual-wrap" style={{ position: 'relative', minHeight: 'clamp(380px, 48vh, 520px)' }}>
-      <ProductVisual id="education-journey" themeId="schooling" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: '-6% -5%',
-          border: `1px dashed ${accent.border}`,
-          borderRadius: T.rCard,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-    </div>
-  )
 }
 
 // ─── EDUCATION JOURNEY ────────────────────────────────────────────────────────
@@ -924,30 +904,7 @@ export default function EducationPage() {
 
   return (
     <PageShell auroraTheme="schooling">
-      {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
-        <Aurora themeId="schooling" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero education-page-hero">
-            <FadeIn>
-              <Eyebrow tone="dark" accent>Education</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
-                The academic products<br />on Skylent.
-              </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
-                Schooling, undergraduate, postgraduate, and competitive exams are different audiences and different curriculum models. Explore each on its own terms.
-              </p>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Programs</Button>
-                <Button variant="secondary" size="lg" onClick={() => navigate('/institutions')}>For Institutions</Button>
-              </div>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <EducationHeroVisual />
-            </FadeIn>
-          </div>
-        </div>
-      </section>
+      <EducationPathwayExplorer />
 
       <ContextualNavBar items={EDUCATION_NAV_ITEMS} themeId="schooling" activeId={activeSection} />
 

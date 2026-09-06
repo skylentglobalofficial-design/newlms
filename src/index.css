@@ -678,3 +678,288 @@ html, body {
 *:hover::-webkit-scrollbar-thumb {
   background: rgba(102, 112, 120, 0.3);
 }
+
+/* ── Product explorers (Skills, Education, Home ecosystem) ───────────────── */
+
+.skills-explorer,
+.pathway-explorer {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.34fr) 1fr;
+  gap: clamp(24px, 4vw, 48px);
+  align-items: start;
+}
+
+.skills-explorer-list,
+.pathway-explorer-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.skills-explorer-mobile,
+.pathway-explorer-mobile {
+  display: none;
+}
+
+.skills-explorer-select,
+.pathway-explorer-select {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #fff;
+  padding: 12px 14px;
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+.skills-explorer-tab,
+.pathway-explorer-tab {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-left: 2px solid transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 16px;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.skills-explorer-tab.is-selected,
+.pathway-explorer-tab.is-selected {
+  background: rgba(99, 102, 241, 0.08);
+  border-left-color: rgba(129, 140, 248, 0.9);
+}
+
+.skills-explorer-tab:focus-visible,
+.pathway-explorer-tab:focus-visible,
+.ecosystem-map-pillar:focus-visible {
+  outline: 2px solid rgba(129, 140, 248, 0.85);
+  outline-offset: 2px;
+}
+
+.skills-explorer-tab-label,
+.pathway-explorer-tab-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.skills-explorer-tab.is-selected .skills-explorer-tab-label,
+.pathway-explorer-tab.is-selected .pathway-explorer-tab-label {
+  color: #fff;
+  font-weight: 600;
+}
+
+.skills-explorer-tab-meta,
+.pathway-explorer-tab-meta {
+  display: block;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 3px;
+}
+
+.skills-explorer-panel,
+.pathway-explorer-panel {
+  min-width: 0;
+}
+
+.skills-explorer-catalog {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.skills-explorer-catalog-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  text-decoration: none;
+  color: inherit;
+}
+
+.skills-explorer-catalog-type {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: rgba(129, 140, 248, 0.85);
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+.skills-explorer-catalog-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 3px;
+}
+
+.skills-explorer-catalog-meta {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.skills-explorer-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skills-explorer-chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+}
+
+.skills-explorer-block {
+  margin-bottom: 28px;
+}
+
+.skills-explorer-meta-grid,
+.education-pathway-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.ecosystem-map-grid,
+.career-workflow-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(32px, 5vw, 64px);
+  align-items: start;
+}
+
+.ecosystem-map-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.ecosystem-map-node.is-active {
+  color: #fff;
+  font-weight: 600;
+}
+
+.ecosystem-map-arrow {
+  margin: 0 4px;
+  opacity: 0.35;
+}
+
+.ecosystem-map-pillars {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.ecosystem-map-pillar {
+  text-align: left;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.career-workflow-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.career-workflow-step {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  gap: 12px;
+  align-items: start;
+}
+
+.career-workflow-step-index {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(129, 140, 248, 0.9);
+  border: 1px solid rgba(129, 140, 248, 0.25);
+  background: rgba(99, 102, 241, 0.08);
+}
+
+.career-workflow-step-label {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.career-workflow-step-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.42);
+  margin-top: 2px;
+}
+
+.career-workflow-step-arrow {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 12px;
+  align-self: center;
+}
+
+@media (max-width: 1024px) {
+  .skills-explorer,
+  .pathway-explorer,
+  .ecosystem-map-grid,
+  .career-workflow-hero-grid,
+  .education-pathway-detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .skills-explorer-list,
+  .pathway-explorer-list {
+    display: none;
+  }
+
+  .skills-explorer-mobile,
+  .pathway-explorer-mobile {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .ecosystem-map-pillars,
+  .skills-explorer-meta-grid,
+  .education-pathway-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .career-workflow-step {
+    grid-template-columns: 32px 1fr;
+  }
+
+  .career-workflow-step-arrow {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skills-explorer-tab,
+  .pathway-explorer-tab,
+  .ecosystem-map-pillar {
+    transition: none;
+  }
+}

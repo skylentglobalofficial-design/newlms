@@ -1,25 +1,21 @@
 import { useState, useEffect, type CSSProperties, type FormEvent } from 'react'
 import { useNavigate, useLocation, Link, type NavigateFunction } from 'react-router-dom'
-import { useAuth, isAuthDemoMode } from '../context/AuthContext'
-import type { AuthUser, UserRole } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext'
+import type { UserRole } from '../context/AuthContext'
 import { fulfillCatalogEnrollment, learnPathForWorkspace, type CatalogEnrollTarget, type LoginRedirectState } from '../lib/catalog-enrollment'
 import { buildGoogleOAuthStartUrl } from '../lib/auth-api'
 import { C, T } from '../tokens'
-import { Aurora, GlassSurface } from '../components/foundation'
+import { Aurora } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 
 const accent = getDomainAccent('general')
 
-// ─── DEMO USERS ───────────────────────────────────────────────────────────────
-
-type DemoEntry = AuthUser & { desc: string }
-
-const DEMO_USERS: DemoEntry[] = [
-  { id: 'demo-student', role: 'student', name: 'Arjun Sharma', email: 'arjun@demo.skylent.in', avatar: 'AS', program: 'Data Science & AI', progress: 72, desc: 'Learning dashboard' },
-  { id: 'demo-faculty', role: 'faculty', name: 'Dr. Priya Nair', email: 'priya@demo.skylent.in', avatar: 'PN', course: 'Data Science & AI', students: 128, desc: 'Faculty tools' },
-  { id: 'demo-org', role: 'organisation', name: 'Apex College', email: 'admin@apex.edu.in', avatar: 'AC', students: 1240, institution: 'Apex College', desc: 'Admin & analytics' },
-  { id: 'demo-recruiter', role: 'recruiter', name: 'Riya Menon', email: 'riya@recruit.in', avatar: 'RM', desc: 'Talent pipeline' },
-  { id: 'demo-admin', role: 'superadmin', name: 'Skylent Admin', email: 'admin@skylent.in', avatar: 'SA', totalUsers: 12450, desc: 'System overview' },
+const DEV_DEMO_ACCOUNTS = [
+  { role: 'Learner', email: 'learner@demo.skylent.dev' },
+  { role: 'Mentor', email: 'mentor@demo.skylent.dev' },
+  { role: 'Institution', email: 'institution@demo.skylent.dev' },
+  { role: 'Recruiter', email: 'recruiter@demo.skylent.dev' },
+  { role: 'Admin', email: 'admin@demo.skylent.dev' },
 ]
 
 function roleRoute(role: UserRole): string {
@@ -36,62 +32,23 @@ async function finishAuthNavigation(
   navigate: NavigateFunction,
   role: UserRole,
   redirectState: LoginRedirectState | null,
-) {
+): Promise<string | null> {
   if (redirectState?.enrollTarget) {
     try {
       const workspace = await fulfillCatalogEnrollment(redirectState.enrollTarget)
       navigate(learnPathForWorkspace(workspace))
-      return
-    } catch {
-      // Fall through to returnTo or role dashboard.
+      return null
+    } catch (err) {
+      return err instanceof Error ? err.message : 'Enrollment failed'
     }
   }
   if (redirectState?.returnTo) {
     navigate(redirectState.returnTo)
-    return
+    return null
   }
   navigate(roleRoute(role))
+  return null
 }
-
-const ROLE_LABELS: Record<UserRole, string> = {
-  student: 'Student',
-  faculty: 'Faculty',
-  organisation: 'Organisation',
-  recruiter: 'Recruiter',
-  superadmin: 'Super Admin',
-}
-
-// ─── ENTRY VISUAL ─────────────────────────────────────────────────────────────
-
-function EntryVisual() {
-  return (
-    <div style={{ position: 'relative', maxWidth: 420 }}>
-      <div style={{
-        padding: '28px 0',
-        borderTop: `1px solid ${T.lineDark}`,
-        borderBottom: `1px solid ${T.lineDark}`,
-      }}>
-        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 380 }}>
-          One account for learning, teaching, and institution operations. Sign in to continue where you left off.
-        </p>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginTop: 28 }}>
-        {[
-          { label: 'Programs', detail: 'Structured learning paths' },
-          { label: 'Learning', detail: 'Courses, labs & assessments' },
-          { label: 'Career OS', detail: 'Interview prep & opportunities' },
-        ].map(item => (
-          <div key={item.label} style={{ minWidth: 0 }}>
-            <div style={{ color: C.white, fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{item.label}</div>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11.5, lineHeight: 1.5 }}>{item.detail}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// ─── INPUT STYLES ─────────────────────────────────────────────────────────────
 
 function fieldStyle(focused: boolean, hasError?: boolean): CSSProperties {
   return {
@@ -152,23 +109,18 @@ function googleButtonStyle(disabled: boolean): CSSProperties {
 }
 
 export default function LoginPage() {
-  const { login, signup, loginDemo, user, ready } = useAuth()
+  const { login, signup, user, ready } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const demoMode = isAuthDemoMode()
-
-  const [tab, setTab] = useState<'signin' | 'signup'>('signin')
+  const isSignup = location.pathname === '/signup'
 
   const [siEmail, setSiEmail] = useState('')
   const [siPassword, setSiPassword] = useState('')
 
   const [suName, setSuName] = useState('')
   const [suEmail, setSuEmail] = useState('')
-  const [suPhone, setSuPhone] = useState('')
   const [suPassword, setSuPassword] = useState('')
-  const [suGoal, setSuGoal] = useState<string | null>(null)
 
-  const [activeRole, setActiveRole] = useState<string | null>(null)
   const [focusedField, setFocusedField] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -176,15 +128,14 @@ export default function LoginPage() {
   const [oauthHandled, setOauthHandled] = useState(false)
 
   useEffect(() => {
-    if (location.pathname === '/signup') setTab('signup')
-    else if (location.pathname === '/login') setTab('signin')
-  }, [location.pathname])
-
-  useEffect(() => {
     const params = new URLSearchParams(location.search)
     const errorParam = params.get('error')
     if (errorParam?.startsWith('oauth')) {
-      setError('Google sign-in failed. Please try again or use email and password.')
+      setError(
+        errorParam === 'oauth_config'
+          ? 'Google sign-in is misconfigured. Confirm GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your root .env match the OAuth client in Google Cloud Console, then restart the API.'
+          : 'Google sign-in failed. Please try again or use email and password.',
+      )
       navigate(location.pathname, { replace: true, state: location.state })
       return
     }
@@ -217,23 +168,6 @@ export default function LoginPage() {
     window.location.assign(url)
   }
 
-  function handleDemoSelect(demo: DemoEntry) {
-    if (!demoMode) return
-    setError(null)
-    setActiveRole(demo.id)
-    setSiEmail(demo.email)
-    setSiPassword('demo1234')
-    if (tab !== 'signin') setTab('signin')
-    setSubmitting(true)
-
-    setTimeout(() => {
-      const { desc: _d, ...user } = demo
-      loginDemo(user)
-      navigate(roleRoute(demo.role))
-      setSubmitting(false)
-    }, 80)
-  }
-
   async function handleSignIn(e: FormEvent) {
     e.preventDefault()
     setError(null)
@@ -252,7 +186,10 @@ export default function LoginPage() {
     try {
       const role = await login(siEmail.trim(), siPassword)
       const redirectState = (location.state ?? null) as LoginRedirectState | null
-      await finishAuthNavigation(navigate, role, redirectState)
+      const enrollError = await finishAuthNavigation(navigate, role, redirectState)
+      if (enrollError) {
+        setError(`Signed in, but enrollment could not be completed: ${enrollError}`)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to sign in.')
     } finally {
@@ -286,15 +223,16 @@ export default function LoginPage() {
     try {
       const role = await signup(suName.trim(), suEmail.trim(), suPassword)
       const redirectState = (location.state ?? null) as LoginRedirectState | null
-      await finishAuthNavigation(navigate, role, redirectState)
+      const enrollError = await finishAuthNavigation(navigate, role, redirectState)
+      if (enrollError) {
+        setError(`Account created, but enrollment could not be completed: ${enrollError}`)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to create account.')
     } finally {
       setSubmitting(false)
     }
   }
-
-  const goals = ['Get a job', 'Build skills', 'Switch career', 'Professional growth']
 
   const submitStyle: CSSProperties = {
     width: '100%',
@@ -311,8 +249,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: C.canvas, position: 'relative', overflow: 'hidden' }}>
-      <Aurora themeId="general" variant="hero" />
+    <div className="login-page" style={{ minHeight: '100vh', background: C.canvas, position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <Aurora themeId="general" />
 
       <button
         type="button"
@@ -328,315 +266,190 @@ export default function LoginPage() {
           fontSize: 13,
           cursor: 'pointer',
           fontFamily: 'var(--font-body)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 6,
           padding: 0,
         }}
       >
-        ← Back to Skylent
+        ← Back
       </button>
 
       <div
-        className="login-page-grid"
         style={{
           position: 'relative',
           zIndex: 1,
-          maxWidth: T.maxW,
-          margin: '0 auto',
-          minHeight: '100vh',
-          display: 'grid',
-          gridTemplateColumns: '1.05fr 0.95fr',
-          gap: 'clamp(32px, 5vw, 72px)',
+          flex: 1,
+          display: 'flex',
           alignItems: 'center',
-          padding: `clamp(88px, 12vh, 120px) ${T.gutter} clamp(48px, 6vh, 72px)`,
+          justifyContent: 'center',
+          padding: `clamp(88px, 14vh, 120px) ${T.gutter} clamp(48px, 8vh, 72px)`,
         }}
       >
-        {/* Editorial */}
-        <div className="login-page-editorial">
-          <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 28 }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.white, letterSpacing: '-0.02em' }}>
-              Skylent<span style={{ color: accent.primary }}>.</span>
+        <div style={{ width: '100%', maxWidth: 400 }}>
+          <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 32 }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: C.white, letterSpacing: '-0.02em' }}>
+              SKYLENT
             </span>
           </Link>
 
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
-            <span style={{ width: 20, height: 1, background: 'currentColor', opacity: 0.5 }} />
-            Sign in
-          </div>
-
-          <h1 className="skylent-display-lg" style={{ color: C.white, margin: '0 0 16px', maxWidth: 520 }}>
-            Sign in to Skylent
+          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 600, color: C.white, margin: '0 0 28px', letterSpacing: '-0.02em' }}>
+            {isSignup ? 'Create your account' : 'Welcome back'}
           </h1>
-          <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.58)', maxWidth: 480, margin: '0 0 32px' }}>
-            Access your learner, faculty, or institution workspace — programs, learning, and Career OS where your account includes them.
-          </p>
 
-          <EntryVisual />
-        </div>
+          {error && (
+            <div
+              role="alert"
+              aria-live="polite"
+              style={{
+                background: 'rgba(239,68,68,0.08)',
+                border: '1px solid rgba(239,68,68,0.28)',
+                borderRadius: T.rControl,
+                padding: '12px 14px',
+                color: 'rgba(255,255,255,0.78)',
+                fontSize: 13,
+                lineHeight: 1.5,
+                marginBottom: 18,
+              }}
+            >
+              {error}
+            </div>
+          )}
 
-        {/* Auth surface */}
-        <div className="login-page-auth">
-          <GlassSurface level={2} padding="clamp(24px, 4vw, 32px)">
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.white, marginBottom: 6 }}>
-                {tab === 'signin' ? 'Sign in' : 'Create account'}
+          {!isSignup ? (
+            <form onSubmit={handleSignIn} noValidate>
+              <div style={{ marginBottom: 16 }}>
+                <label htmlFor="si-email" style={{ display: 'block', color: 'var(--text-muted)', fontSize: 13, fontFamily: 'var(--font-body)', marginBottom: 6 }}>
+                  Email
+                </label>
+                <input
+                  id="si-email"
+                  type="email"
+                  autoComplete="email"
+                  value={siEmail}
+                  onChange={e => setSiEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  disabled={submitting}
+                  style={fieldStyle(focusedField === 'si-email')}
+                  onFocus={() => setFocusedField('si-email')}
+                  onBlur={() => setFocusedField(null)}
+                />
               </div>
-              <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13.5, margin: 0, lineHeight: 1.55 }}>
-                {tab === 'signin' ? 'Use your Skylent account to continue.' : 'Register for a learner workspace.'}
-              </p>
-            </div>
+              <div style={{ marginBottom: 20 }}>
+                <label htmlFor="si-password" style={{ display: 'block', color: 'var(--text-muted)', fontSize: 13, fontFamily: 'var(--font-body)', marginBottom: 6 }}>
+                  Password
+                </label>
+                <input
+                  id="si-password"
+                  type="password"
+                  autoComplete="current-password"
+                  value={siPassword}
+                  onChange={e => setSiPassword(e.target.value)}
+                  placeholder="••••••••"
+                  disabled={submitting}
+                  style={fieldStyle(focusedField === 'si-pw')}
+                  onFocus={() => setFocusedField('si-pw')}
+                  onBlur={() => setFocusedField(null)}
+                />
+              </div>
+              <button type="submit" disabled={submitting} style={submitStyle}>
+                {submitting ? 'Signing in…' : 'Sign in'}
+              </button>
 
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', borderRadius: T.rControl, padding: 3, marginBottom: 24, gap: 3, border: `1px solid ${T.lineDark}` }}>
-              {(['signin', 'signup'] as const).map(t => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => { setTab(t); setError(null) }}
-                  aria-selected={tab === t}
-                  style={{
-                    flex: 1,
-                    background: tab === t ? accent.subtle : 'transparent',
-                    border: 'none',
-                    borderRadius: 6,
-                    padding: '10px 0',
-                    color: tab === t ? C.white : 'rgba(255,255,255,0.42)',
-                    fontSize: 13,
-                    fontWeight: tab === t ? 600 : 400,
-                    cursor: 'pointer',
-                    fontFamily: 'var(--font-body)',
-                  }}
-                >
-                  {t === 'signin' ? 'Sign In' : 'Sign Up'}
-                </button>
-              ))}
-            </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '20px 0' }}>
+                <div style={{ flex: 1, height: 1, background: T.lineDark }} />
+                <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>or</span>
+                <div style={{ flex: 1, height: 1, background: T.lineDark }} />
+              </div>
 
-            {error && (
-              <div
-                role="alert"
-                aria-live="polite"
-                style={{
-                  background: 'rgba(239,68,68,0.08)',
-                  border: '1px solid rgba(239,68,68,0.28)',
-                  borderRadius: T.rControl,
-                  padding: '12px 14px',
-                  color: 'rgba(255,255,255,0.78)',
-                  fontSize: 13,
-                  lineHeight: 1.5,
-                  marginBottom: 18,
-                }}
+              <button
+                type="button"
+                disabled={submitting || googleLoading}
+                onClick={startGoogleAuth}
+                style={googleButtonStyle(submitting || googleLoading)}
               >
-                {error}
+                {googleLoading ? 'Redirecting…' : 'Continue with Google'}
+              </button>
+
+              <p style={{ textAlign: 'center', marginTop: 20, color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>
+                Don&apos;t have an account?{' '}
+                <Link to="/signup" style={{ color: accent.text, fontSize: 13 }}>
+                  Create an account
+                </Link>
+              </p>
+            </form>
+          ) : (
+            <form onSubmit={handleSignUp} noValidate>
+              {[
+                { id: 'su-name', label: 'Name', type: 'text', value: suName, set: setSuName, placeholder: 'Your name', auto: 'name' },
+                { id: 'su-email', label: 'Email', type: 'email', value: suEmail, set: setSuEmail, placeholder: 'you@example.com', auto: 'email' },
+                { id: 'su-pw', label: 'Password', type: 'password', value: suPassword, set: setSuPassword, placeholder: 'At least 8 characters', auto: 'new-password' },
+              ].map(field => (
+                <div key={field.id} style={{ marginBottom: 16 }}>
+                  <label htmlFor={field.id} style={{ display: 'block', color: 'var(--text-muted)', fontSize: 13, fontFamily: 'var(--font-body)', marginBottom: 6 }}>
+                    {field.label}
+                  </label>
+                  <input
+                    id={field.id}
+                    type={field.type}
+                    autoComplete={field.auto}
+                    value={field.value}
+                    onChange={e => field.set(e.target.value)}
+                    placeholder={field.placeholder}
+                    disabled={submitting}
+                    style={fieldStyle(focusedField === field.id)}
+                    onFocus={() => setFocusedField(field.id)}
+                    onBlur={() => setFocusedField(null)}
+                  />
+                </div>
+              ))}
+
+              <button type="submit" disabled={submitting || googleLoading} style={submitStyle}>
+                {submitting ? 'Creating account…' : 'Create account'}
+              </button>
+
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '20px 0' }}>
+                <div style={{ flex: 1, height: 1, background: T.lineDark }} />
+                <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>or</span>
+                <div style={{ flex: 1, height: 1, background: T.lineDark }} />
               </div>
-            )}
 
-            {tab === 'signin' && (
-              <form onSubmit={handleSignIn} noValidate>
-                <div style={{ marginBottom: 16 }}>
-                  <label htmlFor="si-email" style={{ display: 'block', color: 'rgba(255,255,255,0.45)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 6, letterSpacing: '0.06em' }}>
-                    EMAIL
-                  </label>
-                  <input
-                    id="si-email"
-                    type="email"
-                    autoComplete="email"
-                    value={siEmail}
-                    onChange={e => setSiEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    disabled={submitting}
-                    style={fieldStyle(focusedField === 'si-email')}
-                    onFocus={() => setFocusedField('si-email')}
-                    onBlur={() => setFocusedField(null)}
-                  />
-                </div>
-                <div style={{ marginBottom: 8 }}>
-                  <label htmlFor="si-password" style={{ display: 'block', color: 'rgba(255,255,255,0.45)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 6, letterSpacing: '0.06em' }}>
-                    PASSWORD
-                  </label>
-                  <input
-                    id="si-password"
-                    type="password"
-                    autoComplete="current-password"
-                    value={siPassword}
-                    onChange={e => setSiPassword(e.target.value)}
-                    placeholder="••••••••"
-                    disabled={submitting}
-                    style={fieldStyle(focusedField === 'si-pw')}
-                    onFocus={() => setFocusedField('si-pw')}
-                    onBlur={() => setFocusedField(null)}
-                  />
-                </div>
-                <div style={{ textAlign: 'right', marginBottom: 20 }}>
-                  <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>Forgot password?</span>
-                </div>
-                <button type="submit" disabled={submitting} style={submitStyle}>
-                  {submitting ? 'Continuing…' : 'Continue'}
-                </button>
+              <button
+                type="button"
+                disabled={submitting || googleLoading}
+                onClick={startGoogleAuth}
+                style={googleButtonStyle(submitting || googleLoading)}
+              >
+                {googleLoading ? 'Redirecting…' : 'Continue with Google'}
+              </button>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '20px 0' }}>
-                  <div style={{ flex: 1, height: 1, background: T.lineDark }} />
-                  <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>or continue with</span>
-                  <div style={{ flex: 1, height: 1, background: T.lineDark }} />
-                </div>
+              <p style={{ textAlign: 'center', marginTop: 20, color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>
+                Already have an account?{' '}
+                <Link to="/login" style={{ color: accent.text, fontSize: 13 }}>
+                  Sign in
+                </Link>
+              </p>
+            </form>
+          )}
 
-                <button
-                  type="button"
-                  disabled={submitting || googleLoading}
-                  onClick={startGoogleAuth}
-                  style={googleButtonStyle(submitting || googleLoading)}
-                >
-                  {googleLoading ? 'Redirecting to Google…' : 'Continue with Google'}
-                </button>
-
-                <p style={{ textAlign: 'center', marginTop: 20, color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>
-                  New to Skylent?{' '}
-                  <button type="button" onClick={() => { setTab('signup'); setError(null) }} style={{ background: 'none', border: 'none', color: accent.text, cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)', padding: 0 }}>
-                    Create account →
-                  </button>
-                </p>
-              </form>
-            )}
-
-            {tab === 'signup' && (
-              <form onSubmit={handleSignUp} noValidate>
-                {[
-                  { id: 'su-name', label: 'FULL NAME', type: 'text', value: suName, set: setSuName, placeholder: 'Your name', auto: 'name' },
-                  { id: 'su-email', label: 'EMAIL', type: 'email', value: suEmail, set: setSuEmail, placeholder: 'you@example.com', auto: 'email' },
-                  { id: 'su-phone', label: 'PHONE', type: 'tel', value: suPhone, set: setSuPhone, placeholder: '+91 98765 43210', auto: 'tel' },
-                  { id: 'su-pw', label: 'PASSWORD', type: 'password', value: suPassword, set: setSuPassword, placeholder: '••••••••', auto: 'new-password' },
-                ].map(field => (
-                  <div key={field.id} style={{ marginBottom: 16 }}>
-                    <label htmlFor={field.id} style={{ display: 'block', color: 'rgba(255,255,255,0.45)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 6, letterSpacing: '0.06em' }}>
-                      {field.label}
-                    </label>
-                    <input
-                      id={field.id}
-                      type={field.type}
-                      autoComplete={field.auto}
-                      value={field.value}
-                      onChange={e => field.set(e.target.value)}
-                      placeholder={field.placeholder}
-                      disabled={submitting}
-                      style={fieldStyle(focusedField === field.id)}
-                      onFocus={() => setFocusedField(field.id)}
-                      onBlur={() => setFocusedField(null)}
-                    />
+          {import.meta.env.DEV && (
+            <div style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
+              <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 10 }}>
+                Development demo accounts
+              </div>
+              <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 12, lineHeight: 1.6, margin: '0 0 10px' }}>
+                Run <code style={{ fontFamily: 'var(--font-mono)' }}>npm run db:seed</code> to create demo users. Password: <code style={{ fontFamily: 'var(--font-mono)' }}>DemoSkylent2026!</code> (or <code style={{ fontFamily: 'var(--font-mono)' }}>DEMO_USER_PASSWORD</code>).
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {DEV_DEMO_ACCOUNTS.map((account) => (
+                  <div key={account.email} style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.62)' }}>{account.role}</span>
+                    {' · '}
+                    <span style={{ fontFamily: 'var(--font-mono)' }}>{account.email}</span>
                   </div>
                 ))}
-
-                <div style={{ marginBottom: 22 }}>
-                  <div style={{ display: 'block', color: 'rgba(255,255,255,0.45)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 10, letterSpacing: '0.06em' }}>
-                    YOUR GOAL
-                  </div>
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                    {goals.map(g => (
-                      <button
-                        key={g}
-                        type="button"
-                        onClick={() => setSuGoal(g === suGoal ? null : g)}
-                        style={{
-                          background: suGoal === g ? accent.subtle : 'rgba(255,255,255,0.04)',
-                          border: `1px solid ${suGoal === g ? accent.border : T.lineDark}`,
-                          borderRadius: T.rControl,
-                          padding: '8px 14px',
-                          color: suGoal === g ? accent.text : 'rgba(255,255,255,0.52)',
-                          fontSize: 12,
-                          cursor: 'pointer',
-                          fontFamily: 'var(--font-body)',
-                        }}
-                      >
-                        {g}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <button type="submit" disabled={submitting || googleLoading} style={submitStyle}>
-                  {submitting ? 'Creating account…' : 'Create Account'}
-                </button>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '20px 0' }}>
-                  <div style={{ flex: 1, height: 1, background: T.lineDark }} />
-                  <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>or continue with</span>
-                  <div style={{ flex: 1, height: 1, background: T.lineDark }} />
-                </div>
-
-                <button
-                  type="button"
-                  disabled={submitting || googleLoading}
-                  onClick={startGoogleAuth}
-                  style={googleButtonStyle(submitting || googleLoading)}
-                >
-                  {googleLoading ? 'Redirecting to Google…' : 'Sign up with Google'}
-                </button>
-
-                <p style={{ textAlign: 'center', marginTop: 20, color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>
-                  Already have an account?{' '}
-                  <button type="button" onClick={() => { setTab('signin'); setError(null) }} style={{ background: 'none', border: 'none', color: accent.text, cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)', padding: 0 }}>
-                    Sign in →
-                  </button>
-                </p>
-              </form>
-            )}
-          </GlassSurface>
-
-          {/* Demo mode — development only */}
-          {demoMode && (
-          <div style={{ marginTop: 24, padding: '18px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
-            <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 12 }}>
-              Explore workspaces (demo mode)
+              </div>
             </div>
-            <div className="login-demo-grid" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {DEMO_USERS.map(demo => {
-                const isActive = activeRole === demo.id
-                return (
-                  <button
-                    key={demo.id}
-                    type="button"
-                    onClick={() => handleDemoSelect(demo)}
-                    disabled={submitting}
-                    style={{
-                      flex: '1 1 calc(20% - 8px)',
-                      minWidth: 88,
-                      background: isActive ? accent.subtle : 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${isActive ? accent.border : T.lineDark}`,
-                      borderRadius: T.rControl,
-                      padding: '10px 6px',
-                      cursor: submitting ? 'wait' : 'pointer',
-                      textAlign: 'center',
-                    }}
-                  >
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? accent.primary : 'rgba(255,255,255,0.08)', color: isActive ? C.black : 'rgba(255,255,255,0.5)', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px', fontFamily: 'var(--font-mono)' }}>
-                      {demo.avatar}
-                    </div>
-                    <div style={{ color: isActive ? C.white : 'rgba(255,255,255,0.55)', fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{ROLE_LABELS[demo.role]}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 9, fontFamily: 'var(--font-mono)' }}>{demo.desc}</div>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
           )}
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 900px) {
-          .login-page-grid {
-            grid-template-columns: 1fr !important;
-            align-items: start !important;
-          }
-          .login-page-auth { order: 1; }
-          .login-page-editorial { order: 2; }
-        }
-        @media (max-width: 480px) {
-          .login-demo-grid button {
-            flex: 1 1 calc(33.33% - 8px) !important;
-            min-width: 80px !important;
-          }
-        }
-      `}</style>
     </div>
   )
 }

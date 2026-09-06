@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
 import { Section, SectionHeader, Button, Eyebrow, CTABand, T, Heading } from '../components/ui'
 import { Aurora, MediaImage, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
-import { ProductVisual } from '../components/product/ProductVisuals'
 import { getDomainAccent } from '../aurora-themes'
 import { PHOTO } from '../media'
 
@@ -126,21 +125,25 @@ const partnershipSteps = [
 function InstitutionTypesSection({
   activeType,
   setActiveType,
+  promoteToTop = false,
 }: {
   activeType: string
   setActiveType: (id: string) => void
+  promoteToTop?: boolean
 }) {
   const navigate = useNavigate()
   const active = institutionTypes.find(t => t.id === activeType) ?? institutionTypes[1]
 
   return (
-    <Section id="institution-types" tone="canvas" divider>
+    <Section id="institution-types" tone="canvas" divider style={promoteToTop ? { paddingTop: 'clamp(88px, 12vw, 120px)' } : undefined}>
       <FadeIn>
         <SectionHeader
           tone="dark"
-          eyebrow="Institution types"
-          title="What can Skylent provide to your institution?"
-          lead="Every institution type has a distinct partnership model. Select yours to see what Skylent delivers."
+          eyebrow={promoteToTop ? 'For Institutions' : 'Institution types'}
+          title={promoteToTop ? 'Institution OS for education delivery.' : 'What can Skylent provide to your institution?'}
+          lead={promoteToTop
+            ? 'Select your institution type to see education, skills, programs, learner development, assessments, and career workflows Skylent can support.'
+            : 'Every institution type has a distinct partnership model. Select yours to see what Skylent delivers.'}
         />
       </FadeIn>
 
@@ -370,35 +373,9 @@ export default function InstitutionsPage() {
 
   return (
     <PageShell auroraTheme="institution">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
-        <Aurora themeId="institution" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero institution-page-hero">
-            <FadeIn>
-              <Eyebrow tone="dark" accent>For Institutions</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
-                Institution OS for education delivery.
-              </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
-                Programs, batches, learners, assessment, and progress — operational workflows for schools, colleges, universities, and training partners.
-              </p>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Button variant="primary" themeId="institution" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent</Button>
-                <Button variant="secondary" size="lg" onClick={() => navigate('/os')}>Explore Skylent OS</Button>
-              </div>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <div className="institution-hero-visual-wrap" style={{ minHeight: 'clamp(380px, 48vh, 520px)' }}>
-                <ProductVisual id="institution-pipeline" themeId="institution" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
-              </div>
-            </FadeIn>
-          </div>
-        </div>
-      </section>
+      <InstitutionTypesSection activeType={activeType} setActiveType={setActiveType} promoteToTop />
 
       <ContextualNavBar items={INSTITUTION_NAV_ITEMS} themeId="institution" activeId={activeSection} />
-
-      <InstitutionTypesSection activeType={activeType} setActiveType={setActiveType} />
       <EcosystemSection />
       <PartnershipSection />
       <EnquiriesSection />

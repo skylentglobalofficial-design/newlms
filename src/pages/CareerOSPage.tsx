@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell, JobDrawer, ApplyModal } from '../components/shared'
-import { Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader, MarketingHero } from '../components/ui'
+import { Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader } from '../components/ui'
 import { Aurora, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
-import { ProductVisual } from '../components/product/ProductVisuals'
+import CareerOSWorkflowHero from '../components/career/CareerOSWorkflowHero'
 import { getDomainAccent } from '../aurora-themes'
 import { jobs, programs } from '../data'
 import type { Job } from '../data'
@@ -29,27 +29,6 @@ const CAREER_NAV_ITEMS: ContextualNavItem[] = [
   { id: 'tracker', label: 'Applications', sub: 'Track submissions' },
   { id: 'career-support', label: 'Career Support', sub: 'Workflow & guidance' },
 ]
-
-// ─── HERO VISUAL ──────────────────────────────────────────────────────────────
-
-function CareerHeroVisual() {
-  return (
-    <div className="career-hero-visual" style={{ position: 'relative', minHeight: 'clamp(380px, 48vh, 520px)' }}>
-      <ProductVisual id="career-workspace" themeId="career" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: '-6% -5%',
-          border: `1px dashed ${accent.border}`,
-          borderRadius: T.rCard,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-    </div>
-  )
-}
 
 // ─── CAREER JOURNEY ───────────────────────────────────────────────────────────
 
@@ -708,26 +687,7 @@ export default function CareerOSPage() {
 
   return (
     <PageShell auroraTheme="career">
-      <MarketingHero
-        auroraTheme="career"
-        eyebrow="Career OS"
-        title="Profile → proof → apply → track."
-        lead="A career workspace with interview prep and a job board. Available after a Professional Program. See what happens after you apply."
-        actions={
-          <>
-            <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Professional Programs</Button>
-            <Button variant="secondary" size="lg" onClick={() => navigate('/career-os/app')}>Open Career OS workspace</Button>
-            <Button variant="secondary" size="lg" onClick={() => { const el = document.getElementById('jobs'); if (el) el.scrollIntoView({ behavior: 'smooth' }) }}>
-              Browse Jobs
-            </Button>
-          </>
-        }
-        visual={
-          <div className="career-hero-visual-wrap">
-            <CareerHeroVisual />
-          </div>
-        }
-      />
+      <CareerOSWorkflowHero />
 
       <ContextualNavBar items={CAREER_NAV_ITEMS} themeId="career" activeId={activeSection} />
 

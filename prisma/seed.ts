@@ -1,8 +1,11 @@
-import { PrismaClient, CurriculumNodeType, EnrollmentStatus, ProgramType } from '@prisma/client'
+import { PrismaClient, CurriculumNodeType, EnrollmentStatus, ProgramType, RoleName, JobStatus, CareerEmploymentType, CareerWorkMode, CareerSkillProficiency } from '@prisma/client'
+import bcrypt from 'bcrypt'
 
 import { courses, programs } from '../src/data.js'
 
 const prisma = new PrismaClient()
+const DEMO_PASSWORD = process.env.DEMO_USER_PASSWORD ?? 'DemoSkylent2026!'
+const BCRYPT_ROUNDS = 12
 
 function enrollmentStatus(value: string | undefined): EnrollmentStatus | undefined {
   return value ? (value.toUpperCase() as EnrollmentStatus) : undefined
@@ -231,6 +234,251 @@ async function seedProgramCourses() {
   console.log(`Linked ${links.length} program-course relationships`)
 }
 
+async function ensureRole(name: RoleName) {
+  return prisma.role.upsert({
+    where: { name },
+    update: {},
+    create: { name },
+  })
+}
+
+async function assignRole(userId: string, roleName: RoleName) {
+  const role = await ensureRole(roleName)
+  await prisma.userRole.upsert({
+    where: { userId_roleId: { userId, roleId: role.id } },
+    update: {},
+    create: { userId, roleId: role.id },
+  })
+}
+
+async function seedDemoUser(config: {
+  email: string
+  displayName: string
+  role: RoleName
+  organisationSlug?: string
+  organisationName?: string
+}) {
+  const passwordHash = await bcrypt.hash(DEMO_PASSWORD, BCRYPT_ROUNDS)
+  const user = await prisma.user.upsert({
+    where: { email: config.email },
+    update: {
+      displayName: config.displayName,
+      passwordHash,
+    },
+    create: {
+      email: config.email,
+      displayName: config.displayName,
+      passwordHash,
+    },
+  })
+
+  await assignRole(user.id, config.role)
+
+  if (config.organisationSlug) {
+    const organisation = await prisma.organisation.upsert({
+      where: { slug: config.organisationSlug },
+      update: { name: config.organisationName ?? config.organisationSlug },
+      create: {
+        slug: config.organisationSlug,
+        name: config.organisationName ?? config.organisationSlug,
+      },
+    })
+
+    await prisma.organisationMembership.upsert({
+      where: {
+        organisationId_userId: {
+          organisationId: organisation.id,
+          userId: user.id,
+        },
+      },
+      update: {},
+      create: {
+        organisationId: organisation.id,
+        userId: user.id,
+      },
+    })
+  }
+
+  return user
+}
+
+async function seedLearnerWorkspace(userId: string) {
+  const course = await prisma.course.findUnique({ where: { slug: 'data-analytics' } })
+  const program = await prisma.program.findUnique({ where: { slug: 'data-science-ai' } })
+  if (!course) return
+
+  const enrollment = await prisma.userEnrollment.upsert({
+    where: { userId_courseId: { userId, courseId: course.id } },
+    update: { status: 'active' },
+    create: {
+      userId,
+      courseId: course.id,
+      status: 'active',
+    },
+  })
+
+  const lessonNodes = await prisma.curriculumNode.findMany({
+    where: {
+      module: { courseId: course.id },
+      nodeType: { not: CurriculumNodeType.TOPIC },
+    },
+    orderBy: [{ module: { order: 'asc' } }, { order: 'asc' }],
+    take: 3,
+    select: { id: true },
+  })
+
+  for (const node of lessonNodes) {
+    await prisma.lessonProgress.upsert({
+      where: { enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: node.id } },
+      update: { completedAt: new Date(), lastAccessedAt: new Date() },
+      create: {
+        enrollmentId: enrollment.id,
+        nodeId: node.id,
+        completedAt: new Date(),
+        lastAccessedAt: new Date(),
+      },
+    })
+  }
+
+  if (program) {
+    await prisma.userEnrollment.upsert({
+      where: { userId_programId: { userId, programId: program.id } },
+      update: { status: 'active' },
+      create: {
+        userId,
+        programId: program.id,
+        status: 'active',
+      },
+    })
+  }
+
+  await prisma.careerProfile.upsert({
+    where: { userId },
+    update: {
+      headline: 'Aspiring Data Analyst',
+      summary: 'Building analytics skills through Skylent programs and projects.',
+      location: 'Bengaluru, India',
+      preferredRole: 'Data Analyst',
+      preferredWorkMode: CareerWorkMode.HYBRID,
+    },
+    create: {
+      userId,
+      headline: 'Aspiring Data Analyst',
+      summary: 'Building analytics skills through Skylent programs and projects.',
+      location: 'Bengaluru, India',
+      preferredRole: 'Data Analyst',
+      preferredWorkMode: CareerWorkMode.HYBRID,
+    },
+  })
+
+  const profile = await prisma.careerProfile.findUnique({ where: { userId } })
+  if (profile) {
+    const skillCount = await prisma.careerSkill.count({ where: { profileId: profile.id } })
+    if (skillCount === 0) {
+      await prisma.careerSkill.createMany({
+        data: [
+          { profileId: profile.id, name: 'SQL', proficiency: CareerSkillProficiency.INTERMEDIATE, sortOrder: 0 },
+          { profileId: profile.id, name: 'Python', proficiency: CareerSkillProficiency.INTERMEDIATE, sortOrder: 1 },
+          { profileId: profile.id, name: 'Power BI', proficiency: CareerSkillProficiency.BEGINNER, sortOrder: 2 },
+        ],
+      })
+    }
+
+    const projectCount = await prisma.careerProject.count({ where: { profileId: profile.id } })
+    if (projectCount === 0) {
+      await prisma.careerProject.create({
+        data: {
+          profileId: profile.id,
+          title: 'Sales Performance Dashboard',
+          description: 'Power BI dashboard built from a retail sales dataset.',
+          technologies: ['Power BI', 'DAX', 'SQL'],
+          sortOrder: 0,
+        },
+      })
+    }
+  }
+}
+
+async function seedDemoJobs() {
+  const employer = await prisma.employer.upsert({
+    where: { slug: 'skylent-demo-employer' },
+    update: { name: 'Skylent Demo Employer' },
+    create: {
+      slug: 'skylent-demo-employer',
+      name: 'Skylent Demo Employer',
+      description: 'Development fixture employer for Career OS job board previews.',
+      location: 'Remote',
+    },
+  })
+
+  await prisma.job.upsert({
+    where: { slug: 'demo-junior-data-analyst' },
+    update: {
+      status: JobStatus.OPEN,
+      postedAt: new Date(),
+    },
+    create: {
+      employerId: employer.id,
+      title: 'Junior Data Analyst',
+      slug: 'demo-junior-data-analyst',
+      description: 'Development fixture role for demo job board and application flows.',
+      employmentType: CareerEmploymentType.FULL_TIME,
+      workMode: CareerWorkMode.HYBRID,
+      location: 'Bengaluru',
+      skills: ['SQL', 'Python', 'Power BI'],
+      category: 'Data',
+      status: JobStatus.OPEN,
+      postedAt: new Date(),
+    },
+  })
+}
+
+async function seedDemoUsers() {
+  if (process.env.NODE_ENV === 'production' && process.env.SEED_DEMO_USERS !== 'true') {
+    console.log('Skipping demo users in production (set SEED_DEMO_USERS=true to override).')
+    return
+  }
+
+  console.log('Seeding development demo users...')
+
+  const learner = await seedDemoUser({
+    email: 'learner@demo.skylent.dev',
+    displayName: 'Demo Learner',
+    role: RoleName.STUDENT,
+  })
+  await seedLearnerWorkspace(learner.id)
+
+  await seedDemoUser({
+    email: 'mentor@demo.skylent.dev',
+    displayName: 'Demo Mentor',
+    role: RoleName.FACULTY,
+  })
+
+  await seedDemoUser({
+    email: 'institution@demo.skylent.dev',
+    displayName: 'Demo Institution Admin',
+    role: RoleName.ORGANISATION_ADMIN,
+    organisationSlug: 'skylent-demo-college',
+    organisationName: 'Skylent Demo College',
+  })
+
+  await seedDemoUser({
+    email: 'recruiter@demo.skylent.dev',
+    displayName: 'Demo Recruiter',
+    role: RoleName.RECRUITER,
+  })
+
+  await seedDemoUser({
+    email: 'admin@demo.skylent.dev',
+    displayName: 'Demo Admin',
+    role: RoleName.ADMIN,
+  })
+
+  await seedDemoJobs()
+
+  console.log('Demo users seeded (password via DEMO_USER_PASSWORD or DemoSkylent2026!).')
+}
+
 async function main() {
   for (const program of programs) await seedProgram(program)
   for (const course of courses) await seedCourse(course)
@@ -241,6 +489,8 @@ async function main() {
 
   console.log("Seeding program-course links...")
   await seedProgramCourses()
+
+  await seedDemoUsers()
 
   console.log("Seed complete.")
 }

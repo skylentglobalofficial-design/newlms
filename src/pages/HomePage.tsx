@@ -2,10 +2,10 @@ import { useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { C, FadeIn, Footer } from '../components/shared'
 import {
-  Section, Button, CTABand, T, SectionHeader, FlowStrip, MarketingHero,
+  Section, Button, CTABand, T, SectionHeader, FlowStrip,
 } from '../components/ui'
 import { GlassSurface, MediaImage } from '../components/foundation'
-import { ProductVisual } from '../components/product/ProductVisuals'
+import EcosystemMapHero from '../components/home/EcosystemMapHero'
 import { getDomainAccent } from '../aurora-themes'
 import { programs, jobs } from '../data'
 import type { Program, ProgramType } from '../data'
@@ -28,44 +28,7 @@ const SUPPORTING_PROGRAMS = programs
   .filter(p => p.slug !== FEATURED_PROGRAM.slug)
   .slice(0, 5)
 
-// ─── HERO VISUAL ──────────────────────────────────────────────────────────────
-
-function EcosystemHeroVisual() {
-  return (
-    <ProductVisual
-      id="learning-loop"
-      themeId="general"
-      className="skylent-hero-visual"
-      style={{ minHeight: 'clamp(240px, 32vh, 360px)', maxHeight: 'min(46vh, 400px)' }}
-    />
-  )
-}
-
-// ─── 1. HERO ──────────────────────────────────────────────────────────────────
-
-function HeroSection() {
-  const navigate = useNavigate()
-
-  return (
-    <MarketingHero
-      auroraTheme="general"
-      size="xl"
-      eyebrow="Skylent"
-      title={<>Learn. Build skills.<br /><span style={{ color: accent.text }}>Build a career.</span></>}
-      lead="Programs, credentials, and Career OS in one workspace — from school through professional hire."
-      actions={
-        <>
-          <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Programs</Button>
-          <Button variant="secondary" size="lg" onClick={() => navigate('/education')}>Explore Education</Button>
-        </>
-      }
-      visual={<EcosystemHeroVisual />}
-      visualMaxWidth={880}
-    />
-  )
-}
-
-// ─── 2. WHAT SKYLENT COVERS ──────────────────────────────────────────────────
+// ─── 1. ECOSYSTEM MAP ─────────────────────────────────────────────────────────
 
 function CoverageSection() {
   const pillars = [
@@ -613,7 +576,7 @@ export default function HomePage() {
 
   return (
     <>
-      <HeroSection />
+      <EcosystemMapHero />
       <CoverageSection />
       <EducationSection />
       <SkillsSection />

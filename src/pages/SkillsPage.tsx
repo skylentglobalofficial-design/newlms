@@ -4,8 +4,8 @@ import {
   Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader,
 } from '../components/ui'
 import { Aurora, MediaImage, GlassSurface, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
-import { ProductVisual } from '../components/product/ProductVisuals'
 import { getDomainAccent } from '../aurora-themes'
+import SkillsExplorer from '../components/skills/SkillsExplorer'
 import { programs, workshops } from '../data'
 import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
 
@@ -26,27 +26,6 @@ const SKILLS_NAV_ITEMS: ContextualNavItem[] = [
   { id: 'professional', label: 'Professional Programs', sub: 'Career products' },
   { id: 'job-assistance', label: 'Job Assistance', sub: 'Career support' },
 ]
-
-// ─── HERO VISUAL ──────────────────────────────────────────────────────────────
-
-function SkillsHeroVisual() {
-  return (
-    <div className="skills-hero-visual-wrap" style={{ position: 'relative', minHeight: 'clamp(380px, 48vh, 520px)' }}>
-      <ProductVisual id="skills-workspace" themeId="professional" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: '-6% -5%',
-          border: `1px dashed ${accent.border}`,
-          borderRadius: T.rCard,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-    </div>
-  )
-}
 
 // ─── SKILLS PATH ──────────────────────────────────────────────────────────────
 
@@ -623,29 +602,7 @@ export default function SkillsPage() {
 
   return (
     <PageShell auroraTheme="professional">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
-        <Aurora themeId="professional" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero skills-page-hero">
-            <FadeIn>
-              <Eyebrow tone="dark" accent>Skills</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
-                Capability that can<br />become a career.
-              </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
-                Webinars are events. Certificate programs are credentials. Professional Programs are career products. Job Assistance is support — not a course.
-              </p>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Professional Programs</Button>
-                <Button variant="secondary" size="lg" onClick={() => navigate('/workshops')}>Browse Webinars</Button>
-              </div>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <SkillsHeroVisual />
-            </FadeIn>
-          </div>
-        </div>
-      </section>
+      <SkillsExplorer />
 
       <ContextualNavBar items={SKILLS_NAV_ITEMS} themeId="professional" activeId={activeSection} />
 
