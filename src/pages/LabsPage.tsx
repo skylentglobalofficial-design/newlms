@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
+import { getDomainAccent } from '../aurora-themes'
+
+const accent = getDomainAccent('professional')
 import { labSubjects } from '../data'
 import type { LabType } from '../data'
 
@@ -17,7 +20,7 @@ const labTypeLabels: Record<LabType, string> = {
 
 const labTypeColors: Record<LabType, { bg: string; text: string; border: string }> = {
   coding: { bg: 'rgba(59,130,246,0.12)', text: '#60a5fa', border: 'rgba(59,130,246,0.25)' },
-  data: { bg: 'rgba(243,107,33,0.12)', text: C.orange, border: 'rgba(243,107,33,0.25)' },
+  data: { bg: 'rgba(139,92,246,0.12)', text: '#a78bfa', border: 'rgba(139,92,246,0.25)' },
   business: { bg: 'rgba(34,197,94,0.12)', text: '#4ade80', border: 'rgba(34,197,94,0.25)' },
   simulation: { bg: 'rgba(168,85,247,0.12)', text: '#c084fc', border: 'rgba(168,85,247,0.25)' },
 }
@@ -40,10 +43,10 @@ export default function LabsPage() {
       {/* Hero */}
       <section style={{ background: C.ink, padding: '120px 32px 80px', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)', backgroundSize: '56px 56px', pointerEvents: 'none' }} />
-        <div style={{ position: 'absolute', top: 0, right: '5%', width: 480, height: 480, background: `radial-gradient(circle, ${C.orange}12 0%, transparent 65%)`, pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: 0, right: '5%', width: 480, height: 480, background: `radial-gradient(circle, ${accent.primary}12 0%, transparent 65%)`, pointerEvents: 'none' }} />
         <div style={{ maxWidth: 1280, margin: '0 auto', position: 'relative' }}>
           <FadeIn>
-            <div style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.18em', marginBottom: 24 }}>SKYLENT LABS</div>
+            <div style={{ color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.18em', marginBottom: 24 }}>SKYLENT LABS</div>
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(44px, 6vw, 80px)', fontWeight: 700, color: C.white, lineHeight: 1.0, letterSpacing: '-0.035em', margin: '0 0 20px' }}>
               Practice. Build. Prove.
             </h1>
@@ -72,7 +75,7 @@ export default function LabsPage() {
                 <button
                   key={p}
                   onClick={() => setSelectedProgram(p)}
-                  style={{ padding: '6px 14px', borderRadius: 100, border: `1px solid ${selectedProgram === p ? C.orange : 'rgba(255,255,255,0.12)'}`, background: selectedProgram === p ? 'rgba(243,107,33,0.12)' : 'transparent', color: selectedProgram === p ? C.orange : 'rgba(255,255,255,0.45)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
+                  style={{ padding: '6px 14px', borderRadius: 100, border: `1px solid ${selectedProgram === p ? accent.border : 'rgba(255,255,255,0.12)'}`, background: selectedProgram === p ? accent.subtle : 'transparent', color: selectedProgram === p ? accent.text : 'rgba(255,255,255,0.45)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
                 >
                   {p}
                 </button>
@@ -172,7 +175,7 @@ export default function LabsPage() {
                           <span style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>0%</span>
                         </div>
                         <div style={{ background: 'rgba(11,13,15,0.08)', borderRadius: 3, height: 3 }}>
-                          <div style={{ background: C.orange, width: '0%', height: '100%', borderRadius: 3 }} />
+                          <div style={{ background: accent.primary, width: '0%', height: '100%', borderRadius: 3 }} />
                         </div>
                       </div>
 

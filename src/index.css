@@ -5,13 +5,13 @@
 
 @theme inline {
   --color-ink: #0B0D0F;
+  --color-ink-2: #14171A;
+  --color-ink-3: #1D2126;
   --color-orange: #F36B21;
   --color-warm-white: #F8F6F2;
   --color-sand: #EEE9E1;
   --color-slate: #667078;
-  /* Extended neutral scale for restrained surfaces / hairlines */
-  --color-ink-2: #14171A;
-  --color-ink-3: #1D2126;
+  --color-canvas: #050505;
   --color-line: rgba(11, 13, 15, 0.08);
   --color-line-strong: rgba(11, 13, 15, 0.14);
 }
@@ -21,24 +21,39 @@
   --font-body: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'DM Mono', monospace;
 
+  /* Typography scale */
+  --type-display-xl: clamp(40px, 6vw, 84px);
+  --type-display-lg: clamp(34px, 5.2vw, 64px);
+  --type-display-md: clamp(28px, 3.6vw, 44px);
+  --type-display-sm: clamp(24px, 3vw, 34px);
+  --type-body-lg: clamp(16px, 2vw, 18px);
+  --type-body: 15px;
+  --type-body-sm: 13.5px;
+  --type-label: 11px;
+  --type-caption: 10px;
+
+  /* Layout */
+  --section-pad: clamp(88px, 12vw, 140px);
+  --section-pad-sm: clamp(64px, 8vw, 96px);
+  --gutter: clamp(20px, 5vw, 32px);
+  --max-w: 1240px;
+  --nav-h: 64px;
+
   /* ── Skylent Glass System ───────────────────────────────────────────────── */
-  /* Glass 01 — Navigation / floating controls */
-  --glass-01-bg: rgba(11,13,15,0.72);
-  --glass-01-border: rgba(255,255,255,0.09);
+  --glass-01-bg: rgba(11, 13, 15, 0.72);
+  --glass-01-border: rgba(255, 255, 255, 0.09);
   --glass-01-blur: blur(20px);
-  --glass-01-shadow: 0 4px 24px rgba(0,0,0,0.18);
+  --glass-01-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
 
-  /* Glass 02 — Cards / side panels */
-  --glass-02-bg: rgba(255,255,255,0.055);
-  --glass-02-border: rgba(255,255,255,0.10);
-  --glass-02-blur: blur(14px);
-  --glass-02-shadow: 0 8px 40px rgba(0,0,0,0.22);
+  --glass-02-bg: rgba(255, 255, 255, 0.068);
+  --glass-02-border: rgba(255, 255, 255, 0.12);
+  --glass-02-blur: blur(16px);
+  --glass-02-shadow: 0 8px 48px rgba(0, 0, 0, 0.28);
 
-  /* Glass 03 — Deep product surfaces / LMS hero */
-  --glass-03-bg: rgba(255,255,255,0.04);
-  --glass-03-border: rgba(255,255,255,0.08);
+  --glass-03-bg: rgba(255, 255, 255, 0.04);
+  --glass-03-border: rgba(255, 255, 255, 0.08);
   --glass-03-blur: blur(28px);
-  --glass-03-shadow: 0 24px 80px rgba(0,0,0,0.40);
+  --glass-03-shadow: 0 24px 80px rgba(0, 0, 0, 0.40);
 }
 
 * {
@@ -51,12 +66,182 @@ html {
 
 body {
   font-family: var(--font-body);
-  background-color: #F8F6F2;
-  color: #0B0D0F;
+  background-color: var(--color-canvas);
+  color: #ffffff;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Public page shell — continuous near-black canvas */
+.skylent-public-canvas {
+  background-color: var(--color-canvas);
+  color: #ffffff;
+}
+
+/* Typography utilities */
+.skylent-display-xl {
+  font-family: var(--font-display);
+  font-size: var(--type-display-xl);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+.skylent-display-lg {
+  font-family: var(--font-display);
+  font-size: var(--type-display-lg);
+  font-weight: 600;
+  line-height: 1.03;
+  letter-spacing: -0.03em;
+}
+
+.skylent-display-md {
+  font-family: var(--font-display);
+  font-size: var(--type-display-md);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+}
+
+.skylent-body-lg {
+  font-size: var(--type-body-lg);
+  line-height: 1.7;
+}
+
+.skylent-label {
+  font-family: var(--font-mono);
+  font-size: var(--type-label);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Responsive media art direction */
+@media (max-width: 768px) {
+  .skylent-media-img {
+    object-position: center 30% !important;
+  }
+  .skylent-hero-visual .skylent-media-img {
+    object-position: center 25% !important;
+  }
+}
+
+@media (max-width: 375px) {
+  .skylent-display-xl {
+    letter-spacing: -0.03em;
+  }
+  .home-hero-visual {
+    min-height: 0 !important;
+  }
+  .programs-result-featured .two-col {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+/* Product visual frames inside MediaImage */
+.skylent-product-visual-frame {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.skylent-product-visual-frame > * {
+  flex: 1;
+  min-height: 0;
+}
+
+@media (max-width: 768px) {
+  .skylent-page-hero .skylent-product-visual-frame,
+  .home-hero-visual .skylent-hero-visual {
+    min-height: clamp(280px, 42vh, 380px) !important;
+  }
+  .education-discovery {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 1100px) {
+  .program-hero-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .program-hero-visual-col {
+    order: 2;
+    min-height: clamp(300px, 44vh, 420px) !important;
+  }
+  .program-hero-layout > :last-child {
+    order: 3;
+  }
+  .program-curriculum-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .program-outcomes-split > *:last-child {
+    min-height: 260px;
+  }
+  .career-page-hero > *:last-child,
+  .institution-page-hero > *:last-child,
+  .about-page-hero > *:last-child,
+  .education-page-hero > *:last-child,
+  .skills-page-hero > *:last-child {
+    min-height: clamp(300px, 42vh, 400px);
+  }
+}
+
+@media (max-width: 768px) {
+  .program-hero-visual-col,
+  .program-workflow-visual {
+    min-height: clamp(280px, 40vh, 360px) !important;
+  }
+  .career-hero-visual,
+  .institution-hero-visual-wrap,
+  .about-hero-visual,
+  .education-hero-visual-wrap,
+  .skills-hero-visual-wrap {
+    min-height: clamp(280px, 40vh, 360px) !important;
+  }
+}
+
+@media (max-width: 1100px) {
+  .home-hero-visual {
+    min-height: 0 !important;
+  }
+  .home-hero-proof {
+    position: relative !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin-top: 16px !important;
+    bottom: auto !important;
+    right: auto !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .login-page-editorial {
+    display: none;
+  }
+  .login-page-grid {
+    padding-top: clamp(72px, 10vh, 96px) !important;
+  }
+}
+
+/* Nav mega menu — prevent awkward hero overlap */
+.nav-mega-dropdown {
+  max-height: min(70vh, 420px);
+  overflow-y: auto;
+}
+
+/* LMS responsive shell */
+.lms-shell {
+  overflow-x: hidden;
+}
+
+/* Public page section overflow guard */
+.skylent-public-canvas {
+  overflow-x: hidden;
 }
 
 /* Hide scrollbar by default, show while scrolling */

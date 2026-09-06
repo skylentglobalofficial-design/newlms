@@ -1,6 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
 import { C, Nav, Footer, globalCSS } from './components/shared'
+import { PublicCanvas } from './components/foundation'
+import LabDetailPage from './pages/LabDetailPage'
+import ExperimentPage from './pages/ExperimentPage'
 import { AuthProvider } from './context/AuthContext'
+import { DemoStateProvider } from './demo/DemoStateContext'
 import HomePage from './pages/HomePage'
 import EducationPage from './pages/EducationPage'
 import OSPage from './pages/OSPage'
@@ -31,7 +35,7 @@ import LearnPage from './pages/LearnPage'
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<><Nav /><HomePage /></>} />
+      <Route path="/" element={<PublicCanvas themeId="general"><Nav /><HomePage /></PublicCanvas>} />
       <Route path="/education" element={<EducationPage />} />
       <Route path="/skills" element={<SkillsPage />} />
       <Route path="/career-os" element={<CareerOSPage />} />
@@ -60,9 +64,11 @@ function AppRoutes() {
       <Route path="/career" element={<Navigate to="/career-os" replace />} />
       <Route path="/universities" element={<UniversitiesPage />} />
       <Route path="/labs" element={<LabsPage />} />
+      <Route path="/labs/:labId" element={<LabDetailPage />} />
+      <Route path="/labs/:labId/:experimentId" element={<ExperimentPage />} />
       <Route path="/jobs" element={<Navigate to="/career-os" replace />} />
       <Route path="/jobs/:id" element={<Navigate to="/career-os" replace />} />
-      <Route path="*" element={<><Nav /><div style={{ paddingTop: 120, textAlign: 'center', background: C.warmWhite, minHeight: '100vh' }}><h2 style={{ fontFamily: 'var(--font-display)', color: C.ink }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></>} />
+      <Route path="*" element={<PublicCanvas themeId="general"><Nav /><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md" style={{ color: C.white }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></PublicCanvas>} />
     </Routes>
   )
 }
@@ -71,8 +77,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <style>{globalCSS}</style>
-        <AppRoutes />
+        <DemoStateProvider>
+          <style>{globalCSS}</style>
+          <AppRoutes />
+        </DemoStateProvider>
       </AuthProvider>
     </BrowserRouter>
   )

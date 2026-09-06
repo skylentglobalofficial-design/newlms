@@ -4,6 +4,10 @@ import { C } from '../components/shared'
 import { labSubjects } from '../data'
 import type { LabExperimentStatus, LabType } from '../data'
 import { useAuth } from '../context/AuthContext'
+import { useDemoState } from '../demo/DemoStateContext'
+import { getDomainAccent } from '../aurora-themes'
+
+const accent = getDomainAccent('professional')
 
 const labTypeLabels: Record<LabType, string> = {
   coding: 'Coding',
@@ -279,6 +283,7 @@ export default function ExperimentPage() {
   const { labId, experimentId } = useParams<{ labId: string; experimentId: string }>()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const demo = useDemoState()
 
   useEffect(() => {
     if (!user) navigate('/login')
@@ -286,12 +291,13 @@ export default function ExperimentPage() {
 
   const subject = labSubjects.find(s => s.id === labId)
   const experiment = subject?.experiments.find(e => e.id === experimentId)
+  const labProgress = labId ? demo.getLabProgress(labId) : { launched: false, complete: false, experiments: {} }
 
-  const [statuses, setStatuses] = useState<Record<string, LabExperimentStatus>>(() => {
-    const init: Record<string, LabExperimentStatus> = {}
-    subject?.experiments.forEach(e => { init[e.id] = 'not_started' })
-    return init
+  const statuses: Record<string, LabExperimentStatus> = {}
+  subject?.experiments.forEach(e => {
+    statuses[e.id] = labProgress.experiments[e.id] ?? 'not_started'
   })
+
   const [checkedTasks, setCheckedTasks] = useState<Record<string, boolean>>({})
   const [toast, setToast] = useState('')
 
@@ -301,22 +307,24 @@ export default function ExperimentPage() {
   }
 
   function handleSubmit() {
-    if (!experimentId) return
-    setStatuses(prev => ({ ...prev, [experimentId]: 'submitted' }))
-    showToast('Experiment submitted! Under review.')
+    if (!experimentId || !labId) return
+    demo.setExperimentStatus(labId, experimentId, 'submitted')
+    demo.setLabLaunched(labId)
+    showToast('Experiment submitted — local demo state only.')
   }
 
   function handleMarkComplete() {
-    if (!experimentId) return
-    setStatuses(prev => ({ ...prev, [experimentId]: 'completed' }))
-    showToast('Experiment marked as completed!')
+    if (!experimentId || !labId) return
+    demo.setExperimentStatus(labId, experimentId, 'completed')
+    demo.setLabLaunched(labId)
+    showToast('Experiment marked complete — local demo state only.')
   }
 
   if (!subject || !experiment) {
     return (
       <div style={{ minHeight: '100vh', background: C.ink, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, fontFamily: 'var(--font-body)' }}>
         <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)' }}>Experiment not found</div>
-        <Link to={`/labs/${labId}`} style={{ color: C.orange, textDecoration: 'none' }}>&larr; Back to Lab</Link>
+        <Link to={`/labs/${labId}`} style={{ color: accent.text, textDecoration: 'none' }}>&larr; Back to Lab</Link>
       </div>
     )
   }
@@ -427,7 +435,10 @@ export default function ExperimentPage() {
                       key={i}
                       onClick={() => {
                         setCheckedTasks(prev => ({ ...prev, [key]: !prev[key] }))
-                        if (currentStatus === 'not_started') setStatuses(prev => ({ ...prev, [experimentId!]: 'in_progress' }))
+                        if (currentStatus === 'not_started' && labId && experimentId) {
+                          demo.setExperimentStatus(labId, experimentId, 'in_progress')
+                          demo.setLabLaunched(labId)
+                        }
                       }}
                       style={{ display: 'flex', gap: 10, alignItems: 'flex-start', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}
                     >

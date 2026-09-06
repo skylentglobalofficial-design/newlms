@@ -2,23 +2,21 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import type { Job } from '../data'
 import { useAuth } from '../context/AuthContext'
+import { useDemoState } from '../demo/DemoStateContext'
 import type { UserRole } from '../context/AuthContext'
+import { C, T } from '../tokens'
+import { PublicCanvas, useAuroraTheme } from './foundation'
+import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 
-// ─── COLOUR TOKENS ────────────────────────────────────────────────────────────
-export const C = {
-  ink: '#0B0D0F',
-  orange: '#F36B21',
-  warmWhite: '#F8F6F2',
-  sand: '#EEE9E1',
-  slate: '#667078',
-  white: '#FFFFFF',
-  black: '#050505',
-}
+const navAccent = getDomainAccent('general')
 
-// ─── IMAGE URLS ───────────────────────────────────────────────────────────────
+// Re-export color tokens for backward compatibility
+export { C } from '../tokens'
+
+// ─── PRODUCT VISUAL REFS (no remote URLs) ─────────────────────────────────────
 export const IMG = {
-  studentsLecture: 'https://images.unsplash.com/photo-1758270704534-fd9715bffc0e?w=1400&h=900&fit=crop&auto=format',
-  groupTech: 'https://images.unsplash.com/photo-1782388716252-d598f84ea62f?w=1400&h=900&fit=crop&auto=format',
+  studentsLecture: 'skylent:schooling-classroom',
+  groupTech: 'skylent:fullstack-workspace',
 }
 
 // ─── HOOKS ────────────────────────────────────────────────────────────────────
@@ -85,8 +83,10 @@ export function FadeIn({ children, delay = 0, className }: { children: React.Rea
 // ─── ENROLLMENT MODAL (separate from job apply) ───────────────────────────────
 type EnrollItem = { id: string; title: string; price: number; type: 'course' | 'program' | 'workshop' }
 
-export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: () => void }) {
+export function EnrollmentModal({ item, onClose, themeId }: { item: EnrollItem; onClose: () => void; themeId?: AuroraThemeId }) {
   const { user } = useAuth()
+  const demo = useDemoState()
+  const accent = getDomainAccent(themeId ?? (item.type === 'program' ? 'professional' : 'data-science'))
   const [plan, setPlan] = useState(0)
   const [payMethod, setPayMethod] = useState<'upi' | 'card' | 'netbanking' | 'emi'>('upi')
   const navigate = useNavigate()
@@ -105,43 +105,54 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
-  }, [])
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKey) }
+  }, [onClose])
+
+  function advanceStep() {
+    if (steps[step] === 'Payment') {
+      demo.enroll({ itemId: item.id, type: item.type, title: item.title })
+      setStep(s => s + 1)
+      return
+    }
+    setStep(s => s + 1)
+  }
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.6)', zIndex: 500, backdropFilter: 'blur(6px)' }} />
-      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.white, borderRadius: 18, padding: '36px 40px', width: 540, maxWidth: '94vw', zIndex: 501, boxShadow: '0 40px 120px rgba(0,0,0,0.32)', overflowY: 'auto', maxHeight: '92vh' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.6)', zIndex: 500, backdropFilter: 'blur(6px)' }} aria-hidden="true" />
+      <div role="dialog" aria-modal="true" aria-labelledby="enrollment-modal-title" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.white, borderRadius: 18, padding: '36px 40px', width: 540, maxWidth: '94vw', zIndex: 501, boxShadow: '0 40px 120px rgba(0,0,0,0.32)', overflowY: 'auto', maxHeight: '92vh' }}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
           <div>
-            <div style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 3 }}>ENROLLMENT</div>
-            <div style={{ color: C.ink, fontSize: 16, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{item.title}</div>
+            <div style={{ color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 3 }}>Enrollment</div>
+            <div id="enrollment-modal-title" style={{ color: C.ink, fontSize: 16, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{item.title}</div>
           </div>
-          <button onClick={onClose} style={{ background: C.sand, border: 'none', borderRadius: 7, padding: '7px 13px', cursor: 'pointer', color: C.slate, fontSize: 14 }}>✕</button>
+          <button type="button" onClick={onClose} aria-label="Close enrollment dialog" style={{ background: C.sand, border: 'none', borderRadius: 7, padding: '7px 13px', cursor: 'pointer', color: C.slate, fontSize: 14 }}>✕</button>
         </div>
         {/* Step indicator */}
         <div style={{ display: 'flex', gap: 4, marginBottom: 28 }}>
           {steps.map((s, i) => (
-            <div key={s} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= step ? C.orange : 'rgba(11,13,15,0.1)', transition: 'background 0.3s' }} />
+            <div key={s} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= step ? accent.primary : 'rgba(11,13,15,0.1)', transition: 'background 0.3s' }} />
           ))}
         </div>
-        <div style={{ fontSize: 10, color: C.slate, fontFamily: 'var(--font-mono)', marginBottom: 20 }}>STEP {step + 1} OF {steps.length} — {steps[step].toUpperCase()}</div>
+        <div style={{ fontSize: 10, color: C.slate, fontFamily: 'var(--font-mono)', marginBottom: 20 }}>Step {step + 1} of {steps.length} — {steps[step]}</div>
 
         {/* Step content — keyed by step name to handle auth-aware step skipping */}
         {steps[step] === 'Plan' && (
           <div>
             <div style={{ marginBottom: 20 }}>
               {plans.map((p, i) => (
-                <div key={p.name} onClick={() => setPlan(i)} style={{ border: `1px solid ${plan === i ? C.orange : 'rgba(11,13,15,0.12)'}`, borderRadius: 10, padding: '14px 18px', marginBottom: 8, cursor: 'pointer', background: plan === i ? 'rgba(243,107,33,0.04)' : 'transparent', transition: 'all 0.2s' }}>
+                <div key={p.name} onClick={() => setPlan(i)} style={{ border: `1px solid ${plan === i ? accent.primary : 'rgba(11,13,15,0.12)'}`, borderRadius: 10, padding: '14px 18px', marginBottom: 8, cursor: 'pointer', background: plan === i ? accent.subtle : 'transparent', transition: 'all 0.2s' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <div style={{ color: C.ink, fontSize: 14, fontWeight: 600 }}>{p.name}</div>
-                      <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{item.type === 'program' && i === 1 ? 'Most popular' : item.type === 'program' && i === 2 ? 'Best for placement' : 'Access all content'}</div>
+                      <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{item.type === 'program' && i === 1 ? 'Most popular' : item.type === 'program' && i === 2 ? 'Includes Career OS' : 'Access all content'}</div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, color: C.ink, fontWeight: 600 }}>₹{p.price.toLocaleString('en-IN')}</div>
-                      {plan === i && <div style={{ width: 18, height: 18, borderRadius: '50%', background: C.orange, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: 'white' }}>✓</div>}
+                      {plan === i && <div style={{ width: 18, height: 18, borderRadius: '50%', background: accent.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, color: C.black }}>✓</div>}
                     </div>
                   </div>
                 </div>
@@ -156,7 +167,7 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
                 <div key={l}><div style={{ color: C.slate, fontSize: 11, marginBottom: 5 }}>{l}</div><div style={{ background: C.sand, borderRadius: 7, padding: '11px 14px', fontSize: 14, color: C.ink }}>{v}</div></div>
               ))}
             </div>
-            <div style={{ marginTop: 14, padding: '10px 14px', background: 'rgba(243,107,33,0.06)', border: '1px solid rgba(243,107,33,0.18)', borderRadius: 7, color: C.slate, fontSize: 12 }}>Demo mode — no real account is created.</div>
+            <div style={{ marginTop: 14, padding: '10px 14px', background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 7, color: C.slate, fontSize: 12 }}>Demo mode — no real account is created.</div>
           </div>
         )}
         {steps[step] === 'Details' && (
@@ -194,8 +205,8 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
               <div>
                 <div style={{ color: C.slate, fontSize: 11, marginBottom: 6 }}>UPI ID</div>
                 <div style={{ background: C.sand, borderRadius: 7, padding: '11px 14px', fontSize: 14, color: C.ink, marginBottom: 14 }}>arjun@okaxis</div>
-                <div style={{ background: 'rgba(243,107,33,0.06)', border: '1px solid rgba(243,107,33,0.18)', borderRadius: 8, padding: 14, textAlign: 'center' }}>
-                  <div style={{ color: C.slate, fontSize: 11, marginBottom: 6 }}>DEMO — No real payment is processed</div>
+                <div style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 8, padding: 14, textAlign: 'center' }}>
+                  <div style={{ color: C.slate, fontSize: 11, marginBottom: 6 }}>Demo — no real payment is processed</div>
                   <div style={{ color: C.ink, fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 600 }}>₹{Math.round(selectedPrice * 1.18).toLocaleString('en-IN')}</div>
                 </div>
               </div>
@@ -214,7 +225,7 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
         )}
         {steps[step] === 'Success' && (
           <div style={{ textAlign: 'center', padding: '12px 0' }}>
-            <div style={{ width: 56, height: 56, borderRadius: '50%', background: `linear-gradient(135deg, ${C.orange}, #ff9a3c)`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 22, color: 'white', fontWeight: 700 }}>✓</div>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: `linear-gradient(135deg, ${accent.primary}, ${accent.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 22, color: C.black, fontWeight: 700 }}>✓</div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, color: C.ink, fontWeight: 700, marginBottom: 8 }}>Enrollment Successful</div>
             <div style={{ color: C.slate, fontSize: 14, marginBottom: 24 }}>{item.title} has been added to your learning dashboard.</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, background: C.sand, borderRadius: 10, padding: 14, marginBottom: 24, fontSize: 12 }}>
@@ -223,7 +234,7 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
               ))}
             </div>
             <div style={{ background: 'rgba(11,13,15,0.04)', borderRadius: 8, padding: 10, color: C.slate, fontSize: 11, marginBottom: 20 }}>Demo enrollment — no real payment was processed.</div>
-            <button onClick={() => { onClose(); navigate('/dashboard/student') }} style={{ width: '100%', background: C.orange, border: 'none', color: C.white, borderRadius: 9, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Go to Student Dashboard →</button>
+            <button onClick={() => { onClose(); navigate('/dashboard/student') }} style={{ width: '100%', background: accent.primary, border: 'none', color: C.black, borderRadius: 9, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Go to student dashboard</button>
           </div>
         )}
 
@@ -231,7 +242,7 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
         {steps[step] !== 'Success' && (
           <div style={{ display: 'flex', gap: 10, marginTop: 24 }}>
             {step > 0 && <button onClick={() => setStep(s => s - 1)} style={{ flex: 1, background: C.sand, border: 'none', color: C.ink, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>← Back</button>}
-            <button onClick={() => setStep(s => s + 1)} style={{ flex: 2, background: steps[step] === 'Payment' ? '#16a34a' : C.orange, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.2s' }}>{steps[step] === 'Payment' ? 'Confirm Payment →' : steps[step] === 'Plan' ? `Enroll — ₹${selectedPrice.toLocaleString('en-IN')}` : 'Continue →'}</button>
+            <button type="button" onClick={advanceStep} style={{ flex: 2, background: steps[step] === 'Payment' ? '#16a34a' : accent.primary, border: 'none', color: steps[step] === 'Payment' ? C.white : C.black, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.2s' }}>{steps[step] === 'Payment' ? 'Confirm payment (demo)' : steps[step] === 'Plan' ? `Enroll — ₹${selectedPrice.toLocaleString('en-IN')}` : 'Continue'}</button>
           </div>
         )}
       </div>
@@ -242,46 +253,63 @@ export function EnrollmentModal({ item, onClose }: { item: EnrollItem; onClose: 
 // ─── APPLY MODAL (job application — separate from enrollment) ─────────────────
 export function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) {
   const [step, setStep] = useState(0)
-  const steps = ['Profile', 'Resume', 'Screening', 'Interview', 'Result']
+  const steps = ['Profile', 'Resume', 'Screening', 'Review', 'Result']
+  const accent = getDomainAccent('career')
+  const demo = useDemoState()
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
-  }, [])
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKey) }
+  }, [onClose])
+
+  function handleContinue() {
+    if (step === 3) {
+      if (demo.hasApplied(job.id)) {
+        setStep(4)
+        return
+      }
+      demo.applyToJob({ id: job.id, role: job.role, company: job.company })
+      setStep(4)
+      return
+    }
+    setStep(s => s + 1)
+  }
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.55)', zIndex: 500, backdropFilter: 'blur(5px)' }} />
-      <div style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.white, borderRadius: 16, padding: 40, width: 520, maxWidth: '92vw', zIndex: 501, boxShadow: '0 32px 100px rgba(0,0,0,0.35)', overflowY: 'auto', maxHeight: '90vh' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.55)', zIndex: 500, backdropFilter: 'blur(5px)' }} aria-hidden="true" />
+      <div role="dialog" aria-modal="true" aria-labelledby="apply-modal-title" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.white, borderRadius: 16, padding: 40, width: 520, maxWidth: '92vw', zIndex: 501, boxShadow: '0 32px 100px rgba(0,0,0,0.35)', overflowY: 'auto', maxHeight: '90vh' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 28 }}>
           <div>
-            <div style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>JOB APPLICATION</div>
-            <div style={{ color: C.ink, fontSize: 16, fontWeight: 600 }}>{job.role} · {job.company}</div>
+            <div style={{ color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>Job application</div>
+            <div id="apply-modal-title" style={{ color: C.ink, fontSize: 16, fontWeight: 600 }}>{job.role} · {job.company}</div>
           </div>
-          <button onClick={onClose} style={{ background: C.sand, border: 'none', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', color: C.slate, fontSize: 15 }}>✕</button>
+          <button type="button" onClick={onClose} aria-label="Close application dialog" style={{ background: C.sand, border: 'none', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', color: C.slate, fontSize: 15 }}>✕</button>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: 28 }}>
           {steps.map((s, i) => (
             <div key={s} style={{ display: 'flex', alignItems: 'center', flex: i < steps.length - 1 ? 1 : 'none' }}>
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 44 }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, background: i < step ? C.orange : i === step ? C.ink : C.sand, color: i <= step ? C.white : C.slate, marginBottom: 5, transition: 'all 0.3s' }}>{i < step ? '✓' : i + 1}</div>
+                <div style={{ width: 30, height: 30, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, background: i < step ? accent.primary : i === step ? C.ink : C.sand, color: i <= step ? (i < step ? C.white : C.white) : C.slate, marginBottom: 5, transition: 'all 0.3s' }}>{i < step ? '✓' : i + 1}</div>
                 <span style={{ fontSize: 9, color: i === step ? C.ink : C.slate, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>{s}</span>
               </div>
-              {i < steps.length - 1 && <div style={{ flex: 1, height: 1, background: i < step ? C.orange : 'rgba(11,13,15,0.12)', marginBottom: 18, transition: 'background 0.3s' }} />}
+              {i < steps.length - 1 && <div style={{ flex: 1, height: 1, background: i < step ? accent.primary : 'rgba(11,13,15,0.12)', marginBottom: 18, transition: 'background 0.3s' }} />}
             </div>
           ))}
         </div>
         <div style={{ background: C.sand, borderRadius: 10, padding: 22, marginBottom: 20, minHeight: 130 }}>
           {step === 0 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 14 }}>YOUR PROFILE</div><div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>{[['Full Name', 'Arjun Sharma'], ['Email', 'arjun@email.com'], ['Phone', '+91 98765 43210'], ['City', 'Bengaluru']].map(([l, v]) => <div key={l}><div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{l.toUpperCase()}</div><div style={{ background: C.white, borderRadius: 6, padding: '8px 12px', fontSize: 13, color: C.ink }}>{v}</div></div>)}</div></div>}
-          {step === 1 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 14 }}>RESUME</div><div style={{ background: C.white, borderRadius: 8, padding: 14, display: 'flex', alignItems: 'center', gap: 12 }}><div style={{ width: 38, height: 38, borderRadius: 6, background: 'rgba(243,107,33,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.orange, fontSize: 18 }}>⬛</div><div><div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>Arjun_Sharma_Resume.pdf</div><div style={{ color: C.slate, fontSize: 11 }}>Skylent-reviewed · ATS optimised</div></div><div style={{ marginLeft: 'auto', color: '#16a34a', fontSize: 10, fontFamily: 'var(--font-mono)' }}>READY</div></div></div>}
+          {step === 1 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 14 }}>Resume</div><div style={{ background: C.white, borderRadius: 8, padding: 14, display: 'flex', alignItems: 'center', gap: 12 }}><div style={{ width: 38, height: 38, borderRadius: 6, background: accent.subtle, display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent.primary, fontSize: 18 }}>⬛</div><div><div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>Arjun_Sharma_Resume.pdf</div><div style={{ color: C.slate, fontSize: 11 }}>Sample resume · demo file</div></div><div style={{ marginLeft: 'auto', color: '#16a34a', fontSize: 10, fontFamily: 'var(--font-mono)' }}>Ready</div></div></div>}
           {step === 2 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 12 }}>SCREENING QUESTION</div><div style={{ color: C.ink, fontSize: 14, lineHeight: 1.65, marginBottom: 10 }}>Why are you interested in this role?</div><div style={{ background: C.white, borderRadius: 6, padding: '10px 14px', color: C.slate, fontSize: 13, lineHeight: 1.6 }}>I am passionate about using data to drive decisions and have completed 4 industry projects during my Skylent program...</div></div>}
-          {step === 3 && <div style={{ textAlign: 'center', paddingTop: 8 }}><div style={{ fontSize: 30, marginBottom: 10 }}>🗓</div><div style={{ color: C.ink, fontSize: 15, fontWeight: 600, marginBottom: 5 }}>Interview Scheduled</div><div style={{ color: C.slate, fontSize: 13 }}>Thursday, 15 August · 11:00 AM</div><div style={{ color: C.slate, fontSize: 13 }}>Technical + HR · 60 minutes</div></div>}
-          {step === 4 && <div style={{ textAlign: 'center', paddingTop: 4 }}><div style={{ width: 48, height: 48, borderRadius: '50%', background: `linear-gradient(135deg, ${C.orange}, #ff9a3c)`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 20, color: 'white', fontWeight: 700 }}>✓</div><div style={{ color: C.ink, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Application Submitted</div><div style={{ color: C.slate, fontSize: 13 }}>Demo application — no real submission was made.</div></div>}
+          {step === 3 && <div style={{ textAlign: 'center', paddingTop: 8 }}><div style={{ color: C.ink, fontSize: 15, fontWeight: 600, marginBottom: 8 }}>Ready to submit</div><div style={{ color: C.slate, fontSize: 13, lineHeight: 1.6 }}>Your profile and screening answers will be saved locally as a demo application. No employer communication occurs.</div></div>}
+          {step === 4 && <div style={{ textAlign: 'center', paddingTop: 4 }}><div style={{ width: 48, height: 48, borderRadius: '50%', background: `linear-gradient(135deg, ${accent.primary}, ${accent.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 20, color: C.white, fontWeight: 700 }}>✓</div><div style={{ color: C.ink, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Application submitted</div><div style={{ color: C.slate, fontSize: 13 }}>Status: Applied — view in Application Tracker below.</div></div>}
         </div>
         <div style={{ display: 'flex', gap: 10 }}>
           {step > 0 && step < 4 && <button onClick={() => setStep(s => s - 1)} style={{ flex: 1, background: C.sand, border: 'none', color: C.ink, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>← Back</button>}
-          {step < 4 && <button onClick={() => setStep(s => s + 1)} style={{ flex: 2, background: C.orange, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>{step === 3 ? 'View Result' : 'Continue →'}</button>}
-          {step === 4 && <button onClick={onClose} style={{ flex: 1, background: C.ink, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Close</button>}
+          {step < 4 && <button type="button" onClick={handleContinue} style={{ flex: 2, background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>{step === 3 ? 'Submit application' : 'Continue'}</button>}
+          {step === 4 && <button type="button" onClick={onClose} style={{ flex: 1, background: C.ink, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Close</button>}
         </div>
       </div>
     </>
@@ -290,6 +318,7 @@ export function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) 
 
 // ─── JOB DRAWER ───────────────────────────────────────────────────────────────
 export function JobDrawer({ job, onClose, onApply }: { job: Job; onClose: () => void; onApply: () => void }) {
+  const careerAccent = getDomainAccent('career')
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.5)', zIndex: 400, backdropFilter: 'blur(4px)' }} />
@@ -316,7 +345,7 @@ export function JobDrawer({ job, onClose, onApply }: { job: Job; onClose: () => 
             {job.skills.map(s => <span key={s} style={{ background: 'rgba(243,107,33,0.08)', border: '1px solid rgba(243,107,33,0.2)', borderRadius: 6, padding: '5px 12px', color: C.ink, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{s}</span>)}
           </div>
         </div>
-        <button onClick={onApply} style={{ width: '100%', background: C.orange, border: 'none', color: C.white, borderRadius: 8, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Apply Now →</button>
+        <button onClick={onApply} style={{ width: '100%', background: careerAccent.primary, border: 'none', color: C.white, borderRadius: 8, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Apply now</button>
       </div>
     </>
   )
@@ -349,7 +378,7 @@ const megaMenu = [
   {
     label: 'Career OS',
     to: '/career-os',
-    tagline: 'Your career, as an operating system',
+    tagline: 'Profile, jobs, and applications',
     items: [
       { label: 'Interview Preparation', sub: 'Mock interviews & practice', to: '/career-os' },
       { label: 'Job Board', sub: 'Curated opportunities', to: '/career-os' },
@@ -358,7 +387,7 @@ const megaMenu = [
   {
     label: 'For Institutions',
     to: '/institutions',
-    tagline: 'Education + career infrastructure',
+    tagline: 'Dashboards for schools and colleges',
     items: [
       { label: 'Schools', sub: 'Student learning & teacher tools', to: '/institutions' },
       { label: 'Colleges', sub: 'Academic programs & career readiness', to: '/institutions' },
@@ -394,6 +423,13 @@ export function Nav() {
     if (searchOpen) searchRef.current?.focus()
   }, [searchOpen])
 
+  useEffect(() => {
+    if (!menuOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = prev }
+  }, [menuOpen])
+
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
     const q = searchQuery.trim()
@@ -405,13 +441,18 @@ export function Nav() {
   const { user, logout } = useAuth()
 
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 40)
+    const h = () => { setScrolled(window.scrollY > 40); setActiveMenu(null) }
     window.addEventListener('scroll', h, { passive: true })
     return () => window.removeEventListener('scroll', h)
   }, [])
   useEffect(() => { setMenuOpen(false); setActiveMenu(null) }, [location.pathname])
 
   const showDark = scrolled || !isHome
+
+  const navBg = showDark ? 'var(--glass-01-bg)' : 'transparent'
+  const navBlur = showDark ? 'var(--glass-01-blur)' : 'none'
+  const navBorder = showDark ? '1px solid var(--glass-01-border)' : 'none'
+  const navShadow = showDark ? 'var(--glass-01-shadow)' : 'none'
 
   const handleMenuEnter = useCallback((label: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current)
@@ -428,8 +469,8 @@ export function Nav() {
   ]
 
   return (
-    <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: showDark ? 'rgba(11,13,15,0.92)' : 'transparent', backdropFilter: showDark ? 'blur(20px)' : 'none', borderBottom: showDark ? '1px solid rgba(255,255,255,0.07)' : 'none', transition: 'background 0.4s, backdrop-filter 0.4s, border-color 0.4s' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 64 }}>
+    <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, backdropFilter: navBlur, WebkitBackdropFilter: navBlur, borderBottom: navBorder, boxShadow: navShadow, transition: 'background 0.4s, backdrop-filter 0.4s, border-color 0.4s, box-shadow 0.4s' }}>
+      <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH }}>
         {/* Logo */}
         <button onClick={() => navigate('/')} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: C.white, background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '-0.02em', padding: 0, flexShrink: 0 }}>
           Skylent<span style={{ color: C.orange }}>.</span>
@@ -444,7 +485,7 @@ export function Nav() {
                 <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{ opacity: 0.5, transform: activeMenu === group.label ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l5 6 5-6z"/></svg>
               </button>
               {activeMenu === group.label && (
-                <div onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: 'rgba(11,13,15,0.97)', backdropFilter: 'blur(24px)', border: '1px solid rgba(255,255,255,0.09)', borderRadius: 14, padding: 8, minWidth: 288, boxShadow: '0 28px 70px rgba(0,0,0,0.5)', zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
+                <div className="nav-mega-dropdown" onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)', WebkitBackdropFilter: 'var(--glass-01-blur)', border: '1px solid var(--glass-01-border)', borderRadius: 14, padding: 8, minWidth: 288, boxShadow: '0 28px 70px rgba(0,0,0,0.5)', zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
                   <Link to={group.to} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px 13px', borderRadius: 10, textDecoration: 'none', marginBottom: 4, borderBottom: '1px solid rgba(255,255,255,0.07)' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -453,7 +494,7 @@ export function Nav() {
                       <div style={{ color: C.white, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
                       <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{group.tagline}</div>
                     </div>
-                    <span style={{ color: C.orange, fontSize: 15 }}>→</span>
+                    <span style={{ color: navAccent.text, fontSize: 15 }}>→</span>
                   </Link>
                   {group.items.map(item => (
                     <Link key={item.to + item.label} to={item.to} style={{ display: 'block', padding: '9px 14px', borderRadius: 9, textDecoration: 'none', transition: 'background 0.15s' }}
@@ -488,7 +529,7 @@ export function Nav() {
                 onKeyDown={e => e.key === 'Escape' && setSearchOpen(false)}
                 style={{ background: 'transparent', border: 'none', outline: 'none', color: C.white, fontSize: 13, padding: '7px 12px', width: 220, fontFamily: 'var(--font-body)' }}
               />
-              <button type="submit" style={{ background: 'none', border: 'none', color: C.orange, padding: '7px 10px', cursor: 'pointer' }}>
+              <button type="submit" style={{ background: 'none', border: 'none', color: navAccent.text, padding: '7px 10px', cursor: 'pointer' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
               <button type="button" onClick={() => setSearchOpen(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', padding: '7px 10px', cursor: 'pointer', fontSize: 13 }}>✕</button>
@@ -510,9 +551,9 @@ export function Nav() {
             <>
               {/* Avatar chip */}
               <div className="nav-links" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, padding: '5px 10px' }}>
-                <div style={{ width: 26, height: 26, borderRadius: '50%', background: C.orange, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: C.white, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>{user.avatar}</div>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: navAccent.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: C.white, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>{user.avatar}</div>
                 <span style={{ color: C.white, fontSize: 12, fontWeight: 500, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name.length > 14 ? user.name.slice(0, 14) + '...' : user.name}</span>
-                <span style={{ background: 'rgba(243,107,33,0.18)', border: '1px solid rgba(243,107,33,0.35)', borderRadius: 4, padding: '1px 6px', fontSize: 9, color: C.orange, fontFamily: 'var(--font-mono)', letterSpacing: '0.05em', flexShrink: 0 }}>{user.role}</span>
+                <span style={{ background: navAccent.subtle, border: `1px solid ${navAccent.border}`, borderRadius: 4, padding: '1px 6px', fontSize: 9, color: navAccent.text, fontFamily: 'var(--font-mono)', letterSpacing: '0.05em', flexShrink: 0 }}>{user.role}</span>
               </div>
               <Link to={dashRoute(user.role)} className="nav-links" style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: C.white, borderRadius: 7, padding: '7px 14px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'border-color 0.2s', whiteSpace: 'nowrap' }}
                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)')}
@@ -529,9 +570,9 @@ export function Nav() {
                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)')}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
               >Sign In</Link>
-              <Link to="/programs" style={{ background: C.orange, border: 'none', color: C.white, borderRadius: 7, padding: '8px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#ff7d33' }}
-                onMouseLeave={e => { e.currentTarget.style.background = C.orange }}
+              <Link to="/programs" style={{ background: navAccent.primary, border: 'none', color: C.white, borderRadius: 7, padding: '8px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+                onMouseEnter={e => { e.currentTarget.style.background = navAccent.secondary }}
+                onMouseLeave={e => { e.currentTarget.style.background = navAccent.primary }}
               >Explore Programs</Link>
             </>
           )}
@@ -543,12 +584,25 @@ export function Nav() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu — full-screen overlay so page content does not bleed through */}
       {menuOpen && (
-        <div style={{ background: C.ink, borderTop: '1px solid rgba(255,255,255,0.07)', padding: '12px 24px 20px', maxHeight: '80vh', overflowY: 'auto' }}>
+        <div
+          className="mobile-nav-overlay"
+          style={{
+            position: 'fixed',
+            inset: `${T.navH}px 0 0 0`,
+            zIndex: 250,
+            background: 'rgba(5, 5, 5, 0.98)',
+            backdropFilter: 'blur(16px)',
+            WebkitBackdropFilter: 'blur(16px)',
+            borderTop: '1px solid rgba(255,255,255,0.07)',
+            padding: '12px 24px 28px',
+            overflowY: 'auto',
+          }}
+        >
           {megaMenu.map(group => (
             <div key={group.label} style={{ marginBottom: 8 }}>
-              <Link to={group.to} onClick={() => setMenuOpen(false)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', padding: '12px 0 6px', textDecoration: 'none' }}>{group.label.toUpperCase()}<span style={{ opacity: 0.7 }}>→</span></Link>
+              <Link to={group.to} onClick={() => setMenuOpen(false)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: navAccent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', padding: '12px 0 6px', textDecoration: 'none' }}>{group.label.toUpperCase()}<span style={{ opacity: 0.7 }}>→</span></Link>
               {group.items.map(item => (
                 <Link key={item.label} to={item.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '9px 0', color: 'rgba(255,255,255,0.7)', fontSize: 14, textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{item.label}</Link>
               ))}
@@ -563,7 +617,7 @@ export function Nav() {
             ) : (
               <Link to="/login" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13 }}>Sign In</Link>
             )}
-            <Link to="/programs" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', background: C.orange, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>Explore Programs</Link>
+            <Link to="/programs" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', background: navAccent.primary, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>Explore Programs</Link>
           </div>
         </div>
       )}
@@ -580,12 +634,12 @@ export function Footer() {
     { heading: 'Company', links: [['About', '/about'], ['For Institutions', '/institutions'], ['Stories', '/stories'], ['Blog', '/blog'], ['Contact', '/contact']] },
   ]
   return (
-    <footer style={{ background: C.black, padding: '72px 32px 32px' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+    <footer style={{ background: C.black, padding: `${T.sectionSm} ${T.gutter} 32px`, position: 'relative' }}>
+      <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1.7fr repeat(4, 1fr)', gap: 40, marginBottom: 56 }} className="footer-grid">
           <div>
             <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.white, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
-            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>One ecosystem — from education to employability. Building the infrastructure for the future of learning and careers.</p>
+            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Education, skills, and career workflows on one platform — for learners and institutions.</p>
             <div style={{ display: 'flex', gap: 10 }}>
               {['in', 'tw', 'yt', 'ig'].map(s => (<div key={s} style={{ width: 32, height: 32, borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{s}</div>))}
             </div>
@@ -614,15 +668,27 @@ export function Footer() {
 }
 
 // ─── PAGE SHELL ───────────────────────────────────────────────────────────────
-export function PageShell({ children }: { children: React.ReactNode }) {
+export function PageShell({
+  children,
+  aurora,
+  auroraTheme,
+}: {
+  children: React.ReactNode
+  aurora?: boolean
+  auroraTheme?: AuroraThemeId
+}) {
   const location = useLocation()
+  const autoTheme = useAuroraTheme()
+  const theme = auroraTheme ?? autoTheme
+  const showAurora = aurora ?? true
+
   useEffect(() => {
     if (location.hash) {
       const id = location.hash.replace('#', '')
       requestAnimationFrame(() => {
         const el = document.getElementById(id)
         if (el) {
-          const y = el.getBoundingClientRect().top + window.scrollY - 72
+          const y = el.getBoundingClientRect().top + window.scrollY - (T.navH + 8)
           window.scrollTo({ top: y, behavior: 'smooth' })
         }
       })
@@ -630,12 +696,15 @@ export function PageShell({ children }: { children: React.ReactNode }) {
       window.scrollTo(0, 0)
     }
   }, [location.pathname, location.hash])
+
   return (
-    <div style={{ paddingTop: 64 }}>
-      <Nav />
-      {children}
-      <Footer />
-    </div>
+    <PublicCanvas themeId={theme} aurora={showAurora}>
+      <div style={{ paddingTop: T.navH }}>
+        <Nav />
+        <main>{children}</main>
+        <Footer />
+      </div>
+    </PublicCanvas>
   )
 }
 
@@ -650,11 +719,28 @@ export const globalCSS = `
   .nav-links { display: flex !important; }
   .show-mobile { display: none !important; }
 
+  .skylent-section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.08) 80%, transparent 100%);
+    max-width: var(--max-w);
+    margin: 0 auto;
+  }
+
+  .contextual-nav-panel { display: block; }
+  .contextual-nav-bar { display: none; }
+  .contextual-nav-bar-scroll::-webkit-scrollbar { display: none; }
+
   @media (max-width: 1100px) {
     .nav-links { display: none !important; }
     .show-mobile { display: flex !important; }
-    .hero-grid, .two-col, .two-col-sm { grid-template-columns: 1fr !important; gap: 32px !important; }
+    .contextual-nav-panel { display: none !important; }
+    .contextual-nav-bar { display: block !important; }
+    .career-hero-visual-wrap { display: block !important; }
+    .hero-grid, .two-col, .two-col-sm, .skylent-page-hero { grid-template-columns: 1fr !important; gap: 32px !important; }
     .program-detail-grid { grid-template-columns: 1fr !important; }
+    .program-hero-layout { grid-template-columns: 1fr !important; }
+    .program-curriculum-layout { grid-template-columns: 1fr !important; }
+    .program-outcomes-split { grid-template-columns: 1fr !important; }
     .three-col { grid-template-columns: 1fr 1fr !important; }
     .programs-grid { grid-template-columns: 1fr 1fr !important; }
     .intent-grid { grid-template-columns: 1fr 1fr !important; }
@@ -664,8 +750,65 @@ export const globalCSS = `
     .edu-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
     .dash-grid { grid-template-columns: 1fr !important; }
     .hero-float { display: none !important; }
-    .hero-visual { aspect-ratio: 4/3 !important; max-height: 380px !important; }
-    .hero-visual img { transform: none !important; }
+    .hero-visual, .skylent-hero-visual { aspect-ratio: 4/3 !important; max-height: 380px !important; }
+    .hero-visual img, .skylent-hero-visual img { transform: none !important; }
+  }
+  @media (max-width: 768px) {
+    .skylent-page-hero { gap: 28px !important; }
+    .skylent-display-lg { font-size: clamp(30px, 8vw, 44px) !important; }
+    .education-journey { grid-template-columns: 1fr !important; gap: 40px !important; }
+    .education-journey-line { display: none !important; }
+    .education-journey-arrow { display: none !important; }
+    .education-discovery { grid-template-columns: 1fr !important; }
+    .education-ug-grid { grid-template-columns: 1fr !important; }
+    .education-ug-grid > *:first-child { order: 1; }
+    .education-ug-grid > *:last-child { order: 0; }
+    .education-value-row { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .education-cat-grid { grid-template-columns: 1fr !important; }
+    .education-hero-visual-wrap,
+    .skills-hero-visual-wrap {
+      min-height: clamp(280px, 40vh, 360px) !important;
+    }
+    .skills-path { overflow-x: auto; }
+    .skills-path > div { grid-template-columns: repeat(5, minmax(120px, 1fr)) !important; min-width: 560px; }
+    .skills-path-line { display: none !important; }
+    .skills-hero-visual-wrap { min-height: clamp(280px, 40vh, 360px) !important; }
+    .skills-discovery, .skills-pro-featured { grid-template-columns: 1fr !important; }
+    .skills-cert-grid > *:first-child { order: 1; }
+    .skills-cert-grid > *:last-child { order: 0; }
+    .skills-proof-grid { grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
+    .skills-proof-grid > div { border-right: none !important; padding: 0 !important; }
+    .program-overview-split { grid-template-columns: 1fr !important; }
+    .program-who-split { grid-template-columns: 1fr !important; }
+    .program-project-featured { grid-template-columns: 1fr !important; }
+    .program-reviews-grid { grid-template-columns: 1fr !important; }
+    .program-workflow-panels { grid-template-columns: 1fr !important; }
+    .program-artifact-panels { grid-template-columns: 1fr !important; }
+    .program-cert-split { grid-template-columns: 1fr !important; }
+    .program-sticky-nav-scroll { -webkit-overflow-scrolling: touch; }
+  }
+  @media (max-width: 900px) {
+    .career-journey > div { grid-template-columns: repeat(3, 1fr) !important; gap: 24px !important; }
+    .career-journey-line { display: none !important; }
+    .career-ecosystem > div { grid-template-columns: repeat(3, 1fr) !important; gap: 24px !important; }
+  }
+  @media (max-width: 375px) {
+    .program-tools-strip > div { padding: 12px 16px !important; font-size: 13px !important; }
+    .program-pricing-wrap { margin-left: -4px; margin-right: -4px; }
+    .skills-proof-grid { grid-template-columns: 1fr !important; }
+    .skills-path > div { min-width: 480px; }
+    .career-journey > div { grid-template-columns: repeat(3, 1fr) !important; gap: 28px !important; }
+    .career-journey-line { display: none !important; }
+    .career-ecosystem > div { grid-template-columns: repeat(2, 1fr) !important; gap: 24px !important; }
+    .career-job-header { display: none !important; }
+    .career-job-row { grid-template-columns: 1fr auto !important; gap: 12px !important; }
+    .career-support-row { grid-template-columns: 1fr !important; gap: 8px !important; }
+    .career-hero-visual { min-height: 340px !important; }
+    .institution-type-grid { grid-template-columns: 1fr !important; }
+    .institution-ecosystem-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+    .institution-ecosystem-grid > div { border-right: none !important; padding: 0 !important; }
+    .institution-partnership-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
+    .institution-partnership-line { display: none !important; }
   }
   @media (max-width: 640px) {
     .three-col { grid-template-columns: 1fr !important; }
