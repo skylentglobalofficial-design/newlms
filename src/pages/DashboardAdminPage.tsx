@@ -4,7 +4,7 @@ import { C, T } from '../tokens'
 import { AuroraBand, GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
-import { useAuth } from '../context/AuthContext'
+import { useRequireRole } from '../hooks/useRequireRole'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'admin-overview' },
@@ -105,21 +105,18 @@ function AdminWorkspace() {
 }
 
 export default function DashboardAdminPage() {
-  const { user, ready } = useAuth()
+  const { user, ready, authorized } = useRequireRole('superadmin')
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
 
-  useEffect(() => {
-    if (ready && !user) navigate('/login')
-  }, [ready, user, navigate])
-
-  if (!ready || !user) return null
+  if (!ready || !authorized || !user) return null
 
   const maxEnrollment = topCourses[0].enrollments
 
   return (
     <AuthDashboardShell
       themeId="superadmin"
+      accent={accent}
       workspaceLabel="Platform"
       roleLabel="Super Admin"
       navItems={NAV_ITEMS}

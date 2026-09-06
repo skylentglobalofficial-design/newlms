@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
-import { useAuth } from '../context/AuthContext'
+import { useRequireRole } from '../hooks/useRequireRole'
 import { fetchOrganisationDashboard, type OrganisationDashboard } from '../lib/organisation-api'
 import { ProductVisual } from '../components/product/ProductVisuals'
 
@@ -305,23 +305,19 @@ function OrgContextRail({ programs }: { programs: OrganisationDashboard['program
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function DashboardOrgPage() {
-  const { user, ready } = useAuth()
+  const { user, ready, authorized } = useRequireRole('organisation')
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
   const [dashboard, setDashboard] = useState<OrganisationDashboard | null>(null)
 
   useEffect(() => {
-    if (ready && !user) navigate('/login')
-  }, [ready, user, navigate])
-
-  useEffect(() => {
-    if (!ready || !user) return
+    if (!ready || !authorized || !user) return
     fetchOrganisationDashboard()
       .then(setDashboard)
       .catch(() => setDashboard(null))
-  }, [ready, user])
+  }, [ready, authorized, user])
 
-  if (!ready || !user) return null
+  if (!ready || !authorized || !user) return null
 
   const institutionName = dashboard?.organisation.name ?? user.institution ?? user.name ?? 'Institution'
   const institutionLearners = dashboard?.totals.enrollmentCount ?? 0
@@ -332,6 +328,7 @@ export default function DashboardOrgPage() {
   return (
     <AuthDashboardShell
       themeId="institution"
+      accent={accent}
       workspaceLabel="Institution"
       roleLabel="Institution"
       navItems={NAV_ITEMS}

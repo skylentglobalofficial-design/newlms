@@ -4,10 +4,13 @@ import { C, T } from '../tokens'
 import { AuroraBand, GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
-import { useAuth } from '../context/AuthContext'
+import { useRequireRole } from '../hooks/useRequireRole'
 import { fetchFacultyDashboard, type FacultyDashboard, type FacultySubmission } from '../lib/faculty-api'
+import FacultyLessonMaterials from '../components/faculty/FacultyLessonMaterials'
 
 const TEACHING_COURSE_SLUG = 'data-analytics'
+const TEACHING_LESSON_KEY = 'l2'
+const TEACHING_LESSON_TITLE = 'The Analytics Mindset'
 
 const DEMO = {
   moduleTitle: 'SQL for Analysis',
@@ -436,23 +439,19 @@ function ClassesRail({
 // ─── MAIN PAGE ────────────────────────────────────────────────────────────────
 
 export default function DashboardFacultyPage() {
-  const { user, ready } = useAuth()
+  const { user, ready, authorized } = useRequireRole('faculty')
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
   const [dashboard, setDashboard] = useState<FacultyDashboard | null>(null)
 
   useEffect(() => {
-    if (ready && !user) navigate('/login')
-  }, [ready, user, navigate])
-
-  useEffect(() => {
-    if (!ready || !user) return
+    if (!ready || !authorized || !user) return
     fetchFacultyDashboard()
       .then(setDashboard)
       .catch(() => setDashboard(null))
-  }, [ready, user])
+  }, [ready, authorized, user])
 
-  if (!ready || !user) return null
+  if (!ready || !authorized || !user) return null
 
   const programs = dashboard?.programs ?? []
   const courses = dashboard?.courses ?? []
@@ -472,6 +471,7 @@ export default function DashboardFacultyPage() {
   return (
     <AuthDashboardShell
       themeId="data-analytics"
+      accent={accent}
       workspaceLabel="Teaching"
       roleLabel="Faculty"
       navItems={NAV_ITEMS}
@@ -500,6 +500,14 @@ export default function DashboardFacultyPage() {
               <CurriculumTeachingPath summary={curriculumSummary} />
               <div id="faculty-assignments" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
                 <AssignmentReview submissions={submissions} onFocus={focusAssignments} />
+              </div>
+              <div id="faculty-materials" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
+                <FacultyLessonMaterials
+                  courseSlug={TEACHING_COURSE_SLUG}
+                  lessonKey={TEACHING_LESSON_KEY}
+                  lessonTitle={TEACHING_LESSON_TITLE}
+                  accent={accent}
+                />
               </div>
               <div id="faculty-learners" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
                 <LearnerProgress dashboard={dashboard} />

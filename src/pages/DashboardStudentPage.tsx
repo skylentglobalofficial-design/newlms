@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
-import { useAuth } from '../context/AuthContext'
+import { useRequireRole } from '../hooks/useRequireRole'
 import { programs } from '../data'
 import {
   LearningWorkspacePanel,
@@ -42,19 +42,17 @@ function NavIcon({ id }: { id: string }) {
 }
 
 export default function DashboardStudentPage() {
-  const { user, ready } = useAuth()
+  const { user, ready, authorized } = useRequireRole('student')
   const { workspace, course, lessonStates, loading, reload } = useLmsDashboard()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
   const [enrolling, setEnrolling] = useState(false)
   const [enrollError, setEnrollError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (ready && !user) navigate('/login')
-  }, [ready, user, navigate])
+  if (!ready || !authorized || !user) return null
 
   const program = programs.find(p => p.slug === 'data-science-ai') ?? programs[0]
-  const programName = user?.program || program?.name || 'Your program'
+  const programName = user.program || program?.name || 'Your program'
 
   const learnSlug = workspace?.course.slug ?? ''
   const allLessons = course?.modules.flatMap(m => m.lessons) ?? []
@@ -68,8 +66,6 @@ export default function DashboardStudentPage() {
     : []
 
   const activeProject = program?.projectsDetail?.[Math.min(workspace?.progress.completedCount ?? 0, (program?.projectsDetail?.length ?? 1) - 1)] ?? program?.projectsDetail?.[0]
-
-  if (!ready || !user) return null
 
   if (loading) {
     return (

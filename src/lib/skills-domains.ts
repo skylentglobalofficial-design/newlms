@@ -21,19 +21,47 @@ export type SkillDomainDef = {
   learnTopicHints?: string[]
 }
 
+export type SkillCatalogItemKind = "program" | "course" | "workshop"
+
+export type SkillCatalogItem = {
+  kind: SkillCatalogItemKind
+  slug: string
+  title: string
+  href: string
+  typeLabel: string
+  description: string
+  level: string | null
+  duration: string | null
+  format: string | null
+  certificate: string | null
+  projects: number | null
+  status: string | null
+}
+
+export type SkillDomainCta = {
+  label: string
+  href: string
+}
+
 export type ResolvedSkillDomain = SkillDomainDef & {
-  programs: Program[]
-  courses: Course[]
-  workshops: Workshop[]
+  catalogItems: SkillCatalogItem[]
   learnTopics: string[]
-  formatSummary: string | null
-  levelSummary: string | null
-  certificateSummary: string | null
   hasCatalog: boolean
-  projectBased: boolean
+  cta: SkillDomainCta
 }
 
 const SKILLS_PROGRAM_TYPES = new Set(["PROFESSIONAL", "CERTIFICATE"])
+
+const PROGRAM_TYPE_LABELS: Record<string, string> = {
+  PROFESSIONAL: "Professional Program",
+  CERTIFICATE: "Certificate Program",
+}
+
+const ENROLLMENT_STATUS_LABELS: Record<string, string> = {
+  open: "Open for enrollment",
+  waitlist: "Waitlist",
+  coming_soon: "Coming soon",
+}
 
 export const SKILL_DOMAIN_DEFS: SkillDomainDef[] = [
   {
@@ -49,7 +77,7 @@ export const SKILL_DOMAIN_DEFS: SkillDomainDef[] = [
     id: "data-analytics",
     label: "Data Analytics",
     tagline: "Turn data into decisions with SQL, BI, and analytics workflows.",
-    programSlugs: ["data-analytics-pro"],
+    programSlugs: ["data-analytics-pro", "sql-certificate"],
     courseSlugs: ["data-analytics", "power-bi"],
     workshopSlugs: ["power-bi-workshop"],
     learnTopicHints: ["SQL", "Excel", "Power BI", "Python"],
@@ -134,7 +162,85 @@ function uniqueStrings(values: string[]): string[] {
   return result
 }
 
-function extractLearnTopics(def: SkillDomainDef, resolvedPrograms: Program[], resolvedCourses: Course[]): string[] {
+function programToCatalogItem(program: Program): SkillCatalogItem {
+  return {
+    kind: "program",
+    slug: program.slug,
+    title: program.name,
+    href: `/programs/${program.slug}`,
+    typeLabel: PROGRAM_TYPE_LABELS[program.programType] ?? "Program",
+    description: program.desc,
+    level: program.level ?? null,
+    duration: program.duration ?? null,
+    format: program.format ?? null,
+    certificate: program.cert ?? null,
+    projects: program.projects > 0 ? program.projects : null,
+    status: program.enrollmentStatus
+      ? ENROLLMENT_STATUS_LABELS[program.enrollmentStatus] ?? program.enrollmentStatus
+      : null,
+  }
+}
+
+function courseToCatalogItem(course: Course): SkillCatalogItem {
+  return {
+    kind: "course",
+    slug: course.slug,
+    title: course.title,
+    href: `/courses/${course.slug}`,
+    typeLabel: "Course",
+    description: course.desc,
+    level: course.level ?? null,
+    duration: course.duration ?? null,
+    format: course.mode ?? null,
+    certificate: null,
+    projects: course.projects > 0 ? course.projects : null,
+    status: null,
+  }
+}
+
+function workshopToCatalogItem(workshop: Workshop): SkillCatalogItem {
+  const seatsAvailable = workshop.seatsLeft > 0
+  return {
+    kind: "workshop",
+    slug: workshop.slug,
+    title: workshop.title,
+    href: `/workshops/${workshop.slug}`,
+    typeLabel: "Webinar",
+    description: workshop.desc,
+    level: null,
+    duration: workshop.duration ?? null,
+    format: workshop.mode ?? null,
+    certificate: null,
+    projects: null,
+    status: seatsAvailable ? `${workshop.seatsLeft} seats left` : "Full",
+  }
+}
+
+function buildCatalogItems(def: SkillDomainDef): SkillCatalogItem[] {
+  const resolvedPrograms = bySlug(
+    programs.filter((program) => SKILLS_PROGRAM_TYPES.has(program.programType)),
+    def.programSlugs,
+  )
+  const resolvedCourses = bySlug(courses, def.courseSlugs)
+  const resolvedWorkshops = bySlug(workshops, def.workshopSlugs)
+
+  return [
+    ...resolvedPrograms.map(programToCatalogItem),
+    ...resolvedCourses.map(courseToCatalogItem),
+    ...resolvedWorkshops.map(workshopToCatalogItem),
+  ]
+}
+
+function extractLearnTopics(def: SkillDomainDef, catalogItems: SkillCatalogItem[]): string[] {
+  const programSlugs = catalogItems.filter((item) => item.kind === "program").map((item) => item.slug)
+  const courseSlugs = catalogItems.filter((item) => item.kind === "course").map((item) => item.slug)
+
+  const resolvedPrograms = bySlug(
+    programs.filter((program) => SKILLS_PROGRAM_TYPES.has(program.programType)),
+    programSlugs,
+  )
+  const resolvedCourses = bySlug(courses, courseSlugs)
+
   const fromPrograms = resolvedPrograms.flatMap((program) => program.whatYouWillLearn ?? []).slice(0, 6)
   const fromModules = resolvedPrograms
     .flatMap((program) => program.curriculumDetail ?? [])
@@ -143,51 +249,44 @@ function extractLearnTopics(def: SkillDomainDef, resolvedPrograms: Program[], re
   const fromCourseModules = resolvedCourses.flatMap((course) => course.modules.map((module) => module.title)).slice(0, 6)
   const hints = def.learnTopicHints ?? []
 
-  const combined = uniqueStrings([...hints, ...fromModules, ...fromCourseModules, ...fromPrograms])
-  return combined.slice(0, 8)
+  return uniqueStrings([...hints, ...fromModules, ...fromCourseModules, ...fromPrograms]).slice(0, 8)
 }
 
-function summarizeLevels(items: Array<{ level: string }>): string | null {
-  const levels = uniqueStrings(items.map((item) => item.level))
-  if (levels.length === 0) return null
-  if (levels.length === 1) return levels[0]
-  return levels.join(" · ")
-}
+function buildDomainCta(domain: SkillDomainDef, catalogItems: SkillCatalogItem[]): SkillDomainCta {
+  if (catalogItems.length === 0) {
+    return { label: "Browse programs", href: "/programs" }
+  }
 
-function summarizeFormats(items: Array<{ format: string }>): string | null {
-  const formats = uniqueStrings(items.map((item) => item.format))
-  if (formats.length === 0) return null
-  return formats.join(" · ")
-}
+  const programsOnly = catalogItems.filter((item) => item.kind === "program")
+  if (programsOnly.length === 1) {
+    return { label: "View program", href: programsOnly[0].href }
+  }
+  if (programsOnly.length > 1) {
+    return { label: `Explore all ${domain.label} programs`, href: "/programs" }
+  }
 
-function summarizeCertificates(resolvedPrograms: Program[]): string | null {
-  const certs = uniqueStrings(resolvedPrograms.map((program) => program.cert))
-  if (certs.length === 0) return null
-  return certs.join(" · ")
+  if (catalogItems.length === 1) {
+    const item = catalogItems[0]
+    const label =
+      item.kind === "workshop" ? `View ${item.title}` :
+      item.kind === "course" ? "View course" :
+      "View program"
+    return { label, href: item.href }
+  }
+
+  return { label: `Explore ${domain.label}`, href: catalogItems[0].href }
 }
 
 export function resolveSkillDomain(def: SkillDomainDef): ResolvedSkillDomain {
-  const resolvedPrograms = bySlug(
-    programs.filter((program) => SKILLS_PROGRAM_TYPES.has(program.programType)),
-    def.programSlugs,
-  )
-  const resolvedCourses = bySlug(courses, def.courseSlugs)
-  const resolvedWorkshops = bySlug(workshops, def.workshopSlugs)
-  const learnTopics = extractLearnTopics(def, resolvedPrograms, resolvedCourses)
-  const hasCatalog = resolvedPrograms.length > 0 || resolvedCourses.length > 0 || resolvedWorkshops.length > 0
-  const projectBased = resolvedPrograms.some((program) => program.projects > 0) || resolvedCourses.some((course) => course.projects > 0)
+  const catalogItems = buildCatalogItems(def)
+  const learnTopics = extractLearnTopics(def, catalogItems)
 
   return {
     ...def,
-    programs: resolvedPrograms,
-    courses: resolvedCourses,
-    workshops: resolvedWorkshops,
+    catalogItems,
     learnTopics,
-    formatSummary: summarizeFormats(resolvedPrograms),
-    levelSummary: summarizeLevels([...resolvedPrograms, ...resolvedCourses]),
-    certificateSummary: summarizeCertificates(resolvedPrograms),
-    hasCatalog,
-    projectBased,
+    hasCatalog: catalogItems.length > 0,
+    cta: buildDomainCta(def, catalogItems),
   }
 }
 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { AuthDashboardShell, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
-import { useAuth } from '../context/AuthContext'
+import { useRequireRole } from '../hooks/useRequireRole'
 import { useDemoState } from '../demo/DemoStateContext'
 
 // ─── DEMO DATA (local workspace preview) ─────────────────────────────────────
@@ -285,7 +285,7 @@ function ApplicationsSection() {
 }
 
 export default function DashboardRecruiterPage() {
-  const { user, ready } = useAuth()
+  const { user, ready, authorized } = useRequireRole('recruiter')
   const demo = useDemoState()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('review')
@@ -295,11 +295,7 @@ export default function DashboardRecruiterPage() {
 
   const shortlistedSet = new Set(demo.shortlist)
 
-  useEffect(() => {
-    if (ready && !user) navigate('/login')
-  }, [ready, user, navigate])
-
-  if (!ready || !user) return null
+  if (!ready || !authorized || !user) return null
 
   const filtered = candidates.filter(c => {
     const matchSkill = skillFilter === 'All' || c.skills.some(s => s.toLowerCase().includes(skillFilter.toLowerCase()))
@@ -316,6 +312,7 @@ export default function DashboardRecruiterPage() {
   return (
     <AuthDashboardShell
       themeId="career"
+      accent={accent}
       workspaceLabel="Recruiter"
       roleLabel="Recruiter"
       navItems={NAV_ITEMS}
