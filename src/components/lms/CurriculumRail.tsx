@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 import { C, T } from '../../tokens'
-import type { Course, CourseLesson, CourseModule } from '../../data'
+import type { CourseLesson, CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
 import LessonIcon from './LessonIcon'
-import { computeCourseProgress, isLessonUnlocked } from './lms-utils'
+import { computeCourseProgress, isLessonUnlocked, type LmsCourseView } from './lms-utils'
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
@@ -14,7 +14,7 @@ export default function CurriculumRail({
   accent,
   onSelectLesson,
 }: {
-  course: Course
+  course: LmsCourseView
   lessonStates: Record<string, LessonState>
   selectedLessonId: string
   accent: Accent

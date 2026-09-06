@@ -4,8 +4,7 @@ import { C, T } from '../tokens'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
-import { useDemoState } from '../demo/DemoStateContext'
-import { courses, programs } from '../data'
+import { programs } from '../data'
 import {
   LearningWorkspacePanel,
   CurriculumProgressRail,
@@ -15,8 +14,8 @@ import {
   getPendingTasks,
   getRecentActivity,
 } from '../components/lms'
-
-const LEARN_SLUG = 'data-analytics'
+import { useLmsDashboard } from '../hooks/useLms'
+import { enrollInCourse } from '../lib/lms-api'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'student-overview' },
@@ -44,29 +43,85 @@ function NavIcon({ id }: { id: string }) {
 
 export default function DashboardStudentPage() {
   const { user, ready } = useAuth()
-  const demo = useDemoState()
+  const { workspace, course, lessonStates, loading, reload } = useLmsDashboard()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
+  const [enrolling, setEnrolling] = useState(false)
 
   useEffect(() => {
     if (ready && !user) navigate('/login')
   }, [ready, user, navigate])
 
-  const course = courses.find(c => c.slug === LEARN_SLUG)
   const program = programs.find(p => p.slug === 'data-science-ai') ?? programs[0]
   const programName = user?.program || program?.name || 'Your program'
-  const lms = demo.getLmsSummary(LEARN_SLUG)
-  const lessonStates = demo.getLessonStates(LEARN_SLUG)
+
+  const learnSlug = workspace?.course.slug ?? ''
   const allLessons = course?.modules.flatMap(m => m.lessons) ?? []
   const { progressPct, allComplete } = course ? computeCourseProgress(allLessons, lessonStates) : { progressPct: 0, allComplete: false }
 
-  const currentLesson = allLessons.find(l => l.id === lms?.currentLessonId)
+  const resume = workspace?.resume
+  const currentLesson = allLessons.find(l => l.id === resume?.lessonId)
   const pending = course ? getPendingTasks(course, lessonStates) : []
-  const recent = getRecentActivity(courses.filter(c => c.slug === LEARN_SLUG), demo.getLessonStates)
+  const recent = course
+    ? getRecentActivity([course], () => lessonStates)
+    : []
 
-  const activeProject = program?.projectsDetail?.[Math.min(lms?.completedCount ?? 0, (program?.projectsDetail?.length ?? 1) - 1)] ?? program?.projectsDetail?.[0]
+  const activeProject = program?.projectsDetail?.[Math.min(workspace?.progress.completedCount ?? 0, (program?.projectsDetail?.length ?? 1) - 1)] ?? program?.projectsDetail?.[0]
 
-  if (!ready || !user || !course) return null
+  if (!ready || !user) return null
+
+  if (loading) {
+    return (
+      <AuthDashboardShell
+        themeId="data-science"
+        workspaceLabel="Learning"
+        roleLabel="Learner"
+        navItems={NAV_ITEMS}
+        bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'learning', 'assignments', 'progress', 'career'].includes(n.id))}
+        activeNav={activeNav}
+        onNavChange={setActiveNav}
+        renderNavIcon={id => <NavIcon id={id} />}
+      >
+        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Loading your learning workspace…</div>
+      </AuthDashboardShell>
+    )
+  }
+
+  if (!course || !workspace) {
+    return (
+      <AuthDashboardShell
+        themeId="data-science"
+        workspaceLabel="Learning"
+        roleLabel="Learner"
+        navItems={NAV_ITEMS}
+        bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'learning', 'assignments', 'progress', 'career'].includes(n.id))}
+        activeNav={activeNav}
+        onNavChange={setActiveNav}
+        renderNavIcon={id => <NavIcon id={id} />}
+      >
+        <div id="student-overview" style={{ maxWidth: 560 }}>
+          <div style={{ color: C.white, fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, marginBottom: 12 }}>Start your learning journey</div>
+          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.7, margin: '0 0 20px' }}>
+            Enroll in a course to unlock your learner dashboard, curriculum progress, and resume learning.
+          </p>
+          <button
+            type="button"
+            disabled={enrolling}
+            onClick={() => {
+              setEnrolling(true)
+              void enrollInCourse('data-analytics')
+                .then(() => reload())
+                .finally(() => setEnrolling(false))
+            }}
+            style={{ background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer', marginRight: 12 }}
+          >
+            {enrolling ? 'Enrolling…' : 'Enroll in Data Analytics'}
+          </button>
+          <Link to="/courses" style={{ color: accent.text, fontSize: 13, textDecoration: 'none' }}>Browse courses →</Link>
+        </div>
+      </AuthDashboardShell>
+    )
+  }
 
   const pendingRail = pending.map(t => ({
     label: t.kind === 'quiz' ? 'Practice' : t.kind === 'assignment' ? 'Assignment' : 'Lesson',
@@ -93,9 +148,6 @@ export default function DashboardStudentPage() {
       renderNavIcon={id => <NavIcon id={id} />}
     >
       <div id="student-overview">
-        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 20, padding: '10px 14px', background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rControl }}>
-          Demo workspace — progress is saved locally in this browser only.
-        </div>
         <AuthDashboardLayout
           primary={
             <>
@@ -104,33 +156,37 @@ export default function DashboardStudentPage() {
                   courseTitle={course.title}
                   programName={programName}
                   progressPct={progressPct}
-                  completedCount={lms?.completedCount ?? 0}
-                  totalLessons={lms?.totalLessons ?? allLessons.length}
-                  moduleTitle={lms?.currentModuleTitle ?? course.modules[0]?.title ?? ''}
-                  moduleIndex={lms?.moduleIndex ?? 1}
-                  moduleTotal={lms?.moduleTotal ?? course.modules.length}
-                  lessonTitle={lms?.currentLessonTitle ?? 'Start learning'}
+                  completedCount={workspace.progress.completedCount}
+                  totalLessons={workspace.progress.totalLessons}
+                  moduleTitle={resume?.moduleTitle ?? course.modules[0]?.title ?? ''}
+                  moduleIndex={resume?.moduleIndex ?? 1}
+                  moduleTotal={resume?.moduleTotal ?? course.modules.length}
+                  lessonTitle={resume?.lessonTitle ?? 'Start learning'}
                   lessonType={currentLesson?.type ?? 'video'}
-                  nextLessonTitle={lms?.nextLessonTitle ?? null}
-                  learnSlug={LEARN_SLUG}
-                  lessonId={lms?.currentLessonId ?? ''}
+                  nextLessonTitle={resume?.nextLessonTitle ?? null}
+                  learnSlug={learnSlug}
+                  lessonId={resume?.lessonId ?? ''}
                   accent={accent}
                 />
               </div>
-              <CurriculumProgressRail course={course} lessonStates={lessonStates} accent={accent} learnSlug={LEARN_SLUG} />
+              <CurriculumProgressRail course={course} lessonStates={lessonStates} accent={accent} learnSlug={learnSlug} />
               <StudentProgressSurface course={course} lessonStates={lessonStates} accent={accent} certificateReady={allComplete} />
               <div id="student-certificates" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
                 <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.32)', marginBottom: 10 }}>Certificate</div>
-                {allComplete ? (
+                {workspace.enrollment.certificateEligible ? (
                   <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-                    Course complete — certificate issuance is not available in this demo.
+                    Eligible for certificate — status: {workspace.enrollment.certificateStatus}. Download will be available in a later phase.
+                  </p>
+                ) : allComplete ? (
+                  <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+                    Course complete — certificate eligibility is being finalized.
                   </p>
                 ) : (
                   <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: '0 0 12px', lineHeight: 1.6 }}>
                     Complete all lessons to unlock certificate eligibility.
                   </p>
                 )}
-                <Link to={`/learn/${LEARN_SLUG}`} style={{ color: accent.text, fontSize: 13, textDecoration: 'none' }}>Open course →</Link>
+                <Link to={`/learn/${learnSlug}/${resume?.lessonId ?? ''}`} style={{ color: accent.text, fontSize: 13, textDecoration: 'none' }}>Resume course →</Link>
               </div>
             </>
           }

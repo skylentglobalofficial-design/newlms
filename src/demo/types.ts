@@ -29,10 +29,9 @@ export type DemoApplication = {
   appliedAt: string
 }
 
-/** Single persisted demo-state document — separate from auth authority. */
+/** Single persisted demo-state document — labs/career demo only; LMS uses backend. */
 export type DemoState = {
   version: 1
-  lms: Record<string, Record<string, LessonState>>
   labs: Record<string, LabProgress>
   enrollments: DemoEnrollment[]
   applications: DemoApplication[]

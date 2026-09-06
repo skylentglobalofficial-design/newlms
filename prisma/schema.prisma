@@ -40,16 +40,37 @@ enum CurriculumNodeType {
   TOPIC
 }
 
+enum UserEnrollmentStatus {
+  active
+  completed
+  withdrawn
+}
+
+enum AssignmentStatus {
+  not_started
+  in_progress
+  submitted
+}
+
+enum CertificateStatus {
+  locked
+  eligible
+  issued
+}
+
 model User {
-  id             String                   @id @default(uuid()) @db.Uuid
-  email          String                   @unique
-  passwordHash   String?
-  displayName    String?
-  createdAt      DateTime                 @default(now())
-  updatedAt      DateTime                 @updatedAt
-  roles          UserRole[]
-  sessions       Session[]
-  memberships    OrganisationMembership[]
+  id                 String                   @id @default(uuid()) @db.Uuid
+  email              String                   @unique
+  passwordHash       String?
+  displayName        String?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
+  roles              UserRole[]
+  sessions           Session[]
+  memberships        OrganisationMembership[]
+  enrollments        UserEnrollment[]
+  quizAttempts       QuizAttempt[]
+  assignmentProgress AssignmentProgress[]
 }
 
 model Role {
@@ -71,24 +92,24 @@ model UserRole {
 }
 
 model Session {
-  id               String   @id @default(uuid()) @db.Uuid
-  userId           String   @db.Uuid
-  secretHash       String   @unique
-  expiresAt        DateTime
-  createdAt        DateTime @default(now())
-  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
+  secretHash String   @unique
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([expiresAt])
 }
 
 model Organisation {
-  id           String                   @id @default(uuid()) @db.Uuid
-  name         String
-  slug         String                   @unique
-  createdAt    DateTime                 @default(now())
-  updatedAt    DateTime                 @updatedAt
-  memberships  OrganisationMembership[]
+  id          String                   @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String                   @unique
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
+  memberships OrganisationMembership[]
 }
 
 model OrganisationMembership {
@@ -104,44 +125,45 @@ model OrganisationMembership {
 }
 
 model Program {
-  id               String             @id @default(uuid()) @db.Uuid
-  slug             String             @unique
-  name             String
-  duration         String
-  moduleCount      Int
-  projectCount     Int
-  format           String
-  cert             String
-  outcome          String
-  desc             String
-  upcomingBatch    String
-  programType      ProgramType
-  level            String
-  whoIsItFor       String[]
-  whatYouWillLearn String[]
+  id                 String             @id @default(uuid()) @db.Uuid
+  slug               String             @unique
+  name               String
+  duration           String
+  moduleCount        Int
+  projectCount       Int
+  format             String
+  cert               String
+  outcome            String
+  desc               String
+  upcomingBatch      String
+  programType        ProgramType
+  level              String
+  whoIsItFor         String[]
+  whatYouWillLearn   String[]
   learningExperience String[]
-  careerSupport    Boolean?
-  enrollmentStatus EnrollmentStatus?
-  examPattern      String?
-  examSections     String[]
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  pricing          PricingTier[]
-  curriculum      CurriculumModule[]
+  careerSupport      Boolean?
+  enrollmentStatus   EnrollmentStatus?
+  examPattern        String?
+  examSections       String[]
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  pricing            PricingTier[]
+  curriculum         CurriculumModule[]
+  enrollments        UserEnrollment[]
 
   @@index([programType])
   @@index([enrollmentStatus])
 }
 
 model PricingTier {
-  id            String   @id @default(uuid()) @db.Uuid
-  programId     String   @db.Uuid
+  id            String  @id @default(uuid()) @db.Uuid
+  programId     String  @db.Uuid
   name          String
   price         Int
   originalPrice Int
   features      String[]
-  highlight     Boolean  @default(false)
-  program       Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  highlight     Boolean @default(false)
+  program       Program @relation(fields: [programId], references: [id], onDelete: Cascade)
 
   @@unique([programId, name])
 }
@@ -167,6 +189,7 @@ model Course {
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
   curriculum    CurriculumModule[]
+  enrollments   UserEnrollment[]
 
   @@index([category])
   @@index([level])
@@ -194,16 +217,116 @@ model CurriculumModule {
 }
 
 model CurriculumNode {
-  id          String              @id @default(uuid()) @db.Uuid
-  sourceId    String?
-  order       Int
-  title       String
-  nodeType    CurriculumNodeType
-  duration    String?
-  completed   Boolean             @default(false)
-  moduleId    String              @db.Uuid
-  module      CurriculumModule    @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  id                    String               @id @default(uuid()) @db.Uuid
+  sourceId              String?
+  order                 Int
+  title                 String
+  nodeType              CurriculumNodeType
+  duration              String?
+  completed             Boolean              @default(false)
+  moduleId              String               @db.Uuid
+  module                CurriculumModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  lessonProgress        LessonProgress[]
+  quizQuestions         QuizQuestion[]
+  quizAttempts          QuizAttempt[]
+  assignmentProgress    AssignmentProgress[]
+  lastAccessedEnrollments UserEnrollment[]   @relation("LastAccessedNode")
 
   @@unique([moduleId, sourceId])
   @@index([moduleId, order])
+}
+
+model UserEnrollment {
+  id                  String               @id @default(uuid()) @db.Uuid
+  userId              String               @db.Uuid
+  courseId            String?              @db.Uuid
+  programId           String?              @db.Uuid
+  status              UserEnrollmentStatus @default(active)
+  lastAccessedNodeId  String?              @db.Uuid
+  certificateStatus   CertificateStatus    @default(locked)
+  certificateEligible Boolean              @default(false)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course             Course?              @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  program            Program?             @relation(fields: [programId], references: [id], onDelete: Cascade)
+  lastAccessedNode   CurriculumNode?      @relation("LastAccessedNode", fields: [lastAccessedNodeId], references: [id], onDelete: SetNull)
+  lessonProgress     LessonProgress[]
+  quizAttempts       QuizAttempt[]
+  assignmentProgress AssignmentProgress[]
+
+  @@unique([userId, courseId])
+  @@unique([userId, programId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([programId])
+}
+
+model LessonProgress {
+  id             String    @id @default(uuid()) @db.Uuid
+  enrollmentId   String    @db.Uuid
+  nodeId         String    @db.Uuid
+  startedAt      DateTime  @default(now())
+  completedAt    DateTime?
+  lastAccessedAt DateTime  @default(now())
+
+  enrollment UserEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  node       CurriculumNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@unique([enrollmentId, nodeId])
+  @@index([enrollmentId])
+  @@index([nodeId])
+}
+
+model QuizQuestion {
+  id           String @id @default(uuid()) @db.Uuid
+  nodeId       String @db.Uuid
+  sortOrder    Int
+  question     String @db.Text
+  options      Json
+  correctIndex Int
+
+  node CurriculumNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@index([nodeId, sortOrder])
+}
+
+model QuizAttempt {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @db.Uuid
+  enrollmentId   String   @db.Uuid
+  nodeId         String   @db.Uuid
+  attemptNumber  Int
+  score          Int?
+  totalQuestions Int?
+  passed         Boolean  @default(false)
+  answers        Json?
+  submittedAt    DateTime @default(now())
+
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollment UserEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  node       CurriculumNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@index([userId, nodeId])
+  @@index([enrollmentId])
+}
+
+model AssignmentProgress {
+  id           String           @id @default(uuid()) @db.Uuid
+  userId       String           @db.Uuid
+  enrollmentId String           @db.Uuid
+  nodeId       String           @db.Uuid
+  status       AssignmentStatus @default(not_started)
+  responseText String?          @db.Text
+  submittedAt  DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollment UserEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  node       CurriculumNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@unique([enrollmentId, nodeId])
+  @@index([userId])
 }

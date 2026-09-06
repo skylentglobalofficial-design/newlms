@@ -1,50 +1,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { courses } from '../data'
 import type { LabExperimentStatus } from '../data'
 import { getDefaultDemoState, loadDemoState, saveDemoState } from './storage'
-import type { DemoApplication, DemoEnrollment, DemoState, LessonState } from './types'
-
-export const EMPTY_LESSON_STATE: LessonState = {
-  videoWatched: false,
-  quizPassed: false,
-  assignmentSubmitted: false,
-  complete: false,
-}
-
-function seedLessonStates(courseSlug: string): Record<string, LessonState> {
-  const course = courses.find(c => c.slug === courseSlug)
-  if (!course) return {}
-  const states: Record<string, LessonState> = {}
-  course.modules.forEach(m => {
-    m.lessons.forEach(l => {
-      states[l.id] = l.completed
-        ? { videoWatched: true, quizPassed: true, assignmentSubmitted: true, complete: true }
-        : { ...EMPTY_LESSON_STATE }
-    })
-  })
-  return states
-}
-
-export type LmsSummary = {
-  courseSlug: string
-  courseTitle: string
-  progressPct: number
-  completedCount: number
-  totalLessons: number
-  currentLessonId: string
-  currentLessonTitle: string
-  currentModuleTitle: string
-  moduleIndex: number
-  moduleTotal: number
-  nextLessonTitle: string | null
-}
+import type { DemoApplication, DemoEnrollment, DemoState } from './types'
 
 type DemoStateContextValue = {
   ready: boolean
   isDemo: true
-  getLessonStates: (courseSlug: string) => Record<string, LessonState>
-  updateLesson: (courseSlug: string, lessonId: string, patch: Partial<LessonState>) => void
-  getLmsSummary: (courseSlug: string) => LmsSummary | null
   getLabProgress: (labId: string) => { launched: boolean; complete: boolean; experiments: Record<string, LabExperimentStatus> }
   setLabLaunched: (labId: string) => void
   setLabComplete: (labId: string) => void
@@ -75,57 +36,6 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
     setState(next)
     saveDemoState(next)
   }, [])
-
-  const getLessonStates = useCallback((courseSlug: string) => {
-    const seeded = seedLessonStates(courseSlug)
-    const stored = state.lms[courseSlug] ?? {}
-    const merged: Record<string, LessonState> = { ...seeded }
-    Object.entries(stored).forEach(([id, s]) => {
-      merged[id] = { ...seeded[id] ?? EMPTY_LESSON_STATE, ...s }
-    })
-    return merged
-  }, [state.lms])
-
-  const updateLesson = useCallback((courseSlug: string, lessonId: string, patch: Partial<LessonState>) => {
-    const current = getLessonStates(courseSlug)
-    const prev = current[lessonId] ?? EMPTY_LESSON_STATE
-    const updated: LessonState = { ...prev, ...patch }
-    if (updated.assignmentSubmitted) updated.complete = true
-    persist({
-      ...state,
-      lms: {
-        ...state.lms,
-        [courseSlug]: { ...current, [lessonId]: updated },
-      },
-    })
-  }, [state, persist, getLessonStates])
-
-  const getLmsSummary = useCallback((courseSlug: string): LmsSummary | null => {
-    const course = courses.find(c => c.slug === courseSlug)
-    if (!course) return null
-    const lessonStates = getLessonStates(courseSlug)
-    const allLessons = course.modules.flatMap(m => m.lessons)
-    const completedCount = allLessons.filter(l => lessonStates[l.id]?.complete).length
-    const progressPct = allLessons.length > 0 ? Math.round((completedCount / allLessons.length) * 100) : 0
-    const currentLesson = allLessons.find(l => !lessonStates[l.id]?.complete) ?? allLessons[allLessons.length - 1]
-    const currentModule = course.modules.find(m => m.lessons.some(l => l.id === currentLesson?.id)) ?? course.modules[0]
-    const moduleIndex = course.modules.findIndex(m => m.id === currentModule?.id) + 1
-    const currentIdx = allLessons.findIndex(l => l.id === currentLesson?.id)
-    const nextLesson = currentIdx >= 0 && currentIdx < allLessons.length - 1 ? allLessons[currentIdx + 1] : null
-    return {
-      courseSlug,
-      courseTitle: course.title,
-      progressPct,
-      completedCount,
-      totalLessons: allLessons.length,
-      currentLessonId: currentLesson?.id ?? '',
-      currentLessonTitle: currentLesson?.title ?? '',
-      currentModuleTitle: currentModule?.title ?? '',
-      moduleIndex,
-      moduleTotal: course.modules.length,
-      nextLessonTitle: nextLesson?.title ?? null,
-    }
-  }, [getLessonStates])
 
   const getLabProgress = useCallback((labId: string) => {
     const lab = state.labs[labId] ?? {}
@@ -182,9 +92,6 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<DemoStateContextValue>(() => ({
     ready,
     isDemo: true,
-    getLessonStates,
-    updateLesson,
-    getLmsSummary,
     getLabProgress,
     setLabLaunched,
     setLabComplete,
@@ -199,8 +106,7 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
     toggleShortlist,
     isShortlisted: (name: string) => state.shortlist.includes(name),
   }), [
-    ready, getLessonStates, updateLesson, getLmsSummary, getLabProgress,
-    setLabLaunched, setLabComplete, setExperimentStatus, enroll, state.enrollments,
+    ready, getLabProgress, setLabLaunched, setLabComplete, setExperimentStatus, enroll, state.enrollments,
     applyToJob, state.applications, state.shortlist, toggleShortlist,
   ])
 
@@ -214,9 +120,6 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
 const SAFE_DEFAULT: DemoStateContextValue = {
   ready: true,
   isDemo: true,
-  getLessonStates: () => ({}),
-  updateLesson: () => {},
-  getLmsSummary: () => null,
   getLabProgress: () => ({ launched: false, complete: false, experiments: {} }),
   setLabLaunched: () => {},
   setLabComplete: () => {},
@@ -235,4 +138,12 @@ const SAFE_DEFAULT: DemoStateContextValue = {
 export function useDemoState(): DemoStateContextValue {
   const ctx = useContext(DemoStateContext)
   return ctx ?? SAFE_DEFAULT
+}
+
+/** Shared empty lesson state for LMS UI fallbacks. */
+export const EMPTY_LESSON_STATE = {
+  videoWatched: false,
+  quizPassed: false,
+  assignmentSubmitted: false,
+  complete: false,
 }

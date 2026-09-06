@@ -8,22 +8,22 @@ import { lessonTypeLabel } from './lms-utils'
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
-const DEFAULT_QUIZ: QuizQuestion[] = [
-  { q: 'What does SQL stand for?', options: ['Structured Query Language', 'Simple Query Logic', 'Structured Queue List', 'Standard Query Link'], correct: 0 },
-  { q: 'Which SQL clause filters rows after grouping?', options: ['WHERE', 'HAVING', 'GROUP BY', 'ORDER BY'], correct: 1 },
-  { q: 'What type of JOIN returns all rows from both tables?', options: ['INNER JOIN', 'LEFT JOIN', 'RIGHT JOIN', 'FULL OUTER JOIN'], correct: 3 },
-]
-
 export function LessonContentView({
   lesson,
   lessonState,
   accent,
   onComplete,
+  quizQuestions,
+  onQuizSubmit,
+  onAssignmentSubmit,
 }: {
   lesson: CourseLesson
   lessonState: LessonState
   accent: Accent
   onComplete: () => void
+  quizQuestions?: QuizQuestion[]
+  onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
+  onAssignmentSubmit?: (text: string) => Promise<void>
 }) {
   if (lesson.type === 'video') {
     return (
@@ -83,18 +83,24 @@ export function LessonContentView({
   }
 
   if (lesson.type === 'quiz') {
+    const questions = quizQuestions ?? []
     return (
       <div className="lms-lesson-quiz" style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)' }}>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
-        <AssessmentSurface
-          mode="timed"
-          title={lesson.title}
-          subtitle="Answer all questions correctly to complete this lesson."
-          questions={DEFAULT_QUIZ}
-          accent={accent}
-          passed={lessonState.complete || lessonState.quizPassed}
-          onPass={onComplete}
-        />
+        {questions.length === 0 ? (
+          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Quiz questions are loading…</div>
+        ) : (
+          <AssessmentSurface
+            mode="timed"
+            title={lesson.title}
+            subtitle="Answer all questions correctly to complete this lesson."
+            questions={questions}
+            accent={accent}
+            passed={lessonState.complete || lessonState.quizPassed}
+            onPass={onComplete}
+            onSubmitAnswers={onQuizSubmit}
+          />
+        )}
       </div>
     )
   }
@@ -108,7 +114,7 @@ export function LessonContentView({
         subtitle="Apply concepts from this module. Faculty will review your submission."
         accent={accent}
         passed={lessonState.complete || lessonState.assignmentSubmitted}
-        onSubmitAssignment={() => onComplete()}
+        onSubmitAssignment={(text) => { void onAssignmentSubmit?.(text) }}
       />
     </div>
   )

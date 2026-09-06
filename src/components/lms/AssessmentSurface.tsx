@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { C, T } from '../../tokens'
 
-export type QuizQuestion = { q: string; options: string[]; correct: number }
+export type QuizQuestion = { q: string; options: string[]; correct?: number }
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
@@ -14,6 +14,7 @@ export function AssessmentSurface({
   passed,
   onPass,
   onSubmitAssignment,
+  onSubmitAnswers,
 }: {
   mode: 'mcq' | 'timed' | 'assignment'
   title: string
@@ -23,6 +24,7 @@ export function AssessmentSurface({
   passed?: boolean
   onPass?: () => void
   onSubmitAssignment?: (text: string) => void
+  onSubmitAnswers?: (answers: Record<number, number>) => Promise<boolean>
 }) {
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [submitted, setSubmitted] = useState(false)
@@ -30,10 +32,16 @@ export function AssessmentSurface({
   const [elapsed, setElapsed] = useState(0)
   const [text, setText] = useState('')
   const [assignmentDone, setAssignmentDone] = useState(false)
+  const [serverPassed, setServerPassed] = useState<boolean | null>(null)
+  const [submitting, setSubmitting] = useState(false)
 
   const qs = questions ?? []
   const answeredCount = Object.keys(answers).length
-  const correct = qs.filter((q, i) => answers[i] === q.correct).length
+  const usesServerGrading = Boolean(onSubmitAnswers)
+  const correct = usesServerGrading
+    ? (serverPassed ? qs.length : 0)
+    : qs.filter((q, i) => q.correct !== undefined && answers[i] === q.correct).length
+  const allCorrect = usesServerGrading ? serverPassed === true : correct === qs.length
   const timed = mode === 'timed'
 
   useEffect(() => {
@@ -95,8 +103,17 @@ export function AssessmentSurface({
     )
   }
 
-  function handleSubmit() {
+  async function handleSubmitAsync() {
+    setSubmitting(true)
     setSubmitted(true)
+    if (onSubmitAnswers) {
+      const passedResult = await onSubmitAnswers(answers)
+      setServerPassed(passedResult)
+      setSubmitting(false)
+      if (passedResult) onPass?.()
+      return
+    }
+    setSubmitting(false)
     if (correct === qs.length) onPass?.()
   }
 
@@ -119,9 +136,13 @@ export function AssessmentSurface({
         </div>
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{answeredCount}/{qs.length}</span>
       </div>
-      {submitted && (
-        <div style={{ background: correct === qs.length ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${correct === qs.length ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`, borderRadius: T.rControl, padding: '12px 18px', marginBottom: 16, color: correct === qs.length ? '#22c55e' : '#ef4444', fontSize: 13 }}>
-          {correct === qs.length ? `All ${correct} correct` : `${correct} of ${qs.length} correct. Try again.`}
+      {submitted && !submitting && (
+        <div style={{ background: allCorrect ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${allCorrect ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`, borderRadius: T.rControl, padding: '12px 18px', marginBottom: 16, color: allCorrect ? '#22c55e' : '#ef4444', fontSize: 13 }}>
+          {allCorrect
+            ? `All ${qs.length} correct`
+            : usesServerGrading
+              ? 'Not all answers were correct. Try again.'
+              : `${correct} of ${qs.length} correct. Try again.`}
         </div>
       )}
       {qs.filter((_, qi) => qi === currentQ).map((q) => {
@@ -133,8 +154,8 @@ export function AssessmentSurface({
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {q.options.map((opt, oi) => {
                 const selected = answers[qi] === oi
-                const isCorrect = submitted && oi === q.correct
-                const isWrong = submitted && selected && oi !== q.correct
+                const isCorrect = !usesServerGrading && submitted && oi === q.correct
+                const isWrong = !usesServerGrading && submitted && selected && oi !== q.correct
                 return (
                   <button
                     key={oi}
@@ -159,8 +180,8 @@ export function AssessmentSurface({
       {!submitted ? (
         <button
           type="button"
-          onClick={handleSubmit}
-          disabled={answeredCount < qs.length}
+          onClick={() => { void handleSubmitAsync() }}
+          disabled={answeredCount < qs.length || submitting}
           style={{
             background: answeredCount < qs.length ? 'rgba(255,255,255,0.05)' : accent.primary,
             border: 'none', color: answeredCount < qs.length ? 'rgba(255,255,255,0.25)' : C.black,
@@ -170,8 +191,8 @@ export function AssessmentSurface({
         >
           Submit
         </button>
-      ) : correct < qs.length ? (
-        <button type="button" onClick={() => { setSubmitted(false); setAnswers({}); setCurrentQ(0) }} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, color: C.white, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Try again</button>
+      ) : !allCorrect ? (
+        <button type="button" onClick={() => { setSubmitted(false); setAnswers({}); setCurrentQ(0); setServerPassed(null) }} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, color: C.white, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Try again</button>
       ) : null}
     </div>
   )
