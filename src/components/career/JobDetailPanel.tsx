@@ -36,7 +36,7 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
         roleTitle: job.title,
         source: "career-os-jobs",
       })
-      setApplyFeedback({ tone: "success", message: "Application recorded. Track it in Applications when that workspace opens." })
+      setApplyFeedback({ tone: "success", message: "Application recorded." })
       onApplied?.()
     } catch (err) {
       setApplyFeedback({ tone: "error", message: err instanceof Error ? err.message : "Failed to apply" })
@@ -220,7 +220,7 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
 
         {alreadyApplied && (
           <Link to="/career-os/applications" style={{ alignSelf: "center", color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
-            Applications workspace →
+            View applications →
           </Link>
         )}
       </div>

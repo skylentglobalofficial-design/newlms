@@ -5,7 +5,8 @@ import { getDomainAccent } from "../../aurora-themes"
 import { GlassSurface } from "../../components/foundation"
 import { AuthDashboardLayout } from "../../components/AuthDashboardShell"
 import { useCareerProfile } from "../../hooks/useCareerProfile"
-import { listApplications } from "../../lib/career-api"
+import { listApplications, type JobApplication } from "../../lib/career-api"
+import { applicationEmployerName, applicationRoleTitle, formatStatusLabel } from "../../components/career/application-utils"
 import { LoadingBlock, FeedbackBanner } from "../../components/career/section-ui"
 
 const accent = getDomainAccent("career")
@@ -13,12 +14,18 @@ const accent = getDomainAccent("career")
 export default function CareerOSOverviewPage() {
   const { profile, loading, error, reload } = useCareerProfile()
   const [applicationCount, setApplicationCount] = useState<number | null>(null)
+  const [recentApplications, setRecentApplications] = useState<Awaited<ReturnType<typeof listApplications>>>([])
   const [appsError, setAppsError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
     void listApplications()
-      .then(apps => { if (!cancelled) setApplicationCount(apps.length) })
+      .then(apps => {
+        if (!cancelled) {
+          setApplicationCount(apps.length)
+          setRecentApplications(apps.slice(0, 3))
+        }
+      })
       .catch(err => {
         if (!cancelled) setAppsError(err instanceof Error ? err.message : "Failed to load applications")
       })
@@ -125,8 +132,8 @@ export default function CareerOSOverviewPage() {
                 <Link to="/career-os/jobs" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
                   Browse jobs
                 </Link>
-                <Link to="/career-os/applications" style={{ color: "rgba(255,255,255,0.55)", fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}` }}>
-                  View applications (coming next)
+                <Link to="/career-os/applications" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                  View applications
                 </Link>
               </div>
             </GlassSurface>
@@ -139,6 +146,30 @@ export default function CareerOSOverviewPage() {
                 <div style={{ fontSize: 28, fontWeight: 700, color: C.white }}>{applicationCount ?? "—"}</div>
               )}
               <p style={{ margin: "8px 0 0", color: "rgba(255,255,255,0.4)", fontSize: 12.5 }}>Tracked applications from Career OS</p>
+              {recentApplications.length > 0 && (
+                <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8 }}>
+                  {recentApplications.map((app: JobApplication) => (
+                    <Link
+                      key={app.id}
+                      to={`/career-os/applications/${app.id}`}
+                      style={{
+                        textDecoration: "none",
+                        padding: "10px 12px",
+                        borderRadius: T.rControl,
+                        border: `1px solid ${T.lineDark}`,
+                        background: "rgba(255,255,255,0.02)",
+                      }}
+                    >
+                      <div style={{ color: C.white, fontSize: 13, fontWeight: 500, wordBreak: "break-word" }}>
+                        {applicationRoleTitle(app)}
+                      </div>
+                      <div style={{ color: "rgba(255,255,255,0.42)", fontSize: 12, marginTop: 2 }}>
+                        {[applicationEmployerName(app), formatStatusLabel(app.status)].filter(Boolean).join(" · ")}
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
             </GlassSurface>
           </div>
         )}

@@ -177,8 +177,24 @@ export type JobApplication = {
   roleTitle: string | null
   status: JobApplicationStatus
   appliedAt: string | null
+  nextActionAt: string | null
   notes: string | null
   source: string | null
+  job: JobListing | null
+  employer: EmployerSummary | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type ApplicationEvent = {
+  id: string
+  applicationId: string
+  type: string
+  title: string
+  description: string | null
+  occurredAt: string
+  metadata: Record<string, unknown> | null
+  createdAt: string
 }
 
 async function parseJson<T>(response: Response): Promise<T> {
@@ -265,8 +281,56 @@ export async function unsaveJob(jobId: string): Promise<void> {
   await careerMutate<{ data: { removed: boolean } }>(`/career/saved-jobs/${jobId}`, "DELETE")
 }
 
-export async function listApplications(): Promise<JobApplication[]> {
-  const result = await careerGet<{ data: JobApplication[] }>("/career/applications")
+export async function listApplications(status?: JobApplicationStatus): Promise<JobApplication[]> {
+  const query = status ? `?status=${status}` : ""
+  const result = await careerGet<{ data: JobApplication[] }>(`/career/applications${query}`)
+  return result.data
+}
+
+export async function fetchApplication(id: string): Promise<JobApplication> {
+  const result = await careerGet<{ data: JobApplication }>(`/career/applications/${id}`)
+  return result.data
+}
+
+export async function updateApplication(
+  id: string,
+  input: Partial<{
+    status: JobApplicationStatus
+    roleTitle: string
+    appliedAt: string | null
+    nextActionAt: string | null
+    notes: string | null
+    source: string | null
+  }>,
+): Promise<JobApplication> {
+  const result = await careerMutate<{ data: JobApplication }>(`/career/applications/${id}`, "PATCH", input)
+  return result.data
+}
+
+export async function deleteApplication(id: string): Promise<void> {
+  await careerMutate<{ data: { deleted: boolean } }>(`/career/applications/${id}`, "DELETE")
+}
+
+export async function listApplicationEvents(applicationId: string): Promise<ApplicationEvent[]> {
+  const result = await careerGet<{ data: ApplicationEvent[] }>(`/career/applications/${applicationId}/events`)
+  return result.data
+}
+
+export async function createApplicationEvent(
+  applicationId: string,
+  input: {
+    type: string
+    title: string
+    description?: string | null
+    occurredAt: string
+    metadata?: Record<string, unknown> | null
+  },
+): Promise<ApplicationEvent> {
+  const result = await careerMutate<{ data: ApplicationEvent }>(
+    `/career/applications/${applicationId}/events`,
+    "POST",
+    input,
+  )
   return result.data
 }
 
@@ -274,7 +338,11 @@ export async function createApplication(input: {
   jobId?: string
   employerId?: string
   roleTitle?: string
-  source?: string
+  status?: JobApplicationStatus
+  appliedAt?: string
+  nextActionAt?: string | null
+  notes?: string | null
+  source?: string | null
 }): Promise<JobApplication> {
   const result = await careerMutate<{ data: JobApplication }>("/career/applications", "POST", input)
   return result.data
