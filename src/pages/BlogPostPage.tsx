@@ -1,6 +1,12 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
+import { Button, Eyebrow, Section, T } from '../components/ui'
+import { Aurora, GlassSurface } from '../components/foundation'
+import { getDomainAccent } from '../aurora-themes'
 import { blogPosts } from '../data'
+
+const accent = getDomainAccent('general')
+const ARTICLE_MAX = 680
 
 export default function BlogPostPage() {
   const { slug } = useParams()
@@ -9,11 +15,13 @@ export default function BlogPostPage() {
 
   if (!post) {
     return (
-      <PageShell>
-        <div style={{ padding: '120px 32px', textAlign: 'center', background: C.warmWhite, minHeight: '60vh' }}>
-          <h2 style={{ fontFamily: 'var(--font-display)', color: C.ink }}>Article not found</h2>
-          <button onClick={() => navigate('/blog')} style={{ color: C.orange, background: 'none', border: 'none', cursor: 'pointer', fontSize: 15 }}>← Back to Blog</button>
-        </div>
+      <PageShell auroraTheme="general">
+        <Section tone="canvas" style={{ minHeight: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center' }}>
+            <h2 className="skylent-display-md" style={{ color: C.white }}>Article not found</h2>
+            <Button variant="secondary" onClick={() => navigate('/blog')} style={{ marginTop: 16 }}>← Back to blog</Button>
+          </div>
+        </Section>
       </PageShell>
     )
   }
@@ -21,63 +29,112 @@ export default function BlogPostPage() {
   const related = blogPosts.filter(p => p.slug !== slug && p.category === post.category).slice(0, 2)
 
   return (
-    <PageShell>
-      {/* Hero */}
-      <section style={{ background: C.ink, padding: '100px 32px 72px' }}>
-        <div style={{ maxWidth: 860, margin: '0 auto' }}>
-          <button onClick={() => navigate('/blog')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', marginBottom: 28, padding: 0 }}>← Back to Blog</button>
+    <PageShell auroraTheme="general">
+      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 28}px ${T.gutter} clamp(32px, 5vw, 48px)` }}>
+        <Aurora themeId="general" variant="hero" />
+        <div style={{ maxWidth: ARTICLE_MAX, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <button
+            type="button"
+            onClick={() => navigate('/blog')}
+            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.45)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', marginBottom: 24, padding: 0 }}
+          >
+            ← Back to blog
+          </button>
           <FadeIn>
-            <div style={{ display: 'flex', gap: 10, marginBottom: 22 }}>
-              <span style={{ background: 'rgba(243,107,33,0.15)', border: '1px solid rgba(243,107,33,0.3)', borderRadius: 6, padding: '4px 12px', color: C.orange, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.category}</span>
-              <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.readTime} read</span>
-              <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.date}</span>
+            <div style={{ display: 'flex', gap: 10, marginBottom: 18, flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 12px', color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.category}</span>
+              <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.readTime} read</span>
+              <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.date}</span>
             </div>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(32px, 4.5vw, 56px)', fontWeight: 700, color: C.white, letterSpacing: '-0.03em', lineHeight: 1.08, margin: '0 0 22px' }}>{post.title}</h1>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 18, lineHeight: 1.75, margin: 0 }}>{post.excerpt}</p>
+            <h1 className="skylent-display-md" style={{ color: C.white, margin: '0 0 18px', lineHeight: 1.1 }}>{post.title}</h1>
+            <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.55)', margin: 0, lineHeight: 1.75 }}>{post.excerpt}</p>
           </FadeIn>
         </div>
       </section>
 
-      {/* Article body */}
-      <section style={{ background: C.warmWhite, padding: '64px 32px 80px' }}>
-        <div style={{ maxWidth: 860, margin: '0 auto' }}>
+      <Section tone="canvas" divider>
+        <div style={{ maxWidth: ARTICLE_MAX, margin: '0 auto', width: '100%' }}>
           <FadeIn>
-            <div style={{ color: C.ink, fontSize: 17, lineHeight: 1.85, fontFamily: 'var(--font-body)' }}>
-              {post.body.split('\n\n').map((para, i) => {
-                if (para.startsWith('## ')) {
-                  return <h2 key={i} style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: C.ink, letterSpacing: '-0.02em', margin: '44px 0 16px', lineHeight: 1.2 }}>{para.replace('## ', '')}</h2>
-                }
-                if (para.startsWith('### ')) {
-                  return <h3 key={i} style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.ink, letterSpacing: '-0.015em', margin: '32px 0 12px', lineHeight: 1.3 }}>{para.replace('### ', '')}</h3>
-                }
-                return <p key={i} style={{ margin: '0 0 24px', color: '#2a2d31', lineHeight: 1.85 }}>{para}</p>
-              })}
-            </div>
+            <GlassSurface level={2} padding="clamp(28px, 5vw, 44px)">
+              <article
+                className="skylent-article"
+                style={{
+                  color: 'rgba(255,255,255,0.78)',
+                  fontSize: 'clamp(16px, 2.1vw, 17px)',
+                  lineHeight: 1.85,
+                  fontFamily: 'var(--font-body)',
+                }}
+              >
+                {post.body.split('\n\n').map((para, i) => {
+                  if (para.startsWith('## ')) {
+                    return (
+                      <h2
+                        key={i}
+                        className="skylent-display-sm"
+                        style={{ color: C.white, margin: '2.4em 0 0.75em', lineHeight: 1.2, letterSpacing: '-0.02em' }}
+                      >
+                        {para.replace('## ', '')}
+                      </h2>
+                    )
+                  }
+                  if (para.startsWith('### ')) {
+                    return (
+                      <h3
+                        key={i}
+                        style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.white, margin: '1.8em 0 0.6em', lineHeight: 1.3 }}
+                      >
+                        {para.replace('### ', '')}
+                      </h3>
+                    )
+                  }
+                  if (para.startsWith('```') || para.startsWith('    ')) {
+                    return (
+                      <pre
+                        key={i}
+                        style={{
+                          background: 'rgba(0,0,0,0.35)',
+                          border: `1px solid ${T.lineDark}`,
+                          borderRadius: 10,
+                          padding: '16px 18px',
+                          overflowX: 'auto',
+                          fontSize: 13,
+                          lineHeight: 1.6,
+                          fontFamily: 'var(--font-mono)',
+                          color: 'rgba(255,255,255,0.72)',
+                          margin: '0 0 1.5em',
+                        }}
+                      >
+                        {para.replace(/```/g, '')}
+                      </pre>
+                    )
+                  }
+                  return <p key={i} style={{ margin: '0 0 1.35em' }}>{para}</p>
+                })}
+              </article>
+            </GlassSurface>
           </FadeIn>
 
-          {/* Divider */}
-          <div style={{ borderTop: '1px solid rgba(11,13,15,0.1)', margin: '48px 0' }} />
-
-          {/* Related */}
           {related.length > 0 && (
-            <FadeIn>
-              <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 20 }}>RELATED ARTICLES</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }} className="two-col">
-                {related.map(p => (
-                  <div key={p.slug} onClick={() => navigate(`/blog/${p.slug}`)} style={{ background: C.white, border: '1px solid rgba(11,13,15,0.08)', borderRadius: 12, padding: 20, cursor: 'pointer', transition: 'box-shadow 0.2s' }}
-                    onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 24px rgba(11,13,15,0.1)')}
-                    onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
-                  >
-                    <span style={{ background: C.sand, borderRadius: 4, padding: '2px 8px', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', display: 'inline-block', marginBottom: 10 }}>{p.category}</span>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink, lineHeight: 1.3, marginBottom: 6 }}>{p.title}</div>
-                    <div style={{ color: C.orange, fontSize: 13, fontWeight: 600 }}>Read →</div>
-                  </div>
-                ))}
+            <FadeIn delay={80}>
+              <div style={{ marginTop: 48 }}>
+                <Eyebrow tone="dark">Related</Eyebrow>
+                <h2 className="skylent-display-sm" style={{ color: C.white, margin: '12px 0 24px' }}>More in {post.category}</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }} className="two-col">
+                  {related.map(p => (
+                    <Link key={p.slug} to={`/blog/${p.slug}`} style={{ textDecoration: 'none' }}>
+                      <GlassSurface level={2} padding="20px 22px" style={{ height: '100%' }}>
+                        <span className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', display: 'block', marginBottom: 10 }}>{p.category}</span>
+                        <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, lineHeight: 1.35, marginBottom: 8 }}>{p.title}</div>
+                        <span style={{ color: accent.text, fontSize: 13, fontWeight: 600 }}>Read →</span>
+                      </GlassSurface>
+                    </Link>
+                  ))}
+                </div>
               </div>
             </FadeIn>
           )}
         </div>
-      </section>
+      </Section>
     </PageShell>
   )
 }

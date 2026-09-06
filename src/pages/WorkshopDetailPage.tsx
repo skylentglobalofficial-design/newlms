@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell, EnrollmentModal } from '../components/shared'
+import { Button, Eyebrow, Section, T } from '../components/ui'
+import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { workshops } from '../data'
+import { PHOTO } from '../media'
 
 const accent = getDomainAccent('webinar')
 
@@ -14,11 +17,13 @@ export default function WorkshopDetailPage() {
 
   if (!workshop) {
     return (
-      <PageShell>
-        <div style={{ padding: '120px 32px', textAlign: 'center', background: C.warmWhite, minHeight: '60vh' }}>
-          <h2 style={{ fontFamily: 'var(--font-display)', color: C.ink }}>Workshop not found</h2>
-          <button onClick={() => navigate('/workshops')} style={{ color: accent.text, background: 'none', border: 'none', cursor: 'pointer', fontSize: 15 }}>← Back to Workshops</button>
-        </div>
+      <PageShell auroraTheme="webinar">
+        <Section tone="canvas" style={{ minHeight: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ textAlign: 'center' }}>
+            <h2 className="skylent-display-md" style={{ color: C.white }}>Workshop not found</h2>
+            <Button variant="secondary" onClick={() => navigate('/workshops')} style={{ marginTop: 16 }}>← Back to workshops</Button>
+          </div>
+        </Section>
       </PageShell>
     )
   }
@@ -26,86 +31,114 @@ export default function WorkshopDetailPage() {
   const pct = Math.round(((workshop.seats - workshop.seatsLeft) / workshop.seats) * 100)
 
   return (
-    <PageShell>
-      {/* Hero */}
-      <section style={{ background: C.ink, padding: '100px 32px 72px' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-          <button onClick={() => navigate('/workshops')} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', marginBottom: 28, padding: 0 }}>← Back to Workshops</button>
-          <FadeIn>
-            <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 12px', color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)', display: 'inline-block', marginBottom: 20 }}>{workshop.category}</span>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px, 5vw, 60px)', fontWeight: 700, color: C.white, letterSpacing: '-0.03em', lineHeight: 1.05, margin: '0 0 20px' }}>{workshop.title}</h1>
-            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 17, lineHeight: 1.75, maxWidth: 540, margin: '0 0 36px' }}>{workshop.desc}</p>
-            <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
-              {[['Duration', workshop.duration], ['Date', workshop.date], ['Instructor', workshop.instructor], ['Mode', workshop.mode]].map(([l, v]) => (
-                <div key={l}>
-                  <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>{(l as string).toUpperCase()}</div>
-                  <div style={{ color: C.white, fontSize: 15, fontWeight: 500 }}>{v}</div>
-                </div>
-              ))}
-            </div>
-          </FadeIn>
-        </div>
-      </section>
+    <PageShell auroraTheme="webinar">
+      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} clamp(36px, 5vw, 56px)` }}>
+        <Aurora themeId="webinar" variant="hero" />
+        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <button
+            type="button"
+            onClick={() => navigate('/workshops')}
+            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.45)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', marginBottom: 24, padding: 0 }}
+          >
+            ← Back to workshops
+          </button>
 
-      {/* Body */}
-      <section style={{ background: C.warmWhite, padding: '64px 32px' }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: 48, alignItems: 'start' }} className="edu-grid">
-          <div>
+          <div className="workshop-event-hero two-col" style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(28px, 5vw, 48px)', alignItems: 'start' }}>
             <FadeIn>
-              <div style={{ background: C.white, borderRadius: 14, padding: 28, marginBottom: 24, border: '1px solid rgba(11,13,15,0.08)' }}>
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: C.ink, margin: '0 0 18px', letterSpacing: '-0.02em' }}>What you get</h2>
-                {workshop.whatYouGet.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '10px 0', borderBottom: i < workshop.whatYouGet.length - 1 ? '1px solid rgba(11,13,15,0.06)' : 'none' }}>
-                    <div style={{ width: 20, height: 20, borderRadius: '50%', background: accent.subtle, border: `1px solid ${accent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary }} />
-                    </div>
-                    <span style={{ color: C.ink, fontSize: 14 }}>{item}</span>
-                  </div>
-                ))}
-              </div>
+              <Eyebrow tone="dark" accent>Live workshop</Eyebrow>
+              <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 12px', color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)', display: 'inline-block', margin: '14px 0 18px' }}>{workshop.category}</span>
+              <h1 className="skylent-display-md" style={{ color: C.white, margin: '0 0 16px' }}>{workshop.title}</h1>
+              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 520, margin: '0 0 24px' }}>{workshop.desc}</p>
+              <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', maxWidth: 480 }}>
+                <MediaImage src={PHOTO.workshop} alt="" style={{ minHeight: 200 }} />
+              </GlassSurface>
             </FadeIn>
-            <FadeIn delay={60}>
-              <div style={{ background: 'rgba(11,13,15,0.03)', border: '1px solid rgba(11,13,15,0.08)', borderRadius: 12, padding: 20 }}>
-                <div style={{ color: C.slate, fontSize: 12 }}>This is a demo workshop listing. No real registration will be processed. Real Skylent workshops are conducted via the platform portal.</div>
-              </div>
-            </FadeIn>
-          </div>
 
-          {/* Registration card */}
-          <div style={{ position: 'sticky', top: 88 }}>
-            <FadeIn>
-              <div style={{ background: C.white, border: '1px solid rgba(11,13,15,0.1)', borderRadius: 16, padding: 26, boxShadow: '0 8px 40px rgba(11,13,15,0.08)' }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 4 }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 30, fontWeight: 700, color: C.ink }}>₹{workshop.price.toLocaleString('en-IN')}</span>
-                  {workshop.originalPrice > workshop.price && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 15, color: C.slate, textDecoration: 'line-through' }}>₹{workshop.originalPrice.toLocaleString('en-IN')}</span>}
-                </div>
-                <div style={{ marginBottom: 18 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                    <span style={{ color: C.slate, fontSize: 12 }}>{workshop.seatsLeft} seats left</span>
-                    <span style={{ color: pct > 70 ? '#dc2626' : C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
-                  </div>
-                  <div style={{ height: 5, background: C.sand, borderRadius: 3 }}><div style={{ width: `${pct}%`, height: '100%', background: pct > 70 ? '#dc2626' : accent.primary, borderRadius: 3, transition: 'width 0.6s ease' }} /></div>
-                </div>
-                <button onClick={() => setEnrollOpen(true)} style={{ width: '100%', background: accent.primary, border: 'none', color: C.white, borderRadius: 9, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', marginBottom: 12, transition: 'opacity 0.2s' }}
-                  onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
-                  onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
-                >Register Now →</button>
-                <div style={{ display: 'grid', gap: 6, marginTop: 14 }}>
-                  {[['Date', workshop.date], ['Duration', workshop.duration], ['Mode', workshop.mode], ['Instructor', workshop.instructor]].map(([l, v]) => (
-                    <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '5px 0', borderBottom: '1px solid rgba(11,13,15,0.06)' }}>
-                      <span style={{ color: C.slate, fontSize: 13 }}>{l}</span>
-                      <span style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>{v}</span>
+            <FadeIn delay={80}>
+              <GlassSurface level={2} padding="24px 26px">
+                <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Event details</div>
+                <div style={{ display: 'grid', gap: 16, marginBottom: 22 }}>
+                  {[
+                    { label: 'Date', value: workshop.date, emphasis: true },
+                    { label: 'Duration', value: workshop.duration },
+                    { label: 'Format', value: workshop.mode },
+                    { label: 'Host', value: workshop.instructor },
+                  ].map(row => (
+                    <div key={row.label} style={{ paddingBottom: 14, borderBottom: `1px solid ${T.lineDark}` }}>
+                      <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.32)', marginBottom: 6 }}>{row.label}</div>
+                      <div style={{ color: C.white, fontSize: row.emphasis ? 20 : 15, fontWeight: row.emphasis ? 600 : 500, fontFamily: row.emphasis ? 'var(--font-display)' : 'var(--font-body)' }}>{row.value}</div>
                     </div>
                   ))}
                 </div>
-              </div>
+                <div style={{ marginBottom: 18 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{workshop.seatsLeft} seats left (demo)</span>
+                    <span style={{ color: pct > 70 ? '#f87171' : 'rgba(255,255,255,0.35)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
+                  </div>
+                  <div style={{ height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2 }}>
+                    <div style={{ width: `${pct}%`, height: '100%', background: pct > 70 ? '#f87171' : accent.primary, borderRadius: 2 }} />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: C.white }}>₹{workshop.price.toLocaleString('en-IN')}</span>
+                  {workshop.originalPrice > workshop.price && (
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through' }}>₹{workshop.originalPrice.toLocaleString('en-IN')}</span>
+                  )}
+                </div>
+                <Button variant="primary" size="lg" onClick={() => setEnrollOpen(true)} style={{ width: '100%' }}>
+                  Register for workshop
+                </Button>
+              </GlassSurface>
             </FadeIn>
           </div>
         </div>
       </section>
 
+      <Section tone="canvas" divider>
+        <div style={{ maxWidth: T.maxW, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 320px', gap: 'clamp(28px, 4vw, 40px)', alignItems: 'start' }} className="edu-grid">
+          <div>
+            <FadeIn>
+              <GlassSurface level={2} padding="24px 28px" style={{ marginBottom: 20 }}>
+                <Eyebrow tone="dark" accent>Session outline</Eyebrow>
+                <h2 className="skylent-display-sm" style={{ color: C.white, margin: '12px 0 20px' }}>What the session covers</h2>
+                {workshop.whatYouGet.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 0', borderBottom: i < workshop.whatYouGet.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: accent.primary, marginTop: 7, flexShrink: 0 }} />
+                    <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: 14, lineHeight: 1.55 }}>{item}</span>
+                  </div>
+                ))}
+              </GlassSurface>
+            </FadeIn>
+            <FadeIn delay={60}>
+              <GlassSurface level={2} padding="18px 22px">
+                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, lineHeight: 1.65, margin: 0 }}>
+                  Demo workshop listing. Registration opens the standard enrollment flow — no live event is scheduled in this environment.
+                </p>
+              </GlassSurface>
+            </FadeIn>
+          </div>
+
+          <div className="workshop-sticky-panel" style={{ position: 'sticky', top: T.navH + 16 }}>
+            <FadeIn delay={40}>
+              <GlassSurface level={2} padding="22px 24px">
+                <div className="skylent-label" style={{ color: accent.text, marginBottom: 14 }}>At a glance</div>
+                {[['Date', workshop.date], ['Time block', workshop.duration], ['Format', workshop.mode], ['Host', workshop.instructor]].map(([l, v]) => (
+                  <div key={l} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '8px 0', borderBottom: `1px solid ${T.lineDark}`, flexWrap: 'wrap' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>{l}</span>
+                    <span style={{ color: C.white, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
+                  </div>
+                ))}
+                <Button variant="secondary" onClick={() => setEnrollOpen(true)} style={{ width: '100%', marginTop: 18 }}>
+                  Register
+                </Button>
+              </GlassSurface>
+            </FadeIn>
+          </div>
+        </div>
+      </Section>
+
       {enrollOpen && (
-        <EnrollmentModal item={{ id: workshop.slug, title: workshop.title, price: workshop.price, type: 'workshop' }} onClose={() => setEnrollOpen(false)} />
+        <EnrollmentModal item={{ id: workshop.slug, title: workshop.title, price: workshop.price, type: 'workshop' }} onClose={() => setEnrollOpen(false)} themeId="webinar" />
       )}
     </PageShell>
   )
