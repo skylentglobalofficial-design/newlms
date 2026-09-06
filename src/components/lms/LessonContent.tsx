@@ -15,6 +15,7 @@ export function LessonContentView({
   accent,
   onComplete,
   quizQuestions,
+  quizLoading,
   onQuizSubmit,
   onAssignmentSubmit,
   lessonMedia,
@@ -24,6 +25,7 @@ export function LessonContentView({
   accent: Accent
   onComplete: () => void
   quizQuestions?: QuizQuestion[]
+  quizLoading?: boolean
   onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
   onAssignmentSubmit?: (text: string) => Promise<void>
   lessonMedia?: VideoPlaybackSource
@@ -31,13 +33,6 @@ export function LessonContentView({
   if (lesson.type === 'video') {
     return (
       <div className="lms-lesson-video">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
-          <div>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
-            <h2 style={{ color: C.white, fontSize: 18, fontWeight: 600, margin: 0, lineHeight: 1.3 }}>{lesson.title}</h2>
-          </div>
-          {lesson.duration && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{lesson.duration}</span>}
-        </div>
         <LessonVideoPlayer
           media={lessonMedia}
           title={lesson.title}
@@ -56,26 +51,12 @@ export function LessonContentView({
   }
 
   if (lesson.type === 'notes') {
-    const notes = `# ${lesson.title}\n\n## Key concepts\n\n- Foundational ideas for ${lesson.title}\n- How this connects to the module curriculum\n- Practice checkpoints before the next lesson\n\n## Summary\n\nRead through and mark complete when ready to continue.`
     return (
       <div className="lms-lesson-notes">
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 16 }}>
-          <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)', maxWidth: 720 }}>
-            {notes.split('\n').map((line, i) => {
-              if (line.startsWith('# ')) return <div key={i} style={{ color: C.white, fontSize: 20, fontWeight: 700, marginBottom: 16, fontFamily: 'var(--font-display)' }}>{line.slice(2)}</div>
-              if (line.startsWith('## ')) return <div key={i} style={{ color: C.white, fontSize: 15, fontWeight: 600, marginTop: 20, marginBottom: 10 }}>{line.slice(3)}</div>
-              if (line.startsWith('- ')) return <div key={i} style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, lineHeight: 1.7, marginBottom: 8, paddingLeft: 16, borderLeft: `2px solid ${accent.border}` }}>{line.slice(2)}</div>
-              if (line.trim() === '') return <div key={i} style={{ height: 8 }} />
-              return <div key={i} style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.7 }}>{line}</div>
-            })}
-          </div>
-          <div style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 16 }}>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Resources</div>
-            {['Course slides', 'Reference sheet', 'Practice set'].map(r => (
-              <div key={r} style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, padding: '8px 0', borderBottom: `1px solid ${T.lineDark}` }}>{r}</div>
-            ))}
-          </div>
+        <div className="lms-empty-state lms-empty-state--inline">
+          <p className="lms-empty-state__copy">
+            No lesson notes have been published for this lesson yet. Instructor-uploaded materials will appear here when available.
+          </p>
         </div>
         {!lessonState.complete && (
           <button type="button" onClick={onComplete} style={{ marginTop: 20, background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
@@ -89,10 +70,19 @@ export function LessonContentView({
   if (lesson.type === 'quiz') {
     const questions = quizQuestions ?? []
     return (
-      <div className="lms-lesson-quiz" style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)' }}>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
-        {questions.length === 0 ? (
-          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Quiz questions are loading…</div>
+      <div className="lms-lesson-quiz">
+        {quizLoading ? (
+          <div className="lms-empty-state lms-empty-state--inline">
+            <p className="lms-empty-state__copy">Quiz questions are loading…</p>
+          </div>
+        ) : questions.length === 0 ? (
+          <div className="lms-empty-state lms-empty-state--inline">
+            <p className="lms-empty-state__copy">
+              {lessonState.complete || lessonState.quizPassed
+                ? 'This quiz is complete.'
+                : 'Quiz questions could not be loaded. Refresh the page or contact support if this persists.'}
+            </p>
+          </div>
         ) : (
           <AssessmentSurface
             mode="timed"
@@ -110,8 +100,7 @@ export function LessonContentView({
   }
 
   return (
-    <div className="lms-lesson-assignment" style={{ borderLeft: `3px solid ${accent.primary}`, paddingLeft: 20 }}>
-      <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
+    <div className="lms-lesson-assignment">
       <AssessmentSurface
         mode="assignment"
         title={lesson.title}

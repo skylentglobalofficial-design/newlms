@@ -3,7 +3,7 @@ import { C, T } from '../../tokens'
 import { AuroraBand, GlassSurface } from '../foundation'
 import type { CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
-import { computeModuleProgress, type LmsCourseView } from './lms-utils'
+import { computeModuleProgress, isLessonUnlocked, type LmsCourseView } from './lms-utils'
 import LessonIcon from './LessonIcon'
 
 type Accent = { primary: string; secondary: string; subtle: string; subtleStrong: string; border: string; text: string }
@@ -98,16 +98,18 @@ export function CurriculumProgressRail({
   accent: Accent
   learnSlug: string
 }) {
+  const allLessons = course.modules.flatMap(m => m.lessons)
+
   return (
     <div id="student-curriculum" className="student-curriculum-rail" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
       <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, letterSpacing: '0.08em', marginBottom: 16 }}>Curriculum · current position</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <div className="student-curriculum-modules">
         {course.modules.map((mod: CourseModule, mi: number) => {
           const mp = computeModuleProgress(mod, lessonStates)
           const isCurrentModule = !!mp.current
           return (
-            <div key={mod.id} style={{ padding: '16px 0', borderTop: mi === 0 ? 'none' : `1px solid ${T.lineDark}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 10 }}>
+            <div key={mod.id} className="student-curriculum-module">
+              <div className="student-curriculum-module__head">
                 <div style={{ minWidth: 0 }}>
                   <div style={{ color: isCurrentModule ? C.white : 'rgba(255,255,255,0.55)', fontSize: 14, fontWeight: isCurrentModule ? 600 : 400 }}>
                     Module {mi + 1} · {mod.title}
@@ -128,15 +130,50 @@ export function CurriculumProgressRail({
                 </div>
               </div>
               {mp.total > 0 && (
-                <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2 }}>
-                  <div style={{ width: `${mp.pct}%`, height: '100%', background: isCurrentModule ? accent.primary : 'rgba(255,255,255,0.2)', borderRadius: 2 }} />
+                <div className="student-curriculum-module__bar">
+                  <div style={{ width: `${mp.pct}%`, background: isCurrentModule ? accent.primary : 'rgba(255,255,255,0.2)' }} />
                 </div>
               )}
-              {isCurrentModule && mp.current && (
-                <Link to={`/learn/${learnSlug}/${mp.current.id}`} style={{ display: 'inline-block', marginTop: 10, color: accent.text, fontSize: 12, textDecoration: 'none' }}>
-                  Continue module →
-                </Link>
-              )}
+              <div className="student-curriculum-lessons">
+                {mod.lessons.map((lesson) => {
+                  const state = lessonStates[lesson.id]
+                  const unlocked = isLessonUnlocked(lesson.id, allLessons, lessonStates)
+                  const isActive = mp.current?.id === lesson.id
+                  const content = (
+                    <>
+                      <span className="student-curriculum-lessons__icon">
+                        {state?.complete ? (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={accent.primary} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        ) : !unlocked ? (
+                          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        ) : (
+                          <LessonIcon type={lesson.type} size={12} color={isActive ? accent.text : 'rgba(255,255,255,0.35)'} />
+                        )}
+                      </span>
+                      <span className="student-curriculum-lessons__title">{lesson.title}</span>
+                      {isActive && <span className="student-curriculum-lessons__now" style={{ color: accent.text }}>NOW</span>}
+                    </>
+                  )
+
+                  if (!unlocked) {
+                    return (
+                      <div key={lesson.id} className="student-curriculum-lessons__item is-locked" aria-disabled="true">
+                        {content}
+                      </div>
+                    )
+                  }
+
+                  return (
+                    <Link
+                      key={lesson.id}
+                      to={`/learn/${learnSlug}/${lesson.id}`}
+                      className={`student-curriculum-lessons__item${isActive ? ' is-active' : ''}${state?.complete ? ' is-complete' : ''}`}
+                    >
+                      {content}
+                    </Link>
+                  )
+                })}
+              </div>
             </div>
           )
         })}
@@ -187,15 +224,13 @@ export function StudentProgressSurface({
 export function StudentActionRail({
   pendingTasks,
   recentActivity,
-  projectTitle,
-  projectWhat,
   accent,
+  careerPanel,
 }: {
   pendingTasks: Array<{ title: string; detail: string; href: string; label: string }>
   recentActivity: Array<{ label: string; detail: string; href: string }>
-  projectTitle: string
-  projectWhat: string
   accent: Accent
+  careerPanel?: React.ReactNode
 }) {
   return (
     <div id="student-rail" className="student-action-rail">
@@ -226,12 +261,11 @@ export function StudentActionRail({
           ))
         )}
       </div>
-      <div style={{ paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
-        <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.32)', marginBottom: 8 }}>Project track</div>
-        <div style={{ color: C.white, fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{projectTitle}</div>
-        <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, lineHeight: 1.5, marginBottom: 12 }}>{projectWhat}</div>
-        <Link to="/career-os/app" style={{ color: accent.text, fontSize: 12, textDecoration: 'none' }}>Career OS →</Link>
-      </div>
+      {careerPanel && (
+        <div style={{ paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
+          {careerPanel}
+        </div>
+      )}
     </div>
   )
 }
