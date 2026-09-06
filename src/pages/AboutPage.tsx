@@ -59,9 +59,6 @@ function HeroSection() {
               <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
                 Education → skills → career → institutions.
               </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 20px' }}>
-                Skylent connects academic learning, practical capability, and career opportunity in one platform — with product depth, not marketing claims.
-              </p>
               <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.75, maxWidth: 520, margin: '0 0 28px' }}>
                 We are building the infrastructure where students, parents, institutions, and employers can meet — with product depth, not marketing claims.
               </p>

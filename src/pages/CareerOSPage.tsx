@@ -240,7 +240,8 @@ function InterviewPrepSection({
         />
       </FadeIn>
 
-      <div style={{ marginTop: 36, display: 'flex', gap: 8, marginBottom: 28, flexWrap: 'wrap' }}>
+      <div className="scroll-control-strip" style={{ marginTop: 36, marginBottom: 28 }}>
+        <div className="scroll-control-strip-scroll career-interview-tabs" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         {(['technical', 'hr', 'managerial'] as const).map(r => (
           <button
             key={r}
@@ -261,6 +262,7 @@ function InterviewPrepSection({
             {r}
           </button>
         ))}
+        </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }} className="two-col">
