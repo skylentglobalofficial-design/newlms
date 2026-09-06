@@ -216,7 +216,7 @@ async function main() {
 
   const quizNode = await prisma.curriculumNode.findFirst({
     where: {
-      externalKey: "l3",
+      sourceId: "l3",
       module: { courseId: course.id },
     },
   })
@@ -260,7 +260,7 @@ async function main() {
   const assignmentRow = await prisma.assignmentProgress.findFirst({
     where: {
       userId: userARow.id,
-      node: { externalKey: "l6", module: { courseId: course.id } },
+      node: { sourceId: "l6", module: { courseId: course.id } },
       status: "submitted",
     },
     include: { attachments: true },
