@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { C, T } from '../tokens'
-import { courses } from '../data'
 import { useAuth } from '../context/AuthContext'
-import { useDemoState, EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
+import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
 import { getLmsRoleAccent, getLmsTabAccent } from '../role-themes'
 import CurriculumRail from '../components/lms/CurriculumRail'
 import { LessonContentView, LessonNavigation } from '../components/lms/LessonContent'
+import type { QuizQuestion } from '../components/lms/AssessmentSurface'
 import {
   computeCourseProgress,
   defaultTabForLesson,
@@ -14,6 +14,15 @@ import {
   isLessonUnlocked,
   lessonTypeLabel,
 } from '../components/lms/lms-utils'
+import { useLmsCourse } from '../hooks/useLms'
+import {
+  fetchCourseWorkspace,
+  fetchQuizQuestions,
+  markLessonAccess,
+  markLessonComplete,
+  submitQuizAttempt,
+  updateAssignment,
+} from '../lib/lms-api'
 
 function dashRoute(role?: string) {
   switch (role) {
@@ -28,26 +37,104 @@ function dashRoute(role?: string) {
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
   const navigate = useNavigate()
-  const { user } = useAuth()
-  const demo = useDemoState()
+  const { user, ready: authReady } = useAuth()
+  const { access, lessonStates, reload, enroll } = useLmsCourse(slug)
   const roleAccent = getLmsRoleAccent(user?.role)
 
-  const course = courses.find(c => c.slug === slug)
+  const course = access.status === 'ready' ? access.course : null
   const allLessons = course ? course.modules.flatMap(m => m.lessons) : []
-  const firstLessonId = allLessons[0]?.id ?? ''
-  const lessonStates = slug ? demo.getLessonStates(slug) : {}
+  const resumeLessonId = access.status === 'ready' ? access.workspace.resume.lessonId : ''
+  const firstLessonId = resumeLessonId || allLessons[0]?.id || ''
 
   const [selectedLessonId, setSelectedLessonId] = useState(lessonId ?? firstLessonId)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showCertificate, setShowCertificate] = useState(false)
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
+  const [enrolling, setEnrolling] = useState(false)
 
   useEffect(() => {
-    if (selectedLessonId && slug) navigate(`/learn/${slug}/${selectedLessonId}`, { replace: true })
-  }, [selectedLessonId, slug, navigate])
+    if (firstLessonId && !lessonId && access.status === 'ready') {
+      setSelectedLessonId(firstLessonId)
+    }
+  }, [firstLessonId, lessonId, access.status])
+
+  useEffect(() => {
+    if (selectedLessonId && slug && access.status === 'ready') {
+      navigate(`/learn/${slug}/${selectedLessonId}`, { replace: true })
+    }
+  }, [selectedLessonId, slug, navigate, access.status])
 
   useEffect(() => {
     if (lessonId && allLessons.some(l => l.id === lessonId)) setSelectedLessonId(lessonId)
   }, [lessonId, allLessons])
+
+  useEffect(() => {
+    if (!slug || access.status !== 'ready' || !selectedLessonId) return
+    const lesson = allLessons.find(l => l.id === selectedLessonId)
+    if (!lesson) return
+
+    void markLessonAccess(slug, selectedLessonId).catch(() => undefined)
+
+    if (lesson.type === 'quiz') {
+      fetchQuizQuestions(slug, selectedLessonId)
+        .then((questions) => setQuizQuestions(questions.map(q => ({ q: q.q, options: q.options }))))
+        .catch(() => setQuizQuestions([]))
+    } else {
+      setQuizQuestions([])
+    }
+  }, [slug, access.status, selectedLessonId, allLessons])
+
+  const refreshWorkspace = useCallback(async () => {
+    if (!slug) return
+    await reload()
+  }, [slug, reload])
+
+  if (!slug) {
+    return (
+      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: C.white }}>Course not found</div>
+      </div>
+    )
+  }
+
+  if (!authReady || access.status === 'loading') {
+    return (
+      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Loading course…</div>
+      </div>
+    )
+  }
+
+  if (access.status === 'login_required') {
+    return (
+      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
+        <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>Sign in to continue learning</div>
+        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>Course content is available to enrolled learners after authentication.</p>
+        <Link to="/login" style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Go to login →</Link>
+      </div>
+    )
+  }
+
+  if (access.status === 'not_enrolled') {
+    return (
+      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
+        <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>{access.courseTitle}</div>
+        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>You are signed in but not enrolled in this course yet.</p>
+        <button
+          type="button"
+          disabled={enrolling}
+          onClick={() => {
+            setEnrolling(true)
+            void enroll().finally(() => setEnrolling(false))
+          }}
+          style={{ background: roleAccent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer' }}
+        >
+          {enrolling ? 'Enrolling…' : 'Enroll to start learning'}
+        </button>
+        <Link to="/dashboard/student" style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 13 }}>← Back to dashboard</Link>
+      </div>
+    )
+  }
 
   if (!course) {
     return (
@@ -63,6 +150,7 @@ export default function LearnPage() {
   const { progressPct, allComplete } = computeCourseProgress(allLessons, lessonStates)
   const tabAccent = getLmsTabAccent(selectedLesson ? defaultTabForLesson(selectedLesson) : 'video')
   const { prev, next } = getAdjacentLessons(allLessons, selectedLessonId)
+  const certificateEligible = access.workspace.enrollment.certificateEligible
 
   function handleLessonSelect(id: string) {
     if (!isLessonUnlocked(id, allLessons, lessonStates)) return
@@ -70,21 +158,41 @@ export default function LearnPage() {
     setSidebarOpen(false)
   }
 
-  function handleLessonComplete() {
+  async function handleLessonComplete() {
     if (!slug || !selectedLesson) return
-    const patch = selectedLesson.type === 'video'
-      ? { videoWatched: true, complete: true }
-      : selectedLesson.type === 'quiz'
-        ? { quizPassed: true, complete: true }
-        : selectedLesson.type === 'assignment'
-          ? { assignmentSubmitted: true, complete: true }
-          : { complete: true }
-    demo.updateLesson(slug, selectedLesson.id, patch)
-    const remaining = allLessons.filter(l => l.id !== selectedLesson.id && !lessonStates[l.id]?.complete)
+    await markLessonComplete(slug, selectedLesson.id)
+    await refreshWorkspace()
+    const workspace = await fetchCourseWorkspace(slug)
+    const updatedStates = Object.fromEntries(
+      Object.entries(workspace.lessonStates).map(([key, state]) => [
+        key,
+        {
+          videoWatched: state.videoWatched,
+          quizPassed: state.quizPassed,
+          assignmentSubmitted: state.assignmentSubmitted,
+          complete: state.complete,
+        },
+      ]),
+    )
+    const remaining = allLessons.filter(l => l.id !== selectedLesson.id && !updatedStates[l.id]?.complete)
     if (remaining.length === 0) setTimeout(() => setShowCertificate(true), 600)
-    else if (next && isLessonUnlocked(next.id, allLessons, { ...lessonStates, [selectedLesson.id]: { ...selectedState, ...patch } })) {
+    else if (next && isLessonUnlocked(next.id, allLessons, updatedStates)) {
       setTimeout(() => setSelectedLessonId(next.id), 400)
     }
+  }
+
+  async function handleQuizSubmit(answers: Record<number, number>) {
+    if (!slug || !selectedLesson) return false
+    const ordered = quizQuestions.map((_, index) => answers[index] ?? -1)
+    const result = await submitQuizAttempt(slug, selectedLesson.id, ordered)
+    if (result.passed) await refreshWorkspace()
+    return result.passed
+  }
+
+  async function handleAssignmentSubmit(text: string) {
+    if (!slug || !selectedLesson) return
+    await updateAssignment(slug, selectedLesson.id, 'submit', text)
+    await handleLessonComplete()
   }
 
   return (
@@ -127,7 +235,11 @@ export default function LearnPage() {
             <div className="lms-certificate-banner" style={{ background: roleAccent.subtle, border: `1px solid ${roleAccent.border}`, borderRadius: T.rCard, padding: '24px', marginBottom: 24, textAlign: 'center' }}>
               <div style={{ color: roleAccent.text, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 10 }}>COURSE COMPLETE</div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: C.white, marginBottom: 8 }}>{course.title}</div>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginBottom: 16 }}>Certificate issuance is not available in this demo workspace.</div>
+              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginBottom: 16 }}>
+                {certificateEligible
+                  ? 'You are eligible for a certificate. Download and issuance will be available in a later phase.'
+                  : 'Complete all requirements to unlock certificate eligibility.'}
+              </div>
             </div>
           )}
 
@@ -145,7 +257,10 @@ export default function LearnPage() {
                 lesson={selectedLesson}
                 lessonState={selectedState}
                 accent={{ ...tabAccent, text: roleAccent.text }}
-                onComplete={handleLessonComplete}
+                onComplete={() => { void handleLessonComplete() }}
+                quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
+                onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
+                onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
               />
               <LessonNavigation
                 prev={prev}

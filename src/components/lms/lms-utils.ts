@@ -1,9 +1,15 @@
-import type { Course, CourseLesson, CourseModule } from '../../data'
+import type { CourseLesson, CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
+
+export type LmsCourseView = {
+  slug: string
+  title: string
+  modules: CourseModule[]
+}
 
 export type LessonNav = { lesson: CourseLesson; module: CourseModule; moduleIndex: number }
 
-export function flattenLessons(course: Course): LessonNav[] {
+export function flattenLessons(course: LmsCourseView): LessonNav[] {
   return course.modules.flatMap((mod, mi) =>
     mod.lessons.map(lesson => ({ lesson, module: mod, moduleIndex: mi + 1 })),
   )
@@ -80,7 +86,7 @@ export type PendingTask = {
   moduleTitle: string
 }
 
-export function getPendingTasks(course: Course, lessonStates: Record<string, LessonState>): PendingTask[] {
+export function getPendingTasks(course: LmsCourseView, lessonStates: Record<string, LessonState>): PendingTask[] {
   const tasks: PendingTask[] = []
   for (const mod of course.modules) {
     for (const lesson of mod.lessons) {
@@ -111,7 +117,7 @@ export type RecentActivity = {
 }
 
 export function getRecentActivity(
-  courses: Course[],
+  courses: LmsCourseView[],
   getLessonStates: (slug: string) => Record<string, LessonState>,
 ): RecentActivity[] {
   const items: RecentActivity[] = []

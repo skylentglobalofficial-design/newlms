@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 import { C, T } from '../../tokens'
 import { AuroraBand, GlassSurface } from '../foundation'
-import type { Course, CourseModule } from '../../data'
+import type { CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
-import { computeModuleProgress } from './lms-utils'
+import { computeModuleProgress, type LmsCourseView } from './lms-utils'
 import LessonIcon from './LessonIcon'
 
 type Accent = { primary: string; secondary: string; subtle: string; subtleStrong: string; border: string; text: string }
@@ -93,7 +93,7 @@ export function CurriculumProgressRail({
   accent,
   learnSlug,
 }: {
-  course: Course
+  course: LmsCourseView
   lessonStates: Record<string, LessonState>
   accent: Accent
   learnSlug: string
@@ -151,7 +151,7 @@ export function StudentProgressSurface({
   accent,
   certificateReady,
 }: {
-  course: Course
+  course: LmsCourseView
   lessonStates: Record<string, LessonState>
   accent: Accent
   certificateReady: boolean

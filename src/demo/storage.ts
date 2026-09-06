@@ -5,7 +5,6 @@ export const DEMO_STATE_KEY = 'skylent_demo_state'
 export function getDefaultDemoState(): DemoState {
   return {
     version: 1,
-    lms: {},
     labs: {},
     enrollments: [],
     applications: [],
@@ -22,7 +21,6 @@ export function loadDemoState(): DemoState {
     return {
       ...getDefaultDemoState(),
       ...parsed,
-      lms: parsed.lms ?? {},
       labs: parsed.labs ?? {},
       enrollments: parsed.enrollments ?? [],
       applications: parsed.applications ?? [],
