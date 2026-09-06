@@ -230,7 +230,7 @@ function CertificateSection() {
             A credential you can finish.
           </Heading>
           <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 480 }}>
-            Shorter than a Professional Program. Structured curriculum, assessment, and certification — without Career OS unlock.
+            Shorter than a Professional Program. Structured curriculum, assessment, and certification — without Career OS access.
           </p>
 
           <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Credential path</div>
@@ -660,7 +660,7 @@ export default function SkillsPage() {
       <CTABand
         eyebrow="Next step"
         title={<>Ready to become<br />career-ready?</>}
-        lead="Start with a Professional Program to unlock Career OS, or join a webinar to begin."
+        lead="Start with a Professional Program for Career OS access, or join a webinar to begin."
         primary={{ label: 'Explore Professional Programs', to: '/programs' }}
         secondary={{ label: 'See Career OS', to: '/career-os' }}
         auroraTheme="professional"

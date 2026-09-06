@@ -52,7 +52,7 @@ export const courses: Course[] = [
     price: 4999,
     originalPrice: 9999,
     desc: 'Master SQL, Excel, Power BI and Python to analyse data and drive business decisions.',
-    longDesc: 'A comprehensive, hands-on Data Analytics course designed to take you from zero to job-ready. You will work with real datasets, build dashboards, and develop the analytical thinking that employers look for.',
+    longDesc: 'A hands-on Data Analytics course designed to take you from spreadsheets to dashboards. You work with real datasets, build Power BI reports, and practice presenting insights to stakeholders.',
     outcomes: ['Analyse business datasets with SQL and Python', 'Build interactive Power BI dashboards', 'Create Excel models and pivot tables', 'Present data insights to stakeholders', 'Complete 3 portfolio-ready projects'],
     forWhom: ['Commerce or non-technical graduates', 'Professionals moving into data roles', 'Business analysts upskilling', 'MBA students building analytics capability'],
     modules: [
@@ -126,9 +126,9 @@ export const courses: Course[] = [
     reviews: 189,
     price: 5999,
     originalPrice: 12999,
-    desc: 'Prompt engineering, LangChain, RAG systems, and building real AI-powered applications.',
-    longDesc: 'The hands-on Generative AI course — from prompt engineering fundamentals to building production-grade AI applications using LLMs, vector databases, and agent frameworks.',
-    outcomes: ['Master prompt engineering techniques', 'Build RAG systems with LangChain', 'Create AI-powered apps', 'Understand LLM architectures', 'Deploy 2 AI projects'],
+    desc: 'Prompt engineering, LangChain, RAG systems, and building LLM applications with real project work.',
+    longDesc: 'A hands-on Generative AI course — from prompt engineering fundamentals to building applications with LLMs, vector databases, and agent frameworks.',
+    outcomes: ['Write effective prompts for production use cases', 'Build RAG systems with LangChain', 'Ship two LLM application projects', 'Understand LLM architectures', 'Deploy projects with clear evaluation criteria'],
     forWhom: ['Developers wanting to add AI to their stack', 'Product managers building AI products', 'Data scientists extending into LLMs'],
     modules: [
       { id: 'm1', title: 'LLM Fundamentals', lessons: [
@@ -504,7 +504,7 @@ export const programs: Program[] = [
     enrollmentStatus: 'open',
     careerSupport: true,
     whoIsItFor: [
-      'Developers who want to build AI-powered products and features',
+      'Developers who want to build LLM-based products and features',
       'Data scientists extending their skills into LLMs and generative models',
       'Product managers and tech leads evaluating AI architecture decisions',
       'Engineers with Python experience wanting to specialise in AI',
@@ -933,8 +933,10 @@ LLMs are a powerful tool inside that system. They are not the system itself.`,
     category: 'Career',
     date: '2 August 2026',
     readTime: '5 min read',
-    excerpt: 'We looked at 800+ data job listings across India and interviewed 30 hiring managers. Here is what employers are actually hiring for.',
-    body: `We looked at 800+ data job listings across India and interviewed 30 hiring managers at companies ranging from early-stage startups to large enterprise technology firms.
+    excerpt: 'A sample editorial on what data hiring teams look for in portfolios, SQL skills, and dashboard work.',
+    body: `This is an illustrative editorial — not a published research study.
+
+We outline what hiring teams commonly look for when reviewing data analyst and data scientist applications: SQL fluency, dashboard storytelling, and evidence of working with messy business datasets.
 
 The results were different from what most course providers would have you believe.
 

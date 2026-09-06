@@ -400,7 +400,7 @@ html, body {
 
 @media (max-width: 375px) {
   .lms-header-course {
-    max-width: 100px;
+    max-width: min(140px, 38vw);
   }
   .lms-header {
     gap: 8px;
@@ -411,6 +411,95 @@ html, body {
 /* Public page section overflow guard */
 .skylent-public-canvas {
   overflow-x: hidden;
+}
+
+/* Discoverable horizontal scroll strips — nav/filter controls at narrow widths */
+.scroll-control-strip {
+  position: relative;
+  overflow: hidden;
+}
+
+.scroll-control-strip::before,
+.scroll-control-strip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.scroll-control-strip::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(5, 5, 5, 0.92) 0%, transparent 100%);
+}
+
+.scroll-control-strip::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(5, 5, 5, 0.92) 0%, transparent 100%);
+}
+
+.scroll-control-strip.is-scrollable::before,
+.scroll-control-strip.is-scrollable::after {
+  opacity: 1;
+}
+
+.scroll-control-strip-scroll {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-padding-inline: 16px;
+  padding-inline-end: 28px;
+  overscroll-behavior-x: contain;
+}
+
+.scroll-control-strip-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .scroll-control-strip::after {
+    opacity: 1;
+  }
+
+  .labs-filter-divider {
+    display: none;
+  }
+
+  .labs-filter-bar {
+    flex-wrap: nowrap !important;
+    gap: 0 !important;
+    padding: 12px 0 !important;
+  }
+
+  .labs-filter-group {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    padding-right: 12px;
+    margin-right: 12px;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .labs-filter-group:last-child {
+    border-right: none;
+    margin-right: 0;
+    padding-right: 4px;
+  }
+
+  .career-interview-tabs {
+    flex-wrap: nowrap !important;
+    margin-bottom: 24px !important;
+  }
+
+  .career-interview-tabs button {
+    flex-shrink: 0;
+  }
 }
 
 /* Hide scrollbar by default, show while scrolling */

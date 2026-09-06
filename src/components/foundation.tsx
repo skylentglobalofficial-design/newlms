@@ -441,44 +441,45 @@ export function ContextualNavBar({
         borderBottom: `1px solid ${T.lineDark}`,
       }}
     >
-      <div
-        className="contextual-nav-bar-scroll"
-        style={{
-          maxWidth: T.maxW,
-          margin: '0 auto',
-          padding: `0 ${T.gutter}`,
-          display: 'flex',
-          gap: 0,
-          overflowX: 'auto',
-          scrollbarWidth: 'none',
-          WebkitOverflowScrolling: 'touch',
-        }}
-      >
-        {items.map(item => {
-          const active = activeId === item.id
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => scrollToSection(item.id)}
-              style={{
-                flexShrink: 0,
-                background: 'none',
-                border: 'none',
-                borderBottom: `2px solid ${active ? accent.primary : 'transparent'}`,
-                padding: '12px 14px',
-                color: active ? accent.text : 'rgba(255,255,255,0.42)',
-                fontSize: 12.5,
-                fontWeight: active ? 600 : 400,
-                cursor: 'pointer',
-                fontFamily: 'var(--font-body)',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {item.label}
-            </button>
-          )
-        })}
+      <div className="scroll-control-strip" style={{ maxWidth: T.maxW, margin: '0 auto' }}>
+        <div
+          className="scroll-control-strip-scroll contextual-nav-bar-scroll"
+          role="tablist"
+          aria-label="Page sections"
+          style={{
+            padding: `0 ${T.gutter}`,
+            display: 'flex',
+            gap: 0,
+          }}
+        >
+          {items.map(item => {
+            const active = activeId === item.id
+            return (
+              <button
+                key={item.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => scrollToSection(item.id)}
+                style={{
+                  flexShrink: 0,
+                  background: 'none',
+                  border: 'none',
+                  borderBottom: `2px solid ${active ? accent.primary : 'transparent'}`,
+                  padding: '12px 16px',
+                  color: active ? accent.text : 'rgba(255,255,255,0.42)',
+                  fontSize: 12.5,
+                  fontWeight: active ? 600 : 400,
+                  cursor: 'pointer',
+                  fontFamily: 'var(--font-body)',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {item.label}
+              </button>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

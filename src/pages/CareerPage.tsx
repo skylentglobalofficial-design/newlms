@@ -25,7 +25,7 @@ export default function CareerPage() {
             <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(40px, 5.5vw, 72px)', fontWeight: 700, color: C.white, letterSpacing: '-0.03em', lineHeight: 1.02, margin: '0 0 20px' }}>
               Where learning<br /><span style={{ color: C.orange }}>becomes opportunity.</span>
             </h1>
-            <p style={{ color: 'rgba(255,255,255,0.44)', fontSize: 18, lineHeight: 1.75, maxWidth: 520, margin: 0 }}>800+ hiring partners. Verified portfolios. A career pipeline built into your learning.</p>
+            <p style={{ color: 'rgba(255,255,255,0.44)', fontSize: 18, lineHeight: 1.75, maxWidth: 520, margin: 0 }}>Build your profile, apply to roles, and track applications. Sample job listings below until partners are onboarded.</p>
           </FadeIn>
 
           {/* Pipeline */}

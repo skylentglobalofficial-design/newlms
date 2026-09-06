@@ -371,7 +371,7 @@ const megaMenu = [
     items: [
       { label: 'Webinars', sub: 'Live expert-led sessions', to: '/workshops' },
       { label: 'Certificate Programs', sub: 'Focused, credentialed skills', to: '/programs' },
-      { label: 'Professional Programs', sub: 'Career-ready — unlocks Career OS', to: '/programs' },
+      { label: 'Professional Programs', sub: 'Career-ready — includes Career OS', to: '/programs' },
       { label: 'Job Assistance', sub: 'Placement & readiness support', to: '/skills#job-assistance' },
     ],
   },
@@ -769,8 +769,8 @@ export const globalCSS = `
     .skills-hero-visual-wrap {
       min-height: clamp(280px, 40vh, 360px) !important;
     }
-    .skills-path { overflow-x: auto; }
-    .skills-path > div { grid-template-columns: repeat(5, minmax(120px, 1fr)) !important; min-width: 560px; }
+    .skills-path { overflow-x: visible; }
+    .skills-path > div { grid-template-columns: repeat(2, 1fr) !important; min-width: 0 !important; gap: 24px 20px !important; }
     .skills-path-line { display: none !important; }
     .skills-hero-visual-wrap { min-height: clamp(280px, 40vh, 360px) !important; }
     .skills-discovery, .skills-pro-featured { grid-template-columns: 1fr !important; }
@@ -796,7 +796,7 @@ export const globalCSS = `
     .program-tools-strip > div { padding: 12px 16px !important; font-size: 13px !important; }
     .program-pricing-wrap { margin-left: -4px; margin-right: -4px; }
     .skills-proof-grid { grid-template-columns: 1fr !important; }
-    .skills-path > div { min-width: 480px; }
+    .skills-path > div { grid-template-columns: 1fr !important; min-width: 0 !important; }
     .career-journey > div { grid-template-columns: repeat(3, 1fr) !important; gap: 28px !important; }
     .career-journey-line { display: none !important; }
     .career-ecosystem > div { grid-template-columns: repeat(2, 1fr) !important; gap: 24px !important; }
