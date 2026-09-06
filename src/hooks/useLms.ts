@@ -5,8 +5,10 @@ import {
   enrollInCourse,
   fetchCourseAccess,
   fetchCourseWorkspace,
+  fetchEnrollments,
   fetchLmsDashboard,
   workspaceToCourse,
+  type ApiEnrollment,
 } from "../lib/lms-api"
 import type { LessonState } from "../demo/types"
 import type { LmsCourseView } from "../components/lms/lms-utils"
@@ -119,4 +121,30 @@ export function useLmsCourse(slug: string | undefined) {
   }, [])
 
   return { access, lessonStates, getLessonState, reload, enroll, patchWorkspace }
+}
+
+export function useLmsEnrollments() {
+  const [enrollments, setEnrollments] = useState<ApiEnrollment[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const reload = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await fetchEnrollments()
+      setEnrollments(data)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load enrollments")
+      setEnrollments([])
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    reload()
+  }, [reload])
+
+  return { enrollments, loading, error, reload }
 }

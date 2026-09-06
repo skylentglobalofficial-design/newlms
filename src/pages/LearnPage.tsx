@@ -53,8 +53,10 @@ export default function LearnPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showCertificate, setShowCertificate] = useState(false)
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
+  const [quizLoading, setQuizLoading] = useState(false)
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
   const [enrolling, setEnrolling] = useState(false)
+  const [enrollError, setEnrollError] = useState<string | null>(null)
 
   useEffect(() => {
     if (firstLessonId && !lessonId && access.status === 'ready') {
@@ -86,11 +88,14 @@ export default function LearnPage() {
     void markLessonAccess(slug, selectedLessonId).catch(() => undefined)
 
     if (lesson.type === 'quiz') {
+      setQuizLoading(true)
       fetchQuizQuestions(slug, selectedLessonId)
         .then((questions) => setQuizQuestions(questions.map(q => ({ q: q.q, options: q.options }))))
         .catch(() => setQuizQuestions([]))
+        .finally(() => setQuizLoading(false))
     } else {
       setQuizQuestions([])
+      setQuizLoading(false)
     }
 
     if (lesson.type === 'video') {
@@ -118,7 +123,7 @@ export default function LearnPage() {
   if (!authReady || access.status === 'loading') {
     return (
       <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Loading course…</div>
+        <div style={{ color: 'var(--text-muted)', fontSize: 14 }}>Loading course…</div>
       </div>
     )
   }
@@ -127,8 +132,8 @@ export default function LearnPage() {
     return (
       <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
         <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>Sign in to continue learning</div>
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>Course content is available to enrolled learners after authentication.</p>
-        <Link to="/login" style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Go to login →</Link>
+        <p style={{ color: 'var(--text-secondary)', fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>Course content is available to enrolled learners after authentication.</p>
+        <Link to="/login" state={{ enrollTarget: { kind: 'course', slug } }} style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Go to login →</Link>
       </div>
     )
   }
@@ -137,13 +142,23 @@ export default function LearnPage() {
     return (
       <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
         <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>{access.courseTitle}</div>
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>You are signed in but not enrolled in this course yet.</p>
+        <p style={{ color: 'var(--text-secondary)', fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>You are signed in but not enrolled in this course yet.</p>
+        {enrollError && (
+          <p role="alert" style={{ color: 'rgba(255,255,255,0.72)', fontSize: 13, margin: 0, textAlign: 'center', maxWidth: 420 }}>
+            {enrollError} Please try again.
+          </p>
+        )}
         <button
           type="button"
           disabled={enrolling}
           onClick={() => {
+            setEnrollError(null)
             setEnrolling(true)
-            void enroll().finally(() => setEnrolling(false))
+            void enroll()
+              .catch((err: unknown) => {
+                setEnrollError(err instanceof Error ? err.message : 'Enrollment failed')
+              })
+              .finally(() => setEnrolling(false))
           }}
           style={{ background: roleAccent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer' }}
         >
@@ -247,10 +262,11 @@ export default function LearnPage() {
               <span className="lms-header-lesson">{selectedLesson.title}</span>
             </>
           )}
-          <div className="lms-header-progress">{progressPct}%</div>
+          <div className="lms-header-progress" style={{ color: roleAccent.text }}>{progressPct}%</div>
         </header>
 
         <div className="lms-content">
+          <div className="lms-content-inner">
           {(allComplete || showCertificate) && (
             <div className="lms-certificate-banner" style={{ background: roleAccent.subtle, border: `1px solid ${roleAccent.border}`, borderRadius: T.rCard, padding: '24px', marginBottom: 24, textAlign: 'center' }}>
               <div style={{ color: roleAccent.text, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 10 }}>COURSE COMPLETE</div>
@@ -264,15 +280,30 @@ export default function LearnPage() {
           )}
 
           {selectedLesson ? (
-            <div className={`lms-lesson-panel lms-lesson-type-${selectedLesson.type}`} style={{ border: `1px solid ${tabAccent.border}`, borderLeft: `3px solid ${tabAccent.primary}`, borderRadius: T.rCard, background: 'rgba(255,255,255,0.015)', padding: 'clamp(20px, 3vw, 28px)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
-                <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: tabAccent.primary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                  {lessonTypeLabel(selectedLesson.type)}
-                </span>
-                <span style={{ fontSize: 11, color: selectedState.complete ? '#22c55e' : 'rgba(255,255,255,0.35)' }}>
-                  {selectedState.complete ? 'Complete' : 'In progress'}
-                </span>
-              </div>
+            <div className="lms-lesson-panel">
+              <header className="lms-lesson-header" style={{ marginBottom: 24, paddingBottom: 20, borderBottom: `1px solid ${T.lineDark}` }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, flexWrap: 'wrap' }}>
+                  <div style={{ minWidth: 0, flex: '1 1 240px' }}>
+                    <div className="skylent-label" style={{ color: roleAccent.text, marginBottom: 8 }}>
+                      {course.title}
+                    </div>
+                    <h1 style={{ color: C.white, fontFamily: 'var(--font-display)', fontSize: 'clamp(20px, 2.5vw, 26px)', fontWeight: 600, margin: '0 0 8px', lineHeight: 1.25 }}>
+                      {selectedLesson.title}
+                    </h1>
+                    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
+                      <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                        {lessonTypeLabel(selectedLesson.type)}
+                      </span>
+                      {selectedLesson.duration && (
+                        <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.35)' }}>{selectedLesson.duration}</span>
+                      )}
+                      <span style={{ fontSize: 11, color: selectedState.complete ? '#22c55e' : 'rgba(255,255,255,0.35)' }}>
+                        {selectedState.complete ? 'Complete' : `${progressPct}% course progress`}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </header>
               {selectedState.locked ? (
                 <LockedLessonState
                   lessonTitle={selectedLesson.title}
@@ -290,6 +321,7 @@ export default function LearnPage() {
                   accent={{ ...tabAccent, text: roleAccent.text }}
                   onComplete={() => { void handleLessonComplete() }}
                   quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
+                  quizLoading={selectedLesson.type === 'quiz' ? quizLoading : false}
                   onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
                   onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
                   lessonMedia={lessonMedia}
@@ -304,8 +336,9 @@ export default function LearnPage() {
               />
             </div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.3)' }}>Select a lesson from the curriculum.</div>
+            <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--text-muted)' }}>Select a lesson from the curriculum.</div>
           )}
+          </div>
         </div>
       </div>
     </div>

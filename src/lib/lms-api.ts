@@ -115,6 +115,22 @@ async function lmsMutate<T>(path: string, body: Record<string, unknown>): Promis
   return parseJson<T>(response)
 }
 
+export type ApiEnrollment = {
+  id: string
+  status: string
+  courseSlug: string | null
+  courseTitle: string | null
+  programSlug: string | null
+  programName: string | null
+  certificateEligible: boolean
+  certificateStatus: string
+}
+
+export async function fetchEnrollments(): Promise<ApiEnrollment[]> {
+  const result = await lmsGet<{ data: ApiEnrollment[] }>("/lms/enrollments")
+  return result.data
+}
+
 export async function fetchLmsDashboard(): Promise<ApiCourseWorkspace | null> {
   const result = await lmsGet<{ data: ApiCourseWorkspace | null }>("/lms/dashboard")
   return result.data

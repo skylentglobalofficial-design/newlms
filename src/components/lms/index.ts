@@ -10,4 +10,8 @@ export {
   StudentProgressSurface,
   StudentActionRail,
 } from './StudentDashboard'
+export { default as LmsEmptyState, LmsInlineEmpty, LmsSectionShell } from './LmsEmptyState'
+export { default as CertificatePanel } from './CertificatePanel'
+export { default as EnrolledCoursesPanel } from './EnrolledCoursesPanel'
+export { default as CareerOsLinkPanel } from './CareerOsLinkPanel'
 export * from './lms-utils'

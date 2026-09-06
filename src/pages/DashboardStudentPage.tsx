@@ -1,10 +1,8 @@
-import { useState, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { C, T } from '../tokens'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useRequireRole } from '../hooks/useRequireRole'
-import { programs } from '../data'
 import {
   LearningWorkspacePanel,
   CurriculumProgressRail,
@@ -14,19 +12,24 @@ import {
   getPendingTasks,
   getRecentActivity,
 } from '../components/lms'
-import { useLmsDashboard } from '../hooks/useLms'
+import LmsEmptyState, { LmsSectionShell } from '../components/lms/LmsEmptyState'
+import EnrolledCoursesPanel from '../components/lms/EnrolledCoursesPanel'
+import CertificatePanel from '../components/lms/CertificatePanel'
+import CareerOsLinkPanel from '../components/lms/CareerOsLinkPanel'
+import { useLmsDashboard, useLmsEnrollments } from '../hooks/useLms'
 import { enrollInCourse } from '../lib/lms-api'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'student-overview' },
   { id: 'learning', label: 'My Learning', short: 'Learn', sectionId: 'student-learning' },
-  { id: 'courses', label: 'Courses', short: 'Courses', sectionId: 'student-curriculum' },
+  { id: 'courses', label: 'Courses', short: 'Courses', sectionId: 'student-courses' },
   { id: 'assignments', label: 'Assignments', short: 'Tasks', sectionId: 'student-rail' },
   { id: 'progress', label: 'Progress', short: 'Progress', sectionId: 'student-progress' },
   { id: 'career', label: 'Career OS', short: 'Career', href: '/career-os/app' },
-  { id: 'settings', label: 'Settings', short: 'Settings', sectionId: 'student-certificates' },
+  { id: 'certificate', label: 'Certificate', short: 'Cert', sectionId: 'student-certificates' },
 ]
 
+const BOTTOM_NAV = NAV_ITEMS.filter(n => ['overview', 'learning', 'assignments', 'progress', 'career'].includes(n.id))
 const accent = getRoleAccent('student')
 
 function NavIcon({ id }: { id: string }) {
@@ -38,21 +41,48 @@ function NavIcon({ id }: { id: string }) {
   if (id === 'assignments') return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
   if (id === 'progress') return <svg {...s}><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
   if (id === 'career') return <svg {...s}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-  return <svg {...s}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  if (id === 'certificate') return <svg {...s}><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+  return <svg {...s}><circle cx="12" cy="12" r="3"/></svg>
+}
+
+function StudentShell({
+  activeNav,
+  onNavChange,
+  children,
+}: {
+  activeNav: string
+  onNavChange: (id: string) => void
+  children: React.ReactNode
+}) {
+  return (
+    <AuthDashboardShell
+      themeId="data-science"
+      accent={accent}
+      workspaceLabel="Learning"
+      roleLabel="Learner"
+      navItems={NAV_ITEMS}
+      bottomNavItems={BOTTOM_NAV}
+      activeNav={activeNav}
+      onNavChange={onNavChange}
+      renderNavIcon={id => <NavIcon id={id} />}
+    >
+      {children}
+    </AuthDashboardShell>
+  )
 }
 
 export default function DashboardStudentPage() {
   const { user, ready, authorized } = useRequireRole('student')
-  const { workspace, course, lessonStates, loading, reload } = useLmsDashboard()
-  const navigate = useNavigate()
+  const { workspace, course, lessonStates, loading, error, reload } = useLmsDashboard()
+  const { enrollments, loading: enrollmentsLoading } = useLmsEnrollments()
   const [activeNav, setActiveNav] = useState('overview')
   const [enrolling, setEnrolling] = useState(false)
   const [enrollError, setEnrollError] = useState<string | null>(null)
 
   if (!ready || !authorized || !user) return null
 
-  const program = programs.find(p => p.slug === 'data-science-ai') ?? programs[0]
-  const programName = user.program || program?.name || 'Your program'
+  const programEnrollment = enrollments.find(e => e.programSlug && !e.courseSlug)
+  const programName = programEnrollment?.programName ?? 'Your learning path'
 
   const learnSlug = workspace?.course.slug ?? ''
   const allLessons = course?.modules.flatMap(m => m.lessons) ?? []
@@ -61,57 +91,38 @@ export default function DashboardStudentPage() {
   const resume = workspace?.resume
   const currentLesson = allLessons.find(l => l.id === resume?.lessonId)
   const pending = course ? getPendingTasks(course, lessonStates) : []
-  const recent = course
-    ? getRecentActivity([course], () => lessonStates)
-    : []
-
-  const activeProject = program?.projectsDetail?.[Math.min(workspace?.progress.completedCount ?? 0, (program?.projectsDetail?.length ?? 1) - 1)] ?? program?.projectsDetail?.[0]
+  const recent = course ? getRecentActivity([course], () => lessonStates) : []
 
   if (loading) {
     return (
-      <AuthDashboardShell
-        themeId="data-science"
-      accent={accent}
-        workspaceLabel="Learning"
-        roleLabel="Learner"
-        navItems={NAV_ITEMS}
-        bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'learning', 'assignments', 'progress', 'career'].includes(n.id))}
-        activeNav={activeNav}
-        onNavChange={setActiveNav}
-        renderNavIcon={id => <NavIcon id={id} />}
-      >
-        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Loading your learning workspace…</div>
-      </AuthDashboardShell>
+      <StudentShell activeNav={activeNav} onNavChange={setActiveNav}>
+        <div className="lms-dashboard-loading">Loading your learning workspace…</div>
+      </StudentShell>
+    )
+  }
+
+  if (error) {
+    return (
+      <StudentShell activeNav={activeNav} onNavChange={setActiveNav}>
+        <LmsEmptyState
+          title="Could not load your workspace"
+          description={error}
+          actionLabel="Try again"
+          onAction={() => { void reload() }}
+        />
+      </StudentShell>
     )
   }
 
   if (!course || !workspace) {
     return (
-      <AuthDashboardShell
-        themeId="data-science"
-      accent={accent}
-        workspaceLabel="Learning"
-        roleLabel="Learner"
-        navItems={NAV_ITEMS}
-        bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'learning', 'assignments', 'progress', 'career'].includes(n.id))}
-        activeNav={activeNav}
-        onNavChange={setActiveNav}
-        renderNavIcon={id => <NavIcon id={id} />}
-      >
-        <div id="student-overview" style={{ maxWidth: 560 }}>
-          <div style={{ color: C.white, fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, marginBottom: 12 }}>Start your learning journey</div>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.7, margin: '0 0 20px' }}>
-            Enroll in a course to open your learner dashboard, curriculum progress, and resume learning.
-          </p>
-          {enrollError && (
-            <p role="alert" style={{ color: 'rgba(255,255,255,0.72)', fontSize: 13, lineHeight: 1.6, margin: '0 0 16px' }}>
-              {enrollError} Please try again.
-            </p>
-          )}
-          <button
-            type="button"
-            disabled={enrolling}
-            onClick={() => {
+      <StudentShell activeNav={activeNav} onNavChange={setActiveNav}>
+        <div id="student-overview">
+          <LmsEmptyState
+            title="Start your learning journey"
+            description="Enroll in a course to open your learner dashboard, curriculum progress, and resume learning."
+            actionLabel={enrolling ? 'Enrolling…' : 'Enroll in Data Analytics'}
+            onAction={() => {
               setEnrollError(null)
               setEnrolling(true)
               void enrollInCourse('data-analytics')
@@ -121,18 +132,20 @@ export default function DashboardStudentPage() {
                 })
                 .finally(() => setEnrolling(false))
             }}
-            style={{ background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer', marginRight: 12 }}
-          >
-            {enrolling ? 'Enrolling…' : 'Enroll in Data Analytics'}
-          </button>
-          <Link to="/courses" style={{ color: accent.text, fontSize: 13, textDecoration: 'none' }}>Browse courses →</Link>
+            actionDisabled={enrolling}
+            actionHref={undefined}
+          />
+          {enrollError && (
+            <p role="alert" className="lms-dashboard-error">{enrollError} Please try again.</p>
+          )}
+          <Link to="/courses" className="lms-dashboard-browse" style={{ color: accent.text }}>Browse courses →</Link>
         </div>
-      </AuthDashboardShell>
+      </StudentShell>
     )
   }
 
   const pendingRail = pending.map(t => ({
-    label: t.kind === 'quiz' ? 'Practice' : t.kind === 'assignment' ? 'Assignment' : 'Lesson',
+    label: t.kind === 'quiz' ? 'Assessment' : t.kind === 'assignment' ? 'Assignment' : 'Lesson',
     title: t.title,
     detail: `${t.moduleTitle} · ${t.courseTitle}`,
     href: `/learn/${t.courseSlug}/${t.lessonId}`,
@@ -145,17 +158,7 @@ export default function DashboardStudentPage() {
   }))
 
   return (
-    <AuthDashboardShell
-      themeId="data-science"
-      accent={accent}
-      workspaceLabel="Learning"
-      roleLabel="Learner"
-      navItems={NAV_ITEMS}
-      bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'learning', 'assignments', 'progress', 'career'].includes(n.id))}
-      activeNav={activeNav}
-      onNavChange={setActiveNav}
-      renderNavIcon={id => <NavIcon id={id} />}
-    >
+    <StudentShell activeNav={activeNav} onNavChange={setActiveNav}>
       <div id="student-overview">
         <AuthDashboardLayout
           primary={
@@ -178,38 +181,41 @@ export default function DashboardStudentPage() {
                   accent={accent}
                 />
               </div>
+
+              <LmsSectionShell id="student-courses" label="Enrolled courses">
+                {enrollmentsLoading ? (
+                  <p className="lms-dashboard-loading-inline">Loading enrollments…</p>
+                ) : (
+                  <EnrolledCoursesPanel
+                    enrollments={enrollments}
+                    activeCourseSlug={learnSlug}
+                    accent={accent}
+                  />
+                )}
+              </LmsSectionShell>
+
               <CurriculumProgressRail course={course} lessonStates={lessonStates} accent={accent} learnSlug={learnSlug} />
               <StudentProgressSurface course={course} lessonStates={lessonStates} accent={accent} certificateReady={allComplete} />
-              <div id="student-certificates" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.32)', marginBottom: 10 }}>Certificate</div>
-                {workspace.enrollment.certificateEligible ? (
-                  <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-                    Eligible for certificate — status: {workspace.enrollment.certificateStatus}. Download will be available in a later phase.
-                  </p>
-                ) : allComplete ? (
-                  <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-                    Course complete — certificate eligibility is being finalized.
-                  </p>
-                ) : (
-                  <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: '0 0 12px', lineHeight: 1.6 }}>
-                    Complete all lessons to unlock certificate eligibility.
-                  </p>
-                )}
-                <Link to={`/learn/${learnSlug}/${resume?.lessonId ?? ''}`} style={{ color: accent.text, fontSize: 13, textDecoration: 'none' }}>Resume course →</Link>
-              </div>
+
+              <LmsSectionShell id="student-certificates" label="Certificate">
+                <CertificatePanel
+                  courseSlug={learnSlug}
+                  lessonId={resume?.lessonId ?? allLessons[0]?.id ?? ''}
+                  accent={accent}
+                />
+              </LmsSectionShell>
             </>
           }
           rail={
             <StudentActionRail
               pendingTasks={pendingRail}
               recentActivity={recentRail}
-              projectTitle={activeProject?.title ?? 'Capstone project'}
-              projectWhat={activeProject?.what ?? 'Portfolio artifact from your program.'}
               accent={accent}
+              careerPanel={<CareerOsLinkPanel accent={accent} />}
             />
           }
         />
       </div>
-    </AuthDashboardShell>
+    </StudentShell>
   )
 }

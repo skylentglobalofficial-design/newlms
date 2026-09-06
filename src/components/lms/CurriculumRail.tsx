@@ -26,7 +26,7 @@ export default function CurriculumRail({
   return (
     <div className="lms-curriculum-rail">
       <div style={{ padding: '20px', borderBottom: `1px solid ${T.lineDark}` }}>
-        <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 12 }}>
+        <Link to="/dashboard/student" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 12 }}>
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 18, color: C.white }}>
             Skylent<span style={{ color: accent.primary }}>.</span>
           </span>
