@@ -1063,6 +1063,66 @@ html, body {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
+  margin-bottom: 28px;
+}
+
+.education-pathway-description {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 12px 0 0;
+  max-width: 560px;
+}
+
+.education-pathway-meta-value {
+  color: #fff;
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 6px 0 0;
+}
+
+.education-catalog-pattern {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0 0 12px;
+}
+
+.education-catalog-sections {
+  margin-bottom: 12px;
+}
+
+.education-prep-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.education-prep-list li {
+  position: relative;
+  padding-left: 16px;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.education-prep-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(129, 140, 248, 0.85);
+}
+
+.pathway-explorer-select:focus-visible {
+  outline: 2px solid rgba(129, 140, 248, 0.85);
+  outline-offset: 2px;
 }
 
 .ecosystem-map-grid,
