@@ -209,6 +209,28 @@ async function seedQuizQuestions() {
   console.log(`Seeded quiz questions for ${quizNodes.length} quiz nodes`)
 }
 
+async function seedProgramCourses() {
+  const links: Array<{ programSlug: string; courseSlug: string; sortOrder: number }> = [
+    { programSlug: "data-analytics-pro", courseSlug: "data-analytics", sortOrder: 0 },
+    { programSlug: "data-science-ai", courseSlug: "data-analytics", sortOrder: 0 },
+    { programSlug: "data-science-ai", courseSlug: "python-programming", sortOrder: 1 },
+  ]
+
+  for (const link of links) {
+    const program = await prisma.program.findUnique({ where: { slug: link.programSlug }, select: { id: true } })
+    const course = await prisma.course.findUnique({ where: { slug: link.courseSlug }, select: { id: true } })
+    if (!program || !course) continue
+
+    await prisma.programCourse.upsert({
+      where: { programId_courseId: { programId: program.id, courseId: course.id } },
+      update: { sortOrder: link.sortOrder },
+      create: { programId: program.id, courseId: course.id, sortOrder: link.sortOrder },
+    })
+  }
+
+  console.log(`Linked ${links.length} program-course relationships`)
+}
+
 async function main() {
   for (const program of programs) await seedProgram(program)
   for (const course of courses) await seedCourse(course)
@@ -216,6 +238,10 @@ async function main() {
 
   console.log("Seeding quiz questions...")
   await seedQuizQuestions()
+
+  console.log("Seeding program-course links...")
+  await seedProgramCourses()
+
   console.log("Seed complete.")
 }
 

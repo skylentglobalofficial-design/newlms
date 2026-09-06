@@ -17,6 +17,12 @@ export type FormattedLesson = {
   title: string
   type: string | null
   duration?: string
+  locked?: boolean
+  requiredLessonKey?: string | null
+  media?: {
+    provider: "mux" | "unavailable"
+    playbackId?: string
+  }
 }
 
 export type FormattedModule = {
@@ -28,6 +34,8 @@ export type FormattedModule = {
 export type LessonStatePayload = {
   started: boolean
   complete: boolean
+  locked: boolean
+  requiredLessonKey?: string | null
   videoWatched: boolean
   quizPassed: boolean
   assignmentSubmitted: boolean
@@ -96,16 +104,32 @@ export function moduleKey(module: CurriculumModule): string {
   return module.sourceId ?? `m${module.order + 1}`
 }
 
-export function formatCourseModules(course: CourseWithCurriculum): FormattedModule[] {
+export function formatCourseModules(
+  course: CourseWithCurriculum,
+  lessonStates: Record<LessonKey, LessonStatePayload>,
+): FormattedModule[] {
   return course.curriculum.map((module) => ({
     id: moduleKey(module),
     title: module.title,
-    lessons: module.nodes.map((node) => ({
-      id: lessonKey(node),
-      title: node.title,
-      type: nodeTypeKey(node.nodeType),
-      duration: node.duration ?? undefined,
-    })),
+    lessons: module.nodes.map((node) => {
+      const key = lessonKey(node)
+      const state = lessonStates[key]
+      const media =
+        nodeTypeKey(node.nodeType) === "video"
+          ? node.muxPlaybackId
+            ? { provider: "mux" as const, playbackId: node.muxPlaybackId }
+            : { provider: "unavailable" as const }
+          : undefined
+      return {
+        id: key,
+        title: node.title,
+        type: nodeTypeKey(node.nodeType),
+        duration: node.duration ?? undefined,
+        locked: state?.locked ?? false,
+        requiredLessonKey: state?.requiredLessonKey ?? null,
+        media,
+      }
+    }),
   }))
 }
 
@@ -154,7 +178,7 @@ export async function findNodeByLessonKey(course: CourseWithCurriculum, key: Les
   return null
 }
 
-export async function getActiveEnrollment(userId: string, courseId: string) {
+export async function getActiveCourseEnrollment(userId: string, courseId: string) {
   return prisma.userEnrollment.findFirst({
     where: {
       userId,
@@ -164,8 +188,33 @@ export async function getActiveEnrollment(userId: string, courseId: string) {
   })
 }
 
-export async function getPrimaryEnrollment(userId: string) {
+export async function getProgramEnrollmentForCourse(userId: string, courseId: string) {
   return prisma.userEnrollment.findFirst({
+    where: {
+      userId,
+      programId: { not: null },
+      status: { in: ["active", "completed"] },
+      program: {
+        programCourses: { some: { courseId } },
+      },
+    },
+  })
+}
+
+export async function resolveCourseEnrollment(userId: string, courseId: string) {
+  const direct = await getActiveCourseEnrollment(userId, courseId)
+  if (direct) return direct
+
+  return getProgramEnrollmentForCourse(userId, courseId)
+}
+
+/** @deprecated use resolveCourseEnrollment */
+export async function getActiveEnrollment(userId: string, courseId: string) {
+  return resolveCourseEnrollment(userId, courseId)
+}
+
+export async function getPrimaryEnrollment(userId: string) {
+  const courseEnrollment = await prisma.userEnrollment.findFirst({
     where: {
       userId,
       status: { in: ["active", "completed"] },
@@ -177,6 +226,35 @@ export async function getPrimaryEnrollment(userId: string) {
       lastAccessedNode: true,
     },
   })
+  if (courseEnrollment) return courseEnrollment
+
+  const programEnrollment = await prisma.userEnrollment.findFirst({
+    where: {
+      userId,
+      status: { in: ["active", "completed"] },
+      programId: { not: null },
+    },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      program: {
+        include: {
+          programCourses: {
+            orderBy: { sortOrder: "asc" },
+            include: { course: { include: courseInclude } },
+          },
+        },
+      },
+      lastAccessedNode: true,
+    },
+  })
+
+  if (!programEnrollment?.program?.programCourses[0]?.course) return null
+
+  const primaryCourse = programEnrollment.program.programCourses[0].course
+  return {
+    ...programEnrollment,
+    course: primaryCourse,
+  }
 }
 
 function buildLessonState(
@@ -184,6 +262,7 @@ function buildLessonState(
   progress: LessonProgress | undefined,
   quizAttempts: QuizAttempt[],
   assignment: AssignmentProgress | undefined,
+  lock: { locked: boolean; requiredLessonKey?: string | null },
 ): LessonStatePayload {
   const complete = Boolean(progress?.completedAt)
   const quizPassed = quizAttempts.some((a) => a.passed)
@@ -192,6 +271,8 @@ function buildLessonState(
   return {
     started: Boolean(progress?.startedAt),
     complete,
+    locked: lock.locked,
+    requiredLessonKey: lock.requiredLessonKey ?? null,
     videoWatched: nodeTypeKey(node.nodeType) === "video" ? complete : false,
     quizPassed: nodeTypeKey(node.nodeType) === "quiz" ? quizPassed || complete : false,
     assignmentSubmitted: nodeTypeKey(node.nodeType) === "assignment" ? assignmentSubmitted || complete : false,
@@ -199,6 +280,49 @@ function buildLessonState(
     completedAt: progress?.completedAt?.toISOString(),
     lastAccessedAt: progress?.lastAccessedAt?.toISOString(),
   }
+}
+
+export function computeLessonLocks(
+  course: CourseWithCurriculum,
+  lessonStates: Record<LessonKey, Pick<LessonStatePayload, "complete">>,
+): Record<LessonKey, { locked: boolean; requiredLessonKey?: string | null }> {
+  const items = flattenNodes(course)
+  const locks: Record<LessonKey, { locked: boolean; requiredLessonKey?: string | null }> = {}
+
+  items.forEach((item, index) => {
+    if (index === 0) {
+      locks[item.lessonKey] = { locked: false }
+      return
+    }
+    const previous = items[index - 1]
+    const previousComplete = lessonStates[previous.lessonKey]?.complete ?? false
+    locks[item.lessonKey] = {
+      locked: !previousComplete,
+      requiredLessonKey: previousComplete ? null : previous.lessonKey,
+    }
+  })
+
+  return locks
+}
+
+export function assertLessonUnlocked(
+  course: CourseWithCurriculum,
+  lessonKeyValue: LessonKey,
+  lessonStates: Record<LessonKey, LessonStatePayload>,
+) {
+  const state = lessonStates[lessonKeyValue]
+  if (state?.locked) {
+    return {
+      ok: false as const,
+      status: 403,
+      body: {
+        error: "Lesson locked",
+        reason: "previous_incomplete",
+        requiredLessonKey: state.requiredLessonKey ?? null,
+      },
+    }
+  }
+  return { ok: true as const }
 }
 
 export function computeProgress(
@@ -285,6 +409,16 @@ export async function loadLessonStates(
   }
   const assignmentByNode = new Map(assignments.map((row) => [row.nodeId, row]))
 
+  const baseStates: Record<LessonKey, Pick<LessonStatePayload, "complete">> = {}
+  for (const item of flattenNodes(course)) {
+    const progress = progressByNode.get(item.node.id)
+    const quizPassed = (attemptsByNode.get(item.node.id) ?? []).some((a) => a.passed)
+    const assignmentSubmitted = assignmentByNode.get(item.node.id)?.status === "submitted"
+    const complete = Boolean(progress?.completedAt) || quizPassed || assignmentSubmitted
+    baseStates[item.lessonKey] = { complete }
+  }
+
+  const locks = computeLessonLocks(course, baseStates)
   const lessonStates: Record<LessonKey, LessonStatePayload> = {}
   for (const item of flattenNodes(course)) {
     lessonStates[item.lessonKey] = buildLessonState(
@@ -292,6 +426,7 @@ export async function loadLessonStates(
       progressByNode.get(item.node.id),
       attemptsByNode.get(item.node.id) ?? [],
       assignmentByNode.get(item.node.id),
+      locks[item.lessonKey] ?? { locked: false },
     )
   }
 
@@ -319,7 +454,7 @@ export async function buildCourseWorkspace(
     course: {
       slug: enrollment.course.slug,
       title: enrollment.course.title,
-      modules: formatCourseModules(enrollment.course),
+      modules: formatCourseModules(enrollment.course, lessonStates),
     },
     lessonStates,
     progress,
@@ -327,15 +462,31 @@ export async function buildCourseWorkspace(
   }
 }
 
-export async function syncCertificateState(enrollmentId: string) {
+export async function syncCertificateState(enrollmentId: string, courseId?: string) {
   const enrollment = await prisma.userEnrollment.findUnique({
     where: { id: enrollmentId },
-    include: { course: { include: courseInclude } },
+    include: {
+      course: { include: courseInclude },
+      program: {
+        include: {
+          programCourses: {
+            orderBy: { sortOrder: "asc" },
+            include: { course: { include: courseInclude } },
+          },
+        },
+      },
+    },
   })
-  if (!enrollment?.course) return
 
-  const lessonStates = await loadLessonStates(enrollment, enrollment.course)
-  const { allComplete } = computeProgress(enrollment.course, lessonStates)
+  const course =
+    enrollment?.course ??
+    (courseId
+      ? await prisma.course.findUnique({ where: { id: courseId }, include: courseInclude })
+      : enrollment?.program?.programCourses[0]?.course)
+  if (!enrollment || !course) return
+
+  const lessonStates = await loadLessonStates(enrollment, course)
+  const { allComplete } = computeProgress(course, lessonStates)
 
   await prisma.userEnrollment.update({
     where: { id: enrollmentId },
@@ -345,4 +496,33 @@ export async function syncCertificateState(enrollmentId: string) {
       status: allComplete ? "completed" : "active",
     },
   })
+}
+
+export async function findProgramBySlug(slug: string) {
+  return prisma.program.findUnique({
+    where: { slug },
+    include: {
+      programCourses: {
+        orderBy: { sortOrder: "asc" },
+        include: { course: { include: courseInclude } },
+      },
+    },
+  })
+}
+
+export async function getCourseIdsForProgram(programId: string) {
+  const links = await prisma.programCourse.findMany({
+    where: { programId },
+    orderBy: { sortOrder: "asc" },
+    select: { courseId: true },
+  })
+  return links.map((link) => link.courseId)
+}
+
+export function formatVideoMedia(node: CurriculumNode) {
+  if (nodeTypeKey(node.nodeType) !== "video") return null
+  if (node.muxPlaybackId) {
+    return { provider: "mux" as const, playbackId: node.muxPlaybackId }
+  }
+  return { provider: "unavailable" as const }
 }

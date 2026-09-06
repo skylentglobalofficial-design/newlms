@@ -7,6 +7,8 @@ export type CourseLesson = {
   type: 'video' | 'notes' | 'quiz' | 'assignment'
   duration?: string
   completed: boolean
+  locked?: boolean
+  media?: { provider: 'mux' | 'unavailable'; playbackId?: string }
 }
 
 export type CourseModule = {

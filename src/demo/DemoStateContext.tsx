@@ -146,4 +146,5 @@ export const EMPTY_LESSON_STATE = {
   quizPassed: false,
   assignmentSubmitted: false,
   complete: false,
+  locked: false,
 }

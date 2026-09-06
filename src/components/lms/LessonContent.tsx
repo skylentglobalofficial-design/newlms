@@ -2,7 +2,8 @@ import { Link } from 'react-router-dom'
 import { C, T } from '../../tokens'
 import type { CourseLesson } from '../../data'
 import type { LessonState } from '../../demo/types'
-import MuxVideoPlaceholder from './MuxVideoPlaceholder'
+import LessonVideoPlayer from './LessonVideoPlayer'
+import type { VideoPlaybackSource } from '../../lib/media/types'
 import { AssessmentSurface, type QuizQuestion } from './AssessmentSurface'
 import { lessonTypeLabel } from './lms-utils'
 
@@ -16,6 +17,7 @@ export function LessonContentView({
   quizQuestions,
   onQuizSubmit,
   onAssignmentSubmit,
+  lessonMedia,
 }: {
   lesson: CourseLesson
   lessonState: LessonState
@@ -24,6 +26,7 @@ export function LessonContentView({
   quizQuestions?: QuizQuestion[]
   onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
   onAssignmentSubmit?: (text: string) => Promise<void>
+  lessonMedia?: VideoPlaybackSource
 }) {
   if (lesson.type === 'video') {
     return (
@@ -35,7 +38,8 @@ export function LessonContentView({
           </div>
           {lesson.duration && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{lesson.duration}</span>}
         </div>
-        <MuxVideoPlaceholder
+        <LessonVideoPlayer
+          media={lessonMedia}
           title={lesson.title}
           duration={lesson.duration}
           watched={lessonState.complete || lessonState.videoWatched}

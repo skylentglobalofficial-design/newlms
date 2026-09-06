@@ -10,6 +10,8 @@ type ApiError = { error: string }
 export type ApiLessonState = {
   started: boolean
   complete: boolean
+  locked: boolean
+  requiredLessonKey?: string | null
   videoWatched: boolean
   quizPassed: boolean
   assignmentSubmitted: boolean
@@ -23,6 +25,7 @@ export type ApiCourseLesson = {
   title: string
   type: string | null
   duration?: string
+  media?: { provider: "mux" | "unavailable"; playbackId?: string }
 }
 
 export type ApiCourseModule = {
@@ -132,6 +135,23 @@ export async function enrollInCourse(courseSlug: string): Promise<ApiCourseWorks
   return result.data
 }
 
+export async function enrollInProgram(programSlug: string): Promise<ApiCourseWorkspace> {
+  const result = await lmsMutate<{ data: ApiCourseWorkspace }>("/lms/enrollments", { programSlug })
+  return result.data
+}
+
+export async function fetchLessonMedia(slug: string, lessonKey: string) {
+  const result = await lmsGet<{
+    data: {
+      lessonKey: string
+      title: string
+      duration?: string | null
+      media: { provider: "mux" | "unavailable"; playbackId?: string }
+    }
+  }>(`/lms/courses/${slug}/lessons/${lessonKey}/media`)
+  return result.data
+}
+
 export async function markLessonAccess(slug: string, lessonKey: string) {
   return lmsMutate<{ data: { lessonKey: string; state: ApiLessonState } }>(
     `/lms/courses/${slug}/lessons/${lessonKey}/progress`,
@@ -200,6 +220,8 @@ export function apiLessonStateToUi(state: ApiLessonState) {
     quizPassed: state.quizPassed,
     assignmentSubmitted: state.assignmentSubmitted,
     complete: state.complete,
+    locked: state.locked,
+    requiredLessonKey: state.requiredLessonKey ?? null,
   }
 }
 
@@ -216,6 +238,8 @@ export function workspaceToCourse(workspace: ApiCourseWorkspace): LmsCourseView 
         type: (lesson.type ?? "video") as "video" | "notes" | "quiz" | "assignment",
         duration: lesson.duration,
         completed: workspace.lessonStates[lesson.id]?.complete ?? false,
+        locked: workspace.lessonStates[lesson.id]?.locked ?? false,
+        media: lesson.media,
       })),
     })),
   }
