@@ -333,7 +333,44 @@ async function main() {
       "Other user should not see owner practice",
     )
 
-    console.log("17. Support request creation works")
+    console.log("17. Resume storage metadata is server-controlled")
+    const resumeCreate = await request(jarA, "/career/profile/resumes", {
+      method: "POST",
+      csrf: true,
+      body: { label: "Primary resume" },
+    })
+    assert(resumeCreate.response.status === 201, "Resume create failed")
+    const resumeId = resumeCreate.data.data.id
+    assert(resumeCreate.data.data.storageProvider === null, "Resume storageProvider should be null on create")
+    assert(resumeCreate.data.data.storageKey === null, "Resume storageKey should be null on create")
+
+    const resumeWithFakeStorage = await request(jarA, "/career/profile/resumes", {
+      method: "POST",
+      csrf: true,
+      body: {
+        label: "Probe resume",
+        storageProvider: "FAKE_PROVIDER",
+        storageKey: "arbitrary/fake/path.pdf",
+      },
+    })
+    assert(resumeWithFakeStorage.response.status === 201, "Resume create with extra storage fields should still succeed")
+    const probeResumeId = resumeWithFakeStorage.data.data.id
+    assert(resumeWithFakeStorage.data.data.storageProvider === null, "Client cannot set storageProvider")
+    assert(resumeWithFakeStorage.data.data.storageKey === null, "Client cannot set storageKey")
+
+    const resumeList = await request(jarA, "/career/profile/resumes")
+    const listedProbe = resumeList.data.data.find((r: { id: string }) => r.id === probeResumeId)
+    assert(listedProbe?.storageProvider === null, "Listed resume must not persist client storageProvider")
+    assert(listedProbe?.storageKey === null, "Listed resume must not persist client storageKey")
+
+    const resumeDelete = await request(jarA, `/career/profile/resumes/${probeResumeId}`, { method: "DELETE", csrf: true })
+    assert(resumeDelete.response.ok, "Resume delete failed")
+
+    const crossResumeDelete = await request(jarB, `/career/profile/resumes/${resumeId}`, { method: "DELETE", csrf: true })
+    assert(crossResumeDelete.response.status === 404, "Cross-user resume delete should be forbidden")
+    await request(jarA, `/career/profile/resumes/${resumeId}`, { method: "DELETE", csrf: true })
+
+    console.log("18. Support request creation works")
     const support = await request(jarA, "/career/support", {
       method: "POST",
       csrf: true,
@@ -345,7 +382,7 @@ async function main() {
     })
     assert(support.response.status === 201, "Support request create failed")
 
-    console.log("18. Another user cannot access private career resources")
+    console.log("19. Another user cannot access private career resources")
     const crossApp = await request(jarB, `/career/applications/${applicationId}`)
     assert(crossApp.response.status === 404, "Cross-user application access should be forbidden")
     const crossSupport = await request(jarB, `/career/support/${support.data.data.id}`)

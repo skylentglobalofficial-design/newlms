@@ -580,8 +580,6 @@ export type CreateResumeInput = {
   fileName?: string | null
   mimeType?: string | null
   byteSize?: number | null
-  storageProvider?: string | null
-  storageKey?: string | null
   notes?: string | null
   status?: "DRAFT" | "ACTIVE" | "ARCHIVED"
   isPrimary?: boolean
