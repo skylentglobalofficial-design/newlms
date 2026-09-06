@@ -15,8 +15,11 @@ import {
   lessonTypeLabel,
 } from '../components/lms/lms-utils'
 import { useLmsCourse } from '../hooks/useLms'
+import LockedLessonState from '../components/lms/LockedLessonState'
+import type { VideoPlaybackSource } from '../lib/media/types'
 import {
   fetchCourseWorkspace,
+  fetchLessonMedia,
   fetchQuizQuestions,
   markLessonAccess,
   markLessonComplete,
@@ -50,6 +53,7 @@ export default function LearnPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showCertificate, setShowCertificate] = useState(false)
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
+  const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
   const [enrolling, setEnrolling] = useState(false)
 
   useEffect(() => {
@@ -72,6 +76,12 @@ export default function LearnPage() {
     if (!slug || access.status !== 'ready' || !selectedLessonId) return
     const lesson = allLessons.find(l => l.id === selectedLessonId)
     if (!lesson) return
+    const state = lessonStates[selectedLessonId]
+    if (state?.locked) {
+      setQuizQuestions([])
+      setLessonMedia(undefined)
+      return
+    }
 
     void markLessonAccess(slug, selectedLessonId).catch(() => undefined)
 
@@ -82,7 +92,15 @@ export default function LearnPage() {
     } else {
       setQuizQuestions([])
     }
-  }, [slug, access.status, selectedLessonId, allLessons])
+
+    if (lesson.type === 'video') {
+      fetchLessonMedia(slug, selectedLessonId)
+        .then((payload) => setLessonMedia(payload.media))
+        .catch(() => setLessonMedia(lesson.media ?? { provider: 'unavailable' }))
+    } else {
+      setLessonMedia(undefined)
+    }
+  }, [slug, access.status, selectedLessonId, allLessons, lessonStates])
 
   const refreshWorkspace = useCallback(async () => {
     if (!slug) return
@@ -171,6 +189,8 @@ export default function LearnPage() {
           quizPassed: state.quizPassed,
           assignmentSubmitted: state.assignmentSubmitted,
           complete: state.complete,
+          locked: state.locked,
+          requiredLessonKey: state.requiredLessonKey ?? null,
         },
       ]),
     )
@@ -253,15 +273,28 @@ export default function LearnPage() {
                   {selectedState.complete ? 'Complete' : 'In progress'}
                 </span>
               </div>
-              <LessonContentView
-                lesson={selectedLesson}
-                lessonState={selectedState}
-                accent={{ ...tabAccent, text: roleAccent.text }}
-                onComplete={() => { void handleLessonComplete() }}
-                quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
-                onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
-                onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
-              />
+              {selectedState.locked ? (
+                <LockedLessonState
+                  lessonTitle={selectedLesson.title}
+                  requiredLessonTitle={
+                    selectedState.requiredLessonKey
+                      ? allLessons.find((lesson) => lesson.id === selectedState.requiredLessonKey)?.title
+                      : null
+                  }
+                  accent={{ ...tabAccent, text: roleAccent.text }}
+                />
+              ) : (
+                <LessonContentView
+                  lesson={selectedLesson}
+                  lessonState={selectedState}
+                  accent={{ ...tabAccent, text: roleAccent.text }}
+                  onComplete={() => { void handleLessonComplete() }}
+                  quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
+                  onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
+                  onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
+                  lessonMedia={lessonMedia}
+                />
+              )}
               <LessonNavigation
                 prev={prev}
                 next={next && isLessonUnlocked(next.id, allLessons, lessonStates) ? next : null}

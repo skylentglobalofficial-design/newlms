@@ -8,16 +8,20 @@ import {
   requireCsrf,
   type AuthenticatedRequest,
 } from "../lib/auth.js"
+import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
 import {
+  assertLessonUnlocked,
   buildCourseWorkspace,
   computeResume,
   findCourseBySlug,
   findNodeByLessonKey,
+  findProgramBySlug,
   flattenNodes,
-  getActiveEnrollment,
+  formatVideoMedia,
   getPrimaryEnrollment,
   lessonKey,
   loadLessonStates,
+  resolveCourseEnrollment,
   syncCertificateState,
 } from "../lib/lms.js"
 
@@ -35,12 +39,30 @@ const lessonKeySchema = z.object({
   lessonKey: z.string().min(1).max(40),
 })
 
-const enrollSchema = z.object({
-  courseSlug: z
-    .string()
-    .min(1)
-    .max(120)
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+const enrollSchema = z
+  .object({
+    courseSlug: z
+      .string()
+      .min(1)
+      .max(120)
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+      .optional(),
+    programSlug: z
+      .string()
+      .min(1)
+      .max(120)
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+      .optional(),
+  })
+  .refine((data) => Boolean(data.courseSlug ?? data.programSlug), {
+    message: "courseSlug or programSlug is required",
+    path: ["courseSlug"],
+  })
+
+const attachmentSchema = z.object({
+  fileName: z.string().min(1).max(255),
+  mimeType: z.string().min(1).max(120),
+  byteSize: z.number().int().min(1).max(50_000_000),
 })
 
 const progressPatchSchema = z.object({
@@ -54,10 +76,20 @@ const quizAttemptSchema = z.object({
 const assignmentPatchSchema = z.object({
   action: z.enum(["start", "submit"]),
   responseText: z.string().max(10000).optional(),
+  attachments: z.array(attachmentSchema).max(5).optional(),
 })
 
 async function requireEnrollment(userId: string, courseId: string) {
-  return getActiveEnrollment(userId, courseId)
+  return resolveCourseEnrollment(userId, courseId)
+}
+
+async function loadCourseContext(userId: string, courseSlug: string) {
+  const course = await findCourseBySlug(courseSlug)
+  if (!course) return { error: "not_found" as const }
+  const enrollment = await requireEnrollment(userId, course.id)
+  if (!enrollment) return { error: "forbidden" as const, course }
+  const lessonStates = await loadLessonStates(enrollment, course)
+  return { course, enrollment, lessonStates }
 }
 
 lmsRouter.get("/dashboard", requireAuth, async (req: AuthenticatedRequest, res) => {
@@ -118,38 +150,47 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
   }
 
   try {
-    const course = await findCourseBySlug(parsed.data.courseSlug)
-    if (!course) {
-      return res.status(404).json({ error: "Course not found" })
+    const userId = req.auth!.user.id
+
+    if (parsed.data.programSlug) {
+      const program = await findProgramBySlug(parsed.data.programSlug)
+      if (!program) return res.status(404).json({ error: "Program not found" })
+      if (program.programCourses.length === 0) {
+        return res.status(400).json({ error: "Program has no linked courses" })
+      }
+
+      const existing = await prisma.userEnrollment.findUnique({
+        where: { userId_programId: { userId, programId: program.id } },
+      })
+      const primaryCourse = program.programCourses[0].course
+      if (existing) {
+        const workspace = await buildCourseWorkspace({ ...existing, course: primaryCourse })
+        return res.json({ data: workspace })
+      }
+
+      const enrollment = await prisma.userEnrollment.create({
+        data: { userId, programId: program.id, status: "active" },
+      })
+      const workspace = await buildCourseWorkspace({ ...enrollment, course: primaryCourse })
+      return res.status(201).json({ data: workspace })
     }
 
-    const userId = req.auth!.user.id
+    const course = await findCourseBySlug(parsed.data.courseSlug!)
+    if (!course) return res.status(404).json({ error: "Course not found" })
+
     const existing = await prisma.userEnrollment.findUnique({
       where: { userId_courseId: { userId, courseId: course.id } },
     })
-
     if (existing) {
-      const full = await prisma.userEnrollment.findUnique({
-        where: { id: existing.id },
-        include: { course: { include: { curriculum: { include: { nodes: true } } } } },
-      })
-      const workspace = full ? await buildCourseWorkspace(full) : null
+      const workspace = await buildCourseWorkspace({ ...existing, course })
       return res.json({ data: workspace })
     }
 
     const enrollment = await prisma.userEnrollment.create({
-      data: {
-        userId,
-        courseId: course.id,
-        status: "active",
-      },
-      include: {
-        course: { include: { curriculum: { include: { nodes: { orderBy: { order: "asc" } } }, orderBy: { order: "asc" } } } },
-      },
+      data: { userId, courseId: course.id, status: "active" },
     })
-
-    const workspace = await buildCourseWorkspace(enrollment)
-    res.status(201).json({ data: workspace })
+    const workspace = await buildCourseWorkspace({ ...enrollment, course })
+    return res.status(201).json({ data: workspace })
   } catch (error) {
     console.error("Failed to enroll:", error)
     res.status(500).json({ error: "Failed to enroll" })
@@ -227,14 +268,7 @@ lmsRouter.get("/courses/:slug", requireAuth, async (req: AuthenticatedRequest, r
       return res.status(403).json({ error: "Not enrolled in this course" })
     }
 
-    const full = await prisma.userEnrollment.findUnique({
-      where: { id: enrollment.id },
-      include: {
-        course: { include: { curriculum: { include: { nodes: { orderBy: { order: "asc" } } }, orderBy: { order: "asc" } } } },
-      },
-    })
-
-    const workspace = full ? await buildCourseWorkspace(full) : null
+    const workspace = await buildCourseWorkspace({ ...enrollment, course })
     res.json({ data: workspace })
   } catch (error) {
     console.error("Failed to load course workspace:", error)
@@ -291,6 +325,10 @@ lmsRouter.post(
       const located = await findNodeByLessonKey(course, lessonParsed.data.lessonKey)
       if (!located) return res.status(404).json({ error: "Lesson not found" })
 
+      const lessonStates = await loadLessonStates(enrollment, course)
+      const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
+      if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
+
       const now = new Date()
       const isComplete = bodyParsed.data.action === "complete"
 
@@ -317,14 +355,14 @@ lmsRouter.post(
       })
 
       if (isComplete) {
-        await syncCertificateState(enrollment.id)
+        await syncCertificateState(enrollment.id, course.id)
       }
 
-      const lessonStates = await loadLessonStates(enrollment, course)
+      const updatedStates = await loadLessonStates(enrollment, course)
       res.json({
         data: {
           lessonKey: lessonParsed.data.lessonKey,
-          state: lessonStates[lessonParsed.data.lessonKey],
+          state: updatedStates[lessonParsed.data.lessonKey],
           progress: progress.completedAt
             ? { completedAt: progress.completedAt.toISOString() }
             : { lastAccessedAt: progress.lastAccessedAt.toISOString() },
@@ -358,6 +396,10 @@ lmsRouter.get(
       if (!located || located.node.nodeType !== CurriculumNodeType.QUIZ) {
         return res.status(404).json({ error: "Quiz lesson not found" })
       }
+
+      const lessonStates = await loadLessonStates(enrollment, course)
+      const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
+      if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
 
       const questions = await prisma.quizQuestion.findMany({
         where: { nodeId: located.node.id },
@@ -404,6 +446,10 @@ lmsRouter.post(
       if (!located || located.node.nodeType !== CurriculumNodeType.QUIZ) {
         return res.status(404).json({ error: "Quiz lesson not found" })
       }
+
+      const lessonStates = await loadLessonStates(enrollment, course)
+      const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
+      if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
 
       const questions = await prisma.quizQuestion.findMany({
         where: { nodeId: located.node.id },
@@ -462,7 +508,7 @@ lmsRouter.post(
           where: { id: enrollment.id },
           data: { lastAccessedNodeId: located.node.id },
         })
-        await syncCertificateState(enrollment.id)
+        await syncCertificateState(enrollment.id, course.id)
       } else {
         await prisma.lessonProgress.upsert({
           where: {
@@ -517,10 +563,15 @@ lmsRouter.get(
         return res.status(404).json({ error: "Assignment lesson not found" })
       }
 
+      const lessonStates = await loadLessonStates(enrollment, course)
+      const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
+      if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
+
       const assignment = await prisma.assignmentProgress.findUnique({
         where: {
           enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
         },
+        include: { attachments: true },
       })
 
       res.json({
@@ -528,6 +579,13 @@ lmsRouter.get(
           lessonKey: lessonParsed.data.lessonKey,
           status: assignment?.status ?? "not_started",
           submittedAt: assignment?.submittedAt?.toISOString() ?? null,
+          attachments: assignment?.attachments.map((file) => ({
+            id: file.id,
+            fileName: file.fileName,
+            mimeType: file.mimeType,
+            byteSize: file.byteSize,
+            storageProvider: file.storageProvider,
+          })) ?? [],
         },
       })
     } catch (error) {
@@ -561,10 +619,16 @@ lmsRouter.post(
         return res.status(404).json({ error: "Assignment lesson not found" })
       }
 
+      const lessonStates = await loadLessonStates(enrollment, course)
+      const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
+      if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
+
       const now = new Date()
       const isSubmit = bodyParsed.data.action === "submit"
-      if (isSubmit && !bodyParsed.data.responseText?.trim()) {
-        return res.status(400).json({ error: "Response text is required to submit" })
+      const hasText = Boolean(bodyParsed.data.responseText?.trim())
+      const hasAttachments = Boolean(bodyParsed.data.attachments?.length)
+      if (isSubmit && !hasText && !hasAttachments) {
+        return res.status(400).json({ error: "Response text or attachment metadata is required to submit" })
       }
 
       const assignment = await prisma.assignmentProgress.upsert({
@@ -585,6 +649,16 @@ lmsRouter.post(
           submittedAt: isSubmit ? now : undefined,
         },
       })
+
+      if (isSubmit && bodyParsed.data.attachments?.length) {
+        await prisma.assignmentAttachment.deleteMany({ where: { assignmentProgressId: assignment.id } })
+        await prisma.assignmentAttachment.createMany({
+          data: bodyParsed.data.attachments.map((file) => ({
+            assignmentProgressId: assignment.id,
+            ...buildPendingAttachmentRecord(assignment.id, file),
+          })),
+        })
+      }
 
       if (isSubmit) {
         await prisma.lessonProgress.upsert({
@@ -607,7 +681,7 @@ lmsRouter.post(
           where: { id: enrollment.id },
           data: { lastAccessedNodeId: located.node.id },
         })
-        await syncCertificateState(enrollment.id)
+        await syncCertificateState(enrollment.id, course.id)
       } else {
         await prisma.lessonProgress.upsert({
           where: {
@@ -633,6 +707,47 @@ lmsRouter.post(
     } catch (error) {
       console.error("Failed to update assignment:", error)
       res.status(500).json({ error: "Failed to update assignment" })
+    }
+  },
+)
+
+lmsRouter.get(
+  "/courses/:slug/lessons/:lessonKey/media",
+  requireAuth,
+  async (req: AuthenticatedRequest, res) => {
+    const slugParsed = slugParamSchema.safeParse(req.params)
+    const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
+    if (!slugParsed.success || !lessonParsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    try {
+      const course = await findCourseBySlug(slugParsed.data.slug)
+      if (!course) return res.status(404).json({ error: "Course not found" })
+
+      const enrollment = await requireEnrollment(req.auth!.user.id, course.id)
+      if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
+
+      const located = await findNodeByLessonKey(course, lessonParsed.data.lessonKey)
+      if (!located || located.node.nodeType !== CurriculumNodeType.VIDEO) {
+        return res.status(404).json({ error: "Video lesson not found" })
+      }
+
+      const lessonStates = await loadLessonStates(enrollment, course)
+      const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
+      if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
+
+      res.json({
+        data: {
+          lessonKey: lessonParsed.data.lessonKey,
+          title: located.node.title,
+          duration: located.node.duration,
+          media: formatVideoMedia(located.node),
+        },
+      })
+    } catch (error) {
+      console.error("Failed to load lesson media:", error)
+      res.status(500).json({ error: "Failed to load lesson media" })
     }
   },
 )

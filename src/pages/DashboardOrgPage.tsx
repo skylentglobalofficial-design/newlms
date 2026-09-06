@@ -4,40 +4,8 @@ import { C, T } from '../tokens'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
-import { BATCH_LEARNERS } from '../demo/seed'
+import { fetchOrganisationDashboard, type OrganisationDashboard } from '../lib/organisation-api'
 import { ProductVisual } from '../components/product/ProductVisuals'
-
-// ─── DEMO INSTITUTION DATA (preserved from prior dashboard) ───────────────────
-
-const cohorts = [
-  { name: 'Data Science Batch 12', program: 'Data Science & AI', students: 52, completion: 74, atRisk: 4, status: 'On Track' as const, faculty: 'Dr. Priya Nair' },
-  { name: 'Analytics Pro Cohort 8', program: 'Data Analytics with Gen AI', students: 38, completion: 58, atRisk: 9, status: 'Needs Attention' as const, faculty: 'Arun Krishnamurthy' },
-  { name: 'Full Stack Batch 5', program: 'Full Stack Development', students: 44, completion: 42, atRisk: 14, status: 'Critical' as const, faculty: 'Meghna Srivastava' },
-  { name: 'Gen AI Cohort 3', program: 'Generative AI', students: 61, completion: 81, atRisk: 2, status: 'On Track' as const, faculty: 'Ritesh Agarwal' },
-  { name: 'PM Program Batch 2', program: 'Product Management', students: 29, completion: 63, atRisk: 6, status: 'Needs Attention' as const, faculty: 'Sunita Menon' },
-]
-
-const facultyLoad = [
-  { name: 'Dr. Priya Nair', load: 92, programs: ['Data Science & AI'] },
-  { name: 'Arun Krishnamurthy', load: 74, programs: ['Data Analytics with Gen AI'] },
-  { name: 'Meghna Srivastava', load: 61, programs: ['Full Stack Development'] },
-  { name: 'Ritesh Agarwal', load: 85, programs: ['Generative AI'] },
-  { name: 'Sunita Menon', load: 48, programs: ['Product Management'] },
-]
-
-const offerings = [
-  { program: 'Data Science & AI', offering: 'Professional Program · Cohort 12', batches: 1, learners: 52, status: 'Active' },
-  { program: 'Data Analytics with Gen AI', offering: 'Certificate Track · Cohort 8', batches: 1, learners: 38, status: 'Active' },
-  { program: 'Full Stack Development', offering: 'Professional Program · Batch 5', batches: 1, learners: 44, status: 'Active' },
-  { program: 'Generative AI', offering: 'Certificate Track · Cohort 3', batches: 1, learners: 61, status: 'Active' },
-  { program: 'Product Management', offering: 'Professional Program · Batch 2', batches: 1, learners: 29, status: 'Active' },
-]
-
-const attentionLearners = [
-  { cohort: 'Full Stack Batch 5', count: 14, issue: 'Below 50% completion target' },
-  { cohort: 'Analytics Pro Cohort 8', count: 9, issue: 'Elevated at-risk learners' },
-  { cohort: 'PM Program Batch 2', count: 6, issue: 'Assignment backlog' },
-]
 
 const ACADEMIC_PIPELINE = [
   { id: 'program', label: 'Program', detail: 'Data Science & AI', status: 'complete' as const },
@@ -63,29 +31,6 @@ const NAV_ITEMS: AuthNavItem[] = [
 
 const accent = getRoleAccent('organisation')
 
-const batchLearners = cohorts.reduce((sum, c) => sum + c.students, 0)
-const totalAtRisk = cohorts.reduce((sum, c) => sum + c.atRisk, 0)
-const activePrograms = [...new Set(cohorts.map(c => c.program))].length
-const needsAttentionCohorts = cohorts.filter(c => c.status !== 'On Track')
-
-const statusColor: Record<string, string> = {
-  'On Track': '#4ade80',
-  'Needs Attention': '#fbbf24',
-  'Critical': '#f87171',
-}
-
-const statusBg: Record<string, string> = {
-  'On Track': 'rgba(74,222,128,0.1)',
-  'Needs Attention': 'rgba(251,191,36,0.1)',
-  'Critical': 'rgba(248,113,113,0.1)',
-}
-
-const statusBorder: Record<string, string> = {
-  'On Track': 'rgba(74,222,128,0.25)',
-  'Needs Attention': 'rgba(251,191,36,0.25)',
-  'Critical': 'rgba(248,113,113,0.25)',
-}
-
 // ─── NAV ICONS ────────────────────────────────────────────────────────────────
 
 function NavIcon({ id }: { id: string }) {
@@ -108,13 +53,13 @@ function NavIcon({ id }: { id: string }) {
 function InstitutionWorkspace({
   institutionName,
   institutionLearners,
-  criticalBatch,
-  onAction,
+  programCount,
+  batchMessage,
 }: {
   institutionName: string
   institutionLearners: number
-  criticalBatch: typeof cohorts[0]
-  onAction: () => void
+  programCount: number
+  batchMessage: string
 }) {
   return (
     <div id="org-overview">
@@ -128,65 +73,25 @@ function InstitutionWorkspace({
           {institutionName}
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, margin: 0 }}>
-          Academic operations workspace · demo cohort data where labeled
+          {programCount} programs · {institutionLearners} enrollments · backend-backed totals
         </p>
       </div>
 
       <div style={{
-        padding: '24px 0', marginBottom: 28,
+        padding: '24px 20px', marginBottom: 28,
         borderTop: `1px solid ${T.lineDark}`,
         borderBottom: `1px solid ${T.lineDark}`,
-        borderLeft: `3px solid ${statusColor[criticalBatch.status]}`,
-        paddingLeft: 20,
+        borderLeft: `3px solid ${accent.primary}`,
+        background: 'rgba(255,255,255,0.02)',
+        borderRadius: T.rCard,
       }}>
-        <div style={{ color: statusColor[criticalBatch.status], fontSize: 11, fontWeight: 500, marginBottom: 10 }}>
-          Needs attention
+        <div style={{ color: accent.text, fontSize: 11, fontWeight: 500, marginBottom: 10 }}>
+          Batch analytics unavailable
         </div>
-        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(22px, 3vw, 28px)', fontWeight: 600, color: C.white, margin: '0 0 8px' }}>
-          {criticalBatch.name}
-        </h2>
-        <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, margin: '0 0 4px', lineHeight: 1.5 }}>
-          {criticalBatch.program} · Faculty: {criticalBatch.faculty}
+        <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, margin: 0, lineHeight: 1.6 }}>
+          {batchMessage}
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, margin: '0 0 20px' }}>
-          Batch status: {criticalBatch.status} · demo cohort record
-        </p>
-        <button
-          type="button"
-          onClick={onAction}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: accent.primary, color: C.black, border: 'none',
-            padding: '13px 24px', borderRadius: T.rControl,
-            fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-body)',
-            cursor: 'pointer',
-          }}
-        >
-          Review batch
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
-        </button>
       </div>
-
-      {attentionLearners.length > 0 && (
-        <div style={{ marginBottom: 8 }}>
-          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, marginBottom: 14 }}>Other batches needing review</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {attentionLearners.filter(a => a.cohort !== criticalBatch.name).map((item, i, arr) => (
-              <div key={item.cohort} style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12,
-                padding: '12px 0',
-                borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-              }}>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ color: C.white, fontSize: 13, fontWeight: 500 }}>{item.cohort}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{item.issue}</div>
-                </div>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#f87171', flexShrink: 0 }}>{item.count} learners</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 }
@@ -258,7 +163,7 @@ function AcademicPipeline() {
 
 // ─── PROGRAM OPERATIONS (Level 0) ─────────────────────────────────────────────
 
-function ProgramOperations() {
+function ProgramOperations({ programs }: { programs: OrganisationDashboard['programs'] }) {
   return (
     <div id="org-programs">
       <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
@@ -266,29 +171,31 @@ function ProgramOperations() {
       </div>
 
       <div id="org-offerings">
-        {offerings.map((o, i) => (
-          <div key={o.program} style={{
+        {programs.length > 0 ? programs.map((program, i) => (
+          <div key={program.slug} style={{
             display: 'grid',
             gridTemplateColumns: '1fr auto',
             gap: 12,
             alignItems: 'center',
             padding: '14px 0',
-            borderBottom: i < offerings.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+            borderBottom: i < programs.length - 1 ? `1px solid ${T.lineDark}` : 'none',
           }}>
             <div style={{ minWidth: 0 }}>
               <div style={{ color: C.white, fontSize: 14, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {o.program}
+                {program.name}
               </div>
               <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {o.offering}
+                {program.duration} · {program.format}
               </div>
             </div>
             <div style={{ textAlign: 'right', flexShrink: 0 }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>{o.learners} learners</div>
-              <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 10, marginTop: 2 }}>{o.status}</div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>{program.enrollmentCount} enrollments</div>
+              <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 10, marginTop: 2 }}>{program.enrollmentStatus ?? '—'}</div>
             </div>
           </div>
-        ))}
+        )) : (
+          <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, margin: 0 }}>No programs available yet.</p>
+        )}
       </div>
     </div>
   )
@@ -296,7 +203,7 @@ function ProgramOperations() {
 
 // ─── BATCH OPERATIONS (Level 0) ───────────────────────────────────────────────
 
-function BatchOperations({ onFocusBatch }: { onFocusBatch: () => void }) {
+function BatchOperations({ batchMessage }: { batchMessage: string }) {
   return (
     <div id="org-batches">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, gap: 12, flexWrap: 'wrap' }}>
@@ -308,99 +215,33 @@ function BatchOperations({ onFocusBatch }: { onFocusBatch: () => void }) {
             Cohort performance
           </h3>
         </div>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
-          {needsAttentionCohorts.length} need attention
-        </span>
       </div>
 
-      <div id="org-batch-operations" className="org-batch-table-wrap" style={{ width: '100%', maxWidth: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-        <table className="org-batch-table" style={{ width: '100%', borderCollapse: 'collapse', minWidth: 480 }}>
-          <thead>
-            <tr>
-              {['Batch', 'Program', 'Learners', 'Progress', 'At-risk', 'Status'].map(h => (
-                <th key={h} style={{
-                  color: 'rgba(255,255,255,0.28)', fontSize: 10, fontFamily: 'var(--font-mono)',
-                  textAlign: 'left', padding: '0 12px 12px 0', letterSpacing: '0.06em', fontWeight: 500,
-                }}>
-                  {h.toUpperCase()}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {cohorts.map(c => (
-              <tr key={c.name} style={{ borderTop: `1px solid ${T.lineDark}` }}>
-                <td style={{ padding: '12px 12px 12px 0', color: C.white, fontSize: 13, fontWeight: 500, whiteSpace: 'nowrap' }}>{c.name}</td>
-                <td style={{ padding: '12px 12px 12px 0', color: 'rgba(255,255,255,0.45)', fontSize: 12, maxWidth: 140, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.program}</td>
-                <td style={{ padding: '12px 12px 12px 0', fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.55)' }}>{c.students}</td>
-                <td style={{ padding: '12px 12px 12px 0', minWidth: 100 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ flex: 1, background: 'rgba(255,255,255,0.06)', borderRadius: 2, height: 4, minWidth: 48 }}>
-                      <div style={{ background: statusColor[c.status], width: `${c.completion}%`, height: '100%', borderRadius: 2 }} />
-                    </div>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: statusColor[c.status], flexShrink: 0 }}>{c.completion}%</span>
-                  </div>
-                </td>
-                <td style={{ padding: '12px 12px 12px 0', fontFamily: 'var(--font-mono)', fontSize: 12, color: c.atRisk > 8 ? '#f87171' : 'rgba(255,255,255,0.45)' }}>{c.atRisk}</td>
-                <td style={{ padding: '12px 0' }}>
-                  <span style={{
-                    background: statusBg[c.status], border: `1px solid ${statusBorder[c.status]}`,
-                    color: statusColor[c.status], padding: '3px 8px', borderRadius: 4,
-                    fontSize: 10, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap',
-                  }}>
-                    {c.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div id="org-batch-operations" style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
+        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, margin: 0, lineHeight: 1.6 }}>
+          {batchMessage}
+        </p>
       </div>
-
-      {needsAttentionCohorts.length > 0 && (
-        <div style={{ marginTop: 18, paddingTop: 18, borderTop: `1px solid ${T.lineDark}` }}>
-          <button
-            type="button"
-            onClick={onFocusBatch}
-            style={{
-              background: 'transparent', border: `1px solid ${T.lineDark}`,
-              color: accent.text, padding: '8px 14px', borderRadius: T.rControl,
-              fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)',
-            }}
-          >
-            Open {needsAttentionCohorts[0].name} →
-          </button>
-        </div>
-      )}
     </div>
   )
 }
 
 // ─── LEARNER PROGRESS (Level 0) ───────────────────────────────────────────────
 
-function LearnerProgress() {
+function LearnerProgress({ enrollmentCount }: { enrollmentCount: number }) {
   return (
     <div id="org-learners">
       <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Learner operations
       </div>
 
-      <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 14 }}>Distribution by batch</div>
-      {cohorts.map((c, i) => (
-        <div key={c.name} style={{
-          marginBottom: 12,
-          paddingBottom: i < cohorts.length - 1 ? 12 : 0,
-          borderBottom: i < cohorts.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5, gap: 8 }}>
-            <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, flexShrink: 0 }}>{c.students}</span>
-          </div>
-          <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
-            <div style={{ width: `${(c.students / batchLearners) * 100}%`, height: '100%', background: accent.secondary, borderRadius: 2, opacity: 0.85 }} />
-          </div>
-        </div>
-      ))}
+      <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
+        <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 8 }}>Total enrollments</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 24, color: accent.text }}>{enrollmentCount}</div>
+        <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, margin: '12px 0 0', lineHeight: 1.6 }}>
+          Batch-level learner distribution requires a Batch/Cohort model. Per-batch completion and at-risk analytics are not available yet.
+        </p>
+      </div>
     </div>
   )
 }
@@ -413,150 +254,49 @@ function FacultyOperations() {
       <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Faculty
       </div>
-
-      {facultyLoad.map((f, i) => {
-        const cohort = cohorts.find(c => c.faculty === f.name)
-        const loadColor = f.load > 85 ? '#f87171' : f.load > 70 ? '#fbbf24' : accent.text
-        return (
-          <div key={f.name} style={{
-            padding: '14px 0',
-            borderBottom: i < facultyLoad.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, gap: 12 }}>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{f.name}</div>
-                <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {f.programs.join(' · ')}
-                </div>
-              </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: loadColor, flexShrink: 0 }}>{f.load}%</span>
-            </div>
-            <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{ width: `${f.load}%`, height: '100%', background: loadColor, borderRadius: 2, opacity: 0.8 }} />
-            </div>
-            {cohort && (
-              <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 10, marginTop: 6 }}>
-                {cohort.name} · {cohort.students} learners
-              </div>
-            )}
-          </div>
-        )
-      })}
+      <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
+        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, margin: 0, lineHeight: 1.6 }}>
+          Faculty load and cohort assignment data are not represented in the current schema. Organisation membership is available; faculty workload analytics will require additional models.
+        </p>
+      </div>
     </div>
   )
 }
 
 // ─── CONTEXT RAIL (Level 0 — assessments + attention) ───────────────────────────
 
-function OrgContextRail() {
-  const assessmentItems = cohorts.map(c => ({
-    batch: c.name,
-    completion: c.completion,
-    status: c.status,
-  }))
+function OrgContextRail({ programs }: { programs: OrganisationDashboard['programs'] }) {
+  const topPrograms = programs.slice(0, 5)
 
   return (
     <div>
       <div id="org-assessments">
         <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
-          Assessments & progress
+          Program enrollments
         </div>
 
-        <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 12 }}>Batch status</div>
-        {assessmentItems.map((item, i) => (
-          <div key={item.batch} style={{
+        {topPrograms.length > 0 ? topPrograms.map((program, i) => (
+          <div key={program.slug} style={{
             marginBottom: 12,
-            paddingBottom: i < assessmentItems.length - 1 ? 12 : 0,
-            borderBottom: i < assessmentItems.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+            paddingBottom: i < topPrograms.length - 1 ? 12 : 0,
+            borderBottom: i < topPrograms.length - 1 ? `1px solid ${T.lineDark}` : 'none',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5, gap: 8 }}>
-              <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.batch}</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: statusColor[item.status], flexShrink: 0 }}>{item.status}</span>
+              <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{program.name}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, flexShrink: 0 }}>{program.enrollmentCount}</span>
             </div>
             <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 10 }}>Completion analytics —</div>
           </div>
-        ))}
+        )) : (
+          <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, margin: 0 }}>No program enrollment data yet.</p>
+        )}
       </div>
 
       <div id="org-progress" style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
         <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 14 }}>Attention needed</div>
-        {attentionLearners.map((item, i) => (
-          <div key={item.cohort} style={{
-            display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12,
-            padding: '12px 0',
-            borderBottom: i < attentionLearners.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-          }}>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ color: C.white, fontSize: 13, fontWeight: 500 }}>{item.cohort}</div>
-              <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{item.issue}</div>
-            </div>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: '#f87171', flexShrink: 0 }}>{item.count}</span>
-          </div>
-        ))}
-
-        <div style={{ marginTop: 16, paddingTop: 16, borderTop: `1px solid ${T.lineDark}` }}>
-          <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, marginBottom: 8 }}>Pending academic actions</div>
-          <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, margin: 0, lineHeight: 1.6 }}>
-            {needsAttentionCohorts.length} batches below target completion. Review cohort progress and faculty assignments to address at-risk learners ({totalAtRisk} total).
-          </p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── BATCH REVIEW VIEW ────────────────────────────────────────────────────────
-
-function BatchDetailView({
-  batch,
-  onBack,
-}: {
-  batch: typeof cohorts[0]
-  onBack: () => void
-}) {
-  const learners = BATCH_LEARNERS[batch.name] ?? []
-
-  return (
-    <div id="org-batch-review">
-      <button type="button" onClick={onBack} style={{
-        background: 'none', border: 'none', color: 'rgba(255,255,255,0.45)',
-        fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', padding: 0, marginBottom: 24,
-      }}>
-        ← Back to overview
-      </button>
-
-      <div style={{ marginBottom: 28, paddingBottom: 24, borderBottom: `1px solid ${T.lineDark}` }}>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Batch review</div>
-        <h1 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 8px' }}>{batch.name}</h1>
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: '0 0 4px' }}>
-          {batch.program} · {batch.completion}% completion · {batch.atRisk} learners need attention
+        <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, margin: 0, lineHeight: 1.6 }}>
+          Batch-level attention lists require cohort models and learner-batch relationships that are not yet in the database.
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, margin: 0 }}>Faculty: {batch.faculty}</p>
-      </div>
-
-      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 16 }}>
-        Attention-needed learners · demo cohort data
-      </div>
-
-      <div className="org-batch-table-wrap" style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 480 }}>
-          <thead>
-            <tr>
-              {['Learner', 'Completion', 'Attention reason'].map(h => (
-                <th key={h} style={{ textAlign: 'left', padding: '0 12px 12px 0', color: 'rgba(255,255,255,0.28)', fontSize: 10, fontFamily: 'var(--font-mono)', fontWeight: 500 }}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {learners.map(l => (
-              <tr key={l.name} style={{ borderTop: `1px solid ${T.lineDark}` }}>
-                <td style={{ padding: '14px 12px 14px 0', color: C.white, fontSize: 13, fontWeight: 500 }}>{l.name}</td>
-                <td style={{ padding: '14px 12px 14px 0', fontFamily: 'var(--font-mono)', fontSize: 12, color: l.completion < 40 ? '#f87171' : 'rgba(255,255,255,0.55)' }}>{l.completion}%</td>
-                <td style={{ padding: '14px 0', color: 'rgba(255,255,255,0.45)', fontSize: 12, lineHeight: 1.5 }}>{l.issue}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     </div>
   )
@@ -568,29 +308,26 @@ export default function DashboardOrgPage() {
   const { user, ready } = useAuth()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
-  const [batchReview, setBatchReview] = useState<string | null>(null)
+  const [dashboard, setDashboard] = useState<OrganisationDashboard | null>(null)
 
   useEffect(() => {
     if (ready && !user) navigate('/login')
   }, [ready, user, navigate])
 
+  useEffect(() => {
+    if (!ready || !user) return
+    fetchOrganisationDashboard()
+      .then(setDashboard)
+      .catch(() => setDashboard(null))
+  }, [ready, user])
+
   if (!ready || !user) return null
 
-  const institutionName = user.institution || user.name || 'Apex College'
-  const institutionLearners = user.students ?? batchLearners
-  const criticalBatch = cohorts.find(c => c.status === 'Critical') ?? cohorts[0]
-
-  function focusBatches() {
-    setActiveNav('batches')
-    document.getElementById('org-batch-operations')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-
-  function openBatchReview(batchName: string) {
-    setBatchReview(batchName)
-    setActiveNav('batches')
-  }
-
-  const reviewBatch = batchReview ? cohorts.find(c => c.name === batchReview) : null
+  const institutionName = dashboard?.organisation.name ?? user.institution ?? user.name ?? 'Institution'
+  const institutionLearners = dashboard?.totals.enrollmentCount ?? 0
+  const programCount = dashboard?.totals.programCount ?? 0
+  const programs = dashboard?.programs ?? []
+  const batchMessage = dashboard?.batchModelRequired ?? 'Batch/Cohort model not yet in schema — batch analytics unavailable'
 
   return (
     <AuthDashboardShell
@@ -605,26 +342,23 @@ export default function DashboardOrgPage() {
     >
       <AuthDashboardLayout
         primary={
-          batchReview && reviewBatch ? (
-            <BatchDetailView batch={reviewBatch} onBack={() => setBatchReview(null)} />
-          ) : (
           <>
             <InstitutionWorkspace
               institutionName={institutionName}
               institutionLearners={institutionLearners}
-              criticalBatch={criticalBatch}
-              onAction={() => openBatchReview(criticalBatch.name)}
+              programCount={programCount}
+              batchMessage={batchMessage}
             />
 
             <AcademicPipeline />
 
             <div className="org-two-col" style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 'clamp(16px, 2vw, 24px)', marginTop: 'clamp(28px, 4vw, 40px)' }}>
-              <ProgramOperations />
-              <BatchOperations onFocusBatch={focusBatches} />
+              <ProgramOperations programs={programs} />
+              <BatchOperations batchMessage={batchMessage} />
             </div>
 
             <div className="org-two-col" style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(16px, 2vw, 24px)', marginTop: 'clamp(28px, 4vw, 40px)' }}>
-              <LearnerProgress />
+              <LearnerProgress enrollmentCount={institutionLearners} />
               <FacultyOperations />
             </div>
 
@@ -637,9 +371,8 @@ export default function DashboardOrgPage() {
               </p>
             </div>
           </>
-          )
         }
-        rail={<OrgContextRail />}
+        rail={<OrgContextRail programs={programs} />}
       />
 
       <style>{`

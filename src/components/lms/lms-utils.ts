@@ -20,6 +20,8 @@ export function isLessonUnlocked(
   allLessons: CourseLesson[],
   lessonStates: Record<string, LessonState>,
 ): boolean {
+  const state = lessonStates[lessonId]
+  if (state?.locked !== undefined) return !state.locked
   const idx = allLessons.findIndex(l => l.id === lessonId)
   if (idx <= 0) return true
   const prev = allLessons[idx - 1]

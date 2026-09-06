@@ -150,6 +150,7 @@ model Program {
   pricing            PricingTier[]
   curriculum         CurriculumModule[]
   enrollments        UserEnrollment[]
+  programCourses     ProgramCourse[]
 
   @@index([programType])
   @@index([enrollmentStatus])
@@ -190,6 +191,7 @@ model Course {
   updatedAt     DateTime           @updatedAt
   curriculum    CurriculumModule[]
   enrollments   UserEnrollment[]
+  programCourses ProgramCourse[]
 
   @@index([category])
   @@index([level])
@@ -224,6 +226,7 @@ model CurriculumNode {
   nodeType              CurriculumNodeType
   duration              String?
   completed             Boolean              @default(false)
+  muxPlaybackId         String?
   moduleId              String               @db.Uuid
   module                CurriculumModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   lessonProgress        LessonProgress[]
@@ -323,10 +326,42 @@ model AssignmentProgress {
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 
-  user       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  enrollment UserEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
-  node       CurriculumNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  user        User                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollment  UserEnrollment         @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  node        CurriculumNode         @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  attachments AssignmentAttachment[]
 
   @@unique([enrollmentId, nodeId])
   @@index([userId])
+}
+
+model ProgramCourse {
+  id        String   @id @default(uuid()) @db.Uuid
+  programId String   @db.Uuid
+  courseId  String   @db.Uuid
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  program Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  course  Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([programId, courseId])
+  @@index([programId, sortOrder])
+  @@index([courseId])
+}
+
+model AssignmentAttachment {
+  id                   String   @id @default(uuid()) @db.Uuid
+  assignmentProgressId String   @db.Uuid
+  fileName             String
+  mimeType             String
+  byteSize             Int
+  storageProvider      String
+  storageKey           String
+  createdAt            DateTime @default(now())
+
+  assignmentProgress AssignmentProgress @relation(fields: [assignmentProgressId], references: [id], onDelete: Cascade)
+
+  @@index([assignmentProgressId])
 }

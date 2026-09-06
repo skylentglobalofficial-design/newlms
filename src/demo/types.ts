@@ -1,11 +1,13 @@
 import type { LabExperimentStatus } from '../data'
 
-/** Per-lesson LMS progress — frontend demo only, not authoritative. */
+/** Per-lesson LMS progress — synced from backend API. */
 export type LessonState = {
   videoWatched: boolean
   quizPassed: boolean
   assignmentSubmitted: boolean
   complete: boolean
+  locked?: boolean
+  requiredLessonKey?: string | null
 }
 
 export type LabProgress = {
