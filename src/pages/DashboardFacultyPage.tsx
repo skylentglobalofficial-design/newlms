@@ -5,17 +5,11 @@ import { AuroraBand, GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
-import { programs } from '../data'
+import { programs, courses as catalogCourses } from '../data'
 
-// ─── DEMO TEACHING STATE (preserved from prior dashboard) ─────────────────────
+const TEACHING_COURSE_SLUG = 'data-analytics'
 
-const courses = [
-  { name: 'Data Science & AI', students: 52, completion: 71, lastActivity: '2h ago' },
-  { name: 'Machine Learning Fundamentals', students: 44, completion: 58, lastActivity: '1d ago' },
-  { name: 'Python for Data Science', students: 32, completion: 83, lastActivity: '5h ago' },
-]
-
-const submissions = [
+const FACULTY_ASSIGNMENTS = [
   { student: 'Arjun Sharma', assignment: 'SQL Query Assignment', submitted: 'Today 9:41 AM', status: 'Pending' as const },
   { student: 'Meera Pillai', assignment: 'EDA Project', submitted: 'Yesterday 6:12 PM', status: 'Reviewed' as const },
   { student: 'Rohan Mehta', assignment: 'Feature Engineering', submitted: '2 days ago', status: 'Reviewed' as const },
@@ -40,13 +34,31 @@ const DEMO = {
   assessmentWhen: 'Next week',
 }
 
-const CURRICULUM_TEACHING = [
+const submissions = FACULTY_ASSIGNMENTS
+const pendingCount = submissions.filter(s => s.status === 'Pending').length
+const reviewedCount = submissions.filter(s => s.status === 'Reviewed').length
+
+const CURRICULUM_TEACHING_FALLBACK = [
   { id: 'module', label: 'Module', detail: 'SQL for Analysis', status: 'complete' as const },
   { id: 'lesson', label: 'Lesson', detail: 'Introduction to SQL', status: 'complete' as const },
   { id: 'assignment', label: 'Assignment', detail: 'SQL Query Assignment', status: 'current' as const },
   { id: 'assessment', label: 'Assessment', detail: 'SQL Module Quiz', status: 'upcoming' as const },
-  { id: 'review', label: 'Review', detail: '2 pending', status: 'upcoming' as const },
+  { id: 'review', label: 'Review', detail: 'Pending', status: 'upcoming' as const },
 ]
+
+const CURRICULUM_TEACHING = (() => {
+  const course = catalogCourses.find(c => c.slug === TEACHING_COURSE_SLUG)
+  if (!course) return CURRICULUM_TEACHING_FALLBACK
+  const currentMod = course.modules[2] ?? course.modules[0]
+  const currentLesson = currentMod?.lessons[0]
+  return [
+    { id: 'module', label: 'Module', detail: currentMod?.title ?? '—', status: 'complete' as const },
+    { id: 'lesson', label: 'Lesson', detail: currentLesson?.title ?? '—', status: 'complete' as const },
+    { id: 'assignment', label: 'Assignment', detail: 'SQL Query Assignment', status: 'current' as const },
+    { id: 'assessment', label: 'Assessment', detail: 'SQL Module Quiz', status: 'upcoming' as const },
+    { id: 'review', label: 'Review', detail: `${pendingCount} pending`, status: 'upcoming' as const },
+  ]
+})()
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'faculty-overview' },
@@ -59,10 +71,6 @@ const NAV_ITEMS: AuthNavItem[] = [
 ]
 
 const accent = getRoleAccent('faculty')
-
-const pendingCount = submissions.filter(s => s.status === 'Pending').length
-const reviewedCount = submissions.filter(s => s.status === 'Reviewed').length
-const avgCompletion = Math.round(courses.reduce((sum, c) => sum + c.completion, 0) / courses.length)
 
 const canvasSectionStyle = {
   padding: '22px 24px',
@@ -107,8 +115,6 @@ function FacultyWorkspace({
   nextAction: string
   onReview: () => void
 }) {
-  const cohortCompletion = courses.find(c => c.name === courseName)?.completion ?? avgCompletion
-
   return (
     <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', position: 'relative' }}>
       <AuroraBand themeId="data-analytics" />
@@ -143,20 +149,16 @@ function FacultyWorkspace({
             <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, marginTop: 2 }}>submissions waiting</div>
           </div>
           <div style={{ flex: '1 1 120px', minWidth: 0 }}>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 4 }}>Active classes</div>
+            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 4 }}>Assigned programs</div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.white }}>
-              {courses.length}
+              {programs.filter(p => p.programType === 'PROFESSIONAL').length}
             </div>
-            <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, marginTop: 2 }}>this term</div>
+            <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, marginTop: 2 }}>from catalog</div>
           </div>
           <div style={{ flex: '1 1 140px', minWidth: 0 }}>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 6 }}>Cohort completion</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden' }}>
-                <div style={{ width: `${cohortCompletion}%`, height: '100%', background: accent.primary, borderRadius: 2 }} />
-              </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text, flexShrink: 0 }}>{cohortCompletion}%</span>
-            </div>
+            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 6 }}>Cohort progress</div>
+            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>—</div>
+            <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, marginTop: 4 }}>Requires cohort integration</div>
           </div>
           <div style={{ flexShrink: 0 }}>
             <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 4 }}>Module {moduleIndex} of {moduleTotal}</div>
@@ -339,35 +341,20 @@ function LearnerProgress({
   nudgeSent: Record<string, boolean>
   onNudge: (name: string) => void
 }) {
-  const distribution = courses.map(c => ({ name: c.name, completion: c.completion, students: c.students }))
-
   return (
     <div style={canvasSectionStyle}>
       <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
         Learner progress
       </div>
 
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 14 }}>Completion by class</div>
-        {distribution.map(c => (
-          <div key={c.name} style={{ marginBottom: 14 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6, gap: 8 }}>
-              <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, flexShrink: 0 }}>{c.completion}%</span>
-            </div>
-            <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{
-                width: `${c.completion}%`, height: '100%', borderRadius: 2,
-                background: c.completion >= 70 ? accent.primary : c.completion >= 50 ? '#f59e0b' : '#ef4444',
-              }} />
-            </div>
-            <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, marginTop: 4 }}>{c.students} learners</div>
-          </div>
-        ))}
+      <div style={{ marginBottom: 24, padding: '16px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
+        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, lineHeight: 1.6 }}>
+          Cohort completion analytics are not connected in this demo workspace. Learner progress will appear when cohort data is integrated.
+        </div>
       </div>
 
       <div style={{ borderTop: `1px solid ${T.lineDark}`, paddingTop: 18 }}>
-        <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 14 }}>Learners needing attention</div>
+        <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 14 }}>Sample attention list · workflow demo</div>
         {atRisk.map((s, i) => (
           <div key={s.name} style={{
             display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12,
@@ -454,30 +441,32 @@ function UpcomingTeaching() {
 // ─── CLASSES RAIL (Level 0) ───────────────────────────────────────────────────
 
 function ClassesRail() {
+  const assignedPrograms = programs.filter(p => p.programType === 'PROFESSIONAL').slice(0, 4)
+  const teachingCourse = catalogCourses.find(c => c.slug === TEACHING_COURSE_SLUG)
+
   return (
     <div style={{ ...canvasSectionStyle, marginTop: 20 }}>
       <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
-        Your classes
+        Assigned programs & courses
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-        {courses.map((c, i) => (
-          <div key={c.name} style={{
+        {assignedPrograms.map((p, i) => (
+          <div key={p.slug} style={{
             padding: '16px 0',
-            borderBottom: i < courses.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+            borderBottom: i < assignedPrograms.length - 1 ? `1px solid ${T.lineDark}` : 'none',
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, gap: 12 }}>
-              <div style={{ color: C.white, fontSize: 14, fontWeight: 600, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.name}</div>
-              <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>{c.lastActivity}</div>
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-              <span style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{c.students} learners</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>{c.completion}%</span>
-            </div>
-            <div style={{ height: 3, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
-              <div style={{ width: `${c.completion}%`, height: '100%', background: accent.primary, borderRadius: 2 }} />
-            </div>
+            <div style={{ color: C.white, fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{p.name}</div>
+            <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{p.duration} · {p.format}</div>
+            <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, marginTop: 6 }}>Cohort data —</div>
           </div>
         ))}
+        {teachingCourse && (
+          <div style={{ padding: '16px 0', borderTop: `1px solid ${T.lineDark}`, marginTop: 8 }}>
+            <div style={{ color: accent.text, fontSize: 10, letterSpacing: '0.08em', marginBottom: 6 }}>LMS course</div>
+            <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{teachingCourse.title}</div>
+            <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginTop: 4 }}>{teachingCourse.modules.length} modules · {teachingCourse.modules.flatMap(m => m.lessons).length} lessons</div>
+          </div>
+        )}
       </div>
     </div>
   )
