@@ -10,8 +10,7 @@ import {
 } from "../lib/auth.js"
 import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
 import {
-  createPresignedDownloadUrl,
-  isObjectStorageConfigured,
+  resolveMaterialDownloadUrl,
   toPublicMaterial,
 } from "../lib/object-storage.js"
 import {
@@ -812,24 +811,26 @@ lmsRouter.get(
       const located = await findNodeByLessonKey(course, lessonParsed.data.lessonKey)
       if (!located) return res.status(404).json({ error: "Lesson not found" })
 
+      const lessonStates = await loadLessonStates(enrollment, course)
+      const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
+      if (!unlock.ok) {
+        return res.status(unlock.status).json(unlock.body)
+      }
+
       const materials = await prisma.lessonMaterial.findMany({
         where: { nodeId: located.node.id, published: true },
         orderBy: { createdAt: "desc" },
       })
 
-      if (!isObjectStorageConfigured()) {
-        return res.json({
-          data: materials.map((material) => ({
-            ...toPublicMaterial(material),
-            downloadUrl: null,
-          })),
-        })
-      }
-
       const data = await Promise.all(
         materials.map(async (material) => ({
           ...toPublicMaterial(material),
-          downloadUrl: await createPresignedDownloadUrl(material.storageKey),
+          downloadUrl: await resolveMaterialDownloadUrl({
+            storageKey: material.storageKey,
+            uploadStatus: material.uploadStatus,
+            published: material.published,
+            requirePublished: true,
+          }),
         })),
       )
 

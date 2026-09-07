@@ -504,18 +504,25 @@ model AssignmentAttachment {
   @@index([assignmentProgressId])
 }
 
+enum LessonMaterialUploadStatus {
+  PENDING
+  READY
+  FAILED
+}
+
 model LessonMaterial {
-  id              String   @id @default(uuid()) @db.Uuid
-  nodeId          String   @db.Uuid
+  id              String                     @id @default(uuid()) @db.Uuid
+  nodeId          String                     @db.Uuid
   fileName        String
   mimeType        String
   byteSize        Int
   storageProvider String
   storageKey      String
-  published       Boolean  @default(false)
-  uploadedById    String?  @db.Uuid
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  uploadStatus    LessonMaterialUploadStatus @default(PENDING)
+  published       Boolean                    @default(false)
+  uploadedById    String?                    @db.Uuid
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
 
   node       CurriculumNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
   uploadedBy User?          @relation(fields: [uploadedById], references: [id], onDelete: SetNull)

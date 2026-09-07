@@ -299,6 +299,7 @@ async function seedDemoLessonMaterials() {
       byteSize: 14336,
       storageProvider: 'r2',
       storageKey: `lesson-materials/${DEMO_COURSE_SLUG}/${node.id}/demo-seed/sql-reference-sheet.pdf`,
+      uploadStatus: 'PENDING',
       published: true,
     },
   })

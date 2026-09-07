@@ -98,7 +98,9 @@ export default function LessonMaterialsPanel({
                   View / Download
                 </a>
               ) : (
-                <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>Unavailable</span>
+                <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>
+                  {material.uploadStatus === "FAILED" ? "Unavailable (upload failed)" : "Unavailable"}
+                </span>
               )}
             </div>
           ))}

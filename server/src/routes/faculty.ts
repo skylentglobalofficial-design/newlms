@@ -8,9 +8,10 @@ import { canManageLessonMaterials, loadCourseLessonNode } from "../lib/lesson-ma
 import {
   OBJECT_STORAGE_PROVIDER,
   buildLessonMaterialStorageKey,
-  createPresignedDownloadUrl,
   createPresignedUploadUrl,
   isObjectStorageConfigured,
+  objectExists,
+  resolveMaterialDownloadUrl,
   sanitizeMaterialFileName,
   toPublicMaterial,
   validateMaterialByteSize,
@@ -183,22 +184,21 @@ async function mapFacultyMaterials(materials: Array<{
   fileName: string
   mimeType: string
   byteSize: number
+  uploadStatus: "PENDING" | "READY" | "FAILED"
   published: boolean
   createdAt: Date
   updatedAt: Date
   storageKey: string
 }>) {
-  if (!isObjectStorageConfigured()) {
-    return materials.map((material) => ({
-      ...toPublicMaterial(material),
-      downloadUrl: null,
-    }))
-  }
-
   return Promise.all(
     materials.map(async (material) => ({
       ...toPublicMaterial(material),
-      downloadUrl: await createPresignedDownloadUrl(material.storageKey),
+      downloadUrl: await resolveMaterialDownloadUrl({
+        storageKey: material.storageKey,
+        uploadStatus: material.uploadStatus,
+        published: material.published,
+        requirePublished: false,
+      }),
     })),
   )
 }
@@ -291,6 +291,7 @@ facultyRouter.post(
           byteSize,
           storageProvider: OBJECT_STORAGE_PROVIDER,
           storageKey,
+          uploadStatus: "PENDING",
           published: false,
           uploadedById: req.auth!.user.id,
         },
@@ -312,7 +313,70 @@ facultyRouter.post(
       })
     } catch (error) {
       console.error("Failed to create lesson material upload:", error)
+      if (error instanceof Error && error.message === "Object storage is not configured") {
+        return res.status(503).json({ error: "Object storage is not configured" })
+      }
       res.status(500).json({ error: "Failed to create lesson material upload" })
+    }
+  },
+)
+
+facultyRouter.post(
+  "/courses/:slug/lessons/:lessonKey/materials/:materialId/complete-upload",
+  requireAuth,
+  requireCsrf,
+  requireRoles("faculty", "superadmin"),
+  async (req: AuthenticatedRequest, res) => {
+    const slugParsed = slugParamSchema.safeParse(req.params)
+    const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
+    const materialParsed = materialIdSchema.safeParse({ materialId: req.params.materialId })
+    if (!slugParsed.success || !lessonParsed.success || !materialParsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    if (!canManageLessonMaterials(req, slugParsed.data.slug)) {
+      return res.status(403).json({ error: "Forbidden" })
+    }
+
+    if (!isObjectStorageConfigured()) {
+      return res.status(503).json({ error: "Object storage is not configured" })
+    }
+
+    try {
+      const context = await resolveFacultyLessonContext(slugParsed.data.slug, lessonParsed.data.lessonKey)
+      if (context.status !== 200) {
+        return res.status(context.status).json(context.body)
+      }
+
+      const existing = await prisma.lessonMaterial.findFirst({
+        where: { id: materialParsed.data.materialId, nodeId: context.node.id },
+      })
+      if (!existing) {
+        return res.status(404).json({ error: "Material not found" })
+      }
+
+      if (existing.uploadStatus === "READY") {
+        return res.json({ data: toPublicMaterial(existing) })
+      }
+
+      const exists = await objectExists(existing.storageKey)
+      if (!exists) {
+        await prisma.lessonMaterial.update({
+          where: { id: existing.id },
+          data: { uploadStatus: "FAILED" },
+        })
+        return res.status(409).json({ error: "Storage object not found", code: "upload_incomplete" })
+      }
+
+      const material = await prisma.lessonMaterial.update({
+        where: { id: existing.id },
+        data: { uploadStatus: "READY" },
+      })
+
+      res.json({ data: toPublicMaterial(material) })
+    } catch (error) {
+      console.error("Failed to complete lesson material upload:", error)
+      res.status(500).json({ error: "Failed to complete lesson material upload" })
     }
   },
 )
@@ -345,6 +409,27 @@ facultyRouter.post(
       })
       if (!existing) {
         return res.status(404).json({ error: "Material not found" })
+      }
+
+      if (!isObjectStorageConfigured()) {
+        return res.status(503).json({ error: "Object storage is not configured" })
+      }
+
+      if (existing.uploadStatus !== "READY") {
+        return res.status(409).json({
+          error: "Material upload is not ready",
+          code: "upload_not_ready",
+          uploadStatus: existing.uploadStatus,
+        })
+      }
+
+      const exists = await objectExists(existing.storageKey)
+      if (!exists) {
+        await prisma.lessonMaterial.update({
+          where: { id: existing.id },
+          data: { uploadStatus: "FAILED" },
+        })
+        return res.status(409).json({ error: "Storage object not found", code: "object_missing" })
       }
 
       const material = await prisma.lessonMaterial.update({

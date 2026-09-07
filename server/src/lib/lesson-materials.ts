@@ -2,6 +2,9 @@ import type { AuthenticatedRequest } from "./auth.js"
 import { hasApiRole } from "./roles.js"
 import { findCourseBySlug, findNodeByLessonKey } from "./lms.js"
 
+/** Demo teaching course slug — faculty demo accounts may manage materials only for this course. */
+export const DEMO_TEACHING_COURSE_SLUG = "data-analytics"
+
 export async function loadCourseLessonNode(courseSlug: string, lessonKey: string) {
   const course = await findCourseBySlug(courseSlug)
   if (!course) return { error: "course_not_found" as const }
@@ -10,8 +13,22 @@ export async function loadCourseLessonNode(courseSlug: string, lessonKey: string
   return { course, node: located.node }
 }
 
-export function canManageLessonMaterials(req: AuthenticatedRequest, _courseSlug: string): boolean {
+function isDemoFacultyAccount(email: string | null | undefined): boolean {
+  return email?.endsWith("@demo.skylent.dev") ?? false
+}
+
+/**
+ * Faculty material management scope:
+ * - superadmin: any course
+ * - demo faculty (@demo.skylent.dev): demo teaching course only
+ * - other faculty: denied until course assignment is modeled in the schema
+ *
+ * Remaining limitation: there is no per-faculty course assignment table yet.
+ */
+export function canManageLessonMaterials(req: AuthenticatedRequest, courseSlug: string): boolean {
   if (hasApiRole(req, "superadmin")) return true
-  if (hasApiRole(req, "faculty")) return true
+  if (hasApiRole(req, "faculty") && isDemoFacultyAccount(req.auth?.user.email)) {
+    return courseSlug === DEMO_TEACHING_COURSE_SLUG
+  }
   return false
 }

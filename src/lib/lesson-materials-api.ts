@@ -2,11 +2,14 @@ import { ensureCsrfToken } from "./auth-api"
 
 const API_BASE = "/api/v1"
 
+export type LessonMaterialUploadStatus = "PENDING" | "READY" | "FAILED"
+
 export type LessonMaterial = {
   id: string
   fileName: string
   mimeType: string
   byteSize: number
+  uploadStatus: LessonMaterialUploadStatus
   published: boolean
   createdAt: string
   updatedAt: string
@@ -41,6 +44,28 @@ export async function fetchFacultyLessonMaterials(courseSlug: string, lessonKey:
     { credentials: "include" },
   )
   const result = await parseJson<{ data: LessonMaterial[] }>(response)
+  return result.data
+}
+
+export async function completeLessonMaterialUpload(input: {
+  courseSlug: string
+  lessonKey: string
+  materialId: string
+}): Promise<LessonMaterial> {
+  const token = await ensureCsrfToken()
+  const response = await fetch(
+    `${API_BASE}/faculty/courses/${encodeURIComponent(input.courseSlug)}/lessons/${encodeURIComponent(input.lessonKey)}/materials/${input.materialId}/complete-upload`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": token,
+      },
+      body: JSON.stringify({}),
+    },
+  )
+  const result = await parseJson<{ data: LessonMaterial }>(response)
   return result.data
 }
 
@@ -85,7 +110,11 @@ export async function requestLessonMaterialUpload(input: {
     throw new Error("Material upload to storage failed")
   }
 
-  return result.data.material
+  return completeLessonMaterialUpload({
+    courseSlug: input.courseSlug,
+    lessonKey: input.lessonKey,
+    materialId: result.data.material.id,
+  })
 }
 
 export async function publishLessonMaterial(input: {

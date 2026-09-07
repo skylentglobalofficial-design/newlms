@@ -11,6 +11,20 @@ const ACCEPTED_TYPES = ".pdf,.ppt,.pptx,application/pdf,application/vnd.ms-power
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
+function statusLabel(material: LessonMaterial): string {
+  if (material.published) return "published"
+  if (material.uploadStatus === "FAILED") return "failed"
+  if (material.uploadStatus === "READY") return "ready"
+  return "upload pending"
+}
+
+function statusColor(material: LessonMaterial, accent: Accent): string {
+  if (material.published) return accent.text
+  if (material.uploadStatus === "FAILED") return "rgba(255,120,120,0.85)"
+  if (material.uploadStatus === "READY") return "rgba(140,220,160,0.85)"
+  return "rgba(255,255,255,0.35)"
+}
+
 export default function FacultyLessonMaterials({
   courseSlug,
   lessonKey,
@@ -55,7 +69,11 @@ export default function FacultyLessonMaterials({
     setStatus(null)
     try {
       const uploaded = await requestLessonMaterialUpload({ courseSlug, lessonKey, file })
-      setStatus(`Uploaded ${uploaded.fileName}. Publish it when ready for learners.`)
+      setStatus(
+        uploaded.uploadStatus === "READY"
+          ? `Uploaded ${uploaded.fileName}. Publish it when ready for learners.`
+          : `Upload for ${uploaded.fileName} is still pending verification.`,
+      )
       await reloadMaterials()
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed")
@@ -152,10 +170,10 @@ export default function FacultyLessonMaterials({
               >
                 <span style={{ color: C.white, fontSize: 13 }}>{material.fileName}</span>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={{ color: material.published ? accent.text : "rgba(255,255,255,0.35)", fontSize: 11, fontFamily: "var(--font-mono)" }}>
-                    {material.published ? "published" : "draft"}
+                  <span style={{ color: statusColor(material, accent), fontSize: 11, fontFamily: "var(--font-mono)" }}>
+                    {statusLabel(material)}
                   </span>
-                  {!material.published && (
+                  {material.uploadStatus === "READY" && !material.published && (
                     <button
                       type="button"
                       disabled={publishingId === material.id}

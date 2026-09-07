@@ -1,6 +1,7 @@
 import crypto from "node:crypto"
-import { PutObjectCommand, S3Client, GetObjectCommand } from "@aws-sdk/client-s3"
+import { GetObjectCommand, HeadObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import type { LessonMaterialUploadStatus } from "@prisma/client"
 
 export const OBJECT_STORAGE_PROVIDER = "r2"
 export const MAX_MATERIAL_BYTE_SIZE = 50_000_000
@@ -76,6 +77,36 @@ function getClient(): S3Client {
   return cachedClient
 }
 
+function isObjectNotFoundError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false
+  const record = error as { name?: string; Code?: string; $metadata?: { httpStatusCode?: number } }
+  const status = record.$metadata?.httpStatusCode
+  return (
+    record.name === "NotFound" ||
+    record.Code === "NotFound" ||
+    record.Code === "NoSuchKey" ||
+    status === 404
+  )
+}
+
+export async function objectExists(storageKey: string): Promise<boolean> {
+  const config = getObjectStorageConfig()
+  if (!config) return false
+
+  try {
+    await getClient().send(
+      new HeadObjectCommand({
+        Bucket: config.bucketName,
+        Key: storageKey,
+      }),
+    )
+    return true
+  } catch (error) {
+    if (isObjectNotFoundError(error)) return false
+    throw error
+  }
+}
+
 export function sanitizeMaterialFileName(fileName: string): string {
   const trimmed = fileName.trim()
   const sanitized = trimmed.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 200)
@@ -135,11 +166,28 @@ export async function createPresignedDownloadUrl(storageKey: string): Promise<st
   return getSignedUrl(getClient(), command, { expiresIn: DOWNLOAD_URL_TTL_SECONDS })
 }
 
+export async function resolveMaterialDownloadUrl(material: {
+  storageKey: string
+  uploadStatus: LessonMaterialUploadStatus
+  published?: boolean
+  requirePublished?: boolean
+}): Promise<string | null> {
+  if (!isObjectStorageConfigured()) return null
+  if (material.uploadStatus !== "READY") return null
+  if (material.requirePublished && !material.published) return null
+
+  const exists = await objectExists(material.storageKey)
+  if (!exists) return null
+
+  return createPresignedDownloadUrl(material.storageKey)
+}
+
 export function toPublicMaterial(input: {
   id: string
   fileName: string
   mimeType: string
   byteSize: number
+  uploadStatus: LessonMaterialUploadStatus
   published: boolean
   createdAt: Date
   updatedAt: Date
@@ -149,6 +197,7 @@ export function toPublicMaterial(input: {
     fileName: input.fileName,
     mimeType: input.mimeType,
     byteSize: input.byteSize,
+    uploadStatus: input.uploadStatus,
     published: input.published,
     createdAt: input.createdAt.toISOString(),
     updatedAt: input.updatedAt.toISOString(),

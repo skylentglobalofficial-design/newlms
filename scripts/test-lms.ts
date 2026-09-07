@@ -79,10 +79,15 @@ async function completeLesson(jar: CookieJar, courseSlug: string, lessonKey: str
   return result.data
 }
 
-async function grantRole(email: string, role: "faculty" | "organisation", organisationSlug = "apex-college") {
+async function grantRole(email: string, role: "faculty" | "organisation" | "admin", organisationSlug = "apex-college") {
   const user = await prisma.user.findUnique({ where: { email } })
   assert(user, `User ${email} not found`)
-  const roleName = role === "faculty" ? RoleName.FACULTY : RoleName.ORGANISATION_ADMIN
+  const roleName =
+    role === "faculty"
+      ? RoleName.FACULTY
+      : role === "organisation"
+        ? RoleName.ORGANISATION_ADMIN
+        : RoleName.ADMIN
   const roleRecord = await prisma.role.upsert({
     where: { name: roleName },
     update: {},
@@ -388,6 +393,151 @@ async function main() {
   assert(maliciousRow.attachments[0].storageProvider === "pending", "Client cannot set storage provider")
   assert(maliciousRow.attachments[0].storageKey.startsWith("pending/"), "Storage key must be server-generated")
   assert(!maliciousRow.attachments[0].storageKey.includes("attacker/owned"), "Client cannot inject storage key")
+
+  console.log("20. Unauthorized upload rejected for lesson materials")
+  const studentJar: CookieJar = new Map()
+  const studentUser = await signupUser(studentJar, "material-student")
+  await request(studentJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { courseSlug },
+  })
+  const studentUpload = await request(studentJar, `/faculty/courses/${courseSlug}/lessons/l2/materials`, {
+    method: "POST",
+    csrf: true,
+    body: { fileName: "slides.pdf", mimeType: "application/pdf", byteSize: 1024 },
+  })
+  assert(studentUpload.response.status === 403, "Students must not upload lesson materials")
+
+  console.log("21. Instructor upload authorization and server-owned metadata")
+  const instructorJar: CookieJar = new Map()
+  const instructorUser = await signupUser(instructorJar, "material-instructor")
+  await grantRole(instructorUser.email, "admin")
+  const uploadAttempt = await request(instructorJar, `/faculty/courses/${courseSlug}/lessons/l2/materials`, {
+    method: "POST",
+    csrf: true,
+    body: {
+      fileName: "lecture.pdf",
+      mimeType: "application/pdf",
+      byteSize: 2048,
+      storageProvider: "r2",
+      storageKey: "attacker/owned/material.pdf",
+    },
+  })
+  const storageConfigured = uploadAttempt.response.status === 201
+  let publishedMaterialId: string | null = null
+  if (storageConfigured) {
+    assert(uploadAttempt.data.data.material.fileName === "lecture.pdf", "Material filename should be stored")
+    assert(uploadAttempt.data.data.uploadUrl, "Upload URL should be returned when storage is configured")
+    assert(uploadAttempt.data.data.material.uploadStatus === "PENDING", "New materials should start pending")
+    const materialId = uploadAttempt.data.data.material.id as string
+    publishedMaterialId = materialId
+    const materialRow = await prisma.lessonMaterial.findUnique({ where: { id: materialId } })
+    assert(materialRow, "Material row should exist")
+    assert(materialRow.storageProvider === "r2", "Storage provider must be server-controlled")
+    assert(materialRow.storageKey.startsWith(`lesson-materials/${courseSlug}/`), "Storage key must be server-generated")
+    assert(!materialRow.storageKey.includes("attacker/owned"), "Client cannot inject storage key")
+
+    const prematurePublish = await request(
+      instructorJar,
+      `/faculty/courses/${courseSlug}/lessons/l2/materials/${materialId}/publish`,
+      { method: "POST", csrf: true, body: {} },
+    )
+    assert(prematurePublish.response.status === 409, "Publish without verified upload must be rejected")
+
+    const incompleteComplete = await request(
+      instructorJar,
+      `/faculty/courses/${courseSlug}/lessons/l2/materials/${materialId}/complete-upload`,
+      { method: "POST", csrf: true, body: {} },
+    )
+    assert(incompleteComplete.response.status === 409, "Complete-upload without storage object must be rejected")
+
+    const putResponse = await fetch(uploadAttempt.data.data.uploadUrl as string, {
+      method: uploadAttempt.data.data.uploadMethod as string,
+      headers: uploadAttempt.data.data.uploadHeaders as Record<string, string>,
+      body: Buffer.alloc(2048),
+    })
+    assert(putResponse.ok, "Presigned PUT upload should succeed when storage is configured")
+
+    const completeUpload = await request(
+      instructorJar,
+      `/faculty/courses/${courseSlug}/lessons/l2/materials/${materialId}/complete-upload`,
+      { method: "POST", csrf: true, body: {} },
+    )
+    assert(completeUpload.response.ok, "Complete-upload should succeed after storage PUT")
+    assert(completeUpload.data.data.uploadStatus === "READY", "Material should be ready after verified upload")
+
+    const publish = await request(
+      instructorJar,
+      `/faculty/courses/${courseSlug}/lessons/l2/materials/${materialId}/publish`,
+      { method: "POST", csrf: true, body: {} },
+    )
+    assert(publish.response.ok, "Instructor should be able to publish verified material")
+    assert(publish.data.data.published === true, "Published flag should be true")
+  } else {
+    assert(uploadAttempt.response.status === 503, "Missing storage config should return 503, not accept client metadata")
+  }
+
+  console.log("22. Unsupported lesson material file type rejected")
+  const badType = await request(instructorJar, `/faculty/courses/${courseSlug}/lessons/l2/materials`, {
+    method: "POST",
+    csrf: true,
+    body: { fileName: "virus.exe", mimeType: "application/x-msdownload", byteSize: 1024 },
+  })
+  assert(badType.response.status === 400, "Unsupported file type must be rejected")
+
+  console.log("23. Locked lesson materials forbidden for enrolled learner")
+  const lockedMaterials = await request(studentJar, `/lms/courses/${courseSlug}/lessons/l2/materials`)
+  assert(lockedMaterials.response.status === 403, "Locked lesson materials must be forbidden")
+  assert(lockedMaterials.data.error === "Lesson locked", "Locked lesson should return structured error")
+
+  console.log("24. Unlocked lesson materials allowed after prerequisite completion")
+  await completeLesson(studentJar, courseSlug, "l1")
+  const enrolledMaterials = await request(studentJar, `/lms/courses/${courseSlug}/lessons/l2/materials`)
+  assert(enrolledMaterials.response.ok, "Enrolled student should list lesson materials after unlock")
+  if (storageConfigured && publishedMaterialId) {
+    assert(Array.isArray(enrolledMaterials.data.data), "Materials list should be an array")
+    const lecture = enrolledMaterials.data.data.find((item: { fileName?: string }) => item.fileName === "lecture.pdf")
+    assert(lecture, "Published material should be visible to enrolled student")
+    assert(lecture.downloadUrl, "Verified published material should include download URL when storage is configured")
+  } else {
+    assert(Array.isArray(enrolledMaterials.data.data), "Materials list should be an array")
+  }
+
+  console.log("25. Non-enrolled student cannot access private lesson materials")
+  const materialOutsiderJar: CookieJar = new Map()
+  await signupUser(materialOutsiderJar, "material-outsider")
+  const outsiderMaterials = await request(materialOutsiderJar, `/lms/courses/${courseSlug}/lessons/l2/materials`)
+  assert(outsiderMaterials.response.status === 403, "Non-enrolled user must not access lesson materials")
+
+  console.log("26. Faculty without teaching scope cannot manage lesson materials")
+  const materialScopedFacultyJar: CookieJar = new Map()
+  const materialScopedFaculty = await signupUser(materialScopedFacultyJar, "scoped-faculty")
+  await grantRole(materialScopedFaculty.email, "faculty")
+  const scopedUpload = await request(materialScopedFacultyJar, `/faculty/courses/${courseSlug}/lessons/l2/materials`, {
+    method: "POST",
+    csrf: true,
+    body: { fileName: "scoped.pdf", mimeType: "application/pdf", byteSize: 1024 },
+  })
+  assert(scopedUpload.response.status === 403, "Faculty without demo teaching scope must not manage materials")
+
+  console.log("27. Learner only sees published materials")
+  if (storageConfigured && publishedMaterialId) {
+    await prisma.lessonMaterial.update({
+      where: { id: publishedMaterialId },
+      data: { published: false },
+    })
+    const hiddenMaterials = await request(studentJar, `/lms/courses/${courseSlug}/lessons/l2/materials`)
+    assert(hiddenMaterials.response.ok, "Materials endpoint should succeed")
+    assert(
+      !hiddenMaterials.data.data.some((item: { fileName?: string }) => item.fileName === "lecture.pdf"),
+      "Unpublished materials must not appear for learners",
+    )
+    await prisma.lessonMaterial.update({
+      where: { id: publishedMaterialId },
+      data: { published: true },
+    })
+  }
 
   console.log("All LMS integration checks passed.")
   await prisma.$disconnect()
