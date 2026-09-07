@@ -5,6 +5,7 @@ import {
   logoutRequest,
   signupRequest,
   clearAuthClientState,
+  syncCsrfFromCookie,
   type ApiRole,
 } from "../lib/auth-api"
 
@@ -68,6 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const session = await fetchCurrentUser()
         if (cancelled) return
         if (session) {
+          syncCsrfFromCookie()
           setUser(toAuthUser(session))
           setRoles(session.roles)
         }
@@ -89,6 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const session = await loginRequest({ email, password })
+    syncCsrfFromCookie()
     const nextUser = toAuthUser(session)
     setUser(nextUser)
     setRoles(session.roles)
@@ -97,6 +100,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = useCallback(async (name: string, email: string, password: string) => {
     const session = await signupRequest({ name, email, password })
+    syncCsrfFromCookie()
     const nextUser = toAuthUser(session)
     setUser(nextUser)
     setRoles(session.roles)

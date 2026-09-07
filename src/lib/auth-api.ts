@@ -47,11 +47,19 @@ function readCsrfCookie(): string | null {
   return match ? decodeURIComponent(match[1]) : null
 }
 
+export function syncCsrfFromCookie(): void {
+  csrfToken = readCsrfCookie()
+}
+
 export async function ensureCsrfToken(): Promise<string> {
-  const existing = csrfToken ?? readCsrfCookie()
-  if (existing) {
-    csrfToken = existing
-    return existing
+  const cookieToken = readCsrfCookie()
+  if (cookieToken) {
+    csrfToken = cookieToken
+    return cookieToken
+  }
+
+  if (csrfToken) {
+    return csrfToken
   }
 
   const response = await fetch(`${API_BASE}/auth/csrf`, { credentials: "include" })
