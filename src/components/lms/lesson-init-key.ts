@@ -8,3 +8,11 @@ export function buildLessonInitKey(input: {
   if (input.locked) return `${input.slug}:${input.lessonId}:locked`
   return `${input.slug}:${input.lessonId}:${input.lessonType}`
 }
+
+export function shouldRunLessonInitialization(
+  completedKey: string | null,
+  nextKey: string | null,
+): boolean {
+  if (!nextKey) return false
+  return completedKey !== nextKey
+}

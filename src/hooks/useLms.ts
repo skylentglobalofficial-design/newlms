@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import type { ApiCourseWorkspace } from "../lib/lms-api"
 import {
   apiLessonStateToUi,
@@ -99,15 +99,18 @@ export function useLmsCourse(slug: string | undefined) {
     return workspace
   }, [slug])
 
-  const lessonStates: Record<string, LessonState> =
-    access.status === "ready"
-      ? Object.fromEntries(
-          Object.entries(access.workspace.lessonStates).map(([key, state]) => [
-            key,
-            apiLessonStateToUi(state),
-          ]),
-        )
-      : {}
+  const lessonStates: Record<string, LessonState> = useMemo(
+    () =>
+      access.status === "ready"
+        ? Object.fromEntries(
+            Object.entries(access.workspace.lessonStates).map(([key, state]) => [
+              key,
+              apiLessonStateToUi(state),
+            ]),
+          )
+        : {},
+    [access],
+  )
 
   const getLessonState = (lessonId: string): LessonState =>
     lessonStates[lessonId] ?? { ...EMPTY_LESSON_STATE }

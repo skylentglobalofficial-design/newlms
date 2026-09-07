@@ -937,6 +937,76 @@ async function main() {
   assert(duplicateKey === unlockedKey, "Lesson init key should be stable for the same lesson context")
   assert(lockedKey === `${courseSlug}:l4:locked`, "Locked lessons should use locked init key")
 
+  console.log("58. Lesson initialization guard suppresses repeated init for same key")
+  const { shouldRunLessonInitialization } = await import("../src/components/lms/lesson-init-key.js")
+  let completedInitKey: string | null = null
+  let initRuns = 0
+  for (const _attempt of Array.from({ length: 20 })) {
+    if (shouldRunLessonInitialization(completedInitKey, unlockedKey)) {
+      initRuns += 1
+      completedInitKey = unlockedKey
+    }
+  }
+  assert(initRuns === 1, "Repeated effect invocations with the same init key should initialize once")
+  assert(
+    shouldRunLessonInitialization(completedInitKey, lockedKey),
+    "A changed init key should allow initialization again",
+  )
+
+  console.log("59. Learn page lesson init does not loop in browser (smoke)")
+  const learnSmokeBase = process.env.LEARN_SMOKE_BASE ?? "http://localhost:5173"
+  const chromePath = process.env.CHROME_PATH ?? "/usr/bin/google-chrome-stable"
+  const viteReachable = await fetch(learnSmokeBase).then((response) => response.ok).catch(() => false)
+  if (!viteReachable) {
+    console.log(`   SKIP: Vite dev server not reachable at ${learnSmokeBase}`)
+  } else {
+    const { default: puppeteer } = await import("puppeteer-core")
+    const browser = await puppeteer.launch({
+      executablePath: chromePath,
+      headless: true,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    })
+    const page = await browser.newPage()
+    const mediaRequests: string[] = []
+    const progressRequests: string[] = []
+    page.on("request", (request) => {
+      const url = request.url()
+      if (url.includes("/lessons/l1/media")) mediaRequests.push(url)
+      if (url.includes("/lessons/l1/progress")) progressRequests.push(url)
+    })
+
+    await page.goto(`${learnSmokeBase}/login`, { waitUntil: "domcontentloaded", timeout: 30000 })
+    await page.waitForSelector("#si-email", { timeout: 15000 })
+    await page.type("#si-email", "learner@demo.skylent.dev", { delay: 5 })
+    await page.type("#si-password", process.env.DEMO_USER_PASSWORD ?? "DemoSkylent2026!", { delay: 5 })
+    await page.click('button[type="submit"]')
+    await page.waitForFunction(
+      () => window.location.pathname.includes("/dashboard/"),
+      { timeout: 20000 },
+    )
+
+    await page.goto(`${learnSmokeBase}/learn/data-analytics/l1`, { waitUntil: "domcontentloaded", timeout: 45000 })
+    await page.waitForSelector(".lms-lesson-panel", { timeout: 20000 })
+    const startMedia = mediaRequests.length
+    const startProgress = progressRequests.length
+    await new Promise((resolve) => setTimeout(resolve, 6000))
+    const muxReady = await page.evaluate(() => ({
+      hasMuxPlayer: Boolean(document.querySelector("mux-player")),
+      materialsLoading: document.body.textContent?.includes("Loading materials…") ?? false,
+    }))
+    await browser.close()
+
+    assert(mediaRequests.length - startMedia <= 1, `Media requests looped during observe window (${mediaRequests.length} total)`)
+    assert(progressRequests.length - startProgress <= 1, `Progress requests looped during observe window (${progressRequests.length} total)`)
+    assert(mediaRequests.length <= 4, `Too many media requests during lesson load (${mediaRequests.length})`)
+    assert(progressRequests.length <= 4, `Too many progress requests during lesson load (${progressRequests.length})`)
+    assert(muxReady.hasMuxPlayer, "Mux player should render on unlocked demo lesson")
+    assert(!muxReady.materialsLoading, "Materials should finish loading when requests are finite")
+    console.log(
+      `   PASS: media=${mediaRequests.length}, progress=${progressRequests.length}, mux=${muxReady.hasMuxPlayer}`,
+    )
+  }
+
   console.log("All LMS integration checks passed.")
   await prisma.$disconnect()
 }

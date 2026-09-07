@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { useAuth } from '../context/AuthContext'
 import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
@@ -35,6 +35,7 @@ import { buildLessonInitKey } from '../components/lms/lesson-init-key'
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, ready: authReady } = useAuth()
   const { access, lessonStates, reload, enroll } = useLmsCourse(slug)
   const roleAccent = getLmsRoleAccent(user?.role)
@@ -64,10 +65,12 @@ export default function LearnPage() {
   }, [firstLessonId, lessonId, access.status])
 
   useEffect(() => {
-    if (selectedLessonId && slug && access.status === 'ready') {
-      navigate(`/learn/${slug}/${selectedLessonId}`, { replace: true })
+    if (!selectedLessonId || !slug || access.status !== 'ready') return
+    const target = `/learn/${slug}/${selectedLessonId}`
+    if (location.pathname !== target) {
+      navigate(target, { replace: true })
     }
-  }, [selectedLessonId, slug, navigate, access.status])
+  }, [selectedLessonId, slug, navigate, access.status, location.pathname])
 
   useEffect(() => {
     if (lessonId && allLessons.some((lesson) => lesson.id === lessonId)) {
@@ -84,30 +87,57 @@ export default function LearnPage() {
     () => allLessons.find((lesson) => lesson.id === selectedLessonId)?.media,
     [allLessons, selectedLessonId],
   )
-  const lessonInitKey = buildLessonInitKey({
+  const lessonInitKey =
+    access.status === 'ready'
+      ? buildLessonInitKey({
+          slug,
+          lessonId: selectedLessonId,
+          locked: selectedLessonLocked,
+          lessonType: selectedLessonType,
+        })
+      : null
+  const completedLessonInitKeyRef = useRef<string | null>(null)
+  const lessonInitContextRef = useRef({
     slug,
-    lessonId: selectedLessonId,
-    locked: selectedLessonLocked,
-    lessonType: selectedLessonType,
+    selectedLessonId,
+    selectedLessonType,
+    selectedLessonLocked,
+    selectedLessonFallbackMedia,
   })
-  const lastLessonInitKeyRef = useRef<string | null>(null)
+  lessonInitContextRef.current = {
+    slug,
+    selectedLessonId,
+    selectedLessonType,
+    selectedLessonLocked,
+    selectedLessonFallbackMedia,
+  }
 
   useEffect(() => {
-    if (access.status !== 'ready' || !lessonInitKey || !slug || !selectedLessonId) return
-    if (lastLessonInitKeyRef.current === lessonInitKey) return
-    lastLessonInitKeyRef.current = lessonInitKey
+    if (access.status !== 'ready' || !lessonInitKey) return
+    if (completedLessonInitKeyRef.current === lessonInitKey) return
+    completedLessonInitKeyRef.current = lessonInitKey
 
-    if (selectedLessonLocked) {
+    const {
+      slug: activeSlug,
+      selectedLessonId: activeLessonId,
+      selectedLessonType: activeLessonType,
+      selectedLessonLocked: activeLessonLocked,
+      selectedLessonFallbackMedia: activeFallbackMedia,
+    } = lessonInitContextRef.current
+
+    if (!activeSlug || !activeLessonId) return
+
+    if (activeLessonLocked) {
       setQuizQuestions([])
       setLessonMedia(undefined)
       return
     }
 
-    void markLessonAccess(slug, selectedLessonId).catch(() => undefined)
+    void markLessonAccess(activeSlug, activeLessonId).catch(() => undefined)
 
-    if (selectedLessonType === 'quiz') {
+    if (activeLessonType === 'quiz') {
       setQuizLoading(true)
-      fetchQuizQuestions(slug, selectedLessonId)
+      fetchQuizQuestions(activeSlug, activeLessonId)
         .then((questions) => setQuizQuestions(questions.map(q => ({ q: q.q, options: q.options }))))
         .catch(() => setQuizQuestions([]))
         .finally(() => setQuizLoading(false))
@@ -116,22 +146,14 @@ export default function LearnPage() {
       setQuizLoading(false)
     }
 
-    if (selectedLessonType === 'video') {
-      fetchLessonMedia(slug, selectedLessonId)
+    if (activeLessonType === 'video') {
+      fetchLessonMedia(activeSlug, activeLessonId)
         .then((payload) => setLessonMedia(payload.media))
-        .catch(() => setLessonMedia(selectedLessonFallbackMedia ?? { provider: 'unavailable' }))
+        .catch(() => setLessonMedia(activeFallbackMedia ?? { provider: 'unavailable' }))
     } else {
       setLessonMedia(undefined)
     }
-  }, [
-    access.status,
-    lessonInitKey,
-    slug,
-    selectedLessonId,
-    selectedLessonLocked,
-    selectedLessonType,
-    selectedLessonFallbackMedia,
-  ])
+  }, [access.status, lessonInitKey])
 
   const refreshWorkspace = useCallback(async () => {
     if (!slug) return

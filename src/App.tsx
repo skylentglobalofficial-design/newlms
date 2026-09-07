@@ -88,8 +88,7 @@ function AppRoutes() {
       <Route path="/dashboard/organisation" element={<DashboardOrgPage />} />
       <Route path="/dashboard/recruiter" element={<DashboardRecruiterPage />} />
       <Route path="/dashboard/admin" element={<DashboardAdminPage />} />
-      <Route path="/learn/:slug" element={<LearnPage />} />
-      <Route path="/learn/:slug/:lessonId" element={<LearnPage />} />
+      <Route path="/learn/:slug/:lessonId?" element={<LearnPage />} />
       <Route path="/career" element={<Navigate to="/career-os" replace />} />
       <Route path="/universities" element={<Navigate to="/institutions" replace />} />
       <Route path="/labs" element={<LabsPage />} />
