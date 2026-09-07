@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 import { C, T } from '../../tokens'
+import { useAuth } from '../../context/AuthContext'
+import { roleRoute } from '../../lib/auth-routing'
 import type { CourseLesson, CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
 import LessonIcon from './LessonIcon'
@@ -20,13 +22,15 @@ export default function CurriculumRail({
   accent: Accent
   onSelectLesson: (id: string) => void
 }) {
+  const { user } = useAuth()
+  const dashboardPath = roleRoute(user?.role ?? 'student')
   const allLessons = course.modules.flatMap(m => m.lessons)
   const { progressPct } = computeCourseProgress(allLessons, lessonStates)
 
   return (
     <div className="lms-curriculum-rail">
       <div style={{ padding: '20px', borderBottom: `1px solid ${T.lineDark}` }}>
-        <Link to="/dashboard/student" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 12 }}>
+        <Link to={dashboardPath} style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 12 }}>
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 18, color: C.white }}>
             Skylent<span style={{ color: accent.primary }}>.</span>
           </span>

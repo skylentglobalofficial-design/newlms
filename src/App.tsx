@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
 import { C, Nav, Footer, globalCSS } from './components/shared'
 import { PublicCanvas } from './components/foundation'
+import { DashboardIndexRedirect, LegacyCareerOsRedirect } from './components/routing/RouteGuards'
 import LabDetailPage from './pages/LabDetailPage'
 import ExperimentPage from './pages/ExperimentPage'
 import { AuthProvider } from './context/AuthContext'
@@ -9,7 +10,6 @@ import HomePage from './pages/HomePage'
 import EducationPage from './pages/EducationPage'
 import OSPage from './pages/OSPage'
 import InstitutionsPage from './pages/InstitutionsPage'
-import UniversitiesPage from './pages/UniversitiesPage'
 import LabsPage from './pages/LabsPage'
 import StoriesPage from './pages/StoriesPage'
 import AboutPage from './pages/AboutPage'
@@ -60,14 +60,14 @@ function AppRoutes() {
         <Route path="support" element={<CareerOSSupportPage />} />
         <Route path="support/:id" element={<CareerOSSupportDetailPage />} />
       </Route>
-      <Route path="/career-os/profile" element={<Navigate to="/career-os/app/profile" replace />} />
-      <Route path="/career-os/jobs" element={<Navigate to="/career-os/app/jobs" replace />} />
-      <Route path="/career-os/applications" element={<Navigate to="/career-os/app/applications" replace />} />
-      <Route path="/career-os/applications/:id" element={<Navigate to="/career-os/app/applications/:id" replace />} />
-      <Route path="/career-os/interviews" element={<Navigate to="/career-os/app/interviews" replace />} />
-      <Route path="/career-os/interviews/:id" element={<Navigate to="/career-os/app/interviews/:id" replace />} />
-      <Route path="/career-os/support" element={<Navigate to="/career-os/app/support" replace />} />
-      <Route path="/career-os/support/:id" element={<Navigate to="/career-os/app/support/:id" replace />} />
+      <Route path="/career-os/profile" element={<LegacyCareerOsRedirect />} />
+      <Route path="/career-os/jobs" element={<LegacyCareerOsRedirect />} />
+      <Route path="/career-os/applications" element={<LegacyCareerOsRedirect />} />
+      <Route path="/career-os/applications/:id" element={<LegacyCareerOsRedirect />} />
+      <Route path="/career-os/interviews" element={<LegacyCareerOsRedirect />} />
+      <Route path="/career-os/interviews/:id" element={<LegacyCareerOsRedirect />} />
+      <Route path="/career-os/support" element={<LegacyCareerOsRedirect />} />
+      <Route path="/career-os/support/:id" element={<LegacyCareerOsRedirect />} />
       <Route path="/institutions" element={<InstitutionsPage />} />
       <Route path="/os" element={<OSPage />} />
       <Route path="/programs" element={<ProgramsPage />} />
@@ -83,6 +83,7 @@ function AppRoutes() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<LoginPage />} />
+      <Route path="/dashboard" element={<DashboardIndexRedirect />} />
       <Route path="/dashboard/student" element={<DashboardStudentPage />} />
       <Route path="/dashboard/faculty" element={<DashboardFacultyPage />} />
       <Route path="/dashboard/organisation" element={<DashboardOrgPage />} />
@@ -91,7 +92,7 @@ function AppRoutes() {
       <Route path="/learn/:slug" element={<LearnPage />} />
       <Route path="/learn/:slug/:lessonId" element={<LearnPage />} />
       <Route path="/career" element={<Navigate to="/career-os" replace />} />
-      <Route path="/universities" element={<UniversitiesPage />} />
+      <Route path="/universities" element={<Navigate to="/institutions" replace />} />
       <Route path="/labs" element={<LabsPage />} />
       <Route path="/labs/:labId" element={<LabDetailPage />} />
       <Route path="/labs/:labId/:experimentId" element={<ExperimentPage />} />

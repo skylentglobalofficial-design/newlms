@@ -577,7 +577,6 @@ export default function HomePage() {
   return (
     <>
       <EcosystemMapHero />
-      <CoverageSection />
       <EducationSection />
       <SkillsSection />
       <CareerSection />

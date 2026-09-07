@@ -417,10 +417,10 @@ export function Nav() {
                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)')}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
               >Sign In</Link>
-              <Link to="/programs" style={{ background: navAccent.primary, border: 'none', color: C.white, borderRadius: 7, padding: '8px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+              <Link to="/signup" style={{ background: navAccent.primary, border: 'none', color: C.white, borderRadius: 7, padding: '8px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
                 onMouseEnter={e => { e.currentTarget.style.background = navAccent.secondary }}
                 onMouseLeave={e => { e.currentTarget.style.background = navAccent.primary }}
-              >Explore Programs</Link>
+              >Get Started</Link>
             </>
           )}
           <button className="show-mobile" onClick={() => setMenuOpen(o => !o)} style={{ background: 'none', border: 'none', color: C.white, cursor: 'pointer', padding: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -458,13 +458,18 @@ export function Nav() {
           {simpleLinks.map(l => (
             <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '10px 0', color: 'rgba(255,255,255,0.7)', fontSize: 14, textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{l.label}</Link>
           ))}
-          <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 16 }}>
             {user ? (
-              <button onClick={() => { logout(); navigate('/'); setMenuOpen(false) }} style={{ flex: 1, textAlign: 'center', padding: '11px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, color: C.white, background: 'none', textDecoration: 'none', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Sign Out</button>
+              <>
+                <Link to={dashRoute(user.role)} onClick={() => setMenuOpen(false)} style={{ textAlign: 'center', padding: '11px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>Dashboard</Link>
+                <button onClick={() => { logout(); navigate('/'); setMenuOpen(false) }} style={{ width: '100%', textAlign: 'center', padding: '11px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, color: C.white, background: 'none', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Sign Out</button>
+              </>
             ) : (
-              <Link to="/login" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13 }}>Sign In</Link>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <Link to="/login" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13 }}>Sign In</Link>
+                <Link to="/signup" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', background: navAccent.primary, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>Get Started</Link>
+              </div>
             )}
-            <Link to="/programs" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', background: navAccent.primary, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>Explore Programs</Link>
           </div>
         </div>
       )}
@@ -477,7 +482,7 @@ export function Footer() {
   const cols = [
     { heading: 'Education', links: [['Overview', '/education'], ['Schooling', '/education#schooling'], ['Undergraduate', '/education#undergraduate'], ['Postgraduate', '/education#postgraduate']] },
     { heading: 'Skills', links: [['Overview', '/skills'], ['Webinars', '/workshops'], ['Certificate Programs', '/programs'], ['Professional Programs', '/programs'], ['Job Assistance', '/skills#job-assistance']] },
-    { heading: 'Career OS', links: [['Overview', '/career-os'], ['Interview Prep', '/career-os'], ['Job Board', '/career-os'], ['Skylent OS', '/os']] },
+    { heading: 'Career OS', links: [['Overview', '/career-os'], ['Interview Prep', '/career-os#interview'], ['Job Board', '/career-os#jobs'], ['Skylent OS', '/os']] },
     { heading: 'Company', links: [['About', '/about'], ['For Institutions', '/institutions'], ['Stories', '/stories'], ['Blog', '/blog'], ['Contact', '/contact']] },
   ]
   return (
@@ -487,8 +492,8 @@ export function Footer() {
           <div>
             <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.white, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
             <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Education, skills, and career workflows on one platform — for learners and institutions.</p>
-            <div style={{ display: 'flex', gap: 10 }}>
-              {['in', 'tw', 'yt', 'ig'].map(s => (<div key={s} style={{ width: 32, height: 32, borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{s}</div>))}
+            <div style={{ display: 'flex', gap: 10 }} aria-hidden="true">
+              {['in', 'tw', 'yt', 'ig'].map(s => (<div key={s} style={{ width: 32, height: 32, borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.2)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>{s}</div>))}
             </div>
           </div>
           {cols.map(col => (
@@ -507,7 +512,7 @@ export function Footer() {
         </div>
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
           <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>© 2026 Skylent Global. All rights reserved.</div>
-          <div style={{ display: 'flex', gap: 20 }}>{['Privacy', 'Terms', 'Cookies'].map(l => <span key={l} style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{l}</span>)}</div>
+          <div style={{ display: 'flex', gap: 20 }}>{['Privacy', 'Terms', 'Cookies'].map(l => <span key={l} style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{l}</span>)}</div>
         </div>
       </div>
     </footer>

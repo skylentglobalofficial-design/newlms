@@ -27,15 +27,7 @@ import {
   updateAssignment,
 } from '../lib/lms-api'
 
-function dashRoute(role?: string) {
-  switch (role) {
-    case 'faculty': return '/dashboard/faculty'
-    case 'organisation': return '/dashboard/organisation'
-    case 'recruiter': return '/dashboard/recruiter'
-    case 'superadmin': return '/dashboard/admin'
-    default: return '/dashboard/student'
-  }
-}
+import { roleRoute } from '../lib/auth-routing'
 
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
@@ -164,7 +156,7 @@ export default function LearnPage() {
         >
           {enrolling ? 'Enrolling…' : 'Enroll to start learning'}
         </button>
-        <Link to="/dashboard/student" style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 13 }}>← Back to dashboard</Link>
+        <Link to={roleRoute(user?.role ?? 'student')} style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 13 }}>← Back to dashboard</Link>
       </div>
     )
   }
@@ -250,7 +242,7 @@ export default function LearnPage() {
           <button type="button" className="lms-menu-btn" onClick={() => setSidebarOpen(true)} aria-label="Open curriculum">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
-          <button type="button" onClick={() => navigate(dashRoute(user?.role))} className="lms-back-btn">
+          <button type="button" onClick={() => navigate(roleRoute(user?.role ?? 'student'))} className="lms-back-btn">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
             Dashboard
           </button>

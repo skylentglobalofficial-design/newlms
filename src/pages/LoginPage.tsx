@@ -80,6 +80,13 @@ export default function LoginPage() {
     void finishAuthNavigation(navigate, user.role, mergedState)
   }, [location.pathname, location.search, location.state, navigate, oauthHandled, ready, user, redirectState])
 
+  useEffect(() => {
+    if (!ready || !user) return
+    const params = new URLSearchParams(location.search)
+    if (params.get("oauth") === "success") return
+    void finishAuthNavigation(navigate, user.role, redirectState)
+  }, [ready, user, navigate, redirectState, location.search])
+
   function startGoogleAuth() {
     setError(null)
     setGoogleLoading(true)

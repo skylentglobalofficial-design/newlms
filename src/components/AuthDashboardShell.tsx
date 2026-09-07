@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
+import type { RoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
 
 export type AuthNavItem = {
@@ -16,6 +17,8 @@ export type AuthNavItem = {
 
 export type AuthDashboardShellProps = {
   themeId: AuroraThemeId
+  /** Role accent for nav, CTAs, focus — not page background */
+  accent?: RoleAccent
   /** Subtitle under Skylent logo, e.g. "Learning" */
   workspaceLabel: string
   roleLabel: string
@@ -31,6 +34,7 @@ export type AuthDashboardShellProps = {
 
 export function AuthDashboardShell({
   themeId,
+  accent: accentProp,
   workspaceLabel,
   roleLabel,
   navItems,
@@ -41,7 +45,7 @@ export function AuthDashboardShell({
   children,
   header,
 }: AuthDashboardShellProps) {
-  const accent = getDomainAccent(themeId)
+  const accent = accentProp ?? getDomainAccent(themeId)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -62,7 +66,7 @@ export function AuthDashboardShell({
 
   async function handleLogout() {
     await logout()
-    navigate('/login')
+    navigate('/')
   }
 
   const sidebarContent = (
@@ -197,7 +201,7 @@ export function AuthDashboardShell({
           <div style={{ width: 36 }} />
         </header>
 
-        <div className="auth-shell-content" style={{ padding: 'clamp(20px, 3vw, 36px) clamp(16px, 3vw, 36px) 96px', minWidth: 0 }}>
+        <div className="auth-shell-content skylent-content-container" style={{ padding: 'clamp(20px, 3vw, 36px) clamp(16px, 3vw, 36px) 96px', minWidth: 0, maxWidth: 1120 }}>
           {header}
           {children}
         </div>
