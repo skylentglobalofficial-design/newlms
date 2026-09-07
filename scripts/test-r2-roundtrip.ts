@@ -1,6 +1,7 @@
 import { config as loadEnv } from "dotenv"
 import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
+import bcrypt from "bcrypt"
 import { PrismaClient } from "@prisma/client"
 
 const repoRoot = resolve(fileURLToPath(new URL(".", import.meta.url)), "..")
@@ -10,11 +11,30 @@ const { isObjectStorageConfigured } = await import("../server/src/lib/object-sto
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
-const DEMO_PASSWORD = process.env.DEMO_USER_PASSWORD ?? "DemoSkylent2026!"
+const BCRYPT_ROUNDS = 12
+const DEMO_MENTOR_EMAIL = "mentor@demo.skylent.dev"
+const DEMO_LEARNER_EMAIL = "learner@demo.skylent.dev"
 const COURSE_SLUG = "data-analytics"
 const LESSON_KEY = "l2"
 
 type CookieJar = Map<string, string>
+
+function getDemoPassword(): string {
+  return process.env.DEMO_USER_PASSWORD ?? "DemoSkylent2026!"
+}
+
+function parseSetCookie(headers: string[] | undefined, jar: CookieJar) {
+  if (!headers) return
+  for (const header of headers) {
+    const [pair] = header.split(";")
+    const index = pair.indexOf("=")
+    if (index === -1) continue
+    const name = pair.slice(0, index).trim()
+    const value = pair.slice(index + 1).trim()
+    if (value) jar.set(name, value)
+    else jar.delete(name)
+  }
+}
 
 function cookieHeader(jar: CookieJar): string {
   return Array.from(jar.entries()).map(([name, value]) => `${name}=${value}`).join("; ")
@@ -23,13 +43,15 @@ function cookieHeader(jar: CookieJar): string {
 async function request(
   jar: CookieJar,
   path: string,
-  options: { method?: string; body?: unknown; csrf?: boolean } = {},
+  options: { method?: string; body?: unknown; csrf?: boolean; csrfToken?: string } = {},
 ) {
   const headers: Record<string, string> = {}
   const cookie = cookieHeader(jar)
   if (cookie) headers.Cookie = cookie
   if (options.body !== undefined) headers["Content-Type"] = "application/json"
-  if (options.csrf) headers["X-CSRF-Token"] = jar.get("csrf") ?? ""
+  if (options.csrf) {
+    headers["X-CSRF-Token"] = options.csrfToken ?? jar.get("csrf") ?? ""
+  }
 
   const response = await fetch(`${API_BASE}${path}`, {
     method: options.method ?? "GET",
@@ -37,23 +59,50 @@ async function request(
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
   })
 
-  for (const header of response.headers.getSetCookie?.() ?? []) {
-    const [pair] = header.split(";")
-    const index = pair.indexOf("=")
-    jar.set(pair.slice(0, index).trim(), pair.slice(index + 1).trim())
-  }
+  parseSetCookie(response.headers.getSetCookie?.() ?? [], jar)
 
   const text = await response.text()
   const data = text ? JSON.parse(text) : null
   return { response, data }
 }
 
+async function ensureDemoAccountReady(email: string) {
+  if (!email.endsWith("@demo.skylent.dev")) {
+    throw new Error("Demo account preparation is limited to @demo.skylent.dev addresses")
+  }
+
+  const password = getDemoPassword()
+  const user = await prisma.user.findUnique({ where: { email } })
+  if (!user) {
+    throw new Error(`Demo account ${email} is missing. Run: npm run db:seed`)
+  }
+
+  if (!user.passwordHash || !(await bcrypt.compare(password, user.passwordHash))) {
+    await prisma.user.update({
+      where: { email },
+      data: { passwordHash: await bcrypt.hash(password, BCRYPT_ROUNDS) },
+    })
+  }
+}
+
 async function loginDemo(jar: CookieJar, email: string) {
-  await request(jar, "/auth/csrf")
+  await ensureDemoAccountReady(email)
+
+  const csrfBootstrap = await request(jar, "/auth/csrf")
+  if (!csrfBootstrap.response.ok) {
+    throw new Error(`CSRF bootstrap failed for ${email}`)
+  }
+
+  const csrfToken =
+    typeof csrfBootstrap.data?.csrfToken === "string"
+      ? csrfBootstrap.data.csrfToken
+      : jar.get("csrf") ?? ""
+
   const login = await request(jar, "/auth/login", {
     method: "POST",
     csrf: true,
-    body: { email, password: DEMO_PASSWORD },
+    csrfToken,
+    body: { email, password: getDemoPassword() },
   })
   if (!login.response.ok) {
     throw new Error(`Login failed for ${email}: ${JSON.stringify(login.data)}`)
@@ -74,8 +123,8 @@ async function main() {
   const mentorJar: CookieJar = new Map()
   const learnerJar: CookieJar = new Map()
 
-  await loginDemo(mentorJar, "mentor@demo.skylent.dev")
-  await loginDemo(learnerJar, "learner@demo.skylent.dev")
+  await loginDemo(mentorJar, DEMO_MENTOR_EMAIL)
+  await loginDemo(learnerJar, DEMO_LEARNER_EMAIL)
 
   const create = await request(mentorJar, `/faculty/courses/${COURSE_SLUG}/lessons/${LESSON_KEY}/materials`, {
     method: "POST",
