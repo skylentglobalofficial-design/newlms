@@ -2,14 +2,14 @@ import { config as loadEnv } from "dotenv"
 import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import bcrypt from "bcrypt"
-import { PrismaClient } from "@prisma/client"
+import { createPrismaClient } from "../server/src/lib/prisma.js"
 
 const repoRoot = resolve(fileURLToPath(new URL(".", import.meta.url)), "..")
 loadEnv({ path: resolve(repoRoot, ".env"), override: true })
 
 const { isObjectStorageConfigured } = await import("../server/src/lib/object-storage.js")
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 const BCRYPT_ROUNDS = 12
 const DEMO_MENTOR_EMAIL = "mentor@demo.skylent.dev"

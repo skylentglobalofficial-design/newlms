@@ -1,7 +1,7 @@
 import "dotenv/config"
-import { PrismaClient } from "@prisma/client"
+import { createPrismaClient } from "../server/src/lib/prisma.js"
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 
 async function main() {
   const counts = {

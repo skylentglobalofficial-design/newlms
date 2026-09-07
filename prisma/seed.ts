@@ -1,5 +1,5 @@
+import { createPrismaClient } from '../server/src/lib/prisma.js'
 import {
-  PrismaClient,
   CurriculumNodeType,
   EnrollmentStatus,
   ProgramType,
@@ -30,7 +30,7 @@ const repoRoot = resolve(fileURLToPath(new URL('.', import.meta.url)), '..')
 loadEnv({ path: resolve(repoRoot, '.env'), override: true })
 loadEnv({ path: resolve(repoRoot, '.env.local'), override: true })
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 const DEMO_PASSWORD = process.env.DEMO_USER_PASSWORD ?? 'DemoSkylent2026!'
 const BCRYPT_ROUNDS = 12
 const DEMO_ORG_SLUG = 'skylent-demo-college'

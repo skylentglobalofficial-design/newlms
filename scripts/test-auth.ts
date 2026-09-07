@@ -2,8 +2,9 @@ import { config as loadEnv } from "dotenv"
 import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import crypto from "node:crypto"
-import { AuthProvider, RoleName, PrismaClient } from "@prisma/client"
+import { AuthProvider, RoleName } from "@prisma/client"
 import type { GoogleIdTokenClaims } from "../server/src/lib/google-oauth.js"
+import { createPrismaClient } from "../server/src/lib/prisma.js"
 
 const repoRoot = resolve(fileURLToPath(new URL(".", import.meta.url)), "..")
 loadEnv({ path: resolve(repoRoot, ".env"), override: true })
@@ -12,7 +13,7 @@ const { ensureRole } = await import("../server/src/lib/auth.js")
 const { getGoogleOAuthConfig, resolveGoogleAccount } = await import("../server/src/lib/google-oauth.js")
 const { createOAuthState, verifySignedOAuthState } = await import("../server/src/lib/oauth-state.js")
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 
 type CookieJar = Map<string, string>
