@@ -29,6 +29,40 @@ type GoogleCertsResponse = Record<string, string>
 
 let cachedCerts: { fetchedAt: number; keys: GoogleCertsResponse } | null = null
 
+const CERT_CACHE_TTL_MS = 60 * 60 * 1000
+
+export function resetGoogleCertificateCache(): void {
+  cachedCerts = null
+}
+
+/** Seeds the in-memory certificate cache for integration tests. */
+export function seedGoogleCertificateCache(keys: GoogleCertsResponse): void {
+  cachedCerts = { fetchedAt: Date.now(), keys }
+}
+
+async function fetchGoogleCertificates(): Promise<GoogleCertsResponse> {
+  const response = await fetch(GOOGLE_CERTS_URL)
+  if (!response.ok) {
+    throw new Error("Failed to fetch Google signing certificates")
+  }
+
+  return (await response.json()) as GoogleCertsResponse
+}
+
+async function getGoogleCertificates(options?: { forceRefresh?: boolean }): Promise<GoogleCertsResponse> {
+  if (
+    !options?.forceRefresh &&
+    cachedCerts &&
+    Date.now() - cachedCerts.fetchedAt < CERT_CACHE_TTL_MS
+  ) {
+    return cachedCerts.keys
+  }
+
+  const keys = await fetchGoogleCertificates()
+  cachedCerts = { fetchedAt: Date.now(), keys }
+  return keys
+}
+
 export function getGoogleOAuthConfig(): GoogleOAuthConfig | null {
   const clientId = process.env.GOOGLE_CLIENT_ID?.trim()
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim()
@@ -59,21 +93,6 @@ export function buildGoogleAuthorizationUrl(input: {
   return `${GOOGLE_AUTH_URL}?${params.toString()}`
 }
 
-async function getGoogleCertificates(): Promise<GoogleCertsResponse> {
-  if (cachedCerts && Date.now() - cachedCerts.fetchedAt < 60 * 60 * 1000) {
-    return cachedCerts.keys
-  }
-
-  const response = await fetch(GOOGLE_CERTS_URL)
-  if (!response.ok) {
-    throw new Error("Failed to fetch Google signing certificates")
-  }
-
-  const keys = (await response.json()) as GoogleCertsResponse
-  cachedCerts = { fetchedAt: Date.now(), keys }
-  return keys
-}
-
 function decodeJwtPart<T>(part: string): T {
   return JSON.parse(Buffer.from(part, "base64url").toString("utf8")) as T
 }
@@ -96,7 +115,11 @@ export async function verifyGoogleIdToken(idToken: string, expectedNonce?: strin
   }
 
   const certs = await getGoogleCertificates()
-  const pem = certs[header.kid]
+  let pem = certs[header.kid]
+  if (!pem) {
+    const refreshedCerts = await getGoogleCertificates({ forceRefresh: true })
+    pem = refreshedCerts[header.kid]
+  }
   if (!pem) {
     throw new Error("Unknown Google signing key")
   }

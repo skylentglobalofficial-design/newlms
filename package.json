@@ -20,6 +20,7 @@
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "test:auth": "tsx scripts/test-auth.ts",
+    "test:google-oauth": "tsx scripts/test-google-oauth.ts",
     "test:lms": "tsx scripts/test-lms.ts",
     "test:r2-roundtrip": "tsx scripts/test-r2-roundtrip.ts",
     "test:career": "tsx scripts/test-career.ts",
