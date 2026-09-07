@@ -81,6 +81,29 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #fff;
+  -webkit-box-shadow: 0 0 0 1000px rgba(11, 13, 15, 0.92) inset;
+  transition: background-color 5000s ease-in-out 0s;
+  caret-color: #fff;
+}
+
 /* Public page shell — continuous near-black canvas */
 .skylent-public-canvas {
   background-color: var(--color-canvas);
@@ -2121,6 +2144,7 @@ html, body {
   position: relative;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .auth-skip-link {
@@ -2172,7 +2196,25 @@ html, body {
 
 .auth-page-card {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
+}
+
+.auth-subtitle {
+  margin: -12px 0 24px;
+  color: var(--text-muted);
+  font-size: var(--type-body-sm);
+  line-height: 1.6;
+}
+
+.auth-enroll-notice {
+  margin: 0 0 20px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(129, 140, 248, 0.28);
+  background: rgba(99, 102, 241, 0.08);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .auth-brand-link {
@@ -2191,10 +2233,10 @@ html, body {
 
 .auth-title {
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: clamp(26px, 4vw, 30px);
   font-weight: 600;
   color: #fff;
-  margin: 0 0 28px;
+  margin: 0 0 10px;
   letter-spacing: -0.02em;
 }
 
@@ -2253,6 +2295,11 @@ html, body {
   font-weight: 600;
   cursor: pointer;
   font-family: var(--font-body);
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.auth-submit:hover:not(:disabled) {
+  background: rgba(129, 140, 248, 0.98);
 }
 
 .auth-submit:disabled {
@@ -2267,14 +2314,28 @@ html, body {
 
 .auth-google-button {
   width: 100%;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   color: #fff;
   border-radius: 10px;
   padding: 12px;
   font-size: 13px;
   cursor: pointer;
   font-family: var(--font-body);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.auth-google-button:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.auth-google-icon {
+  flex-shrink: 0;
 }
 
 .auth-google-button:disabled {
@@ -2301,10 +2362,11 @@ html, body {
 }
 
 .auth-divider-label {
-  color: rgba(255, 255, 255, 0.28);
-  font-size: 11px;
+  color: rgba(255, 255, 255, 0.32);
+  font-size: 10px;
   font-family: var(--font-mono);
-  text-transform: lowercase;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .auth-switch {
@@ -2319,10 +2381,22 @@ html, body {
   border: 1px solid rgba(239, 68, 68, 0.28);
   border-radius: 10px;
   padding: 12px 14px;
-  color: rgba(255, 255, 255, 0.78);
+  margin-bottom: 18px;
+}
+
+.auth-error-title {
+  margin: 0 0 4px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.auth-error-message {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
   font-size: 13px;
   line-height: 1.5;
-  margin-bottom: 18px;
 }
 
 .auth-dev-panel {

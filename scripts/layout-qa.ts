@@ -8,11 +8,16 @@ const OUT = join(process.cwd(), "qa-screenshots-layout")
 
 const ROUTES = [
   "/",
+  "/education",
+  "/skills",
+  "/institutions",
+  "/career-os",
+  "/login",
+  "/signup",
   "/programs",
   "/programs/data-science-ai",
   "/courses",
   "/courses/data-analytics",
-  "/career-os",
   "/learn/data-analytics",
 ]
 
