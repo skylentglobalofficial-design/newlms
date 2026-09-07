@@ -15,6 +15,7 @@ import RoleWorkspaceBanner from '../components/auth/RoleWorkspaceBanner'
 import RoleSectionEmpty, { roleCanvasSectionStyle } from '../components/auth/RoleSectionEmpty'
 import FacultyLessonMaterials from '../components/faculty/FacultyLessonMaterials'
 import FacultyLessonNotes from '../components/faculty/FacultyLessonNotes'
+import FacultySubmissionReview from '../components/faculty/FacultySubmissionReview'
 
 const TEACHING_COURSE_SLUG = 'data-analytics'
 
@@ -222,13 +223,18 @@ function formatSubmittedAt(value: string | null) {
 
 function AssignmentReview({
   submissions,
-  onFocus,
+  selectedSubmissionId,
+  onSelectSubmission,
+  onCloseSubmission,
 }: {
   submissions: FacultySubmission[]
-  onFocus: () => void
+  selectedSubmissionId: string | null
+  onSelectSubmission: (submission: FacultySubmission) => void
+  onCloseSubmission: () => void
 }) {
   const pendingCount = submissions.length
   const featured = submissions[0]
+  const selectedSubmission = submissions.find((row) => row.id === selectedSubmissionId) ?? null
 
   return (
     <div style={roleCanvasSectionStyle}>
@@ -268,11 +274,11 @@ function AssignmentReview({
               </div>
               <button
                 type="button"
-                onClick={onFocus}
+                onClick={() => onSelectSubmission(row)}
                 style={{
-                  background: accent.subtle,
+                  background: selectedSubmissionId === row.id ? accent.primary : accent.subtle,
                   border: `1px solid ${accent.border}`,
-                  color: accent.text,
+                  color: selectedSubmissionId === row.id ? C.black : accent.text,
                   padding: '7px 14px',
                   borderRadius: T.rControl,
                   fontSize: 12,
@@ -294,6 +300,14 @@ function AssignmentReview({
           description="Learner assignment submissions from enrolled courses will appear here when submitted."
         />
       )}
+
+      {selectedSubmission ? (
+        <FacultySubmissionReview
+          submission={selectedSubmission}
+          accent={accent}
+          onClose={onCloseSubmission}
+        />
+      ) : null}
     </div>
   )
 }
@@ -525,6 +539,7 @@ export default function DashboardFacultyPage() {
   const { user, ready, authorized } = useRequireRole('faculty')
   const [activeNav, setActiveNav] = useState('overview')
   const [dashboard, setDashboard] = useState<FacultyDashboard | null>(null)
+  const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!ready || !authorized || !user) return
@@ -558,6 +573,11 @@ export default function DashboardFacultyPage() {
   function focusAssignments() {
     setActiveNav('assignments')
     document.getElementById('faculty-assignments')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
+
+  function handleSelectSubmission(submission: FacultySubmission) {
+    setSelectedSubmissionId(submission.id)
+    focusAssignments()
   }
 
   const hasLiveData = dashboard !== null
@@ -599,7 +619,12 @@ export default function DashboardFacultyPage() {
               />
               <CurriculumTeachingPath summary={curriculumSummary} />
               <div id="faculty-assignments" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
-                <AssignmentReview submissions={submissions} onFocus={focusAssignments} />
+                <AssignmentReview
+                  submissions={submissions}
+                  selectedSubmissionId={selectedSubmissionId}
+                  onSelectSubmission={handleSelectSubmission}
+                  onCloseSubmission={() => setSelectedSubmissionId(null)}
+                />
               </div>
               <div id="faculty-materials" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
                 <LessonMaterialsSection

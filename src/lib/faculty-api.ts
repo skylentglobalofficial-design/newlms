@@ -15,6 +15,34 @@ export type FacultySubmission = {
   attachmentCount: number
 }
 
+export type FacultySubmissionAttachment = {
+  id: string
+  fileName: string
+  mimeType: string
+  byteSize: number
+  uploadStatus: "PENDING" | "READY" | "FAILED"
+  storageStatus: "pending" | "ready" | "failed"
+  downloadAvailable: boolean
+  downloadUrl: string | null
+  createdAt: string
+}
+
+export type FacultySubmissionDetail = {
+  id: string
+  status: string
+  responseText: string | null
+  submittedAt: string | null
+  studentName: string
+  studentEmail: string
+  lessonTitle: string
+  lessonKey: string
+  courseSlug: string | null
+  courseTitle: string | null
+  programName: string | null
+  attachments: FacultySubmissionAttachment[]
+  objectStorageConfigured: boolean
+}
+
 export type FacultyDashboard = {
   programs: Array<{
     slug: string
@@ -95,4 +123,34 @@ export async function fetchFacultyDashboard(): Promise<FacultyDashboard> {
   const response = await fetch(`${API_BASE}/faculty/dashboard`, { credentials: "include" })
   const result = await parseJson<{ data: FacultyDashboard }>(response)
   return result.data
+}
+
+export async function fetchFacultySubmission(submissionId: string): Promise<FacultySubmissionDetail> {
+  const response = await fetch(`${API_BASE}/faculty/submissions/${encodeURIComponent(submissionId)}`, {
+    credentials: "include",
+  })
+  const result = await parseJson<{ data: FacultySubmissionDetail }>(response)
+  return result.data
+}
+
+export async function downloadFacultySubmissionAttachment(attachment: FacultySubmissionAttachment): Promise<void> {
+  if (!attachment.downloadUrl) {
+    throw new Error("Download is not available for this attachment")
+  }
+
+  const response = await fetch(attachment.downloadUrl)
+  if (!response.ok) {
+    throw new Error(`Download failed (${response.status})`)
+  }
+
+  const blob = await response.blob()
+  const objectUrl = URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = objectUrl
+  link.download = attachment.fileName
+  link.rel = "noopener"
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(objectUrl)
 }

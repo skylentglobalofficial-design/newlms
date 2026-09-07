@@ -1,4 +1,5 @@
 import "dotenv/config"
+import crypto from "node:crypto"
 import { PrismaClient, RoleName } from "@prisma/client"
 import { isObjectStorageConfigured } from "../server/src/lib/object-storage.js"
 
@@ -754,6 +755,115 @@ async function main() {
     })
     assert(rejectedSubmit.response.status === 400, "Submit must reject non-ready attachment IDs")
   }
+
+  console.log("45. Faculty can review authorized submission with attachments")
+  assert(assignmentRow, "Submitted assignment row should exist for faculty review tests")
+  const facultyReview = await request(instructorJar, `/faculty/submissions/${assignmentRow.id}`)
+  assert(facultyReview.response.ok, "Authorized faculty should load submission detail")
+  assert(facultyReview.data.data.id === assignmentRow.id, "Submission detail should match requested id")
+  assert(
+    typeof facultyReview.data.data.responseText === "string",
+    "Faculty submission detail should include learner response text",
+  )
+  if (storageConfigured && readyAttachmentId) {
+    assert(facultyReview.data.data.attachments.length >= 1, "Faculty should see submission attachments")
+    const reviewedAttachment = facultyReview.data.data.attachments.find(
+      (entry: { id?: string }) => entry.id === readyAttachmentId,
+    )
+    assert(reviewedAttachment, "Faculty should see the ready learner attachment")
+    assert(reviewedAttachment.downloadUrl, "Ready attachment with storage object should include presigned GET")
+    assert(reviewedAttachment.downloadAvailable === true, "Ready attachment should report download availability")
+  }
+
+  console.log("46. Unauthorized faculty cannot access submission review")
+  const scopedFacultyReview = await request(
+    materialScopedFacultyJar,
+    `/faculty/submissions/${assignmentRow.id}`,
+  )
+  assert(scopedFacultyReview.response.status === 403, "Faculty without teaching scope must not review submissions")
+
+  console.log("47. Learner cannot use faculty submission review route")
+  const learnerFacultyReview = await request(studentJar, `/faculty/submissions/${assignmentRow.id}`)
+  assert(learnerFacultyReview.response.status === 403, "Learner must not access faculty submission review")
+
+  console.log("48. READY attachment without storage object has no download URL")
+  const ghostAttachment = await prisma.assignmentAttachment.create({
+    data: {
+      assignmentProgressId: assignmentRow.id,
+      fileName: "ghost-ready.pdf",
+      mimeType: "application/pdf",
+      byteSize: 1024,
+      storageProvider: "r2",
+      storageKey: `assignment-attachments/${courseSlug}/${assignmentRow.id}/ghost/${crypto.randomUUID()}/ghost-ready.pdf`,
+      uploadStatus: "READY",
+    },
+  })
+  const ghostReview = await request(instructorJar, `/faculty/submissions/${assignmentRow.id}`)
+  assert(ghostReview.response.ok, "Faculty submission detail should load with ghost attachment metadata")
+  const ghostItem = ghostReview.data.data.attachments.find(
+    (entry: { id?: string }) => entry.id === ghostAttachment.id,
+  )
+  assert(ghostItem, "Ghost attachment should be listed")
+  assert(!ghostItem.downloadUrl, "READY metadata without storage object must not expose download URL")
+  assert(ghostItem.downloadAvailable === false, "Ghost attachment must report download unavailable")
+
+  console.log("49. Pending attachment has no download URL in faculty review")
+  const pendingReviewAttachment = await prisma.assignmentAttachment.create({
+    data: {
+      assignmentProgressId: assignmentRow.id,
+      fileName: "pending-review.pdf",
+      mimeType: "application/pdf",
+      byteSize: 512,
+      storageProvider: "r2",
+      storageKey: `assignment-attachments/${courseSlug}/${assignmentRow.id}/pending/${crypto.randomUUID()}/pending-review.pdf`,
+      uploadStatus: "PENDING",
+    },
+  })
+  const pendingFacultyReview = await request(instructorJar, `/faculty/submissions/${assignmentRow.id}`)
+  const pendingItem = pendingFacultyReview.data.data.attachments.find(
+    (entry: { id?: string }) => entry.id === pendingReviewAttachment.id,
+  )
+  assert(pendingItem, "Pending attachment should be listed for faculty review")
+  assert(!pendingItem.downloadUrl, "Pending attachment must not include download URL")
+  assert(pendingItem.downloadAvailable === false, "Pending attachment must not claim download availability")
+
+  console.log("50. Faculty submission review reports honest storage availability")
+  assert(
+    facultyReview.data.data.objectStorageConfigured === storageConfigured,
+    "Faculty submission detail should report real object storage configuration",
+  )
+
+  console.log("51. Superadmin can access submission review")
+  const superadminReview = await request(instructorJar, `/faculty/submissions/${assignmentRow.id}`)
+  assert(superadminReview.response.ok, "Superadmin should access submission review")
+
+  console.log("52. Submission review rejects unknown submission id")
+  const missingReview = await request(
+    instructorJar,
+    `/faculty/submissions/${crypto.randomUUID()}`,
+  )
+  assert(missingReview.response.status === 404, "Unknown submission id should return 404")
+
+  console.log("53. Faculty submission attachments are scoped to the requested submission")
+  const submitUserRow = await prisma.user.findUnique({ where: { email: submitUser.email } })
+  assert(submitUserRow, "Submit test user should exist")
+  const secondSubmission = await request(submitJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "submit", responseText: "Another learner submission for scope test." },
+  })
+  assert(secondSubmission.response.ok, "Second learner submission should succeed")
+  const secondAssignmentRow = await prisma.assignmentProgress.findFirst({
+    where: { userId: submitUserRow.id, status: "submitted" },
+    orderBy: { updatedAt: "desc" },
+  })
+  assert(secondAssignmentRow, "Second assignment row should exist")
+  const scopedReview = await request(instructorJar, `/faculty/submissions/${secondAssignmentRow.id}`)
+  assert(scopedReview.response.ok, "Faculty should load second submission")
+  const crossAttachment = scopedReview.data.data.attachments.find(
+    (entry: { id?: string }) => entry.id === readyAttachmentId,
+  )
+  assert(!crossAttachment, "Submission review must not expose attachments from another learner submission")
 
   console.log("All LMS integration checks passed.")
   await prisma.$disconnect()

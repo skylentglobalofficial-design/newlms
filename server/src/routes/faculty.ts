@@ -4,7 +4,8 @@ import { z } from "zod"
 import { prisma } from "../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { hasApiRole, requireRoles } from "../lib/roles.js"
-import { canManageLessonMaterials, loadCourseLessonNode } from "../lib/lesson-materials.js"
+import { canManageLessonMaterials, DEMO_TEACHING_COURSE_SLUG, loadCourseLessonNode } from "../lib/lesson-materials.js"
+import { formatAttachmentForApi } from "../lib/assignment-attachments.js"
 import {
   OBJECT_STORAGE_PROVIDER,
   buildLessonMaterialStorageKey,
@@ -36,7 +37,11 @@ function emptyFacultyDashboard() {
   }
 }
 
-async function loadSuperadminFacultyDashboard() {
+const submissionIdSchema = z.object({
+  submissionId: z.string().uuid(),
+})
+
+async function loadFacultyDashboardData(courseSlugFilter: string | null) {
   const [programs, courses, submissions] = await Promise.all([
     prisma.program.findMany({
       orderBy: { name: "asc" },
@@ -60,7 +65,10 @@ async function loadSuperadminFacultyDashboard() {
       take: 6,
     }),
     prisma.assignmentProgress.findMany({
-      where: { status: "submitted" },
+      where: {
+        status: "submitted",
+        ...(courseSlugFilter ? { enrollment: { course: { slug: courseSlugFilter } } } : {}),
+      },
       orderBy: { submittedAt: "desc" },
       take: 20,
       include: {
@@ -73,7 +81,7 @@ async function loadSuperadminFacultyDashboard() {
           },
         },
         attachments: {
-          select: { id: true, fileName: true, mimeType: true, byteSize: true, storageProvider: true },
+          select: { id: true, fileName: true, mimeType: true, byteSize: true, uploadStatus: true },
         },
       },
     }),
@@ -138,13 +146,83 @@ facultyRouter.get("/dashboard", requireAuth, requireRoles("faculty", "superadmin
       hasApiRole(req, "superadmin") ||
       (hasApiRole(req, "faculty") && isDemoFacultyAccount(req.auth?.user.email))
 
-    const data = canLoadTeachingData ? await loadSuperadminFacultyDashboard() : emptyFacultyDashboard()
+    const courseSlugFilter = hasApiRole(req, "superadmin") ? null : DEMO_TEACHING_COURSE_SLUG
+    const data = canLoadTeachingData ? await loadFacultyDashboardData(courseSlugFilter) : emptyFacultyDashboard()
     res.json({ data })
   } catch (error) {
     console.error("Failed to load faculty dashboard:", error)
     res.status(500).json({ error: "Failed to load faculty dashboard" })
   }
 })
+
+facultyRouter.get(
+  "/submissions/:submissionId",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  async (req: AuthenticatedRequest, res) => {
+    const parsed = submissionIdSchema.safeParse({ submissionId: req.params.submissionId })
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    try {
+      const submission = await prisma.assignmentProgress.findUnique({
+        where: { id: parsed.data.submissionId },
+        include: {
+          user: { select: { displayName: true, email: true } },
+          node: { select: { title: true, sourceId: true } },
+          enrollment: {
+            include: {
+              course: { select: { slug: true, title: true } },
+              program: { select: { slug: true, name: true } },
+            },
+          },
+          attachments: true,
+        },
+      })
+
+      if (!submission || submission.status !== "submitted") {
+        return res.status(404).json({ error: "Submission not found" })
+      }
+
+      const courseSlug = submission.enrollment.course?.slug
+      if (!courseSlug || !canManageLessonMaterials(req, courseSlug)) {
+        return res.status(403).json({ error: "Forbidden" })
+      }
+
+      const attachments = await Promise.all(
+        submission.attachments.map(async (file) => {
+          const formatted = await formatAttachmentForApi(file)
+          return {
+            ...formatted,
+            createdAt: file.createdAt.toISOString(),
+          }
+        }),
+      )
+
+      res.json({
+        data: {
+          id: submission.id,
+          status: submission.status,
+          responseText: submission.responseText,
+          submittedAt: submission.submittedAt?.toISOString() ?? null,
+          studentName: submission.user.displayName ?? submission.user.email,
+          studentEmail: submission.user.email,
+          lessonTitle: submission.node.title,
+          lessonKey: submission.node.sourceId,
+          courseSlug,
+          courseTitle: submission.enrollment.course?.title ?? null,
+          programName: submission.enrollment.program?.name ?? null,
+          attachments,
+          objectStorageConfigured: isObjectStorageConfigured(),
+        },
+      })
+    } catch (error) {
+      console.error("Failed to load faculty submission:", error)
+      res.status(500).json({ error: "Failed to load submission" })
+    }
+  },
+)
 
 const slugParamSchema = z.object({
   slug: z
