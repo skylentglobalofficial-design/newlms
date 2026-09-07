@@ -46,7 +46,7 @@ const CAT_SECTION = {
     { label: 'Data Interpretation & Logical Reasoning', abbr: 'DILR', weight: '33%', color: '#f59e0b' },
     { label: 'Quantitative Aptitude', abbr: 'QA', weight: '33%', color: '#60a5fa' },
   ],
-  features: ['Sectional practice', 'Speed & accuracy drills', 'Mock CATs with analysis', 'Score predictor'],
+  features: ['Sectional practice', 'Speed & accuracy drills', 'Mock CATs with analysis', 'Progress tracking (planned)'],
 }
 
 const OTHER_EXAMS = ['CUET', 'CLAT', 'GMAT', 'GRE', 'UPSC', 'Bank PO']
@@ -61,7 +61,7 @@ const EDUCATION_NAV_ITEMS: ContextualNavItem[] = [
   { id: 'schooling', label: 'Schooling', sub: 'Grades 1–12' },
   { id: 'undergraduate', label: 'Undergraduate', sub: 'Degree-aligned' },
   { id: 'postgraduate', label: 'Postgraduate', sub: 'Specialisation' },
-  { id: 'competitive-exams', label: 'Competitive Exams', sub: 'JEE · NEET · CAT' },
+  { id: 'competitive-exams', label: 'Competitive Exams', sub: 'JEE · CAT' },
 ]
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────

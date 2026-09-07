@@ -210,8 +210,8 @@ const megaMenu = [
     to: '/career-os',
     tagline: 'Profile, jobs, and applications',
     items: [
-      { label: 'Interview Preparation', sub: 'Mock interviews & practice', to: '/career-os' },
-      { label: 'Job Board', sub: 'Curated opportunities', to: '/career-os' },
+      { label: 'Interview Preparation', sub: 'Mock interviews & practice', to: '/career-os#interview' },
+      { label: 'Job Board', sub: 'Curated opportunities', to: '/career-os#jobs' },
     ],
   },
   {
@@ -482,7 +482,7 @@ export function Footer() {
   const cols = [
     { heading: 'Education', links: [['Overview', '/education'], ['Schooling', '/education#schooling'], ['Undergraduate', '/education#undergraduate'], ['Postgraduate', '/education#postgraduate']] },
     { heading: 'Skills', links: [['Overview', '/skills'], ['Webinars', '/workshops'], ['Certificate Programs', '/programs'], ['Professional Programs', '/programs'], ['Job Assistance', '/skills#job-assistance']] },
-    { heading: 'Career OS', links: [['Overview', '/career-os'], ['Interview Prep', '/career-os#interview'], ['Job Board', '/career-os#jobs'], ['Skylent OS', '/os']] },
+    { heading: 'Career OS', links: [['Overview', '/career-os'], ['Interview Prep', '/career-os#interview'], ['Job Board', '/career-os#jobs'], ['Sign in to workspace', '/login']] },
     { heading: 'Company', links: [['About', '/about'], ['For Institutions', '/institutions'], ['Stories', '/stories'], ['Blog', '/blog'], ['Contact', '/contact']] },
   ]
   return (

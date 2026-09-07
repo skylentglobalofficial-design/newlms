@@ -44,6 +44,13 @@ async function main() {
     }
   }
 
+  await check("legacy-os-route-redirects-to-login", async (page) => {
+    await page.goto(`${BASE}/os`, { waitUntil: "domcontentloaded", timeout: 30000 })
+    await waitForPath(page, "/login")
+    const path = await page.evaluate(() => window.location.pathname)
+    return { passed: path === "/login", path }
+  })
+
   await check("career-os-legacy-application-id", async (page) => {
     await loginAsLearner(page)
     await page.goto(`${BASE}/career-os/applications/demo-app-1`, { waitUntil: "domcontentloaded", timeout: 30000 })

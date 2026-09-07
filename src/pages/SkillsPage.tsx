@@ -1,4 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import { careerOsWorkspaceNav } from '../lib/auth-routing'
 import { C, FadeIn, PageShell } from '../components/shared'
 import {
   Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader,
@@ -401,6 +403,8 @@ function ProfessionalSection() {
 
 function JobAssistanceSection() {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const workspace = careerOsWorkspaceNav(Boolean(user))
   const steps = [
     { label: 'Profile', desc: 'Resume and profile review' },
     { label: 'Interview Prep', desc: 'Preparation and mock interviews' },
@@ -453,7 +457,7 @@ function JobAssistanceSection() {
             ))}
           </div>
 
-          <Button variant="primary" onClick={() => navigate('/career-os')}>Open Career OS →</Button>
+          <Button variant="primary" onClick={() => navigate(workspace.path, { state: workspace.state })}>Open Career OS workspace →</Button>
         </FadeIn>
       </div>
     </Section>

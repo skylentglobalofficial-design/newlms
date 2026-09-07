@@ -8,7 +8,6 @@ import { AuthProvider } from './context/AuthContext'
 import { DemoStateProvider } from './demo/DemoStateContext'
 import HomePage from './pages/HomePage'
 import EducationPage from './pages/EducationPage'
-import OSPage from './pages/OSPage'
 import InstitutionsPage from './pages/InstitutionsPage'
 import LabsPage from './pages/LabsPage'
 import StoriesPage from './pages/StoriesPage'
@@ -69,7 +68,7 @@ function AppRoutes() {
       <Route path="/career-os/support" element={<LegacyCareerOsRedirect />} />
       <Route path="/career-os/support/:id" element={<LegacyCareerOsRedirect />} />
       <Route path="/institutions" element={<InstitutionsPage />} />
-      <Route path="/os" element={<OSPage />} />
+      <Route path="/os" element={<Navigate to="/login" replace />} />
       <Route path="/programs" element={<ProgramsPage />} />
       <Route path="/programs/:slug" element={<ProgramPage />} />
       <Route path="/courses" element={<CoursesPage />} />

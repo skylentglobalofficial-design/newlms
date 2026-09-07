@@ -689,7 +689,7 @@ export const programs: Program[] = [
     format: 'Live + Self-paced',
     cert: 'Completion Certificate',
     outcome: 'IIM / Top B-School Admission',
-    desc: 'Section-oriented CAT preparation covering VARC, DILR, and QA — with concept building, intensive practice, sectional tests, and full mock CATs with percentile analytics.',
+    desc: 'Section-oriented CAT preparation covering VARC, DILR, and QA — with concept building, intensive practice, sectional tests, and full mock CATs. Detailed analytics are planned for a later release.',
     upcomingBatch: 'January 2027',
     programType: 'EXAM_PREP',
     level: 'Advanced',
@@ -711,7 +711,7 @@ export const programs: Program[] = [
     ],
     curriculumDetail: [
       {
-        number: 'S1', title: 'VARC — Verbal Ability & Reading Comprehension', description: 'RC passage analysis, vocabulary in context, Para Jumbles, Para Summary, and Odd Sentence. Speed reading and inference techniques for 99th percentile accuracy.', duration: '9 months (parallel)',
+        number: 'S1', title: 'VARC — Verbal Ability & Reading Comprehension', description: 'RC passage analysis, vocabulary in context, Para Jumbles, Para Summary, and Odd Sentence. Speed reading and inference techniques for accuracy under timed conditions.', duration: '9 months (parallel)',
         topics: ['Reading Comprehension', 'Para Jumbles', 'Para Summary', 'Verbal Ability', 'Critical Reasoning'],
       },
       {
@@ -727,12 +727,12 @@ export const programs: Program[] = [
       'Live sessions per section, twice per week',
       'Weekly sectional tests with timed practice',
       'Full-length mock CATs in the actual exam format',
-      'Detailed mock analysis: percentile, accuracy, time-per-question',
+      'Detailed mock analysis: accuracy and time-per-question (percentile analytics planned)',
       'GD-PI preparation included for shortlisted candidates',
     ],
     faqs: [
       { q: 'Is this for working professionals?', a: 'Yes. The program is structured around a live + recorded format so working professionals can attend sessions in the evening and catch up via recordings.' },
-      { q: 'How many mock tests are included?', a: 'The full prep track includes 30 full-length mock CATs plus unlimited sectional tests. Every mock comes with detailed percentile and accuracy analytics.' },
+      { q: 'How many mock tests are included?', a: 'The full prep track is designed around 30 full-length mock CATs plus sectional tests. Mock analytics depth will expand as the product ships — enrollment is not open yet.' },
       { q: 'Is GD-PI preparation included?', a: 'Yes — for students who receive interview calls, a GD-PI preparation module is included in the Full Prep track.' },
     ],
     faculty: [
