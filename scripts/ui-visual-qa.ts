@@ -4,6 +4,11 @@ const APP_BASE = process.env.APP_BASE ?? "http://localhost:8443"
 
 const ROUTES = [
   "/",
+  "/education",
+  "/skills",
+  "/institutions",
+  "/login",
+  "/signup",
   "/courses",
   "/courses/data-analytics",
   "/skills",
