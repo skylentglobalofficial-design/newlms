@@ -18,9 +18,15 @@ import {
   CareerSupportPriority,
   CareerProfileVisibility,
 } from '@prisma/client'
+import { config as loadEnv } from 'dotenv'
+import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import bcrypt from 'bcrypt'
 
 import { courses, programs } from '../src/data.js'
+
+const repoRoot = resolve(fileURLToPath(new URL('.', import.meta.url)), '..')
+loadEnv({ path: resolve(repoRoot, '.env'), override: true })
 
 const prisma = new PrismaClient()
 const DEMO_PASSWORD = process.env.DEMO_USER_PASSWORD ?? 'DemoSkylent2026!'
