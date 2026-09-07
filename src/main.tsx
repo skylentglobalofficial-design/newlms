@@ -5,6 +5,7 @@ import { bootstrapTheme } from './lib/theme-init'
 import './index.css'
 import './theme-overrides.css'
 import './skylent-home.css'
+import './skylent-public-overrides.css'
 
 bootstrapTheme()
 
