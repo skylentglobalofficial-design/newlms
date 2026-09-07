@@ -1,0 +1,13 @@
+/* Public inverse-typography fixes for the warm light mode. */
+[data-theme='light'] nav[aria-label='Main navigation'] .nav-links { color: var(--skylent-text) !important; }
+[data-theme='light'] nav[aria-label='Main navigation'] .nav-links a,
+[data-theme='light'] nav[aria-label='Main navigation'] .nav-links button { color: var(--skylent-text) !important; }
+[data-theme='light'] nav[aria-label='Main navigation'] > div > button:first-child { color: var(--skylent-text) !important; }
+[data-theme='light'] nav[aria-label='Main navigation'] .skylent-nav-dropdown a,
+[data-theme='light'] nav[aria-label='Main navigation'] .skylent-nav-dropdown button { color: var(--skylent-text) !important; }
+[data-theme='light'] nav[aria-label='Main navigation'] .show-mobile span { background: var(--skylent-text) !important; }
+[data-theme='light'] .skylent-public-canvas .skylent-label { color: var(--skylent-text-muted); }
+[data-theme='light'] .skylent-public-canvas .skylent-display-xl,
+[data-theme='light'] .skylent-public-canvas .skylent-display-lg,
+[data-theme='light'] .skylent-public-canvas .skylent-display-md,
+[data-theme='light'] .skylent-public-canvas .skylent-display-sm { color: var(--skylent-text) !important; }
