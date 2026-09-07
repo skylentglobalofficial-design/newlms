@@ -1,6 +1,9 @@
 import type { UserRole } from './context/AuthContext'
 import { getDomainAccent, type AuroraThemeId } from './aurora-themes'
 
+/** Role accent tokens for nav, CTAs, focus — derived from Aurora domain themes. */
+export type RoleAccent = ReturnType<typeof getDomainAccent>
+
 /** Canonical role → visual theme mapping for authenticated surfaces. */
 export const ROLE_THEME_MAP: Record<UserRole, AuroraThemeId> = {
   student: 'data-science',
@@ -33,7 +36,7 @@ export function getRoleThemeId(role: UserRole): AuroraThemeId {
   return ROLE_THEME_MAP[role]
 }
 
-export function getRoleAccent(role: UserRole) {
+export function getRoleAccent(role: UserRole): RoleAccent {
   return getDomainAccent(getRoleThemeId(role))
 }
 
@@ -42,7 +45,7 @@ export function getLmsTabAccent(tab: LmsTabId) {
 }
 
 /** Resolve LMS role accent from auth user, defaulting to learner violet/indigo. */
-export function getLmsRoleAccent(role?: UserRole | null) {
+export function getLmsRoleAccent(role?: UserRole | null): RoleAccent {
   if (role === 'faculty') return getRoleAccent('faculty')
   if (role === 'organisation') return getRoleAccent('organisation')
   if (role === 'superadmin') return getRoleAccent('superadmin')
