@@ -1,4 +1,5 @@
 import puppeteer from "puppeteer-core"
+import { loginViaForm } from "./qa-auth.js"
 
 const PORT = process.env.PORT ?? "8443"
 const BASE = `http://localhost:${PORT}`
@@ -13,12 +14,11 @@ async function waitForPath(page: import("puppeteer-core").Page, path: string, ti
 }
 
 async function loginAsLearner(page: import("puppeteer-core").Page) {
-  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded", timeout: 30000 })
-  await page.waitForSelector("#si-email", { timeout: 15000 })
-  await page.type("#si-email", "learner@demo.skylent.dev", { delay: 10 })
-  await page.type("#si-password", PASSWORD, { delay: 10 })
-  await page.click('button[type="submit"]')
-  await waitForPath(page, "/dashboard/student")
+  await loginViaForm(page, {
+    email: "learner@demo.skylent.dev",
+    password: PASSWORD,
+    expectedPath: "/dashboard/student",
+  })
 }
 
 async function main() {

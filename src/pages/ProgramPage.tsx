@@ -16,6 +16,7 @@ import { ProductVisual, resolveProgramVisualId } from '../components/product/Pro
 import { programs } from '../data'
 import type { ProgramType, EnrollmentStatus } from '../data'
 import { useCatalogEnrollment } from '../hooks/useCatalogEnrollment'
+import { isProgramLmsEnrollable } from '../lib/program-lms-enrollment'
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
@@ -197,14 +198,16 @@ export default function ProgramPage() {
   const isExamPrep = program?.programType === 'EXAM_PREP'
   const isCareerOS = !!program?.careerSupport
   const enrollStatus = (program?.enrollmentStatus ?? 'open') as EnrollmentStatus
+  const lmsEnrollable = program ? isProgramLmsEnrollable(program.slug) : false
+  const canEnrollInLms = enrollStatus === 'open' && lmsEnrollable
   const typeLabel = program ? TYPE_LABELS[program.programType] : ''
-  const ctaLabel = program?.programType === 'PROFESSIONAL' && enrollStatus === 'open' ? 'Apply Now' : CTA_LABEL[enrollStatus]
+  const ctaLabel = program?.programType === 'PROFESSIONAL' && canEnrollInLms ? 'Apply Now' : CTA_LABEL[enrollStatus]
   const auroraTheme: AuroraThemeId = program ? resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType) : 'general'
   const domainAccent = getDomainAccent(auroraTheme)
 
   function handleProgramApply() {
     if (!program) return
-    if (enrollStatus !== 'open') {
+    if (!canEnrollInLms) {
       navigate('/contact')
       return
     }

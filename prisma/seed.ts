@@ -25,6 +25,7 @@ import bcrypt from 'bcrypt'
 
 import { courses, programs } from '../src/data.js'
 import { normalizeMuxPlaybackId } from '../src/lib/media/mux-playback.js'
+import { PROGRAM_LMS_COURSE_LINKS } from '../src/lib/program-lms-enrollment.js'
 
 const repoRoot = resolve(fileURLToPath(new URL('.', import.meta.url)), '..')
 loadEnv({ path: resolve(repoRoot, '.env'), override: true })
@@ -243,11 +244,7 @@ async function seedQuizQuestions() {
 }
 
 async function seedProgramCourses() {
-  const links: Array<{ programSlug: string; courseSlug: string; sortOrder: number }> = [
-    { programSlug: "data-analytics-pro", courseSlug: "data-analytics", sortOrder: 0 },
-    { programSlug: "data-science-ai", courseSlug: "data-analytics", sortOrder: 0 },
-    { programSlug: "data-science-ai", courseSlug: "python-programming", sortOrder: 1 },
-  ]
+  const links = PROGRAM_LMS_COURSE_LINKS
 
   for (const link of links) {
     const program = await prisma.program.findUnique({ where: { slug: link.programSlug }, select: { id: true } })

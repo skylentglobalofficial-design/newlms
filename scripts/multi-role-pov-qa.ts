@@ -1,4 +1,5 @@
 import puppeteer from "puppeteer-core"
+import { loginViaForm } from "./qa-auth.js"
 
 const PORT = process.env.PORT ?? "8443"
 const BASE = `http://localhost:${PORT}`
@@ -44,22 +45,7 @@ const ROLES: RoleSpec[] = [
 ]
 
 async function login(page: import("puppeteer-core").Page, email: string, expectedPath: string) {
-  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded", timeout: 30000 })
-  await page.waitForSelector("#si-email", { timeout: 15000 })
-  await page.evaluate(() => {
-    const email = document.querySelector<HTMLInputElement>("#si-email")
-    const password = document.querySelector<HTMLInputElement>("#si-password")
-    if (email) email.value = ""
-    if (password) password.value = ""
-  })
-  await page.type("#si-email", email, { delay: 10 })
-  await page.type("#si-password", PASSWORD, { delay: 10 })
-  await page.click('button[type="submit"]')
-  await page.waitForFunction(
-    (path) => window.location.pathname === path,
-    { timeout: 20000 },
-    expectedPath,
-  )
+  await loginViaForm(page, { email, password: PASSWORD, expectedPath })
 }
 
 async function main() {

@@ -117,6 +117,13 @@ async function grantRole(email: string, role: "faculty" | "organisation" | "admi
 async function main() {
   const courseSlug = "data-analytics"
   const storageConfigured = isObjectStorageConfigured()
+  const { normalizeMuxPlaybackId, isConfiguredMuxPlaybackId } = await import(
+    "../src/lib/media/mux-playback.js"
+  )
+  const muxConfigured = Boolean(normalizeMuxPlaybackId(process.env.MUX_DEMO_PLAYBACK_ID))
+  console.log(
+    `Infrastructure: Mux=${muxConfigured ? "CONFIGURED" : "NOT CONFIGURED"}, R2=${storageConfigured ? "CONFIGURED" : "NOT CONFIGURED"}`,
+  )
   const userAJar: CookieJar = new Map()
   const userBJar: CookieJar = new Map()
   const anonJar: CookieJar = new Map()
@@ -328,6 +335,29 @@ async function main() {
   const programCourseAccess = await request(programJar, `/lms/courses/${courseSlug}`)
   assert(programCourseAccess.response.ok, "Program-enrolled user should access linked course")
   assert(programCourseAccess.data.data.lessonStates.l1?.locked === false, "Program enrollment should include unlock rules")
+
+  console.log("14b. LMS-linked open programs enroll successfully")
+  for (const programSlug of ["full-stack", "generative-ai-program", "product-management"]) {
+    const progJar: CookieJar = new Map()
+    await signupUser(progJar, programSlug)
+    const progEnroll = await request(progJar, "/lms/enrollments", {
+      method: "POST",
+      csrf: true,
+      body: { programSlug },
+    })
+    assert(progEnroll.response.ok, `Program enrollment should succeed for ${programSlug}`)
+    assert(progEnroll.data.data.course?.slug, `Program enrollment should resolve a course for ${programSlug}`)
+  }
+
+  console.log("14c. Programs without LMS course links cannot enroll")
+  const blockedJar: CookieJar = new Map()
+  await signupUser(blockedJar, "sql-cert")
+  const blockedEnroll = await request(blockedJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { programSlug: "sql-certificate" },
+  })
+  assert(blockedEnroll.response.status === 400, "Program without linked courses must return 400")
 
   console.log("15. Faculty and organisation routes enforce authorization")
   const studentFaculty = await request(userAJar, "/faculty/dashboard")
@@ -866,9 +896,6 @@ async function main() {
   assert(!crossAttachment, "Submission review must not expose attachments from another learner submission")
 
   console.log("54. Lesson media returns mux playback when configured")
-  const { normalizeMuxPlaybackId, isConfiguredMuxPlaybackId } = await import(
-    "../src/lib/media/mux-playback.js"
-  )
   const l1Node = await prisma.curriculumNode.findFirst({
     where: { sourceId: "l1", module: { course: { slug: courseSlug } } },
     select: { id: true, muxPlaybackId: true },

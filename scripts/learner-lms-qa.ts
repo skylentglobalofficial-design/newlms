@@ -1,4 +1,5 @@
 import puppeteer from "puppeteer-core"
+import { loginViaForm } from "./qa-auth.js"
 
 const PORT = process.env.PORT ?? "8443"
 const BASE = `http://localhost:${PORT}`
@@ -7,26 +8,11 @@ const PASSWORD = process.env.DEMO_USER_PASSWORD ?? "DemoSkylent2026!"
 const VIEWPORTS = [1440, 1024, 768, 375] as const
 
 async function loginAsLearner(page: import("puppeteer-core").Page) {
-  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded", timeout: 30000 })
-  await page.waitForFunction(
-    () => Boolean(document.querySelector("#si-email")) || window.location.pathname.includes("/dashboard/"),
-    { timeout: 15000 },
-  )
-  await page.waitForSelector("#si-email", { timeout: 15000 }).catch(() => undefined)
-  const emailField = await page.$("#si-email")
-  if (!emailField) {
-    if (!page.url().includes("/dashboard/student")) {
-      await page.goto(`${BASE}/dashboard/student`, { waitUntil: "domcontentloaded", timeout: 30000 })
-    }
-    return
-  }
-  await page.type("#si-email", EMAIL, { delay: 10 })
-  await page.type("#si-password", PASSWORD, { delay: 10 })
-  await page.click('button[type="submit"]')
-  await page.waitForFunction(
-    () => window.location.pathname.includes("/dashboard/student"),
-    { timeout: 20000 },
-  )
+  await loginViaForm(page, {
+    email: EMAIL,
+    password: PASSWORD,
+    expectedPath: "/dashboard/student",
+  })
 }
 
 async function main() {
@@ -56,6 +42,8 @@ async function main() {
       hasCurriculum: Boolean(document.querySelector(".student-curriculum-rail")),
       hasProgress: Boolean(document.querySelector("#student-progress")),
       hasCertificate: Boolean(document.querySelector("#student-certificates")),
+      hasCertificatePanel: Boolean(document.querySelector(".lms-certificate-panel")),
+      hasCertificateDownload: Boolean(document.querySelector(".lms-certificate-panel__download")),
       hasCareerLink: Boolean(document.querySelector(".lms-career-link-panel")),
       overflowPx: Math.max(0, document.documentElement.scrollWidth - window.innerWidth),
     }))
