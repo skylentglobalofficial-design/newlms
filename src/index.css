@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
 
 @theme inline {
@@ -17,6 +20,8 @@
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'DM Mono', monospace;
+
+  /* Typography scale */
   --type-display-xl: clamp(40px, 6vw, 84px);
   --type-display-lg: clamp(34px, 5.2vw, 64px);
   --type-display-md: clamp(28px, 3.6vw, 44px);
@@ -26,6 +31,8 @@
   --type-body-sm: 13.5px;
   --type-label: 11px;
   --type-caption: 10px;
+
+  /* Layout */
   --section-pad: clamp(96px, 13vw, 152px);
   --section-pad-sm: clamp(72px, 9vw, 104px);
   --gutter: clamp(20px, 5vw, 32px);
@@ -33,6 +40,8 @@
   --max-w-content: 1080px;
   --max-w-reading: 720px;
   --nav-h: 64px;
+
+  /* Semantic theme — dark default (matches historical product identity) */
   --skylent-canvas: #08080a;
   --skylent-surface: rgba(255, 255, 255, 0.025);
   --skylent-elevated: rgba(255, 255, 255, 0.045);
@@ -54,18 +63,24 @@
   --skylent-warning-surface: rgba(245, 158, 11, 0.1);
   --skylent-error-surface: rgba(239, 68, 68, 0.1);
   --skylent-aurora-opacity: 0.42;
+
+  /* Legacy aliases — map to semantic tokens */
   --color-canvas: var(--skylent-canvas);
   --text-primary: var(--skylent-text);
   --text-secondary: var(--skylent-text-secondary);
   --text-muted: var(--skylent-text-muted);
+
+  /* Restrained glass — used sparingly */
   --glass-01-bg: var(--skylent-nav-bg);
   --glass-01-border: var(--skylent-border-subtle);
   --glass-01-blur: blur(14px);
   --glass-01-shadow: none;
+
   --glass-02-bg: var(--skylent-surface);
   --glass-02-border: var(--skylent-border-subtle);
   --glass-02-blur: blur(10px);
   --glass-02-shadow: none;
+
   --glass-03-bg: var(--skylent-elevated);
   --glass-03-border: var(--skylent-border-subtle);
   --glass-03-blur: blur(12px);
@@ -122,11 +137,27 @@
 
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
-body { font-family: var(--font-body); background-color: var(--skylent-canvas); color: var(--skylent-text); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; transition: background-color .2s ease,color .2s ease; }
-button,input,select,textarea { font: inherit; color: inherit; }
-input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus,textarea:-webkit-autofill,textarea:-webkit-autofill:hover,textarea:-webkit-autofill:focus,select:-webkit-autofill,select:-webkit-autofill:hover,select:-webkit-autofill:focus { -webkit-text-fill-color:var(--skylent-text);-webkit-box-shadow:0 0 0 1000px var(--skylent-input-bg) inset;transition:background-color 5000s ease-in-out 0s;caret-color:var(--skylent-text); }
-.skylent-public-canvas { background-color:var(--skylent-canvas);color:var(--skylent-text);transition:background-color .2s ease,color .2s ease; }
-.skylent-theme-text{color:var(--skylent-text)} .skylent-theme-text-secondary{color:var(--skylent-text-secondary)} .skylent-theme-text-muted{color:var(--skylent-text-muted)}
-.skylent-aurora,.skylent-aurora-band{opacity:var(--skylent-aurora-opacity)}
-.skylent-theme-toggle{display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:8px;border:1px solid var(--skylent-border-subtle);background:var(--skylent-surface)}
-.skylent-theme-toggle-btn{border:none;background:transparent;color:var(--skylent-text-muted);font-size:11px;font-family:var(--font-mono);letter-spacing:.04em;
+body { font-family: var(--font-body); background-color: var(--skylent-canvas); color: var(--skylent-text); margin: 0; padding: 0; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; transition: background-color 0.2s ease, color 0.2s ease; }
+button, input, select, textarea { font: inherit; color: inherit; }
+input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus,textarea:-webkit-autofill,textarea:-webkit-autofill:hover,textarea:-webkit-autofill:focus,select:-webkit-autofill,select:-webkit-autofill:hover,select:-webkit-autofill:focus { -webkit-text-fill-color:var(--skylent-text); -webkit-box-shadow:0 0 0 1000px var(--skylent-input-bg) inset; transition:background-color 5000s ease-in-out 0s; caret-color:var(--skylent-text); }
+.skylent-public-canvas { background-color:var(--skylent-canvas); color:var(--skylent-text); transition:background-color .2s ease,color .2s ease; }
+.skylent-theme-text { color:var(--skylent-text); }
+.skylent-theme-text-secondary { color:var(--skylent-text-secondary); }
+.skylent-theme-text-muted { color:var(--skylent-text-muted); }
+.skylent-aurora,.skylent-aurora-band { opacity:var(--skylent-aurora-opacity); }
+.skylent-theme-toggle { display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:8px;border:1px solid var(--skylent-border-subtle);background:var(--skylent-surface); }
+.skylent-theme-toggle-btn { border:none;background:transparent;color:var(--skylent-text-muted);font-size:11px;font-family:var(--font-mono);letter-spacing:.04em;text-transform:uppercase;padding:6px 8px;border-radius:6px;cursor:pointer;line-height:1;min-width:2.25rem; }
+.skylent-theme-toggle-btn[aria-pressed="true"] { background:var(--skylent-elevated);color:var(--skylent-text); }
+.skylent-theme-toggle-btn:focus-visible { outline:2px solid var(--skylent-focus-ring);outline-offset:1px; }
+.skylent-nav-dropdown { background:var(--skylent-elevated);border:1px solid var(--skylent-border-subtle);box-shadow:none; }
+.skylent-nav-dropdown-head { border-bottom:1px solid var(--skylent-border-subtle); }
+.skylent-nav-dropdown a:hover,.skylent-nav-dropdown-head:hover { background:var(--skylent-surface); }
+.skylent-display-xl { font-family:var(--font-display);font-size:var(--type-display-xl);font-weight:600;line-height:.98;letter-spacing:-.035em; }
+.skylent-display-lg { font-family:var(--font-display);font-size:var(--type-display-lg);font-weight:600;line-height:1.03;letter-spacing:-.03em; }
+.skylent-display-md { font-family:var(--font-display);font-size:var(--type-display-md);font-weight:600;line-height:1.06;letter-spacing:-.025em; }
+.skylent-body-lg { font-size:var(--type-body-lg);line-height:1.7;color:var(--text-secondary); }
+.skylent-text-primary { color:var(--text-primary); }
+.skylent-text-secondary { color:var(--text-secondary); }
+.skylent-text-muted { color:var(--text-muted); }
+.skylent-label { font-family:var(--font-mono);font-size:var(--type-label);letter-spacing:.12em;text-transform:uppercase; }
+html,body { overflow-x:hidden; }
