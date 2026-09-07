@@ -9,13 +9,13 @@ import {
   OBJECT_STORAGE_PROVIDER,
   buildLessonMaterialStorageKey,
   createPresignedUploadUrl,
+  inferMaterialMimeType,
   isObjectStorageConfigured,
   objectExists,
   resolveMaterialDownloadUrl,
   sanitizeMaterialFileName,
   toPublicMaterial,
   validateMaterialByteSize,
-  validateMaterialMimeType,
 } from "../lib/object-storage.js"
 
 export const facultyRouter = Router()
@@ -385,7 +385,8 @@ facultyRouter.post(
     }
 
     const { fileName, mimeType, byteSize } = bodyParsed.data
-    if (!validateMaterialMimeType(mimeType)) {
+    const resolvedMimeType = inferMaterialMimeType(fileName, mimeType)
+    if (!resolvedMimeType) {
       return res.status(400).json({ error: "Unsupported file type" })
     }
     if (!validateMaterialByteSize(byteSize)) {
@@ -416,7 +417,7 @@ facultyRouter.post(
           id: materialId,
           nodeId: context.node.id,
           fileName: safeFileName,
-          mimeType: mimeType.trim().toLowerCase(),
+          mimeType: resolvedMimeType,
           byteSize,
           storageProvider: OBJECT_STORAGE_PROVIDER,
           storageKey,

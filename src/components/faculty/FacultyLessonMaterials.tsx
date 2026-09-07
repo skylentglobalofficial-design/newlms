@@ -10,11 +10,12 @@ import {
 const ACCEPTED_TYPES = ".pdf,.ppt,.pptx,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
+type UploadPhase = "creating" | "uploading" | "verifying" | null
 
 function statusLabel(material: LessonMaterial): string {
   if (material.published) return "published"
-  if (material.uploadStatus === "FAILED") return "failed"
-  if (material.uploadStatus === "READY") return "ready"
+  if (material.uploadStatus === "FAILED") return "upload failed"
+  if (material.uploadStatus === "READY") return "ready to publish"
   return "upload pending"
 }
 
@@ -23,6 +24,13 @@ function statusColor(material: LessonMaterial, accent: Accent): string {
   if (material.uploadStatus === "FAILED") return "rgba(255,120,120,0.85)"
   if (material.uploadStatus === "READY") return "rgba(140,220,160,0.85)"
   return "rgba(255,255,255,0.35)"
+}
+
+function uploadPhaseLabel(phase: UploadPhase): string {
+  if (phase === "creating") return "Preparing upload…"
+  if (phase === "uploading") return "Uploading file to storage…"
+  if (phase === "verifying") return "Verifying storage object…"
+  return "Uploading…"
 }
 
 export default function FacultyLessonMaterials({
@@ -40,6 +48,7 @@ export default function FacultyLessonMaterials({
   const [materials, setMaterials] = useState<LessonMaterial[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [uploadPhase, setUploadPhase] = useState<UploadPhase>(null)
   const [publishingId, setPublishingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [status, setStatus] = useState<string | null>(null)
@@ -65,20 +74,28 @@ export default function FacultyLessonMaterials({
   async function handleFileSelected(file: File | null) {
     if (!file) return
     setUploading(true)
+    setUploadPhase("creating")
     setError(null)
     setStatus(null)
     try {
-      const uploaded = await requestLessonMaterialUpload({ courseSlug, lessonKey, file })
+      const uploaded = await requestLessonMaterialUpload({
+        courseSlug,
+        lessonKey,
+        file,
+        onPhaseChange: setUploadPhase,
+      })
       setStatus(
         uploaded.uploadStatus === "READY"
-          ? `Uploaded ${uploaded.fileName}. Publish it when ready for learners.`
-          : `Upload for ${uploaded.fileName} is still pending verification.`,
+          ? `${uploaded.fileName} is ready. Publish it when you want learners to access it.`
+          : `${uploaded.fileName} is still pending verification.`,
       )
       await reloadMaterials()
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed")
+      await reloadMaterials()
     } finally {
       setUploading(false)
+      setUploadPhase(null)
       if (inputRef.current) inputRef.current.value = ""
     }
   }
@@ -89,6 +106,9 @@ export default function FacultyLessonMaterials({
     setStatus(null)
     try {
       const published = await publishLessonMaterial({ courseSlug, lessonKey, materialId })
+      if (!published.published) {
+        throw new Error("Publish did not complete")
+      }
       setStatus(`Published ${published.fileName} for learners.`)
       await reloadMaterials()
     } catch (err) {
@@ -134,7 +154,7 @@ export default function FacultyLessonMaterials({
           opacity: uploading ? 0.7 : 1,
         }}
       >
-        {uploading ? "Uploading…" : "Add material (PDF/PPT/PPTX)"}
+        {uploading ? uploadPhaseLabel(uploadPhase) : "Select material (PDF/PPT/PPTX)"}
       </button>
 
       {status && (

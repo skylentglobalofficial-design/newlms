@@ -125,6 +125,20 @@ export function extensionForMimeType(mimeType: string): string | null {
   return MIME_EXTENSION[mimeType.trim().toLowerCase()] ?? null
 }
 
+export function inferMaterialMimeType(fileName: string, declaredMimeType: string): string | null {
+  const normalized = declaredMimeType.trim().toLowerCase()
+  if (validateMaterialMimeType(normalized)) return normalized
+
+  const extension = fileName.trim().toLowerCase().match(/\.([a-z0-9]+)$/)?.[1]
+  const byExtension: Record<string, string> = {
+    pdf: "application/pdf",
+    ppt: "application/vnd.ms-powerpoint",
+    pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  }
+  const inferred = extension ? byExtension[extension] : undefined
+  return inferred && validateMaterialMimeType(inferred) ? inferred : null
+}
+
 export function buildLessonMaterialStorageKey(input: {
   courseSlug: string
   nodeId: string

@@ -609,6 +609,34 @@ async function main() {
   const certificateBlocked = await request(studentJar, `/lms/courses/${courseSlug}/certificate/download`)
   assert(certificateBlocked.response.status === 409, "Ineligible learner must not download certificate")
 
+  console.log("36. Material MIME type can be inferred from file extension")
+  const extensionMime = await request(instructorJar, `/faculty/courses/${courseSlug}/lessons/l2/materials`, {
+    method: "POST",
+    csrf: true,
+    body: { fileName: "slides.pptx", mimeType: "application/octet-stream", byteSize: 1024 },
+  })
+  if (storageConfigured) {
+    assert(extensionMime.response.status === 201, "Extension-based MIME inference should allow upload creation")
+    assert(
+      extensionMime.data.data.material.mimeType === "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "PPTX MIME should be inferred from file extension",
+    )
+  } else {
+    assert(extensionMime.response.status === 503, "Unconfigured storage should return 503")
+  }
+
+  console.log("37. Published material without storage object has no download URL")
+  const facultyL8Materials = await request(instructorJar, `/faculty/courses/${courseSlug}/lessons/l8/materials`)
+  if (facultyL8Materials.response.ok) {
+    const seededItem = facultyL8Materials.data.data.find(
+      (entry: { fileName?: string }) => entry.fileName === "sql-reference-sheet.pdf",
+    )
+    if (seededItem) {
+      assert(!seededItem.downloadUrl, "Metadata-only published material must not expose a download URL")
+      assert(seededItem.uploadStatus === "PENDING", "Seeded demo material should remain pending without R2 object")
+    }
+  }
+
   console.log("All LMS integration checks passed.")
   await prisma.$disconnect()
 }
