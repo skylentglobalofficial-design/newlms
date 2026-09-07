@@ -24,6 +24,7 @@ import { fileURLToPath } from 'node:url'
 import bcrypt from 'bcrypt'
 
 import { courses, programs } from '../src/data.js'
+import { normalizeMuxPlaybackId } from '../server/src/lib/mux-playback.js'
 
 const repoRoot = resolve(fileURLToPath(new URL('.', import.meta.url)), '..')
 loadEnv({ path: resolve(repoRoot, '.env'), override: true })
@@ -291,8 +292,14 @@ async function findCourseNode(courseSlug: string, sourceId: string) {
 function readDemoMuxPlaybackId(): string | undefined {
   const value = process.env.MUX_DEMO_PLAYBACK_ID
   if (value == null) return undefined
-  const normalized = value.replace(/\uFEFF/g, '').replace(/\r/g, '').trim()
-  return normalized || undefined
+  const normalized = normalizeMuxPlaybackId(value)
+  if (!normalized) {
+    console.warn(
+      `MUX_DEMO_PLAYBACK_ID is set but is not a valid public Mux playback ID; ${DEMO_COURSE_SLUG}/l1 will remain unavailable.`,
+    )
+    return undefined
+  }
+  return normalized
 }
 
 async function seedDemoLessonMuxPlayback() {

@@ -866,39 +866,63 @@ async function main() {
   assert(!crossAttachment, "Submission review must not expose attachments from another learner submission")
 
   console.log("54. Lesson media returns mux playback when configured")
+  const { normalizeMuxPlaybackId, isConfiguredMuxPlaybackId } = await import(
+    "../server/src/lib/mux-playback.js"
+  )
   const l1Node = await prisma.curriculumNode.findFirst({
     where: { sourceId: "l1", module: { course: { slug: courseSlug } } },
     select: { id: true, muxPlaybackId: true },
   })
   assert(l1Node, "data-analytics/l1 should exist")
-  const originalPlaybackId = l1Node.muxPlaybackId
-  const qaPlaybackId = process.env.MUX_DEMO_PLAYBACK_ID?.trim() || "mux-qa-playback-contract"
-  await prisma.curriculumNode.update({
-    where: { id: l1Node.id },
-    data: { muxPlaybackId: qaPlaybackId },
-  })
+  const configuredPlaybackId = normalizeMuxPlaybackId(process.env.MUX_DEMO_PLAYBACK_ID)
+  if (!configuredPlaybackId) {
+    console.log("   SKIP: MUX_DEMO_PLAYBACK_ID is not set to a valid public Mux playback ID")
+    const staleMedia = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l1/media`)
+    assert(staleMedia.response.ok, "Media endpoint should succeed")
+    if (isConfiguredMuxPlaybackId(l1Node.muxPlaybackId)) {
+      assert(
+        staleMedia.data.data.media.provider === "mux",
+        "Valid stored playback ID should report mux provider",
+      )
+    } else {
+      assert(
+        staleMedia.data.data.media.provider === "unavailable",
+        "Invalid placeholder playback IDs must not be exposed as mux media",
+      )
+    }
+  } else {
+    const originalPlaybackId = l1Node.muxPlaybackId
+    await prisma.curriculumNode.update({
+      where: { id: l1Node.id },
+      data: { muxPlaybackId: configuredPlaybackId },
+    })
 
-  const muxMedia = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l1/media`)
-  assert(muxMedia.response.ok, "Unlocked video lesson media should load")
-  assert(muxMedia.data.data.media.provider === "mux", "Configured lesson should report mux provider")
-  assert(muxMedia.data.data.media.playbackId === qaPlaybackId, "Playback ID should round-trip")
+    const muxMedia = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l1/media`)
+    assert(muxMedia.response.ok, "Unlocked video lesson media should load")
+    assert(muxMedia.data.data.media.provider === "mux", "Configured lesson should report mux provider")
+    assert(muxMedia.data.data.media.playbackId === configuredPlaybackId, "Playback ID should round-trip")
 
-  console.log("55. Lesson media unavailable without playback ID")
-  await prisma.curriculumNode.update({
-    where: { id: l1Node.id },
-    data: { muxPlaybackId: null },
-  })
-  const unavailableMedia = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l1/media`)
-  assert(unavailableMedia.response.ok, "Media endpoint should succeed without playback ID")
-  assert(
-    unavailableMedia.data.data.media.provider === "unavailable",
-    "Missing playback ID should report unavailable media",
-  )
+    console.log("55. Lesson media unavailable without playback ID")
+    await prisma.curriculumNode.update({
+      where: { id: l1Node.id },
+      data: { muxPlaybackId: null },
+    })
+    const unavailableMedia = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l1/media`)
+    assert(unavailableMedia.response.ok, "Media endpoint should succeed without playback ID")
+    assert(
+      unavailableMedia.data.data.media.provider === "unavailable",
+      "Missing playback ID should report unavailable media",
+    )
 
-  await prisma.curriculumNode.update({
-    where: { id: l1Node.id },
-    data: { muxPlaybackId: originalPlaybackId },
-  })
+    await prisma.curriculumNode.update({
+      where: { id: l1Node.id },
+      data: { muxPlaybackId: originalPlaybackId },
+    })
+  }
+
+  if (!configuredPlaybackId) {
+    console.log("55. SKIP lesson media unavailable case — valid MUX_DEMO_PLAYBACK_ID not configured")
+  }
 
   console.log("56. Locked lesson video media forbidden")
   const lockedMuxJar: CookieJar = new Map()
@@ -937,7 +961,21 @@ async function main() {
   assert(duplicateKey === unlockedKey, "Lesson init key should be stable for the same lesson context")
   assert(lockedKey === `${courseSlug}:l4:locked`, "Locked lessons should use locked init key")
 
-  console.log("58. Lesson initialization guard suppresses repeated init for same key")
+  console.log("58. Mux playback ID normalization rejects placeholders and accepts public IDs")
+  assert(
+    normalizeMuxPlaybackId("mux-qa-vertical-slice-playback") === null,
+    "Placeholder mux-* strings must not be treated as playback IDs",
+  )
+  assert(
+    normalizeMuxPlaybackId("https://stream.mux.com/AbCdEfGhIjKl0123456789.m3u8") === "AbCdEfGhIjKl0123456789",
+    "Mux HLS URLs should normalize to the playback ID",
+  )
+  assert(
+    normalizeMuxPlaybackId('"AbCdEfGhIjKl0123456789"') === "AbCdEfGhIjKl0123456789",
+    "Wrapped playback IDs should normalize cleanly",
+  )
+
+  console.log("59. Lesson initialization guard suppresses repeated init for same key")
   const { shouldRunLessonInitialization } = await import("../src/components/lms/lesson-init-key.js")
   let completedInitKey: string | null = null
   let initRuns = 0
@@ -953,7 +991,7 @@ async function main() {
     "A changed init key should allow initialization again",
   )
 
-  console.log("59. Learn page lesson init does not loop in browser (smoke)")
+  console.log("60. Learn page lesson init does not loop in browser (smoke)")
   const learnSmokeBase = process.env.LEARN_SMOKE_BASE ?? "http://localhost:5173"
   const chromePath = process.env.CHROME_PATH ?? "/usr/bin/google-chrome-stable"
   const viteReachable = await fetch(learnSmokeBase).then((response) => response.ok).catch(() => false)
@@ -1000,7 +1038,14 @@ async function main() {
     assert(progressRequests.length - startProgress <= 1, `Progress requests looped during observe window (${progressRequests.length} total)`)
     assert(mediaRequests.length <= 4, `Too many media requests during lesson load (${mediaRequests.length})`)
     assert(progressRequests.length <= 4, `Too many progress requests during lesson load (${progressRequests.length})`)
-    assert(muxReady.hasMuxPlayer, "Mux player should render on unlocked demo lesson")
+    if (configuredPlaybackId) {
+      assert(muxReady.hasMuxPlayer, "Mux player should render when a valid playback ID is configured")
+    } else {
+      assert(
+        !muxReady.hasMuxPlayer,
+        "Invalid or missing playback IDs should not mount mux-player",
+      )
+    }
     assert(!muxReady.materialsLoading, "Materials should finish loading when requests are finite")
     console.log(
       `   PASS: media=${mediaRequests.length}, progress=${progressRequests.length}, mux=${muxReady.hasMuxPlayer}`,

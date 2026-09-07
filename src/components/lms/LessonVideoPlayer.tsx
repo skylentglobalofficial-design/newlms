@@ -53,7 +53,16 @@ function MuxPlaybackSurface({
   watched: boolean
   onMarkWatched?: () => void
 }) {
+  const playerRef = useRef<HTMLElement>(null)
   useMuxPlayerScript(true)
+
+  useEffect(() => {
+    const player = playerRef.current
+    if (!player) return
+    player.setAttribute("playback-id", playbackId)
+    player.setAttribute("stream-type", "on-demand")
+    player.setAttribute("title", title)
+  }, [playbackId, title])
 
   return (
     <div>
@@ -71,6 +80,8 @@ function MuxPlaybackSurface({
         }}
       >
         {createElement("mux-player", {
+          key: playbackId,
+          ref: playerRef,
           "playback-id": playbackId,
           "stream-type": "on-demand",
           title,
