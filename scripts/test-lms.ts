@@ -1,9 +1,10 @@
 import "dotenv/config"
 import crypto from "node:crypto"
-import { PrismaClient, RoleName } from "@prisma/client"
+import { RoleName } from "@prisma/client"
+import { createPrismaClient } from "../server/src/lib/prisma.js"
 import { isObjectStorageConfigured } from "../server/src/lib/object-storage.js"
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 
 type CookieJar = Map<string, string>

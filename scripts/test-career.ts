@@ -5,10 +5,10 @@ import {
   CareerWorkMode,
   InterviewQuestionDifficulty,
   JobStatus,
-  PrismaClient,
 } from "@prisma/client"
+import { createPrismaClient } from "../server/src/lib/prisma.js"
 
-const prisma = new PrismaClient()
+const prisma = createPrismaClient()
 const API_BASE = process.env.API_BASE ?? `http://localhost:${process.env.PORT ?? 3000}/api/v1`
 
 type CookieJar = Map<string, string>

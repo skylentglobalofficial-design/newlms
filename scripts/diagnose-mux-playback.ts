@@ -2,7 +2,7 @@ import "dotenv/config"
 import { config as loadEnv } from "dotenv"
 import { resolve } from "node:path"
 import { fileURLToPath } from "node:url"
-import { PrismaClient } from "@prisma/client"
+import { createPrismaClient } from "../server/src/lib/prisma.js"
 import { normalizeMuxPlaybackId } from "../src/lib/media/mux-playback.js"
 
 const repoRoot = resolve(fileURLToPath(new URL(".", import.meta.url)), "..")
@@ -67,7 +67,7 @@ function describeId(value: string | null | undefined) {
 }
 
 async function main() {
-  const prisma = new PrismaClient()
+  const prisma = createPrismaClient()
   const node = await prisma.curriculumNode.findFirst({
     where: { sourceId: "l1", module: { course: { slug: "data-analytics" } } },
     select: { sourceId: true, title: true, muxPlaybackId: true },
