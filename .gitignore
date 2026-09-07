@@ -13,3 +13,5 @@ logs/
 *.log
 .claude-replay.*
 .tmp-*
+qa-results*.json
+qa-screenshots*/
