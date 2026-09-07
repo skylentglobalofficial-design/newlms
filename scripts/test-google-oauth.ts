@@ -17,6 +17,7 @@ const originalFetch = globalThis.fetch
 const {
   resetGoogleCertificateCache,
   seedGoogleCertificateCache,
+  parseGoogleCertificates,
   verifyGoogleIdToken,
 } = await import("../server/src/lib/google-oauth.js")
 
@@ -144,6 +145,50 @@ async function run() {
       nonceRejected = error instanceof Error && error.message === "Invalid ID token nonce"
     }
     assert(nonceRejected, "Expected nonce validation to fail with mismatched nonce")
+
+    console.log("5. Google JWK set response is parsed into kid → PEM map")
+    resetGoogleCertificateCache()
+    certFetchCount = 0
+    const exportedJwk = publicKey.export({ format: "jwk" }) as { kty: string; n: string; e: string }
+    const jwkSet = {
+      keys: [
+        {
+          kty: exportedJwk.kty,
+          kid: rotatedKid,
+          use: "sig",
+          alg: "RS256",
+          n: exportedJwk.n,
+          e: exportedJwk.e,
+        },
+      ],
+    }
+    const parsed = parseGoogleCertificates(jwkSet)
+    assert(parsed.responseShape === "jwk_set", "Expected JWK set response shape")
+    assert(typeof parsed.keys[rotatedKid] === "string", "Expected parsed PEM for rotated kid")
+    certFetchQueue = [jwkSet]
+    const jwkToken = createSignedIdToken({ kid: rotatedKid })
+    await verifyGoogleIdToken(jwkToken)
+    assert(certFetchCount === 1, "Expected one fetch for JWK set verification")
+
+    console.log("6. Missing kid in JWK set triggers forced refresh and succeeds")
+    resetGoogleCertificateCache()
+    certFetchCount = 0
+    seedGoogleCertificateCache({ [staleKid]: publicPem })
+    certFetchQueue = [jwkSet]
+    const jwkRotatedToken = createSignedIdToken({ kid: rotatedKid })
+    await verifyGoogleIdToken(jwkRotatedToken)
+    assert(certFetchCount === 1, "Expected forced refresh against JWK set response")
+
+    console.log("7. Live Google certificate endpoint returns parseable signing keys")
+    restoreFetchMock()
+    resetGoogleCertificateCache()
+    const liveResponse = await originalFetch(GOOGLE_CERTS_URL)
+    assert(liveResponse.ok, "Expected live Google certificate endpoint to respond")
+    const livePayload = await liveResponse.json()
+    const liveParsed = parseGoogleCertificates(livePayload)
+    assert(liveParsed.responseShape === "jwk_set", "Expected live Google certs to use JWK set format")
+    assert(Object.keys(liveParsed.keys).length >= 1, "Expected at least one live Google signing key")
+    installCertFetchMock()
 
     console.log("All Google OAuth certificate rotation checks passed.")
   } finally {

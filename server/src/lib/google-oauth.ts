@@ -1,4 +1,4 @@
-import { createPublicKey, timingSafeEqual, verify } from "node:crypto"
+import { createPublicKey, timingSafeEqual, verify, type KeyObject } from "node:crypto"
 import { AuthProvider, RoleName } from "@prisma/client"
 import { prisma } from "./prisma.js"
 import { ensureRole, normalizeEmail } from "./auth.js"
@@ -25,9 +25,24 @@ export type GoogleIdTokenClaims = {
   nonce?: string
 }
 
-type GoogleCertsResponse = Record<string, string>
+/** kid → PEM public key material used for RS256 verification. */
+export type GoogleCertsResponse = Record<string, string>
 
-let cachedCerts: { fetchedAt: number; keys: GoogleCertsResponse } | null = null
+type GoogleJwk = {
+  kty?: string
+  kid?: string
+  n?: string
+  e?: string
+  alg?: string
+  use?: string
+}
+
+type GoogleCertificateCache = {
+  fetchedAt: number
+  keys: GoogleCertsResponse
+}
+
+let cachedCerts: GoogleCertificateCache | null = null
 
 const CERT_CACHE_TTL_MS = 60 * 60 * 1000
 
@@ -40,13 +55,93 @@ export function seedGoogleCertificateCache(keys: GoogleCertsResponse): void {
   cachedCerts = { fetchedAt: Date.now(), keys }
 }
 
+function listCertificateKeyIds(keys: GoogleCertsResponse): string[] {
+  return Object.keys(keys).sort()
+}
+
+function logGoogleSigningKeyDiagnostics(event: {
+  phase: "cache_miss" | "refresh_complete" | "refresh_miss"
+  requestedKid: string
+  cachedKeyIds: string[]
+  refreshedKeyIds?: string[]
+  foundAfterRefresh?: boolean
+  responseShape?: "jwk_set" | "legacy_pem_map"
+}): void {
+  console.error(
+    "[google-oauth:certs]",
+    JSON.stringify({
+      phase: event.phase,
+      requestedKid: event.requestedKid,
+      cachedKeyIds: event.cachedKeyIds,
+      ...(event.refreshedKeyIds ? { refreshedKeyIds: event.refreshedKeyIds } : {}),
+      ...(event.foundAfterRefresh !== undefined ? { foundAfterRefresh: event.foundAfterRefresh } : {}),
+      ...(event.responseShape ? { responseShape: event.responseShape } : {}),
+    }),
+  )
+}
+
+function jwkToPem(jwk: GoogleJwk): string {
+  if (jwk.kty !== "RSA" || !jwk.kid || !jwk.n || !jwk.e) {
+    throw new Error("Unsupported Google JWK entry")
+  }
+
+  const key = createPublicKey({
+    key: { kty: "RSA", n: jwk.n, e: jwk.e },
+    format: "jwk",
+  })
+
+  return key.export({ type: "spki", format: "pem" }).toString()
+}
+
+/** Parse Google's certificate response into a kid → PEM map. */
+export function parseGoogleCertificates(payload: unknown): {
+  keys: GoogleCertsResponse
+  responseShape: "jwk_set" | "legacy_pem_map"
+} {
+  if (!payload || typeof payload !== "object") {
+    throw new Error("Unrecognized Google certificates response shape")
+  }
+
+  const record = payload as Record<string, unknown>
+
+  if (Array.isArray(record.keys)) {
+    const keys: GoogleCertsResponse = {}
+    for (const entry of record.keys) {
+      if (!entry || typeof entry !== "object") continue
+      const jwk = entry as GoogleJwk
+      if (jwk.kty !== "RSA" || !jwk.kid || !jwk.n || !jwk.e) continue
+      keys[jwk.kid] = jwkToPem(jwk)
+    }
+
+    if (Object.keys(keys).length === 0) {
+      throw new Error("Google JWK set contained no usable RSA signing keys")
+    }
+
+    return { keys, responseShape: "jwk_set" }
+  }
+
+  const keys: GoogleCertsResponse = {}
+  for (const [kid, value] of Object.entries(record)) {
+    if (typeof value === "string" && value.includes("BEGIN")) {
+      keys[kid] = value
+    }
+  }
+
+  if (Object.keys(keys).length === 0) {
+    throw new Error("Unrecognized Google certificates response shape")
+  }
+
+  return { keys, responseShape: "legacy_pem_map" }
+}
+
 async function fetchGoogleCertificates(): Promise<GoogleCertsResponse> {
   const response = await fetch(GOOGLE_CERTS_URL)
   if (!response.ok) {
     throw new Error("Failed to fetch Google signing certificates")
   }
 
-  return (await response.json()) as GoogleCertsResponse
+  const payload = await response.json()
+  return parseGoogleCertificates(payload).keys
 }
 
 async function getGoogleCertificates(options?: { forceRefresh?: boolean }): Promise<GoogleCertsResponse> {
@@ -117,14 +212,31 @@ export async function verifyGoogleIdToken(idToken: string, expectedNonce?: strin
   const certs = await getGoogleCertificates()
   let pem = certs[header.kid]
   if (!pem) {
+    const cachedKeyIds = listCertificateKeyIds(certs)
+    logGoogleSigningKeyDiagnostics({
+      phase: "cache_miss",
+      requestedKid: header.kid,
+      cachedKeyIds,
+    })
+
     const refreshedCerts = await getGoogleCertificates({ forceRefresh: true })
+    const refreshedKeyIds = listCertificateKeyIds(refreshedCerts)
     pem = refreshedCerts[header.kid]
+    const foundAfterRefresh = Boolean(pem)
+
+    logGoogleSigningKeyDiagnostics({
+      phase: foundAfterRefresh ? "refresh_complete" : "refresh_miss",
+      requestedKid: header.kid,
+      cachedKeyIds,
+      refreshedKeyIds,
+      foundAfterRefresh,
+    })
   }
   if (!pem) {
     throw new Error("Unknown Google signing key")
   }
 
-  const key = createPublicKey(pem)
+  const key: KeyObject = createPublicKey(pem)
   const signedData = Buffer.from(`${encodedHeader}.${encodedPayload}`)
   const signature = Buffer.from(encodedSignature, "base64url")
   const valid = verify("RSA-SHA256", signedData, key, signature)
