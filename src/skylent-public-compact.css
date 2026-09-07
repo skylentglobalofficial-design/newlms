@@ -1,0 +1,9 @@
+.skylent-public-canvas .skylent-page-hero{grid-template-columns:1fr;max-width:900px;margin:0 auto;text-align:center;gap:clamp(34px,5vw,56px)}
+.skylent-public-canvas .skylent-page-hero .skylent-display-lg,.skylent-public-canvas .skylent-page-hero .skylent-body-lg{margin-left:auto;margin-right:auto}
+.skylent-public-canvas .skylent-page-hero [style*="display: flex"]{justify-content:center}
+.skylent-public-canvas .two-col{width:min(100%,980px);margin-left:auto;margin-right:auto}
+.skylent-public-canvas .education-journey,.skylent-public-canvas .education-value-row{max-width:980px;margin-left:auto;margin-right:auto}
+[data-theme='light'] .skylent-public-canvas p[style*="rgba(255,255,255"],
+[data-theme='light'] .skylent-public-canvas span[style*="rgba(255,255,255"]{color:var(--skylent-text-secondary)!important}
+@media(max-width:900px){.skylent-public-canvas .two-col{grid-template-columns:1fr!important;gap:clamp(30px,6vw,48px)!important}.skylent-public-canvas .two-col>*{min-width:0}}
+@media(max-width:600px){.skylent-public-canvas .two-col{width:min(100%,calc(100% - 4px));gap:28px!important}.skylent-public-canvas .skylent-page-hero{gap:30px}}
