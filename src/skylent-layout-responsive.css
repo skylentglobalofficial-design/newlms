@@ -1,14 +1,104 @@
-/* Skylent public layout correction: centered content, deliberate whitespace, responsive collapse. */
-:root{--skylent-layout-max:1120px;--skylent-layout-gutter:clamp(48px,7vw,96px)}
-.skylent-public-canvas .skylent-home-container,.skylent-public-canvas .skylent-home-hero-inner{width:min(var(--skylent-layout-max),calc(100% - (var(--skylent-layout-gutter)*2)))!important;margin-inline:auto!important}.skylent-public-canvas .skylent-home-section>.skylent-home-container{width:min(var(--skylent-layout-max),calc(100% - (var(--skylent-layout-gutter)*2)))!important}.skylent-public-canvas nav[aria-label='Main navigation']>div{width:min(var(--skylent-layout-max),calc(100% - (var(--skylent-layout-gutter)*2)))!important;padding-inline:0!important;margin-inline:auto!important}.skylent-public-canvas .skylent-content-container{max-width:var(--skylent-layout-max)!important;padding-inline:0!important}.skylent-public-canvas .skylent-content-standard,.skylent-public-canvas .marketing-hero-inner{max-width:1040px!important;padding-inline:0!important;margin-inline:auto!important}
-[data-theme='dark'] .skylent-public-canvas{background-color:#080a0d!important}[data-theme='dark'] .skylent-public-canvas::before{opacity:.72!important}[data-theme='dark'] .skylent-home-hero{background:#080a0d!important}[data-theme='dark'] .skylent-home-hero-inner{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr)!important;gap:clamp(42px,6vw,76px)!important}[data-theme='dark'] .skylent-home-hero-title{max-width:10ch}.skylent-home-section{overflow:clip}.skylent-home-section-head,.skylent-career-layout,.skylent-institution-layout,.skylent-os-gateway-inner{max-width:var(--skylent-layout-max);margin-inline:auto}
-/* FadeIn wrappers must participate in the parent grid without collapsing card height. */
-.skylent-ecosystem-grid>div{min-width:0;height:100%;display:block}.skylent-ecosystem-grid>div>.skylent-ecosystem-card{height:100%;min-height:340px;box-sizing:border-box;display:flex;flex-direction:column}.skylent-ecosystem-grid>div>.skylent-ecosystem-card p{max-width:340px}.skylent-ecosystem-grid>div>.skylent-ecosystem-card .skylent-ecosystem-link{margin-top:auto;position:static;padding-top:26px}.skylent-journey-track>div{min-width:0;height:100%}.skylent-journey-track>div>.skylent-journey-step{height:100%;box-sizing:border-box}.skylent-program-feature{min-width:0}.skylent-career-layout>div,.skylent-institution-layout>div{min-width:0}
-/* Editorial contrast: headings are ink; supporting copy is warm charcoal, never grey-on-grey. */
-[data-theme='light'] .skylent-public-canvas{color:#171411!important}.skylent-public-canvas .skylent-home-section-head p,.skylent-public-canvas .skylent-home-journey-intro p,.skylent-public-canvas .skylent-career-copy p,.skylent-public-canvas .skylent-institution-layout p{max-width:540px}.skylent-public-canvas .skylent-ecosystem-card h3,.skylent-public-canvas .skylent-journey-step h3{color:var(--skylent-text)!important}.skylent-public-canvas .skylent-ecosystem-card p,.skylent-public-canvas .skylent-journey-step p{color:var(--skylent-text-secondary)!important}
-/* Light Aurora: preserve Skylent indigo/violet/blue, but let it breathe through warm cream. */
-[data-theme='light'] .skylent-public-canvas::before{opacity:1!important;background:radial-gradient(ellipse 56% 34% at 8% 0%,rgba(99,102,241,.16),transparent 70%),radial-gradient(ellipse 48% 32% at 94% 2%,rgba(139,92,246,.13),transparent 72%),radial-gradient(ellipse 40% 28% at 52% 6%,rgba(59,130,246,.075),transparent 74%)!important;background-size:100% 760px,100% 680px,100% 600px!important}.skylent-public-canvas .skylent-home-hero-grid{mix-blend-mode:multiply}
-@media(max-width:1080px){.skylent-public-canvas .skylent-home-container,.skylent-public-canvas .skylent-home-hero-inner,.skylent-public-canvas .skylent-home-section>.skylent-home-container,.skylent-public-canvas nav[aria-label='Main navigation']>div{width:min(100%,calc(100% - 72px))!important}}
-@media(max-width:900px){.skylent-public-canvas nav[aria-label='Main navigation']>div>.nav-links,.skylent-public-canvas nav[aria-label='Main navigation']>div>div:last-child>*:not(.show-mobile){display:none!important}.skylent-public-canvas nav[aria-label='Main navigation']>div>div:last-child{display:flex!important;align-items:center;margin-left:auto}.skylent-public-canvas nav[aria-label='Main navigation'] .show-mobile{display:flex!important}.skylent-public-canvas .skylent-home-hero{min-height:auto!important;padding:108px 0 72px!important}.skylent-public-canvas .skylent-home-hero-inner{grid-template-columns:1fr!important;gap:52px!important}.skylent-public-canvas .skylent-home-hero-title{max-width:none;font-size:clamp(48px,9vw,76px)!important}.skylent-public-canvas .skylent-home-hero-visual{min-height:500px!important}.skylent-public-canvas .skylent-float-chip{display:none}.skylent-public-canvas .skylent-home-section-head{grid-template-columns:1fr!important;gap:22px!important;align-items:start!important}.skylent-public-canvas .skylent-ecosystem-grid{grid-template-columns:1fr!important}.skylent-public-canvas .skylent-ecosystem-card{min-height:280px;border-right:0}.skylent-public-canvas .skylent-journey-track{grid-template-columns:repeat(2,1fr)!important}.skylent-public-canvas .skylent-os-gateway-inner{grid-template-columns:1fr!important;gap:48px!important}.skylent-public-canvas .skylent-os-stack{min-height:360px}.skylent-public-canvas .skylent-os-layer{width:94%}.skylent-public-canvas .skylent-career-layout,.skylent-public-canvas .skylent-institution-layout{grid-template-columns:1fr!important;gap:42px!important}.skylent-ecosystem-grid>div>.skylent-ecosystem-card{min-height:280px}}
-@media(max-width:700px){.skylent-public-canvas .skylent-home-container,.skylent-public-canvas .skylent-home-hero-inner,.skylent-public-canvas .skylent-home-section>.skylent-home-container,.skylent-public-canvas nav[aria-label='Main navigation']>div{width:calc(100% - 32px)!important}.skylent-public-canvas .skylent-home-section{padding:76px 0!important}.skylent-public-canvas .skylent-home-hero-title{font-size:clamp(42px,12vw,62px)!important;line-height:.95!important}.skylent-public-canvas .skylent-home-hero-lead{font-size:15px!important;line-height:1.65!important}.skylent-public-canvas .skylent-home-hero-actions{flex-direction:column;align-items:stretch}.skylent-public-canvas .skylent-home-hero-actions>*{width:100%;justify-content:center}.skylent-public-canvas .skylent-home-hero-meta{margin-top:32px;flex-wrap:wrap}.skylent-public-canvas .skylent-home-hero-visual{min-height:0!important}.skylent-public-canvas .skylent-product-window{width:100%;border-radius:14px}.skylent-public-canvas .skylent-product-window-body{grid-template-columns:1fr!important;min-height:0}.skylent-public-canvas .skylent-product-window-body aside{display:flex;align-items:center;gap:4px;padding:10px;border-right:0;border-bottom:1px solid var(--skylent-border-subtle);overflow-x:auto}.skylent-public-canvas .skylent-mini-brand{padding:0 8px;margin-right:auto;flex-shrink:0}.skylent-public-canvas .skylent-mini-nav{padding:8px 9px;margin:0;flex-shrink:0;font-size:11px}.skylent-public-canvas .skylent-mini-nav span{display:none}.skylent-public-canvas .skylent-product-main{padding:22px}.skylent-public-canvas .skylent-product-cards{grid-template-columns:1fr!important}.skylent-public-canvas .skylent-product-card.is-large{grid-row:auto;min-height:130px}.skylent-public-canvas .skylent-ecosystem-card{min-height:250px;padding:22px}.skylent-public-canvas .skylent-journey-track{grid-template-columns:1fr!important}.skylent-public-canvas .skylent-journey-step,.skylent-public-canvas .skylent-journey-step:not(:first-child){min-height:150px;padding:20px 0!important;border-right:0;border-bottom:1px solid var(--skylent-border-subtle)}.skylent-public-canvas .skylent-journey-step:last-child{border-bottom:0}.skylent-public-canvas .skylent-journey-step h3{margin-top:28px}.skylent-public-canvas .skylent-journey-step>b{display:none}.skylent-public-canvas .skylent-os-stack{min-height:300px}.skylent-public-canvas .skylent-os-layer{width:100%;padding:18px}.skylent-public-canvas .skylent-program-feature{grid-template-columns:1fr!important}}
-@media(max-width:480px){.skylent-public-canvas .skylent-home-container,.skylent-public-canvas .skylent-home-hero-inner,.skylent-public-canvas .skylent-home-section>.skylent-home-container,.skylent-public-canvas nav[aria-label='Main navigation']>div{width:calc(100% - 24px)!important}.skylent-public-canvas .skylent-home-hero{padding-top:94px!important}.skylent-public-canvas .skylent-product-main{padding:18px}.skylent-public-canvas .skylent-home-section-head h2,.skylent-public-canvas .skylent-home-journey-intro h2,.skylent-public-canvas .skylent-os-copy h2,.skylent-public-canvas .skylent-career-copy h2,.skylent-public-canvas .skylent-institution-layout h2,.skylent-public-canvas .skylent-labs-teaser h2{font-size:38px!important}}
+/* Skylent public layout: centered editorial frame with deliberate desktop whitespace. */
+:root{--skylent-layout-max:1120px;--skylent-layout-gutter:64px}
+.skylent-public-canvas .skylent-home-container,.skylent-public-canvas .skylent-home-hero-inner{width:min(var(--skylent-layout-max),calc(100% - (var(--skylent-layout-gutter)*2)))!important;margin-inline:auto!important}
+.skylent-public-canvas .skylent-home-section>.skylent-home-container{width:min(var(--skylent-layout-max),calc(100% - (var(--skylent-layout-gutter)*2)))!important}
+.skylent-public-canvas nav[aria-label='Main navigation']>div{width:min(var(--skylent-layout-max),calc(100% - (var(--skylent-layout-gutter)*2)))!important;padding-inline:0!important;margin-inline:auto!important}
+.skylent-public-canvas .skylent-content-container{max-width:var(--skylent-layout-max)!important;padding-inline:0!important;margin-inline:auto!important}
+.skylent-public-canvas .skylent-content-standard,.skylent-public-canvas .marketing-hero-inner{max-width:1040px!important;padding-inline:0!important;margin-inline:auto!important}
+.skylent-public-canvas .skylent-home-section-head,.skylent-public-canvas .skylent-career-layout,.skylent-public-canvas .skylent-institution-layout,.skylent-public-canvas .skylent-os-gateway-inner{max-width:var(--skylent-layout-max);margin-inline:auto}
+
+/* Dark mode remains black-first; Aurora stays an atmospheric accent. */
+[data-theme='dark'] .skylent-public-canvas{background-color:#080a0d!important}
+[data-theme='dark'] .skylent-home-hero{background:#080a0d!important}
+[data-theme='dark'] .skylent-public-canvas::before{opacity:.72!important}
+[data-theme='dark'] .skylent-home-hero-grid{opacity:.12!important}
+
+/* FadeIn wrappers participate correctly in the parent grid. */
+.skylent-ecosystem-grid>div{min-width:0;height:100%;display:block}
+.skylent-ecosystem-grid>div>.skylent-ecosystem-card{height:100%;min-height:340px;box-sizing:border-box;display:flex;flex-direction:column}
+.skylent-ecosystem-grid>div>.skylent-ecosystem-card p{max-width:340px}
+.skylent-ecosystem-grid>div>.skylent-ecosystem-card .skylent-ecosystem-link{margin-top:auto;position:static;padding-top:26px}
+.skylent-journey-track>div{min-width:0;height:100%}
+.skylent-journey-track>div>.skylent-journey-step{height:100%;box-sizing:border-box}
+.skylent-program-feature{min-width:0}
+.skylent-career-layout>div,.skylent-institution-layout>div{min-width:0}
+
+/* Warm editorial light mode: ink hierarchy on cream, same Aurora family. */
+[data-theme='light'] .skylent-public-canvas{color:#171411!important}
+[data-theme='light'] .skylent-public-canvas .skylent-home-section-head p,
+[data-theme='light'] .skylent-public-canvas .skylent-home-journey-intro p,
+[data-theme='light'] .skylent-public-canvas .skylent-career-copy p,
+[data-theme='light'] .skylent-public-canvas .skylent-institution-layout p{color:#514b44!important}
+[data-theme='light'] .skylent-public-canvas .skylent-ecosystem-card h3,
+[data-theme='light'] .skylent-public-canvas .skylent-journey-step h3{color:#171411!important}
+[data-theme='light'] .skylent-public-canvas .skylent-ecosystem-card p,
+[data-theme='light'] .skylent-public-canvas .skylent-journey-step p{color:#514b44!important}
+[data-theme='light'] .skylent-public-canvas::before{opacity:1!important;background:radial-gradient(ellipse 56% 34% at 8% 0%,rgba(99,102,241,.16),transparent 70%),radial-gradient(ellipse 48% 32% at 94% 2%,rgba(139,92,246,.13),transparent 72%),radial-gradient(ellipse 40% 28% at 52% 6%,rgba(59,130,246,.075),transparent 74%)!important;background-size:100% 760px,100% 680px,100% 600px!important}
+
+/* Desktop/tablet: preserve a real frame instead of letting content expand to the viewport. */
+@media(max-width:1199px){
+  :root{--skylent-layout-gutter:56px}
+}
+@media(max-width:1080px){
+  :root{--skylent-layout-gutter:64px}
+  .skylent-public-canvas .skylent-home-container,.skylent-public-canvas .skylent-home-hero-inner,.skylent-public-canvas .skylent-home-section>.skylent-home-container,.skylent-public-canvas nav[aria-label='Main navigation']>div{width:calc(100% - (var(--skylent-layout-gutter)*2))!important}
+  .skylent-public-canvas .skylent-content-container{max-width:calc(100% - 128px)!important}
+}
+
+@media(max-width:900px){
+  :root{--skylent-layout-gutter:40px}
+  .skylent-public-canvas nav[aria-label='Main navigation']>div>.nav-links,.skylent-public-canvas nav[aria-label='Main navigation']>div>div:last-child>*:not(.show-mobile){display:none!important}
+  .skylent-public-canvas nav[aria-label='Main navigation']>div>div:last-child{display:flex!important;align-items:center;margin-left:auto}
+  .skylent-public-canvas nav[aria-label='Main navigation'] .show-mobile{display:flex!important}
+  .skylent-public-canvas .skylent-home-hero{min-height:auto!important;padding:108px 0 72px!important}
+  .skylent-public-canvas .skylent-home-hero-inner{grid-template-columns:1fr!important;gap:52px!important}
+  .skylent-public-canvas .skylent-home-hero-title{max-width:none;font-size:clamp(48px,9vw,76px)!important}
+  .skylent-public-canvas .skylent-home-hero-visual{min-height:500px!important}
+  .skylent-public-canvas .skylent-float-chip{display:none}
+  .skylent-public-canvas .skylent-home-section-head{grid-template-columns:1fr!important;gap:22px!important;align-items:start!important}
+  .skylent-public-canvas .skylent-ecosystem-grid{grid-template-columns:1fr!important}
+  .skylent-public-canvas .skylent-ecosystem-card{min-height:280px;border-right:0}
+  .skylent-public-canvas .skylent-journey-track{grid-template-columns:repeat(2,1fr)!important}
+  .skylent-public-canvas .skylent-os-gateway-inner{grid-template-columns:1fr!important;gap:48px!important}
+  .skylent-public-canvas .skylent-os-stack{min-height:360px}
+  .skylent-public-canvas .skylent-os-layer{width:94%}
+  .skylent-public-canvas .skylent-career-layout,.skylent-public-canvas .skylent-institution-layout{grid-template-columns:1fr!important;gap:42px!important}
+  .skylent-ecosystem-grid>div>.skylent-ecosystem-card{min-height:280px}
+}
+
+@media(max-width:700px){
+  :root{--skylent-layout-gutter:16px}
+  .skylent-public-canvas .skylent-home-container,.skylent-public-canvas .skylent-home-hero-inner,.skylent-public-canvas .skylent-home-section>.skylent-home-container,.skylent-public-canvas nav[aria-label='Main navigation']>div{width:calc(100% - 32px)!important}
+  .skylent-public-canvas .skylent-content-container{max-width:calc(100% - 32px)!important}
+  .skylent-public-canvas .skylent-home-section{padding:76px 0!important}
+  .skylent-public-canvas .skylent-home-hero-title{font-size:clamp(42px,12vw,62px)!important;line-height:.95!important}
+  .skylent-public-canvas .skylent-home-hero-lead{font-size:15px!important;line-height:1.65!important}
+  .skylent-public-canvas .skylent-home-hero-actions{flex-direction:column;align-items:stretch}
+  .skylent-public-canvas .skylent-home-hero-actions>*{width:100%;justify-content:center}
+  .skylent-public-canvas .skylent-home-hero-meta{margin-top:32px;flex-wrap:wrap}
+  .skylent-public-canvas .skylent-home-hero-visual{min-height:0!important}
+  .skylent-public-canvas .skylent-product-window{width:100%;border-radius:14px}
+  .skylent-public-canvas .skylent-product-window-body{grid-template-columns:1fr!important;min-height:0}
+  .skylent-public-canvas .skylent-product-window-body aside{display:flex;align-items:center;gap:4px;padding:10px;border-right:0;border-bottom:1px solid var(--skylent-border-subtle);overflow-x:auto}
+  .skylent-public-canvas .skylent-mini-brand{padding:0 8px;margin-right:auto;flex-shrink:0}
+  .skylent-public-canvas .skylent-mini-nav{padding:8px 9px;margin:0;flex-shrink:0;font-size:11px}
+  .skylent-public-canvas .skylent-mini-nav span{display:none}
+  .skylent-public-canvas .skylent-product-main{padding:22px}
+  .skylent-public-canvas .skylent-product-cards{grid-template-columns:1fr!important}
+  .skylent-public-canvas .skylent-product-card.is-large{grid-row:auto;min-height:130px}
+  .skylent-public-canvas .skylent-ecosystem-card{min-height:250px;padding:22px}
+  .skylent-public-canvas .skylent-journey-track{grid-template-columns:1fr!important}
+  .skylent-public-canvas .skylent-journey-step,.skylent-public-canvas .skylent-journey-step:not(:first-child){min-height:150px;padding:20px 0!important;border-right:0;border-bottom:1px solid var(--skylent-border-subtle)}
+  .skylent-public-canvas .skylent-journey-step:last-child{border-bottom:0}
+  .skylent-public-canvas .skylent-journey-step h3{margin-top:28px}
+  .skylent-public-canvas .skylent-journey-step>b{display:none}
+  .skylent-public-canvas .skylent-os-stack{min-height:300px}
+  .skylent-public-canvas .skylent-os-layer{width:100%;padding:18px}
+  .skylent-public-canvas .skylent-program-feature{grid-template-columns:1fr!important}
+}
+
+@media(max-width:480px){
+  .skylent-public-canvas .skylent-home-hero{padding-top:94px!important}
+  .skylent-public-canvas .skylent-product-main{padding:18px}
+  .skylent-public-canvas .skylent-home-section-head h2,.skylent-public-canvas .skylent-home-journey-intro h2,.skylent-public-canvas .skylent-os-copy h2,.skylent-public-canvas .skylent-career-copy h2,.skylent-public-canvas .skylent-institution-layout h2,.skylent-public-canvas .skylent-labs-teaser h2{font-size:38px!important}
+}
