@@ -54,10 +54,10 @@ function Hero() {
                   <div className="skylent-product-kicker">YOUR JOURNEY</div>
                   <div className="skylent-product-title">Build capability.<br />Create proof.</div>
                   <div className="skylent-progress-line"><span /></div>
-                  <div className="skylent-progress-label"><span>Learning progress</span><strong>68%</strong></div>
+                  <div className="skylent-progress-label"><span>Learning progress</span><strong>Preview</strong></div>
                   <div className="skylent-product-cards">
                     <div className="skylent-product-card is-large"><span>01 / LEARN</span><strong>Data Analytics</strong><small>Continue · Module 03</small></div>
-                    <div className="skylent-product-card"><span>02 / PROVE</span><strong>3 projects</strong><small>Portfolio evidence</small></div>
+                    <div className="skylent-product-card"><span>02 / PROVE</span><strong>Projects</strong><small>Portfolio evidence</small></div>
                     <div className="skylent-product-card"><span>03 / CAREER</span><strong>Career OS</strong><small>Access after Professional Program</small></div>
                   </div>
                 </div>
