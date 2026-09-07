@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { useAuth } from '../context/AuthContext'
@@ -30,6 +30,7 @@ import {
 
 import { roleRoute } from '../lib/auth-routing'
 import LessonMaterialsPanel from '../components/lms/LessonMaterialsPanel'
+import { buildLessonInitKey } from '../components/lms/lesson-init-key'
 
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
@@ -39,7 +40,10 @@ export default function LearnPage() {
   const roleAccent = getLmsRoleAccent(user?.role)
 
   const course = access.status === 'ready' ? access.course : null
-  const allLessons = course ? course.modules.flatMap(m => m.lessons) : []
+  const allLessons = useMemo(
+    () => (course ? course.modules.flatMap((module) => module.lessons) : []),
+    [course],
+  )
   const resumeLessonId = access.status === 'ready' ? access.workspace.resume.lessonId : ''
   const firstLessonId = resumeLessonId || allLessons[0]?.id || ''
 
@@ -66,15 +70,34 @@ export default function LearnPage() {
   }, [selectedLessonId, slug, navigate, access.status])
 
   useEffect(() => {
-    if (lessonId && allLessons.some(l => l.id === lessonId)) setSelectedLessonId(lessonId)
+    if (lessonId && allLessons.some((lesson) => lesson.id === lessonId)) {
+      setSelectedLessonId(lessonId)
+    }
   }, [lessonId, allLessons])
 
+  const selectedLessonLocked =
+    access.status === 'ready' && selectedLessonId
+      ? (lessonStates[selectedLessonId]?.locked ?? false)
+      : true
+  const selectedLessonType = allLessons.find((lesson) => lesson.id === selectedLessonId)?.type
+  const selectedLessonFallbackMedia = useMemo(
+    () => allLessons.find((lesson) => lesson.id === selectedLessonId)?.media,
+    [allLessons, selectedLessonId],
+  )
+  const lessonInitKey = buildLessonInitKey({
+    slug,
+    lessonId: selectedLessonId,
+    locked: selectedLessonLocked,
+    lessonType: selectedLessonType,
+  })
+  const lastLessonInitKeyRef = useRef<string | null>(null)
+
   useEffect(() => {
-    if (!slug || access.status !== 'ready' || !selectedLessonId) return
-    const lesson = allLessons.find(l => l.id === selectedLessonId)
-    if (!lesson) return
-    const state = lessonStates[selectedLessonId]
-    if (state?.locked) {
+    if (access.status !== 'ready' || !lessonInitKey || !slug || !selectedLessonId) return
+    if (lastLessonInitKeyRef.current === lessonInitKey) return
+    lastLessonInitKeyRef.current = lessonInitKey
+
+    if (selectedLessonLocked) {
       setQuizQuestions([])
       setLessonMedia(undefined)
       return
@@ -82,7 +105,7 @@ export default function LearnPage() {
 
     void markLessonAccess(slug, selectedLessonId).catch(() => undefined)
 
-    if (lesson.type === 'quiz') {
+    if (selectedLessonType === 'quiz') {
       setQuizLoading(true)
       fetchQuizQuestions(slug, selectedLessonId)
         .then((questions) => setQuizQuestions(questions.map(q => ({ q: q.q, options: q.options }))))
@@ -93,14 +116,22 @@ export default function LearnPage() {
       setQuizLoading(false)
     }
 
-    if (lesson.type === 'video') {
+    if (selectedLessonType === 'video') {
       fetchLessonMedia(slug, selectedLessonId)
         .then((payload) => setLessonMedia(payload.media))
-        .catch(() => setLessonMedia(lesson.media ?? { provider: 'unavailable' }))
+        .catch(() => setLessonMedia(selectedLessonFallbackMedia ?? { provider: 'unavailable' }))
     } else {
       setLessonMedia(undefined)
     }
-  }, [slug, access.status, selectedLessonId, allLessons, lessonStates])
+  }, [
+    access.status,
+    lessonInitKey,
+    slug,
+    selectedLessonId,
+    selectedLessonLocked,
+    selectedLessonType,
+    selectedLessonFallbackMedia,
+  ])
 
   const refreshWorkspace = useCallback(async () => {
     if (!slug) return

@@ -913,6 +913,30 @@ async function main() {
   assert(lockedMuxMedia.response.status === 403, "Locked video lesson media must be forbidden")
   assert(lockedMuxMedia.data.error === "Lesson locked", "Locked media should return lesson locked error")
 
+  console.log("57. Lesson init key stays stable across repeated renders")
+  const { buildLessonInitKey } = await import("../src/components/lms/lesson-init-key.js")
+  const unlockedKey = buildLessonInitKey({
+    slug: courseSlug,
+    lessonId: "l1",
+    locked: false,
+    lessonType: "video",
+  })
+  const duplicateKey = buildLessonInitKey({
+    slug: courseSlug,
+    lessonId: "l1",
+    locked: false,
+    lessonType: "video",
+  })
+  const lockedKey = buildLessonInitKey({
+    slug: courseSlug,
+    lessonId: "l4",
+    locked: true,
+    lessonType: "video",
+  })
+  assert(unlockedKey === `${courseSlug}:l1:video`, "Unlocked video lessons should use type-specific init key")
+  assert(duplicateKey === unlockedKey, "Lesson init key should be stable for the same lesson context")
+  assert(lockedKey === `${courseSlug}:l4:locked`, "Locked lessons should use locked init key")
+
   console.log("All LMS integration checks passed.")
   await prisma.$disconnect()
 }
