@@ -590,9 +590,9 @@ function EcosystemSection() {
     { label: 'Learning', desc: 'Professional Program curriculum', to: '/programs' },
     { label: 'Projects', desc: 'Portfolio work from coursework', to: '/programs' },
     { label: 'Proof', desc: 'Certificates and project artifacts', to: '/skills' },
-    { label: 'Career Profile', desc: 'Identity, skills, portfolio', to: '/career-os' },
+    { label: 'Career Profile', desc: 'Identity, skills, portfolio', to: '/career-os#profile' },
     { label: 'Jobs', desc: 'Curated job board', to: '/career-os#jobs' },
-    { label: 'Applications', desc: 'Apply and submit', to: '/career-os#jobs' },
+    { label: 'Applications', desc: 'Apply and submit', to: '/career-os#tracker' },
     { label: 'Interviews', desc: 'Preparation and practice', to: '/career-os#interview' },
   ]
 

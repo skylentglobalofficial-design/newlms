@@ -8,7 +8,17 @@ const VIEWPORTS = [1440, 1024, 768, 375] as const
 
 async function loginAsLearner(page: import("puppeteer-core").Page) {
   await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded", timeout: 30000 })
-  await page.waitForSelector("#si-email", { timeout: 15000 })
+  await page.waitForFunction(
+    () => Boolean(document.querySelector("#si-email")) || window.location.pathname.includes("/dashboard/"),
+    { timeout: 15000 },
+  )
+  const emailField = await page.$("#si-email")
+  if (!emailField) {
+    if (!page.url().includes("/dashboard/student")) {
+      await page.goto(`${BASE}/dashboard/student`, { waitUntil: "domcontentloaded", timeout: 30000 })
+    }
+    return
+  }
   await page.type("#si-email", EMAIL, { delay: 10 })
   await page.type("#si-password", PASSWORD, { delay: 10 })
   await page.click('button[type="submit"]')
@@ -25,10 +35,15 @@ async function main() {
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   })
 
+  const context = await browser.createBrowserContext()
+  const loginPage = await context.newPage()
+  await loginAsLearner(loginPage)
+  await loginPage.close()
+
   const results: Array<Record<string, unknown>> = []
 
   for (const width of VIEWPORTS) {
-    const page = await browser.newPage()
+    const page = await context.newPage()
     await page.setViewport({ width, height: 900 })
 
     await loginAsLearner(page)
@@ -86,6 +101,7 @@ async function main() {
     await page.close()
   }
 
+  await context.close()
   await browser.close()
 
   const failures = results.filter((r) => r.overflow || !(r.dashboard as { hasWorkspace: boolean }).hasWorkspace)

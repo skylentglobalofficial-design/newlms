@@ -192,7 +192,7 @@ export default function ProgramPage() {
   const [faqOpen, setFaqOpen] = useState<string | null>(null)
   const [activeSection, setActiveSection] = useState('overview')
   const [featuredProject, setFeaturedProject] = useState(0)
-  const { startProgramEnrollment, enrolling } = useCatalogEnrollment()
+  const { startProgramEnrollment, enrolling, enrollError, clearEnrollError } = useCatalogEnrollment()
 
   const isExamPrep = program?.programType === 'EXAM_PREP'
   const isCareerOS = !!program?.careerSupport
@@ -208,6 +208,7 @@ export default function ProgramPage() {
       navigate('/contact')
       return
     }
+    clearEnrollError()
     void startProgramEnrollment(program.slug)
   }
 
@@ -288,6 +289,11 @@ export default function ProgramPage() {
         actions={
           <>
             <Button variant="primary" size="lg" themeId={auroraTheme} onClick={handleProgramApply}>{enrolling ? 'Enrolling…' : `${ctaLabel} →`}</Button>
+            {enrollError && (
+              <div role="alert" style={{ color: 'rgba(255,255,255,0.72)', fontSize: 13, lineHeight: 1.5, marginTop: 12, maxWidth: 420 }}>
+                {enrollError} Please try again.
+              </div>
+            )}
             <Button
               variant="secondary"
               size="lg"
@@ -308,10 +314,10 @@ export default function ProgramPage() {
           </div>
         }
       >
-        <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.58)', margin: '24px auto 0', maxWidth: 560, lineHeight: 1.75 }}>
+        <p className="skylent-body-lg" style={{ color: 'var(--text-secondary)', margin: '24px auto 0', maxWidth: 560, lineHeight: 1.75 }}>
           {program.desc}
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 13, margin: '16px 0 0', fontFamily: 'var(--font-mono)' }}>
+        <p style={{ color: 'var(--text-muted)', fontSize: 13, margin: '16px 0 0', fontFamily: 'var(--font-mono)' }}>
           From ₹{lowestPrice.toLocaleString('en-IN')} · {program.duration} · {program.format}
         </p>
       </MarketingHero>
@@ -350,7 +356,7 @@ export default function ProgramPage() {
               <h2 className="skylent-display-md" style={{ color: C.white, margin: '18px 0 16px' }}>
                 {program.outcome}
               </h2>
-              <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: 0, maxWidth: 520 }}>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 16, lineHeight: 1.75, margin: 0, maxWidth: 520 }}>
                 {program.desc}
               </p>
             </div>

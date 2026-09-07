@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom'
 import { C } from '../components/shared'
 import { getDomainAccent } from '../aurora-themes'
 
@@ -33,12 +33,15 @@ const statusColors: Record<LabExperimentStatus, { color: string; label: string }
 export default function LabDetailPage() {
   const { labId } = useParams<{ labId: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuth()
   const demo = useDemoState()
 
   useEffect(() => {
-    if (!user) navigate('/login')
-  }, [user, navigate])
+    if (!user) {
+      navigate('/login', { state: { returnTo: location.pathname + location.search + location.hash } })
+    }
+  }, [user, navigate, location.pathname, location.search, location.hash])
 
   const subject = labSubjects.find(s => s.id === labId)
   const labProgress = labId ? demo.getLabProgress(labId) : { launched: false, complete: false, experiments: {} }
@@ -73,8 +76,12 @@ export default function LabDetailPage() {
           {subject.program} &rsaquo; {subject.semester} &rsaquo; {subject.subject}
         </div>
         <div style={{ marginLeft: 'auto', color: 'rgba(255,255,255,0.35)', fontSize: 12, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>
-          {completedCount} of {subject.experiments.length} complete
+          Catalog preview
         </div>
+      </div>
+
+      <div style={{ background: 'rgba(243,107,33,0.08)', borderBottom: '1px solid rgba(243,107,33,0.2)', padding: '12px 28px', color: 'rgba(255,255,255,0.65)', fontSize: 13 }}>
+        Virtual labs are not connected to enrolled courses yet. Experiment launch and submission are unavailable in this environment.
       </div>
 
       {/* Main */}
@@ -88,10 +95,10 @@ export default function LabDetailPage() {
             return (
               <button
                 key={exp.id}
-                onClick={() => navigate(`/labs/${labId}/${exp.id}`)}
-                style={{ display: 'flex', width: '100%', textAlign: 'left', padding: '11px 16px', gap: 12, alignItems: 'flex-start', background: 'transparent', border: 'none', cursor: 'pointer', transition: 'background 0.15s' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                type="button"
+                disabled
+                title="Experiment launch is not available yet"
+                style={{ display: 'flex', width: '100%', textAlign: 'left', padding: '11px 16px', gap: 12, alignItems: 'flex-start', background: 'transparent', border: 'none', cursor: 'not-allowed', opacity: 0.55 }}
               >
                 {/* Status dot */}
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: sc.color, flexShrink: 0, marginTop: 4, border: status === 'not_started' ? '1px solid rgba(255,255,255,0.2)' : 'none', boxSizing: 'border-box' }} />
@@ -162,14 +169,13 @@ export default function LabDetailPage() {
 
                   {/* Status + button */}
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 12, flexShrink: 0 }}>
-                    <span style={{ color: sc.color, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{sc.label}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>Unavailable</span>
                     <button
-                      onClick={() => navigate(`/labs/${labId}/${exp.id}`)}
-                      style={{ background: status === 'completed' ? 'rgba(34,197,94,0.1)' : accent.primary, border: status === 'completed' ? '1px solid rgba(34,197,94,0.3)' : 'none', color: status === 'completed' ? '#4ade80' : C.black, padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'opacity 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.opacity = '0.8')}
-                      onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+                      type="button"
+                      disabled
+                      style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.35)', padding: '9px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'not-allowed', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}
                     >
-                      {status === 'not_started' ? 'Start →' : status === 'in_progress' ? 'Continue →' : status === 'submitted' ? 'View →' : 'Review →'}
+                      Launch unavailable
                     </button>
                   </div>
                 </div>

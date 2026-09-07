@@ -45,7 +45,7 @@ export function useCatalogEnrollment() {
       return
     }
 
-    void runEnrollment(target).catch(() => undefined)
+    void runEnrollment(target)
   }, [navigate, ready, runEnrollment, user])
 
   return {

@@ -139,7 +139,7 @@ export default function InstitutionTypePanel({
           <Link to={institution.cta.href} className="skills-explorer-primary-link">
             {institution.cta.label} →
           </Link>
-          <Link to="/os" className="skills-explorer-secondary-link">
+          <Link to="/login" className="skills-explorer-secondary-link">
             View Skylent OS
           </Link>
         </div>

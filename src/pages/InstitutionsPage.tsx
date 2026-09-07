@@ -177,7 +177,7 @@ export default function InstitutionsPage() {
         title={<>Bring Skylent OS<br />to your institution.</>}
         lead="Let's map your needs and co-design a program that moves your learners from education to employability."
         primary={{ label: 'Partner With Skylent', to: '/contact' }}
-        secondary={{ label: 'View Skylent OS', to: '/os' }}
+        secondary={{ label: 'Sign in to workspace', to: '/login' }}
         auroraTheme="institution"
       />
     </PageShell>

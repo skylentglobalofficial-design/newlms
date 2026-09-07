@@ -72,7 +72,8 @@ async function main() {
   const results: Array<Record<string, unknown>> = []
 
   for (const spec of ROLES) {
-    const page = await browser.newPage()
+    const context = await browser.createBrowserContext()
+    const page = await context.newPage()
     await page.setViewport({ width: 1440, height: 900 })
 
     await login(page, spec.email, spec.homePath)
@@ -110,7 +111,7 @@ async function main() {
       passed: home.path === spec.homePath && home.hasShell && home.hasBanner && isolation.every((i) => i.blocked),
     })
 
-    await page.close()
+    await context.close()
   }
 
   await browser.close()
