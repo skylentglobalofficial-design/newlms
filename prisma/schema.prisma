@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider   = "prisma-client-js"
+  engineType = "client"
 }
 
 datasource db {
@@ -194,6 +195,7 @@ model User {
   interviewRounds    InterviewRound[]
   interviewPractice  InterviewPractice[]
   supportRequests    CareerSupportRequest[]
+  uploadedMaterials  LessonMaterial[]
 }
 
 model Role {
@@ -363,6 +365,7 @@ model CurriculumNode {
   duration              String?
   completed             Boolean              @default(false)
   muxPlaybackId         String?
+  notesBody             String?              @db.Text
   moduleId              String               @db.Uuid
   module                CurriculumModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   lessonProgress        LessonProgress[]
@@ -370,6 +373,7 @@ model CurriculumNode {
   quizAttempts          QuizAttempt[]
   assignmentProgress    AssignmentProgress[]
   lastAccessedEnrollments UserEnrollment[]   @relation("LastAccessedNode")
+  materials             LessonMaterial[]
 
   @@unique([moduleId, sourceId])
   @@index([moduleId, order])
@@ -488,18 +492,46 @@ model ProgramCourse {
 }
 
 model AssignmentAttachment {
-  id                   String   @id @default(uuid()) @db.Uuid
-  assignmentProgressId String   @db.Uuid
+  id                   String                     @id @default(uuid()) @db.Uuid
+  assignmentProgressId String                     @db.Uuid
   fileName             String
   mimeType             String
   byteSize             Int
   storageProvider      String
   storageKey           String
-  createdAt            DateTime @default(now())
+  uploadStatus         LessonMaterialUploadStatus @default(PENDING)
+  createdAt            DateTime                   @default(now())
 
   assignmentProgress AssignmentProgress @relation(fields: [assignmentProgressId], references: [id], onDelete: Cascade)
 
   @@index([assignmentProgressId])
+}
+
+enum LessonMaterialUploadStatus {
+  PENDING
+  READY
+  FAILED
+}
+
+model LessonMaterial {
+  id              String                     @id @default(uuid()) @db.Uuid
+  nodeId          String                     @db.Uuid
+  fileName        String
+  mimeType        String
+  byteSize        Int
+  storageProvider String
+  storageKey      String
+  uploadStatus    LessonMaterialUploadStatus @default(PENDING)
+  published       Boolean                    @default(false)
+  uploadedById    String?                    @db.Uuid
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
+
+  node       CurriculumNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  uploadedBy User?          @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([nodeId, published])
+  @@index([uploadedById])
 }
 
 model CareerProfile {

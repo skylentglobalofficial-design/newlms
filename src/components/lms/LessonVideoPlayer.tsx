@@ -1,6 +1,7 @@
 import { useEffect, useRef, createElement } from "react"
 import { C, T } from "../../tokens"
 import type { VideoPlaybackSource } from "../../lib/media/types"
+import { normalizeMuxPlaybackId, sanitizeVideoPlaybackSource } from "../../lib/media/mux-playback"
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
@@ -44,33 +45,63 @@ function MuxPlaybackSurface({
   playbackId,
   title,
   accent,
+  watched,
+  onMarkWatched,
 }: {
   playbackId: string
   title: string
   accent: Accent
+  watched: boolean
+  onMarkWatched?: () => void
 }) {
+  const playerRef = useRef<HTMLElement>(null)
   useMuxPlayerScript(true)
 
+  useEffect(() => {
+    const player = playerRef.current
+    if (!player) return
+    player.setAttribute("playback-id", playbackId)
+    player.setAttribute("stream-type", "on-demand")
+    player.setAttribute("title", title)
+  }, [playbackId, title])
+
   return (
-    <div
-      className="lms-media-frame lms-media-frame--mux"
-      data-mux-ready="true"
-      data-playback-provider="mux"
-      style={{
-        background: "rgba(255,255,255,0.02)",
-        borderRadius: T.rCard,
-        aspectRatio: "16/9",
-        marginBottom: 20,
-        overflow: "hidden",
-        border: `1px solid ${accent.border}`,
-      }}
-    >
-      {createElement("mux-player", {
-        "playback-id": playbackId,
-        "stream-type": "on-demand",
-        title,
-        style: { width: "100%", height: "100%", display: "block" },
-      })}
+    <div>
+      <div
+        className="lms-media-frame lms-media-frame--mux"
+        data-mux-ready="true"
+        data-playback-provider="mux"
+        style={{
+          background: "rgba(255,255,255,0.02)",
+          borderRadius: T.rCard,
+          aspectRatio: "16/9",
+          marginBottom: 20,
+          overflow: "hidden",
+          border: `1px solid ${accent.border}`,
+        }}
+      >
+        {createElement("mux-player", {
+          key: playbackId,
+          ref: playerRef,
+          "playback-id": playbackId,
+          "stream-type": "on-demand",
+          title,
+          style: { width: "100%", height: "100%", display: "block" },
+        })}
+      </div>
+      {!watched && onMarkWatched && (
+        <button
+          type="button"
+          onClick={onMarkWatched}
+          style={{
+            background: accent.primary, border: "none", color: C.black,
+            padding: "12px 24px", borderRadius: T.rControl, fontSize: 14, fontWeight: 600,
+            cursor: "pointer", fontFamily: "var(--font-body)",
+          }}
+        >
+          Mark as watched →
+        </button>
+      )}
     </div>
   )
 }
@@ -125,7 +156,7 @@ function VideoPreviewSurface({
             <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 8, fontFamily: "var(--font-mono)" }}>{duration}</div>
           )}
           <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 10, fontFamily: "var(--font-mono)" }}>
-            Stream not configured — playback ID will connect Mux when available
+            Video content is not available in this environment. A Mux playback ID is required for streaming.
           </div>
         </div>
         {watched && (
@@ -167,7 +198,28 @@ export default function LessonVideoPlayer({
   onMarkWatched?: () => void
 }) {
   if (media?.provider === "mux" && media.playbackId) {
-    return <MuxPlaybackSurface playbackId={media.playbackId} title={title} accent={accent} />
+    const playbackId = normalizeMuxPlaybackId(media.playbackId)
+    if (!playbackId) {
+      return (
+        <VideoPreviewSurface
+          title={title}
+          duration={duration}
+          watched={watched}
+          accent={accent}
+          onMarkWatched={onMarkWatched}
+        />
+      )
+    }
+
+    return (
+      <MuxPlaybackSurface
+        playbackId={playbackId}
+        title={title}
+        accent={accent}
+        watched={watched}
+        onMarkWatched={onMarkWatched}
+      />
+    )
   }
 
   return (

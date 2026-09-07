@@ -4,9 +4,18 @@ import { AuroraBand, GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useRequireRole } from '../hooks/useRequireRole'
-import { fetchFacultyDashboard, type FacultyDashboard, type FacultySubmission } from '../lib/faculty-api'
+import {
+  fetchFacultyDashboard,
+  fetchFacultyLessons,
+  type FacultyDashboard,
+  type FacultyLesson,
+  type FacultySubmission,
+} from '../lib/faculty-api'
 import RoleWorkspaceBanner from '../components/auth/RoleWorkspaceBanner'
 import RoleSectionEmpty, { roleCanvasSectionStyle } from '../components/auth/RoleSectionEmpty'
+import FacultyLessonMaterials from '../components/faculty/FacultyLessonMaterials'
+import FacultyLessonNotes from '../components/faculty/FacultyLessonNotes'
+import FacultySubmissionReview from '../components/faculty/FacultySubmissionReview'
 
 const TEACHING_COURSE_SLUG = 'data-analytics'
 
@@ -214,13 +223,18 @@ function formatSubmittedAt(value: string | null) {
 
 function AssignmentReview({
   submissions,
-  onFocus,
+  selectedSubmissionId,
+  onSelectSubmission,
+  onCloseSubmission,
 }: {
   submissions: FacultySubmission[]
-  onFocus: () => void
+  selectedSubmissionId: string | null
+  onSelectSubmission: (submission: FacultySubmission) => void
+  onCloseSubmission: () => void
 }) {
   const pendingCount = submissions.length
   const featured = submissions[0]
+  const selectedSubmission = submissions.find((row) => row.id === selectedSubmissionId) ?? null
 
   return (
     <div style={roleCanvasSectionStyle}>
@@ -260,11 +274,11 @@ function AssignmentReview({
               </div>
               <button
                 type="button"
-                onClick={onFocus}
+                onClick={() => onSelectSubmission(row)}
                 style={{
-                  background: accent.subtle,
+                  background: selectedSubmissionId === row.id ? accent.primary : accent.subtle,
                   border: `1px solid ${accent.border}`,
-                  color: accent.text,
+                  color: selectedSubmissionId === row.id ? C.black : accent.text,
                   padding: '7px 14px',
                   borderRadius: T.rControl,
                   fontSize: 12,
@@ -286,6 +300,14 @@ function AssignmentReview({
           description="Learner assignment submissions from enrolled courses will appear here when submitted."
         />
       )}
+
+      {selectedSubmission ? (
+        <FacultySubmissionReview
+          submission={selectedSubmission}
+          accent={accent}
+          onClose={onCloseSubmission}
+        />
+      ) : null}
     </div>
   )
 }
@@ -389,24 +411,135 @@ function ClassesRail({
   )
 }
 
-function LessonMaterialsSection() {
+function FacultyLessonWorkspace({
+  teachingScopeAvailable,
+  courseSlug,
+}: {
+  teachingScopeAvailable: boolean
+  courseSlug: string | null
+}) {
+  const [lessons, setLessons] = useState<FacultyLesson[]>([])
+  const [lessonKey, setLessonKey] = useState<string>('')
+  const [loadingLessons, setLoadingLessons] = useState(false)
+  const [lessonError, setLessonError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!teachingScopeAvailable || !courseSlug) {
+      setLessons([])
+      setLessonKey('')
+      return
+    }
+    setLoadingLessons(true)
+    setLessonError(null)
+    void fetchFacultyLessons(courseSlug)
+      .then((items) => {
+        setLessons(items)
+        setLessonKey(items[0]?.lessonKey ?? '')
+      })
+      .catch((err: unknown) => {
+        setLessons([])
+        setLessonError(err instanceof Error ? err.message : 'Failed to load lessons')
+      })
+      .finally(() => setLoadingLessons(false))
+  }, [teachingScopeAvailable, courseSlug])
+
+  const selectedLesson = lessons.find((lesson) => lesson.lessonKey === lessonKey) ?? lessons[0]
+
+  if (!teachingScopeAvailable) {
+    return (
+      <div style={roleCanvasSectionStyle}>
+        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
+          Lesson content
+        </div>
+        <RoleSectionEmpty
+          title="Lesson editing not available"
+          description="Teaching scope is not assigned for this faculty account. Demo mentor accounts can edit content for assigned courses."
+        />
+      </div>
+    )
+  }
+
+  if (!courseSlug) {
+    return (
+      <div style={roleCanvasSectionStyle}>
+        <RoleSectionEmpty
+          title="No teaching course available"
+          description="Assign a course to this faculty account to edit lesson notes and materials."
+        />
+      </div>
+    )
+  }
+
   return (
     <div style={roleCanvasSectionStyle}>
       <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
-        Lesson materials
+        Lesson content
       </div>
-      <RoleSectionEmpty
-        title="Materials upload not available"
-        description="Faculty lesson material uploads require object storage and a materials API that are not yet connected to this workspace."
-      />
+      <div style={{ marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
+        <label htmlFor="faculty-lesson-select" style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13 }}>
+          Lesson
+        </label>
+        <select
+          id="faculty-lesson-select"
+          value={lessonKey}
+          onChange={(event) => setLessonKey(event.target.value)}
+          disabled={loadingLessons || lessons.length === 0}
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: `1px solid ${T.lineDark}`,
+            borderRadius: T.rControl,
+            color: C.white,
+            fontSize: 13,
+            padding: '8px 12px',
+            minWidth: 240,
+          }}
+        >
+          {lessons.map((lesson) => (
+            <option key={lesson.lessonKey} value={lesson.lessonKey}>
+              {lesson.lessonKey} · {lesson.title}
+            </option>
+          ))}
+        </select>
+        {loadingLessons && <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>Loading lessons…</span>}
+      </div>
+      {lessonError && (
+        <p role="alert" style={{ color: 'rgba(255,255,255,0.72)', fontSize: 13, marginBottom: 12 }}>{lessonError}</p>
+      )}
+      {selectedLesson && (
+        <>
+          <FacultyLessonNotes
+            courseSlug={courseSlug}
+            lessonKey={selectedLesson.lessonKey}
+            lessonTitle={selectedLesson.title}
+            accent={accent}
+          />
+          <FacultyLessonMaterials
+            courseSlug={courseSlug}
+            lessonKey={selectedLesson.lessonKey}
+            lessonTitle={selectedLesson.title}
+            accent={accent}
+          />
+        </>
+      )}
     </div>
   )
+}
+
+function LessonMaterialsSection({
+  teachingScopeAvailable,
+  courseSlug,
+}: {
+  teachingScopeAvailable: boolean
+  courseSlug: string | null
+}) {
+  return <FacultyLessonWorkspace teachingScopeAvailable={teachingScopeAvailable} courseSlug={courseSlug} />
 }
 
 export default function DashboardFacultyPage() {
   const { user, ready, authorized } = useRequireRole('faculty')
   const [activeNav, setActiveNav] = useState('overview')
   const [dashboard, setDashboard] = useState<FacultyDashboard | null>(null)
+  const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null)
 
   useEffect(() => {
     if (!ready || !authorized || !user) return
@@ -442,6 +575,11 @@ export default function DashboardFacultyPage() {
     document.getElementById('faculty-assignments')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
+  function handleSelectSubmission(submission: FacultySubmission) {
+    setSelectedSubmissionId(submission.id)
+    focusAssignments()
+  }
+
   const hasLiveData = dashboard !== null
 
   return (
@@ -462,7 +600,7 @@ export default function DashboardFacultyPage() {
           accent={accent}
           title="Mentor workspace"
           description={hasLiveData
-            ? 'Submissions, programs, and courses load from the faculty API. Cohort analytics, live sessions, and lesson materials are not yet available.'
+            ? 'Submissions, programs, and courses load from the faculty API. Cohort analytics and live sessions are not yet available. Lesson materials can be uploaded for the Data Analytics demo course when object storage is configured.'
             : 'Could not load faculty dashboard data. Sign in with a demo mentor account after seeding the database.'}
         />
 
@@ -481,10 +619,18 @@ export default function DashboardFacultyPage() {
               />
               <CurriculumTeachingPath summary={curriculumSummary} />
               <div id="faculty-assignments" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
-                <AssignmentReview submissions={submissions} onFocus={focusAssignments} />
+                <AssignmentReview
+                  submissions={submissions}
+                  selectedSubmissionId={selectedSubmissionId}
+                  onSelectSubmission={handleSelectSubmission}
+                  onCloseSubmission={() => setSelectedSubmissionId(null)}
+                />
               </div>
               <div id="faculty-materials" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
-                <LessonMaterialsSection />
+                <LessonMaterialsSection
+                  teachingScopeAvailable={dashboard?.teachingScopeAvailable ?? false}
+                  courseSlug={teachingCourse?.slug ?? null}
+                />
               </div>
               <div id="faculty-learners" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
                 <LearnerProgress dashboard={dashboard} />

@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { useAuth } from '../context/AuthContext'
 import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
@@ -17,6 +17,7 @@ import {
 import { useLmsCourse } from '../hooks/useLms'
 import LockedLessonState from '../components/lms/LockedLessonState'
 import type { VideoPlaybackSource } from '../lib/media/types'
+import { sanitizeVideoPlaybackSource } from '../lib/media/mux-playback'
 import {
   fetchCourseWorkspace,
   fetchLessonMedia,
@@ -25,19 +26,26 @@ import {
   markLessonComplete,
   submitQuizAttempt,
   updateAssignment,
+  downloadCourseCertificate,
 } from '../lib/lms-api'
 
 import { roleRoute } from '../lib/auth-routing'
+import LessonMaterialsPanel from '../components/lms/LessonMaterialsPanel'
+import { buildLessonInitKey } from '../components/lms/lesson-init-key'
 
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, ready: authReady } = useAuth()
   const { access, lessonStates, reload, enroll } = useLmsCourse(slug)
   const roleAccent = getLmsRoleAccent(user?.role)
 
   const course = access.status === 'ready' ? access.course : null
-  const allLessons = course ? course.modules.flatMap(m => m.lessons) : []
+  const allLessons = useMemo(
+    () => (course ? course.modules.flatMap((module) => module.lessons) : []),
+    [course],
+  )
   const resumeLessonId = access.status === 'ready' ? access.workspace.resume.lessonId : ''
   const firstLessonId = resumeLessonId || allLessons[0]?.id || ''
 
@@ -49,6 +57,7 @@ export default function LearnPage() {
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
   const [enrolling, setEnrolling] = useState(false)
   const [enrollError, setEnrollError] = useState<string | null>(null)
+  const [certificateDownloading, setCertificateDownloading] = useState(false)
 
   useEffect(() => {
     if (firstLessonId && !lessonId && access.status === 'ready') {
@@ -57,31 +66,72 @@ export default function LearnPage() {
   }, [firstLessonId, lessonId, access.status])
 
   useEffect(() => {
-    if (selectedLessonId && slug && access.status === 'ready') {
-      navigate(`/learn/${slug}/${selectedLessonId}`, { replace: true })
+    if (!selectedLessonId || !slug || access.status !== 'ready') return
+    const target = `/learn/${slug}/${selectedLessonId}`
+    if (location.pathname !== target) {
+      navigate(target, { replace: true })
     }
-  }, [selectedLessonId, slug, navigate, access.status])
+  }, [selectedLessonId, slug, navigate, access.status, location.pathname])
 
   useEffect(() => {
-    if (lessonId && allLessons.some(l => l.id === lessonId)) setSelectedLessonId(lessonId)
+    if (lessonId && allLessons.some((lesson) => lesson.id === lessonId)) {
+      setSelectedLessonId(lessonId)
+    }
   }, [lessonId, allLessons])
 
+  const selectedLessonLocked =
+    access.status === 'ready' && selectedLessonId
+      ? (lessonStates[selectedLessonId]?.locked ?? false)
+      : true
+  const selectedLessonType = allLessons.find((lesson) => lesson.id === selectedLessonId)?.type
+  const lessonInitKey =
+    access.status === 'ready'
+      ? buildLessonInitKey({
+          slug,
+          lessonId: selectedLessonId,
+          locked: selectedLessonLocked,
+          lessonType: selectedLessonType,
+        })
+      : null
+  const completedLessonInitKeyRef = useRef<string | null>(null)
+  const lessonInitContextRef = useRef({
+    slug,
+    selectedLessonId,
+    selectedLessonType,
+    selectedLessonLocked,
+  })
+  lessonInitContextRef.current = {
+    slug,
+    selectedLessonId,
+    selectedLessonType,
+    selectedLessonLocked,
+  }
+
   useEffect(() => {
-    if (!slug || access.status !== 'ready' || !selectedLessonId) return
-    const lesson = allLessons.find(l => l.id === selectedLessonId)
-    if (!lesson) return
-    const state = lessonStates[selectedLessonId]
-    if (state?.locked) {
+    if (access.status !== 'ready' || !lessonInitKey) return
+    if (completedLessonInitKeyRef.current === lessonInitKey) return
+    completedLessonInitKeyRef.current = lessonInitKey
+
+    const {
+      slug: activeSlug,
+      selectedLessonId: activeLessonId,
+      selectedLessonType: activeLessonType,
+      selectedLessonLocked: activeLessonLocked,
+    } = lessonInitContextRef.current
+
+    if (!activeSlug || !activeLessonId) return
+
+    if (activeLessonLocked) {
       setQuizQuestions([])
       setLessonMedia(undefined)
       return
     }
 
-    void markLessonAccess(slug, selectedLessonId).catch(() => undefined)
+    void markLessonAccess(activeSlug, activeLessonId).catch(() => undefined)
 
-    if (lesson.type === 'quiz') {
+    if (activeLessonType === 'quiz') {
       setQuizLoading(true)
-      fetchQuizQuestions(slug, selectedLessonId)
+      fetchQuizQuestions(activeSlug, activeLessonId)
         .then((questions) => setQuizQuestions(questions.map(q => ({ q: q.q, options: q.options }))))
         .catch(() => setQuizQuestions([]))
         .finally(() => setQuizLoading(false))
@@ -90,14 +140,14 @@ export default function LearnPage() {
       setQuizLoading(false)
     }
 
-    if (lesson.type === 'video') {
-      fetchLessonMedia(slug, selectedLessonId)
-        .then((payload) => setLessonMedia(payload.media))
-        .catch(() => setLessonMedia(lesson.media ?? { provider: 'unavailable' }))
+    if (activeLessonType === 'video') {
+      fetchLessonMedia(activeSlug, activeLessonId)
+        .then((payload) => setLessonMedia(sanitizeVideoPlaybackSource(payload.media)))
+        .catch(() => setLessonMedia({ provider: 'unavailable' }))
     } else {
       setLessonMedia(undefined)
     }
-  }, [slug, access.status, selectedLessonId, allLessons, lessonStates])
+  }, [access.status, lessonInitKey])
 
   const refreshWorkspace = useCallback(async () => {
     if (!slug) return
@@ -176,6 +226,11 @@ export default function LearnPage() {
   const tabAccent = getLmsTabAccent(selectedLesson ? defaultTabForLesson(selectedLesson) : 'video')
   const { prev, next } = getAdjacentLessons(allLessons, selectedLessonId)
   const certificateEligible = access.workspace.enrollment.certificateEligible
+  const notesContent =
+    selectedLesson?.type === 'notes' && selectedLesson.notesBody?.trim()
+      ? { body: selectedLesson.notesBody }
+      : null
+  const showMaterialsPanel = Boolean(selectedLesson && !selectedState.locked && slug)
 
   function handleLessonSelect(id: string) {
     if (!isLessonUnlocked(id, allLessons, lessonStates)) return
@@ -216,9 +271,9 @@ export default function LearnPage() {
     return result.passed
   }
 
-  async function handleAssignmentSubmit(text: string) {
+  async function handleAssignmentSubmit(input: { text: string; attachmentIds: string[] }) {
     if (!slug || !selectedLesson) return
-    await updateAssignment(slug, selectedLesson.id, 'submit', text)
+    await updateAssignment(slug, selectedLesson.id, 'submit', input.text, input.attachmentIds)
     await handleLessonComplete()
   }
 
@@ -265,9 +320,42 @@ export default function LearnPage() {
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: C.white, marginBottom: 8 }}>{course.title}</div>
               <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginBottom: 16 }}>
                 {certificateEligible
-                  ? 'You are eligible for a certificate. Download and issuance will be available in a later phase.'
+                  ? 'You have completed all course requirements. Download your certificate below.'
                   : 'Complete all requirements to unlock certificate eligibility.'}
               </div>
+              {certificateEligible && (
+                <button
+                  type="button"
+                  disabled={certificateDownloading}
+                  onClick={() => {
+                    if (!slug) return
+                    setCertificateDownloading(true)
+                    void downloadCourseCertificate(slug)
+                      .then((blob) => {
+                        const url = URL.createObjectURL(blob)
+                        const link = document.createElement('a')
+                        link.href = url
+                        link.download = `${slug}-certificate.pdf`
+                        link.click()
+                        URL.revokeObjectURL(url)
+                      })
+                      .catch(() => undefined)
+                      .finally(() => setCertificateDownloading(false))
+                  }}
+                  style={{
+                    background: roleAccent.primary,
+                    border: 'none',
+                    color: C.black,
+                    padding: '10px 18px',
+                    borderRadius: T.rControl,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: certificateDownloading ? 'wait' : 'pointer',
+                  }}
+                >
+                  {certificateDownloading ? 'Preparing…' : 'Download certificate'}
+                </button>
+              )}
             </div>
           )}
 
@@ -307,6 +395,7 @@ export default function LearnPage() {
                   accent={{ ...tabAccent, text: roleAccent.text }}
                 />
               ) : (
+                <>
                 <LessonContentView
                   lesson={selectedLesson}
                   lessonState={selectedState}
@@ -317,7 +406,20 @@ export default function LearnPage() {
                   onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
                   onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
                   lessonMedia={lessonMedia}
+                  notesContent={notesContent}
+                  hasMaterials={showMaterialsPanel}
+                  courseSlug={slug}
                 />
+                {showMaterialsPanel && slug && (
+                  <div style={{ marginTop: 24 }}>
+                    <LessonMaterialsPanel
+                      courseSlug={slug}
+                      lessonKey={selectedLesson.id}
+                      accent={{ ...tabAccent, text: roleAccent.text }}
+                    />
+                  </div>
+                )}
+                </>
               )}
               <LessonNavigation
                 prev={prev}

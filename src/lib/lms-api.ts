@@ -25,6 +25,7 @@ export type ApiCourseLesson = {
   title: string
   type: string | null
   duration?: string
+  notesBody?: string | null
   media?: { provider: "mux" | "unavailable"; playbackId?: string }
 }
 
@@ -204,16 +205,35 @@ export async function submitQuizAttempt(slug: string, lessonKey: string, answers
 }
 
 export async function fetchAssignmentState(slug: string, lessonKey: string) {
-  const result = await lmsGet<{ data: { lessonKey: string; status: string; submittedAt: string | null } }>(
-    `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
-  )
+  const result = await lmsGet<{
+    data: {
+      lessonKey: string
+      status: string
+      submittedAt: string | null
+      attachments: Array<{
+        id: string
+        fileName: string
+        mimeType: string
+        byteSize: number
+        storageStatus: string
+        downloadAvailable: boolean
+        downloadUrl?: string | null
+      }>
+    }
+  }>(`/lms/courses/${slug}/lessons/${lessonKey}/assignment`)
   return result.data
 }
 
-export async function updateAssignment(slug: string, lessonKey: string, action: "start" | "submit", responseText?: string) {
+export async function updateAssignment(
+  slug: string,
+  lessonKey: string,
+  action: "start" | "submit",
+  responseText?: string,
+  attachmentIds?: string[],
+) {
   const result = await lmsMutate<{ data: { lessonKey: string; status: string; submittedAt: string | null } }>(
     `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
-    { action, responseText },
+    { action, responseText, attachmentIds },
   )
   return result.data
 }
@@ -223,11 +243,23 @@ export async function fetchCertificateState(slug: string) {
     data: {
       certificateEligible: boolean
       certificateStatus: string
+      certificateId: string
       allComplete: boolean
       requirements: Array<{ lessonKey: string; title: string; complete: boolean }>
     }
   }>(`/lms/courses/${slug}/certificate`)
   return result.data
+}
+
+export async function downloadCourseCertificate(slug: string): Promise<Blob> {
+  const response = await fetch(`${API_BASE}/lms/courses/${encodeURIComponent(slug)}/certificate/download`, {
+    credentials: "include",
+  })
+  if (!response.ok) {
+    const data = (await response.json()) as ApiError
+    throw new Error(data.error ?? "Certificate download failed")
+  }
+  return response.blob()
 }
 
 export function apiLessonStateToUi(state: ApiLessonState) {
@@ -256,6 +288,7 @@ export function workspaceToCourse(workspace: ApiCourseWorkspace): LmsCourseView 
         completed: workspace.lessonStates[lesson.id]?.complete ?? false,
         locked: workspace.lessonStates[lesson.id]?.locked ?? false,
         media: lesson.media,
+        notesBody: lesson.notesBody ?? null,
       })),
     })),
   }

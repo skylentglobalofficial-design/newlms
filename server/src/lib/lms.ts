@@ -9,6 +9,7 @@ import type {
   UserEnrollment,
 } from "@prisma/client"
 import { prisma } from "./prisma.js"
+import { normalizeMuxPlaybackId } from "./mux-playback.js"
 
 export type LessonKey = string
 
@@ -19,6 +20,7 @@ export type FormattedLesson = {
   duration?: string
   locked?: boolean
   requiredLessonKey?: string | null
+  notesBody?: string | null
   media?: {
     provider: "mux" | "unavailable"
     playbackId?: string
@@ -116,9 +118,12 @@ export function formatCourseModules(
       const state = lessonStates[key]
       const media =
         nodeTypeKey(node.nodeType) === "video"
-          ? node.muxPlaybackId
-            ? { provider: "mux" as const, playbackId: node.muxPlaybackId }
-            : { provider: "unavailable" as const }
+          ? (() => {
+              const playbackId = normalizeMuxPlaybackId(node.muxPlaybackId)
+              return playbackId
+                ? { provider: "mux" as const, playbackId }
+                : { provider: "unavailable" as const }
+            })()
           : undefined
       return {
         id: key,
@@ -128,6 +133,10 @@ export function formatCourseModules(
         locked: state?.locked ?? false,
         requiredLessonKey: state?.requiredLessonKey ?? null,
         media,
+        notesBody:
+          nodeTypeKey(node.nodeType) === "notes" && !state?.locked
+            ? node.notesBody ?? null
+            : null,
       }
     }),
   }))
@@ -521,8 +530,9 @@ export async function getCourseIdsForProgram(programId: string) {
 
 export function formatVideoMedia(node: CurriculumNode) {
   if (nodeTypeKey(node.nodeType) !== "video") return null
-  if (node.muxPlaybackId) {
-    return { provider: "mux" as const, playbackId: node.muxPlaybackId }
+  const playbackId = normalizeMuxPlaybackId(node.muxPlaybackId)
+  if (playbackId) {
+    return { provider: "mux" as const, playbackId }
   }
   return { provider: "unavailable" as const }
 }

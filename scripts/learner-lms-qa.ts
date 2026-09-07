@@ -12,6 +12,7 @@ async function loginAsLearner(page: import("puppeteer-core").Page) {
     () => Boolean(document.querySelector("#si-email")) || window.location.pathname.includes("/dashboard/"),
     { timeout: 15000 },
   )
+  await page.waitForSelector("#si-email", { timeout: 15000 }).catch(() => undefined)
   const emailField = await page.$("#si-email")
   if (!emailField) {
     if (!page.url().includes("/dashboard/student")) {
