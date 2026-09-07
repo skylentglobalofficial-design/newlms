@@ -205,16 +205,35 @@ export async function submitQuizAttempt(slug: string, lessonKey: string, answers
 }
 
 export async function fetchAssignmentState(slug: string, lessonKey: string) {
-  const result = await lmsGet<{ data: { lessonKey: string; status: string; submittedAt: string | null } }>(
-    `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
-  )
+  const result = await lmsGet<{
+    data: {
+      lessonKey: string
+      status: string
+      submittedAt: string | null
+      attachments: Array<{
+        id: string
+        fileName: string
+        mimeType: string
+        byteSize: number
+        storageStatus: string
+        downloadAvailable: boolean
+        downloadUrl?: string | null
+      }>
+    }
+  }>(`/lms/courses/${slug}/lessons/${lessonKey}/assignment`)
   return result.data
 }
 
-export async function updateAssignment(slug: string, lessonKey: string, action: "start" | "submit", responseText?: string) {
+export async function updateAssignment(
+  slug: string,
+  lessonKey: string,
+  action: "start" | "submit",
+  responseText?: string,
+  attachmentIds?: string[],
+) {
   const result = await lmsMutate<{ data: { lessonKey: string; status: string; submittedAt: string | null } }>(
     `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
-    { action, responseText },
+    { action, responseText, attachmentIds },
   )
   return result.data
 }

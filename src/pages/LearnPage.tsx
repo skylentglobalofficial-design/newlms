@@ -224,9 +224,9 @@ export default function LearnPage() {
     return result.passed
   }
 
-  async function handleAssignmentSubmit(text: string) {
+  async function handleAssignmentSubmit(input: { text: string; attachmentIds: string[] }) {
     if (!slug || !selectedLesson) return
-    await updateAssignment(slug, selectedLesson.id, 'submit', text)
+    await updateAssignment(slug, selectedLesson.id, 'submit', input.text, input.attachmentIds)
     await handleLessonComplete()
   }
 
@@ -361,6 +361,7 @@ export default function LearnPage() {
                   lessonMedia={lessonMedia}
                   notesContent={notesContent}
                   hasMaterials={showMaterialsPanel}
+                  courseSlug={slug}
                 />
                 {showMaterialsPanel && slug && (
                   <div style={{ marginTop: 24 }}>

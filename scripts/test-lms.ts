@@ -1,5 +1,6 @@
 import "dotenv/config"
 import { PrismaClient, RoleName } from "@prisma/client"
+import { isObjectStorageConfigured } from "../server/src/lib/object-storage.js"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
@@ -114,6 +115,7 @@ async function grantRole(email: string, role: "faculty" | "organisation" | "admi
 
 async function main() {
   const courseSlug = "data-analytics"
+  const storageConfigured = isObjectStorageConfigured()
   const userAJar: CookieJar = new Map()
   const userBJar: CookieJar = new Map()
   const anonJar: CookieJar = new Map()
@@ -240,21 +242,54 @@ async function main() {
   assert(attempt.response.status === 201, "Quiz attempt should persist")
   assert(attempt.data.data.passed === true, "Correct answers should pass quiz")
 
-  console.log("13. Assignment state persists with optional attachment metadata")
+  console.log("13. Assignment state persists with R2 attachment upload flow")
   await completeLesson(userAJar, courseSlug, "l5")
+  let readyAttachmentId: string | null = null
+  const attachmentCreate = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments`, {
+    method: "POST",
+    csrf: true,
+    body: {
+      fileName: "analysis.xlsx",
+      mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      byteSize: 2048,
+    },
+  })
+  if (storageConfigured) {
+    assert(attachmentCreate.response.status === 201, "Attachment upload metadata should be created")
+    assert(attachmentCreate.data.data.uploadUrl, "Presigned upload URL should be returned")
+    assert(attachmentCreate.data.data.attachment.uploadStatus === "PENDING", "New attachments should start pending")
+    readyAttachmentId = attachmentCreate.data.data.attachment.id as string
+    const attachmentRow = await prisma.assignmentAttachment.findUnique({ where: { id: readyAttachmentId } })
+    assert(attachmentRow, "Attachment row should exist")
+    assert(attachmentRow.storageProvider === "r2", "Storage provider must be server-controlled")
+    assert(attachmentRow.storageKey.startsWith(`assignment-attachments/${courseSlug}/`), "Storage key must be server-generated")
+    assert(!attachmentRow.storageKey.includes("data-analytics/l6"), "Client must not choose storage key")
+
+    const putResponse = await fetch(attachmentCreate.data.data.uploadUrl as string, {
+      method: attachmentCreate.data.data.uploadMethod as string,
+      headers: attachmentCreate.data.data.uploadHeaders as Record<string, string>,
+      body: Buffer.alloc(2048),
+    })
+    assert(putResponse.ok, "Presigned PUT upload should succeed when storage is configured")
+
+    const completeUpload = await request(
+      userAJar,
+      `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments/${readyAttachmentId}/complete-upload`,
+      { method: "POST", csrf: true, body: {} },
+    )
+    assert(completeUpload.response.ok, "Complete-upload should succeed after storage PUT")
+    assert(completeUpload.data.data.uploadStatus === "READY", "Attachment should be ready after verified upload")
+  } else {
+    assert(attachmentCreate.response.status === 503, "Missing storage config should return 503")
+  }
+
   const assignmentSubmit = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
     method: "POST",
     csrf: true,
     body: {
       action: "submit",
       responseText: "My Excel analysis submission.",
-      attachments: [
-        {
-          fileName: "analysis.xlsx",
-          mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          byteSize: 2048,
-        },
-      ],
+      attachmentIds: readyAttachmentId ? [readyAttachmentId] : undefined,
     },
   })
   assert(assignmentSubmit.response.ok, "Assignment submit should succeed")
@@ -271,10 +306,12 @@ async function main() {
     include: { attachments: true },
   })
   assert(assignmentRow, "Assignment progress should exist in database")
-  assert(assignmentRow.attachments.length === 1, "Attachment metadata should be stored")
-  assert(assignmentRow.attachments[0].storageProvider === "pending", "Storage provider should be server-controlled pending")
-  assert(assignmentRow.attachments[0].storageKey.startsWith("pending/"), "Storage key should be server-generated")
-  assert(!assignmentRow.attachments[0].storageKey.includes("data-analytics/l6"), "Client must not choose storage key")
+  if (storageConfigured && readyAttachmentId) {
+    assert(assignmentRow.attachments.length === 1, "Ready attachment should remain linked after submit")
+    assert(assignmentRow.attachments[0].uploadStatus === "READY", "Submitted attachment should remain ready")
+    assert(assignmentRow.attachments[0].storageProvider === "r2", "Storage provider should be r2")
+    assert(assignmentRow.attachments[0].storageKey.startsWith(`assignment-attachments/${courseSlug}/`), "Storage key should remain server-generated")
+  }
 
   console.log("14. Program enrollment resolves course access correctly")
   const programJar: CookieJar = new Map()
@@ -362,37 +399,28 @@ async function main() {
   for (const lessonKey of ["l1", "l2", "l3", "l4", "l5"]) {
     await completeLesson(attachmentJar, courseSlug, lessonKey)
   }
-  const maliciousAttachment = await request(attachmentJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+  const maliciousAttachment = await request(attachmentJar, `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments`, {
     method: "POST",
     csrf: true,
     body: {
-      action: "submit",
-      responseText: "Attachment metadata only.",
-      attachments: [
-        {
-          fileName: "report.pdf",
-          mimeType: "application/pdf",
-          byteSize: 1024,
-          storageProvider: "r2",
-          storageKey: "attacker/owned/object-key",
-        },
-      ],
+      fileName: "report.pdf",
+      mimeType: "application/pdf",
+      byteSize: 1024,
+      storageProvider: "r2",
+      storageKey: "attacker/owned/object-key",
     },
   })
-  assert(maliciousAttachment.response.ok, "Attachment submit with extra fields should still succeed using server-owned storage metadata")
-
-  const attachmentUserRow = await prisma.user.findUnique({ where: { email: attachmentUser.email } })
-  assert(attachmentUserRow, "Attachment test user should exist")
-  const maliciousRow = await prisma.assignmentProgress.findFirst({
-    where: { userId: attachmentUserRow.id, status: "submitted" },
-    include: { attachments: true },
-    orderBy: { updatedAt: "desc" },
-  })
-  assert(maliciousRow, "Malicious attachment submission should persist")
-  assert(maliciousRow.attachments.length === 1, "Attachment metadata should be stored")
-  assert(maliciousRow.attachments[0].storageProvider === "pending", "Client cannot set storage provider")
-  assert(maliciousRow.attachments[0].storageKey.startsWith("pending/"), "Storage key must be server-generated")
-  assert(!maliciousRow.attachments[0].storageKey.includes("attacker/owned"), "Client cannot inject storage key")
+  if (storageConfigured) {
+    assert(maliciousAttachment.response.status === 201, "Attachment create with extra fields should succeed using server-owned storage metadata")
+    const attachmentId = maliciousAttachment.data.data.attachment.id as string
+    const maliciousRow = await prisma.assignmentAttachment.findUnique({ where: { id: attachmentId } })
+    assert(maliciousRow, "Attachment metadata should be stored")
+    assert(maliciousRow.storageProvider === "r2", "Client cannot set storage provider")
+    assert(maliciousRow.storageKey.startsWith(`assignment-attachments/${courseSlug}/`), "Storage key must be server-generated")
+    assert(!maliciousRow.storageKey.includes("attacker/owned"), "Client cannot inject storage key")
+  } else {
+    assert(maliciousAttachment.response.status === 503, "Missing storage config should return 503")
+  }
 
   console.log("20. Unauthorized upload rejected for lesson materials")
   const studentJar: CookieJar = new Map()
@@ -424,7 +452,7 @@ async function main() {
       storageKey: "attacker/owned/material.pdf",
     },
   })
-  const storageConfigured = uploadAttempt.response.status === 201
+  assert(storageConfigured === (uploadAttempt.response.status === 201), "Storage availability should match configured state")
   let publishedMaterialId: string | null = null
   if (storageConfigured) {
     assert(uploadAttempt.data.data.material.fileName === "lecture.pdf", "Material filename should be stored")
@@ -597,12 +625,18 @@ async function main() {
   assert(!lockedL2?.notesBody, "Locked lesson notes must not be exposed in workspace")
 
   console.log("34. Assignment attachments do not claim fake download availability")
-  const assignmentLesson = await request(studentJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`)
+  const assignmentLesson = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`)
   if (assignmentLesson.response.ok && assignmentLesson.data.data.attachments?.length) {
     const attachment = assignmentLesson.data.data.attachments[0]
-    assert(attachment.downloadAvailable === false, "Pending attachment must not claim download availability")
-    assert(attachment.storageStatus === "pending", "Pending attachment should report pending storage status")
-    assert(!attachment.downloadUrl, "Pending attachment must not include download URL")
+    if (storageConfigured && readyAttachmentId) {
+      assert(attachment.storageStatus === "ready", "Verified attachment should report ready storage status")
+      assert(attachment.downloadUrl, "Ready attachment with storage object should include download URL")
+      assert(attachment.downloadAvailable === true, "Ready attachment should report download availability")
+    } else {
+      assert(attachment.downloadAvailable === false, "Pending attachment must not claim download availability")
+      assert(attachment.storageStatus === "pending", "Pending attachment should report pending storage status")
+      assert(!attachment.downloadUrl, "Pending attachment must not include download URL")
+    }
   }
 
   console.log("35. Certificate download requires eligibility")
@@ -635,6 +669,90 @@ async function main() {
       assert(!seededItem.downloadUrl, "Metadata-only published material must not expose a download URL")
       assert(seededItem.uploadStatus === "PENDING", "Seeded demo material should remain pending without R2 object")
     }
+  }
+
+  console.log("38. Unsupported assignment attachment file type rejected")
+  const badAttachmentType = await request(attachmentJar, `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments`, {
+    method: "POST",
+    csrf: true,
+    body: { fileName: "virus.exe", mimeType: "application/x-msdownload", byteSize: 1024 },
+  })
+  assert(badAttachmentType.response.status === 400, "Unsupported attachment file type must be rejected")
+
+  console.log("39. Unauthorized assignment attachment creation rejected")
+  const outsiderAttachmentJar: CookieJar = new Map()
+  await signupUser(outsiderAttachmentJar, "attachment-outsider")
+  const outsiderAttachment = await request(outsiderAttachmentJar, `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments`, {
+    method: "POST",
+    csrf: true,
+    body: { fileName: "report.pdf", mimeType: "application/pdf", byteSize: 1024 },
+  })
+  assert(outsiderAttachment.response.status === 403, "Non-enrolled user must not create assignment attachments")
+
+  console.log("40. Complete-upload missing object rejected")
+  if (storageConfigured) {
+    const pendingCreate = await request(attachmentJar, `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments`, {
+      method: "POST",
+      csrf: true,
+      body: { fileName: "pending-only.pdf", mimeType: "application/pdf", byteSize: 512 },
+    })
+    assert(pendingCreate.response.status === 201, "Pending attachment metadata should be created")
+    const pendingId = pendingCreate.data.data.attachment.id as string
+    const incompleteComplete = await request(
+      attachmentJar,
+      `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments/${pendingId}/complete-upload`,
+      { method: "POST", csrf: true, body: {} },
+    )
+    assert(incompleteComplete.response.status === 409, "Complete-upload without storage object must be rejected")
+  }
+
+  console.log("41. Inaccessible assignment attachment routes blocked")
+  const lockedAttachment = await request(userBJar, `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments`, {
+    method: "POST",
+    csrf: true,
+    body: { fileName: "locked.pdf", mimeType: "application/pdf", byteSize: 1024 },
+  })
+  assert(lockedAttachment.response.status === 403, "Locked assignment attachment upload must be forbidden")
+
+  console.log("42. Student cannot perform faculty-only material mutation")
+  const studentMaterialUpload = await request(studentJar, `/faculty/courses/${courseSlug}/lessons/l2/materials`, {
+    method: "POST",
+    csrf: true,
+    body: { fileName: "slides.pdf", mimeType: "application/pdf", byteSize: 1024 },
+  })
+  assert(studentMaterialUpload.response.status === 403, "Students must not upload lesson materials")
+
+  console.log("43. Assignment attachment create returns 503 when R2 unavailable")
+  if (!storageConfigured) {
+    const unavailableCreate = await request(attachmentJar, `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments`, {
+      method: "POST",
+      csrf: true,
+      body: { fileName: "offline.pdf", mimeType: "application/pdf", byteSize: 1024 },
+    })
+    assert(unavailableCreate.response.status === 503, "Unconfigured storage should return 503 for attachment create")
+  }
+
+  console.log("44. Submit rejects non-ready attachment IDs")
+  const submitJar: CookieJar = new Map()
+  const submitUser = await signupUser(submitJar, "attachment-submit")
+  await request(submitJar, "/lms/enrollments", { method: "POST", csrf: true, body: { courseSlug } })
+  for (const lessonKey of ["l1", "l2", "l3", "l4", "l5"]) {
+    await completeLesson(submitJar, courseSlug, lessonKey)
+  }
+  if (storageConfigured) {
+    const pendingOnly = await request(submitJar, `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments`, {
+      method: "POST",
+      csrf: true,
+      body: { fileName: "not-ready.pdf", mimeType: "application/pdf", byteSize: 256 },
+    })
+    assert(pendingOnly.response.status === 201, "Pending attachment should be created")
+    const pendingOnlyId = pendingOnly.data.data.attachment.id as string
+    const rejectedSubmit = await request(submitJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+      method: "POST",
+      csrf: true,
+      body: { action: "submit", attachmentIds: [pendingOnlyId] },
+    })
+    assert(rejectedSubmit.response.status === 400, "Submit must reject non-ready attachment IDs")
   }
 
   console.log("All LMS integration checks passed.")

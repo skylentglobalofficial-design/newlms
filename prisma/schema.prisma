@@ -491,14 +491,15 @@ model ProgramCourse {
 }
 
 model AssignmentAttachment {
-  id                   String   @id @default(uuid()) @db.Uuid
-  assignmentProgressId String   @db.Uuid
+  id                   String                     @id @default(uuid()) @db.Uuid
+  assignmentProgressId String                     @db.Uuid
   fileName             String
   mimeType             String
   byteSize             Int
   storageProvider      String
   storageKey           String
-  createdAt            DateTime @default(now())
+  uploadStatus         LessonMaterialUploadStatus @default(PENDING)
+  createdAt            DateTime                   @default(now())
 
   assignmentProgress AssignmentProgress @relation(fields: [assignmentProgressId], references: [id], onDelete: Cascade)
 

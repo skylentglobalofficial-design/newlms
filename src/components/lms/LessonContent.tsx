@@ -31,6 +31,7 @@ export function LessonContentView({
   lessonMedia,
   notesContent,
   hasMaterials,
+  courseSlug,
 }: {
   lesson: CourseLesson
   lessonState: LessonState
@@ -39,10 +40,11 @@ export function LessonContentView({
   quizQuestions?: QuizQuestion[]
   quizLoading?: boolean
   onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
-  onAssignmentSubmit?: (text: string) => Promise<void>
+  onAssignmentSubmit?: (input: { text: string; attachmentIds: string[] }) => Promise<void>
   lessonMedia?: VideoPlaybackSource
   notesContent?: LessonNotesContent | null
   hasMaterials?: boolean
+  courseSlug?: string
 }) {
   if (lesson.type === 'video') {
     return (
@@ -138,7 +140,9 @@ export function LessonContentView({
         subtitle="Apply concepts from this module. Faculty will review your submission."
         accent={accent}
         passed={lessonState.complete || lessonState.assignmentSubmitted}
-        onSubmitAssignment={(text) => { void onAssignmentSubmit?.(text) }}
+        courseSlug={courseSlug}
+        lessonKey={lesson.id}
+        onSubmitAssignment={async (input) => { await onAssignmentSubmit?.(input) }}
       />
     </div>
   )

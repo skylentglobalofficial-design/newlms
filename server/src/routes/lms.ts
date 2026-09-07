@@ -1,3 +1,4 @@
+import crypto from "node:crypto"
 import { Router } from "express"
 import { z } from "zod"
 import { AssignmentStatus, CurriculumNodeType } from "@prisma/client"
@@ -8,9 +9,21 @@ import {
   requireCsrf,
   type AuthenticatedRequest,
 } from "../lib/auth.js"
-import { buildPendingAttachmentRecord, formatAttachmentForApi } from "../lib/assignment-attachments.js"
+import {
+  buildAssignmentAttachmentStorageKey,
+  createAttachmentPresignedUpload,
+  formatAttachmentForApi,
+  inferAttachmentMimeType,
+  MAX_ASSIGNMENT_ATTACHMENTS,
+  OBJECT_STORAGE_PROVIDER,
+  sanitizeAttachmentFileName,
+  toPublicAttachment,
+  validateAttachmentByteSize,
+} from "../lib/assignment-attachments.js"
 import { buildCertificateId, buildCertificatePdf } from "../lib/certificate-pdf.js"
 import {
+  isObjectStorageConfigured,
+  objectExists,
   resolveMaterialDownloadUrl,
   toPublicMaterial,
 } from "../lib/object-storage.js"
@@ -70,18 +83,24 @@ const attachmentSchema = z.object({
   byteSize: z.number().int().min(1).max(50_000_000),
 })
 
+const attachmentUploadSchema = attachmentSchema
+
+const attachmentIdSchema = z.object({
+  attachmentId: z.string().uuid(),
+})
+
+const assignmentPatchSchema = z.object({
+  action: z.enum(["start", "submit"]),
+  responseText: z.string().max(10000).optional(),
+  attachmentIds: z.array(z.string().uuid()).max(MAX_ASSIGNMENT_ATTACHMENTS).optional(),
+})
+
 const progressPatchSchema = z.object({
   action: z.enum(["access", "complete"]),
 })
 
 const quizAttemptSchema = z.object({
   answers: z.array(z.number().int().min(0)),
-})
-
-const assignmentPatchSchema = z.object({
-  action: z.enum(["start", "submit"]),
-  responseText: z.string().max(10000).optional(),
-  attachments: z.array(attachmentSchema).max(5).optional(),
 })
 
 async function requireEnrollment(userId: string, courseId: string) {
@@ -95,6 +114,31 @@ async function loadCourseContext(userId: string, courseSlug: string) {
   if (!enrollment) return { error: "forbidden" as const, course }
   const lessonStates = await loadLessonStates(enrollment, course)
   return { course, enrollment, lessonStates }
+}
+
+async function resolveAssignmentLessonContext(userId: string, courseSlug: string, lessonKey: string) {
+  const course = await findCourseBySlug(courseSlug)
+  if (!course) return { status: 404 as const, body: { error: "Course not found" } }
+
+  const enrollment = await requireEnrollment(userId, course.id)
+  if (!enrollment) return { status: 403 as const, body: { error: "Not enrolled in this course" } }
+
+  const located = await findNodeByLessonKey(course, lessonKey)
+  if (!located || located.node.nodeType !== CurriculumNodeType.ASSIGNMENT) {
+    return { status: 404 as const, body: { error: "Assignment lesson not found" } }
+  }
+
+  const lessonStates = await loadLessonStates(enrollment, course)
+  const unlock = assertLessonUnlocked(course, lessonKey, lessonStates)
+  if (!unlock.ok) return { status: unlock.status, body: unlock.body }
+
+  return {
+    status: 200 as const,
+    course,
+    enrollment,
+    node: located.node,
+    lessonStates,
+  }
 }
 
 lmsRouter.get("/dashboard", requireAuth, async (req: AuthenticatedRequest, res) => {
@@ -579,12 +623,16 @@ lmsRouter.get(
         include: { attachments: true },
       })
 
+      const attachments = assignment
+        ? await Promise.all(assignment.attachments.map((file) => formatAttachmentForApi(file)))
+        : []
+
       res.json({
         data: {
           lessonKey: lessonParsed.data.lessonKey,
           status: assignment?.status ?? "not_started",
           submittedAt: assignment?.submittedAt?.toISOString() ?? null,
-          attachments: assignment?.attachments.map((file) => formatAttachmentForApi(file)) ?? [],
+          attachments,
         },
       })
     } catch (error) {
@@ -625,9 +673,35 @@ lmsRouter.post(
       const now = new Date()
       const isSubmit = bodyParsed.data.action === "submit"
       const hasText = Boolean(bodyParsed.data.responseText?.trim())
-      const hasAttachments = Boolean(bodyParsed.data.attachments?.length)
+      const attachmentIds = bodyParsed.data.attachmentIds ?? []
+      const hasAttachments = attachmentIds.length > 0
       if (isSubmit && !hasText && !hasAttachments) {
-        return res.status(400).json({ error: "Response text or attachment metadata is required to submit" })
+        return res.status(400).json({ error: "Response text or ready attachments are required to submit" })
+      }
+
+      const existingAssignment = await prisma.assignmentProgress.findUnique({
+        where: {
+          enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
+        },
+      })
+      if (existingAssignment?.status === AssignmentStatus.submitted && isSubmit) {
+        return res.status(409).json({ error: "Assignment already submitted" })
+      }
+
+      if (isSubmit && hasAttachments) {
+        if (!existingAssignment) {
+          return res.status(400).json({ error: "Upload attachments before submitting" })
+        }
+        const readyAttachments = await prisma.assignmentAttachment.findMany({
+          where: {
+            id: { in: attachmentIds },
+            assignmentProgressId: existingAssignment.id,
+            uploadStatus: "READY",
+          },
+        })
+        if (readyAttachments.length !== attachmentIds.length) {
+          return res.status(400).json({ error: "All attachment IDs must reference ready uploads for this assignment" })
+        }
       }
 
       const assignment = await prisma.assignmentProgress.upsert({
@@ -649,13 +723,12 @@ lmsRouter.post(
         },
       })
 
-      if (isSubmit && bodyParsed.data.attachments?.length) {
-        await prisma.assignmentAttachment.deleteMany({ where: { assignmentProgressId: assignment.id } })
-        await prisma.assignmentAttachment.createMany({
-          data: bodyParsed.data.attachments.map((file) => ({
+      if (isSubmit && hasAttachments) {
+        await prisma.assignmentAttachment.deleteMany({
+          where: {
             assignmentProgressId: assignment.id,
-            ...buildPendingAttachmentRecord(assignment.id, file),
-          })),
+            id: { notIn: attachmentIds },
+          },
         })
       }
 
@@ -706,6 +779,201 @@ lmsRouter.post(
     } catch (error) {
       console.error("Failed to update assignment:", error)
       res.status(500).json({ error: "Failed to update assignment" })
+    }
+  },
+)
+
+lmsRouter.post(
+  "/courses/:slug/lessons/:lessonKey/assignment/attachments",
+  requireAuth,
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const slugParsed = slugParamSchema.safeParse(req.params)
+    const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
+    const bodyParsed = attachmentUploadSchema.safeParse(req.body)
+    if (!slugParsed.success || !lessonParsed.success || !bodyParsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    const { fileName, mimeType, byteSize } = bodyParsed.data
+    const resolvedMimeType = inferAttachmentMimeType(fileName, mimeType)
+    if (!resolvedMimeType) {
+      return res.status(400).json({ error: "Unsupported file type" })
+    }
+    if (!validateAttachmentByteSize(byteSize)) {
+      return res.status(400).json({ error: "Invalid file size" })
+    }
+
+    try {
+      const context = await resolveAssignmentLessonContext(
+        req.auth!.user.id,
+        slugParsed.data.slug,
+        lessonParsed.data.lessonKey,
+      )
+      if (context.status !== 200) {
+        return res.status(context.status).json(context.body)
+      }
+
+      if (!isObjectStorageConfigured()) {
+        return res.status(503).json({ error: "Object storage is not configured" })
+      }
+
+      const { enrollment, node } = context as {
+        status: 200
+        enrollment: NonNullable<(typeof context)["enrollment"]>
+        node: NonNullable<(typeof context)["node"]>
+      }
+
+      const existingAssignment = await prisma.assignmentProgress.findUnique({
+        where: {
+          enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: node.id },
+        },
+        include: { attachments: true },
+      })
+      if (existingAssignment?.status === AssignmentStatus.submitted) {
+        return res.status(409).json({ error: "Assignment already submitted" })
+      }
+      if (existingAssignment && existingAssignment.attachments.length >= MAX_ASSIGNMENT_ATTACHMENTS) {
+        return res.status(400).json({ error: "Maximum attachment count reached" })
+      }
+
+      const assignment = await prisma.assignmentProgress.upsert({
+        where: {
+          enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: node.id },
+        },
+        create: {
+          userId: req.auth!.user.id,
+          enrollmentId: enrollment.id,
+          nodeId: node.id,
+          status: AssignmentStatus.in_progress,
+        },
+        update: {
+          status: AssignmentStatus.in_progress,
+        },
+      })
+
+      const safeFileName = sanitizeAttachmentFileName(fileName)
+      const attachmentId = crypto.randomUUID()
+      const storageKey = buildAssignmentAttachmentStorageKey({
+        courseSlug: slugParsed.data.slug,
+        assignmentProgressId: assignment.id,
+        attachmentId,
+        fileName: safeFileName,
+      })
+
+      const attachment = await prisma.assignmentAttachment.create({
+        data: {
+          id: attachmentId,
+          assignmentProgressId: assignment.id,
+          fileName: safeFileName,
+          mimeType: resolvedMimeType,
+          byteSize,
+          storageProvider: OBJECT_STORAGE_PROVIDER,
+          storageKey,
+          uploadStatus: "PENDING",
+        },
+      })
+
+      const uploadUrl = await createAttachmentPresignedUpload({
+        storageKey,
+        mimeType: attachment.mimeType,
+        byteSize,
+      })
+
+      res.status(201).json({
+        data: {
+          attachment: toPublicAttachment(attachment),
+          uploadUrl,
+          uploadMethod: "PUT" as const,
+          uploadHeaders: { "Content-Type": attachment.mimeType },
+        },
+      })
+    } catch (error) {
+      console.error("Failed to create assignment attachment upload:", error)
+      if (error instanceof Error && error.message === "Object storage is not configured") {
+        return res.status(503).json({ error: "Object storage is not configured" })
+      }
+      res.status(500).json({ error: "Failed to create assignment attachment upload" })
+    }
+  },
+)
+
+lmsRouter.post(
+  "/courses/:slug/lessons/:lessonKey/assignment/attachments/:attachmentId/complete-upload",
+  requireAuth,
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const slugParsed = slugParamSchema.safeParse(req.params)
+    const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
+    const attachmentParsed = attachmentIdSchema.safeParse({ attachmentId: req.params.attachmentId })
+    if (!slugParsed.success || !lessonParsed.success || !attachmentParsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    try {
+      const context = await resolveAssignmentLessonContext(
+        req.auth!.user.id,
+        slugParsed.data.slug,
+        lessonParsed.data.lessonKey,
+      )
+      if (context.status !== 200) {
+        return res.status(context.status).json(context.body)
+      }
+
+      if (!isObjectStorageConfigured()) {
+        return res.status(503).json({ error: "Object storage is not configured" })
+      }
+
+      const { enrollment, node } = context as {
+        status: 200
+        enrollment: NonNullable<(typeof context)["enrollment"]>
+        node: NonNullable<(typeof context)["node"]>
+      }
+
+      const assignment = await prisma.assignmentProgress.findUnique({
+        where: {
+          enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: node.id },
+        },
+      })
+      if (!assignment) {
+        return res.status(404).json({ error: "Assignment progress not found" })
+      }
+      if (assignment.status === AssignmentStatus.submitted) {
+        return res.status(409).json({ error: "Assignment already submitted" })
+      }
+
+      const existing = await prisma.assignmentAttachment.findFirst({
+        where: {
+          id: attachmentParsed.data.attachmentId,
+          assignmentProgressId: assignment.id,
+        },
+      })
+      if (!existing) {
+        return res.status(404).json({ error: "Attachment not found" })
+      }
+
+      if (existing.uploadStatus === "READY") {
+        return res.json({ data: toPublicAttachment(existing) })
+      }
+
+      const exists = await objectExists(existing.storageKey)
+      if (!exists) {
+        await prisma.assignmentAttachment.update({
+          where: { id: existing.id },
+          data: { uploadStatus: "FAILED" },
+        })
+        return res.status(409).json({ error: "Storage object not found", code: "upload_incomplete" })
+      }
+
+      const attachment = await prisma.assignmentAttachment.update({
+        where: { id: existing.id },
+        data: { uploadStatus: "READY" },
+      })
+
+      res.json({ data: toPublicAttachment(attachment) })
+    } catch (error) {
+      console.error("Failed to complete assignment attachment upload:", error)
+      res.status(500).json({ error: "Failed to complete assignment attachment upload" })
     }
   },
 )

@@ -1,9 +1,29 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { C, T } from '../../tokens'
+import type { AssignmentAttachment } from '../../lib/assignment-attachments-api'
+import {
+  downloadAssignmentAttachment,
+  fetchAssignmentAttachments,
+  requestAssignmentAttachmentUpload,
+} from '../../lib/assignment-attachments-api'
 
 export type QuizQuestion = { q: string; options: string[]; correct?: number }
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
+
+type LocalAttachment = AssignmentAttachment & {
+  localPhase?: 'preparing' | 'uploading' | 'verifying' | 'failed'
+  localError?: string
+}
+
+function attachmentStatusLabel(attachment: LocalAttachment): string {
+  if (attachment.localPhase === 'preparing') return 'Preparing upload…'
+  if (attachment.localPhase === 'uploading') return 'Uploading file…'
+  if (attachment.localPhase === 'verifying') return 'Verifying storage…'
+  if (attachment.localPhase === 'failed' || attachment.storageStatus === 'failed') return 'Failed'
+  if (attachment.storageStatus === 'ready' || attachment.uploadStatus === 'READY') return 'Ready'
+  return 'Preparing upload…'
+}
 
 export function AssessmentSurface({
   mode,
@@ -15,6 +35,8 @@ export function AssessmentSurface({
   onPass,
   onSubmitAssignment,
   onSubmitAnswers,
+  courseSlug,
+  lessonKey,
 }: {
   mode: 'mcq' | 'timed' | 'assignment'
   title: string
@@ -23,8 +45,10 @@ export function AssessmentSurface({
   accent: Accent
   passed?: boolean
   onPass?: () => void
-  onSubmitAssignment?: (text: string) => void
+  onSubmitAssignment?: (input: { text: string; attachmentIds: string[] }) => Promise<void>
   onSubmitAnswers?: (answers: Record<number, number>) => Promise<boolean>
+  courseSlug?: string
+  lessonKey?: string
 }) {
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [submitted, setSubmitted] = useState(false)
@@ -34,6 +58,10 @@ export function AssessmentSurface({
   const [assignmentDone, setAssignmentDone] = useState(false)
   const [serverPassed, setServerPassed] = useState<boolean | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [attachments, setAttachments] = useState<LocalAttachment[]>([])
+  const [uploadError, setUploadError] = useState<string | null>(null)
+  const [loadingAttachments, setLoadingAttachments] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const qs = questions ?? []
   const answeredCount = Object.keys(answers).length
@@ -43,6 +71,12 @@ export function AssessmentSurface({
     : qs.filter((q, i) => q.correct !== undefined && answers[i] === q.correct).length
   const allCorrect = usesServerGrading ? serverPassed === true : correct === qs.length
   const timed = mode === 'timed'
+  const readyAttachmentIds = attachments
+    .filter((item) => item.storageStatus === 'ready' || item.uploadStatus === 'READY')
+    .map((item) => item.id)
+  const hasReadyAttachments = readyAttachmentIds.length > 0
+  const uploadInProgress = attachments.some((item) => Boolean(item.localPhase))
+  const canSubmitAssignment = Boolean(text.trim() || hasReadyAttachments) && !uploadInProgress && !submitting
 
   useEffect(() => {
     if (mode === 'assignment' || passed) return
@@ -50,7 +84,84 @@ export function AssessmentSurface({
     return () => window.clearInterval(id)
   }, [mode, passed])
 
+  useEffect(() => {
+    if (mode !== 'assignment' || !courseSlug || !lessonKey || passed || assignmentDone) return
+    let cancelled = false
+    setLoadingAttachments(true)
+    void fetchAssignmentAttachments(courseSlug, lessonKey)
+      .then((items) => {
+        if (!cancelled) setAttachments(items)
+      })
+      .catch(() => {
+        if (!cancelled) setAttachments([])
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingAttachments(false)
+      })
+    return () => { cancelled = true }
+  }, [mode, courseSlug, lessonKey, passed, assignmentDone])
+
   const timerLabel = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`
+
+  async function handleAttachmentSelect(fileList: FileList | null) {
+    if (!fileList?.length || !courseSlug || !lessonKey) return
+    const file = fileList[0]
+    setUploadError(null)
+
+    const tempId = `temp-${Date.now()}`
+    setAttachments((prev) => [
+      ...prev,
+      {
+        id: tempId,
+        fileName: file.name,
+        mimeType: file.type,
+        byteSize: file.size,
+        storageStatus: 'pending',
+        downloadAvailable: false,
+        localPhase: 'preparing',
+      },
+    ])
+
+    try {
+      const uploaded = await requestAssignmentAttachmentUpload({
+        courseSlug,
+        lessonKey,
+        file,
+        onPhaseChange: (phase) => {
+          const localPhase = phase === 'creating' ? 'preparing' : phase
+          setAttachments((prev) => prev.map((item) => (
+            item.id === tempId
+              ? { ...item, localPhase }
+              : item
+          )))
+        },
+      })
+      setAttachments((prev) => prev.map((item) => (
+        item.id === tempId ? { ...uploaded, localPhase: undefined } : item
+      )))
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Upload failed'
+      setUploadError(message)
+      setAttachments((prev) => prev.map((item) => (
+        item.id === tempId
+          ? { ...item, localPhase: 'failed', localError: message, storageStatus: 'failed' }
+          : item
+      )))
+    } finally {
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  async function handleAssignmentSubmitClick() {
+    if (!canSubmitAssignment) return
+    setSubmitting(true)
+    try {
+      await onSubmitAssignment?.({ text, attachmentIds: readyAttachmentIds })
+      setAssignmentDone(true)
+    } catch {
+      setSubmitting(false)
+    }
+  }
 
   if (mode === 'assignment') {
     if (assignmentDone || passed) {
@@ -68,7 +179,7 @@ export function AssessmentSurface({
         <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 16, marginBottom: 16 }}>
           <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Submission workspace</div>
           <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.7 }}>
-            Document your approach, include queries or calculations, and explain assumptions.
+            Document your approach, include queries or calculations, and attach supporting files when needed.
           </div>
         </div>
         <textarea
@@ -77,18 +188,102 @@ export function AssessmentSurface({
           placeholder="Type your response..."
           style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: T.rControl, padding: 14, color: C.white, fontSize: 13, lineHeight: 1.7, resize: 'vertical', minHeight: 160, outline: 'none', boxSizing: 'border-box', marginBottom: 16 }}
         />
+        <div style={{ marginBottom: 16 }}>
+          <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Attachments</div>
+          {loadingAttachments ? (
+            <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13 }}>Loading attachments…</div>
+          ) : attachments.length > 0 ? (
+            <div style={{ display: 'grid', gap: 8, marginBottom: 12 }}>
+              {attachments.map((attachment) => (
+                <div
+                  key={attachment.id}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    gap: 12,
+                    background: 'rgba(255,255,255,0.02)',
+                    border: `1px solid ${T.lineDark}`,
+                    borderRadius: T.rControl,
+                    padding: '10px 12px',
+                  }}
+                >
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ color: C.white, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {attachment.fileName}
+                    </div>
+                    <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11, marginTop: 2 }}>
+                      {attachmentStatusLabel(attachment)}
+                      {attachment.localError ? ` — ${attachment.localError}` : ''}
+                    </div>
+                  </div>
+                  {attachment.downloadUrl ? (
+                    <button
+                      type="button"
+                      onClick={() => { void downloadAssignmentAttachment(attachment) }}
+                      style={{
+                        background: accent.subtle,
+                        border: `1px solid ${accent.border}`,
+                        color: accent.text,
+                        borderRadius: T.rControl,
+                        padding: '6px 10px',
+                        fontSize: 12,
+                        cursor: 'pointer',
+                        fontFamily: 'var(--font-body)',
+                        flexShrink: 0,
+                      }}
+                    >
+                      Download
+                    </button>
+                  ) : attachment.storageStatus === 'ready' || attachment.uploadStatus === 'READY' ? (
+                    <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, flexShrink: 0 }}>Download unavailable</span>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, marginBottom: 12 }}>No files attached yet.</div>
+          )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,.xlsx,.xls,.doc,.docx,.ppt,.pptx,.csv,.zip"
+            style={{ display: 'none' }}
+            onChange={(event) => { void handleAttachmentSelect(event.target.files) }}
+          />
+          <button
+            type="button"
+            disabled={uploadInProgress || attachments.length >= 5 || !courseSlug || !lessonKey}
+            onClick={() => fileInputRef.current?.click()}
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: `1px solid ${T.lineDark}`,
+              color: uploadInProgress ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.72)',
+              padding: '10px 14px',
+              borderRadius: T.rControl,
+              fontSize: 13,
+              cursor: uploadInProgress ? 'not-allowed' : 'pointer',
+              fontFamily: 'var(--font-body)',
+            }}
+          >
+            Add file
+          </button>
+          {uploadError && (
+            <div style={{ color: '#ef4444', fontSize: 12, marginTop: 8 }}>{uploadError}</div>
+          )}
+        </div>
         <button
           type="button"
-          disabled={!text.trim()}
-          onClick={() => { setAssignmentDone(true); onSubmitAssignment?.(text) }}
+          disabled={!canSubmitAssignment}
+          onClick={() => { void handleAssignmentSubmitClick() }}
           style={{
-            background: !text.trim() ? 'rgba(255,255,255,0.05)' : accent.primary,
-            border: 'none', color: !text.trim() ? 'rgba(255,255,255,0.25)' : C.black,
+            background: !canSubmitAssignment ? 'rgba(255,255,255,0.05)' : accent.primary,
+            border: 'none', color: !canSubmitAssignment ? 'rgba(255,255,255,0.25)' : C.black,
             padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600,
-            cursor: !text.trim() ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
+            cursor: !canSubmitAssignment ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
           }}
         >
-          Submit assignment →
+          {submitting ? 'Submitting…' : 'Submit assignment →'}
         </button>
       </div>
     )
