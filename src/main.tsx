@@ -9,6 +9,7 @@ import './skylent-public-overrides.css'
 import './skylent-dark-visual.css'
 import './skylent-layout-responsive.css'
 import './skylent-light-aurora.css'
+import './skylent-home-layout-fix.css'
 
 bootstrapTheme()
 
