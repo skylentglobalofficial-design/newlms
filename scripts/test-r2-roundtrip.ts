@@ -20,7 +20,21 @@ const LESSON_KEY = "l2"
 type CookieJar = Map<string, string>
 
 function getDemoPassword(): string {
-  return process.env.DEMO_USER_PASSWORD ?? "DemoSkylent2026!"
+  const raw = process.env.DEMO_USER_PASSWORD
+  if (raw == null) return "DemoSkylent2026!"
+  const normalized = raw.replace(/\uFEFF/g, "").replace(/\r/g, "").trim()
+  return normalized || "DemoSkylent2026!"
+}
+
+function databaseFingerprint(): string {
+  const url = process.env.DATABASE_URL
+  if (!url) return "missing"
+  try {
+    const parsed = new URL(url.replace(/^postgresql:/, "http:"))
+    return `${parsed.hostname}:${parsed.port || "5432"}${parsed.pathname}`
+  } catch {
+    return "unparseable"
+  }
 }
 
 function parseSetCookie(headers: string[] | undefined, jar: CookieJar) {
@@ -74,14 +88,23 @@ async function ensureDemoAccountReady(email: string) {
   const password = getDemoPassword()
   const user = await prisma.user.findUnique({ where: { email } })
   if (!user) {
-    throw new Error(`Demo account ${email} is missing. Run: npm run db:seed`)
+    throw new Error(
+      `Demo account ${email} is missing in ${databaseFingerprint()}. Run: npm run db:seed`,
+    )
   }
 
-  if (!user.passwordHash || !(await bcrypt.compare(password, user.passwordHash))) {
-    await prisma.user.update({
-      where: { email },
-      data: { passwordHash: await bcrypt.hash(password, BCRYPT_ROUNDS) },
-    })
+  // Mirror prisma/seed.ts seedDemoUser upsert: always refresh the password hash.
+  const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS)
+  await prisma.user.update({
+    where: { email },
+    data: { passwordHash },
+  })
+
+  const verified = await prisma.user.findUnique({ where: { email }, select: { passwordHash: true } })
+  if (!verified?.passwordHash || !(await bcrypt.compare(password, verified.passwordHash))) {
+    throw new Error(
+      `Demo password sync failed for ${email} in ${databaseFingerprint()}. Run: npm run db:seed`,
+    )
   }
 }
 
@@ -105,7 +128,12 @@ async function loginDemo(jar: CookieJar, email: string) {
     body: { email, password: getDemoPassword() },
   })
   if (!login.response.ok) {
-    throw new Error(`Login failed for ${email}: ${JSON.stringify(login.data)}`)
+    throw new Error(
+      `Login failed for ${email}: ${JSON.stringify(login.data)} `
+      + `(database=${databaseFingerprint()}, `
+      + `demoPasswordSource=${process.env.DEMO_USER_PASSWORD ? "DEMO_USER_PASSWORD" : "default"}, `
+      + `demoPasswordLength=${getDemoPassword().length}, api=${API_BASE})`,
+    )
   }
 }
 
