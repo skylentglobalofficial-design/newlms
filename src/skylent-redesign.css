@@ -1,0 +1,208 @@
+/*
+ * Skylent Global — master visual redesign layer
+ *
+ * This stylesheet is intentionally additive: it establishes the new visual
+ * direction without touching product/backend behaviour. It also fixes the
+ * Aurora stacking/background problem at the public-canvas level.
+ */
+
+:root {
+  --skylent-canvas: #07080a;
+  --skylent-surface: #0c0e12;
+  --skylent-elevated: #11141a;
+  --skylent-glass-bg: rgba(17, 20, 26, 0.88);
+  --skylent-text: rgba(255, 255, 255, 0.94);
+  --skylent-text-secondary: rgba(255, 255, 255, 0.70);
+  --skylent-text-muted: rgba(255, 255, 255, 0.48);
+  --skylent-border: rgba(255, 255, 255, 0.12);
+  --skylent-border-subtle: rgba(255, 255, 255, 0.075);
+  --skylent-accent: #818cf8;
+  --skylent-accent-foreground: #07080a;
+  --skylent-card-bg: rgba(255, 255, 255, 0.035);
+  --skylent-nav-bg: rgba(7, 8, 10, 0.94);
+}
+
+[data-theme="light"] {
+  --skylent-canvas: #f3ebdd;
+  --skylent-surface: #f7f0e5;
+  --skylent-elevated: #fbf6ed;
+  --skylent-glass-bg: rgba(251, 246, 237, 0.94);
+  --skylent-text: #171411;
+  --skylent-text-secondary: #4d4740;
+  --skylent-text-muted: #746d64;
+  --skylent-border: rgba(23, 20, 17, 0.14);
+  --skylent-border-subtle: rgba(23, 20, 17, 0.08);
+  --skylent-accent: #6366f1;
+  --skylent-accent-foreground: #fbf6ed;
+  --skylent-card-bg: rgba(255, 255, 255, 0.34);
+  --skylent-nav-bg: rgba(243, 235, 221, 0.96);
+}
+
+/* ── Continuous public canvas + Aurora ───────────────────────────────────── */
+.skylent-public-canvas {
+  position: relative !important;
+  isolation: isolate;
+  min-height: 100%;
+  background: var(--skylent-canvas) !important;
+  color: var(--skylent-text) !important;
+  overflow: clip;
+}
+
+/* A persistent atmospheric field. It is deliberately a separate layer so
+   section backgrounds cannot accidentally erase Aurora. */
+.skylent-public-canvas::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 72% 48% at 7% 0%, rgba(99, 102, 241, 0.22), transparent 68%),
+    radial-gradient(ellipse 58% 44% at 95% 5%, rgba(139, 92, 246, 0.18), transparent 70%),
+    radial-gradient(ellipse 50% 36% at 54% 12%, rgba(59, 130, 246, 0.09), transparent 72%);
+  background-repeat: no-repeat;
+  background-size: 100% 780px, 100% 720px, 100% 650px;
+}
+
+[data-theme="dark"] .skylent-public-canvas::before {
+  background:
+    radial-gradient(ellipse 72% 48% at 7% 0%, rgba(99, 102, 241, 0.25), transparent 68%),
+    radial-gradient(ellipse 58% 44% at 95% 5%, rgba(139, 92, 246, 0.21), transparent 70%),
+    radial-gradient(ellipse 50% 36% at 54% 12%, rgba(59, 130, 246, 0.12), transparent 72%);
+}
+
+.skylent-public-canvas > .skylent-public-content,
+.skylent-public-canvas > div[style*="z-index: 1"] {
+  position: relative;
+  z-index: 1;
+}
+
+/* Section wrappers using the semantic canvas are transparent so the global
+   atmospheric field remains visible. Explicit light/dark/custom backgrounds
+   are intentionally left alone. */
+.skylent-public-canvas section[style*="var(--skylent-canvas)"] {
+  background: transparent !important;
+}
+
+/* Inline Aurora instances remain useful for domain/hero accents, but cannot
+   disappear behind the content wrapper. */
+.skylent-public-canvas .skylent-aurora {
+  z-index: 0 !important;
+  opacity: 1 !important;
+}
+
+.skylent-public-canvas .skylent-aurora > div:first-child {
+  opacity: 0.92;
+}
+
+.skylent-public-canvas .skylent-aurora > div:nth-child(2) {
+  opacity: 0.82;
+}
+
+/* ── Light mode: warm editorial paper ────────────────────────────────────── */
+[data-theme="light"] body,
+[data-theme="light"] .skylent-public-canvas {
+  background-color: #f3ebdd !important;
+}
+
+[data-theme="light"] .skylent-public-canvas section[style*="var(--skylent-canvas)"] {
+  color: #171411 !important;
+}
+
+/* ── Dark mode: deep blue-black rather than dead black ───────────────────── */
+[data-theme="dark"] body,
+[data-theme="dark"] .skylent-public-canvas {
+  background-color: #07080a !important;
+}
+
+/* ── Navigation ───────────────────────────────────────────────────────────── */
+.skylent-nav-dropdown {
+  background: rgba(12, 14, 18, 0.98) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.28) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+[data-theme="light"] .skylent-nav-dropdown {
+  background: #fbf6ed !important;
+  border-color: rgba(23, 20, 17, 0.12) !important;
+  box-shadow: 0 20px 55px rgba(57, 45, 31, 0.12) !important;
+}
+
+/* Dropdown content must remain readable instead of allowing the page behind
+   it to visually bleed through. */
+[data-theme="dark"] .skylent-nav-dropdown,
+[data-theme="dark"] .skylent-nav-dropdown * {
+  color-scheme: dark;
+}
+
+/* ── Theme control ────────────────────────────────────────────────────────── */
+.skylent-theme-toggle {
+  background: var(--skylent-surface) !important;
+  border-color: var(--skylent-border-subtle) !important;
+  border-radius: 10px !important;
+  padding: 3px !important;
+}
+
+.skylent-theme-toggle-btn {
+  min-width: 2.35rem !important;
+  padding: 7px 8px !important;
+  border-radius: 7px !important;
+}
+
+.skylent-theme-toggle-btn[aria-pressed="true"] {
+  background: var(--skylent-elevated) !important;
+  color: var(--skylent-text) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.10);
+}
+
+/* ── Editorial typography ────────────────────────────────────────────────── */
+.skylent-display-xl,
+.skylent-display-lg,
+.skylent-display-md,
+.skylent-display-sm {
+  text-wrap: balance;
+}
+
+.skylent-public-canvas p {
+  text-wrap: pretty;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+.skylent-public-canvas button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Keep primary CTAs crisp rather than pill-like/glowing. */
+.skylent-public-canvas button[style*="background"] {
+  transition: transform 160ms ease, opacity 160ms ease, border-color 160ms ease, background-color 160ms ease !important;
+}
+
+/* ── Reduce generic card-heavy appearance ────────────────────────────────── */
+.skylent-public-canvas .skylent-nav-dropdown,
+.skylent-public-canvas .contextual-nav-panel {
+  border-radius: 14px;
+}
+
+/* ── Mobile ───────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .skylent-public-canvas::before {
+    background-size: 160% 620px, 150% 560px, 140% 520px;
+    background-position: -20% 0, 120% 0, 50% 0;
+  }
+
+  .skylent-public-canvas {
+    overflow-x: clip;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skylent-public-canvas,
+  .skylent-public-canvas * {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
