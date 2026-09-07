@@ -1,0 +1,88 @@
+/* Final public-home layout guardrails. FadeIn adds a wrapper around grid children;
+   these rules make the wrapper inherit the visual card geometry instead of collapsing it. */
+.skylent-ecosystem-grid > div {
+  min-width: 0;
+  height: 100%;
+}
+
+.skylent-ecosystem-grid > div > .skylent-ecosystem-card {
+  height: 100%;
+  min-height: 340px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.skylent-ecosystem-grid > div > .skylent-ecosystem-card .skylent-ecosystem-link {
+  position: static;
+  margin-top: auto;
+  padding-top: 26px;
+}
+
+.skylent-ecosystem-grid > div > .skylent-ecosystem-card p {
+  max-width: 340px;
+}
+
+.skylent-journey-track > div {
+  min-width: 0;
+  height: 100%;
+}
+
+.skylent-journey-track > div > .skylent-journey-step {
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.skylent-career-layout > div,
+.skylent-institution-layout > div {
+  min-width: 0;
+}
+
+/* Warm editorial light: keep the Aurora palette; only the surface changes. */
+[data-theme='light'] .skylent-public-canvas {
+  color: #171411 !important;
+}
+
+[data-theme='light'] .skylent-public-canvas::before {
+  opacity: 1 !important;
+  background:
+    radial-gradient(ellipse 56% 34% at 8% 0%, rgba(99,102,241,.16), transparent 70%),
+    radial-gradient(ellipse 48% 32% at 94% 2%, rgba(139,92,246,.13), transparent 72%),
+    radial-gradient(ellipse 40% 28% at 52% 6%, rgba(59,130,246,.075), transparent 74%) !important;
+  background-size: 100% 760px, 100% 680px, 100% 600px !important;
+}
+
+[data-theme='light'] .skylent-home-hero-grid {
+  mix-blend-mode: multiply;
+}
+
+[data-theme='light'] .skylent-home-section-head p,
+[data-theme='light'] .skylent-home-journey-intro p,
+[data-theme='light'] .skylent-career-copy p,
+[data-theme='light'] .skylent-institution-layout p,
+[data-theme='light'] .skylent-ecosystem-card p,
+[data-theme='light'] .skylent-journey-step p {
+  color: #4f4942 !important;
+}
+
+[data-theme='light'] .skylent-home-section-head h2,
+[data-theme='light'] .skylent-home-journey-intro h2,
+[data-theme='light'] .skylent-ecosystem-card h3,
+[data-theme='light'] .skylent-journey-step h3,
+[data-theme='light'] .skylent-career-copy h2,
+[data-theme='light'] .skylent-institution-layout h2,
+[data-theme='light'] .skylent-labs-teaser h2 {
+  color: #171411 !important;
+}
+
+@media (max-width: 900px) {
+  .skylent-ecosystem-grid > div > .skylent-ecosystem-card {
+    min-height: 280px;
+  }
+}
+
+@media (max-width: 700px) {
+  .skylent-ecosystem-grid > div > .skylent-ecosystem-card {
+    min-height: 250px;
+  }
+}
