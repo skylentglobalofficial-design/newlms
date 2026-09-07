@@ -9,6 +9,11 @@ import { lessonTypeLabel } from './lms-utils'
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
+export type LessonNotesContent = {
+  title: string
+  paragraphs: string[]
+}
+
 export function LessonContentView({
   lesson,
   lessonState,
@@ -19,6 +24,8 @@ export function LessonContentView({
   onQuizSubmit,
   onAssignmentSubmit,
   lessonMedia,
+  notesContent,
+  hasMaterials,
 }: {
   lesson: CourseLesson
   lessonState: LessonState
@@ -29,6 +36,8 @@ export function LessonContentView({
   onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
   onAssignmentSubmit?: (text: string) => Promise<void>
   lessonMedia?: VideoPlaybackSource
+  notesContent?: LessonNotesContent | null
+  hasMaterials?: boolean
 }) {
   if (lesson.type === 'video') {
     return (
@@ -53,11 +62,27 @@ export function LessonContentView({
   if (lesson.type === 'notes') {
     return (
       <div className="lms-lesson-notes">
-        <div className="lms-empty-state lms-empty-state--inline">
-          <p className="lms-empty-state__copy">
-            No lesson notes have been published for this lesson yet. Instructor-uploaded materials will appear here when available.
-          </p>
-        </div>
+        {notesContent ? (
+          <div style={{ marginBottom: 20 }}>
+            <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Reading · Demo</div>
+            <h2 style={{ color: C.white, fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, margin: '0 0 16px', lineHeight: 1.3 }}>
+              {notesContent.title}
+            </h2>
+            <div style={{ display: 'grid', gap: 14 }}>
+              {notesContent.paragraphs.map((paragraph) => (
+                <p key={paragraph} style={{ color: 'rgba(255,255,255,0.72)', fontSize: 14, lineHeight: 1.75, margin: 0 }}>
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </div>
+        ) : !hasMaterials ? (
+          <div className="lms-empty-state lms-empty-state--inline">
+            <p className="lms-empty-state__copy">
+              No lesson notes have been published for this lesson yet. Instructor-uploaded materials will appear below when available.
+            </p>
+          </div>
+        ) : null}
         {!lessonState.complete && (
           <button type="button" onClick={onComplete} style={{ marginTop: 20, background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
             Mark reading complete →

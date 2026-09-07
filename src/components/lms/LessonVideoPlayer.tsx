@@ -125,7 +125,7 @@ function VideoPreviewSurface({
             <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 8, fontFamily: "var(--font-mono)" }}>{duration}</div>
           )}
           <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 10, fontFamily: "var(--font-mono)" }}>
-            Stream not configured — playback ID will connect Mux when available
+            Video content is not available in this environment. A Mux playback ID is required for streaming.
           </div>
         </div>
         {watched && (

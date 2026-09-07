@@ -10,6 +10,11 @@ import {
 } from "../lib/auth.js"
 import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
 import {
+  createPresignedDownloadUrl,
+  isObjectStorageConfigured,
+  toPublicMaterial,
+} from "../lib/object-storage.js"
+import {
   assertLessonUnlocked,
   buildCourseWorkspace,
   computeResume,
@@ -786,3 +791,52 @@ lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: Authenticat
     res.status(500).json({ error: "Failed to load certificate state" })
   }
 })
+
+lmsRouter.get(
+  "/courses/:slug/lessons/:lessonKey/materials",
+  requireAuth,
+  async (req: AuthenticatedRequest, res) => {
+    const slugParsed = slugParamSchema.safeParse(req.params)
+    const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
+    if (!slugParsed.success || !lessonParsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    try {
+      const course = await findCourseBySlug(slugParsed.data.slug)
+      if (!course) return res.status(404).json({ error: "Course not found" })
+
+      const enrollment = await requireEnrollment(req.auth!.user.id, course.id)
+      if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
+
+      const located = await findNodeByLessonKey(course, lessonParsed.data.lessonKey)
+      if (!located) return res.status(404).json({ error: "Lesson not found" })
+
+      const materials = await prisma.lessonMaterial.findMany({
+        where: { nodeId: located.node.id, published: true },
+        orderBy: { createdAt: "desc" },
+      })
+
+      if (!isObjectStorageConfigured()) {
+        return res.json({
+          data: materials.map((material) => ({
+            ...toPublicMaterial(material),
+            downloadUrl: null,
+          })),
+        })
+      }
+
+      const data = await Promise.all(
+        materials.map(async (material) => ({
+          ...toPublicMaterial(material),
+          downloadUrl: await createPresignedDownloadUrl(material.storageKey),
+        })),
+      )
+
+      res.json({ data })
+    } catch (error) {
+      console.error("Failed to load lesson materials:", error)
+      res.status(500).json({ error: "Failed to load lesson materials" })
+    }
+  },
+)

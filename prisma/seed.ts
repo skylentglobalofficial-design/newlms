@@ -282,6 +282,28 @@ async function findCourseNode(courseSlug: string, sourceId: string) {
   })
 }
 
+async function seedDemoLessonMaterials() {
+  const node = await findCourseNode(DEMO_COURSE_SLUG, 'l8')
+  if (!node) return
+
+  const existing = await prisma.lessonMaterial.findFirst({
+    where: { nodeId: node.id, fileName: 'sql-reference-sheet.pdf' },
+  })
+  if (existing) return
+
+  await prisma.lessonMaterial.create({
+    data: {
+      nodeId: node.id,
+      fileName: 'sql-reference-sheet.pdf',
+      mimeType: 'application/pdf',
+      byteSize: 14336,
+      storageProvider: 'r2',
+      storageKey: `lesson-materials/${DEMO_COURSE_SLUG}/${node.id}/demo-seed/sql-reference-sheet.pdf`,
+      published: true,
+    },
+  })
+}
+
 async function addOrganisationMember(organisationSlug: string, userId: string) {
   const organisation = await prisma.organisation.findUnique({ where: { slug: organisationSlug } })
   if (!organisation) return
@@ -448,6 +470,8 @@ async function seedLearnerWorkspace(userId: string) {
       },
     })
   }
+
+  await seedDemoLessonMaterials()
 
   await prisma.careerProfile.upsert({
     where: { userId },

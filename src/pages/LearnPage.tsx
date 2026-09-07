@@ -28,6 +28,8 @@ import {
 } from '../lib/lms-api'
 
 import { roleRoute } from '../lib/auth-routing'
+import LessonMaterialsPanel from '../components/lms/LessonMaterialsPanel'
+import { getDemoLessonNotes } from '../demo/lesson-notes-content'
 
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
@@ -176,6 +178,8 @@ export default function LearnPage() {
   const tabAccent = getLmsTabAccent(selectedLesson ? defaultTabForLesson(selectedLesson) : 'video')
   const { prev, next } = getAdjacentLessons(allLessons, selectedLessonId)
   const certificateEligible = access.workspace.enrollment.certificateEligible
+  const demoNotes = slug && selectedLessonId ? getDemoLessonNotes(slug, selectedLessonId) : null
+  const showMaterialsPanel = Boolean(selectedLesson && !selectedState.locked && slug)
 
   function handleLessonSelect(id: string) {
     if (!isLessonUnlocked(id, allLessons, lessonStates)) return
@@ -307,6 +311,7 @@ export default function LearnPage() {
                   accent={{ ...tabAccent, text: roleAccent.text }}
                 />
               ) : (
+                <>
                 <LessonContentView
                   lesson={selectedLesson}
                   lessonState={selectedState}
@@ -317,7 +322,19 @@ export default function LearnPage() {
                   onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
                   onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
                   lessonMedia={lessonMedia}
+                  notesContent={demoNotes}
+                  hasMaterials={showMaterialsPanel}
                 />
+                {showMaterialsPanel && slug && (
+                  <div style={{ marginTop: 24 }}>
+                    <LessonMaterialsPanel
+                      courseSlug={slug}
+                      lessonKey={selectedLesson.id}
+                      accent={{ ...tabAccent, text: roleAccent.text }}
+                    />
+                  </div>
+                )}
+                </>
               )}
               <LessonNavigation
                 prev={prev}

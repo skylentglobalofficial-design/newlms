@@ -7,6 +7,8 @@ import { useRequireRole } from '../hooks/useRequireRole'
 import { fetchFacultyDashboard, type FacultyDashboard, type FacultySubmission } from '../lib/faculty-api'
 import RoleWorkspaceBanner from '../components/auth/RoleWorkspaceBanner'
 import RoleSectionEmpty, { roleCanvasSectionStyle } from '../components/auth/RoleSectionEmpty'
+import FacultyLessonMaterials from '../components/faculty/FacultyLessonMaterials'
+import { DEMO_FACULTY_COURSE_SLUG, DEMO_FACULTY_LESSONS } from '../demo/faculty-lesson-options'
 
 const TEACHING_COURSE_SLUG = 'data-analytics'
 
@@ -389,15 +391,63 @@ function ClassesRail({
   )
 }
 
-function LessonMaterialsSection() {
+function LessonMaterialsSection({
+  teachingScopeAvailable,
+}: {
+  teachingScopeAvailable: boolean
+}) {
+  const [lessonKey, setLessonKey] = useState<string>(DEMO_FACULTY_LESSONS[1]?.key ?? 'l2')
+  const selectedLesson = DEMO_FACULTY_LESSONS.find((lesson) => lesson.key === lessonKey) ?? DEMO_FACULTY_LESSONS[0]
+
+  if (!teachingScopeAvailable) {
+    return (
+      <div style={roleCanvasSectionStyle}>
+        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
+          Lesson materials
+        </div>
+        <RoleSectionEmpty
+          title="Materials upload not available"
+          description="Teaching scope is not assigned for this faculty account. Demo mentor accounts can manage materials for the Data Analytics course."
+        />
+      </div>
+    )
+  }
+
   return (
     <div style={roleCanvasSectionStyle}>
       <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
         Lesson materials
       </div>
-      <RoleSectionEmpty
-        title="Materials upload not available"
-        description="Faculty lesson material uploads require object storage and a materials API that are not yet connected to this workspace."
+      <div style={{ marginBottom: 16, display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
+        <label htmlFor="faculty-lesson-select" style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13 }}>
+          Lesson
+        </label>
+        <select
+          id="faculty-lesson-select"
+          value={lessonKey}
+          onChange={(event) => setLessonKey(event.target.value)}
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: `1px solid ${T.lineDark}`,
+            borderRadius: T.rControl,
+            color: C.white,
+            fontSize: 13,
+            padding: '8px 12px',
+            minWidth: 240,
+          }}
+        >
+          {DEMO_FACULTY_LESSONS.map((lesson) => (
+            <option key={lesson.key} value={lesson.key}>
+              {lesson.key} · {lesson.title}
+            </option>
+          ))}
+        </select>
+      </div>
+      <FacultyLessonMaterials
+        courseSlug={DEMO_FACULTY_COURSE_SLUG}
+        lessonKey={selectedLesson.key}
+        lessonTitle={selectedLesson.title}
+        accent={accent}
       />
     </div>
   )
@@ -462,7 +512,7 @@ export default function DashboardFacultyPage() {
           accent={accent}
           title="Mentor workspace"
           description={hasLiveData
-            ? 'Submissions, programs, and courses load from the faculty API. Cohort analytics, live sessions, and lesson materials are not yet available.'
+            ? 'Submissions, programs, and courses load from the faculty API. Cohort analytics and live sessions are not yet available. Lesson materials can be uploaded for the Data Analytics demo course when object storage is configured.'
             : 'Could not load faculty dashboard data. Sign in with a demo mentor account after seeding the database.'}
         />
 
@@ -484,7 +534,7 @@ export default function DashboardFacultyPage() {
                 <AssignmentReview submissions={submissions} onFocus={focusAssignments} />
               </div>
               <div id="faculty-materials" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
-                <LessonMaterialsSection />
+                <LessonMaterialsSection teachingScopeAvailable={dashboard?.teachingScopeAvailable ?? false} />
               </div>
               <div id="faculty-learners" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
                 <LearnerProgress dashboard={dashboard} />
