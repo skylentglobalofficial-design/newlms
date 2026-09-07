@@ -16,33 +16,42 @@
       })();
     </script>
     <style>
-      /* Skylent light mode: warm editorial canvas + the same indigo/violet Aurora family. */
+      /* Skylent light mode: warm editorial canvas; preserve the same Aurora family as night mode. */
       [data-theme="light"] {
-        --skylent-canvas: #eee6d8 !important;
-        --skylent-surface: #f4ede2 !important;
-        --skylent-elevated: #f8f1e6 !important;
-        --skylent-glass-bg: rgba(36, 31, 26, 0.035) !important;
-        --skylent-text: #181613 !important;
-        --skylent-text-secondary: #4b4640 !important;
-        --skylent-text-muted: #766f67 !important;
-        --skylent-border: rgba(24, 22, 19, 0.12) !important;
-        --skylent-border-subtle: rgba(24, 22, 19, 0.075) !important;
+        --skylent-canvas: #efe5d5 !important;
+        --skylent-surface: #f6eee2 !important;
+        --skylent-elevated: #fbf5eb !important;
+        --skylent-glass-bg: rgba(38, 32, 25, 0.035) !important;
+        --skylent-text: #171411 !important;
+        --skylent-text-secondary: #4d4740 !important;
+        --skylent-text-muted: #756d64 !important;
+        --skylent-border: rgba(23, 20, 17, 0.13) !important;
+        --skylent-border-subtle: rgba(23, 20, 17, 0.075) !important;
         --skylent-accent: #6366f1 !important;
-        --skylent-accent-foreground: #f8f1e6 !important;
-        --skylent-input-bg: rgba(24, 22, 19, 0.035) !important;
-        --skylent-input-border: rgba(24, 22, 19, 0.14) !important;
-        --skylent-card-bg: rgba(24, 22, 19, 0.025) !important;
-        --skylent-nav-bg: rgba(238, 230, 216, 0.94) !important;
-        --skylent-footer-bg: #e5dccd !important;
-        --skylent-focus-ring: rgba(99, 102, 241, 0.45) !important;
-        --skylent-aurora-opacity: 0.34 !important;
+        --skylent-accent-foreground: #fbf5eb !important;
+        --skylent-input-bg: rgba(23, 20, 17, 0.035) !important;
+        --skylent-input-border: rgba(23, 20, 17, 0.14) !important;
+        --skylent-card-bg: rgba(23, 20, 17, 0.025) !important;
+        --skylent-nav-bg: rgba(239, 229, 213, 0.94) !important;
+        --skylent-footer-bg: #e5dac9 !important;
+        --skylent-focus-ring: rgba(99, 102, 241, 0.48) !important;
+        --skylent-aurora-opacity: 0.52 !important;
       }
 
+      /* Keep Aurora atmospheric rather than replacing it with a separate light-mode palette. */
       [data-theme="light"] .skylent-public-canvas {
+        background-color: #efe5d5 !important;
         background-image:
-          radial-gradient(ellipse 58% 42% at 10% 2%, rgba(99, 102, 241, 0.14), transparent 72%),
-          radial-gradient(ellipse 48% 38% at 92% 5%, rgba(139, 92, 246, 0.11), transparent 70%) !important;
+          radial-gradient(ellipse 62% 48% at 8% 0%, rgba(99, 102, 241, 0.24), transparent 68%),
+          radial-gradient(ellipse 52% 44% at 94% 3%, rgba(139, 92, 246, 0.19), transparent 68%),
+          radial-gradient(ellipse 42% 34% at 58% 16%, rgba(59, 130, 246, 0.10), transparent 72%) !important;
         background-repeat: no-repeat;
+        background-size: 100% 760px, 100% 700px, 100% 620px;
+      }
+
+      [data-theme="light"] .skylent-aurora,
+      [data-theme="light"] .skylent-aurora-band {
+        opacity: 0.52 !important;
       }
     </style>
     <title>Skylent — Education, Skills, Career</title>
