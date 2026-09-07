@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { C, FadeIn, PageShell, EnrollmentModal } from '../components/shared'
-import { Button, Eyebrow, Section, SectionHeader, T } from '../components/ui'
+import { C, FadeIn, PageShell } from '../components/shared'
+import { Button, Eyebrow, Section, SectionHeader, T, MarketingHero } from '../components/ui'
 import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { workshops } from '../data'
-import type { Workshop } from '../data'
 import { PHOTO } from '../media'
 
 const accent = getDomainAccent('webinar')
@@ -13,7 +12,6 @@ const accent = getDomainAccent('webinar')
 export default function WorkshopsPage() {
   const [category, setCategory] = useState('All')
   const [mode, setMode] = useState('All')
-  const [enrollItem, setEnrollItem] = useState<Workshop | null>(null)
   const navigate = useNavigate()
 
   const categories = ['All', ...Array.from(new Set(workshops.map(w => w.category)))]
@@ -27,28 +25,17 @@ export default function WorkshopsPage() {
 
   return (
     <PageShell auroraTheme="webinar">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 32}px ${T.gutter} clamp(40px, 5vw, 56px)` }}>
-        <Aurora themeId="webinar" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div className="two-col" style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px, 5vw, 48px)', alignItems: 'center' }}>
-            <FadeIn>
-              <Eyebrow tone="dark" accent>Workshops</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '18px 0 14px' }}>
-                Focused sessions.<br />
-                <span style={{ color: accent.text }}>Practical outcomes.</span>
-              </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 480, margin: 0 }}>
-                Short live workshops on specific skills — register, attend, and leave with something you can apply the same week.
-              </p>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <GlassSurface level={2} padding="0" style={{ overflow: 'hidden' }}>
-                <MediaImage src={PHOTO.workshop} alt="Workshop session" style={{ minHeight: 240 }} />
-              </GlassSurface>
-            </FadeIn>
-          </div>
-        </div>
-      </section>
+      <MarketingHero
+        auroraTheme="webinar"
+        eyebrow="Workshops"
+        title={<>Focused sessions.<br /><span style={{ color: accent.text }}>Practical outcomes.</span></>}
+        lead="Short live workshops on specific skills — register, attend, and leave with something you can apply the same week."
+        visual={
+          <GlassSurface level={2} padding="0" style={{ overflow: 'hidden' }}>
+            <MediaImage src={PHOTO.workshop} alt="Workshop session" style={{ minHeight: 240 }} aspect="21/9" />
+          </GlassSurface>
+        }
+      />
 
       <Section tone="canvas" divider>
         <FadeIn>
@@ -135,10 +122,6 @@ export default function WorkshopsPage() {
           })}
         </div>
       </Section>
-
-      {enrollItem && (
-        <EnrollmentModal item={{ id: enrollItem.slug, title: enrollItem.title, price: enrollItem.price, type: 'workshop' }} onClose={() => setEnrollItem(null)} themeId="webinar" />
-      )}
     </PageShell>
   )
 }
