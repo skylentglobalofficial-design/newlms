@@ -4,6 +4,7 @@ import App from './App'
 import { bootstrapTheme } from './lib/theme-init'
 import './index.css'
 import './theme-overrides.css'
+import './skylent-redesign.css'
 
 bootstrapTheme()
 
