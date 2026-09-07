@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext'
 import { useDemoState } from '../demo/DemoStateContext'
 import type { UserRole } from '../context/AuthContext'
 import { C, T } from '../tokens'
+import { S } from '../theme'
+import ThemeToggle from './ThemeToggle'
 import { PublicCanvas, useAuroraTheme } from './foundation'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 
@@ -451,10 +453,10 @@ export function Nav() {
 
   const showDark = scrolled || !isHome
 
-  const navBg = showDark ? 'var(--glass-01-bg)' : 'transparent'
-  const navBlur = showDark ? 'var(--glass-01-blur)' : 'none'
-  const navBorder = showDark ? '1px solid var(--glass-01-border)' : 'none'
-  const navShadow = showDark ? 'var(--glass-01-shadow)' : 'none'
+  const navBg = showDark ? 'var(--skylent-nav-bg)' : 'transparent'
+  const navBlur = showDark ? 'blur(12px)' : 'none'
+  const navBorder = showDark ? `1px solid ${S.borderSubtle}` : 'none'
+  const navShadow = 'none'
 
   const handleMenuEnter = useCallback((label: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current)
@@ -475,7 +477,7 @@ export function Nav() {
       <a href="#main-content" className="skylent-skip-link">Skip to content</a>
       <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH }}>
         {/* Logo */}
-        <button onClick={() => navigate('/')} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: C.white, background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '-0.02em', padding: 0, flexShrink: 0 }}>
+        <button onClick={() => navigate('/')} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: S.text, background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '-0.02em', padding: 0, flexShrink: 0 }}>
           Skylent<span style={{ color: C.orange }}>.</span>
         </button>
 
@@ -488,20 +490,18 @@ export function Nav() {
                 aria-expanded={activeMenu === group.label}
                 aria-haspopup="true"
                 onClick={() => navigate(group.to)}
-                style={{ background: 'none', border: 'none', color: activeMenu === group.label ? C.white : 'rgba(255,255,255,0.6)', fontSize: 13.5, cursor: 'pointer', padding: '8px 13px', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-body)', transition: 'color 0.2s', letterSpacing: '-0.01em' }}
+                style={{ background: 'none', border: 'none', color: activeMenu === group.label ? S.text : S.textSecondary, fontSize: 13.5, cursor: 'pointer', padding: '8px 13px', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-body)', transition: 'color 0.2s', letterSpacing: '-0.01em' }}
               >
                 {group.label}
                 <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{ opacity: 0.5, transform: activeMenu === group.label ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l5 6 5-6z"/></svg>
               </button>
               {activeMenu === group.label && (
-                <div className="nav-mega-dropdown" onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: 'rgba(8, 9, 11, 0.96)', backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 14, padding: 8, minWidth: 288, boxShadow: '0 20px 48px rgba(0,0,0,0.55)', zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
-                  <Link to={group.to} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px 13px', borderRadius: 10, textDecoration: 'none', marginBottom: 4, borderBottom: '1px solid rgba(255,255,255,0.07)' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                <div className="nav-mega-dropdown skylent-nav-dropdown" onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, borderRadius: 14, padding: 8, minWidth: 288, zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
+                  <Link to={group.to} className="skylent-nav-dropdown-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '11px 14px 13px', borderRadius: 10, textDecoration: 'none', marginBottom: 4 }}
                   >
                     <div>
-                      <div style={{ color: C.white, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
-                      <div style={{ color: 'var(--text-muted)', fontSize: 11, marginTop: 2 }}>{group.tagline}</div>
+                      <div style={{ color: S.text, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
+                      <div style={{ color: S.textMuted, fontSize: 11, marginTop: 2 }}>{group.tagline}</div>
                     </div>
                     <span style={{ color: navAccent.text, fontSize: 15 }}>→</span>
                   </Link>
@@ -559,6 +559,9 @@ export function Nav() {
 
         {/* CTAs */}
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div className="nav-links">
+            <ThemeToggle compact />
+          </div>
           {user ? (
             <>
               {/* Avatar chip */}
@@ -651,12 +654,12 @@ export function Footer() {
     { heading: 'Company', links: [['About', '/about'], ['For Institutions', '/institutions'], ['Stories', '/stories'], ['Blog', '/blog'], ['Contact', '/contact']] },
   ]
   return (
-    <footer style={{ background: C.black, padding: `${T.sectionSm} ${T.gutter} 32px`, position: 'relative' }}>
+    <footer style={{ background: S.footerBg, padding: `${T.sectionSm} ${T.gutter} 32px`, position: 'relative', borderTop: `1px solid ${S.borderSubtle}` }}>
       <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1.7fr repeat(4, 1fr)', gap: 40, marginBottom: 56 }} className="footer-grid">
           <div>
-            <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.white, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
-            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Education, skills, and career workflows on one platform — for learners and institutions.</p>
+            <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: S.text, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
+            <p style={{ color: S.textMuted, fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Education, skills, and career workflows on one platform — for learners and institutions.</p>
             <div style={{ display: 'flex', gap: 10 }} aria-hidden="true">
               {['in', 'tw', 'yt', 'ig'].map(s => (<div key={s} style={{ width: 32, height: 32, borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.2)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>{s}</div>))}
             </div>
@@ -697,7 +700,7 @@ export function PageShell({
   const location = useLocation()
   const autoTheme = useAuroraTheme()
   const theme = auroraTheme ?? autoTheme
-  const showAurora = aurora ?? true
+  const showAurora = aurora ?? false
 
   useEffect(() => {
     if (location.hash) {

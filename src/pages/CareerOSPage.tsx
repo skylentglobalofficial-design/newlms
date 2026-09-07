@@ -87,10 +87,10 @@ function CareerJourneySection() {
                 >
                   {step.num}
                 </div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(14px, 1.4vw, 17px)', fontWeight: 600, color: C.white, margin: '0 0 5px' }}>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(14px, 1.4vw, 17px)', fontWeight: 600, color: 'var(--skylent-text)', margin: '0 0 5px' }}>
                   {step.label}
                 </h3>
-                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11.5, lineHeight: 1.5, margin: 0 }}>{step.desc}</p>
+                <p style={{ color: 'var(--skylent-text-muted)', fontSize: 11.5, lineHeight: 1.5, margin: 0 }}>{step.desc}</p>
               </div>
             </FadeIn>
           ))}
@@ -130,7 +130,7 @@ function ProfileResumeSection() {
                   alignItems: 'start',
                 }}
               >
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{slot}</span>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--skylent-text)' }}>{slot}</span>
                 <span style={{ color: 'rgba(255,255,255,0.38)', fontSize: 13, lineHeight: 1.55 }}>Waiting for your program data</span>
               </div>
             ))}
@@ -138,7 +138,7 @@ function ProfileResumeSection() {
 
           <div style={{ paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
             <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 10 }}>Resume</div>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.65, margin: '0 0 16px' }}>
+            <p style={{ color: 'var(--skylent-text-muted)', fontSize: 14, lineHeight: 1.65, margin: '0 0 16px' }}>
               Build and export a resume when you are ready. We do not invent ATS scores or sample CVs as if they were yours.
             </p>
             <p style={{ color: 'rgba(255,255,255,0.35)', fontSize: 13, fontFamily: 'var(--font-mono)', margin: 0 }}>
@@ -156,7 +156,7 @@ function ProfileResumeSection() {
                   —
                 </div>
                 <div>
-                  <div style={{ color: C.white, fontSize: 16, fontWeight: 600 }}>Your name</div>
+                  <div style={{ color: 'var(--skylent-text)', fontSize: 16, fontWeight: 600 }}>Your name</div>
                   <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginTop: 2 }}>Program · Outcome</div>
                 </div>
               </div>
@@ -231,7 +231,7 @@ function InterviewPrepSection({
               borderRadius: 8,
               border: `1px solid ${interviewRound === r ? accent.border : T.lineDark}`,
               background: interviewRound === r ? accent.subtle : 'transparent',
-              color: interviewRound === r ? accent.text : 'rgba(255,255,255,0.45)',
+              color: interviewRound === r ? accent.text : 'var(--skylent-text-muted)',
               fontSize: 13,
               cursor: 'pointer',
               fontFamily: 'var(--font-body)',
@@ -274,8 +274,8 @@ function InterviewPrepSection({
             {!mockStarted && !mockDone && (
               <div>
                 <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Mock interview</div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: C.white, margin: '0 0 10px' }}>Five practice prompts</h3>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.65, margin: '0 0 18px' }}>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--skylent-text)', margin: '0 0 10px' }}>Five practice prompts</h3>
+                <p style={{ color: 'var(--skylent-text-muted)', fontSize: 14, lineHeight: 1.65, margin: '0 0 18px' }}>
                   Practice five prompts. Feedback in this demo is illustrative — not a scored assessment of you.
                 </p>
                 <Button variant="primary" onClick={() => setMockStarted(true)}>Start practice</Button>
@@ -286,7 +286,7 @@ function InterviewPrepSection({
                 <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 12 }}>
                   Question {mockQ + 1} / {mockQuestions.length}
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: C.white, marginBottom: 16, lineHeight: 1.35 }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--skylent-text)', marginBottom: 16, lineHeight: 1.35 }}>
                   {mockQuestions[mockQ]}
                 </div>
                 <textarea
@@ -301,7 +301,7 @@ function InterviewPrepSection({
                     marginBottom: 14,
                     boxSizing: 'border-box',
                     background: 'rgba(255,255,255,0.03)',
-                    color: C.white,
+                    color: 'var(--skylent-text)',
                     resize: 'vertical',
                   }}
                 />
@@ -318,8 +318,8 @@ function InterviewPrepSection({
             )}
             {mockDone && (
               <div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: C.white, margin: '0 0 10px' }}>Practice complete</h3>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.65, margin: '0 0 18px' }}>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--skylent-text)', margin: '0 0 10px' }}>Practice complete</h3>
+                <p style={{ color: 'var(--skylent-text-muted)', fontSize: 14, lineHeight: 1.65, margin: '0 0 18px' }}>
                   Sample coaching note: structure answers with context, action, and result. This is not a personal score.
                 </p>
                 <Button variant="secondary" onClick={() => { setMockDone(false); setMockStarted(false); setMockQ(() => 0) }}>
@@ -391,16 +391,16 @@ function JobBoardSection({
               }}
             >
               <div>
-                <div style={{ color: C.white, fontSize: 15, fontWeight: 600, marginBottom: 6 }}>{job.role}</div>
+                <div style={{ color: 'var(--skylent-text)', fontSize: 15, fontWeight: 600, marginBottom: 6 }}>{job.role}</div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {job.skills.slice(0, 3).map(s => (
                     <span key={s} style={{ color: 'rgba(255,255,255,0.38)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{s}</span>
                   ))}
                 </div>
               </div>
-              <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14 }}>{job.company}</div>
-              <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13 }}>{job.location}</div>
-              <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, fontFamily: 'var(--font-mono)' }}>{job.exp}</div>
+              <div style={{ color: 'var(--skylent-text-secondary)', fontSize: 14 }}>{job.company}</div>
+              <div style={{ color: 'var(--skylent-text-muted)', fontSize: 13 }}>{job.location}</div>
+              <div style={{ color: 'var(--skylent-text-muted)', fontSize: 13, fontFamily: 'var(--font-mono)' }}>{job.exp}</div>
               <button
                 type="button"
                 onClick={e => { e.stopPropagation(); if (!hasApplied(job.id)) onApply(job) }}
@@ -470,8 +470,8 @@ function ApplicationTrackingSection() {
             {demo.applications.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '32px 16px' }}>
               <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 12 }}>TRACKER</div>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: C.white, margin: '0 0 10px' }}>No applications yet</h3>
-              <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, lineHeight: 1.65, margin: 0, maxWidth: 280 }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: 'var(--skylent-text)', margin: '0 0 10px' }}>No applications yet</h3>
+              <p style={{ color: 'var(--skylent-text-muted)', fontSize: 13, lineHeight: 1.65, margin: 0, maxWidth: 280 }}>
                 Apply from the job board above. Your submissions will be tracked here.
               </p>
             </div>
@@ -483,8 +483,8 @@ function ApplicationTrackingSection() {
                     padding: '12px 0', borderBottom: i < demo.applications.length - 1 ? `1px solid ${T.lineDark}` : 'none',
                   }}>
                     <div>
-                      <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{app.role}</div>
-                      <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 2 }}>{app.company}</div>
+                      <div style={{ color: 'var(--skylent-text)', fontSize: 14, fontWeight: 500 }}>{app.role}</div>
+                      <div style={{ color: 'var(--skylent-text-muted)', fontSize: 12, marginTop: 2 }}>{app.company}</div>
                     </div>
                     <span style={{ color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{app.status}</span>
                   </div>
@@ -523,7 +523,7 @@ function ApplicationTrackingSection() {
                   >
                     {i + 1}
                   </div>
-                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>{step}</span>
+                  <span style={{ color: 'var(--skylent-text-secondary)', fontSize: 13 }}>{step}</span>
                 </div>
               ))}
             </div>
@@ -571,9 +571,9 @@ function CareerSupportSection() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary, flexShrink: 0 }} />
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white }}>{item.label}</span>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: 'var(--skylent-text)' }}>{item.label}</span>
               </div>
-              <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.55 }}>{item.desc}</span>
+              <span style={{ color: 'var(--skylent-text-muted)', fontSize: 14, lineHeight: 1.55 }}>{item.desc}</span>
             </div>
           ))}
         </div>
@@ -637,7 +637,7 @@ function EcosystemSection() {
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: accent.text, marginBottom: 12 }}>
                   {String(i + 1).padStart(2, '0')}
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(13px, 1.3vw, 16px)', fontWeight: 600, color: C.white, marginBottom: 5 }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(13px, 1.3vw, 16px)', fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 5 }}>
                   {item.label}
                 </div>
                 <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 11, lineHeight: 1.5 }}>{item.desc}</div>
@@ -659,7 +659,7 @@ function EcosystemSection() {
                   key={p.slug}
                   type="button"
                   onClick={() => navigate(`/programs/${p.slug}`)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'rgba(255,255,255,0.55)', fontSize: 14, fontFamily: 'var(--font-body)' }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--skylent-text-secondary)', fontSize: 14, fontFamily: 'var(--font-body)' }}
                 >
                   {p.name} →
                 </button>

@@ -5,6 +5,7 @@ import { DashboardIndexRedirect, LegacyCareerOsRedirect } from './components/rou
 import LabDetailPage from './pages/LabDetailPage'
 import ExperimentPage from './pages/ExperimentPage'
 import { AuthProvider } from './context/AuthContext'
+import { ThemeProvider } from './context/ThemeContext'
 import { DemoStateProvider } from './demo/DemoStateContext'
 import HomePage from './pages/HomePage'
 import EducationPage from './pages/EducationPage'
@@ -96,7 +97,7 @@ function AppRoutes() {
       <Route path="/labs/:labId/:experimentId" element={<ExperimentPage />} />
       <Route path="/jobs" element={<Navigate to="/career-os" replace />} />
       <Route path="/jobs/:id" element={<Navigate to="/career-os" replace />} />
-      <Route path="*" element={<PublicCanvas themeId="general"><Nav /><main id="main-content"><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md" style={{ color: C.white }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></main></PublicCanvas>} />
+      <Route path="*" element={<PublicCanvas themeId="general"><Nav /><main id="main-content"><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md skylent-theme-text">Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></main></PublicCanvas>} />
     </Routes>
   )
 }
@@ -104,12 +105,14 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <DemoStateProvider>
-          <style>{globalCSS}</style>
-          <AppRoutes />
-        </DemoStateProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <DemoStateProvider>
+            <style>{globalCSS}</style>
+            <AppRoutes />
+          </DemoStateProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }

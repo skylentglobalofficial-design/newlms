@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script>
+      (function () {
+        var key = "skylent-theme";
+        var stored = localStorage.getItem(key);
+        var systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = stored === "light" || stored === "dark" ? stored : (systemDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
     <title>Skylent — Education, Skills, Career</title>
     <meta name="description" content="Skylent is an education technology platform spanning academic education, career-ready skills, and Career OS — for students, parents, and institutions." />
   </head>

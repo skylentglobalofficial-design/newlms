@@ -86,7 +86,7 @@ function SkillsPathSection() {
                 >
                   {step.num}
                 </div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(16px, 1.8vw, 20px)', fontWeight: 600, color: C.white, margin: '0 0 6px' }}>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(16px, 1.8vw, 20px)', fontWeight: 600, color: 'var(--skylent-text)', margin: '0 0 6px' }}>
                   {step.label}
                 </h3>
                 <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 12.5, lineHeight: 1.55, margin: 0, maxWidth: 160 }}>
@@ -148,18 +148,18 @@ function WebinarsSection() {
 
           <div style={{ padding: '20px 0', borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}`, marginBottom: 24 }}>
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Next session</div>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.white, margin: '0 0 10px', lineHeight: 1.25 }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: 'var(--skylent-text)', margin: '0 0 10px', lineHeight: 1.25 }}>
               {FEATURED_WORKSHOP.title}
             </h3>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.65, margin: '0 0 16px' }}>{FEATURED_WORKSHOP.desc}</p>
+            <p style={{ color: 'var(--skylent-text-muted)', fontSize: 14, lineHeight: 1.65, margin: '0 0 16px' }}>{FEATURED_WORKSHOP.desc}</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
                 <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>Date</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.date}</div>
+                <div style={{ color: 'var(--skylent-text)', fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.date}</div>
               </div>
               <div>
                 <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>Speaker</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.instructor}</div>
+                <div style={{ color: 'var(--skylent-text)', fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.instructor}</div>
               </div>
             </div>
           </div>
@@ -181,7 +181,7 @@ function WebinarsSection() {
                 }}
               >
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{w.title}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 3 }}>{w.title}</div>
                   <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{w.date} · {w.duration}</div>
                 </div>
                 <span style={{ color: accent.textMuted, fontSize: 14 }}>→</span>
@@ -227,9 +227,9 @@ function CertificateSection() {
           {cert ? (
             <>
               <div style={{ padding: '20px 0', borderTop: `1px solid ${T.lineDark}`, marginBottom: 24 }}>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.white, margin: '0 0 10px' }}>{cert.name}</h3>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.65, margin: '0 0 14px' }}>{cert.desc}</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: 'var(--skylent-text)', margin: '0 0 10px' }}>{cert.name}</h3>
+                <p style={{ color: 'var(--skylent-text-muted)', fontSize: 14, lineHeight: 1.65, margin: '0 0 14px' }}>{cert.desc}</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 13, color: 'var(--skylent-text-muted)' }}>
                   <span>{cert.duration}</span>
                   <span>{cert.level}</span>
                   <span>{cert.format}</span>
@@ -239,7 +239,7 @@ function CertificateSection() {
               <Button variant="primary" onClick={() => navigate(`/programs/${cert.slug}`)}>View Program →</Button>
             </>
           ) : (
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Certificate programs will appear here as they are published.</p>
+            <p style={{ color: 'var(--skylent-text-muted)', fontSize: 14 }}>Certificate programs will appear here as they are published.</p>
           )}
         </FadeIn>
 
@@ -247,10 +247,10 @@ function CertificateSection() {
           <GlassSurface level={2} padding="28px 28px 24px" style={{ marginBottom: 20 }}>
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Certificate of completion</div>
             <div style={{ borderBottom: `1px solid ${T.lineDark}`, paddingBottom: 16, marginBottom: 16 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: C.white, marginBottom: 4 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 4 }}>
                 {cert?.name ?? 'Certificate Program'}
               </div>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
+              <div style={{ color: 'var(--skylent-text-muted)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
                 {cert?.cert ?? 'Skylent Certificate'}
               </div>
             </div>
@@ -268,7 +268,7 @@ function CertificateSection() {
                     }}
                   >
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text }}>{mod.number}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>{mod.title}</span>
+                    <span style={{ color: 'var(--skylent-text-secondary)', fontSize: 13 }}>{mod.title}</span>
                   </div>
                 ))}
               </div>
@@ -335,7 +335,7 @@ function ProfessionalSection() {
                   </div>
                   <div style={{ background: accent.subtle, borderRadius: 8, padding: 12, minHeight: 64, border: `1px solid ${accent.border}` }}>
                     <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: accent.textMuted, marginBottom: 8 }}>RESULT</div>
-                    <div style={{ fontSize: 10, color: C.white, lineHeight: 1.45 }}>{featuredProject.title}</div>
+                    <div style={{ fontSize: 10, color: 'var(--skylent-text)', lineHeight: 1.45 }}>{featuredProject.title}</div>
                   </div>
                 </div>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
@@ -343,7 +343,7 @@ function ProfessionalSection() {
                 </div>
               </>
             ) : (
-              <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Portfolio projects included in every professional program.</div>
+              <div style={{ color: 'var(--skylent-text-muted)', fontSize: 14 }}>Portfolio projects included in every professional program.</div>
             )}
           </GlassSurface>
           <MediaImage src={featuredPhoto} alt={FEATURED_PRO.name} aspect="16/9" overlay="full" />
@@ -351,7 +351,7 @@ function ProfessionalSection() {
 
         <FadeIn delay={80}>
           <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Professional Program · Career OS</div>
-          <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 12px' }}>{FEATURED_PRO.name}</h3>
+          <h3 className="skylent-display-sm" style={{ color: 'var(--skylent-text)', margin: '0 0 12px' }}>{FEATURED_PRO.name}</h3>
           <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px' }}>{FEATURED_PRO.desc}</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 24 }}>
             {[
@@ -362,7 +362,7 @@ function ProfessionalSection() {
             ].map(({ k, v }) => (
               <div key={k}>
                 <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>{k}</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                <div style={{ color: 'var(--skylent-text)', fontSize: 14, fontWeight: 500 }}>{v}</div>
               </div>
             ))}
           </div>
@@ -386,7 +386,7 @@ function ProfessionalSection() {
                 }}
               >
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{p.name}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 3 }}>{p.name}</div>
                   <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{p.outcome} · {p.duration}</div>
                 </div>
                 <span style={{ color: accent.textMuted, fontSize: 14 }}>→</span>
@@ -450,9 +450,9 @@ function JobAssistanceSection() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary, flexShrink: 0 }} />
-                  <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{step.label}</span>
+                  <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--skylent-text)' }}>{step.label}</span>
                 </div>
-                <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.55 }}>{step.desc}</span>
+                <span style={{ color: 'var(--skylent-text-muted)', fontSize: 14, lineHeight: 1.55 }}>{step.desc}</span>
               </div>
             ))}
           </div>
@@ -495,7 +495,7 @@ function CareerProofSection() {
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, marginBottom: 10 }}>
                 {String(i + 1).padStart(2, '0')}
               </div>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.white, margin: '0 0 8px' }}>{item.title}</h3>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: 'var(--skylent-text)', margin: '0 0 8px' }}>{item.title}</h3>
               <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
             </div>
           ))}
@@ -532,7 +532,7 @@ function ProgramDiscoverySection() {
             <MediaImage src={featuredPhoto} alt={FEATURED_PRO.name} aspect="16/9" overlay="full" />
             <div style={{ paddingTop: 24 }}>
               <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Featured · Professional Program</div>
-              <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 12px' }}>{FEATURED_PRO.name}</h3>
+              <h3 className="skylent-display-sm" style={{ color: 'var(--skylent-text)', margin: '0 0 12px' }}>{FEATURED_PRO.name}</h3>
               <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>{FEATURED_PRO.desc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 20 }}>
                 {[
@@ -542,7 +542,7 @@ function ProgramDiscoverySection() {
                 ].map(({ k, v }) => (
                   <div key={k}>
                     <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>{k}</div>
-                    <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                    <div style={{ color: 'var(--skylent-text)', fontSize: 14, fontWeight: 500 }}>{v}</div>
                   </div>
                 ))}
               </div>
@@ -578,11 +578,11 @@ function ProgramDiscoverySection() {
                   </div>
                   <div>
                     <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 3, letterSpacing: '0.06em' }}>{typeLabel}</div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 2 }}>{program.name}</div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 2 }}>{program.name}</div>
                     <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{program.duration} · {program.outcome}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--skylent-text)' }}>₹{price.toLocaleString('en-IN')}</div>
                     <div style={{ color: accent.textMuted, fontSize: 11, marginTop: 2 }}>→</div>
                   </div>
                 </Link>

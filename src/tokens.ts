@@ -1,5 +1,6 @@
 // Skylent public-site design tokens — single source of truth for JS inline styles.
 // CSS custom properties live in index.css; keep both in sync.
+// Semantic theme tokens live in src/theme.ts (S).
 
 export const C = {
   ink: '#0B0D0F',
@@ -11,26 +12,26 @@ export const C = {
   slate: '#667078',
   white: '#FFFFFF',
   black: '#050505',
-  canvas: '#050505',
+  canvas: 'var(--skylent-canvas)',
 } as const
 
 export const T = {
   rControl: 8,
   rCard: 16,
   rPill: 100,
-  section: 'clamp(88px, 12vw, 140px)',
-  sectionSm: 'clamp(64px, 8vw, 96px)',
-  sectionTight: 'clamp(48px, 6vw, 72px)',
-  sectionCompact: 'clamp(40px, 5vw, 60px)',
+  section: 'clamp(96px, 13vw, 152px)',
+  sectionSm: 'clamp(72px, 9vw, 104px)',
+  sectionTight: 'clamp(56px, 7vw, 80px)',
+  sectionCompact: 'clamp(44px, 5.5vw, 64px)',
   gutter: 'clamp(20px, 5vw, 32px)',
   maxW: 1240,
   maxWContent: 1080,
   maxWReading: 720,
   navH: 64,
-  lineLight: 'rgba(11,13,15,0.08)',
-  lineStrong: 'rgba(11,13,15,0.14)',
-  lineDark: 'rgba(255,255,255,0.09)',
-  lineDarkStrong: 'rgba(255,255,255,0.16)',
+  lineLight: 'var(--skylent-border-subtle)',
+  lineStrong: 'var(--skylent-border)',
+  lineDark: 'var(--skylent-border-subtle)',
+  lineDarkStrong: 'var(--skylent-border)',
 } as const
 
 export const type = {

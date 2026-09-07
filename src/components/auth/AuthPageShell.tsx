@@ -1,6 +1,4 @@
 import { Link, useNavigate } from "react-router-dom"
-import { Aurora, GlassSurface } from "../foundation"
-import { T } from "../../tokens"
 
 type AuthPageShellProps = {
   children: React.ReactNode
@@ -11,8 +9,6 @@ export default function AuthPageShell({ children }: AuthPageShellProps) {
 
   return (
     <div className="auth-page">
-      <Aurora themeId="general" variant="hero" />
-
       <a href="#auth-main" className="auth-skip-link">Skip to sign in</a>
 
       <button
@@ -24,12 +20,12 @@ export default function AuthPageShell({ children }: AuthPageShellProps) {
       </button>
 
       <main id="auth-main" className="auth-page-main">
-        <GlassSurface level={3} padding="clamp(28px, 5vw, 36px)" radius={T.rCard} className="auth-page-card">
+        <div className="auth-page-card" style={{ padding: "clamp(28px, 5vw, 36px)" }}>
           <Link to="/" className="auth-brand-link">
             <span className="auth-brand">SKYLENT</span>
           </Link>
           {children}
-        </GlassSurface>
+        </div>
       </main>
     </div>
   )
