@@ -8,7 +8,8 @@ import {
   requireCsrf,
   type AuthenticatedRequest,
 } from "../lib/auth.js"
-import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
+import { buildPendingAttachmentRecord, formatAttachmentForApi } from "../lib/assignment-attachments.js"
+import { buildCertificateId, buildCertificatePdf } from "../lib/certificate-pdf.js"
 import {
   resolveMaterialDownloadUrl,
   toPublicMaterial,
@@ -583,13 +584,7 @@ lmsRouter.get(
           lessonKey: lessonParsed.data.lessonKey,
           status: assignment?.status ?? "not_started",
           submittedAt: assignment?.submittedAt?.toISOString() ?? null,
-          attachments: assignment?.attachments.map((file) => ({
-            id: file.id,
-            fileName: file.fileName,
-            mimeType: file.mimeType,
-            byteSize: file.byteSize,
-            storageProvider: file.storageProvider,
-          })) ?? [],
+          attachments: assignment?.attachments.map((file) => formatAttachmentForApi(file)) ?? [],
         },
       })
     } catch (error) {
@@ -781,6 +776,7 @@ lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: Authenticat
       data: {
         certificateEligible: enrollment.certificateEligible,
         certificateStatus: enrollment.certificateStatus,
+        certificateId: buildCertificateId(enrollment.id),
         requirements,
         allComplete: requirements.every((r) => r.complete),
       },
@@ -788,6 +784,53 @@ lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: Authenticat
   } catch (error) {
     console.error("Failed to load certificate state:", error)
     res.status(500).json({ error: "Failed to load certificate state" })
+  }
+})
+
+lmsRouter.get("/courses/:slug/certificate/download", requireAuth, async (req: AuthenticatedRequest, res) => {
+  const parsed = slugParamSchema.safeParse(req.params)
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Invalid slug" })
+  }
+
+  try {
+    const course = await findCourseBySlug(parsed.data.slug)
+    if (!course) return res.status(404).json({ error: "Course not found" })
+
+    const enrollment = await requireEnrollment(req.auth!.user.id, course.id)
+    if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
+
+    if (!enrollment.certificateEligible) {
+      return res.status(409).json({ error: "Certificate not yet eligible", code: "not_eligible" })
+    }
+
+    const learnerName = req.auth!.user.displayName ?? req.auth!.user.email
+    const certificateId = buildCertificateId(enrollment.id)
+    const issuedAt = new Date()
+
+    if (enrollment.certificateStatus !== "issued") {
+      await prisma.userEnrollment.update({
+        where: { id: enrollment.id },
+        data: { certificateStatus: "issued" },
+      })
+    }
+
+    const pdf = buildCertificatePdf({
+      learnerName,
+      courseTitle: course.title,
+      certificateId,
+      issuedAt,
+    })
+
+    res.setHeader("Content-Type", "application/pdf")
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${course.slug}-certificate.pdf"`,
+    )
+    res.send(pdf)
+  } catch (error) {
+    console.error("Failed to generate certificate:", error)
+    res.status(500).json({ error: "Failed to generate certificate" })
   }
 })
 

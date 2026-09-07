@@ -364,6 +364,7 @@ model CurriculumNode {
   duration              String?
   completed             Boolean              @default(false)
   muxPlaybackId         String?
+  notesBody             String?              @db.Text
   moduleId              String               @db.Uuid
   module                CurriculumModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   lessonProgress        LessonProgress[]

@@ -10,8 +10,13 @@ import { lessonTypeLabel } from './lms-utils'
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
 export type LessonNotesContent = {
-  title: string
-  paragraphs: string[]
+  body: string
+}
+
+function renderNotesParagraphs(body: string): string[] {
+  const trimmed = body.trim()
+  if (!trimmed) return []
+  return trimmed.split(/\n{2,}/).map((paragraph) => paragraph.trim()).filter(Boolean)
 }
 
 export function LessonContentView({
@@ -60,17 +65,18 @@ export function LessonContentView({
   }
 
   if (lesson.type === 'notes') {
+    const paragraphs = notesContent ? renderNotesParagraphs(notesContent.body) : []
     return (
       <div className="lms-lesson-notes">
-        {notesContent ? (
+        {paragraphs.length > 0 ? (
           <div style={{ marginBottom: 20 }}>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Reading · Demo</div>
+            <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Reading</div>
             <h2 style={{ color: C.white, fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, margin: '0 0 16px', lineHeight: 1.3 }}>
-              {notesContent.title}
+              {lesson.title}
             </h2>
             <div style={{ display: 'grid', gap: 14 }}>
-              {notesContent.paragraphs.map((paragraph) => (
-                <p key={paragraph} style={{ color: 'rgba(255,255,255,0.72)', fontSize: 14, lineHeight: 1.75, margin: 0 }}>
+              {paragraphs.map((paragraph) => (
+                <p key={paragraph} style={{ color: 'rgba(255,255,255,0.72)', fontSize: 14, lineHeight: 1.75, margin: 0, whiteSpace: 'pre-wrap' }}>
                   {paragraph}
                 </p>
               ))}
@@ -79,7 +85,7 @@ export function LessonContentView({
         ) : !hasMaterials ? (
           <div className="lms-empty-state lms-empty-state--inline">
             <p className="lms-empty-state__copy">
-              No lesson notes have been published for this lesson yet. Instructor-uploaded materials will appear below when available.
+              No notes published yet for this lesson. Instructor materials will appear below when available.
             </p>
           </div>
         ) : null}

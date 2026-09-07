@@ -539,6 +539,76 @@ async function main() {
     })
   }
 
+  console.log("28. Faculty lessons API returns curriculum lessons")
+  const facultyLessons = await request(instructorJar, `/faculty/courses/${courseSlug}/lessons`)
+  assert(facultyLessons.response.ok, "Faculty should list course lessons")
+  assert(
+    facultyLessons.data.data.some((lesson: { lessonKey?: string }) => lesson.lessonKey === "l2"),
+    "Faculty lessons API should include l2",
+  )
+
+  console.log("29. Faculty can update lesson notes")
+  const facultyNotesUpdate = await request(
+    instructorJar,
+    `/faculty/courses/${courseSlug}/lessons/l2/notes`,
+    { method: "PATCH", csrf: true, body: { notesBody: "Analytics mindset notes from integration test." } },
+  )
+  assert(facultyNotesUpdate.response.ok, "Faculty should update lesson notes")
+  assert(
+    facultyNotesUpdate.data.data.notesBody.includes("Analytics mindset"),
+    "Updated notes should be returned",
+  )
+
+  console.log("30. Learner cannot update lesson notes")
+  const learnerNotesUpdate = await request(
+    studentJar,
+    `/faculty/courses/${courseSlug}/lessons/l2/notes`,
+    { method: "PATCH", csrf: true, body: { notesBody: "Learner tamper attempt" } },
+  )
+  assert(learnerNotesUpdate.response.status === 403, "Learner must not update lesson notes")
+
+  console.log("31. Unauthorized faculty cannot update lesson notes")
+  const scopedNotesUpdate = await request(
+    materialScopedFacultyJar,
+    `/faculty/courses/${courseSlug}/lessons/l2/notes`,
+    { method: "PATCH", csrf: true, body: { notesBody: "Scoped faculty tamper attempt" } },
+  )
+  assert(scopedNotesUpdate.response.status === 403, "Scoped faculty must not update lesson notes")
+
+  console.log("32. DB-backed notes returned to enrolled learner after unlock")
+  const workspaceAfterNotes = await request(studentJar, `/lms/courses/${courseSlug}`)
+  assert(workspaceAfterNotes.response.ok, "Workspace should load for enrolled learner")
+  const l2Lesson = workspaceAfterNotes.data.data.course.modules
+    .flatMap((module: { lessons: Array<{ id: string; notesBody?: string | null }> }) => module.lessons)
+    .find((lesson: { id: string }) => lesson.id === "l2")
+  assert(l2Lesson?.notesBody, "Unlocked learner should receive DB-backed notes in workspace")
+
+  console.log("33. Locked lesson notes withheld from workspace")
+  const lockedWorkspace = await request(userBJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { courseSlug },
+  })
+  assert(lockedWorkspace.response.status === 201 || lockedWorkspace.response.ok, "Second user should enroll")
+  const lockedWorkspaceView = await request(userBJar, `/lms/courses/${courseSlug}`)
+  const lockedL2 = lockedWorkspaceView.data.data.course.modules
+    .flatMap((module: { lessons: Array<{ id: string; notesBody?: string | null }> }) => module.lessons)
+    .find((lesson: { id: string }) => lesson.id === "l2")
+  assert(!lockedL2?.notesBody, "Locked lesson notes must not be exposed in workspace")
+
+  console.log("34. Assignment attachments do not claim fake download availability")
+  const assignmentLesson = await request(studentJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`)
+  if (assignmentLesson.response.ok && assignmentLesson.data.data.attachments?.length) {
+    const attachment = assignmentLesson.data.data.attachments[0]
+    assert(attachment.downloadAvailable === false, "Pending attachment must not claim download availability")
+    assert(attachment.storageStatus === "pending", "Pending attachment should report pending storage status")
+    assert(!attachment.downloadUrl, "Pending attachment must not include download URL")
+  }
+
+  console.log("35. Certificate download requires eligibility")
+  const certificateBlocked = await request(studentJar, `/lms/courses/${courseSlug}/certificate/download`)
+  assert(certificateBlocked.response.status === 409, "Ineligible learner must not download certificate")
+
   console.log("All LMS integration checks passed.")
   await prisma.$disconnect()
 }

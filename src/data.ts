@@ -8,6 +8,7 @@ export type CourseLesson = {
   duration?: string
   completed: boolean
   locked?: boolean
+  notesBody?: string | null
   media?: { provider: 'mux' | 'unavailable'; playbackId?: string }
 }
 

@@ -25,6 +25,7 @@ export type ApiCourseLesson = {
   title: string
   type: string | null
   duration?: string
+  notesBody?: string | null
   media?: { provider: "mux" | "unavailable"; playbackId?: string }
 }
 
@@ -223,11 +224,23 @@ export async function fetchCertificateState(slug: string) {
     data: {
       certificateEligible: boolean
       certificateStatus: string
+      certificateId: string
       allComplete: boolean
       requirements: Array<{ lessonKey: string; title: string; complete: boolean }>
     }
   }>(`/lms/courses/${slug}/certificate`)
   return result.data
+}
+
+export async function downloadCourseCertificate(slug: string): Promise<Blob> {
+  const response = await fetch(`${API_BASE}/lms/courses/${encodeURIComponent(slug)}/certificate/download`, {
+    credentials: "include",
+  })
+  if (!response.ok) {
+    const data = (await response.json()) as ApiError
+    throw new Error(data.error ?? "Certificate download failed")
+  }
+  return response.blob()
 }
 
 export function apiLessonStateToUi(state: ApiLessonState) {
@@ -256,6 +269,7 @@ export function workspaceToCourse(workspace: ApiCourseWorkspace): LmsCourseView 
         completed: workspace.lessonStates[lesson.id]?.complete ?? false,
         locked: workspace.lessonStates[lesson.id]?.locked ?? false,
         media: lesson.media,
+        notesBody: lesson.notesBody ?? null,
       })),
     })),
   }

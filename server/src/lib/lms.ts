@@ -19,6 +19,7 @@ export type FormattedLesson = {
   duration?: string
   locked?: boolean
   requiredLessonKey?: string | null
+  notesBody?: string | null
   media?: {
     provider: "mux" | "unavailable"
     playbackId?: string
@@ -128,6 +129,10 @@ export function formatCourseModules(
         locked: state?.locked ?? false,
         requiredLessonKey: state?.requiredLessonKey ?? null,
         media,
+        notesBody:
+          nodeTypeKey(node.nodeType) === "notes" && !state?.locked
+            ? node.notesBody ?? null
+            : null,
       }
     }),
   }))

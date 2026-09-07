@@ -1,4 +1,4 @@
-/** Demo reading content for notes-type LMS lessons (development seed copy only). */
+/** Seed-source copy for demo lesson notes (DB is authoritative at runtime). */
 export const DEMO_LESSON_NOTES: Record<string, Record<string, { title: string; paragraphs: string[] }>> = {
   "data-analytics": {
     l2: {
@@ -23,3 +23,5 @@ export const DEMO_LESSON_NOTES: Record<string, Record<string, { title: string; p
 export function getDemoLessonNotes(courseSlug: string, lessonKey: string) {
   return DEMO_LESSON_NOTES[courseSlug]?.[lessonKey] ?? null
 }
+
+/** @deprecated Runtime learner delivery uses DB-backed notes via LMS API. */

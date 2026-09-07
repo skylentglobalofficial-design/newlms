@@ -25,11 +25,11 @@ import {
   markLessonComplete,
   submitQuizAttempt,
   updateAssignment,
+  downloadCourseCertificate,
 } from '../lib/lms-api'
 
 import { roleRoute } from '../lib/auth-routing'
 import LessonMaterialsPanel from '../components/lms/LessonMaterialsPanel'
-import { getDemoLessonNotes } from '../demo/lesson-notes-content'
 
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
@@ -51,6 +51,7 @@ export default function LearnPage() {
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
   const [enrolling, setEnrolling] = useState(false)
   const [enrollError, setEnrollError] = useState<string | null>(null)
+  const [certificateDownloading, setCertificateDownloading] = useState(false)
 
   useEffect(() => {
     if (firstLessonId && !lessonId && access.status === 'ready') {
@@ -178,7 +179,10 @@ export default function LearnPage() {
   const tabAccent = getLmsTabAccent(selectedLesson ? defaultTabForLesson(selectedLesson) : 'video')
   const { prev, next } = getAdjacentLessons(allLessons, selectedLessonId)
   const certificateEligible = access.workspace.enrollment.certificateEligible
-  const demoNotes = slug && selectedLessonId ? getDemoLessonNotes(slug, selectedLessonId) : null
+  const notesContent =
+    selectedLesson?.type === 'notes' && selectedLesson.notesBody?.trim()
+      ? { body: selectedLesson.notesBody }
+      : null
   const showMaterialsPanel = Boolean(selectedLesson && !selectedState.locked && slug)
 
   function handleLessonSelect(id: string) {
@@ -269,9 +273,42 @@ export default function LearnPage() {
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: C.white, marginBottom: 8 }}>{course.title}</div>
               <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginBottom: 16 }}>
                 {certificateEligible
-                  ? 'You are eligible for a certificate. Download and issuance will be available in a later phase.'
+                  ? 'You have completed all course requirements. Download your certificate below.'
                   : 'Complete all requirements to unlock certificate eligibility.'}
               </div>
+              {certificateEligible && (
+                <button
+                  type="button"
+                  disabled={certificateDownloading}
+                  onClick={() => {
+                    if (!slug) return
+                    setCertificateDownloading(true)
+                    void downloadCourseCertificate(slug)
+                      .then((blob) => {
+                        const url = URL.createObjectURL(blob)
+                        const link = document.createElement('a')
+                        link.href = url
+                        link.download = `${slug}-certificate.pdf`
+                        link.click()
+                        URL.revokeObjectURL(url)
+                      })
+                      .catch(() => undefined)
+                      .finally(() => setCertificateDownloading(false))
+                  }}
+                  style={{
+                    background: roleAccent.primary,
+                    border: 'none',
+                    color: C.black,
+                    padding: '10px 18px',
+                    borderRadius: T.rControl,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    cursor: certificateDownloading ? 'wait' : 'pointer',
+                  }}
+                >
+                  {certificateDownloading ? 'Preparing…' : 'Download certificate'}
+                </button>
+              )}
             </div>
           )}
 
@@ -322,7 +359,7 @@ export default function LearnPage() {
                   onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
                   onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
                   lessonMedia={lessonMedia}
-                  notesContent={demoNotes}
+                  notesContent={notesContent}
                   hasMaterials={showMaterialsPanel}
                 />
                 {showMaterialsPanel && slug && (

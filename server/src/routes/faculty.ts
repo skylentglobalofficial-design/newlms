@@ -168,6 +168,135 @@ const materialUploadSchema = z.object({
   byteSize: z.number().int().min(1).max(50_000_000),
 })
 
+const notesBodySchema = z.object({
+  notesBody: z.string().max(50000),
+})
+
+function nodeTypeKey(nodeType: string): string {
+  return nodeType.toLowerCase()
+}
+
+facultyRouter.get(
+  "/courses/:slug/lessons",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  async (req: AuthenticatedRequest, res) => {
+    const slugParsed = slugParamSchema.safeParse(req.params)
+    if (!slugParsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    if (!canManageLessonMaterials(req, slugParsed.data.slug)) {
+      return res.status(403).json({ error: "Forbidden" })
+    }
+
+    try {
+      const course = await prisma.course.findUnique({
+        where: { slug: slugParsed.data.slug },
+        include: {
+          curriculum: {
+            orderBy: { order: "asc" },
+            include: { nodes: { orderBy: { order: "asc" } } },
+          },
+        },
+      })
+      if (!course) return res.status(404).json({ error: "Course not found" })
+
+      const lessons = course.curriculum.flatMap((module) =>
+        module.nodes.map((node) => ({
+          lessonKey: node.sourceId ?? `l${node.order + 1}`,
+          title: node.title,
+          type: nodeTypeKey(node.nodeType),
+          duration: node.duration ?? null,
+          moduleTitle: module.title,
+        })),
+      )
+
+      res.json({ data: lessons })
+    } catch (error) {
+      console.error("Failed to list faculty lessons:", error)
+      res.status(500).json({ error: "Failed to list faculty lessons" })
+    }
+  },
+)
+
+facultyRouter.get(
+  "/courses/:slug/lessons/:lessonKey/notes",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  async (req: AuthenticatedRequest, res) => {
+    const slugParsed = slugParamSchema.safeParse(req.params)
+    const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
+    if (!slugParsed.success || !lessonParsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    if (!canManageLessonMaterials(req, slugParsed.data.slug)) {
+      return res.status(403).json({ error: "Forbidden" })
+    }
+
+    try {
+      const context = await resolveFacultyLessonContext(slugParsed.data.slug, lessonParsed.data.lessonKey)
+      if (context.status !== 200) {
+        return res.status(context.status).json(context.body)
+      }
+
+      res.json({
+        data: {
+          lessonKey: lessonParsed.data.lessonKey,
+          title: context.node.title,
+          notesBody: context.node.notesBody ?? "",
+        },
+      })
+    } catch (error) {
+      console.error("Failed to load faculty lesson notes:", error)
+      res.status(500).json({ error: "Failed to load lesson notes" })
+    }
+  },
+)
+
+facultyRouter.patch(
+  "/courses/:slug/lessons/:lessonKey/notes",
+  requireAuth,
+  requireCsrf,
+  requireRoles("faculty", "superadmin"),
+  async (req: AuthenticatedRequest, res) => {
+    const slugParsed = slugParamSchema.safeParse(req.params)
+    const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
+    const bodyParsed = notesBodySchema.safeParse(req.body)
+    if (!slugParsed.success || !lessonParsed.success || !bodyParsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    if (!canManageLessonMaterials(req, slugParsed.data.slug)) {
+      return res.status(403).json({ error: "Forbidden" })
+    }
+
+    try {
+      const context = await resolveFacultyLessonContext(slugParsed.data.slug, lessonParsed.data.lessonKey)
+      if (context.status !== 200) {
+        return res.status(context.status).json(context.body)
+      }
+
+      const node = await prisma.curriculumNode.update({
+        where: { id: context.node.id },
+        data: { notesBody: bodyParsed.data.notesBody },
+      })
+
+      res.json({
+        data: {
+          lessonKey: lessonParsed.data.lessonKey,
+          title: node.title,
+          notesBody: node.notesBody ?? "",
+        },
+      })
+    } catch (error) {
+      console.error("Failed to update faculty lesson notes:", error)
+      res.status(500).json({ error: "Failed to update lesson notes" })
+    }
+  },
+)
+
 async function resolveFacultyLessonContext(courseSlug: string, lessonKey: string) {
   const located = await loadCourseLessonNode(courseSlug, lessonKey)
   if (located.error === "course_not_found") {
