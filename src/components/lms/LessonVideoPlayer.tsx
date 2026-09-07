@@ -1,6 +1,7 @@
 import { useEffect, useRef, createElement } from "react"
 import { C, T } from "../../tokens"
 import type { VideoPlaybackSource } from "../../lib/media/types"
+import { normalizeMuxPlaybackId, sanitizeVideoPlaybackSource } from "../../lib/media/mux-playback"
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
@@ -197,9 +198,22 @@ export default function LessonVideoPlayer({
   onMarkWatched?: () => void
 }) {
   if (media?.provider === "mux" && media.playbackId) {
+    const playbackId = normalizeMuxPlaybackId(media.playbackId)
+    if (!playbackId) {
+      return (
+        <VideoPreviewSurface
+          title={title}
+          duration={duration}
+          watched={watched}
+          accent={accent}
+          onMarkWatched={onMarkWatched}
+        />
+      )
+    }
+
     return (
       <MuxPlaybackSurface
-        playbackId={media.playbackId}
+        playbackId={playbackId}
         title={title}
         accent={accent}
         watched={watched}

@@ -17,6 +17,7 @@ import {
 import { useLmsCourse } from '../hooks/useLms'
 import LockedLessonState from '../components/lms/LockedLessonState'
 import type { VideoPlaybackSource } from '../lib/media/types'
+import { sanitizeVideoPlaybackSource } from '../lib/media/mux-playback'
 import {
   fetchCourseWorkspace,
   fetchLessonMedia,
@@ -83,10 +84,6 @@ export default function LearnPage() {
       ? (lessonStates[selectedLessonId]?.locked ?? false)
       : true
   const selectedLessonType = allLessons.find((lesson) => lesson.id === selectedLessonId)?.type
-  const selectedLessonFallbackMedia = useMemo(
-    () => allLessons.find((lesson) => lesson.id === selectedLessonId)?.media,
-    [allLessons, selectedLessonId],
-  )
   const lessonInitKey =
     access.status === 'ready'
       ? buildLessonInitKey({
@@ -102,14 +99,12 @@ export default function LearnPage() {
     selectedLessonId,
     selectedLessonType,
     selectedLessonLocked,
-    selectedLessonFallbackMedia,
   })
   lessonInitContextRef.current = {
     slug,
     selectedLessonId,
     selectedLessonType,
     selectedLessonLocked,
-    selectedLessonFallbackMedia,
   }
 
   useEffect(() => {
@@ -122,7 +117,6 @@ export default function LearnPage() {
       selectedLessonId: activeLessonId,
       selectedLessonType: activeLessonType,
       selectedLessonLocked: activeLessonLocked,
-      selectedLessonFallbackMedia: activeFallbackMedia,
     } = lessonInitContextRef.current
 
     if (!activeSlug || !activeLessonId) return
@@ -148,8 +142,8 @@ export default function LearnPage() {
 
     if (activeLessonType === 'video') {
       fetchLessonMedia(activeSlug, activeLessonId)
-        .then((payload) => setLessonMedia(payload.media))
-        .catch(() => setLessonMedia(activeFallbackMedia ?? { provider: 'unavailable' }))
+        .then((payload) => setLessonMedia(sanitizeVideoPlaybackSource(payload.media)))
+        .catch(() => setLessonMedia({ provider: 'unavailable' }))
     } else {
       setLessonMedia(undefined)
     }

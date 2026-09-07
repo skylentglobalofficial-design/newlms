@@ -24,10 +24,11 @@ import { fileURLToPath } from 'node:url'
 import bcrypt from 'bcrypt'
 
 import { courses, programs } from '../src/data.js'
-import { normalizeMuxPlaybackId } from '../server/src/lib/mux-playback.js'
+import { normalizeMuxPlaybackId } from '../src/lib/media/mux-playback.js'
 
 const repoRoot = resolve(fileURLToPath(new URL('.', import.meta.url)), '..')
 loadEnv({ path: resolve(repoRoot, '.env'), override: true })
+loadEnv({ path: resolve(repoRoot, '.env.local'), override: true })
 
 const prisma = new PrismaClient()
 const DEMO_PASSWORD = process.env.DEMO_USER_PASSWORD ?? 'DemoSkylent2026!'

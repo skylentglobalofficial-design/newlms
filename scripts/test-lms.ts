@@ -867,7 +867,7 @@ async function main() {
 
   console.log("54. Lesson media returns mux playback when configured")
   const { normalizeMuxPlaybackId, isConfiguredMuxPlaybackId } = await import(
-    "../server/src/lib/mux-playback.js"
+    "../src/lib/media/mux-playback.js"
   )
   const l1Node = await prisma.curriculumNode.findFirst({
     where: { sourceId: "l1", module: { course: { slug: courseSlug } } },
@@ -962,16 +962,21 @@ async function main() {
   assert(lockedKey === `${courseSlug}:l4:locked`, "Locked lessons should use locked init key")
 
   console.log("58. Mux playback ID normalization rejects placeholders and accepts public IDs")
+  const { normalizeMuxPlaybackId: normalizeMuxId } = await import("../src/lib/media/mux-playback.js")
   assert(
-    normalizeMuxPlaybackId("mux-qa-vertical-slice-playback") === null,
+    normalizeMuxId("mux-qa-vertical-slice-playback") === null,
     "Placeholder mux-* strings must not be treated as playback IDs",
   )
   assert(
-    normalizeMuxPlaybackId("https://stream.mux.com/AbCdEfGhIjKl0123456789.m3u8") === "AbCdEfGhIjKl0123456789",
+    normalizeMuxId("mux-seed-verification-playback") === null,
+    "Seed verification placeholders must not be treated as playback IDs",
+  )
+  assert(
+    normalizeMuxId("https://stream.mux.com/AbCdEfGhIjKl0123456789.m3u8") === "AbCdEfGhIjKl0123456789",
     "Mux HLS URLs should normalize to the playback ID",
   )
   assert(
-    normalizeMuxPlaybackId('"AbCdEfGhIjKl0123456789"') === "AbCdEfGhIjKl0123456789",
+    normalizeMuxId('"AbCdEfGhIjKl0123456789"') === "AbCdEfGhIjKl0123456789",
     "Wrapped playback IDs should normalize cleanly",
   )
 

@@ -50,3 +50,13 @@ export function isConfiguredMuxPlaybackId(
 ): boolean {
   return normalizeMuxPlaybackId(input) != null
 }
+
+export function sanitizeVideoPlaybackSource(
+  media?: { provider?: string; playbackId?: string } | null,
+): { provider: "mux" | "unavailable"; playbackId?: string } {
+  if (media?.provider === "mux") {
+    const playbackId = normalizeMuxPlaybackId(media.playbackId)
+    if (playbackId) return { provider: "mux", playbackId }
+  }
+  return { provider: "unavailable" }
+}
