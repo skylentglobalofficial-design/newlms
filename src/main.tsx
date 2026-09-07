@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import { bootstrapTheme } from './lib/theme-init'
 import './index.css'
+import './theme-overrides.css'
 
 bootstrapTheme()
 
