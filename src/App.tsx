@@ -45,7 +45,7 @@ import LearnPage from './pages/LearnPage'
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<PublicCanvas themeId="general"><Nav /><main id="main-content"><HomePage /></main></PublicCanvas>} />
+      <Route path="/" element={<PublicCanvas themeId="general" aurora><Nav /><main id="main-content"><HomePage /></main></PublicCanvas>} />
       <Route path="/education" element={<EducationPage />} />
       <Route path="/skills" element={<SkillsPage />} />
       <Route path="/career-os" element={<CareerOSPage />} />
@@ -67,7 +67,6 @@ function AppRoutes() {
       <Route path="/career-os/interviews" element={<LegacyCareerOsRedirect />} />
       <Route path="/career-os/interviews/:id" element={<LegacyCareerOsRedirect />} />
       <Route path="/career-os/support" element={<LegacyCareerOsRedirect />} />
-      <Route path="/career-os/support/:id" element={<LegacyCareerOsRedirect />} />
       <Route path="/institutions" element={<InstitutionsPage />} />
       <Route path="/os" element={<Navigate to="/login" replace />} />
       <Route path="/programs" element={<ProgramsPage />} />
