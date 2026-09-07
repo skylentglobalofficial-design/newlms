@@ -282,6 +282,30 @@ async function findCourseNode(courseSlug: string, sourceId: string) {
   })
 }
 
+function readDemoMuxPlaybackId(): string | undefined {
+  const value = process.env.MUX_DEMO_PLAYBACK_ID
+  if (value == null) return undefined
+  const normalized = value.replace(/\uFEFF/g, '').replace(/\r/g, '').trim()
+  return normalized || undefined
+}
+
+async function seedDemoLessonMuxPlayback() {
+  const node = await findCourseNode(DEMO_COURSE_SLUG, 'l1')
+  if (!node) return
+
+  const playbackId = readDemoMuxPlaybackId()
+  await prisma.curriculumNode.update({
+    where: { id: node.id },
+    data: { muxPlaybackId: playbackId ?? null },
+  })
+
+  if (playbackId) {
+    console.log(`Configured Mux playback for ${DEMO_COURSE_SLUG}/l1 (${node.title}).`)
+  } else {
+    console.log(`No MUX_DEMO_PLAYBACK_ID set; ${DEMO_COURSE_SLUG}/l1 video remains unavailable.`)
+  }
+}
+
 async function seedDemoLessonNotes() {
   const notesByLesson: Record<string, string> = {
     l2: [
@@ -877,6 +901,8 @@ async function main() {
 
   console.log("Seeding program-course links...")
   await seedProgramCourses()
+
+  await seedDemoLessonMuxPlayback()
 
   await seedDemoUsers()
 

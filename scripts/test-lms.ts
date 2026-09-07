@@ -865,6 +865,54 @@ async function main() {
   )
   assert(!crossAttachment, "Submission review must not expose attachments from another learner submission")
 
+  console.log("54. Lesson media returns mux playback when configured")
+  const l1Node = await prisma.curriculumNode.findFirst({
+    where: { sourceId: "l1", module: { course: { slug: courseSlug } } },
+    select: { id: true, muxPlaybackId: true },
+  })
+  assert(l1Node, "data-analytics/l1 should exist")
+  const originalPlaybackId = l1Node.muxPlaybackId
+  const qaPlaybackId = process.env.MUX_DEMO_PLAYBACK_ID?.trim() || "mux-qa-playback-contract"
+  await prisma.curriculumNode.update({
+    where: { id: l1Node.id },
+    data: { muxPlaybackId: qaPlaybackId },
+  })
+
+  const muxMedia = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l1/media`)
+  assert(muxMedia.response.ok, "Unlocked video lesson media should load")
+  assert(muxMedia.data.data.media.provider === "mux", "Configured lesson should report mux provider")
+  assert(muxMedia.data.data.media.playbackId === qaPlaybackId, "Playback ID should round-trip")
+
+  console.log("55. Lesson media unavailable without playback ID")
+  await prisma.curriculumNode.update({
+    where: { id: l1Node.id },
+    data: { muxPlaybackId: null },
+  })
+  const unavailableMedia = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l1/media`)
+  assert(unavailableMedia.response.ok, "Media endpoint should succeed without playback ID")
+  assert(
+    unavailableMedia.data.data.media.provider === "unavailable",
+    "Missing playback ID should report unavailable media",
+  )
+
+  await prisma.curriculumNode.update({
+    where: { id: l1Node.id },
+    data: { muxPlaybackId: originalPlaybackId },
+  })
+
+  console.log("56. Locked lesson video media forbidden")
+  const lockedMuxJar: CookieJar = new Map()
+  await signupUser(lockedMuxJar, "locked-mux")
+  const lockedMuxEnroll = await request(lockedMuxJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { courseSlug },
+  })
+  assert(lockedMuxEnroll.response.status === 201 || lockedMuxEnroll.response.ok, "Locked mux enroll should succeed")
+  const lockedMuxMedia = await request(lockedMuxJar, `/lms/courses/${courseSlug}/lessons/l4/media`)
+  assert(lockedMuxMedia.response.status === 403, "Locked video lesson media must be forbidden")
+  assert(lockedMuxMedia.data.error === "Lesson locked", "Locked media should return lesson locked error")
+
   console.log("All LMS integration checks passed.")
   await prisma.$disconnect()
 }
