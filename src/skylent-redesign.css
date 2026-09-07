@@ -1,9 +1,7 @@
 /*
  * Skylent Global — master visual redesign layer
- *
- * This stylesheet is intentionally additive: it establishes the new visual
- * direction without touching product/backend behaviour. It also fixes the
- * Aurora stacking/background problem at the public-canvas level.
+ * Additive visual system: preserves product/backend behaviour while replacing
+ * the weak theme/atmosphere treatment with a coherent editorial system.
  */
 
 :root {
@@ -38,7 +36,7 @@
   --skylent-nav-bg: rgba(243, 235, 221, 0.96);
 }
 
-/* ── Continuous public canvas + Aurora ───────────────────────────────────── */
+/* ── Continuous public canvas + real atmospheric layer ───────────────────── */
 .skylent-public-canvas {
   position: relative !important;
   isolation: isolate;
@@ -48,8 +46,6 @@
   overflow: clip;
 }
 
-/* A persistent atmospheric field. It is deliberately a separate layer so
-   section backgrounds cannot accidentally erase Aurora. */
 .skylent-public-canvas::before {
   content: "";
   position: absolute;
@@ -77,45 +73,35 @@
   z-index: 1;
 }
 
-/* Section wrappers using the semantic canvas are transparent so the global
-   atmospheric field remains visible. Explicit light/dark/custom backgrounds
-   are intentionally left alone. */
+/* Canvas-tone sections previously painted an opaque canvas over Aurora. */
 .skylent-public-canvas section[style*="var(--skylent-canvas)"] {
   background: transparent !important;
 }
 
-/* Inline Aurora instances remain useful for domain/hero accents, but cannot
-   disappear behind the content wrapper. */
+.skylent-public-canvas .marketing-hero-section[style*="var(--skylent-canvas)"] {
+  background: transparent !important;
+}
+
 .skylent-public-canvas .skylent-aurora {
   z-index: 0 !important;
   opacity: 1 !important;
 }
 
-.skylent-public-canvas .skylent-aurora > div:first-child {
-  opacity: 0.92;
-}
+.skylent-public-canvas .skylent-aurora > div:first-child { opacity: 0.92; }
+.skylent-public-canvas .skylent-aurora > div:nth-child(2) { opacity: 0.82; }
 
-.skylent-public-canvas .skylent-aurora > div:nth-child(2) {
-  opacity: 0.82;
-}
-
-/* ── Light mode: warm editorial paper ────────────────────────────────────── */
+/* ── Theme canvases ───────────────────────────────────────────────────────── */
 [data-theme="light"] body,
 [data-theme="light"] .skylent-public-canvas {
   background-color: #f3ebdd !important;
 }
 
-[data-theme="light"] .skylent-public-canvas section[style*="var(--skylent-canvas)"] {
-  color: #171411 !important;
-}
-
-/* ── Dark mode: deep blue-black rather than dead black ───────────────────── */
 [data-theme="dark"] body,
 [data-theme="dark"] .skylent-public-canvas {
   background-color: #07080a !important;
 }
 
-/* ── Navigation ───────────────────────────────────────────────────────────── */
+/* ── Navigation / dropdowns ───────────────────────────────────────────────── */
 .skylent-nav-dropdown {
   background: rgba(12, 14, 18, 0.98) !important;
   border: 1px solid rgba(255, 255, 255, 0.13) !important;
@@ -130,11 +116,29 @@
   box-shadow: 0 20px 55px rgba(57, 45, 31, 0.12) !important;
 }
 
-/* Dropdown content must remain readable instead of allowing the page behind
-   it to visually bleed through. */
-[data-theme="dark"] .skylent-nav-dropdown,
-[data-theme="dark"] .skylent-nav-dropdown * {
-  color-scheme: dark;
+[data-theme="light"] .skylent-public-canvas nav a,
+[data-theme="light"] .skylent-public-canvas nav button {
+  color: var(--skylent-text);
+}
+
+[data-theme="light"] .skylent-nav-dropdown a,
+[data-theme="light"] .skylent-nav-dropdown button {
+  color: var(--skylent-text) !important;
+}
+
+[data-theme="dark"] .skylent-nav-dropdown a,
+[data-theme="dark"] .skylent-nav-dropdown button {
+  color: var(--skylent-text) !important;
+}
+
+[data-theme="light"] .skylent-nav-dropdown a:hover,
+[data-theme="light"] .skylent-nav-dropdown-head:hover {
+  background: rgba(23, 20, 17, 0.045) !important;
+}
+
+[data-theme="dark"] .skylent-nav-dropdown a:hover,
+[data-theme="dark"] .skylent-nav-dropdown-head:hover {
+  background: rgba(255, 255, 255, 0.055) !important;
 }
 
 /* ── Theme control ────────────────────────────────────────────────────────── */
@@ -149,6 +153,7 @@
   min-width: 2.35rem !important;
   padding: 7px 8px !important;
   border-radius: 7px !important;
+  color: var(--skylent-text-muted) !important;
 }
 
 .skylent-theme-toggle-btn[aria-pressed="true"] {
@@ -169,32 +174,131 @@
   text-wrap: pretty;
 }
 
-/* ── Buttons ──────────────────────────────────────────────────────────────── */
+/* ── Ecosystem map: product architecture, not a generic tab list ─────────── */
+.ecosystem-map-hero { position: relative; }
+.ecosystem-map-intro { max-width: 780px; }
+
+.ecosystem-map-flow-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 42px 0 30px;
+  padding: 13px 16px;
+  border-top: 1px solid var(--skylent-border-subtle);
+  border-bottom: 1px solid var(--skylent-border-subtle);
+  color: var(--skylent-text-muted);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.ecosystem-map-flow-banner::-webkit-scrollbar { display: none; }
+
+.ecosystem-map-flow-banner-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.ecosystem-map-flow-banner-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--skylent-text-muted);
+}
+
+.ecosystem-map-flow-banner-label.is-active {
+  color: var(--skylent-accent) !important;
+}
+
+.ecosystem-map-flow-banner-arrow,
+.ecosystem-map-flow-connector {
+  color: var(--skylent-text-muted) !important;
+}
+
+.ecosystem-map-explorer {
+  border-top: 1px solid var(--skylent-border-subtle);
+  border-bottom: 1px solid var(--skylent-border-subtle);
+}
+
+.ecosystem-map-nav { background: transparent !important; }
+
+.ecosystem-map-pillar-tab {
+  border-radius: 0 !important;
+  border-top: 1px solid transparent !important;
+  border-bottom: 1px solid transparent !important;
+  border-right: 0 !important;
+  transition: background 160ms ease, border-color 160ms ease, padding 160ms ease !important;
+}
+
+[data-theme="light"] .ecosystem-map-pillar-tab.is-selected {
+  background: rgba(99, 102, 241, 0.075) !important;
+}
+
+[data-theme="dark"] .ecosystem-map-pillar-tab.is-selected {
+  background: rgba(129, 140, 248, 0.085) !important;
+}
+
+.ecosystem-map-pillar-tab:hover {
+  background: var(--skylent-surface) !important;
+}
+
+.ecosystem-map-pillar-step {
+  font-family: var(--font-mono);
+  color: var(--skylent-text-muted) !important;
+  letter-spacing: 0.08em;
+}
+
+.ecosystem-map-panel {
+  background: var(--skylent-elevated) !important;
+  border-left: 1px solid var(--skylent-border-subtle);
+}
+
+[data-theme="light"] .ecosystem-map-panel {
+  background: rgba(251, 246, 237, 0.72) !important;
+}
+
+.skills-explorer-panel-inner {
+  padding: clamp(26px, 4vw, 46px) !important;
+}
+
+.skills-explorer-panel-tagline {
+  font-size: clamp(17px, 2vw, 21px) !important;
+  line-height: 1.45 !important;
+}
+
+.skills-explorer-chip {
+  background: transparent !important;
+  border-color: var(--skylent-border) !important;
+  color: var(--skylent-text-secondary) !important;
+}
+
+/* ── Quiet controls / public buttons ─────────────────────────────────────── */
 .skylent-public-canvas button {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Keep primary CTAs crisp rather than pill-like/glowing. */
 .skylent-public-canvas button[style*="background"] {
   transition: transform 160ms ease, opacity 160ms ease, border-color 160ms ease, background-color 160ms ease !important;
 }
 
-/* ── Reduce generic card-heavy appearance ────────────────────────────────── */
-.skylent-public-canvas .skylent-nav-dropdown,
-.skylent-public-canvas .contextual-nav-panel {
-  border-radius: 14px;
+/* ── Mobile ───────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .ecosystem-map-panel {
+    border-left: 0;
+    border-top: 1px solid var(--skylent-border-subtle);
+  }
 }
 
-/* ── Mobile ───────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .skylent-public-canvas::before {
     background-size: 160% 620px, 150% 560px, 140% 520px;
     background-position: -20% 0, 120% 0, 50% 0;
   }
 
-  .skylent-public-canvas {
-    overflow-x: clip;
-  }
+  .skylent-public-canvas { overflow-x: clip; }
+  .ecosystem-map-flow-banner { margin-top: 32px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
