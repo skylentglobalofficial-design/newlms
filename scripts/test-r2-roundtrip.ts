@@ -1,6 +1,12 @@
-import "dotenv/config"
+import { config as loadEnv } from "dotenv"
+import { resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 import { PrismaClient } from "@prisma/client"
-import { isObjectStorageConfigured } from "../server/src/lib/object-storage.js"
+
+const repoRoot = resolve(fileURLToPath(new URL(".", import.meta.url)), "..")
+loadEnv({ path: resolve(repoRoot, ".env"), override: true })
+
+const { isObjectStorageConfigured } = await import("../server/src/lib/object-storage.js")
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
