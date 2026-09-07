@@ -168,7 +168,7 @@ function EducationJourneySection() {
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
               </div>
-              <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 8px', fontSize: 'clamp(22px, 2.5vw, 28px)' }}>
+              <h3 className="skylent-display-sm" style={{ color: 'var(--skylent-text)', margin: '0 0 8px', fontSize: 'clamp(22px, 2.5vw, 28px)' }}>
                 {stage.title}
               </h3>
               <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14, lineHeight: 1.65, margin: 0, maxWidth: 280 }}>
@@ -216,7 +216,7 @@ function SchoolingSection() {
                 }}
               >
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, margin: '0 auto 6px' }} />
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 600, color: C.white }}>{band}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 600, color: 'var(--skylent-text)' }}>{band}</div>
                 <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2 }}>Gr {grades}</div>
               </div>
             ))}
@@ -274,12 +274,12 @@ function SchoolingSection() {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white }}>{band}</span>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: 'var(--skylent-text)' }}>{band}</span>
                     <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>Grade {grades}</span>
                   </div>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     {subjects.map(s => (
-                      <span key={s} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>{s}</span>
+                      <span key={s} style={{ color: 'var(--skylent-text-muted)', fontSize: 12 }}>{s}</span>
                     ))}
                   </div>
                 </div>
@@ -395,7 +395,7 @@ function UndergraduateSection() {
                   borderRight: i < 2 ? `1px solid ${T.lineDark}` : 'none',
                 }}
               >
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{value}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 3 }}>{value}</div>
                 <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>{label}</div>
               </div>
             ))}
@@ -422,14 +422,14 @@ function PostgraduateSection() {
       <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col">
         <FadeIn>
           <Eyebrow tone="dark">Postgraduate</Eyebrow>
-          <h2 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 24px', lineHeight: 1.02 }}>
+          <h2 className="skylent-display-lg" style={{ color: 'var(--skylent-text)', margin: '20px 0 24px', lineHeight: 1.02 }}>
             Specialisation.<br />Mastery.<br />Leadership.
           </h2>
           <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 420 }}>
             For advanced learners, working professionals, and researchers. Deep, case-driven programs designed around professional outcomes — not just academic completion.
           </p>
           <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 12 }}>Program structure</div>
-          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.03em', lineHeight: 1.9, margin: '0 0 28px' }}>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--skylent-text-muted)', letterSpacing: '0.03em', lineHeight: 1.9, margin: '0 0 28px' }}>
             Program → Specialization → Advanced Modules → Cases → Projects → Professional Outcomes
           </p>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -457,8 +457,8 @@ function PostgraduateSection() {
                   {String(i + 1).padStart(2, '0')}
                 </div>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 4 }}>{name}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.55 }}>{desc}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 4 }}>{name}</div>
+                  <div style={{ color: 'var(--skylent-text-muted)', fontSize: 14, lineHeight: 1.55 }}>{desc}</div>
                 </div>
               </div>
             ))}
@@ -556,7 +556,7 @@ function ProgramDiscoverySection() {
               </div>
               <div style={{ paddingTop: 24 }}>
                 <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Exam Preparation</div>
-                <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 12px' }}>{FEATURED_PROGRAM.name}</h3>
+                <h3 className="skylent-display-sm" style={{ color: 'var(--skylent-text)', margin: '0 0 12px' }}>{FEATURED_PROGRAM.name}</h3>
                 <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>
                   {FEATURED_PROGRAM.desc}
                 </p>
@@ -569,7 +569,7 @@ function ProgramDiscoverySection() {
                   ].map(({ k, v }) => (
                     <div key={k}>
                       <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>{k}</div>
-                      <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                      <div style={{ color: 'var(--skylent-text)', fontSize: 14, fontWeight: 500 }}>{v}</div>
                     </div>
                   ))}
                 </div>
@@ -606,11 +606,11 @@ function ProgramDiscoverySection() {
                     <MediaImage src={photo} alt="" aspect="4/3" radius={8} />
                   </div>
                   <div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 4 }}>{program.name}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{program.duration} · {program.outcome}</div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 4 }}>{program.name}</div>
+                    <div style={{ color: 'var(--skylent-text-muted)', fontSize: 12 }}>{program.duration} · {program.outcome}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: 'var(--skylent-text)' }}>₹{price.toLocaleString('en-IN')}</div>
                     <div style={{ color: accent.textMuted, fontSize: 11, marginTop: 2 }}>→</div>
                   </div>
                 </Link>
@@ -664,9 +664,9 @@ function CompetitiveExamsSection() {
             <FadeIn key={exam.name} delay={ei * 70}>
               <div style={{ padding: '28px 0', borderTop: `1px solid ${T.lineDark}` }}>
                 <div style={{ marginBottom: 20 }}>
-                  <div className="skylent-display-sm" style={{ color: C.white, margin: '0 0 4px' }}>{exam.name}</div>
+                  <div className="skylent-display-sm" style={{ color: 'var(--skylent-text)', margin: '0 0 4px' }}>{exam.name}</div>
                   <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{exam.full}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)', marginTop: 6 }}>{exam.target}</div>
+                  <div style={{ color: 'var(--skylent-text-muted)', fontSize: 12, fontFamily: 'var(--font-mono)', marginTop: 6 }}>{exam.target}</div>
                 </div>
 
                 <div style={{ marginBottom: 20, minHeight: 220 }}>
@@ -682,7 +682,7 @@ function CompetitiveExamsSection() {
                     <div key={name} style={{ padding: '14px 0', borderBottom: `1px solid ${T.lineDark}` }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                         <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0 }} />
-                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{name}</span>
+                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--skylent-text)' }}>{name}</span>
                       </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                         {topics.map(t => (
@@ -695,7 +695,7 @@ function CompetitiveExamsSection() {
 
                 <div style={{ paddingTop: 16, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
                   {exam.features.map(f => (
-                    <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span key={f} style={{ color: 'var(--skylent-text-muted)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, opacity: 0.7 }} />
                       {f}
                     </span>
@@ -712,12 +712,12 @@ function CompetitiveExamsSection() {
           <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 20 }}>MBA entrance — section-oriented</div>
           <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 'clamp(24px,4vw,48px)', alignItems: 'start' }} className="two-col-sm education-cat-grid">
             <div>
-              <div className="skylent-display-md" style={{ color: C.white, margin: '0 0 4px', fontSize: 'clamp(36px,4vw,48px)' }}>CAT</div>
+              <div className="skylent-display-md" style={{ color: 'var(--skylent-text)', margin: '0 0 4px', fontSize: 'clamp(36px,4vw,48px)' }}>CAT</div>
               <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{CAT_SECTION.full}</div>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)', marginBottom: 16 }}>{CAT_SECTION.target}</div>
+              <div style={{ color: 'var(--skylent-text-muted)', fontSize: 12, fontFamily: 'var(--font-mono)', marginBottom: 16 }}>{CAT_SECTION.target}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {CAT_SECTION.features.map(f => (
-                  <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span key={f} style={{ color: 'var(--skylent-text-muted)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, opacity: 0.7 }} />
                     {f}
                   </span>
@@ -764,7 +764,7 @@ function CompetitiveExamsSection() {
             <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 10 }}>More exams — coming soon</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {OTHER_EXAMS.map(e => (
-                <span key={e} style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{e}</span>
+                <span key={e} style={{ color: 'var(--skylent-text-muted)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{e}</span>
               ))}
             </div>
           </div>
@@ -823,13 +823,13 @@ function ValueSection() {
               className="education-value-row"
             >
               <div>
-                <h3 className="skylent-display-sm" style={{ color: C.white, margin: 0, fontSize: 'clamp(22px, 2.5vw, 28px)' }}>{title}</h3>
+                <h3 className="skylent-display-sm" style={{ color: 'var(--skylent-text)', margin: 0, fontSize: 'clamp(22px, 2.5vw, 28px)' }}>{title}</h3>
               </div>
               <div>
                 <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 16px', maxWidth: 560 }}>{desc}</p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 20px' }}>
                   {points.map(p => (
-                    <span key={p} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span key={p} style={{ color: 'var(--skylent-text-muted)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, flexShrink: 0 }} />
                       {p}
                     </span>
@@ -883,7 +883,7 @@ function ValueSection() {
                   <div style={{ width: 6, height: 6, borderRadius: '50%', background: current ? accent.primary : 'rgba(255,255,255,0.25)', flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
                     <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: current ? accent.text : C.white }}>{name}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginTop: 2 }}>{desc}</div>
+                    <div style={{ color: 'var(--skylent-text-muted)', fontSize: 13, marginTop: 2 }}>{desc}</div>
                   </div>
                   {!current && <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 16 }}>→</span>}
                 </button>

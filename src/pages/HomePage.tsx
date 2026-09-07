@@ -97,7 +97,7 @@ function CoverageSection() {
                 <div className="skylent-label" style={{ color: pillar.theme.text, marginBottom: 14 }}>
                   {String(i + 1).padStart(2, '0')}
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(20px, 2.4vw, 28px)', fontWeight: 600, color: C.white, marginBottom: 8, letterSpacing: '-0.02em' }}>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(20px, 2.4vw, 28px)', fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 8, letterSpacing: '-0.02em' }}>
                   {pillar.label}
                 </div>
                 <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 14, lineHeight: 1.45 }}>{pillar.sub}</div>
@@ -178,7 +178,7 @@ function EducationSection() {
                   <MediaImage src={stage.photo} alt="" aspect="1/1" radius={8} />
                 </div>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 3 }}>{stage.label}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 3 }}>{stage.label}</div>
                   <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>{stage.sub}</div>
                 </div>
                 <span style={{ color: eduAccent.text, fontSize: 13, fontWeight: 500 }}>View</span>
@@ -312,7 +312,7 @@ function CareerSection() {
                   </div>
                   <div>
                     <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 3 }}>{row.label}</div>
-                    <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{row.title}</div>
+                    <div style={{ color: 'var(--skylent-text)', fontSize: 14, fontWeight: 600 }}>{row.title}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: 12, marginTop: 2 }}>{row.sub}</div>
                   </div>
                 </div>
@@ -321,10 +321,10 @@ function CareerSection() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, padding: '14px 0', alignItems: 'center' }}>
                   <div>
                     <div style={{ fontSize: 11, color: careerAccent.text, marginBottom: 3 }}>Open role</div>
-                    <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{sampleJob.role}</div>
+                    <div style={{ color: 'var(--skylent-text)', fontSize: 14, fontWeight: 600 }}>{sampleJob.role}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: 12, marginTop: 2 }}>{sampleJob.company} · {sampleJob.mode}</div>
                   </div>
-                  <div style={{ background: careerAccent.primary, color: C.white, borderRadius: 6, padding: '8px 14px', fontSize: 11, fontWeight: 600 }}>Apply</div>
+                  <div style={{ background: careerAccent.primary, color: 'var(--skylent-text)', borderRadius: 6, padding: '8px 14px', fontSize: 11, fontWeight: 600 }}>Apply</div>
                 </div>
               )}
             </div>
@@ -336,7 +336,7 @@ function CareerSection() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px 16px', marginBottom: 28 }}>
             {journey.map((step) => (
               <div key={step.label} style={{ padding: '12px 0', minWidth: 0, textAlign: 'center' }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{step.label}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--skylent-text)' }}>{step.label}</div>
                 <div style={{ color: 'var(--text-muted)', fontSize: 11, marginTop: 3 }}>{step.sub}</div>
               </div>
             ))}
@@ -405,7 +405,7 @@ function InstitutionsSection() {
                   {String(i + 1).padStart(2, '0')}
                 </div>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 3 }}>{step.label}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 3 }}>{step.label}</div>
                   <div style={{ color: 'var(--text-muted)', fontSize: 12.5 }}>{step.sub}</div>
                 </div>
               </div>
@@ -493,7 +493,7 @@ function ProgramDiscoverySection() {
             </div>
             <div style={{ paddingTop: 24 }}>
               <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{TYPE_LABELS[FEATURED_PROGRAM.programType]}</div>
-              <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 12px' }}>{FEATURED_PROGRAM.name}</h3>
+              <h3 className="skylent-display-sm" style={{ color: 'var(--skylent-text)', margin: '0 0 12px' }}>{FEATURED_PROGRAM.name}</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>{FEATURED_PROGRAM.desc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 20 }}>
                 {[
@@ -504,7 +504,7 @@ function ProgramDiscoverySection() {
                 ].map(({ k, v }) => (
                   <div key={k}>
                     <div className="skylent-label" style={{ color: 'var(--text-muted)', marginBottom: 4 }}>{k}</div>
-                    <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                    <div style={{ color: 'var(--skylent-text)', fontSize: 14, fontWeight: 500 }}>{v}</div>
                   </div>
                 ))}
               </div>
@@ -520,7 +520,7 @@ function ProgramDiscoverySection() {
             if (!count) return null
             return (
               <div key={cat.label} style={{ padding: '14px 0', borderBottom: `1px solid ${T.lineDark}` }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 4 }}>{cat.label}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 4 }}>{cat.label}</div>
                 <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>{count} program{count !== 1 ? 's' : ''} in catalog</div>
               </div>
             )
@@ -550,11 +550,11 @@ function ProgramDiscoverySection() {
                     <MediaImage src={photo} alt="" aspect="4/3" radius={8} />
                   </div>
                   <div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{program.name}</div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 3 }}>{program.name}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: 11.5 }}>{TYPE_LABELS[program.programType]} · {program.duration}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--skylent-text)' }}>₹{price.toLocaleString('en-IN')}</div>
                   </div>
                 </Link>
               )

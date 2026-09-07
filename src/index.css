@@ -33,34 +33,106 @@
   --type-caption: 10px;
 
   /* Layout */
-  --section-pad: clamp(88px, 12vw, 140px);
-  --section-pad-sm: clamp(64px, 8vw, 96px);
+  --section-pad: clamp(96px, 13vw, 152px);
+  --section-pad-sm: clamp(72px, 9vw, 104px);
   --gutter: clamp(20px, 5vw, 32px);
   --max-w: 1240px;
   --max-w-content: 1080px;
   --max-w-reading: 720px;
   --nav-h: 64px;
 
-  /* Readable text hierarchy on dark canvas */
-  --text-primary: rgba(255, 255, 255, 0.94);
-  --text-secondary: rgba(255, 255, 255, 0.72);
-  --text-muted: rgba(255, 255, 255, 0.56);
+  /* Semantic theme — dark default (matches historical product identity) */
+  --skylent-canvas: #08080a;
+  --skylent-surface: rgba(255, 255, 255, 0.025);
+  --skylent-elevated: rgba(255, 255, 255, 0.045);
+  --skylent-glass-bg: rgba(255, 255, 255, 0.04);
+  --skylent-text: rgba(255, 255, 255, 0.92);
+  --skylent-text-secondary: rgba(255, 255, 255, 0.68);
+  --skylent-text-muted: rgba(255, 255, 255, 0.48);
+  --skylent-border: rgba(255, 255, 255, 0.1);
+  --skylent-border-subtle: rgba(255, 255, 255, 0.06);
+  --skylent-accent: #818cf8;
+  --skylent-accent-foreground: #08080a;
+  --skylent-input-bg: rgba(255, 255, 255, 0.04);
+  --skylent-input-border: rgba(255, 255, 255, 0.12);
+  --skylent-card-bg: rgba(255, 255, 255, 0.03);
+  --skylent-nav-bg: rgba(8, 8, 10, 0.88);
+  --skylent-footer-bg: #050505;
+  --skylent-focus-ring: rgba(129, 140, 248, 0.55);
+  --skylent-success-surface: rgba(34, 197, 94, 0.1);
+  --skylent-warning-surface: rgba(245, 158, 11, 0.1);
+  --skylent-error-surface: rgba(239, 68, 68, 0.1);
+  --skylent-aurora-opacity: 0.42;
 
-  /* ── Skylent Glass System ───────────────────────────────────────────────── */
-  --glass-01-bg: rgba(11, 13, 15, 0.72);
-  --glass-01-border: rgba(255, 255, 255, 0.09);
-  --glass-01-blur: blur(20px);
-  --glass-01-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+  /* Legacy aliases — map to semantic tokens */
+  --color-canvas: var(--skylent-canvas);
+  --text-primary: var(--skylent-text);
+  --text-secondary: var(--skylent-text-secondary);
+  --text-muted: var(--skylent-text-muted);
 
-  --glass-02-bg: rgba(255, 255, 255, 0.045);
-  --glass-02-border: rgba(255, 255, 255, 0.09);
-  --glass-02-blur: blur(12px);
-  --glass-02-shadow: 0 4px 32px rgba(0, 0, 0, 0.22);
+  /* Restrained glass — used sparingly */
+  --glass-01-bg: var(--skylent-nav-bg);
+  --glass-01-border: var(--skylent-border-subtle);
+  --glass-01-blur: blur(14px);
+  --glass-01-shadow: none;
 
-  --glass-03-bg: rgba(255, 255, 255, 0.04);
-  --glass-03-border: rgba(255, 255, 255, 0.08);
-  --glass-03-blur: blur(28px);
-  --glass-03-shadow: 0 24px 80px rgba(0, 0, 0, 0.40);
+  --glass-02-bg: var(--skylent-surface);
+  --glass-02-border: var(--skylent-border-subtle);
+  --glass-02-blur: blur(10px);
+  --glass-02-shadow: none;
+
+  --glass-03-bg: var(--skylent-elevated);
+  --glass-03-border: var(--skylent-border-subtle);
+  --glass-03-blur: blur(12px);
+  --glass-03-shadow: none;
+}
+
+[data-theme="light"] {
+  --skylent-canvas: #f3ede3;
+  --skylent-surface: #f8f4ec;
+  --skylent-elevated: #faf6ef;
+  --skylent-glass-bg: rgba(26, 23, 20, 0.03);
+  --skylent-text: #1a1714;
+  --skylent-text-secondary: #4a4540;
+  --skylent-text-muted: #7a746c;
+  --skylent-border: rgba(26, 23, 20, 0.12);
+  --skylent-border-subtle: rgba(26, 23, 20, 0.07);
+  --skylent-accent: #6366f1;
+  --skylent-accent-foreground: #faf6ef;
+  --skylent-input-bg: rgba(26, 23, 20, 0.03);
+  --skylent-input-border: rgba(26, 23, 20, 0.14);
+  --skylent-card-bg: rgba(26, 23, 20, 0.02);
+  --skylent-nav-bg: rgba(243, 237, 227, 0.92);
+  --skylent-footer-bg: #ebe4d8;
+  --skylent-focus-ring: rgba(99, 102, 241, 0.45);
+  --skylent-success-surface: rgba(22, 163, 74, 0.08);
+  --skylent-warning-surface: rgba(217, 119, 6, 0.08);
+  --skylent-error-surface: rgba(220, 38, 38, 0.08);
+  --skylent-aurora-opacity: 0.22;
+}
+
+[data-theme="dark"] {
+  --skylent-canvas: #08080a;
+  --skylent-surface: rgba(255, 255, 255, 0.025);
+  --skylent-elevated: rgba(255, 255, 255, 0.045);
+  --skylent-glass-bg: rgba(255, 255, 255, 0.04);
+  --skylent-text: rgba(255, 255, 255, 0.92);
+  --skylent-text-secondary: rgba(255, 255, 255, 0.68);
+  --skylent-text-muted: rgba(255, 255, 255, 0.48);
+  --skylent-border: rgba(255, 255, 255, 0.1);
+  --skylent-border-subtle: rgba(255, 255, 255, 0.06);
+  --skylent-accent: #818cf8;
+  --skylent-accent-foreground: #08080a;
+  --skylent-input-bg: rgba(255, 255, 255, 0.04);
+  --skylent-input-border: rgba(255, 255, 255, 0.12);
+  --skylent-card-bg: rgba(255, 255, 255, 0.03);
+  --skylent-nav-bg: rgba(8, 8, 10, 0.88);
+  --skylent-footer-bg: #050505;
+  --skylent-focus-ring: rgba(129, 140, 248, 0.55);
+  --skylent-success-surface: rgba(34, 197, 94, 0.1);
+  --skylent-warning-surface: rgba(245, 158, 11, 0.1);
+  --skylent-error-surface: rgba(239, 68, 68, 0.1);
+  --skylent-aurora-opacity: 0.42;
 }
 
 * {
@@ -73,12 +145,13 @@ html {
 
 body {
   font-family: var(--font-body);
-  background-color: var(--color-canvas);
-  color: var(--text-primary);
+  background-color: var(--skylent-canvas);
+  color: var(--skylent-text);
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 button,
@@ -98,16 +171,84 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-  -webkit-text-fill-color: #fff;
-  -webkit-box-shadow: 0 0 0 1000px rgba(11, 13, 15, 0.92) inset;
+  -webkit-text-fill-color: var(--skylent-text);
+  -webkit-box-shadow: 0 0 0 1000px var(--skylent-input-bg) inset;
   transition: background-color 5000s ease-in-out 0s;
-  caret-color: #fff;
+  caret-color: var(--skylent-text);
 }
 
-/* Public page shell — continuous near-black canvas */
+/* Public page shell */
 .skylent-public-canvas {
-  background-color: var(--color-canvas);
-  color: #ffffff;
+  background-color: var(--skylent-canvas);
+  color: var(--skylent-text);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.skylent-theme-text {
+  color: var(--skylent-text);
+}
+
+.skylent-theme-text-secondary {
+  color: var(--skylent-text-secondary);
+}
+
+.skylent-theme-text-muted {
+  color: var(--skylent-text-muted);
+}
+
+.skylent-aurora,
+.skylent-aurora-band {
+  opacity: var(--skylent-aurora-opacity);
+}
+
+.skylent-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  border: 1px solid var(--skylent-border-subtle);
+  background: var(--skylent-surface);
+}
+
+.skylent-theme-toggle-btn {
+  border: none;
+  background: transparent;
+  color: var(--skylent-text-muted);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  line-height: 1;
+  min-width: 2.25rem;
+}
+
+.skylent-theme-toggle-btn[aria-pressed="true"] {
+  background: var(--skylent-elevated);
+  color: var(--skylent-text);
+}
+
+.skylent-theme-toggle-btn:focus-visible {
+  outline: 2px solid var(--skylent-focus-ring);
+  outline-offset: 1px;
+}
+
+.skylent-nav-dropdown {
+  background: var(--skylent-elevated);
+  border: 1px solid var(--skylent-border-subtle);
+  box-shadow: none;
+}
+
+.skylent-nav-dropdown-head {
+  border-bottom: 1px solid var(--skylent-border-subtle);
+}
+
+.skylent-nav-dropdown a:hover,
+.skylent-nav-dropdown-head:hover {
+  background: var(--skylent-surface);
 }
 
 /* Typography utilities */
@@ -2140,7 +2281,7 @@ html, body {
 
 .auth-page {
   min-height: 100vh;
-  background: var(--color-canvas, #050505);
+  background: var(--skylent-canvas);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -2172,7 +2313,7 @@ html, body {
   z-index: 2;
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--skylent-text-muted);
   font-size: 13px;
   cursor: pointer;
   font-family: var(--font-body);
@@ -2180,7 +2321,7 @@ html, body {
 }
 
 .auth-back-link:focus-visible {
-  outline: 2px solid rgba(129, 140, 248, 0.85);
+  outline: 2px solid var(--skylent-focus-ring);
   outline-offset: 2px;
 }
 
@@ -2197,11 +2338,15 @@ html, body {
 .auth-page-card {
   width: 100%;
   max-width: 420px;
+  background: var(--skylent-elevated);
+  border: 1px solid var(--skylent-border-subtle);
+  border-radius: 16px;
+  box-shadow: none;
 }
 
 .auth-subtitle {
   margin: -12px 0 24px;
-  color: var(--text-muted);
+  color: var(--skylent-text-muted);
   font-size: var(--type-body-sm);
   line-height: 1.6;
 }
@@ -2210,9 +2355,9 @@ html, body {
   margin: 0 0 20px;
   padding: 10px 12px;
   border-radius: 10px;
-  border: 1px solid rgba(129, 140, 248, 0.28);
-  background: rgba(99, 102, 241, 0.08);
-  color: rgba(255, 255, 255, 0.78);
+  border: 1px solid var(--skylent-border);
+  background: var(--skylent-surface);
+  color: var(--skylent-text-secondary);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -2227,7 +2372,7 @@ html, body {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: 22px;
-  color: #fff;
+  color: var(--skylent-text);
   letter-spacing: -0.02em;
 }
 
@@ -2235,7 +2380,7 @@ html, body {
   font-family: var(--font-display);
   font-size: clamp(26px, 4vw, 30px);
   font-weight: 600;
-  color: #fff;
+  color: var(--skylent-text);
   margin: 0 0 10px;
   letter-spacing: -0.02em;
 }
@@ -2250,7 +2395,7 @@ html, body {
 
 .auth-label {
   display: block;
-  color: var(--text-muted);
+  color: var(--skylent-text-muted);
   font-size: 13px;
   font-family: var(--font-body);
   margin-bottom: 6px;
@@ -2258,11 +2403,11 @@ html, body {
 
 .auth-field {
   width: 100%;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--skylent-input-bg);
+  border: 1px solid var(--skylent-input-border);
   border-radius: 10px;
   padding: 12px 14px;
-  color: #fff;
+  color: var(--skylent-text);
   font-size: 14px;
   font-family: var(--font-body);
   outline: none;
@@ -2271,7 +2416,7 @@ html, body {
 }
 
 .auth-field.is-focused {
-  border-color: rgba(129, 140, 248, 0.85);
+  border-color: var(--skylent-accent);
 }
 
 .auth-field.has-error {
@@ -2279,27 +2424,27 @@ html, body {
 }
 
 .auth-field:focus-visible {
-  outline: 2px solid rgba(129, 140, 248, 0.85);
+  outline: 2px solid var(--skylent-focus-ring);
   outline-offset: 2px;
 }
 
 .auth-submit {
   width: 100%;
   margin-top: 4px;
-  background: rgba(99, 102, 241, 0.95);
+  background: var(--skylent-accent);
   border: none;
-  color: #050505;
+  color: var(--skylent-accent-foreground);
   border-radius: 10px;
   padding: 13px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   font-family: var(--font-body);
-  transition: background-color 0.15s ease, opacity 0.15s ease;
+  transition: opacity 0.15s ease;
 }
 
 .auth-submit:hover:not(:disabled) {
-  background: rgba(129, 140, 248, 0.98);
+  opacity: 0.92;
 }
 
 .auth-submit:disabled {
@@ -2308,7 +2453,7 @@ html, body {
 }
 
 .auth-submit:focus-visible {
-  outline: 2px solid rgba(129, 140, 248, 0.85);
+  outline: 2px solid var(--skylent-focus-ring);
   outline-offset: 2px;
 }
 
@@ -2318,9 +2463,9 @@ html, body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #fff;
+  background: transparent;
+  border: 1px solid var(--skylent-border);
+  color: var(--skylent-text);
   border-radius: 10px;
   padding: 12px;
   font-size: 13px;
@@ -2330,8 +2475,8 @@ html, body {
 }
 
 .auth-google-button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: var(--skylent-surface);
+  border-color: var(--skylent-border);
 }
 
 .auth-google-icon {
@@ -2344,7 +2489,7 @@ html, body {
 }
 
 .auth-google-button:focus-visible {
-  outline: 2px solid rgba(129, 140, 248, 0.85);
+  outline: 2px solid var(--skylent-focus-ring);
   outline-offset: 2px;
 }
 
@@ -2358,11 +2503,11 @@ html, body {
 .auth-divider-line {
   flex: 1;
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--skylent-border-subtle);
 }
 
 .auth-divider-label {
-  color: rgba(255, 255, 255, 0.32);
+  color: var(--skylent-text-muted);
   font-size: 10px;
   font-family: var(--font-mono);
   letter-spacing: 0.08em;
@@ -2372,12 +2517,12 @@ html, body {
 .auth-switch {
   text-align: center;
   margin: 20px 0 0;
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--skylent-text-muted);
   font-size: 13px;
 }
 
 .auth-error {
-  background: rgba(239, 68, 68, 0.08);
+  background: var(--skylent-error-surface);
   border: 1px solid rgba(239, 68, 68, 0.28);
   border-radius: 10px;
   padding: 12px 14px;
@@ -2386,7 +2531,7 @@ html, body {
 
 .auth-error-title {
   margin: 0 0 4px;
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--skylent-text);
   font-size: 13px;
   font-weight: 600;
   line-height: 1.4;
@@ -2394,7 +2539,7 @@ html, body {
 
 .auth-error-message {
   margin: 0;
-  color: rgba(255, 255, 255, 0.72);
+  color: var(--skylent-text-secondary);
   font-size: 13px;
   line-height: 1.5;
 }

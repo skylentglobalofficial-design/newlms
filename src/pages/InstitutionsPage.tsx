@@ -61,7 +61,7 @@ function EcosystemSection() {
                 {col.items.map((item, j) => (
                   <div key={item} style={{ display: 'flex', gap: 10, padding: '12px 0', borderBottom: j < col.items.length - 1 ? `1px solid ${T.lineDark}` : 'none', alignItems: 'center' }}>
                     <div style={{ width: 4, height: 4, borderRadius: '50%', background: col.accent ? accent.primary : 'rgba(255,255,255,0.25)', flexShrink: 0 }} />
-                    <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14 }}>{item}</span>
+                    <span style={{ color: 'var(--skylent-text-secondary)', fontSize: 14 }}>{item}</span>
                   </div>
                 ))}
               </div>
@@ -103,7 +103,7 @@ function PartnershipSection() {
             <FadeIn key={step.n} delay={i * 50}>
               <div style={{ padding: '0 16px 0 0' }}>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, marginBottom: 14 }}>{step.n}</div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, margin: '0 0 8px' }}>{step.label}</h3>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: 'var(--skylent-text)', margin: '0 0 8px' }}>{step.label}</h3>
                 <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{step.desc}</p>
               </div>
             </FadeIn>
@@ -132,7 +132,7 @@ function EnquiriesSection() {
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 20px', marginBottom: 28 }}>
               {features.map(f => (
-                <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span key={f} style={{ color: 'var(--skylent-text-muted)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary }} />
                   {f}
                 </span>
@@ -150,7 +150,7 @@ function EnquiriesSection() {
             ].map(({ k, v }, i, arr) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '12px 0', borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
                 <span style={{ color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>{k}</span>
-                <span style={{ color: C.white, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
+                <span style={{ color: 'var(--skylent-text)', fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
               </div>
             ))}
           </GlassSurface>
