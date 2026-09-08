@@ -9,6 +9,7 @@ import {
   requireCsrf,
   type AuthenticatedRequest,
 } from "../lib/auth.js"
+import { requireRoles } from "../lib/roles.js"
 import {
   buildAssignmentAttachmentStorageKey,
   createAttachmentPresignedUpload,
@@ -141,7 +142,7 @@ async function resolveAssignmentLessonContext(userId: string, courseSlug: string
   }
 }
 
-lmsRouter.get("/dashboard", requireAuth, async (req: AuthenticatedRequest, res) => {
+lmsRouter.get("/dashboard", requireAuth, requireRoles("student"), async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.auth!.user.id
     const enrollment = await getPrimaryEnrollment(userId)
@@ -158,7 +159,7 @@ lmsRouter.get("/dashboard", requireAuth, async (req: AuthenticatedRequest, res) 
   }
 })
 
-lmsRouter.get("/enrollments", requireAuth, async (req: AuthenticatedRequest, res) => {
+lmsRouter.get("/enrollments", requireAuth, requireRoles("student"), async (req: AuthenticatedRequest, res) => {
   try {
     const enrollments = await prisma.userEnrollment.findMany({
       where: { userId: req.auth!.user.id },
@@ -189,7 +190,7 @@ lmsRouter.get("/enrollments", requireAuth, async (req: AuthenticatedRequest, res
   }
 })
 
-lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
+lmsRouter.post("/enrollments", requireAuth, requireRoles("student"), requireCsrf, async (req: AuthenticatedRequest, res) => {
   const parsed = enrollSchema.safeParse(req.body)
   if (!parsed.success) {
     return res.status(400).json({
@@ -300,7 +301,7 @@ lmsRouter.get("/courses/:slug/access", async (req, res) => {
   }
 })
 
-lmsRouter.get("/courses/:slug", requireAuth, async (req: AuthenticatedRequest, res) => {
+lmsRouter.get("/courses/:slug", requireAuth, requireRoles("student"), async (req: AuthenticatedRequest, res) => {
   const parsed = slugParamSchema.safeParse(req.params)
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid slug" })
@@ -325,7 +326,7 @@ lmsRouter.get("/courses/:slug", requireAuth, async (req: AuthenticatedRequest, r
   }
 })
 
-lmsRouter.get("/courses/:slug/resume", requireAuth, async (req: AuthenticatedRequest, res) => {
+lmsRouter.get("/courses/:slug/resume", requireAuth, requireRoles("student"), async (req: AuthenticatedRequest, res) => {
   const parsed = slugParamSchema.safeParse(req.params)
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid slug" })
@@ -354,6 +355,7 @@ lmsRouter.get("/courses/:slug/resume", requireAuth, async (req: AuthenticatedReq
 lmsRouter.post(
   "/courses/:slug/lessons/:lessonKey/progress",
   requireAuth,
+  requireRoles("student"),
   requireCsrf,
   async (req: AuthenticatedRequest, res) => {
     const slugParsed = slugParamSchema.safeParse(req.params)
@@ -427,6 +429,7 @@ lmsRouter.post(
 lmsRouter.get(
   "/courses/:slug/lessons/:lessonKey/quiz",
   requireAuth,
+  requireRoles("student"),
   async (req: AuthenticatedRequest, res) => {
     const slugParsed = slugParamSchema.safeParse(req.params)
     const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
@@ -475,6 +478,7 @@ lmsRouter.get(
 lmsRouter.post(
   "/courses/:slug/lessons/:lessonKey/quiz/attempts",
   requireAuth,
+  requireRoles("student"),
   requireCsrf,
   async (req: AuthenticatedRequest, res) => {
     const slugParsed = slugParamSchema.safeParse(req.params)
@@ -593,6 +597,7 @@ lmsRouter.post(
 lmsRouter.get(
   "/courses/:slug/lessons/:lessonKey/assignment",
   requireAuth,
+  requireRoles("student"),
   async (req: AuthenticatedRequest, res) => {
     const slugParsed = slugParamSchema.safeParse(req.params)
     const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
@@ -645,6 +650,7 @@ lmsRouter.get(
 lmsRouter.post(
   "/courses/:slug/lessons/:lessonKey/assignment",
   requireAuth,
+  requireRoles("student"),
   requireCsrf,
   async (req: AuthenticatedRequest, res) => {
     const slugParsed = slugParamSchema.safeParse(req.params)
@@ -786,6 +792,7 @@ lmsRouter.post(
 lmsRouter.post(
   "/courses/:slug/lessons/:lessonKey/assignment/attachments",
   requireAuth,
+  requireRoles("student"),
   requireCsrf,
   async (req: AuthenticatedRequest, res) => {
     const slugParsed = slugParamSchema.safeParse(req.params)
@@ -901,6 +908,7 @@ lmsRouter.post(
 lmsRouter.post(
   "/courses/:slug/lessons/:lessonKey/assignment/attachments/:attachmentId/complete-upload",
   requireAuth,
+  requireRoles("student"),
   requireCsrf,
   async (req: AuthenticatedRequest, res) => {
     const slugParsed = slugParamSchema.safeParse(req.params)
@@ -981,6 +989,7 @@ lmsRouter.post(
 lmsRouter.get(
   "/courses/:slug/lessons/:lessonKey/media",
   requireAuth,
+  requireRoles("student"),
   async (req: AuthenticatedRequest, res) => {
     const slugParsed = slugParamSchema.safeParse(req.params)
     const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
@@ -1019,7 +1028,7 @@ lmsRouter.get(
   },
 )
 
-lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: AuthenticatedRequest, res) => {
+lmsRouter.get("/courses/:slug/certificate", requireAuth, requireRoles("student"), async (req: AuthenticatedRequest, res) => {
   const parsed = slugParamSchema.safeParse(req.params)
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid slug" })
@@ -1055,7 +1064,7 @@ lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: Authenticat
   }
 })
 
-lmsRouter.get("/courses/:slug/certificate/download", requireAuth, async (req: AuthenticatedRequest, res) => {
+lmsRouter.get("/courses/:slug/certificate/download", requireAuth, requireRoles("student"), async (req: AuthenticatedRequest, res) => {
   const parsed = slugParamSchema.safeParse(req.params)
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid slug" })
@@ -1105,6 +1114,7 @@ lmsRouter.get("/courses/:slug/certificate/download", requireAuth, async (req: Au
 lmsRouter.get(
   "/courses/:slug/lessons/:lessonKey/materials",
   requireAuth,
+  requireRoles("student"),
   async (req: AuthenticatedRequest, res) => {
     const slugParsed = slugParamSchema.safeParse(req.params)
     const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
