@@ -62,6 +62,7 @@
   border-color: var(--skylent-border-subtle) !important;
 }
 
+/* Learner workspace surfaces use deliberate dark-mode inline values. */
 [data-theme='light'] .student-learning-workspace > div[style*='position: relative'] [style*='color: rgba(255,255,255'],
 [data-theme='light'] .student-curriculum-rail [style*='color: rgba(255,255,255'],
 [data-theme='light'] #student-progress [style*='color: rgba(255,255,255'],
@@ -88,8 +89,7 @@
   border-color: var(--skylent-border-subtle) !important;
 }
 
-/* Organisation rows use comma-tight rgba literals in JSX. Normalize their
-   dark-mode contrast in light mode while preserving accent/status colors. */
+/* Organisation rows use comma-tight rgba literals in JSX. */
 [data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.28)'],
 [data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.35)'] {
   color: var(--skylent-text-muted) !important;
@@ -98,8 +98,43 @@
 [data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.38)'],
 [data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.42)'],
 [data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.45)'],
-[data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.52)'] {
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.52)'],
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.55)'],
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.58)'],
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.62)'] {
   color: var(--skylent-text-secondary) !important;
+}
+
+/* Keep interactive controls readable in every authenticated light workspace. */
+[data-theme='light'] .auth-shell-content input,
+[data-theme='light'] .auth-shell-content textarea,
+[data-theme='light'] .auth-shell-content select {
+  color: var(--skylent-text) !important;
+  background: var(--skylent-input-bg) !important;
+  border-color: var(--skylent-input-border) !important;
+}
+
+[data-theme='light'] .auth-shell-content input::placeholder,
+[data-theme='light'] .auth-shell-content textarea::placeholder {
+  color: var(--skylent-text-muted) !important;
+  opacity: 1;
+}
+
+[data-theme='light'] .auth-shell-content table th {
+  color: var(--skylent-text-muted) !important;
+}
+
+[data-theme='light'] .auth-shell-content table td {
+  border-color: var(--skylent-border-subtle) !important;
+}
+
+[data-theme='light'] .auth-shell-content button:focus-visible,
+[data-theme='light'] .auth-shell-content a:focus-visible,
+[data-theme='light'] .auth-shell-content input:focus-visible,
+[data-theme='light'] .auth-shell-content textarea:focus-visible,
+[data-theme='light'] .auth-shell-content select:focus-visible {
+  outline: 2px solid var(--skylent-focus-ring) !important;
+  outline-offset: 2px;
 }
 
 @media (max-width: 600px) {
