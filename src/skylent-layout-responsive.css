@@ -9,7 +9,6 @@
 
 /* Dark mode remains black-first; Aurora stays an atmospheric accent. */
 [data-theme='dark'] .skylent-public-canvas{background-color:#080a0d!important}
-[data-theme='dark'] .skylent-home-hero{background:#080a0d!important}
 [data-theme='dark'] .skylent-public-canvas::before{opacity:.72!important}
 [data-theme='dark'] .skylent-home-hero-grid{opacity:.12!important}
 

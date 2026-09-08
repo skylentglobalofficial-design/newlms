@@ -23,10 +23,6 @@
   background-size: 100% 760px, 100% 680px, 100% 600px !important;
 }
 
-[data-theme='dark'] .skylent-home-hero {
-  background: #07080a !important;
-}
-
 [data-theme='dark'] .skylent-home-hero-grid {
   opacity: .12 !important;
   background-image:
@@ -54,10 +50,6 @@
 
 [data-theme='dark'] .skylent-ecosystem-card:hover {
   background: #0d1014 !important;
-}
-
-[data-theme='dark'] .skylent-home-os-gateway {
-  background: #050608 !important;
 }
 
 [data-theme='dark'] .skylent-os-glow {

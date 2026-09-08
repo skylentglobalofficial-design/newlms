@@ -24,7 +24,6 @@
   --skylent-focus-ring: rgba(99, 102, 241, 0.48) !important;
   --skylent-aurora-opacity: 0 !important;
 }
-
 [data-theme="dark"] {
   --skylent-canvas: #09090d !important;
   --skylent-surface: rgba(255, 255, 255, 0.032) !important;
@@ -55,12 +54,6 @@
 
 [data-theme="dark"] .skylent-public-canvas {
   background-color: #09090d !important;
-  background-image:
-    radial-gradient(ellipse 58% 44% at 7% 0%, rgba(99, 102, 241, 0.10), transparent 70%),
-    radial-gradient(ellipse 52% 42% at 94% 1%, rgba(139, 92, 246, 0.085), transparent 72%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.012) 0%, transparent 42%) !important;
-  background-repeat: no-repeat;
-  background-size: 100% 720px, 100% 650px, 100% 560px;
 }
 
 [data-theme="light"] .skylent-aurora,
@@ -125,15 +118,3 @@
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
 }
 
-
-/* Dark Aurora layering: keep one isolated page atmosphere behind stable content surfaces. */
-[data-theme="dark"] .skylent-public-canvas {
-  isolation: isolate;
-  background-image: none !important;
-}
-
-[data-theme="dark"] .skylent-public-canvas main section::after,
-[data-theme="dark"] .skylent-public-canvas .skylent-home-section::after {
-  background: none !important;
-  animation: none !important;
-}

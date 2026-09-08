@@ -31,41 +31,11 @@
   100% { background-position: 15% 0, 84% 28px, 54% 12px; }
 }
 
-/* Give each major public section its own quiet Aurora pocket so the colour does not disappear below the fold. */
 .skylent-public-canvas main section,
 .skylent-public-canvas .skylent-home-section {
   position: relative;
   isolation: isolate;
   background-color: transparent;
-}
-
-.skylent-public-canvas main section::after,
-.skylent-public-canvas .skylent-home-section::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 46% 55% at 18% 8%, rgba(99,102,241,.075), transparent 72%),
-    radial-gradient(ellipse 42% 48% at 84% 18%, rgba(139,92,246,.055), transparent 74%);
-  animation: skylent-section-breathe 16s ease-in-out infinite alternate;
-  will-change: transform, opacity;
-}
-
-[data-theme='light'] .skylent-public-canvas main section::after,
-[data-theme='light'] .skylent-public-canvas .skylent-home-section::after {
-  background: none !important;
-  animation: none;
-}
-
-[data-theme='light'] .skylent-home-aurora-orb {
-  opacity: 0 !important;
-}
-
-@keyframes skylent-section-breathe {
-  from { transform: translate3d(-1.5%, 0, 0) scale(1); opacity: .72; }
-  to { transform: translate3d(1.5%, 1%, 0) scale(1.035); opacity: 1; }
 }
 
 /* Homepage: human/editorial composition, not an AI dashboard collage. */
@@ -190,7 +160,7 @@
   background: rgba(255,250,242,.20);
 }
 
-/* The dedicated OS visual remains a dark product moment, not an accidental theme mismatch. */
+/* Keep the OS product layers isolated from the page canvas. */
 .skylent-home-os-gateway { isolation: isolate; }
 
 /* Tablet / iPad */
@@ -243,9 +213,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .skylent-public-canvas::before,
-  .skylent-public-canvas main section::after,
-  .skylent-public-canvas .skylent-home-section::after {
+  .skylent-public-canvas::before {
     animation: none !important;
   }
 }

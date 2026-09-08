@@ -52,7 +52,7 @@ export function Section({
         style={{
           background,
           color: textColor,
-          padding: `${T.section} 0`,
+          padding: `${T.sectionSm} 0`,
           position: 'relative',
           ...style,
         }}

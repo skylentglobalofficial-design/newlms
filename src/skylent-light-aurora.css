@@ -121,19 +121,6 @@
   background-image: linear-gradient(rgba(35, 30, 24, 0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(35, 30, 24, 0.045) 1px, transparent 1px) !important;
 }
 
-/* Keep the dedicated dark product gateway dark in both themes; it gives the page visual rhythm. */
-[data-theme='light'] .skylent-home-os-gateway {
-  background: #0a0b10 !important;
-}
-
-[data-theme='light'] .skylent-home-os-gateway .skylent-os-copy h2 {
-  color: #fff !important;
-}
-
-[data-theme='light'] .skylent-home-os-gateway .skylent-os-copy p {
-  color: rgba(255, 255, 255, 0.64) !important;
-}
-
 /* Warm, solid dropdown — no hero text bleeding through it. */
 [data-theme='light'] .skylent-nav-dropdown,
 [data-theme='light'] .nav-mega-dropdown {

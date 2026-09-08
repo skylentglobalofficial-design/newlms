@@ -1,6 +1,5 @@
 /* Launch audit: final, low-specificity guardrails for public + LMS surfaces. */
 
-.skylent-public-canvas main,
 .skylent-public-canvas section > .container,
 .skylent-public-canvas section > [class*="max-w-"] {
   max-width: min(var(--max-w-content), calc(100vw - (var(--gutter) * 2)));
