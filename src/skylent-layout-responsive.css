@@ -102,3 +102,10 @@
   .skylent-public-canvas .skylent-product-main{padding:18px}
   .skylent-public-canvas .skylent-home-section-head h2,.skylent-public-canvas .skylent-home-journey-intro h2,.skylent-public-canvas .skylent-os-copy h2,.skylent-public-canvas .skylent-career-copy h2,.skylent-public-canvas .skylent-institution-layout h2,.skylent-public-canvas .skylent-labs-teaser h2{font-size:38px!important}
 }
+
+
+/* Temporary A/B variant: tighten only the Data Science & AI program hero. */
+#program-hero.marketing-hero-section{padding-top:calc(var(--nav-h) + 16px)!important}
+@media(max-width:600px){
+  #program-hero.marketing-hero-section{padding-top:calc(var(--nav-h) + 24px)!important}
+}
