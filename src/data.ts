@@ -27,8 +27,6 @@ export type Course = {
   mode: string
   lessons: number
   projects: number
-  rating: number
-  reviews: number
   price: number
   originalPrice: number
   desc: string
@@ -48,8 +46,6 @@ export const courses: Course[] = [
     mode: 'Self-paced',
     lessons: 48,
     projects: 3,
-    rating: 4.8,
-    reviews: 312,
     price: 4999,
     originalPrice: 9999,
     desc: 'Master SQL, Excel, Power BI and Python to analyse data and drive business decisions.',
@@ -93,8 +89,6 @@ export const courses: Course[] = [
     mode: 'Self-paced',
     lessons: 36,
     projects: 2,
-    rating: 4.9,
-    reviews: 245,
     price: 3999,
     originalPrice: 7999,
     desc: 'Learn Python from scratch — variables, pandas, numpy, matplotlib, and real-world projects.',
@@ -123,8 +117,6 @@ export const courses: Course[] = [
     mode: 'Live + Self-paced',
     lessons: 28,
     projects: 2,
-    rating: 4.9,
-    reviews: 189,
     price: 5999,
     originalPrice: 12999,
     desc: 'Prompt engineering, LangChain, RAG systems, and building LLM applications with real project work.',
@@ -153,8 +145,6 @@ export const courses: Course[] = [
     mode: 'Self-paced',
     lessons: 24,
     projects: 2,
-    rating: 4.7,
-    reviews: 198,
     price: 2999,
     originalPrice: 5999,
     desc: 'Build professional business intelligence dashboards with Power BI and DAX from scratch.',
@@ -178,8 +168,6 @@ export const courses: Course[] = [
     mode: 'Live Classes',
     lessons: 32,
     projects: 3,
-    rating: 4.8,
-    reviews: 156,
     price: 6999,
     originalPrice: 14999,
     desc: 'Product thinking, user research, roadmapping, and stakeholder management through live case studies.',
@@ -203,8 +191,6 @@ export const courses: Course[] = [
     mode: 'Live + Self-paced',
     lessons: 64,
     projects: 4,
-    rating: 4.8,
-    reviews: 203,
     price: 7999,
     originalPrice: 16999,
     desc: 'Build complete web applications — React, Node.js, PostgreSQL, and cloud deployment with real client projects.',
