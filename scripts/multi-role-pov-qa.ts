@@ -15,14 +15,21 @@ type RoleSpec = {
 
 const ROLES: RoleSpec[] = [
   {
-    role: "mentor",
+    role: "student",
+    email: "learner@demo.skylent.dev",
+    homePath: "/dashboard/student",
+    shellMarker: "#student-overview",
+    foreignPaths: ["/dashboard/faculty", "/dashboard/organisation", "/dashboard/recruiter", "/dashboard/admin"],
+  },
+  {
+    role: "faculty",
     email: "mentor@demo.skylent.dev",
     homePath: "/dashboard/faculty",
     shellMarker: "#faculty-overview",
     foreignPaths: ["/dashboard/student", "/dashboard/organisation", "/dashboard/recruiter", "/dashboard/admin"],
   },
   {
-    role: "institution",
+    role: "organisation",
     email: "institution@demo.skylent.dev",
     homePath: "/dashboard/organisation",
     shellMarker: "#org-overview",
@@ -36,7 +43,7 @@ const ROLES: RoleSpec[] = [
     foreignPaths: ["/dashboard/student", "/dashboard/faculty", "/dashboard/organisation", "/dashboard/admin"],
   },
   {
-    role: "admin",
+    role: "superadmin",
     email: "admin@demo.skylent.dev",
     homePath: "/dashboard/admin",
     shellMarker: "#admin-overview",
@@ -62,40 +69,40 @@ async function main() {
     const page = await context.newPage()
     await page.setViewport({ width: 1440, height: 900 })
 
-    await login(page, spec.email, spec.homePath)
-    await page.waitForSelector(spec.shellMarker, { timeout: 20000 }).catch(() => null)
-    await page.waitForSelector(".role-workspace-banner", { timeout: 20000 }).catch(() => null)
+    try {
+      await login(page, spec.email, spec.homePath)
+      await page.waitForSelector(spec.shellMarker, { timeout: 20000 }).catch(() => null)
+      await page.waitForSelector(".role-workspace-banner", { timeout: 20000 }).catch(() => null)
 
-    const home = await page.evaluate((marker) => ({
-      path: window.location.pathname,
-      hasShell: Boolean(document.querySelector(marker)),
-      hasBanner: Boolean(document.querySelector(".role-workspace-banner")),
-      overflowPx: Math.max(0, document.documentElement.scrollWidth - window.innerWidth),
-    }), spec.shellMarker)
+      const home = await page.evaluate((marker) => ({
+        path: window.location.pathname,
+        hasShell: Boolean(document.querySelector(marker)),
+        hasBanner: Boolean(document.querySelector(".role-workspace-banner")),
+        overflowPx: Math.max(0, document.documentElement.scrollWidth - window.innerWidth),
+      }), spec.shellMarker)
 
-    const isolation: Array<{ path: string; redirectedTo: string; blocked: boolean }> = []
-    for (const foreign of spec.foreignPaths) {
-      await page.goto(`${BASE}${foreign}`, { waitUntil: "domcontentloaded", timeout: 20000 })
-      await page.waitForFunction(
-        (homePath) => window.location.pathname === homePath,
-        { timeout: 15000 },
-        spec.homePath,
-      ).catch(() => null)
-      const redirectedTo = await page.evaluate(() => window.location.pathname)
-      isolation.push({
-        path: foreign,
-        redirectedTo,
-        blocked: redirectedTo === spec.homePath,
+      const isolation: Array<{ path: string; redirectedTo: string; blocked: boolean }> = []
+      for (const foreign of spec.foreignPaths) {
+        await page.goto(`${BASE}${foreign}`, { waitUntil: "domcontentloaded", timeout: 20000 })
+        await page.waitForFunction(
+          (homePath) => window.location.pathname === homePath,
+          { timeout: 15000 },
+          spec.homePath,
+        ).catch(() => null)
+        const redirectedTo = await page.evaluate(() => window.location.pathname)
+        isolation.push({ path: foreign, redirectedTo, blocked: redirectedTo === spec.homePath })
+      }
+
+      results.push({
+        role: spec.role,
+        email: spec.email,
+        home,
+        isolation,
+        passed: home.path === spec.homePath && home.hasShell && home.hasBanner && home.overflowPx <= 1 && isolation.every((i) => i.blocked),
       })
+    } catch (error) {
+      results.push({ role: spec.role, email: spec.email, passed: false, error: error instanceof Error ? error.message : String(error) })
     }
-
-    results.push({
-      role: spec.role,
-      email: spec.email,
-      home,
-      isolation,
-      passed: home.path === spec.homePath && home.hasShell && home.hasBanner && isolation.every((i) => i.blocked),
-    })
 
     await context.close()
   }
