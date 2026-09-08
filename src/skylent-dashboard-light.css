@@ -1,7 +1,4 @@
-/* Shared authenticated workspace light theme.
-   Dashboards use a dark shell by default; light mode keeps the Aurora family but
-   switches the workspace chrome and readable text to the same warm-paper system
-   used by the public site. */
+/* Shared authenticated workspace light theme. */
 
 [data-theme='light'] .auth-shell-sidebar-desktop,
 [data-theme='light'] .auth-shell-sidebar-mobile,
@@ -41,34 +38,34 @@
   color: var(--skylent-text-secondary) !important;
 }
 
-/* Convert the common white inline text used by role workspaces to semantic
-   light-theme ink without touching accent-colored labels. */
 [data-theme='light'] .auth-shell-content [style*='color: rgb(255, 255, 255)'],
 [data-theme='light'] .auth-shell-content [style*='color: #FFFFFF'],
 [data-theme='light'] .auth-shell-content [style*='color: #fff'] {
   color: var(--skylent-text) !important;
 }
 
-[data-theme='light'] .auth-shell-content [style*='color: rgba(255, 255, 255'] {
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255, 255, 255'],
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255'],
+[data-theme='light'] .auth-shell-content [style*='color:rgba(255,255,255'] {
   color: var(--skylent-text-secondary) !important;
 }
 
-[data-theme='light'] .auth-shell-content [style*='background: rgba(255,255,255'] {
+[data-theme='light'] .auth-shell-content [style*='background: rgba(255,255,255'],
+[data-theme='light'] .auth-shell-content [style*='background:rgba(255,255,255'] {
   background: rgba(47, 39, 29, 0.035) !important;
 }
 
 [data-theme='light'] .auth-shell-content [style*='border: 1px solid rgba(255,255,255'],
-[data-theme='light'] .auth-shell-content [style*='borderTop: 1px solid rgba(255,255,255'] {
+[data-theme='light'] .auth-shell-content [style*='border:1px solid rgba(255,255,255'],
+[data-theme='light'] .auth-shell-content [style*='borderTop: 1px solid rgba(255,255,255'],
+[data-theme='light'] .auth-shell-content [style*='borderTop:1px solid rgba(255,255,255'] {
   border-color: var(--skylent-border-subtle) !important;
 }
 
-/* Learner workspace surfaces use several deliberate dark-mode inline values.
-   Keep the Aurora band itself intact, but make the surrounding curriculum,
-   progress, and activity content readable on warm paper in light mode. */
-[data-theme='light'] .student-learning-workspace > div[style*='position: relative'] [style*='color: rgba(255, 255, 255'],
-[data-theme='light'] .student-curriculum-rail [style*='color: rgba(255, 255, 255'],
-[data-theme='light'] #student-progress [style*='color: rgba(255, 255, 255'],
-[data-theme='light'] .student-action-rail [style*='color: rgba(255, 255, 255'] {
+[data-theme='light'] .student-learning-workspace > div[style*='position: relative'] [style*='color: rgba(255,255,255'],
+[data-theme='light'] .student-curriculum-rail [style*='color: rgba(255,255,255'],
+[data-theme='light'] #student-progress [style*='color: rgba(255,255,255'],
+[data-theme='light'] .student-action-rail [style*='color: rgba(255,255,255'] {
   color: var(--skylent-text-secondary) !important;
 }
 
@@ -89,6 +86,26 @@
 [data-theme='light'] #student-progress [style*='border: 1px solid rgba(255,255,255'],
 [data-theme='light'] .student-action-rail [style*='border: 1px solid rgba(255,255,255'] {
   border-color: var(--skylent-border-subtle) !important;
+}
+
+/* Organisation rows use comma-tight rgba literals in JSX. Normalize their
+   dark-mode contrast in light mode while preserving accent/status colors. */
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.28)'],
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.35)'] {
+  color: var(--skylent-text-muted) !important;
+}
+
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.38)'],
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.42)'],
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.45)'],
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255,255,255,0.52)'] {
+  color: var(--skylent-text-secondary) !important;
+}
+
+@media (max-width: 600px) {
+  [data-theme='light'] .auth-shell-content {
+    padding-bottom: 92px;
+  }
 }
 
 /* Keep intentional dark product visuals; only workspace chrome/content is themed. */
