@@ -5,9 +5,9 @@
  */
 
 [data-theme="light"] {
-  --skylent-canvas: #efe4d2 !important;
-  --skylent-surface: #f6eee2 !important;
-  --skylent-elevated: #fbf5eb !important;
+  --skylent-canvas: #ede2d2 !important;
+  --skylent-surface: #f3e9da !important;
+  --skylent-elevated: #f7efe3 !important;
   --skylent-glass-bg: rgba(42, 34, 25, 0.035) !important;
   --skylent-text: #171411 !important;
   --skylent-text-secondary: #4f4942 !important;
@@ -15,14 +15,14 @@
   --skylent-border: rgba(23, 20, 17, 0.14) !important;
   --skylent-border-subtle: rgba(23, 20, 17, 0.08) !important;
   --skylent-accent: #6366f1 !important;
-  --skylent-accent-foreground: #fffaf2 !important;
+  --skylent-accent-foreground: #f7efe3 !important;
   --skylent-input-bg: rgba(23, 20, 17, 0.035) !important;
   --skylent-input-border: rgba(23, 20, 17, 0.14) !important;
   --skylent-card-bg: rgba(23, 20, 17, 0.025) !important;
-  --skylent-nav-bg: rgba(239, 228, 210, 0.90) !important;
-  --skylent-footer-bg: #e4d8c6 !important;
+  --skylent-nav-bg: rgba(237, 226, 210, 0.94) !important;
+  --skylent-footer-bg: #e3d6c2 !important;
   --skylent-focus-ring: rgba(99, 102, 241, 0.48) !important;
-  --skylent-aurora-opacity: 0.72 !important;
+  --skylent-aurora-opacity: 0 !important;
 }
 
 [data-theme="dark"] {
@@ -49,13 +49,8 @@
 /* The canvas currently receives an inline background shorthand from PublicCanvas.
    Keep that inline value for theme color, but explicitly restore the atmosphere. */
 [data-theme="light"] .skylent-public-canvas {
-  background-color: #efe4d2 !important;
-  background-image:
-    radial-gradient(ellipse 58% 42% at 7% 0%, rgba(99, 102, 241, 0.14), transparent 70%),
-    radial-gradient(ellipse 50% 40% at 94% 1%, rgba(139, 92, 246, 0.11), transparent 72%),
-    linear-gradient(180deg, rgba(255, 250, 242, 0.20) 0%, transparent 42%) !important;
-  background-repeat: no-repeat;
-  background-size: 100% 680px, 100% 620px, 100% 520px;
+  background-color: #ede2d2 !important;
+  background-image: none !important;
 }
 
 [data-theme="dark"] .skylent-public-canvas {

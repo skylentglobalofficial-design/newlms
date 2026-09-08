@@ -88,9 +88,9 @@
 }
 
 [data-theme="light"] {
-  --skylent-canvas: #f3ede3;
-  --skylent-surface: #f8f4ec;
-  --skylent-elevated: #faf6ef;
+  --skylent-canvas: #ede2d2;
+  --skylent-surface: #f3e9da;
+  --skylent-elevated: #f7efe3;
   --skylent-glass-bg: rgba(26, 23, 20, 0.03);
   --skylent-text: #1a1714;
   --skylent-text-secondary: #4a4540;
@@ -98,17 +98,17 @@
   --skylent-border: rgba(26, 23, 20, 0.12);
   --skylent-border-subtle: rgba(26, 23, 20, 0.07);
   --skylent-accent: #6366f1;
-  --skylent-accent-foreground: #faf6ef;
+  --skylent-accent-foreground: #f7efe3;
   --skylent-input-bg: rgba(26, 23, 20, 0.03);
   --skylent-input-border: rgba(26, 23, 20, 0.14);
   --skylent-card-bg: rgba(26, 23, 20, 0.02);
-  --skylent-nav-bg: rgba(243, 237, 227, 0.92);
-  --skylent-footer-bg: #ebe4d8;
+  --skylent-nav-bg: rgba(237, 226, 210, 0.94);
+  --skylent-footer-bg: #e3d6c2;
   --skylent-focus-ring: rgba(99, 102, 241, 0.45);
   --skylent-success-surface: rgba(22, 163, 74, 0.08);
   --skylent-warning-surface: rgba(217, 119, 6, 0.08);
   --skylent-error-surface: rgba(220, 38, 38, 0.08);
-  --skylent-aurora-opacity: 0.22;
+  --skylent-aurora-opacity: 0;
 }
 
 [data-theme="dark"] {

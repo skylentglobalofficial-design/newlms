@@ -1,9 +1,9 @@
-/* Skylent light mode — warm paper, same Aurora family, stronger editorial contrast. */
+/* Skylent light mode — warm paper with no visible Aurora wash. */
 
 [data-theme='light'] {
-  --skylent-canvas: #f3eadc !important;
-  --skylent-surface: #f8f1e6 !important;
-  --skylent-elevated: #fcf7ef !important;
+  --skylent-canvas: #ede2d2 !important;
+  --skylent-surface: #f3e9da !important;
+  --skylent-elevated: #f7efe3 !important;
   --skylent-glass-bg: rgba(47, 39, 29, 0.035) !important;
   --skylent-text: #191714 !important;
   --skylent-text-secondary: #514b44 !important;
@@ -11,43 +11,35 @@
   --skylent-border: rgba(35, 30, 24, 0.14) !important;
   --skylent-border-subtle: rgba(35, 30, 24, 0.085) !important;
   --skylent-accent: #5f63d9 !important;
-  --skylent-accent-foreground: #fffaf2 !important;
+  --skylent-accent-foreground: #f7efe3 !important;
   --skylent-input-bg: rgba(35, 30, 24, 0.035) !important;
   --skylent-input-border: rgba(35, 30, 24, 0.15) !important;
   --skylent-card-bg: rgba(255, 250, 242, 0.66) !important;
-  --skylent-nav-bg: rgba(243, 234, 220, 0.94) !important;
-  --skylent-footer-bg: #e7dccb !important;
+  --skylent-nav-bg: rgba(237, 226, 210, 0.94) !important;
+  --skylent-footer-bg: #e3d6c2 !important;
   --skylent-focus-ring: rgba(95, 99, 217, 0.42) !important;
-  --skylent-aurora-opacity: 0.78 !important;
+  --skylent-aurora-opacity: 0 !important;
 }
 
 /* Same Aurora colours as dark mode; only the substrate changes. */
 [data-theme='light'] .skylent-public-canvas {
-  background-color: #f3eadc !important;
-  background-image:
-    radial-gradient(ellipse 62% 38% at 7% 0%, rgba(99, 102, 241, 0.18), transparent 69%),
-    radial-gradient(ellipse 52% 36% at 94% 2%, rgba(139, 92, 246, 0.14), transparent 71%),
-    radial-gradient(ellipse 46% 30% at 52% 7%, rgba(59, 130, 246, 0.075), transparent 72%) !important;
-  background-repeat: no-repeat;
-  background-size: 100% 760px, 100% 690px, 100% 610px;
+  background-color: #ede2d2 !important;
+  background-image: none !important;
 }
 
 [data-theme='light'] .skylent-public-canvas::before {
-  background:
-    radial-gradient(ellipse 62% 38% at 7% 0%, rgba(99, 102, 241, 0.12), transparent 70%),
-    radial-gradient(ellipse 50% 36% at 94% 3%, rgba(139, 92, 246, 0.10), transparent 72%),
-    radial-gradient(ellipse 42% 28% at 52% 8%, rgba(59, 130, 246, 0.055), transparent 74%);
-  opacity: 0.9;
+  background: none !important;
+  opacity: 0;
 }
 
 /* The Aurora should feel like coloured light falling onto paper, not a purple wash. */
 [data-theme='light'] .skylent-aurora,
 [data-theme='light'] .skylent-aurora-band {
-  opacity: 0.78 !important;
+  opacity: 0 !important;
 }
 
 [data-theme='light'] .skylent-home-aurora-orb {
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.17), rgba(139, 92, 246, 0.07) 42%, transparent 69%) !important;
+  opacity: 0 !important;
 }
 
 /* Editorial type hierarchy: near-black headings, readable warm-gray body, muted metadata. */
