@@ -56,7 +56,7 @@ function AppRoutes() {
         <Route path="/education" element={<EducationPage />} />
         <Route path="/skills" element={<SkillsPage />} />
         <Route path="/career-os" element={<CareerOSPage />} />
-        <Route path="/career-os/app" element={<CareerOSLayout />}>
+        <Route path="/career-os/app" element={<RoleRouteGuard allowedRoles={["student"]}><CareerOSLayout /></RoleRouteGuard>}>
           <Route index element={<CareerOSOverviewPage />} />
           <Route path="profile" element={<CareerOSProfilePage />} />
           <Route path="jobs" element={<CareerOSJobsPage />} />
