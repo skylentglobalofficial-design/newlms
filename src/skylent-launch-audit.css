@@ -30,6 +30,14 @@ img { height: auto; }
   .skylent-public-canvas [class*="grid-cols-2"] { grid-template-columns: minmax(0, 1fr); }
 }
 
+@media (max-width: 900px) {
+  .skylent-public-canvas .skills-path > div:not(.skills-path-line) {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 28px 18px !important;
+  }
+  .skylent-public-canvas .skills-path-line { display: none; }
+}
+
 @media (max-width: 768px) {
   :root {
     --section-pad: clamp(56px, 12vw, 80px);
@@ -41,6 +49,13 @@ img { height: auto; }
   .skylent-public-canvas section { padding-inline: var(--gutter); }
   .skylent-public-canvas [class*="flex-row"] { flex-direction: column; }
   .skylent-public-canvas [class*="gap-8"] { gap: 1.25rem; }
+}
+
+@media (max-width: 600px) {
+  .skylent-public-canvas .skills-path > div:not(.skills-path-line) {
+    grid-template-columns: 1fr !important;
+    gap: 22px !important;
+  }
 }
 
 @media (max-width: 480px) {
