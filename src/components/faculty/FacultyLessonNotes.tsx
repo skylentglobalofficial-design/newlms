@@ -58,17 +58,23 @@ export default function FacultyLessonNotes({
     }
   }
 
+  const muted = "var(--skylent-text-muted)"
+  const secondary = "var(--skylent-text-secondary)"
+  const foreground = "var(--skylent-text)"
+  const surface = "var(--skylent-card-bg)"
+  const border = "var(--skylent-border-subtle)"
+
   return (
-    <div style={{ padding: "22px 24px", border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, marginTop: 16 }}>
-      <div style={{ color: C.white, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, marginBottom: 6 }}>
+    <div style={{ padding: "22px 24px", background: surface, border: `1px solid ${border}`, borderRadius: T.rCard, marginTop: 16 }}>
+      <div style={{ color: foreground, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, marginBottom: 6 }}>
         Lesson notes
       </div>
-      <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, lineHeight: 1.6, margin: "0 0 16px" }}>
-        Edit reading content for <strong style={{ color: "rgba(255,255,255,0.72)" }}>{lessonTitle}</strong>. Plain text or Markdown.
+      <p style={{ color: secondary, fontSize: 13, lineHeight: 1.6, margin: "0 0 16px" }}>
+        Edit reading content for <strong style={{ color: foreground }}>{lessonTitle}</strong>. Plain text or Markdown.
       </p>
 
       {loading ? (
-        <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 13 }}>Loading notes…</p>
+        <p style={{ color: secondary, fontSize: 13 }}>Loading notes…</p>
       ) : (
         <textarea
           value={notesBody}
@@ -77,10 +83,10 @@ export default function FacultyLessonNotes({
           style={{
             width: "100%",
             boxSizing: "border-box",
-            background: "rgba(255,255,255,0.03)",
-            border: `1px solid ${T.lineDark}`,
+            background: "var(--skylent-input-bg)",
+            border: `1px solid ${border}`,
             borderRadius: T.rControl,
-            color: C.white,
+            color: foreground,
             fontSize: 13,
             lineHeight: 1.65,
             padding: "12px 14px",
@@ -90,7 +96,7 @@ export default function FacultyLessonNotes({
         />
       )}
 
-      <div style={{ marginTop: 12, display: "flex", gap: 12, alignItems: "center" }}>
+      <div style={{ marginTop: 12, display: "flex", gap: 12, alignItems: "center", flexWrap: "wrap" }}>
         <button
           type="button"
           disabled={loading || saving}
@@ -112,7 +118,7 @@ export default function FacultyLessonNotes({
         {status && <span style={{ color: accent.text, fontSize: 13 }}>{status}</span>}
       </div>
       {error && (
-        <p role="alert" style={{ color: "rgba(255,255,255,0.72)", fontSize: 13, margin: "12px 0 0" }}>
+        <p role="alert" style={{ color: "#b42318", fontSize: 13, margin: "12px 0 0" }}>
           {error}
         </p>
       )}
