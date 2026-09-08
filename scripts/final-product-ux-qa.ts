@@ -3,7 +3,10 @@ import { loginViaForm } from "./qa-auth.js"
 
 const PORT = process.env.PORT ?? "8443"
 const BASE = `http://localhost:${PORT}`
-const PASSWORD = process.env.DEMO_USER_PASSWORD ?? "DemoSkylent2026!"
+const PASSWORD = process.env.DEMO_USER_PASSWORD
+if (!PASSWORD) {
+  throw new Error("DEMO_USER_PASSWORD must be set to run authenticated QA; no demo password is stored in source.")
+}
 
 const PUBLIC_ROUTES = [
   "/",
@@ -141,4 +144,4 @@ async function main() {
 main().catch((error) => {
   console.error(error)
   process.exitCode = 1
-})
+}
