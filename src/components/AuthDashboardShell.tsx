@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
@@ -49,6 +49,17 @@ export function AuthDashboardShell({
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  useEffect(() => {
+    if (!mobileOpen) return
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setMobileOpen(false)
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [mobileOpen])
 
   const mobileNav = bottomNavItems ?? navItems.slice(0, 5)
 
@@ -172,6 +183,8 @@ export function AuthDashboardShell({
         />
       )}
       <aside
+        id="auth-shell-mobile-nav"
+        aria-label="Workspace navigation"
         className={`auth-shell-sidebar-mobile${mobileOpen ? ' open' : ''}`}
         style={{
           position: 'fixed', top: 0, left: 0, bottom: 0, width: 280,
@@ -190,7 +203,7 @@ export function AuthDashboardShell({
           padding: '12px 16px', background: 'rgba(5,5,5,0.92)', borderBottom: `1px solid ${T.lineDark}`,
           backdropFilter: 'blur(16px)', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu" style={{ background: 'none', border: 'none', color: C.white, padding: 8, cursor: 'pointer' }}>
+          <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu" aria-expanded={mobileOpen} aria-controls="auth-shell-mobile-nav" style={{ background: 'none', border: 'none', color: C.white, padding: 8, cursor: 'pointer' }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white }}>
