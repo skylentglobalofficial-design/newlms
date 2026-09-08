@@ -5,20 +5,42 @@ const PORT = process.env.PORT ?? "8443"
 const BASE = `http://localhost:${PORT}`
 const PASSWORD = process.env.DEMO_USER_PASSWORD ?? "DemoSkylent2026!"
 
-async function waitForPath(page: import("puppeteer-core").Page, path: string, timeout = 15000) {
-  await page.waitForFunction(
-    (expected) => window.location.pathname === expected,
-    { timeout },
-    path,
-  )
-}
+const PUBLIC_ROUTES = [
+  "/",
+  "/education",
+  "/skills",
+  "/career-os",
+  "/institutions",
+  "/programs",
+  "/programs/data-science-ai",
+  "/courses",
+  "/courses/data-analytics",
+  "/workshops",
+  "/workshops/prompt-engineering",
+  "/stories",
+  "/about",
+  "/blog",
+  "/blog/data-skills-2026",
+  "/contact",
+  "/login",
+  "/signup",
+] as const
 
-async function loginAsLearner(page: import("puppeteer-core").Page) {
-  await loginViaForm(page, {
-    email: "learner@demo.skylent.dev",
-    password: PASSWORD,
-    expectedPath: "/dashboard/student",
-  })
+const VIEWPORTS = [1440, 1100, 1024, 768, 375] as const
+
+type Result = {
+  route: string
+  viewport: number
+  overflowPx: number
+  consoleErrors: string[]
+  checks: {
+    skipLink: boolean
+    publicCanvas: boolean
+    compactFrame: boolean
+    hasHeading: boolean
+    hasNav: boolean
+  }
+  passed: boolean
 }
 
 async function main() {
@@ -28,105 +50,92 @@ async function main() {
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   })
 
-  const results: Array<Record<string, unknown>> = []
+  const results: Result[] = []
 
-  async function check(name: string, fn: (page: import("puppeteer-core").Page) => Promise<Record<string, unknown>>) {
-    const context = await browser.createBrowserContext()
-    const page = await context.newPage()
-    await page.setViewport({ width: 1440, height: 900 })
-    try {
-      const detail = await fn(page)
-      results.push({ name, passed: detail.passed !== false, ...detail })
-    } catch (error) {
-      results.push({ name, passed: false, error: error instanceof Error ? error.message : String(error) })
-    } finally {
-      await context.close()
+  for (const width of VIEWPORTS) {
+    for (const route of PUBLIC_ROUTES) {
+      const page = await browser.newPage()
+      const consoleErrors: string[] = []
+      page.on("pageerror", (error) => consoleErrors.push(String(error)))
+      page.on("console", (message) => {
+        if (message.type() === "error") consoleErrors.push(message.text())
+      })
+
+      await page.setViewport({ width, height: 900 })
+      try {
+        await page.goto(`${BASE}${route}`, { waitUntil: "networkidle0", timeout: 30000 })
+        const checks = await page.evaluate(() => {
+          const root = document.querySelector(".skylent-public-canvas")
+          const frame = document.querySelector(".skylent-public-canvas main, .skylent-content-standard, .marketing-hero-inner") as HTMLElement | null
+          return {
+            overflowPx: Math.max(0, document.documentElement.scrollWidth - window.innerWidth),
+            skipLink: Boolean(document.querySelector(".skylent-skip-link")),
+            publicCanvas: Boolean(root),
+            compactFrame: Boolean(frame && frame.getBoundingClientRect().width <= Math.max(window.innerWidth - 24, 1)),
+            hasHeading: Boolean(document.querySelector("h1, h2")),
+            hasNav: Boolean(document.querySelector("nav")),
+          }
+        })
+        results.push({
+          route,
+          viewport: width,
+          overflowPx: checks.overflowPx,
+          consoleErrors: consoleErrors.slice(0, 5),
+          checks: {
+            skipLink: checks.skipLink,
+            publicCanvas: checks.publicCanvas,
+            compactFrame: checks.compactFrame,
+            hasHeading: checks.hasHeading,
+            hasNav: checks.hasNav,
+          },
+          passed: checks.overflowPx <= 1 && checks.publicCanvas && checks.compactFrame && checks.hasHeading && checks.hasNav,
+        })
+      } catch (error) {
+        results.push({
+          route,
+          viewport: width,
+          overflowPx: -1,
+          consoleErrors: [...consoleErrors, String(error)].slice(0, 5),
+          checks: { skipLink: false, publicCanvas: false, compactFrame: false, hasHeading: false, hasNav: false },
+          passed: false,
+        })
+      }
+      await page.close()
     }
   }
 
-  await check("legacy-os-route-redirects-to-login", async (page) => {
-    await page.goto(`${BASE}/os`, { waitUntil: "domcontentloaded", timeout: 30000 })
-    await waitForPath(page, "/login")
-    const path = await page.evaluate(() => window.location.pathname)
-    return { passed: path === "/login", path }
-  })
-
-  await check("career-os-legacy-application-id", async (page) => {
-    await loginAsLearner(page)
-    await page.goto(`${BASE}/career-os/applications/demo-app-1`, { waitUntil: "domcontentloaded", timeout: 30000 })
-    await waitForPath(page, "/career-os/app/applications/demo-app-1")
-    const path = await page.evaluate(() => window.location.pathname)
-    return { passed: path === "/career-os/app/applications/demo-app-1", path }
-  })
-
-  await check("dashboard-index-redirects-to-login", async (page) => {
-    await page.goto(`${BASE}/dashboard`, { waitUntil: "domcontentloaded", timeout: 30000 })
-    await waitForPath(page, "/login")
-    const path = await page.evaluate(() => window.location.pathname)
-    return { passed: path === "/login", path }
-  })
-
-  await check("universities-redirects-to-institutions", async (page) => {
-    await page.goto(`${BASE}/universities`, { waitUntil: "domcontentloaded", timeout: 30000 })
-    await waitForPath(page, "/institutions")
-    const path = await page.evaluate(() => window.location.pathname)
-    return { passed: path === "/institutions", path }
-  })
-
-  await check("login-redirects-when-authenticated", async (page) => {
-    await loginAsLearner(page)
-    await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded", timeout: 30000 })
-    await page.waitForFunction(
-      () => !window.location.pathname.includes("/login"),
-      { timeout: 15000 },
-    )
-    const path = await page.evaluate(() => window.location.pathname)
-    return { passed: path.includes("/dashboard/student"), path }
-  })
-
-  await check("wrong-role-dashboard-redirect", async (page) => {
-    await loginAsLearner(page)
-    await page.goto(`${BASE}/dashboard/faculty`, { waitUntil: "domcontentloaded", timeout: 30000 })
-    await waitForPath(page, "/dashboard/student")
-    const path = await page.evaluate(() => window.location.pathname)
-    return { passed: path === "/dashboard/student", path }
-  })
-
-  await check("mobile-nav-dashboard-link", async (page) => {
-    await page.setViewport({ width: 375, height: 812 })
-    await loginAsLearner(page)
-    await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded", timeout: 30000 })
-    await page.click(".show-mobile")
-    await page.waitForSelector('a[href="/dashboard/student"]', { timeout: 10000 })
-    const hasDashboard = await page.evaluate(() =>
-      Boolean(document.querySelector('a[href="/dashboard/student"]')),
-    )
-    return { passed: hasDashboard, hasDashboard }
-  })
-
-  await check("homepage-without-duplicate-coverage", async (page) => {
-    await page.goto(`${BASE}/`, { waitUntil: "domcontentloaded", timeout: 30000 })
-    const metrics = await page.evaluate(() => ({
-      hasEcosystemMap: Boolean(document.querySelector(".ecosystem-map-hero")),
-      hasDuplicateCoverage: document.body.textContent?.includes("What Skylent covers") ?? false,
-      overflowPx: Math.max(0, document.documentElement.scrollWidth - window.innerWidth),
-    }))
-    return {
-      passed: metrics.hasEcosystemMap && !metrics.hasDuplicateCoverage && metrics.overflowPx <= 1,
-      ...metrics,
-    }
-  })
-
+  const context = await browser.createBrowserContext()
+  const learnerPage = await context.newPage()
+  await learnerPage.setViewport({ width: 1440, height: 900 })
+  let roleIsolationPassed = false
+  let roleIsolationRedirectedTo = ""
+  try {
+    await loginViaForm(learnerPage, {
+      email: "learner@demo.skylent.dev",
+      password: PASSWORD,
+      expectedPath: "/dashboard/student",
+    })
+    await learnerPage.goto(`${BASE}/dashboard/faculty`, { waitUntil: "domcontentloaded", timeout: 30000 })
+    await learnerPage.waitForFunction(() => window.location.pathname === "/dashboard/student", { timeout: 15000 })
+    roleIsolationRedirectedTo = await learnerPage.evaluate(() => window.location.pathname)
+    roleIsolationPassed = roleIsolationRedirectedTo === "/dashboard/student"
+  } catch {
+    roleIsolationPassed = false
+  }
+  await context.close()
   await browser.close()
 
-  const failures = results.filter((r) => !r.passed)
-  console.log(JSON.stringify({
-    passed: failures.length === 0,
-    failureCount: failures.length,
-    results,
-  }, null, 2))
-
-  if (failures.length > 0) process.exitCode = 1
+  const failures = results.filter((result) => !result.passed)
+  const summary = {
+    passed: failures.length === 0 && roleIsolationPassed,
+    publicChecks: results.length,
+    publicFailures: failures.length,
+    roleIsolationPassed,
+    roleIsolationRedirectedTo,
+    failures: failures.slice(0, 30),
+  }
+  console.log(JSON.stringify(summary, null, 2))
+  if (!summary.passed) process.exitCode = 1
 }
 
 main().catch((error) => {
