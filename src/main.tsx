@@ -13,6 +13,7 @@ import './skylent-home-layout-fix.css'
 import './skylent-final-visual.css'
 import './skylent-public-compact.css'
 import './skylent-launch-audit.css'
+import './skylent-accessibility.css'
 
 bootstrapTheme()
 
