@@ -447,7 +447,16 @@ export function Nav() {
     if (!menuOpen) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = prev }
+
+    function handleMenuKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+
+    window.addEventListener('keydown', handleMenuKeyDown)
+    return () => {
+      document.body.style.overflow = prev
+      window.removeEventListener('keydown', handleMenuKeyDown)
+    }
   }, [menuOpen])
 
   function handleSearch(e: React.FormEvent) {
@@ -614,7 +623,15 @@ export function Nav() {
               >Get Started</Link>
             </>
           )}
-          <button className="show-mobile" onClick={() => setMenuOpen(o => !o)} style={{ background: 'none', border: 'none', color: C.white, cursor: 'pointer', padding: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <button
+            type="button"
+            className="show-mobile"
+            onClick={() => setMenuOpen(o => !o)}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            aria-controls="mobile-nav-overlay"
+            style={{ background: 'none', border: 'none', color: C.white, cursor: 'pointer', padding: 6, display: 'flex', flexDirection: 'column', gap: 4 }}
+          >
             <span style={{ display: 'block', width: 20, height: 2, background: C.white, borderRadius: 1 }} />
             <span style={{ display: 'block', width: 20, height: 2, background: C.white, borderRadius: 1 }} />
             <span style={{ display: 'block', width: 20, height: 2, background: C.white, borderRadius: 1 }} />
@@ -625,7 +642,10 @@ export function Nav() {
       {/* Mobile menu — full-screen overlay so page content does not bleed through */}
       {menuOpen && (
         <div
+          id="mobile-nav-overlay"
           className="mobile-nav-overlay"
+          role="dialog"
+          aria-label="Mobile navigation"
           style={{
             position: 'fixed',
             inset: `${T.navH}px 0 0 0`,
