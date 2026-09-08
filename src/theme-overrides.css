@@ -124,3 +124,16 @@
   color: var(--skylent-text) !important;
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
 }
+
+
+/* Dark Aurora layering: keep one isolated page atmosphere behind stable content surfaces. */
+[data-theme="dark"] .skylent-public-canvas {
+  isolation: isolate;
+  background-image: none !important;
+}
+
+[data-theme="dark"] .skylent-public-canvas main section::after,
+[data-theme="dark"] .skylent-public-canvas .skylent-home-section::after {
+  background: none !important;
+  animation: none !important;
+}
