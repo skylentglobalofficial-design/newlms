@@ -1,4 +1,6 @@
 import { Router } from "express"
+import { requireAuth } from "../../lib/auth.js"
+import { requireRoles } from "../../lib/roles.js"
 import { profileRouter } from "./profile.js"
 import { jobsRouter } from "./jobs.js"
 import { savedJobsRouter } from "./saved-jobs.js"
@@ -10,11 +12,13 @@ import { supportRouter } from "./support.js"
 
 export const careerRouter = Router()
 
-careerRouter.use("/profile", profileRouter)
+const studentCareerAccess = [requireAuth, requireRoles("student")]
+
+careerRouter.use("/profile", studentCareerAccess, profileRouter)
 careerRouter.use("/jobs", jobsRouter)
-careerRouter.use("/saved-jobs", savedJobsRouter)
-careerRouter.use("/applications", applicationsRouter)
-careerRouter.use("/interviews", interviewsRouter)
+careerRouter.use("/saved-jobs", studentCareerAccess, savedJobsRouter)
+careerRouter.use("/applications", studentCareerAccess, applicationsRouter)
+careerRouter.use("/interviews", studentCareerAccess, interviewsRouter)
 careerRouter.use("/questions", questionsRouter)
-careerRouter.use("/practice", practiceRouter)
-careerRouter.use("/support", supportRouter)
+careerRouter.use("/practice", studentCareerAccess, practiceRouter)
+careerRouter.use("/support", studentCareerAccess, supportRouter)
