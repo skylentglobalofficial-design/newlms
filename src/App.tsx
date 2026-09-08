@@ -95,7 +95,7 @@ function AppRoutes() {
         <Route path="/dashboard/organisation" element={<RoleRouteGuard allowedRoles={["organisation"]}><DashboardOrgPage /></RoleRouteGuard>} />
         <Route path="/dashboard/recruiter" element={<RoleRouteGuard allowedRoles={["recruiter"]}><DashboardRecruiterPage /></RoleRouteGuard>} />
         <Route path="/dashboard/admin" element={<RoleRouteGuard allowedRoles={["superadmin"]}><DashboardAdminPage /></RoleRouteGuard>} />
-        <Route path="/learn/:slug/:lessonId?" element={<LearnPage />} />
+        <Route path="/learn/:slug/:lessonId?" element={<RoleRouteGuard allowedRoles={["student"]}><LearnPage /></RoleRouteGuard>} />
         <Route path="/career" element={<Navigate to="/career-os" replace />} />
         <Route path="/universities" element={<Navigate to="/institutions" replace />} />
         <Route path="/labs" element={<LabsPage />} />

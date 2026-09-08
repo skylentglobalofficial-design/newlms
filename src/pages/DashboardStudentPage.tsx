@@ -16,6 +16,7 @@ import LmsEmptyState, { LmsSectionShell } from '../components/lms/LmsEmptyState'
 import EnrolledCoursesPanel from '../components/lms/EnrolledCoursesPanel'
 import CertificatePanel from '../components/lms/CertificatePanel'
 import CareerOsLinkPanel from '../components/lms/CareerOsLinkPanel'
+import RoleWorkspaceBanner from '../components/auth/RoleWorkspaceBanner'
 import { useLmsDashboard, useLmsEnrollments } from '../hooks/useLms'
 import { enrollInCourse } from '../lib/lms-api'
 
@@ -118,6 +119,12 @@ export default function DashboardStudentPage() {
     return (
       <StudentShell activeNav={activeNav} onNavChange={setActiveNav}>
         <div id="student-overview">
+          <RoleWorkspaceBanner
+            variant="functional"
+            accent={accent}
+            title="Learner workspace"
+            description="Enrollments, curriculum progress, lesson completion, and certificates load from the LMS API. Progress and scores reflect your account only."
+          />
           <LmsEmptyState
             title="Start your learning journey"
             description="Enroll in a course to open your learner dashboard, curriculum progress, and resume learning."
@@ -160,6 +167,12 @@ export default function DashboardStudentPage() {
   return (
     <StudentShell activeNav={activeNav} onNavChange={setActiveNav}>
       <div id="student-overview">
+        <RoleWorkspaceBanner
+          variant="functional"
+          accent={accent}
+          title="Learner workspace"
+          description="Enrollments, curriculum progress, lesson completion, and certificates load from the LMS API. Progress and scores reflect your account only."
+        />
         <AuthDashboardLayout
           primary={
             <>

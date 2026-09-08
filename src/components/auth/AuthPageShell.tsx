@@ -8,18 +8,20 @@ export default function AuthPageShell({ children }: AuthPageShellProps) {
   const navigate = useNavigate()
 
   return (
-    <div className="auth-page">
-      <a href="#auth-main" className="auth-skip-link">Skip to sign in</a>
+    <div className="auth-page skylent-public-canvas">
+      <a href="#auth-main" className="auth-skip-link skylent-skip-link">Skip to sign in</a>
 
-      <button
-        type="button"
-        onClick={() => navigate("/")}
-        className="auth-back-link"
-      >
-        ← Back
-      </button>
+      <nav className="auth-page-nav" aria-label="Authentication">
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="auth-back-link"
+        >
+          ← Back to home
+        </button>
+      </nav>
 
-      <main id="auth-main" className="auth-page-main">
+      <main id="auth-main" className="auth-page-main skylent-content-standard">
         <div className="auth-page-card" style={{ padding: "clamp(28px, 5vw, 36px)" }}>
           <Link to="/" className="auth-brand-link">
             <span className="auth-brand">SKYLENT</span>
