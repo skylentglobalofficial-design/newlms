@@ -62,7 +62,36 @@
   border-color: var(--skylent-border-subtle) !important;
 }
 
-/* Preserve intentional dark product visuals; only workspace chrome/content is themed. */
+/* Learner workspace surfaces use several deliberate dark-mode inline values.
+   Keep the Aurora band itself intact, but make the surrounding curriculum,
+   progress, and activity content readable on warm paper in light mode. */
+[data-theme='light'] .student-learning-workspace > div[style*='position: relative'] [style*='color: rgba(255, 255, 255'],
+[data-theme='light'] .student-curriculum-rail [style*='color: rgba(255, 255, 255'],
+[data-theme='light'] #student-progress [style*='color: rgba(255, 255, 255'],
+[data-theme='light'] .student-action-rail [style*='color: rgba(255, 255, 255'] {
+  color: var(--skylent-text-secondary) !important;
+}
+
+[data-theme='light'] .student-learning-workspace > div[style*='position: relative'] [style*='color: rgb(255, 255, 255)'],
+[data-theme='light'] .student-curriculum-rail [style*='color: rgb(255, 255, 255)'],
+[data-theme='light'] #student-progress [style*='color: rgb(255, 255, 255)'],
+[data-theme='light'] .student-action-rail [style*='color: rgb(255, 255, 255)'] {
+  color: var(--skylent-text) !important;
+}
+
+[data-theme='light'] .student-curriculum-rail [style*='background: rgba(255,255,255'],
+[data-theme='light'] #student-progress [style*='background: rgba(255,255,255'],
+[data-theme='light'] .student-action-rail [style*='background: rgba(255,255,255'] {
+  background: rgba(47, 39, 29, 0.035) !important;
+}
+
+[data-theme='light'] .student-curriculum-rail [style*='border: 1px solid rgba(255,255,255'],
+[data-theme='light'] #student-progress [style*='border: 1px solid rgba(255,255,255'],
+[data-theme='light'] .student-action-rail [style*='border: 1px solid rgba(255,255,255'] {
+  border-color: var(--skylent-border-subtle) !important;
+}
+
+/* Keep intentional dark product visuals; only workspace chrome/content is themed. */
 [data-theme='light'] .auth-shell .org-institution-visual {
   color-scheme: light;
 }
