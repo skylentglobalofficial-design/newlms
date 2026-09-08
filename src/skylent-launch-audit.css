@@ -1,0 +1,95 @@
+/* Launch audit: final, low-specificity guardrails for public + LMS surfaces. */
+
+/* Keep large-screen content intentional rather than stretching decorative wrappers. */
+.skylent-public-canvas main,
+.skylent-public-canvas section > .container,
+.skylent-public-canvas section > [class*="max-w-"] {
+  max-width: min(var(--max-w-content), calc(100vw - (var(--gutter) * 2)));
+  margin-inline: auto;
+}
+
+/* Never allow media to become the dominant column on narrow desktop/tablet widths. */
+img, video, svg, canvas {
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+/* Keyboard-visible focus is consistent across native and custom controls. */
+:where(a, button, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid var(--skylent-focus-ring);
+  outline-offset: 3px;
+}
+
+/* Prevent accidental horizontal overflow from long catalog names / IDs. */
+:where(h1, h2, h3, h4, p, a, button, label, td, th, code) {
+  overflow-wrap: anywhere;
+}
+
+/* Compact, centered public composition at laptop/tablet widths. */
+@media (max-width: 1100px) {
+  :root {
+    --section-pad: clamp(72px, 10vw, 112px);
+    --section-pad-sm: clamp(56px, 8vw, 84px);
+    --gutter: clamp(20px, 4vw, 28px);
+  }
+
+  .skylent-public-canvas section {
+    padding-inline: var(--gutter);
+  }
+
+  .skylent-public-canvas [class*="grid-cols-2"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --section-pad: clamp(56px, 12vw, 80px);
+    --section-pad-sm: clamp(44px, 9vw, 64px);
+    --gutter: 18px;
+    --type-body-lg: 16px;
+  }
+
+  .skylent-public-canvas section {
+    padding-inline: var(--gutter);
+  }
+
+  .skylent-public-canvas [class*="flex-row"] {
+    flex-direction: column;
+  }
+
+  .skylent-public-canvas [class*="gap-8"] {
+    gap: 1.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --gutter: 16px;
+  }
+
+  .skylent-display-xl {
+    font-size: clamp(36px, 12vw, 54px);
+  }
+
+  .skylent-display-lg {
+    font-size: clamp(30px, 10vw, 44px);
+  }
+}
+
+/* Respect users who explicitly disable motion; keep theme changes instant too. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
