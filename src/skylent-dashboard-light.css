@@ -1,0 +1,68 @@
+/* Shared authenticated workspace light theme.
+   Dashboards use a dark shell by default; light mode keeps the Aurora family but
+   switches the workspace chrome and readable text to the same warm-paper system
+   used by the public site. */
+
+[data-theme='light'] .auth-shell-sidebar-desktop,
+[data-theme='light'] .auth-shell-sidebar-mobile,
+[data-theme='light'] .auth-shell-mobile-header,
+[data-theme='light'] .auth-shell-bottom-nav {
+  background: rgba(248, 241, 230, 0.96) !important;
+  border-color: var(--skylent-border) !important;
+  color: var(--skylent-text) !important;
+  box-shadow: 0 12px 40px rgba(62, 48, 31, 0.08);
+}
+
+[data-theme='light'] .auth-shell-mobile-header,
+[data-theme='light'] .auth-shell-bottom-nav {
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+[data-theme='light'] .auth-shell-sidebar-desktop nav button,
+[data-theme='light'] .auth-shell-sidebar-mobile nav button,
+[data-theme='light'] .auth-shell-bottom-nav button {
+  color: var(--skylent-text-secondary) !important;
+}
+
+[data-theme='light'] .auth-shell-sidebar-desktop nav button[style*='background:'],
+[data-theme='light'] .auth-shell-sidebar-mobile nav button[style*='background:'] {
+  color: var(--skylent-text) !important;
+}
+
+[data-theme='light'] .auth-shell-sidebar-desktop a,
+[data-theme='light'] .auth-shell-sidebar-mobile a {
+  color: var(--skylent-text) !important;
+}
+
+[data-theme='light'] .auth-shell-sidebar-desktop button[style*='color: rgba(255,255,255'],
+[data-theme='light'] .auth-shell-sidebar-mobile button[style*='color: rgba(255,255,255'],
+[data-theme='light'] .auth-shell-bottom-nav button[style*='color: rgba(255,255,255'] {
+  color: var(--skylent-text-secondary) !important;
+}
+
+/* Convert the common white inline text used by role workspaces to semantic
+   light-theme ink without touching accent-colored labels. */
+[data-theme='light'] .auth-shell-content [style*='color: rgb(255, 255, 255)'],
+[data-theme='light'] .auth-shell-content [style*='color: #FFFFFF'],
+[data-theme='light'] .auth-shell-content [style*='color: #fff'] {
+  color: var(--skylent-text) !important;
+}
+
+[data-theme='light'] .auth-shell-content [style*='color: rgba(255, 255, 255'] {
+  color: var(--skylent-text-secondary) !important;
+}
+
+[data-theme='light'] .auth-shell-content [style*='background: rgba(255,255,255'] {
+  background: rgba(47, 39, 29, 0.035) !important;
+}
+
+[data-theme='light'] .auth-shell-content [style*='border: 1px solid rgba(255,255,255'],
+[data-theme='light'] .auth-shell-content [style*='borderTop: 1px solid rgba(255,255,255'] {
+  border-color: var(--skylent-border-subtle) !important;
+}
+
+/* Preserve intentional dark product visuals; only workspace chrome/content is themed. */
+[data-theme='light'] .auth-shell .org-institution-visual {
+  color-scheme: light;
+}
