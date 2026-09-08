@@ -127,5 +127,5 @@ function Institutions() {
 
 export default function HomePage() {
   useEffect(() => { window.scrollTo(0, 0) }, [])
-  return <div className="skylent-home"><Hero /><Ecosystem /><LearningJourney /><OSGateway /><ProgramSpotlight /><CareerPreview /><LabsTeaser /><Institutions /><CTABand eyebrow="Start here" title={<>Find the path<br />that fits you.</>} lead="Explore education, build skills, enter Career OS, or build with Skylent as an institution." primary={{ label: 'Explore Programs', to: '/programs' }} secondary={{ label: 'Partner With Us', to: '/institutions' }} auroraTheme="general" /><Footer /></div>
+  return <div className="skylent-home"><Hero /><Ecosystem /><LearningJourney /><OSGateway /><ProgramSpotlight /><CareerPreview /><LabsTeaser /><Institutions /><CTABand eyebrow="Start here" title={<>Find the path<br />that fits you.</>} lead="Explore education, build skills, enter Career OS, or build with Skylent as an institution." primary={{ label: 'Explore Programs', to: '/programs' }} secondary={{ label: 'Partner With Us', to: '/institutions' }} /><Footer /></div>
 }

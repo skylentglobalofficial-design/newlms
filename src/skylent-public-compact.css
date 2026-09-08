@@ -7,8 +7,18 @@
 [data-theme='light'] .skylent-public-canvas span[style*="rgba(255,255,255"],
 [data-theme='light'] .skylent-public-canvas div[style*="color: rgba(255,255,255"],
 [data-theme='light'] .skylent-public-canvas div[style*="color:rgba(255,255,255"]{color:var(--skylent-text-secondary)!important}
+[data-theme='light'] .skylent-public-canvas p[style*="rgba(255, 255, 255"],
+[data-theme='light'] .skylent-public-canvas span[style*="rgba(255, 255, 255"],
+[data-theme='light'] .skylent-public-canvas div[style*="color: rgba(255, 255, 255"],
+[data-theme='light'] .skylent-public-canvas div[style*="color:rgba(255, 255, 255"]{color:var(--skylent-text-secondary)!important}
 [data-theme='light'] .skylent-public-canvas [style*="color: rgb(255, 255, 255)"],
 [data-theme='light'] .skylent-public-canvas [style*="color:rgb(255,255,255)"]{color:var(--skylent-text)!important}
+[data-theme='light'] .skylent-public-canvas [style*="color: rgb(255, 255, 255, 0."],
+[data-theme='light'] .skylent-public-canvas [style*="color:rgba(255, 255, 255, 0."]{color:var(--skylent-text-secondary)!important}
+/* Dark product windows keep their own contrast even when the surrounding canvas is light. */
+[data-theme='light'] .skylent-public-canvas .skylent-os-layer{color:rgba(255,255,255,.72)!important}
+[data-theme='light'] .skylent-public-canvas .skylent-os-layer span[style*="color"],
+[data-theme='light'] .skylent-public-canvas .skylent-os-layer strong[style*="color"]{color:rgba(255,255,255,.72)!important}
 [data-theme='light'] .skylent-public-canvas [style*="background: rgba(255,255,255"],
 [data-theme='light'] .skylent-public-canvas [style*="background:rgba(255,255,255"]{background:rgba(47,39,29,.035)!important}
 [data-theme='light'] .skylent-public-canvas [style*="border: 1px solid rgba(255,255,255"],

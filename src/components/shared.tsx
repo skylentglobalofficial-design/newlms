@@ -551,9 +551,9 @@ export function Nav() {
             </div>
           ))}
           {simpleLinks.map(l => (
-            <Link key={l.to} to={l.to} style={{ color: location.pathname === l.to ? C.white : 'rgba(255,255,255,0.55)', fontSize: 13, textDecoration: 'none', padding: '8px 12px', transition: 'color 0.2s', whiteSpace: 'nowrap' }}
-              onMouseEnter={e => (e.currentTarget.style.color = C.white)}
-              onMouseLeave={e => (e.currentTarget.style.color = location.pathname === l.to ? C.white : 'rgba(255,255,255,0.55)')}
+            <Link key={l.to} to={l.to} style={{ color: location.pathname === l.to ? S.text : S.textSecondary, fontSize: 13, textDecoration: 'none', padding: '8px 12px', transition: 'color 0.2s', whiteSpace: 'nowrap' }}
+              onMouseEnter={e => (e.currentTarget.style.color = S.text)}
+              onMouseLeave={e => (e.currentTarget.style.color = location.pathname === l.to ? S.text : S.textSecondary)}
             >{l.label}</Link>
           ))}
         </div>
@@ -561,28 +561,28 @@ export function Nav() {
         {/* Global search */}
         <div className="nav-links" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           {searchOpen ? (
-            <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 7, overflow: 'hidden' }}>
+            <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', background: S.surface, border: `1px solid ${S.border}`, borderRadius: 7, overflow: 'hidden' }}>
               <input
                 ref={searchRef}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search courses, programs, jobs..."
                 onKeyDown={e => e.key === 'Escape' && setSearchOpen(false)}
-                style={{ background: 'transparent', border: 'none', outline: 'none', color: C.white, fontSize: 13, padding: '7px 12px', width: 220, fontFamily: 'var(--font-body)' }}
+                style={{ background: 'transparent', border: 'none', outline: 'none', color: S.text, fontSize: 13, padding: '7px 12px', width: 220, fontFamily: 'var(--font-body)' }}
               />
               <button type="submit" style={{ background: 'none', border: 'none', color: navAccent.text, padding: '7px 10px', cursor: 'pointer' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
-              <button type="button" onClick={() => setSearchOpen(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', padding: '7px 10px', cursor: 'pointer', fontSize: 13 }}>✕</button>
+              <button type="button" onClick={() => setSearchOpen(false)} style={{ background: 'none', border: 'none', color: S.textMuted, padding: '7px 10px', cursor: 'pointer', fontSize: 13 }}>✕</button>
             </form>
           ) : (
             <button
               type="button"
               onClick={() => setSearchOpen(true)}
               aria-label="Search"
-              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.55)', padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: 7, transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = C.white)}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
+              style={{ background: 'none', border: 'none', color: S.textSecondary, padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: 7, transition: 'color 0.2s' }}
+              onMouseEnter={e => (e.currentTarget.style.color = S.text)}
+              onMouseLeave={e => (e.currentTarget.style.color = S.textSecondary)}
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </button>
@@ -613,11 +613,11 @@ export function Nav() {
             </>
           ) : (
             <>
-              <Link to="/login" className="nav-links" style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: C.white, borderRadius: 7, padding: '7px 16px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'border-color 0.2s', whiteSpace: 'nowrap' }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
+              <Link to="/login" className="nav-links" style={{ background: 'transparent', border: `1px solid ${S.border}`, color: S.text, borderRadius: 7, padding: '7px 16px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'border-color 0.2s', whiteSpace: 'nowrap' }}
+                onMouseEnter={e => (e.currentTarget.style.borderColor = S.textSecondary)}
+                onMouseLeave={e => (e.currentTarget.style.borderColor = S.border)}
               >Sign In</Link>
-              <Link to="/signup" style={{ background: navAccent.primary, border: 'none', color: C.white, borderRadius: 7, padding: '8px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
+              <Link to="/signup" style={{ background: navAccent.primary, border: 'none', color: S.accentForeground, borderRadius: 7, padding: '8px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
                 onMouseEnter={e => { e.currentTarget.style.background = navAccent.secondary }}
                 onMouseLeave={e => { e.currentTarget.style.background = navAccent.primary }}
               >Get Started</Link>
@@ -650,10 +650,10 @@ export function Nav() {
             position: 'fixed',
             inset: `${T.navH}px 0 0 0`,
             zIndex: 250,
-            background: 'rgba(5, 5, 5, 0.98)',
+            background: S.navBg,
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
-            borderTop: '1px solid rgba(255,255,255,0.07)',
+            borderTop: `1px solid ${S.borderSubtle}`,
             padding: '12px 24px 28px',
             overflowY: 'auto',
           }}
@@ -662,12 +662,12 @@ export function Nav() {
             <div key={group.label} style={{ marginBottom: 8 }}>
               <Link to={group.to} onClick={() => setMenuOpen(false)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: navAccent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', padding: '12px 0 6px', textDecoration: 'none' }}>{group.label.toUpperCase()}<span style={{ opacity: 0.7 }}>→</span></Link>
               {group.items.map(item => (
-                <Link key={item.label} to={item.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '9px 0', color: 'rgba(255,255,255,0.7)', fontSize: 14, textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>{item.label}</Link>
+                <Link key={item.label} to={item.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '9px 0', color: S.textSecondary, fontSize: 14, textDecoration: 'none', borderBottom: `1px solid ${S.borderSubtle}` }}>{item.label}</Link>
               ))}
             </div>
           ))}
           {simpleLinks.map(l => (
-            <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '10px 0', color: 'rgba(255,255,255,0.7)', fontSize: 14, textDecoration: 'none', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>{l.label}</Link>
+            <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '10px 0', color: S.textSecondary, fontSize: 14, textDecoration: 'none', borderBottom: `1px solid ${S.borderSubtle}` }}>{l.label}</Link>
           ))}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 16 }}>
             {user ? (
@@ -677,8 +677,8 @@ export function Nav() {
               </>
             ) : (
               <div style={{ display: 'flex', gap: 10 }}>
-                <Link to="/login" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13 }}>Sign In</Link>
-                <Link to="/signup" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', background: navAccent.primary, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>Get Started</Link>
+                <Link to="/login" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', border: `1px solid ${S.border}`, borderRadius: 7, color: S.text, textDecoration: 'none', fontSize: 13 }}>Sign In</Link>
+                <Link to="/signup" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', background: navAccent.primary, borderRadius: 7, color: S.accentForeground, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>Get Started</Link>
               </div>
             )}
           </div>
@@ -697,33 +697,33 @@ export function Footer() {
     { heading: 'Company', links: [['About', '/about'], ['For Institutions', '/institutions'], ['Stories', '/stories'], ['Blog', '/blog'], ['Contact', '/contact']] },
   ]
   return (
-    <footer style={{ background: S.footerBg, padding: `${T.sectionSm} ${T.gutter} 32px`, position: 'relative', borderTop: `1px solid ${S.borderSubtle}` }}>
+    <footer style={{ background: 'transparent', padding: `${T.sectionSm} ${T.gutter} 32px`, position: 'relative' }}>
       <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1.7fr repeat(4, 1fr)', gap: 40, marginBottom: 56 }} className="footer-grid">
           <div>
             <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: S.text, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
             <p style={{ color: S.textMuted, fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Education, skills, and career workflows on one platform — for learners and institutions.</p>
             <div style={{ display: 'flex', gap: 10 }} aria-hidden="true">
-              {['in', 'tw', 'yt', 'ig'].map(s => (<div key={s} style={{ width: 32, height: 32, borderRadius: 6, border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.2)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>{s}</div>))}
+              {['in', 'tw', 'yt', 'ig'].map(s => (<div key={s} style={{ width: 32, height: 32, borderRadius: 6, border: `1px solid ${S.borderSubtle}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.textMuted, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{s}</div>))}
             </div>
           </div>
           {cols.map(col => (
             <div key={col.heading}>
-              <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 14 }}>{col.heading.toUpperCase()}</div>
+              <div style={{ color: S.textMuted, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 14 }}>{col.heading.toUpperCase()}</div>
               {col.links.map(([label, to]) => (
                 <div key={label} style={{ marginBottom: 8 }}>
-                  <Link to={to} style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, textDecoration: 'none', transition: 'color 0.2s' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = C.white)}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.42)')}
+                  <Link to={to} style={{ color: S.textSecondary, fontSize: 13, textDecoration: 'none', transition: 'color 0.2s' }}
+                    onMouseEnter={e => (e.currentTarget.style.color = S.text)}
+                    onMouseLeave={e => (e.currentTarget.style.color = S.textSecondary)}
                   >{label}</Link>
                 </div>
               ))}
             </div>
           ))}
         </div>
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-          <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>© 2026 Skylent Global. All rights reserved.</div>
-          <div style={{ display: 'flex', gap: 20 }}>{['Privacy', 'Terms', 'Cookies'].map(l => <span key={l} style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{l}</span>)}</div>
+        <div style={{ borderTop: `1px solid ${S.borderSubtle}`, paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+          <div style={{ color: S.textMuted, fontSize: 12, fontFamily: 'var(--font-mono)' }}>© 2026 Skylent Global. All rights reserved.</div>
+          <div style={{ display: 'flex', gap: 20 }}>{['Privacy', 'Terms', 'Cookies'].map(l => <span key={l} style={{ color: S.textMuted, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{l}</span>)}</div>
         </div>
       </div>
     </footer>

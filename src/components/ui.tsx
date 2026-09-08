@@ -463,7 +463,7 @@ export function CTABand({
   lead,
   primary,
   secondary,
-  bg = C.ink,
+  bg = 'transparent',
   tone = 'dark',
   auroraTheme,
 }: {
