@@ -178,6 +178,7 @@ export function AuthDashboardShell({
       {mobileOpen && (
         <div
           className="auth-shell-overlay"
+          aria-hidden="true"
           onClick={() => setMobileOpen(false)}
           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 200, backdropFilter: 'blur(4px)' }}
         />
@@ -185,12 +186,14 @@ export function AuthDashboardShell({
       <aside
         id="auth-shell-mobile-nav"
         aria-label="Workspace navigation"
+        aria-hidden={!mobileOpen}
         className={`auth-shell-sidebar-mobile${mobileOpen ? ' open' : ''}`}
         style={{
           position: 'fixed', top: 0, left: 0, bottom: 0, width: 280,
           background: 'rgba(5,5,5,0.98)', borderRight: `1px solid ${T.lineDark}`,
           display: 'flex', flexDirection: 'column', zIndex: 210,
           transform: mobileOpen ? 'translateX(0)' : 'translateX(-100%)',
+          visibility: mobileOpen ? 'visible' : 'hidden',
           transition: 'transform 0.25s ease',
         }}
       >
