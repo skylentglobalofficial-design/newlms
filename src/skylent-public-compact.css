@@ -4,7 +4,6 @@
 .skylent-public-canvas .two-col{width:min(100%,980px);margin-left:auto;margin-right:auto}
 .skylent-public-canvas .education-journey,.skylent-public-canvas .education-value-row{max-width:980px;margin-left:auto;margin-right:auto}
 
-/* Public light mode keeps the warm canvas readable when legacy dark-mode inline values remain in product sections. */
 [data-theme='light'] .skylent-public-canvas .two-col p[style*="rgba(255,255,255"],
 [data-theme='light'] .skylent-public-canvas .two-col span[style*="rgba(255,255,255"],
 [data-theme='light'] .skylent-public-canvas .two-col div[style*="color: rgba(255,255,255"],
@@ -29,3 +28,8 @@
 
 @media(max-width:900px){.skylent-public-canvas .two-col{grid-template-columns:1fr!important;gap:clamp(30px,6vw,48px)!important}.skylent-public-canvas .two-col>*{min-width:0}}
 @media(max-width:600px){.skylent-public-canvas .two-col{width:min(100%,calc(100% - 4px));gap:28px!important}.skylent-public-canvas .skylent-page-hero{gap:30px}}
+
+[data-theme='light'] .skylent-public-canvas .two-col [style*="color: rgb(255, 255, 255)"],
+[data-theme='light'] .skylent-public-canvas .skylent-page-hero [style*="color: rgb(255, 255, 255)"]{
+  color:var(--skylent-text)!important;
+}
