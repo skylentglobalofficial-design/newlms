@@ -21,9 +21,9 @@ function statusLabel(material: LessonMaterial): string {
 
 function statusColor(material: LessonMaterial, accent: Accent): string {
   if (material.published) return accent.text
-  if (material.uploadStatus === "FAILED") return "rgba(255,120,120,0.85)"
-  if (material.uploadStatus === "READY") return "rgba(140,220,160,0.85)"
-  return "rgba(255,255,255,0.35)"
+  if (material.uploadStatus === "FAILED") return "#b42318"
+  if (material.uploadStatus === "READY") return "#087443"
+  return "var(--skylent-text-muted)"
 }
 
 function uploadPhaseLabel(phase: UploadPhase): string {
@@ -118,13 +118,20 @@ export default function FacultyLessonMaterials({
     }
   }
 
+  const foreground = "var(--skylent-text)"
+  const secondary = "var(--skylent-text-secondary)"
+  const muted = "var(--skylent-text-muted)"
+  const surface = "var(--skylent-card-bg)"
+  const inputSurface = "var(--skylent-input-bg)"
+  const border = "var(--skylent-border-subtle)"
+
   return (
-    <div style={{ ...{ padding: "22px 24px", border: `1px solid ${T.lineDark}`, borderRadius: T.rCard } }}>
-      <div style={{ color: C.white, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, marginBottom: 6 }}>
+    <div style={{ padding: "22px 24px", background: surface, border: `1px solid ${border}`, borderRadius: T.rCard }}>
+      <div style={{ color: foreground, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, marginBottom: 6 }}>
         Lesson materials
       </div>
-      <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, lineHeight: 1.6, margin: "0 0 16px" }}>
-        Upload PDF or PowerPoint files for <strong style={{ color: "rgba(255,255,255,0.72)" }}>{lessonTitle}</strong> in {courseSlug}.
+      <p style={{ color: secondary, fontSize: 13, lineHeight: 1.6, margin: "0 0 16px" }}>
+        Upload PDF or PowerPoint files for <strong style={{ color: foreground }}>{lessonTitle}</strong> in {courseSlug}.
       </p>
 
       <input
@@ -157,21 +164,15 @@ export default function FacultyLessonMaterials({
         {uploading ? uploadPhaseLabel(uploadPhase) : "Select material (PDF/PPT/PPTX)"}
       </button>
 
-      {status && (
-        <p style={{ color: accent.text, fontSize: 13, margin: "12px 0 0" }}>{status}</p>
-      )}
-      {error && (
-        <p role="alert" style={{ color: "rgba(255,255,255,0.72)", fontSize: 13, margin: "12px 0 0" }}>
-          {error}
-        </p>
-      )}
+      {status && <p style={{ color: accent.text, fontSize: 13, margin: "12px 0 0" }}>{status}</p>}
+      {error && <p role="alert" style={{ color: "#b42318", fontSize: 13, margin: "12px 0 0" }}>{error}</p>}
 
       <div style={{ marginTop: 18 }}>
-        <div className="skylent-label" style={{ color: "rgba(255,255,255,0.35)", marginBottom: 8 }}>Lesson files</div>
+        <div className="skylent-label" style={{ color: muted, marginBottom: 8 }}>Lesson files</div>
         {loading ? (
-          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, margin: 0 }}>Loading…</p>
+          <p style={{ color: secondary, fontSize: 13, margin: 0 }}>Loading…</p>
         ) : materials.length === 0 ? (
-          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, margin: 0 }}>No materials uploaded yet.</p>
+          <p style={{ color: secondary, fontSize: 13, margin: 0 }}>No materials uploaded yet.</p>
         ) : (
           <div style={{ display: "grid", gap: 8 }}>
             {materials.map((material) => (
@@ -184,12 +185,12 @@ export default function FacultyLessonMaterials({
                   gap: 12,
                   padding: "10px 12px",
                   borderRadius: T.rControl,
-                  background: "rgba(255,255,255,0.03)",
-                  border: `1px solid ${T.lineDark}`,
+                  background: inputSurface,
+                  border: `1px solid ${border}`,
                 }}
               >
-                <span style={{ color: C.white, fontSize: 13 }}>{material.fileName}</span>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ color: foreground, fontSize: 13 }}>{material.fileName}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
                   <span style={{ color: statusColor(material, accent), fontSize: 11, fontFamily: "var(--font-mono)" }}>
                     {statusLabel(material)}
                   </span>
