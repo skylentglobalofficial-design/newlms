@@ -175,6 +175,31 @@
   color: #8a8279 !important;
 }
 
+/* Release hardening: keyboard focus must remain visible across the warm light canvas. */
+[data-theme='light'] :where(a, button, input, select, textarea, [tabindex]:not([tabindex='-1'])):focus-visible {
+  outline: 2px solid #5f63d9 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 4px rgba(95, 99, 217, 0.16) !important;
+}
+
+/* Avoid hover-only affordances becoming inaccessible on touch devices. */
+@media (hover: none) {
+  [data-theme='light'] :where(a, button):active {
+    outline: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='light'] *,
+  [data-theme='light'] *::before,
+  [data-theme='light'] *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
 @media (max-width: 700px) {
   [data-theme='light'] .skylent-public-canvas {
     background-size: 100% 560px, 100% 500px, 100% 440px;
