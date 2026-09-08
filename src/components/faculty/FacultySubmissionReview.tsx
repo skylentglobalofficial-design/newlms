@@ -53,27 +53,33 @@ export default function FacultySubmissionReview({
     return () => { cancelled = true }
   }, [submission.id])
 
+  const muted = 'var(--skylent-text-muted)'
+  const secondary = 'var(--skylent-text-secondary)'
+  const foreground = 'var(--skylent-text)'
+  const surface = 'var(--skylent-card-bg)'
+  const border = 'var(--skylent-border-subtle)'
+
   return (
     <div style={{
       marginTop: 20,
       padding: '18px 20px',
-      background: 'rgba(255,255,255,0.02)',
+      background: surface,
       border: `1px solid ${accent.border}`,
       borderRadius: T.rCard,
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 16 }}>
         <div style={{ minWidth: 0 }}>
-          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, letterSpacing: '0.12em', marginBottom: 6 }}>
+          <div className="skylent-label" style={{ color: accent.text, fontSize: 10, letterSpacing: '0.12em', marginBottom: 6 }}>
             Submission review
           </div>
-          <h4 style={{ color: C.white, fontSize: 16, fontWeight: 600, margin: '0 0 4px' }}>
+          <h4 style={{ color: foreground, fontSize: 16, fontWeight: 600, margin: '0 0 4px' }}>
             {submission.lessonTitle}
           </h4>
-          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>
+          <div style={{ color: secondary, fontSize: 12 }}>
             {submission.studentName}
             {submission.courseTitle ? ` · ${submission.courseTitle}` : ''}
           </div>
-          <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, marginTop: 4 }}>
+          <div style={{ color: muted, fontSize: 11, marginTop: 4 }}>
             Submitted {formatSubmittedAt(submission.submittedAt)}
           </div>
         </div>
@@ -81,9 +87,9 @@ export default function FacultySubmissionReview({
           type="button"
           onClick={onClose}
           style={{
-            background: 'rgba(255,255,255,0.04)',
-            border: `1px solid ${T.lineDark}`,
-            color: 'rgba(255,255,255,0.65)',
+            background: 'var(--skylent-input-bg)',
+            border: `1px solid ${border}`,
+            color: secondary,
             padding: '6px 10px',
             borderRadius: T.rControl,
             fontSize: 12,
@@ -97,7 +103,7 @@ export default function FacultySubmissionReview({
       </div>
 
       {loading ? (
-        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13 }}>Loading submission…</div>
+        <div style={{ color: secondary, fontSize: 13 }}>Loading submission…</div>
       ) : error ? (
         <div style={{ color: '#ef4444', fontSize: 13 }}>{error}</div>
       ) : detail ? (
@@ -105,11 +111,11 @@ export default function FacultySubmissionReview({
           <div style={{ marginBottom: 18 }}>
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Learner response</div>
             <div style={{
-              background: 'rgba(255,255,255,0.03)',
-              border: `1px solid ${T.lineDark}`,
+              background: 'var(--skylent-input-bg)',
+              border: `1px solid ${border}`,
               borderRadius: T.rControl,
               padding: 14,
-              color: 'rgba(255,255,255,0.72)',
+              color: secondary,
               fontSize: 13,
               lineHeight: 1.7,
               whiteSpace: 'pre-wrap',
@@ -122,7 +128,7 @@ export default function FacultySubmissionReview({
           <div>
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Attachments</div>
             {detail.attachments.length === 0 ? (
-              <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13 }}>No files attached.</div>
+              <div style={{ color: secondary, fontSize: 13 }}>No files attached.</div>
             ) : (
               <div style={{ display: 'grid', gap: 8 }}>
                 {detail.attachments.map((attachment) => (
@@ -133,17 +139,17 @@ export default function FacultySubmissionReview({
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       gap: 12,
-                      background: 'rgba(255,255,255,0.02)',
-                      border: `1px solid ${T.lineDark}`,
+                      background: surface,
+                      border: `1px solid ${border}`,
                       borderRadius: T.rControl,
                       padding: '10px 12px',
                     }}
                   >
                     <div style={{ minWidth: 0 }}>
-                      <div style={{ color: C.white, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <div style={{ color: foreground, fontSize: 13, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                         {attachment.fileName}
                       </div>
-                      <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11, marginTop: 2 }}>
+                      <div style={{ color: muted, fontSize: 11, marginTop: 2 }}>
                         {attachmentStatusLabel(attachment)}
                         {!detail.objectStorageConfigured && attachment.storageStatus !== 'ready'
                           ? ' · Storage unavailable'
@@ -169,7 +175,7 @@ export default function FacultySubmissionReview({
                         Download
                       </button>
                     ) : (
-                      <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, flexShrink: 0 }}>
+                      <span style={{ color: muted, fontSize: 11, flexShrink: 0 }}>
                         Download unavailable
                       </span>
                     )}
