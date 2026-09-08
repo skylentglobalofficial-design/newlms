@@ -14,6 +14,7 @@ import './skylent-final-visual.css'
 import './skylent-public-compact.css'
 import './skylent-launch-audit.css'
 import './skylent-accessibility.css'
+import './skylent-dashboard-light.css'
 
 bootstrapTheme()
 
