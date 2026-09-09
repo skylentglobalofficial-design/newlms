@@ -92,54 +92,54 @@ function FacultyWorkspace({
       <AuroraBand themeId="data-analytics" />
 
       <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 4vw, 36px)' }}>
-        <h1 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 8px', lineHeight: 1.1 }}>
+        <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px', lineHeight: 1.1 }}>
           What are you teaching today?
         </h1>
-        <p style={{ color: 'rgba(255,255,255,0.58)', fontSize: 16, margin: '0 0 4px', lineHeight: 1.5 }}>
+        <p style={{ color: C.slate, fontSize: 16, margin: '0 0 4px', lineHeight: 1.5 }}>
           {courseContext}
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 15, margin: '0 0 4px' }}>
+        <p style={{ color: C.slate, fontSize: 15, margin: '0 0 4px' }}>
           {courseName} · {moduleTitle} · Module {moduleIndex}
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, margin: '0 0 4px' }}>
+        <p style={{ color: C.slate, fontSize: 14, margin: '0 0 4px' }}>
           {lessonTitle}
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.28)', fontSize: 13, margin: '0 0 24px' }}>
+        <p style={{ color: C.slate, fontSize: 13, margin: '0 0 24px' }}>
           {sessionContext}
         </p>
 
         <div style={{
           display: 'flex', flexWrap: 'wrap', gap: '16px 24px', alignItems: 'center',
           padding: '16px 0', marginBottom: 20,
-          borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}`,
+          borderTop: `1px solid ${T.lineLight}`, borderBottom: `1px solid ${T.lineLight}`,
         }}>
           <div style={{ flex: '1 1 120px', minWidth: 0 }}>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 4 }}>Pending reviews</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.white }}>
+            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Pending reviews</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink }}>
               {pendingCount}
             </div>
-            <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, marginTop: 2 }}>submissions waiting</div>
+            <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>submissions waiting</div>
           </div>
           <div style={{ flex: '1 1 120px', minWidth: 0 }}>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 4 }}>Assigned programs</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.white }}>
+            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Assigned programs</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink }}>
               {professionalProgramCount}
             </div>
-            <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, marginTop: 2 }}>from catalog</div>
+            <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>from catalog</div>
           </div>
           <div style={{ flex: '1 1 140px', minWidth: 0 }}>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 6 }}>Cohort progress</div>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>—</div>
-            <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, marginTop: 4 }}>Requires cohort integration</div>
+            <div style={{ color: C.slate, fontSize: 11, marginBottom: 6 }}>Cohort progress</div>
+            <div style={{ color: C.slate, fontSize: 12 }}>—</div>
+            <div style={{ color: C.slate, fontSize: 10, marginTop: 4 }}>Requires cohort integration</div>
           </div>
           <div style={{ flexShrink: 0 }}>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 4 }}>Module {moduleIndex} of {moduleTotal}</div>
-            <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>{DEMO.currentAssignment}</div>
+            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Module {moduleIndex} of {moduleTotal}</div>
+            <div style={{ color: C.slate, fontSize: 12 }}>{DEMO.currentAssignment}</div>
           </div>
         </div>
 
         <div style={{ marginBottom: 24 }}>
-          <div style={{ height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, overflow: 'hidden' }}>
+          <div style={{ height: 4, background: 'rgba(11,13,15,0.08)', borderRadius: 2, overflow: 'hidden' }}>
             <div style={{ width: `${(moduleIndex / moduleTotal) * 100}%`, height: '100%', background: accent.secondary, borderRadius: 2 }} />
           </div>
         </div>
@@ -159,7 +159,7 @@ function FacultyWorkspace({
             {nextAction}
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
-          <span style={{ color: 'rgba(255,255,255,0.32)', fontSize: 13 }}>
+          <span style={{ color: C.slate, fontSize: 13 }}>
             {DEMO.currentAssignment} · {pendingCount} submissions to review
           </span>
         </div>
@@ -184,7 +184,7 @@ function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curric
 
   return (
     <div id="faculty-curriculum" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
-      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, letterSpacing: '0.08em', marginBottom: 20 }}>
+      <div style={{ color: C.slate, fontSize: 11, letterSpacing: '0.08em', marginBottom: 20 }}>
         Curriculum workspace
       </div>
       <div className="faculty-path-timeline">
@@ -199,7 +199,7 @@ function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curric
                   width: isCurrent ? 12 : 8,
                   height: isCurrent ? 12 : 8,
                   borderRadius: '50%',
-                  background: isCurrent ? accent.primary : isComplete ? 'rgba(255,255,255,0.35)' : 'rgba(255,255,255,0.12)',
+                  background: isCurrent ? accent.primary : isComplete ? accent.primary : 'rgba(11,13,15,0.12)',
                   boxShadow: isCurrent ? `0 0 16px ${accent.subtleStrong}` : 'none',
                   flexShrink: 0,
                   marginTop: 4,
@@ -207,7 +207,7 @@ function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curric
                 {!isLast && (
                   <div style={{
                     width: 1, flex: 1, minHeight: 28,
-                    background: isComplete ? `${accent.primary}55` : T.lineDark,
+                    background: isComplete ? `${accent.primary}55` : T.lineLight,
                     marginTop: 4,
                   }} />
                 )}
@@ -216,14 +216,14 @@ function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curric
                 <div style={{
                   fontSize: isCurrent ? 14 : 13,
                   fontWeight: isCurrent ? 600 : 400,
-                  color: isCurrent ? C.white : isComplete ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.32)',
+                  color: isCurrent ? C.ink : isComplete ? C.slate : C.slate,
                 }}>
                   {node.label}
                   {isCurrent && <span style={{ color: accent.text, fontSize: 11, marginLeft: 8, fontWeight: 500 }}>current</span>}
                 </div>
                 <div style={{
                   fontSize: 12,
-                  color: isCurrent ? accent.textMuted : 'rgba(255,255,255,0.28)',
+                  color: isCurrent ? accent.textMuted : C.slate,
                   marginTop: 4,
                 }}>
                   {node.detail}
@@ -258,10 +258,10 @@ function AssignmentReview({
     <div style={canvasSectionStyle}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20, gap: 12, flexWrap: 'wrap' }}>
         <div>
-          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, letterSpacing: '0.12em', marginBottom: 8 }}>
+          <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 8 }}>
             Assignment review
           </div>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.white, margin: 0 }}>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, margin: 0 }}>
             {featured?.lessonTitle ?? DEMO.currentAssignment}
           </h3>
         </div>
@@ -279,16 +279,16 @@ function AssignmentReview({
               gap: 12,
               alignItems: 'center',
               padding: '14px 0',
-              borderBottom: i < submissions.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+              borderBottom: i < submissions.length - 1 ? `1px solid ${T.lineLight}` : 'none',
             }}>
               <div style={{ minWidth: 0 }}>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{row.studentName}</div>
-                <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginTop: 2 }}>
+                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{row.studentName}</div>
+                <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>
                   {row.lessonTitle}
                   {row.courseTitle ? ` · ${row.courseTitle}` : ''}
                   {row.attachmentCount > 0 ? ` · ${row.attachmentCount} attachment(s)` : ''}
                 </div>
-                <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, marginTop: 2 }}>{formatSubmittedAt(row.submittedAt)}</div>
+                <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>{formatSubmittedAt(row.submittedAt)}</div>
               </div>
               <button
                 type="button"
@@ -313,7 +313,7 @@ function AssignmentReview({
           ))}
         </div>
       ) : (
-        <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+        <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
           No submitted assignments yet. Learner submissions will appear here when available.
         </p>
       )}
@@ -326,12 +326,12 @@ function AssignmentReview({
 function LearnerProgress({ dashboard }: { dashboard: FacultyDashboard | null }) {
   return (
     <div style={canvasSectionStyle}>
-      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
+      <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
         Learner progress
       </div>
 
-      <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
-        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, lineHeight: 1.6 }}>
+      <div style={{ padding: '16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+        <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.6 }}>
           {dashboard?.teachingScopeAvailable === false
             ? (dashboard.teachingScopeMessage ?? "Teaching scope is unavailable until faculty assignment is modeled in the backend.")
             : "Cohort completion analytics are not available yet. Learner counts, completion rates, and at-risk cohort data require a Batch/Cohort model in the backend."}
@@ -352,7 +352,7 @@ function UpcomingTeaching({ pendingCount }: { pendingCount: number }) {
 
   return (
     <div style={canvasSectionStyle}>
-      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
+      <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
         Upcoming teaching
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -362,7 +362,7 @@ function UpcomingTeaching({ pendingCount }: { pendingCount: number }) {
             style={{
               display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 14, alignItems: 'center',
               padding: '14px 0',
-              borderBottom: i < items.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+              borderBottom: i < items.length - 1 ? `1px solid ${T.lineLight}` : 'none',
             }}
           >
             <div style={{
@@ -380,8 +380,8 @@ function UpcomingTeaching({ pendingCount }: { pendingCount: number }) {
               )}
             </div>
             <div style={{ minWidth: 0 }}>
-              <div style={{ color: C.white, fontSize: 14, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</div>
-              <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginTop: 2 }}>{item.detail}</div>
+              <div style={{ color: C.ink, fontSize: 14, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</div>
+              <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{item.detail}</div>
             </div>
           </div>
         ))}
@@ -404,29 +404,29 @@ function ClassesRail({
 
   return (
     <div style={{ ...canvasSectionStyle, marginTop: 20 }}>
-      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
+      <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
         Assigned programs & courses
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
         {assignedPrograms.map((p, i) => (
           <div key={p.slug} style={{
             padding: '16px 0',
-            borderBottom: i < assignedPrograms.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+            borderBottom: i < assignedPrograms.length - 1 ? `1px solid ${T.lineLight}` : 'none',
           }}>
-            <div style={{ color: C.white, fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{p.name}</div>
-            <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{p.duration} · {p.format}</div>
-            <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, marginTop: 6 }}>Cohort data —</div>
+            <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{p.name}</div>
+            <div style={{ color: C.slate, fontSize: 12 }}>{p.duration} · {p.format}</div>
+            <div style={{ color: C.slate, fontSize: 11, marginTop: 6 }}>Cohort data —</div>
           </div>
         ))}
         {teachingCourse && (
-          <div style={{ padding: '16px 0', borderTop: assignedPrograms.length > 0 ? `1px solid ${T.lineDark}` : 'none', marginTop: assignedPrograms.length > 0 ? 8 : 0 }}>
+          <div style={{ padding: '16px 0', borderTop: assignedPrograms.length > 0 ? `1px solid ${T.lineLight}` : 'none', marginTop: assignedPrograms.length > 0 ? 8 : 0 }}>
             <div style={{ color: accent.text, fontSize: 10, letterSpacing: '0.08em', marginBottom: 6 }}>LMS course</div>
-            <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{teachingCourse.title}</div>
-            <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginTop: 4 }}>{teachingCourse.moduleCount} modules · {teachingCourse.lessonCount} lessons</div>
+            <div style={{ color: C.ink, fontSize: 14, fontWeight: 600 }}>{teachingCourse.title}</div>
+            <div style={{ color: C.slate, fontSize: 12, marginTop: 4 }}>{teachingCourse.moduleCount} modules · {teachingCourse.lessonCount} lessons</div>
           </div>
         )}
         {assignedPrograms.length === 0 && !teachingCourse && (
-          <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, margin: 0 }}>No programs or courses available yet.</p>
+          <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>No programs or courses available yet.</p>
         )}
       </div>
     </div>
@@ -504,9 +504,9 @@ export default function DashboardFacultyPage() {
               <div id="faculty-learners" style={{ marginTop: 'clamp(24px, 3vw, 32px)' }}>
                 <LearnerProgress dashboard={dashboard} />
               </div>
-              <div id="faculty-settings" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
-                <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 11, letterSpacing: '0.08em', marginBottom: 10 }}>SETTINGS</div>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+              <div id="faculty-settings" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
+                <div style={{ color: C.slate, fontSize: 11, letterSpacing: '0.08em', marginBottom: 10 }}>SETTINGS</div>
+                <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
                   Notification preferences and teaching profile settings will appear here.
                 </p>
               </div>
