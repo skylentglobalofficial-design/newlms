@@ -1,0 +1,1 @@
+This branch contains the approved light homepage direction and is ready for controlled UI implementation.
