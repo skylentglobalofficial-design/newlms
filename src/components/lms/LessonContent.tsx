@@ -30,7 +30,7 @@ export function LessonContentView({
 }) {
   if (lesson.type === 'video') {
     return (
-      <div className="lms-lesson-video">
+      <div className="lms-lesson-video lms-activity-surface lms-activity-video">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
           <div>
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
@@ -58,7 +58,7 @@ export function LessonContentView({
   if (lesson.type === 'notes') {
     const notes = `# ${lesson.title}\n\n## Key concepts\n\n- Foundational ideas for ${lesson.title}\n- How this connects to the module curriculum\n- Practice checkpoints before the next lesson\n\n## Summary\n\nRead through and mark complete when ready to continue.`
     return (
-      <div className="lms-lesson-notes">
+      <div className="lms-lesson-notes lms-activity-surface lms-activity-reading">
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 16 }}>
           <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)', maxWidth: 720 }}>
@@ -89,7 +89,7 @@ export function LessonContentView({
   if (lesson.type === 'quiz') {
     const questions = quizQuestions ?? []
     return (
-      <div className="lms-lesson-quiz" style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)' }}>
+      <div className="lms-lesson-quiz lms-activity-surface lms-activity-quiz" style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)' }}>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
         {questions.length === 0 ? (
           <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Quiz questions are loading…</div>
@@ -110,7 +110,7 @@ export function LessonContentView({
   }
 
   return (
-    <div className="lms-lesson-assignment" style={{ borderLeft: `3px solid ${accent.primary}`, paddingLeft: 20 }}>
+    <div className="lms-lesson-assignment lms-activity-surface lms-activity-assignment" style={{ borderLeft: `3px solid ${accent.primary}`, paddingLeft: 20 }}>
       <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
       <AssessmentSurface
         mode="assignment"

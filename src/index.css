@@ -559,6 +559,245 @@ html, body {
   }
 }
 
+/* Student learning workspace: light presentation over the existing LMS logic. */
+.skylent-lms-shell {
+  background: #f6f4ee !important;
+  color: #080909;
+}
+.skylent-lms-state {
+  color: #080909;
+}
+.skylent-lms-state > div,
+.skylent-lms-state > p {
+  color: #080909 !important;
+}
+.skylent-lms-state > p {
+  color: #68716c !important;
+}
+.skylent-lms-state a {
+  color: #187762 !important;
+}
+.skylent-lms-shell .lms-sidebar,
+.skylent-lms-shell .lms-main,
+.skylent-lms-shell .lms-content {
+  background: #f6f4ee !important;
+}
+.skylent-lms-shell .lms-sidebar {
+  width: 292px;
+  border-right-color: rgba(8, 9, 9, .12) !important;
+  box-shadow: 12px 0 30px rgba(8, 9, 9, .035);
+}
+.skylent-curriculum-rail {
+  color: #080909;
+}
+.skylent-curriculum-rail > div:first-child {
+  background: #fffdf9;
+  border-bottom-color: rgba(8, 9, 9, .1) !important;
+}
+.skylent-curriculum-rail > div:first-child a span,
+.skylent-curriculum-rail > div:first-child > div > div,
+.skylent-curriculum-rail .lms-curriculum-lesson,
+.skylent-curriculum-rail .lms-curriculum-lesson div {
+  color: #080909 !important;
+}
+.skylent-curriculum-rail .skylent-module-label {
+  color: #89908b !important;
+  font-family: var(--font-mono);
+  font-size: 9px !important;
+  text-transform: uppercase;
+}
+.skylent-curriculum-rail .lms-curriculum-lesson {
+  min-height: 58px;
+  border-left-color: transparent !important;
+  border-bottom: 1px solid rgba(8, 9, 9, .055) !important;
+  background: transparent !important;
+}
+.skylent-curriculum-rail .lms-curriculum-lesson.active {
+  background: #e0efe9 !important;
+  border-left: 3px solid #2f8d78 !important;
+}
+.skylent-curriculum-rail .lms-curriculum-lesson:not(:disabled):hover {
+  background: #f0f2ed !important;
+}
+.skylent-curriculum-rail .lms-curriculum-lesson div div:last-child {
+  color: #8a928d !important;
+}
+.skylent-curriculum-rail .lms-curriculum-lesson:disabled,
+.skylent-curriculum-rail .lms-curriculum-lesson:disabled div {
+  color: #b5bbb5 !important;
+}
+.skylent-lms-shell .lms-header {
+  background: rgba(246, 244, 238, .94) !important;
+  border-bottom-color: rgba(8, 9, 9, .1) !important;
+  color: #080909;
+}
+.skylent-lms-shell .lms-menu-btn,
+.skylent-lms-shell .lms-back-btn,
+.skylent-lms-shell .lms-header-course,
+.skylent-lms-shell .lms-header-lesson,
+.skylent-lms-shell .lms-header-progress {
+  color: #4f5954 !important;
+}
+.skylent-lms-shell .lms-header-sep,
+.skylent-lms-shell .lms-header-lesson-sep {
+  color: #adb3ad !important;
+}
+.skylent-lms-shell .lms-header-progress {
+  color: #187762 !important;
+  font-weight: 700;
+}
+.skylent-lms-shell .lms-content {
+  padding: clamp(24px, 4vw, 54px) clamp(20px, 5vw, 72px);
+}
+.lms-learning-context {
+  width: min(100%, 1040px);
+  margin: 0 auto 22px;
+}
+.lms-context-kicker {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  color: #2f8d78;
+  font: 10px var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.lms-context-kicker span + span {
+  color: #939b95;
+}
+.lms-context-module {
+  margin-top: 15px;
+  color: #7a837d;
+  font-size: 12px;
+}
+.lms-learning-context h1 {
+  max-width: 760px;
+  margin: 8px 0 8px;
+  color: #080909;
+  font: 600 clamp(30px, 4vw, 48px)/1.02 var(--font-display);
+  letter-spacing: -.045em;
+}
+.lms-learning-context p {
+  max-width: 630px;
+  margin: 0;
+  color: #68716c;
+  font-size: 15px;
+  line-height: 1.65;
+}
+.lms-lesson-frame {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  border: 1px solid rgba(8, 9, 9, .12) !important;
+  border-left: 3px solid #2f8d78 !important;
+  border-radius: 8px !important;
+  background: #fffdf9 !important;
+  box-shadow: 0 20px 50px rgba(8, 9, 9, .055);
+}
+.lms-lesson-frame > div:first-child {
+  border-bottom: 1px solid rgba(8, 9, 9, .08);
+  padding-bottom: 17px;
+}
+.lms-lesson-frame > div:first-child .skylent-label {
+  color: #2f8d78 !important;
+}
+.lms-lesson-frame > div:first-child span:last-child {
+  color: #738079 !important;
+}
+.lms-activity-surface,
+.lms-activity-surface * {
+  --lms-ink: #080909;
+}
+.lms-activity-video h2,
+.lms-activity-reading h2,
+.lms-activity-quiz h2,
+.lms-activity-assignment h2,
+.lms-activity-surface [style*="color"] {
+  color: #080909 !important;
+}
+.lms-activity-surface [style*="rgba(255,255,255"] {
+  color: #68716c !important;
+}
+.lms-activity-surface [style*="rgba(255, 255, 255"] {
+  color: #68716c !important;
+}
+.lms-activity-surface [style*="background: rgba(255,255,255"],
+.lms-activity-surface [style*="background: rgba(255, 255, 255"] {
+  background: #f5f3ed !important;
+}
+.lms-activity-surface [style*="border: 1px solid rgba(255,255,255"],
+.lms-activity-surface [style*="border: 1px solid rgba(255, 255, 255"] {
+  border-color: rgba(8, 9, 9, .1) !important;
+}
+.lms-activity-video .lms-media-frame {
+  background: #eef2ed !important;
+  border-color: rgba(8, 9, 9, .12) !important;
+}
+.lms-activity-video .lms-media-frame [style*="color"] {
+  color: #5f6b65 !important;
+}
+.lms-activity-reading > div > div:first-child {
+  background: #fffdf9 !important;
+  border-color: rgba(8, 9, 9, .1) !important;
+}
+.lms-activity-reading > div > div:last-child {
+  background: #e5f1eb !important;
+  border-color: #b7d9ca !important;
+}
+.lms-activity-quiz,
+.lms-activity-assignment {
+  background: #fbfaf5 !important;
+  border-color: rgba(8, 9, 9, .1) !important;
+}
+.lms-quiz-workspace,
+.lms-assignment-workspace {
+  color: #080909;
+}
+.lms-quiz-workspace button,
+.lms-assignment-workspace button {
+  min-height: 44px;
+}
+.lms-quiz-workspace textarea {
+  background: #fffdf9 !important;
+  color: #080909 !important;
+  border-color: rgba(8, 9, 9, .16) !important;
+}
+.lms-lesson-locked {
+  background: #f1f0e9 !important;
+  border-color: rgba(8, 9, 9, .12) !important;
+}
+.lms-lesson-locked > div,
+.lms-lesson-locked p {
+  color: #080909 !important;
+}
+.lms-lesson-locked p {
+  color: #68716c !important;
+}
+.lms-lesson-nav {
+  border-top-color: rgba(8, 9, 9, .1) !important;
+}
+.lms-lesson-nav button,
+.lms-lesson-nav a {
+  background: #f5f3ed !important;
+  border-color: rgba(8, 9, 9, .13) !important;
+  color: #33413a !important;
+}
+.lms-lesson-nav a {
+  background: #e0efe9 !important;
+  color: #176e5c !important;
+}
+@media (max-width: 900px) {
+  .skylent-lms-shell .lms-sidebar { width: min(88vw, 320px); }
+  .skylent-lms-shell .lms-content { padding: 28px 24px 48px; }
+}
+@media (max-width: 600px) {
+  .skylent-lms-shell .lms-content { padding: 22px 16px 40px; }
+  .lms-context-kicker { flex-wrap: wrap; gap: 8px 12px; }
+  .lms-learning-context h1 { font-size: clamp(30px, 10vw, 40px); }
+  .lms-learning-context p { font-size: 14px; }
+  .lms-lesson-frame { padding: 17px !important; }
+  .lms-lesson-frame > div:first-child { margin-bottom: 16px !important; }
+}
+
 /* Public page section overflow guard */
 .skylent-public-canvas {
   overflow-x: hidden;

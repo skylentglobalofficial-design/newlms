@@ -62,7 +62,7 @@ export function AssessmentSurface({
       )
     }
     return (
-      <div>
+      <div className="lms-assignment-workspace">
         <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>{title}</div>
         {subtitle && <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginBottom: 20, lineHeight: 1.6 }}>{subtitle}</div>}
         <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 16, marginBottom: 16 }}>
@@ -118,7 +118,7 @@ export function AssessmentSurface({
   }
 
   return (
-    <div>
+    <div className="lms-quiz-workspace">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 8, flexWrap: 'wrap' }}>
         <div>
           <div style={{ color: C.white, fontSize: 16, fontWeight: 600 }}>{title}</div>
