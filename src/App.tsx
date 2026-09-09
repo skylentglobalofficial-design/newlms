@@ -4,6 +4,7 @@ import { PublicCanvas } from './components/foundation'
 import LabDetailPage from './pages/LabDetailPage'
 import ExperimentPage from './pages/ExperimentPage'
 import { AuthProvider } from './context/AuthContext'
+import { RoleRouteGuard } from './components/routing/RoleRouteGuard'
 import { DemoStateProvider } from './demo/DemoStateContext'
 import HomePage from './pages/HomePage'
 import EducationPage from './pages/EducationPage'
@@ -73,13 +74,13 @@ function AppRoutes() {
       <Route path="/contact" element={<ContactPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<LoginPage />} />
-      <Route path="/dashboard/student" element={<DashboardStudentPage />} />
-      <Route path="/dashboard/faculty" element={<DashboardFacultyPage />} />
-      <Route path="/dashboard/organisation" element={<DashboardOrgPage />} />
-      <Route path="/dashboard/recruiter" element={<DashboardRecruiterPage />} />
-      <Route path="/dashboard/admin" element={<DashboardAdminPage />} />
-      <Route path="/learn/:slug" element={<LearnPage />} />
-      <Route path="/learn/:slug/:lessonId" element={<LearnPage />} />
+      <Route path="/dashboard/student" element={<RoleRouteGuard allowedRoles={['student']}><DashboardStudentPage /></RoleRouteGuard>} />
+      <Route path="/dashboard/faculty" element={<RoleRouteGuard allowedRoles={['faculty']}><DashboardFacultyPage /></RoleRouteGuard>} />
+      <Route path="/dashboard/organisation" element={<RoleRouteGuard allowedRoles={['organisation']}><DashboardOrgPage /></RoleRouteGuard>} />
+      <Route path="/dashboard/recruiter" element={<RoleRouteGuard allowedRoles={['recruiter']}><DashboardRecruiterPage /></RoleRouteGuard>} />
+      <Route path="/dashboard/admin" element={<RoleRouteGuard allowedRoles={['superadmin']}><DashboardAdminPage /></RoleRouteGuard>} />
+      <Route path="/learn/:slug" element={<RoleRouteGuard allowedRoles={['student']}><LearnPage /></RoleRouteGuard>} />
+      <Route path="/learn/:slug/:lessonId" element={<RoleRouteGuard allowedRoles={['student']}><LearnPage /></RoleRouteGuard>} />
       <Route path="/career" element={<Navigate to="/career-os" replace />} />
       <Route path="/universities" element={<UniversitiesPage />} />
       <Route path="/labs" element={<LabsPage />} />
