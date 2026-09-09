@@ -4,6 +4,11 @@ import { fileURLToPath } from 'node:url'
 
 import express from 'express'
 
+import {
+  authCredentialsRateLimit,
+  createCorsMiddleware,
+  jsonBodyParser,
+} from './lib/security-middleware.js'
 import catalogRouter from './routes/catalog.js'
 import healthRouter from './routes/health.js'
 import { authRouter } from './routes/auth.js'
@@ -15,7 +20,10 @@ import { careerRouter } from './routes/career/index.js'
 const app = express()
 const port = Number(process.env.PORT ?? 3000)
 
-app.use(express.json())
+app.use(createCorsMiddleware())
+app.use(jsonBodyParser())
+app.use('/api/v1/auth/login', authCredentialsRateLimit)
+app.use('/api/v1/auth/signup', authCredentialsRateLimit)
 app.use('/api/v1/health', healthRouter)
 app.use('/api/v1/catalog', catalogRouter)
 app.use('/api/v1/auth', authRouter)
@@ -41,8 +49,21 @@ if (process.env.NODE_ENV === 'production') {
   })
 }
 
-app.use((error: unknown, _request: express.Request, response: express.Response, _next: express.NextFunction) => {
+app.use((error: unknown, _request: express.Request, response: express.Response, next: express.NextFunction) => {
+  if (
+    error &&
+    typeof error === 'object' &&
+    'type' in error &&
+    error.type === 'entity.too.large'
+  ) {
+    response.status(413).json({ error: 'Request body too large' })
+    return
+  }
   console.error(error)
+  if (response.headersSent) {
+    next(error)
+    return
+  }
   response.status(500).json({ error: 'Internal server error' })
 })
 
