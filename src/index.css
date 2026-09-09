@@ -1051,6 +1051,125 @@ html, body {
   }
 }
 
+/* Organisation workspace: calm operational presentation over existing data flows. */
+.organisation-workspace {
+  color: #080909;
+}
+.organisation-workspace .auth-dashboard-layout {
+  gap: clamp(22px, 3vw, 38px) !important;
+}
+.organisation-workspace .org-institution-visual {
+  min-height: clamp(210px, 28vw, 310px);
+  margin-bottom: 26px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 16px 42px rgba(8, 9, 9, .08);
+}
+.organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) {
+  color: #080909;
+}
+.organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="color: rgba(255,255,255"],
+.organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="color: rgba(255, 255, 255"],
+.organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="color: #FFFFFF"],
+.organisation-workspace .org-section [style*="color: rgba(255,255,255"],
+.organisation-workspace .org-section [style*="color: rgba(255, 255, 255"],
+.organisation-workspace .org-section [style*="color: #FFFFFF"],
+.organisation-workspace .org-context-rail [style*="color: rgba(255,255,255"],
+.organisation-workspace .org-context-rail [style*="color: rgba(255, 255, 255"],
+.organisation-workspace .org-context-rail [style*="color: #FFFFFF"] {
+  color: #68716c !important;
+}
+.organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) h1,
+.organisation-workspace .org-section h3,
+.organisation-workspace .org-section [style*="color: #FFFFFF"] {
+  color: #080909 !important;
+}
+.organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="border-top: 1px solid rgba(255,255,255"],
+.organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="border-top: 1px solid rgba(255, 255, 255"],
+.organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="border-bottom: 1px solid rgba(255,255,255"],
+.organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="border-bottom: 1px solid rgba(255, 255, 255"],
+.organisation-workspace .org-section [style*="border: 1px solid rgba(255,255,255"],
+.organisation-workspace .org-section [style*="border: 1px solid rgba(255, 255, 255"],
+.organisation-workspace .org-section [style*="border-bottom: 1px solid rgba(255,255,255"],
+.organisation-workspace .org-section [style*="border-bottom: 1px solid rgba(255, 255, 255"],
+.organisation-workspace .org-context-rail [style*="border-bottom: 1px solid rgba(255,255,255"],
+.organisation-workspace .org-context-rail [style*="border-top: 1px solid rgba(255,255,255"] {
+  border-color: rgba(8, 9, 9, .1) !important;
+}
+.organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="background: rgba(255,255,255"],
+.organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="background: rgba(255, 255, 255"],
+.organisation-workspace .org-section [style*="background: rgba(255,255,255"],
+.organisation-workspace .org-section [style*="background: rgba(255, 255, 255"],
+.organisation-workspace .org-context-rail [style*="background: rgba(255,255,255"],
+.organisation-workspace .org-context-rail [style*="background: rgba(255, 255, 255"] {
+  background: #f5f3ed !important;
+}
+.organisation-workspace .org-section {
+  margin-top: clamp(24px, 3vw, 36px);
+  padding: 22px 24px;
+  border: 1px solid rgba(8, 9, 9, .1);
+  border-radius: 8px;
+  background: #fffdf9;
+}
+.organisation-workspace .org-section > .skylent-label,
+.organisation-workspace .org-context-rail .skylent-label {
+  color: #7a837d !important;
+}
+.organisation-workspace .org-curriculum-section {
+  overflow: hidden;
+}
+.organisation-workspace .org-academic-pipeline {
+  padding: 8px 0 2px;
+}
+.organisation-workspace .org-pipeline-node span:first-of-type {
+  color: #080909 !important;
+}
+.organisation-workspace .org-pipeline-node span:last-of-type {
+  color: #7a837d !important;
+}
+.organisation-workspace .org-pipeline-connector {
+  background: rgba(8, 9, 9, .12) !important;
+}
+.organisation-workspace .org-context-rail {
+  padding: 22px 20px;
+  border: 1px solid rgba(8, 9, 9, .1);
+  border-radius: 8px;
+  background: #fffdf9;
+}
+.organisation-workspace .org-context-rail > div + div {
+  border-top-color: rgba(8, 9, 9, .1) !important;
+}
+.organisation-workspace .org-context-rail span {
+  color: #35463f;
+}
+.organisation-workspace .org-context-rail p {
+  color: #68716c !important;
+}
+.organisation-workspace #org-settings {
+  border-top-color: rgba(8, 9, 9, .1) !important;
+}
+.organisation-workspace #org-settings p {
+  color: #68716c !important;
+}
+@media (max-width: 900px) {
+  .organisation-workspace .org-section {
+    padding: 20px;
+  }
+  .organisation-workspace .org-institution-visual {
+    min-height: 220px;
+  }
+}
+@media (max-width: 600px) {
+  .organisation-workspace .org-section,
+  .organisation-workspace .org-context-rail {
+    padding: 18px 16px;
+    border-radius: 6px;
+  }
+  .organisation-workspace .org-institution-visual {
+    min-height: 190px;
+  }
+}
+
 /* Discoverable horizontal scroll strips — nav/filter controls at narrow widths */
 .scroll-control-strip {
   position: relative;

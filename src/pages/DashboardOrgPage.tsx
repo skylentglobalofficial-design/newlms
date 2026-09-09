@@ -62,7 +62,7 @@ function InstitutionWorkspace({
   batchMessage: string
 }) {
   return (
-    <div id="org-overview">
+    <div id="org-overview" className="org-institution-workspace">
       <div className="org-institution-visual">
         <ProductVisual id="institution-pipeline" themeId="institution" style={{ minHeight: 240 }} />
       </div>
@@ -86,10 +86,10 @@ function InstitutionWorkspace({
         borderRadius: T.rCard,
       }}>
         <div style={{ color: accent.text, fontSize: 11, fontWeight: 500, marginBottom: 10 }}>
-          Batch analytics unavailable
+          What needs your attention?
         </div>
         <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, margin: 0, lineHeight: 1.6 }}>
-          {batchMessage}
+          Batch analytics unavailable. {batchMessage}
         </p>
       </div>
     </div>
@@ -100,7 +100,7 @@ function InstitutionWorkspace({
 
 function AcademicPipeline() {
   return (
-    <div id="org-curriculum" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
+    <div id="org-curriculum" className="org-section org-curriculum-section" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
       <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Curriculum operations
       </div>
@@ -165,7 +165,7 @@ function AcademicPipeline() {
 
 function ProgramOperations({ programs }: { programs: OrganisationDashboard['programs'] }) {
   return (
-    <div id="org-programs">
+    <div id="org-programs" className="org-section">
       <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Programs & offerings
       </div>
@@ -205,7 +205,7 @@ function ProgramOperations({ programs }: { programs: OrganisationDashboard['prog
 
 function BatchOperations({ batchMessage }: { batchMessage: string }) {
   return (
-    <div id="org-batches">
+    <div id="org-batches" className="org-section">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, gap: 12, flexWrap: 'wrap' }}>
         <div>
           <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 8, fontSize: 10, letterSpacing: '0.12em' }}>
@@ -230,7 +230,7 @@ function BatchOperations({ batchMessage }: { batchMessage: string }) {
 
 function LearnerProgress({ enrollmentCount }: { enrollmentCount: number }) {
   return (
-    <div id="org-learners">
+    <div id="org-learners" className="org-section">
       <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Learner operations
       </div>
@@ -250,7 +250,7 @@ function LearnerProgress({ enrollmentCount }: { enrollmentCount: number }) {
 
 function FacultyOperations() {
   return (
-    <div id="org-faculty">
+    <div id="org-faculty" className="org-section">
       <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Faculty
       </div>
@@ -269,7 +269,7 @@ function OrgContextRail({ programs }: { programs: OrganisationDashboard['program
   const topPrograms = programs.slice(0, 5)
 
   return (
-    <div>
+    <div className="org-context-rail">
       <div id="org-assessments">
         <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
           Program enrollments
@@ -340,6 +340,7 @@ export default function DashboardOrgPage() {
       onNavChange={setActiveNav}
       renderNavIcon={id => <NavIcon id={id} />}
     >
+      <div className="organisation-workspace">
       <AuthDashboardLayout
         primary={
           <>
@@ -374,7 +375,7 @@ export default function DashboardOrgPage() {
         }
         rail={<OrgContextRail programs={programs} />}
       />
-
+      </div>
       <style>{`
         .org-two-col > * { min-width: 0; }
         .org-academic-pipeline { display: flex; align-items: flex-start; }
