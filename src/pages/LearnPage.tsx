@@ -272,7 +272,7 @@ export default function LearnPage() {
 
           {selectedLesson ? (
             <>
-            <div className="lms-learning-context">
+            <div className={`lms-learning-context lms-context-${selectedLesson.type}`}>
               <div className="lms-context-kicker"><span>{lessonTypeLabel(selectedLesson.type)}</span><span>{selectedLesson.duration ?? 'Self-paced'}</span></div>
               <div className="lms-context-module">{course.modules.find(module => module.lessons.some(lesson => lesson.id === selectedLesson.id))?.title ?? 'Current module'}</div>
               <h1>{selectedLesson.title}</h1>

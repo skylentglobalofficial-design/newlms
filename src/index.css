@@ -665,6 +665,10 @@ html, body {
 .lms-context-kicker span + span {
   color: #939b95;
 }
+.lms-context-video .lms-context-kicker > span:first-child { color: #3c6fa8; }
+.lms-context-quiz .lms-context-kicker > span:first-child { color: #7257b8; }
+.lms-context-assignment .lms-context-kicker > span:first-child { color: #3b8e61; }
+.lms-context-notes .lms-context-kicker > span:first-child { color: #9a7440; }
 .lms-context-module {
   margin-top: 15px;
   color: #7a837d;
@@ -796,6 +800,43 @@ html, body {
 .lms-workspace-activity .lms-activity-quiz > .skylent-label,
 .lms-workspace-activity .lms-activity-assignment > .skylent-label {
   display: none;
+}
+.lms-lesson-type-video .lms-workspace-phase {
+  border-color: #b8cae2;
+  background: #eef4fb;
+  color: #3c6fa8;
+}
+.lms-lesson-type-quiz .lms-workspace-phase {
+  border-color: #cec2e8;
+  background: #f3effa;
+  color: #7257b8;
+}
+.lms-lesson-type-assignment .lms-workspace-phase {
+  border-color: #b9d8c5;
+  background: #edf7f0;
+  color: #3b8e61;
+}
+.lms-lesson-type-notes .lms-workspace-phase {
+  border-color: #ddc9a9;
+  background: #fbf4e8;
+  color: #9a7440;
+}
+.lms-lesson-type-video .lms-capability-list span.is-active { border-color: #b8cae2; background: #eef4fb; color: #3c6fa8; }
+.lms-lesson-type-quiz .lms-capability-list span.is-active { border-color: #cec2e8; background: #f3effa; color: #7257b8; }
+.lms-lesson-type-assignment .lms-capability-list span.is-active { border-color: #b9d8c5; background: #edf7f0; color: #3b8e61; }
+.lms-lesson-type-notes .lms-capability-list span.is-active { border-color: #ddc9a9; background: #fbf4e8; color: #9a7440; }
+.skylent-lms-shell .lms-certificate-banner {
+  background: #e5f1eb !important;
+  border-color: #b7d9ca !important;
+}
+.skylent-lms-shell .lms-certificate-banner > div {
+  color: #187762 !important;
+}
+.skylent-lms-shell .lms-certificate-banner > div:nth-child(2) {
+  color: #080909 !important;
+}
+.skylent-lms-shell .lms-certificate-banner > div:nth-child(3) {
+  color: #68716c !important;
 }
 .lms-activity-surface,
 .lms-activity-surface * {
