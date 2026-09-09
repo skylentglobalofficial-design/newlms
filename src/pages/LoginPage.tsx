@@ -71,7 +71,7 @@ function EntryVisual() {
         borderTop: `1px solid ${T.lineDark}`,
         borderBottom: `1px solid ${T.lineDark}`,
       }}>
-        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 380 }}>
+        <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 380 }}>
           One account for learning, teaching, and institution operations. Sign in to continue where you left off.
         </p>
       </div>
@@ -82,8 +82,8 @@ function EntryVisual() {
           { label: 'Career OS', detail: 'Interview prep & opportunities' },
         ].map(item => (
           <div key={item.label} style={{ minWidth: 0 }}>
-            <div style={{ color: C.white, fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{item.label}</div>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11.5, lineHeight: 1.5 }}>{item.detail}</div>
+            <div style={{ color: C.ink, fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{item.label}</div>
+            <div style={{ color: C.slate, fontSize: 11.5, lineHeight: 1.5 }}>{item.detail}</div>
           </div>
         ))}
       </div>
@@ -96,11 +96,11 @@ function EntryVisual() {
 function fieldStyle(focused: boolean, hasError?: boolean): CSSProperties {
   return {
     width: '100%',
-    background: 'rgba(255,255,255,0.04)',
+        background: C.white,
     border: `1px solid ${hasError ? 'rgba(239,68,68,0.55)' : focused ? accent.primary : T.lineDark}`,
     borderRadius: T.rControl,
     padding: '12px 14px',
-    color: C.white,
+    color: C.ink,
     fontSize: 14,
     fontFamily: 'var(--font-body)',
     outline: 'none',
@@ -141,7 +141,7 @@ function googleButtonStyle(disabled: boolean): CSSProperties {
     width: '100%',
     background: 'transparent',
     border: `1px solid ${T.lineDark}`,
-    color: C.white,
+    color: C.ink,
     borderRadius: T.rControl,
     padding: '12px',
     fontSize: 13,
@@ -311,8 +311,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: C.canvas, position: 'relative', overflow: 'hidden' }}>
-      <Aurora themeId="general" variant="hero" />
+    <div style={{ minHeight: '100vh', background: C.canvas, color: C.ink, position: 'relative', overflow: 'hidden' }}>
 
       <button
         type="button"
@@ -324,7 +323,7 @@ export default function LoginPage() {
           zIndex: 2,
           background: 'none',
           border: 'none',
-          color: 'rgba(255,255,255,0.45)',
+          color: C.slate,
           fontSize: 13,
           cursor: 'pointer',
           fontFamily: 'var(--font-body)',
@@ -355,7 +354,7 @@ export default function LoginPage() {
         {/* Editorial */}
         <div className="login-page-editorial">
           <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 28 }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.white, letterSpacing: '-0.02em' }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.ink, letterSpacing: '-0.02em' }}>
               Skylent<span style={{ color: accent.primary }}>.</span>
             </span>
           </Link>
@@ -365,10 +364,10 @@ export default function LoginPage() {
             Sign in
           </div>
 
-          <h1 className="skylent-display-lg" style={{ color: C.white, margin: '0 0 16px', maxWidth: 520 }}>
+          <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 16px', maxWidth: 520 }}>
             Sign in to Skylent
           </h1>
-          <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.58)', maxWidth: 480, margin: '0 0 32px' }}>
+          <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 480, margin: '0 0 32px' }}>
             Access your learner, faculty, or institution workspace — programs, learning, and Career OS where your account includes them.
           </p>
 
@@ -379,10 +378,10 @@ export default function LoginPage() {
         <div className="login-page-auth">
           <GlassSurface level={2} padding="clamp(24px, 4vw, 32px)">
             <div style={{ marginBottom: 24 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.white, marginBottom: 6 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink, marginBottom: 6 }}>
                 {tab === 'signin' ? 'Sign in' : 'Create account'}
               </div>
-              <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13.5, margin: 0, lineHeight: 1.55 }}>
+              <p style={{ color: C.slate, fontSize: 13.5, margin: 0, lineHeight: 1.55 }}>
                 {tab === 'signin' ? 'Use your Skylent account to continue.' : 'Register for a learner workspace.'}
               </p>
             </div>
@@ -400,7 +399,7 @@ export default function LoginPage() {
                     border: 'none',
                     borderRadius: 6,
                     padding: '10px 0',
-                    color: tab === t ? C.white : 'rgba(255,255,255,0.42)',
+                    color: tab === t ? C.ink : C.slate,
                     fontSize: 13,
                     fontWeight: tab === t ? 600 : 400,
                     cursor: 'pointer',
@@ -421,7 +420,7 @@ export default function LoginPage() {
                   border: '1px solid rgba(239,68,68,0.28)',
                   borderRadius: T.rControl,
                   padding: '12px 14px',
-                  color: 'rgba(255,255,255,0.78)',
+                  color: C.ink,
                   fontSize: 13,
                   lineHeight: 1.5,
                   marginBottom: 18,
@@ -434,7 +433,7 @@ export default function LoginPage() {
             {tab === 'signin' && (
               <form onSubmit={handleSignIn} noValidate>
                 <div style={{ marginBottom: 16 }}>
-                  <label htmlFor="si-email" style={{ display: 'block', color: 'rgba(255,255,255,0.45)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 6, letterSpacing: '0.06em' }}>
+                  <label htmlFor="si-email" style={{ display: 'block', color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 6, letterSpacing: '0.06em' }}>
                     EMAIL
                   </label>
                   <input
@@ -451,7 +450,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <div style={{ marginBottom: 8 }}>
-                  <label htmlFor="si-password" style={{ display: 'block', color: 'rgba(255,255,255,0.45)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 6, letterSpacing: '0.06em' }}>
+                  <label htmlFor="si-password" style={{ display: 'block', color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 6, letterSpacing: '0.06em' }}>
                     PASSWORD
                   </label>
                   <input
@@ -468,7 +467,7 @@ export default function LoginPage() {
                   />
                 </div>
                 <div style={{ textAlign: 'right', marginBottom: 20 }}>
-                  <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>Forgot password?</span>
+                  <span style={{ color: C.slate, fontSize: 12 }}>Forgot password?</span>
                 </div>
                 <button type="submit" disabled={submitting} style={submitStyle}>
                   {submitting ? 'Continuing…' : 'Continue'}
@@ -476,7 +475,7 @@ export default function LoginPage() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '20px 0' }}>
                   <div style={{ flex: 1, height: 1, background: T.lineDark }} />
-                  <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>or continue with</span>
+                  <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>or continue with</span>
                   <div style={{ flex: 1, height: 1, background: T.lineDark }} />
                 </div>
 
@@ -489,7 +488,7 @@ export default function LoginPage() {
                   {googleLoading ? 'Redirecting to Google…' : 'Continue with Google'}
                 </button>
 
-                <p style={{ textAlign: 'center', marginTop: 20, color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>
+                <p style={{ textAlign: 'center', marginTop: 20, color: C.slate, fontSize: 13 }}>
                   New to Skylent?{' '}
                   <button type="button" onClick={() => { setTab('signup'); setError(null) }} style={{ background: 'none', border: 'none', color: accent.text, cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)', padding: 0 }}>
                     Create account →
@@ -507,7 +506,7 @@ export default function LoginPage() {
                   { id: 'su-pw', label: 'PASSWORD', type: 'password', value: suPassword, set: setSuPassword, placeholder: '••••••••', auto: 'new-password' },
                 ].map(field => (
                   <div key={field.id} style={{ marginBottom: 16 }}>
-                    <label htmlFor={field.id} style={{ display: 'block', color: 'rgba(255,255,255,0.45)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 6, letterSpacing: '0.06em' }}>
+                    <label htmlFor={field.id} style={{ display: 'block', color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 6, letterSpacing: '0.06em' }}>
                       {field.label}
                     </label>
                     <input
@@ -526,7 +525,7 @@ export default function LoginPage() {
                 ))}
 
                 <div style={{ marginBottom: 22 }}>
-                  <div style={{ display: 'block', color: 'rgba(255,255,255,0.45)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 10, letterSpacing: '0.06em' }}>
+                  <div style={{ display: 'block', color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 10, letterSpacing: '0.06em' }}>
                     YOUR GOAL
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -540,7 +539,7 @@ export default function LoginPage() {
                           border: `1px solid ${suGoal === g ? accent.border : T.lineDark}`,
                           borderRadius: T.rControl,
                           padding: '8px 14px',
-                          color: suGoal === g ? accent.text : 'rgba(255,255,255,0.52)',
+                          color: suGoal === g ? accent.text : C.slate,
                           fontSize: 12,
                           cursor: 'pointer',
                           fontFamily: 'var(--font-body)',
@@ -558,7 +557,7 @@ export default function LoginPage() {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '20px 0' }}>
                   <div style={{ flex: 1, height: 1, background: T.lineDark }} />
-                  <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>or continue with</span>
+                  <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>or continue with</span>
                   <div style={{ flex: 1, height: 1, background: T.lineDark }} />
                 </div>
 
@@ -571,7 +570,7 @@ export default function LoginPage() {
                   {googleLoading ? 'Redirecting to Google…' : 'Sign up with Google'}
                 </button>
 
-                <p style={{ textAlign: 'center', marginTop: 20, color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>
+                <p style={{ textAlign: 'center', marginTop: 20, color: C.slate, fontSize: 13 }}>
                   Already have an account?{' '}
                   <button type="button" onClick={() => { setTab('signin'); setError(null) }} style={{ background: 'none', border: 'none', color: accent.text, cursor: 'pointer', fontSize: 13, fontFamily: 'var(--font-body)', padding: 0 }}>
                     Sign in →
