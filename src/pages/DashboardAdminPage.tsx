@@ -18,7 +18,7 @@ const accent = getRoleAccent('superadmin')
 
 const canvasRow = {
   padding: '22px 0',
-  borderBottom: `1px solid ${T.lineDark}`,
+  borderBottom: `1px solid ${T.lineLight}`,
 } as const
 
 function NavIcon({ id }: { id: string }) {
@@ -37,13 +37,13 @@ function AdminOverview() {
     <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', position: 'relative' }}>
       <AuroraBand themeId="superadmin" />
       <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 3.5vw, 36px)' }}>
-        <h1 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 8px' }}>Platform overview</h1>
-        <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 14, lineHeight: 1.6, margin: '0 0 24px', maxWidth: 640 }}>
+        <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px' }}>Platform overview</h1>
+        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.6, margin: '0 0 24px', maxWidth: 640 }}>
           The Super Admin workspace is connected to the authenticated platform role. Live platform metrics are shown only when backed by the admin API.
         </p>
-        <div style={{ padding: '18px 0', borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}` }}>
+        <div style={{ padding: '18px 0', borderTop: `1px solid ${T.lineLight}`, borderBottom: `1px solid ${T.lineLight}` }}>
           <div style={{ color: accent.text, fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>Live data boundary</div>
-          <div style={{ color: 'rgba(255,255,255,0.62)', fontSize: 13, lineHeight: 1.7 }}>
+          <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.7 }}>
             No fabricated enrollment, revenue, organisation, uptime, or course-ranking figures are rendered here. Once the corresponding APIs are connected, this surface can display verified data without changing the workspace structure.
           </div>
         </div>
@@ -65,10 +65,10 @@ function AdminSection({
 }) {
   return (
     <div id={id} style={last ? { paddingTop: 22 } : canvasRow}>
-      <div style={{ color: 'rgba(255,255,255,0.48)', fontSize: 11, marginBottom: 12 }}>{title}</div>
-      <div style={{ padding: '18px 20px', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, background: 'rgba(255,255,255,0.02)' }}>
-        <div style={{ color: C.white, fontSize: 13, marginBottom: 6 }}>{title} API not connected</div>
-        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, lineHeight: 1.7, margin: 0, maxWidth: 620 }}>{description}</p>
+      <div style={{ color: C.slate, fontSize: 11, marginBottom: 12 }}>{title}</div>
+      <div style={{ padding: '18px 20px', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard, background: 'rgba(11,13,15,0.02)' }}>
+        <div style={{ color: C.ink, fontSize: 13, marginBottom: 6 }}>{title} API not connected</div>
+        <p style={{ color: C.slate, fontSize: 12, lineHeight: 1.7, margin: 0, maxWidth: 620 }}>{description}</p>
       </div>
     </div>
   )
@@ -92,7 +92,7 @@ export default function DashboardAdminPage() {
       renderNavIcon={id => <NavIcon id={id} />}
     >
       <div id="admin-overview">
-        <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11, marginBottom: 20, padding: '10px 14px', background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rControl }}>
+        <div style={{ color: C.slate, fontSize: 11, marginBottom: 20, padding: '10px 14px', background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rControl }}>
           Development preview — live platform data appears only when the admin APIs are connected. This workspace does not invent operational metrics or business activity.
         </div>
 
