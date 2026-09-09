@@ -1,0 +1,1 @@
+Implementation target: public homepage only for this pass. Preserve all existing business logic and routes.
