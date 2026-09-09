@@ -114,7 +114,7 @@ export function PublicCanvas({
       className="skylent-public-canvas"
       style={{ position: 'relative', minHeight: '100%', background: C.canvas, color: C.ink }}
     >
-      {aurora && <AuroraBand themeId={resolved} />}
+      {aurora && <div className="skylent-light-atmosphere" aria-hidden />}
       <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
     </div>
   )

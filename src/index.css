@@ -79,6 +79,16 @@ body {
   color: #080909;
 }
 
+/* Legacy page modules keep their behavior but inherit the light presentation. */
+.skylent-public-canvas main [style*="color: rgb(255, 255, 255)"],
+.skylent-public-canvas main [style*="color: #ffffff"],
+.skylent-public-canvas main [style*="color: #fff"] { color: #080909 !important; }
+.skylent-public-canvas main [style*="color: rgba(255, 255, 255"],
+.skylent-public-canvas main [style*="color: rgba(255,255,255"] { color: #667078 !important; }
+.skylent-public-canvas main [style*="background: rgba(255, 255, 255"],
+.skylent-public-canvas main [style*="background: rgba(255,255,255"] { background: #FFFDFC !important; }
+.skylent-light-atmosphere { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.62), transparent 38%); }
+
 /* Light product system */
 .home-redesign { background: #F6F4EE; color: #080909; }
 .home-hero-new { padding: 132px var(--gutter) 88px; border-bottom: 1px solid rgba(8,9,9,.1); }
