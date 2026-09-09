@@ -1,0 +1,1 @@
+Approved final scope: replace public homepage presentation with light cream product-first design. Preserve backend, auth, data, routing, dashboards, and existing logic.
