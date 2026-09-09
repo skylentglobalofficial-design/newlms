@@ -1,0 +1,1 @@
+Homepage redesign branch. Next implementation step is to replace only public HomePage presentation while preserving application logic and route structure.
