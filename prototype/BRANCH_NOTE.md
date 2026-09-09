@@ -1,0 +1,1 @@
+This branch was created from main for the approved Skylent light homepage redesign. No backend/auth/data logic should be changed in this pass.
