@@ -1,0 +1,1 @@
+This redesign pass is UI-first. Preserve backend/auth/data/routing/product logic.
