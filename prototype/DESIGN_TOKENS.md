@@ -1,0 +1,1 @@
+Approved visual baseline: warm cream background; true black primary text; white/cream surfaces; restrained domain accents; black/white logo only; purposeful photography; responsive desktop/tablet/mobile; no dark theme. Domain accents: Education soft blue, Exams soft violet/rose, Skills soft green, Business/Analytics warm amber/indigo, Career green, Institutions deep forest.
