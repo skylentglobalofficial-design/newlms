@@ -42,7 +42,7 @@ const accent = getRoleAccent('faculty')
 
 const canvasSectionStyle = {
   padding: '22px 24px',
-  border: `1px solid ${T.lineDark}`,
+  border: '1px solid rgba(8, 9, 9, 0.1)',
   borderRadius: T.rCard,
 } as const
 
@@ -93,7 +93,7 @@ function FacultyWorkspace({
 
       <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 4vw, 36px)' }}>
         <h1 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 8px', lineHeight: 1.1 }}>
-          Today&apos;s teaching
+          What are you teaching today?
         </h1>
         <p style={{ color: 'rgba(255,255,255,0.58)', fontSize: 16, margin: '0 0 4px', lineHeight: 1.5 }}>
           {courseContext}
@@ -480,7 +480,7 @@ export default function DashboardFacultyPage() {
       onNavChange={setActiveNav}
       renderNavIcon={id => <NavIcon id={id} />}
     >
-      <div id="faculty-overview">
+      <div id="faculty-overview" className="faculty-teaching-workspace">
         <AuthDashboardLayout
           primary={
             <>
