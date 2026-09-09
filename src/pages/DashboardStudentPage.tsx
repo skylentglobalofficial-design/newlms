@@ -82,7 +82,7 @@ export default function DashboardStudentPage() {
         onNavChange={setActiveNav}
         renderNavIcon={id => <NavIcon id={id} />}
       >
-        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Loading your learning workspace…</div>
+        <div style={{ color: C.slate, fontSize: 14 }}>Loading your learning workspace…</div>
       </AuthDashboardShell>
     )
   }
@@ -100,8 +100,8 @@ export default function DashboardStudentPage() {
         renderNavIcon={id => <NavIcon id={id} />}
       >
         <div id="student-overview" style={{ maxWidth: 560 }}>
-          <div style={{ color: C.white, fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, marginBottom: 12 }}>Start your learning journey</div>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.7, margin: '0 0 20px' }}>
+          <div style={{ color: C.ink, fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, marginBottom: 12 }}>Start your learning journey</div>
+          <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '0 0 20px' }}>
             Enroll in a course to open your learner dashboard, curriculum progress, and resume learning.
           </p>
           <button
@@ -171,18 +171,18 @@ export default function DashboardStudentPage() {
               </div>
               <CurriculumProgressRail course={course} lessonStates={lessonStates} accent={accent} learnSlug={learnSlug} />
               <StudentProgressSurface course={course} lessonStates={lessonStates} accent={accent} certificateReady={allComplete} />
-              <div id="student-certificates" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.32)', marginBottom: 10 }}>Certificate</div>
+              <div id="student-certificates" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
+                <div className="skylent-label" style={{ color: C.slate, marginBottom: 10 }}>Certificate</div>
                 {workspace.enrollment.certificateEligible ? (
-                  <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+                  <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
                     Eligible for certificate — status: {workspace.enrollment.certificateStatus}. Download will be available in a later phase.
                   </p>
                 ) : allComplete ? (
-                  <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+                  <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
                     Course complete — certificate eligibility is being finalized.
                   </p>
                 ) : (
-                  <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: '0 0 12px', lineHeight: 1.6 }}>
+                  <p style={{ color: C.slate, fontSize: 14, margin: '0 0 12px', lineHeight: 1.6 }}>
                     Complete all lessons to unlock certificate eligibility.
                   </p>
                 )}

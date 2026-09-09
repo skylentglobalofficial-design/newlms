@@ -1,6 +1,5 @@
-import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { C, FadeIn, PageShell, EnrollmentModal } from '../components/shared'
+import { C, FadeIn, PageShell } from '../components/shared'
 import { Button, Eyebrow, Section, T } from '../components/ui'
 import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
@@ -13,7 +12,6 @@ export default function WorkshopDetailPage() {
   const { slug } = useParams()
   const navigate = useNavigate()
   const workshop = workshops.find(w => w.slug === slug)
-  const [enrollOpen, setEnrollOpen] = useState(false)
 
   if (!workshop) {
     return (
@@ -72,7 +70,7 @@ export default function WorkshopDetailPage() {
                 </div>
                 <div style={{ marginBottom: 18 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{workshop.seatsLeft} seats left (demo)</span>
+                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{workshop.seatsLeft} seats left (illustrative)</span>
                     <span style={{ color: pct > 70 ? '#f87171' : 'rgba(255,255,255,0.35)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
                   </div>
                   <div style={{ height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2 }}>
@@ -85,8 +83,13 @@ export default function WorkshopDetailPage() {
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through' }}>₹{workshop.originalPrice.toLocaleString('en-IN')}</span>
                   )}
                 </div>
-                <Button variant="primary" size="lg" onClick={() => setEnrollOpen(true)} style={{ width: '100%' }}>
-                  Register for workshop
+                <div style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, borderRadius: 10, padding: '14px 16px', marginBottom: 16 }}>
+                  <p style={{ color: 'rgba(255,255,255,0.62)', fontSize: 13, lineHeight: 1.65, margin: 0 }}>
+                    Workshop registration is not live yet. This page is marketing information only until a workshop backend is added.
+                  </p>
+                </div>
+                <Button variant="secondary" size="lg" onClick={() => navigate('/contact')} style={{ width: '100%' }}>
+                  Contact us about workshops
                 </Button>
               </GlassSurface>
             </FadeIn>
@@ -109,37 +112,23 @@ export default function WorkshopDetailPage() {
                 ))}
               </GlassSurface>
             </FadeIn>
-            <FadeIn delay={60}>
-              <GlassSurface level={2} padding="18px 22px">
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, lineHeight: 1.65, margin: 0 }}>
-                  Demo workshop listing. Registration opens the standard enrollment flow — no live event is scheduled in this environment.
-                </p>
-              </GlassSurface>
-            </FadeIn>
           </div>
 
           <div className="workshop-sticky-panel" style={{ position: 'sticky', top: T.navH + 16 }}>
             <FadeIn delay={40}>
               <GlassSurface level={2} padding="22px 24px">
-                <div className="skylent-label" style={{ color: accent.text, marginBottom: 14 }}>At a glance</div>
-                {[['Date', workshop.date], ['Time block', workshop.duration], ['Format', workshop.mode], ['Host', workshop.instructor]].map(([l, v]) => (
-                  <div key={l} style={{ display: 'flex', justifyContent: 'space-between', gap: 12, padding: '8px 0', borderBottom: `1px solid ${T.lineDark}`, flexWrap: 'wrap' }}>
-                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>{l}</span>
-                    <span style={{ color: C.white, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
-                  </div>
-                ))}
-                <Button variant="secondary" onClick={() => setEnrollOpen(true)} style={{ width: '100%', marginTop: 18 }}>
-                  Register
+                <div className="skylent-label" style={{ color: accent.text, marginBottom: 14 }}>Registration status</div>
+                <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.65, margin: '0 0 18px' }}>
+                  Workshop registration is not live yet. Seat counts and pricing shown here are illustrative marketing data.
+                </p>
+                <Button variant="secondary" onClick={() => navigate('/contact')} style={{ width: '100%' }}>
+                  Get notified
                 </Button>
               </GlassSurface>
             </FadeIn>
           </div>
         </div>
       </Section>
-
-      {enrollOpen && (
-        <EnrollmentModal item={{ id: workshop.slug, title: workshop.title, price: workshop.price, type: 'workshop' }} onClose={() => setEnrollOpen(false)} themeId="webinar" />
-      )}
     </PageShell>
   )
 }

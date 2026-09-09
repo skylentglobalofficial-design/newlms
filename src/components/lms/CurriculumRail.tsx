@@ -24,7 +24,7 @@ export default function CurriculumRail({
   const { progressPct } = computeCourseProgress(allLessons, lessonStates)
 
   return (
-    <div className="lms-curriculum-rail">
+    <div className="lms-curriculum-rail skylent-curriculum-rail">
       <div style={{ padding: '20px', borderBottom: `1px solid ${T.lineDark}` }}>
         <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 12 }}>
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 18, color: C.white }}>
@@ -42,10 +42,10 @@ export default function CurriculumRail({
           </div>
         </div>
       </div>
-      <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
+      <div className="skylent-curriculum-scroll" style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
         {course.modules.map((mod: CourseModule, mi: number) => (
           <div key={mod.id}>
-            <div style={{ padding: '12px 16px 6px', color: 'rgba(255,255,255,0.3)', fontSize: 10, letterSpacing: '0.06em' }}>
+            <div className="skylent-module-label" style={{ padding: '12px 16px 6px', color: 'rgba(255,255,255,0.3)', fontSize: 10, letterSpacing: '0.06em' }}>
               Module {mi + 1} · {mod.title}
             </div>
             {mod.lessons.map((lesson: CourseLesson) => {

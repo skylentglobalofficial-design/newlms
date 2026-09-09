@@ -8,6 +8,8 @@ import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 import { programs } from '../data'
 import type { Program, ProgramType } from '../data'
+import { catalogProgramBySlug, type CatalogProgramSummary } from '../lib/catalog-api'
+import { useCatalogPrograms } from '../hooks/useCatalog'
 import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
 
 const accent = getDomainAccent('general')
@@ -49,6 +51,20 @@ function programAccent(type: ProgramType) {
 
 function lowestPrice(program: Program) {
   return Math.min(...program.pricing.map(p => p.price))
+}
+
+function programFacts(catalog: CatalogProgramSummary[] | null | undefined, slug: string) {
+  return catalogProgramBySlug(catalog, slug)
+}
+
+function displayProgramPrice(program: Program, facts: CatalogProgramSummary | null) {
+  if (facts?.pricing.length) return Math.min(...facts.pricing.map((tier) => tier.price))
+  return lowestPrice(program)
+}
+
+function displayProgramStatus(program: Program, facts: CatalogProgramSummary | null) {
+  const status = facts?.enrollmentStatus ?? program.enrollmentStatus ?? 'open'
+  return STATUS_LABEL[status]
 }
 
 // ─── HERO VISUAL ──────────────────────────────────────────────────────────────
@@ -418,12 +434,15 @@ function FilterControls({
 
 // ─── FEATURED PROGRAM ─────────────────────────────────────────────────────────
 
-function FeaturedProgramSection({ program }: { program: Program }) {
+function FeaturedProgramSection({ program, catalog }: { program: Program; catalog: CatalogProgramSummary[] | null }) {
   const navigate = useNavigate()
   const typeAccent = programAccent(program.programType)
   const photo = PROGRAM_PHOTO[program.slug] ?? DEFAULT_PROGRAM_PHOTO
-  const price = lowestPrice(program)
-  const status = STATUS_LABEL[program.enrollmentStatus ?? 'open']
+  const facts = programFacts(catalog, program.slug)
+  const price = displayProgramPrice(program, facts)
+  const status = displayProgramStatus(program, facts)
+  const moduleCount = facts?.moduleCount ?? program.modules
+  const projectCount = facts?.projectCount ?? program.projects
 
   return (
     <Section tone="canvas" divider id="featured">
@@ -447,8 +466,8 @@ function FeaturedProgramSection({ program }: { program: Program }) {
                 { k: 'Duration', v: program.duration },
                 { k: 'Format', v: program.format },
                 { k: 'Level', v: program.level },
-                { k: 'Modules', v: String(program.modules) },
-                { k: 'Projects', v: String(program.projects) },
+                { k: 'Modules', v: String(moduleCount) },
+                { k: 'Projects', v: String(projectCount) },
                 { k: 'Outcome', v: program.outcome },
                 { k: 'From', v: `₹${price.toLocaleString('en-IN')}` },
               ].map(({ k, v }) => (
@@ -469,11 +488,14 @@ function FeaturedProgramSection({ program }: { program: Program }) {
 
 // ─── PROGRAM RESULTS ──────────────────────────────────────────────────────────
 
-function ProgramResultRow({ program, prominent }: { program: Program; prominent?: boolean }) {
+function ProgramResultRow({ program, prominent, catalog }: { program: Program; prominent?: boolean; catalog: CatalogProgramSummary[] | null }) {
   const typeAccent = programAccent(program.programType)
   const photo = PROGRAM_PHOTO[program.slug] ?? DEFAULT_PROGRAM_PHOTO
-  const price = lowestPrice(program)
-  const status = STATUS_LABEL[program.enrollmentStatus ?? 'open']
+  const facts = programFacts(catalog, program.slug)
+  const price = displayProgramPrice(program, facts)
+  const status = displayProgramStatus(program, facts)
+  const moduleCount = facts?.moduleCount ?? program.modules
+  const projectCount = facts?.projectCount ?? program.projects
 
   return (
     <Link
@@ -504,8 +526,8 @@ function ProgramResultRow({ program, prominent }: { program: Program; prominent?
                 <span>{program.duration}</span>
                 <span>{program.format}</span>
                 <span>{program.level}</span>
-                <span>{program.modules} modules</span>
-                <span>{program.projects} projects</span>
+                <span>{moduleCount} modules</span>
+                <span>{projectCount} projects</span>
               </div>
             </div>
             <div style={{ minHeight: 200, position: 'relative' }}>
@@ -549,7 +571,7 @@ function ProgramResultRow({ program, prominent }: { program: Program; prominent?
   )
 }
 
-function ProgramResultsSection({ results, excludeSlug }: { results: Program[]; excludeSlug?: string }) {
+function ProgramResultsSection({ results, excludeSlug, catalog }: { results: Program[]; excludeSlug?: string; catalog: CatalogProgramSummary[] | null }) {
   const list = excludeSlug ? results.filter(p => p.slug !== excludeSlug) : results
   const [lead, ...rest] = list
 
@@ -577,7 +599,7 @@ function ProgramResultsSection({ results, excludeSlug }: { results: Program[]; e
           {lead && (
             <FadeIn>
               <div style={{ marginBottom: 24 }}>
-                <ProgramResultRow program={lead} prominent />
+                <ProgramResultRow program={lead} prominent catalog={catalog} />
               </div>
             </FadeIn>
           )}
@@ -586,7 +608,7 @@ function ProgramResultsSection({ results, excludeSlug }: { results: Program[]; e
               <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 8 }}>More programs</div>
               {rest.map((program, i) => (
                 <FadeIn key={program.slug} delay={i * 40}>
-                  <ProgramResultRow program={program} />
+                  <ProgramResultRow program={program} catalog={catalog} />
                 </FadeIn>
               ))}
             </div>
@@ -650,6 +672,7 @@ function DecisionSupportSection() {
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
 export default function ProgramsPage() {
+  const catalog = useCatalogPrograms()
   const navigate = useNavigate()
   const [pillar, setPillar] = useState<Pillar>('All')
   const [type, setType] = useState<'All' | ProgramType>('All')
@@ -747,9 +770,9 @@ export default function ProgramsPage() {
         resultCount={filtered.length}
       />
 
-      {featured && <FeaturedProgramSection program={featured} />}
+      {featured && <FeaturedProgramSection program={featured} catalog={catalog.data} />}
 
-      <ProgramResultsSection results={filtered} excludeSlug={featured?.slug} />
+      <ProgramResultsSection results={filtered} excludeSlug={featured?.slug} catalog={catalog.data} />
 
       <DecisionSupportSection />
 

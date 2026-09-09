@@ -21,8 +21,8 @@ type Tone = 'light' | 'dark' | 'canvas'
 // ── Section wrapper ──────────────────────────────────────────────────────────
 function sectionBg(tone: Tone, bg?: string): string {
   if (bg) return bg
-  if (tone === 'canvas') return C.canvas
-  if (tone === 'dark') return C.ink
+  if (tone === 'canvas') return C.warmWhite
+  if (tone === 'dark') return C.warmWhite
   return C.warmWhite
 }
 
@@ -42,7 +42,7 @@ export function Section({
   divider?: boolean
 }) {
   const background = sectionBg(tone, bg)
-  const textColor = tone === 'light' ? C.ink : C.white
+  const textColor = C.ink
   return (
     <>
       {divider && <div className="skylent-section-divider" />}
@@ -64,7 +64,7 @@ export function Section({
 
 // ── Eyebrow (mono label) ─────────────────────────────────────────────────────
 export function Eyebrow({ children, tone = 'light', accent }: { children: React.ReactNode; tone?: Tone; accent?: boolean }) {
-  const color = accent ? brandAccent.text : tone === 'light' ? C.slate : 'rgba(255,255,255,0.42)'
+  const color = accent ? brandAccent.text : C.slate
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
       <span style={{ width: 20, height: 1, background: 'currentColor', opacity: 0.5 }} />
@@ -92,7 +92,7 @@ export function Heading({
     xl: 'clamp(40px, 6vw, 84px)',
   }
   return (
-    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: sizes[size], lineHeight: 1.04, letterSpacing: '-0.03em', color: tone === 'light' ? C.ink : C.white, margin: 0, ...style }}>
+    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: sizes[size], lineHeight: 1.04, letterSpacing: '-0.03em', color: C.ink, margin: 0, ...style }}>
       {children}
     </h2>
   )
@@ -120,7 +120,7 @@ export function SectionHeader({
         {eyebrow && <div style={{ marginBottom: 22 }}><Eyebrow tone={tone}>{eyebrow}</Eyebrow></div>}
         <Heading tone={tone}>{title}</Heading>
         {lead && (
-          <p style={{ color: tone === 'light' ? C.slate : 'rgba(255,255,255,0.5)', fontSize: type.bodyLg, lineHeight: 1.7, margin: '22px 0 0', maxWidth: 560, ...(align === 'center' ? { marginLeft: 'auto', marginRight: 'auto' } : {}) }}>{lead}</p>
+          <p style={{ color: C.slate, fontSize: type.bodyLg, lineHeight: 1.7, margin: '22px 0 0', maxWidth: 560, ...(align === 'center' ? { marginLeft: 'auto', marginRight: 'auto' } : {}) }}>{lead}</p>
         )}
       </div>
       {action}

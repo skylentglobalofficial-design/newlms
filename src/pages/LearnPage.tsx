@@ -37,6 +37,13 @@ function dashRoute(role?: string) {
   }
 }
 
+function lessonPhase(type: string) {
+  if (type === 'assignment') return { label: 'BUILD', capability: 'Build and submit evidence.' }
+  if (type === 'quiz') return { label: 'PROVE', capability: 'Solve, explain, and check your reasoning.' }
+  if (type === 'notes') return { label: 'UNDERSTAND', capability: 'Explain the idea in your own words.' }
+  return { label: 'LEARN', capability: 'Understand the concept before you apply it.' }
+}
+
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
   const navigate = useNavigate()
@@ -109,7 +116,7 @@ export default function LearnPage() {
 
   if (!slug) {
     return (
-      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="skylent-lms-state" style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: C.white }}>Course not found</div>
       </div>
     )
@@ -117,7 +124,7 @@ export default function LearnPage() {
 
   if (!authReady || access.status === 'loading') {
     return (
-      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div className="skylent-lms-state" style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Loading course…</div>
       </div>
     )
@@ -125,7 +132,7 @@ export default function LearnPage() {
 
   if (access.status === 'login_required') {
     return (
-      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
+      <div className="skylent-lms-state" style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
         <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>Sign in to continue learning</div>
         <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>Course content is available to enrolled learners after authentication.</p>
         <Link to="/login" style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Go to login →</Link>
@@ -135,7 +142,7 @@ export default function LearnPage() {
 
   if (access.status === 'not_enrolled') {
     return (
-      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
+      <div className="skylent-lms-state" style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
         <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>{access.courseTitle}</div>
         <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>You are signed in but not enrolled in this course yet.</p>
         <button
@@ -216,7 +223,7 @@ export default function LearnPage() {
   }
 
   return (
-    <div className="lms-shell" style={{ display: 'flex', height: '100vh', background: C.canvas, overflow: 'hidden' }}>
+    <div className="lms-shell skylent-lms-shell" style={{ display: 'flex', height: '100vh', background: C.canvas, overflow: 'hidden' }}>
       {sidebarOpen && (
         <div className="lms-sidebar-overlay" onClick={() => setSidebarOpen(false)} role="presentation" />
       )}
@@ -264,7 +271,14 @@ export default function LearnPage() {
           )}
 
           {selectedLesson ? (
-            <div className={`lms-lesson-panel lms-lesson-type-${selectedLesson.type}`} style={{ border: `1px solid ${tabAccent.border}`, borderLeft: `3px solid ${tabAccent.primary}`, borderRadius: T.rCard, background: 'rgba(255,255,255,0.015)', padding: 'clamp(20px, 3vw, 28px)' }}>
+            <>
+            <div className={`lms-learning-context lms-context-${selectedLesson.type}`}>
+              <div className="lms-context-kicker"><span>{lessonTypeLabel(selectedLesson.type)}</span><span>{selectedLesson.duration ?? 'Self-paced'}</span></div>
+              <div className="lms-context-module">{course.modules.find(module => module.lessons.some(lesson => lesson.id === selectedLesson.id))?.title ?? 'Current module'}</div>
+              <h1>{selectedLesson.title}</h1>
+              <p>{selectedLesson.type === 'video' ? 'Build a clear mental model, then use it in the next activity.' : selectedLesson.type === 'quiz' ? 'Work through the question carefully and use the feedback to sharpen your understanding.' : selectedLesson.type === 'assignment' ? 'Turn the brief into evidence you can stand behind.' : 'Read the key ideas, make a connection, and decide what you can do next.'}</p>
+            </div>
+            <div className={`lms-lesson-panel lms-lesson-frame lms-lesson-type-${selectedLesson.type}`} style={{ border: `1px solid ${tabAccent.border}`, borderLeft: `3px solid ${tabAccent.primary}`, borderRadius: T.rCard, background: 'rgba(255,255,255,0.015)', padding: 'clamp(20px, 3vw, 28px)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: tabAccent.primary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   {lessonTypeLabel(selectedLesson.type)}
@@ -273,28 +287,42 @@ export default function LearnPage() {
                   {selectedState.complete ? 'Complete' : 'In progress'}
                 </span>
               </div>
-              {selectedState.locked ? (
-                <LockedLessonState
-                  lessonTitle={selectedLesson.title}
-                  requiredLessonTitle={
-                    selectedState.requiredLessonKey
-                      ? allLessons.find((lesson) => lesson.id === selectedState.requiredLessonKey)?.title
-                      : null
-                  }
-                  accent={{ ...tabAccent, text: roleAccent.text }}
-                />
-              ) : (
-                <LessonContentView
-                  lesson={selectedLesson}
-                  lessonState={selectedState}
-                  accent={{ ...tabAccent, text: roleAccent.text }}
-                  onComplete={() => { void handleLessonComplete() }}
-                  quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
-                  onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
-                  onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
-                  lessonMedia={lessonMedia}
-                />
-              )}
+              <div className="lms-workspace-grid">
+                <aside className="lms-workspace-brief">
+                  <div className="lms-workspace-brief-label">YOUR BRIEF</div>
+                  <div className="lms-workspace-phase">{lessonPhase(selectedLesson.type).label}</div>
+                  <h2>{lessonPhase(selectedLesson.type).capability}</h2>
+                  <p>{selectedLesson.type === 'video' ? 'Watch for the idea that changes how you see the problem. Pause, take notes, then continue.' : selectedLesson.type === 'quiz' ? 'Choose an answer, look at the feedback, and use it to decide what you understand next.' : selectedLesson.type === 'assignment' ? 'Make your thinking visible. A considered submission becomes evidence of what you can do.' : 'Read for the connection, not just the completion tick.'}</p>
+                  <div className="lms-capability-list">
+                    {['Explain', selectedLesson.type === 'assignment' ? 'Build' : selectedLesson.type === 'quiz' ? 'Solve' : 'Apply', 'Next step'].map((item, index) => <span key={item} className={index === 0 ? 'is-active' : ''}>{item}</span>)}
+                  </div>
+                  <div className="lms-brief-status"><span>{selectedState.complete ? 'Complete' : 'In progress'}</span><b>{selectedState.complete ? 'Ready for what comes next.' : 'Keep going. Your next action is here.'}</b></div>
+                </aside>
+                <div className="lms-workspace-activity">
+                  {selectedState.locked ? (
+                    <LockedLessonState
+                      lessonTitle={selectedLesson.title}
+                      requiredLessonTitle={
+                        selectedState.requiredLessonKey
+                          ? allLessons.find((lesson) => lesson.id === selectedState.requiredLessonKey)?.title
+                          : null
+                      }
+                      accent={{ ...tabAccent, text: roleAccent.text }}
+                    />
+                  ) : (
+                    <LessonContentView
+                      lesson={selectedLesson}
+                      lessonState={selectedState}
+                      accent={{ ...tabAccent, text: roleAccent.text }}
+                      onComplete={() => { void handleLessonComplete() }}
+                      quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
+                      onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
+                      onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
+                      lessonMedia={lessonMedia}
+                    />
+                  )}
+                </div>
+              </div>
               <LessonNavigation
                 prev={prev}
                 next={next && isLessonUnlocked(next.id, allLessons, lessonStates) ? next : null}
@@ -303,6 +331,7 @@ export default function LearnPage() {
                 onNavigate={handleLessonSelect}
               />
             </div>
+            </>
           ) : (
             <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.3)' }}>Select a lesson from the curriculum.</div>
           )}

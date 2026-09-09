@@ -5,11 +5,14 @@ import { Button, Eyebrow, Section, SectionHeader, T } from '../components/ui'
 import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { courses } from '../data'
+import { catalogCourseBySlug } from '../lib/catalog-api'
+import { useCatalogCourses } from '../hooks/useCatalog'
 import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO, coursePhoto } from '../media'
 
 const accent = getDomainAccent('professional')
 
 export default function CoursesPage() {
+  const catalog = useCatalogCourses()
   const [searchParams] = useSearchParams()
   const [search, setSearch] = useState(searchParams.get('q') ?? '')
 
@@ -129,7 +132,13 @@ export default function CoursesPage() {
           </div>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }} className="three-col programs-grid">
-            {filtered.map((course, i) => (
+            {filtered.map((course, i) => {
+              const facts = catalogCourseBySlug(catalog.data, course.slug)
+              const price = facts?.price ?? course.price
+              const originalPrice = facts?.originalPrice ?? course.originalPrice
+              const lessonCount = facts?.lessonCount ?? course.lessons
+              const projectCount = facts?.projectCount ?? course.projects
+              return (
               <FadeIn key={course.slug} delay={i * 40}>
                 <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}>
                   <div style={{ position: 'relative', minHeight: 140, borderBottom: `1px solid ${T.lineDark}` }}>
@@ -147,7 +156,7 @@ export default function CoursesPage() {
                     <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 19, fontWeight: 600, color: C.white, letterSpacing: '-0.02em', lineHeight: 1.25, margin: '0 0 10px' }}>{course.title}</h3>
                     <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 13, lineHeight: 1.65, margin: '0 0 16px', flex: 1 }}>{course.desc}</p>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 18 }}>
-                      {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', String(course.lessons)], ['Projects', String(course.projects)]].map(([l, v]) => (
+                      {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', String(lessonCount)], ['Projects', String(projectCount)]].map(([l, v]) => (
                         <div key={l} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '8px 10px' }}>
                           <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 3 }}>{l}</div>
                           <div style={{ color: C.white, fontSize: 12, fontWeight: 600 }}>{v}</div>
@@ -156,8 +165,8 @@ export default function CoursesPage() {
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
                       <div>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: C.white }}>₹{course.price.toLocaleString('en-IN')}</span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through', marginLeft: 8 }}>₹{course.originalPrice.toLocaleString('en-IN')}</span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: C.white }}>₹{price.toLocaleString('en-IN')}</span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through', marginLeft: 8 }}>₹{originalPrice.toLocaleString('en-IN')}</span>
                       </div>
                       <Link to={`/courses/${course.slug}`} style={{ textDecoration: 'none' }}>
                         <Button variant="primary" size="sm">View course</Button>
@@ -166,7 +175,7 @@ export default function CoursesPage() {
                   </div>
                 </GlassSurface>
               </FadeIn>
-            ))}
+            )})}
           </div>
         )}
       </Section>

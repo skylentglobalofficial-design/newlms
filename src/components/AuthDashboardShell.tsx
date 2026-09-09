@@ -67,13 +67,13 @@ export function AuthDashboardShell({
 
   const sidebarContent = (
     <>
-      <div style={{ padding: '22px 20px 18px', borderBottom: `1px solid ${T.lineDark}` }}>
+      <div style={{ padding: '22px 20px 18px', borderBottom: `1px solid ${T.lineLight}` }}>
         <Link to="/" style={{ textDecoration: 'none' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: C.white, letterSpacing: '-0.02em' }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: C.ink, letterSpacing: '-0.02em' }}>
             Skylent<span style={{ color: accent.primary }}>.</span>
           </div>
         </Link>
-        <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 11, marginTop: 4, letterSpacing: '0.04em' }}>{workspaceLabel}</div>
+        <div style={{ color: C.slate, fontSize: 11, marginTop: 4, letterSpacing: '0.04em' }}>{workspaceLabel}</div>
       </div>
 
       <nav style={{ flex: 1, padding: '14px 12px', overflowY: 'auto' }}>
@@ -96,14 +96,14 @@ export function AuthDashboardShell({
                 border: 'none',
                 background: isActive ? accent.subtle : 'transparent',
                 borderLeft: isActive ? `2px solid ${accent.primary}` : '2px solid transparent',
-                color: isActive ? C.white : 'rgba(255,255,255,0.48)',
+                color: isActive ? C.ink : C.slate,
                 fontSize: 13.5,
                 fontFamily: 'var(--font-body)',
                 cursor: 'pointer',
                 fontWeight: isActive ? 600 : 400,
               }}
             >
-              <span style={{ color: isActive ? accent.text : 'rgba(255,255,255,0.35)', display: 'flex' }}>
+              <span style={{ color: isActive ? accent.text : C.slate, display: 'flex' }}>
                 {renderNavIcon(item.id)}
               </span>
               <span>{item.label}</span>
@@ -112,11 +112,11 @@ export function AuthDashboardShell({
         })}
       </nav>
 
-      <div style={{ padding: '16px', borderTop: `1px solid ${T.lineDark}` }}>
+      <div style={{ padding: '16px', borderTop: `1px solid ${T.lineLight}` }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12,
-          padding: '10px 12px', background: 'rgba(255,255,255,0.03)',
-          borderRadius: T.rControl, border: `1px solid ${T.lineDark}`,
+          padding: '10px 12px', background: C.white,
+          borderRadius: T.rControl, border: `1px solid ${T.lineLight}`,
         }}>
           <div style={{
             width: 34, height: 34, borderRadius: '50%',
@@ -127,10 +127,10 @@ export function AuthDashboardShell({
             {user?.avatar || '??'}
           </div>
           <div style={{ overflow: 'hidden', minWidth: 0 }}>
-            <div style={{ color: C.white, fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div style={{ color: C.ink, fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {user?.name || 'User'}
             </div>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11 }}>{roleLabel}</div>
+            <div style={{ color: C.slate, fontSize: 11 }}>{roleLabel}</div>
           </div>
         </div>
         <button
@@ -138,8 +138,8 @@ export function AuthDashboardShell({
           onClick={handleLogout}
           style={{
             width: '100%', padding: '9px', background: 'transparent',
-            border: `1px solid ${T.lineDark}`, borderRadius: T.rControl,
-            color: 'rgba(255,255,255,0.45)', fontSize: 12, cursor: 'pointer',
+            border: `1px solid ${T.lineLight}`, borderRadius: T.rControl,
+            color: C.slate, fontSize: 12, cursor: 'pointer',
             fontFamily: 'var(--font-body)',
           }}
         >
@@ -154,7 +154,7 @@ export function AuthDashboardShell({
       {/* Level 1 — desktop sidebar chrome */}
       <aside className="auth-shell-sidebar-desktop" style={{
         position: 'fixed', top: 0, left: 0, bottom: 0, width: 236,
-        background: 'rgba(5,5,5,0.94)', borderRight: `1px solid ${T.lineDark}`,
+        background: C.warmWhite, borderRight: `1px solid ${T.lineLight}`,
         backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
         display: 'flex', flexDirection: 'column', zIndex: 120,
       }}>
@@ -172,7 +172,7 @@ export function AuthDashboardShell({
         className={`auth-shell-sidebar-mobile${mobileOpen ? ' open' : ''}`}
         style={{
           position: 'fixed', top: 0, left: 0, bottom: 0, width: 280,
-          background: 'rgba(5,5,5,0.98)', borderRight: `1px solid ${T.lineDark}`,
+          background: C.warmWhite, borderRight: `1px solid ${T.lineLight}`,
           display: 'flex', flexDirection: 'column', zIndex: 210,
           transform: mobileOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 0.25s ease',
@@ -185,13 +185,13 @@ export function AuthDashboardShell({
         {/* Level 1 — mobile header chrome */}
         <header className="auth-shell-mobile-header" style={{
           display: 'none', position: 'sticky', top: 0, zIndex: 90,
-          padding: '12px 16px', background: 'rgba(5,5,5,0.92)', borderBottom: `1px solid ${T.lineDark}`,
+          padding: '12px 16px', background: 'rgba(246,244,238,0.92)', borderBottom: `1px solid ${T.lineLight}`,
           backdropFilter: 'blur(16px)', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu" style={{ background: 'none', border: 'none', color: C.white, padding: 8, cursor: 'pointer' }}>
+          <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu" style={{ background: 'none', border: 'none', color: C.ink, padding: 8, cursor: 'pointer' }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white }}>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink }}>
             Skylent<span style={{ color: accent.primary }}>.</span>
           </span>
           <div style={{ width: 36 }} />
@@ -206,7 +206,7 @@ export function AuthDashboardShell({
       {/* Level 1 — mobile bottom nav */}
       <nav className="auth-shell-bottom-nav" style={{
         position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
-        background: 'rgba(5,5,5,0.94)', borderTop: `1px solid ${T.lineDark}`,
+        background: 'rgba(246,244,238,0.94)', borderTop: `1px solid ${T.lineLight}`,
         backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
         display: 'none', justifyContent: 'space-around',
         padding: '8px 4px max(8px, env(safe-area-inset-bottom))',
@@ -221,7 +221,7 @@ export function AuthDashboardShell({
               style={{
                 flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 background: 'none', border: 'none', cursor: 'pointer', padding: '6px 4px',
-                color: isActive ? accent.text : 'rgba(255,255,255,0.38)',
+                color: isActive ? accent.text : C.slate,
               }}
             >
               {renderNavIcon(item.id)}

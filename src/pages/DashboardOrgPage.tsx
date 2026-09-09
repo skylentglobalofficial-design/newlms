@@ -62,34 +62,34 @@ function InstitutionWorkspace({
   batchMessage: string
 }) {
   return (
-    <div id="org-overview">
+    <div id="org-overview" className="org-institution-workspace">
       <div className="org-institution-visual">
         <ProductVisual id="institution-pipeline" themeId="institution" style={{ minHeight: 240 }} />
       </div>
 
       <div style={{ marginBottom: 28 }}>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Institution workspace</div>
-        <h1 className="skylent-display-md" style={{ color: C.white, margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>
+        <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>
           {institutionName}
         </h1>
-        <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 14, margin: 0 }}>
+        <p style={{ color: C.slate, fontSize: 14, margin: 0 }}>
           {programCount} programs · {institutionLearners} enrollments · backend-backed totals
         </p>
       </div>
 
       <div style={{
         padding: '24px 20px', marginBottom: 28,
-        borderTop: `1px solid ${T.lineDark}`,
-        borderBottom: `1px solid ${T.lineDark}`,
+        borderTop: `1px solid ${T.lineLight}`,
+        borderBottom: `1px solid ${T.lineLight}`,
         borderLeft: `3px solid ${accent.primary}`,
-        background: 'rgba(255,255,255,0.02)',
+        background: 'rgba(11,13,15,0.02)',
         borderRadius: T.rCard,
       }}>
         <div style={{ color: accent.text, fontSize: 11, fontWeight: 500, marginBottom: 10 }}>
-          Batch analytics unavailable
+          What needs your attention?
         </div>
-        <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, margin: 0, lineHeight: 1.6 }}>
-          {batchMessage}
+        <p style={{ color: C.slate, fontSize: 15, margin: 0, lineHeight: 1.6 }}>
+          Batch analytics unavailable. {batchMessage}
         </p>
       </div>
     </div>
@@ -100,8 +100,8 @@ function InstitutionWorkspace({
 
 function AcademicPipeline() {
   return (
-    <div id="org-curriculum" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
-      <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
+    <div id="org-curriculum" className="org-section org-curriculum-section" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
+      <div className="skylent-label" style={{ color: C.slate, marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Curriculum operations
       </div>
       <div className="org-academic-pipeline" style={{ width: '100%', maxWidth: '100%' }}>
@@ -116,28 +116,28 @@ function AcademicPipeline() {
                   height: isCurrent ? 32 : 24,
                   borderRadius: '50%',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: isCurrent ? accent.subtleStrong : isComplete ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
-                  border: `1.5px solid ${isCurrent ? accent.border : isComplete ? 'rgba(255,255,255,0.2)' : T.lineDark}`,
+                  background: isCurrent ? accent.subtleStrong : isComplete ? 'rgba(11,13,15,0.06)' : 'rgba(11,13,15,0.03)',
+                  border: `1.5px solid ${isCurrent ? accent.border : isComplete ? accent.border : T.lineLight}`,
                 }}>
                   {isComplete ? (
                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={accent.text} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                   ) : isCurrent ? (
                     <div style={{ width: 7, height: 7, borderRadius: '50%', background: accent.primary }} />
                   ) : (
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(11,13,15,0.12)' }} />
                   )}
                 </div>
                 <span style={{
                   fontSize: isCurrent ? 11 : 10,
                   fontWeight: isCurrent ? 600 : 400,
-                  color: isCurrent ? C.white : 'rgba(255,255,255,0.4)',
+                  color: isCurrent ? C.ink : C.slate,
                   textAlign: 'center',
                 }}>
                   {node.label}
                 </span>
                 <span style={{
                   fontSize: 9,
-                  color: isCurrent ? accent.textMuted : 'rgba(255,255,255,0.25)',
+                  color: isCurrent ? accent.textMuted : C.slate,
                   textAlign: 'center',
                   maxWidth: 72,
                   overflow: 'hidden',
@@ -150,7 +150,7 @@ function AcademicPipeline() {
               {i < ACADEMIC_PIPELINE.length - 1 && (
                 <div className="org-pipeline-connector" style={{
                   flex: 1, height: 1, minWidth: 6, margin: '0 3px 28px',
-                  background: isComplete ? `linear-gradient(90deg, ${accent.primary}66, ${T.lineDark})` : T.lineDark,
+                  background: isComplete ? `linear-gradient(90deg, ${accent.primary}66, ${T.lineLight})` : T.lineLight,
                 }} />
               )}
             </div>
@@ -165,8 +165,8 @@ function AcademicPipeline() {
 
 function ProgramOperations({ programs }: { programs: OrganisationDashboard['programs'] }) {
   return (
-    <div id="org-programs">
-      <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
+    <div id="org-programs" className="org-section">
+      <div className="skylent-label" style={{ color: C.slate, marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Programs & offerings
       </div>
 
@@ -178,23 +178,23 @@ function ProgramOperations({ programs }: { programs: OrganisationDashboard['prog
             gap: 12,
             alignItems: 'center',
             padding: '14px 0',
-            borderBottom: i < programs.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+            borderBottom: i < programs.length - 1 ? `1px solid ${T.lineLight}` : 'none',
           }}>
             <div style={{ minWidth: 0 }}>
-              <div style={{ color: C.white, fontSize: 14, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {program.name}
               </div>
-              <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              <div style={{ color: C.slate, fontSize: 12, marginTop: 3, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {program.duration} · {program.format}
               </div>
             </div>
             <div style={{ textAlign: 'right', flexShrink: 0 }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>{program.enrollmentCount} enrollments</div>
-              <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 10, marginTop: 2 }}>{program.enrollmentStatus ?? '—'}</div>
+              <div style={{ color: C.slate, fontSize: 10, marginTop: 2 }}>{program.enrollmentStatus ?? '—'}</div>
             </div>
           </div>
         )) : (
-          <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, margin: 0 }}>No programs available yet.</p>
+          <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>No programs available yet.</p>
         )}
       </div>
     </div>
@@ -205,20 +205,20 @@ function ProgramOperations({ programs }: { programs: OrganisationDashboard['prog
 
 function BatchOperations({ batchMessage }: { batchMessage: string }) {
   return (
-    <div id="org-batches">
+    <div id="org-batches" className="org-section">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18, gap: 12, flexWrap: 'wrap' }}>
         <div>
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 8, fontSize: 10, letterSpacing: '0.12em' }}>
+          <div className="skylent-label" style={{ color: C.slate, marginBottom: 8, fontSize: 10, letterSpacing: '0.12em' }}>
             Batch operations
           </div>
-          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.white, margin: 0 }}>
+          <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, margin: 0 }}>
             Cohort performance
           </h3>
         </div>
       </div>
 
-      <div id="org-batch-operations" style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, margin: 0, lineHeight: 1.6 }}>
+      <div id="org-batch-operations" style={{ padding: '16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+        <p style={{ color: C.slate, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
           {batchMessage}
         </p>
       </div>
@@ -230,15 +230,15 @@ function BatchOperations({ batchMessage }: { batchMessage: string }) {
 
 function LearnerProgress({ enrollmentCount }: { enrollmentCount: number }) {
   return (
-    <div id="org-learners">
-      <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
+    <div id="org-learners" className="org-section">
+      <div className="skylent-label" style={{ color: C.slate, marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Learner operations
       </div>
 
-      <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
-        <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 8 }}>Total enrollments</div>
+      <div style={{ padding: '16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+        <div style={{ color: C.slate, fontSize: 12, marginBottom: 8 }}>Total enrollments</div>
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 24, color: accent.text }}>{enrollmentCount}</div>
-        <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, margin: '12px 0 0', lineHeight: 1.6 }}>
+        <p style={{ color: C.slate, fontSize: 13, margin: '12px 0 0', lineHeight: 1.6 }}>
           Batch-level learner distribution requires a Batch/Cohort model. Per-batch completion and at-risk analytics are not available yet.
         </p>
       </div>
@@ -250,12 +250,12 @@ function LearnerProgress({ enrollmentCount }: { enrollmentCount: number }) {
 
 function FacultyOperations() {
   return (
-    <div id="org-faculty">
-      <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
+    <div id="org-faculty" className="org-section">
+      <div className="skylent-label" style={{ color: C.slate, marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Faculty
       </div>
-      <div style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, margin: 0, lineHeight: 1.6 }}>
+      <div style={{ padding: '16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+        <p style={{ color: C.slate, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
           Faculty load and cohort assignment data are not represented in the current schema. Organisation membership is available; faculty workload analytics will require additional models.
         </p>
       </div>
@@ -269,9 +269,9 @@ function OrgContextRail({ programs }: { programs: OrganisationDashboard['program
   const topPrograms = programs.slice(0, 5)
 
   return (
-    <div>
+    <div className="org-context-rail">
       <div id="org-assessments">
-        <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
+        <div className="skylent-label" style={{ color: C.slate, marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
           Program enrollments
         </div>
 
@@ -279,22 +279,22 @@ function OrgContextRail({ programs }: { programs: OrganisationDashboard['program
           <div key={program.slug} style={{
             marginBottom: 12,
             paddingBottom: i < topPrograms.length - 1 ? 12 : 0,
-            borderBottom: i < topPrograms.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+            borderBottom: i < topPrograms.length - 1 ? `1px solid ${T.lineLight}` : 'none',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5, gap: 8 }}>
-              <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{program.name}</span>
+              <span style={{ color: C.slate, fontSize: 12, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{program.name}</span>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, flexShrink: 0 }}>{program.enrollmentCount}</span>
             </div>
-            <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 10 }}>Completion analytics —</div>
+            <div style={{ color: C.slate, fontSize: 10 }}>Completion analytics —</div>
           </div>
         )) : (
-          <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, margin: 0 }}>No program enrollment data yet.</p>
+          <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>No program enrollment data yet.</p>
         )}
       </div>
 
-      <div id="org-progress" style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
-        <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginBottom: 14 }}>Attention needed</div>
-        <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, margin: 0, lineHeight: 1.6 }}>
+      <div id="org-progress" style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineLight}` }}>
+        <div style={{ color: C.slate, fontSize: 12, marginBottom: 14 }}>Attention needed</div>
+        <p style={{ color: C.slate, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
           Batch-level attention lists require cohort models and learner-batch relationships that are not yet in the database.
         </p>
       </div>
@@ -340,6 +340,7 @@ export default function DashboardOrgPage() {
       onNavChange={setActiveNav}
       renderNavIcon={id => <NavIcon id={id} />}
     >
+      <div className="organisation-workspace">
       <AuthDashboardLayout
         primary={
           <>
@@ -362,11 +363,11 @@ export default function DashboardOrgPage() {
               <FacultyOperations />
             </div>
 
-            <div id="org-settings" style={{ marginTop: 'clamp(28px, 4vw, 40px)', paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
-              <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 10, fontSize: 10, letterSpacing: '0.12em' }}>
+            <div id="org-settings" style={{ marginTop: 'clamp(28px, 4vw, 40px)', paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
+              <div className="skylent-label" style={{ color: C.slate, marginBottom: 10, fontSize: 10, letterSpacing: '0.12em' }}>
                 Institution settings
               </div>
-              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+              <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
                 Configure programs, faculty assignments, and academic calendar for {institutionName}.
               </p>
             </div>
@@ -374,7 +375,7 @@ export default function DashboardOrgPage() {
         }
         rail={<OrgContextRail programs={programs} />}
       />
-
+      </div>
       <style>{`
         .org-two-col > * { min-width: 0; }
         .org-academic-pipeline { display: flex; align-items: flex-start; }

@@ -96,7 +96,7 @@ export function useAuroraTheme(): AuroraThemeId {
 }
 
 // ─── Public canvas ────────────────────────────────────────────────────────────
-// Near-black continuous background with optional Aurora.
+// Shared light canvas. Atmospheric colour is intentionally opt-in and local.
 
 export function PublicCanvas({
   children,
@@ -112,9 +112,9 @@ export function PublicCanvas({
   return (
     <div
       className="skylent-public-canvas"
-      style={{ position: 'relative', minHeight: '100%', background: C.canvas, color: C.white }}
+      style={{ position: 'relative', minHeight: '100%', background: C.canvas, color: C.ink }}
     >
-      {aurora && <Aurora themeId={resolved} />}
+      {aurora && <div className="skylent-light-atmosphere" aria-hidden />}
       <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
     </div>
   )

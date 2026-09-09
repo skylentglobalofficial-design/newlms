@@ -6,12 +6,12 @@ export const C = {
   ink2: '#14171A',
   ink3: '#1D2126',
   orange: '#F36B21',
-  warmWhite: '#F8F6F2',
-  sand: '#EEE9E1',
+  warmWhite: '#F6F4EE',
+  sand: '#E8E5DC',
   slate: '#667078',
   white: '#FFFFFF',
-  black: '#050505',
-  canvas: '#050505',
+  black: '#080909',
+  canvas: '#F6F4EE',
 } as const
 
 export const T = {

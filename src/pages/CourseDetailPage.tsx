@@ -5,6 +5,7 @@ import { Button, Eyebrow, Section, T } from '../components/ui'
 import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { courses } from '../data'
+import { useCatalogCourse } from '../hooks/useCatalog'
 import { coursePhoto } from '../media'
 
 const accent = getDomainAccent('professional')
@@ -13,6 +14,7 @@ export default function CourseDetailPage() {
   const { slug } = useParams()
   const navigate = useNavigate()
   const course = courses.find(c => c.slug === slug)
+  const catalog = useCatalogCourse(slug)
   const [expandedModule, setExpandedModule] = useState<string | null>(course?.modules[0]?.id ?? null)
   const [enrollOpen, setEnrollOpen] = useState(false)
 
@@ -29,7 +31,12 @@ export default function CourseDetailPage() {
     )
   }
 
-  const discount = Math.round((1 - course.price / course.originalPrice) * 100)
+  const price = catalog.data?.price ?? course.price
+  const originalPrice = catalog.data?.originalPrice ?? course.originalPrice
+  const lessonCount = catalog.data?.lessonCount ?? course.lessons
+  const projectCount = catalog.data?.projectCount ?? course.projects
+  const enrollable = Boolean(catalog.data)
+  const discount = Math.round((1 - price / originalPrice) * 100)
   const visual = coursePhoto(course.slug)
 
   return (
@@ -53,7 +60,7 @@ export default function CourseDetailPage() {
               <h1 className="skylent-display-md" style={{ color: C.white, margin: '0 0 16px' }}>{course.title}</h1>
               <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.58)', maxWidth: 560, margin: '0 0 28px' }}>{course.longDesc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
-                {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', String(course.lessons)], ['Projects', String(course.projects)]].map(([l, v]) => (
+                {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', String(lessonCount)], ['Projects', String(projectCount)]].map(([l, v]) => (
                   <div key={l}>
                     <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.3)', marginBottom: 4 }}>{l}</div>
                     <div style={{ color: C.white, fontSize: 15, fontWeight: 500 }}>{v}</div>
@@ -143,16 +150,21 @@ export default function CourseDetailPage() {
             <FadeIn>
               <GlassSurface level={2} padding="24px 28px">
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: C.white }}>₹{course.price.toLocaleString('en-IN')}</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through' }}>₹{course.originalPrice.toLocaleString('en-IN')}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: C.white }}>₹{price.toLocaleString('en-IN')}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through' }}>₹{originalPrice.toLocaleString('en-IN')}</span>
                   <span style={{ background: 'rgba(74,222,128,0.12)', color: '#4ade80', fontSize: 11, padding: '2px 8px', borderRadius: 5, fontFamily: 'var(--font-mono)' }}>{discount}% off</span>
                 </div>
                 <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginBottom: 20 }}>Including GST · Lifetime access</div>
-                <Button variant="primary" size="lg" onClick={() => setEnrollOpen(true)} style={{ width: '100%', marginBottom: 16 }}>
-                  Enroll now
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={() => { if (enrollable || !catalog.loading) setEnrollOpen(true) }}
+                  style={{ width: '100%', marginBottom: 16, opacity: !enrollable && !catalog.loading ? 0.55 : 1 }}
+                >
+                  {enrollable ? 'Enroll now' : catalog.loading ? 'Checking availability…' : 'Enrollment unavailable'}
                 </Button>
                 <div style={{ display: 'grid', gap: 8 }}>
-                  {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', `${course.lessons} lessons`], ['Projects', `${course.projects} projects`], ['Certificate', 'Skylent certificate']].map(([l, v]) => (
+                  {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', `${lessonCount} lessons`], ['Projects', `${projectCount} projects`], ['Certificate', 'Skylent certificate']].map(([l, v]) => (
                     <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${T.lineDark}` }}>
                       <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>{l}</span>
                       <span style={{ color: C.white, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
@@ -166,7 +178,11 @@ export default function CourseDetailPage() {
       </Section>
 
       {enrollOpen && (
-        <EnrollmentModal item={{ id: course.slug, title: course.title, price: course.price, type: 'course' }} onClose={() => setEnrollOpen(false)} themeId="professional" />
+        <EnrollmentModal
+          item={{ kind: 'course', slug: course.slug, title: course.title, price, enrollable }}
+          onClose={() => setEnrollOpen(false)}
+          themeId="professional"
+        />
       )}
     </PageShell>
   )

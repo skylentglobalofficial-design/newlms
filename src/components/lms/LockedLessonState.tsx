@@ -11,7 +11,7 @@ export default function LockedLessonState({
 }) {
   return (
     <div
-      className="lms-lesson-locked"
+      className="lms-lesson-locked lms-activity-surface"
       style={{
         textAlign: "center",
         padding: "48px 24px",
