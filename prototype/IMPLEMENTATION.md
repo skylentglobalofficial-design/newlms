@@ -1,0 +1,1 @@
+Implementation should preserve backend/auth/routing/data logic and update the public homepage UI first.
