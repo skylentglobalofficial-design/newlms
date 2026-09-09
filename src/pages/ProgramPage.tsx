@@ -37,6 +37,35 @@ const CTA_LABEL: Record<EnrollmentStatus, string> = {
   coming_soon: 'Register Interest',
 }
 
+const CATALOG_LOADING_CTA = 'Checking availability…'
+
+function programEnrollmentCtaLabel({
+  catalogLoading,
+  enrollable,
+  status,
+  programType,
+  surface,
+}: {
+  catalogLoading: boolean
+  enrollable: boolean
+  status: EnrollmentStatus
+  programType: ProgramType
+  surface: 'primary' | 'panel'
+}): string {
+  if (catalogLoading) return CATALOG_LOADING_CTA
+  if (enrollable) {
+    return programType === 'PROFESSIONAL' ? 'Apply Now' : CTA_LABEL.open
+  }
+  if (surface === 'panel') {
+    if (status === 'coming_soon') return 'Launching soon'
+    if (status === 'waitlist') return 'Join waitlist'
+    return 'Enrollment not available yet'
+  }
+  if (status === 'waitlist') return CTA_LABEL.waitlist
+  if (status === 'coming_soon') return CTA_LABEL.coming_soon
+  return 'Enrollment unavailable'
+}
+
 const CURRICULUM_MODEL: Record<ProgramType, string> = {
   SCHOOLING: 'Grade → Subject → Chapter → Lesson → Activity → Assessment',
   UNDERGRADUATE: 'Degree → Semester → Subject → Module → Lesson → Assignment / Project',
@@ -72,13 +101,14 @@ function scrollToSection(id: string) {
 // ─── STICKY SECTION NAV ───────────────────────────────────────────────────────
 
 function StickyProgramNav({
-  sections, activeId, ctaLabel, onCTA, accent,
+  sections, activeId, ctaLabel, onCTA, accent, ctaDisabled,
 }: {
   sections: NavSection[]
   activeId: string
   ctaLabel: string
   onCTA: () => void
   accent: ReturnType<typeof getDomainAccent>
+  ctaDisabled?: boolean
 }) {
   return (
     <nav style={{
@@ -106,13 +136,15 @@ function StickyProgramNav({
         </div>
         <button
           onClick={onCTA}
+          disabled={ctaDisabled}
           style={{
             flexShrink: 0, background: accent.primary, border: 'none', color: C.black,
             borderRadius: T.rControl, padding: '8px 18px', fontSize: 12.5, fontWeight: 600,
-            cursor: 'pointer', fontFamily: 'var(--font-body)',
+            cursor: ctaDisabled ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
+            opacity: ctaDisabled ? 0.72 : 1,
           }}
         >
-          {ctaLabel} →
+          {ctaLabel}{ctaDisabled ? '' : ' →'}
         </button>
       </div>
     </nav>
@@ -122,7 +154,7 @@ function StickyProgramNav({
 // ─── ENROLLMENT PANEL ─────────────────────────────────────────────────────────
 
 function EnrollmentPanel({
-  program, status, ctaLabel, onCTA, accent, lowestPrice, originalPrice, multipleTiers, enrollable,
+  program, status, ctaLabel, onCTA, accent, lowestPrice, originalPrice, multipleTiers, enrollable, catalogLoading,
 }: {
   program: NonNullable<ReturnType<typeof programs.find>>
   status: EnrollmentStatus
@@ -133,6 +165,7 @@ function EnrollmentPanel({
   originalPrice: number
   multipleTiers: boolean
   enrollable: boolean
+  catalogLoading: boolean
 }) {
   const isCareerOS = !!program.careerSupport
 
@@ -170,8 +203,14 @@ function EnrollmentPanel({
       </div>
 
       <div style={{ padding: '18px 24px 22px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <Button variant="primary" full themeId={program.slug ? resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType) : undefined} onClick={onCTA}>
-          {enrollable ? `${ctaLabel} →` : status === 'coming_soon' ? 'Launching soon' : status === 'waitlist' ? 'Join waitlist' : 'Enrollment not available yet'}
+        <Button
+          variant="primary"
+          full
+          themeId={program.slug ? resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType) : undefined}
+          onClick={catalogLoading ? undefined : onCTA}
+          style={catalogLoading ? { opacity: 0.72, cursor: 'not-allowed' } : undefined}
+        >
+          {catalogLoading ? ctaLabel : enrollable ? `${ctaLabel} →` : ctaLabel}
         </Button>
         <Link to="/contact" style={{ display: 'block', textAlign: 'center', color: 'rgba(255,255,255,0.45)', fontSize: 13, textDecoration: 'none', padding: '6px 0' }}>
           Talk to an advisor
@@ -202,6 +241,7 @@ export default function ProgramPage() {
   const isExamPrep = program?.programType === 'EXAM_PREP'
   const isCareerOS = !!program?.careerSupport
   const enrollStatus = (catalog.data?.enrollmentStatus ?? program?.enrollmentStatus ?? 'open') as EnrollmentStatus
+  const catalogLoading = catalog.loading
   const enrollable = Boolean(catalog.data && isProgramEnrollable(catalog.data))
   const moduleCount = catalog.data?.moduleCount ?? program?.modules ?? 0
   const projectCount = catalog.data?.projectCount ?? program?.projects ?? 0
@@ -210,15 +250,24 @@ export default function ProgramPage() {
   const pricingTiers = catalogPricing ?? staticPricing
   const lowestPrice = pricingTiers.length ? Math.min(...pricingTiers.map((tier) => tier.price)) : 0
   const typeLabel = program ? TYPE_LABELS[program.programType] : ''
-  const ctaLabel = enrollable && program?.programType === 'PROFESSIONAL'
-    ? 'Apply Now'
-    : enrollable
-      ? CTA_LABEL.open
-      : enrollStatus === 'waitlist'
-        ? CTA_LABEL.waitlist
-        : enrollStatus === 'coming_soon'
-          ? CTA_LABEL.coming_soon
-          : 'Enrollment unavailable'
+  const ctaLabel = program
+    ? programEnrollmentCtaLabel({
+      catalogLoading,
+      enrollable,
+      status: enrollStatus,
+      programType: program.programType,
+      surface: 'primary',
+    })
+    : ''
+  const panelCtaLabel = program
+    ? programEnrollmentCtaLabel({
+      catalogLoading,
+      enrollable,
+      status: enrollStatus,
+      programType: program.programType,
+      surface: 'panel',
+    })
+    : ''
   const auroraTheme: AuroraThemeId = program ? resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType) : 'general'
   const domainAccent = getDomainAccent(auroraTheme)
 
@@ -301,7 +350,7 @@ export default function ProgramPage() {
               </p>
 
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 0 }}>
-                <Button variant="primary" size="lg" themeId={auroraTheme} onClick={() => setApplyOpen(true)}>{ctaLabel} →</Button>
+                <Button variant="primary" size="lg" themeId={auroraTheme} onClick={catalogLoading ? undefined : () => setApplyOpen(true)} style={catalogLoading ? { opacity: 0.72, cursor: 'not-allowed' } : undefined}>{ctaLabel}{catalogLoading ? '' : ' →'}</Button>
                 <Button
                   variant="secondary"
                   size="lg"
@@ -322,13 +371,14 @@ export default function ProgramPage() {
               <EnrollmentPanel
                 program={program}
                 status={enrollStatus}
-                ctaLabel={ctaLabel}
+                ctaLabel={panelCtaLabel}
                 onCTA={() => setApplyOpen(true)}
                 accent={domainAccent}
                 lowestPrice={lowestPrice}
                 originalPrice={pricingTiers[0]?.originalPrice ?? lowestPrice}
                 multipleTiers={pricingTiers.length > 1}
                 enrollable={enrollable}
+                catalogLoading={catalogLoading}
               />
             </FadeIn>
           </div>
@@ -357,7 +407,7 @@ export default function ProgramPage() {
         </div>
       </section>
 
-      <StickyProgramNav sections={navSections} activeId={activeSection} ctaLabel={ctaLabel} onCTA={() => setApplyOpen(true)} accent={domainAccent} />
+      <StickyProgramNav sections={navSections} activeId={activeSection} ctaLabel={ctaLabel} onCTA={() => setApplyOpen(true)} accent={domainAccent} ctaDisabled={catalogLoading} />
 
       {/* ── OVERVIEW ──────────────────────────────────────────────────────── */}
       <Section id="overview" tone="canvas" divider>
@@ -825,7 +875,7 @@ export default function ProgramPage() {
                 : `Next batch starts ${program.upcomingBatch}.`}
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-              <Button variant="primary" size="lg" onClick={() => setApplyOpen(true)}>{ctaLabel} →</Button>
+              <Button variant="primary" size="lg" onClick={catalogLoading ? undefined : () => setApplyOpen(true)} style={catalogLoading ? { opacity: 0.72, cursor: 'not-allowed' } : undefined}>{ctaLabel}{catalogLoading ? '' : ' →'}</Button>
               <Button variant="secondary" size="lg" onClick={() => navigate('/contact')}>Talk to an advisor</Button>
             </div>
           </FadeIn>
