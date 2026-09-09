@@ -25,64 +25,149 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   return <div className="home-section-label"><span />{children}</div>
 }
 
-function HomeHeroPhoto() {
-  return (
-    <div className="home-hero-photo" role="img" aria-label="Learners exploring a lesson together">
-      <div className="home-hero-photo-sky" />
-      <div className="home-hero-photo-room" />
-      <div className="home-hero-photo-desk" />
-      <div className="home-hero-photo-figures" aria-hidden="true">
-        <span className="home-hero-figure home-hero-figure--mentor" />
-        <span className="home-hero-figure home-hero-figure--learner" />
-        <span className="home-hero-figure home-hero-figure--peer" />
-      </div>
-      <div className="home-hero-photo-glow" aria-hidden="true" />
-      <p className="home-hero-photo-caption">Learning together, in the room where ideas become action.</p>
-    </div>
-  )
-}
-
-function HomeDomainArt({ label, scene, accent }: { label: string; scene: string; accent: string }) {
-  const tag = label.split(' / ')[0]
-  return (
-    <div
-      className={`home-domain-art home-domain-art--${scene}`}
-      style={{ '--domain-accent': accent } as React.CSSProperties}
-      aria-hidden="true"
-    >
-      <div className="home-domain-art-bg" />
-      <div className="home-domain-art-figure" />
-      <span className="home-domain-art-tag">{tag}</span>
-    </div>
-  )
-}
-
-function LearningMomentPreview() {
+function HeroInformationVisual() {
   const [orbitMode, setOrbitMode] = useState<'observe' | 'change'>('observe')
+  const velocity = orbitMode === 'observe' ? '7.2' : '9.4'
+  const outcome = orbitMode === 'observe' ? 'Stable elliptical path' : 'Orbit widening — escape risk'
 
   return (
-    <div className="home-learning-moment" aria-label="Learning by doing preview">
-      <div className="home-learning-moment-header">
-        <span>Physics · Orbit simulation</span>
-        <span className="home-learning-moment-badge">Learn by doing</span>
+    <div className="home-hero-info-visual" aria-label="Physics orbit learning workspace">
+      <div className="home-info-visual-head">
+        <span className="home-info-kicker">Physics / Orbit</span>
+        <span className="home-info-flow">Question → Experiment → Observation → Understanding</span>
       </div>
-      <h3>Why does a planet stay in orbit?</h3>
-      <p>Change one variable. Watch the system respond. Then explain what you observed.</p>
-      <div className={`orbit-simulation ${orbitMode}`} aria-label="Orbit simulation preview">
-        <span className="orbit-sun" />
-        <span className="orbit-ring orbit-ring-one" />
-        <span className="orbit-ring orbit-ring-two" />
-        <span className="orbit-planet" />
+      <h3 className="home-info-question">Why does a planet stay in orbit?</h3>
+      <p className="home-info-prompt">Adjust mass or velocity. Read the system. Explain what changed.</p>
+
+      <div className="home-info-visual-body">
+        <div className="home-orbit-stage">
+          <div className={`home-orbit-diagram ${orbitMode}`} aria-hidden="true">
+            <span className="home-orbit-sun" />
+            <span className="home-orbit-path" />
+            <span className="home-orbit-planet" />
+            <span className="home-orbit-vector" />
+            <span className="home-orbit-mass-label">M<sub>☉</sub></span>
+          </div>
+          <div className="home-orbit-controls">
+            <span>Variable</span>
+            <button type="button" className={orbitMode === 'observe' ? 'is-active' : ''} onClick={() => setOrbitMode('observe')}>Stable orbit</button>
+            <button type="button" className={orbitMode === 'change' ? 'is-active' : ''} onClick={() => setOrbitMode('change')}>Increase velocity</button>
+          </div>
+        </div>
+
+        <aside className="home-orbit-metrics">
+          <div className="home-metric"><span>Velocity</span><strong>{velocity} km/s</strong></div>
+          <div className="home-metric"><span>Gravity</span><strong>9.8 m/s²</strong></div>
+          <div className="home-metric"><span>Distance</span><strong>4.2M km</strong></div>
+          <div className="home-metric home-metric--outcome"><span>Outcome</span><strong>{outcome}</strong></div>
+          <div className="home-mini-chart" aria-hidden="true">
+            <span className="home-mini-chart-label">Velocity trace</span>
+            <div className="home-mini-chart-bars">
+              {[42, 55, 48, 62, orbitMode === 'observe' ? 58 : 78, 65].map((h, i) => (
+                <i key={i} style={{ height: `${h}%` }} />
+              ))}
+            </div>
+          </div>
+        </aside>
       </div>
-      <div className="orbit-controls">
-        <span>Gravity</span>
-        <button type="button" className={orbitMode === 'observe' ? 'is-active' : ''} onClick={() => setOrbitMode('observe')}>Stable</button>
-        <button type="button" className={orbitMode === 'change' ? 'is-active' : ''} onClick={() => setOrbitMode('change')}>Change speed</button>
+
+      <div className="home-info-visual-foot">
+        <span>{orbitMode === 'observe' ? 'Observation saved · centrifugal force balances gravity' : 'Feedback: velocity exceeded stable threshold'}</span>
+        <span className="home-info-step">Step 2 of 4 · Observe</span>
       </div>
-      <div className="home-learning-moment-footer">
-        <span>{orbitMode === 'observe' ? 'Observation saved · step 1 of 3' : 'Feedback: the orbit is changing'}</span>
-        <button type="button">Next step <span>→</span></button>
-      </div>
+    </div>
+  )
+}
+
+function DomainInfoVisual({ scene, accent }: { scene: string; accent: string }) {
+  return (
+    <div className={`home-domain-info home-domain-info--${scene}`} style={{ '--domain-accent': accent } as React.CSSProperties} aria-hidden="true">
+      {scene === 'biology' && (
+        <svg viewBox="0 0 320 180" className="home-domain-svg">
+          <rect width="320" height="180" fill="#f3f7f4" />
+          <ellipse cx="160" cy="92" rx="38" ry="58" fill="none" stroke={accent} strokeWidth="1.5" opacity=".5" />
+          <circle cx="160" cy="78" r="14" fill={accent} opacity=".22" />
+          <circle cx="148" cy="98" r="9" fill={accent} opacity=".35" />
+          <circle cx="172" cy="98" r="9" fill={accent} opacity=".35" />
+          <path d="M160 92 L148 118 M160 92 L172 118" stroke={accent} strokeWidth="1.2" opacity=".6" />
+          <text x="24" y="28" fill={accent} fontSize="10" fontFamily="var(--font-mono)">CARDIOVASCULAR FLOW</text>
+          <text x="24" y="158" fill="#6d7772" fontSize="9" fontFamily="var(--font-mono)">symptom → system → diagnosis</text>
+        </svg>
+      )}
+      {scene === 'engineering' && (
+        <svg viewBox="0 0 320 180" className="home-domain-svg">
+          <rect width="320" height="180" fill="#f2f6fb" />
+          <rect x="118" y="72" width="84" height="44" fill="#fff" stroke={accent} strokeWidth="1.5" rx="4" />
+          <line x1="88" y1="94" x2="118" y2="94" stroke={accent} strokeWidth="2" markerEnd="url(#arrow)" />
+          <line x1="202" y1="94" x2="232" y2="94" stroke={accent} strokeWidth="2" />
+          <line x1="160" y1="52" x2="160" y2="72" stroke={accent} strokeWidth="2" />
+          <text x="70" y="88" fill={accent} fontSize="9" fontFamily="var(--font-mono)">F</text>
+          <text x="24" y="28" fill={accent} fontSize="10" fontFamily="var(--font-mono)">MECHANICS / FORCES</text>
+          <text x="24" y="158" fill="#6d7772" fontSize="9" fontFamily="var(--font-mono)">load → structure → response</text>
+        </svg>
+      )}
+      {scene === 'analytics' && (
+        <svg viewBox="0 0 320 180" className="home-domain-svg">
+          <rect width="320" height="180" fill="#f5f3fa" />
+          <text x="24" y="28" fill={accent} fontSize="10" fontFamily="var(--font-mono)">DATASET / TREND</text>
+          {[48, 72, 58, 90, 68, 110, 84].map((h, i) => (
+            <rect key={i} x={36 + i * 32} y={150 - h} width="18" height={h} fill={accent} opacity={0.25 + i * 0.08} rx="2" />
+          ))}
+          <polyline points="44,118 76,96 108,104 140,72 172,88 204,58 236,74" fill="none" stroke={accent} strokeWidth="2" />
+          <text x="24" y="158" fill="#6d7772" fontSize="9" fontFamily="var(--font-mono)">filter → pattern → decision</text>
+        </svg>
+      )}
+      {scene === 'business' && (
+        <svg viewBox="0 0 320 180" className="home-domain-svg">
+          <rect width="320" height="180" fill="#fbf7ef" />
+          <text x="24" y="28" fill={accent} fontSize="10" fontFamily="var(--font-mono)">STRATEGY MAP</text>
+          <rect x="130" y="44" width="60" height="28" rx="4" fill="#fff" stroke={accent} strokeWidth="1.2" />
+          <line x1="160" y1="72" x2="100" y2="108" stroke={accent} strokeWidth="1.2" />
+          <line x1="160" y1="72" x2="220" y2="108" stroke={accent} strokeWidth="1.2" />
+          <rect x="70" y="108" width="60" height="28" rx="4" fill={accent} opacity=".18" stroke={accent} strokeWidth="1" />
+          <rect x="190" y="108" width="60" height="28" rx="4" fill="#fff" stroke={accent} strokeWidth="1" />
+          <text x="24" y="158" fill="#6d7772" fontSize="9" fontFamily="var(--font-mono)">option → trade-off → outcome</text>
+        </svg>
+      )}
+      {scene === 'coding' && (
+        <svg viewBox="0 0 320 180" className="home-domain-svg">
+          <rect width="320" height="180" fill="#f0f5fa" />
+          <text x="24" y="28" fill={accent} fontSize="10" fontFamily="var(--font-mono)">SYSTEM FLOW</text>
+          {[{ x: 32, label: 'API' }, { x: 120, label: 'Service' }, { x: 208, label: 'Store' }].map((node, i) => (
+            <g key={node.label}>
+              <rect x={node.x} y="78" width="72" height="36" rx="4" fill="#fff" stroke={accent} strokeWidth="1.2" />
+              <text x={node.x + 36} y="100" textAnchor="middle" fill={accent} fontSize="10" fontFamily="var(--font-mono)">{node.label}</text>
+              {i < 2 && <line x1={node.x + 72} y1="96" x2={node.x + 96} y2="96" stroke={accent} strokeWidth="1.5" />}
+            </g>
+          ))}
+          <text x="24" y="158" fill="#6d7772" fontSize="9" fontFamily="var(--font-mono)">input → process → output</text>
+        </svg>
+      )}
+      {scene === 'design' && (
+        <svg viewBox="0 0 320 180" className="home-domain-svg">
+          <rect width="320" height="180" fill="#faf3f7" />
+          <text x="24" y="28" fill={accent} fontSize="10" fontFamily="var(--font-mono)">PROTOTYPE FLOW</text>
+          <rect x="32" y="56" width="256" height="18" rx="3" fill="#fff" stroke={accent} strokeWidth="1" opacity=".7" />
+          <rect x="32" y="84" width="180" height="52" rx="4" fill="#fff" stroke={accent} strokeWidth="1.2" />
+          <rect x="32" y="146" width="120" height="10" rx="2" fill={accent} opacity=".2" />
+          <rect x="220" y="84" width="68" height="52" rx="4" fill={accent} opacity=".12" stroke={accent} strokeWidth="1" strokeDasharray="4 3" />
+          <text x="24" y="168" fill="#6d7772" fontSize="9" fontFamily="var(--font-mono)">wireframe → test → refine</text>
+        </svg>
+      )}
+      {scene === 'humanities' && (
+        <svg viewBox="0 0 320 180" className="home-domain-svg">
+          <rect width="320" height="180" fill="#f2f6f3" />
+          <text x="24" y="28" fill={accent} fontSize="10" fontFamily="var(--font-mono)">TIMELINE / CONTEXT</text>
+          <line x1="40" y1="110" x2="280" y2="110" stroke={accent} strokeWidth="1.5" opacity=".5" />
+          {[{ x: 56, y: '1962' }, { x: 120, y: '1991' }, { x: 188, y: '2008' }, { x: 256, y: '2024' }].map((point) => (
+            <g key={point.y}>
+              <circle cx={point.x} cy="110" r="5" fill={accent} />
+              <text x={point.x} y="132" textAnchor="middle" fill="#6d7772" fontSize="8" fontFamily="var(--font-mono)">{point.y}</text>
+            </g>
+          ))}
+          <text x="24" y="158" fill="#6d7772" fontSize="9" fontFamily="var(--font-mono)">event → cause → consequence</text>
+        </svg>
+      )}
     </div>
   )
 }
@@ -111,10 +196,7 @@ export default function HomePage() {
             </div>
 
             <div className="home-hero-art">
-              <div className="home-hero-visual-stack">
-                <HomeHeroPhoto />
-                <LearningMomentPreview />
-              </div>
+              <HeroInformationVisual />
             </div>
           </div>
         </section>
@@ -150,7 +232,7 @@ export default function HomePage() {
                 key={domain.label}
                 style={{ '--domain-accent': domain.accent } as React.CSSProperties}
               >
-                <HomeDomainArt label={domain.label} scene={domain.scene} accent={domain.accent} />
+                <DomainInfoVisual scene={domain.scene} accent={domain.accent} />
                 <div className="home-domain-content">
                   <span className="home-domain-number">0{index + 1}</span>
                   <h3>{domain.label}</h3>
@@ -191,7 +273,7 @@ export default function HomePage() {
             </div>
             <div className={`home-engine-workspace engine-mode-${intent}`}>
               <div className="workspace-heading">
-                <span>ACTIVE WORKSPACE / {selectedIntent.label.toUpperCase()}</span>
+                <span>ACTIVE WORKSPACE / {['SIMULATION', 'CASE', 'BUILD', 'PRACTICE'][intent]}</span>
                 <b>0{intent + 1} / 04</b>
               </div>
               <div className="engine-task">
@@ -207,30 +289,49 @@ export default function HomePage() {
                 </h3>
                 {intent === 0 && (
                   <div className="engine-visual engine-simulation">
-                    <span className="engine-axis" />
-                    <span className="engine-point point-a" />
-                    <span className="engine-point point-b" />
-                    <i>change one variable</i>
+                    <div className="engine-sim-controls">
+                      <span>Variable: friction</span>
+                      <div className="engine-sim-sliders"><i className="is-low" /><i className="is-mid is-active" /><i /></div>
+                    </div>
+                    <div className="engine-sim-chart">
+                      <span className="engine-axis" />
+                      <span className="engine-point point-a" />
+                      <span className="engine-point point-b" />
+                      <span className="engine-sim-curve" />
+                    </div>
+                    <p className="engine-visual-caption">Increase friction → curve shifts → predict the landing point</p>
                   </div>
                 )}
                 {intent === 1 && (
                   <div className="engine-visual engine-case">
                     <span>CASE / CITY TRANSIT</span>
                     <strong>Which route should launch first?</strong>
-                    <div><b>Demand</b><em>High</em></div>
-                    <div><b>Cost</b><em>Medium</em></div>
+                    <div className="engine-case-tree">
+                      <div className="engine-case-node is-root">Launch decision</div>
+                      <div className="engine-case-branch"><div className="engine-case-node is-choice">Route A · high demand</div><em>+18% ridership</em></div>
+                      <div className="engine-case-branch"><div className="engine-case-node">Route B · lower cost</div><em>−6% margin</em></div>
+                    </div>
                   </div>
                 )}
                 {intent === 2 && (
                   <div className="engine-visual engine-build">
                     <span>YOUR BUILD</span>
+                    <div className="engine-build-flow">
+                      <div><b>Input</b><small>Brief + constraints</small></div>
+                      <i>→</i>
+                      <div className="is-active"><b>Build</b><small>Draft v2</small></div>
+                      <i>→</i>
+                      <div><b>Output</b><small>Working demo</small></div>
+                    </div>
                     <div className="build-frame"><i /><i /><i /></div>
                     <small>Draft · feedback · revision</small>
                   </div>
                 )}
                 {intent === 3 && (
                   <div className="engine-visual engine-practice">
-                    <span>FEEDBACK</span>
+                    <span>PRACTICE / FEEDBACK</span>
+                    <div className="engine-practice-q"><b>Q.</b> Which constraint breaks first when load doubles?</div>
+                    <div className="engine-practice-a"><b>A.</b> Memory on the worker node</div>
                     <strong>Good reasoning. Try the next constraint.</strong>
                     <div className="practice-meter"><i /></div>
                     <small>2 of 5 attempts · specific guidance</small>
