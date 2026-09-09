@@ -1,1 +1,0 @@
-Live homepage redesign branch. Preserve backend/auth/routing/data/product logic; update public UI only.
