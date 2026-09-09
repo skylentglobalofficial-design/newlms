@@ -1,6 +1,6 @@
 import { useState, useEffect, type CSSProperties, type FormEvent } from 'react'
 import { useNavigate, useLocation, Link, type NavigateFunction } from 'react-router-dom'
-import { useAuth, isAuthDemoMode } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext'
 import type { AuthUser, UserRole } from '../context/AuthContext'
 import { fulfillCatalogEnrollment, learnPathForWorkspace, type CatalogEnrollTarget, type LoginRedirectState } from '../lib/catalog-enrollment'
 import { buildGoogleOAuthStartUrl } from '../lib/auth-api'
@@ -10,17 +10,23 @@ import { getDomainAccent } from '../aurora-themes'
 
 const accent = getDomainAccent('general')
 
-// ─── DEMO USERS ───────────────────────────────────────────────────────────────
+// Compile-time flag (Vite replaces import.meta.env.VITE_*). Production builds set
+// VITE_DEMO_MODE=false via .env.production so the picker is tree-shaken out of dist.
+const DEMO_MODE = import.meta.env.VITE_DEMO_MODE === "true"
+
+// ─── DEMO USERS (local development only; omitted from production builds) ──────
 
 type DemoEntry = AuthUser & { desc: string }
 
-const DEMO_USERS: DemoEntry[] = [
-  { id: 'demo-student', role: 'student', name: 'Arjun Sharma', email: 'arjun@demo.skylent.in', avatar: 'AS', program: 'Data Science & AI', progress: 72, desc: 'Learning dashboard' },
-  { id: 'demo-faculty', role: 'faculty', name: 'Dr. Priya Nair', email: 'priya@demo.skylent.in', avatar: 'PN', course: 'Data Science & AI', students: 128, desc: 'Faculty tools' },
-  { id: 'demo-org', role: 'organisation', name: 'Apex College', email: 'admin@apex.edu.in', avatar: 'AC', students: 1240, institution: 'Apex College', desc: 'Admin & analytics' },
-  { id: 'demo-recruiter', role: 'recruiter', name: 'Riya Menon', email: 'riya@recruit.in', avatar: 'RM', desc: 'Talent pipeline' },
-  { id: 'demo-admin', role: 'superadmin', name: 'Skylent Admin', email: 'admin@skylent.in', avatar: 'SA', totalUsers: 12450, desc: 'System overview' },
-]
+const DEMO_USERS: DemoEntry[] = DEMO_MODE
+  ? [
+      { id: 'demo-student', role: 'student', name: 'Arjun Sharma', email: 'arjun@demo.skylent.in', avatar: 'AS', program: 'Data Science & AI', progress: 72, desc: 'Learning dashboard' },
+      { id: 'demo-faculty', role: 'faculty', name: 'Dr. Priya Nair', email: 'priya@demo.skylent.in', avatar: 'PN', course: 'Data Science & AI', students: 128, desc: 'Faculty tools' },
+      { id: 'demo-org', role: 'organisation', name: 'Apex College', email: 'admin@apex.edu.in', avatar: 'AC', students: 1240, institution: 'Apex College', desc: 'Admin & analytics' },
+      { id: 'demo-recruiter', role: 'recruiter', name: 'Riya Menon', email: 'riya@recruit.in', avatar: 'RM', desc: 'Talent pipeline' },
+      { id: 'demo-admin', role: 'superadmin', name: 'Skylent Admin', email: 'admin@skylent.in', avatar: 'SA', totalUsers: 12450, desc: 'System overview' },
+    ]
+  : []
 
 function roleRoute(role: UserRole): string {
   switch (role) {
@@ -155,7 +161,7 @@ export default function LoginPage() {
   const { login, signup, loginDemo, user, ready } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const demoMode = isAuthDemoMode()
+  const demoMode = DEMO_MODE
 
   const [tab, setTab] = useState<'signin' | 'signup'>('signin')
 
@@ -629,12 +635,14 @@ export default function LoginPage() {
           .login-page-auth { order: 1; }
           .login-page-editorial { order: 2; }
         }
+        ${DEMO_MODE ? `
         @media (max-width: 480px) {
           .login-demo-grid button {
             flex: 1 1 calc(33.33% - 8px) !important;
             min-width: 80px !important;
           }
         }
+        ` : ''}
       `}</style>
     </div>
   )
