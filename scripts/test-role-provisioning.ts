@@ -321,7 +321,7 @@ async function main() {
     "Acting superadmin must keep the ADMIN role",
   )
 
-  console.log("12. Last-superadmin demotion blocked")
+  console.log("12. Cross-admin promotion and demotion")
   const secondAdminEmail = `role-admin2-${stamp}@example.com`
   const secondAdmin = await signup(secondAdminEmail, "Role Admin Two")
   const promoteSecond = await request(adminSession.jar, `/admin/users/${secondAdmin.userId}/role`, {
@@ -333,19 +333,23 @@ async function main() {
   assert(promoteSecond.data.data.role === "superadmin", "Second admin should be a superadmin")
 
   const secondAdminSession = await login(secondAdminEmail)
-  const otherAdmins = await prisma.user.count({
-    where: { roles: { some: { role: { name: RoleName.ADMIN } } }, id: { not: admin.userId } },
+  const secondAdminList = await request(secondAdminSession.jar, "/admin/users?limit=1")
+  assert(secondAdminList.response.ok, "A newly promoted superadmin should reach the admin API")
+
+  // A superadmin can demote another superadmin, but never themselves (test 11),
+  // so the acting account always survives a demotion. The last-superadmin 409
+  // guard in the route is a redundant server-side safety net for non-HTTP
+  // callers and cannot be triggered through the API surface.
+  const demoteOtherAdmin = await request(secondAdminSession.jar, `/admin/users/${selfElevate.data.user.id}/role`, {
+    method: "PATCH",
+    csrf: true,
+    body: { role: "student" },
   })
-  if (otherAdmins === 0) {
-    const demoteLast = await request(secondAdminSession.jar, `/admin/users/${admin.userId}/role`, {
-      method: "PATCH",
-      csrf: true,
-      body: { role: "student" },
-    })
-    assert(demoteLast.response.status === 409, "Demoting the last superadmin should be 409")
-  } else {
-    console.log("   (multiple superadmins exist in this database; last-admin guard verified by unit rule only)")
-  }
+  assert(demoteOtherAdmin.response.ok, "A superadmin should be able to demote another account")
+  const remainingAdmins = await prisma.user.count({
+    where: { roles: { some: { role: { name: RoleName.ADMIN } } } },
+  })
+  assert(remainingAdmins > 0, "At least one superadmin must always remain")
 
   console.log("13. Revoke returns the user to STUDENT")
   const revoke = await request(adminSession.jar, `/admin/users/${target.userId}/role`, {
