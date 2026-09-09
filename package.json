@@ -23,7 +23,9 @@
     "test:auth": "tsx scripts/test-auth.ts",
     "test:google-oauth": "tsx scripts/test-google-oauth.ts",
     "test:lms": "tsx scripts/test-lms.ts",
-    "test:career": "tsx scripts/test-career.ts"
+    "test:career": "tsx scripts/test-career.ts",
+    "test:roles": "tsx scripts/test-role-provisioning.ts",
+    "bootstrap:superadmin": "tsx scripts/bootstrap-superadmin.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -11,6 +11,7 @@ import {
 } from './lib/security-middleware.js'
 import catalogRouter from './routes/catalog.js'
 import healthRouter from './routes/health.js'
+import { adminRouter } from './routes/admin.js'
 import { authRouter } from './routes/auth.js'
 import { lmsRouter } from './routes/lms.js'
 import { facultyRouter } from './routes/faculty.js'
@@ -31,6 +32,7 @@ app.use('/api/v1/lms', lmsRouter)
 app.use('/api/v1/faculty', facultyRouter)
 app.use('/api/v1/organisation', organisationRouter)
 app.use('/api/v1/career', careerRouter)
+app.use('/api/v1/admin', adminRouter)
 
 if (process.env.NODE_ENV === 'production') {
   const clientDist = resolve(dirname(fileURLToPath(import.meta.url)), '../../dist')
