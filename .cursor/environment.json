@@ -1,0 +1,16 @@
+{
+  "name": "Skylent LMS",
+  "user": "node",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "install": "bash .cursor/install.sh",
+  "start": "bash .cursor/start.sh",
+  "terminals": [
+    {
+      "name": "dev",
+      "command": "bash .cursor/dev.sh"
+    }
+  ],
+  "ports": [5173, 3000]
+}
