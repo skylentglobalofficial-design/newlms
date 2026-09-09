@@ -1,0 +1,1 @@
+Homepage redesign snapshot marker.
