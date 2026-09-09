@@ -37,6 +37,13 @@ function dashRoute(role?: string) {
   }
 }
 
+function lessonPhase(type: string) {
+  if (type === 'assignment') return { label: 'BUILD', capability: 'Build and submit evidence.' }
+  if (type === 'quiz') return { label: 'PROVE', capability: 'Solve, explain, and check your reasoning.' }
+  if (type === 'notes') return { label: 'UNDERSTAND', capability: 'Explain the idea in your own words.' }
+  return { label: 'LEARN', capability: 'Understand the concept before you apply it.' }
+}
+
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
   const navigate = useNavigate()
@@ -280,28 +287,42 @@ export default function LearnPage() {
                   {selectedState.complete ? 'Complete' : 'In progress'}
                 </span>
               </div>
-              {selectedState.locked ? (
-                <LockedLessonState
-                  lessonTitle={selectedLesson.title}
-                  requiredLessonTitle={
-                    selectedState.requiredLessonKey
-                      ? allLessons.find((lesson) => lesson.id === selectedState.requiredLessonKey)?.title
-                      : null
-                  }
-                  accent={{ ...tabAccent, text: roleAccent.text }}
-                />
-              ) : (
-                <LessonContentView
-                  lesson={selectedLesson}
-                  lessonState={selectedState}
-                  accent={{ ...tabAccent, text: roleAccent.text }}
-                  onComplete={() => { void handleLessonComplete() }}
-                  quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
-                  onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
-                  onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
-                  lessonMedia={lessonMedia}
-                />
-              )}
+              <div className="lms-workspace-grid">
+                <aside className="lms-workspace-brief">
+                  <div className="lms-workspace-brief-label">YOUR BRIEF</div>
+                  <div className="lms-workspace-phase">{lessonPhase(selectedLesson.type).label}</div>
+                  <h2>{lessonPhase(selectedLesson.type).capability}</h2>
+                  <p>{selectedLesson.type === 'video' ? 'Watch for the idea that changes how you see the problem. Pause, take notes, then continue.' : selectedLesson.type === 'quiz' ? 'Choose an answer, look at the feedback, and use it to decide what you understand next.' : selectedLesson.type === 'assignment' ? 'Make your thinking visible. A considered submission becomes evidence of what you can do.' : 'Read for the connection, not just the completion tick.'}</p>
+                  <div className="lms-capability-list">
+                    {['Explain', selectedLesson.type === 'assignment' ? 'Build' : selectedLesson.type === 'quiz' ? 'Solve' : 'Apply', 'Next step'].map((item, index) => <span key={item} className={index === 0 ? 'is-active' : ''}>{item}</span>)}
+                  </div>
+                  <div className="lms-brief-status"><span>{selectedState.complete ? 'Complete' : 'In progress'}</span><b>{selectedState.complete ? 'Ready for what comes next.' : 'Keep going. Your next action is here.'}</b></div>
+                </aside>
+                <div className="lms-workspace-activity">
+                  {selectedState.locked ? (
+                    <LockedLessonState
+                      lessonTitle={selectedLesson.title}
+                      requiredLessonTitle={
+                        selectedState.requiredLessonKey
+                          ? allLessons.find((lesson) => lesson.id === selectedState.requiredLessonKey)?.title
+                          : null
+                      }
+                      accent={{ ...tabAccent, text: roleAccent.text }}
+                    />
+                  ) : (
+                    <LessonContentView
+                      lesson={selectedLesson}
+                      lessonState={selectedState}
+                      accent={{ ...tabAccent, text: roleAccent.text }}
+                      onComplete={() => { void handleLessonComplete() }}
+                      quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
+                      onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
+                      onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
+                      lessonMedia={lessonMedia}
+                    />
+                  )}
+                </div>
+              </div>
               <LessonNavigation
                 prev={prev}
                 next={next && isLessonUnlocked(next.id, allLessons, lessonStates) ? next : null}
