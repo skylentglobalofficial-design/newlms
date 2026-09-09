@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { C, FadeIn, PageShell, EnrollmentModal } from '../components/shared'
+import { C, FadeIn, PageShell } from '../components/shared'
 import { Button, Eyebrow, Section, SectionHeader, T } from '../components/ui'
 import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { workshops } from '../data'
-import type { Workshop } from '../data'
 import { PHOTO } from '../media'
 
 const accent = getDomainAccent('webinar')
@@ -13,7 +12,6 @@ const accent = getDomainAccent('webinar')
 export default function WorkshopsPage() {
   const [category, setCategory] = useState('All')
   const [mode, setMode] = useState('All')
-  const [enrollItem, setEnrollItem] = useState<Workshop | null>(null)
   const navigate = useNavigate()
 
   const categories = ['All', ...Array.from(new Set(workshops.map(w => w.category)))]
@@ -56,7 +54,7 @@ export default function WorkshopsPage() {
             tone="dark"
             eyebrow="Upcoming"
             title={`${filtered.length} workshop${filtered.length !== 1 ? 's' : ''}`}
-            lead="Filter by topic or delivery mode. Seat counts are illustrative for this demo catalog."
+            lead="Filter by topic or delivery mode. Workshop registration is not live yet — these listings are marketing information only."
           />
         </FadeIn>
 
@@ -136,9 +134,6 @@ export default function WorkshopsPage() {
         </div>
       </Section>
 
-      {enrollItem && (
-        <EnrollmentModal item={{ id: enrollItem.slug, title: enrollItem.title, price: enrollItem.price, type: 'workshop' }} onClose={() => setEnrollItem(null)} themeId="webinar" />
-      )}
     </PageShell>
   )
 }

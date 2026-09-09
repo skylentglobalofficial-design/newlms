@@ -24,6 +24,7 @@
     "test:google-oauth": "tsx scripts/test-google-oauth.ts",
     "test:lms": "tsx scripts/test-lms.ts",
     "test:career": "tsx scripts/test-career.ts",
+    "test:catalog-parity": "tsx scripts/check-catalog-parity.ts",
     "test:roles": "tsx scripts/test-role-provisioning.ts",
     "bootstrap:superadmin": "tsx scripts/bootstrap-superadmin.ts"
   },

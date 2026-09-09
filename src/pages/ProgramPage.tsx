@@ -16,6 +16,8 @@ import {
 import { ProductVisual, resolveProgramVisualId } from '../components/product/ProductVisuals'
 import { programs } from '../data'
 import type { ProgramType, EnrollmentStatus } from '../data'
+import { isProgramEnrollable } from '../lib/catalog-api'
+import { useCatalogProgram } from '../hooks/useCatalog'
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
@@ -120,15 +122,18 @@ function StickyProgramNav({
 // ─── ENROLLMENT PANEL ─────────────────────────────────────────────────────────
 
 function EnrollmentPanel({
-  program, status, ctaLabel, onCTA, accent,
+  program, status, ctaLabel, onCTA, accent, lowestPrice, originalPrice, multipleTiers, enrollable,
 }: {
   program: NonNullable<ReturnType<typeof programs.find>>
   status: EnrollmentStatus
   ctaLabel: string
   onCTA: () => void
   accent: ReturnType<typeof getDomainAccent>
+  lowestPrice: number
+  originalPrice: number
+  multipleTiers: boolean
+  enrollable: boolean
 }) {
-  const lowestPrice = Math.min(...program.pricing.map(p => p.price))
   const isCareerOS = !!program.careerSupport
 
   return (
@@ -139,13 +144,13 @@ function EnrollmentPanel({
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 30, fontWeight: 700, color: C.white, lineHeight: 1 }}>
             ₹{lowestPrice.toLocaleString('en-IN')}
           </div>
-          {program.pricing[0]?.originalPrice > lowestPrice && (
+          {originalPrice > lowestPrice && (
             <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, textDecoration: 'line-through', fontFamily: 'var(--font-mono)' }}>
-              ₹{program.pricing[0].originalPrice.toLocaleString('en-IN')}
+              ₹{originalPrice.toLocaleString('en-IN')}
             </div>
           )}
         </div>
-        {program.pricing.length > 1 && (
+        {multipleTiers && (
           <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 4 }}>Multiple plans below</div>
         )}
       </div>
@@ -166,7 +171,7 @@ function EnrollmentPanel({
 
       <div style={{ padding: '18px 24px 22px', display: 'flex', flexDirection: 'column', gap: 8 }}>
         <Button variant="primary" full themeId={program.slug ? resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType) : undefined} onClick={onCTA}>
-          {ctaLabel} →
+          {enrollable ? `${ctaLabel} →` : status === 'coming_soon' ? 'Launching soon' : status === 'waitlist' ? 'Join waitlist' : 'Enrollment not available yet'}
         </Button>
         <Link to="/contact" style={{ display: 'block', textAlign: 'center', color: 'rgba(255,255,255,0.45)', fontSize: 13, textDecoration: 'none', padding: '6px 0' }}>
           Talk to an advisor
@@ -186,6 +191,7 @@ export default function ProgramPage() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const program = programs.find(p => p.slug === slug)
+  const catalog = useCatalogProgram(slug)
 
   const [curriculumOpen, setCurriculumOpen] = useState<string | null>(null)
   const [faqOpen, setFaqOpen] = useState<string | null>(null)
@@ -195,9 +201,24 @@ export default function ProgramPage() {
 
   const isExamPrep = program?.programType === 'EXAM_PREP'
   const isCareerOS = !!program?.careerSupport
-  const enrollStatus = (program?.enrollmentStatus ?? 'open') as EnrollmentStatus
+  const enrollStatus = (catalog.data?.enrollmentStatus ?? program?.enrollmentStatus ?? 'open') as EnrollmentStatus
+  const enrollable = Boolean(catalog.data && isProgramEnrollable(catalog.data))
+  const moduleCount = catalog.data?.moduleCount ?? program?.modules ?? 0
+  const projectCount = catalog.data?.projectCount ?? program?.projects ?? 0
+  const catalogPricing = catalog.data?.pricing.length ? catalog.data.pricing : null
+  const staticPricing = program?.pricing ?? []
+  const pricingTiers = catalogPricing ?? staticPricing
+  const lowestPrice = pricingTiers.length ? Math.min(...pricingTiers.map((tier) => tier.price)) : 0
   const typeLabel = program ? TYPE_LABELS[program.programType] : ''
-  const ctaLabel = program?.programType === 'PROFESSIONAL' && enrollStatus === 'open' ? 'Apply Now' : CTA_LABEL[enrollStatus]
+  const ctaLabel = enrollable && program?.programType === 'PROFESSIONAL'
+    ? 'Apply Now'
+    : enrollable
+      ? CTA_LABEL.open
+      : enrollStatus === 'waitlist'
+        ? CTA_LABEL.waitlist
+        : enrollStatus === 'coming_soon'
+          ? CTA_LABEL.coming_soon
+          : 'Enrollment unavailable'
   const auroraTheme: AuroraThemeId = program ? resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType) : 'general'
   const domainAccent = getDomainAccent(auroraTheme)
 
@@ -243,8 +264,8 @@ export default function ProgramPage() {
     )
   }
 
-  const highlightTier = program.pricing.find(p => p.highlight) ?? program.pricing[0]
-  const allPricingFeatures = Array.from(new Set(program.pricing.flatMap(p => p.features)))
+  const highlightTier = pricingTiers.find(p => p.highlight) ?? pricingTiers[0]
+  const allPricingFeatures = Array.from(new Set(pricingTiers.flatMap(p => p.features)))
   const programVisualId = resolveProgramVisualId(program.slug, program.programType)
 
   return (
@@ -298,7 +319,17 @@ export default function ProgramPage() {
             </FadeIn>
 
             <FadeIn delay={80}>
-              <EnrollmentPanel program={program} status={enrollStatus} ctaLabel={ctaLabel} onCTA={() => setApplyOpen(true)} accent={domainAccent} />
+              <EnrollmentPanel
+                program={program}
+                status={enrollStatus}
+                ctaLabel={ctaLabel}
+                onCTA={() => setApplyOpen(true)}
+                accent={domainAccent}
+                lowestPrice={lowestPrice}
+                originalPrice={pricingTiers[0]?.originalPrice ?? lowestPrice}
+                multipleTiers={pricingTiers.length > 1}
+                enrollable={enrollable}
+              />
             </FadeIn>
           </div>
 
@@ -311,8 +342,8 @@ export default function ProgramPage() {
               ...(isExamPrep
                 ? [{ label: 'Sections', value: program.examSections?.join(' · ') ?? '—' }]
                 : [
-                    ...(program.modules ? [{ label: 'Modules', value: String(program.modules) }] : []),
-                    ...(program.projects ? [{ label: 'Projects', value: String(program.projects) }] : []),
+                    ...(moduleCount ? [{ label: 'Modules', value: String(moduleCount) }] : []),
+                    ...(projectCount ? [{ label: 'Projects', value: String(projectCount) }] : []),
                   ]),
               { label: 'Certificate', value: program.cert },
               { label: enrollStatus === 'coming_soon' ? 'Planned Batch' : 'Next Batch', value: program.upcomingBatch },
@@ -717,9 +748,9 @@ export default function ProgramPage() {
         <div style={{ marginTop: 32, overflowX: 'auto' }} className="program-pricing-wrap">
           <div style={{ minWidth: 560 }}>
             {/* Tier headers */}
-            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${program.pricing.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${pricingTiers.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
               <div style={{ padding: '16px 0', color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>Plan</div>
-              {program.pricing.map(tier => (
+              {pricingTiers.map(tier => (
                 <div key={tier.name} style={{ padding: '16px 20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? domainAccent.subtle : 'transparent' }}>
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: tier.highlight ? domainAccent.text : C.white }}>{tier.name}</div>
                   {tier.highlight && <div className="skylent-label" style={{ color: domainAccent.text, fontSize: 9, marginTop: 4 }}>Recommended</div>}
@@ -727,9 +758,9 @@ export default function ProgramPage() {
               ))}
             </div>
             {/* Prices */}
-            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${program.pricing.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${pricingTiers.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
               <div style={{ padding: '20px 0', color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>Price</div>
-              {program.pricing.map(tier => (
+              {pricingTiers.map(tier => (
                 <div key={tier.name} style={{ padding: '20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? `${domainAccent.subtle}` : 'transparent' }}>
                   <div style={{ fontFamily: 'var(--font-mono)', fontSize: 24, fontWeight: 700, color: C.white }}>₹{tier.price.toLocaleString('en-IN')}</div>
                   <div style={{ color: 'rgba(255,255,255,0.22)', fontSize: 12, textDecoration: 'line-through', marginTop: 4 }}>₹{tier.originalPrice.toLocaleString('en-IN')}</div>
@@ -738,9 +769,9 @@ export default function ProgramPage() {
             </div>
             {/* Feature rows */}
             {allPricingFeatures.map((feature, fi) => (
-              <div key={feature} style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${program.pricing.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
+              <div key={feature} style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${pricingTiers.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
                 <div style={{ padding: '14px 0', color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.4 }}>{feature}</div>
-                {program.pricing.map(tier => (
+                {pricingTiers.map(tier => (
                   <div key={tier.name} style={{ padding: '14px 20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? `${domainAccent.subtle}` : 'transparent' }}>
                     {tier.features.includes(feature) ? (
                       <span style={{ color: tier.highlight ? domainAccent.text : 'rgba(255,255,255,0.5)', fontSize: 14 }}>✓</span>
@@ -752,9 +783,9 @@ export default function ProgramPage() {
               </div>
             ))}
             {/* CTA row */}
-            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${program.pricing.length}, 1fr)`, gap: 0, paddingTop: 24 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${pricingTiers.length}, 1fr)`, gap: 0, paddingTop: 24 }}>
               <div />
-              {program.pricing.map(tier => (
+              {pricingTiers.map(tier => (
                 <div key={tier.name} style={{ padding: '0 12px', borderLeft: `1px solid ${T.lineDark}` }}>
                   <Button
                     variant={tier.highlight ? 'primary' : 'secondary'}
@@ -803,7 +834,15 @@ export default function ProgramPage() {
 
       {applyOpen && (
         <EnrollmentModal
-          item={{ id: program.slug, title: program.name, price: highlightTier.price, type: 'program' }}
+          item={{
+            kind: 'program',
+            slug: program.slug,
+            title: program.name,
+            price: highlightTier.price,
+            enrollmentStatus: enrollStatus,
+            enrollable,
+            linkedCourseSlugs: catalog.data?.linkedCourseSlugs ?? [],
+          }}
           themeId={auroraTheme}
           onClose={() => setApplyOpen(false)}
         />
