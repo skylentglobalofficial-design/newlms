@@ -1,5 +1,5 @@
+import { createPrismaClient } from '../server/src/lib/prisma.js'
 import {
-  PrismaClient,
   CurriculumNodeType,
   EnrollmentStatus,
   ProgramType,
@@ -18,11 +18,20 @@ import {
   CareerSupportPriority,
   CareerProfileVisibility,
 } from '@prisma/client'
+import { config as loadEnv } from 'dotenv'
+import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import bcrypt from 'bcrypt'
 
 import { courses, programs } from '../src/data.js'
+import { normalizeMuxPlaybackId } from '../src/lib/media/mux-playback.js'
+import { PROGRAM_LMS_COURSE_LINKS } from '../src/lib/program-lms-enrollment.js'
 
-const prisma = new PrismaClient()
+const repoRoot = resolve(fileURLToPath(new URL('.', import.meta.url)), '..')
+loadEnv({ path: resolve(repoRoot, '.env'), override: true })
+loadEnv({ path: resolve(repoRoot, '.env.local'), override: true })
+
+const prisma = createPrismaClient()
 const DEMO_PASSWORD = process.env.DEMO_USER_PASSWORD ?? 'DemoSkylent2026!'
 const BCRYPT_ROUNDS = 12
 const DEMO_ORG_SLUG = 'skylent-demo-college'
@@ -235,11 +244,7 @@ async function seedQuizQuestions() {
 }
 
 async function seedProgramCourses() {
-  const links: Array<{ programSlug: string; courseSlug: string; sortOrder: number }> = [
-    { programSlug: "data-analytics-pro", courseSlug: "data-analytics", sortOrder: 0 },
-    { programSlug: "data-science-ai", courseSlug: "data-analytics", sortOrder: 0 },
-    { programSlug: "data-science-ai", courseSlug: "python-programming", sortOrder: 1 },
-  ]
+  const links = PROGRAM_LMS_COURSE_LINKS
 
   for (const link of links) {
     const program = await prisma.program.findUnique({ where: { slug: link.programSlug }, select: { id: true } })
@@ -279,6 +284,83 @@ async function findCourseNode(courseSlug: string, sourceId: string) {
   return prisma.curriculumNode.findFirst({
     where: { sourceId, module: { courseId: course.id } },
     select: { id: true, title: true, nodeType: true },
+  })
+}
+
+function readDemoMuxPlaybackId(): string | undefined {
+  const value = process.env.MUX_DEMO_PLAYBACK_ID
+  if (value == null) return undefined
+  const normalized = normalizeMuxPlaybackId(value)
+  if (!normalized) {
+    console.warn(
+      `MUX_DEMO_PLAYBACK_ID is set but is not a valid public Mux playback ID; ${DEMO_COURSE_SLUG}/l1 will remain unavailable.`,
+    )
+    return undefined
+  }
+  return normalized
+}
+
+async function seedDemoLessonMuxPlayback() {
+  const node = await findCourseNode(DEMO_COURSE_SLUG, 'l1')
+  if (!node) return
+
+  const playbackId = readDemoMuxPlaybackId()
+  await prisma.curriculumNode.update({
+    where: { id: node.id },
+    data: { muxPlaybackId: playbackId ?? null },
+  })
+
+  if (playbackId) {
+    console.log(`Configured Mux playback for ${DEMO_COURSE_SLUG}/l1 (${node.title}).`)
+  } else {
+    console.log(`No MUX_DEMO_PLAYBACK_ID set; ${DEMO_COURSE_SLUG}/l1 video remains unavailable.`)
+  }
+}
+
+async function seedDemoLessonNotes() {
+  const notesByLesson: Record<string, string> = {
+    l2: [
+      'Data analytics is not only about tools — it is a way of thinking. Analysts start with a clear business question, identify what evidence would answer it, and only then choose spreadsheets, SQL, or dashboards.',
+      'A strong analytics mindset balances curiosity with skepticism. You question data quality, define metrics carefully, and separate correlation from causation before recommending action.',
+      'In this demo lesson, use the reading notes below and any instructor materials to reflect on how you would frame an analytics problem for a retail or operations team.',
+    ].join('\n\n'),
+    l8: [
+      'SQL (Structured Query Language) is the standard way to query relational databases. SELECT retrieves columns, WHERE filters rows, and JOIN combines tables on shared keys.',
+      'Common patterns for analysts include aggregations (COUNT, SUM, AVG), GROUP BY for summaries, and HAVING to filter grouped results.',
+      'Practice writing queries that answer one business question at a time — for example, monthly revenue by product category or customers with repeat purchases.',
+    ].join('\n\n'),
+  }
+
+  for (const [lessonKey, notesBody] of Object.entries(notesByLesson)) {
+    const node = await findCourseNode(DEMO_COURSE_SLUG, lessonKey)
+    if (!node) continue
+    await prisma.curriculumNode.update({
+      where: { id: node.id },
+      data: { notesBody },
+    })
+  }
+}
+
+async function seedDemoLessonMaterials() {
+  const node = await findCourseNode(DEMO_COURSE_SLUG, 'l8')
+  if (!node) return
+
+  const existing = await prisma.lessonMaterial.findFirst({
+    where: { nodeId: node.id, fileName: 'sql-reference-sheet.pdf' },
+  })
+  if (existing) return
+
+  await prisma.lessonMaterial.create({
+    data: {
+      nodeId: node.id,
+      fileName: 'sql-reference-sheet.pdf',
+      mimeType: 'application/pdf',
+      byteSize: 14336,
+      storageProvider: 'r2',
+      storageKey: `lesson-materials/${DEMO_COURSE_SLUG}/${node.id}/demo-seed/sql-reference-sheet.pdf`,
+      uploadStatus: 'PENDING',
+      published: true,
+    },
   })
 }
 
@@ -448,6 +530,9 @@ async function seedLearnerWorkspace(userId: string) {
       },
     })
   }
+
+  await seedDemoLessonNotes()
+  await seedDemoLessonMaterials()
 
   await prisma.careerProfile.upsert({
     where: { userId },
@@ -827,6 +912,8 @@ async function main() {
 
   console.log("Seeding program-course links...")
   await seedProgramCourses()
+
+  await seedDemoLessonMuxPlayback()
 
   await seedDemoUsers()
 

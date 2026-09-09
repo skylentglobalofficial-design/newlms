@@ -1,0 +1,120 @@
+/*
+ * Theme refinement layer.
+ * Intent: one Skylent visual language in both modes — warm editorial light,
+ * deep atmospheric dark, identical Aurora family, inverse typography.
+ */
+
+[data-theme="light"] {
+  --skylent-canvas: #ede2d2 !important;
+  --skylent-surface: #f3e9da !important;
+  --skylent-elevated: #f7efe3 !important;
+  --skylent-glass-bg: rgba(42, 34, 25, 0.035) !important;
+  --skylent-text: #171411 !important;
+  --skylent-text-secondary: #4f4942 !important;
+  --skylent-text-muted: #766e65 !important;
+  --skylent-border: rgba(23, 20, 17, 0.14) !important;
+  --skylent-border-subtle: rgba(23, 20, 17, 0.08) !important;
+  --skylent-accent: #6366f1 !important;
+  --skylent-accent-foreground: #f7efe3 !important;
+  --skylent-input-bg: rgba(23, 20, 17, 0.035) !important;
+  --skylent-input-border: rgba(23, 20, 17, 0.14) !important;
+  --skylent-card-bg: rgba(23, 20, 17, 0.025) !important;
+  --skylent-nav-bg: rgba(237, 226, 210, 0.94) !important;
+  --skylent-footer-bg: #e3d6c2 !important;
+  --skylent-focus-ring: rgba(99, 102, 241, 0.48) !important;
+  --skylent-aurora-opacity: 0 !important;
+}
+[data-theme="dark"] {
+  --skylent-canvas: #09090d !important;
+  --skylent-surface: rgba(255, 255, 255, 0.032) !important;
+  --skylent-elevated: rgba(255, 255, 255, 0.055) !important;
+  --skylent-glass-bg: rgba(255, 255, 255, 0.042) !important;
+  --skylent-text: rgba(255, 255, 255, 0.94) !important;
+  --skylent-text-secondary: rgba(255, 255, 255, 0.70) !important;
+  --skylent-text-muted: rgba(255, 255, 255, 0.50) !important;
+  --skylent-border: rgba(255, 255, 255, 0.115) !important;
+  --skylent-border-subtle: rgba(255, 255, 255, 0.065) !important;
+  --skylent-accent: #818cf8 !important;
+  --skylent-accent-foreground: #09090d !important;
+  --skylent-input-bg: rgba(255, 255, 255, 0.045) !important;
+  --skylent-input-border: rgba(255, 255, 255, 0.13) !important;
+  --skylent-card-bg: rgba(255, 255, 255, 0.032) !important;
+  --skylent-nav-bg: rgba(9, 9, 13, 0.84) !important;
+  --skylent-footer-bg: #060609 !important;
+  --skylent-focus-ring: rgba(129, 140, 248, 0.58) !important;
+  --skylent-aurora-opacity: 0.66 !important;
+}
+
+/* The canvas currently receives an inline background shorthand from PublicCanvas.
+   Keep that inline value for theme color, but explicitly restore the atmosphere. */
+[data-theme="light"] .skylent-public-canvas {
+  background-color: #ede2d2 !important;
+  background-image: none !important;
+}
+
+[data-theme="dark"] .skylent-public-canvas {
+  background-color: #09090d !important;
+}
+
+[data-theme="light"] .skylent-aurora,
+[data-theme="light"] .skylent-aurora-band,
+[data-theme="dark"] .skylent-aurora,
+[data-theme="dark"] .skylent-aurora-band {
+  opacity: var(--skylent-aurora-opacity) !important;
+}
+
+/* Ecosystem map: remove legacy dark-mode text assumptions in the public hero. */
+[data-theme="light"] .ecosystem-map-flow-banner-item,
+[data-theme="light"] .ecosystem-map-flow-banner-arrow,
+[data-theme="light"] .skills-explorer-list-label,
+[data-theme="light"] .ecosystem-map-flow-connector,
+[data-theme="light"] .pathway-explorer-tab-meta,
+[data-theme="light"] .skills-explorer-panel-tagline,
+[data-theme="light"] .education-pathway-description,
+[data-theme="light"] .skills-explorer-block-label,
+[data-theme="light"] .education-prep-list,
+[data-theme="light"] .skills-explorer-chip {
+  color: var(--skylent-text-secondary) !important;
+}
+
+[data-theme="light"] .pathway-explorer-tab-label,
+[data-theme="light"] .skills-explorer-panel-title {
+  color: var(--skylent-text) !important;
+}
+
+[data-theme="light"] .pathway-explorer-tab.is-selected .pathway-explorer-tab-label {
+  color: var(--skylent-text) !important;
+}
+
+[data-theme="light"] .ecosystem-map-flow-banner-label.is-active,
+[data-theme="light"] .skills-explorer-panel-eyebrow,
+[data-theme="light"] .skills-explorer-primary-link {
+  filter: saturate(1.05);
+}
+
+/* A few legacy inline white labels exist in the Skills block. In day mode they
+   must follow the inverse-typography rule rather than disappear on cream. */
+[data-theme="light"] #skills [style*="color: rgb(255, 255, 255)"],
+[data-theme="light"] #skills [style*="color: rgb(255,255,255)"],
+[data-theme="light"] #skills [style*="color:#FFFFFF"],
+[data-theme="light"] #skills [style*="color: #FFFFFF"] {
+  color: var(--skylent-text) !important;
+}
+
+/* Keep the theme control legible and deliberately compact. */
+.skylent-theme-toggle {
+  background: var(--skylent-surface) !important;
+  border-color: var(--skylent-border-subtle) !important;
+  backdrop-filter: blur(10px);
+}
+
+.skylent-theme-toggle-btn {
+  color: var(--skylent-text-muted) !important;
+}
+
+.skylent-theme-toggle-btn[aria-pressed="true"] {
+  background: var(--skylent-elevated) !important;
+  color: var(--skylent-text) !important;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+}
+

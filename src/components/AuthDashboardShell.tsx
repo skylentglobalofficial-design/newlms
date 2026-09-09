@@ -1,7 +1,8 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
+import type { RoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
 
 export type AuthNavItem = {
@@ -16,6 +17,8 @@ export type AuthNavItem = {
 
 export type AuthDashboardShellProps = {
   themeId: AuroraThemeId
+  /** Role accent for nav, CTAs, focus — not page background */
+  accent?: RoleAccent
   /** Subtitle under Skylent logo, e.g. "Learning" */
   workspaceLabel: string
   roleLabel: string
@@ -31,6 +34,7 @@ export type AuthDashboardShellProps = {
 
 export function AuthDashboardShell({
   themeId,
+  accent: accentProp,
   workspaceLabel,
   roleLabel,
   navItems,
@@ -41,10 +45,21 @@ export function AuthDashboardShell({
   children,
   header,
 }: AuthDashboardShellProps) {
-  const accent = getDomainAccent(themeId)
+  const accent = accentProp ?? getDomainAccent(themeId)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  useEffect(() => {
+    if (!mobileOpen) return
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') setMobileOpen(false)
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [mobileOpen])
 
   const mobileNav = bottomNavItems ?? navItems.slice(0, 5)
 
@@ -62,7 +77,7 @@ export function AuthDashboardShell({
 
   async function handleLogout() {
     await logout()
-    navigate('/login')
+    navigate('/')
   }
 
   const sidebarContent = (
@@ -151,7 +166,6 @@ export function AuthDashboardShell({
 
   return (
     <div className="auth-shell" style={{ minHeight: '100vh', background: C.canvas, fontFamily: 'var(--font-body)', position: 'relative' }}>
-      {/* Level 1 — desktop sidebar chrome */}
       <aside className="auth-shell-sidebar-desktop" style={{
         position: 'fixed', top: 0, left: 0, bottom: 0, width: 236,
         background: 'rgba(5,5,5,0.94)', borderRight: `1px solid ${T.lineDark}`,
@@ -164,17 +178,22 @@ export function AuthDashboardShell({
       {mobileOpen && (
         <div
           className="auth-shell-overlay"
+          aria-hidden="true"
           onClick={() => setMobileOpen(false)}
           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 200, backdropFilter: 'blur(4px)' }}
         />
       )}
       <aside
+        id="auth-shell-mobile-nav"
+        aria-label="Workspace navigation"
+        aria-hidden={!mobileOpen}
         className={`auth-shell-sidebar-mobile${mobileOpen ? ' open' : ''}`}
         style={{
           position: 'fixed', top: 0, left: 0, bottom: 0, width: 280,
           background: 'rgba(5,5,5,0.98)', borderRight: `1px solid ${T.lineDark}`,
           display: 'flex', flexDirection: 'column', zIndex: 210,
           transform: mobileOpen ? 'translateX(0)' : 'translateX(-100%)',
+          visibility: mobileOpen ? 'visible' : 'hidden',
           transition: 'transform 0.25s ease',
         }}
       >
@@ -182,13 +201,12 @@ export function AuthDashboardShell({
       </aside>
 
       <div className="auth-shell-main" style={{ position: 'relative', zIndex: 1, marginLeft: 236, minHeight: '100vh' }}>
-        {/* Level 1 — mobile header chrome */}
         <header className="auth-shell-mobile-header" style={{
           display: 'none', position: 'sticky', top: 0, zIndex: 90,
           padding: '12px 16px', background: 'rgba(5,5,5,0.92)', borderBottom: `1px solid ${T.lineDark}`,
           backdropFilter: 'blur(16px)', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu" style={{ background: 'none', border: 'none', color: C.white, padding: 8, cursor: 'pointer' }}>
+          <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu" aria-expanded={mobileOpen} aria-controls="auth-shell-mobile-nav" style={{ background: 'none', border: 'none', color: C.white, padding: 8, cursor: 'pointer' }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white }}>
@@ -197,13 +215,12 @@ export function AuthDashboardShell({
           <div style={{ width: 36 }} />
         </header>
 
-        <div className="auth-shell-content" style={{ padding: 'clamp(20px, 3vw, 36px) clamp(16px, 3vw, 36px) 96px', minWidth: 0 }}>
+        <div className="auth-shell-content skylent-content-container" style={{ padding: 'clamp(20px, 3vw, 36px) clamp(16px, 3vw, 36px) 96px', minWidth: 0, width: 'min(1120px, calc(100% - clamp(32px, 6vw, 72px)))', margin: '0 auto' }}>
           {header}
           {children}
         </div>
       </div>
 
-      {/* Level 1 — mobile bottom nav */}
       <nav className="auth-shell-bottom-nav" style={{
         position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
         background: 'rgba(5,5,5,0.94)', borderTop: `1px solid ${T.lineDark}`,
@@ -234,13 +251,16 @@ export function AuthDashboardShell({
       <style>{`
         .auth-shell-sidebar-mobile { display: none; }
         .auth-shell-main { overflow-x: hidden; }
+        .auth-shell-content > * { max-width: 100%; }
         @media (max-width: 900px) {
           .auth-shell-sidebar-desktop { display: none !important; }
           .auth-shell-sidebar-mobile { display: flex !important; }
           .auth-shell-main { margin-left: 0 !important; }
+          .auth-shell-content { width: min(100% - 24px, 760px) !important; }
           .auth-shell-mobile-header { display: flex !important; }
         }
         @media (max-width: 600px) {
+          .auth-shell-content { width: calc(100% - 20px) !important; padding-left: 10px !important; padding-right: 10px !important; }
           .auth-shell-bottom-nav { display: flex !important; }
           .auth-shell-content { padding-bottom: 88px !important; }
         }
@@ -256,24 +276,21 @@ export function AuthDashboardLayout({
   className,
 }: {
   primary: ReactNode
-  rail: ReactNode
+  rail?: ReactNode
   className?: string
 }) {
   return (
-    <div className={`auth-dashboard-layout${className ? ` ${className}` : ''}`} style={{
-      display: 'grid',
-      gridTemplateColumns: 'minmax(0, 1fr) minmax(240px, 300px)',
-      gap: 'clamp(20px, 2.5vw, 32px)',
-      alignItems: 'start',
-    }}>
-      <div className="auth-dashboard-primary" style={{ minWidth: 0 }}>{primary}</div>
-      <aside className="auth-dashboard-rail" style={{ minWidth: 0 }}>{rail}</aside>
-      <style>{`
-        @media (max-width: 900px) {
-          .auth-dashboard-layout { grid-template-columns: 1fr !important; }
-          .auth-dashboard-rail { order: 2; }
-        }
-      `}</style>
+    <div
+      className={className}
+      style={{
+        display: 'grid',
+        gridTemplateColumns: rail ? 'minmax(0, 1fr) minmax(220px, 300px)' : 'minmax(0, 1fr)',
+        gap: 24,
+        alignItems: 'start',
+      }}
+    >
+      <main style={{ minWidth: 0 }}>{primary}</main>
+      {rail && <aside style={{ minWidth: 0 }}>{rail}</aside>}
     </div>
   )
 }

@@ -2,6 +2,17 @@ import type { NavigateFunction } from "react-router-dom"
 import type { UserRole } from "../context/AuthContext"
 import { fulfillCatalogEnrollment, learnPathForWorkspace, type LoginRedirectState } from "./catalog-enrollment"
 
+export function loginReturnPath(pathname: string, search = "", hash = ""): string {
+  return `${pathname}${search}${hash}`
+}
+
+export function careerOsWorkspaceNav(isAuthenticated: boolean) {
+  if (isAuthenticated) {
+    return { path: "/career-os/app", state: undefined }
+  }
+  return { path: "/login", state: { returnTo: "/career-os/app" } }
+}
+
 export function roleRoute(role: UserRole): string {
   switch (role) {
     case "student":

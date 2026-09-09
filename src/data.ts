@@ -8,6 +8,7 @@ export type CourseLesson = {
   duration?: string
   completed: boolean
   locked?: boolean
+  notesBody?: string | null
   media?: { provider: 'mux' | 'unavailable'; playbackId?: string }
 }
 
@@ -26,8 +27,6 @@ export type Course = {
   mode: string
   lessons: number
   projects: number
-  rating: number
-  reviews: number
   price: number
   originalPrice: number
   desc: string
@@ -47,8 +46,6 @@ export const courses: Course[] = [
     mode: 'Self-paced',
     lessons: 48,
     projects: 3,
-    rating: 4.8,
-    reviews: 312,
     price: 4999,
     originalPrice: 9999,
     desc: 'Master SQL, Excel, Power BI and Python to analyse data and drive business decisions.',
@@ -92,8 +89,6 @@ export const courses: Course[] = [
     mode: 'Self-paced',
     lessons: 36,
     projects: 2,
-    rating: 4.9,
-    reviews: 245,
     price: 3999,
     originalPrice: 7999,
     desc: 'Learn Python from scratch — variables, pandas, numpy, matplotlib, and real-world projects.',
@@ -122,8 +117,6 @@ export const courses: Course[] = [
     mode: 'Live + Self-paced',
     lessons: 28,
     projects: 2,
-    rating: 4.9,
-    reviews: 189,
     price: 5999,
     originalPrice: 12999,
     desc: 'Prompt engineering, LangChain, RAG systems, and building LLM applications with real project work.',
@@ -152,8 +145,6 @@ export const courses: Course[] = [
     mode: 'Self-paced',
     lessons: 24,
     projects: 2,
-    rating: 4.7,
-    reviews: 198,
     price: 2999,
     originalPrice: 5999,
     desc: 'Build professional business intelligence dashboards with Power BI and DAX from scratch.',
@@ -177,8 +168,6 @@ export const courses: Course[] = [
     mode: 'Live Classes',
     lessons: 32,
     projects: 3,
-    rating: 4.8,
-    reviews: 156,
     price: 6999,
     originalPrice: 14999,
     desc: 'Product thinking, user research, roadmapping, and stakeholder management through live case studies.',
@@ -202,8 +191,6 @@ export const courses: Course[] = [
     mode: 'Live + Self-paced',
     lessons: 64,
     projects: 4,
-    rating: 4.8,
-    reviews: 203,
     price: 7999,
     originalPrice: 16999,
     desc: 'Build complete web applications — React, Node.js, PostgreSQL, and cloud deployment with real client projects.',
@@ -689,7 +676,7 @@ export const programs: Program[] = [
     format: 'Live + Self-paced',
     cert: 'Completion Certificate',
     outcome: 'IIM / Top B-School Admission',
-    desc: 'Section-oriented CAT preparation covering VARC, DILR, and QA — with concept building, intensive practice, sectional tests, and full mock CATs with percentile analytics.',
+    desc: 'Section-oriented CAT preparation covering VARC, DILR, and QA — with concept building, intensive practice, sectional tests, and full mock CATs. Detailed analytics are planned for a later release.',
     upcomingBatch: 'January 2027',
     programType: 'EXAM_PREP',
     level: 'Advanced',
@@ -711,7 +698,7 @@ export const programs: Program[] = [
     ],
     curriculumDetail: [
       {
-        number: 'S1', title: 'VARC — Verbal Ability & Reading Comprehension', description: 'RC passage analysis, vocabulary in context, Para Jumbles, Para Summary, and Odd Sentence. Speed reading and inference techniques for 99th percentile accuracy.', duration: '9 months (parallel)',
+        number: 'S1', title: 'VARC — Verbal Ability & Reading Comprehension', description: 'RC passage analysis, vocabulary in context, Para Jumbles, Para Summary, and Odd Sentence. Speed reading and inference techniques for accuracy under timed conditions.', duration: '9 months (parallel)',
         topics: ['Reading Comprehension', 'Para Jumbles', 'Para Summary', 'Verbal Ability', 'Critical Reasoning'],
       },
       {
@@ -727,12 +714,12 @@ export const programs: Program[] = [
       'Live sessions per section, twice per week',
       'Weekly sectional tests with timed practice',
       'Full-length mock CATs in the actual exam format',
-      'Detailed mock analysis: percentile, accuracy, time-per-question',
+      'Detailed mock analysis: accuracy and time-per-question (percentile analytics planned)',
       'GD-PI preparation included for shortlisted candidates',
     ],
     faqs: [
       { q: 'Is this for working professionals?', a: 'Yes. The program is structured around a live + recorded format so working professionals can attend sessions in the evening and catch up via recordings.' },
-      { q: 'How many mock tests are included?', a: 'The full prep track includes 30 full-length mock CATs plus unlimited sectional tests. Every mock comes with detailed percentile and accuracy analytics.' },
+      { q: 'How many mock tests are included?', a: 'The full prep track is designed around 30 full-length mock CATs plus sectional tests. Mock analytics depth will expand as the product ships — enrollment is not open yet.' },
       { q: 'Is GD-PI preparation included?', a: 'Yes — for students who receive interview calls, a GD-PI preparation module is included in the Full Prep track.' },
     ],
     faculty: [
@@ -760,7 +747,7 @@ export const programs: Program[] = [
     upcomingBatch: 'Enroll anytime',
     programType: 'CERTIFICATE',
     level: 'Beginner to Intermediate',
-    enrollmentStatus: 'open',
+    enrollmentStatus: 'waitlist',
     careerSupport: false,
     whoIsItFor: [
       'Business analysts wanting to query data without relying on engineers',

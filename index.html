@@ -3,6 +3,57 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <script>
+      (function () {
+        var key = "skylent-theme";
+        var stored = localStorage.getItem(key);
+        var systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        var theme = stored === "light" || stored === "dark" ? stored : (systemDark ? "dark" : "light");
+        document.documentElement.setAttribute("data-theme", theme);
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
+    <style>
+      /* Skylent light mode: warm editorial canvas; preserve the same Aurora family as night mode. */
+      [data-theme="light"] {
+        --skylent-canvas: #efe5d5 !important;
+        --skylent-surface: #f6eee2 !important;
+        --skylent-elevated: #fbf5eb !important;
+        --skylent-glass-bg: rgba(38, 32, 25, 0.035) !important;
+        --skylent-text: #171411 !important;
+        --skylent-text-secondary: #4d4740 !important;
+        --skylent-text-muted: #756d64 !important;
+        --skylent-border: rgba(23, 20, 17, 0.13) !important;
+        --skylent-border-subtle: rgba(23, 20, 17, 0.075) !important;
+        --skylent-accent: #6366f1 !important;
+        --skylent-accent-foreground: #fbf5eb !important;
+        --skylent-input-bg: rgba(23, 20, 17, 0.035) !important;
+        --skylent-input-border: rgba(23, 20, 17, 0.14) !important;
+        --skylent-card-bg: rgba(23, 20, 17, 0.025) !important;
+        --skylent-nav-bg: rgba(239, 229, 213, 0.94) !important;
+        --skylent-footer-bg: #e5dac9 !important;
+        --skylent-focus-ring: rgba(99, 102, 241, 0.48) !important;
+        --skylent-aurora-opacity: 0.52 !important;
+      }
+
+      /* Keep Aurora atmospheric rather than replacing it with a separate light-mode palette. */
+      [data-theme="light"] .skylent-public-canvas {
+        background-color: #efe5d5 !important;
+        background-image:
+          radial-gradient(ellipse 62% 48% at 8% 0%, rgba(99, 102, 241, 0.24), transparent 68%),
+          radial-gradient(ellipse 52% 44% at 94% 3%, rgba(139, 92, 246, 0.19), transparent 68%),
+          radial-gradient(ellipse 42% 34% at 58% 16%, rgba(59, 130, 246, 0.10), transparent 72%) !important;
+        background-repeat: no-repeat;
+        background-size: 100% 760px, 100% 700px, 100% 620px;
+      }
+
+      [data-theme="light"] .skylent-aurora,
+      [data-theme="light"] .skylent-aurora-band {
+        opacity: 0.52 !important;
+      }
+    </style>
     <title>Skylent — Education, Skills, Career</title>
     <meta name="description" content="Skylent is an education technology platform spanning academic education, career-ready skills, and Career OS — for students, parents, and institutions." />
   </head>

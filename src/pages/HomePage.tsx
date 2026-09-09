@@ -1,19 +1,18 @@
 import { useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { C, FadeIn, Footer } from '../components/shared'
-import {
-  Section, Button, CTABand, T, SectionHeader, FlowStrip,
-} from '../components/ui'
-import { GlassSurface, MediaImage } from '../components/foundation'
-import EcosystemMapHero from '../components/home/EcosystemMapHero'
+import { Link, useNavigate } from 'react-router-dom'
+import { FadeIn, Footer } from '../components/shared'
+import { Button, Eyebrow, CTABand } from '../components/ui'
+import { MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
-import { programs, jobs } from '../data'
-import type { Program, ProgramType } from '../data'
+import { programs } from '../data'
+import type { ProgramType } from '../data'
 import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
 
-const accent = getDomainAccent('general')
+const featured = programs.find(p => p.slug === 'data-science-ai') ?? programs[0]
+const professional = getDomainAccent('professional')
+const career = getDomainAccent('career')
 
-const TYPE_LABELS: Record<ProgramType, string> = {
+const typeLabel: Record<ProgramType, string> = {
   PROFESSIONAL: 'Professional Program',
   CERTIFICATE: 'Certificate Program',
   WEBINAR: 'Webinar',
@@ -23,576 +22,110 @@ const TYPE_LABELS: Record<ProgramType, string> = {
   POSTGRADUATE: 'Postgraduate',
 }
 
-const FEATURED_PROGRAM = programs.find(p => p.slug === 'data-science-ai') ?? programs[0]
-const SUPPORTING_PROGRAMS = programs
-  .filter(p => p.slug !== FEATURED_PROGRAM.slug)
-  .slice(0, 5)
-
-// ─── 1. ECOSYSTEM MAP ─────────────────────────────────────────────────────────
-
-function CoverageSection() {
-  const pillars = [
-    {
-      label: 'Education',
-      sub: 'School · Undergraduate · Postgraduate · Exams',
-      desc: 'Academic programs with visible progress — not one generic LMS.',
-      to: '/education',
-      theme: getDomainAccent('schooling'),
-    },
-    {
-      label: 'Skills',
-      sub: 'Webinars · Certificates · Professional Programs',
-      desc: 'Credentialed upskilling. Professional Programs include Career OS access.',
-      to: '/skills',
-      theme: getDomainAccent('professional'),
-    },
-    {
-      label: 'Career OS',
-      sub: 'Profile · Interview prep · Jobs · Applications',
-      desc: 'A career workspace — activated after a Professional Program.',
-      to: '/career-os',
-      theme: getDomainAccent('career'),
-    },
-    {
-      label: 'Institutions',
-      sub: 'Schools · Colleges · Universities · Training',
-      desc: 'Dashboards for schools, colleges, universities, and training partners.',
-      to: '/institutions',
-      theme: getDomainAccent('institution'),
-    },
-  ]
-
-  return (
-    <Section tone="canvas" divider>
-      <FadeIn>
-        <SectionHeader
-          tone="dark"
-          eyebrow="What Skylent covers"
-          title="Education, Skills, Career, Institutions."
-          lead="Each product has its own pages, curriculum, and workflows. They connect when a learner moves from school to hire."
-        />
-      </FadeIn>
-
-      <div style={{ marginTop: 52 }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 0 }}>
-          {pillars.map((pillar, i) => (
-            <FadeIn key={pillar.label} delay={i * 60}>
-              <Link
-                to={pillar.to}
-                style={{
-                  display: 'block',
-                  flex: '1 1 min(240px, 100%)',
-                  minWidth: 'min(240px, 100%)',
-                  textAlign: 'left',
-                  background: 'transparent',
-                  border: 'none',
-                  borderTop: `1px solid ${T.lineDark}`,
-                  padding: '28px clamp(12px, 2vw, 24px)',
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-body)',
-                  textDecoration: 'none',
-                  color: 'inherit',
-                }}
-              >
-                <div className="skylent-label" style={{ color: pillar.theme.text, marginBottom: 14 }}>
-                  {String(i + 1).padStart(2, '0')}
-                </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(20px, 2.4vw, 28px)', fontWeight: 600, color: C.white, marginBottom: 8, letterSpacing: '-0.02em' }}>
-                  {pillar.label}
-                </div>
-                <div style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 14, lineHeight: 1.45 }}>{pillar.sub}</div>
-                <p style={{ color: 'var(--text-secondary)', fontSize: 13.5, lineHeight: 1.65, margin: '0 0 16px', maxWidth: 240 }}>{pillar.desc}</p>
-                <span style={{ color: pillar.theme.text, fontSize: 13, fontWeight: 600 }}>View</span>
-              </Link>
-            </FadeIn>
-          ))}
-        </div>
-      </div>
-    </Section>
-  )
-}
-
-// ─── 3. EDUCATION ─────────────────────────────────────────────────────────────
-
-function EducationSection() {
+function Hero() {
   const navigate = useNavigate()
-
-  const stages = [
-    { label: 'Schooling', sub: 'Grades 1–12', anchor: 'schooling', photo: PHOTO.classroomWarm },
-    { label: 'Undergraduate', sub: 'Degree-aligned', anchor: 'undergraduate', photo: PHOTO.college },
-    { label: 'Postgraduate', sub: 'Specialisation', anchor: 'postgraduate', photo: PHOTO.research },
-    { label: 'Competitive Exams', sub: 'JEE · NEET · CAT', anchor: 'competitive-exams', photo: PHOTO.study },
-  ]
-
-  const eduAccent = getDomainAccent('schooling')
-
   return (
-    <Section tone="canvas" divider id="education">
-      <FadeIn>
-        <SectionHeader
-          tone="dark"
-          align="center"
-          eyebrow="Education"
-          title={<>From schooling<br />to competitive exams.</>}
-          lead="Four distinct academic products — each with its own curriculum model, audience, and workflow. Not one generic course catalog."
-        />
-      </FadeIn>
-      <FadeIn delay={60}>
-        <div style={{ marginTop: 40 }}>
-          <MediaImage
-            src={PHOTO.lecture}
-            alt="Students in a lecture environment"
-            aspect="21/9"
-            overlay="bottom"
-            objectPosition="center"
-          />
-        </div>
-      </FadeIn>
-      <FadeIn delay={80}>
-        <div style={{ marginTop: 40, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {stages.map((stage, i) => (
-              <Link
-                key={stage.label}
-                to={`/education#${stage.anchor}`}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '56px 1fr auto',
-                  gap: 16,
-                  alignItems: 'center',
-                  padding: '16px 0',
-                  borderTop: i === 0 ? `1px solid ${T.lineDark}` : 'none',
-                  borderBottom: `1px solid ${T.lineDark}`,
-                  background: 'none',
-                  borderLeft: 'none',
-                  borderRight: 'none',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  width: '100%',
-                  fontFamily: 'var(--font-body)',
-                  textDecoration: 'none',
-                  color: 'inherit',
-                }}
-              >
-                <div style={{ width: 48, height: 48, borderRadius: 8, overflow: 'hidden', background: C.ink3 }}>
-                  <MediaImage src={stage.photo} alt="" aspect="1/1" radius={8} />
-                </div>
-                <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 3 }}>{stage.label}</div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>{stage.sub}</div>
-                </div>
-                <span style={{ color: eduAccent.text, fontSize: 13, fontWeight: 500 }}>View</span>
-              </Link>
-            ))}
-          </div>
-          <div style={{ marginTop: 28, textAlign: 'center' }}>
-            <Button variant="secondary" onClick={() => navigate('/education')}>Explore Education</Button>
-          </div>
-        </div>
-      </FadeIn>
-    </Section>
-  )
-}
-
-// ─── 4. SKILLS ────────────────────────────────────────────────────────────────
-
-function SkillsSection() {
-  const navigate = useNavigate()
-  const skillsAccent = getDomainAccent('professional')
-
-  const stages = [
-    { label: 'Webinars', sub: 'Live sessions · Register and attend', to: '/skills#webinars' },
-    { label: 'Certificate Programs', sub: 'Structured credentials with assessment', to: '/skills#certificate' },
-    { label: 'Professional Programs', sub: 'Deep programs with Career OS access', to: '/skills#professional', highlight: true },
-    { label: 'Job Assistance', sub: 'Resume, interviews, applications', to: '/skills#job-assistance' },
-  ]
-
-  return (
-    <Section tone="canvas" divider id="skills">
-      <FadeIn>
-        <SectionHeader
-          tone="dark"
-          align="center"
-          eyebrow="Skills"
-          title={<>Events, credentials,<br />and career programs.</>}
-          lead="A webinar is not a Professional Program. Each skills product has its own depth, format, and outcome — with Professional Programs as the bridge to Career OS."
-        />
-      </FadeIn>
-      <FadeIn delay={60}>
-        <div style={{ marginTop: 40 }}>
-          <MediaImage
-            src={PHOTO.workshop}
-            alt="Professionals in a skills workshop"
-            aspect="21/9"
-            overlay="bottom"
-          />
-        </div>
-      </FadeIn>
-      <FadeIn delay={80}>
-        <div style={{ marginTop: 40, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {stages.map((stage, i) => (
-              <Link
-                key={stage.label}
-                to={stage.to}
-                style={{
-                  display: 'flex',
-                  gap: 14,
-                  alignItems: 'flex-start',
-                  padding: '18px 14px',
-                  background: stage.highlight ? skillsAccent.subtle : 'transparent',
-                  border: 'none',
-                  borderBottom: `1px solid ${T.lineDark}`,
-                  borderLeft: `2px solid ${stage.highlight ? skillsAccent.primary : 'transparent'}`,
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  width: '100%',
-                  fontFamily: 'var(--font-body)',
-                  textDecoration: 'none',
-                  color: 'inherit',
-                }}
-              >
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: stage.highlight ? skillsAccent.text : 'var(--text-muted)', marginTop: 4, flexShrink: 0 }}>
-                  {String(i + 1).padStart(2, '0')}
-                </span>
-                <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: stage.highlight ? skillsAccent.text : C.white, marginBottom: 4 }}>{stage.label}</div>
-                  <div style={{ color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.55 }}>{stage.sub}</div>
-                </div>
-              </Link>
-            ))}
-          </div>
-          <div style={{ marginTop: 28, textAlign: 'center' }}>
-            <Button variant="secondary" onClick={() => navigate('/skills')}>Explore Skills</Button>
-          </div>
-        </div>
-      </FadeIn>
-    </Section>
-  )
-}
-
-// ─── 5. CAREER ────────────────────────────────────────────────────────────────
-
-function CareerSection() {
-  const navigate = useNavigate()
-  const careerAccent = getDomainAccent('career')
-  const sampleJob = jobs[0]
-
-  const journey = [
-    { label: 'Profile', sub: 'Identity, skills, resume' },
-    { label: 'Proof', sub: 'Projects from programs' },
-    { label: 'Application', sub: 'Submit from job board' },
-    { label: 'Interview', sub: 'Prep and practice' },
-    { label: 'Outcome', sub: 'Offers and status' },
-  ]
-
-  return (
-    <Section tone="canvas" divider id="career">
-      <FadeIn>
-        <SectionHeader
-          tone="dark"
-          align="center"
-          eyebrow="Career OS"
-          title={<>A career product,<br />not a slogan.</>}
-          lead="Interview preparation, a job board, and application tracking in one workspace. Available after you complete a Professional Program."
-        />
-      </FadeIn>
-      <FadeIn delay={60}>
-        <div style={{ marginTop: 40, maxWidth: 640, marginLeft: 'auto', marginRight: 'auto' }}>
-          <GlassSurface level={2} padding="20px 22px">
-            <div className="skylent-label" style={{ color: careerAccent.text, marginBottom: 16 }}>Career OS workspace</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-              {[
-                { label: 'Profile', title: 'Your professional profile', sub: 'Identity · Skills · Portfolio' },
-                { label: 'Proof', title: 'Program projects', sub: 'Portfolio links from coursework' },
-              ].map(row => (
-                <div key={row.label} style={{ display: 'grid', gridTemplateColumns: '56px 1fr', gap: 14, padding: '14px 0', borderBottom: `1px solid ${T.lineDark}`, alignItems: 'center' }}>
-                  <div style={{ width: 44, height: 44, borderRadius: row.label === 'Profile' ? '50%' : 8, background: careerAccent.subtle, border: `1px solid ${careerAccent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontFamily: 'var(--font-mono)', color: careerAccent.text }}>
-                    {row.label === 'Profile' ? '—' : 'PRJ'}
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 3 }}>{row.label}</div>
-                    <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{row.title}</div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: 12, marginTop: 2 }}>{row.sub}</div>
-                  </div>
-                </div>
-              ))}
-              {sampleJob && (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 12, padding: '14px 0', alignItems: 'center' }}>
-                  <div>
-                    <div style={{ fontSize: 11, color: careerAccent.text, marginBottom: 3 }}>Open role</div>
-                    <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{sampleJob.role}</div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: 12, marginTop: 2 }}>{sampleJob.company} · {sampleJob.mode}</div>
-                  </div>
-                  <div style={{ background: careerAccent.primary, color: C.white, borderRadius: 6, padding: '8px 14px', fontSize: 11, fontWeight: 600 }}>Apply</div>
-                </div>
-              )}
-            </div>
-          </GlassSurface>
-        </div>
-      </FadeIn>
-      <FadeIn delay={80}>
-        <div style={{ marginTop: 36, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '8px 16px', marginBottom: 28 }}>
-            {journey.map((step) => (
-              <div key={step.label} style={{ padding: '12px 0', minWidth: 0, textAlign: 'center' }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{step.label}</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: 11, marginTop: 3 }}>{step.sub}</div>
-              </div>
-            ))}
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <Button variant="primary" onClick={() => navigate('/career-os')}>Explore Career OS</Button>
-          </div>
-        </div>
-      </FadeIn>
-    </Section>
-  )
-}
-
-// ─── 6. INSTITUTIONS ──────────────────────────────────────────────────────────
-
-function InstitutionsSection() {
-  const navigate = useNavigate()
-  const instAccent = getDomainAccent('institution')
-
-  const workflow = [
-    { label: 'Programs', sub: 'Curriculum across departments' },
-    { label: 'Offerings', sub: 'Skills tracks beside degrees' },
-    { label: 'Learners', sub: 'Student lifecycle visibility' },
-    { label: 'Faculty', sub: 'Teaching and development' },
-    { label: 'Progress', sub: 'Outcomes parents can see' },
-  ]
-
-  return (
-    <Section tone="canvas" divider id="institutions">
-      <FadeIn>
-        <SectionHeader
-          tone="dark"
-          align="center"
-          eyebrow="For Institutions"
-          title={<>Enterprise software<br />for education.</>}
-          lead="Schools, colleges, universities, and training institutes each get a distinct workflow — programs, offerings, learners, faculty, and progress as shared infrastructure."
-        />
-      </FadeIn>
-      <FadeIn delay={60}>
-        <div style={{ marginTop: 40 }}>
-          <MediaImage
-            src={PHOTO.schoolBuilding}
-            alt="School building"
-            aspect="21/9"
-            overlay="bottom"
-            objectPosition="center"
-          />
-        </div>
-      </FadeIn>
-      <FadeIn delay={80}>
-        <div style={{ marginTop: 40, maxWidth: 720, marginLeft: 'auto', marginRight: 'auto' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {workflow.map((step, i) => (
-              <div
-                key={step.label}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '32px 1fr',
-                  gap: 14,
-                  padding: '14px 0',
-                  borderBottom: `1px solid ${T.lineDark}`,
-                  alignItems: 'start',
-                }}
-              >
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: instAccent.text, paddingTop: 2 }}>
-                  {String(i + 1).padStart(2, '0')}
-                </div>
-                <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 3 }}>{step.label}</div>
-                  <div style={{ color: 'var(--text-muted)', fontSize: 12.5 }}>{step.sub}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop: 28, textAlign: 'center' }}>
-            <Button variant="secondary" onClick={() => navigate('/institutions')}>For Institutions</Button>
-          </div>
-        </div>
-      </FadeIn>
-    </Section>
-  )
-}
-
-// ─── 7. CONNECTION BAND (compact) ─────────────────────────────────────────────
-
-function ConnectionBand() {
-  const careerAccent = getDomainAccent('career')
-  const proAccent = getDomainAccent('professional')
-
-  return (
-    <Section tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
-      <FadeIn>
-        <GlassSurface level={2} padding="clamp(24px, 4vw, 36px)">
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>How it connects</div>
-          <FlowStrip
-            tone="dark"
-            steps={[
-              { label: 'Learn', sub: 'Education & skills' },
-              { label: 'Build', sub: 'Projects & proof', highlight: true },
-              { label: 'Career', sub: 'Career OS' },
-              { label: 'Hire', sub: 'Applications' },
-            ]}
-          />
-          <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.7, margin: '20px 0 0', maxWidth: 640 }}>
-            Institutions run the same sequence with their own dashboards — programs, learners, faculty, and progress in one place.
-          </p>
-          <div style={{ marginTop: 20, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 12, color: proAccent.text, fontFamily: 'var(--font-mono)' }}>Skills → Career OS</span>
-            <span style={{ fontSize: 12, color: careerAccent.text, fontFamily: 'var(--font-mono)' }}>Education → Exams</span>
-            <span style={{ fontSize: 12, color: getDomainAccent('institution').text, fontFamily: 'var(--font-mono)' }}>Institutions → Ops</span>
-          </div>
-        </GlassSurface>
-      </FadeIn>
-    </Section>
-  )
-}
-
-// ─── 8. PROGRAM DISCOVERY ─────────────────────────────────────────────────────
-
-function ProgramDiscoverySection() {
-  const navigate = useNavigate()
-  if (!FEATURED_PROGRAM) return null
-
-  const featuredPhoto = PROGRAM_PHOTO[FEATURED_PROGRAM.slug] ?? DEFAULT_PROGRAM_PHOTO
-  const lowestPrice = Math.min(...FEATURED_PROGRAM.pricing.map(p => p.price))
-
-  const categories = [
-    { label: 'Professional', type: 'PROFESSIONAL' as ProgramType },
-    { label: 'Certificate', type: 'CERTIFICATE' as ProgramType },
-    { label: 'Exam Prep', type: 'EXAM_PREP' as ProgramType },
-  ]
-
-  return (
-    <Section tone="canvas" divider id="programs">
-      <FadeIn>
-        <SectionHeader
-          tone="dark"
-          eyebrow="Program discovery"
-          title="Programs with structure,<br />not placeholders."
-          lead="Professional Programs, certificates, and exam preparation — each with curriculum, format, and a defined outcome."
-        />
-      </FadeIn>
-
-      <div style={{ marginTop: 48, display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: 'clamp(28px, 4vw, 48px)', alignItems: 'start' }} className="two-col education-discovery">
+    <section className="skylent-home-hero">
+      <div className="skylent-home-hero-grid" aria-hidden />
+      <div className="skylent-home-hero-inner">
         <FadeIn>
-          <Link to={`/programs/${FEATURED_PROGRAM.slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-            <div style={{ position: 'relative' }}>
-              <MediaImage src={featuredPhoto} alt={FEATURED_PROGRAM.name} aspect="16/9" overlay="full" />
-              <div style={{ position: 'absolute', top: 16, left: 16 }}>
-                <span style={{ background: accent.subtleStrong, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 10px', fontSize: 10, fontFamily: 'var(--font-mono)', color: accent.text, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                  Featured
-                </span>
-              </div>
+          <div className="skylent-home-hero-copy">
+            <Eyebrow tone="dark" accent>Skylent Global</Eyebrow>
+            <h1 className="skylent-home-hero-title">Where learning<br />becomes <em>career.</em></h1>
+            <p className="skylent-home-hero-lead">An education, skills and career ecosystem built to take learners from foundation to capability — and from capability to opportunity.</p>
+            <div className="skylent-home-hero-actions">
+              <Button size="lg" onClick={() => navigate('/programs')}>Explore Skylent OS</Button>
+              <Button size="lg" variant="secondary" onClick={() => navigate('/institutions')}>Partner With Us</Button>
             </div>
-            <div style={{ paddingTop: 24 }}>
-              <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{TYPE_LABELS[FEATURED_PROGRAM.programType]}</div>
-              <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 12px' }}>{FEATURED_PROGRAM.name}</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>{FEATURED_PROGRAM.desc}</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 20 }}>
-                {[
-                  { k: 'Duration', v: FEATURED_PROGRAM.duration },
-                  { k: 'Format', v: FEATURED_PROGRAM.format },
-                  { k: 'Outcome', v: FEATURED_PROGRAM.outcome },
-                  { k: 'From', v: `₹${lowestPrice.toLocaleString('en-IN')}` },
-                ].map(({ k, v }) => (
-                  <div key={k}>
-                    <div className="skylent-label" style={{ color: 'var(--text-muted)', marginBottom: 4 }}>{k}</div>
-                    <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Link>
-          <Button variant="primary" onClick={() => navigate(`/programs/${FEATURED_PROGRAM.slug}`)}>View Program →</Button>
-        </FadeIn>
-
-        <FadeIn delay={80}>
-          <div className="skylent-label" style={{ color: 'var(--text-muted)', marginBottom: 16 }}>By category</div>
-          {categories.map(cat => {
-            const count = programs.filter(p => p.programType === cat.type).length
-            if (!count) return null
-            return (
-              <div key={cat.label} style={{ padding: '14px 0', borderBottom: `1px solid ${T.lineDark}` }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 4 }}>{cat.label}</div>
-                <div style={{ color: 'var(--text-muted)', fontSize: 12 }}>{count} program{count !== 1 ? 's' : ''} in catalog</div>
-              </div>
-            )
-          })}
-
-          <div className="skylent-label" style={{ color: 'var(--text-muted)', margin: '28px 0 16px' }}>More programs</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {SUPPORTING_PROGRAMS.map((program, i) => {
-              const photo = PROGRAM_PHOTO[program.slug] ?? DEFAULT_PROGRAM_PHOTO
-              const price = Math.min(...program.pricing.map(p => p.price))
-              return (
-                <Link
-                  key={program.slug}
-                  to={`/programs/${program.slug}`}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '64px 1fr auto',
-                    gap: 14,
-                    alignItems: 'center',
-                    padding: '16px 0',
-                    borderBottom: i < SUPPORTING_PROGRAMS.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                  }}
-                >
-                  <div style={{ width: 64, height: 48, borderRadius: 8, overflow: 'hidden', background: C.ink3 }}>
-                    <MediaImage src={photo} alt="" aspect="4/3" radius={8} />
-                  </div>
-                  <div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{program.name}</div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: 11.5 }}>{TYPE_LABELS[program.programType]} · {program.duration}</div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
-                  </div>
-                </Link>
-              )
-            })}
+            <div className="skylent-home-hero-meta"><span>EDUCATION</span><i /><span>SKILLS</span><i /><span>CAREER OS</span></div>
           </div>
-          <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
-            <Button variant="secondary" onClick={() => navigate('/programs')}>Explore Programs</Button>
+        </FadeIn>
+        <FadeIn delay={100}>
+          <div className="skylent-home-hero-visual" aria-label="Skylent ecosystem product preview">
+            <div className="skylent-home-aurora-orb" />
+            <div className="skylent-product-window">
+              <div className="skylent-product-window-bar"><div className="skylent-window-dots"><b /><b /><b /></div><span>skylent os / overview</span><span className="skylent-window-status">PRODUCT PREVIEW</span></div>
+              <div className="skylent-product-window-body">
+                <aside>
+                  <div className="skylent-mini-brand">SKYLENT <i /></div>
+                  {['Learning', 'Practice', 'Proof', 'Career'].map((item, i) => <div key={item} className={`skylent-mini-nav ${i === 0 ? 'is-active' : ''}`}><span>0{i + 1}</span>{item}</div>)}
+                </aside>
+                <div className="skylent-product-main">
+                  <div className="skylent-product-kicker">YOUR JOURNEY</div>
+                  <div className="skylent-product-title">Build capability.<br />Create proof.</div>
+                  <div className="skylent-progress-line"><span /></div>
+                  <div className="skylent-progress-label"><span>Learning progress</span><strong>Preview</strong></div>
+                  <div className="skylent-product-cards">
+                    <div className="skylent-product-card is-large"><span>01 / LEARN</span><strong>Data Analytics</strong><small>Continue · Module 03</small></div>
+                    <div className="skylent-product-card"><span>02 / PROVE</span><strong>Projects</strong><small>Portfolio evidence</small></div>
+                    <div className="skylent-product-card"><span>03 / CAREER</span><strong>Career OS</strong><small>Access after Professional Program</small></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="skylent-float-chip chip-learning">Learning <b>↗</b></div>
+            <div className="skylent-float-chip chip-proof">Proof <b>✓</b></div>
+            <div className="skylent-float-chip chip-career">Career <b>→</b></div>
           </div>
         </FadeIn>
       </div>
-    </Section>
+    </section>
   )
 }
 
-// ─── PAGE ─────────────────────────────────────────────────────────────────────
+function Ecosystem() {
+  const pillars = [
+    { n: '01', label: 'Education', title: 'Build the foundation.', body: 'Schooling, undergraduate and postgraduate pathways designed as distinct academic experiences.', to: '/education', accent: getDomainAccent('schooling') },
+    { n: '02', label: 'Skills', title: 'Build capability.', body: 'Webinars, credentials and professional programs that turn learning into practical skill.', to: '/skills', accent: professional },
+    { n: '03', label: 'Career OS', title: 'Turn proof into opportunity.', body: 'Interview preparation, jobs and application workflows — unlocked through Professional Programs.', to: '/career-os', accent: career },
+  ]
+  return (
+    <section className="skylent-home-section skylent-home-ecosystem">
+      <div className="skylent-home-container">
+        <FadeIn><div className="skylent-home-section-head"><div><Eyebrow tone="dark">Skylent OS</Eyebrow><h2>One ecosystem.<br /><em>Every stage</em> of the journey.</h2></div><p>Three connected products, each with its own purpose. The value is in the handoff between them.</p></div></FadeIn>
+        <div className="skylent-ecosystem-grid">
+          {pillars.map((p, i) => <FadeIn key={p.label} delay={i * 80}><Link to={p.to} className="skylent-ecosystem-card"><div className="skylent-ecosystem-top"><span>{p.n}</span><span style={{ color: p.accent.text }}>↗</span></div><div className="skylent-ecosystem-label" style={{ color: p.accent.text }}>{p.label}</div><h3>{p.title}</h3><p>{p.body}</p><div className="skylent-ecosystem-link">Explore {p.label} <span>→</span></div></Link></FadeIn>)}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+function LearningJourney() {
+  const steps = [
+    ['01', 'Learn', 'Concepts, curriculum and guided practice.'],
+    ['02', 'Build', 'Projects and practical work that create evidence.'],
+    ['03', 'Prove', 'Assessments, credentials and a visible skill record.'],
+    ['04', 'Advance', 'Career preparation and opportunity through Career OS.'],
+  ]
+  return <section className="skylent-home-section skylent-home-journey"><div className="skylent-home-container"><FadeIn><div className="skylent-home-journey-intro"><Eyebrow tone="dark">The learning loop</Eyebrow><h2>Learning should leave<br /><em>evidence behind.</em></h2><p>Every meaningful learning action should contribute to something a learner can carry forward.</p></div></FadeIn><div className="skylent-journey-track">{steps.map(([n, title, body], i) => <FadeIn key={title} delay={i * 70}><div className="skylent-journey-step"><span>{n}</span><div><h3>{title}</h3><p>{body}</p></div>{i < steps.length - 1 && <b>→</b>}</div></FadeIn>)}</div></div></section>
+}
+
+function OSGateway() {
+  return <section className="skylent-home-os-gateway"><div className="skylent-os-glow" /><div className="skylent-home-container"><FadeIn><div className="skylent-os-gateway-inner"><div className="skylent-os-copy"><Eyebrow tone="dark" accent>Experience Skylent OS</Eyebrow><h2>The website introduces the journey.<br /><em>The product runs it.</em></h2><p>A focused product environment for learning, proof and career readiness.</p><Link to="/login" className="skylent-os-link">Enter Skylent OS <span>→</span></Link></div><div className="skylent-os-stack" aria-hidden><div className="skylent-os-layer layer-back"><span>CAREER READINESS</span><strong>Skills · Projects · Interviews</strong></div><div className="skylent-os-layer layer-mid"><span>LEARNING RECORD</span><strong>Courses · Assessments · Credentials</strong></div><div className="skylent-os-layer layer-front"><span>SKYLENT OS</span><strong>Learn → Build → Prove → Advance</strong><i>↗</i></div></div></div></FadeIn></div></section>
+}
+
+function ProgramSpotlight() {
+  const navigate = useNavigate()
+  if (!featured) return null
+  const photo = PROGRAM_PHOTO[featured.slug] ?? DEFAULT_PROGRAM_PHOTO
+  const price = Math.min(...featured.pricing.map(p => p.price))
+  return <section className="skylent-home-section skylent-home-programs"><div className="skylent-home-container"><FadeIn><div className="skylent-home-section-head compact"><div><Eyebrow tone="dark">Programs</Eyebrow><h2>Go deeper when<br /><em>depth matters.</em></h2></div><Button variant="secondary" onClick={() => navigate('/programs')}>View all programs</Button></div></FadeIn><FadeIn delay={80}><Link to={`/programs/${featured.slug}`} className="skylent-program-feature"><MediaImage src={photo} alt={featured.name} aspect="16/9" overlay="full" /><div className="skylent-program-feature-copy"><span>{typeLabel[featured.programType]}</span><h3>{featured.name}</h3><p>{featured.desc}</p><div><b>{featured.duration}</b><b>{featured.format}</b><b>From ₹{price.toLocaleString('en-IN')}</b></div></div></Link></FadeIn></div></section>
+}
+
+function CareerPreview() {
+  return <section className="skylent-home-section skylent-home-career"><div className="skylent-home-container"><div className="skylent-career-layout"><FadeIn><div className="skylent-career-copy"><Eyebrow tone="dark" accent>Career OS</Eyebrow><h2>Your career,<br /><em>operating layer.</em></h2><p>Professional Programs unlock a workspace that connects your profile, proof, interview preparation and job applications.</p><Link to="/career-os" className="skylent-text-link">Explore Career OS <span>→</span></Link></div></FadeIn><FadeIn delay={100}><div className="skylent-career-product"><div className="skylent-career-product-head"><span>CAREER OS</span><span>READINESS</span></div><div className="skylent-career-score"><div><small>Career readiness</small><strong>—</strong><span>Build your record first</span></div><div className="skylent-score-ring"><i /></div></div><div className="skylent-career-actions"><div><span>01</span><b>Resume</b><small>Profile + skills</small></div><div><span>02</span><b>Interview</b><small>Practice + prep</small></div><div><span>03</span><b>Jobs</b><small>Apply + track</small></div></div><div className="skylent-career-note">Career OS access <strong>unlocks with Professional Programs</strong></div></div></FadeIn></div></div></section>
+}
+
+function LabsTeaser() {
+  return <section className="skylent-home-section skylent-home-labs"><div className="skylent-home-container"><Link to="/labs" className="skylent-labs-teaser"><div><Eyebrow tone="dark">Skylent Labs</Eyebrow><h2>Turn learning<br /><em>into practice.</em></h2><p>Hands-on experiments and practical work that make skill visible.</p></div><div className="skylent-labs-visual"><div className="lab-line"><span>01</span><b>Experiment</b><i>Complete</i></div><div className="lab-line active"><span>02</span><b>Practical task</b><i>In progress</i></div><div className="lab-line"><span>03</span><b>Learning proof</b><i>Next</i></div></div><span className="skylent-labs-arrow">Explore Labs →</span></Link></div></section>
+}
+
+function Institutions() {
+  return <section className="skylent-home-section skylent-home-institutions"><div className="skylent-home-container"><div className="skylent-institution-layout"><MediaImage src={PHOTO.schoolBuilding} alt="Education institution" aspect="4/3" overlay="full" /><div><Eyebrow tone="dark">For Institutions</Eyebrow><h2>Infrastructure for<br /><em>better learning.</em></h2><p>Bring industry-aligned programs, skills development, learning workflows and career readiness into one institutional experience.</p><Link to="/institutions" className="skylent-text-link">Partner With Skylent <span>→</span></Link></div></div></div></section>
+}
 
 export default function HomePage() {
   useEffect(() => { window.scrollTo(0, 0) }, [])
-
-  return (
-    <>
-      <EcosystemMapHero />
-      <CoverageSection />
-      <EducationSection />
-      <SkillsSection />
-      <CareerSection />
-      <InstitutionsSection />
-      <ConnectionBand />
-      <ProgramDiscoverySection />
-      <CTABand
-        eyebrow="Get started"
-        title={<>Start with the path<br />that fits you.</>}
-        lead="Browse programs, education pathways, skills tracks, Career OS, or partner with Skylent as an institution."
-        primary={{ label: 'Explore Programs', to: '/programs' }}
-        secondary={{ label: 'For Institutions', to: '/institutions' }}
-        auroraTheme="general"
-      />
-      <Footer />
-    </>
-  )
+  return <div className="skylent-home"><Hero /><Ecosystem /><LearningJourney /><OSGateway /><ProgramSpotlight /><CareerPreview /><LabsTeaser /><Institutions /><CTABand eyebrow="Start here" title={<>Find the path<br />that fits you.</>} lead="Explore education, build skills, enter Career OS, or build with Skylent as an institution." primary={{ label: 'Explore Programs', to: '/programs' }} secondary={{ label: 'Partner With Us', to: '/institutions' }} /><Footer /></div>
 }

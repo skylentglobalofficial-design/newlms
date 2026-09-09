@@ -1,21 +1,21 @@
 import puppeteer from "puppeteer-core"
+import { loginViaForm } from "./qa-auth.js"
 
 const PORT = process.env.PORT ?? "8443"
 const BASE = `http://localhost:${PORT}`
 const EMAIL = "learner@demo.skylent.dev"
-const PASSWORD = process.env.DEMO_USER_PASSWORD ?? "DemoSkylent2026!"
+const PASSWORD = process.env.DEMO_USER_PASSWORD
+if (!PASSWORD) {
+  throw new Error("DEMO_USER_PASSWORD must be set to run authenticated QA; no demo password is stored in source.")
+}
 const VIEWPORTS = [1440, 1024, 768, 375] as const
 
 async function loginAsLearner(page: import("puppeteer-core").Page) {
-  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded", timeout: 30000 })
-  await page.waitForSelector("#si-email", { timeout: 15000 })
-  await page.type("#si-email", EMAIL, { delay: 10 })
-  await page.type("#si-password", PASSWORD, { delay: 10 })
-  await page.click('button[type="submit"]')
-  await page.waitForFunction(
-    () => window.location.pathname.includes("/dashboard/student"),
-    { timeout: 20000 },
-  )
+  await loginViaForm(page, {
+    email: EMAIL,
+    password: PASSWORD,
+    expectedPath: "/dashboard/student",
+  })
 }
 
 async function main() {
@@ -25,10 +25,15 @@ async function main() {
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   })
 
+  const context = await browser.createBrowserContext()
+  const loginPage = await context.newPage()
+  await loginAsLearner(loginPage)
+  await loginPage.close()
+
   const results: Array<Record<string, unknown>> = []
 
   for (const width of VIEWPORTS) {
-    const page = await browser.newPage()
+    const page = await context.newPage()
     await page.setViewport({ width, height: 900 })
 
     await loginAsLearner(page)
@@ -40,6 +45,8 @@ async function main() {
       hasCurriculum: Boolean(document.querySelector(".student-curriculum-rail")),
       hasProgress: Boolean(document.querySelector("#student-progress")),
       hasCertificate: Boolean(document.querySelector("#student-certificates")),
+      hasCertificatePanel: Boolean(document.querySelector(".lms-certificate-panel")),
+      hasCertificateDownload: Boolean(document.querySelector(".lms-certificate-panel__download")),
       hasCareerLink: Boolean(document.querySelector(".lms-career-link-panel")),
       overflowPx: Math.max(0, document.documentElement.scrollWidth - window.innerWidth),
     }))
@@ -86,6 +93,7 @@ async function main() {
     await page.close()
   }
 
+  await context.close()
   await browser.close()
 
   const failures = results.filter((r) => r.overflow || !(r.dashboard as { hasWorkspace: boolean }).hasWorkspace)
@@ -102,4 +110,4 @@ async function main() {
 main().catch((error) => {
   console.error(error)
   process.exitCode = 1
-})
+}

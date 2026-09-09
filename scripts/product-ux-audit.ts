@@ -2,12 +2,37 @@ import puppeteer from "puppeteer-core"
 
 const PORT = process.env.PORT ?? "8443"
 const BASE = `http://localhost:${PORT}`
-
-const PUBLIC_ROUTES = ["/", "/education", "/skills", "/career-os", "/institutions", "/login", "/signup"] as const
+const PUBLIC_ROUTES = [
+  "/",
+  "/education",
+  "/skills",
+  "/career-os",
+  "/institutions",
+  "/programs",
+  "/programs/data-science-ai",
+  "/courses",
+  "/courses/data-analytics",
+  "/workshops",
+  "/workshops/prompt-engineering",
+  "/stories",
+  "/about",
+  "/blog",
+  "/blog/data-skills-2026",
+  "/contact",
+  "/login",
+  "/signup",
+] as const
 const VIEWPORTS = [1440, 1100, 1024, 768, 375] as const
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+type RouteResult = {
+  route: string
+  viewport: number
+  overflowPx: number
+  consoleErrors: string[]
+  hasPublicCanvas: boolean
+  hasHeading: boolean
+  hasNav: boolean
+  passed: boolean
 }
 
 async function main() {
@@ -17,71 +42,56 @@ async function main() {
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   })
 
-  const results: Array<Record<string, unknown>> = []
-  const consoleErrors: string[] = []
-
-  for (const route of PUBLIC_ROUTES) {
-    for (const width of VIEWPORTS) {
+  const results: RouteResult[] = []
+  for (const viewport of VIEWPORTS) {
+    for (const route of PUBLIC_ROUTES) {
       const page = await browser.newPage()
-      page.on("pageerror", (err) => consoleErrors.push(`${route}@${width}: ${String(err)}`))
-      page.on("console", (msg) => {
-        if (msg.type() === "error") consoleErrors.push(`${route}@${width}: ${msg.text()}`)
+      const consoleErrors: string[] = []
+      page.on("pageerror", (error) => consoleErrors.push(String(error)))
+      page.on("console", (message) => {
+        if (message.type() === "error") consoleErrors.push(message.text())
       })
-
-      await page.setViewport({ width, height: 900 })
-      await page.goto(`${BASE}${route}`, { waitUntil: "networkidle0", timeout: 30000 })
-
-      const metrics = await page.evaluate(() => ({
-        overflowPx: Math.max(0, document.documentElement.scrollWidth - window.innerWidth),
-        hasMarketingHero: Boolean(document.querySelector(".skylent-marketing-hero")),
-        hasSkillsExplorer: Boolean(document.querySelector(".skills-explorer")),
-        hasPathwayExplorer: Boolean(document.querySelector(".education-pathway-explorer, .pathway-explorer")),
-        hasCareerWorkflow: Boolean(document.querySelector(".career-workflow-hero")),
-        hasEcosystemMap: Boolean(document.querySelector(".ecosystem-map-hero")),
-        hasInstitutionExplorer: Boolean(document.querySelector("#institution-types")),
-        hasLoginForm: Boolean(document.querySelector("#si-email, #su-name")),
-        skipLink: Boolean(document.querySelector(".skylent-skip-link")),
-      }))
-
-      if (route === "/skills" && width > 1024) {
-        const tab = await page.$('[data-domain-id="data-analytics"]')
-        if (tab) {
-          await tab.click()
-          await sleep(150)
-        }
+      await page.setViewport({ width: viewport, height: 900 })
+      try {
+        await page.goto(`${BASE}${route}`, { waitUntil: "networkidle0", timeout: 30000 })
+        const metrics = await page.evaluate(() => ({
+          overflowPx: Math.max(0, document.documentElement.scrollWidth - window.innerWidth),
+          hasPublicCanvas: Boolean(document.querySelector(".skylent-public-canvas")),
+          hasHeading: Boolean(document.querySelector("h1, h2")),
+          hasNav: Boolean(document.querySelector("nav")),
+        }))
+        results.push({
+          route,
+          viewport,
+          ...metrics,
+          consoleErrors: consoleErrors.slice(0, 5),
+          passed: metrics.overflowPx <= 1 && metrics.hasPublicCanvas && metrics.hasHeading && metrics.hasNav,
+        })
+      } catch (error) {
+        results.push({
+          route,
+          viewport,
+          overflowPx: -1,
+          consoleErrors: [...consoleErrors, String(error)].slice(0, 5),
+          hasPublicCanvas: false,
+          hasHeading: false,
+          hasNav: false,
+          passed: false,
+        })
       }
-
-      if (route === "/skills" && width <= 1024) {
-        await page.select("#skills-domain-select", "ui-ux-design")
-        await sleep(150)
-      }
-
-      const emptyState = route === "/skills"
-        ? await page.evaluate(() => Boolean(document.querySelector(".skills-explorer-empty-title")))
-        : false
-
-      results.push({
-        route,
-        viewport: width,
-        overflow: metrics.overflowPx > 1,
-        overflowPx: metrics.overflowPx,
-        ...metrics,
-        skillsEmptyState: emptyState,
-      })
-
       await page.close()
     }
   }
 
   await browser.close()
-
-  const overflowFailures = results.filter((r) => r.overflow)
+  const failures = results.filter((result) => !result.passed)
   console.log(JSON.stringify({
-    passed: overflowFailures.length === 0,
-    overflowFailures: overflowFailures.length,
-    consoleErrors: consoleErrors.slice(0, 20),
-    results,
+    passed: failures.length === 0,
+    totalChecks: results.length,
+    failureCount: failures.length,
+    failures: failures.slice(0, 30),
   }, null, 2))
+  if (failures.length > 0) process.exitCode = 1
 }
 
 main().catch((error) => {

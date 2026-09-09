@@ -1,0 +1,186 @@
+/* Skylent light mode — warm paper with no visible Aurora wash. */
+
+[data-theme='light'] {
+  --skylent-canvas: #ede2d2 !important;
+  --skylent-surface: #f3e9da !important;
+  --skylent-elevated: #f7efe3 !important;
+  --skylent-glass-bg: rgba(47, 39, 29, 0.035) !important;
+  --skylent-text: #191714 !important;
+  --skylent-text-secondary: #514b44 !important;
+  --skylent-text-muted: #766f67 !important;
+  --skylent-border: rgba(35, 30, 24, 0.14) !important;
+  --skylent-border-subtle: rgba(35, 30, 24, 0.085) !important;
+  --skylent-accent: #5f63d9 !important;
+  --skylent-accent-foreground: #f7efe3 !important;
+  --skylent-input-bg: rgba(35, 30, 24, 0.035) !important;
+  --skylent-input-border: rgba(35, 30, 24, 0.15) !important;
+  --skylent-card-bg: rgba(255, 250, 242, 0.66) !important;
+  --skylent-nav-bg: rgba(237, 226, 210, 0.94) !important;
+  --skylent-footer-bg: #e3d6c2 !important;
+  --skylent-focus-ring: rgba(95, 99, 217, 0.42) !important;
+  --skylent-aurora-opacity: 0 !important;
+}
+
+/* Same Aurora colours as dark mode; only the substrate changes. */
+[data-theme='light'] .skylent-public-canvas {
+  background-color: #ede2d2 !important;
+  background-image: none !important;
+}
+
+[data-theme='light'] .skylent-public-canvas::before {
+  background: none !important;
+  opacity: 0;
+}
+
+/* The Aurora should feel like coloured light falling onto paper, not a purple wash. */
+[data-theme='light'] .skylent-aurora,
+[data-theme='light'] .skylent-aurora-band {
+  opacity: 0 !important;
+}
+
+[data-theme='light'] .skylent-home-aurora-orb {
+  opacity: 0 !important;
+}
+
+/* Editorial type hierarchy: near-black headings, readable warm-gray body, muted metadata. */
+[data-theme='light'] .skylent-home-hero-title,
+[data-theme='light'] .skylent-home-section-head h2,
+[data-theme='light'] .skylent-home-journey-intro h2,
+[data-theme='light'] .skylent-os-copy h2,
+[data-theme='light'] .skylent-career-copy h2,
+[data-theme='light'] .skylent-institution-layout h2,
+[data-theme='light'] .skylent-labs-teaser h2,
+[data-theme='light'] .skylent-ecosystem-card h3,
+[data-theme='light'] .skylent-journey-step h3,
+[data-theme='light'] .skylent-product-title,
+[data-theme='light'] .skylent-product-card strong,
+[data-theme='light'] .skylent-ecosystem-link {
+  color: #191714 !important;
+}
+
+[data-theme='light'] .skylent-home-hero-lead,
+[data-theme='light'] .skylent-home-section-head p,
+[data-theme='light'] .skylent-home-journey-intro p,
+[data-theme='light'] .skylent-os-copy p,
+[data-theme='light'] .skylent-career-copy p,
+[data-theme='light'] .skylent-institution-layout p,
+[data-theme='light'] .skylent-labs-teaser p,
+[data-theme='light'] .skylent-ecosystem-card p {
+  color: #514b44 !important;
+}
+
+[data-theme='light'] .skylent-home-hero-meta,
+[data-theme='light'] .skylent-product-window-bar,
+[data-theme='light'] .skylent-progress-label,
+[data-theme='light'] .skylent-product-card span,
+[data-theme='light'] .skylent-product-card small,
+[data-theme='light'] .skylent-ecosystem-top,
+[data-theme='light'] .skylent-journey-step p {
+  color: #766f67 !important;
+}
+
+[data-theme='light'] .skylent-home-hero-title em,
+[data-theme='light'] .skylent-home-section h2 em,
+[data-theme='light'] .skylent-os-copy h2 em,
+[data-theme='light'] .skylent-career-copy h2 em,
+[data-theme='light'] .skylent-institution-layout h2 em,
+[data-theme='light'] .skylent-labs-teaser h2 em,
+[data-theme='light'] .skylent-home-journey-intro h2 em,
+[data-theme='light'] .skylent-home-hero-meta i,
+[data-theme='light'] .skylent-window-status,
+[data-theme='light'] .skylent-product-kicker,
+[data-theme='light'] .skylent-ecosystem-link span,
+[data-theme='light'] .skylent-journey-step > span,
+[data-theme='light'] .skylent-journey-step > b {
+  color: #5f63d9 !important;
+}
+
+/* Cards and product surfaces stay warm/neutral so Aurora accents remain accents. */
+[data-theme='light'] .skylent-product-window {
+  background: rgba(252, 247, 239, 0.92) !important;
+  border-color: rgba(35, 30, 24, 0.13) !important;
+  box-shadow: 0 30px 90px rgba(62, 48, 31, 0.14), 0 0 0 1px rgba(95, 99, 217, 0.035) !important;
+}
+
+[data-theme='light'] .skylent-product-card {
+  background: rgba(255, 250, 242, 0.72) !important;
+  border-color: rgba(35, 30, 24, 0.085) !important;
+}
+
+[data-theme='light'] .skylent-product-card.is-large {
+  background: linear-gradient(145deg, rgba(99, 102, 241, 0.09), rgba(255, 250, 242, 0.76)) !important;
+}
+
+[data-theme='light'] .skylent-mini-nav.is-active {
+  background: rgba(99, 102, 241, 0.075) !important;
+  color: #191714 !important;
+}
+
+[data-theme='light'] .skylent-home-hero-grid {
+  opacity: 0.12 !important;
+  background-image: linear-gradient(rgba(35, 30, 24, 0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(35, 30, 24, 0.045) 1px, transparent 1px) !important;
+}
+
+/* Warm, solid dropdown — no hero text bleeding through it. */
+[data-theme='light'] .skylent-nav-dropdown,
+[data-theme='light'] .nav-mega-dropdown {
+  background: #fbf5eb !important;
+  color: #191714 !important;
+  border-color: rgba(35, 30, 24, 0.12) !important;
+  box-shadow: 0 18px 48px rgba(58, 45, 29, 0.12) !important;
+  backdrop-filter: blur(14px);
+}
+
+[data-theme='light'] .skylent-nav-dropdown a,
+[data-theme='light'] .nav-mega-dropdown a {
+  color: #514b44 !important;
+}
+
+[data-theme='light'] .skylent-nav-dropdown a:hover,
+[data-theme='light'] .nav-mega-dropdown a:hover {
+  color: #191714 !important;
+  background: rgba(99, 102, 241, 0.06) !important;
+}
+
+/* Inputs / controls follow the same ink hierarchy. */
+[data-theme='light'] input,
+[data-theme='light'] select,
+[data-theme='light'] textarea {
+  color: #191714 !important;
+}
+
+[data-theme='light'] input::placeholder,
+[data-theme='light'] textarea::placeholder {
+  color: #8a8279 !important;
+}
+
+/* Release hardening: keyboard focus must remain visible across the warm light canvas. */
+[data-theme='light'] :where(a, button, input, select, textarea, [tabindex]:not([tabindex='-1'])):focus-visible {
+  outline: 2px solid #5f63d9 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 4px rgba(95, 99, 217, 0.16) !important;
+}
+
+/* Avoid hover-only affordances becoming inaccessible on touch devices. */
+@media (hover: none) {
+  [data-theme='light'] :where(a, button):active {
+    outline: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='light'] *,
+  [data-theme='light'] *::before,
+  [data-theme='light'] *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+@media (max-width: 700px) {
+  [data-theme='light'] .skylent-public-canvas {
+    background-size: 100% 560px, 100% 500px, 100% 440px;
+  }
+}

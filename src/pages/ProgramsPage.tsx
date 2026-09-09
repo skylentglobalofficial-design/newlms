@@ -63,7 +63,7 @@ function CatalogHeroVisual({ preview }: { preview: Program[] }) {
           <div className="skylent-label" style={{ color: accent.text }}>Program catalog</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '6px 10px', minWidth: 140 }}>
             <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: 12 }}>Search</span>
-            <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12 }}>programs…</span>
+            <span style={{ color: 'var(--skylent-text-secondary)', fontSize: 12 }}>programs…</span>
           </div>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', minHeight: 280 }}>
@@ -83,7 +83,7 @@ function CatalogHeroVisual({ preview }: { preview: Program[] }) {
                   <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: typeAccent.text, marginBottom: 4 }}>
                     {TYPE_LABELS[program.programType]}
                   </div>
-                  <div style={{ color: isActive ? C.white : 'rgba(255,255,255,0.55)', fontSize: 13, fontWeight: isActive ? 600 : 400 }}>
+                  <div style={{ color: isActive ? C.white : 'var(--skylent-text-secondary)', fontSize: 13, fontWeight: isActive ? 600 : 400 }}>
                     {program.name}
                   </div>
                 </div>
@@ -93,8 +93,8 @@ function CatalogHeroVisual({ preview }: { preview: Program[] }) {
           {active && (
             <div style={{ padding: '18px 20px' }}>
               <div className="skylent-label" style={{ color: programAccent(active.programType).text, marginBottom: 10 }}>Preview</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.white, marginBottom: 8 }}>{active.name}</div>
-              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12.5, lineHeight: 1.6, margin: '0 0 16px' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 8 }}>{active.name}</div>
+              <p style={{ color: 'var(--skylent-text-muted)', fontSize: 12.5, lineHeight: 1.6, margin: '0 0 16px' }}>
                 {active.desc.slice(0, 120)}…
               </p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
@@ -106,7 +106,7 @@ function CatalogHeroVisual({ preview }: { preview: Program[] }) {
                 ].map(({ k, v }) => (
                   <div key={k}>
                     <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.28)', marginBottom: 3 }}>{k}</div>
-                    <div style={{ color: C.white, fontSize: 12 }}>{v}</div>
+                    <div style={{ color: 'var(--skylent-text)', fontSize: 12 }}>{v}</div>
                   </div>
                 ))}
               </div>
@@ -203,7 +203,7 @@ function DomainsSection({
                 }}
               >
                 <div className="skylent-label" style={{ color: domain.accent.text, marginBottom: 10 }}>{domain.label}</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.white, marginBottom: 10 }}>{domain.label}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 10 }}>{domain.label}</div>
                 <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14, lineHeight: 1.65, margin: '0 0 20px' }}>{domain.desc}</p>
               </button>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -234,7 +234,7 @@ function DomainsSection({
                         textAlign: 'left',
                       }}
                     >
-                      <span style={{ color: 'rgba(255,255,255,0.62)', fontSize: 14 }}>{item.label}</span>
+                      <span style={{ color: 'var(--skylent-text-secondary)', fontSize: 14 }}>{item.label}</span>
                       <span style={{ color: domain.accent.text, fontSize: 14 }}>→</span>
                     </button>
                   )
@@ -290,7 +290,7 @@ function FilterControls({
     padding: '10px 12px',
     fontFamily: 'var(--font-body)',
     background: 'rgba(255,255,255,0.04)',
-    color: C.white,
+    color: 'var(--skylent-text)',
     fontSize: 13,
     width: '100%',
   }
@@ -341,7 +341,7 @@ function FilterControls({
                 borderRadius: 8,
                 border: `1px solid ${pillar === f ? accent.border : T.lineDark}`,
                 background: pillar === f ? accent.subtle : 'transparent',
-                color: pillar === f ? accent.text : 'rgba(255,255,255,0.55)',
+                color: pillar === f ? accent.text : 'var(--skylent-text-secondary)',
                 fontSize: 12.5,
                 cursor: 'pointer',
                 fontFamily: 'var(--font-body)',
@@ -364,7 +364,7 @@ function FilterControls({
             borderRadius: 8,
             border: `1px solid ${T.lineDark}`,
             background: 'rgba(255,255,255,0.04)',
-            color: C.white,
+            color: 'var(--skylent-text)',
             fontSize: 13,
             cursor: 'pointer',
             fontFamily: 'var(--font-body)',
@@ -454,7 +454,7 @@ function FeaturedProgramSection({ program }: { program: Program }) {
               ].map(({ k, v }) => (
                 <div key={k}>
                   <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>{k}</div>
-                  <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                  <div style={{ color: 'var(--skylent-text)', fontSize: 14, fontWeight: 500 }}>{v}</div>
                 </div>
               ))}
             </div>
@@ -498,9 +498,9 @@ function ProgramResultRow({ program, prominent }: { program: Program; prominent?
                 <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: typeAccent.text }}>{TYPE_LABELS[program.programType]}</span>
                 <span style={{ color: status.color, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{status.text}</span>
               </div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: C.white, marginBottom: 10 }}>{program.name}</div>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.65, margin: '0 0 16px' }}>{program.desc}</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 10 }}>{program.name}</div>
+              <p style={{ color: 'var(--skylent-text-secondary)', fontSize: 14, lineHeight: 1.65, margin: '0 0 16px' }}>{program.desc}</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 12, color: 'var(--skylent-text-muted)' }}>
                 <span>{program.duration}</span>
                 <span>{program.format}</span>
                 <span>{program.level}</span>
@@ -513,7 +513,7 @@ function ProgramResultRow({ program, prominent }: { program: Program; prominent?
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 26px', borderTop: `1px solid ${T.lineDark}` }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 15, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 15, color: 'var(--skylent-text)' }}>₹{price.toLocaleString('en-IN')}</div>
             <span style={{ color: typeAccent.text, fontSize: 13, fontWeight: 600 }}>View Program →</span>
           </div>
         </GlassSurface>
@@ -528,7 +528,7 @@ function ProgramResultRow({ program, prominent }: { program: Program; prominent?
               <span style={{ color: status.color, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{status.text}</span>
               {program.careerSupport && <span style={{ color: careerAccent.text, fontSize: 10, fontFamily: 'var(--font-mono)' }}>Career OS</span>}
             </div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 4 }}>{program.name}</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 4 }}>{program.name}</div>
             <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, lineHeight: 1.55, margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
               {program.desc}
             </p>
@@ -540,7 +540,7 @@ function ProgramResultRow({ program, prominent }: { program: Program; prominent?
             </div>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: 'var(--skylent-text)' }}>₹{price.toLocaleString('en-IN')}</div>
             <div style={{ color: typeAccent.textMuted, fontSize: 12, marginTop: 4 }}>→</div>
           </div>
         </>
@@ -708,10 +708,10 @@ export default function ProgramsPage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }} className="two-col skylent-page-hero">
             <FadeIn>
               <Eyebrow tone="dark" accent>Programs</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
+              <h1 className="skylent-display-lg" style={{ color: 'var(--skylent-text)', margin: '20px 0 16px', maxWidth: 640 }}>
                 Find the program that fits where you want to go.
               </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
+              <p className="skylent-body-lg" style={{ color: 'var(--skylent-text-secondary)', maxWidth: 520, margin: '0 0 28px' }}>
                 Education pathways, exam preparation, and career-focused skills — filter by domain, type, level, and format using what is actually in the catalog.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -758,7 +758,7 @@ export default function ProgramsPage() {
           <FadeIn>
             <GlassSurface level={1} padding="28px 32px" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
               <div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.white, marginBottom: 6 }}>Need help choosing?</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 6 }}>Need help choosing?</div>
                 <div style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14 }}>Tell us your background — we will help you choose from what is actually available.</div>
               </div>
               <Button variant="secondary" onClick={() => navigate('/contact')}>Talk to an advisor</Button>

@@ -4,6 +4,11 @@ const APP_BASE = process.env.APP_BASE ?? "http://localhost:8443"
 
 const ROUTES = [
   "/",
+  "/education",
+  "/skills",
+  "/institutions",
+  "/login",
+  "/signup",
   "/courses",
   "/courses/data-analytics",
   "/skills",
@@ -45,14 +50,17 @@ async function inspectPage(page: puppeteer.Page, route: string, viewport: string
     const overflowPx = document.documentElement.scrollWidth - window.innerWidth
 
     let warmWhiteHits = 0
-    document.querySelectorAll<HTMLElement>("*").forEach((el) => {
-      const bg = getComputedStyle(el).backgroundColor
-      if (!bg || bg === "rgba(0, 0, 0, 0)" || bg === "transparent") return
-      const m = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
-      if (!m) return
-      const hex = `#${Number(m[1]).toString(16).padStart(2, "0")}${Number(m[2]).toString(16).padStart(2, "0")}${Number(m[3]).toString(16).padStart(2, "0")}`
-      if (hex.toUpperCase() === warmWhite.toUpperCase()) warmWhiteHits++
-    })
+    const isLightTheme = document.documentElement.getAttribute("data-theme") === "light"
+    if (!isLightTheme) {
+      document.querySelectorAll<HTMLElement>("*").forEach((el) => {
+        const bg = getComputedStyle(el).backgroundColor
+        if (!bg || bg === "rgba(0, 0, 0, 0)" || bg === "transparent") return
+        const m = bg.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/)
+        if (!m) return
+        const hex = `#${Number(m[1]).toString(16).padStart(2, "0")}${Number(m[2]).toString(16).padStart(2, "0")}${Number(m[3]).toString(16).padStart(2, "0")}`
+        if (hex.toUpperCase() === warmWhite.toUpperCase()) warmWhiteHits++
+      })
+    }
 
     const clippedControls: string[] = []
     document.querySelectorAll<HTMLElement>(".scroll-control-strip-scroll, .contextual-nav-bar-scroll").forEach((strip) => {

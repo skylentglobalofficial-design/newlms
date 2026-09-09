@@ -1,0 +1,93 @@
+/* Final public-home layout guardrails. FadeIn adds a wrapper around grid children;
+   these rules make the wrapper inherit the visual card geometry instead of collapsing it. */
+.skylent-ecosystem-grid > div { min-width: 0; height: 100%; }
+.skylent-ecosystem-grid > div > .skylent-ecosystem-card { height: 100%; min-height: 340px; box-sizing: border-box; display: flex; flex-direction: column; }
+.skylent-ecosystem-grid > div > .skylent-ecosystem-card .skylent-ecosystem-link { position: static; margin-top: auto; padding-top: 26px; }
+.skylent-ecosystem-grid > div > .skylent-ecosystem-card p { max-width: 340px; }
+.skylent-journey-track > div { min-width: 0; height: 100%; }
+.skylent-journey-track > div > .skylent-journey-step { height: 100%; box-sizing: border-box; }
+.skylent-career-layout > div, .skylent-institution-layout > div { min-width: 0; }
+
+/* Final composition: centered text, visual directly underneath, deliberate side whitespace. */
+.skylent-home-container, .skylent-home-hero-inner { width: min(1120px, calc(100% - 72px)); margin-inline: auto; }
+.skylent-home-hero { min-height: auto; padding: clamp(120px, 13vw, 170px) 0 clamp(86px, 9vw, 120px); }
+.skylent-home-hero-inner { display: flex; flex-direction: column; align-items: center; gap: clamp(48px, 7vw, 82px); text-align: center; }
+.skylent-home-hero-copy { width: min(820px, 100%); max-width: 820px; display: flex; flex-direction: column; align-items: center; }
+.skylent-home-hero-title { max-width: 820px !important; font-size: clamp(58px, 7.5vw, 96px); line-height: .91; }
+.skylent-home-hero-lead { max-width: 680px; text-wrap: balance; }
+.skylent-home-hero-actions, .skylent-home-hero-meta { justify-content: center; }
+.skylent-home-hero-visual { width: min(960px, 100%); min-height: 0; padding: 12px 0 18px; }
+.skylent-product-window { width: min(900px, 100%); }
+.skylent-float-chip.chip-learning { left: 0; }
+.skylent-float-chip.chip-career { right: 0; }
+.skylent-home-section > .skylent-home-container { width: min(1120px, calc(100% - 72px)); }
+.skylent-home-section-head, .skylent-career-layout, .skylent-institution-layout, .skylent-os-gateway-inner { max-width: 1120px; margin-inline: auto; }
+
+/* Warm cream light mode; retain the same Aurora colour family and use warm ink typography. */
+[data-theme='light'] .skylent-public-canvas { background: #f1e7d8 !important; color: #181512 !important; }
+[data-theme='light'] .skylent-public-canvas::before { opacity: 1 !important; background: radial-gradient(ellipse 60% 38% at 8% 0%,rgba(99,102,241,.15),transparent 70%),radial-gradient(ellipse 52% 36% at 94% 2%,rgba(139,92,246,.12),transparent 72%),radial-gradient(ellipse 44% 30% at 50% 5%,rgba(59,130,246,.07),transparent 74%) !important; }
+[data-theme='light'] .skylent-home-hero-title, [data-theme='light'] .skylent-home-section-head h2, [data-theme='light'] .skylent-home-journey-intro h2, [data-theme='light'] .skylent-ecosystem-card h3, [data-theme='light'] .skylent-journey-step h3, [data-theme='light'] .skylent-career-copy h2, [data-theme='light'] .skylent-institution-layout h2, [data-theme='light'] .skylent-labs-teaser h2 { color: #181512 !important; }
+[data-theme='light'] .skylent-home-hero-lead, [data-theme='light'] .skylent-home-section-head p, [data-theme='light'] .skylent-home-journey-intro p, [data-theme='light'] .skylent-career-copy p, [data-theme='light'] .skylent-institution-layout p, [data-theme='light'] .skylent-labs-teaser p { color: #504941 !important; }
+[data-theme='light'] .skylent-ecosystem-card p, [data-theme='light'] .skylent-journey-step p { color: #5b544c !important; }
+
+/* Tablet */
+@media (max-width: 1100px) {
+  .skylent-home-container, .skylent-home-section > .skylent-home-container, .skylent-home-hero-inner { width: min(100% - 64px, 1040px); }
+  .skylent-home-section-head, .skylent-career-layout, .skylent-institution-layout, .skylent-os-gateway-inner { max-width: 1040px; }
+  .skylent-home-hero-title { font-size: clamp(54px, 7vw, 78px); }
+}
+@media (max-width: 900px) {
+  .skylent-home-container, .skylent-home-section > .skylent-home-container, .skylent-home-hero-inner { width: calc(100% - 48px); }
+  .skylent-home-section-head, .skylent-career-layout, .skylent-institution-layout, .skylent-os-gateway-inner { max-width: none; }
+  .skylent-home-hero { padding-top: 112px; }
+  .skylent-home-hero-visual { width: min(760px,100%); }
+  .skylent-ecosystem-grid { grid-template-columns: 1fr; }
+  .skylent-ecosystem-grid > div > .skylent-ecosystem-card { min-height: 270px; }
+  .skylent-journey-track { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
+  .skylent-home-os-gateway-inner, .skylent-career-layout, .skylent-institution-layout { grid-template-columns: 1fr !important; }
+  .skylent-os-stack { min-height: 360px; }
+  .skylent-float-chip { display: none; }
+}
+@media (max-width: 700px) {
+  .skylent-home-container, .skylent-home-section > .skylent-home-container, .skylent-home-hero-inner { width: calc(100% - 32px); }
+  .skylent-home-hero { padding: 94px 0 72px; }
+  .skylent-home-hero-title { font-size: clamp(43px,12vw,62px); line-height: .94; }
+  .skylent-home-hero-lead { font-size: 15px; line-height: 1.65; }
+  .skylent-home-hero-actions { width: 100%; flex-direction: column; align-items: stretch; }
+  .skylent-home-hero-actions > * { width: 100%; justify-content: center; }
+  .skylent-home-hero-meta { margin-top: 30px; flex-wrap: wrap; }
+  .skylent-home-hero-visual { padding: 0; }
+  .skylent-product-window { border-radius: 14px; }
+  .skylent-product-window-body { grid-template-columns: 1fr !important; }
+  .skylent-product-window-body aside { display: flex; align-items: center; gap: 4px; padding: 10px; overflow-x: auto; border-right: 0; border-bottom: 1px solid var(--skylent-border-subtle); }
+  .skylent-mini-brand { margin-right: auto; padding: 0 8px; flex-shrink: 0; }
+  .skylent-mini-nav { margin: 0; flex-shrink: 0; padding: 8px 9px; }
+  .skylent-mini-nav span { display: none; }
+  .skylent-product-main { padding: 20px; }
+  .skylent-product-cards { grid-template-columns: 1fr !important; }
+  .skylent-product-card.is-large { grid-row: auto; min-height: 130px; }
+  .skylent-home-section { padding: 76px 0 !important; }
+  .skylent-home-section-head { grid-template-columns: 1fr !important; gap: 20px !important; }
+  .skylent-journey-track { grid-template-columns: 1fr !important; }
+  .skylent-journey-step { border-right: 0 !important; border-bottom: 1px solid var(--skylent-border-subtle); min-height: 150px; padding: 20px 0 !important; }
+  .skylent-journey-step:last-child { border-bottom: 0; }
+  .skylent-os-stack { min-height: 300px; }
+  .skylent-os-layer { width: 100% !important; padding: 18px; }
+  .skylent-program-feature { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 480px) {
+  .skylent-home-container, .skylent-home-section > .skylent-home-container, .skylent-home-hero-inner { width: calc(100% - 24px); }
+  .skylent-home-hero { padding-top: 88px; }
+  .skylent-product-main { padding: 18px; }
+  .skylent-home-section-head h2, .skylent-home-journey-intro h2, .skylent-os-copy h2, .skylent-career-copy h2, .skylent-institution-layout h2, .skylent-labs-teaser h2 { font-size: 38px !important; }
+}
+
+/* Keep small-device rendering cheap: remove costly blur and honour reduced-motion preferences. */
+@media (max-width: 700px), (prefers-reduced-motion: reduce) {
+  .skylent-product-window, .skylent-float-chip, .skylent-theme-toggle { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+  .skylent-home-aurora-orb { filter: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto !important; }
+  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+}

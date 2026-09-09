@@ -1,3 +1,7 @@
+import { existsSync } from 'node:fs'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
 import express from 'express'
 
 import catalogRouter from './routes/catalog.js'
@@ -19,6 +23,24 @@ app.use('/api/v1/lms', lmsRouter)
 app.use('/api/v1/faculty', facultyRouter)
 app.use('/api/v1/organisation', organisationRouter)
 app.use('/api/v1/career', careerRouter)
+
+if (process.env.NODE_ENV === 'production') {
+  const clientDist = resolve(dirname(fileURLToPath(import.meta.url)), '../../dist')
+
+  app.use(express.static(clientDist))
+
+  app.get(/^(?!\/api\/).*/, (request, response, next) => {
+    const indexPath = resolve(clientDist, 'index.html')
+    if (!existsSync(indexPath)) {
+      next()
+      return
+    }
+    response.sendFile(indexPath, (error) => {
+      if (error) next(error)
+    })
+  })
+}
+
 app.use((error: unknown, _request: express.Request, response: express.Response, _next: express.NextFunction) => {
   console.error(error)
   response.status(500).json({ error: 'Internal server error' })

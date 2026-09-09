@@ -4,10 +4,54 @@ import { useAuth } from "../context/AuthContext"
 import { type CatalogEnrollTarget, type LoginRedirectState } from "../lib/catalog-enrollment"
 import { buildGoogleOAuthStartUrl } from "../lib/auth-api"
 import { finishAuthNavigation } from "../lib/auth-routing"
-import AuthPageShell, { AuthDivider, AuthDevDemoAccounts, AuthError, authFieldClass } from "../components/auth/AuthPageShell"
+import AuthPageShell, {
+  AuthDivider,
+  AuthDevDemoAccounts,
+  AuthEnrollNotice,
+  AuthError,
+  AuthGoogleIcon,
+  AuthSubtitle,
+  authFieldClass,
+} from "../components/auth/AuthPageShell"
 import { getDomainAccent } from "../aurora-themes"
 
 const accent = getDomainAccent("general")
+
+type AuthFormError = {
+  title?: string
+  message: string
+}
+
+function resolveOAuthErrorMessage(errorParam: string): AuthFormError {
+  switch (errorParam) {
+    case "oauth_config":
+      return {
+        title: "Google sign-in unavailable",
+        message: "Google sign-in is not available right now. Use email and password, or try again later.",
+      }
+    case "oauth_denied":
+      return {
+        title: "Sign-in cancelled",
+        message: "Google sign-in was cancelled. You can try again or use email and password.",
+      }
+    case "oauth_state":
+      return {
+        title: "Sign-in expired",
+        message: "Your Google sign-in session expired. Please try again.",
+      }
+    case "oauth_start":
+      return {
+        title: "Could not start Google sign-in",
+        message: "Google sign-in could not be started. Please try again.",
+      }
+    case "oauth_failed":
+    default:
+      return {
+        title: "Google sign-in failed",
+        message: "Google sign-in did not complete. Please try again or use email and password.",
+      }
+  }
+}
 
 function readOAuthRedirectState(params: URLSearchParams): LoginRedirectState | null {
   const returnTo = params.get("returnTo") ?? undefined
@@ -49,7 +93,7 @@ export default function LoginPage() {
   const [suEmail, setSuEmail] = useState("")
   const [suPassword, setSuPassword] = useState("")
   const [focusedField, setFocusedField] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<AuthFormError | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [oauthHandled, setOauthHandled] = useState(false)
@@ -58,11 +102,7 @@ export default function LoginPage() {
     const params = new URLSearchParams(location.search)
     const errorParam = params.get("error")
     if (errorParam?.startsWith("oauth")) {
-      setError(
-        errorParam === "oauth_config"
-          ? "Google sign-in is misconfigured. Confirm GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your root .env match the OAuth client in Google Cloud Console, then restart the API."
-          : "Google sign-in failed. Please try again or use email and password.",
-      )
+      setError(resolveOAuthErrorMessage(errorParam))
       navigate(location.pathname, { replace: true, state: location.state })
       return
     }
@@ -71,7 +111,10 @@ export default function LoginPage() {
 
     setOauthHandled(true)
     if (!user) {
-      setError("Google sign-in could not restore your session. Please try again.")
+      setError({
+        title: "Session not restored",
+        message: "Google sign-in could not restore your session. Please try again.",
+      })
       navigate(location.pathname, { replace: true, state: location.state })
       return
     }
@@ -79,6 +122,13 @@ export default function LoginPage() {
     const mergedState = mergeRedirectState(redirectState, params)
     void finishAuthNavigation(navigate, user.role, mergedState)
   }, [location.pathname, location.search, location.state, navigate, oauthHandled, ready, user, redirectState])
+
+  useEffect(() => {
+    if (!ready || !user) return
+    const params = new URLSearchParams(location.search)
+    if (params.get("oauth") === "success") return
+    void finishAuthNavigation(navigate, user.role, redirectState)
+  }, [ready, user, navigate, redirectState, location.search])
 
   function startGoogleAuth() {
     setError(null)
@@ -95,11 +145,11 @@ export default function LoginPage() {
     setError(null)
 
     if (!siEmail.trim()) {
-      setError("Enter your email address.")
+      setError({ message: "Enter your email address." })
       return
     }
     if (!siPassword.trim()) {
-      setError("Enter your password.")
+      setError({ message: "Enter your password." })
       return
     }
 
@@ -109,10 +159,13 @@ export default function LoginPage() {
       const role = await login(siEmail.trim(), siPassword)
       const enrollError = await finishAuthNavigation(navigate, role, redirectState)
       if (enrollError) {
-        setError(`Signed in, but enrollment could not be completed: ${enrollError}`)
+        setError({
+          title: "Signed in",
+          message: `Enrollment could not be completed: ${enrollError}`,
+        })
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to sign in.")
+      setError({ message: err instanceof Error ? err.message : "Unable to sign in." })
     } finally {
       setSubmitting(false)
     }
@@ -123,19 +176,19 @@ export default function LoginPage() {
     setError(null)
 
     if (!suName.trim()) {
-      setError("Enter your full name.")
+      setError({ message: "Enter your full name." })
       return
     }
     if (!suEmail.trim()) {
-      setError("Enter your email address.")
+      setError({ message: "Enter your email address." })
       return
     }
     if (!suPassword.trim()) {
-      setError("Enter a password.")
+      setError({ message: "Enter a password." })
       return
     }
     if (suPassword.trim().length < 8) {
-      setError("Password must be at least 8 characters.")
+      setError({ message: "Password must be at least 8 characters." })
       return
     }
 
@@ -145,10 +198,13 @@ export default function LoginPage() {
       const role = await signup(suName.trim(), suEmail.trim(), suPassword)
       const enrollError = await finishAuthNavigation(navigate, role, redirectState)
       if (enrollError) {
-        setError(`Account created, but enrollment could not be completed: ${enrollError}`)
+        setError({
+          title: "Account created",
+          message: `Enrollment could not be completed: ${enrollError}`,
+        })
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to create account.")
+      setError({ message: err instanceof Error ? err.message : "Unable to create account." })
     } finally {
       setSubmitting(false)
     }
@@ -161,8 +217,22 @@ export default function LoginPage() {
   return (
     <AuthPageShell>
       <h1 className="auth-title">{isSignup ? "Create your account" : "Welcome back"}</h1>
+      <AuthSubtitle>
+        {isSignup
+          ? "Join Skylent to learn, build skills, and move your career forward."
+          : "Sign in to continue your learning journey across Education, Skills, and Career OS."}
+      </AuthSubtitle>
 
-      {error && <AuthError message={error} />}
+      {redirectState?.enrollTarget && (
+        <AuthEnrollNotice kind={redirectState.enrollTarget.kind} />
+      )}
+
+      {error && (
+        <AuthError
+          title={error.title ?? "Unable to sign in"}
+          message={error.message}
+        />
+      )}
 
       {!isSignup ? (
         <form onSubmit={handleSignIn} noValidate className="auth-form">
@@ -208,7 +278,8 @@ export default function LoginPage() {
             onClick={startGoogleAuth}
             className="auth-google-button"
           >
-            {googleLoading ? "Redirecting…" : "Continue with Google"}
+            <AuthGoogleIcon />
+            <span>{googleLoading ? "Redirecting…" : "Continue with Google"}</span>
           </button>
 
           <p className="auth-switch">
@@ -254,7 +325,8 @@ export default function LoginPage() {
             onClick={startGoogleAuth}
             className="auth-google-button"
           >
-            {googleLoading ? "Redirecting…" : "Continue with Google"}
+            <AuthGoogleIcon />
+            <span>{googleLoading ? "Redirecting…" : "Continue with Google"}</span>
           </button>
 
           <p className="auth-switch">

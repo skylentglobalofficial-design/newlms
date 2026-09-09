@@ -1,14 +1,19 @@
-import "dotenv/config"
+import { config as loadEnv } from "dotenv"
+import { resolve } from "node:path"
+import { fileURLToPath } from "node:url"
 import crypto from "node:crypto"
-import { AuthProvider, RoleName, PrismaClient } from "@prisma/client"
-import { ensureRole } from "../server/src/lib/auth.js"
-import { resolveGoogleAccount, type GoogleIdTokenClaims } from "../server/src/lib/google-oauth.js"
-import {
-  createOAuthState,
-  verifySignedOAuthState,
-} from "../server/src/lib/oauth-state.js"
+import { AuthProvider, RoleName } from "@prisma/client"
+import type { GoogleIdTokenClaims } from "../server/src/lib/google-oauth.js"
+import { createPrismaClient } from "../server/src/lib/prisma.js"
 
-const prisma = new PrismaClient()
+const repoRoot = resolve(fileURLToPath(new URL(".", import.meta.url)), "..")
+loadEnv({ path: resolve(repoRoot, ".env"), override: true })
+
+const { ensureRole } = await import("../server/src/lib/auth.js")
+const { getGoogleOAuthConfig, resolveGoogleAccount } = await import("../server/src/lib/google-oauth.js")
+const { createOAuthState, verifySignedOAuthState } = await import("../server/src/lib/oauth-state.js")
+
+const prisma = createPrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 
 type CookieJar = Map<string, string>
@@ -194,11 +199,7 @@ async function main() {
   assert(badCsrf.response.status === 403, "Invalid CSRF should be rejected")
 
   console.log("7. Google OAuth start route")
-  const googleConfigured = Boolean(
-    process.env.GOOGLE_CLIENT_ID
-    && process.env.GOOGLE_CLIENT_SECRET
-    && process.env.GOOGLE_REDIRECT_URI,
-  )
+  const googleConfigured = getGoogleOAuthConfig() !== null
   const googleStart = await request(new Map(), "/auth/google")
   if (googleConfigured) {
     assert(googleStart.response.status === 302, "Google OAuth start should redirect")

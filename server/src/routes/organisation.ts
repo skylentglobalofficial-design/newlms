@@ -9,7 +9,7 @@ import {
 
 export const organisationRouter = Router()
 
-organisationRouter.get("/dashboard", requireAuth, requireRoles("organisation", "superadmin"), async (req: AuthenticatedRequest, res) => {
+organisationRouter.get("/dashboard", requireAuth, requireRoles("organisation"), async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.auth!.user.id
     const membership = await requireOrganisationMembership(userId)

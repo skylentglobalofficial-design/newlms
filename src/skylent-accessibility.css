@@ -1,0 +1,34 @@
+/* Launch-readiness interaction guardrails shared by public and authenticated surfaces. */
+:focus-visible {
+  outline: 2px solid var(--skylent-focus-ring, rgba(129, 140, 248, 0.55));
+  outline-offset: 3px;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  [role="tab"],
+  [role="radio"] {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

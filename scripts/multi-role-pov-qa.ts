@@ -1,8 +1,12 @@
 import puppeteer from "puppeteer-core"
+import { loginViaForm } from "./qa-auth.js"
 
 const PORT = process.env.PORT ?? "8443"
 const BASE = `http://localhost:${PORT}`
-const PASSWORD = process.env.DEMO_USER_PASSWORD ?? "DemoSkylent2026!"
+const PASSWORD = process.env.DEMO_USER_PASSWORD
+if (!PASSWORD) {
+  throw new Error("DEMO_USER_PASSWORD must be set to run authenticated QA; no demo password is stored in source.")
+}
 
 type RoleSpec = {
   role: string
@@ -14,14 +18,21 @@ type RoleSpec = {
 
 const ROLES: RoleSpec[] = [
   {
-    role: "mentor",
+    role: "student",
+    email: "learner@demo.skylent.dev",
+    homePath: "/dashboard/student",
+    shellMarker: "#student-overview",
+    foreignPaths: ["/dashboard/faculty", "/dashboard/organisation", "/dashboard/recruiter", "/dashboard/admin"],
+  },
+  {
+    role: "faculty",
     email: "mentor@demo.skylent.dev",
     homePath: "/dashboard/faculty",
     shellMarker: "#faculty-overview",
     foreignPaths: ["/dashboard/student", "/dashboard/organisation", "/dashboard/recruiter", "/dashboard/admin"],
   },
   {
-    role: "institution",
+    role: "organisation",
     email: "institution@demo.skylent.dev",
     homePath: "/dashboard/organisation",
     shellMarker: "#org-overview",
@@ -35,7 +46,7 @@ const ROLES: RoleSpec[] = [
     foreignPaths: ["/dashboard/student", "/dashboard/faculty", "/dashboard/organisation", "/dashboard/admin"],
   },
   {
-    role: "admin",
+    role: "superadmin",
     email: "admin@demo.skylent.dev",
     homePath: "/dashboard/admin",
     shellMarker: "#admin-overview",
@@ -44,22 +55,7 @@ const ROLES: RoleSpec[] = [
 ]
 
 async function login(page: import("puppeteer-core").Page, email: string, expectedPath: string) {
-  await page.goto(`${BASE}/login`, { waitUntil: "domcontentloaded", timeout: 30000 })
-  await page.waitForSelector("#si-email", { timeout: 15000 })
-  await page.evaluate(() => {
-    const email = document.querySelector<HTMLInputElement>("#si-email")
-    const password = document.querySelector<HTMLInputElement>("#si-password")
-    if (email) email.value = ""
-    if (password) password.value = ""
-  })
-  await page.type("#si-email", email, { delay: 10 })
-  await page.type("#si-password", PASSWORD, { delay: 10 })
-  await page.click('button[type="submit"]')
-  await page.waitForFunction(
-    (path) => window.location.pathname === path,
-    { timeout: 20000 },
-    expectedPath,
-  )
+  await loginViaForm(page, { email, password: PASSWORD, expectedPath })
 }
 
 async function main() {
@@ -72,45 +68,46 @@ async function main() {
   const results: Array<Record<string, unknown>> = []
 
   for (const spec of ROLES) {
-    const page = await browser.newPage()
+    const context = await browser.createBrowserContext()
+    const page = await context.newPage()
     await page.setViewport({ width: 1440, height: 900 })
 
-    await login(page, spec.email, spec.homePath)
-    await page.waitForSelector(spec.shellMarker, { timeout: 20000 }).catch(() => null)
-    await page.waitForSelector(".role-workspace-banner", { timeout: 20000 }).catch(() => null)
+    try {
+      await login(page, spec.email, spec.homePath)
+      await page.waitForSelector(spec.shellMarker, { timeout: 20000 }).catch(() => null)
+      await page.waitForSelector(".role-workspace-banner", { timeout: 20000 }).catch(() => null)
 
-    const home = await page.evaluate((marker) => ({
-      path: window.location.pathname,
-      hasShell: Boolean(document.querySelector(marker)),
-      hasBanner: Boolean(document.querySelector(".role-workspace-banner")),
-      overflowPx: Math.max(0, document.documentElement.scrollWidth - window.innerWidth),
-    }), spec.shellMarker)
+      const home = await page.evaluate((marker) => ({
+        path: window.location.pathname,
+        hasShell: Boolean(document.querySelector(marker)),
+        hasBanner: Boolean(document.querySelector(".role-workspace-banner")),
+        overflowPx: Math.max(0, document.documentElement.scrollWidth - window.innerWidth),
+      }), spec.shellMarker)
 
-    const isolation: Array<{ path: string; redirectedTo: string; blocked: boolean }> = []
-    for (const foreign of spec.foreignPaths) {
-      await page.goto(`${BASE}${foreign}`, { waitUntil: "domcontentloaded", timeout: 20000 })
-      await page.waitForFunction(
-        (homePath) => window.location.pathname === homePath,
-        { timeout: 15000 },
-        spec.homePath,
-      ).catch(() => null)
-      const redirectedTo = await page.evaluate(() => window.location.pathname)
-      isolation.push({
-        path: foreign,
-        redirectedTo,
-        blocked: redirectedTo === spec.homePath,
+      const isolation: Array<{ path: string; redirectedTo: string; blocked: boolean }> = []
+      for (const foreign of spec.foreignPaths) {
+        await page.goto(`${BASE}${foreign}`, { waitUntil: "domcontentloaded", timeout: 20000 })
+        await page.waitForFunction(
+          (homePath) => window.location.pathname === homePath,
+          { timeout: 15000 },
+          spec.homePath,
+        ).catch(() => null)
+        const redirectedTo = await page.evaluate(() => window.location.pathname)
+        isolation.push({ path: foreign, redirectedTo, blocked: redirectedTo === spec.homePath })
+      }
+
+      results.push({
+        role: spec.role,
+        email: spec.email,
+        home,
+        isolation,
+        passed: home.path === spec.homePath && home.hasShell && home.hasBanner && home.overflowPx <= 1 && isolation.every((i) => i.blocked),
       })
+    } catch (error) {
+      results.push({ role: spec.role, email: spec.email, passed: false, error: error instanceof Error ? error.message : String(error) })
     }
 
-    results.push({
-      role: spec.role,
-      email: spec.email,
-      home,
-      isolation,
-      passed: home.path === spec.homePath && home.hasShell && home.hasBanner && isolation.every((i) => i.blocked),
-    })
-
-    await page.close()
+    await context.close()
   }
 
   await browser.close()
@@ -128,4 +125,4 @@ async function main() {
 main().catch((error) => {
   console.error(error)
   process.exitCode = 1
-})
+}

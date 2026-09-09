@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell, EnrollmentModal } from '../components/shared'
-import { Button, Eyebrow, Section, T } from '../components/ui'
+import { Button, Eyebrow, Section, T, MarketingHero } from '../components/ui'
 import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { workshops } from '../data'
@@ -32,67 +32,65 @@ export default function WorkshopDetailPage() {
 
   return (
     <PageShell auroraTheme="webinar">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} clamp(36px, 5vw, 56px)` }}>
-        <Aurora themeId="webinar" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+      <MarketingHero
+        auroraTheme="webinar"
+        back={
           <button
             type="button"
             onClick={() => navigate('/workshops')}
-            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.45)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', marginBottom: 24, padding: 0 }}
+            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.45)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', padding: 0 }}
           >
             ← Back to workshops
           </button>
-
-          <div className="workshop-event-hero two-col" style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(28px, 5vw, 48px)', alignItems: 'start' }}>
-            <FadeIn>
-              <Eyebrow tone="dark" accent>Live workshop</Eyebrow>
-              <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 12px', color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)', display: 'inline-block', margin: '14px 0 18px' }}>{workshop.category}</span>
-              <h1 className="skylent-display-md" style={{ color: C.white, margin: '0 0 16px' }}>{workshop.title}</h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 520, margin: '0 0 24px' }}>{workshop.desc}</p>
-              <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', maxWidth: 480 }}>
-                <MediaImage src={PHOTO.workshop} alt="" style={{ minHeight: 200 }} />
-              </GlassSurface>
-            </FadeIn>
-
-            <FadeIn delay={80}>
-              <GlassSurface level={2} padding="24px 26px">
-                <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Event details</div>
-                <div style={{ display: 'grid', gap: 16, marginBottom: 22 }}>
-                  {[
-                    { label: 'Date', value: workshop.date, emphasis: true },
-                    { label: 'Duration', value: workshop.duration },
-                    { label: 'Format', value: workshop.mode },
-                    { label: 'Host', value: workshop.instructor },
-                  ].map(row => (
-                    <div key={row.label} style={{ paddingBottom: 14, borderBottom: `1px solid ${T.lineDark}` }}>
-                      <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.32)', marginBottom: 6 }}>{row.label}</div>
-                      <div style={{ color: C.white, fontSize: row.emphasis ? 20 : 15, fontWeight: row.emphasis ? 600 : 500, fontFamily: row.emphasis ? 'var(--font-display)' : 'var(--font-body)' }}>{row.value}</div>
-                    </div>
-                  ))}
+        }
+        eyebrow="Live workshop"
+        badges={
+          <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 12px', color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{workshop.category}</span>
+        }
+        title={workshop.title}
+        lead={workshop.desc}
+        visual={
+          <GlassSurface level={2} padding="0" style={{ overflow: 'hidden' }}>
+            <MediaImage src={PHOTO.workshop} alt="" style={{ minHeight: 200 }} aspect="21/9" />
+          </GlassSurface>
+        }
+        footer={
+          <GlassSurface level={2} padding="24px 26px">
+            <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Event details</div>
+            <div style={{ display: 'grid', gap: 16, marginBottom: 22 }}>
+              {[
+                { label: 'Date', value: workshop.date, emphasis: true },
+                { label: 'Duration', value: workshop.duration },
+                { label: 'Format', value: workshop.mode },
+                { label: 'Host', value: workshop.instructor },
+              ].map(row => (
+                <div key={row.label} style={{ paddingBottom: 14, borderBottom: `1px solid ${T.lineDark}` }}>
+                  <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.32)', marginBottom: 6 }}>{row.label}</div>
+                  <div style={{ color: C.white, fontSize: row.emphasis ? 20 : 15, fontWeight: row.emphasis ? 600 : 500, fontFamily: row.emphasis ? 'var(--font-display)' : 'var(--font-body)' }}>{row.value}</div>
                 </div>
-                <div style={{ marginBottom: 18 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{workshop.seatsLeft} seats left (demo)</span>
-                    <span style={{ color: pct > 70 ? '#f87171' : 'rgba(255,255,255,0.35)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
-                  </div>
-                  <div style={{ height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2 }}>
-                    <div style={{ width: `${pct}%`, height: '100%', background: pct > 70 ? '#f87171' : accent.primary, borderRadius: 2 }} />
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: C.white }}>₹{workshop.price.toLocaleString('en-IN')}</span>
-                  {workshop.originalPrice > workshop.price && (
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through' }}>₹{workshop.originalPrice.toLocaleString('en-IN')}</span>
-                  )}
-                </div>
-                <Button variant="primary" size="lg" onClick={() => setEnrollOpen(true)} style={{ width: '100%' }}>
-                  Register for workshop
-                </Button>
-              </GlassSurface>
-            </FadeIn>
-          </div>
-        </div>
-      </section>
+              ))}
+            </div>
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{workshop.seatsLeft} seats left (demo)</span>
+                <span style={{ color: pct > 70 ? '#f87171' : 'rgba(255,255,255,0.35)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
+              </div>
+              <div style={{ height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2 }}>
+                <div style={{ width: `${pct}%`, height: '100%', background: pct > 70 ? '#f87171' : accent.primary, borderRadius: 2 }} />
+              </div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: C.white }}>₹{workshop.price.toLocaleString('en-IN')}</span>
+              {workshop.originalPrice > workshop.price && (
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through' }}>₹{workshop.originalPrice.toLocaleString('en-IN')}</span>
+              )}
+            </div>
+            <Button variant="primary" size="lg" onClick={() => setEnrollOpen(true)} style={{ width: '100%' }}>
+              Register for workshop
+            </Button>
+          </GlassSurface>
+        }
+      />
 
       <Section tone="canvas" divider>
         <div style={{ maxWidth: T.maxW, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 320px', gap: 'clamp(28px, 4vw, 40px)', alignItems: 'start' }} className="edu-grid">

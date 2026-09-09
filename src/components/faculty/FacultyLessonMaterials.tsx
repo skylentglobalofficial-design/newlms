@@ -1,0 +1,224 @@
+import { useEffect, useRef, useState } from "react"
+import { C, T } from "../../tokens"
+import {
+  fetchFacultyLessonMaterials,
+  publishLessonMaterial,
+  requestLessonMaterialUpload,
+  type LessonMaterial,
+} from "../../lib/lesson-materials-api"
+
+const ACCEPTED_TYPES = ".pdf,.ppt,.pptx,application/pdf,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+
+type Accent = { primary: string; subtle: string; border: string; text: string }
+type UploadPhase = "creating" | "uploading" | "verifying" | null
+
+function statusLabel(material: LessonMaterial): string {
+  if (material.published) return "published"
+  if (material.uploadStatus === "FAILED") return "upload failed"
+  if (material.uploadStatus === "READY") return "ready to publish"
+  return "upload pending"
+}
+
+function statusColor(material: LessonMaterial, accent: Accent): string {
+  if (material.published) return accent.text
+  if (material.uploadStatus === "FAILED") return "#b42318"
+  if (material.uploadStatus === "READY") return "#087443"
+  return "var(--skylent-text-muted)"
+}
+
+function uploadPhaseLabel(phase: UploadPhase): string {
+  if (phase === "creating") return "Preparing upload…"
+  if (phase === "uploading") return "Uploading file to storage…"
+  if (phase === "verifying") return "Verifying storage object…"
+  return "Uploading…"
+}
+
+export default function FacultyLessonMaterials({
+  courseSlug,
+  lessonKey,
+  lessonTitle,
+  accent,
+}: {
+  courseSlug: string
+  lessonKey: string
+  lessonTitle: string
+  accent: Accent
+}) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [materials, setMaterials] = useState<LessonMaterial[]>([])
+  const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const [uploadPhase, setUploadPhase] = useState<UploadPhase>(null)
+  const [publishingId, setPublishingId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [status, setStatus] = useState<string | null>(null)
+
+  async function reloadMaterials() {
+    setLoading(true)
+    setError(null)
+    try {
+      const items = await fetchFacultyLessonMaterials(courseSlug, lessonKey)
+      setMaterials(items)
+    } catch (err) {
+      setMaterials([])
+      setError(err instanceof Error ? err.message : "Failed to load materials")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    void reloadMaterials()
+  }, [courseSlug, lessonKey])
+
+  async function handleFileSelected(file: File | null) {
+    if (!file) return
+    setUploading(true)
+    setUploadPhase("creating")
+    setError(null)
+    setStatus(null)
+    try {
+      const uploaded = await requestLessonMaterialUpload({
+        courseSlug,
+        lessonKey,
+        file,
+        onPhaseChange: setUploadPhase,
+      })
+      setStatus(
+        uploaded.uploadStatus === "READY"
+          ? `${uploaded.fileName} is ready. Publish it when you want learners to access it.`
+          : `${uploaded.fileName} is still pending verification.`,
+      )
+      await reloadMaterials()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed")
+      await reloadMaterials()
+    } finally {
+      setUploading(false)
+      setUploadPhase(null)
+      if (inputRef.current) inputRef.current.value = ""
+    }
+  }
+
+  async function handlePublish(materialId: string) {
+    setPublishingId(materialId)
+    setError(null)
+    setStatus(null)
+    try {
+      const published = await publishLessonMaterial({ courseSlug, lessonKey, materialId })
+      if (!published.published) {
+        throw new Error("Publish did not complete")
+      }
+      setStatus(`Published ${published.fileName} for learners.`)
+      await reloadMaterials()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Publish failed")
+    } finally {
+      setPublishingId(null)
+    }
+  }
+
+  const foreground = "var(--skylent-text)"
+  const secondary = "var(--skylent-text-secondary)"
+  const muted = "var(--skylent-text-muted)"
+  const surface = "var(--skylent-card-bg)"
+  const inputSurface = "var(--skylent-input-bg)"
+  const border = "var(--skylent-border-subtle)"
+
+  return (
+    <div style={{ padding: "22px 24px", background: surface, border: `1px solid ${border}`, borderRadius: T.rCard }}>
+      <div style={{ color: foreground, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, marginBottom: 6 }}>
+        Lesson materials
+      </div>
+      <p style={{ color: secondary, fontSize: 13, lineHeight: 1.6, margin: "0 0 16px" }}>
+        Upload PDF or PowerPoint files for <strong style={{ color: foreground }}>{lessonTitle}</strong> in {courseSlug}.
+      </p>
+
+      <input
+        ref={inputRef}
+        type="file"
+        accept={ACCEPTED_TYPES}
+        style={{ display: "none" }}
+        onChange={(event) => {
+          const file = event.target.files?.[0] ?? null
+          void handleFileSelected(file)
+        }}
+      />
+
+      <button
+        type="button"
+        disabled={uploading}
+        onClick={() => inputRef.current?.click()}
+        style={{
+          background: accent.primary,
+          border: "none",
+          color: C.black,
+          padding: "10px 16px",
+          borderRadius: T.rControl,
+          fontSize: 13,
+          fontWeight: 600,
+          cursor: uploading ? "wait" : "pointer",
+          opacity: uploading ? 0.7 : 1,
+        }}
+      >
+        {uploading ? uploadPhaseLabel(uploadPhase) : "Select material (PDF/PPT/PPTX)"}
+      </button>
+
+      {status && <p style={{ color: accent.text, fontSize: 13, margin: "12px 0 0" }}>{status}</p>}
+      {error && <p role="alert" style={{ color: "#b42318", fontSize: 13, margin: "12px 0 0" }}>{error}</p>}
+
+      <div style={{ marginTop: 18 }}>
+        <div className="skylent-label" style={{ color: muted, marginBottom: 8 }}>Lesson files</div>
+        {loading ? (
+          <p style={{ color: secondary, fontSize: 13, margin: 0 }}>Loading…</p>
+        ) : materials.length === 0 ? (
+          <p style={{ color: secondary, fontSize: 13, margin: 0 }}>No materials uploaded yet.</p>
+        ) : (
+          <div style={{ display: "grid", gap: 8 }}>
+            {materials.map((material) => (
+              <div
+                key={material.id}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "10px 12px",
+                  borderRadius: T.rControl,
+                  background: inputSurface,
+                  border: `1px solid ${border}`,
+                }}
+              >
+                <span style={{ color: foreground, fontSize: 13 }}>{material.fileName}</span>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                  <span style={{ color: statusColor(material, accent), fontSize: 11, fontFamily: "var(--font-mono)" }}>
+                    {statusLabel(material)}
+                  </span>
+                  {material.uploadStatus === "READY" && !material.published && (
+                    <button
+                      type="button"
+                      disabled={publishingId === material.id}
+                      onClick={() => { void handlePublish(material.id) }}
+                      style={{
+                        background: "transparent",
+                        border: `1px solid ${accent.border}`,
+                        color: accent.text,
+                        padding: "4px 10px",
+                        borderRadius: T.rPill,
+                        fontSize: 11,
+                        fontWeight: 600,
+                        cursor: publishingId === material.id ? "wait" : "pointer",
+                      }}
+                    >
+                      {publishingId === material.id ? "Publishing…" : "Publish"}
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

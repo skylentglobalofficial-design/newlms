@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FadeIn } from './shared'
 import { C, T, type } from '../tokens'
+import { S } from '../theme'
 import { Aurora, GridField, MediaImage } from './foundation'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 
@@ -21,9 +22,9 @@ type Tone = 'light' | 'dark' | 'canvas'
 // ── Section wrapper ──────────────────────────────────────────────────────────
 function sectionBg(tone: Tone, bg?: string): string {
   if (bg) return bg
-  if (tone === 'canvas') return C.canvas
-  if (tone === 'dark') return C.ink
-  return C.warmWhite
+  if (tone === 'light') return S.surface
+  if (tone === 'dark') return S.elevated
+  return S.canvas
 }
 
 export function Section({
@@ -42,7 +43,7 @@ export function Section({
   divider?: boolean
 }) {
   const background = sectionBg(tone, bg)
-  const textColor = tone === 'light' ? C.ink : C.white
+  const textColor = tone === 'light' ? C.ink : S.text
   return (
     <>
       {divider && <div className="skylent-section-divider" />}
@@ -51,7 +52,7 @@ export function Section({
         style={{
           background,
           color: textColor,
-          padding: `${T.section} 0`,
+          padding: `${T.sectionSm} 0`,
           position: 'relative',
           ...style,
         }}
@@ -64,7 +65,7 @@ export function Section({
 
 // ── Eyebrow (mono label) ─────────────────────────────────────────────────────
 export function Eyebrow({ children, tone = 'light', accent, centered }: { children: React.ReactNode; tone?: Tone; accent?: boolean; centered?: boolean }) {
-  const color = accent ? brandAccent.text : tone === 'light' ? C.slate : 'rgba(255,255,255,0.42)'
+  const color = accent ? brandAccent.text : tone === 'light' ? C.slate : S.textMuted
   const line = <span style={{ width: 20, height: 1, background: 'currentColor', opacity: 0.5, flexShrink: 0 }} />
   return (
     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
@@ -94,7 +95,7 @@ export function Heading({
     xl: 'clamp(40px, 6vw, 84px)',
   }
   return (
-    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: sizes[size], lineHeight: 1.04, letterSpacing: '-0.03em', color: tone === 'light' ? C.ink : C.white, margin: 0, ...style }}>
+    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: sizes[size], lineHeight: 1.04, letterSpacing: '-0.03em', color: tone === 'light' ? C.ink : S.text, margin: 0, ...style }}>
       {children}
     </h2>
   )
@@ -122,7 +123,7 @@ export function SectionHeader({
         {eyebrow && <div style={{ marginBottom: 22 }}><Eyebrow tone={tone}>{eyebrow}</Eyebrow></div>}
         <Heading tone={tone}>{title}</Heading>
         {lead && (
-          <p style={{ color: tone === 'light' ? C.slate : 'rgba(255,255,255,0.5)', fontSize: type.bodyLg, lineHeight: 1.7, margin: '22px 0 0', maxWidth: 560, ...(align === 'center' ? { marginLeft: 'auto', marginRight: 'auto' } : {}) }}>{lead}</p>
+          <p style={{ color: tone === 'light' ? C.slate : S.textSecondary, fontSize: type.bodyLg, lineHeight: 1.7, margin: '22px 0 0', maxWidth: 560, ...(align === 'center' ? { marginLeft: 'auto', marginRight: 'auto' } : {}) }}>{lead}</p>
         )}
       </div>
       {action}
@@ -161,11 +162,11 @@ export function Button({
     width: full ? '100%' : undefined, whiteSpace: 'nowrap', letterSpacing: '-0.01em',
   }
   const variants: Record<BtnVariant, React.CSSProperties> = {
-    primary: { background: accent.primary, color: C.white },
-    secondary: { background: 'transparent', color: C.white, borderColor: T.lineDarkStrong },
-    ghost: { background: 'transparent', color: C.ink, borderColor: T.lineStrong },
-    dark: { background: C.ink, color: C.white },
-    light: { background: C.white, color: C.ink },
+    primary: { background: accent.primary, color: S.accentForeground },
+    secondary: { background: 'transparent', color: S.text, borderColor: S.border },
+    ghost: { background: 'transparent', color: S.text, borderColor: S.borderSubtle },
+    dark: { background: C.ink, color: C.warmWhite },
+    light: { background: S.surface, color: C.ink, borderColor: S.borderSubtle },
   }
   return (
     <button
@@ -174,19 +175,13 @@ export function Button({
       style={{ ...base, ...variants[variant], ...style }}
       onMouseEnter={e => {
         const t = e.currentTarget
-        if (variant === 'primary') { t.style.background = accent.secondary; t.style.transform = 'translateY(-1px)' }
-        else if (variant === 'dark') { t.style.opacity = '0.85'; t.style.transform = 'translateY(-1px)' }
-        else if (variant === 'light') { t.style.transform = 'translateY(-1px)'; t.style.boxShadow = '0 10px 30px rgba(0,0,0,0.14)' }
-        else if (variant === 'secondary') t.style.borderColor = 'rgba(255,255,255,0.4)'
-        else t.style.borderColor = C.ink
+        if (variant === 'primary') { t.style.opacity = '0.92' }
+        else if (variant === 'secondary') t.style.borderColor = S.border
       }}
       onMouseLeave={e => {
         const t = e.currentTarget
-        if (variant === 'primary') { t.style.background = accent.primary; t.style.transform = 'none' }
-        else if (variant === 'dark') { t.style.opacity = '1'; t.style.transform = 'none' }
-        else if (variant === 'light') { t.style.transform = 'none'; t.style.boxShadow = 'none' }
-        else if (variant === 'secondary') t.style.borderColor = T.lineDarkStrong
-        else t.style.borderColor = T.lineStrong
+        if (variant === 'primary') { t.style.opacity = '1' }
+        else if (variant === 'secondary') t.style.borderColor = S.border
       }}
     >
       {children}
@@ -222,7 +217,7 @@ export function Badge({ children, tone = 'light', accent }: { children: React.Re
 export function Card({
   children,
   tone = 'canvas',
-  hover = true,
+  hover = false,
   onClick,
   style,
 }: {
@@ -232,22 +227,19 @@ export function Card({
   onClick?: () => void
   style?: React.CSSProperties
 }) {
-  const base: React.CSSProperties = tone === 'dark'
-    ? { background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}` }
-    : { background: C.white, border: `1px solid ${T.lineLight}` }
+  const base: React.CSSProperties = {
+    background: S.cardBg,
+    border: `1px solid ${S.borderSubtle}`,
+  }
   return (
     <div
       onClick={onClick}
-      style={{ borderRadius: T.rCard, padding: 30, transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease', cursor: onClick ? 'pointer' : 'default', ...base, ...style }}
+      style={{ borderRadius: T.rCard, padding: 30, transition: 'border-color 0.2s ease', cursor: onClick ? 'pointer' : 'default', ...base, ...style }}
       onMouseEnter={hover ? e => {
-        e.currentTarget.style.transform = 'translateY(-4px)'
-        e.currentTarget.style.boxShadow = tone === 'dark' ? '0 24px 60px rgba(0,0,0,0.4)' : '0 20px 50px rgba(11,13,15,0.1)'
-        e.currentTarget.style.borderColor = tone === 'dark' ? T.lineDarkStrong : T.lineStrong
+        e.currentTarget.style.borderColor = S.border
       } : undefined}
       onMouseLeave={hover ? e => {
-        e.currentTarget.style.transform = 'none'
-        e.currentTarget.style.boxShadow = 'none'
-        e.currentTarget.style.borderColor = tone === 'dark' ? T.lineDark : T.lineLight
+        e.currentTarget.style.borderColor = S.borderSubtle
       } : undefined}
     >
       {children}
@@ -293,7 +285,7 @@ export function MarketingHero({
   title,
   lead,
   tone = 'dark',
-  bg = C.ink,
+  bg,
   actions,
   back,
   badges,
@@ -326,20 +318,20 @@ export function MarketingHero({
   const copyMax = size === 'xl' ? T.maxWReading : 640
   const leadMax = size === 'xl' ? 600 : 540
   const defaultVisualMax = visualMaxWidth ?? T.maxWContent
+  const heroBg = bg ?? S.canvas
 
   return (
     <section
       id={id}
       className="marketing-hero-section"
       style={{
-        background: bg,
+        background: heroBg,
         position: 'relative',
         overflow: 'hidden',
         padding: `${T.navH + 48}px 0 ${visual || footer ? T.sectionTight : 'clamp(48px, 6vw, 72px)'}`,
       }}
     >
       {isDark && auroraTheme && <Aurora themeId={auroraTheme} variant="hero" />}
-      {isDark && <GridField opacity={0.02} />}
       <div className="marketing-hero marketing-hero-inner" style={{ position: 'relative', zIndex: 1 }}>
         {back && <div className="marketing-hero-back">{back}</div>}
         <FadeIn>
@@ -354,11 +346,11 @@ export function MarketingHero({
                 {badges}
               </div>
             )}
-            <h1 className={headlineClass} style={{ color: isDark ? C.white : C.ink, margin: 0 }}>
+            <h1 className={headlineClass} style={{ color: isDark ? S.text : C.ink, margin: 0 }}>
               {title}
             </h1>
             {lead && (
-              <p className="skylent-body-lg" style={{ color: isDark ? 'rgba(255,255,255,0.62)' : C.slate, margin: '20px auto 0', maxWidth: leadMax }}>
+              <p className="skylent-body-lg" style={{ color: isDark ? S.textSecondary : C.slate, margin: '20px auto 0', maxWidth: leadMax }}>
                 {lead}
               </p>
             )}
@@ -471,7 +463,7 @@ export function CTABand({
   lead,
   primary,
   secondary,
-  bg = C.ink,
+  bg = 'transparent',
   tone = 'dark',
   auroraTheme,
 }: {

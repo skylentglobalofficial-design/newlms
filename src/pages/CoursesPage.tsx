@@ -48,7 +48,7 @@ function CourseDiscoveryRow({ course }: { course: Course }) {
           <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
           <span style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.38)' }}>{course.duration}</span>
         </div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(18px, 2.2vw, 22px)', fontWeight: 600, color: C.white, marginBottom: 6, lineHeight: 1.25 }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(18px, 2.2vw, 22px)', fontWeight: 600, color: 'var(--skylent-text)', marginBottom: 6, lineHeight: 1.25 }}>
           {course.title}
         </div>
         <p style={{ color: 'var(--text-secondary)', fontSize: 13.5, lineHeight: 1.6, margin: 0, maxWidth: 560 }}>{course.desc}</p>
@@ -58,7 +58,7 @@ function CourseDiscoveryRow({ course }: { course: Course }) {
         </div>
       </div>
       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: C.white }}>₹{course.price.toLocaleString('en-IN')}</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 17, fontWeight: 700, color: 'var(--skylent-text)' }}>₹{course.price.toLocaleString('en-IN')}</div>
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.32)', textDecoration: 'line-through', marginTop: 4 }}>₹{course.originalPrice.toLocaleString('en-IN')}</div>
         <div style={{ marginTop: 12 }}>
           <span style={{ color: accent.text, fontSize: 13, fontWeight: 600 }}>View course →</span>
@@ -136,7 +136,7 @@ export default function CoursesPage() {
               onChange={e => setSearch(e.target.value)}
               placeholder="Search courses…"
               aria-label="Search courses"
-              style={{ background: 'none', border: 'none', outline: 'none', color: C.white, fontSize: 14, width: '100%', fontFamily: 'var(--font-body)' }}
+              style={{ background: 'none', border: 'none', outline: 'none', color: 'var(--skylent-text)', fontSize: 14, width: '100%', fontFamily: 'var(--font-body)' }}
             />
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function CoursesPage() {
                     borderRadius: 100,
                     border: `1px solid ${category === c ? accent.border : T.lineDark}`,
                     background: category === c ? accent.subtle : 'transparent',
-                    color: category === c ? accent.text : 'rgba(255,255,255,0.5)',
+                    color: category === c ? accent.text : 'var(--skylent-text-secondary)',
                     fontSize: 13,
                     cursor: 'pointer',
                     fontFamily: 'var(--font-body)',
@@ -192,7 +192,7 @@ export default function CoursesPage() {
                       borderRadius: 100,
                       border: `1px solid ${(val as string) === o ? accent.border : T.lineDark}`,
                       background: (val as string) === o ? accent.subtle : 'transparent',
-                      color: (val as string) === o ? accent.text : 'rgba(255,255,255,0.45)',
+                      color: (val as string) === o ? accent.text : 'var(--skylent-text-muted)',
                       fontSize: 12,
                       cursor: 'pointer',
                       fontFamily: 'var(--font-body)',
@@ -207,14 +207,14 @@ export default function CoursesPage() {
         </div>
 
         {filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.45)' }}>
+          <div style={{ textAlign: 'center', padding: '60px 0', color: 'var(--skylent-text-muted)' }}>
             No courses match your filters.
           </div>
         ) : category !== 'All' && CATEGORY_META[category] ? (
           <div style={{ marginTop: 40 }}>
             <div style={{ marginBottom: 28, paddingBottom: 20, borderBottom: `1px solid ${T.lineDark}` }}>
-              <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 8px' }}>{CATEGORY_META[category].label}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0 }}>{CATEGORY_META[category].sub}</p>
+              <h3 className="skylent-display-sm" style={{ color: 'var(--skylent-text)', margin: '0 0 8px' }}>{CATEGORY_META[category].label}</h3>
+              <p style={{ color: 'var(--skylent-text-muted)', fontSize: 14, margin: 0 }}>{CATEGORY_META[category].sub}</p>
             </div>
             {filtered.map((course, i) => (
               <FadeIn key={course.slug} delay={i * 30}>
@@ -235,7 +235,7 @@ export default function CoursesPage() {
             {grouped.map((group, gi) => (
               <div key={group.category} style={{ marginBottom: gi < grouped.length - 1 ? 48 : 0 }}>
                 <div style={{ marginBottom: 8, paddingBottom: 16, borderBottom: `1px solid ${T.lineDark}` }}>
-                  <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 6px' }}>
+                  <h3 className="skylent-display-sm" style={{ color: 'var(--skylent-text)', margin: '0 0 6px' }}>
                     {CATEGORY_META[group.category]?.label ?? group.category}
                   </h3>
                   <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13.5, margin: 0 }}>

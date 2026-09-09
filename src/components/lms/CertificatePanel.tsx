@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { T } from "../../tokens"
-import { fetchCertificateState } from "../../lib/lms-api"
+import { C, T } from "../../tokens"
+import { downloadCourseCertificate, fetchCertificateState } from "../../lib/lms-api"
 import { LmsInlineEmpty } from "./LmsEmptyState"
 
 type Accent = { primary: string; text: string; border: string; subtle: string }
@@ -17,6 +17,8 @@ export default function CertificatePanel({
 }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [downloading, setDownloading] = useState(false)
+  const [downloadError, setDownloadError] = useState<string | null>(null)
   const [state, setState] = useState<Awaited<ReturnType<typeof fetchCertificateState>> | null>(null)
 
   useEffect(() => {
@@ -86,9 +88,49 @@ export default function CertificatePanel({
         </ul>
       )}
 
-      <p className="lms-certificate-panel__soon">
-        Certificate download and verification are not available yet. This panel reflects real completion requirements from your enrollment.
-      </p>
+      {state.certificateEligible && (
+        <div style={{ marginTop: 16, marginBottom: 12 }}>
+          <button
+            type="button"
+            className="lms-certificate-panel__download"
+            disabled={downloading}
+            onClick={() => {
+              setDownloadError(null)
+              setDownloading(true)
+              void downloadCourseCertificate(courseSlug)
+                .then((blob) => {
+                  const url = URL.createObjectURL(blob)
+                  const link = document.createElement("a")
+                  link.href = url
+                  link.download = `${courseSlug}-certificate.pdf`
+                  link.click()
+                  URL.revokeObjectURL(url)
+                })
+                .catch((err: unknown) => {
+                  setDownloadError(err instanceof Error ? err.message : "Certificate download failed")
+                })
+                .finally(() => setDownloading(false))
+            }}
+            style={{
+              background: accent.primary,
+              border: "none",
+              color: C.black,
+              padding: "10px 18px",
+              borderRadius: T.rControl,
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: downloading ? "wait" : "pointer",
+            }}
+          >
+            {downloading ? "Preparing…" : "Download certificate"}
+          </button>
+          {downloadError && (
+            <p role="alert" style={{ color: "rgba(255,255,255,0.72)", fontSize: 13, margin: "10px 0 0" }}>
+              {downloadError}
+            </p>
+          )}
+        </div>
+      )}
 
       <Link to={`/learn/${courseSlug}/${lessonId}`} style={{ color: accent.text, fontSize: 13, textDecoration: "none" }}>
         Resume course →

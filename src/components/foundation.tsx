@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { programs } from '../data'
 import { getAuroraTheme, getDomainAccent, resolveAuroraTheme, type AuroraThemeId } from '../aurora-themes'
-import { C, T, glass, type GlassLevel } from '../tokens'
+import { C, T, type GlassLevel } from '../tokens'
+import { S } from '../theme'
 import { parseSkylentVisualRef, isSkylentVisualRef } from '../media'
 import { ProductVisual } from './product/ProductVisuals'
 
@@ -101,7 +102,7 @@ export function useAuroraTheme(): AuroraThemeId {
 export function PublicCanvas({
   children,
   themeId,
-  aurora = true,
+  aurora = false,
 }: {
   children: React.ReactNode
   themeId?: AuroraThemeId
@@ -112,9 +113,9 @@ export function PublicCanvas({
   return (
     <div
       className="skylent-public-canvas"
-      style={{ position: 'relative', minHeight: '100%', background: C.canvas, color: C.white }}
+      style={{ position: 'relative', minHeight: '100%', background: S.canvas, color: S.text }}
     >
-      {aurora && <Aurora themeId={resolved} />}
+      {aurora && <Aurora themeId={resolved} variant="hero" />}
       <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>
     </div>
   )
@@ -138,16 +139,12 @@ export function GlassSurface({
   style?: React.CSSProperties
   className?: string
 }) {
-  const g = glass[level]
   return (
     <div
       className={className}
       style={{
-        background: g.bg,
-        border: `1px solid ${g.border}`,
-        backdropFilter: g.blur,
-        WebkitBackdropFilter: g.blur,
-        boxShadow: g.shadow,
+        background: level >= 3 ? S.elevated : S.surface,
+        border: `1px solid ${S.borderSubtle}`,
         borderRadius: radius,
         padding,
         ...style,
