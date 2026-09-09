@@ -88,6 +88,10 @@ body {
 .skylent-public-canvas main [style*="background: rgba(255, 255, 255"],
 .skylent-public-canvas main [style*="background: rgba(255,255,255"] { background: #FFFDFC !important; }
 .skylent-light-atmosphere { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.62), transparent 38%); }
+.program-sticky-nav-scroll { scrollbar-width: none; }
+.program-sticky-nav-scroll::-webkit-scrollbar { display: none; }
+.program-sticky-nav-scroll > * { transition: color .18s, background .18s; }
+.program-pricing-wrap { scrollbar-width: thin; scrollbar-color: rgba(8,9,9,.2) transparent; }
 
 /* Light product system */
 .home-redesign { background: #F6F4EE; color: #080909; }
