@@ -273,7 +273,7 @@ function EducationJourney({ accent }: { accent: Accent }) {
     { label: 'Schooling', sub: 'Grades 1–12 · NCERT', theme: accent },
     { label: 'Undergraduate', sub: 'Degree · semesters', theme: ugAccent },
     { label: 'Postgraduate', sub: 'Specialisation', theme: pgAccent },
-    { label: 'Exams', sub: 'JEE · NEET · CAT', theme: examAccent },
+    { label: 'Exams', sub: 'JEE · CAT', theme: examAccent },
   ]
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
@@ -553,7 +553,30 @@ function NeetLab({ accent }: { accent: Accent }) {
 }
 
 function MbaCase({ accent }: { accent: Accent }) {
-  return <CatExamInterface accent={accent} />
+  return (
+    <div>
+      <div style={{ fontSize: 10, color: accent.text, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>Case · Product decision</div>
+      <div style={{ fontSize: 11, color: C.white, lineHeight: 1.55, marginBottom: 10 }}>Ship freemium this quarter, or hold for enterprise?</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 10 }}>
+        <div style={{ padding: 8, background: 'rgba(255,255,255,0.03)', borderRadius: 6, fontSize: 9 }}>
+          <div style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 4 }}>Discovery</div>
+          <div style={{ fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.5)' }}>Jobs · segments · risk</div>
+        </div>
+        <div style={{ padding: 8, background: accent.subtle, borderRadius: 6, fontSize: 9, color: accent.text }}>
+          <div style={{ marginBottom: 4 }}>Decision memo</div>
+          <div>Hold · expand sales</div>
+        </div>
+      </div>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        {['Metrics', 'Roadmap', 'Stakeholder'].map(tag => (
+          <span key={tag} style={{
+            fontSize: 9, fontFamily: 'var(--font-mono)', padding: '3px 8px', borderRadius: 4,
+            background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, color: 'rgba(255,255,255,0.45)',
+          }}>{tag}</span>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 function CampaignFunnel({ accent }: { accent: Accent }) {
@@ -622,7 +645,7 @@ const VISUAL_LABELS: Record<ProductVisualId, string> = {
   'institution-ops': 'Institution · operations',
   'skills-ladder': 'Skills · progression',
   'neet-lab': 'NEET · biology lab',
-  'mba-case': 'CAT/MBA · case study',
+  'mba-case': 'Product · decision case',
   'campaign-funnel': 'Marketing · campaign funnel',
   'curriculum-map': 'UG · curriculum map',
   'curriculum-rail': 'Curriculum · module rail',
@@ -672,8 +695,9 @@ export function resolveProgramVisualId(slug: string, programType?: ProgramType):
   if (slug === 'data-science-ai' || slug === 'generative-ai-program') return 'data-workspace'
   if (slug === 'data-analytics-pro' || slug === 'sql-certificate') return 'analytics-workspace'
   if (slug === 'full-stack' || slug === 'full-stack-web') return 'fullstack-workspace'
+  if (slug === 'product-management') return 'mba-case'
   if (slug.includes('neet')) return 'neet-exam'
-  if (slug.includes('cat') || slug === 'product-management') return 'cat-exam'
+  if (slug.includes('cat')) return 'cat-exam'
   if (slug.includes('jee')) return 'jee-exam'
   if (programType === 'EXAM_PREP') return 'jee-exam'
   if (slug.includes('marketing') || slug.includes('digital')) return 'campaign-funnel'

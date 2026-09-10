@@ -350,7 +350,7 @@ export const programs: Program[] = [
     faqs: [
       { q: 'Do I need prior programming experience?', a: 'A basic familiarity with any programming language helps, but we begin from Python fundamentals. Learners from engineering, mathematics, or science backgrounds adapt well.' },
       { q: 'How many hours per week does this require?', a: 'Plan for 10–15 hours per week — including live sessions, recorded modules, assignments, and project work.' },
-      { q: 'Is Career OS included?', a: 'Yes. Completing a Professional Program grants full Career OS access: interview preparation, curated job board, and placement support.' },
+      { q: 'Is Career OS included?', a: 'Yes. Completing a Professional Program grants full Career OS access: interview preparation, curated job board, and application tracking.' },
       { q: 'What if I miss a live session?', a: 'All live sessions are recorded and available within 24 hours. You can submit doubts asynchronously and get responses from the faculty team.' },
       { q: 'What certification do I receive?', a: 'A Skylent Industry Certificate on completing the program and passing the final assessment. The credential includes a verifiable credential ID.' },
     ],
@@ -418,7 +418,7 @@ export const programs: Program[] = [
       { q: 'Do I need a technical background?', a: 'No. This program is specifically designed for non-technical learners. We start from Excel and build up through SQL, Python, and Power BI step by step.' },
       { q: 'Is this suitable for working professionals?', a: 'Yes. The format combines recorded content and weekly live sessions so you can pace learning around your schedule.' },
       { q: 'What jobs does this program prepare me for?', a: 'Common roles include Data Analyst, Business Analyst, BI Analyst, and Reporting Analyst across industries like e-commerce, banking, consulting, and operations.' },
-      { q: 'Is Career OS included?', a: 'Yes. Completing a Professional Program grants full Career OS access: interview preparation, curated job board, and placement support.' },
+      { q: 'Is Career OS included?', a: 'Yes. Completing a Professional Program grants full Career OS access: interview preparation, curated job board, and application tracking.' },
     ],
     pricing: [
       { name: 'Self-paced', price: 19999, originalPrice: 39999, features: ['All recorded content', '14 modules', 'Self-paced projects', 'Skylent certificate', 'Community access'] },

@@ -88,7 +88,7 @@ const institutionTypes = [
     problem: 'Tests end at a score. Learners need a path after the result.',
     value: 'Question banks, tests, attempts, scoring, and analytics — linked to learning, not stranded.',
     workflow: ['Question banks', 'Tests', 'Attempts', 'Scoring', 'Analytics'],
-    description: 'Connect examination infrastructure to continuous learning and, where relevant, exam-prep products (JEE, NEET, CAT).',
+    description: 'Connect examination infrastructure to continuous learning and, where relevant, catalogue exam-prep products (JEE, CAT).',
     offers: [
       'Assessment technology integration',
       'Analytics on attempts and scoring',

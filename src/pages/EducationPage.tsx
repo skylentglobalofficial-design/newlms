@@ -9,37 +9,26 @@ import { getDomainAccent } from '../aurora-themes'
 import { programs } from '../data'
 import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
 
-// ─── EXAM DATA (preserved) ────────────────────────────────────────────────────
+// ─── EXAM DATA (preserved for catalogue-backed exams only) ────────────────────
 
-const JEE_NEET_EXAMS = [
-  {
-    name: 'JEE',
-    full: 'Joint Entrance Examination',
-    target: 'IITs · NITs · Top Engineering',
-    subjects: [
-      { name: 'Physics', color: '#60a5fa', topics: ['Mechanics', 'Electromagnetism', 'Optics', 'Modern Physics'] },
-      { name: 'Chemistry', color: '#34d399', topics: ['Organic', 'Inorganic', 'Physical Chemistry'] },
-      { name: 'Mathematics', color: '#f59e0b', topics: ['Calculus', 'Algebra', 'Coordinate Geometry', 'Trigonometry'] },
-    ],
-    features: ['Question Bank', 'Full mock tests', 'Performance analytics', 'Doubt support'],
-  },
-  {
-    name: 'NEET',
-    full: 'National Eligibility cum Entrance Test',
-    target: 'MBBS · BDS · Allied Health',
-    subjects: [
-      { name: 'Biology', color: '#4ade80', topics: ['Botany', 'Zoology', 'Genetics', 'Ecology'] },
-      { name: 'Chemistry', color: '#34d399', topics: ['Organic', 'Inorganic', 'Physical Chemistry'] },
-      { name: 'Physics', color: '#60a5fa', topics: ['Mechanics', 'Electromagnetism', 'Optics'] },
-    ],
-    features: ['NCERT-aligned content', 'Topic-level practice', 'Mock tests', 'Concept clarity'],
-  },
-]
+const JEE_EXAM = {
+  name: 'JEE',
+  full: 'Joint Entrance Examination',
+  target: 'IITs · NITs · Top Engineering',
+  programSlug: 'jee-advanced-prep',
+  subjects: [
+    { name: 'Physics', color: '#60a5fa', topics: ['Mechanics', 'Electromagnetism', 'Optics', 'Modern Physics'] },
+    { name: 'Chemistry', color: '#34d399', topics: ['Organic', 'Inorganic', 'Physical Chemistry'] },
+    { name: 'Mathematics', color: '#f59e0b', topics: ['Calculus', 'Algebra', 'Coordinate Geometry', 'Trigonometry'] },
+  ],
+  features: ['Question Bank', 'Full mock tests', 'Performance analytics', 'Doubt support'],
+}
 
 const CAT_SECTION = {
   name: 'CAT',
   full: 'Common Admission Test',
   target: 'IIMs · Top B-Schools',
+  programSlug: 'cat-prep',
   sections: [
     { label: 'Verbal Ability & Reading Comprehension', abbr: 'VARC', weight: '34%', color: '#a78bfa' },
     { label: 'Data Interpretation & Logical Reasoning', abbr: 'DILR', weight: '33%', color: '#f59e0b' },
@@ -48,7 +37,8 @@ const CAT_SECTION = {
   features: ['Sectional practice', 'Speed & accuracy drills', 'Mock CATs with analysis', 'Score predictor'],
 }
 
-const OTHER_EXAMS = ['CUET', 'CLAT', 'GMAT', 'GRE', 'UPSC', 'Bank PO']
+/** Exams without a verified catalogue programme — do not market as available. */
+const OTHER_EXAMS = ['NEET', 'CUET', 'CLAT', 'GMAT', 'GRE', 'UPSC', 'Bank PO']
 
 const EXAM_PROGRAMS = programs.filter(p => p.programType === 'EXAM_PREP')
 const FEATURED_PROGRAM = EXAM_PROGRAMS.find(p => p.slug === 'jee-advanced-prep') ?? EXAM_PROGRAMS[0]
@@ -60,7 +50,7 @@ const EDUCATION_NAV_ITEMS: ContextualNavItem[] = [
   { id: 'schooling', label: 'Schooling', sub: 'Grades 1–12' },
   { id: 'undergraduate', label: 'Undergraduate', sub: 'Degree-aligned' },
   { id: 'postgraduate', label: 'Postgraduate', sub: 'Specialisation' },
-  { id: 'competitive-exams', label: 'Competitive Exams', sub: 'JEE · NEET · CAT' },
+  { id: 'competitive-exams', label: 'Competitive Exams', sub: 'JEE · CAT' },
 ]
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
@@ -676,27 +666,19 @@ function CompetitiveExamsSection() {
       </FadeIn>
 
       <div style={{ marginBottom: 32 }}>
-        <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 20 }}>Engineering & medical — subject-oriented</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(20px,3vw,32px)' }} className="two-col">
-          {JEE_NEET_EXAMS.map((exam, ei) => (
-            <FadeIn key={exam.name} delay={ei * 70}>
-              <div style={{ padding: '28px 0', borderTop: `1px solid ${T.lineDark}` }}>
+        <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 20 }}>Engineering entrance — subject-oriented</div>
+        <FadeIn>
+          <div style={{ padding: '28px 0', borderTop: `1px solid ${T.lineDark}` }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(20px,3vw,32px)', alignItems: 'start' }} className="two-col">
+              <div>
                 <div style={{ marginBottom: 20 }}>
-                  <div className="skylent-display-sm" style={{ color: C.white, margin: '0 0 4px' }}>{exam.name}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{exam.full}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)', marginTop: 6 }}>{exam.target}</div>
-                </div>
-
-                <div style={{ marginBottom: 20, minHeight: 220 }}>
-                  <ProductVisual
-                    id={exam.name === 'JEE' ? 'jee-exam' : 'neet-exam'}
-                    themeId={exam.name === 'JEE' ? 'jee' : 'neet'}
-                    style={{ minHeight: 220 }}
-                  />
+                  <div className="skylent-display-sm" style={{ color: C.white, margin: '0 0 4px' }}>{JEE_EXAM.name}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{JEE_EXAM.full}</div>
+                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)', marginTop: 6 }}>{JEE_EXAM.target}</div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                  {exam.subjects.map(({ name, color, topics }) => (
+                  {JEE_EXAM.subjects.map(({ name, color, topics }) => (
                     <div key={name} style={{ padding: '14px 0', borderBottom: `1px solid ${T.lineDark}` }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                         <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0 }} />
@@ -711,18 +693,25 @@ function CompetitiveExamsSection() {
                   ))}
                 </div>
 
-                <div style={{ paddingTop: 16, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
-                  {exam.features.map(f => (
+                <div style={{ paddingTop: 16, display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 20 }}>
+                  {JEE_EXAM.features.map(f => (
                     <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, opacity: 0.7 }} />
                       {f}
                     </span>
                   ))}
                 </div>
+                <Button variant="secondary" onClick={() => navigate(`/programs/${JEE_EXAM.programSlug}`)}>
+                  View JEE programme →
+                </Button>
               </div>
-            </FadeIn>
-          ))}
-        </div>
+
+              <div style={{ minHeight: 220 }}>
+                <ProductVisual id="jee-exam" themeId="jee" style={{ minHeight: 220 }} />
+              </div>
+            </div>
+          </div>
+        </FadeIn>
       </div>
 
       <FadeIn delay={100}>
@@ -733,7 +722,7 @@ function CompetitiveExamsSection() {
               <div className="skylent-display-md" style={{ color: C.white, margin: '0 0 4px', fontSize: 'clamp(36px,4vw,48px)' }}>CAT</div>
               <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{CAT_SECTION.full}</div>
               <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)', marginBottom: 16 }}>{CAT_SECTION.target}</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 16 }}>
                 {CAT_SECTION.features.map(f => (
                   <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, opacity: 0.7 }} />
@@ -741,6 +730,9 @@ function CompetitiveExamsSection() {
                   </span>
                 ))}
               </div>
+              <Button variant="secondary" onClick={() => navigate(`/programs/${CAT_SECTION.programSlug}`)}>
+                View CAT programme →
+              </Button>
             </div>
 
             <div>
@@ -879,7 +871,7 @@ function ValueSection() {
               {[
                 { name: 'Education', desc: 'Academic foundations across all levels', to: '/education', current: true },
                 { name: 'Skills', desc: 'Practical, credentialed upskilling', to: '/skills' },
-                { name: 'Career OS', desc: 'Interview prep, jobs, placement support', to: '/career-os' },
+                { name: 'Career OS', desc: 'Profile, jobs, and applications', to: '/career-os' },
               ].map(({ name, desc, to, current }, i) => (
                 <button
                   key={name}
