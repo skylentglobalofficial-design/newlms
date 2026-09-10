@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
@@ -6,15 +6,6 @@ import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
 import { fetchOrganisationDashboard, type OrganisationDashboard } from '../lib/organisation-api'
 import { ProductVisual } from '../components/product/ProductVisuals'
-
-const ACADEMIC_PIPELINE = [
-  { id: 'program', label: 'Program', detail: 'Data Science & AI', status: 'complete' as const },
-  { id: 'offering', label: 'Offering', detail: 'Cohort 12', status: 'complete' as const },
-  { id: 'batch', label: 'Batch', detail: 'Batch 12', status: 'current' as const },
-  { id: 'curriculum', label: 'Curriculum', detail: 'SQL for Analysis', status: 'upcoming' as const },
-  { id: 'modules', label: 'Modules', detail: 'Module 3 of 18', status: 'upcoming' as const },
-  { id: 'assessments', label: 'Assessments', detail: 'SQL Module Quiz', status: 'upcoming' as const },
-]
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'org-overview' },
@@ -30,6 +21,22 @@ const NAV_ITEMS: AuthNavItem[] = [
 ]
 
 const accent = getRoleAccent('organisation')
+
+function NeutralNote({ children }: { children: ReactNode }) {
+  return (
+    <div style={{
+      padding: '14px 16px',
+      background: 'rgba(11,13,15,0.02)',
+      border: `1px solid ${T.lineLight}`,
+      borderRadius: T.rCard,
+      color: C.slate,
+      fontSize: 13,
+      lineHeight: 1.6,
+    }}>
+      {children}
+    </div>
+  )
+}
 
 // ─── NAV ICONS ────────────────────────────────────────────────────────────────
 
@@ -95,67 +102,25 @@ function InstitutionWorkspace({
   )
 }
 
-// ─── ACADEMIC PIPELINE (Level 0 — canvas timeline) ────────────────────────────
+// ─── ACADEMIC PIPELINE (Level 0 — honest empty until API provides steps) ───────
 
-function AcademicPipeline() {
+function AcademicPipeline({
+  batchMessage,
+  catalogScopeMessage,
+}: {
+  batchMessage: string
+  catalogScopeMessage?: string | null
+}) {
   return (
     <div id="org-curriculum" className="org-section org-curriculum-section" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
       <div className="skylent-label" style={{ color: C.slate, marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Curriculum operations
       </div>
-      <div className="org-academic-pipeline" style={{ width: '100%', maxWidth: '100%' }}>
-        {ACADEMIC_PIPELINE.map((node, i) => {
-          const isCurrent = node.status === 'current'
-          const isComplete = node.status === 'complete'
-          return (
-            <div key={node.id} className="org-pipeline-node" style={{ display: 'flex', alignItems: 'center', flex: i < ACADEMIC_PIPELINE.length - 1 ? '1 1 0' : '0 0 auto', minWidth: 0 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, minWidth: 0 }}>
-                <div style={{
-                  width: isCurrent ? 32 : 24,
-                  height: isCurrent ? 32 : 24,
-                  borderRadius: '50%',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: isCurrent ? accent.subtleStrong : isComplete ? 'rgba(11,13,15,0.06)' : 'rgba(11,13,15,0.03)',
-                  border: `1.5px solid ${isCurrent ? accent.border : isComplete ? accent.border : T.lineLight}`,
-                }}>
-                  {isComplete ? (
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={accent.text} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  ) : isCurrent ? (
-                    <div style={{ width: 7, height: 7, borderRadius: '50%', background: accent.primary }} />
-                  ) : (
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(11,13,15,0.12)' }} />
-                  )}
-                </div>
-                <span style={{
-                  fontSize: isCurrent ? 11 : 10,
-                  fontWeight: isCurrent ? 600 : 400,
-                  color: isCurrent ? C.ink : C.slate,
-                  textAlign: 'center',
-                }}>
-                  {node.label}
-                </span>
-                <span style={{
-                  fontSize: 9,
-                  color: isCurrent ? accent.textMuted : C.slate,
-                  textAlign: 'center',
-                  maxWidth: 72,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}>
-                  {node.detail}
-                </span>
-              </div>
-              {i < ACADEMIC_PIPELINE.length - 1 && (
-                <div className="org-pipeline-connector" style={{
-                  flex: 1, height: 1, minWidth: 6, margin: '0 3px 28px',
-                  background: isComplete ? `linear-gradient(90deg, ${accent.primary}66, ${T.lineLight})` : T.lineLight,
-                }} />
-              )}
-            </div>
-          )
-        })}
-      </div>
+      <NeutralNote>
+        Program → offering → batch → curriculum pipeline steps are not available from the organisation workspace yet.
+        {' '}{batchMessage}
+        {catalogScopeMessage ? ` ${catalogScopeMessage}` : ''}
+      </NeutralNote>
     </div>
   )
 }
@@ -350,7 +315,10 @@ export default function DashboardOrgPage() {
               batchMessage={batchMessage}
             />
 
-            <AcademicPipeline />
+            <AcademicPipeline
+              batchMessage={batchMessage}
+              catalogScopeMessage={dashboard?.catalogScopeMessage}
+            />
 
             <div className="org-two-col" style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 'clamp(16px, 2vw, 24px)', marginTop: 'clamp(28px, 4vw, 40px)' }}>
               <ProgramOperations programs={programs} />
