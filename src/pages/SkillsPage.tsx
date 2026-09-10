@@ -5,6 +5,7 @@ import { programs, workshops } from '../data'
 import SkillsCapabilityHero from '../components/skills/SkillsCapabilityHero'
 import SkillsCapabilityDiscovery from '../components/skills/SkillsCapabilityDiscovery'
 import SkillsPracticeExperience from '../components/skills/SkillsPracticeExperience'
+import SkillsBuildPreview from '../components/skills/SkillsBuildPreview'
 
 const PROFESSIONAL = programs.filter(p => p.programType === 'PROFESSIONAL')
 const CERTIFICATES = programs.filter(p => p.programType === 'CERTIFICATE')
@@ -45,7 +46,9 @@ export default function SkillsPage() {
 
         <SkillsPracticeExperience />
 
-        {/* Residual later scrolls — untouched until Phase 2 Scroll 4+ */}
+        <SkillsBuildPreview />
+
+        {/* Residual later scrolls — untouched until Phase 2 Scroll 5+ */}
         <section className="skills-v2-section skills-v2-section--cream" aria-labelledby="skills-map-heading">
           <div className="skills-v2-inner">
             <header className="skills-v2-copy">

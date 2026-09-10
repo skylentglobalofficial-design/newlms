@@ -3588,6 +3588,331 @@ html, body {
   }
 }
 
+/* Skills Scroll 4 — build preview */
+.skills-scroll4 {
+  padding: clamp(72px, 10vw, 120px) var(--gutter);
+  background: #fffdfa;
+  border-bottom: 1px solid rgba(8,9,9,.1);
+}
+.skills-scroll4-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr);
+  gap: clamp(28px, 5vw, 56px);
+  align-items: start;
+}
+.skills-scroll4-copy { max-width: 34ch; }
+.skills-scroll4-copy h2 {
+  margin: 18px 0 0;
+  font-size: clamp(32px, 4.4vw, 50px);
+  line-height: 1.05;
+  letter-spacing: -.04em;
+  font-weight: 600;
+  color: #080909;
+}
+.skills-scroll4-copy h2 em {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+}
+.skills-scroll4-copy > p {
+  margin: 14px 0 0;
+  color: #5f6866;
+  font-size: clamp(15px, 1.4vw, 16px);
+  line-height: 1.55;
+}
+.skills-scroll4-domains {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: clamp(24px, 3vw, 32px);
+  border-top: 1px solid rgba(8,9,9,.12);
+}
+.skills-scroll4-domains button {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 10px;
+  align-items: center;
+  min-height: 48px;
+  padding: 10px 0;
+  border: none;
+  border-bottom: 1px solid rgba(8,9,9,.1);
+  background: transparent;
+  color: #5f6866;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.skills-scroll4-domains button span {
+  color: #a0a8a4;
+  font: 10px var(--font-mono);
+  letter-spacing: .06em;
+}
+.skills-scroll4-domains button.is-active {
+  color: #080909;
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 #080909;
+  padding-left: 10px;
+}
+.skills-scroll4-domains button.is-active span { color: #080909; }
+.skills-scroll4-domains button:hover { color: #080909; }
+.skills-scroll4-domains button:focus-visible {
+  outline: 2px solid #2f73be;
+  outline-offset: 2px;
+}
+.skills-scroll4-meta {
+  display: grid;
+  gap: 4px;
+  margin-top: 22px;
+}
+.skills-scroll4-meta span {
+  color: #7a837e;
+  font: 10px var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.skills-scroll4-meta strong {
+  color: #080909;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.skills-scroll4-panel {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.skills-scroll4-stages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.skills-scroll4-stages button {
+  display: grid;
+  gap: 4px;
+  min-height: 72px;
+  padding: 12px 12px 14px;
+  border: 1px solid rgba(8,9,9,.12);
+  border-radius: 8px;
+  background: #fff;
+  color: #5f6866;
+  text-align: left;
+  cursor: pointer;
+}
+.skills-scroll4-stages button span {
+  color: #a0a8a4;
+  font: 10px var(--font-mono);
+  letter-spacing: .08em;
+}
+.skills-scroll4-stages button strong {
+  color: #080909;
+  font-size: 14px;
+  font-weight: 600;
+}
+.skills-scroll4-stages button em {
+  color: #7a837e;
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1.35;
+}
+.skills-scroll4-stages button.is-active {
+  background: #171b1f;
+  border-color: #171b1f;
+  color: rgba(255,255,255,.7);
+}
+.skills-scroll4-stages button.is-active span { color: #9fd0ff; }
+.skills-scroll4-stages button.is-active strong { color: #fff; }
+.skills-scroll4-stages button.is-active em { color: rgba(255,255,255,.55); }
+.skills-scroll4-stages button:hover:not(.is-active) {
+  border-color: rgba(8,9,9,.28);
+}
+.skills-scroll4-stages button:focus-visible {
+  outline: 2px solid #2f73be;
+  outline-offset: 2px;
+}
+.skills-scroll4-artifact {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 340px;
+  padding: clamp(22px, 3vw, 32px);
+  border: 1px solid rgba(8,9,9,.12);
+  border-radius: 10px;
+  background: #f6f4ee;
+}
+.skills-scroll4-artifact--code {
+  background: #171b1f;
+  border-color: #171b1f;
+  color: #fff;
+}
+.skills-scroll4-artifact--memo {
+  background: #fff;
+}
+.skills-scroll4-artifact-head {
+  display: grid;
+  gap: 8px;
+}
+.skills-scroll4-artifact-head span {
+  color: #7a837e;
+  font: 600 10px var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.skills-scroll4-artifact--code .skills-scroll4-artifact-head span { color: #9fd0ff; }
+.skills-scroll4-artifact-head h3 {
+  margin: 0;
+  font-size: clamp(22px, 2.4vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -.025em;
+  font-weight: 600;
+}
+.skills-scroll4-lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+.skills-scroll4-lines li {
+  position: relative;
+  padding-left: 14px;
+  color: #2c3331;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.skills-scroll4-lines li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: .55em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #080909;
+}
+.skills-scroll4-lines--memo li {
+  padding: 12px 14px 12px 14px;
+  border-left: 2px solid rgba(8,9,9,.16);
+  background: #f6f4ee;
+}
+.skills-scroll4-lines--memo li::before { display: none; }
+.skills-scroll4-code {
+  margin: 0;
+  padding: 16px;
+  overflow-x: auto;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+  background: #0f1215;
+  color: #d7e0dc;
+  font: 12.5px/1.55 var(--font-mono);
+  white-space: pre;
+}
+.skills-scroll4-callout {
+  margin: 0;
+  padding-top: 4px;
+  color: #5f6866;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.skills-scroll4-artifact--code .skills-scroll4-callout {
+  color: rgba(255,255,255,.55);
+}
+.skills-scroll4-artifact-foot {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(8,9,9,.1);
+}
+.skills-scroll4-artifact--code .skills-scroll4-artifact-foot {
+  border-top-color: rgba(255,255,255,.12);
+}
+.skills-scroll4-artifact-foot p {
+  margin: 0;
+  color: #7a837e;
+  font: 11px var(--font-mono);
+  letter-spacing: .02em;
+}
+.skills-scroll4-artifact--code .skills-scroll4-artifact-foot p {
+  color: rgba(255,255,255,.45);
+}
+.skills-scroll4-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 4px;
+}
+.skills-scroll4-cta > div {
+  display: grid;
+  gap: 2px;
+}
+.skills-scroll4-cta span {
+  color: #7a837e;
+  font: 10px var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.skills-scroll4-cta strong {
+  color: #080909;
+  font-size: 14px;
+  font-weight: 600;
+}
+@media (max-width: 980px) {
+  .skills-scroll4-inner {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .skills-scroll4-domains {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-top: none;
+    gap: 8px;
+  }
+  .skills-scroll4-domains button {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    min-height: 52px;
+    padding: 10px 12px;
+    border: 1px solid rgba(8,9,9,.12);
+    border-radius: 8px;
+    border-bottom: 1px solid rgba(8,9,9,.12);
+  }
+  .skills-scroll4-domains button.is-active {
+    background: #080909;
+    color: #fff;
+    border-color: #080909;
+    box-shadow: none;
+    padding-left: 12px;
+  }
+  .skills-scroll4-domains button.is-active span { color: #9fd0ff; }
+}
+@media (max-width: 720px) {
+  .skills-scroll4-stages { grid-template-columns: 1fr; }
+  .skills-scroll4-stages button em { display: none; }
+  .skills-scroll4-stages button {
+    grid-template-columns: 28px auto;
+    align-items: center;
+    min-height: 48px;
+    gap: 8px 10px;
+  }
+  .skills-scroll4-stages button strong { grid-column: 2; }
+  .skills-scroll4-artifact { min-height: 0; }
+  .skills-scroll4-code { font-size: 11.5px; white-space: pre-wrap; overflow-wrap: anywhere; }
+}
+@media (max-width: 560px) {
+  .skills-scroll4-domains { grid-template-columns: 1fr; }
+  .skills-scroll4-cta { flex-direction: column; align-items: stretch; }
+  .skills-scroll4-cta .home-primary-button { width: 100%; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skills-scroll4-domains button,
+  .skills-scroll4-stages button {
+    transition: none;
+  }
+}
+
 /* Skills vertical V2 */
 .skills-v2 { background: #fffdfa; color: #080909; }
 .skills-v2-hero {
