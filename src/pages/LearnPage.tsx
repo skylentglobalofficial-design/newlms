@@ -1,5 +1,5 @@
 import { useState, useEffect, useId, useMemo } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
 import { getLmsRoleAccent } from '../role-themes'
@@ -43,6 +43,7 @@ function dashRoute(role?: string) {
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, ready: authReady } = useAuth()
   const { access, lessonStates, enroll, patchWorkspace } = useLmsCourse(slug)
   const roleAccent = getLmsRoleAccent(user?.role)
@@ -71,10 +72,14 @@ export default function LearnPage() {
   }, [firstLessonId, lessonId, access.status])
 
   useEffect(() => {
-    if (selectedLessonId && slug && access.status === 'ready') {
-      navigate(`/learn/${slug}/${selectedLessonId}`, { replace: true })
+    if (!selectedLessonId || !slug || access.status !== 'ready') return
+    // Do not override the Practice route if this page remains mounted during navigation.
+    if (location.pathname.endsWith('/practice')) return
+    const target = `/learn/${slug}/${selectedLessonId}`
+    if (location.pathname !== target) {
+      navigate(target, { replace: true })
     }
-  }, [selectedLessonId, slug, navigate, access.status])
+  }, [selectedLessonId, slug, navigate, access.status, location.pathname])
 
   useEffect(() => {
     if (lessonId && allLessons.some((lesson) => lesson.id === lessonId)) {
