@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PageShell } from '../components/shared'
 import SkylentGatewayHero from '../components/home/SkylentGatewayHero'
-import LearnToProofStory from '../components/home/LearnToProofStory'
+import LearningEngineStory from '../components/home/LearningEngineStory'
 
 const domains = [
   { label: 'NEET / MBBS', copy: 'Anatomy, clinical reasoning and exam practice.', accent: '#168C83', scene: 'biology', to: '/education#competitive-exams' },
@@ -129,7 +129,7 @@ export default function HomePage() {
       <main className="home-redesign">
         <SkylentGatewayHero />
 
-        <LearnToProofStory />
+        <LearningEngineStory />
 
         <section className="home-journey-band">
           <div className="home-journey-inner">
