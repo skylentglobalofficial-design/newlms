@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { getAuroraTheme, getDomainAccent, resolveAuroraTheme, type AuroraThemeId } from '../aurora-themes'
 import { C, T, glass, type GlassLevel } from '../tokens'
 import { parseSkylentVisualRef, isSkylentVisualRef } from '../media'
-import { ProductVisual } from './product/ProductVisuals'
+import type { ProductVisualId } from './product/ProductVisuals'
+
+const ProductVisual = lazy(() =>
+  import('./product/ProductVisuals').then(m => ({ default: m.ProductVisual })),
+)
 
 // ─── Aurora ───────────────────────────────────────────────────────────────────
 // Lightweight CSS radial gradients — atmospheric, low-cost, readable.
@@ -222,7 +226,21 @@ export function MediaImage({
     >
       {visualId ? (
         <div className="skylent-product-visual-frame" style={{ width: '100%', height: '100%', minHeight: 0 }}>
-          <ProductVisual id={visualId} themeId={resolvedTheme} style={{ height: '100%' }} />
+          <Suspense
+            fallback={
+              <div
+                aria-hidden
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  minHeight: 120,
+                  background: 'rgba(8,9,9,0.04)',
+                }}
+              />
+            }
+          >
+            <ProductVisual id={visualId as ProductVisualId} themeId={resolvedTheme} style={{ height: '100%' }} />
+          </Suspense>
         </div>
       ) : (
         <img

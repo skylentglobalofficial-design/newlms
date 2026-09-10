@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'
 import { useLmsDashboard } from '../hooks/useLms'
 import { enrollInCourse } from '../lib/lms-api'
 import { getRecentActivity } from '../components/lms'
+import '../styles/lms-workspace.css'
 import {
   LearnerContextPanel,
   LearnerContinueAction,

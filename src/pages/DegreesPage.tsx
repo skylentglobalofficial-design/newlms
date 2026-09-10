@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { PageShell } from '../components/shared'
 import { programs } from '../data'
+import '../styles/degrees-surface.css'
 
 const UNDERGRAD = programs.filter(p => p.programType === 'UNDERGRADUATE')
 const POSTGRAD = programs.filter(p => p.programType === 'POSTGRADUATE')

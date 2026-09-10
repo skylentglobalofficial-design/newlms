@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { PageShell } from '../components/shared'
 import { programs } from '../data'
+import '../styles/exams-surface.css'
 
 const EXAM_PROGRAMS = programs.filter(p => p.programType === 'EXAM_PREP')
 const FEATURED = EXAM_PROGRAMS.find(p => p.slug === 'jee-advanced-prep') ?? EXAM_PROGRAMS[0]
