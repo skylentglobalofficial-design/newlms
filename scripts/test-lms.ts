@@ -235,6 +235,39 @@ async function main() {
   assert(attempt.response.status === 201, "Quiz attempt should persist")
   assert(attempt.data.data.passed === true, "Correct answers should pass quiz")
 
+  console.log("12b. Lesson practice content loads for Foundations mindset lesson")
+  const practice = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l2/practice`)
+  assert(practice.response.ok, `Practice should load for unlocked l2: ${JSON.stringify(practice.data)}`)
+  assert(practice.data.data.interactionType === "choose", "Practice interaction must be choose")
+  assert(practice.data.data.lessonKey === "l2", "Practice lessonKey must be l2")
+  assert(practice.data.data.moduleTitle === "Foundations of Data", "Practice must keep module context")
+  assert(Array.isArray(practice.data.data.options) && practice.data.data.options.length === 3, "Practice must include three options")
+  assert(
+    practice.data.data.options.every((o: { teachingFeedback?: string }) => typeof o.teachingFeedback === "string" && o.teachingFeedback.length > 20),
+    "Every option must include teaching feedback",
+  )
+  assert(practice.data.data.preferredOptionKey === "clarify-question", "Preferred option must match seeded key")
+  assert(!/Correct!|Wrong!|Good job!/i.test(JSON.stringify(practice.data.data)), "Feedback must not be Correct/Wrong theatre")
+
+  const missingPractice = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l1/practice`)
+  assert(missingPractice.response.status === 404, "Lessons without Practice content return 404")
+
+  const workspaceFlags = await request(userAJar, `/lms/courses/${courseSlug}`)
+  const l2Lesson = workspaceFlags.data.data.course.modules
+    .flatMap((m: { lessons: Array<{ id: string; hasPractice?: boolean }> }) => m.lessons)
+    .find((l: { id: string }) => l.id === "l2")
+  assert(l2Lesson?.hasPractice === true, "Workspace lesson l2 should advertise hasPractice")
+  const l1Lesson = workspaceFlags.data.data.course.modules
+    .flatMap((m: { lessons: Array<{ id: string; hasPractice?: boolean }> }) => m.lessons)
+    .find((l: { id: string }) => l.id === "l1")
+  assert(l1Lesson?.hasPractice === false, "Workspace lesson l1 should not claim Practice")
+
+  const anonPractice = await request(anonJar, `/lms/courses/${courseSlug}/lessons/l2/practice`)
+  assert(anonPractice.response.status === 401, "Unauthenticated practice access must be rejected")
+
+  const blockedPractice = await request(userBJar, `/lms/courses/${courseSlug}/lessons/l2/practice`)
+  assert(blockedPractice.response.status === 403, "Non-enrolled user cannot load Practice")
+
   console.log("13. Assignment state persists with optional attachment metadata")
   await completeLesson(userAJar, courseSlug, "l5")
   const assignmentSubmit = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {

@@ -19,6 +19,7 @@ export type FormattedLesson = {
   duration?: string
   locked?: boolean
   requiredLessonKey?: string | null
+  hasPractice?: boolean
   media?: {
     provider: "mux" | "unavailable"
     playbackId?: string
@@ -80,14 +81,21 @@ export type ResumePayload = {
 }
 
 type CourseWithCurriculum = Course & {
-  curriculum: (CurriculumModule & { nodes: CurriculumNode[] })[]
+  curriculum: (CurriculumModule & {
+    nodes: (CurriculumNode & { lessonPractice?: { id: string } | null })[]
+  })[]
 }
 
 const courseInclude = {
   curriculum: {
     orderBy: { order: "asc" as const },
     include: {
-      nodes: { orderBy: { order: "asc" as const } },
+      nodes: {
+        orderBy: { order: "asc" as const },
+        include: {
+          lessonPractice: { select: { id: true } },
+        },
+      },
     },
   },
 }
@@ -127,6 +135,7 @@ export function formatCourseModules(
         duration: node.duration ?? undefined,
         locked: state?.locked ?? false,
         requiredLessonKey: state?.requiredLessonKey ?? null,
+        hasPractice: Boolean(node.lessonPractice),
         media,
       }
     }),

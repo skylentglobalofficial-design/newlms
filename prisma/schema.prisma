@@ -40,6 +40,10 @@ enum CurriculumNodeType {
   TOPIC
 }
 
+enum PracticeInteractionType {
+  choose
+}
+
 enum UserEnrollmentStatus {
   active
   completed
@@ -369,10 +373,41 @@ model CurriculumNode {
   quizQuestions         QuizQuestion[]
   quizAttempts          QuizAttempt[]
   assignmentProgress    AssignmentProgress[]
+  lessonPractice        LessonPractice?
   lastAccessedEnrollments UserEnrollment[]   @relation("LastAccessedNode")
 
   @@unique([moduleId, sourceId])
   @@index([moduleId, order])
+}
+
+/// Lesson-scoped Practice content for LMS Phase 3 (content foundation).
+/// One optional Practice object per curriculum node. Not a quiz engine.
+model LessonPractice {
+  id                 String                  @id @default(uuid()) @db.Uuid
+  nodeId             String                  @unique @db.Uuid
+  interactionType    PracticeInteractionType @default(choose)
+  context            String                  @db.Text
+  task               String                  @db.Text
+  preferredOptionKey String
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
+
+  node    CurriculumNode          @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  options LessonPracticeOption[]
+}
+
+model LessonPracticeOption {
+  id               String @id @default(uuid()) @db.Uuid
+  practiceId       String @db.Uuid
+  optionKey        String
+  sortOrder        Int
+  label            String
+  teachingFeedback String @db.Text
+
+  practice LessonPractice @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+
+  @@unique([practiceId, optionKey])
+  @@index([practiceId, sortOrder])
 }
 
 model UserEnrollment {

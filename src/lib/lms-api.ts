@@ -25,6 +25,7 @@ export type ApiCourseLesson = {
   title: string
   type: string | null
   duration?: string
+  hasPractice?: boolean
   media?: { provider: "mux" | "unavailable"; playbackId?: string }
 }
 
@@ -83,6 +84,26 @@ export type ApiQuizQuestion = {
   id: string
   q: string
   options: string[]
+}
+
+export type ApiLessonPracticeOption = {
+  id: string
+  label: string
+  teachingFeedback: string
+}
+
+export type ApiLessonPractice = {
+  lessonKey: string
+  lessonTitle: string
+  moduleId: string
+  moduleTitle: string
+  courseSlug: string
+  courseTitle: string
+  interactionType: "choose"
+  context: string
+  task: string
+  preferredOptionKey: string
+  options: ApiLessonPracticeOption[]
 }
 
 async function parseJson<T>(response: Response): Promise<T> {
@@ -173,6 +194,13 @@ export async function fetchQuizQuestions(slug: string, lessonKey: string) {
   return result.data.questions
 }
 
+export async function fetchLessonPractice(slug: string, lessonKey: string) {
+  const result = await lmsGet<{ data: ApiLessonPractice }>(
+    `/lms/courses/${slug}/lessons/${lessonKey}/practice`,
+  )
+  return result.data
+}
+
 export async function submitQuizAttempt(slug: string, lessonKey: string, answers: number[]) {
   const result = await lmsMutate<{
     data: {
@@ -240,6 +268,7 @@ export function workspaceToCourse(workspace: ApiCourseWorkspace): LmsCourseView 
         completed: workspace.lessonStates[lesson.id]?.complete ?? false,
         locked: workspace.lessonStates[lesson.id]?.locked ?? false,
         media: lesson.media,
+        // hasPractice is API discovery metadata for future Practice UI; unused by Phase 2 player.
       })),
     })),
   }
