@@ -179,15 +179,13 @@ function EducationJourneySection() {
                   <span className="education-journey-arrow" style={{ color: accent.textMuted, fontSize: 14, opacity: 0.35, display: 'none' }} aria-hidden>·</span>
                 )}
               </div>
-              <div style={{ borderRadius: T.rCard, overflow: 'hidden', marginBottom: 18, aspectRatio: '16/10' }}>
-                <img
-                  src={stage.photo}
-                  alt={stage.title}
-                  loading="lazy"
-                  className="skylent-media-img"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                />
-              </div>
+              <MediaImage
+                src={stage.photo}
+                alt={stage.title}
+                aspect="16/9"
+                radius={T.rCard}
+                style={{ marginBottom: 18, aspectRatio: '16 / 10' }}
+              />
               <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 8px', fontSize: 'clamp(22px, 2.5vw, 28px)' }}>
                 {stage.title}
               </h3>

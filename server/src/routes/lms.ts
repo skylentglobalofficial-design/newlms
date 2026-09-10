@@ -376,6 +376,67 @@ lmsRouter.post(
 )
 
 lmsRouter.get(
+  "/courses/:slug/lessons/:lessonKey/practice",
+  requireAuth,
+  async (req: AuthenticatedRequest, res) => {
+    const slugParsed = slugParamSchema.safeParse(req.params)
+    const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
+    if (!slugParsed.success || !lessonParsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    try {
+      const course = await findCourseBySlug(slugParsed.data.slug)
+      if (!course) return res.status(404).json({ error: "Course not found" })
+
+      const enrollment = await requireEnrollment(req.auth!.user.id, course.id)
+      if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
+
+      const located = await findNodeByLessonKey(course, lessonParsed.data.lessonKey)
+      if (!located) return res.status(404).json({ error: "Lesson not found" })
+
+      const lessonStates = await loadLessonStates(enrollment, course)
+      const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
+      if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
+
+      const practice = await prisma.lessonPractice.findUnique({
+        where: { nodeId: located.node.id },
+        include: {
+          options: { orderBy: { sortOrder: "asc" } },
+        },
+      })
+
+      if (!practice) {
+        return res.status(404).json({ error: "Practice content isn't available yet." })
+      }
+
+      res.json({
+        data: {
+          lessonKey: lessonParsed.data.lessonKey,
+          lessonTitle: located.node.title,
+          moduleId: located.module.sourceId ?? `m${located.module.order + 1}`,
+          moduleTitle: located.module.title,
+          courseSlug: course.slug,
+          courseTitle: course.title,
+          interactionType: practice.interactionType,
+          context: practice.context,
+          task: practice.task,
+          preferredOptionKey: practice.preferredOptionKey,
+          options: practice.options.map((option) => ({
+            id: option.optionKey,
+            label: option.label,
+            teachingFeedback: option.teachingFeedback,
+          })),
+        },
+      })
+    } catch (error) {
+      console.error("Failed to load lesson practice:", error)
+      res.status(500).json({ error: "Failed to load lesson practice" })
+    }
+  },
+)
+
+lmsRouter.get(
   "/courses/:slug/lessons/:lessonKey/quiz",
   requireAuth,
   async (req: AuthenticatedRequest, res) => {

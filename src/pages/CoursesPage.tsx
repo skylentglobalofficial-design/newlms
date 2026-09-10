@@ -56,7 +56,7 @@ export default function CoursesPage() {
                 <span style={{ color: accent.text }}>hands-on work.</span>
               </h1>
               <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.58)', maxWidth: 480, margin: '0 0 28px' }}>
-                Practice SQL, Python, dashboards, and more — with structured lessons and projects you can show in a portfolio.
+                Discovery and conversion for short courses — browse what is listed here, then enroll into the learning workspace when a course is open.
               </p>
               <GlassSurface level={2} padding="12px 16px" style={{ maxWidth: 420 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>

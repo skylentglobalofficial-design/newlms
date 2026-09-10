@@ -184,6 +184,90 @@ export function StudentProgressSurface({
   )
 }
 
+/** Honest evidence panel — only surfaces enrollment, progress, and certificate state from the LMS API. */
+export function StudentEvidenceSurface({
+  courseTitle,
+  enrollmentStatus,
+  progressPct,
+  completedCount,
+  totalLessons,
+  assignmentsSubmitted,
+  assignmentsTotal,
+  certificateEligible,
+  certificateStatus,
+  accent,
+}: {
+  courseTitle: string
+  enrollmentStatus: string
+  progressPct: number
+  completedCount: number
+  totalLessons: number
+  assignmentsSubmitted: number
+  assignmentsTotal: number
+  certificateEligible: boolean
+  certificateStatus: string
+  accent: Accent
+}) {
+  return (
+    <div id="student-evidence" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
+        <div className="skylent-label" style={{ color: C.slate, margin: 0 }}>Evidence</div>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.06em', color: C.slate }}>
+          FROM ENROLLMENT · NO FABRICATED RESULTS
+        </span>
+      </div>
+      <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: '0 0 16px', maxWidth: 640 }}>
+        What you can show today comes from your live LMS record — enrollment, lesson progress, submitted projects, and certificate state.
+      </p>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 16 }}>
+        <div style={{ padding: '14px 16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+          <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.06em', marginBottom: 6 }}>Enrollment</div>
+          <div style={{ color: C.ink, fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{courseTitle}</div>
+          <div style={{ color: accent.text, fontFamily: 'var(--font-mono)', fontSize: 11 }}>{enrollmentStatus}</div>
+        </div>
+        <div style={{ padding: '14px 16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+          <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.06em', marginBottom: 6 }}>Progress</div>
+          <div style={{ color: C.ink, fontFamily: 'var(--font-mono)', fontSize: 18, marginBottom: 4 }}>{progressPct}%</div>
+          <div style={{ color: C.slate, fontSize: 11 }}>{completedCount} of {totalLessons} lessons</div>
+        </div>
+        <div style={{ padding: '14px 16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+          <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.06em', marginBottom: 6 }}>Project submissions</div>
+          <div style={{ color: C.ink, fontFamily: 'var(--font-mono)', fontSize: 18, marginBottom: 4 }}>
+            {assignmentsTotal ? `${assignmentsSubmitted}/${assignmentsTotal}` : '—'}
+          </div>
+          <div style={{ color: C.slate, fontSize: 11 }}>{assignmentsTotal ? 'assignments submitted' : 'none in this course yet'}</div>
+        </div>
+        <div style={{ padding: '14px 16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+          <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.06em', marginBottom: 6 }}>Certificate</div>
+          <div style={{ color: certificateEligible ? C.ink : C.slate, fontSize: 14, fontWeight: 500, marginBottom: 4 }}>
+            {certificateEligible ? 'Eligible' : 'Not yet'}
+          </div>
+          <div style={{ color: C.slate, fontSize: 11 }}>{certificateStatus || 'incomplete'}</div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gap: 10 }}>
+        <div style={{ padding: '12px 14px', borderLeft: `3px solid ${accent.primary}`, background: accent.subtle, borderRadius: T.rControl }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.08em', color: accent.text, marginBottom: 4 }}>PARTIAL</div>
+          <div style={{ color: C.ink, fontSize: 13, fontWeight: 500, marginBottom: 2 }}>Unified evidence layer</div>
+          <div style={{ color: C.slate, fontSize: 12, lineHeight: 1.55 }}>
+            A single evidence ledger across courses and projects is not complete yet. What you see above is the current LMS slice only.
+          </div>
+        </div>
+        <div style={{ padding: '12px 14px', borderLeft: `3px solid ${T.lineLight}`, background: 'rgba(11,13,15,0.02)', borderRadius: T.rControl }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.08em', color: C.slate, marginBottom: 4 }}>FUTURE</div>
+          <div style={{ color: C.ink, fontSize: 13, fontWeight: 500, marginBottom: 2 }}>Auto Career OS import</div>
+          <div style={{ color: C.slate, fontSize: 12, lineHeight: 1.55, marginBottom: 8 }}>
+            Reviewed project artifacts will flow into Career OS when that import path ships. Until then, add projects manually in your profile.
+          </div>
+          <Link to="/career-os" style={{ color: accent.text, fontSize: 12, textDecoration: 'none' }}>Open Career OS →</Link>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export function StudentActionRail({
   pendingTasks,
   recentActivity,

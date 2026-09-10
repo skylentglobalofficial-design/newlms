@@ -53,30 +53,71 @@ export function AssessmentSurface({
   const timerLabel = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`
 
   if (mode === 'assignment') {
+    const projectStages = [
+      { id: 'brief', label: 'Brief' },
+      { id: 'plan', label: 'Plan' },
+      { id: 'build', label: 'Build' },
+      { id: 'submit', label: 'Submit' },
+    ] as const
+    const activeStage = (assignmentDone || passed)
+      ? 'submit'
+      : text.trim().length > 40
+        ? 'build'
+        : text.trim().length > 0
+          ? 'plan'
+          : 'brief'
+
     if (assignmentDone || passed) {
       return (
-        <div style={{ textAlign: 'center', padding: '32px 0' }}>
-          <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Submission recorded</div>
-          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>Awaiting faculty review</div>
+        <div className="lms-assignment-workspace lms-project-workspace">
+          <div className="lms-capability-list lms-project-stages" aria-label="Project stages" style={{ marginBottom: 20 }}>
+            {projectStages.map(stage => (
+              <span key={stage.id} className="is-active">{stage.label}</span>
+            ))}
+          </div>
+          <div style={{ textAlign: 'center', padding: '24px 0' }}>
+            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Submit</div>
+            <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Submission recorded</div>
+            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>Awaiting faculty review — this can become evidence once reviewed.</div>
+          </div>
         </div>
       )
     }
     return (
-      <div className="lms-assignment-workspace">
+      <div className="lms-assignment-workspace lms-project-workspace">
         <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>{title}</div>
-        {subtitle && <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginBottom: 20, lineHeight: 1.6 }}>{subtitle}</div>}
-        <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 16, marginBottom: 16 }}>
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Submission workspace</div>
+        {subtitle && <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginBottom: 16, lineHeight: 1.6 }}>{subtitle}</div>}
+
+        <div className="lms-capability-list lms-project-stages" aria-label="Project stages" style={{ marginBottom: 18 }}>
+          {projectStages.map(stage => (
+            <span key={stage.id} className={activeStage === stage.id ? 'is-active' : ''}>{stage.label}</span>
+          ))}
+        </div>
+
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 16, marginBottom: 12 }}>
+          <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Brief</div>
           <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.7 }}>
-            Document your approach, include queries or calculations, and explain assumptions.
+            Apply concepts from this module. Produce work a reviewer can assess — approach, assumptions, and the artifact itself.
           </div>
         </div>
-        <textarea
-          value={text}
-          onChange={e => setText(e.target.value)}
-          placeholder="Type your response..."
-          style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: T.rControl, padding: 14, color: C.white, fontSize: 13, lineHeight: 1.7, resize: 'vertical', minHeight: 160, outline: 'none', boxSizing: 'border-box', marginBottom: 16 }}
-        />
+
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 16, marginBottom: 12 }}>
+          <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Plan</div>
+          <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.7 }}>
+            Outline steps, data or queries you will use, and what “done” looks like before you build.
+          </div>
+        </div>
+
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 16, marginBottom: 16 }}>
+          <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Build</div>
+          <textarea
+            value={text}
+            onChange={e => setText(e.target.value)}
+            placeholder="Document your plan and build here — queries, calculations, reasoning, and results…"
+            style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: T.rControl, padding: 14, color: C.white, fontSize: 13, lineHeight: 1.7, resize: 'vertical', minHeight: 160, outline: 'none', boxSizing: 'border-box', marginTop: 4 }}
+          />
+        </div>
+
         <button
           type="button"
           disabled={!text.trim()}
@@ -88,7 +129,7 @@ export function AssessmentSurface({
             cursor: !text.trim() ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
           }}
         >
-          Submit assignment →
+          Submit project →
         </button>
       </div>
     )

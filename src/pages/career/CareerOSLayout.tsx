@@ -1,17 +1,23 @@
-import { useEffect } from "react"
-import { Outlet, useNavigate } from "react-router-dom"
+import { Navigate, Outlet, useLocation } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
+import { loginReturnPath } from "../../lib/auth-routing"
 import CareerOSShell from "../../components/career/CareerOSShell"
 
 export default function CareerOSLayout() {
   const { user, ready } = useAuth()
-  const navigate = useNavigate()
+  const location = useLocation()
 
-  useEffect(() => {
-    if (ready && !user) navigate("/login")
-  }, [ready, user, navigate])
+  if (!ready) return null
 
-  if (!ready || !user) return null
+  if (!user) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ returnTo: loginReturnPath(location.pathname, location.search, location.hash) }}
+      />
+    )
+  }
 
   return (
     <CareerOSShell>

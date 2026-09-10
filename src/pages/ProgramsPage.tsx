@@ -728,7 +728,7 @@ export default function ProgramsPage() {
                 Find the program that fits where you want to go.
               </h1>
               <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
-                Education pathways, exam preparation, and career-focused skills — filter by domain, type, level, and format using what is actually in the catalog.
+                Discovery layer for listed programs — browse by domain and format, then enroll into a live workspace when a program is open.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <Button variant="primary" size="lg" onClick={() => document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' })}>

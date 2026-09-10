@@ -209,6 +209,100 @@ async function seedQuizQuestions() {
   console.log(`Seeded quiz questions for ${quizNodes.length} quiz nodes`)
 }
 
+/**
+ * ONE lesson-scoped Practice object for LMS Practice content foundation.
+ *
+ * Selected chain:
+ *   course: data-analytics (Data Analytics)
+ *   module: m1 Foundations of Data
+ *   lesson: l2 The Analytics Mindset
+ *
+ * Curriculum sources (NOT Skills Scroll 3; NOT trivia conversion of l3/l9/l15):
+ * - Course longDesc / outcomes: analytics → insights / business decisions
+ *   (src/data.ts courses[data-analytics])
+ * - Module title: Foundations of Data
+ * - Lesson title: The Analytics Mindset
+ * - Linked program data-analytics-pro curriculumDetail[01] Analytics Foundations:
+ *   "The analyst mindset … and the analytics workflow from question to insight."
+ * - Existing Foundations Quiz bank concept (sibling l3, not converted):
+ *   "Analytics starts with a clear: Business question"
+ *   "primary goal of data analytics: Turn data into insights"
+ *
+ * Interaction: choose — apply the mindset by selecting the first move.
+ */
+async function seedLessonPractice() {
+  const course = await prisma.course.findUnique({
+    where: { slug: "data-analytics" },
+    select: { id: true },
+  })
+  if (!course) {
+    console.warn("data-analytics course missing — skipping lesson practice seed")
+    return
+  }
+
+  const node = await prisma.curriculumNode.findFirst({
+    where: {
+      sourceId: "l2",
+      module: { courseId: course.id, sourceId: "m1" },
+    },
+    select: { id: true, title: true },
+  })
+  if (!node) {
+    console.warn("data-analytics m1/l2 node missing — skipping lesson practice seed")
+    return
+  }
+
+  const options = [
+    {
+      optionKey: "clarify-question",
+      sortOrder: 0,
+      label: "Clarify the business question the analysis must answer",
+      teachingFeedback:
+        "Strongest first move. Foundations frames analytics as a workflow from question to insight — without a clear business question, later charts and tools have nothing to decide against.",
+    },
+    {
+      optionKey: "build-charts",
+      sortOrder: 1,
+      label: "Open the spreadsheet and start building charts immediately",
+      teachingFeedback:
+        "Reasonable impulse, but premature. Charts without a question produce decoration, not insight — the Foundations Quiz concept is that analytics starts with a business question, then evidence.",
+    },
+    {
+      optionKey: "pick-tool",
+      sortOrder: 2,
+      label: "Pick a dashboard tool before defining what decision is needed",
+      teachingFeedback:
+        "Tools matter later. Choosing Power BI or Excel first skips the analyst mindset: decide what question and decision the work must support, then choose the medium.",
+    },
+  ] as const
+
+  await prisma.lessonPracticeOption.deleteMany({
+    where: { practice: { nodeId: node.id } },
+  })
+  await prisma.lessonPractice.deleteMany({ where: { nodeId: node.id } })
+
+  await prisma.lessonPractice.create({
+    data: {
+      nodeId: node.id,
+      interactionType: "choose",
+      context:
+        "In Foundations of Data, the analytics mindset is the workflow from a business question to insight — not opening a file and hoping charts explain themselves.",
+      task: "A stakeholder asks you to \"look at the data.\" What should you do first?",
+      preferredOptionKey: "clarify-question",
+      options: {
+        create: options.map((option) => ({
+          optionKey: option.optionKey,
+          sortOrder: option.sortOrder,
+          label: option.label,
+          teachingFeedback: option.teachingFeedback,
+        })),
+      },
+    },
+  })
+
+  console.log(`Seeded LessonPractice for data-analytics / ${node.title} (l2)`)
+}
+
 async function seedProgramCourses() {
   const links: Array<{ programSlug: string; courseSlug: string; sortOrder: number }> = [
     { programSlug: "data-analytics-pro", courseSlug: "data-analytics", sortOrder: 0 },
@@ -238,6 +332,9 @@ async function main() {
 
   console.log("Seeding quiz questions...")
   await seedQuizQuestions()
+
+  console.log("Seeding lesson practice content...")
+  await seedLessonPractice()
 
   console.log("Seeding program-course links...")
   await seedProgramCourses()

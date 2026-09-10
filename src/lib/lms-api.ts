@@ -7,6 +7,16 @@ const API_BASE = "/api/v1"
 
 type ApiError = { error: string }
 
+export class LmsHttpError extends Error {
+  status: number
+
+  constructor(status: number, message: string) {
+    super(message)
+    this.name = "LmsHttpError"
+    this.status = status
+  }
+}
+
 export type ApiLessonState = {
   started: boolean
   complete: boolean
@@ -25,6 +35,7 @@ export type ApiCourseLesson = {
   title: string
   type: string | null
   duration?: string
+  hasPractice?: boolean
   media?: { provider: "mux" | "unavailable"; playbackId?: string }
 }
 
@@ -85,13 +96,33 @@ export type ApiQuizQuestion = {
   options: string[]
 }
 
+export type ApiLessonPracticeOption = {
+  id: string
+  label: string
+  teachingFeedback: string
+}
+
+export type ApiLessonPractice = {
+  lessonKey: string
+  lessonTitle: string
+  moduleId: string
+  moduleTitle: string
+  courseSlug: string
+  courseTitle: string
+  interactionType: "choose"
+  context: string
+  task: string
+  preferredOptionKey: string
+  options: ApiLessonPracticeOption[]
+}
+
 async function parseJson<T>(response: Response): Promise<T> {
   const data = (await response.json()) as T | ApiError
   if (!response.ok) {
     const message = typeof data === "object" && data && "error" in data
       ? String((data as ApiError).error)
       : "Request failed"
-    throw new Error(message)
+    throw new LmsHttpError(response.status, message)
   }
   return data as T
 }
@@ -173,6 +204,13 @@ export async function fetchQuizQuestions(slug: string, lessonKey: string) {
   return result.data.questions
 }
 
+export async function fetchLessonPractice(slug: string, lessonKey: string) {
+  const result = await lmsGet<{ data: ApiLessonPractice }>(
+    `/lms/courses/${slug}/lessons/${lessonKey}/practice`,
+  )
+  return result.data
+}
+
 export async function submitQuizAttempt(slug: string, lessonKey: string, answers: number[]) {
   const result = await lmsMutate<{
     data: {
@@ -239,6 +277,7 @@ export function workspaceToCourse(workspace: ApiCourseWorkspace): LmsCourseView 
         duration: lesson.duration,
         completed: workspace.lessonStates[lesson.id]?.complete ?? false,
         locked: workspace.lessonStates[lesson.id]?.locked ?? false,
+        hasPractice: Boolean(lesson.hasPractice),
         media: lesson.media,
       })),
     })),
