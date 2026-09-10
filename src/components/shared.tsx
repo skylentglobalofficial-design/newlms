@@ -339,8 +339,8 @@ const megaMenu = [
     to: '/career-os',
     tagline: 'Profile, jobs, and applications',
     items: [
-      { label: 'Interview Preparation', sub: 'Mock interviews & practice', to: '/career-os' },
-      { label: 'Job Board', sub: 'Curated opportunities', to: '/career-os' },
+      { label: 'Interview Preparation', sub: 'Mock interviews & practice', to: '/career-os/interviews' },
+      { label: 'Job Board', sub: 'Curated opportunities', to: '/career-os/jobs' },
     ],
   },
   {
@@ -386,7 +386,14 @@ export function Nav() {
     if (!menuOpen) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = prev }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.body.style.overflow = prev
+      window.removeEventListener('keydown', onKeyDown)
+    }
   }, [menuOpen])
 
   function handleSearch(e: React.FormEvent) {
@@ -535,7 +542,15 @@ export function Nav() {
               >Explore Programs</Link>
             </>
           )}
-          <button className="show-mobile" onClick={() => setMenuOpen(o => !o)} style={{ background: 'none', border: 'none', color: C.ink, cursor: 'pointer', padding: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <button
+            type="button"
+            className="show-mobile"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+            aria-controls="skylent-mobile-nav"
+            onClick={() => setMenuOpen(o => !o)}
+            style={{ background: 'none', border: 'none', color: C.ink, cursor: 'pointer', padding: 6, display: 'flex', flexDirection: 'column', gap: 4 }}
+          >
             <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
             <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
             <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
@@ -546,7 +561,10 @@ export function Nav() {
       {/* Mobile menu — full-screen overlay so page content does not bleed through */}
       {menuOpen && (
         <div
+          id="skylent-mobile-nav"
           className="mobile-nav-overlay"
+          role="navigation"
+          aria-label="Mobile menu"
           style={{
             position: 'fixed',
             inset: `${T.navH}px 0 0 0`,
@@ -589,7 +607,7 @@ export function Footer() {
   const cols = [
     { heading: 'Education', links: [['Overview', '/education'], ['Junior', '/junior'], ['Degrees', '/degrees'], ['Exams', '/exams']] },
     { heading: 'Skills', links: [['Overview', '/skills'], ['Webinars', '/workshops'], ['Certificate Programs', '/programs'], ['Professional Programs', '/programs'], ['Job Assistance', '/skills#job-assistance']] },
-    { heading: 'Career OS', links: [['Overview', '/career-os'], ['Interview Prep', '/career-os'], ['Job Board', '/career-os'], ['Skylent OS', '/os']] },
+    { heading: 'Career OS', links: [['Overview', '/career-os'], ['Interview Prep', '/career-os/interviews'], ['Job Board', '/career-os/jobs'], ['Skylent OS', '/os']] },
     { heading: 'Company', links: [['About', '/about'], ['For Institutions', '/institutions'], ['Stories', '/stories'], ['Blog', '/blog'], ['Contact', '/contact']] },
   ]
   return (

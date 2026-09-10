@@ -103,8 +103,8 @@ function AppRoutes() {
         <Route path="/labs" element={<LabsPage />} />
         <Route path="/labs/:labId" element={<LabDetailPage />} />
         <Route path="/labs/:labId/:experimentId" element={<ExperimentPage />} />
-        <Route path="/jobs" element={<Navigate to="/career-os" replace />} />
-        <Route path="/jobs/:id" element={<Navigate to="/career-os" replace />} />
+        <Route path="/jobs" element={<Navigate to="/career-os/jobs" replace />} />
+        <Route path="/jobs/:id" element={<Navigate to="/career-os/jobs" replace />} />
         <Route path="*" element={<PublicCanvas themeId="general"><Nav /><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md" style={{ color: C.ink }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></PublicCanvas>} />
       </Routes>
     </Suspense>
