@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { programs } from '../data'
 import { getAuroraTheme, getDomainAccent, resolveAuroraTheme, type AuroraThemeId } from '../aurora-themes'
 import { C, T, glass, type GlassLevel } from '../tokens'
 import { parseSkylentVisualRef, isSkylentVisualRef } from '../media'
@@ -91,8 +90,7 @@ export function Aurora({ themeId = 'general', variant = 'default' }: { themeId?:
 export function useAuroraTheme(): AuroraThemeId {
   const { pathname } = useLocation()
   const { slug } = useParams<{ slug?: string }>()
-  const program = slug ? programs.find(p => p.slug === slug) : undefined
-  return resolveAuroraTheme(pathname, slug, program?.programType)
+  return resolveAuroraTheme(pathname, slug)
 }
 
 // ─── Public canvas ────────────────────────────────────────────────────────────

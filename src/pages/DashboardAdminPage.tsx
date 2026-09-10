@@ -38,15 +38,9 @@ function AdminOverview() {
       <AuroraBand themeId="superadmin" />
       <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 3.5vw, 36px)' }}>
         <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px' }}>Platform overview</h1>
-        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.6, margin: '0 0 24px', maxWidth: 640 }}>
-          The Super Admin workspace is connected to the authenticated platform role. Live platform metrics are shown only when backed by the admin API.
+        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.6, margin: 0, maxWidth: 640 }}>
+          Platform metrics appear here only when backed by connected admin APIs.
         </p>
-        <div style={{ padding: '18px 0', borderTop: `1px solid ${T.lineLight}`, borderBottom: `1px solid ${T.lineLight}` }}>
-          <div style={{ color: accent.text, fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: 8 }}>Live data boundary</div>
-          <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.7 }}>
-            No fabricated enrollment, revenue, organisation, uptime, or course-ranking figures are rendered here. Once the corresponding APIs are connected, this surface can display verified data without changing the workspace structure.
-          </div>
-        </div>
       </div>
     </GlassSurface>
   )
@@ -92,10 +86,6 @@ export default function DashboardAdminPage() {
       renderNavIcon={id => <NavIcon id={id} />}
     >
       <div id="admin-overview">
-        <div style={{ color: C.slate, fontSize: 11, marginBottom: 20, padding: '10px 14px', background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rControl }}>
-          Development preview — live platform data appears only when the admin APIs are connected. This workspace does not invent operational metrics or business activity.
-        </div>
-
         <AdminOverview />
 
         <div style={{ marginTop: 32 }}>

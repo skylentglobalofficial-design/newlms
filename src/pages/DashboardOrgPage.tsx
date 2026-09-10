@@ -68,7 +68,6 @@ function InstitutionWorkspace({
       </div>
 
       <div style={{ marginBottom: 28 }}>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Institution workspace</div>
         <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 8px', maxWidth: 680, lineHeight: 1.08 }}>
           {institutionName}
         </h1>

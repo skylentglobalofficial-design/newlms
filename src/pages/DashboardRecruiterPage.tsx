@@ -60,16 +60,9 @@ function NavIcon({ id }: { id: string }) {
 
 function DemoBanner() {
   return (
-    <div style={{
-      padding: '12px 16px', marginBottom: 28,
-      borderLeft: `3px solid ${accent.border}`,
-      background: accent.subtle,
-    }}>
-      <div style={{ color: accent.text, fontSize: 12, fontWeight: 500, marginBottom: 2 }}>Demo workspace</div>
-      <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, lineHeight: 1.5 }}>
-        Candidate names and counts below are sample data for UI preview — not a live talent pool.
-      </div>
-    </div>
+    <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 12, lineHeight: 1.5, margin: '0 0 24px' }}>
+      Sample candidate data for workspace preview.
+    </p>
   )
 }
 
