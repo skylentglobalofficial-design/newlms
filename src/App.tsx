@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react'
+import { lazy, memo, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
 import { C, Nav, Footer, globalCSS } from './components/shared'
 import { PublicCanvas } from './components/foundation'
@@ -111,13 +111,18 @@ function AppRoutes() {
   )
 }
 
+const AppRouteTree = memo(function AppRouteTree() {
+  return <AppRoutes />
+})
+
 export default function App() {
   return (
     <BrowserRouter>
+      {/* Hoisted above auth/demo ready flips so CSS is not re-reconciled on session probe. */}
+      <style>{globalCSS}</style>
       <AuthProvider>
         <DemoStateProvider>
-          <style>{globalCSS}</style>
-          <AppRoutes />
+          <AppRouteTree />
         </DemoStateProvider>
       </AuthProvider>
     </BrowserRouter>

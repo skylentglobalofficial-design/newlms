@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react"
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, startTransition } from "react"
 import {
   fetchCurrentUser,
   loginRequest,
@@ -77,7 +77,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setRoles([])
         }
       } finally {
-        if (!cancelled) setReady(true)
+        // Keep session restore off the urgent paint path on public pages.
+        if (!cancelled) startTransition(() => setReady(true))
       }
     }
 
@@ -123,8 +124,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
+  const value = useMemo<AuthContextValue>(
+    () => ({ user, roles, ready, login, signup, loginDemo, logout }),
+    [user, roles, ready, login, signup, loginDemo, logout],
+  )
+
   return (
-    <AuthContext.Provider value={{ user, roles, ready, login, signup, loginDemo, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   )

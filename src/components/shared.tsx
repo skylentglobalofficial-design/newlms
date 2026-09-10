@@ -367,7 +367,6 @@ function dashRoute(role: UserRole): string {
 }
 
 export function Nav() {
-  const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -375,7 +374,6 @@ export function Nav() {
   const searchRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
-  const isHome = location.pathname === '/'
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -406,19 +404,20 @@ export function Nav() {
   }
   const { user, logout } = useAuth()
 
+  // Close desktop mega-menu on scroll only while open — avoid a permanent
+  // scroll→setState listener (previous `scrolled` state was unused).
   useEffect(() => {
-    const h = () => { setScrolled(window.scrollY > 40); setActiveMenu(null) }
+    if (!activeMenu) return
+    const h = () => setActiveMenu(null)
     window.addEventListener('scroll', h, { passive: true })
     return () => window.removeEventListener('scroll', h)
-  }, [])
+  }, [activeMenu])
   useEffect(() => { setMenuOpen(false); setActiveMenu(null) }, [location.pathname])
 
-  const showDark = true
-
-  const navBg = showDark ? 'var(--glass-01-bg)' : 'transparent'
-  const navBlur = showDark ? 'var(--glass-01-blur)' : 'none'
-  const navBorder = showDark ? '1px solid var(--glass-01-border)' : 'none'
-  const navShadow = showDark ? 'var(--glass-01-shadow)' : 'none'
+  const navBg = 'var(--glass-01-bg)'
+  const navBlur = 'var(--glass-01-blur)'
+  const navBorder = '1px solid var(--glass-01-border)'
+  const navShadow = 'var(--glass-01-shadow)'
 
   const handleMenuEnter = useCallback((label: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current)
