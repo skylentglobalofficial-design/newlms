@@ -306,12 +306,12 @@ const megaMenu = [
   {
     label: 'Education',
     to: '/education',
-    tagline: 'From schooling to postgraduate & exams',
+    tagline: 'From schooling to postgraduate',
     items: [
-      { label: 'Schooling', sub: 'Foundational academic learning', to: '/education#schooling' },
+      { label: 'Junior', sub: 'Class 1–12 schooling', to: '/junior' },
+      { label: 'Degrees', sub: 'Undergraduate & postgraduate pathways', to: '/degrees' },
       { label: 'Undergraduate', sub: 'Degree-aligned programs', to: '/education#undergraduate' },
       { label: 'Postgraduate', sub: 'Advanced specialisation', to: '/education#postgraduate' },
-      { label: 'Competitive Exams', sub: 'JEE · NEET · CAT & more', to: '/education#competitive-exams' },
     ],
   },
   {
@@ -323,6 +323,15 @@ const megaMenu = [
       { label: 'Certificate Programs', sub: 'Focused, credentialed skills', to: '/programs' },
       { label: 'Professional Programs', sub: 'Career-ready — includes Career OS', to: '/programs' },
       { label: 'Job Assistance', sub: 'Placement & readiness support', to: '/skills#job-assistance' },
+    ],
+  },
+  {
+    label: 'Exams',
+    to: '/exams',
+    tagline: 'Diagnose, practice, improve, perform',
+    items: [
+      { label: 'Exam Prep', sub: 'Competitive exam performance loop', to: '/exams' },
+      { label: 'Browse Prep Programs', sub: 'Listed exam-prep programs in catalog', to: '/programs' },
     ],
   },
   {
@@ -578,7 +587,7 @@ export function Nav() {
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
 export function Footer() {
   const cols = [
-    { heading: 'Education', links: [['Overview', '/education'], ['Schooling', '/education#schooling'], ['Undergraduate', '/education#undergraduate'], ['Postgraduate', '/education#postgraduate']] },
+    { heading: 'Education', links: [['Overview', '/education'], ['Junior', '/junior'], ['Degrees', '/degrees'], ['Exams', '/exams']] },
     { heading: 'Skills', links: [['Overview', '/skills'], ['Webinars', '/workshops'], ['Certificate Programs', '/programs'], ['Professional Programs', '/programs'], ['Job Assistance', '/skills#job-assistance']] },
     { heading: 'Career OS', links: [['Overview', '/career-os'], ['Interview Prep', '/career-os'], ['Job Board', '/career-os'], ['Skylent OS', '/os']] },
     { heading: 'Company', links: [['About', '/about'], ['For Institutions', '/institutions'], ['Stories', '/stories'], ['Blog', '/blog'], ['Contact', '/contact']] },
