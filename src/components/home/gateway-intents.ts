@@ -7,7 +7,6 @@ export type GatewayIntent = {
   cta: string
   to: string
   accent: string
-  stageLabel: string
 }
 
 export const GATEWAY_INTENTS: GatewayIntent[] = [
@@ -18,7 +17,6 @@ export const GATEWAY_INTENTS: GatewayIntent[] = [
     cta: 'Explore Skills',
     to: '/skills',
     accent: '#6D58D9',
-    stageLabel: 'Skills · Build',
   },
   {
     id: 'exams',
@@ -27,7 +25,6 @@ export const GATEWAY_INTENTS: GatewayIntent[] = [
     cta: 'Explore exam prep',
     to: '/education#competitive-exams',
     accent: '#3478D4',
-    stageLabel: 'Exams · Practice',
   },
   {
     id: 'schooling',
@@ -36,7 +33,6 @@ export const GATEWAY_INTENTS: GatewayIntent[] = [
     cta: 'Explore schooling',
     to: '/education#schooling',
     accent: '#168C83',
-    stageLabel: 'Schooling · Explore',
   },
   {
     id: 'university',
@@ -45,7 +41,6 @@ export const GATEWAY_INTENTS: GatewayIntent[] = [
     cta: 'Explore university',
     to: '/education#undergraduate',
     accent: '#B87918',
-    stageLabel: 'University · Apply',
   },
   {
     id: 'career',
@@ -54,6 +49,5 @@ export const GATEWAY_INTENTS: GatewayIntent[] = [
     cta: 'Explore CareerOS',
     to: '/career-os',
     accent: '#2E73C8',
-    stageLabel: 'Career · Evidence',
   },
 ]

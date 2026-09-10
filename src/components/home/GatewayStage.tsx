@@ -6,8 +6,8 @@ function SkillsArtifact() {
     <div className="gw-artifact gw-artifact--skills">
       <header className="gw-skills-top">
         <div>
-          <p className="gw-skills-task">Build</p>
           <h3>Find where customers are going quiet</h3>
+          <p>Write the query. Interpret the pattern. Propose one action.</p>
         </div>
         <span className="gw-skills-file">customer-churn.csv</span>
       </header>
@@ -18,13 +18,12 @@ WHERE last_active < DATE '2025-01-01'
 GROUP BY region
 ORDER BY quiet DESC;`}</pre>
         <aside className="gw-skills-side">
-          <p className="gw-skills-side-label">What you&apos;ll produce</p>
+          <p className="gw-skills-side-label">You leave with</p>
           <ul>
-            <li>A working query</li>
-            <li>A short interpretation</li>
-            <li>One recommended next action</li>
+            <li>A working analysis</li>
+            <li>A clear interpretation</li>
+            <li>One next action</li>
           </ul>
-          <p className="gw-skills-prompt">Then explain the pattern in your own words.</p>
         </aside>
       </div>
     </div>
@@ -42,10 +41,7 @@ function ExamsArtifact() {
 
   return (
     <div className="gw-artifact gw-artifact--exams">
-      <div className="gw-exams-meta">
-        <p className="gw-exams-kicker">Practice</p>
-        <p className="gw-exams-topic">Mechanics · Friction</p>
-      </div>
+      <p className="gw-exams-topic">Mechanics · Friction</p>
       <h3 className="gw-exams-question">
         You increase friction on a block sliding down a ramp. What happens to its acceleration?
       </h3>
@@ -79,10 +75,7 @@ function SchoolingArtifact() {
   return (
     <div className="gw-artifact gw-artifact--schooling">
       <div className="gw-school-head">
-        <div>
-          <p className="gw-school-kicker">Try it</p>
-          <h3>What happens if the planet moves faster?</h3>
-        </div>
+        <h3>What happens if the planet moves faster?</h3>
         <div className="gw-school-toggles">
           <button type="button" className={mode === 'steady' ? 'is-on' : ''} onClick={() => setMode('steady')}>
             Steady orbit
@@ -96,12 +89,11 @@ function SchoolingArtifact() {
         <span className="gw-school-sun" />
         <span className="gw-school-path" />
         <span className="gw-school-planet" />
-        <span className="gw-school-trail" />
       </div>
       <p className="gw-school-observe">
         {mode === 'steady'
-          ? 'Observation: gravity and motion stay in balance.'
-          : 'Observation: the path widens — escape becomes possible.'}
+          ? 'Gravity and motion stay in balance.'
+          : 'The path widens — escape becomes possible.'}
       </p>
     </div>
   )
@@ -110,24 +102,20 @@ function SchoolingArtifact() {
 function UniversityArtifact() {
   return (
     <div className="gw-artifact gw-artifact--university">
-      <p className="gw-uni-kicker">Project brief</p>
       <h3 className="gw-uni-title">Design a water-quality sensor for a campus lake.</h3>
       <p className="gw-uni-lead">
-        Move from concept to a working prototype — then explain the trade-offs.
+        From concept to prototype — then explain the trade-offs in your own words.
       </p>
       <div className="gw-uni-rail">
         <div>
-          <span>01</span>
           <strong>Understand</strong>
           <p>Map the variables that matter on site.</p>
         </div>
         <div>
-          <span>02</span>
           <strong>Apply</strong>
           <p>Choose sensors, sampling, and a simple model.</p>
         </div>
         <div>
-          <span>03</span>
           <strong>Deliver</strong>
           <p>Prototype, test, and write the rationale.</p>
         </div>
@@ -140,7 +128,6 @@ function CareerArtifact() {
   return (
     <div className="gw-artifact gw-artifact--career">
       <div className="gw-career-proof">
-        <p className="gw-career-kicker">Evidence</p>
         <h3>Churn analysis notebook</h3>
         <p>
           Segmented quiet customers by region and proposed one retention experiment.
@@ -152,10 +139,8 @@ function CareerArtifact() {
         </ul>
       </div>
       <div className="gw-career-next">
-        <p className="gw-career-kicker">Next step</p>
         <h3>Put this on your profile</h3>
         <p>Show the work first. Then move toward roles it supports.</p>
-        <span className="gw-career-chip">Proof ready</span>
       </div>
     </div>
   )
@@ -166,15 +151,13 @@ export default function GatewayStage({ intent }: { intent: GatewayIntent }) {
     <div
       className={`gateway-stage gateway-stage--${intent.id}`}
       style={{ '--stage-accent': intent.accent } as React.CSSProperties}
+      key={intent.id}
     >
-      <div className="gateway-stage-label">{intent.stageLabel}</div>
-      <div className="gateway-stage-body" key={intent.id}>
-        {intent.id === 'skills' && <SkillsArtifact />}
-        {intent.id === 'exams' && <ExamsArtifact />}
-        {intent.id === 'schooling' && <SchoolingArtifact />}
-        {intent.id === 'university' && <UniversityArtifact />}
-        {intent.id === 'career' && <CareerArtifact />}
-      </div>
+      {intent.id === 'skills' && <SkillsArtifact />}
+      {intent.id === 'exams' && <ExamsArtifact />}
+      {intent.id === 'schooling' && <SchoolingArtifact />}
+      {intent.id === 'university' && <UniversityArtifact />}
+      {intent.id === 'career' && <CareerArtifact />}
     </div>
   )
 }

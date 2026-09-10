@@ -22,12 +22,12 @@ export default function SkylentGatewayHero() {
         </div>
 
         <h1 id="skylent-gateway-headline" className="skylent-gateway-headline">
-          Learning that becomes<br />
-          something you can <em>use.</em>
+          Start with where<br />
+          you&apos;re <em>going.</em>
         </h1>
 
         <p className="skylent-gateway-lede">
-          One platform for skills, exams, school, university, and career — pick the experience you need.
+          One platform. Different experiences for what you need next.
         </p>
 
         <div
