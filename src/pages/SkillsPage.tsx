@@ -7,6 +7,7 @@ import SkillsCapabilityDiscovery from '../components/skills/SkillsCapabilityDisc
 import SkillsPracticeExperience from '../components/skills/SkillsPracticeExperience'
 import SkillsBuildPreview from '../components/skills/SkillsBuildPreview'
 import SkillsEvidencePreview from '../components/skills/SkillsEvidencePreview'
+import SkillsNextStepPreview from '../components/skills/SkillsNextStepPreview'
 
 const PROFESSIONAL = programs.filter(p => p.programType === 'PROFESSIONAL')
 const CERTIFICATES = programs.filter(p => p.programType === 'CERTIFICATE')
@@ -51,7 +52,9 @@ export default function SkillsPage() {
 
         <SkillsEvidencePreview />
 
-        {/* Residual later scrolls — untouched until Phase 2 Scroll 6+ */}
+        <SkillsNextStepPreview />
+
+        {/* Residual later sections — not part of Skills Phase 2 Scrolls 1–6 */}
         <section className="skills-v2-section skills-v2-section--cream" aria-labelledby="skills-map-heading">
           <div className="skills-v2-inner">
             <header className="skills-v2-copy">
