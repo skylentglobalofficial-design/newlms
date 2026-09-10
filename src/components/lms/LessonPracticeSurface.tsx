@@ -1,5 +1,4 @@
 import { useId, useState } from 'react'
-import { Link } from 'react-router-dom'
 import type { ApiLessonPractice } from '../../lib/lms-api'
 import { getAdjacentLessons } from './lms-utils'
 import type { CourseLesson } from '../../data'
@@ -110,18 +109,18 @@ export default function LessonPracticeSurface({
               Try again
             </button>
           ) : null}
-          <Link to={lessonHref} className="lms-practice-back">
+          <a href={lessonHref} className="lms-practice-back">
             Back to lesson
-          </Link>
+          </a>
           {revealed && nextLesson && nextHref ? (
-            <Link
-              to={nextHref}
+            <a
+              href={nextHref}
               className="lms-practice-next"
               style={{ borderColor: accent.border, background: accent.subtle, color: accent.text }}
             >
               Next lesson
               <strong>{nextLesson.title}</strong>
-            </Link>
+            </a>
           ) : null}
         </div>
       </div>

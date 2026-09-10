@@ -201,9 +201,9 @@ export default function LessonPracticePage() {
         Skip to practice
       </a>
       <header className="lms-header lms-learn-header lms-practice-header">
-        <Link to={lessonHref} className="lms-back-btn">
+        <a href={lessonHref} className="lms-back-btn">
           Back to lesson
-        </Link>
+        </a>
         <span className="lms-header-sep" aria-hidden="true">
           ·
         </span>

@@ -24,6 +24,8 @@ import {
   submitQuizAttempt,
   updateAssignment,
 } from '../lib/lms-api'
+import LessonPracticePage from './LessonPracticePage'
+
 function dashRoute(role?: string) {
   switch (role) {
     case 'faculty':
@@ -48,6 +50,9 @@ export default function LearnPage() {
   const roleAccent = getLmsRoleAccent(user?.role)
   const railTitleId = useId()
   const learnerDash = dashRoute(user?.role)
+  const practiceOpen =
+    location.pathname.endsWith('/practice') ||
+    (typeof window !== 'undefined' && window.location.pathname.endsWith('/practice'))
 
   const course = access.status === 'ready' ? access.course : null
   const allLessons = useMemo(
@@ -72,11 +77,12 @@ export default function LearnPage() {
 
   useEffect(() => {
     if (!selectedLessonId || !slug || access.status !== 'ready') return
+    if (practiceOpen) return
     const target = `/learn/${slug}/${selectedLessonId}`
     if (location.pathname !== target) {
       navigate(target, { replace: true })
     }
-  }, [selectedLessonId, slug, navigate, access.status, location.pathname])
+  }, [selectedLessonId, slug, navigate, access.status, location.pathname, practiceOpen])
 
   useEffect(() => {
     if (lessonId && allLessons.some((lesson) => lesson.id === lessonId)) {
@@ -124,6 +130,12 @@ export default function LearnPage() {
         </Link>
       </div>
     )
+  }
+
+  // Practice lives under the lesson splat route. Prefer the browser pathname because
+  // React Router's location can lag behind history updates on /learn navigations.
+  if (practiceOpen) {
+    return <LessonPracticePage />
   }
 
   if (!authReady || access.status === 'loading') {
@@ -382,13 +394,13 @@ export default function LearnPage() {
 
               {!selectedState.locked && selectedLesson.hasPractice && slug ? (
                 <div className="lms-practice-entry">
-                  <Link
-                    to={`/learn/${slug}/${selectedLesson.id}/practice`}
+                  <a
+                    href={`/learn/${slug}/${selectedLesson.id}/practice`}
                     className="lms-practice-entry-link"
                     style={{ borderColor: roleAccent.border, background: roleAccent.subtle, color: roleAccent.text }}
                   >
                     Try the practice
-                  </Link>
+                  </a>
                   <p className="lms-practice-entry-hint">Apply the idea from this lesson in a short decision task.</p>
                 </div>
               ) : null}
