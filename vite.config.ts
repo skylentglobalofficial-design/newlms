@@ -15,6 +15,14 @@ export default defineConfig(({ mode }) => {
     build: {
       sourcemap: emitSourcemaps ? 'inline' : false,
       minify: !emitSourcemaps,
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'vendor-react'
+            if (id.includes('node_modules/react-router')) return 'vendor-router'
+          },
+        },
+      },
     },
     plugins: [
       react(),

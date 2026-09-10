@@ -324,8 +324,7 @@ function FilterControls({
   return (
     <Section tone="canvas" divider id="catalog-controls" style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
       <GlassSurface level={2} padding="clamp(18px, 3vw, 24px)">
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <div className="skylent-label" style={{ color: accent.text }}>Catalog controls</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center', justifyContent: 'flex-end', marginBottom: 16 }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.42)' }}>
             {resultCount} program{resultCount !== 1 ? 's' : ''}
           </div>
@@ -449,16 +448,10 @@ function FeaturedProgramSection({ program, catalog }: { program: Program; catalo
       <FadeIn>
         <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(28px, 4vw, 56px)', alignItems: 'center' }} className="two-col">
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
-              <span style={{ background: typeAccent.subtleStrong, border: `1px solid ${typeAccent.border}`, borderRadius: 6, padding: '4px 10px', fontSize: 10, fontFamily: 'var(--font-mono)', color: typeAccent.text, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                Featured
-              </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12, flexWrap: 'wrap' }}>
+              <div className="skylent-label" style={{ color: typeAccent.text, marginBottom: 0 }}>{TYPE_LABELS[program.programType]}</div>
               <span style={{ color: status.color, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{status.text}</span>
-              {program.careerSupport && (
-                <span style={{ color: careerAccent.text, fontSize: 10, fontFamily: 'var(--font-mono)' }}>Includes Career OS</span>
-              )}
             </div>
-            <div className="skylent-label" style={{ color: typeAccent.text, marginBottom: 8 }}>{TYPE_LABELS[program.programType]}</div>
             <Heading tone="dark" size="md" style={{ marginBottom: 16 }}>{program.name}</Heading>
             <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: '0 0 24px', maxWidth: 520 }}>{program.desc}</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginBottom: 28 }}>

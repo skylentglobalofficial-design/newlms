@@ -80,7 +80,7 @@ export function useCountUp(target: number, inView: boolean, duration = 1600) {
 // ─── FADE IN COMPONENT ────────────────────────────────────────────────────────
 export function FadeIn({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
   return (
-    <div className={className} style={{ animation: `fadeUp 0.5s ${delay}ms ease both` }}>
+    <div className={className} style={{ animation: `fadeIn 0.3s ${delay}ms ease both` }}>
       {children}
     </div>
   )
@@ -630,7 +630,7 @@ export function PageShell({
   const location = useLocation()
   const autoTheme = useAuroraTheme()
   const theme = auroraTheme ?? autoTheme
-  const showAurora = aurora ?? true
+  const showAurora = aurora ?? false
 
   useEffect(() => {
     if (location.hash) {
@@ -660,7 +660,7 @@ export function PageShell({
 
 // ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
 export const globalCSS = `
-  @keyframes fadeUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
+  @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
   @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.35 } }
   @keyframes spin { to { transform: rotate(360deg) } }
 

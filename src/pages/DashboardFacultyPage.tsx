@@ -184,9 +184,6 @@ function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curric
 
   return (
     <div id="faculty-curriculum" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
-      <div style={{ color: C.slate, fontSize: 11, letterSpacing: '0.08em', marginBottom: 20 }}>
-        Curriculum workspace
-      </div>
       <div className="faculty-path-timeline">
         {curriculum.map((node, i) => {
           const isCurrent = node.status === 'current'
