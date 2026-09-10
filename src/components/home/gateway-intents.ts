@@ -23,7 +23,7 @@ export const GATEWAY_INTENTS: GatewayIntent[] = [
     index: '02',
     label: 'Prepare for exams',
     cta: 'Explore exam prep',
-    to: '/education#competitive-exams',
+    to: '/exams',
     accent: '#3478D4',
   },
   {
@@ -31,7 +31,7 @@ export const GATEWAY_INTENTS: GatewayIntent[] = [
     index: '03',
     label: 'Schooling',
     cta: 'Explore schooling',
-    to: '/education#schooling',
+    to: '/junior',
     accent: '#168C83',
   },
   {
@@ -39,7 +39,7 @@ export const GATEWAY_INTENTS: GatewayIntent[] = [
     index: '04',
     label: 'University',
     cta: 'Explore university',
-    to: '/education#undergraduate',
+    to: '/degrees',
     accent: '#B87918',
   },
   {

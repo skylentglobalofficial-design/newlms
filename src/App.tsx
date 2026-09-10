@@ -20,6 +20,9 @@ const AboutPage = lazy(() => import('./pages/AboutPage'))
 const ProgramPage = lazy(() => import('./pages/ProgramPage'))
 const ProgramsPage = lazy(() => import('./pages/ProgramsPage'))
 const SkillsPage = lazy(() => import('./pages/SkillsPage'))
+const ExamsPage = lazy(() => import('./pages/ExamsPage'))
+const JuniorPage = lazy(() => import('./pages/JuniorPage'))
+const DegreesPage = lazy(() => import('./pages/DegreesPage'))
 const CoursesPage = lazy(() => import('./pages/CoursesPage'))
 const CourseDetailPage = lazy(() => import('./pages/CourseDetailPage'))
 const WorkshopsPage = lazy(() => import('./pages/WorkshopsPage'))
@@ -52,6 +55,9 @@ function AppRoutes() {
         <Route path="/" element={<PublicCanvas themeId="general"><Nav /><HomePage /></PublicCanvas>} />
         <Route path="/education" element={<EducationPage />} />
         <Route path="/skills" element={<SkillsPage />} />
+        <Route path="/exams" element={<ExamsPage />} />
+        <Route path="/junior" element={<JuniorPage />} />
+        <Route path="/degrees" element={<DegreesPage />} />
         <Route path="/career-os" element={<CareerOSLayout />}>
           <Route index element={<CareerOSOverviewPage />} />
           <Route path="profile" element={<CareerOSProfilePage />} />

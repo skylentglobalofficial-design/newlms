@@ -26,7 +26,7 @@ const WORLDS: World[] = [
     label: 'Exams',
     purpose: 'Find the weak spot. Practice until it holds.',
     cta: 'Enter exam prep',
-    to: '/education#competitive-exams',
+    to: '/exams',
     tone: 'exams',
   },
   {
@@ -35,7 +35,7 @@ const WORLDS: World[] = [
     label: 'Schooling',
     purpose: 'Explore a concept until it becomes clear.',
     cta: 'Enter schooling',
-    to: '/education#schooling',
+    to: '/junior',
     tone: 'schooling',
   },
   {
@@ -44,7 +44,7 @@ const WORLDS: World[] = [
     label: 'University',
     purpose: 'Apply knowledge through coursework and projects.',
     cta: 'Enter university',
-    to: '/education#undergraduate',
+    to: '/degrees',
     tone: 'university',
   },
   {
