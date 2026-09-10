@@ -6,6 +6,7 @@ import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
 import { fetchOrganisationDashboard, type OrganisationDashboard } from '../lib/organisation-api'
 import { ProductVisual } from '../components/product/ProductVisuals'
+import '../styles/role-workspaces.css'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'org-overview' },

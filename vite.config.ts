@@ -105,6 +105,13 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
   function replaceHtmlCommentSlot(html: string, slotName: string, content: string): string {
     return html.replace(`<!-- ${slotName} -->`, content)
   }
+  function stripMeta(html: string, attrName: 'name' | 'property', attrValue: string): string {
+    const re = new RegExp(
+      `<meta\\s+[^>]*${attrName}=["']${attrValue}["'][^>]*>\\s*`,
+      'gi',
+    )
+    return html.replace(re, '')
+  }
 
   const title = config.title ?? "Figma Make App"
   const description = config.description ?? ''
@@ -147,6 +154,11 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
         result = replaceHtmlCommentSlot(result, 'figma:head-end', headEnd)
         result = replaceHtmlCommentSlot(result, 'figma:body-start', bodyStart)
         result = replaceHtmlCommentSlot(result, 'figma:body-end', bodyEnd)
+
+        // Avoid duplicate / conflicting meta from both index.html and site.json.
+        if (description) result = stripMeta(result, 'name', 'description')
+        if (title) result = stripMeta(result, 'property', 'og:title')
+        if (description) result = stripMeta(result, 'property', 'og:description')
 
         const tags: HtmlTagDescriptor[] = []
         if (description) {

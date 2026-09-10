@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { PageShell } from '../components/shared'
 import { programs } from '../data'
+import '../styles/junior-surface.css'
 
 const SCHOOLING = programs.filter(p => p.programType === 'SCHOOLING')
 const FEATURED = SCHOOLING[0]

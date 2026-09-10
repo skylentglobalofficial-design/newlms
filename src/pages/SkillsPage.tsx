@@ -8,6 +8,7 @@ import SkillsPracticeExperience from '../components/skills/SkillsPracticeExperie
 import SkillsBuildPreview from '../components/skills/SkillsBuildPreview'
 import SkillsEvidencePreview from '../components/skills/SkillsEvidencePreview'
 import SkillsNextStepPreview from '../components/skills/SkillsNextStepPreview'
+import '../styles/skills-surface.css'
 
 const PROFESSIONAL = programs.filter(p => p.programType === 'PROFESSIONAL')
 const CERTIFICATES = programs.filter(p => p.programType === 'CERTIFICATE')

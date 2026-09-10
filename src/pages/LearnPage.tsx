@@ -6,6 +6,7 @@ import { getLmsRoleAccent } from '../role-themes'
 import CurriculumRail from '../components/lms/CurriculumRail'
 import { LessonContentView, LessonNavigation } from '../components/lms/LessonContent'
 import type { QuizQuestion } from '../components/lms/AssessmentSurface'
+import '../styles/lms-workspace.css'
 import {
   computeCourseProgress,
   getAdjacentLessons,

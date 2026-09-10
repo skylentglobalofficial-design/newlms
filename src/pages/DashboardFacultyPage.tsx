@@ -6,6 +6,7 @@ import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../co
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
 import { fetchFacultyDashboard, type FacultyDashboard, type FacultySubmission } from '../lib/faculty-api'
+import '../styles/role-workspaces.css'
 
 const TEACHING_COURSE_SLUG = 'data-analytics'
 
