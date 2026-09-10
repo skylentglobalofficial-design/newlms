@@ -3,20 +3,13 @@ import { Link } from 'react-router-dom'
 import { PageShell } from '../components/shared'
 import { programs, workshops } from '../data'
 import SkillsCapabilityHero from '../components/skills/SkillsCapabilityHero'
+import SkillsCapabilityDiscovery from '../components/skills/SkillsCapabilityDiscovery'
 
 const PROFESSIONAL = programs.filter(p => p.programType === 'PROFESSIONAL')
 const CERTIFICATES = programs.filter(p => p.programType === 'CERTIFICATE')
 const FEATURED = PROFESSIONAL.find(p => p.slug === 'data-analytics-pro')
   ?? PROFESSIONAL.find(p => p.slug === 'data-science-ai')
   ?? PROFESSIONAL[0]
-
-const CATEGORIES = [
-  { id: 'data', label: 'Data', copy: 'SQL, analysis, dashboards, decision support.' },
-  { id: 'ai', label: 'AI', copy: 'Models, prompts, applied workflows.' },
-  { id: 'coding', label: 'Coding', copy: 'Software, APIs, systems you can ship.' },
-  { id: 'design', label: 'Design', copy: 'Research, prototypes, usable interfaces.' },
-  { id: 'business', label: 'Business', copy: 'Cases, product judgment, operations.' },
-]
 
 const CAPABILITY_MAP = [
   { id: 'sql', label: 'SQL', copy: 'Ask the data the right question.' },
@@ -35,7 +28,6 @@ const PATH_STEPS = [
 ]
 
 export default function SkillsPage() {
-  const [category, setCategory] = useState('data')
   const [capability, setCapability] = useState('analysis')
   const [practiceChoice, setPracticeChoice] = useState<string | null>(null)
 
@@ -49,35 +41,7 @@ export default function SkillsPage() {
       <main className="skills-v2">
         <SkillsCapabilityHero />
 
-        {/* SCROLL 2 — categories */}
-        <section id="skills-categories" className="skills-v2-section" aria-labelledby="skills-cat-heading">
-          <div className="skills-v2-inner">
-            <header className="skills-v2-copy">
-              <div className="home-section-label"><span />Categories</div>
-              <h2 id="skills-cat-heading">Start from the capability area.</h2>
-              <p>Pick a domain. Then map the skills that make someone effective there.</p>
-            </header>
-            <div className="skills-v2-cats" role="tablist" aria-label="Skill categories">
-              {CATEGORIES.map(item => (
-                <button
-                  key={item.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={category === item.id}
-                  className={category === item.id ? 'is-active' : ''}
-                  onClick={() => setCategory(item.id)}
-                >
-                  <strong>{item.label}</strong>
-                  <span>{item.copy}</span>
-                </button>
-              ))}
-            </div>
-            <p className="skills-v2-cat-note">
-              Showing the <strong>{CATEGORIES.find(c => c.id === category)?.label}</strong> lens.
-              Programme links below use the live catalog.
-            </p>
-          </div>
-        </section>
+        <SkillsCapabilityDiscovery />
 
         {/* SCROLL 3 — capability map */}
         <section className="skills-v2-section skills-v2-section--cream" aria-labelledby="skills-map-heading">
