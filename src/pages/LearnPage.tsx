@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useId, useMemo } from 'react'
+import { useState, useEffect, useId, useMemo } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
@@ -44,7 +44,7 @@ export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
   const navigate = useNavigate()
   const { user, ready: authReady } = useAuth()
-  const { access, lessonStates, reload, enroll } = useLmsCourse(slug)
+  const { access, lessonStates, enroll, patchWorkspace } = useLmsCourse(slug)
   const roleAccent = getLmsRoleAccent(user?.role)
   const railTitleId = useId()
   const learnerDash = dashRoute(user?.role)
@@ -111,11 +111,6 @@ export default function LearnPage() {
       setLessonMedia(undefined)
     }
   }, [slug, access.status, selectedLessonId, allLessons, lessonStates])
-
-  const refreshWorkspace = useCallback(async () => {
-    if (!slug) return
-    await reload()
-  }, [slug, reload])
 
   if (!slug) {
     return (
@@ -214,8 +209,8 @@ export default function LearnPage() {
     setCompleting(true)
     try {
       await markLessonComplete(slug, selectedLesson.id)
-      await refreshWorkspace()
-      await fetchCourseWorkspace(slug)
+      const workspace = await fetchCourseWorkspace(slug)
+      patchWorkspace(workspace)
     } catch {
       /* keep current progress on failure */
     } finally {
@@ -227,7 +222,10 @@ export default function LearnPage() {
     if (!slug || !selectedLesson) return false
     const ordered = quizQuestions.map((_, index) => answers[index] ?? -1)
     const result = await submitQuizAttempt(slug, selectedLesson.id, ordered)
-    if (result.passed) await refreshWorkspace()
+    if (result.passed) {
+      const workspace = await fetchCourseWorkspace(slug)
+      patchWorkspace(workspace)
+    }
     return result.passed
   }
 
