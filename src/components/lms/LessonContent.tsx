@@ -111,12 +111,15 @@ export function LessonContentView({
   }
 
   return (
-    <div className="lms-lesson-assignment lms-activity-surface lms-activity-assignment" style={{ borderLeft: `3px solid ${accent.primary}`, paddingLeft: 20 }}>
+    <div className="lms-lesson-assignment lms-activity-surface lms-activity-assignment lms-project-surface" style={{ borderLeft: `3px solid ${accent.primary}`, paddingLeft: 20 }}>
       <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
+      <p style={{ margin: '0 0 16px', color: 'rgba(255,255,255,0.45)', fontSize: 13, lineHeight: 1.55 }}>
+        Project workspace — Brief → Plan → Build → Submit. Different from a video or reading lesson: you produce reviewable work.
+      </p>
       <AssessmentSurface
         mode="assignment"
         title={lesson.title}
-        subtitle="Apply concepts from this module. Faculty will review your submission."
+        subtitle="Turn the brief into an artifact faculty can review. Submitted work can become evidence later."
         accent={accent}
         passed={lessonState.complete || lessonState.assignmentSubmitted}
         onSubmitAssignment={(text) => { void onAssignmentSubmit?.(text) }}

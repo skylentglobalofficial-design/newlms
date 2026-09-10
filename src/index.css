@@ -2323,6 +2323,17 @@ html, body {
 .lms-lesson-type-video .lms-capability-list span.is-active { border-color: #b8cae2; background: #eef4fb; color: #3c6fa8; }
 .lms-lesson-type-quiz .lms-capability-list span.is-active { border-color: #cec2e8; background: #f3effa; color: #7257b8; }
 .lms-lesson-type-assignment .lms-capability-list span.is-active { border-color: #b9d8c5; background: #edf7f0; color: #3b8e61; }
+.lms-project-workspace .lms-project-stages {
+  margin-bottom: 4px;
+}
+.lms-project-surface > p {
+  max-width: 42rem;
+}
+.lms-assignment-workspace.lms-project-workspace textarea {
+  background: #fffdf9 !important;
+  color: #080909 !important;
+  border-color: rgba(8, 9, 9, .16) !important;
+}
 .lms-lesson-type-notes .lms-capability-list span.is-active { border-color: #ddc9a9; background: #fbf4e8; color: #9a7440; }
 .skylent-lms-shell .lms-certificate-banner {
   background: #e5f1eb !important;

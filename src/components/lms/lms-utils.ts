@@ -74,7 +74,7 @@ export function lessonTypeLabel(type: CourseLesson['type']) {
     case 'video': return 'Video lesson'
     case 'notes': return 'Reading'
     case 'quiz': return 'Practice quiz'
-    case 'assignment': return 'Assignment'
+    case 'assignment': return 'Project assignment'
   }
 }
 
@@ -93,15 +93,29 @@ export const LEARNING_LOOP_STAGES: LearningLoopStage[] = [
   { id: 'next', label: 'Next' },
 ]
 
+export type ProjectWorkspaceStage = {
+  id: 'brief' | 'plan' | 'build' | 'submit'
+  label: string
+}
+
+/** Assignment / project workspace stages — distinct from video/notes learning loop. */
+export const PROJECT_WORKSPACE_STAGES: ProjectWorkspaceStage[] = [
+  { id: 'brief', label: 'Brief' },
+  { id: 'plan', label: 'Plan' },
+  { id: 'build', label: 'Build' },
+  { id: 'submit', label: 'Submit' },
+]
+
 export function learningLoopForLesson(
   type: CourseLesson['type'],
   state: LessonState,
-): { phaseLabel: string; prompt: string; activeId: LearningLoopStage['id'] } {
+): { phaseLabel: string; prompt: string; activeId: LearningLoopStage['id'] | ProjectWorkspaceStage['id']; workspaceKind: 'learning' | 'project' } {
   if (type === 'video') {
     return {
       phaseLabel: 'LEARN',
       prompt: 'Build a clear mental model, then use it in the next activity.',
       activeId: state.complete || state.videoWatched ? 'next' : 'learn',
+      workspaceKind: 'learning',
     }
   }
   if (type === 'notes') {
@@ -109,6 +123,7 @@ export function learningLoopForLesson(
       phaseLabel: 'CONTEXT',
       prompt: 'Read for the connection, then mark complete to unlock what follows.',
       activeId: state.complete ? 'next' : 'context',
+      workspaceKind: 'learning',
     }
   }
   if (type === 'quiz') {
@@ -117,18 +132,29 @@ export function learningLoopForLesson(
         phaseLabel: 'PROVE',
         prompt: 'You proved this checkpoint. Continue to the next unlocked lesson.',
         activeId: 'next',
+        workspaceKind: 'learning',
       }
     }
     return {
       phaseLabel: 'TRY',
       prompt: 'Attempt the questions. Use the result as feedback, then retry if needed.',
       activeId: 'try',
+      workspaceKind: 'learning',
+    }
+  }
+  if (state.complete || state.assignmentSubmitted) {
+    return {
+      phaseLabel: 'SUBMIT',
+      prompt: 'Submission recorded. This work can become evidence after faculty review.',
+      activeId: 'submit',
+      workspaceKind: 'project',
     }
   }
   return {
-    phaseLabel: 'APPLY',
-    prompt: 'Turn the brief into evidence you can stand behind.',
-    activeId: state.complete || state.assignmentSubmitted ? 'prove' : 'apply',
+    phaseLabel: 'BRIEF',
+    prompt: 'Read the brief, plan your approach, build the artifact, then submit for review.',
+    activeId: 'brief',
+    workspaceKind: 'project',
   }
 }
 

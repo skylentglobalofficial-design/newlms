@@ -13,6 +13,7 @@ import {
   getAdjacentLessons,
   isLessonUnlocked,
   LEARNING_LOOP_STAGES,
+  PROJECT_WORKSPACE_STAGES,
   learningLoopForLesson,
   lessonTypeLabel,
 } from '../components/lms/lms-utils'
@@ -284,23 +285,29 @@ export default function LearnPage() {
               </div>
               <div className="lms-workspace-grid">
                 <aside className="lms-workspace-brief">
-                  <div className="lms-workspace-brief-label">LEARNING LOOP</div>
-                  <div className="lms-workspace-phase">{learningLoopForLesson(selectedLesson.type, selectedState).phaseLabel}</div>
-                  <h2>{learningLoopForLesson(selectedLesson.type, selectedState).prompt}</h2>
+                  {(() => {
+                    const loop = learningLoopForLesson(selectedLesson.type, selectedState)
+                    const isProject = loop.workspaceKind === 'project'
+                    const stages = isProject ? PROJECT_WORKSPACE_STAGES : LEARNING_LOOP_STAGES
+                    return (
+                      <>
+                  <div className="lms-workspace-brief-label">{isProject ? 'PROJECT WORKSPACE' : 'LEARNING LOOP'}</div>
+                  <div className="lms-workspace-phase">{loop.phaseLabel}</div>
+                  <h2>{loop.prompt}</h2>
                   <p>
                     {selectedLesson.type === 'video'
                       ? 'Watch for the idea that changes how you see the problem.'
                       : selectedLesson.type === 'quiz'
                         ? 'Attempt, read the result, then retry if you need another pass.'
                         : selectedLesson.type === 'assignment'
-                          ? 'Submit work that can be reviewed — this becomes evidence.'
+                          ? 'Brief → Plan → Build → Submit. Produce work that can be reviewed as evidence.'
                           : 'Reading checkpoint. Mark complete when you are ready to continue.'}
                   </p>
-                  <div className="lms-capability-list" aria-label="Learning stages">
-                    {LEARNING_LOOP_STAGES.map(stage => (
+                  <div className="lms-capability-list" aria-label={isProject ? 'Project stages' : 'Learning stages'}>
+                    {stages.map(stage => (
                       <span
                         key={stage.id}
-                        className={learningLoopForLesson(selectedLesson.type, selectedState).activeId === stage.id ? 'is-active' : ''}
+                        className={loop.activeId === stage.id ? 'is-active' : ''}
                       >
                         {stage.label}
                       </span>
@@ -313,9 +320,14 @@ export default function LearnPage() {
                         ? `Next: ${next.title}`
                         : selectedState.complete
                           ? 'Ready for what comes next.'
-                          : 'Keep going. Your next action is in this lesson.'}
+                          : isProject
+                            ? 'Next action: build and submit this project.'
+                            : 'Keep going. Your next action is in this lesson.'}
                     </b>
                   </div>
+                      </>
+                    )
+                  })()}
                 </aside>
                 <div className="lms-workspace-activity">
                   {selectedState.locked ? (
