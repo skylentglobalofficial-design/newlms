@@ -3,7 +3,7 @@ import { C, T } from '../../tokens'
 import type { CourseLesson, CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
 import LessonIcon from './LessonIcon'
-import { computeCourseProgress, isLessonUnlocked, type LmsCourseView } from './lms-utils'
+import { computeCourseProgress, isLessonUnlocked, lessonTypeLabel, type LmsCourseView } from './lms-utils'
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
@@ -81,7 +81,7 @@ export default function CurriculumRail({
                       {lesson.title}
                     </div>
                     <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 9, fontFamily: 'var(--font-mono)', marginTop: 2, textTransform: 'uppercase' }}>
-                      {lesson.type}{lesson.duration ? ` · ${lesson.duration}` : ''}
+                      {lessonTypeLabel(lesson.type)}{lesson.duration ? ` · ${lesson.duration}` : ''}
                     </div>
                   </div>
                   {isCurrent && !isActive && (

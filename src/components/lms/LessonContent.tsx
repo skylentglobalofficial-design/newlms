@@ -71,10 +71,11 @@ export function LessonContentView({
             })}
           </div>
           <div style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 16 }}>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Resources</div>
-            {['Course slides', 'Reference sheet', 'Practice set'].map(r => (
-              <div key={r} style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, padding: '8px 0', borderBottom: `1px solid ${T.lineDark}` }}>{r}</div>
-            ))}
+            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Checkpoint</div>
+            <p style={{ margin: 0, color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.55 }}>
+              Reading materials beyond this placeholder are not attached yet.
+              Mark complete when you are ready to unlock the next lesson.
+            </p>
           </div>
         </div>
         {!lessonState.complete && (

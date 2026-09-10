@@ -78,6 +78,60 @@ export function lessonTypeLabel(type: CourseLesson['type']) {
   }
 }
 
+export type LearningLoopStage = {
+  id: 'context' | 'learn' | 'try' | 'feedback' | 'apply' | 'prove' | 'next'
+  label: string
+}
+
+export const LEARNING_LOOP_STAGES: LearningLoopStage[] = [
+  { id: 'context', label: 'Context' },
+  { id: 'learn', label: 'Learn' },
+  { id: 'try', label: 'Try' },
+  { id: 'feedback', label: 'Feedback' },
+  { id: 'apply', label: 'Apply' },
+  { id: 'prove', label: 'Prove' },
+  { id: 'next', label: 'Next' },
+]
+
+export function learningLoopForLesson(
+  type: CourseLesson['type'],
+  state: LessonState,
+): { phaseLabel: string; prompt: string; activeId: LearningLoopStage['id'] } {
+  if (type === 'video') {
+    return {
+      phaseLabel: 'LEARN',
+      prompt: 'Build a clear mental model, then use it in the next activity.',
+      activeId: state.complete || state.videoWatched ? 'next' : 'learn',
+    }
+  }
+  if (type === 'notes') {
+    return {
+      phaseLabel: 'CONTEXT',
+      prompt: 'Read for the connection, then mark complete to unlock what follows.',
+      activeId: state.complete ? 'next' : 'context',
+    }
+  }
+  if (type === 'quiz') {
+    if (state.complete || state.quizPassed) {
+      return {
+        phaseLabel: 'PROVE',
+        prompt: 'You proved this checkpoint. Continue to the next unlocked lesson.',
+        activeId: 'next',
+      }
+    }
+    return {
+      phaseLabel: 'TRY',
+      prompt: 'Attempt the questions. Use the result as feedback, then retry if needed.',
+      activeId: 'try',
+    }
+  }
+  return {
+    phaseLabel: 'APPLY',
+    prompt: 'Turn the brief into evidence you can stand behind.',
+    activeId: state.complete || state.assignmentSubmitted ? 'prove' : 'apply',
+  }
+}
+
 export type PendingTask = {
   id: string
   kind: 'lesson' | 'quiz' | 'assignment'

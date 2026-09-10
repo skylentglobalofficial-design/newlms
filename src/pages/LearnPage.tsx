@@ -12,6 +12,8 @@ import {
   defaultTabForLesson,
   getAdjacentLessons,
   isLessonUnlocked,
+  LEARNING_LOOP_STAGES,
+  learningLoopForLesson,
   lessonTypeLabel,
 } from '../components/lms/lms-utils'
 import { useLmsCourse } from '../hooks/useLms'
@@ -35,13 +37,6 @@ function dashRoute(role?: string) {
     case 'superadmin': return '/dashboard/admin'
     default: return '/dashboard/student'
   }
-}
-
-function lessonPhase(type: string) {
-  if (type === 'assignment') return { label: 'BUILD', capability: 'Build and submit evidence.' }
-  if (type === 'quiz') return { label: 'PROVE', capability: 'Solve, explain, and check your reasoning.' }
-  if (type === 'notes') return { label: 'UNDERSTAND', capability: 'Explain the idea in your own words.' }
-  return { label: 'LEARN', capability: 'Understand the concept before you apply it.' }
 }
 
 export default function LearnPage() {
@@ -276,7 +271,7 @@ export default function LearnPage() {
               <div className="lms-context-kicker"><span>{lessonTypeLabel(selectedLesson.type)}</span><span>{selectedLesson.duration ?? 'Self-paced'}</span></div>
               <div className="lms-context-module">{course.modules.find(module => module.lessons.some(lesson => lesson.id === selectedLesson.id))?.title ?? 'Current module'}</div>
               <h1>{selectedLesson.title}</h1>
-              <p>{selectedLesson.type === 'video' ? 'Build a clear mental model, then use it in the next activity.' : selectedLesson.type === 'quiz' ? 'Work through the question carefully and use the feedback to sharpen your understanding.' : selectedLesson.type === 'assignment' ? 'Turn the brief into evidence you can stand behind.' : 'Read the key ideas, make a connection, and decide what you can do next.'}</p>
+              <p>{learningLoopForLesson(selectedLesson.type, selectedState).prompt}</p>
             </div>
             <div className={`lms-lesson-panel lms-lesson-frame lms-lesson-type-${selectedLesson.type}`} style={{ border: `1px solid ${tabAccent.border}`, borderLeft: `3px solid ${tabAccent.primary}`, borderRadius: T.rCard, background: 'rgba(255,255,255,0.015)', padding: 'clamp(20px, 3vw, 28px)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
@@ -289,14 +284,38 @@ export default function LearnPage() {
               </div>
               <div className="lms-workspace-grid">
                 <aside className="lms-workspace-brief">
-                  <div className="lms-workspace-brief-label">YOUR BRIEF</div>
-                  <div className="lms-workspace-phase">{lessonPhase(selectedLesson.type).label}</div>
-                  <h2>{lessonPhase(selectedLesson.type).capability}</h2>
-                  <p>{selectedLesson.type === 'video' ? 'Watch for the idea that changes how you see the problem. Pause, take notes, then continue.' : selectedLesson.type === 'quiz' ? 'Choose an answer, look at the feedback, and use it to decide what you understand next.' : selectedLesson.type === 'assignment' ? 'Make your thinking visible. A considered submission becomes evidence of what you can do.' : 'Read for the connection, not just the completion tick.'}</p>
-                  <div className="lms-capability-list">
-                    {['Explain', selectedLesson.type === 'assignment' ? 'Build' : selectedLesson.type === 'quiz' ? 'Solve' : 'Apply', 'Next step'].map((item, index) => <span key={item} className={index === 0 ? 'is-active' : ''}>{item}</span>)}
+                  <div className="lms-workspace-brief-label">LEARNING LOOP</div>
+                  <div className="lms-workspace-phase">{learningLoopForLesson(selectedLesson.type, selectedState).phaseLabel}</div>
+                  <h2>{learningLoopForLesson(selectedLesson.type, selectedState).prompt}</h2>
+                  <p>
+                    {selectedLesson.type === 'video'
+                      ? 'Watch for the idea that changes how you see the problem.'
+                      : selectedLesson.type === 'quiz'
+                        ? 'Attempt, read the result, then retry if you need another pass.'
+                        : selectedLesson.type === 'assignment'
+                          ? 'Submit work that can be reviewed — this becomes evidence.'
+                          : 'Reading checkpoint. Mark complete when you are ready to continue.'}
+                  </p>
+                  <div className="lms-capability-list" aria-label="Learning stages">
+                    {LEARNING_LOOP_STAGES.map(stage => (
+                      <span
+                        key={stage.id}
+                        className={learningLoopForLesson(selectedLesson.type, selectedState).activeId === stage.id ? 'is-active' : ''}
+                      >
+                        {stage.label}
+                      </span>
+                    ))}
                   </div>
-                  <div className="lms-brief-status"><span>{selectedState.complete ? 'Complete' : 'In progress'}</span><b>{selectedState.complete ? 'Ready for what comes next.' : 'Keep going. Your next action is here.'}</b></div>
+                  <div className="lms-brief-status">
+                    <span>{selectedState.complete ? 'Complete' : 'In progress'}</span>
+                    <b>
+                      {next && selectedState.complete
+                        ? `Next: ${next.title}`
+                        : selectedState.complete
+                          ? 'Ready for what comes next.'
+                          : 'Keep going. Your next action is in this lesson.'}
+                    </b>
+                  </div>
                 </aside>
                 <div className="lms-workspace-activity">
                   {selectedState.locked ? (
