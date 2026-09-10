@@ -26,7 +26,7 @@ const DOMAINS: DomainConfig[] = [
   {
     id: 'data-ai',
     label: 'Data & AI',
-    kicker: 'Data & AI / Product metrics',
+    kicker: 'Product metrics',
     accent: '#6D58D9',
     challenges: [
       {
@@ -62,7 +62,7 @@ const DOMAINS: DomainConfig[] = [
   {
     id: 'physics',
     label: 'Physics',
-    kicker: 'Physics / Mechanics',
+    kicker: 'Mechanics',
     accent: '#3478D4',
     challenges: [
       {
@@ -98,7 +98,7 @@ const DOMAINS: DomainConfig[] = [
   {
     id: 'biology',
     label: 'Biology',
-    kicker: 'Biology / Clinical reasoning',
+    kicker: 'Clinical reasoning',
     accent: '#168C83',
     challenges: [
       {
@@ -134,7 +134,7 @@ const DOMAINS: DomainConfig[] = [
   {
     id: 'business',
     label: 'Business',
-    kicker: 'Business / Operations',
+    kicker: 'Operations',
     accent: '#B87918',
     challenges: [
       {
@@ -170,7 +170,7 @@ const DOMAINS: DomainConfig[] = [
   {
     id: 'coding',
     label: 'Coding',
-    kicker: 'Coding / Debugging',
+    kicker: 'Debugging',
     accent: '#2E73C8',
     challenges: [
       {
@@ -206,7 +206,7 @@ const DOMAINS: DomainConfig[] = [
   {
     id: 'design',
     label: 'Design',
-    kicker: 'Design / Product UX',
+    kicker: 'Product UX',
     accent: '#B45A86',
     challenges: [
       {
@@ -263,6 +263,7 @@ export default function HomeGatewayHero() {
   )
 
   const challenge = domain.challenges[challengeIndex % domain.challenges.length]
+  const challengeNumber = (challengeIndex % domain.challenges.length) + 1
 
   const resetRound = useCallback(() => {
     setSelectedId(null)
@@ -302,9 +303,16 @@ export default function HomeGatewayHero() {
   return (
     <div className="home-gateway" id="hero-challenge">
       <div
-        className="home-gateway-panel"
+        className="home-gateway-surface"
         style={{ '--gateway-accent': domain.accent } as React.CSSProperties}
       >
+        <div className="home-gateway-chrome" aria-hidden="true">
+          <span className="home-gateway-chrome-accent" />
+          <span className="home-gateway-chrome-label">Live challenge</span>
+          <span className="home-gateway-chrome-divider" />
+          <span className="home-gateway-chrome-topic">{domain.label} · {domain.kicker}</span>
+        </div>
+
         <div
           className="home-gateway-domains"
           role="tablist"
@@ -327,24 +335,27 @@ export default function HomeGatewayHero() {
         </div>
 
         <div
+          key={`${domainId}-${challenge.id}`}
           id="gateway-challenge-panel"
           role="tabpanel"
           aria-labelledby={`gateway-tab-${domainId}`}
           className="home-gateway-challenge"
         >
-          <div className="home-gateway-challenge-head">
+          <div className="home-gateway-challenge-meta">
             <span className="home-gateway-kicker">{domain.kicker}</span>
-            <span className="home-gateway-flow">Choose → Check → Learn</span>
+            <span className="home-gateway-progress" aria-label={`Challenge ${challengeNumber} of ${domain.challenges.length}`}>
+              {String(challengeNumber).padStart(2, '0')} / {String(domain.challenges.length).padStart(2, '0')}
+            </span>
           </div>
 
-          <p className="home-gateway-question">{challenge.question}</p>
+          <h2 className="home-gateway-question">{challenge.question}</h2>
 
           <div
             className="home-gateway-choices"
             role="radiogroup"
             aria-label="Answer choices"
           >
-            {challenge.choices.map(choice => {
+            {challenge.choices.map((choice, index) => {
               const selected = selectedId === choice.id
               const showResult = checked && selected
               const isChoiceCorrect = choice.id === challenge.correctId
@@ -363,8 +374,11 @@ export default function HomeGatewayHero() {
                   onClick={() => !checked && setSelectedId(choice.id)}
                   onKeyDown={e => onChoiceKeyDown(e, choice.id)}
                 >
+                  <span className="home-gateway-choice-index" aria-hidden="true">
+                    {String.fromCharCode(65 + index)}
+                  </span>
+                  <span className="home-gateway-choice-label">{choice.label}</span>
                   <span className="home-gateway-choice-marker" aria-hidden="true" />
-                  <span>{choice.label}</span>
                 </button>
               )
             })}
@@ -391,7 +405,7 @@ export default function HomeGatewayHero() {
           </div>
 
           <div
-            className="home-gateway-feedback"
+            className={`home-gateway-feedback${checked ? ' is-visible' : ''}`}
             aria-live="polite"
             aria-atomic="true"
           >
@@ -407,11 +421,6 @@ export default function HomeGatewayHero() {
                 </p>
               </>
             )}
-          </div>
-
-          <div className="home-gateway-foot">
-            <span>Learning that becomes something.</span>
-            <span className="home-gateway-step">Practice · Feedback · Next step</span>
           </div>
         </div>
       </div>

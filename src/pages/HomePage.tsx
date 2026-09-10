@@ -130,12 +130,15 @@ export default function HomePage() {
           <div className="home-hero-inner home-hero-gateway">
             <div className="home-hero-copy">
               <SectionLabel>Skylent</SectionLabel>
-              <h1>Learning that becomes<br /><em>something.</em></h1>
-              <p>
-                Structured learning, practice, and proof on one platform — from exams and skills to career next steps.
+              <h1 className="home-gateway-headline">
+                Learning that<br />
+                becomes <em>something.</em>
+              </h1>
+              <p className="home-gateway-lede">
+                One platform for different learning paths — structured study, real practice, and proof that leads to action.
               </p>
-              <div className="home-hero-actions">
-                <Link className="home-primary-button" to="/programs">Explore programs <span>↗</span></Link>
+              <div className="home-hero-actions home-gateway-actions">
+                <Link className="home-primary-button" to="/programs">Explore programs <span aria-hidden="true">↗</span></Link>
                 <a className="home-secondary-button" href="#hero-challenge">Try a challenge</a>
               </div>
               <p className="home-hero-loop" aria-label="Learning progression">
