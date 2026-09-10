@@ -3203,6 +3203,8 @@ html, body {
   border-radius: 8px;
   text-decoration: none;
   font: 600 14px/1.2 var(--font-body);
+  cursor: pointer;
+  font-family: var(--font-body);
 }
 .lms-practice-entry-hint {
   margin: 0;

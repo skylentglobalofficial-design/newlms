@@ -24,7 +24,6 @@ import {
   submitQuizAttempt,
   updateAssignment,
 } from '../lib/lms-api'
-
 function dashRoute(role?: string) {
   switch (role) {
     case 'faculty':
@@ -73,8 +72,6 @@ export default function LearnPage() {
 
   useEffect(() => {
     if (!selectedLessonId || !slug || access.status !== 'ready') return
-    // Do not override the Practice route if this page remains mounted during navigation.
-    if (location.pathname.endsWith('/practice')) return
     const target = `/learn/${slug}/${selectedLessonId}`
     if (location.pathname !== target) {
       navigate(target, { replace: true })
