@@ -47,6 +47,7 @@ const DashboardOrgPage = lazy(() => import('./pages/DashboardOrgPage'))
 const DashboardRecruiterPage = lazy(() => import('./pages/DashboardRecruiterPage'))
 const DashboardAdminPage = lazy(() => import('./pages/DashboardAdminPage'))
 const LearnPage = lazy(() => import('./pages/LearnPage'))
+const LessonPracticePage = lazy(() => import('./pages/LessonPracticePage'))
 
 function AppRoutes() {
   return (
@@ -89,6 +90,7 @@ function AppRoutes() {
         <Route path="/dashboard/organisation" element={<RoleRouteGuard allowedRoles={['organisation']}><DashboardOrgPage /></RoleRouteGuard>} />
         <Route path="/dashboard/recruiter" element={<RoleRouteGuard allowedRoles={['recruiter']}><DashboardRecruiterPage /></RoleRouteGuard>} />
         <Route path="/dashboard/admin" element={<RoleRouteGuard allowedRoles={['superadmin']}><DashboardAdminPage /></RoleRouteGuard>} />
+        <Route path="/learn/:slug/:lessonId/practice" element={<RoleRouteGuard allowedRoles={['student']}><LessonPracticePage /></RoleRouteGuard>} />
         <Route path="/learn/:slug" element={<RoleRouteGuard allowedRoles={['student']}><LearnPage /></RoleRouteGuard>} />
         <Route path="/learn/:slug/:lessonId" element={<RoleRouteGuard allowedRoles={['student']}><LearnPage /></RoleRouteGuard>} />
         <Route path="/career" element={<Navigate to="/career-os" replace />} />

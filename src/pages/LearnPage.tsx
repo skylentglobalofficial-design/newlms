@@ -378,6 +378,19 @@ export default function LearnPage() {
                 )}
               </div>
 
+              {!selectedState.locked && selectedLesson.hasPractice && slug ? (
+                <div className="lms-practice-entry">
+                  <Link
+                    to={`/learn/${slug}/${selectedLesson.id}/practice`}
+                    className="lms-practice-entry-link"
+                    style={{ borderColor: roleAccent.border, background: roleAccent.subtle, color: roleAccent.text }}
+                  >
+                    Try the practice
+                  </Link>
+                  <p className="lms-practice-entry-hint">Apply the idea from this lesson in a short decision task.</p>
+                </div>
+              ) : null}
+
               <LessonNavigation
                 prev={prev}
                 next={next}

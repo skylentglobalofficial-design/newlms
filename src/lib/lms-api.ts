@@ -7,6 +7,16 @@ const API_BASE = "/api/v1"
 
 type ApiError = { error: string }
 
+export class LmsHttpError extends Error {
+  status: number
+
+  constructor(status: number, message: string) {
+    super(message)
+    this.name = "LmsHttpError"
+    this.status = status
+  }
+}
+
 export type ApiLessonState = {
   started: boolean
   complete: boolean
@@ -112,7 +122,7 @@ async function parseJson<T>(response: Response): Promise<T> {
     const message = typeof data === "object" && data && "error" in data
       ? String((data as ApiError).error)
       : "Request failed"
-    throw new Error(message)
+    throw new LmsHttpError(response.status, message)
   }
   return data as T
 }
@@ -267,8 +277,8 @@ export function workspaceToCourse(workspace: ApiCourseWorkspace): LmsCourseView 
         duration: lesson.duration,
         completed: workspace.lessonStates[lesson.id]?.complete ?? false,
         locked: workspace.lessonStates[lesson.id]?.locked ?? false,
+        hasPractice: Boolean(lesson.hasPractice),
         media: lesson.media,
-        // hasPractice is API discovery metadata for future Practice UI; unused by Phase 2 player.
       })),
     })),
   }
