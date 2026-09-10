@@ -434,7 +434,7 @@ export function Nav() {
   ]
 
   return (
-    <nav className="skylent-site-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, backdropFilter: navBlur, WebkitBackdropFilter: navBlur, borderBottom: navBorder, boxShadow: navShadow, transition: 'background 0.4s, backdrop-filter 0.4s, border-color 0.4s, box-shadow 0.4s' }}>
+    <nav className="skylent-site-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, backdropFilter: navBlur, WebkitBackdropFilter: navBlur, borderBottom: navBorder, boxShadow: navShadow, transition: 'background 0.4s, border-color 0.4s, box-shadow 0.4s' }}>
       <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH }}>
         {/* Logo */}
         <button onClick={() => navigate('/')} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: C.ink, background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '-0.02em', padding: 0, flexShrink: 0 }}>
@@ -450,7 +450,7 @@ export function Nav() {
                 <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{ opacity: 0.5, transform: activeMenu === group.label ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l5 6 5-6z"/></svg>
               </button>
               {activeMenu === group.label && (
-                <div className="nav-mega-dropdown" onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)', WebkitBackdropFilter: 'var(--glass-01-blur)', border: '1px solid var(--glass-01-border)', borderRadius: 12, padding: 6, minWidth: 260, maxWidth: 300, boxShadow: '0 18px 48px rgba(8,9,9,0.12)', zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
+                <div className="nav-mega-dropdown" onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: 'rgba(255,253,250,0.98)', border: '1px solid var(--glass-01-border)', borderRadius: 12, padding: 6, minWidth: 260, maxWidth: 300, boxShadow: '0 18px 48px rgba(8,9,9,0.12)', zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
                   <Link to={group.to} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px 12px', borderRadius: 8, textDecoration: 'none', marginBottom: 2, borderBottom: '1px solid rgba(8,9,9,0.08)' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'rgba(8,9,9,0.04)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
@@ -568,9 +568,8 @@ export function Nav() {
             position: 'fixed',
             inset: `${T.navH}px 0 0 0`,
             zIndex: 250,
+            /* Near-opaque overlay — backdrop-filter added cost without visible benefit. */
             background: 'rgba(246, 244, 238, 0.98)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
             borderTop: '1px solid rgba(255,255,255,0.07)',
             padding: '12px 24px 28px',
             overflowY: 'auto',

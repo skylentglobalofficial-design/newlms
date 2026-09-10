@@ -111,10 +111,11 @@ function StickyProgramNav({
   ctaDisabled?: boolean
 }) {
   return (
-    <nav style={{
+    <nav className="program-sticky-nav skylent-sticky-glass" style={{
       position: 'sticky', top: T.navH, zIndex: 80,
-      background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)',
-      WebkitBackdropFilter: 'var(--glass-01-blur)', borderBottom: '1px solid var(--glass-01-border)',
+      /* Avoid second full-width blur stacked under fixed site Nav. */
+      background: 'rgba(255, 253, 250, 0.97)',
+      borderBottom: '1px solid var(--glass-01-border)',
     }}>
       <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div className="program-sticky-nav-scroll" style={{ display: 'flex', overflowX: 'auto', scrollbarWidth: 'none' }}>
