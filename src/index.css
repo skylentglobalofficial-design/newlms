@@ -113,6 +113,184 @@ body {
 .home-proof-line { display: flex; gap: 9px; align-items: center; margin-top: 42px; color: #7B8480; font-size: 12px; }
 .home-proof-dot { width: 7px; height: 7px; border-radius: 50%; background: #2F9C83; box-shadow: 0 0 0 4px rgba(47,156,131,.12); }
 .home-hero-art { position: relative; min-height: 0; width: 100%; }
+
+/* Skylent gateway hero — intent routing */
+.skylent-gateway-hero { background: #f6f4ee; }
+.skylent-gateway-hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, .86fr) minmax(400px, 1.14fr);
+  gap: clamp(40px, 6vw, 100px);
+  align-items: end;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+.skylent-gateway-copy { padding-bottom: clamp(8px, 2vw, 24px); }
+.skylent-gateway-headline {
+  margin: 18px 0 0;
+  max-width: 11ch;
+  font-size: clamp(48px, 6.8vw, 92px);
+  line-height: .96;
+  letter-spacing: -.055em;
+  font-weight: 600;
+}
+.skylent-gateway-headline em {
+  font-style: italic;
+  color: #080909;
+  letter-spacing: -.03em;
+}
+.skylent-gateway-tagline {
+  margin: clamp(20px, 2.5vw, 28px) 0 0;
+  max-width: 28ch;
+  color: #5f6866;
+  font-size: clamp(16px, 1.6vw, 18px);
+  line-height: 1.6;
+}
+.skylent-gateway-detail {
+  margin: 14px 0 0;
+  max-width: 38ch;
+  color: #69716f;
+  font-size: 15px;
+  line-height: 1.65;
+  animation: skylent-gateway-fade .28s ease;
+}
+.skylent-gateway-intents {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: clamp(22px, 3vw, 30px);
+}
+.skylent-gateway-intents button {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: none;
+  border-left: 2px solid transparent;
+  border-radius: 0 6px 6px 0;
+  background: transparent;
+  color: #5f6866;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: color .18s, background .18s, border-color .18s;
+}
+.skylent-gateway-intents button:hover {
+  color: #080909;
+  background: rgba(255,253,250,.7);
+}
+.skylent-gateway-intents button.is-active {
+  border-left-color: var(--intent-accent);
+  background: color-mix(in srgb, var(--intent-accent) 7%, #fffdfc);
+  color: #080909;
+  font-weight: 600;
+}
+.skylent-gateway-intents button:focus-visible {
+  outline: 2px solid var(--intent-accent);
+  outline-offset: 2px;
+}
+.skylent-gateway-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: clamp(24px, 3vw, 34px);
+}
+.skylent-gateway-actions .home-primary-button {
+  min-height: 48px;
+  padding: 0 20px;
+  font-size: 14px;
+}
+.skylent-gateway-actions .home-secondary-button {
+  min-height: 48px;
+  padding: 0 18px;
+  font-size: 14px;
+}
+.skylent-gateway-panel {
+  min-height: clamp(300px, 42vh, 420px);
+  animation: skylent-gateway-fade .32s ease;
+}
+.skylent-gateway-visual {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: inherit;
+  border: 1px solid rgba(8,9,9,.1);
+  background: linear-gradient(180deg, #fffdfc 0%, #faf7f1 100%);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.8) inset,
+    0 24px 72px rgba(8,9,9,.08);
+  overflow: hidden;
+}
+.skylent-gateway-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 20% 0%, color-mix(in srgb, var(--gateway-accent) 9%, transparent), transparent 65%);
+  pointer-events: none;
+}
+.skylent-gateway-visual-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px 0;
+}
+.skylent-gateway-visual-kicker {
+  color: var(--gateway-accent);
+  font: 600 10px var(--font-mono);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.skylent-gateway-visual-hint {
+  color: #a0a8a4;
+  font: 10px var(--font-mono);
+  letter-spacing: .04em;
+}
+.skylent-gateway-visual-body {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  padding: 12px 16px 18px;
+}
+.skylent-gateway-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 240px;
+}
+@keyframes skylent-gateway-fade {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 980px) {
+  .skylent-gateway-hero-inner {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    align-items: start;
+  }
+  .skylent-gateway-copy { order: 1; padding-bottom: 0; }
+  .skylent-gateway-panel { order: 2; min-height: 280px; }
+  .skylent-gateway-headline { max-width: 12ch; font-size: clamp(42px, 11vw, 68px); }
+  .skylent-gateway-tagline,
+  .skylent-gateway-detail { max-width: 42ch; }
+}
+@media (max-width: 520px) {
+  .skylent-gateway-intents button { font-size: 13px; padding: 10px 12px; }
+  .skylent-gateway-svg { min-height: 200px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skylent-gateway-detail,
+  .skylent-gateway-panel,
+  .skylent-gateway-intents button {
+    animation: none;
+    transition: none;
+  }
+}
+
 .home-hero-info-visual {
   padding: 22px 24px 18px;
   border: 1px solid rgba(8,9,9,.12);
