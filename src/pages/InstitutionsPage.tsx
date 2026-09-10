@@ -120,7 +120,7 @@ const partnershipSteps = [
   { n: '02', label: 'Co-design', desc: 'Faculty, curriculum leads, and Skylent design the program together.' },
   { n: '03', label: 'Deployment', desc: 'Skylent OS is configured and deployed for your institution.' },
   { n: '04', label: 'Delivery', desc: 'Live program delivery with ongoing support and analytics.' },
-  { n: '05', label: 'Outcomes', desc: 'Graduate career readiness, placements, and continuous improvement.' },
+  { n: '05', label: 'Outcomes', desc: 'Career readiness workflows and continuous improvement — without invented placement rates.' },
 ]
 
 function InstitutionTypesSection({

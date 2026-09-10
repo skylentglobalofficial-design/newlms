@@ -440,12 +440,14 @@ export default function OSPage() {
             <div style={{ textAlign: 'center', marginBottom: 60 }}>
               <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(243,107,33,0.1)', border: '1px solid rgba(243,107,33,0.22)', borderRadius: 100, padding: '5px 16px', marginBottom: 28 }}>
                 <div style={{ width: 5, height: 5, borderRadius: '50%', background: accent.primary, animation: 'pulse 2s infinite' }} />
-                <span style={{ color: accent.primary, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em' }}>SKYLENT OS — DEMO ENVIRONMENT</span>
+                <span style={{ color: accent.primary, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em' }}>SKYLENT OS — ILLUSTRATIVE DEMO</span>
               </div>
               <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(36px, 5vw, 64px)', fontWeight: 700, color: C.white, letterSpacing: '-0.03em', lineHeight: 1.05, margin: '0 0 16px' }}>
                 You are entering<br /><span style={{ color: accent.primary }}>Skylent OS.</span>
               </h1>
-              <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 16, lineHeight: 1.75, maxWidth: 440, margin: '0 auto' }}>A learning and career operating layer. Select a role to explore the full product experience.</p>
+              <p style={{ color: 'rgba(255,255,255,0.38)', fontSize: 16, lineHeight: 1.75, maxWidth: 480, margin: '0 auto' }}>
+                Learning and career operating layer. Select a role to explore product surfaces — demo data is labelled and not live metrics.
+              </p>
             </div>
           </FadeIn>
 

@@ -95,7 +95,10 @@ function InstitutionWorkspace({
           What needs your attention?
         </div>
         <p style={{ color: C.slate, fontSize: 15, margin: 0, lineHeight: 1.6 }}>
-          Batch analytics unavailable. {batchMessage}
+          Cohort / batch analytics are not in schema yet. {batchMessage}
+        </p>
+        <p style={{ color: C.slate, fontSize: 12, margin: '10px 0 0', lineHeight: 1.5, fontFamily: 'var(--font-mono)', letterSpacing: '0.04em' }}>
+          MISSING · Batch · Cohort · Learner-batch links
         </p>
       </div>
     </div>

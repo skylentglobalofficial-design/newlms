@@ -9,25 +9,6 @@ import { fetchFacultyDashboard, type FacultyDashboard, type FacultySubmission } 
 
 const TEACHING_COURSE_SLUG = 'data-analytics'
 
-const DEMO = {
-  moduleTitle: 'SQL for Analysis',
-  moduleIndex: 3,
-  moduleTotal: 18,
-  lessonTitle: 'Introduction to SQL',
-  sessionContext: 'Cohort A · Live session Thu 4:00 PM',
-  currentAssignment: 'SQL Query Assignment',
-  upcomingAssessment: 'SQL Module Quiz',
-  assessmentWhen: 'Next week',
-}
-
-const CURRICULUM_TEACHING_FALLBACK = [
-  { id: 'module', label: 'Module', detail: 'SQL for Analysis', status: 'complete' as const },
-  { id: 'lesson', label: 'Lesson', detail: 'Introduction to SQL', status: 'complete' as const },
-  { id: 'assignment', label: 'Assignment', detail: 'SQL Query Assignment', status: 'current' as const },
-  { id: 'assessment', label: 'Assessment', detail: 'SQL Module Quiz', status: 'upcoming' as const },
-  { id: 'review', label: 'Review', detail: 'Pending', status: 'upcoming' as const },
-]
-
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'faculty-overview' },
   { id: 'classes', label: 'Classes', short: 'Classes', sectionId: 'faculty-classes' },
@@ -92,6 +73,7 @@ function FacultyWorkspace({
       <AuroraBand themeId="data-analytics" />
 
       <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 4vw, 36px)' }}>
+        <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Teach → Guide → Review</div>
         <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px', lineHeight: 1.1 }}>
           What are you teaching today?
         </h1>
@@ -99,14 +81,34 @@ function FacultyWorkspace({
           {courseContext}
         </p>
         <p style={{ color: C.slate, fontSize: 15, margin: '0 0 4px' }}>
-          {courseName} · {moduleTitle} · Module {moduleIndex}
+          {courseName}{moduleTitle ? ` · ${moduleTitle}` : ''}{moduleTotal > 0 ? ` · Module ${moduleIndex}` : ''}
         </p>
-        <p style={{ color: C.slate, fontSize: 14, margin: '0 0 4px' }}>
-          {lessonTitle}
-        </p>
+        {lessonTitle ? (
+          <p style={{ color: C.slate, fontSize: 14, margin: '0 0 4px' }}>
+            {lessonTitle}
+          </p>
+        ) : null}
         <p style={{ color: C.slate, fontSize: 13, margin: '0 0 24px' }}>
           {sessionContext}
         </p>
+
+        <div style={{
+          display: 'flex', flexWrap: 'wrap', gap: '12px 16px', marginBottom: 20,
+        }}>
+          {[
+            { label: 'Teach', detail: moduleTitle || courseName || 'Assigned curriculum' },
+            { label: 'Guide', detail: 'Learners progress through LMS lessons' },
+            { label: 'Review', detail: pendingCount > 0 ? `${pendingCount} submission(s) waiting` : 'No submissions waiting' },
+          ].map(step => (
+            <div key={step.label} style={{
+              flex: '1 1 140px', minWidth: 0, padding: '12px 14px',
+              background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard,
+            }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.08em', color: accent.text, marginBottom: 6 }}>{step.label}</div>
+              <div style={{ color: C.ink, fontSize: 13, lineHeight: 1.45 }}>{step.detail}</div>
+            </div>
+          ))}
+        </div>
 
         <div style={{
           display: 'flex', flexWrap: 'wrap', gap: '16px 24px', alignItems: 'center',
@@ -132,17 +134,21 @@ function FacultyWorkspace({
             <div style={{ color: C.slate, fontSize: 12 }}>—</div>
             <div style={{ color: C.slate, fontSize: 10, marginTop: 4 }}>Requires cohort integration</div>
           </div>
-          <div style={{ flexShrink: 0 }}>
-            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Module {moduleIndex} of {moduleTotal}</div>
-            <div style={{ color: C.slate, fontSize: 12 }}>{DEMO.currentAssignment}</div>
-          </div>
+          {moduleTotal > 0 && (
+            <div style={{ flexShrink: 0 }}>
+              <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Module {moduleIndex} of {moduleTotal}</div>
+              <div style={{ color: C.slate, fontSize: 12 }}>{lessonTitle || 'Current teaching focus'}</div>
+            </div>
+          )}
         </div>
 
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ height: 4, background: 'rgba(11,13,15,0.08)', borderRadius: 2, overflow: 'hidden' }}>
-            <div style={{ width: `${(moduleIndex / moduleTotal) * 100}%`, height: '100%', background: accent.secondary, borderRadius: 2 }} />
+        {moduleTotal > 0 && (
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ height: 4, background: 'rgba(11,13,15,0.08)', borderRadius: 2, overflow: 'hidden' }}>
+              <div style={{ width: `${(moduleIndex / moduleTotal) * 100}%`, height: '100%', background: accent.secondary, borderRadius: 2 }} />
+            </div>
           </div>
-        </div>
+        )}
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, alignItems: 'center' }}>
           <button
@@ -160,7 +166,7 @@ function FacultyWorkspace({
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
           <span style={{ color: C.slate, fontSize: 13 }}>
-            {DEMO.currentAssignment} · {pendingCount} submissions to review
+            {pendingCount} submission{pendingCount === 1 ? '' : 's'} to review
           </span>
         </div>
       </div>
@@ -171,19 +177,29 @@ function FacultyWorkspace({
 // ─── CURRICULUM TEACHING PATH (Level 0 — canvas timeline) ─────────────────────
 
 function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curriculumSummary'] }) {
-  const curriculum = summary.length > 0
-    ? summary.map((node, index) => ({
-        id: `step-${index}`,
-        label: node.label,
-        detail: node.detail,
-        status: (node.status === 'complete' || node.status === 'current' || node.status === 'upcoming'
-          ? node.status
-          : 'upcoming') as 'complete' | 'current' | 'upcoming',
-      }))
-    : CURRICULUM_TEACHING_FALLBACK
+  if (summary.length === 0) {
+    return (
+      <div id="faculty-curriculum" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
+        <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Teach → Guide → Review</div>
+        <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: 0, maxWidth: 560 }}>
+          Curriculum teaching path appears when the faculty API returns a summary. Until then, use assigned courses and the review queue below.
+        </p>
+      </div>
+    )
+  }
+
+  const curriculum = summary.map((node, index) => ({
+    id: `step-${index}`,
+    label: node.label,
+    detail: node.detail,
+    status: (node.status === 'complete' || node.status === 'current' || node.status === 'upcoming'
+      ? node.status
+      : 'upcoming') as 'complete' | 'current' | 'upcoming',
+  }))
 
   return (
     <div id="faculty-curriculum" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
+      <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>Teach → Guide → Review</div>
       <div className="faculty-path-timeline">
         {curriculum.map((node, i) => {
           const isCurrent = node.status === 'current'
@@ -259,7 +275,7 @@ function AssignmentReview({
             Assignment review
           </div>
           <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, margin: 0 }}>
-            {featured?.lessonTitle ?? DEMO.currentAssignment}
+            {featured?.lessonTitle ?? 'Assignment review'}
           </h3>
         </div>
         <div style={{ display: 'flex', gap: 12, flexShrink: 0 }}>
@@ -340,17 +356,37 @@ function LearnerProgress({ dashboard }: { dashboard: FacultyDashboard | null }) 
 
 // ─── UPCOMING TEACHING (Level 0) ──────────────────────────────────────────────
 
-function UpcomingTeaching({ pendingCount }: { pendingCount: number }) {
+function UpcomingTeaching({
+  pendingCount,
+  courseTitle,
+}: {
+  pendingCount: number
+  courseTitle: string | null
+}) {
   const items = [
-    { type: 'session', title: DEMO.sessionContext, detail: DEMO.lessonTitle },
-    { type: 'assessment', title: DEMO.upcomingAssessment, detail: DEMO.assessmentWhen },
-    { type: 'assignment', title: DEMO.currentAssignment, detail: `${pendingCount} submissions pending review` },
+    {
+      type: 'review' as const,
+      title: pendingCount > 0 ? 'Review learner submissions' : 'No submissions waiting',
+      detail: pendingCount > 0
+        ? `${pendingCount} pending in the review queue`
+        : 'New work appears here when learners submit projects',
+    },
+    {
+      type: 'guide' as const,
+      title: courseTitle ? `Guide · ${courseTitle}` : 'Guide learners in assigned courses',
+      detail: 'Live session schedules require calendar integration — not connected yet',
+    },
+    {
+      type: 'teach' as const,
+      title: 'Teach assigned curriculum',
+      detail: 'Module quizzes and assessments appear when published in the LMS',
+    },
   ]
 
   return (
     <div style={canvasSectionStyle}>
       <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
-        Upcoming teaching
+        Teach · Guide · Review
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
         {items.map((item, i) => (
@@ -364,16 +400,16 @@ function UpcomingTeaching({ pendingCount }: { pendingCount: number }) {
           >
             <div style={{
               width: 32, height: 32, borderRadius: 6,
-              background: item.type === 'assessment' ? 'rgba(245,158,11,0.08)' : accent.subtle,
-              border: `1px solid ${item.type === 'assessment' ? 'rgba(245,158,11,0.2)' : accent.border}`,
+              background: item.type === 'review' ? accent.subtle : 'rgba(11,13,15,0.03)',
+              border: `1px solid ${item.type === 'review' ? accent.border : T.lineLight}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              {item.type === 'session' ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={accent.text} strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              ) : item.type === 'assessment' ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-              ) : (
+              {item.type === 'review' ? (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={accent.text} strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              ) : item.type === 'guide' ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={accent.text} strokeWidth="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={accent.text} strokeWidth="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
               )}
             </div>
             <div style={{ minWidth: 0 }}>
@@ -456,10 +492,19 @@ export default function DashboardFacultyPage() {
   const submissions = dashboard?.submissions ?? []
   const curriculumSummary = dashboard?.curriculumSummary ?? []
   const program = programs.find(p => p.slug === 'data-science-ai') ?? programs[0]
-  const courseName = user.course || program?.name || 'Teaching workspace'
+  const teachingCourse = courses.find(c => c.slug === TEACHING_COURSE_SLUG) ?? courses[0]
+  const courseName = user.course || teachingCourse?.title || program?.name || 'Teaching workspace'
   const displayName = user.name || 'Faculty'
   const honorific = displayName.startsWith('Dr.') ? displayName : `Dr. ${displayName.split(' ').pop()}`
   const courseContext = `${honorific} · ${submissions.length > 0 ? 'Review recent learner submissions' : 'No submissions pending review'}`
+  const currentNode = curriculumSummary.find(n => n.status === 'current') ?? curriculumSummary[0]
+  const moduleTitle = currentNode?.label ?? (teachingCourse ? `${teachingCourse.moduleCount} modules` : '')
+  const lessonTitle = currentNode?.detail ?? ''
+  const moduleTotal = teachingCourse?.moduleCount ?? 0
+  const moduleIndex = Math.min(
+    Math.max(1, curriculumSummary.findIndex(n => n.status === 'current') + 1 || 1),
+    moduleTotal || 1,
+  )
 
   function focusAssignments() {
     setActiveNav('assignments')
@@ -484,12 +529,14 @@ export default function DashboardFacultyPage() {
               <FacultyWorkspace
                 courseName={courseName}
                 courseContext={courseContext}
-                moduleTitle={DEMO.moduleTitle}
-                moduleIndex={DEMO.moduleIndex}
-                moduleTotal={DEMO.moduleTotal}
-                lessonTitle={DEMO.lessonTitle}
-                sessionContext={DEMO.sessionContext}
-                nextAction="Review submissions"
+                moduleTitle={moduleTitle}
+                moduleIndex={moduleIndex}
+                moduleTotal={moduleTotal}
+                lessonTitle={lessonTitle}
+                sessionContext={dashboard?.teachingScopeMessage ?? (dashboard?.teachingScopeAvailable === false
+                  ? 'Teaching scope is limited until faculty–cohort assignment is modeled.'
+                  : 'Teach the curriculum, guide learners, then review submitted work.')}
+                nextAction={submissions.length > 0 ? 'Review submissions' : 'Open review queue'}
                 pendingCount={submissions.length}
                 professionalProgramCount={programs.filter(p => p.programType === 'PROFESSIONAL').length}
                 onReview={focusAssignments}
@@ -512,7 +559,7 @@ export default function DashboardFacultyPage() {
           rail={
             <>
               <div id="faculty-upcoming">
-                <UpcomingTeaching pendingCount={submissions.length} />
+                <UpcomingTeaching pendingCount={submissions.length} courseTitle={teachingCourse?.title ?? null} />
               </div>
               <div id="faculty-classes">
                 <ClassesRail programs={programs} courses={courses} />

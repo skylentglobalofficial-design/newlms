@@ -39,7 +39,7 @@ function AdminOverview() {
       <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 3.5vw, 36px)' }}>
         <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px' }}>Platform overview</h1>
         <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.6, margin: 0, maxWidth: 640 }}>
-          Platform metrics appear here only when backed by connected admin APIs.
+          Platform metrics appear here only when backed by connected admin APIs. No placeholder user counts or revenue figures.
         </p>
       </div>
     </GlassSurface>

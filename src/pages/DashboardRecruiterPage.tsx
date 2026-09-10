@@ -61,8 +61,29 @@ function RecruiterWorkspace({ recruiterName }: { recruiterName: string }) {
           {recruiterName}
         </h1>
         <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-          Review candidates, manage open roles, and track application stages — when recruiter data is connected.
+          Hire from Role → Capability → Evidence. No fabricated candidate pools or placement claims.
         </p>
+      </div>
+
+      <div style={{
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 10, marginBottom: 20,
+      }}>
+        {[
+          { label: 'Role', detail: 'Open roles you need filled' },
+          { label: 'Capability', detail: 'Skills that match the role' },
+          { label: 'Evidence', detail: 'Projects & proof, not resumes alone' },
+        ].map(step => (
+          <div key={step.label} style={{
+            padding: '12px 14px',
+            borderLeft: `3px solid ${accent.primary}`,
+            background: 'rgba(11,13,15,0.02)',
+            borderRadius: T.rCard,
+            border: `1px solid ${T.lineLight}`,
+          }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.08em', color: accent.text, marginBottom: 6 }}>{step.label}</div>
+            <div style={{ color: C.ink, fontSize: 13, lineHeight: 1.45 }}>{step.detail}</div>
+          </div>
+        ))}
       </div>
 
       <div style={{
@@ -77,7 +98,7 @@ function RecruiterWorkspace({ recruiterName }: { recruiterName: string }) {
           What needs your attention?
         </div>
         <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-          No live hiring pipeline is connected yet. Open roles, candidate profiles, and application stages will appear here once recruiter APIs are available.
+          No live hiring pipeline is connected yet. Open roles, candidate capability profiles, and evidence will appear here once recruiter APIs are available.
         </p>
       </div>
     </div>
@@ -157,9 +178,9 @@ function ReviewQueueSection({
       </div>
 
       <div id="rec-candidates">
-        <NeutralNote>
-          No candidates connected yet. Candidate pipeline will appear here when recruiter talent data is available. Filters are ready for when profiles load.
-        </NeutralNote>
+      <NeutralNote>
+        No candidates connected yet. When talent data loads, review will follow Role → Capability → Evidence — not invented readiness scores. Filters are ready for when profiles arrive.
+      </NeutralNote>
       </div>
     </section>
   )
