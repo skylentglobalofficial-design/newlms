@@ -59,7 +59,7 @@ function CareerJourneySection() {
     { num: '02', label: 'Proof', desc: 'Projects and program work' },
     { num: '03', label: 'Application', desc: 'Submit from the job board' },
     { num: '04', label: 'Interview', desc: 'Prep rounds and mocks' },
-    { num: '05', label: 'Outcome', desc: 'Offers and placement status' },
+    { num: '05', label: 'Outcome', desc: 'Offers you track yourself' },
   ]
 
   return (

@@ -64,7 +64,7 @@ export default function SkillsNextStepPreview() {
   }, [directionIndex])
 
   return (
-    <section className="skills-scroll6" aria-labelledby={`${baseId}-heading`}>
+    <section id="job-assistance" className="skills-scroll6" aria-labelledby={`${baseId}-heading`}>
       <div className="skills-scroll6-inner">
         <header className="skills-scroll6-copy">
           <div className="home-section-label"><span />Move</div>

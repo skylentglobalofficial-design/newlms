@@ -38,14 +38,14 @@ const institutionTypes = [
     label: 'Colleges',
     sub: 'Degree Colleges · Autonomous Institutions',
     problem: 'Degrees finish. Employability does not arrive automatically.',
-    value: 'Programs, departments, LMS, skills, projects, and placement readiness alongside the academic calendar.',
-    workflow: ['Programs', 'Departments', 'Students', 'LMS', 'Projects', 'Placement'],
+    value: 'Programs, departments, LMS, skills, projects, and career readiness alongside the academic calendar.',
+    workflow: ['Programs', 'Departments', 'Students', 'LMS', 'Projects', 'Career'],
     description: 'Pair undergraduate study with professional programs, projects, and a path into Career OS for qualifying students.',
     offers: [
       'Professional Programs beside the degree',
       'Skills tracks and project portfolios',
       'Career OS for qualifying students',
-      'Placement preparation workflow',
+      'Career readiness workflow',
     ],
     photo: PHOTO.college,
   },
@@ -238,7 +238,7 @@ function EcosystemSection() {
     },
     {
       name: 'Career OS',
-      items: ['Interview preparation', 'Job Board access', 'Placement support'],
+      items: ['Interview preparation', 'Job Board access', 'Career readiness tools'],
     },
   ]
 
