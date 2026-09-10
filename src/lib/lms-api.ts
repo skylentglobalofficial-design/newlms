@@ -146,9 +146,20 @@ async function lmsMutate<T>(path: string, body: Record<string, unknown>): Promis
   return parseJson<T>(response)
 }
 
+/** Deduplicate concurrent identical LMS GETs (StrictMode / remount races). */
+const inflightWorkspace = new Map<string, Promise<ApiCourseWorkspace>>()
+let inflightDashboard: Promise<ApiCourseWorkspace | null> | null = null
+
 export async function fetchLmsDashboard(): Promise<ApiCourseWorkspace | null> {
-  const result = await lmsGet<{ data: ApiCourseWorkspace | null }>("/lms/dashboard")
-  return result.data
+  const existing = inflightDashboard
+  if (existing) return existing
+  const request = lmsGet<{ data: ApiCourseWorkspace | null }>("/lms/dashboard")
+    .then((result) => result.data)
+    .finally(() => {
+      if (inflightDashboard === request) inflightDashboard = null
+    })
+  inflightDashboard = request
+  return request
 }
 
 export async function fetchCourseAccess(slug: string): Promise<ApiCourseAccess> {
@@ -157,8 +168,15 @@ export async function fetchCourseAccess(slug: string): Promise<ApiCourseAccess> 
 }
 
 export async function fetchCourseWorkspace(slug: string): Promise<ApiCourseWorkspace> {
-  const result = await lmsGet<{ data: ApiCourseWorkspace }>(`/lms/courses/${slug}`)
-  return result.data
+  const existing = inflightWorkspace.get(slug)
+  if (existing) return existing
+  const request = lmsGet<{ data: ApiCourseWorkspace }>(`/lms/courses/${slug}`)
+    .then((result) => result.data)
+    .finally(() => {
+      if (inflightWorkspace.get(slug) === request) inflightWorkspace.delete(slug)
+    })
+  inflightWorkspace.set(slug, request)
+  return request
 }
 
 export async function enrollInCourse(courseSlug: string): Promise<ApiCourseWorkspace> {

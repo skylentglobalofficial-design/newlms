@@ -1,4 +1,4 @@
-import { useState, useEffect, useId, useMemo } from 'react'
+import { useState, useEffect, useId, useMemo, lazy, Suspense } from 'react'
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
@@ -25,7 +25,8 @@ import {
   submitQuizAttempt,
   updateAssignment,
 } from '../lib/lms-api'
-import LessonPracticePage from './LessonPracticePage'
+
+const LessonPracticePage = lazy(() => import('./LessonPracticePage'))
 
 function dashRoute(role?: string) {
   switch (role) {
@@ -113,9 +114,15 @@ export default function LearnPage() {
     }
 
     if (lesson.type === 'video') {
-      fetchLessonMedia(slug, selectedLessonId)
-        .then((payload) => setLessonMedia(payload.media))
-        .catch(() => setLessonMedia(lesson.media ?? { provider: 'unavailable' }))
+      if (lesson.media?.provider === 'mux' && lesson.media.playbackId) {
+        setLessonMedia(lesson.media)
+      } else if (lesson.media?.provider === 'unavailable') {
+        setLessonMedia(lesson.media)
+      } else {
+        fetchLessonMedia(slug, selectedLessonId)
+          .then((payload) => setLessonMedia(payload.media))
+          .catch(() => setLessonMedia(lesson.media ?? { provider: 'unavailable' }))
+      }
     } else {
       setLessonMedia(undefined)
     }
@@ -136,7 +143,17 @@ export default function LearnPage() {
   // Practice lives under the lesson splat route. Prefer the browser pathname because
   // React Router's location can lag behind history updates on /learn navigations.
   if (practiceOpen) {
-    return <LessonPracticePage />
+    return (
+      <Suspense
+        fallback={
+          <div className="lms-gate lms-learn-gate" role="status">
+            <p>Loading practice…</p>
+          </div>
+        }
+      >
+        <LessonPracticePage />
+      </Suspense>
+    )
   }
 
   if (!authReady || access.status === 'loading') {

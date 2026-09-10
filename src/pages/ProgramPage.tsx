@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
-import { EnrollmentModal } from '../components/EnrollmentModal'
 import {
   T, Section, SectionHeader, Eyebrow, Button, Badge,
 } from '../components/ui'
@@ -19,6 +18,10 @@ import { programs } from '../data'
 import type { ProgramType, EnrollmentStatus } from '../data'
 import { isProgramEnrollable } from '../lib/catalog-api'
 import { useCatalogProgram } from '../hooks/useCatalog'
+
+const EnrollmentModal = lazy(() =>
+  import('../components/EnrollmentModal').then((m) => ({ default: m.EnrollmentModal })),
+)
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
@@ -885,19 +888,21 @@ export default function ProgramPage() {
       </section>
 
       {applyOpen && (
-        <EnrollmentModal
-          item={{
-            kind: 'program',
-            slug: program.slug,
-            title: program.name,
-            price: highlightTier.price,
-            enrollmentStatus: enrollStatus,
-            enrollable,
-            linkedCourseSlugs: catalog.data?.linkedCourseSlugs ?? [],
-          }}
-          themeId={auroraTheme}
-          onClose={() => setApplyOpen(false)}
-        />
+        <Suspense fallback={null}>
+          <EnrollmentModal
+            item={{
+              kind: 'program',
+              slug: program.slug,
+              title: program.name,
+              price: highlightTier.price,
+              enrollmentStatus: enrollStatus,
+              enrollable,
+              linkedCourseSlugs: catalog.data?.linkedCourseSlugs ?? [],
+            }}
+            themeId={auroraTheme}
+            onClose={() => setApplyOpen(false)}
+          />
+        </Suspense>
       )}
     </PageShell>
   )

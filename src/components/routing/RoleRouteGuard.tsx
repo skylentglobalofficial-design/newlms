@@ -13,7 +13,13 @@ export function RoleRouteGuard({
   const { user, ready } = useAuth()
   const location = useLocation()
 
-  if (!ready) return null
+  if (!ready) {
+    return (
+      <div role="status" aria-live="polite" style={{ minHeight: "40vh", display: "grid", placeItems: "center", fontSize: 14, color: "#64748b" }}>
+        Checking access…
+      </div>
+    )
+  }
   if (!user) {
     return (
       <Navigate
