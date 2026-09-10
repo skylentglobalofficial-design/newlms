@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import type { ApiCourseWorkspace } from "../lib/lms-api"
 import {
   apiLessonStateToUi,
@@ -6,11 +6,19 @@ import {
   fetchCourseAccess,
   fetchCourseWorkspace,
   fetchLmsDashboard,
+  LmsHttpError,
   workspaceToCourse,
 } from "../lib/lms-api"
 import type { LessonState } from "../demo/types"
 import type { LmsCourseView } from "../components/lms/lms-utils"
 import { EMPTY_LESSON_STATE } from "../demo/DemoStateContext"
+
+function mapLessonStates(workspace: ApiCourseWorkspace | null): Record<string, LessonState> {
+  if (!workspace) return {}
+  return Object.fromEntries(
+    Object.entries(workspace.lessonStates).map(([key, state]) => [key, apiLessonStateToUi(state)]),
+  )
+}
 
 export type LmsAccessState =
   | { status: "loading" }
@@ -41,12 +49,8 @@ export function useLmsDashboard() {
     reload()
   }, [reload])
 
-  const course = workspace ? workspaceToCourse(workspace) : null
-  const lessonStates: Record<string, LessonState> = workspace
-    ? Object.fromEntries(
-        Object.entries(workspace.lessonStates).map(([key, state]) => [key, apiLessonStateToUi(state)]),
-      )
-    : {}
+  const course = useMemo(() => (workspace ? workspaceToCourse(workspace) : null), [workspace])
+  const lessonStates = useMemo(() => mapLessonStates(workspace), [workspace])
 
   return { workspace, course, lessonStates, loading, error, reload }
 }
@@ -58,26 +62,32 @@ export function useLmsCourse(slug: string | undefined) {
     if (!slug) return
     setAccess({ status: "loading" })
     try {
-      const accessInfo = await fetchCourseAccess(slug)
-      if (!accessInfo.authenticated) {
-        setAccess({ status: "login_required" })
-        return
-      }
-      if (!accessInfo.enrolled || !accessInfo.canAccess) {
-        setAccess({
-          status: "not_enrolled",
-          courseSlug: accessInfo.courseSlug ?? slug,
-          courseTitle: accessInfo.courseTitle ?? slug,
-        })
-        return
-      }
+      // Workspace-first: avoids access→workspace waterfall. Auth/enrollment
+      // failures map from HTTP status (401/403) instead of a probe round-trip.
       const workspace = await fetchCourseWorkspace(slug)
       setAccess({
         status: "ready",
         workspace,
         course: workspaceToCourse(workspace),
       })
-    } catch {
+    } catch (err) {
+      if (err instanceof LmsHttpError && err.status === 403) {
+        try {
+          const accessInfo = await fetchCourseAccess(slug)
+          setAccess({
+            status: "not_enrolled",
+            courseSlug: accessInfo.courseSlug ?? slug,
+            courseTitle: accessInfo.courseTitle ?? slug,
+          })
+        } catch {
+          setAccess({
+            status: "not_enrolled",
+            courseSlug: slug,
+            courseTitle: slug,
+          })
+        }
+        return
+      }
       setAccess({ status: "login_required" })
     }
   }, [slug])
@@ -97,15 +107,10 @@ export function useLmsCourse(slug: string | undefined) {
     return workspace
   }, [slug])
 
-  const lessonStates: Record<string, LessonState> =
-    access.status === "ready"
-      ? Object.fromEntries(
-          Object.entries(access.workspace.lessonStates).map(([key, state]) => [
-            key,
-            apiLessonStateToUi(state),
-          ]),
-        )
-      : {}
+  const lessonStates = useMemo(
+    () => (access.status === "ready" ? mapLessonStates(access.workspace) : {}),
+    [access],
+  )
 
   const getLessonState = (lessonId: string): LessonState =>
     lessonStates[lessonId] ?? { ...EMPTY_LESSON_STATE }

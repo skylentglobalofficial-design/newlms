@@ -2,7 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { getAuroraTheme, getDomainAccent, resolveAuroraTheme, type AuroraThemeId } from '../aurora-themes'
 import { C, T, glass, type GlassLevel } from '../tokens'
-import { parseSkylentVisualRef, isSkylentVisualRef } from '../media'
+import { parseSkylentVisualRef, isSkylentVisualRef } from '../lib/media-ref'
 import type { ProductVisualId } from './product/ProductVisuals'
 
 const ProductVisual = lazy(() =>
@@ -144,6 +144,7 @@ export function GlassSurface({
   return (
     <div
       className={className}
+      data-skylent-glass=""
       style={{
         background: g.bg,
         border: `1px solid ${g.border}`,
@@ -152,6 +153,7 @@ export function GlassSurface({
         boxShadow: g.shadow,
         borderRadius: radius,
         padding,
+        contain: 'paint',
         ...style,
       }}
     >
@@ -446,14 +448,13 @@ export function ContextualNavBar({
 
   return (
     <div
-      className="contextual-nav-bar"
+      className="contextual-nav-bar skylent-sticky-glass"
       style={{
         position: 'sticky',
         top: T.navH,
         zIndex: 70,
-        background: 'var(--glass-01-bg)',
-        backdropFilter: 'var(--glass-01-blur)',
-        WebkitBackdropFilter: 'var(--glass-01-blur)',
+        /* Solid-enough surface under fixed Nav — avoid stacked backdrop-filter while scrolling. */
+        background: 'rgba(255, 253, 250, 0.97)',
         borderBottom: `1px solid ${T.lineDark}`,
       }}
     >

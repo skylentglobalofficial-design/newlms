@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { C, FadeIn, EnrollmentModal, PageShell } from '../components/shared'
+import { C, FadeIn, PageShell } from '../components/shared'
 import {
   T, Section, SectionHeader, Eyebrow, Button, Badge,
 } from '../components/ui'
@@ -18,6 +18,10 @@ import { programs } from '../data'
 import type { ProgramType, EnrollmentStatus } from '../data'
 import { isProgramEnrollable } from '../lib/catalog-api'
 import { useCatalogProgram } from '../hooks/useCatalog'
+
+const EnrollmentModal = lazy(() =>
+  import('../components/EnrollmentModal').then((m) => ({ default: m.EnrollmentModal })),
+)
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
@@ -111,10 +115,11 @@ function StickyProgramNav({
   ctaDisabled?: boolean
 }) {
   return (
-    <nav style={{
+    <nav className="program-sticky-nav skylent-sticky-glass" style={{
       position: 'sticky', top: T.navH, zIndex: 80,
-      background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)',
-      WebkitBackdropFilter: 'var(--glass-01-blur)', borderBottom: '1px solid var(--glass-01-border)',
+      /* Avoid second full-width blur stacked under fixed site Nav. */
+      background: 'rgba(255, 253, 250, 0.97)',
+      borderBottom: '1px solid var(--glass-01-border)',
     }}>
       <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div className="program-sticky-nav-scroll" style={{ display: 'flex', overflowX: 'auto', scrollbarWidth: 'none' }}>
@@ -883,19 +888,21 @@ export default function ProgramPage() {
       </section>
 
       {applyOpen && (
-        <EnrollmentModal
-          item={{
-            kind: 'program',
-            slug: program.slug,
-            title: program.name,
-            price: highlightTier.price,
-            enrollmentStatus: enrollStatus,
-            enrollable,
-            linkedCourseSlugs: catalog.data?.linkedCourseSlugs ?? [],
-          }}
-          themeId={auroraTheme}
-          onClose={() => setApplyOpen(false)}
-        />
+        <Suspense fallback={null}>
+          <EnrollmentModal
+            item={{
+              kind: 'program',
+              slug: program.slug,
+              title: program.name,
+              price: highlightTier.price,
+              enrollmentStatus: enrollStatus,
+              enrollable,
+              linkedCourseSlugs: catalog.data?.linkedCourseSlugs ?? [],
+            }}
+            themeId={auroraTheme}
+            onClose={() => setApplyOpen(false)}
+          />
+        </Suspense>
       )}
     </PageShell>
   )

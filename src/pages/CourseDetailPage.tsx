@@ -1,12 +1,16 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { C, FadeIn, PageShell, EnrollmentModal } from '../components/shared'
+import { C, FadeIn, PageShell } from '../components/shared'
 import { Button, Eyebrow, Section, T } from '../components/ui'
 import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { courses } from '../data'
 import { useCatalogCourse } from '../hooks/useCatalog'
 import { coursePhoto } from '../media'
+
+const EnrollmentModal = lazy(() =>
+  import('../components/EnrollmentModal').then((m) => ({ default: m.EnrollmentModal })),
+)
 
 const accent = getDomainAccent('professional')
 
@@ -178,11 +182,13 @@ export default function CourseDetailPage() {
       </Section>
 
       {enrollOpen && (
-        <EnrollmentModal
-          item={{ kind: 'course', slug: course.slug, title: course.title, price, enrollable }}
-          onClose={() => setEnrollOpen(false)}
-          themeId="professional"
-        />
+        <Suspense fallback={null}>
+          <EnrollmentModal
+            item={{ kind: 'course', slug: course.slug, title: course.title, price, enrollable }}
+            onClose={() => setEnrollOpen(false)}
+            themeId="professional"
+          />
+        </Suspense>
       )}
     </PageShell>
   )

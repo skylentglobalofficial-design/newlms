@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext'
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard'
 import { DemoStateProvider } from './demo/DemoStateContext'
 import RouteFallback from './components/RouteFallback'
+import ScrollCompositorRelief from './components/ScrollCompositorRelief'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
 const EducationPage = lazy(() => import('./pages/EducationPage'))
@@ -120,6 +121,8 @@ export default function App() {
     <BrowserRouter>
       {/* Hoisted above auth/demo ready flips so CSS is not re-reconciled on session probe. */}
       <style>{globalCSS}</style>
+      {/* Phase 6: classList-only scroll relief — no React setState on scroll. */}
+      <ScrollCompositorRelief />
       <AuthProvider>
         <DemoStateProvider>
           <AppRouteTree />

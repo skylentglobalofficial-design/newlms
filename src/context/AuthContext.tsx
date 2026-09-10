@@ -70,16 +70,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (session) {
           setUser(toAuthUser(session))
           setRoles(session.roles)
+          // Authenticated routes gate on `ready` (Career OS, LMS, dashboards).
+          // Promote ready immediately so those shells are not blank while React
+          // would otherwise defer the transition behind public paint work.
+          setReady(true)
+          return
         }
       } catch {
         if (!cancelled) {
           setUser(null)
           setRoles([])
         }
-      } finally {
-        // Keep session restore off the urgent paint path on public pages.
-        if (!cancelled) startTransition(() => setReady(true))
       }
+      // Anonymous session: keep ready off the urgent path so public first paint
+      // is not blocked by auth bookkeeping.
+      if (!cancelled) startTransition(() => setReady(true))
     }
 
     restoreSession()

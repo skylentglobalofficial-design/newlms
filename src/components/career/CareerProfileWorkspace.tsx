@@ -29,7 +29,10 @@ export default function CareerProfileWorkspace() {
 
   useEffect(() => {
     const sections = PROFILE_NAV.map(item => item.id)
-    function onScroll() {
+    let raf = 0
+    let lastId = ""
+    function measure() {
+      raf = 0
       let current = sections[0]
       for (const id of sections) {
         const el = document.getElementById(id)
@@ -37,11 +40,21 @@ export default function CareerProfileWorkspace() {
         const top = el.getBoundingClientRect().top
         if (top <= 140) current = id
       }
-      setActiveSection(current)
+      if (current !== lastId) {
+        lastId = current
+        setActiveSection(current)
+      }
+    }
+    function onScroll() {
+      if (raf) return
+      raf = requestAnimationFrame(measure)
     }
     window.addEventListener("scroll", onScroll, { passive: true })
-    onScroll()
-    return () => window.removeEventListener("scroll", onScroll)
+    measure()
+    return () => {
+      window.removeEventListener("scroll", onScroll)
+      if (raf) cancelAnimationFrame(raf)
+    }
   }, [profile])
 
   if (loading) {

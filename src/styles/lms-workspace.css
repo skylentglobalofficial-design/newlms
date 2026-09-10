@@ -13,7 +13,6 @@
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  backdrop-filter: blur(20px);
 }
 
 .lms-sidebar-overlay {
