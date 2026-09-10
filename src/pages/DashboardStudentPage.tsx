@@ -9,6 +9,7 @@ import {
   LearningWorkspacePanel,
   CurriculumProgressRail,
   StudentProgressSurface,
+  StudentEvidenceSurface,
   StudentActionRail,
   computeCourseProgress,
   getPendingTasks,
@@ -23,6 +24,7 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: 'courses', label: 'Courses', short: 'Courses', sectionId: 'student-curriculum' },
   { id: 'assignments', label: 'Assignments', short: 'Tasks', sectionId: 'student-rail' },
   { id: 'progress', label: 'Progress', short: 'Progress', sectionId: 'student-progress' },
+  { id: 'evidence', label: 'Evidence', short: 'Proof', sectionId: 'student-evidence' },
   { id: 'career', label: 'Career OS', short: 'Career', href: '/career-os' },
   { id: 'settings', label: 'Settings', short: 'Settings', sectionId: 'student-certificates' },
 ]
@@ -37,6 +39,7 @@ function NavIcon({ id }: { id: string }) {
   if (id === 'courses') return <svg {...s}><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
   if (id === 'assignments') return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
   if (id === 'progress') return <svg {...s}><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+  if (id === 'evidence') return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M9 15l2 2 4-4"/></svg>
   if (id === 'career') return <svg {...s}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
   return <svg {...s}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
 }
@@ -65,6 +68,8 @@ export default function DashboardStudentPage() {
   const recent = course
     ? getRecentActivity([course], () => lessonStates)
     : []
+  const assignmentLessons = course?.modules.flatMap(m => m.lessons).filter(l => l.type === 'assignment') ?? []
+  const assignmentsSubmitted = assignmentLessons.filter(l => lessonStates[l.id]?.complete).length
 
   const activeProject = program?.projectsDetail?.[Math.min(workspace?.progress.completedCount ?? 0, (program?.projectsDetail?.length ?? 1) - 1)] ?? program?.projectsDetail?.[0]
 
@@ -171,6 +176,18 @@ export default function DashboardStudentPage() {
               </div>
               <CurriculumProgressRail course={course} lessonStates={lessonStates} accent={accent} learnSlug={learnSlug} />
               <StudentProgressSurface course={course} lessonStates={lessonStates} accent={accent} certificateReady={allComplete} />
+              <StudentEvidenceSurface
+                courseTitle={course.title}
+                enrollmentStatus={workspace.enrollment.status}
+                progressPct={progressPct}
+                completedCount={workspace.progress.completedCount}
+                totalLessons={workspace.progress.totalLessons}
+                assignmentsSubmitted={assignmentsSubmitted}
+                assignmentsTotal={assignmentLessons.length}
+                certificateEligible={workspace.enrollment.certificateEligible}
+                certificateStatus={workspace.enrollment.certificateStatus}
+                accent={accent}
+              />
               <div id="student-certificates" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
                 <div className="skylent-label" style={{ color: C.slate, marginBottom: 10 }}>Certificate</div>
                 {workspace.enrollment.certificateEligible ? (

@@ -8,6 +8,7 @@ export {
   LearningWorkspacePanel,
   CurriculumProgressRail,
   StudentProgressSurface,
+  StudentEvidenceSurface,
   StudentActionRail,
 } from './StudentDashboard'
 export * from './lms-utils'

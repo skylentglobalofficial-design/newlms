@@ -13,6 +13,14 @@ import { LoadingBlock, FeedbackBanner } from "../../components/career/section-ui
 
 const accent = getDomainAccent("career")
 
+const PATH_STAGES = [
+  { id: "skills", label: "Skills", href: "/skills", copy: "Capability you are building" },
+  { id: "projects", label: "Projects", href: "/career-os/profile", copy: "Work you can show" },
+  { id: "evidence", label: "Evidence", href: "/dashboard/student", copy: "LMS progress & certificates" },
+  { id: "profile", label: "Profile", href: "/career-os/profile", copy: "How employers see you" },
+  { id: "opportunities", label: "Opportunities", href: "/career-os/jobs", copy: "Roles you can pursue" },
+] as const
+
 export default function CareerOSOverviewPage() {
   const { profile, loading, error, reload } = useCareerProfile()
   const [applicationCount, setApplicationCount] = useState<number | null>(null)
@@ -55,6 +63,7 @@ export default function CareerOSOverviewPage() {
 
   const displayName = profile.displayName || "Your profile"
   const nextAction = profile.completeness.nextRecommended
+  const evidenceCount = profile.projects.length
   const activeSupport = supportRequests.filter(isActiveRequest)
   const nextSupportTask = getNextOpenTask(supportRequests)
   const openSupportTasks = countOpenTasks(activeSupport)
@@ -65,24 +74,37 @@ export default function CareerOSOverviewPage() {
         <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.white }}>
           Career OS
         </h1>
-        <p style={{ margin: 0, color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.6 }}>
-          Your profile, applications, and interview prep in one workspace.
+        <p style={{ margin: 0, color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.6, maxWidth: 560 }}>
+          Skills → Projects → Evidence → Profile → Opportunities. Clarity on what to do next — not placement promises.
         </p>
       </div>
 
       <AuthDashboardLayout
         primary={(
           <>
+            {nextAction && (
+              <div style={{ padding: "18px 20px", borderRadius: T.rControl, border: `1px solid ${accent.border}`, background: accent.subtle, marginBottom: 20 }}>
+                <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", letterSpacing: "0.08em", color: accent.text, marginBottom: 6, textTransform: "uppercase" }}>Next action</div>
+                <div style={{ color: C.white, fontSize: 17, fontWeight: 600, marginBottom: 8, lineHeight: 1.4 }}>{nextAction}</div>
+                <p style={{ margin: "0 0 12px", color: "rgba(255,255,255,0.5)", fontSize: 13, lineHeight: 1.55 }}>
+                  Complete this before chasing roles. Profile strength and evidence come first.
+                </p>
+                <Link to="/career-os/profile" style={{ color: accent.text, fontSize: 13, textDecoration: "none", fontWeight: 600 }}>
+                  Open profile workspace →
+                </Link>
+              </div>
+            )}
+
             <GlassSurface level={2} padding="22px" style={{ marginBottom: 20 }}>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 20, justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div style={{ minWidth: 0 }}>
-                  <div style={{ fontSize: 12, color: accent.text, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--font-mono)" }}>Profile state</div>
+                  <div style={{ fontSize: 12, color: accent.text, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--font-mono)" }}>Profile</div>
                   <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: C.white, marginBottom: 6 }}>{displayName}</div>
                   <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 14 }}>
                     {profile.headline || "No headline yet"}
                   </div>
                   <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, marginTop: 8 }}>
-                    {[profile.preferredRole, profile.location, profile.preferredWorkMode?.replace("_", " ")].filter(Boolean).join(" · ") || "Complete your basics to help employers understand your goals"}
+                    {[profile.preferredRole, profile.location, profile.preferredWorkMode?.replace("_", " ")].filter(Boolean).join(" · ") || "Complete your basics so employers understand your goals"}
                   </div>
                 </div>
                 <div style={{ textAlign: "right" }}>
@@ -95,30 +117,64 @@ export default function CareerOSOverviewPage() {
               </div>
             </GlassSurface>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: 12, marginBottom: 24 }}>
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ fontSize: 12, color: accent.text, marginBottom: 12, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>
+                Path clarity
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 140px), 1fr))", gap: 10 }}>
+                {PATH_STAGES.map((stage, index) => (
+                  <Link
+                    key={stage.id}
+                    to={stage.href}
+                    style={{
+                      textDecoration: "none",
+                      padding: "14px 14px",
+                      borderRadius: T.rControl,
+                      border: `1px solid ${T.lineDark}`,
+                      background: "rgba(255,255,255,0.02)",
+                    }}
+                  >
+                    <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, color: "rgba(255,255,255,0.35)", marginBottom: 6 }}>
+                      {String(index + 1).padStart(2, "0")}
+                    </div>
+                    <div style={{ color: C.white, fontSize: 14, fontWeight: 600, marginBottom: 4 }}>{stage.label}</div>
+                    <div style={{ color: "rgba(255,255,255,0.42)", fontSize: 12, lineHeight: 1.45 }}>{stage.copy}</div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 160px), 1fr))", gap: 12, marginBottom: 24 }}>
               {[
-                { label: "Education", value: profile.education.length },
-                { label: "Experience", value: profile.experience.length },
-                { label: "Skills", value: profile.skills.length },
-                { label: "Projects", value: profile.projects.length },
-                { label: "Links", value: profile.links.length },
+                { label: "Skills", value: profile.skills.length, note: "on profile" },
+                { label: "Projects", value: profile.projects.length, note: "listed" },
+                { label: "Evidence", value: evidenceCount, note: "project artifacts on profile" },
+                { label: "Education", value: profile.education.length, note: "entries" },
+                { label: "Experience", value: profile.experience.length, note: "entries" },
+                { label: "Links", value: profile.links.length, note: "portfolio / social" },
               ].map(item => (
                 <div key={item.label} style={{ padding: "14px 16px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.02)" }}>
                   <div style={{ fontSize: 22, fontWeight: 700, color: C.white }}>{item.value}</div>
                   <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>{item.label}</div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.32)", marginTop: 4 }}>{item.note}</div>
                 </div>
               ))}
             </div>
 
-            {nextAction && (
-              <div style={{ padding: "16px 18px", borderRadius: T.rControl, border: `1px solid ${accent.border}`, background: accent.subtle, marginBottom: 20 }}>
-                <div style={{ fontSize: 12, color: accent.text, marginBottom: 4 }}>Next action</div>
-                <div style={{ color: C.white, fontSize: 15, marginBottom: 12 }}>{nextAction}</div>
-                <Link to="/career-os/profile" style={{ color: accent.text, fontSize: 13, textDecoration: "none", fontWeight: 600 }}>
-                  Open profile workspace →
+            <GlassSurface level={2} padding="18px" style={{ marginBottom: 20 }}>
+              <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Evidence</div>
+              <p style={{ margin: "0 0 10px", color: "rgba(255,255,255,0.5)", fontSize: 13, lineHeight: 1.6 }}>
+                Career OS uses profile projects and links you add. Auto-import from LMS assignments is not connected yet — add reviewed work manually.
+              </p>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+                <Link to="/career-os/profile" style={{ color: accent.text, fontSize: 13, textDecoration: "none" }}>
+                  Add or edit projects →
+                </Link>
+                <Link to="/dashboard/student" style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, textDecoration: "none" }}>
+                  View LMS evidence →
                 </Link>
               </div>
-            )}
+            </GlassSurface>
 
             {profile.completeness.percent < 100 && profile.completeness.missing.length > 0 && (
               <div style={{ marginBottom: 20 }}>
@@ -221,13 +277,15 @@ export default function CareerOSOverviewPage() {
             )}
 
             <GlassSurface level={2} padding="18px">
-              <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Applications</div>
+              <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Opportunities</div>
               {appsError ? (
                 <p style={{ margin: 0, color: "rgba(255,255,255,0.45)", fontSize: 13 }}>{appsError}</p>
               ) : (
                 <div style={{ fontSize: 28, fontWeight: 700, color: C.white }}>{applicationCount ?? "—"}</div>
               )}
-              <p style={{ margin: "8px 0 0", color: "rgba(255,255,255,0.4)", fontSize: 12.5 }}>Tracked applications from Career OS</p>
+              <p style={{ margin: "8px 0 0", color: "rgba(255,255,255,0.4)", fontSize: 12.5 }}>
+                Applications you track here. Skylent does not invent recruiter interest or placement outcomes.
+              </p>
               {recentApplications.length > 0 && (
                 <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8 }}>
                   {recentApplications.map((app: JobApplication) => (
@@ -252,6 +310,9 @@ export default function CareerOSOverviewPage() {
                   ))}
                 </div>
               )}
+              <Link to="/career-os/jobs" style={{ display: "inline-block", marginTop: 12, color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
+                Browse open roles →
+              </Link>
             </GlassSurface>
           </div>
         )}
