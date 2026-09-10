@@ -4,6 +4,7 @@ import { PageShell } from '../components/shared'
 import { programs, workshops } from '../data'
 import SkillsCapabilityHero from '../components/skills/SkillsCapabilityHero'
 import SkillsCapabilityDiscovery from '../components/skills/SkillsCapabilityDiscovery'
+import SkillsPracticeExperience from '../components/skills/SkillsPracticeExperience'
 
 const PROFESSIONAL = programs.filter(p => p.programType === 'PROFESSIONAL')
 const CERTIFICATES = programs.filter(p => p.programType === 'CERTIFICATE')
@@ -29,7 +30,6 @@ const PATH_STEPS = [
 
 export default function SkillsPage() {
   const [capability, setCapability] = useState('analysis')
-  const [practiceChoice, setPracticeChoice] = useState<string | null>(null)
 
   const featuredProjects = useMemo(
     () => (FEATURED?.projectsDetail ?? []).slice(0, 3),
@@ -43,7 +43,9 @@ export default function SkillsPage() {
 
         <SkillsCapabilityDiscovery />
 
-        {/* SCROLL 3 — capability map */}
+        <SkillsPracticeExperience />
+
+        {/* Residual later scrolls — untouched until Phase 2 Scroll 4+ */}
         <section className="skills-v2-section skills-v2-section--cream" aria-labelledby="skills-map-heading">
           <div className="skills-v2-inner">
             <header className="skills-v2-copy">
@@ -76,46 +78,6 @@ export default function SkillsPage() {
               <Link className="home-secondary-button" to="/programs">
                 See related programmes
               </Link>
-            </div>
-          </div>
-        </section>
-
-        {/* SCROLL 4 — practice */}
-        <section className="skills-v2-section" aria-labelledby="skills-practice-heading">
-          <div className="skills-v2-inner skills-v2-practice">
-            <header className="skills-v2-copy">
-              <div className="home-section-label"><span />Practice</div>
-              <h2 id="skills-practice-heading">A challenge you can attempt now.</h2>
-              <p>Representative prompt. No fake score.</p>
-            </header>
-            <div className="skills-v2-practice-panel">
-              <span>Challenge</span>
-              <h3>Traffic rose. Return visits fell. What do you investigate first?</h3>
-              <div className="skills-v2-practice-options" role="group" aria-label="Practice choices">
-                {[
-                  { id: 'acq', label: 'Acquisition' },
-                  { id: 'ret', label: 'Retention' },
-                  { id: 'price', label: 'Pricing' },
-                ].map(opt => (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    className={practiceChoice === opt.id ? 'is-selected' : ''}
-                    aria-pressed={practiceChoice === opt.id}
-                    onClick={() => setPracticeChoice(opt.id)}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-              {practiceChoice && (
-                <p className="skills-v2-practice-feedback" role="status">
-                  {practiceChoice === 'ret'
-                    ? 'Strong first cut — retention explains fewer returns.'
-                    : 'Useful angle. Retention usually explains this pattern first.'}
-                  {' '}This is illustrative feedback, not a graded result.
-                </p>
-              )}
             </div>
           </div>
         </section>

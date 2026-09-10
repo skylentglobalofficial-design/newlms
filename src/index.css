@@ -3289,6 +3289,305 @@ html, body {
   }
 }
 
+/* Skills Scroll 3 — hands-on practice */
+.skills-scroll3 {
+  padding: clamp(72px, 10vw, 120px) var(--gutter);
+  background: #f6f4ee;
+  border-bottom: 1px solid rgba(8,9,9,.1);
+}
+.skills-scroll3-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.skills-scroll3-copy { max-width: 38ch; }
+.skills-scroll3-copy h2 {
+  margin: 18px 0 0;
+  font-size: clamp(32px, 4.6vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -.04em;
+  font-weight: 600;
+  color: #080909;
+}
+.skills-scroll3-copy h2 em {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+}
+.skills-scroll3-copy > p {
+  margin: 14px 0 0;
+  color: #5f6866;
+  font-size: clamp(15px, 1.4vw, 16px);
+  line-height: 1.55;
+}
+.skills-scroll3-domains {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: clamp(24px, 3vw, 32px);
+  padding: 6px;
+  border: 1px solid rgba(8,9,9,.12);
+  border-radius: 10px;
+  background: rgba(255,253,250,.7);
+}
+.skills-scroll3-domains button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: #5f6866;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.skills-scroll3-domains button span {
+  margin-right: 8px;
+  color: #a0a8a4;
+  font: 10px var(--font-mono);
+  letter-spacing: .06em;
+}
+.skills-scroll3-domains button.is-active {
+  background: #080909;
+  color: #fff;
+  font-weight: 600;
+}
+.skills-scroll3-domains button.is-active span { color: #9fd0ff; }
+.skills-scroll3-domains button:hover:not(.is-active) { color: #080909; }
+.skills-scroll3-domains button:focus-visible {
+  outline: 2px solid #2f73be;
+  outline-offset: 2px;
+}
+.skills-scroll3-board { margin-top: 22px; }
+.skills-scroll3-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-bottom: 12px;
+}
+.skills-scroll3-meta span {
+  color: #080909;
+  font-size: 13px;
+  font-weight: 600;
+}
+.skills-scroll3-meta em {
+  color: #7a837e;
+  font: 10px/1 var(--font-mono);
+  font-style: normal;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.skills-scroll3-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid rgba(8,9,9,.12);
+  border-radius: 12px;
+  background: #fffdfa;
+  box-shadow: 0 18px 48px rgba(8,9,9,.05);
+}
+.skills-scroll3-context {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: clamp(20px, 2.6vw, 28px);
+  background: #171b1f;
+  color: #fff;
+  min-width: 0;
+}
+.skills-scroll3-kicker {
+  color: #9fd0ff;
+  font: 600 10px var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.skills-scroll3-context h3 {
+  margin: 0;
+  font-size: clamp(20px, 2.2vw, 26px);
+  line-height: 1.2;
+  letter-spacing: -.025em;
+  font-weight: 600;
+}
+.skills-scroll3-context ul {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.skills-scroll3-context li {
+  color: rgba(255,255,255,.72);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.skills-scroll3-code {
+  padding: 14px;
+  background: #0f1215;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 8px;
+}
+.skills-scroll3-code li {
+  color: #d7e0dc !important;
+  font: 12px/1.55 var(--font-mono);
+  letter-spacing: .01em;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.skills-scroll3-disclaimer {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.12);
+  color: rgba(255,255,255,.48);
+  font: 11px var(--font-mono);
+  letter-spacing: .02em;
+}
+.skills-scroll3-action {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  padding: clamp(20px, 2.6vw, 28px);
+  background: #fffdfa;
+}
+.skills-scroll3-task {
+  margin: 0;
+  color: #080909;
+  font-size: clamp(18px, 2vw, 22px);
+  line-height: 1.25;
+  letter-spacing: -.02em;
+  font-weight: 600;
+}
+.skills-scroll3-options {
+  display: grid;
+  gap: 8px;
+}
+.skills-scroll3-options button {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-height: 48px;
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(8,9,9,.12);
+  border-radius: 8px;
+  background: #fff;
+  color: #080909;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+  cursor: pointer;
+}
+.skills-scroll3-radio {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  flex-shrink: 0;
+  border: 1.5px solid rgba(8,9,9,.28);
+  border-radius: 50%;
+  background: #fff;
+}
+.skills-scroll3-options button.is-selected {
+  border-color: #080909;
+  background: #f1eee7;
+  box-shadow: inset 3px 0 0 #080909;
+}
+.skills-scroll3-options button.is-selected .skills-scroll3-radio {
+  border-color: #080909;
+  background:
+    radial-gradient(circle at center, #080909 0 5px, transparent 6px),
+    #fff;
+}
+.skills-scroll3-options button.is-preferred:not(.is-selected) {
+  border-color: rgba(47,115,190,.45);
+}
+.skills-scroll3-options button:hover:not(:disabled) {
+  border-color: rgba(8,9,9,.28);
+}
+.skills-scroll3-options button:disabled {
+  cursor: default;
+}
+.skills-scroll3-options button:focus-visible {
+  outline: 2px solid #2f73be;
+  outline-offset: 2px;
+}
+.skills-scroll3-result {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(8,9,9,.12);
+  border-radius: 10px;
+  background: #f6f4ee;
+}
+.skills-scroll3-result > p {
+  margin: 0;
+  color: #2c3331;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.skills-scroll3-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+.skills-scroll3-retry {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid rgba(8,9,9,.16);
+  border-radius: 7px;
+  background: transparent;
+  color: #080909;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.skills-scroll3-retry:hover { background: rgba(8,9,9,.04); }
+.skills-scroll3-retry:focus-visible {
+  outline: 2px solid #2f73be;
+  outline-offset: 2px;
+}
+.skills-scroll3-source {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding-top: 4px;
+}
+.skills-scroll3-source span {
+  color: #7a837e;
+  font: 10px var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.skills-scroll3-source strong {
+  color: #080909;
+  font-size: 13px;
+  font-weight: 600;
+}
+@media (max-width: 860px) {
+  .skills-scroll3-workspace { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+  .skills-scroll3-domains {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+  .skills-scroll3-domains button { justify-content: flex-start; }
+  .skills-scroll3-result-actions { flex-direction: column; align-items: stretch; }
+  .skills-scroll3-result-actions .home-primary-button,
+  .skills-scroll3-retry { width: 100%; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skills-scroll3-domains button,
+  .skills-scroll3-options button,
+  .skills-scroll3-retry {
+    transition: none;
+  }
+}
+
 /* Skills vertical V2 */
 .skills-v2 { background: #fffdfa; color: #080909; }
 .skills-v2-hero {
