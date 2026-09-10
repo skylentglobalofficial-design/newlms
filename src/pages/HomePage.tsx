@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PageShell } from '../components/shared'
+import SkylentGatewayHero from '../components/home/SkylentGatewayHero'
+import LearningEngineStory from '../components/home/LearningEngineStory'
 
 const domains = [
   { label: 'NEET / MBBS', copy: 'Anatomy, clinical reasoning and exam practice.', accent: '#168C83', scene: 'biology', to: '/education#competitive-exams' },
@@ -23,60 +25,6 @@ const journey = ['Schooling', 'Undergraduate', 'Postgraduate', 'Exams', 'Skills'
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return <div className="home-section-label"><span />{children}</div>
-}
-
-function HeroInformationVisual() {
-  const [orbitMode, setOrbitMode] = useState<'observe' | 'change'>('observe')
-  const velocity = orbitMode === 'observe' ? '7.2' : '9.4'
-  const outcome = orbitMode === 'observe' ? 'Stable elliptical path' : 'Orbit widening — escape risk'
-
-  return (
-    <div className="home-hero-info-visual" aria-label="Physics orbit learning workspace">
-      <div className="home-info-visual-head">
-        <span className="home-info-kicker">Physics / Orbit</span>
-        <span className="home-info-flow">Question → Experiment → Observation → Understanding</span>
-      </div>
-      <h3 className="home-info-question">Why does a planet stay in orbit?</h3>
-      <p className="home-info-prompt">Adjust mass or velocity. Read the system. Explain what changed.</p>
-
-      <div className="home-info-visual-body">
-        <div className="home-orbit-stage">
-          <div className={`home-orbit-diagram ${orbitMode}`} aria-hidden="true">
-            <span className="home-orbit-sun" />
-            <span className="home-orbit-path" />
-            <span className="home-orbit-planet" />
-            <span className="home-orbit-vector" />
-            <span className="home-orbit-mass-label">M<sub>☉</sub></span>
-          </div>
-          <div className="home-orbit-controls">
-            <span>Variable</span>
-            <button type="button" className={orbitMode === 'observe' ? 'is-active' : ''} onClick={() => setOrbitMode('observe')}>Stable orbit</button>
-            <button type="button" className={orbitMode === 'change' ? 'is-active' : ''} onClick={() => setOrbitMode('change')}>Increase velocity</button>
-          </div>
-        </div>
-
-        <aside className="home-orbit-metrics">
-          <div className="home-metric"><span>Velocity</span><strong>{velocity} km/s</strong></div>
-          <div className="home-metric"><span>Gravity</span><strong>9.8 m/s²</strong></div>
-          <div className="home-metric"><span>Distance</span><strong>4.2M km</strong></div>
-          <div className="home-metric home-metric--outcome"><span>Outcome</span><strong>{outcome}</strong></div>
-          <div className="home-mini-chart" aria-hidden="true">
-            <span className="home-mini-chart-label">Velocity trace</span>
-            <div className="home-mini-chart-bars">
-              {[42, 55, 48, 62, orbitMode === 'observe' ? 58 : 78, 65].map((h, i) => (
-                <i key={i} style={{ height: `${h}%` }} />
-              ))}
-            </div>
-          </div>
-        </aside>
-      </div>
-
-      <div className="home-info-visual-foot">
-        <span>{orbitMode === 'observe' ? 'Observation saved · centrifugal force balances gravity' : 'Feedback: velocity exceeded stable threshold'}</span>
-        <span className="home-info-step">Step 2 of 4 · Observe</span>
-      </div>
-    </div>
-  )
 }
 
 function DomainInfoVisual({ scene, accent }: { scene: string; accent: string }) {
@@ -179,27 +127,9 @@ export default function HomePage() {
   return (
     <PageShell aurora={false}>
       <main className="home-redesign">
-        <section className="home-hero-new">
-          <div className="home-hero-inner">
-            <div className="home-hero-copy">
-              <SectionLabel>Education, skills and opportunity</SectionLabel>
-              <h1>Don&apos;t just learn.<br /><em>Do something</em> with it.</h1>
-              <p>Academic education, exams, practical skills, real work and future opportunities, connected in one place.</p>
-              <div className="home-hero-actions">
-                <Link className="home-primary-button" to="/programs">Experience Skylent <span>↗</span></Link>
-                <a className="home-secondary-button" href="#interests">Explore by interest</a>
-              </div>
-              <div className="home-proof-line">
-                <span className="home-proof-dot" />
-                A learning system built around capability, not just completion.
-              </div>
-            </div>
+        <SkylentGatewayHero />
 
-            <div className="home-hero-art">
-              <HeroInformationVisual />
-            </div>
-          </div>
-        </section>
+        <LearningEngineStory />
 
         <section className="home-journey-band">
           <div className="home-journey-inner">
