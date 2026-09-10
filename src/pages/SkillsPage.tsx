@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PageShell } from '../components/shared'
 import { programs, workshops } from '../data'
+import SkillsCapabilityHero from '../components/skills/SkillsCapabilityHero'
 
 const PROFESSIONAL = programs.filter(p => p.programType === 'PROFESSIONAL')
 const CERTIFICATES = programs.filter(p => p.programType === 'CERTIFICATE')
@@ -46,46 +47,7 @@ export default function SkillsPage() {
   return (
     <PageShell aurora={false}>
       <main className="skills-v2">
-        {/* SCROLL 1 — capability hero */}
-        <section className="skills-v2-hero" aria-labelledby="skills-v2-hero-heading">
-          <div className="skills-v2-hero-inner">
-            <div className="skills-v2-hero-copy">
-              <div className="home-section-label"><span />Skills</div>
-              <h1 id="skills-v2-hero-heading">
-                What do you want<br />
-                to be able to <em>do?</em>
-              </h1>
-              <p>
-                Skills is for capability — practice, projects, and evidence — not a wall of course titles.
-              </p>
-              <div className="skills-v2-hero-actions">
-                <Link className="home-primary-button" to={FEATURED ? `/programs/${FEATURED.slug}` : '/programs'}>
-                  Explore a programme <span aria-hidden="true">↗</span>
-                </Link>
-                <a className="home-secondary-button" href="#skills-categories">
-                  Browse capabilities
-                </a>
-              </div>
-            </div>
-            <aside className="skills-v2-hero-artifact" aria-label="Representative skills workspace">
-              <div className="skills-v2-artifact-rail">
-                <span>Workspace</span>
-                <span>Data · Analytics</span>
-                <span>Representative</span>
-              </div>
-              <div className="skills-v2-artifact-body">
-                <span>Today</span>
-                <h2>Find where customers go quiet</h2>
-                <code>
-                  SELECT region, days_since_visit{'\n'}
-                  FROM customer_activity{'\n'}
-                  WHERE days_since_visit &gt; 14;
-                </code>
-                <p>Draft analysis open · not a live learner result</p>
-              </div>
-            </aside>
-          </div>
-        </section>
+        <SkillsCapabilityHero />
 
         {/* SCROLL 2 — categories */}
         <section id="skills-categories" className="skills-v2-section" aria-labelledby="skills-cat-heading">
