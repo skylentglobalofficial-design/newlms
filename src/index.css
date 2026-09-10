@@ -822,6 +822,7 @@ body {
   padding: clamp(72px, 10vw, 120px) var(--gutter);
   background: #f7f4ee;
   border-bottom: 1px solid rgba(8,9,9,.1);
+  scroll-margin-top: 80px;
 }
 .home-engine-story-inner {
   max-width: 1240px;
@@ -833,10 +834,12 @@ body {
 .home-engine-story-copy h2 {
   margin: 18px 0 0;
   font-size: clamp(36px, 5vw, 64px);
-  line-height: .98;
+  line-height: 1.02;
   letter-spacing: -.045em;
   font-weight: 600;
   color: #080909;
+  overflow: visible;
+  padding-bottom: .06em;
 }
 .home-engine-story-copy h2 em {
   font-family: 'Fraunces', Georgia, serif;
