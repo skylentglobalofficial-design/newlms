@@ -122,7 +122,7 @@ function EducationJourneySection() {
     <Section tone="canvas" divider style={{ paddingTop: T.sectionTight }}>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="Academic stages"
           title="Schooling, undergraduate, postgraduate."
           lead="Three audiences, three curriculum models. Each section below covers format, subjects, and how progress is tracked."
@@ -188,10 +188,10 @@ function EducationJourneySection() {
                   style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 />
               </div>
-              <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 8px', fontSize: 'clamp(22px, 2.5vw, 28px)' }}>
+              <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px', fontSize: 'clamp(22px, 2.5vw, 28px)' }}>
                 {stage.title}
               </h3>
-              <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14, lineHeight: 1.65, margin: 0, maxWidth: 280 }}>
+              <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: 0, maxWidth: 280 }}>
                 {stage.desc}
               </p>
             </button>
@@ -224,7 +224,7 @@ function SchoolingSection() {
             overlay="full"
             objectPosition="center 25%"
           />
-          <div style={{ display: 'flex', gap: 0, marginTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
+          <div style={{ display: 'flex', gap: 0, marginTop: 20, borderTop: `1px solid ${T.lineLight}` }}>
             {gradeBands.map(({ band, grades, color }, i) => (
               <div
                 key={band}
@@ -232,30 +232,30 @@ function SchoolingSection() {
                   flex: 1,
                   padding: '14px 8px',
                   textAlign: 'center',
-                  borderRight: i < gradeBands.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  borderRight: i < gradeBands.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                 }}
               >
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, margin: '0 auto 6px' }} />
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 600, color: C.white }}>{band}</div>
-                <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2 }}>Gr {grades}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 600, color: C.ink }}>{band}</div>
+                <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2 }}>Gr {grades}</div>
               </div>
             ))}
           </div>
         </FadeIn>
 
         <FadeIn delay={80}>
-          <Eyebrow tone="dark">Schooling</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
+          <Eyebrow >Schooling</Eyebrow>
+          <Heading  size="md" style={{ margin: '20px 0 16px' }}>
             Learning that builds confidence.
           </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 24px', maxWidth: 480 }}>
+          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 24px', maxWidth: 480 }}>
             For school students and their parents. Programs built around the actual curriculum — from foundational concepts in primary school to board-level mastery in senior secondary.
           </p>
 
           <div style={{ marginBottom: 32 }}>
-            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Lesson rhythm</div>
+            <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Lesson rhythm</div>
             <FlowStrip
-              tone="dark"
+              
               steps={[
                 { label: 'Lesson', sub: 'Concept introduction' },
                 { label: 'Activity', sub: 'Guided practice' },
@@ -273,7 +273,7 @@ function SchoolingSection() {
                   display: 'flex',
                   gap: 14,
                   padding: '14px 0',
-                  borderBottom: i < gradeBands.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  borderBottom: i < gradeBands.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                   alignItems: 'flex-start',
                 }}
               >
@@ -294,12 +294,12 @@ function SchoolingSection() {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white }}>{band}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>Grade {grades}</span>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.ink }}>{band}</span>
+                    <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>Grade {grades}</span>
                   </div>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     {subjects.map(s => (
-                      <span key={s} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>{s}</span>
+                      <span key={s} style={{ color: C.slate, fontSize: 12 }}>{s}</span>
                     ))}
                   </div>
                 </div>
@@ -307,9 +307,9 @@ function SchoolingSection() {
             ))}
           </div>
 
-          <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
-            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 12 }}>Learning journey</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 12, color: 'rgba(255,255,255,0.65)' }}>
+          <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${T.lineLight}` }}>
+            <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Learning journey</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 12, color: C.slate }}>
               {['Grade', 'Subject', 'Chapter', 'Lesson', 'Activity', 'Assessment', 'Progress'].map((s, i, arr) => (
                 <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                   <span>{s}</span>
@@ -347,16 +347,16 @@ function UndergraduateSection() {
     <Section id="undergraduate" tone="canvas" divider>
       <div style={{ display: 'grid', gridTemplateColumns: '0.95fr 1.05fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col education-ug-grid">
         <FadeIn>
-          <Eyebrow tone="dark">Undergraduate</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
+          <Eyebrow >Undergraduate</Eyebrow>
+          <Heading  size="md" style={{ margin: '20px 0 16px' }}>
             Academic depth. Industry direction.
           </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 480 }}>
+          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 480 }}>
             For college students and degree institutions. Programs that sit alongside the academic calendar — building applied skills, projects, and career readiness from the first year.
           </p>
 
           <div style={{ marginBottom: 32 }}>
-            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 16 }}>Program structure</div>
+            <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>Program structure</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
               {journey.map(({ step, desc }, i) => (
                 <div key={step} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
@@ -373,14 +373,14 @@ function UndergraduateSection() {
                       }}
                     />
                     {i < journey.length - 1 && (
-                      <div style={{ width: 1, flex: 1, minHeight: 20, background: T.lineDark, marginTop: 3 }} />
+                      <div style={{ width: 1, flex: 1, minHeight: 20, background: T.lineLight, marginTop: 3 }} />
                     )}
                   </div>
                   <div style={{ paddingBottom: i < journey.length - 1 ? 12 : 0, paddingTop: 8 }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: i === journey.length - 1 ? accent.text : C.white }}>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: i === journey.length - 1 ? accent.text : C.ink }}>
                       {step}
                     </span>
-                    <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginTop: 2 }}>{desc}</div>
+                    <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{desc}</div>
                   </div>
                 </div>
               ))}
@@ -401,7 +401,7 @@ function UndergraduateSection() {
             overlay="full"
             objectPosition="center"
           />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, marginTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0, marginTop: 20, borderTop: `1px solid ${T.lineLight}` }}>
             {[
               { value: 'Sem-aligned', label: 'Schedule' },
               { value: 'Projects', label: 'Portfolio ready' },
@@ -412,11 +412,11 @@ function UndergraduateSection() {
                 style={{
                   padding: '16px 12px',
                   textAlign: 'center',
-                  borderRight: i < 2 ? `1px solid ${T.lineDark}` : 'none',
+                  borderRight: i < 2 ? `1px solid ${T.lineLight}` : 'none',
                 }}
               >
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{value}</div>
-                <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>{label}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{value}</div>
+                <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{label}</div>
               </div>
             ))}
           </div>
@@ -441,15 +441,15 @@ function PostgraduateSection() {
     <Section id="postgraduate" tone="canvas" divider>
       <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col">
         <FadeIn>
-          <Eyebrow tone="dark">Postgraduate</Eyebrow>
-          <h2 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 24px', lineHeight: 1.02 }}>
+          <Eyebrow >Postgraduate</Eyebrow>
+          <h2 className="skylent-display-lg" style={{ color: C.ink, margin: '20px 0 24px', lineHeight: 1.02 }}>
             Specialisation.<br />Mastery.<br />Leadership.
           </h2>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 420 }}>
+          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 420 }}>
             For advanced learners, working professionals, and researchers. Deep, case-driven programs designed around professional outcomes — not just academic completion.
           </p>
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 12 }}>Program structure</div>
-          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.45)', letterSpacing: '0.03em', lineHeight: 1.9, margin: '0 0 28px' }}>
+          <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Program structure</div>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate, letterSpacing: '0.03em', lineHeight: 1.9, margin: '0 0 28px' }}>
             Program → Specialization → Advanced Modules → Cases → Projects → Professional Outcomes
           </p>
           <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -460,7 +460,7 @@ function PostgraduateSection() {
 
         <FadeIn delay={80}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 16 }}>Specialization tracks</div>
+            <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>Specialization tracks</div>
             {tracks.map(({ name, desc }, i) => (
               <div
                 key={name}
@@ -469,7 +469,7 @@ function PostgraduateSection() {
                   gridTemplateColumns: '48px 1fr',
                   gap: 16,
                   padding: '20px 0',
-                  borderBottom: i < tracks.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  borderBottom: i < tracks.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                   alignItems: 'start',
                 }}
               >
@@ -477,8 +477,8 @@ function PostgraduateSection() {
                   {String(i + 1).padStart(2, '0')}
                 </div>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 4 }}>{name}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.55 }}>{desc}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{name}</div>
+                  <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{desc}</div>
                 </div>
               </div>
             ))}
@@ -512,13 +512,13 @@ function HowLearningWorksSection() {
     <Section tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="How learning works"
           title="From browsing to assessed progress."
           lead="Every education pathway on Skylent follows the same academic rhythm — structured content, deliberate practice, and visible progress."
         />
         <div style={{ marginTop: 40 }}>
-          <FlowStrip steps={steps} tone="dark" />
+          <FlowStrip steps={steps}  />
         </div>
       </FadeIn>
     </Section>
@@ -538,7 +538,7 @@ function ProgramDiscoverySection() {
     <Section tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="Program discovery"
           title="Exam preparation, structured."
           lead="Programs built around exam patterns, subject mastery, and performance analytics — not generic course bundles."
@@ -576,8 +576,8 @@ function ProgramDiscoverySection() {
               </div>
               <div style={{ paddingTop: 24 }}>
                 <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Exam Preparation</div>
-                <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 12px' }}>{FEATURED_PROGRAM.name}</h3>
-                <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>
+                <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 12px' }}>{FEATURED_PROGRAM.name}</h3>
+                <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>
                   {FEATURED_PROGRAM.desc}
                 </p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 20 }}>
@@ -588,8 +588,8 @@ function ProgramDiscoverySection() {
                     { k: 'From', v: `₹${lowestPrice.toLocaleString('en-IN')}` },
                   ].map(({ k, v }) => (
                     <div key={k}>
-                      <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>{k}</div>
-                      <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                      <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{k}</div>
+                      <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{v}</div>
                     </div>
                   ))}
                 </div>
@@ -602,7 +602,7 @@ function ProgramDiscoverySection() {
         </FadeIn>
 
         <FadeIn delay={80}>
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 20 }}>More programs</div>
+          <div className="skylent-label" style={{ color: C.slate, marginBottom: 20 }}>More programs</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {SUPPORTING_PROGRAMS.map((program, i) => {
               const photo = PROGRAM_PHOTO[program.slug] ?? DEFAULT_PROGRAM_PHOTO
@@ -617,7 +617,7 @@ function ProgramDiscoverySection() {
                     gap: 16,
                     alignItems: 'center',
                     padding: '18px 0',
-                    borderBottom: i < SUPPORTING_PROGRAMS.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                    borderBottom: i < SUPPORTING_PROGRAMS.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                     textDecoration: 'none',
                     color: 'inherit',
                   }}
@@ -626,18 +626,18 @@ function ProgramDiscoverySection() {
                     <MediaImage src={photo} alt="" aspect="4/3" radius={8} />
                   </div>
                   <div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 4 }}>{program.name}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{program.duration} · {program.outcome}</div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{program.name}</div>
+                    <div style={{ color: C.slate, fontSize: 12 }}>{program.duration} · {program.outcome}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: C.ink }}>₹{price.toLocaleString('en-IN')}</div>
                     <div style={{ color: accent.textMuted, fontSize: 11, marginTop: 2 }}>→</div>
                   </div>
                 </Link>
               )
             })}
           </div>
-          <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
+          <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineLight}` }}>
             <Button variant="secondary" onClick={() => navigate('/programs')}>Browse all programs</Button>
           </div>
         </FadeIn>
@@ -655,10 +655,10 @@ function CompetitiveExamsSection() {
     <Section id="competitive-exams" tone="canvas" divider>
       <FadeIn>
         <div style={{ marginBottom: 48 }}>
-          <Eyebrow tone="dark" accent>Competitive Exams</Eyebrow>
+          <Eyebrow  accent>Competitive Exams</Eyebrow>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,4vw,56px)', alignItems: 'end', marginTop: 20 }} className="two-col">
-            <Heading tone="dark" size="md">Structured. Performance-first.</Heading>
-            <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.78, margin: 0 }}>
+            <Heading  size="md">Structured. Performance-first.</Heading>
+            <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.78, margin: 0 }}>
               Exam preparation is not a course. It is a performance system — built around exam patterns, subject mastery, and analytics.
             </p>
           </div>
@@ -667,9 +667,9 @@ function CompetitiveExamsSection() {
 
       <FadeIn>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 40, alignItems: 'center' }}>
-          <span className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginRight: 8 }}>Prep system</span>
+          <span className="skylent-label" style={{ color: C.slate, marginRight: 8 }}>Prep system</span>
           {['Exam', 'Subject / Section', 'Topic', 'Practice', 'Test', 'Mock', 'Analytics'].map((s, i, arr) => (
-            <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'rgba(255,255,255,0.65)', fontSize: 12 }}>
+            <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: C.slate, fontSize: 12 }}>
               <span>{s}</span>
               {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
             </span>
@@ -678,15 +678,15 @@ function CompetitiveExamsSection() {
       </FadeIn>
 
       <div style={{ marginBottom: 32 }}>
-        <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 20 }}>Engineering & medical — subject-oriented</div>
+        <div className="skylent-label" style={{ color: C.slate, marginBottom: 20 }}>Engineering & medical — subject-oriented</div>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(20px,3vw,32px)' }} className="two-col">
           {JEE_NEET_EXAMS.map((exam, ei) => (
             <FadeIn key={exam.name} delay={ei * 70}>
-              <div style={{ padding: '28px 0', borderTop: `1px solid ${T.lineDark}` }}>
+              <div style={{ padding: '28px 0', borderTop: `1px solid ${T.lineLight}` }}>
                 <div style={{ marginBottom: 20 }}>
-                  <div className="skylent-display-sm" style={{ color: C.white, margin: '0 0 4px' }}>{exam.name}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{exam.full}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)', marginTop: 6 }}>{exam.target}</div>
+                  <div className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 4px' }}>{exam.name}</div>
+                  <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{exam.full}</div>
+                  <div style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)', marginTop: 6 }}>{exam.target}</div>
                 </div>
 
                 <div style={{ marginBottom: 20, minHeight: 220 }}>
@@ -699,14 +699,14 @@ function CompetitiveExamsSection() {
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                   {exam.subjects.map(({ name, color, topics }) => (
-                    <div key={name} style={{ padding: '14px 0', borderBottom: `1px solid ${T.lineDark}` }}>
+                    <div key={name} style={{ padding: '14px 0', borderBottom: `1px solid ${T.lineLight}` }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                         <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0 }} />
-                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{name}</span>
+                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink }}>{name}</span>
                       </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                         {topics.map(t => (
-                          <span key={t} style={{ color: 'rgba(255,255,255,0.42)', fontSize: 12 }}>{t}</span>
+                          <span key={t} style={{ color: C.slate, fontSize: 12 }}>{t}</span>
                         ))}
                       </div>
                     </div>
@@ -715,7 +715,7 @@ function CompetitiveExamsSection() {
 
                 <div style={{ paddingTop: 16, display: 'flex', flexWrap: 'wrap', gap: 12 }}>
                   {exam.features.map(f => (
-                    <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <span key={f} style={{ color: C.slate, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
                       <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, opacity: 0.7 }} />
                       {f}
                     </span>
@@ -729,15 +729,15 @@ function CompetitiveExamsSection() {
 
       <FadeIn delay={100}>
         <div style={{ marginBottom: 32 }}>
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 20 }}>MBA entrance — section-oriented</div>
+          <div className="skylent-label" style={{ color: C.slate, marginBottom: 20 }}>MBA entrance — section-oriented</div>
           <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 'clamp(24px,4vw,48px)', alignItems: 'start' }} className="two-col-sm education-cat-grid">
             <div>
-              <div className="skylent-display-md" style={{ color: C.white, margin: '0 0 4px', fontSize: 'clamp(36px,4vw,48px)' }}>CAT</div>
-              <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{CAT_SECTION.full}</div>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)', marginBottom: 16 }}>{CAT_SECTION.target}</div>
+              <div className="skylent-display-md" style={{ color: C.ink, margin: '0 0 4px', fontSize: 'clamp(36px,4vw,48px)' }}>CAT</div>
+              <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{CAT_SECTION.full}</div>
+              <div style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)', marginBottom: 16 }}>{CAT_SECTION.target}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {CAT_SECTION.features.map(f => (
-                  <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span key={f} style={{ color: C.slate, fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
                     <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, opacity: 0.7 }} />
                     {f}
                   </span>
@@ -762,15 +762,15 @@ function CompetitiveExamsSection() {
                     gridTemplateColumns: '56px 1fr',
                     gap: 16,
                     padding: '14px 0',
-                    borderBottom: `1px solid ${T.lineDark}`,
+                    borderBottom: `1px solid ${T.lineLight}`,
                     alignItems: 'start',
                   }}
                 >
                   <div>
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600, color }}>{abbr}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2 }}>{weight}</div>
+                    <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2 }}>{weight}</div>
                   </div>
-                  <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, lineHeight: 1.45 }}>{label}</div>
+                  <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.45 }}>{label}</div>
                 </div>
               ))}
             </div>
@@ -779,12 +779,12 @@ function CompetitiveExamsSection() {
       </FadeIn>
 
       <FadeIn delay={140}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
           <div>
-            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 10 }}>More exams — coming soon</div>
+            <div className="skylent-label" style={{ color: C.slate, marginBottom: 10 }}>More exams — coming soon</div>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {OTHER_EXAMS.map(e => (
-                <span key={e} style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{e}</span>
+                <span key={e} style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{e}</span>
               ))}
             </div>
           </div>
@@ -821,7 +821,7 @@ function ValueSection() {
     <Section tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="Built for every stakeholder"
           title="Learners, parents, and institutions."
           lead="Schools, parents, and institutions each need different views of the same programs — progress, assessments, and next steps."
@@ -837,19 +837,19 @@ function ValueSection() {
                 gridTemplateColumns: '220px 1fr',
                 gap: 'clamp(24px,4vw,48px)',
                 padding: '32px 0',
-                borderBottom: i < audiences.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                borderBottom: i < audiences.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                 alignItems: 'start',
               }}
               className="education-value-row"
             >
               <div>
-                <h3 className="skylent-display-sm" style={{ color: C.white, margin: 0, fontSize: 'clamp(22px, 2.5vw, 28px)' }}>{title}</h3>
+                <h3 className="skylent-display-sm" style={{ color: C.ink, margin: 0, fontSize: 'clamp(22px, 2.5vw, 28px)' }}>{title}</h3>
               </div>
               <div>
-                <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 16px', maxWidth: 560 }}>{desc}</p>
+                <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: '0 0 16px', maxWidth: 560 }}>{desc}</p>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 20px' }}>
                   {points.map(p => (
-                    <span key={p} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <span key={p} style={{ color: C.slate, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, flexShrink: 0 }} />
                       {p}
                     </span>
@@ -862,14 +862,14 @@ function ValueSection() {
       </div>
 
       <FadeIn delay={120}>
-        <div style={{ marginTop: 48, paddingTop: 40, borderTop: `1px solid ${T.lineDark}` }}>
+        <div style={{ marginTop: 48, paddingTop: 40, borderTop: `1px solid ${T.lineLight}` }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }} className="two-col">
             <div>
-              <Eyebrow tone="dark">After education</Eyebrow>
-              <Heading tone="dark" size="sm" style={{ margin: '18px 0 14px' }}>
+              <Eyebrow >After education</Eyebrow>
+              <Heading  size="sm" style={{ margin: '18px 0 14px' }}>
                 Skills and Career OS come next.
               </Heading>
-              <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 15, lineHeight: 1.75, margin: '0 0 24px', maxWidth: 440 }}>
+              <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 24px', maxWidth: 440 }}>
                 When academic work is done, learners move into credentialed skills programs. Professional Programs open Career OS — profile, jobs, and applications.
               </p>
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
@@ -893,19 +893,19 @@ function ValueSection() {
                     padding: '16px 0',
                     background: 'none',
                     border: 'none',
-                    borderBottom: `1px solid ${T.lineDark}`,
+                    borderBottom: `1px solid ${T.lineLight}`,
                     cursor: current ? 'default' : 'pointer',
                     width: '100%',
                     textAlign: 'left',
                     alignItems: 'center',
                   }}
                 >
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: current ? accent.primary : 'rgba(255,255,255,0.25)', flexShrink: 0 }} />
+                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: current ? accent.primary : C.slate, flexShrink: 0 }} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: current ? accent.text : C.white }}>{name}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginTop: 2 }}>{desc}</div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: current ? accent.text : C.ink }}>{name}</div>
+                    <div style={{ color: C.slate, fontSize: 13, marginTop: 2 }}>{desc}</div>
                   </div>
-                  {!current && <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 16 }}>→</span>}
+                  {!current && <span style={{ color: C.slate, fontSize: 16 }}>→</span>}
                 </button>
               ))}
             </div>
@@ -930,11 +930,11 @@ export default function EducationPage() {
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero education-page-hero">
             <FadeIn>
-              <Eyebrow tone="dark" accent>Education</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
+              <Eyebrow  accent>Education</Eyebrow>
+              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '20px 0 16px', maxWidth: 640 }}>
                 The academic products<br />on Skylent.
               </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
+              <p className="skylent-body-lg" style={{ color: C.ink, maxWidth: 520, margin: '0 0 28px' }}>
                 Schooling, undergraduate, postgraduate, and competitive exams are different audiences and different curriculum models. Explore each on its own terms.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>

@@ -58,27 +58,27 @@ export default function LabsPage() {
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <FadeIn>
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 20 }}>Skylent Labs</div>
-            <h1 className="skylent-display-lg" style={{ color: C.white, margin: '0 0 16px', maxWidth: 560 }}>
+            <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 16px', maxWidth: 560 }}>
               Practice in structured lab environments.
             </h1>
-            <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 480, margin: '0 0 36px' }}>
+            <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 480, margin: '0 0 36px' }}>
               Run coding, data, and simulation exercises connected to your coursework — with clear objectives and submission steps.
             </p>
             <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap', marginBottom: 8 }}>
               {catalogStats.map(({ value, label }) => (
                 <div key={label}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, color: C.white, letterSpacing: '-0.03em' }}>{value}</div>
-                  <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.32)', marginTop: 4 }}>{label}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, color: C.ink, letterSpacing: '-0.03em' }}>{value}</div>
+                  <div className="skylent-label" style={{ color: C.slate, marginTop: 4 }}>{label}</div>
                 </div>
               ))}
             </div>
-            <p style={{ color: 'rgba(255,255,255,0.32)', fontSize: 12, margin: 0 }}>Counts reflect the current lab catalog in this demo environment.</p>
+            <p style={{ color: C.slate, fontSize: 12, margin: 0 }}>Counts reflect the current lab catalog in this demo environment.</p>
           </FadeIn>
         </div>
       </section>
 
       {/* Filter bar */}
-      <section style={{ background: C.canvas, borderBottom: `1px solid ${T.lineDark}`, position: 'sticky', top: T.navH, zIndex: 40 }}>
+      <section style={{ background: C.canvas, borderBottom: `1px solid ${T.lineLight}`, position: 'sticky', top: T.navH, zIndex: 40 }}>
         <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}` }}>
           <div className="scroll-control-strip">
             <div className="scroll-control-strip-scroll labs-filter-bar" style={{ display: 'flex', gap: 16, flexWrap: 'wrap', padding: '16px 0' }}>
@@ -88,26 +88,26 @@ export default function LabsPage() {
                 <button
                   key={p}
                   onClick={() => setSelectedProgram(p)}
-                  style={{ padding: '6px 14px', borderRadius: 100, border: `1px solid ${selectedProgram === p ? accent.border : 'rgba(255,255,255,0.12)'}`, background: selectedProgram === p ? accent.subtle : 'transparent', color: selectedProgram === p ? accent.text : 'rgba(255,255,255,0.45)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
+                  style={{ padding: '6px 14px', borderRadius: 100, border: `1px solid ${selectedProgram === p ? accent.border : C.slate}`, background: selectedProgram === p ? accent.subtle : 'transparent', color: selectedProgram === p ? accent.text : C.slate, fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
                 >
                   {p}
                 </button>
               ))}
             </div>
-            <div className="labs-filter-divider" style={{ width: 1, background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
+            <div className="labs-filter-divider" style={{ width: 1, background: 'rgba(11,13,15,0.08)', flexShrink: 0 }} />
             {/* Semester filter */}
             <div className="labs-filter-group" style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flexShrink: 0 }}>
               {semesters.map(s => (
                 <button
                   key={s}
                   onClick={() => setSelectedSemester(s)}
-                  style={{ padding: '6px 14px', borderRadius: 100, border: `1px solid ${selectedSemester === s ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.1)'}`, background: selectedSemester === s ? 'rgba(255,255,255,0.08)' : 'transparent', color: selectedSemester === s ? C.white : 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
+                  style={{ padding: '6px 14px', borderRadius: 100, border: `1px solid ${selectedSemester === s ? C.slate : C.slate}`, background: selectedSemester === s ? C.slate : 'transparent', color: selectedSemester === s ? C.ink : C.slate, fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
                 >
                   {s}
                 </button>
               ))}
             </div>
-            <div className="labs-filter-divider" style={{ width: 1, background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
+            <div className="labs-filter-divider" style={{ width: 1, background: 'rgba(11,13,15,0.08)', flexShrink: 0 }} />
             {/* Type filter */}
             <div className="labs-filter-group" style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flexShrink: 0 }}>
               {labTypes.map(t => {
@@ -117,7 +117,7 @@ export default function LabsPage() {
                   <button
                     key={t}
                     onClick={() => setSelectedType(t)}
-                    style={{ padding: '6px 14px', borderRadius: 100, border: `1px solid ${active && colors ? colors.border : active ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.1)'}`, background: active && colors ? colors.bg : active ? 'rgba(255,255,255,0.07)' : 'transparent', color: active && colors ? colors.text : active ? C.white : 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
+                    style={{ padding: '6px 14px', borderRadius: 100, border: `1px solid ${active && colors ? colors.border : active ? C.slate : C.slate}`, background: active && colors ? colors.bg : active ? C.slate : 'transparent', color: active && colors ? colors.text : active ? C.ink : C.slate, fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
                   >
                     {t === 'All' ? 'All Types' : labTypeLabels[t]}
                   </button>
@@ -133,13 +133,13 @@ export default function LabsPage() {
       <Section tone="canvas">
         <div style={{ maxWidth: T.maxW, margin: '0 auto', width: '100%' }}>
           {filtered.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '80px 0', color: 'rgba(255,255,255,0.45)' }}>
-              <div style={{ fontSize: 24, marginBottom: 12, color: C.white }}>No labs found</div>
+            <div style={{ textAlign: 'center', padding: '80px 0', color: C.slate }}>
+              <div style={{ fontSize: 24, marginBottom: 12, color: C.ink }}>No labs found</div>
               <div style={{ fontSize: 15 }}>Try adjusting your filters.</div>
             </div>
           ) : (
             <>
-              <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 28 }}>
+              <div className="skylent-label" style={{ color: C.slate, marginBottom: 28 }}>
                 {filtered.length} lab{filtered.length !== 1 ? 's' : ''} found
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }} className="labs-grid">
@@ -161,21 +161,21 @@ export default function LabsPage() {
                       >
                       {/* Badges */}
                       <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-                        <span style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.07em', padding: '3px 10px', borderRadius: 100 }}>
+                        <span style={{ background: '$rgba(11,13,15,0.04)', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.07em', padding: '3px 10px', borderRadius: 100 }}>
                           {subject.program}
                         </span>
-                        <span style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.45)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.07em', padding: '3px 10px', borderRadius: 100 }}>
+                        <span style={{ background: '#FFFDFC', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.07em', padding: '3px 10px', borderRadius: 100 }}>
                           {subject.semester}
                         </span>
                       </div>
 
                       {/* Subject name */}
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: C.white, lineHeight: 1.2, marginBottom: 10 }}>
+                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: C.ink, lineHeight: 1.2, marginBottom: 10 }}>
                         {subject.subject}
                       </div>
 
                       {/* Desc */}
-                      <div style={{ color: 'rgba(255,255,255,0.48)', fontSize: 13.5, lineHeight: 1.65, marginBottom: 20, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                      <div style={{ color: C.slate, fontSize: 13.5, lineHeight: 1.65, marginBottom: 20, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                         {subject.desc}
                       </div>
 
@@ -191,10 +191,10 @@ export default function LabsPage() {
                       {/* Experiment count + Progress */}
                       <div style={{ marginBottom: 16 }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{subject.experiments.length} experiments</span>
-                          <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>Demo</span>
+                          <span style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{subject.experiments.length} experiments</span>
+                          <span style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>Demo</span>
                         </div>
-                        <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 3, height: 3 }}>
+                        <div style={{ background: 'rgba(11,13,15,0.08)', borderRadius: 3, height: 3 }}>
                           <div style={{ background: accent.primary, width: '0%', height: '100%', borderRadius: 3 }} />
                         </div>
                       </div>
@@ -203,7 +203,7 @@ export default function LabsPage() {
                       <button
                         type="button"
                         onClick={e => { e.stopPropagation(); navigate(`/labs/${subject.id}`) }}
-                        style={{ width: '100%', background: accent.primary, border: 'none', color: C.white, padding: '11px 20px', borderRadius: 9, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.2s', textAlign: 'center' }}
+                        style={{ width: '100%', background: accent.primary, border: 'none', color: C.ink, padding: '11px 20px', borderRadius: 9, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.2s', textAlign: 'center' }}
                       >
                         Open lab →
                       </button>

@@ -36,9 +36,9 @@ function StoriesHeroVisual() {
   return (
     <div style={{ position: 'relative', minHeight: 380 }}>
       <GlassSurface level={2} padding="0" style={{ overflow: 'hidden' }}>
-        <div style={{ padding: '16px 20px', borderBottom: `1px solid ${T.lineDark}` }}>
+        <div style={{ padding: '16px 20px', borderBottom: `1px solid ${T.lineLight}` }}>
           <div className="skylent-label" style={{ color: accent.text }}>Editorial queue</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, marginTop: 8 }}>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.ink, marginTop: 8 }}>
             Stories in preparation
           </div>
         </div>
@@ -52,20 +52,20 @@ function StoriesHeroVisual() {
                 gap: 16,
                 alignItems: 'center',
                 padding: '16px 20px',
-                borderBottom: i < queue.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                borderBottom: i < queue.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                 borderLeft: `2px solid ${item.theme.primary}`,
               }}
             >
               <div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 4 }}>{item.label}</div>
-                <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 11.5, fontFamily: 'var(--font-mono)' }}>{item.status}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{item.label}</div>
+                <div style={{ color: C.slate, fontSize: 11.5, fontFamily: 'var(--font-mono)' }}>{item.status}</div>
               </div>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: '$rgba(11,13,15,0.04)' }} />
             </div>
           ))}
         </div>
-        <div style={{ padding: '14px 20px', borderTop: `1px solid ${T.lineDark}`, background: 'rgba(243,107,33,0.06)' }}>
-          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11.5, lineHeight: 1.55 }}>
+        <div style={{ padding: '14px 20px', borderTop: `1px solid ${T.lineLight}`, background: 'rgba(243,107,33,0.06)' }}>
+          <div style={{ color: C.slate, fontSize: 11.5, lineHeight: 1.55 }}>
             No verified learner stories are published yet. Sample narratives are not shown here.
           </div>
         </div>
@@ -97,14 +97,14 @@ function HeroSection() {
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'start' }} className="two-col skylent-page-hero">
             <FadeIn>
-              <Eyebrow tone="dark" accent>Stories</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
+              <Eyebrow  accent>Stories</Eyebrow>
+              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '20px 0 16px', maxWidth: 640 }}>
                 Journeys, told<br />editorially.
               </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 16px' }}>
+              <p className="skylent-body-lg" style={{ color: C.ink, maxWidth: 520, margin: '0 0 16px' }}>
                 What does learning and career progression through Skylent look like? This page will publish verified learner, program, and institution stories — not marketing testimonials.
               </p>
-              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 15, lineHeight: 1.7, maxWidth: 520, margin: 0 }}>
+              <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, maxWidth: 520, margin: 0 }}>
                 Until verified experiences are available, we show the product workflows stories will eventually document — clearly labelled, never as fabricated outcomes.
               </p>
             </FadeIn>
@@ -138,14 +138,14 @@ function PublishingSection() {
       <FadeIn>
         <GlassSurface level={2} padding="clamp(28px, 4vw, 40px)" style={{ borderLeft: `2px solid ${accent.primary}` }}>
           <div className="skylent-label" style={{ color: accent.text, marginBottom: 12 }}>Publishing status</div>
-          <Heading tone="dark" size="md" style={{ marginBottom: 16 }}>
+          <Heading  size="md" style={{ marginBottom: 16 }}>
             Stories are being prepared.
           </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 640 }}>
+          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 640 }}>
             Verified learner, program, and institution stories will appear here as they are reviewed and approved. We do not publish names, outcomes, salaries, or placement claims we cannot verify.
           </p>
           <div style={{ display: 'inline-flex', background: 'rgba(243,107,33,0.08)', border: '1px solid rgba(243,107,33,0.22)', borderRadius: 8, padding: '10px 14px' }}>
-            <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12.5, lineHeight: 1.5 }}>
+            <span style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.5 }}>
               Sample narratives in the codebase are not displayed on this page. Editorial writing lives on the <Link to="/blog" style={{ color: accent.text, textDecoration: 'none' }}>blog</Link>.
             </span>
           </div>
@@ -154,7 +154,7 @@ function PublishingSection() {
 
       <FadeIn delay={80}>
         <div style={{ marginTop: 48 }}>
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 20 }}>What will publish here</div>
+          <div className="skylent-label" style={{ color: C.slate, marginBottom: 20 }}>What will publish here</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {categories.map((cat, i) => (
               <div
@@ -164,7 +164,7 @@ function PublishingSection() {
                   gridTemplateColumns: '32px 1fr',
                   gap: 16,
                   padding: '18px 0',
-                  borderBottom: i < categories.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  borderBottom: i < categories.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                   alignItems: 'start',
                 }}
               >
@@ -172,8 +172,8 @@ function PublishingSection() {
                   {String(i + 1).padStart(2, '0')}
                 </div>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 4 }}>{cat.label}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13.5, lineHeight: 1.6 }}>{cat.desc}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{cat.label}</div>
+                  <div style={{ color: C.slate, fontSize: 13.5, lineHeight: 1.6 }}>{cat.desc}</div>
                 </div>
               </div>
             ))}
@@ -193,7 +193,7 @@ function LearningSection() {
     <Section id="learning" tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="Product workflow"
           title="How learning work becomes proof."
           lead="Not a learner story — the curriculum structure stories will eventually document. Project artifacts from the Data Science & AI program catalog."
@@ -207,7 +207,7 @@ function LearningSection() {
               PROGRAM CURRICULUM
             </span>
             {FEATURED_PROGRAM && (
-              <span style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13 }}>{FEATURED_PROGRAM.name}</span>
+              <span style={{ color: C.slate, fontSize: 13 }}>{FEATURED_PROGRAM.name}</span>
             )}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
@@ -217,17 +217,17 @@ function LearningSection() {
                   <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 20, alignItems: 'start' }} className="two-col-sm">
                     <div>
                       <div className="skylent-label" style={{ color: skillsAccent.text, marginBottom: 8 }}>Project {i + 1}</div>
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.white, marginBottom: 8 }}>{project.title}</div>
-                      <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14, lineHeight: 1.65, margin: '0 0 12px' }}>{project.what}</p>
+                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, marginBottom: 8 }}>{project.title}</div>
+                      <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: '0 0 12px' }}>{project.what}</p>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                         {project.skills.map(skill => (
-                          <span key={skill} style={{ color: 'rgba(255,255,255,0.38)', fontSize: 11.5, fontFamily: 'var(--font-mono)' }}>{skill}</span>
+                          <span key={skill} style={{ color: C.slate, fontSize: 11.5, fontFamily: 'var(--font-mono)' }}>{skill}</span>
                         ))}
                       </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>DIFFICULTY</div>
-                      <div style={{ color: C.white, fontSize: 13 }}>{project.difficulty}</div>
+                      <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>DIFFICULTY</div>
+                      <div style={{ color: C.ink, fontSize: 13 }}>{project.difficulty}</div>
                     </div>
                   </div>
                 </GlassSurface>
@@ -243,7 +243,7 @@ function LearningSection() {
       ) : (
         <FadeIn>
           <GlassSurface level={1} padding="32px" style={{ marginTop: 32, textAlign: 'center' }}>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 15, margin: 0 }}>Program project details will appear here when available in the catalog.</p>
+            <p style={{ color: C.slate, fontSize: 15, margin: 0 }}>Program project details will appear here when available in the catalog.</p>
           </GlassSurface>
         </FadeIn>
       )}
@@ -270,7 +270,7 @@ function CareerWorkflowSection() {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 56px)', alignItems: 'start' }} className="two-col">
         <FadeIn>
           <SectionHeader
-            tone="dark"
+            
             eyebrow="Product workflow"
             title="Career OS — what stories will cover."
             lead="Not a placement story. The career workspace learners enter after a Professional Program — where verified career journeys may be documented later."
@@ -292,7 +292,7 @@ function CareerWorkflowSection() {
                   gridTemplateColumns: '28px 1fr',
                   gap: 14,
                   padding: '12px 0',
-                  borderBottom: i < steps.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  borderBottom: i < steps.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                   alignItems: 'start',
                 }}
               >
@@ -300,8 +300,8 @@ function CareerWorkflowSection() {
                   {String(i + 1).padStart(2, '0')}
                 </div>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 2 }}>{step.label}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>{step.sub}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.ink, marginBottom: 2 }}>{step.label}</div>
+                  <div style={{ color: C.slate, fontSize: 12 }}>{step.sub}</div>
                 </div>
               </div>
             ))}
@@ -334,8 +334,8 @@ function InstitutionWorkflowSection() {
               {workflow.map((item, i) => (
                 <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: instAccent.textMuted }}>{String(i + 1).padStart(2, '0')}</span>
-                  <span style={{ color: 'rgba(255,255,255,0.58)', fontSize: 13.5 }}>{item}</span>
-                  {i < workflow.length - 1 && <span style={{ color: 'rgba(255,255,255,0.15)', marginLeft: 4 }}>→</span>}
+                  <span style={{ color: C.slate, fontSize: 13.5 }}>{item}</span>
+                  {i < workflow.length - 1 && <span style={{ color: C.slate, marginLeft: 4 }}>→</span>}
                 </div>
               ))}
             </div>
@@ -343,7 +343,7 @@ function InstitutionWorkflowSection() {
         </FadeIn>
         <FadeIn delay={80}>
           <SectionHeader
-            tone="dark"
+            
             eyebrow="Product workflow"
             title="Institution stories — when partners are ready."
             lead="Not a case study. The delivery workflow institution stories will document once verified partner experiences are published."

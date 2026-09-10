@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { C } from '../components/shared'
+import { T } from '../components/ui'
 import { labSubjects } from '../data'
 import type { LabExperimentStatus, LabType } from '../data'
 import { useAuth } from '../context/AuthContext'
@@ -49,25 +50,25 @@ function CodingWorkspace({ title, subject }: { title: string; subject: string })
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <div style={{ color: C.white, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{title}</div>
-          <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, fontFamily: 'var(--font-mono)', marginTop: 4 }}>{subject}</div>
+          <div style={{ color: C.ink, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{title}</div>
+          <div style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)', marginTop: 4 }}>{subject}</div>
         </div>
         <div style={{ background: 'rgba(59,130,246,0.12)', color: '#60a5fa', border: '1px solid rgba(59,130,246,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)', padding: '4px 12px', borderRadius: 100 }}>Python 3.11</div>
       </div>
 
       {/* Editor */}
-      <div style={{ background: '#0d1117', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, overflow: 'hidden' }}>
-        <div style={{ background: '#161b22', padding: '10px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: 8, alignItems: 'center' }}>
+      <div style={{ background: '#0d1117', border: `1px solid ${T.lineLight}`, borderRadius: 10, overflow: 'hidden' }}>
+        <div style={{ background: '#161b22', padding: '10px 16px', borderBottom: '1px solid C.slate', display: 'flex', gap: 8, alignItems: 'center' }}>
           <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#ff5f57' }} />
           <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#febc2e' }} />
           <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#28c840' }} />
-          <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 11, fontFamily: 'var(--font-mono)', marginLeft: 8 }}>main.py</span>
+          <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginLeft: 8 }}>main.py</span>
         </div>
         <div style={{ padding: '16px', fontFamily: 'var(--font-mono)', fontSize: 13, lineHeight: 1.8 }}>
           {codeLines.map((line, i) => (
             <div key={i} style={{ display: 'flex', gap: 16 }}>
-              <span style={{ color: 'rgba(255,255,255,0.15)', minWidth: 24, textAlign: 'right', userSelect: 'none' }}>{line ? i + 1 : ''}</span>
-              <span style={{ color: line.startsWith('#') ? '#6a9955' : line.startsWith('import') || line.startsWith('from') ? '#c586c0' : line.includes('=') ? '#9cdcfe' : 'rgba(255,255,255,0.7)' }}>
+              <span style={{ color: C.slate, minWidth: 24, textAlign: 'right', userSelect: 'none' }}>{line ? i + 1 : ''}</span>
+              <span style={{ color: line.startsWith('#') ? '#6a9955' : line.startsWith('import') || line.startsWith('from') ? '#c586c0' : line.includes('=') ? '#9cdcfe' : C.slate }}>
                 {line || ' '}
               </span>
             </div>
@@ -77,7 +78,7 @@ function CodingWorkspace({ title, subject }: { title: string; subject: string })
 
       <button
         onClick={() => setRan(true)}
-        style={{ alignSelf: 'flex-start', background: C.orange, border: 'none', color: C.white, padding: '10px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', gap: 8 }}
+        style={{ alignSelf: 'flex-start', background: C.orange, border: 'none', color: C.ink, padding: '10px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', gap: 8 }}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
         Run Code
@@ -85,17 +86,17 @@ function CodingWorkspace({ title, subject }: { title: string; subject: string })
 
       {ran && (
         <div style={{ background: '#0d1117', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 10, overflow: 'hidden' }}>
-          <div style={{ background: '#161b22', padding: '8px 16px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ background: '#161b22', padding: '8px 16px', borderBottom: '1px solid C.slate', display: 'flex', alignItems: 'center', gap: 8 }}>
             <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80' }} />
-            <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>Output</span>
+            <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>Output</span>
           </div>
-          <div style={{ padding: '16px', fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.65)', lineHeight: 1.8 }}>
+          <div style={{ padding: '16px', fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate, lineHeight: 1.8 }}>
             <div style={{ color: '#4ade80', marginBottom: 8 }}>DataFrame loaded: 150 rows, 5 columns</div>
             <div>   sepal_length  sepal_width  petal_length  petal_width  species</div>
             <div>0           5.1          3.5           1.4          0.2   setosa</div>
             <div>1           4.9          3.0           1.4          0.2   setosa</div>
             <div>2           4.7          3.2           1.3          0.2   setosa</div>
-            <div style={{ marginTop: 8, color: 'rgba(255,255,255,0.35)' }}>Null values: sepal_length 0, sepal_width 0, petal_length 3, ...</div>
+            <div style={{ marginTop: 8, color: C.slate }}>Null values: sepal_length 0, sepal_width 0, petal_length 3, ...</div>
             <div style={{ marginTop: 4, color: '#4ade80' }}>Process finished with exit code 0</div>
           </div>
         </div>
@@ -113,31 +114,31 @@ function DataWorkspace({ title }: { title: string }) {
   ]
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div style={{ color: C.white, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 4 }}>{title}</div>
+      <div style={{ color: C.ink, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 4 }}>{title}</div>
       {cells.map((cell, i) => (
-        <div key={i} style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 10, overflow: 'hidden' }}>
+        <div key={i} style={{ border: `1px solid ${T.lineLight}`, borderRadius: 10, overflow: 'hidden' }}>
           {cell.type === 'markdown' ? (
-            <div style={{ padding: '20px 24px', background: 'rgba(255,255,255,0.02)' }}>
+            <div style={{ padding: '20px 24px', background: '$rgba(11,13,15,0.04)' }}>
               {cell.content.split('\n').map((line, li) => (
-                <div key={li} style={{ color: line.startsWith('## ') ? C.white : 'rgba(255,255,255,0.5)', fontSize: line.startsWith('## ') ? 16 : 13, fontWeight: line.startsWith('## ') ? 700 : 400, lineHeight: 1.7, marginBottom: line.startsWith('## ') ? 8 : 0 }}>{line.replace(/^## /, '')}</div>
+                <div key={li} style={{ color: line.startsWith('## ') ? C.ink : C.slate, fontSize: line.startsWith('## ') ? 16 : 13, fontWeight: line.startsWith('## ') ? 700 : 400, lineHeight: 1.7, marginBottom: line.startsWith('## ') ? 8 : 0 }}>{line.replace(/^## /, '')}</div>
               ))}
             </div>
           ) : (
             <div>
-              <div style={{ background: '#0d1117', padding: '14px 20px', fontFamily: 'var(--font-mono)', fontSize: 12, lineHeight: 1.8, color: 'rgba(255,255,255,0.65)' }}>
+              <div style={{ background: '#0d1117', padding: '14px 20px', fontFamily: 'var(--font-mono)', fontSize: 12, lineHeight: 1.8, color: C.slate }}>
                 {cell.content.split('\n').map((l, li) => (
-                  <div key={li} style={{ color: l.startsWith('#') ? '#6a9955' : l.startsWith('import') || l.startsWith('from') ? '#c586c0' : 'rgba(255,255,255,0.65)' }}>{l || ' '}</div>
+                  <div key={li} style={{ color: l.startsWith('#') ? '#6a9955' : l.startsWith('import') || l.startsWith('from') ? '#c586c0' : C.slate }}>{l || ' '}</div>
                 ))}
               </div>
-              <div style={{ background: '#161b22', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+              <div style={{ background: '#161b22', padding: '8px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: `1px solid ${T.lineLight}` }}>
                 <button
                   onClick={() => setExecuted(prev => ({ ...prev, [i]: true }))}
-                  style={{ background: 'none', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.4)', padding: '4px 12px', borderRadius: 6, fontSize: 11, cursor: 'pointer', fontFamily: 'var(--font-mono)' }}
+                  style={{ background: 'none', border: `1px solid ${T.lineLight}`, color: C.slate, padding: '4px 12px', borderRadius: 6, fontSize: 11, cursor: 'pointer', fontFamily: 'var(--font-mono)' }}
                 >Execute Cell</button>
                 {executed[i] && <span style={{ color: '#4ade80', fontSize: 11, fontFamily: 'var(--font-mono)' }}>Done</span>}
               </div>
               {executed[i] && (
-                <div style={{ background: 'rgba(255,255,255,0.01)', padding: '12px 20px', borderTop: '1px solid rgba(255,255,255,0.05)', fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.5)', lineHeight: 1.8 }}>
+                <div style={{ background: '$rgba(11,13,15,0.04)', padding: '12px 20px', borderTop: `1px solid ${T.lineLight}`, fontFamily: 'var(--font-mono)', fontSize: 11, color: C.slate, lineHeight: 1.8 }}>
                   <div style={{ color: '#4ade80' }}>Shape: (150, 5)</div>
                   <div>        count       mean        std   min   25%</div>
                   <div>sepal_l  150.0      5.843      0.828  4.30  5.10</div>
@@ -161,13 +162,13 @@ function BusinessWorkspace({ title, instructions }: { title: string; instruction
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
       <div>
-        <div style={{ color: C.white, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 12 }}>{title}</div>
-        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 24px' }}>
-          <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 12 }}>CASE STUDY</div>
+        <div style={{ color: C.ink, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)', marginBottom: 12 }}>{title}</div>
+        <div style={{ background: 'rgba(11,13,15,0.03)', border: `1px solid ${T.lineLight}`, borderRadius: 10, padding: '20px 24px' }}>
+          <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 12 }}>CASE STUDY</div>
           {instructions.map((inst, i) => (
             <div key={i} style={{ display: 'flex', gap: 12, marginBottom: 10, alignItems: 'flex-start' }}>
               <span style={{ color: C.orange, fontSize: 12, fontFamily: 'var(--font-mono)', flexShrink: 0, marginTop: 1 }}>{i + 1}.</span>
-              <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.7 }}>{inst}</span>
+              <span style={{ color: C.slate, fontSize: 13, lineHeight: 1.7 }}>{inst}</span>
             </div>
           ))}
         </div>
@@ -179,13 +180,13 @@ function BusinessWorkspace({ title, instructions }: { title: string; instruction
         { label: 'RECOMMENDATION', value: recommendation, setter: setRecommendation, placeholder: 'State your recommendation with supporting justification...' },
       ].map(field => (
         <div key={field.label}>
-          <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 8 }}>{field.label}</div>
+          <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 8 }}>{field.label}</div>
           <textarea
             value={field.value}
             onChange={e => field.setter(e.target.value)}
             placeholder={field.placeholder}
             rows={4}
-            style={{ width: '100%', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '12px 16px', color: C.white, fontSize: 13, fontFamily: 'var(--font-body)', lineHeight: 1.7, resize: 'vertical', outline: 'none', boxSizing: 'border-box' }}
+            style={{ width: '100%', background: '#FFFDFC', border: `1px solid ${T.lineLight}`, borderRadius: 8, padding: '12px 16px', color: C.ink, fontSize: 13, fontFamily: 'var(--font-body)', lineHeight: 1.7, resize: 'vertical', outline: 'none', boxSizing: 'border-box' }}
           />
         </div>
       ))}
@@ -193,7 +194,7 @@ function BusinessWorkspace({ title, instructions }: { title: string; instruction
       <div style={{ display: 'flex', gap: 12 }}>
         <button
           onClick={() => setSaved(true)}
-          style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: saved ? '#4ade80' : C.white, padding: '10px 20px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+          style={{ background: '$rgba(11,13,15,0.04)', border: `1px solid ${T.lineLight}`, color: saved ? '#4ade80' : C.ink, padding: '10px 20px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
         >{saved ? 'Draft Saved' : 'Save Draft'}</button>
       </div>
     </div>
@@ -214,18 +215,18 @@ function SimulationWorkspace({ title, instructions }: { title: string; instructi
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <div style={{ color: C.white, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{title}</div>
+      <div style={{ color: C.ink, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{title}</div>
 
       <div style={{ background: 'rgba(168,85,247,0.06)', border: '1px solid rgba(168,85,247,0.15)', borderRadius: 10, padding: '20px 24px' }}>
         <div style={{ color: 'rgba(168,85,247,0.7)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 12 }}>SIMULATION DESCRIPTION</div>
         {instructions.slice(0, 3).map((inst, i) => (
-          <div key={i} style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, lineHeight: 1.7, marginBottom: 6 }}>{inst}</div>
+          <div key={i} style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, marginBottom: 6 }}>{inst}</div>
         ))}
       </div>
 
       {/* Parameters */}
-      <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 10, padding: '20px 24px' }}>
-        <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 16 }}>PARAMETERS</div>
+      <div style={{ background: 'rgba(11,13,15,0.03)', border: `1px solid ${T.lineLight}`, borderRadius: 10, padding: '20px 24px' }}>
+        <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 16 }}>PARAMETERS</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {[
             { key: 'iterations' as const, label: 'Iterations', min: 100, max: 10000, step: 100 },
@@ -234,7 +235,7 @@ function SimulationWorkspace({ title, instructions }: { title: string; instructi
           ].map(param => (
             <div key={param.key}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                <label style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>{param.label}</label>
+                <label style={{ color: C.slate, fontSize: 13 }}>{param.label}</label>
                 <span style={{ color: C.orange, fontSize: 13, fontFamily: 'var(--font-mono)' }}>{params[param.key]}</span>
               </div>
               <input
@@ -265,9 +266,9 @@ function SimulationWorkspace({ title, instructions }: { title: string; instructi
               { label: 'Overrun Probability', value: result.overrunProb },
               { label: 'Std Deviation', value: params.stddev.toString() },
             ].map(m => (
-              <div key={m.label} style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 8, padding: '14px' }}>
+              <div key={m.label} style={{ background: '#FFFDFC', border: `1px solid ${T.lineLight}`, borderRadius: 8, padding: '14px' }}>
                 <div style={{ color: '#c084fc', fontSize: 18, fontFamily: 'var(--font-mono)', fontWeight: 700 }}>{m.value}</div>
-                <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 4 }}>{m.label}</div>
+                <div style={{ color: C.slate, fontSize: 11, marginTop: 4 }}>{m.label}</div>
               </div>
             ))}
           </div>
@@ -323,7 +324,7 @@ export default function ExperimentPage() {
   if (!subject || !experiment) {
     return (
       <div style={{ minHeight: '100vh', background: C.ink, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, fontFamily: 'var(--font-body)' }}>
-        <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)' }}>Experiment not found</div>
+        <div style={{ color: C.ink, fontSize: 24, fontFamily: 'var(--font-display)' }}>Experiment not found</div>
         <Link to={`/labs/${labId}`} style={{ color: accent.text, textDecoration: 'none' }}>&larr; Back to Lab</Link>
       </div>
     )
@@ -342,13 +343,13 @@ export default function ExperimentPage() {
       )}
 
       {/* Top bar */}
-      <div style={{ height: 48, background: C.ink, borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', padding: '0 20px', gap: 12, flexShrink: 0, position: 'sticky', top: 0, zIndex: 50 }}>
-        <button onClick={() => navigate(`/labs/${labId}`)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontFamily: 'var(--font-body)', padding: 0, flexShrink: 0 }}>
+      <div style={{ height: 48, background: C.ink, borderBottom: '1px solid C.slate', display: 'flex', alignItems: 'center', padding: '0 20px', gap: 12, flexShrink: 0, position: 'sticky', top: 0, zIndex: 50 }}>
+        <button onClick={() => navigate(`/labs/${labId}`)} style={{ background: 'none', border: 'none', color: C.slate, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontFamily: 'var(--font-body)', padding: 0, flexShrink: 0 }}>
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
           Lab Overview
         </button>
-        <div style={{ color: 'rgba(255,255,255,0.15)', fontSize: 14 }}>/</div>
-        <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12, fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+        <div style={{ color: C.slate, fontSize: 14 }}>/</div>
+        <div style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
           Exp {experiment.number}: {experiment.title}
         </div>
       </div>
@@ -357,24 +358,24 @@ export default function ExperimentPage() {
       <div style={{ display: 'flex', flex: 1, height: 'calc(100vh - 48px)', overflow: 'hidden' }}>
 
         {/* LEFT sidebar — experiment list */}
-        <div style={{ width: 200, flexShrink: 0, background: C.ink, borderRight: '1px solid rgba(255,255,255,0.06)', overflowY: 'auto' }}>
-          <div style={{ padding: '14px 14px 6px', color: 'rgba(255,255,255,0.18)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em' }}>ALL EXPERIMENTS</div>
+        <div style={{ width: 200, flexShrink: 0, background: C.ink, borderRight: '1px solid C.slate', overflowY: 'auto' }}>
+          <div style={{ padding: '14px 14px 6px', color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em' }}>ALL EXPERIMENTS</div>
           {subject.experiments.map(exp => {
             const isActive = exp.id === experimentId
             const status = statuses[exp.id] ?? 'not_started'
-            const dotColor = status === 'completed' ? '#4ade80' : status === 'submitted' ? '#60a5fa' : status === 'in_progress' ? C.orange : 'rgba(255,255,255,0.2)'
+            const dotColor = status === 'completed' ? '#4ade80' : status === 'submitted' ? '#60a5fa' : status === 'in_progress' ? C.orange : C.slate
             return (
               <button
                 key={exp.id}
                 onClick={() => navigate(`/labs/${labId}/${exp.id}`)}
                 style={{ display: 'flex', width: '100%', textAlign: 'left', padding: '10px 14px', gap: 10, alignItems: 'flex-start', background: 'transparent', borderLeft: isActive ? `3px solid ${C.orange}` : '3px solid transparent', border: 'none', cursor: 'pointer', transition: 'all 0.15s', borderRight: 'none' }}
-                onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.03)' }}
+                onMouseEnter={e => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(11,13,15,0.04)' }}
                 onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
               >
-                <div style={{ width: 7, height: 7, borderRadius: '50%', background: dotColor, flexShrink: 0, marginTop: 5, border: status === 'not_started' ? '1px solid rgba(255,255,255,0.2)' : 'none' }} />
+                <div style={{ width: 7, height: 7, borderRadius: '50%', background: dotColor, flexShrink: 0, marginTop: 5, border: status === 'not_started' ? '1px solid C.slate' : 'none' }} />
                 <div style={{ flex: 1, overflow: 'hidden' }}>
-                  <div style={{ color: 'rgba(255,255,255,0.22)', fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 2 }}>#{exp.number}</div>
-                  <div style={{ color: isActive ? C.white : 'rgba(255,255,255,0.5)', fontSize: 11, lineHeight: 1.4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{exp.title}</div>
+                  <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 2 }}>#{exp.number}</div>
+                  <div style={{ color: isActive ? C.ink : C.slate, fontSize: 11, lineHeight: 1.4, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{exp.title}</div>
                 </div>
               </button>
             )
@@ -390,34 +391,34 @@ export default function ExperimentPage() {
         </div>
 
         {/* RIGHT panel — instructions + submission */}
-        <div style={{ width: 280, flexShrink: 0, background: '#0d0f11', borderLeft: '1px solid rgba(255,255,255,0.06)', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ width: 280, flexShrink: 0, background: '#0d0f11', borderLeft: '1px solid C.slate', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           <div style={{ padding: '20px 20px 0' }}>
             {/* Experiment header */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 6 }}>EXPERIMENT {experiment.number}</div>
-              <div style={{ color: C.white, fontSize: 13, fontWeight: 600, lineHeight: 1.35, marginBottom: 10 }}>{experiment.title}</div>
+              <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 6 }}>EXPERIMENT {experiment.number}</div>
+              <div style={{ color: C.ink, fontSize: 13, fontWeight: 600, lineHeight: 1.35, marginBottom: 10 }}>{experiment.title}</div>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                 <span style={{ background: typeColors.bg, color: typeColors.text, border: `1px solid ${typeColors.border}`, fontSize: 9, fontFamily: 'var(--font-mono)', padding: '3px 9px', borderRadius: 100 }}>{labTypeLabels[experiment.type]}</span>
-                <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)', paddingTop: 2 }}>{experiment.duration}</span>
+                <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', paddingTop: 2 }}>{experiment.duration}</span>
               </div>
             </div>
 
             {/* Status */}
-            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 8, padding: '10px 14px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 7, height: 7, borderRadius: '50%', background: currentStatus === 'completed' ? '#4ade80' : currentStatus === 'submitted' ? '#60a5fa' : currentStatus === 'in_progress' ? C.orange : 'rgba(255,255,255,0.2)', border: currentStatus === 'not_started' ? '1px solid rgba(255,255,255,0.2)' : 'none' }} />
-              <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>
+            <div style={{ background: 'rgba(11,13,15,0.03)', border: `1px solid ${T.lineLight}`, borderRadius: 8, padding: '10px 14px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: currentStatus === 'completed' ? '#4ade80' : currentStatus === 'submitted' ? '#60a5fa' : currentStatus === 'in_progress' ? C.orange : C.slate, border: currentStatus === 'not_started' ? '1px solid C.slate' : 'none' }} />
+              <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>
                 {currentStatus === 'not_started' ? 'Not Started' : currentStatus === 'in_progress' ? 'In Progress' : currentStatus === 'submitted' ? 'Under Review' : 'Completed'}
               </span>
             </div>
 
             {/* Instructions */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 10 }}>INSTRUCTIONS</div>
+              <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 10 }}>INSTRUCTIONS</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {experiment.instructions.map((inst, i) => (
                   <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                     <span style={{ color: C.orange, fontSize: 10, fontFamily: 'var(--font-mono)', flexShrink: 0, marginTop: 2 }}>{i + 1}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 11.5, lineHeight: 1.65 }}>{inst}</span>
+                    <span style={{ color: C.slate, fontSize: 11.5, lineHeight: 1.65 }}>{inst}</span>
                   </div>
                 ))}
               </div>
@@ -425,7 +426,7 @@ export default function ExperimentPage() {
 
             {/* Tasks checklist */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 10 }}>TASKS</div>
+              <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 10 }}>TASKS</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {experiment.tasks.map((task, i) => {
                   const key = `${experimentId}-task-${i}`
@@ -442,10 +443,10 @@ export default function ExperimentPage() {
                       }}
                       style={{ display: 'flex', gap: 10, alignItems: 'flex-start', background: 'none', border: 'none', cursor: 'pointer', padding: 0, textAlign: 'left' }}
                     >
-                      <div style={{ width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${checked ? C.orange : 'rgba(255,255,255,0.18)'}`, background: checked ? 'rgba(243,107,33,0.15)' : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
+                      <div style={{ width: 16, height: 16, borderRadius: 4, border: `1.5px solid ${checked ? C.orange : C.slate}`, background: checked ? 'rgba(243,107,33,0.15)' : 'transparent', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
                         {checked && <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke={C.orange} strokeWidth="3"><polyline points="20 6 9 17 4 12"/></svg>}
                       </div>
-                      <span style={{ color: checked ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.6)', fontSize: 11.5, lineHeight: 1.6, textDecoration: checked ? 'line-through' : 'none' }}>{task}</span>
+                      <span style={{ color: checked ? C.slate : C.slate, fontSize: 11.5, lineHeight: 1.6, textDecoration: checked ? 'line-through' : 'none' }}>{task}</span>
                     </button>
                   )
                 })}
@@ -454,22 +455,22 @@ export default function ExperimentPage() {
 
             {/* Expected outcome */}
             <div style={{ marginBottom: 20 }}>
-              <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 8 }}>EXPECTED OUTCOME</div>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11.5, lineHeight: 1.7, background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 8, padding: '12px' }}>
+              <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 8 }}>EXPECTED OUTCOME</div>
+              <div style={{ color: C.slate, fontSize: 11.5, lineHeight: 1.7, background: '$rgba(11,13,15,0.04)', border: `1px solid ${T.lineLight}`, borderRadius: 8, padding: '12px' }}>
                 {experiment.expectedOutcome}
               </div>
             </div>
           </div>
 
           {/* Submission section */}
-          <div style={{ marginTop: 'auto', padding: '20px', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
-            <div style={{ color: 'rgba(255,255,255,0.2)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 14 }}>SUBMISSION</div>
+          <div style={{ marginTop: 'auto', padding: '20px', borderTop: `1px solid ${T.lineLight}` }}>
+            <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 14 }}>SUBMISSION</div>
 
             {(currentStatus === 'not_started' || currentStatus === 'in_progress') && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <button
                   onClick={handleSubmit}
-                  style={{ width: '100%', background: C.orange, border: 'none', color: C.white, padding: '11px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.15s' }}
+                  style={{ width: '100%', background: C.orange, border: 'none', color: C.ink, padding: '11px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.15s' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '0.85')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
                 >Submit Experiment</button>
@@ -480,13 +481,13 @@ export default function ExperimentPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div style={{ background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.25)', borderRadius: 8, padding: '12px 14px', textAlign: 'center' }}>
                   <div style={{ color: '#60a5fa', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Under Review</div>
-                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11 }}>Your submission is being reviewed</div>
+                  <div style={{ color: C.slate, fontSize: 11 }}>Your submission is being reviewed</div>
                 </div>
                 <button
                   onClick={handleMarkComplete}
-                  style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', padding: '10px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+                  style={{ width: '100%', background: '$rgba(11,13,15,0.04)', border: `1px solid ${T.lineLight}`, color: C.slate, padding: '10px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
                 >Mark Complete (Admin)</button>
-                <button onClick={() => navigate(`/labs/${labId}`)} style={{ width: '100%', background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', padding: '6px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Return to Lab</button>
+                <button onClick={() => navigate(`/labs/${labId}`)} style={{ width: '100%', background: 'none', border: 'none', color: C.slate, padding: '6px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Return to Lab</button>
               </div>
             )}
 
@@ -497,8 +498,8 @@ export default function ExperimentPage() {
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>
                   <div style={{ color: '#4ade80', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Completed</div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: C.white }}>88<span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>/100</span></div>
-                  <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 4 }}>Score</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: C.ink }}>88<span style={{ fontSize: 13, color: C.slate }}>/100</span></div>
+                  <div style={{ color: C.slate, fontSize: 11, marginTop: 4 }}>Score</div>
                 </div>
                 <button onClick={() => navigate(`/labs/${labId}`)} style={{ width: '100%', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', color: '#4ade80', padding: '10px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Return to Lab</button>
               </div>

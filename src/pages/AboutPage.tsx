@@ -55,11 +55,11 @@ function HeroSection() {
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'start' }} className="two-col skylent-page-hero about-page-hero">
             <FadeIn>
-              <Eyebrow tone="dark" accent>About Skylent</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
+              <Eyebrow  accent>About Skylent</Eyebrow>
+              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '20px 0 16px', maxWidth: 640 }}>
                 Education → skills → career → institutions.
               </h1>
-              <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.75, maxWidth: 520, margin: '0 0 28px' }}>
+              <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, maxWidth: 520, margin: '0 0 28px' }}>
                 We are building the infrastructure where students, parents, institutions, and employers can meet — with product depth, not marketing claims.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
@@ -93,14 +93,14 @@ function GapSection() {
     <Section id="gap" tone="canvas" divider>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 72px)', alignItems: 'start' }} className="two-col">
         <FadeIn>
-          <Eyebrow tone="dark">The gap</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
+          <Eyebrow >The gap</Eyebrow>
+          <Heading  size="md" style={{ margin: '20px 0 16px' }}>
             Close the distance between what people learn and what they can do next.
           </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 20px' }}>
+          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 20px' }}>
             Students need more than lectures. Parents need visibility. Institutions need infrastructure. Employers need people who can contribute. Skylent is built so those needs meet in one system.
           </p>
-          <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 15, lineHeight: 1.75, margin: 0 }}>
+          <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: 0 }}>
             The gap is not a single missing feature — it is the disconnect between learning, practice, proof, career readiness, and the institutions that deliver education at scale.
           </p>
         </FadeIn>
@@ -114,16 +114,16 @@ function GapSection() {
                   alignItems: 'center',
                   gap: 16,
                   padding: '18px 22px',
-                  borderBottom: i < stages.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  borderBottom: i < stages.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                 }}
               >
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: stage.accent.primary, flexShrink: 0 }} />
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 3 }}>{stage.label}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12.5, lineHeight: 1.5 }}>{stage.sub}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{stage.label}</div>
+                  <div style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.5 }}>{stage.sub}</div>
                 </div>
                 {i < stages.length - 1 && (
-                  <span style={{ color: 'rgba(255,255,255,0.18)', fontSize: 14, flexShrink: 0 }}>↓</span>
+                  <span style={{ color: C.slate, fontSize: 14, flexShrink: 0 }}>↓</span>
                 )}
               </div>
             ))}
@@ -170,7 +170,7 @@ function EcosystemSection() {
     <Section id="ecosystem" tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="What Skylent connects"
           title="Four products that connect."
           lead="Education, Skills, Career OS, and Institutions are separate products with separate pages — designed to work together when a learner is ready to move on."
@@ -203,7 +203,7 @@ function EcosystemSection() {
                   textAlign: 'left',
                   background: 'transparent',
                   border: 'none',
-                  borderTop: `1px solid ${T.lineDark}`,
+                  borderTop: `1px solid ${T.lineLight}`,
                   padding: '28px clamp(14px, 2vw, 24px)',
                   cursor: 'pointer',
                   fontFamily: 'var(--font-body)',
@@ -213,8 +213,8 @@ function EcosystemSection() {
                 <div className="skylent-label" style={{ color: item.accent.text, marginBottom: 10 }}>
                   {String(i + 1).padStart(2, '0')}
                 </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.white, marginBottom: 10 }}>{item.label}</div>
-                <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14, lineHeight: 1.65, margin: '0 0 14px' }}>{item.body}</p>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink, marginBottom: 10 }}>{item.label}</div>
+                <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: '0 0 14px' }}>{item.body}</p>
                 <span style={{ color: item.accent.text, fontSize: 13, fontWeight: 600 }}>View</span>
               </button>
             </FadeIn>
@@ -251,7 +251,7 @@ function JourneySection() {
     <Section id="journey" tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="How it works"
           title="From programs to opportunities."
           lead="Each step maps to product surfaces already in Skylent — not a marketing funnel, but an implemented journey."
@@ -265,18 +265,18 @@ function JourneySection() {
             {learnerSteps.map((step, i) => (
               <div key={step.label} style={{ display: 'flex', alignItems: 'center', flex: '1 1 120px', minWidth: 0 }}>
                 <div style={{ padding: '10px 0' }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{step.label}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{step.sub}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink }}>{step.label}</div>
+                  <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>{step.sub}</div>
                 </div>
                 {i < learnerSteps.length - 1 && (
-                  <span style={{ color: 'rgba(255,255,255,0.2)', padding: '0 6px', fontSize: 13 }}>→</span>
+                  <span style={{ color: C.slate, padding: '0 6px', fontSize: 13 }}>→</span>
                 )}
               </div>
             ))}
           </div>
         </FadeIn>
         <FadeIn delay={80}>
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 16 }}>Product surfaces</div>
+          <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>Product surfaces</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {productMap.map((item, i) => (
               <div
@@ -286,14 +286,14 @@ function JourneySection() {
                   gridTemplateColumns: '8px 1fr',
                   gap: 16,
                   padding: '14px 0',
-                  borderBottom: i < productMap.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  borderBottom: i < productMap.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                   alignItems: 'start',
                 }}
               >
                 <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.accent.primary, marginTop: 6 }} />
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white, marginBottom: 3 }}>{item.label}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12.5 }}>{item.sub}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{item.label}</div>
+                  <div style={{ color: C.slate, fontSize: 12.5 }}>{item.sub}</div>
                 </div>
               </div>
             ))}
@@ -304,7 +304,7 @@ function JourneySection() {
       <FadeIn delay={120}>
         <div style={{ marginTop: 40 }}>
           <FlowStrip
-            tone="dark"
+            
             steps={[
               { label: 'Programs', sub: 'Catalog' },
               { label: 'Learning', sub: 'Curriculum' },
@@ -339,7 +339,7 @@ function WhoWeServeSection() {
     <Section id="who-we-serve" tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="Who we serve"
           title="Built for learners and the institutions that support them."
           lead="Each audience has a distinct workflow in Skylent — not one generic user type forced into the same product."
@@ -359,7 +359,7 @@ function WhoWeServeSection() {
                 alignItems: 'center',
                 padding: '20px 16px',
                 border: 'none',
-                borderBottom: `1px solid ${T.lineDark}`,
+                borderBottom: `1px solid ${T.lineLight}`,
                 borderLeft: `2px solid ${group.accent.primary}`,
                 cursor: 'pointer',
                 width: '100%',
@@ -369,8 +369,8 @@ function WhoWeServeSection() {
               }}
             >
               <div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, marginBottom: 4 }}>{group.label}</div>
-                <div style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13.5, lineHeight: 1.55 }}>{group.desc}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{group.label}</div>
+                <div style={{ color: C.slate, fontSize: 13.5, lineHeight: 1.55 }}>{group.desc}</div>
               </div>
               <span style={{ color: group.accent.text, fontSize: 16, flexShrink: 0 }}>→</span>
             </button>
@@ -395,36 +395,36 @@ function InstitutionsEmployersSection() {
     <Section id="institutions" tone="canvas" divider>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 56px)', alignItems: 'start' }} className="two-col">
         <FadeIn>
-          <Eyebrow tone="dark">Institution side</Eyebrow>
-          <Heading tone="dark" size="sm" style={{ margin: '18px 0 14px' }}>
+          <Eyebrow >Institution side</Eyebrow>
+          <Heading  size="sm" style={{ margin: '18px 0 14px' }}>
             Infrastructure institutions run on.
           </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>
+          <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>
             Long-term, Skylent OS is curriculum, assessment, skills, and placement readiness as shared infrastructure — for schools through universities, training partners, and industry.
           </p>
           <GlassSurface level={1} padding="18px 22px" style={{ marginBottom: 24 }}>
             <div className="skylent-label" style={{ color: instAccent.text, marginBottom: 14 }}>Institution OS</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px' }}>
               {institutionItems.map(item => (
-                <span key={item} style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>{item}</span>
+                <span key={item} style={{ color: C.slate, fontSize: 13 }}>{item}</span>
               ))}
             </div>
           </GlassSurface>
           <Button variant="secondary" onClick={() => navigate('/institutions')}>For Institutions</Button>
         </FadeIn>
         <FadeIn delay={80}>
-          <Eyebrow tone="dark">Career side</Eyebrow>
-          <Heading tone="dark" size="sm" style={{ margin: '18px 0 14px' }}>
+          <Eyebrow >Career side</Eyebrow>
+          <Heading  size="sm" style={{ margin: '18px 0 14px' }}>
             Career readiness as a product.
           </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>
+          <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>
             Career OS gives learners a working profile, interview preparation, and a job board — with application tracking that stays empty until they apply. Employers interact through open roles, not unverified partnership claims.
           </p>
           <GlassSurface level={1} padding="18px 22px" style={{ marginBottom: 24 }}>
             <div className="skylent-label" style={{ color: careerAccent.text, marginBottom: 14 }}>Career OS</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px' }}>
               {careerItems.map(item => (
-                <span key={item} style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>{item}</span>
+                <span key={item} style={{ color: C.slate, fontSize: 13 }}>{item}</span>
               ))}
             </div>
           </GlassSurface>
@@ -452,7 +452,7 @@ function PlatformSection() {
     <Section id="platform" tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="Building the platform"
           title="Become the education and career platform institutions run on."
           lead="Skylent OS is not a single app — it is the connected layer where curriculum, skills, career readiness, and institutional delivery meet."
@@ -472,8 +472,8 @@ function PlatformSection() {
                 alignItems: 'center',
                 width: '100%',
                 padding: '22px 0',
-                borderTop: i === 0 ? `1px solid ${T.lineDark}` : 'none',
-                borderBottom: `1px solid ${T.lineDark}`,
+                borderTop: i === 0 ? `1px solid ${T.lineLight}` : 'none',
+                borderBottom: `1px solid ${T.lineLight}`,
                 background: 'none',
                 borderLeft: 'none',
                 borderRight: 'none',
@@ -484,8 +484,8 @@ function PlatformSection() {
             >
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: surface.accent.text }}>{String(i + 1).padStart(2, '0')}</div>
               <div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.white, marginBottom: 4 }}>{surface.label}</div>
-                <div style={{ color: 'rgba(255,255,255,0.42)', fontSize: 14, lineHeight: 1.55 }}>{surface.desc}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{surface.label}</div>
+                <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{surface.desc}</div>
               </div>
               <span style={{ color: surface.accent.text, fontSize: 16 }}>→</span>
             </button>
@@ -495,8 +495,8 @@ function PlatformSection() {
 
       <FadeIn delay={280}>
         <GlassSurface level={1} padding="28px 32px" style={{ marginTop: 40 }}>
-          <Eyebrow tone="dark">Honest company</Eyebrow>
-          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 16, lineHeight: 1.8, margin: '16px 0 0', maxWidth: 720 }}>
+          <Eyebrow >Honest company</Eyebrow>
+          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '16px 0 0', maxWidth: 720 }}>
             We do not publish student counts, placement rates, or partner logos we cannot verify. Credibility is product depth, honest enrollment, and institutions that can actually run on this platform.
           </p>
         </GlassSurface>

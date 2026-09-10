@@ -238,8 +238,8 @@ export function Card({
       onClick={onClick}
       style={{ borderRadius: T.rCard, padding: 30, transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease', cursor: onClick ? 'pointer' : 'default', ...base, ...style }}
       onMouseEnter={hover ? e => {
-        e.currentTarget.style.transform = 'translateY(-4px)'
-        e.currentTarget.style.boxShadow = tone === 'dark' ? '0 24px 60px rgba(0,0,0,0.4)' : '0 20px 50px rgba(11,13,15,0.1)'
+        e.currentTarget.style.transform = 'translateY(-1px)'
+        e.currentTarget.style.boxShadow = tone === 'dark' ? '0 12px 32px rgba(0,0,0,0.2)' : '0 8px 24px rgba(11,13,15,0.06)'
         e.currentTarget.style.borderColor = tone === 'dark' ? T.lineDarkStrong : T.lineStrong
       } : undefined}
       onMouseLeave={hover ? e => {
@@ -451,4 +451,92 @@ export function PillarCard({
       </div>
     </div>
   )
+}
+
+// ── Catalog browse primitives (light canvas) ─────────────────────────────────
+export function FilterChip({
+  label,
+  active,
+  onClick,
+  themeId,
+}: {
+  label: string
+  active: boolean
+  onClick: () => void
+  themeId?: AuroraThemeId
+}) {
+  const a = themeId ? getDomainAccent(themeId) : brandAccent
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        padding: '6px 14px',
+        borderRadius: T.rPill,
+        border: `1px solid ${active ? a.border : T.lineLight}`,
+        background: active ? a.subtle : 'transparent',
+        color: active ? a.text : C.slate,
+        fontSize: 12,
+        cursor: 'pointer',
+        fontFamily: 'var(--font-body)',
+        fontWeight: active ? 600 : 400,
+      }}
+    >
+      {label}
+    </button>
+  )
+}
+
+export const catalogFieldStyle: React.CSSProperties = {
+  border: `1px solid ${T.lineLight}`,
+  borderRadius: T.rControl,
+  padding: '10px 12px',
+  fontFamily: 'var(--font-body)',
+  background: '#FFFDFC',
+  color: C.ink,
+  fontSize: 14,
+  width: '100%',
+}
+
+export const catalogLabelStyle: React.CSSProperties = {
+  fontSize: 11,
+  fontFamily: 'var(--font-mono)',
+  color: C.slate,
+  letterSpacing: '0.06em',
+  textTransform: 'uppercase',
+  marginBottom: 6,
+  display: 'block',
+}
+
+export const publicHeroTitle: React.CSSProperties = {
+  color: C.ink,
+  margin: '20px 0 16px',
+}
+
+export const publicHeroLead: React.CSSProperties = {
+  color: C.slate,
+  lineHeight: 1.7,
+}
+
+export const catalogMetaBoxStyle: React.CSSProperties = {
+  background: 'rgba(11,13,15,0.03)',
+  border: `1px solid ${T.lineLight}`,
+  borderRadius: T.rControl,
+  padding: '8px 10px',
+}
+
+export const catalogCardTitle: React.CSSProperties = {
+  fontFamily: 'var(--font-display)',
+  fontSize: 19,
+  fontWeight: 600,
+  color: C.ink,
+  letterSpacing: '-0.02em',
+  lineHeight: 1.25,
+  margin: 0,
+}
+
+export const catalogCardBody: React.CSSProperties = {
+  color: C.slate,
+  fontSize: 13,
+  lineHeight: 1.65,
 }
