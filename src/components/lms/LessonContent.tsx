@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { C, T } from '../../tokens'
 import type { CourseLesson } from '../../data'
 import type { LessonState } from '../../demo/types'
 import LessonVideoPlayer from './LessonVideoPlayer'
@@ -14,6 +13,7 @@ export function LessonContentView({
   lessonState,
   accent,
   onComplete,
+  completing = false,
   quizQuestions,
   onQuizSubmit,
   onAssignmentSubmit,
@@ -23,6 +23,7 @@ export function LessonContentView({
   lessonState: LessonState
   accent: Accent
   onComplete: () => void
+  completing?: boolean
   quizQuestions?: QuizQuestion[]
   onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
   onAssignmentSubmit?: (text: string) => Promise<void>
@@ -30,25 +31,31 @@ export function LessonContentView({
 }) {
   if (lesson.type === 'video') {
     return (
-      <div className="lms-lesson-video lms-activity-surface lms-activity-video">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
-          <div>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
-            <h2 style={{ color: C.white, fontSize: 18, fontWeight: 600, margin: 0, lineHeight: 1.3 }}>{lesson.title}</h2>
-          </div>
-          {lesson.duration && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{lesson.duration}</span>}
-        </div>
+      <div className="lms-lesson-body lms-lesson-body--video">
         <LessonVideoPlayer
           media={lessonMedia}
           title={lesson.title}
           duration={lesson.duration}
           watched={lessonState.complete || lessonState.videoWatched}
           accent={accent}
-          onMarkWatched={lessonState.complete ? undefined : () => onComplete()}
+          onMarkWatched={lessonState.complete || completing ? undefined : () => onComplete()}
         />
-        {(lessonState.complete || lessonState.videoWatched) && (
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: T.rControl, padding: '10px 18px', color: '#22c55e', fontSize: 13 }}>
+        {lessonState.complete ? (
+          <p className="lms-lesson-status is-complete" role="status">
             Lesson complete
+          </p>
+        ) : (
+          <div className="lms-lesson-actions">
+            <button
+              type="button"
+              className="lms-mark-complete"
+              style={{ background: accent.primary }}
+              onClick={onComplete}
+              disabled={completing}
+            >
+              {completing ? 'Saving…' : 'Mark lesson complete'}
+            </button>
+            <p className="lms-lesson-hint">Use this when you have finished the video lesson.</p>
           </div>
         )}
       </div>
@@ -56,32 +63,32 @@ export function LessonContentView({
   }
 
   if (lesson.type === 'notes') {
-    const notes = `# ${lesson.title}\n\n## Key concepts\n\n- Foundational ideas for ${lesson.title}\n- How this connects to the module curriculum\n- Practice checkpoints before the next lesson\n\n## Summary\n\nRead through and mark complete when ready to continue.`
     return (
-      <div className="lms-lesson-notes lms-activity-surface lms-activity-reading">
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 16 }}>
-          <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)', maxWidth: 720 }}>
-            {notes.split('\n').map((line, i) => {
-              if (line.startsWith('# ')) return <div key={i} style={{ color: C.white, fontSize: 20, fontWeight: 700, marginBottom: 16, fontFamily: 'var(--font-display)' }}>{line.slice(2)}</div>
-              if (line.startsWith('## ')) return <div key={i} style={{ color: C.white, fontSize: 15, fontWeight: 600, marginTop: 20, marginBottom: 10 }}>{line.slice(3)}</div>
-              if (line.startsWith('- ')) return <div key={i} style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, lineHeight: 1.7, marginBottom: 8, paddingLeft: 16, borderLeft: `2px solid ${accent.border}` }}>{line.slice(2)}</div>
-              if (line.trim() === '') return <div key={i} style={{ height: 8 }} />
-              return <div key={i} style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.7 }}>{line}</div>
-            })}
-          </div>
-          <div style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 16 }}>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Checkpoint</div>
-            <p style={{ margin: 0, color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.55 }}>
-              Reading materials beyond this placeholder are not attached yet.
-              Mark complete when you are ready to unlock the next lesson.
-            </p>
-          </div>
+      <div className="lms-lesson-body lms-lesson-body--notes">
+        <div className="lms-lesson-unavailable" role="status">
+          <p className="lms-lesson-kicker">{lessonTypeLabel(lesson.type)}</p>
+          <h2>Lesson content isn't available yet.</h2>
+          <p>
+            This reading lesson exists in the curriculum, but attached reading materials are not stored in the LMS yet.
+            You can still mark it complete to unlock the next lesson when you are ready to continue.
+          </p>
         </div>
-        {!lessonState.complete && (
-          <button type="button" onClick={onComplete} style={{ marginTop: 20, background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
-            Mark reading complete →
-          </button>
+        {lessonState.complete ? (
+          <p className="lms-lesson-status is-complete" role="status">
+            Lesson complete
+          </p>
+        ) : (
+          <div className="lms-lesson-actions">
+            <button
+              type="button"
+              className="lms-mark-complete"
+              style={{ background: accent.primary }}
+              onClick={onComplete}
+              disabled={completing}
+            >
+              {completing ? 'Saving…' : 'Mark lesson complete'}
+            </button>
+          </div>
         )}
       </div>
     )
@@ -90,15 +97,19 @@ export function LessonContentView({
   if (lesson.type === 'quiz') {
     const questions = quizQuestions ?? []
     return (
-      <div className="lms-lesson-quiz lms-activity-surface lms-activity-quiz" style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)' }}>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
+      <div className="lms-lesson-body lms-lesson-body--quiz">
+        <p className="lms-lesson-kicker">{lessonTypeLabel(lesson.type)}</p>
+        <p className="lms-lesson-defer-note">
+          This curriculum node uses the existing quiz completion path so you can continue the course. A dedicated Practice
+          phase is not part of this lesson experience.
+        </p>
         {questions.length === 0 ? (
-          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Quiz questions are loading…</div>
+          <p className="lms-lesson-hint">Quiz questions are loading, or none are attached to this lesson yet.</p>
         ) : (
           <AssessmentSurface
             mode="timed"
             title={lesson.title}
-            subtitle="Answer all questions correctly to complete this lesson."
+            subtitle="Answer the questions to complete this lesson."
             questions={questions}
             accent={accent}
             passed={lessonState.complete || lessonState.quizPassed}
@@ -111,18 +122,21 @@ export function LessonContentView({
   }
 
   return (
-    <div className="lms-lesson-assignment lms-activity-surface lms-activity-assignment lms-project-surface" style={{ borderLeft: `3px solid ${accent.primary}`, paddingLeft: 20 }}>
-      <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
-      <p style={{ margin: '0 0 16px', color: 'rgba(255,255,255,0.45)', fontSize: 13, lineHeight: 1.55 }}>
-        Project workspace — Brief → Plan → Build → Submit. Different from a video or reading lesson: you produce reviewable work.
+    <div className="lms-lesson-body lms-lesson-body--assignment">
+      <p className="lms-lesson-kicker">{lessonTypeLabel(lesson.type)}</p>
+      <p className="lms-lesson-defer-note">
+        This curriculum node uses the existing assignment submission path so you can continue the course. A dedicated
+        Projects phase is not part of this lesson experience.
       </p>
       <AssessmentSurface
         mode="assignment"
         title={lesson.title}
-        subtitle="Turn the brief into an artifact faculty can review. Submitted work can become evidence later."
+        subtitle="Submit work for this assignment node when you are ready."
         accent={accent}
         passed={lessonState.complete || lessonState.assignmentSubmitted}
-        onSubmitAssignment={(text) => { void onAssignmentSubmit?.(text) }}
+        onSubmitAssignment={(text) => {
+          void onAssignmentSubmit?.(text)
+        }}
       />
     </div>
   )
@@ -134,25 +148,61 @@ export function LessonNavigation({
   courseSlug,
   accent,
   onNavigate,
+  nextUnlocked,
+  complete,
+  dashboardHref = '/dashboard/student',
 }: {
   prev: CourseLesson | null
   next: CourseLesson | null
   courseSlug: string
   accent: Accent
   onNavigate: (id: string) => void
+  nextUnlocked: boolean
+  complete: boolean
+  dashboardHref?: string
 }) {
   return (
-    <div className="lms-lesson-nav" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 28, paddingTop: 20, borderTop: `1px solid ${T.lineDark}`, flexWrap: 'wrap' }}>
+    <nav className="lms-lesson-nav" aria-label="Lesson navigation">
       {prev ? (
-        <button type="button" onClick={() => onNavigate(prev.id)} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: T.rControl, padding: '10px 16px', color: 'rgba(255,255,255,0.6)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left', maxWidth: '48%' }}>
-          ← {prev.title}
+        <button type="button" className="lms-nav-prev" onClick={() => onNavigate(prev.id)}>
+          <span>Previous</span>
+          <strong>{prev.title}</strong>
         </button>
-      ) : <div />}
+      ) : (
+        <span className="lms-nav-spacer" aria-hidden="true" />
+      )}
+
       {next ? (
-        <Link to={`/learn/${courseSlug}/${next.id}`} onClick={() => onNavigate(next.id)} style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rControl, padding: '10px 16px', color: accent.text, fontSize: 13, textDecoration: 'none', textAlign: 'right', maxWidth: '48%' }}>
-          {next.title} →
+        nextUnlocked ? (
+          <Link
+            className={`lms-nav-next${complete ? ' is-primary' : ''}`}
+            to={`/learn/${courseSlug}/${next.id}`}
+            onClick={() => onNavigate(next.id)}
+            style={
+              complete
+                ? { borderColor: accent.border, background: accent.subtle, color: accent.text }
+                : undefined
+            }
+          >
+            <span>{complete ? 'Next lesson' : 'Next'}</span>
+            <strong>{next.title}</strong>
+          </Link>
+        ) : (
+          <div className="lms-nav-next is-locked" aria-disabled="true">
+            <span>Next lesson locked</span>
+            <strong>{next.title}</strong>
+          </div>
+        )
+      ) : complete ? (
+        <Link
+          className="lms-nav-next is-primary"
+          to={dashboardHref}
+          style={{ borderColor: accent.border, background: accent.subtle, color: accent.text }}
+        >
+          <span>Course map</span>
+          <strong>Return to learning workspace</strong>
         </Link>
       ) : null}
-    </div>
+    </nav>
   )
 }
