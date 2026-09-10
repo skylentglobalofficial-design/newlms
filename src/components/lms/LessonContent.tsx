@@ -1,10 +1,14 @@
 import { Link } from 'react-router-dom'
+import { lazy, Suspense } from 'react'
 import type { CourseLesson } from '../../data'
 import type { LessonState } from '../../demo/types'
 import LessonVideoPlayer from './LessonVideoPlayer'
 import type { VideoPlaybackSource } from '../../lib/media/types'
 import { AssessmentSurface, type QuizQuestion } from './AssessmentSurface'
 import { lessonTypeLabel } from './lms-utils'
+import type { AssignmentStatePayload } from '../../lib/lms-api'
+
+const ProjectExperience = lazy(() => import('./ProjectExperience'))
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
@@ -17,6 +21,8 @@ export function LessonContentView({
   quizQuestions,
   onQuizSubmit,
   onAssignmentSubmit,
+  assignmentState,
+  onProjectSubmit,
   lessonMedia,
 }: {
   lesson: CourseLesson
@@ -27,6 +33,11 @@ export function LessonContentView({
   quizQuestions?: QuizQuestion[]
   onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
   onAssignmentSubmit?: (text: string) => Promise<void>
+  assignmentState?: AssignmentStatePayload | null
+  onProjectSubmit?: (payload: {
+    responseText: string
+    attachments: Array<{ fileName: string; mimeType: string; byteSize: number }>
+  }) => Promise<void>
   lessonMedia?: VideoPlaybackSource
 }) {
   if (lesson.type === 'video') {
@@ -121,12 +132,31 @@ export function LessonContentView({
     )
   }
 
+  if (assignmentState?.brief) {
+    return (
+      <div className="lms-lesson-body lms-lesson-body--assignment lms-lesson-body--project">
+        <Suspense fallback={<p className="lms-lesson-hint">Loading project brief…</p>}>
+          <ProjectExperience
+            brief={assignmentState.brief}
+            accent={accent}
+            status={assignmentState.status}
+            initialResponseText={assignmentState.responseText}
+            initialAttachments={assignmentState.attachments}
+            onSubmit={async (payload) => {
+              await onProjectSubmit?.(payload)
+            }}
+          />
+        </Suspense>
+      </div>
+    )
+  }
+
   return (
     <div className="lms-lesson-body lms-lesson-body--assignment">
       <p className="lms-lesson-kicker">{lessonTypeLabel(lesson.type)}</p>
       <p className="lms-lesson-defer-note">
         This curriculum node uses the existing assignment submission path so you can continue the course. A dedicated
-        Projects phase is not part of this lesson experience.
+        project brief is not authored for this node yet.
       </p>
       <AssessmentSurface
         mode="assignment"

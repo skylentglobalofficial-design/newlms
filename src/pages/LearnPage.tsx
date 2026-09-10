@@ -17,6 +17,7 @@ import { useLmsCourse } from '../hooks/useLms'
 import LockedLessonState from '../components/lms/LockedLessonState'
 import type { VideoPlaybackSource } from '../lib/media/types'
 import {
+  fetchAssignmentState,
   fetchCourseWorkspace,
   fetchLessonMedia,
   fetchQuizQuestions,
@@ -24,6 +25,7 @@ import {
   markLessonComplete,
   submitQuizAttempt,
   updateAssignment,
+  type AssignmentStatePayload,
 } from '../lib/lms-api'
 
 const LessonPracticePage = lazy(() => import('./LessonPracticePage'))
@@ -68,6 +70,7 @@ export default function LearnPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
+  const [assignmentState, setAssignmentState] = useState<AssignmentStatePayload | null>(null)
   const [enrolling, setEnrolling] = useState(false)
   const [completing, setCompleting] = useState(false)
 
@@ -100,6 +103,7 @@ export default function LearnPage() {
     if (state?.locked) {
       setQuizQuestions([])
       setLessonMedia(undefined)
+      setAssignmentState(null)
       return
     }
 
@@ -111,6 +115,14 @@ export default function LearnPage() {
         .catch(() => setQuizQuestions([]))
     } else {
       setQuizQuestions([])
+    }
+
+    if (lesson.type === 'assignment') {
+      fetchAssignmentState(slug, selectedLessonId)
+        .then((payload) => setAssignmentState(payload))
+        .catch(() => setAssignmentState(null))
+    } else {
+      setAssignmentState(null)
     }
 
     if (lesson.type === 'video') {
@@ -264,7 +276,25 @@ export default function LearnPage() {
   async function handleAssignmentSubmit(text: string) {
     if (!slug || !selectedLesson) return
     await updateAssignment(slug, selectedLesson.id, 'submit', text)
-    await handleLessonComplete()
+    const workspace = await fetchCourseWorkspace(slug)
+    patchWorkspace(workspace)
+  }
+
+  async function handleProjectSubmit(payload: {
+    responseText: string
+    attachments: Array<{ fileName: string; mimeType: string; byteSize: number }>
+  }) {
+    if (!slug || !selectedLesson) return
+    const result = await updateAssignment(
+      slug,
+      selectedLesson.id,
+      'submit',
+      payload.responseText,
+      payload.attachments,
+    )
+    setAssignmentState(result)
+    const workspace = await fetchCourseWorkspace(slug)
+    patchWorkspace(workspace)
   }
 
   if (lessonIdInvalid) {
@@ -405,6 +435,8 @@ export default function LearnPage() {
                     quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
                     onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
                     onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
+                    assignmentState={selectedLesson.type === 'assignment' ? assignmentState : null}
+                    onProjectSubmit={selectedLesson.type === 'assignment' ? handleProjectSubmit : undefined}
                     lessonMedia={lessonMedia}
                   />
                 )}

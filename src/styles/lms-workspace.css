@@ -1534,3 +1534,187 @@
   .lms-lesson-frame > div:first-child { margin-bottom: 16px !important; }
 }
 
+
+/* Phase 11 — Sales Analysis project experience */
+.lms-project-experience {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  color: #080909;
+  max-width: 52rem;
+}
+.lms-project-hero h2 {
+  margin: 4px 0 10px;
+  font-size: clamp(1.45rem, 2.4vw, 1.9rem);
+  line-height: 1.25;
+  font-weight: 650;
+  color: #080909;
+}
+.lms-project-honesty {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid #3b8e61;
+  background: #edf7f0;
+  color: #24553a;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+.lms-project-section h3 {
+  margin: 0 0 8px;
+  font-size: 1.05rem;
+  font-weight: 650;
+  color: #080909;
+}
+.lms-project-section p,
+.lms-project-list,
+.lms-project-milestones {
+  margin: 0;
+  color: #3d4540;
+  font-size: 0.95rem;
+  line-height: 1.65;
+}
+.lms-project-case {
+  font-weight: 600;
+  color: #080909 !important;
+}
+.lms-project-list,
+.lms-project-milestones {
+  padding-left: 1.2rem;
+  display: grid;
+  gap: 8px;
+}
+.lms-project-milestones li {
+  display: grid;
+  gap: 2px;
+}
+.lms-project-note {
+  margin-top: 8px;
+  color: #5f6b65 !important;
+  font-size: 0.88rem !important;
+}
+.lms-project-download,
+.lms-project-submit {
+  margin-top: 12px;
+  border: none;
+  color: #080909;
+  min-height: 44px;
+  padding: 11px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.lms-project-download:disabled,
+.lms-project-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.lms-project-rubric {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+.lms-project-rubric-row {
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.9fr) repeat(3, minmax(0, 1.1fr));
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(8, 9, 9, 0.1);
+  border-radius: 10px;
+  background: #fffdf9;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  color: #3d4540;
+}
+.lms-project-rubric-row.is-head {
+  background: #edf7f0;
+  font-weight: 650;
+  color: #24553a;
+}
+.lms-project-submit-form,
+.lms-project-fieldset {
+  display: grid;
+  gap: 14px;
+  border: 1px solid rgba(8, 9, 9, 0.1);
+  border-radius: 12px;
+  padding: 14px;
+  background: #fffdf9;
+}
+.lms-project-fieldset {
+  margin: 0;
+}
+.lms-project-fieldset legend {
+  padding: 0 4px;
+  font-weight: 650;
+  color: #080909;
+}
+.lms-project-field {
+  display: grid;
+  gap: 6px;
+}
+.lms-project-field label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #080909;
+}
+.lms-project-field textarea,
+.lms-project-field input,
+.lms-project-field select {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  border: 1px solid rgba(8, 9, 9, 0.16);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  color: #080909;
+  font: inherit;
+}
+.lms-project-field textarea {
+  min-height: 220px;
+  resize: vertical;
+  line-height: 1.6;
+}
+.lms-project-field textarea:focus,
+.lms-project-field input:focus,
+.lms-project-field select:focus,
+.lms-project-download:focus-visible,
+.lms-project-submit:focus-visible {
+  outline: 2px solid #3b8e61;
+  outline-offset: 2px;
+}
+.lms-project-error {
+  margin: 0;
+  color: #b42318;
+  font-size: 0.9rem;
+}
+.lms-project-submitted {
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #b7d9ca;
+  background: #e5f1eb;
+}
+@media (max-width: 768px) {
+  .lms-project-rubric-row {
+    grid-template-columns: 1fr;
+  }
+  .lms-project-rubric-row.is-head {
+    display: none;
+  }
+  .lms-project-rubric-row > span[role='cell']::before {
+    display: block;
+    font-weight: 650;
+    color: #24553a;
+    margin-bottom: 4px;
+  }
+  .lms-project-rubric-row > span[role='cell']:nth-child(1)::before { content: 'Criterion'; }
+  .lms-project-rubric-row > span[role='cell']:nth-child(2)::before { content: 'Meets'; }
+  .lms-project-rubric-row > span[role='cell']:nth-child(3)::before { content: 'Partial'; }
+  .lms-project-rubric-row > span[role='cell']:nth-child(4)::before { content: 'Does not meet'; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lms-project-experience * {
+    transition: none !important;
+    animation: none !important;
+  }
+}

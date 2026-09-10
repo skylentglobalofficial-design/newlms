@@ -243,17 +243,112 @@ export async function submitQuizAttempt(slug: string, lessonKey: string, answers
   return result.data
 }
 
+export type AssignmentAttachmentMeta = {
+  id?: string
+  fileName: string
+  mimeType: string
+  byteSize: number
+  storageProvider?: string
+}
+
+export type AssignmentBriefPayload = {
+  title: string
+  kicker: string | null
+  content: AssignmentBriefContent | unknown
+  dataset: {
+    available: boolean
+    name: string | null
+    fileName: string | null
+    mimeType: string | null
+    disclaimer: string | null
+    downloadPath: string | null
+  } | null
+}
+
+export type AssignmentBriefContent = {
+  objective?: string
+  scenario?: {
+    caseName?: string
+    framing?: string
+    narrative?: string
+  }
+  businessProblem?: {
+    primaryQuestion?: string
+    decisionSupported?: string
+    gradingNote?: string
+  }
+  learnerTask?: string[]
+  requiredAnalysis?: Array<{ id: string; text: string }>
+  optionalAnalysis?: Array<{ id: string; text: string }>
+  deliverables?: {
+    analyticalArtifact?: {
+      required?: boolean
+      paths?: Array<{ id: string; label: string; description: string }>
+      chooseOne?: boolean
+    }
+    writtenAnalysis?: {
+      required?: boolean
+      wordCount?: string
+      mustInclude?: string[]
+    }
+    optional?: string[]
+  }
+  constraints?: string[]
+  milestones?: Array<{ id: string; label: string; purpose: string }>
+  rubric?: Array<{
+    criterion: string
+    meets: string
+    partial: string
+    doesNotMeet: string
+  }>
+  submissionExpectations?: {
+    requiredArtifacts?: string[]
+    naming?: string
+    completeWhen?: string
+    incompleteIf?: string[]
+    attachmentNote?: string
+  }
+  prerequisites?: {
+    sourceDerivedPath?: string
+    statement?: string
+  }
+  completionRule?: string
+  dataset?: {
+    name?: string
+    analysisWindow?: { start: string; end: string }
+    currency?: string
+    netRevenueFormula?: string
+    honesty?: string
+  }
+}
+
+export type AssignmentStatePayload = {
+  lessonKey: string
+  title?: string
+  status: string
+  submittedAt: string | null
+  responseText?: string | null
+  attachments: AssignmentAttachmentMeta[]
+  brief: AssignmentBriefPayload | null
+}
+
 export async function fetchAssignmentState(slug: string, lessonKey: string) {
-  const result = await lmsGet<{ data: { lessonKey: string; status: string; submittedAt: string | null } }>(
+  const result = await lmsGet<{ data: AssignmentStatePayload }>(
     `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
   )
   return result.data
 }
 
-export async function updateAssignment(slug: string, lessonKey: string, action: "start" | "submit", responseText?: string) {
-  const result = await lmsMutate<{ data: { lessonKey: string; status: string; submittedAt: string | null } }>(
+export async function updateAssignment(
+  slug: string,
+  lessonKey: string,
+  action: "start" | "submit",
+  responseText?: string,
+  attachments?: Array<{ fileName: string; mimeType: string; byteSize: number }>,
+) {
+  const result = await lmsMutate<{ data: AssignmentStatePayload }>(
     `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
-    { action, responseText },
+    { action, responseText, attachments },
   )
   return result.data
 }

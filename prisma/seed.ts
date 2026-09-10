@@ -1,4 +1,6 @@
 import { PrismaClient, CurriculumNodeType, EnrollmentStatus, ProgramType } from '@prisma/client'
+import fs from 'node:fs'
+import path from 'node:path'
 
 import { courses, programs } from '../src/data.js'
 
@@ -303,6 +305,92 @@ async function seedLessonPractice() {
   console.log(`Seeded LessonPractice for data-analytics / ${node.title} (l2)`)
 }
 
+/**
+ * Phase 11 — Project Content Foundation for ONE node:
+ * data-analytics / m5 / l13 Project 1: Sales Analysis
+ * Content source: content/lms/data-analytics/l13/brief.json (Phase 10 authoring).
+ */
+async function seedAssignmentBriefSalesAnalysis() {
+  const briefPath = path.join(
+    process.cwd(),
+    "content/lms/data-analytics/l13/brief.json",
+  )
+  if (!fs.existsSync(briefPath)) {
+    console.warn("Sales Analysis brief.json missing — skipping AssignmentBrief seed")
+    return
+  }
+
+  const raw = JSON.parse(fs.readFileSync(briefPath, "utf8")) as {
+    title: string
+    kicker?: string
+    dataset: {
+      name: string
+      fileName: string
+      mimeType: string
+      honesty: string
+    }
+  }
+
+  const datasetPath = path.join(
+    process.cwd(),
+    "content/lms/data-analytics/l13",
+    raw.dataset.fileName,
+  )
+  if (!fs.existsSync(datasetPath)) {
+    console.warn("Sales Analysis dataset xlsx missing — skipping AssignmentBrief seed")
+    return
+  }
+
+  const course = await prisma.course.findUnique({
+    where: { slug: "data-analytics" },
+    select: { id: true },
+  })
+  if (!course) {
+    console.warn("data-analytics course missing — skipping AssignmentBrief seed")
+    return
+  }
+
+  const node = await prisma.curriculumNode.findFirst({
+    where: {
+      sourceId: "l13",
+      module: { courseId: course.id, sourceId: "m5" },
+      nodeType: CurriculumNodeType.ASSIGNMENT,
+    },
+    select: { id: true, title: true },
+  })
+  if (!node) {
+    console.warn("data-analytics m5/l13 node missing — skipping AssignmentBrief seed")
+    return
+  }
+
+  await prisma.assignmentBrief.upsert({
+    where: { nodeId: node.id },
+    update: {
+      title: raw.title,
+      kicker: raw.kicker ?? null,
+      content: raw,
+      datasetName: raw.dataset.name,
+      datasetFileName: raw.dataset.fileName,
+      datasetMimeType: raw.dataset.mimeType,
+      datasetRelativePath: `content/lms/data-analytics/l13/${raw.dataset.fileName}`,
+      datasetDisclaimer: raw.dataset.honesty,
+    },
+    create: {
+      nodeId: node.id,
+      title: raw.title,
+      kicker: raw.kicker ?? null,
+      content: raw,
+      datasetName: raw.dataset.name,
+      datasetFileName: raw.dataset.fileName,
+      datasetMimeType: raw.dataset.mimeType,
+      datasetRelativePath: `content/lms/data-analytics/l13/${raw.dataset.fileName}`,
+      datasetDisclaimer: raw.dataset.honesty,
+    },
+  })
+
+  console.log(`Seeded AssignmentBrief for data-analytics / ${node.title} (l13)`)
+}
+
 async function seedProgramCourses() {
   const links: Array<{ programSlug: string; courseSlug: string; sortOrder: number }> = [
     { programSlug: "data-analytics-pro", courseSlug: "data-analytics", sortOrder: 0 },
@@ -335,6 +423,9 @@ async function main() {
 
   console.log("Seeding lesson practice content...")
   await seedLessonPractice()
+
+  console.log("Seeding Sales Analysis assignment brief...")
+  await seedAssignmentBriefSalesAnalysis()
 
   console.log("Seeding program-course links...")
   await seedProgramCourses()

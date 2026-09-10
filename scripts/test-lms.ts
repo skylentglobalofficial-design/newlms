@@ -422,6 +422,175 @@ async function main() {
   assert(maliciousRow.attachments[0].storageKey.startsWith("pending/"), "Storage key must be server-generated")
   assert(!maliciousRow.attachments[0].storageKey.includes("attacker/owned"), "Client cannot inject storage key")
 
+  console.log("20. Sales Analysis project brief (l13) loads for enrolled unlocked learner")
+  const projectJar: CookieJar = new Map()
+  await signupUser(projectJar, "project-l13")
+  await request(projectJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { courseSlug },
+  })
+
+  const lockedBrief = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`)
+  assert(lockedBrief.response.status === 403, "Locked l13 assignment should be rejected")
+
+  for (const lessonKey of ["l1", "l2", "l3", "l4", "l5", "l6", "l7", "l8", "l9", "l10", "l11", "l12"]) {
+    await completeLesson(projectJar, courseSlug, lessonKey)
+  }
+
+  const anonL13 = await request(anonJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`)
+  assert(anonL13.response.status === 401, "Unauthenticated l13 assignment access must be rejected")
+
+  const blockedL13 = await request(userBJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`)
+  assert(blockedL13.response.status === 403, "Unenrolled learner cannot load l13 brief")
+
+  const l13Get = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`)
+  assert(l13Get.response.ok, "Enrolled unlocked learner should load l13 assignment")
+  assert(l13Get.data.data.brief, "l13 should include project brief")
+  assert(l13Get.data.data.brief.title === "Project 1: Sales Analysis", "l13 brief title should match authored content")
+  assert(l13Get.data.data.brief.kicker === "PROJECT 1", "l13 brief kicker should be PROJECT 1")
+  assert(l13Get.data.data.brief.content?.objective, "l13 brief should include objective")
+  assert(
+    Array.isArray(l13Get.data.data.brief.content?.requiredAnalysis) &&
+      l13Get.data.data.brief.content.requiredAnalysis.length === 6,
+    "l13 brief should include R1–R6",
+  )
+  assert(l13Get.data.data.brief.dataset?.available === true, "l13 dataset should be available")
+  assert(
+    l13Get.data.data.brief.dataset?.name === "skylent_aether_home_goods_sales_v1",
+    "l13 dataset name should match Phase 10 contract",
+  )
+  assert(
+    String(l13Get.data.data.brief.dataset?.disclaimer ?? "").toLowerCase().includes("synthetic"),
+    "Dataset disclaimer must identify synthetic curriculum data",
+  )
+  assert(
+    String(l13Get.data.data.brief.content?.scenario?.framing ?? "")
+      .toLowerCase()
+      .includes("fictional"),
+    "Scenario framing must identify fictional case",
+  )
+
+  console.log("21. Dataset download is gated and returns xlsx bytes")
+  const anonDataset = await request(anonJar, `/lms/courses/${courseSlug}/lessons/l13/assignment/dataset`)
+  assert(anonDataset.response.status === 401, "Unauthenticated dataset download must be rejected")
+  const blockedDataset = await request(userBJar, `/lms/courses/${courseSlug}/lessons/l13/assignment/dataset`)
+  assert(blockedDataset.response.status === 403, "Unenrolled dataset download must be rejected")
+
+  const datasetRes = await fetch(
+    `${API_BASE}/lms/courses/${courseSlug}/lessons/l13/assignment/dataset`,
+    { headers: { Cookie: cookieHeader(projectJar) } },
+  )
+  assert(datasetRes.ok, "Enrolled unlocked learner should download dataset")
+  const datasetBuf = Buffer.from(await datasetRes.arrayBuffer())
+  assert(datasetBuf.byteLength > 10_000, "Dataset download should return substantial xlsx bytes")
+  assert(
+    (datasetRes.headers.get("content-type") ?? "").includes("spreadsheetml") ||
+      (datasetRes.headers.get("content-type") ?? "").includes("octet-stream"),
+    "Dataset content-type should be spreadsheet-compatible",
+  )
+
+  console.log("22. Project submission requires written analysis + artifact; completes lesson and unlocks next")
+  const incompleteProject = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "submit", responseText: "Only text without artifact." },
+  })
+  assert(incompleteProject.response.status === 400, "Project submit without artifact should fail")
+
+  const incompleteArtifact = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: {
+      action: "submit",
+      attachments: [
+        {
+          fileName: "DA_l13_SalesAnalysis_test.xlsx",
+          mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          byteSize: 4096,
+        },
+      ],
+    },
+  })
+  assert(incompleteArtifact.response.status === 400, "Project submit without written analysis should fail")
+
+  const badMime = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: {
+      action: "submit",
+      responseText:
+        "Filters used: Completed only for net revenue. R1 headline metrics and R6 priorities with evidence. Limitations: synthetic curriculum data only.",
+      attachments: [{ fileName: "malware.exe", mimeType: "application/x-msdownload", byteSize: 1024 }],
+    },
+  })
+  assert(badMime.response.status === 400, "Unsupported attachment mime should be rejected for project")
+
+  const projectSubmit = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: {
+      action: "submit",
+      responseText:
+        "Filters: exclude Cancelled and Returned from net revenue. R1: total net revenue and order count from Completed lines. R2–R5 covered in workbook pivots. R6 priorities: (1) investigate softer H2 category performance with evidence from monthly category views; (2) review West region order mix and return share. Limitations: fictional Aether Home Goods curriculum data; correlation only.",
+      attachments: [
+        {
+          fileName: "DA_l13_SalesAnalysis_test.xlsx",
+          mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          byteSize: 8192,
+        },
+      ],
+    },
+  })
+  assert(projectSubmit.response.ok, "Valid project submit should succeed")
+  assert(projectSubmit.data.data.status === "submitted", "Project should be submitted")
+  assert(projectSubmit.data.data.attachments?.length === 1, "Project attachment metadata should persist")
+
+  const afterL13 = await request(projectJar, `/lms/courses/${courseSlug}`)
+  assert(afterL13.data.data.lessonStates.l13?.complete === true, "l13 lesson progress should be complete")
+  assert(afterL13.data.data.lessonStates.l14?.locked === false, "l14 should unlock after l13 completion")
+
+  console.log("23. Other title-only assignment nodes remain without authored briefs")
+  const l6Brief = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`)
+  assert(l6Brief.response.ok, "l6 assignment GET should still work")
+  assert(l6Brief.data.data.brief === null, "l6 must remain title-only (no brief)")
+
+  const l12Brief = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l12/assignment`)
+  assert(l12Brief.response.ok, "l12 assignment GET should still work")
+  assert(l12Brief.data.data.brief === null, "l12 must remain title-only (no brief)")
+
+  // l14 is unlocked after l13 submit above
+  const l14Brief = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l14/assignment`)
+  assert(l14Brief.response.ok, "l14 assignment GET should work when unlocked")
+  assert(l14Brief.data.data.brief === null, "l14 must remain title-only (no brief)")
+
+  for (const other of [
+    { slug: "python-programming", lesson: "l6" },
+    { slug: "generative-ai", lesson: "l6" },
+    { slug: "full-stack-web", lesson: "l6" },
+  ]) {
+    const otherJar: CookieJar = new Map()
+    await signupUser(otherJar, `other-${other.slug}`)
+    const enrollOther = await request(otherJar, "/lms/enrollments", {
+      method: "POST",
+      csrf: true,
+      body: { courseSlug: other.slug },
+    })
+    if (!enrollOther.response.ok) continue
+    // Unlock through prior lessons when present
+    const ws = await request(otherJar, `/lms/courses/${other.slug}`)
+    const lessons: string[] = (ws.data.data.course.modules ?? []).flatMap(
+      (m: { lessons: Array<{ id: string }> }) => m.lessons.map((l) => l.id),
+    )
+    for (const key of lessons) {
+      if (key === other.lesson) break
+      await completeLesson(otherJar, other.slug, key)
+    }
+    const otherAssign = await request(otherJar, `/lms/courses/${other.slug}/lessons/${other.lesson}/assignment`)
+    assert(otherAssign.response.ok, `${other.slug}/${other.lesson} assignment GET should work`)
+    assert(otherAssign.data.data.brief === null, `${other.slug}/${other.lesson} must remain title-only`)
+  }
+
   console.log("All LMS integration checks passed.")
   await prisma.$disconnect()
 }

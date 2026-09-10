@@ -10,6 +10,11 @@ import {
 } from "../lib/auth.js"
 import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
 import {
+  formatAssignmentBrief,
+  projectSubmissionRequirements,
+  resolveDatasetAbsolutePath,
+} from "../lib/assignment-brief.js"
+import {
   assertLessonUnlocked,
   buildCourseWorkspace,
   computeResume,
@@ -75,7 +80,8 @@ const quizAttemptSchema = z.object({
 
 const assignmentPatchSchema = z.object({
   action: z.enum(["start", "submit"]),
-  responseText: z.string().max(10000).optional(),
+  /** Written analysis for projects may be 400–800 words (~5–8k chars); keep headroom. */
+  responseText: z.string().max(20000).optional(),
   attachments: z.array(attachmentSchema).max(5).optional(),
 })
 
@@ -628,18 +634,23 @@ lmsRouter.get(
       const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
       if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
 
-      const assignment = await prisma.assignmentProgress.findUnique({
-        where: {
-          enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
-        },
-        include: { attachments: true },
-      })
+      const [assignment, brief] = await Promise.all([
+        prisma.assignmentProgress.findUnique({
+          where: {
+            enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
+          },
+          include: { attachments: true },
+        }),
+        prisma.assignmentBrief.findUnique({ where: { nodeId: located.node.id } }),
+      ])
 
       res.json({
         data: {
           lessonKey: lessonParsed.data.lessonKey,
+          title: located.node.title,
           status: assignment?.status ?? "not_started",
           submittedAt: assignment?.submittedAt?.toISOString() ?? null,
+          responseText: assignment?.responseText ?? null,
           attachments: assignment?.attachments.map((file) => ({
             id: file.id,
             fileName: file.fileName,
@@ -647,11 +658,67 @@ lmsRouter.get(
             byteSize: file.byteSize,
             storageProvider: file.storageProvider,
           })) ?? [],
+          brief: formatAssignmentBrief(brief, slugParsed.data.slug, lessonParsed.data.lessonKey),
         },
       })
     } catch (error) {
       console.error("Failed to load assignment:", error)
       res.status(500).json({ error: "Failed to load assignment" })
+    }
+  },
+)
+
+lmsRouter.get(
+  "/courses/:slug/lessons/:lessonKey/assignment/dataset",
+  requireAuth,
+  async (req: AuthenticatedRequest, res) => {
+    const slugParsed = slugParamSchema.safeParse(req.params)
+    const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
+    if (!slugParsed.success || !lessonParsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    try {
+      const course = await findCourseBySlug(slugParsed.data.slug)
+      if (!course) return res.status(404).json({ error: "Course not found" })
+
+      const enrollment = await requireEnrollment(req.auth!.user.id, course.id)
+      if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
+
+      const located = await findNodeByLessonKey(course, lessonParsed.data.lessonKey)
+      if (!located || located.node.nodeType !== CurriculumNodeType.ASSIGNMENT) {
+        return res.status(404).json({ error: "Assignment lesson not found" })
+      }
+
+      const lessonStates = await loadLessonStates(enrollment, course)
+      const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
+      if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
+
+      const brief = await prisma.assignmentBrief.findUnique({ where: { nodeId: located.node.id } })
+      if (!brief?.datasetRelativePath || !brief.datasetFileName) {
+        return res.status(404).json({ error: "Dataset not available for this assignment" })
+      }
+
+      const absolutePath = resolveDatasetAbsolutePath(brief.datasetRelativePath)
+      if (!absolutePath) {
+        return res.status(404).json({ error: "Dataset file not found" })
+      }
+
+      res.setHeader(
+        "Content-Type",
+        brief.datasetMimeType ?? "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      )
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${brief.datasetFileName.replace(/"/g, "")}"`,
+      )
+      if (brief.datasetDisclaimer) {
+        res.setHeader("X-Skylent-Dataset-Disclaimer", brief.datasetDisclaimer.slice(0, 500))
+      }
+      return res.sendFile(absolutePath)
+    } catch (error) {
+      console.error("Failed to download assignment dataset:", error)
+      res.status(500).json({ error: "Failed to download dataset" })
     }
   },
 )
@@ -684,12 +751,41 @@ lmsRouter.post(
       const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
       if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
 
+      const brief = await prisma.assignmentBrief.findUnique({ where: { nodeId: located.node.id } })
+      const projectRules = projectSubmissionRequirements(brief?.content)
+
       const now = new Date()
       const isSubmit = bodyParsed.data.action === "submit"
       const hasText = Boolean(bodyParsed.data.responseText?.trim())
       const hasAttachments = Boolean(bodyParsed.data.attachments?.length)
-      if (isSubmit && !hasText && !hasAttachments) {
-        return res.status(400).json({ error: "Response text or attachment metadata is required to submit" })
+
+      if (isSubmit) {
+        if (projectRules.requireWrittenAnalysis || projectRules.requireAttachment) {
+          if (projectRules.requireWrittenAnalysis && !hasText) {
+            return res.status(400).json({
+              error: "Written analysis is required to submit this project",
+            })
+          }
+          if (projectRules.requireAttachment && !hasAttachments) {
+            return res.status(400).json({
+              error: "Analytical artifact attachment metadata is required to submit this project",
+            })
+          }
+          if (projectRules.allowedMimeTypes && bodyParsed.data.attachments?.length) {
+            const disallowed = bodyParsed.data.attachments.find(
+              (file) => !projectRules.allowedMimeTypes!.includes(file.mimeType),
+            )
+            if (disallowed) {
+              return res.status(400).json({
+                error: `Unsupported attachment type: ${disallowed.mimeType}. Use Excel, Power BI (.pbix), PDF, or plain-text/Markdown documentation.`,
+              })
+            }
+          }
+        } else if (!hasText && !hasAttachments) {
+          return res.status(400).json({
+            error: "Response text or attachment metadata is required to submit",
+          })
+        }
       }
 
       const assignment = await prisma.assignmentProgress.upsert({
@@ -758,11 +854,24 @@ lmsRouter.post(
         })
       }
 
+      const attachments = await prisma.assignmentAttachment.findMany({
+        where: { assignmentProgressId: assignment.id },
+      })
+
       res.json({
         data: {
           lessonKey: lessonParsed.data.lessonKey,
           status: assignment.status,
           submittedAt: assignment.submittedAt?.toISOString() ?? null,
+          responseText: assignment.responseText,
+          attachments: attachments.map((file) => ({
+            id: file.id,
+            fileName: file.fileName,
+            mimeType: file.mimeType,
+            byteSize: file.byteSize,
+            storageProvider: file.storageProvider,
+          })),
+          brief: formatAssignmentBrief(brief, slugParsed.data.slug, lessonParsed.data.lessonKey),
         },
       })
     } catch (error) {
