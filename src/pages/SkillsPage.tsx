@@ -63,7 +63,7 @@ function SkillsPathSection() {
     <Section tone="canvas" divider style={{ paddingTop: T.sectionTight }}>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="Skills path"
           title="Learning → proof → career."
           lead="Webinars, certificates, and professional programs are separate products. Professional Programs include Career OS."
@@ -105,10 +105,10 @@ function SkillsPathSection() {
                 >
                   {step.num}
                 </div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(16px, 1.8vw, 20px)', fontWeight: 600, color: C.white, margin: '0 0 6px' }}>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(16px, 1.8vw, 20px)', fontWeight: 600, color: C.ink, margin: '0 0 6px' }}>
                   {step.label}
                 </h3>
-                <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 12.5, lineHeight: 1.55, margin: 0, maxWidth: 160 }}>
+                <p style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.55, margin: 0, maxWidth: 160 }}>
                   {step.desc}
                 </p>
               </div>
@@ -157,28 +157,28 @@ function WebinarsSection() {
         </FadeIn>
 
         <FadeIn delay={80}>
-          <Eyebrow tone="dark">Webinars</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
+          <Eyebrow >Webinars</Eyebrow>
+          <Heading  size="md" style={{ margin: '20px 0 16px' }}>
             Show up for a session. Leave with a topic mastered.
           </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 24px', maxWidth: 480 }}>
+          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 24px', maxWidth: 480 }}>
             Event-oriented: speaker, date, duration, live or recorded. Open to anyone who wants a first step.
           </p>
 
-          <div style={{ padding: '20px 0', borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}`, marginBottom: 24 }}>
+          <div style={{ padding: '20px 0', borderTop: `1px solid ${T.lineLight}`, borderBottom: `1px solid ${T.lineLight}`, marginBottom: 24 }}>
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Next session</div>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.white, margin: '0 0 10px', lineHeight: 1.25 }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.ink, margin: '0 0 10px', lineHeight: 1.25 }}>
               {FEATURED_WORKSHOP.title}
             </h3>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.65, margin: '0 0 16px' }}>{FEATURED_WORKSHOP.desc}</p>
+            <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: '0 0 16px' }}>{FEATURED_WORKSHOP.desc}</p>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>Date</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.date}</div>
+                <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>Date</div>
+                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.date}</div>
               </div>
               <div>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>Speaker</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.instructor}</div>
+                <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>Speaker</div>
+                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.instructor}</div>
               </div>
             </div>
           </div>
@@ -193,15 +193,15 @@ function WebinarsSection() {
                   gridTemplateColumns: '1fr auto',
                   gap: 12,
                   padding: '14px 0',
-                  borderBottom: i < OTHER_WORKSHOPS.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  borderBottom: i < OTHER_WORKSHOPS.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                   textDecoration: 'none',
                   color: 'inherit',
                   alignItems: 'center',
                 }}
               >
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{w.title}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{w.date} · {w.duration}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{w.title}</div>
+                  <div style={{ color: C.slate, fontSize: 12 }}>{w.date} · {w.duration}</div>
                 </div>
                 <span style={{ color: accent.textMuted, fontSize: 14 }}>→</span>
               </Link>
@@ -225,16 +225,16 @@ function CertificateSection() {
     <Section id="certificate" tone="canvas" divider>
       <div style={{ display: 'grid', gridTemplateColumns: '0.95fr 1.05fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col skills-cert-grid">
         <FadeIn>
-          <Eyebrow tone="dark">Certificate Programs</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
+          <Eyebrow >Certificate Programs</Eyebrow>
+          <Heading  size="md" style={{ margin: '20px 0 16px' }}>
             A credential you can finish.
           </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 480 }}>
+          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 480 }}>
             Shorter than a Professional Program. Structured curriculum, assessment, and certification — without Career OS access.
           </p>
 
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Credential path</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: 'rgba(255,255,255,0.65)', marginBottom: 28 }}>
+          <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Credential path</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: C.slate, marginBottom: 28 }}>
             {['Module', 'Skill', 'Project', 'Credential'].map((s, i, arr) => (
               <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <span>{s}</span>
@@ -245,10 +245,10 @@ function CertificateSection() {
 
           {cert ? (
             <>
-              <div style={{ padding: '20px 0', borderTop: `1px solid ${T.lineDark}`, marginBottom: 24 }}>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.white, margin: '0 0 10px' }}>{cert.name}</h3>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.65, margin: '0 0 14px' }}>{cert.desc}</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
+              <div style={{ padding: '20px 0', borderTop: `1px solid ${T.lineLight}`, marginBottom: 24 }}>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink, margin: '0 0 10px' }}>{cert.name}</h3>
+                <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: '0 0 14px' }}>{cert.desc}</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 13, color: C.slate }}>
                   <span>{cert.duration}</span>
                   <span>{cert.level}</span>
                   <span>{cert.format}</span>
@@ -258,18 +258,18 @@ function CertificateSection() {
               <Button variant="primary" onClick={() => navigate(`/programs/${cert.slug}`)}>View Program →</Button>
             </>
           ) : (
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Certificate programs will appear here as they are published.</p>
+            <p style={{ color: C.slate, fontSize: 14 }}>Certificate programs will appear here as they are published.</p>
           )}
         </FadeIn>
 
         <FadeIn delay={80}>
           <GlassSurface level={2} padding="28px 28px 24px" style={{ marginBottom: 20 }}>
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Certificate of completion</div>
-            <div style={{ borderBottom: `1px solid ${T.lineDark}`, paddingBottom: 16, marginBottom: 16 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: C.white, marginBottom: 4 }}>
+            <div style={{ borderBottom: `1px solid ${T.lineLight}`, paddingBottom: 16, marginBottom: 16 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: C.ink, marginBottom: 4 }}>
                 {cert?.name ?? 'Certificate Program'}
               </div>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
+              <div style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>
                 {cert?.cert ?? 'Skylent Certificate'}
               </div>
             </div>
@@ -283,11 +283,11 @@ function CertificateSection() {
                       gridTemplateColumns: '32px 1fr',
                       gap: 12,
                       padding: '10px 0',
-                      borderBottom: i < 3 ? `1px solid ${T.lineDark}` : 'none',
+                      borderBottom: i < 3 ? `1px solid ${T.lineLight}` : 'none',
                     }}
                   >
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text }}>{mod.number}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>{mod.title}</span>
+                    <span style={{ color: C.slate, fontSize: 13 }}>{mod.title}</span>
                   </div>
                 ))}
               </div>
@@ -321,7 +321,7 @@ function ProfessionalSection() {
     <Section id="professional" tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="Professional Programs"
           title="The deepest conversion product."
           lead="Career outcome, curriculum, projects, tools, cohort, certification, and Career OS. This is the program that opens the door."
@@ -329,11 +329,11 @@ function ProfessionalSection() {
       </FadeIn>
 
       <div style={{ marginTop: 32, marginBottom: 40 }}>
-        <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Program flow</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: 'rgba(255,255,255,0.65)' }}>
+        <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Program flow</div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: C.slate }}>
           {['Learning', 'Project', 'Assessment', 'Career Support'].map((s, i, arr) => (
             <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: i === arr.length - 1 ? accent.text : C.white }}>{s}</span>
+              <span style={{ color: i === arr.length - 1 ? accent.text : C.ink }}>{s}</span>
               {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
             </span>
           ))}
@@ -347,22 +347,22 @@ function ProfessionalSection() {
               <>
                 <div className="skylent-label" style={{ color: accent.text, marginBottom: 12 }}>Featured project</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
-                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: 12, minHeight: 64 }}>
-                    <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)', marginBottom: 8 }}>DATASET</div>
-                    <div style={{ height: 4, width: '80%', background: 'rgba(255,255,255,0.1)', borderRadius: 2, marginBottom: 4 }} />
-                    <div style={{ height: 4, width: '60%', background: 'rgba(255,255,255,0.08)', borderRadius: 2 }} />
+                  <div style={{ background: '#FFFDFC', borderRadius: 8, padding: 12, minHeight: 64 }}>
+                    <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: C.slate, marginBottom: 8 }}>DATASET</div>
+                    <div style={{ height: 4, width: '80%', background: '$rgba(11,13,15,0.04)', borderRadius: 2, marginBottom: 4 }} />
+                    <div style={{ height: 4, width: '60%', background: 'rgba(11,13,15,0.08)', borderRadius: 2 }} />
                   </div>
                   <div style={{ background: accent.subtle, borderRadius: 8, padding: 12, minHeight: 64, border: `1px solid ${accent.border}` }}>
                     <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: accent.textMuted, marginBottom: 8 }}>RESULT</div>
-                    <div style={{ fontSize: 10, color: C.white, lineHeight: 1.45 }}>{featuredProject.title}</div>
+                    <div style={{ fontSize: 10, color: C.ink, lineHeight: 1.45 }}>{featuredProject.title}</div>
                   </div>
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.slate }}>
                   {featuredProject.skills.join(' · ')}
                 </div>
               </>
             ) : (
-              <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Portfolio projects included in every professional program.</div>
+              <div style={{ color: C.slate, fontSize: 14 }}>Portfolio projects included in every professional program.</div>
             )}
           </GlassSurface>
           <MediaImage src={featuredPhoto} alt={FEATURED_PRO.name} aspect="16/9" overlay="full" />
@@ -370,8 +370,8 @@ function ProfessionalSection() {
 
         <FadeIn delay={80}>
           <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Professional Program · Career OS</div>
-          <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 12px' }}>{FEATURED_PRO.name}</h3>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px' }}>{FEATURED_PRO.desc}</p>
+          <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 12px' }}>{FEATURED_PRO.name}</h3>
+          <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: '0 0 20px' }}>{FEATURED_PRO.desc}</p>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 24 }}>
             {[
               { k: 'Outcome', v: FEATURED_PRO.outcome },
@@ -380,15 +380,15 @@ function ProfessionalSection() {
               { k: 'From', v: `₹${lowestPrice.toLocaleString('en-IN')}` },
             ].map(({ k, v }) => (
               <div key={k}>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>{k}</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{k}</div>
+                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{v}</div>
               </div>
             ))}
           </div>
           <Button variant="primary" onClick={() => navigate(`/programs/${FEATURED_PRO.slug}`)}>View Program →</Button>
 
-          <div style={{ marginTop: 36, paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
-            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 16 }}>All professional programs</div>
+          <div style={{ marginTop: 36, paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
+            <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>All professional programs</div>
             {OTHER_PRO.map((p, i) => (
               <Link
                 key={p.slug}
@@ -398,15 +398,15 @@ function ProfessionalSection() {
                   gridTemplateColumns: '1fr auto',
                   gap: 12,
                   padding: '14px 0',
-                  borderBottom: i < OTHER_PRO.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  borderBottom: i < OTHER_PRO.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                   textDecoration: 'none',
                   color: 'inherit',
                   alignItems: 'center',
                 }}
               >
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{p.name}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{p.outcome} · {p.duration}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{p.name}</div>
+                  <div style={{ color: C.slate, fontSize: 12 }}>{p.outcome} · {p.duration}</div>
                 </div>
                 <span style={{ color: accent.textMuted, fontSize: 14 }}>→</span>
               </Link>
@@ -444,11 +444,11 @@ function JobAssistanceSection() {
         </FadeIn>
 
         <FadeIn delay={80}>
-          <Eyebrow tone="dark">Not a course</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
+          <Eyebrow >Not a course</Eyebrow>
+          <Heading  size="md" style={{ margin: '20px 0 16px' }}>
             Job Assistance
           </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 520 }}>
+          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 520 }}>
             Career-support product layered on Professional Programs and Career OS. Resume, profile, interview preparation, mock interviews, job opportunities, and applications — the work after the curriculum.
           </p>
 
@@ -461,15 +461,15 @@ function JobAssistanceSection() {
                   gridTemplateColumns: '120px 1fr',
                   gap: 16,
                   padding: '16px 0',
-                  borderBottom: i < steps.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                  borderBottom: i < steps.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                   alignItems: 'start',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary, flexShrink: 0 }} />
-                  <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{step.label}</span>
+                  <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink }}>{step.label}</span>
                 </div>
-                <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.55 }}>{step.desc}</span>
+                <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{step.desc}</span>
               </div>
             ))}
           </div>
@@ -495,7 +495,7 @@ function CareerProofSection() {
     <Section tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="How skills become career proof"
           title="Capability you can show."
           lead="Skills on Skylent are designed to produce evidence — projects, assessments, certificates, and career support — not just course completion."
@@ -506,14 +506,14 @@ function CareerProofSection() {
               key={item.title}
               style={{
                 padding: '0 20px 0 0',
-                borderRight: i < proof.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                borderRight: i < proof.length - 1 ? `1px solid ${T.lineLight}` : 'none',
               }}
             >
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, marginBottom: 10 }}>
                 {String(i + 1).padStart(2, '0')}
               </div>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.white, margin: '0 0 8px' }}>{item.title}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, margin: '0 0 8px' }}>{item.title}</h3>
+              <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
             </div>
           ))}
         </div>
@@ -536,7 +536,7 @@ function ProgramDiscoverySection() {
     <Section tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          
           eyebrow="Program discovery"
           title="Find the right depth."
           lead="Each listing shows duration, format, price, and outcome — from a single webinar to a full professional program."
@@ -549,8 +549,8 @@ function ProgramDiscoverySection() {
             <MediaImage src={featuredPhoto} alt={FEATURED_PRO.name} aspect="16/9" overlay="full" />
             <div style={{ paddingTop: 24 }}>
               <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Featured · Professional Program</div>
-              <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 12px' }}>{FEATURED_PRO.name}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>{FEATURED_PRO.desc}</p>
+              <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 12px' }}>{FEATURED_PRO.name}</h3>
+              <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>{FEATURED_PRO.desc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 20 }}>
                 {[
                   { k: 'Outcome', v: FEATURED_PRO.outcome },
@@ -558,8 +558,8 @@ function ProgramDiscoverySection() {
                   { k: 'From', v: `₹${lowestPrice.toLocaleString('en-IN')}` },
                 ].map(({ k, v }) => (
                   <div key={k}>
-                    <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>{k}</div>
-                    <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                    <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{k}</div>
+                    <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{v}</div>
                   </div>
                 ))}
               </div>
@@ -569,7 +569,7 @@ function ProgramDiscoverySection() {
         </FadeIn>
 
         <FadeIn delay={80}>
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 20 }}>All skills programs</div>
+          <div className="skylent-label" style={{ color: C.slate, marginBottom: 20 }}>All skills programs</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {allSkillsPrograms.filter(p => p.slug !== FEATURED_PRO.slug).map((program, i, arr) => {
               const photo = PROGRAM_PHOTO[program.slug] ?? DEFAULT_PROGRAM_PHOTO
@@ -585,7 +585,7 @@ function ProgramDiscoverySection() {
                     gap: 14,
                     alignItems: 'center',
                     padding: '16px 0',
-                    borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                    borderBottom: i < arr.length - 1 ? `1px solid ${T.lineLight}` : 'none',
                     textDecoration: 'none',
                     color: 'inherit',
                   }}
@@ -595,18 +595,18 @@ function ProgramDiscoverySection() {
                   </div>
                   <div>
                     <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 3, letterSpacing: '0.06em' }}>{typeLabel}</div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 2 }}>{program.name}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{program.duration} · {program.outcome}</div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 2 }}>{program.name}</div>
+                    <div style={{ color: C.slate, fontSize: 12 }}>{program.duration} · {program.outcome}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.ink }}>₹{price.toLocaleString('en-IN')}</div>
                     <div style={{ color: accent.textMuted, fontSize: 11, marginTop: 2 }}>→</div>
                   </div>
                 </Link>
               )
             })}
           </div>
-          <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
+          <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineLight}` }}>
             <Button variant="secondary" onClick={() => navigate('/programs')}>Browse all programs</Button>
           </div>
         </FadeIn>
@@ -628,11 +628,11 @@ export default function SkillsPage() {
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero skills-page-hero">
             <FadeIn>
-              <Eyebrow tone="dark" accent>Skills</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
+              <Eyebrow  accent>Skills</Eyebrow>
+              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '20px 0 16px', maxWidth: 640 }}>
                 Capability that can<br />become a career.
               </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
+              <p className="skylent-body-lg" style={{ color: C.ink, maxWidth: 520, margin: '0 0 28px' }}>
                 Webinars are events. Certificate programs are credentials. Professional Programs are career products. Job Assistance is support — not a course.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>

@@ -18,7 +18,7 @@ export default function BlogPostPage() {
       <PageShell auroraTheme="general">
         <Section tone="canvas" style={{ minHeight: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ textAlign: 'center' }}>
-            <h2 className="skylent-display-md" style={{ color: C.white }}>Article not found</h2>
+            <h2 className="skylent-display-md" style={{ color: C.ink }}>Article not found</h2>
             <Button variant="secondary" onClick={() => navigate('/blog')} style={{ marginTop: 16 }}>← Back to blog</Button>
           </div>
         </Section>
@@ -36,18 +36,18 @@ export default function BlogPostPage() {
           <button
             type="button"
             onClick={() => navigate('/blog')}
-            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.45)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', marginBottom: 24, padding: 0 }}
+            style={{ background: 'none', border: 'none', color: C.slate, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', marginBottom: 24, padding: 0 }}
           >
             ← Back to blog
           </button>
           <FadeIn>
             <div style={{ display: 'flex', gap: 10, marginBottom: 18, flexWrap: 'wrap', alignItems: 'center' }}>
               <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 12px', color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.category}</span>
-              <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.readTime} read</span>
-              <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.date}</span>
+              <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.readTime} read</span>
+              <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.date}</span>
             </div>
-            <h1 className="skylent-display-md" style={{ color: C.white, margin: '0 0 18px', lineHeight: 1.1 }}>{post.title}</h1>
-            <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.55)', margin: 0, lineHeight: 1.75 }}>{post.excerpt}</p>
+            <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 18px', lineHeight: 1.1 }}>{post.title}</h1>
+            <p className="skylent-body-lg" style={{ color: C.slate, margin: 0, lineHeight: 1.75 }}>{post.excerpt}</p>
           </FadeIn>
         </div>
       </section>
@@ -59,7 +59,7 @@ export default function BlogPostPage() {
               <article
                 className="skylent-article"
                 style={{
-                  color: 'rgba(255,255,255,0.78)',
+                  color: C.slate,
                   fontSize: 'clamp(16px, 2.1vw, 17px)',
                   lineHeight: 1.85,
                   fontFamily: 'var(--font-body)',
@@ -71,7 +71,7 @@ export default function BlogPostPage() {
                       <h2
                         key={i}
                         className="skylent-display-sm"
-                        style={{ color: C.white, margin: '2.4em 0 0.75em', lineHeight: 1.2, letterSpacing: '-0.02em' }}
+                        style={{ color: C.ink, margin: '2.4em 0 0.75em', lineHeight: 1.2, letterSpacing: '-0.02em' }}
                       >
                         {para.replace('## ', '')}
                       </h2>
@@ -81,7 +81,7 @@ export default function BlogPostPage() {
                     return (
                       <h3
                         key={i}
-                        style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.white, margin: '1.8em 0 0.6em', lineHeight: 1.3 }}
+                        style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.ink, margin: '1.8em 0 0.6em', lineHeight: 1.3 }}
                       >
                         {para.replace('### ', '')}
                       </h3>
@@ -93,14 +93,14 @@ export default function BlogPostPage() {
                         key={i}
                         style={{
                           background: 'rgba(0,0,0,0.35)',
-                          border: `1px solid ${T.lineDark}`,
+                          border: `1px solid ${T.lineLight}`,
                           borderRadius: 10,
                           padding: '16px 18px',
                           overflowX: 'auto',
                           fontSize: 13,
                           lineHeight: 1.6,
                           fontFamily: 'var(--font-mono)',
-                          color: 'rgba(255,255,255,0.72)',
+                          color: C.slate,
                           margin: '0 0 1.5em',
                         }}
                       >
@@ -117,14 +117,14 @@ export default function BlogPostPage() {
           {related.length > 0 && (
             <FadeIn delay={80}>
               <div style={{ marginTop: 48 }}>
-                <Eyebrow tone="dark">Related</Eyebrow>
-                <h2 className="skylent-display-sm" style={{ color: C.white, margin: '12px 0 24px' }}>More in {post.category}</h2>
+                <Eyebrow >Related</Eyebrow>
+                <h2 className="skylent-display-sm" style={{ color: C.ink, margin: '12px 0 24px' }}>More in {post.category}</h2>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }} className="two-col">
                   {related.map(p => (
                     <Link key={p.slug} to={`/blog/${p.slug}`} style={{ textDecoration: 'none' }}>
                       <GlassSurface level={2} padding="20px 22px" style={{ height: '100%' }}>
-                        <span className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', display: 'block', marginBottom: 10 }}>{p.category}</span>
-                        <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, lineHeight: 1.35, marginBottom: 8 }}>{p.title}</div>
+                        <span className="skylent-label" style={{ color: C.slate, display: 'block', marginBottom: 10 }}>{p.category}</span>
+                        <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink, lineHeight: 1.35, marginBottom: 8 }}>{p.title}</div>
                         <span style={{ color: accent.text, fontSize: 13, fontWeight: 600 }}>Read →</span>
                       </GlassSurface>
                     </Link>

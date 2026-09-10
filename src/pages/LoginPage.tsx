@@ -68,8 +68,8 @@ function EntryVisual() {
     <div style={{ position: 'relative', maxWidth: 420 }}>
       <div style={{
         padding: '28px 0',
-        borderTop: `1px solid ${T.lineDark}`,
-        borderBottom: `1px solid ${T.lineDark}`,
+        borderTop: `1px solid ${T.lineLight}`,
+        borderBottom: `1px solid ${T.lineLight}`,
       }}>
         <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 380 }}>
           One account for learning, teaching, and institution operations. Sign in to continue where you left off.
@@ -96,8 +96,8 @@ function EntryVisual() {
 function fieldStyle(focused: boolean, hasError?: boolean): CSSProperties {
   return {
     width: '100%',
-        background: C.white,
-    border: `1px solid ${hasError ? 'rgba(239,68,68,0.55)' : focused ? accent.primary : T.lineDark}`,
+        background: C.ink,
+    border: `1px solid ${hasError ? 'rgba(239,68,68,0.55)' : focused ? accent.primary : T.lineLight}`,
     borderRadius: T.rControl,
     padding: '12px 14px',
     color: C.ink,
@@ -140,7 +140,7 @@ function googleButtonStyle(disabled: boolean): CSSProperties {
   return {
     width: '100%',
     background: 'transparent',
-    border: `1px solid ${T.lineDark}`,
+    border: `1px solid ${T.lineLight}`,
     color: C.ink,
     borderRadius: T.rControl,
     padding: '12px',
@@ -386,7 +386,7 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', borderRadius: T.rControl, padding: 3, marginBottom: 24, gap: 3, border: `1px solid ${T.lineDark}` }}>
+            <div style={{ display: 'flex', background: '#FFFDFC', borderRadius: T.rControl, padding: 3, marginBottom: 24, gap: 3, border: `1px solid ${T.lineLight}` }}>
               {(['signin', 'signup'] as const).map(t => (
                 <button
                   key={t}
@@ -474,9 +474,9 @@ export default function LoginPage() {
                 </button>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '20px 0' }}>
-                  <div style={{ flex: 1, height: 1, background: T.lineDark }} />
+                  <div style={{ flex: 1, height: 1, background: T.lineLight }} />
                   <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>or continue with</span>
-                  <div style={{ flex: 1, height: 1, background: T.lineDark }} />
+                  <div style={{ flex: 1, height: 1, background: T.lineLight }} />
                 </div>
 
                 <button
@@ -535,8 +535,8 @@ export default function LoginPage() {
                         type="button"
                         onClick={() => setSuGoal(g === suGoal ? null : g)}
                         style={{
-                          background: suGoal === g ? accent.subtle : 'rgba(255,255,255,0.04)',
-                          border: `1px solid ${suGoal === g ? accent.border : T.lineDark}`,
+                          background: suGoal === g ? accent.subtle : C.slate,
+                          border: `1px solid ${suGoal === g ? accent.border : T.lineLight}`,
                           borderRadius: T.rControl,
                           padding: '8px 14px',
                           color: suGoal === g ? accent.text : C.slate,
@@ -556,9 +556,9 @@ export default function LoginPage() {
                 </button>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '20px 0' }}>
-                  <div style={{ flex: 1, height: 1, background: T.lineDark }} />
+                  <div style={{ flex: 1, height: 1, background: T.lineLight }} />
                   <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>or continue with</span>
-                  <div style={{ flex: 1, height: 1, background: T.lineDark }} />
+                  <div style={{ flex: 1, height: 1, background: T.lineLight }} />
                 </div>
 
                 <button
@@ -582,8 +582,8 @@ export default function LoginPage() {
 
           {/* Demo mode — development only */}
           {demoMode && (
-          <div style={{ marginTop: 24, padding: '18px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
-            <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 12 }}>
+          <div style={{ marginTop: 24, padding: '18px', background: '$rgba(11,13,15,0.04)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+            <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 12 }}>
               Explore workspaces (demo mode)
             </div>
             <div className="login-demo-grid" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -598,19 +598,19 @@ export default function LoginPage() {
                     style={{
                       flex: '1 1 calc(20% - 8px)',
                       minWidth: 88,
-                      background: isActive ? accent.subtle : 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${isActive ? accent.border : T.lineDark}`,
+                      background: isActive ? accent.subtle : C.slate,
+                      border: `1px solid ${isActive ? accent.border : T.lineLight}`,
                       borderRadius: T.rControl,
                       padding: '10px 6px',
                       cursor: submitting ? 'wait' : 'pointer',
                       textAlign: 'center',
                     }}
                   >
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? accent.primary : 'rgba(255,255,255,0.08)', color: isActive ? C.black : 'rgba(255,255,255,0.5)', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px', fontFamily: 'var(--font-mono)' }}>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? accent.primary : C.slate, color: isActive ? C.black : C.slate, fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px', fontFamily: 'var(--font-mono)' }}>
                       {demo.avatar}
                     </div>
-                    <div style={{ color: isActive ? C.white : 'rgba(255,255,255,0.55)', fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{ROLE_LABELS[demo.role]}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 9, fontFamily: 'var(--font-mono)' }}>{demo.desc}</div>
+                    <div style={{ color: isActive ? C.ink : C.slate, fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{ROLE_LABELS[demo.role]}</div>
+                    <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)' }}>{demo.desc}</div>
                   </button>
                 )
               })}

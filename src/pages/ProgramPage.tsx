@@ -88,7 +88,7 @@ function CheckItem({ label, accent }: { label: string; accent: string }) {
         <rect width="16" height="16" rx="4" fill={`${color}22`} stroke={`${color}55`} strokeWidth="0.8" />
         <path d="M4.5 8.5L7 11L11.5 5.5" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: 14, lineHeight: 1.55 }}>{label}</span>
+      <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{label}</span>
     </div>
   )
 }
@@ -125,7 +125,7 @@ function StickyProgramNav({
               style={{
                 background: 'none', border: 'none',
                 borderBottom: `2px solid ${activeId === s.id ? accent.primary : 'transparent'}`,
-                padding: '14px 14px', color: activeId === s.id ? accent.text : 'rgba(255,255,255,0.42)',
+                padding: '14px 14px', color: activeId === s.id ? accent.text : C.slate,
                 fontSize: 12.5, fontFamily: 'var(--font-body)', fontWeight: activeId === s.id ? 600 : 400,
                 cursor: 'pointer', transition: 'color 0.2s, border-color 0.2s', whiteSpace: 'nowrap', flexShrink: 0,
               }}
@@ -171,24 +171,24 @@ function EnrollmentPanel({
 
   return (
     <GlassSurface level={2} padding="0" style={{ position: 'sticky', top: T.navH + 72 }}>
-      <div style={{ padding: '22px 24px 18px', borderBottom: `1px solid ${T.lineDark}` }}>
-        <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Starting from</div>
+      <div style={{ padding: '22px 24px 18px', borderBottom: `1px solid ${T.lineLight}` }}>
+        <div className="skylent-label" style={{ color: C.slate, marginBottom: 6 }}>Starting from</div>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 30, fontWeight: 700, color: C.white, lineHeight: 1 }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 30, fontWeight: 700, color: C.ink, lineHeight: 1 }}>
             ₹{lowestPrice.toLocaleString('en-IN')}
           </div>
           {originalPrice > lowestPrice && (
-            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, textDecoration: 'line-through', fontFamily: 'var(--font-mono)' }}>
+            <div style={{ color: C.slate, fontSize: 13, textDecoration: 'line-through', fontFamily: 'var(--font-mono)' }}>
               ₹{originalPrice.toLocaleString('en-IN')}
             </div>
           )}
         </div>
         {multipleTiers && (
-          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 4 }}>Multiple plans below</div>
+          <div style={{ color: C.slate, fontSize: 11, marginTop: 4 }}>Multiple plans below</div>
         )}
       </div>
 
-      <div style={{ padding: '16px 24px', borderBottom: `1px solid ${T.lineDark}` }}>
+      <div style={{ padding: '16px 24px', borderBottom: `1px solid ${T.lineLight}` }}>
         {[
           { text: `${status === 'coming_soon' ? 'Planned: ' : 'Next batch: '}${program.upcomingBatch}` },
           { text: `${program.duration} · ${program.format}` },
@@ -196,8 +196,8 @@ function EnrollmentPanel({
           ...(isCareerOS ? [{ text: 'Unlocks Career OS on completion', highlight: true }] : []),
         ].map(({ text, highlight }, i) => (
           <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 12 }}>
-            <div style={{ width: 4, height: 4, borderRadius: '50%', background: highlight ? accent.primary : 'rgba(255,255,255,0.25)', flexShrink: 0, marginTop: 6 }} />
-            <span style={{ color: highlight ? accent.text : 'rgba(255,255,255,0.72)', fontSize: 13, lineHeight: 1.45 }}>{text}</span>
+            <div style={{ width: 4, height: 4, borderRadius: '50%', background: highlight ? accent.primary : C.slate, flexShrink: 0, marginTop: 6 }} />
+            <span style={{ color: highlight ? accent.text : C.slate, fontSize: 13, lineHeight: 1.45 }}>{text}</span>
           </div>
         ))}
       </div>
@@ -212,13 +212,13 @@ function EnrollmentPanel({
         >
           {catalogLoading ? ctaLabel : enrollable ? `${ctaLabel} →` : ctaLabel}
         </Button>
-        <Link to="/contact" style={{ display: 'block', textAlign: 'center', color: 'rgba(255,255,255,0.45)', fontSize: 13, textDecoration: 'none', padding: '6px 0' }}>
+        <Link to="/contact" style={{ display: 'block', textAlign: 'center', color: C.slate, fontSize: 13, textDecoration: 'none', padding: '6px 0' }}>
           Talk to an advisor
         </Link>
       </div>
 
-      <div style={{ padding: '10px 24px', borderTop: `1px solid ${T.lineDark}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11 }}>Secure enrollment · Verified certificate</span>
+      <div style={{ padding: '10px 24px', borderTop: `1px solid ${T.lineLight}`, display: 'flex', alignItems: 'center', gap: 8 }}>
+        <span style={{ color: C.slate, fontSize: 11 }}>Secure enrollment · Verified certificate</span>
       </div>
     </GlassSurface>
   )
@@ -305,7 +305,7 @@ export default function ProgramPage() {
       <PageShell>
         <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ textAlign: 'center' }}>
-            <h2 className="skylent-display-md" style={{ color: C.white }}>Program not found</h2>
+            <h2 className="skylent-display-md" style={{ color: C.ink }}>Program not found</h2>
             <Button variant="primary" onClick={() => navigate('/programs')} style={{ marginTop: 20 }}>← All Programs</Button>
           </div>
         </div>
@@ -325,7 +325,7 @@ export default function ProgramPage() {
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <button
             onClick={() => navigate('/programs')}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 24, padding: 0, letterSpacing: '0.06em' }}
+            style={{ display: 'flex', alignItems: 'center', gap: 6, color: C.slate, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 24, padding: 0, letterSpacing: '0.06em' }}
           >
             ← ALL PROGRAMS
           </button>
@@ -333,19 +333,19 @@ export default function ProgramPage() {
           <div className="program-hero-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 0.88fr) minmax(0, 1.12fr) minmax(260px, 0.72fr)', gap: 'clamp(24px,4vw,40px)', alignItems: 'start' }}>
             <div>
               <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
-                <Badge tone="dark" accent>{typeLabel}</Badge>
-                <Badge tone="dark">{program.level}</Badge>
-                {isCareerOS && <Badge tone="dark" accent>+ Career OS</Badge>}
-                {enrollStatus === 'coming_soon' && <Badge tone="dark">Coming Soon</Badge>}
+                <Badge  accent>{typeLabel}</Badge>
+                <Badge >{program.level}</Badge>
+                {isCareerOS && <Badge  accent>+ Career OS</Badge>}
+                {enrollStatus === 'coming_soon' && <Badge >Coming Soon</Badge>}
               </div>
 
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '0 0 12px', maxWidth: 560 }}>
+              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 12px', maxWidth: 560 }}>
                 {program.name}
               </h1>
               <p style={{ color: domainAccent.text, fontSize: 15, fontWeight: 500, margin: '0 0 14px', maxWidth: 520 }}>
                 Outcome: {program.outcome}
               </p>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 24px' }}>
+              <p className="skylent-body-lg" style={{ color: C.ink, maxWidth: 520, margin: '0 0 24px' }}>
                 {program.desc}
               </p>
 
@@ -384,7 +384,7 @@ export default function ProgramPage() {
           </div>
 
           {/* Quick facts strip */}
-          <div style={{ paddingTop: 28, paddingBottom: 28, marginTop: 4, borderTop: `1px solid ${T.lineDark}`, display: 'flex', gap: 'clamp(20px,4vw,48px)', flexWrap: 'wrap' }}>
+          <div style={{ paddingTop: 28, paddingBottom: 28, marginTop: 4, borderTop: `1px solid ${T.lineLight}`, display: 'flex', gap: 'clamp(20px,4vw,48px)', flexWrap: 'wrap' }}>
             {[
               { label: 'Duration', value: program.duration },
               { label: 'Format', value: program.format },
@@ -399,8 +399,8 @@ export default function ProgramPage() {
               { label: enrollStatus === 'coming_soon' ? 'Planned Batch' : 'Next Batch', value: program.upcomingBatch },
             ].filter(f => f.value).map(({ label, value }) => (
               <div key={label}>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 5 }}>{label}</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{value}</div>
+                <div className="skylent-label" style={{ color: C.slate, marginBottom: 5 }}>{label}</div>
+                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{value}</div>
               </div>
             ))}
           </div>
@@ -414,16 +414,16 @@ export default function ProgramPage() {
         <FadeIn>
           <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'start', marginBottom: 48 }} className="two-col program-overview-split">
             <div>
-              <Eyebrow tone="dark">Why this program</Eyebrow>
-              <h2 className="skylent-display-md" style={{ color: C.white, margin: '18px 0 16px' }}>
+              <Eyebrow >Why this program</Eyebrow>
+              <h2 className="skylent-display-md" style={{ color: C.ink, margin: '18px 0 16px' }}>
                 {program.outcome}
               </h2>
-              <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: 0, maxWidth: 520 }}>
+              <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, margin: 0, maxWidth: 520 }}>
                 {program.desc}
               </p>
             </div>
             <div>
-              <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 16 }}>At a glance</div>
+              <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>At a glance</div>
               {[
                 ['Type', typeLabel],
                 ['Duration', program.duration],
@@ -431,9 +431,9 @@ export default function ProgramPage() {
                 ['Certification', program.cert],
                 ...(isCareerOS ? [['Career support', 'Career OS on completion']] : []),
               ].map(([k, v], i, arr) => (
-                <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '12px 0', borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
-                  <span style={{ color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>{k}</span>
-                  <span style={{ color: C.white, fontSize: 13, fontWeight: 600, textAlign: 'right' }}>{v}</span>
+                <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '12px 0', borderBottom: i < arr.length - 1 ? `1px solid ${T.lineLight}` : 'none' }}>
+                  <span style={{ color: C.slate, fontSize: 13 }}>{k}</span>
+                  <span style={{ color: C.ink, fontSize: 13, fontWeight: 600, textAlign: 'right' }}>{v}</span>
                 </div>
               ))}
             </div>
@@ -443,7 +443,7 @@ export default function ProgramPage() {
         {program.whatYouWillLearn && program.whatYouWillLearn.length > 0 && (
           <FadeIn>
             <SectionHeader
-              tone="dark"
+              
               eyebrow="What you will learn"
               title={isExamPrep ? 'Topics and concepts covered' : program.programType === 'PROFESSIONAL' ? 'Skills and knowledge you will build' : 'What this program covers'}
             />
@@ -459,16 +459,16 @@ export default function ProgramPage() {
           <FadeIn>
             <div style={{ marginTop: 48, display: 'grid', gridTemplateColumns: '240px 1fr', gap: 'clamp(24px,4vw,56px)', alignItems: 'start' }} className="program-who-split">
               <div>
-                <Eyebrow tone="dark">Who is this for</Eyebrow>
-                <h3 className="skylent-display-sm" style={{ color: C.white, margin: '16px 0 0' }}>
+                <Eyebrow >Who is this for</Eyebrow>
+                <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '16px 0 0' }}>
                   Built for the right learner.
                 </h3>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                 {program.whoIsItFor.map((who, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', padding: '16px 0', borderBottom: i < program.whoIsItFor!.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
+                  <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', padding: '16px 0', borderBottom: i < program.whoIsItFor!.length - 1 ? `1px solid ${T.lineLight}` : 'none' }}>
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: domainAccent.primary, flexShrink: 0, marginTop: 7 }} />
-                    <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: 15, lineHeight: 1.65 }}>{who}</span>
+                    <span style={{ color: C.slate, fontSize: 15, lineHeight: 1.65 }}>{who}</span>
                   </div>
                 ))}
               </div>
@@ -484,14 +484,14 @@ export default function ProgramPage() {
         <Section id="curriculum" tone="canvas" divider style={{ paddingTop: T.sectionSm }}>
           <FadeIn>
             <SectionHeader
-              tone="dark"
+              
               eyebrow={isExamPrep ? 'Subjects & sections' : 'Curriculum'}
               title={isExamPrep ? 'Subject and section coverage' : 'What you will study'}
               lead={CURRICULUM_MODEL[program.programType]}
             />
             {isExamPrep && program.examSections && (
               <div style={{ display: 'flex', gap: 8, marginTop: 24, flexWrap: 'wrap' }}>
-                {program.examSections.map(s => <Badge key={s} tone="dark" accent>{s}</Badge>)}
+                {program.examSections.map(s => <Badge key={s}  accent>{s}</Badge>)}
               </div>
             )}
           </FadeIn>
@@ -515,37 +515,37 @@ export default function ProgramPage() {
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <div style={{
                         width: 36, height: 36, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: isOpen ? domainAccent.subtleStrong : 'rgba(255,255,255,0.04)',
-                        border: `1px solid ${isOpen ? domainAccent.border : T.lineDark}`,
-                        fontFamily: 'var(--font-mono)', fontSize: 11, color: isOpen ? domainAccent.text : 'rgba(255,255,255,0.4)',
+                        background: isOpen ? domainAccent.subtleStrong : C.slate,
+                        border: `1px solid ${isOpen ? domainAccent.border : T.lineLight}`,
+                        fontFamily: 'var(--font-mono)', fontSize: 11, color: isOpen ? domainAccent.text : C.slate,
                       }}>
                         {mod.number}
                       </div>
-                      {!isLast && <div style={{ width: 1, flex: 1, minHeight: 24, background: T.lineDark, margin: '6px 0' }} />}
+                      {!isLast && <div style={{ width: 1, flex: 1, minHeight: 24, background: T.lineLight, margin: '6px 0' }} />}
                     </div>
-                    <div style={{ paddingBottom: isLast ? 0 : 28, borderBottom: isLast ? 'none' : `1px solid ${T.lineDark}` }}>
+                    <div style={{ paddingBottom: isLast ? 0 : 28, borderBottom: isLast ? 'none' : `1px solid ${T.lineLight}` }}>
                       <button
                         onClick={() => setCurriculumOpen(isOpen ? null : mod.number)}
                         style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', padding: '4px 0 0' }}
                       >
                         <div style={{ flex: 1 }}>
-                          <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(17px,2vw,20px)', fontWeight: 600, color: C.white, lineHeight: 1.3, marginBottom: 6 }}>
+                          <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(17px,2vw,20px)', fontWeight: 600, color: C.ink, lineHeight: 1.3, marginBottom: 6 }}>
                             {mod.title}
                           </div>
-                          {!isOpen && <div style={{ color: 'rgba(255,255,255,0.42)', fontSize: 14, lineHeight: 1.65 }}>{mod.description}</div>}
+                          {!isOpen && <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.65 }}>{mod.description}</div>}
                         </div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0, paddingTop: 4 }}>
-                          <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{mod.duration}</span>
+                          <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{mod.duration}</span>
                           <span style={{ color: domainAccent.text, fontSize: 18, transform: isOpen ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s' }}>+</span>
                         </div>
                       </button>
                       {isOpen && (
                         <div style={{ paddingTop: 12, paddingBottom: 8 }}>
-                          <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 14, lineHeight: 1.75, margin: '0 0 16px' }}>{mod.description}</p>
+                          <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.75, margin: '0 0 16px' }}>{mod.description}</p>
                           {mod.topics && mod.topics.length > 0 && (
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                               {mod.topics.map(topic => (
-                                <span key={topic} style={{ color: 'rgba(255,255,255,0.55)', fontSize: 12, padding: '4px 0', borderBottom: `1px solid ${T.lineDark}` }}>{topic}</span>
+                                <span key={topic} style={{ color: C.slate, fontSize: 12, padding: '4px 0', borderBottom: `1px solid ${T.lineLight}` }}>{topic}</span>
                               ))}
                             </div>
                           )}
@@ -566,7 +566,7 @@ export default function ProgramPage() {
         <Section id="projects" tone="canvas" divider>
           <FadeIn>
             <SectionHeader
-              tone="dark"
+              
               eyebrow="Projects"
               title="What you will build."
               lead="Portfolio-ready work reviewed by mentors — applied deliverables, not placeholder exercises."
@@ -588,12 +588,12 @@ export default function ProgramPage() {
                   />
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                      <span className="skylent-label" style={{ color: 'rgba(255,255,255,0.3)' }}>Project {String(featuredProject + 1).padStart(2, '0')}</span>
+                      <span className="skylent-label" style={{ color: C.slate }}>Project {String(featuredProject + 1).padStart(2, '0')}</span>
                       <span style={{ color: diffColor, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.06em' }}>{proj.difficulty}</span>
                     </div>
-                    <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 14px' }}>{proj.title}</h3>
-                    <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 14px' }}>{proj.what}</p>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
+                    <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 14px' }}>{proj.title}</h3>
+                    <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: '0 0 14px' }}>{proj.what}</p>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.slate }}>
                       {proj.skills.join(' · ')}
                     </div>
                   </div>
@@ -611,19 +611,19 @@ export default function ProgramPage() {
                   onClick={() => setFeaturedProject(i)}
                   style={{
                     display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16,
-                    padding: '18px 0', background: 'none', border: 'none', borderTop: `1px solid ${T.lineDark}`,
+                    padding: '18px 0', background: 'none', border: 'none', borderTop: `1px solid ${T.lineLight}`,
                     cursor: 'pointer', textAlign: 'left', width: '100%',
                   }}
                 >
                   <div>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: featuredProject === i ? domainAccent.text : 'rgba(255,255,255,0.3)' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: featuredProject === i ? domainAccent.text : C.slate }}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <span style={{ color: featuredProject === i ? C.white : 'rgba(255,255,255,0.55)', fontSize: 15, fontWeight: featuredProject === i ? 600 : 400, marginLeft: 14 }}>
+                    <span style={{ color: featuredProject === i ? C.ink : C.slate, fontSize: 15, fontWeight: featuredProject === i ? 600 : 400, marginLeft: 14 }}>
                       {proj.title}
                     </span>
                   </div>
-                  <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 13, fontFamily: 'var(--font-mono)' }}>{proj.difficulty}</span>
+                  <span style={{ color: C.slate, fontSize: 13, fontFamily: 'var(--font-mono)' }}>{proj.difficulty}</span>
                 </button>
               ))}
             </div>
@@ -634,15 +634,15 @@ export default function ProgramPage() {
       {/* ── TOOLS STACK ───────────────────────────────────────────────────── */}
       {program.projectsDetail && program.projectsDetail.length > 0 && (
         <Section id="tools" tone="canvas" divider style={{ paddingTop: T.sectionSm, paddingBottom: T.sectionSm }}>
-          <Eyebrow tone="dark">Tools & technologies</Eyebrow>
-          <h2 className="skylent-display-sm" style={{ color: C.white, margin: '16px 0 28px' }}>What you will work with</h2>
-          <div className="program-tools-strip" style={{ display: 'flex', flexWrap: 'wrap', gap: 0, borderTop: `1px solid ${T.lineDark}`, borderLeft: `1px solid ${T.lineDark}` }}>
+          <Eyebrow >Tools & technologies</Eyebrow>
+          <h2 className="skylent-display-sm" style={{ color: C.ink, margin: '16px 0 28px' }}>What you will work with</h2>
+          <div className="program-tools-strip" style={{ display: 'flex', flexWrap: 'wrap', gap: 0, borderTop: `1px solid ${T.lineLight}`, borderLeft: `1px solid ${T.lineLight}` }}>
             {Array.from(new Set(program.projectsDetail.flatMap(p => p.skills))).map((tool, i, arr) => (
               <div
                 key={tool}
                 style={{
-                  padding: '14px 22px', fontSize: 14, color: 'rgba(255,255,255,0.65)',
-                  borderRight: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}`,
+                  padding: '14px 22px', fontSize: 14, color: C.slate,
+                  borderRight: `1px solid ${T.lineLight}`, borderBottom: `1px solid ${T.lineLight}`,
                   fontFamily: i === 0 ? 'var(--font-display)' : 'var(--font-body)',
                   fontWeight: i === 0 ? 600 : 400,
                 }}
@@ -662,7 +662,7 @@ export default function ProgramPage() {
         <Section id="faculty" tone="canvas" divider>
           <FadeIn>
             <SectionHeader
-              tone="dark"
+              
               eyebrow={isExamPrep ? 'Subject experts' : 'Faculty'}
               title={isExamPrep ? 'Who leads this preparation' : 'Who teaches this program'}
               lead={program.faculty.some(f => f.placeholder) ? 'Faculty profiles published when enrollment opens.' : undefined}
@@ -671,7 +671,7 @@ export default function ProgramPage() {
           <div style={{ marginTop: 40, display: 'flex', flexDirection: 'column', gap: 0 }}>
             {program.faculty.map((f, i) => (
               <FadeIn key={i} delay={i * 50}>
-                <div style={{ display: 'grid', gridTemplateColumns: '56px 1fr', gap: 20, alignItems: 'start', padding: '24px 0', borderBottom: i < program.faculty!.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '56px 1fr', gap: 20, alignItems: 'start', padding: '24px 0', borderBottom: i < program.faculty!.length - 1 ? `1px solid ${T.lineLight}` : 'none' }}>
                   <div style={{
                     width: 52, height: 52, borderRadius: '50%', background: domainAccent.subtle,
                     border: `1px solid ${domainAccent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -680,9 +680,9 @@ export default function ProgramPage() {
                     {f.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2)}
                   </div>
                   <div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, marginBottom: 4 }}>{f.name}</div>
+                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{f.name}</div>
                     <div className="skylent-label" style={{ color: domainAccent.text, marginBottom: 8 }}>{f.role}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.6 }}>{f.expertise}</div>
+                    <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.6 }}>{f.expertise}</div>
                   </div>
                 </div>
               </FadeIn>
@@ -700,18 +700,18 @@ export default function ProgramPage() {
           <FadeIn>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'center' }} className="two-col">
               <div>
-                <Eyebrow tone="dark">Learner outcomes</Eyebrow>
-                <h2 className="skylent-display-sm" style={{ color: C.white, margin: '16px 0 12px' }}>
+                <Eyebrow >Learner outcomes</Eyebrow>
+                <h2 className="skylent-display-sm" style={{ color: C.ink, margin: '16px 0 12px' }}>
                   Stories from this program
                 </h2>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 440 }}>
+                <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 440 }}>
                   Verified learner stories will be published here when available. Sample content is not shown as testimonials.
                 </p>
               </div>
-              <div style={{ padding: '28px 32px', borderLeft: `2px solid ${domainAccent.border}`, borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}` }}>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 12 }}>Status</div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.white, marginBottom: 8 }}>Not yet published</div>
-                <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 13, lineHeight: 1.6 }}>
+              <div style={{ padding: '28px 32px', borderLeft: `2px solid ${domainAccent.border}`, borderTop: `1px solid ${T.lineLight}`, borderBottom: `1px solid ${T.lineLight}` }}>
+                <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Status</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.ink, marginBottom: 8 }}>Not yet published</div>
+                <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.6 }}>
                   Outcome stories require verification before they appear on this page.
                 </div>
               </div>
@@ -733,17 +733,17 @@ export default function ProgramPage() {
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="8" r="6"/><path d="M8.5 14.5L6 22l6-2 6 2-2.5-7.5"/></svg>
               </div>
               <div className="skylent-label" style={{ color: domainAccent.textMuted, marginBottom: 6 }}>Credential</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, lineHeight: 1.3 }}>{program.cert}</div>
-              <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${T.lineDark}`, fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)' }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink, lineHeight: 1.3 }}>{program.cert}</div>
+              <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${T.lineLight}`, fontSize: 10, fontFamily: 'var(--font-mono)', color: C.slate }}>
                 Verifiable on completion
               </div>
             </GlassSurface>
             <div>
-              <Eyebrow tone="dark">Certificate</Eyebrow>
-              <h2 className="skylent-display-sm" style={{ color: C.white, margin: '14px 0 12px' }}>
+              <Eyebrow >Certificate</Eyebrow>
+              <h2 className="skylent-display-sm" style={{ color: C.ink, margin: '14px 0 12px' }}>
                 Credential issued on successful completion
               </h2>
-              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 520 }}>
+              <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 520 }}>
                 Issued by Skylent when you complete the program and pass the final assessment. Each certificate includes a verifiable credential reference.
                 {enrollStatus === 'coming_soon' ? ' Available when enrollment opens.' : ''}
               </p>
@@ -756,24 +756,24 @@ export default function ProgramPage() {
       {program.faqs && program.faqs.length > 0 && (
         <Section id="faq" tone="canvas" divider style={{ paddingTop: T.sectionCompact, paddingBottom: T.sectionTight }}>
           <FadeIn>
-            <SectionHeader tone="dark" eyebrow="FAQs" title="Common questions" />
+            <SectionHeader  eyebrow="FAQs" title="Common questions" />
           </FadeIn>
           <div style={{ maxWidth: 780, marginTop: 28 }}>
             {program.faqs.map((faq, i) => {
               const isOpen = faqOpen === faq.q
               return (
                 <FadeIn key={i} delay={i * 30}>
-                  <div style={{ borderBottom: `1px solid ${T.lineDark}` }}>
+                  <div style={{ borderBottom: `1px solid ${T.lineLight}` }}>
                     <button
                       onClick={() => setFaqOpen(isOpen ? null : faq.q)}
                       style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, padding: '22px 0', background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}
                     >
-                      <span style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(15px,2vw,17px)', fontWeight: 600, color: C.white, lineHeight: 1.4 }}>{faq.q}</span>
+                      <span style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(15px,2vw,17px)', fontWeight: 600, color: C.ink, lineHeight: 1.4 }}>{faq.q}</span>
                       <span style={{ color: domainAccent.text, fontSize: 20, transform: isOpen ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }}>+</span>
                     </button>
                     {isOpen && (
                       <div style={{ paddingBottom: 22 }}>
-                        <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 15, lineHeight: 1.78, margin: 0 }}>{faq.a}</p>
+                        <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.78, margin: 0 }}>{faq.a}</p>
                       </div>
                     )}
                   </div>
@@ -788,7 +788,7 @@ export default function ProgramPage() {
       <Section id="pricing" tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
         <FadeIn>
           <SectionHeader
-            tone="dark"
+            
             eyebrow="Fees & enrollment"
             title="Choose your plan"
             lead="Every plan includes the full curriculum and Skylent certificate."
@@ -798,35 +798,35 @@ export default function ProgramPage() {
         <div style={{ marginTop: 32, overflowX: 'auto' }} className="program-pricing-wrap">
           <div style={{ minWidth: 560 }}>
             {/* Tier headers */}
-            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${pricingTiers.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
-              <div style={{ padding: '16px 0', color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>Plan</div>
+            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${pricingTiers.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineLight}` }}>
+              <div style={{ padding: '16px 0', color: C.slate, fontSize: 12 }}>Plan</div>
               {pricingTiers.map(tier => (
-                <div key={tier.name} style={{ padding: '16px 20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? domainAccent.subtle : 'transparent' }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: tier.highlight ? domainAccent.text : C.white }}>{tier.name}</div>
+                <div key={tier.name} style={{ padding: '16px 20px', textAlign: 'center', borderLeft: `1px solid ${T.lineLight}`, background: tier.highlight ? domainAccent.subtle : 'transparent' }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: tier.highlight ? domainAccent.text : C.ink }}>{tier.name}</div>
                   {tier.highlight && <div className="skylent-label" style={{ color: domainAccent.text, fontSize: 9, marginTop: 4 }}>Recommended</div>}
                 </div>
               ))}
             </div>
             {/* Prices */}
-            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${pricingTiers.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
-              <div style={{ padding: '20px 0', color: 'rgba(255,255,255,0.35)', fontSize: 13 }}>Price</div>
+            <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${pricingTiers.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineLight}` }}>
+              <div style={{ padding: '20px 0', color: C.slate, fontSize: 13 }}>Price</div>
               {pricingTiers.map(tier => (
-                <div key={tier.name} style={{ padding: '20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? `${domainAccent.subtle}` : 'transparent' }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 24, fontWeight: 700, color: C.white }}>₹{tier.price.toLocaleString('en-IN')}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.22)', fontSize: 12, textDecoration: 'line-through', marginTop: 4 }}>₹{tier.originalPrice.toLocaleString('en-IN')}</div>
+                <div key={tier.name} style={{ padding: '20px', textAlign: 'center', borderLeft: `1px solid ${T.lineLight}`, background: tier.highlight ? `${domainAccent.subtle}` : 'transparent' }}>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 24, fontWeight: 700, color: C.ink }}>₹{tier.price.toLocaleString('en-IN')}</div>
+                  <div style={{ color: C.slate, fontSize: 12, textDecoration: 'line-through', marginTop: 4 }}>₹{tier.originalPrice.toLocaleString('en-IN')}</div>
                 </div>
               ))}
             </div>
             {/* Feature rows */}
             {allPricingFeatures.map((feature, fi) => (
-              <div key={feature} style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${pricingTiers.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineDark}` }}>
-                <div style={{ padding: '14px 0', color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.4 }}>{feature}</div>
+              <div key={feature} style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${pricingTiers.length}, 1fr)`, gap: 0, borderBottom: `1px solid ${T.lineLight}` }}>
+                <div style={{ padding: '14px 0', color: C.slate, fontSize: 13, lineHeight: 1.4 }}>{feature}</div>
                 {pricingTiers.map(tier => (
-                  <div key={tier.name} style={{ padding: '14px 20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? `${domainAccent.subtle}` : 'transparent' }}>
+                  <div key={tier.name} style={{ padding: '14px 20px', textAlign: 'center', borderLeft: `1px solid ${T.lineLight}`, background: tier.highlight ? `${domainAccent.subtle}` : 'transparent' }}>
                     {tier.features.includes(feature) ? (
-                      <span style={{ color: tier.highlight ? domainAccent.text : 'rgba(255,255,255,0.5)', fontSize: 14 }}>✓</span>
+                      <span style={{ color: tier.highlight ? domainAccent.text : C.slate, fontSize: 14 }}>✓</span>
                     ) : (
-                      <span style={{ color: 'rgba(255,255,255,0.12)', fontSize: 14 }}>—</span>
+                      <span style={{ color: C.slate, fontSize: 14 }}>—</span>
                     )}
                   </div>
                 ))}
@@ -836,7 +836,7 @@ export default function ProgramPage() {
             <div style={{ display: 'grid', gridTemplateColumns: `1.4fr repeat(${pricingTiers.length}, 1fr)`, gap: 0, paddingTop: 24 }}>
               <div />
               {pricingTiers.map(tier => (
-                <div key={tier.name} style={{ padding: '0 12px', borderLeft: `1px solid ${T.lineDark}` }}>
+                <div key={tier.name} style={{ padding: '0 12px', borderLeft: `1px solid ${T.lineLight}` }}>
                   <Button
                     variant={tier.highlight ? 'primary' : 'secondary'}
                     full
@@ -863,13 +863,13 @@ export default function ProgramPage() {
               className="program-final-visual"
               style={{ marginBottom: 32, minHeight: 220 }}
             />
-            <Eyebrow tone="dark" accent>Get started</Eyebrow>
-            <h2 className="skylent-display-md" style={{ color: C.white, margin: '20px 0 16px' }}>
+            <Eyebrow  accent>Get started</Eyebrow>
+            <h2 className="skylent-display-md" style={{ color: C.ink, margin: '20px 0 16px' }}>
               {enrollStatus === 'coming_soon'
                 ? `Be notified when ${program.name} opens`
                 : `Ready to begin ${program.name}?`}
             </h2>
-            <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.75, margin: '0 0 36px' }}>
+            <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, margin: '0 0 36px' }}>
               {enrollStatus === 'coming_soon'
                 ? 'Register your interest and we will notify you when enrollment opens.'
                 : `Next batch starts ${program.upcomingBatch}.`}
