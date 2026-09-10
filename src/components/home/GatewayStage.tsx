@@ -4,24 +4,27 @@ import type { GatewayIntent } from './gateway-intents'
 function SkillsArtifact() {
   return (
     <div className="gw-artifact gw-artifact--skills">
-      <div className="gw-skills-bar">
-        <span>project · customer-churn.csv</span>
-        <span>run</span>
-      </div>
+      <header className="gw-skills-top">
+        <div>
+          <p className="gw-skills-task">Build</p>
+          <h3>Find where customers are going quiet</h3>
+        </div>
+        <span className="gw-skills-file">customer-churn.csv</span>
+      </header>
       <div className="gw-skills-body">
-        <pre className="gw-skills-code">{`SELECT region, COUNT(*) AS churned
+        <pre className="gw-skills-code">{`SELECT region, COUNT(*) AS quiet
 FROM customers
 WHERE last_active < DATE '2025-01-01'
 GROUP BY region
-ORDER BY churned DESC;`}</pre>
-        <aside className="gw-skills-output">
-          <strong>Output</strong>
+ORDER BY quiet DESC;`}</pre>
+        <aside className="gw-skills-side">
+          <p className="gw-skills-side-label">What you&apos;ll produce</p>
           <ul>
-            <li><span>West</span><b>142</b></li>
-            <li><span>North</span><b>98</b></li>
-            <li><span>South</span><b>71</b></li>
+            <li>A working query</li>
+            <li>A short interpretation</li>
+            <li>One recommended next action</li>
           </ul>
-          <p>Task: explain the pattern, then propose one intervention.</p>
+          <p className="gw-skills-prompt">Then explain the pattern in your own words.</p>
         </aside>
       </div>
     </div>
@@ -39,7 +42,10 @@ function ExamsArtifact() {
 
   return (
     <div className="gw-artifact gw-artifact--exams">
-      <p className="gw-exams-kicker">Practice · Mechanics</p>
+      <div className="gw-exams-meta">
+        <p className="gw-exams-kicker">Practice</p>
+        <p className="gw-exams-topic">Mechanics · Friction</p>
+      </div>
       <h3 className="gw-exams-question">
         You increase friction on a block sliding down a ramp. What happens to its acceleration?
       </h3>
@@ -57,10 +63,10 @@ function ExamsArtifact() {
         ))}
       </div>
       {picked && (
-        <p className="gw-exams-note">
+        <p className={`gw-exams-note ${picked === 'b' ? 'is-good' : ''}`}>
           {picked === 'b'
-            ? 'Friction opposes motion along the ramp, so net acceleration drops.'
-            : 'Look at forces along the ramp — friction acts against the slide.'}
+            ? 'Yes — friction opposes the slide, so net acceleration drops.'
+            : 'Not yet. Think about the force that acts against motion along the ramp.'}
         </p>
       )}
     </div>
@@ -73,7 +79,10 @@ function SchoolingArtifact() {
   return (
     <div className="gw-artifact gw-artifact--schooling">
       <div className="gw-school-head">
-        <p>What happens if the planet moves faster?</p>
+        <div>
+          <p className="gw-school-kicker">Try it</p>
+          <h3>What happens if the planet moves faster?</h3>
+        </div>
         <div className="gw-school-toggles">
           <button type="button" className={mode === 'steady' ? 'is-on' : ''} onClick={() => setMode('steady')}>
             Steady orbit
@@ -87,10 +96,11 @@ function SchoolingArtifact() {
         <span className="gw-school-sun" />
         <span className="gw-school-path" />
         <span className="gw-school-planet" />
+        <span className="gw-school-trail" />
       </div>
       <p className="gw-school-observe">
         {mode === 'steady'
-          ? 'Observation: gravity and motion stay balanced.'
+          ? 'Observation: gravity and motion stay in balance.'
           : 'Observation: the path widens — escape becomes possible.'}
       </p>
     </div>
@@ -101,19 +111,25 @@ function UniversityArtifact() {
   return (
     <div className="gw-artifact gw-artifact--university">
       <p className="gw-uni-kicker">Project brief</p>
-      <h3 className="gw-uni-title">Design a small water-quality sensor for a campus lake.</h3>
-      <div className="gw-uni-grid">
+      <h3 className="gw-uni-title">Design a water-quality sensor for a campus lake.</h3>
+      <p className="gw-uni-lead">
+        Move from concept to a working prototype — then explain the trade-offs.
+      </p>
+      <div className="gw-uni-rail">
         <div>
-          <span>Understand</span>
-          <p>Map the variables that affect local water quality.</p>
+          <span>01</span>
+          <strong>Understand</strong>
+          <p>Map the variables that matter on site.</p>
         </div>
         <div>
-          <span>Apply</span>
-          <p>Choose sensors, sampling logic, and a simple model.</p>
+          <span>02</span>
+          <strong>Apply</strong>
+          <p>Choose sensors, sampling, and a simple model.</p>
         </div>
         <div>
-          <span>Deliver</span>
-          <p>Prototype, test, and explain trade-offs in a short report.</p>
+          <span>03</span>
+          <strong>Deliver</strong>
+          <p>Prototype, test, and write the rationale.</p>
         </div>
       </div>
     </div>
@@ -126,17 +142,20 @@ function CareerArtifact() {
       <div className="gw-career-proof">
         <p className="gw-career-kicker">Evidence</p>
         <h3>Churn analysis notebook</h3>
-        <p>Segmented inactive customers by region and proposed one retention experiment.</p>
+        <p>
+          Segmented quiet customers by region and proposed one retention experiment.
+        </p>
         <ul>
-          <li>SQL analysis</li>
+          <li>Working analysis</li>
           <li>Written recommendation</li>
-          <li>Review notes</li>
+          <li>Review notes attached</li>
         </ul>
       </div>
       <div className="gw-career-next">
         <p className="gw-career-kicker">Next step</p>
-        <h3>Attach this proof to your profile</h3>
-        <p>Show the work, then move toward the roles it supports.</p>
+        <h3>Put this on your profile</h3>
+        <p>Show the work first. Then move toward roles it supports.</p>
+        <span className="gw-career-chip">Proof ready</span>
       </div>
     </div>
   )
