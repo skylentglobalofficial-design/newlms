@@ -112,7 +112,18 @@ export function LearnerProgrammeStructure({
       <ol className="learner-module-list">
         {course.modules.map((mod, mi) => {
           const mp = computeModuleProgress(mod, lessonStates)
-          const isCurrent = !!mp.current || mod.lessons.some(l => l.id === currentLessonId)
+          const containsResume = currentLessonId
+            ? mod.lessons.some(l => l.id === currentLessonId)
+            : false
+          const isFirstIncompleteModule =
+            !currentLessonId
+            && course.modules.findIndex(m => m.lessons.some(l => !lessonStates[l.id]?.complete)) === mi
+          const isCurrent = containsResume || isFirstIncompleteModule
+          const focusLesson = containsResume
+            ? mod.lessons.find(l => l.id === currentLessonId) ?? mp.current
+            : isCurrent
+              ? mp.current
+              : null
           return (
             <li key={mod.id} className={isCurrent ? 'is-current' : undefined}>
               <div className="learner-module-head">
@@ -124,11 +135,11 @@ export function LearnerProgrammeStructure({
                   {mp.total > 0 ? `${mp.completed}/${mp.total}` : '—'}
                 </span>
               </div>
-              {isCurrent && mp.current && (
+              {isCurrent && focusLesson && (
                 <div className="learner-module-current">
-                  <LessonIcon type={mp.current.type} size={14} color={accent.text} />
-                  <span style={{ color: accent.text }}>{mp.current.title}</span>
-                  <Link to={`/learn/${learnSlug}/${mp.current.id}`}>Open</Link>
+                  <LessonIcon type={focusLesson.type} size={14} color={accent.text} />
+                  <span style={{ color: accent.text }}>{focusLesson.title}</span>
+                  <Link to={`/learn/${learnSlug}/${focusLesson.id}`}>Open</Link>
                 </div>
               )}
               {mp.total > 0 && (

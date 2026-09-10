@@ -129,7 +129,7 @@ export default function DashboardStudentPage() {
   const continueHref = resume?.lessonId
     ? `/learn/${learnSlug}/${resume.lessonId}`
     : `/learn/${learnSlug}`
-  const continueLabel = resume?.lessonId && (workspace.progress.completedCount > 0 || resume.lessonTitle)
+  const continueLabel = workspace.progress.completedCount > 0
     ? 'Continue learning'
     : 'Start learning'
 
