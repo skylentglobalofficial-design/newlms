@@ -3913,6 +3913,351 @@ html, body {
   }
 }
 
+/* Skills Scroll 5 — evidence / prove */
+.skills-scroll5 {
+  padding: clamp(72px, 10vw, 120px) var(--gutter);
+  background: #f6f4ee;
+  border-bottom: 1px solid rgba(8,9,9,.1);
+}
+.skills-scroll5-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.skills-scroll5-copy { max-width: 42ch; }
+.skills-scroll5-copy h2 {
+  margin: 18px 0 0;
+  font-size: clamp(32px, 4.6vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -.04em;
+  font-weight: 600;
+  color: #080909;
+}
+.skills-scroll5-copy h2 em {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 500;
+}
+.skills-scroll5-copy > p {
+  margin: 14px 0 0;
+  color: #5f6866;
+  font-size: clamp(15px, 1.4vw, 16px);
+  line-height: 1.55;
+}
+.skills-scroll5-domains {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin-top: clamp(24px, 3vw, 32px);
+  border-bottom: 1px solid rgba(8,9,9,.12);
+}
+.skills-scroll5-domains button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: transparent;
+  color: #7a837e;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.skills-scroll5-domains button span {
+  margin-right: 8px;
+  color: #a0a8a4;
+  font: 10px var(--font-mono);
+  letter-spacing: .06em;
+}
+.skills-scroll5-domains button.is-active {
+  color: #080909;
+  font-weight: 600;
+  border-bottom-color: #080909;
+}
+.skills-scroll5-domains button.is-active span { color: #080909; }
+.skills-scroll5-domains button:hover { color: #080909; }
+.skills-scroll5-domains button:focus-visible {
+  outline: 2px solid #2f73be;
+  outline-offset: 2px;
+}
+.skills-scroll5-panel {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
+.skills-scroll5-context {
+  display: grid;
+  gap: 4px;
+}
+.skills-scroll5-context span {
+  color: #7a837e;
+  font: 10px var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.skills-scroll5-context strong {
+  color: #080909;
+  font-size: 15px;
+  font-weight: 600;
+}
+.skills-scroll5-stages {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgba(8,9,9,.14);
+  border-radius: 8px;
+  background: rgba(8,9,9,.14);
+}
+.skills-scroll5-stages button {
+  display: grid;
+  gap: 4px;
+  min-height: 72px;
+  padding: 14px 14px 16px;
+  border: none;
+  background: #fffdfa;
+  color: #5f6866;
+  text-align: left;
+  cursor: pointer;
+}
+.skills-scroll5-stages button span {
+  color: #a0a8a4;
+  font: 10px var(--font-mono);
+  letter-spacing: .08em;
+}
+.skills-scroll5-stages button strong {
+  color: #080909;
+  font-size: 14px;
+  font-weight: 600;
+}
+.skills-scroll5-stages button em {
+  color: #7a837e;
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1.35;
+}
+.skills-scroll5-stages button.is-active {
+  background: #080909;
+  color: rgba(255,255,255,.68);
+}
+.skills-scroll5-stages button.is-active span { color: #c4a574; }
+.skills-scroll5-stages button.is-active strong { color: #fff; }
+.skills-scroll5-stages button.is-active em { color: rgba(255,255,255,.55); }
+.skills-scroll5-stages button:hover:not(.is-active) { background: #fff; }
+.skills-scroll5-stages button:focus-visible {
+  outline: 2px solid #2f73be;
+  outline-offset: -2px;
+  z-index: 1;
+}
+.skills-scroll5-object {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 360px;
+  padding: clamp(22px, 3vw, 34px);
+  border: 1px solid rgba(8,9,9,.14);
+  background: #fffdfa;
+  box-shadow: 0 1px 0 rgba(8,9,9,.04);
+}
+.skills-scroll5-object--annotation {
+  background: #fff;
+  border-left: 3px solid #080909;
+}
+.skills-scroll5-object--record {
+  background: #171b1f;
+  border-color: #171b1f;
+  color: #fff;
+}
+.skills-scroll5-object-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px 24px;
+  align-items: start;
+}
+.skills-scroll5-object-head > div {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+.skills-scroll5-kicker {
+  color: #7a837e;
+  font: 600 10px var(--font-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.skills-scroll5-object--record .skills-scroll5-kicker { color: #c4a574; }
+.skills-scroll5-object-head h3 {
+  margin: 0;
+  font-size: clamp(22px, 2.5vw, 30px);
+  line-height: 1.18;
+  letter-spacing: -.03em;
+  font-weight: 600;
+}
+.skills-scroll5-path {
+  margin: 0;
+  color: #a0a8a4;
+  font: 10px var(--font-mono);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.skills-scroll5-object--record .skills-scroll5-path {
+  color: rgba(255,255,255,.4);
+}
+.skills-scroll5-lines {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 12px;
+}
+.skills-scroll5-lines li {
+  position: relative;
+  padding-left: 14px;
+  color: #2c3331;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.skills-scroll5-lines li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: .55em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #080909;
+}
+.skills-scroll5-lines--annotate li {
+  padding: 12px 14px;
+  border-top: 1px solid rgba(8,9,9,.1);
+  background: #f6f4ee;
+}
+.skills-scroll5-lines--annotate li::before { display: none; }
+.skills-scroll5-lines--annotate li:first-child { border-top: none; }
+.skills-scroll5-record {
+  margin: 0;
+  display: grid;
+  gap: 0;
+  border-top: 1px solid rgba(255,255,255,.12);
+}
+.skills-scroll5-record > div {
+  display: grid;
+  grid-template-columns: minmax(120px, .38fr) minmax(0, 1fr);
+  gap: 12px 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255,255,255,.1);
+}
+.skills-scroll5-record dt {
+  margin: 0;
+  color: #c4a574;
+  font: 600 10px/1.4 var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.skills-scroll5-record dd {
+  margin: 0;
+  color: rgba(255,255,255,.86);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.skills-scroll5-note {
+  margin: 0;
+  color: #5f6866;
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 52ch;
+}
+.skills-scroll5-object--record .skills-scroll5-note {
+  color: rgba(255,255,255,.58);
+}
+.skills-scroll5-object-foot {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgba(8,9,9,.1);
+}
+.skills-scroll5-object--record .skills-scroll5-object-foot {
+  border-top-color: rgba(255,255,255,.12);
+}
+.skills-scroll5-object-foot p {
+  margin: 0;
+  color: #7a837e;
+  font: 11px var(--font-mono);
+  letter-spacing: .02em;
+}
+.skills-scroll5-object--record .skills-scroll5-object-foot p {
+  color: rgba(255,255,255,.42);
+}
+.skills-scroll5-cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.skills-scroll5-cta > div { display: grid; gap: 2px; }
+.skills-scroll5-cta span {
+  color: #7a837e;
+  font: 10px var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.skills-scroll5-cta strong {
+  color: #080909;
+  font-size: 14px;
+  font-weight: 600;
+}
+@media (max-width: 720px) {
+  .skills-scroll5-stages { grid-template-columns: 1fr; }
+  .skills-scroll5-stages button {
+    min-height: 52px;
+    grid-template-columns: 28px auto;
+    align-items: center;
+    gap: 4px 10px;
+    padding: 12px 14px;
+  }
+  .skills-scroll5-stages button strong { grid-column: 2; }
+  .skills-scroll5-stages button em { display: none; }
+  .skills-scroll5-object { min-height: 0; }
+  .skills-scroll5-record > div {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .skills-scroll5-path { display: none; }
+}
+@media (max-width: 560px) {
+  .skills-scroll5-domains {
+    display: grid;
+    grid-template-columns: 1fr;
+    border-bottom: none;
+    gap: 6px;
+  }
+  .skills-scroll5-domains button {
+    justify-content: flex-start;
+    min-height: 48px;
+    padding: 10px 12px;
+    border: 1px solid rgba(8,9,9,.12);
+    border-radius: 8px;
+    border-bottom: 1px solid rgba(8,9,9,.12);
+    margin-bottom: 0;
+  }
+  .skills-scroll5-domains button.is-active {
+    background: #080909;
+    color: #fff;
+    border-color: #080909;
+  }
+  .skills-scroll5-domains button.is-active span { color: #c4a574; }
+  .skills-scroll5-cta { flex-direction: column; align-items: stretch; }
+  .skills-scroll5-cta .home-primary-button { width: 100%; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skills-scroll5-domains button,
+  .skills-scroll5-stages button {
+    transition: none;
+  }
+}
+
 /* Skills vertical V2 */
 .skills-v2 { background: #fffdfa; color: #080909; }
 .skills-v2-hero {

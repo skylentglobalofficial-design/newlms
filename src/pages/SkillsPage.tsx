@@ -6,6 +6,7 @@ import SkillsCapabilityHero from '../components/skills/SkillsCapabilityHero'
 import SkillsCapabilityDiscovery from '../components/skills/SkillsCapabilityDiscovery'
 import SkillsPracticeExperience from '../components/skills/SkillsPracticeExperience'
 import SkillsBuildPreview from '../components/skills/SkillsBuildPreview'
+import SkillsEvidencePreview from '../components/skills/SkillsEvidencePreview'
 
 const PROFESSIONAL = programs.filter(p => p.programType === 'PROFESSIONAL')
 const CERTIFICATES = programs.filter(p => p.programType === 'CERTIFICATE')
@@ -48,7 +49,9 @@ export default function SkillsPage() {
 
         <SkillsBuildPreview />
 
-        {/* Residual later scrolls — untouched until Phase 2 Scroll 5+ */}
+        <SkillsEvidencePreview />
+
+        {/* Residual later scrolls — untouched until Phase 2 Scroll 6+ */}
         <section className="skills-v2-section skills-v2-section--cream" aria-labelledby="skills-map-heading">
           <div className="skills-v2-inner">
             <header className="skills-v2-copy">
