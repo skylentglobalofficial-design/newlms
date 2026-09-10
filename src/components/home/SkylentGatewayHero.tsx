@@ -21,12 +21,12 @@ export default function SkylentGatewayHero() {
           <div className="home-section-label"><span />Skylent</div>
 
           <h1 id="skylent-gateway-headline" className="skylent-gateway-headline">
-            Learning that takes you<br />
-            <em>somewhere.</em>
+            Start with where<br />
+            you&apos;re <em>going.</em>
           </h1>
 
           <p className="skylent-gateway-lede">
-            One platform with purpose-built paths — choose the experience that matches your goal.
+            One platform. Different experiences for skills, exams, school, university, and career.
           </p>
 
           <div
@@ -49,8 +49,9 @@ export default function SkylentGatewayHero() {
                   onClick={() => setIntentId(item.id)}
                   onKeyDown={e => onIntentKeyDown(e, item.id)}
                 >
-                  <span className="skylent-gateway-intent-marker" aria-hidden="true" />
+                  <span className="skylent-gateway-intent-index" aria-hidden="true">{item.index}</span>
                   <span className="skylent-gateway-intent-label">{item.label}</span>
+                  <span className="skylent-gateway-intent-arrow" aria-hidden="true">→</span>
                 </button>
               )
             })}
