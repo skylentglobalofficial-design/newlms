@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { C, FadeIn, PageShell, EnrollmentModal } from '../components/shared'
+import { C, FadeIn, PageShell } from '../components/shared'
+import { EnrollmentModal } from '../components/EnrollmentModal'
 import { Button, Eyebrow, Section, T } from '../components/ui'
 import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'

@@ -2,11 +2,14 @@
  * Centralized media references for Skylent.
  * Product visuals use skylent:<visualId> refs rendered by ProductVisual.
  * No remote image URLs.
+ *
+ * Parse helpers live in ./lib/media-ref so foundation/shell do not pull PHOTO maps.
  */
 
 import type { ProductVisualId } from "@/components/product/ProductVisuals";
-
-export type MediaRef = string;
+export type { MediaRef } from "./lib/media-ref";
+export { isSkylentVisualRef, parseSkylentVisualRef } from "./lib/media-ref";
+import type { MediaRef } from "./lib/media-ref";
 
 export const DEFAULT_PROGRAM_PHOTO: MediaRef = "skylent:catalog-browser";
 
@@ -90,11 +93,5 @@ export function programPhoto(slug: string): MediaRef {
   return PROGRAM_PHOTO[slug] ?? DEFAULT_PROGRAM_PHOTO;
 }
 
-export function isSkylentVisualRef(src: string): boolean {
-  return src.startsWith("skylent:");
-}
-
-export function parseSkylentVisualRef(src: string): ProductVisualId | null {
-  if (!isSkylentVisualRef(src)) return null;
-  return src.slice("skylent:".length) as ProductVisualId;
-}
+// Keep parse helpers typed against ProductVisualId for page callers.
+export type { ProductVisualId };

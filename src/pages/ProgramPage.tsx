@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { C, FadeIn, EnrollmentModal, PageShell } from '../components/shared'
+import { C, FadeIn, PageShell } from '../components/shared'
+import { EnrollmentModal } from '../components/EnrollmentModal'
 import {
   T, Section, SectionHeader, Eyebrow, Button, Badge,
 } from '../components/ui'

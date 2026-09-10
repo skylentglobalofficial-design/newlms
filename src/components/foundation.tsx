@@ -2,7 +2,7 @@ import { useState, useEffect, lazy, Suspense } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { getAuroraTheme, getDomainAccent, resolveAuroraTheme, type AuroraThemeId } from '../aurora-themes'
 import { C, T, glass, type GlassLevel } from '../tokens'
-import { parseSkylentVisualRef, isSkylentVisualRef } from '../media'
+import { parseSkylentVisualRef, isSkylentVisualRef } from '../lib/media-ref'
 import type { ProductVisualId } from './product/ProductVisuals'
 
 const ProductVisual = lazy(() =>
