@@ -11,4 +11,12 @@ export {
   StudentEvidenceSurface,
   StudentActionRail,
 } from './StudentDashboard'
+export {
+  LearnerContextPanel,
+  LearnerContinueAction,
+  LearnerProgrammeStructure,
+  LearnerRecentWork,
+  LearnerEmptyEnrollment,
+  LearnerPhaseNote,
+} from './LearnerWorkspace'
 export * from './lms-utils'

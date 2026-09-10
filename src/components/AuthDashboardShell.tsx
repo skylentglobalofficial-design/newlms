@@ -84,11 +84,13 @@ export function AuthDashboardShell({
               key={item.id}
               type="button"
               onClick={() => handleNav(item)}
+              aria-current={isActive ? 'page' : undefined}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: 12,
                 width: '100%',
+                minHeight: 44,
                 textAlign: 'left',
                 padding: '11px 12px',
                 marginBottom: 2,
@@ -218,9 +220,11 @@ export function AuthDashboardShell({
               key={item.id}
               type="button"
               onClick={() => handleNav(item)}
+              aria-current={isActive ? 'page' : undefined}
               style={{
                 flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                background: 'none', border: 'none', cursor: 'pointer', padding: '6px 4px',
+                background: 'none', border: 'none', cursor: 'pointer',
+                minHeight: 44, padding: '8px 4px',
                 color: isActive ? accent.text : C.slate,
               }}
             >
