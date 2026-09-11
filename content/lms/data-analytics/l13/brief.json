@@ -131,23 +131,23 @@
   "submissionExpectations": {
     "requiredArtifacts": [
       "Written analysis in the assignment response text (400–800 words)",
-      "Analytical artifact attachment metadata for Excel (.xlsx/.xls) or Power BI (.pbix) or PDF export of report pages"
+      "Analytical artifact binary upload for Excel (.xlsx/.xls), Power BI (.pbix), PDF export, or optional .sql verification"
     ],
     "naming": "DA_l13_SalesAnalysis_<LearnerNameOrId>.<ext>",
-    "completeWhen": "Written analysis is present and at least one analytical artifact attachment is declared.",
+    "completeWhen": "Written analysis is present and at least one analytical artifact binary has been uploaded and stored.",
     "incompleteIf": [
       "Missing write-up",
-      "Missing analytical artifact",
+      "Missing analytical artifact binary",
       "Uses external data",
       "Presents the fictional case as a real client"
     ],
-    "attachmentNote": "This environment stores attachment metadata for faculty review. Binary object storage may remain pending."
+    "attachmentNote": "Analytical artifacts are uploaded to authenticated LMS server storage (local filesystem provider). Filename-only metadata without a stored binary does not satisfy completion."
   },
   "prerequisites": {
     "sourceDerivedPath": "m1 Foundations → m2 Excel (including Excel Assignment) → m3 SQL → m4 Power BI (including Dashboard Project) → m5 Capstone → l13",
     "statement": "From the curriculum sequence titles only, you are expected to have been exposed to spreadsheet work, SQL for analysis, and Power BI/DAX at a course-sequence level. This brief does not claim mastery of specific unpublished lesson scripts. LMS unlock requires sequential completion of prior lessons."
   },
-  "completionRule": "Submit the required written analysis and analytical artifact attachment through the existing assignment submission path. Completion marks the lesson complete and unlocks the next node when unlock rules allow. CareerOS evidence, mentor scores, and automatic insight grading are out of scope.",
+  "completionRule": "Upload the analytical artifact binary, then submit the required written analysis through the existing assignment submission path. Completion marks the lesson complete and unlocks the next node when unlock rules allow. CareerOS evidence, mentor scores, and automatic insight grading are out of scope.",
   "dataset": {
     "name": "skylent_aether_home_goods_sales_v1",
     "fileName": "skylent_aether_home_goods_sales_v1.xlsx",

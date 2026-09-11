@@ -13,4 +13,6 @@ vite.config.*.timestamp-*
 logs/
 *.log
 .claude-replay.*
-.tmp-*
+storage/
+storage/**
+!storage/.gitkeep

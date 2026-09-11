@@ -280,19 +280,10 @@ export default function LearnPage() {
     patchWorkspace(workspace)
   }
 
-  async function handleProjectSubmit(payload: {
-    responseText: string
-    attachments: Array<{ fileName: string; mimeType: string; byteSize: number }>
-  }) {
+  async function handleProjectSubmitted() {
     if (!slug || !selectedLesson) return
-    const result = await updateAssignment(
-      slug,
-      selectedLesson.id,
-      'submit',
-      payload.responseText,
-      payload.attachments,
-    )
-    setAssignmentState(result)
+    const next = await fetchAssignmentState(slug, selectedLesson.id)
+    setAssignmentState(next)
     const workspace = await fetchCourseWorkspace(slug)
     patchWorkspace(workspace)
   }
@@ -428,6 +419,7 @@ export default function LearnPage() {
                     lesson={selectedLesson}
                     lessonState={selectedState}
                     accent={roleAccent}
+                    courseSlug={course.slug}
                     onComplete={() => {
                       void handleLessonComplete()
                     }}
@@ -436,7 +428,7 @@ export default function LearnPage() {
                     onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
                     onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
                     assignmentState={selectedLesson.type === 'assignment' ? assignmentState : null}
-                    onProjectSubmit={selectedLesson.type === 'assignment' ? handleProjectSubmit : undefined}
+                    onProjectSubmitted={selectedLesson.type === 'assignment' ? handleProjectSubmitted : undefined}
                     lessonMedia={lessonMedia}
                   />
                 )}

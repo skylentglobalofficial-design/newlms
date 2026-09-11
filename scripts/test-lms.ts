@@ -490,19 +490,29 @@ async function main() {
     "Dataset content-type should be spreadsheet-compatible",
   )
 
-  console.log("22. Project submission requires written analysis + artifact; completes lesson and unlocks next")
-  const incompleteProject = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`, {
+  console.log("22. Project artifact upload + submission integrity")
+  assert(l13Get.data.data.brief.artifactUpload?.required === true, "l13 brief should advertise required artifact upload")
+  assert(
+    Array.isArray(l13Get.data.data.brief.artifactUpload?.allowedExtensions),
+    "l13 brief should list allowed artifact extensions",
+  )
+
+  const analysisText =
+    "Filters: exclude Cancelled and Returned from net revenue. R1: total net revenue and order count from Completed lines. R2–R5 covered in workbook pivots. R6 priorities: (1) investigate softer H2 category performance with evidence from monthly category views; (2) review West region order mix and return share. Limitations: fictional Aether Home Goods curriculum data; correlation only."
+
+  const textOnly = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`, {
     method: "POST",
     csrf: true,
-    body: { action: "submit", responseText: "Only text without artifact." },
+    body: { action: "submit", responseText: analysisText },
   })
-  assert(incompleteProject.response.status === 400, "Project submit without artifact should fail")
+  assert(textOnly.response.status === 400, "Project submit without stored artifact should fail")
 
-  const incompleteArtifact = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`, {
+  const metadataOnly = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`, {
     method: "POST",
     csrf: true,
     body: {
       action: "submit",
+      responseText: analysisText,
       attachments: [
         {
           fileName: "DA_l13_SalesAnalysis_test.xlsx",
@@ -512,39 +522,174 @@ async function main() {
       ],
     },
   })
-  assert(incompleteArtifact.response.status === 400, "Project submit without written analysis should fail")
+  assert(metadataOnly.response.status === 400, "Project submit with metadata-only attachments should fail")
 
-  const badMime = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`, {
+  async function uploadArtifact(jar: CookieJar, fileName: string, bytes: Buffer, mimeType: string) {
+    const form = new FormData()
+    form.append("artifact", new Blob([new Uint8Array(bytes)], { type: mimeType }), fileName)
+    const response = await fetch(`${API_BASE}/lms/courses/${courseSlug}/lessons/l13/assignment/artifact`, {
+      method: "POST",
+      headers: {
+        Cookie: cookieHeader(jar),
+        "X-CSRF-Token": jar.get("csrf") ?? "",
+      },
+      body: form,
+    })
+    const setCookie = response.headers.getSetCookie?.() ?? []
+    parseSetCookie(setCookie, jar)
+    const text = await response.text()
+    let data: any = null
+    try {
+      data = text ? JSON.parse(text) : null
+    } catch {
+      data = { error: text }
+    }
+    return { response, data }
+  }
+
+  const pdfBytes = Buffer.from("%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n")
+  const zipBytes = Buffer.from([0x50, 0x4b, 0x03, 0x04, 0x14, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+  const exeBytes = Buffer.from([0x4d, 0x5a, 0x90, 0x00, 0x03, 0x00, 0x00, 0x00])
+  const sqlBytes = Buffer.from("-- verification query\nSELECT 1;\n")
+
+  const lockedJar: CookieJar = new Map()
+  await signupUser(lockedJar, "artifact-locked")
+  await request(lockedJar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: {
-      action: "submit",
-      responseText:
-        "Filters used: Completed only for net revenue. R1 headline metrics and R6 priorities with evidence. Limitations: synthetic curriculum data only.",
-      attachments: [{ fileName: "malware.exe", mimeType: "application/x-msdownload", byteSize: 1024 }],
-    },
+    body: { courseSlug },
   })
-  assert(badMime.response.status === 400, "Unsupported attachment mime should be rejected for project")
+  const lockedUpload = await uploadArtifact(
+    lockedJar,
+    "early.xlsx",
+    zipBytes,
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  )
+  assert(lockedUpload.response.status === 403, "Locked assignment artifact upload must be rejected")
+
+  const anonUpload = await uploadArtifact(
+    anonJar,
+    "probe.xlsx",
+    zipBytes,
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  )
+  assert(anonUpload.response.status === 401, "Unauthenticated artifact upload must be rejected")
+
+  const blockedUpload = await uploadArtifact(
+    userBJar,
+    "probe.xlsx",
+    zipBytes,
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  )
+  assert(blockedUpload.response.status === 403, "Unenrolled artifact upload must be rejected")
+
+  const exeUpload = await uploadArtifact(projectJar, "malware.xlsx", exeBytes, "application/octet-stream")
+  assert(exeUpload.response.status === 400, "Executable signature disguised as xlsx must be rejected")
+
+  const badExt = await uploadArtifact(projectJar, "notes.html", Buffer.from("<html></html>"), "text/html")
+  assert(badExt.response.status === 400, "Disallowed extension must be rejected")
+
+  const huge = Buffer.alloc(26 * 1024 * 1024, 0x41)
+  huge[0] = 0x50
+  huge[1] = 0x4b
+  huge[2] = 0x03
+  huge[3] = 0x04
+  const oversize = await uploadArtifact(
+    projectJar,
+    "too-big.xlsx",
+    huge,
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  )
+  assert(oversize.response.status === 400, "Oversized artifact must be rejected")
+
+  const xlsxUpload = await uploadArtifact(
+    projectJar,
+    "DA_l13_SalesAnalysis_test.xlsx",
+    zipBytes,
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  )
+  assert(xlsxUpload.response.ok, `Valid xlsx upload should succeed: ${JSON.stringify(xlsxUpload.data)}`)
+  assert(xlsxUpload.data.data.attachment?.stored === true, "Uploaded xlsx should be marked stored")
+  assert(xlsxUpload.data.data.attachment?.storageProvider === "local", "Uploaded xlsx provider should be local")
+
+  const artifactOnly = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "submit" },
+  })
+  assert(artifactOnly.response.status === 400, "Artifact without written analysis should not complete")
+
+  const pdfUpload = await uploadArtifact(projectJar, "DA_l13_SalesAnalysis_export.pdf", pdfBytes, "application/pdf")
+  assert(pdfUpload.response.ok, "Valid PDF upload should succeed")
+  assert(pdfUpload.data.data.attachment?.stored === true, "Uploaded PDF should be marked stored")
+
+  const sqlUpload = await uploadArtifact(projectJar, "verify_r1.sql", sqlBytes, "text/plain")
+  assert(sqlUpload.response.ok, "Optional SQL upload should succeed per policy")
+
+  const finalUpload = await uploadArtifact(
+    projectJar,
+    "DA_l13_SalesAnalysis_final.xlsx",
+    zipBytes,
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  )
+  assert(finalUpload.response.ok, "Final xlsx upload should succeed")
+  const finalAttachmentId = finalUpload.data.data.attachment.id as string
+
+  const ownerDownload = await fetch(
+    `${API_BASE}/lms/courses/${courseSlug}/lessons/l13/assignment/attachments/${finalAttachmentId}`,
+    { headers: { Cookie: cookieHeader(projectJar) } },
+  )
+  assert(ownerDownload.ok, "Owner should download their stored artifact")
+  const ownerBytes = Buffer.from(await ownerDownload.arrayBuffer())
+  assert(ownerBytes.byteLength === zipBytes.byteLength, "Downloaded artifact bytes should match upload")
+
+  const anonDownload = await fetch(
+    `${API_BASE}/lms/courses/${courseSlug}/lessons/l13/assignment/attachments/${finalAttachmentId}`,
+  )
+  assert(anonDownload.status === 401, "Unauthenticated artifact download must be rejected")
+
+  const otherDownload = await fetch(
+    `${API_BASE}/lms/courses/${courseSlug}/lessons/l13/assignment/attachments/${finalAttachmentId}`,
+    { headers: { Cookie: cookieHeader(userBJar) } },
+  )
+  assert(otherDownload.status === 403, "Other learner must not download this artifact")
+
+  const thiefJar: CookieJar = new Map()
+  await signupUser(thiefJar, "artifact-thief")
+  await request(thiefJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { courseSlug },
+  })
+  for (const lessonKey of ["l1", "l2", "l3", "l4", "l5", "l6", "l7", "l8", "l9", "l10", "l11", "l12"]) {
+    await completeLesson(thiefJar, courseSlug, lessonKey)
+  }
+  const thiefDownload = await fetch(
+    `${API_BASE}/lms/courses/${courseSlug}/lessons/l13/assignment/attachments/${finalAttachmentId}`,
+    { headers: { Cookie: cookieHeader(thiefJar) } },
+  )
+  assert(thiefDownload.status === 403, "Changing attachment id must not grant another learner access")
+
+  const missingDownload = await fetch(
+    `${API_BASE}/lms/courses/${courseSlug}/lessons/l13/assignment/attachments/00000000-0000-4000-8000-000000000000`,
+    { headers: { Cookie: cookieHeader(projectJar) } },
+  )
+  assert(missingDownload.status === 404, "Missing attachment id should fail safely")
 
   const projectSubmit = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l13/assignment`, {
     method: "POST",
     csrf: true,
     body: {
       action: "submit",
-      responseText:
-        "Filters: exclude Cancelled and Returned from net revenue. R1: total net revenue and order count from Completed lines. R2–R5 covered in workbook pivots. R6 priorities: (1) investigate softer H2 category performance with evidence from monthly category views; (2) review West region order mix and return share. Limitations: fictional Aether Home Goods curriculum data; correlation only.",
-      attachments: [
-        {
-          fileName: "DA_l13_SalesAnalysis_test.xlsx",
-          mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-          byteSize: 8192,
-        },
-      ],
+      responseText: analysisText,
     },
   })
-  assert(projectSubmit.response.ok, "Valid project submit should succeed")
+  assert(projectSubmit.response.ok, `Valid project submit should succeed: ${JSON.stringify(projectSubmit.data)}`)
   assert(projectSubmit.data.data.status === "submitted", "Project should be submitted")
-  assert(projectSubmit.data.data.attachments?.length === 1, "Project attachment metadata should persist")
+  assert(
+    projectSubmit.data.data.attachments?.some((a: { stored?: boolean }) => a.stored === true),
+    "Submitted project should retain stored artifact metadata",
+  )
 
   const afterL13 = await request(projectJar, `/lms/courses/${courseSlug}`)
   assert(afterL13.data.data.lessonStates.l13?.complete === true, "l13 lesson progress should be complete")

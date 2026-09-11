@@ -22,7 +22,8 @@ export function LessonContentView({
   onQuizSubmit,
   onAssignmentSubmit,
   assignmentState,
-  onProjectSubmit,
+  onProjectSubmitted,
+  courseSlug,
   lessonMedia,
 }: {
   lesson: CourseLesson
@@ -34,10 +35,8 @@ export function LessonContentView({
   onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
   onAssignmentSubmit?: (text: string) => Promise<void>
   assignmentState?: AssignmentStatePayload | null
-  onProjectSubmit?: (payload: {
-    responseText: string
-    attachments: Array<{ fileName: string; mimeType: string; byteSize: number }>
-  }) => Promise<void>
+  onProjectSubmitted?: () => Promise<void>
+  courseSlug: string
   lessonMedia?: VideoPlaybackSource
 }) {
   if (lesson.type === 'video') {
@@ -137,13 +136,15 @@ export function LessonContentView({
       <div className="lms-lesson-body lms-lesson-body--assignment lms-lesson-body--project">
         <Suspense fallback={<p className="lms-lesson-hint">Loading project brief…</p>}>
           <ProjectExperience
+            courseSlug={courseSlug}
+            lessonKey={lesson.id}
             brief={assignmentState.brief}
             accent={accent}
             status={assignmentState.status}
             initialResponseText={assignmentState.responseText}
             initialAttachments={assignmentState.attachments}
-            onSubmit={async (payload) => {
-              await onProjectSubmit?.(payload)
+            onSubmitted={async () => {
+              await onProjectSubmitted?.()
             }}
           />
         </Suspense>

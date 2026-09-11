@@ -1718,3 +1718,29 @@
     animation: none !important;
   }
 }
+
+
+.lms-project-upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid rgba(8, 9, 9, 0.16);
+  border-radius: 10px;
+  background: #edf7f0;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.lms-project-upload:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.lms-project-filename {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+.lms-project-fieldset input[type="file"] {
+  max-width: 100%;
+}

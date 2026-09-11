@@ -1,40 +1,14 @@
 import { useId, useMemo, useState, type FormEvent } from 'react'
-import type { AssignmentBriefContent, AssignmentBriefPayload, AssignmentAttachmentMeta } from '../../lib/lms-api'
+import type {
+  AssignmentBriefContent,
+  AssignmentBriefPayload,
+  AssignmentAttachmentMeta,
+} from '../../lib/lms-api'
+import { submitProjectAssignment, uploadAssignmentArtifact } from '../../lib/lms-api'
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
-const PROJECT_MIME_OPTIONS: Array<{ label: string; mimeType: string; extensions: string }> = [
-  {
-    label: 'Excel workbook (.xlsx)',
-    mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    extensions: '.xlsx',
-  },
-  {
-    label: 'Excel legacy (.xls)',
-    mimeType: 'application/vnd.ms-excel',
-    extensions: '.xls',
-  },
-  {
-    label: 'Power BI (.pbix)',
-    mimeType: 'application/octet-stream',
-    extensions: '.pbix',
-  },
-  {
-    label: 'PDF export',
-    mimeType: 'application/pdf',
-    extensions: '.pdf',
-  },
-  {
-    label: 'Markdown notes (.md)',
-    mimeType: 'text/markdown',
-    extensions: '.md',
-  },
-  {
-    label: 'Plain text (.txt)',
-    mimeType: 'text/plain',
-    extensions: '.txt',
-  },
-]
+const ACCEPT_ATTR = '.xlsx,.xls,.pbix,.pdf,.sql'
 
 function wordCount(text: string) {
   const trimmed = text.trim()
@@ -42,34 +16,45 @@ function wordCount(text: string) {
   return trimmed.split(/\s+/).length
 }
 
+function formatBytes(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+}
+
 export default function ProjectExperience({
+  courseSlug,
+  lessonKey,
   brief,
   accent,
   status,
   initialResponseText,
   initialAttachments,
-  onSubmit,
+  onSubmitted,
 }: {
+  courseSlug: string
+  lessonKey: string
   brief: AssignmentBriefPayload
   accent: Accent
   status: string
   initialResponseText?: string | null
   initialAttachments?: AssignmentAttachmentMeta[]
-  onSubmit: (payload: {
-    responseText: string
-    attachments: Array<{ fileName: string; mimeType: string; byteSize: number }>
-  }) => Promise<void>
+  onSubmitted: () => Promise<void>
 }) {
   const content = (brief.content ?? {}) as AssignmentBriefContent
   const formId = useId()
   const submitted = status === 'submitted'
+  const uploadConfig = brief.artifactUpload
+  const maxBytes = uploadConfig?.maxBytes ?? 25 * 1024 * 1024
+  const allowedExtensions = uploadConfig?.allowedExtensions ?? ['.xlsx', '.xls', '.pbix', '.pdf', '.sql']
+
   const [responseText, setResponseText] = useState(initialResponseText ?? '')
-  const [fileName, setFileName] = useState(initialAttachments?.[0]?.fileName ?? '')
-  const [mimeType, setMimeType] = useState(
-    initialAttachments?.[0]?.mimeType ?? PROJECT_MIME_OPTIONS[0].mimeType,
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [uploadedArtifact, setUploadedArtifact] = useState<AssignmentAttachmentMeta | null>(
+    initialAttachments?.find((item) => item.stored) ?? initialAttachments?.[0] ?? null,
   )
-  const [byteSize, setByteSize] = useState(
-    initialAttachments?.[0]?.byteSize ? String(initialAttachments[0].byteSize) : '',
+  const [uploadState, setUploadState] = useState<'idle' | 'uploading' | 'uploaded' | 'error'>(
+    initialAttachments?.some((item) => item.stored) ? 'uploaded' : 'idle',
   )
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -78,6 +63,7 @@ export default function ProjectExperience({
   const words = useMemo(() => wordCount(responseText), [responseText])
   const scenario = content.scenario
   const dataset = brief.dataset
+  const hasStoredArtifact = Boolean(uploadedArtifact?.stored || uploadedArtifact?.storageProvider === 'local')
 
   async function handleDatasetDownload() {
     if (!dataset?.downloadPath || !dataset.available) return
@@ -104,6 +90,48 @@ export default function ProjectExperience({
     }
   }
 
+  function handleFileChosen(file: File | null) {
+    setError(null)
+    setSelectedFile(file)
+    if (!file) {
+      setUploadState(hasStoredArtifact ? 'uploaded' : 'idle')
+      return
+    }
+    const lower = file.name.toLowerCase()
+    const allowed = allowedExtensions.some((ext) => lower.endsWith(ext))
+    if (!allowed) {
+      setSelectedFile(null)
+      setUploadState('error')
+      setError(`Unsupported file type. Allowed: ${allowedExtensions.join(', ')}`)
+      return
+    }
+    if (file.size > maxBytes) {
+      setSelectedFile(null)
+      setUploadState('error')
+      setError(`File is too large. Maximum size is ${formatBytes(maxBytes)}.`)
+      return
+    }
+    setUploadState('idle')
+  }
+
+  async function handleArtifactUpload() {
+    if (!selectedFile) {
+      setError('Choose an analytical artifact file before uploading.')
+      return
+    }
+    setError(null)
+    setUploadState('uploading')
+    try {
+      const result = await uploadAssignmentArtifact(courseSlug, lessonKey, selectedFile)
+      setUploadedArtifact(result.attachment)
+      setUploadState('uploaded')
+      setSelectedFile(null)
+    } catch (err) {
+      setUploadState('error')
+      setError(err instanceof Error ? err.message : 'Artifact upload failed')
+    }
+  }
+
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
     if (submitted) return
@@ -114,28 +142,15 @@ export default function ProjectExperience({
       setError('Written analysis is required (400–800 words).')
       return
     }
-    if (!fileName.trim()) {
-      setError('Declare your analytical artifact file name (Excel, Power BI, or PDF export).')
-      return
-    }
-    const size = Number(byteSize)
-    if (!Number.isFinite(size) || size < 1) {
-      setError('Enter the approximate file size in bytes for the analytical artifact.')
+    if (!hasStoredArtifact) {
+      setError('Upload your analytical artifact file before submitting. Filename-only metadata is not accepted.')
       return
     }
 
     setSubmitting(true)
     try {
-      await onSubmit({
-        responseText: trimmed,
-        attachments: [
-          {
-            fileName: fileName.trim(),
-            mimeType,
-            byteSize: Math.floor(size),
-          },
-        ],
-      })
+      await submitProjectAssignment(courseSlug, lessonKey, trimmed)
+      await onSubmitted()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Submission failed')
     } finally {
@@ -338,10 +353,16 @@ export default function ProjectExperience({
             <p>
               <strong>Submission recorded</strong>
             </p>
-            <p>Awaiting faculty review. No automatic score is generated for this project.</p>
-            {initialAttachments?.length ? (
+            <p>
+              Written analysis and analytical artifact are stored with this assignment. No automatic score is
+              generated, and faculty review tooling is not part of this submission flow yet.
+            </p>
+            {uploadedArtifact ? (
               <p>
-                Declared artifact: {initialAttachments[0].fileName} ({initialAttachments[0].mimeType})
+                Stored artifact: {uploadedArtifact.fileName} ({formatBytes(uploadedArtifact.byteSize)})
+                {uploadedArtifact.stored || uploadedArtifact.storageProvider === 'local'
+                  ? ' — binary stored on LMS server'
+                  : ''}
               </p>
             ) : null}
           </div>
@@ -364,49 +385,51 @@ export default function ProjectExperience({
             </div>
 
             <fieldset className="lms-project-fieldset">
-              <legend>Analytical artifact (metadata)</legend>
+              <legend>Analytical artifact (required upload)</legend>
               <p className="lms-project-note">
-                Binary object storage may remain pending. Declare the file you produced so faculty can review
-                the submission record. Supported types: .xlsx, .xls, .pbix, .pdf, .md, .txt.
+                Upload your Excel, Power BI, PDF, or SQL artifact. The server validates extension and file signature,
+                then stores the binary on the LMS filesystem. Filename-only metadata is not accepted for completion.
               </p>
+              {uploadConfig?.honesty ? <p className="lms-project-note">{uploadConfig.honesty}</p> : null}
+              <p className="lms-project-note">
+                Allowed: {allowedExtensions.join(', ')}. Max size: {formatBytes(maxBytes)}.
+              </p>
+
               <div className="lms-project-field">
-                <label htmlFor={`${formId}-filename`}>File name</label>
+                <label htmlFor={`${formId}-file`}>Choose file</label>
                 <input
-                  id={`${formId}-filename`}
-                  type="text"
-                  value={fileName}
-                  onChange={(event) => setFileName(event.target.value)}
-                  placeholder="DA_l13_SalesAnalysis_yourname.xlsx"
-                  required
-                  autoComplete="off"
+                  id={`${formId}-file`}
+                  type="file"
+                  accept={ACCEPT_ATTR}
+                  onChange={(event) => handleFileChosen(event.target.files?.[0] ?? null)}
                 />
               </div>
-              <div className="lms-project-field">
-                <label htmlFor={`${formId}-mime`}>File type</label>
-                <select
-                  id={`${formId}-mime`}
-                  value={mimeType}
-                  onChange={(event) => setMimeType(event.target.value)}
-                >
-                  {PROJECT_MIME_OPTIONS.map((option) => (
-                    <option key={option.mimeType + option.extensions} value={option.mimeType}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="lms-project-field">
-                <label htmlFor={`${formId}-bytes`}>Approximate size (bytes)</label>
-                <input
-                  id={`${formId}-bytes`}
-                  type="number"
-                  min={1}
-                  max={50_000_000}
-                  value={byteSize}
-                  onChange={(event) => setByteSize(event.target.value)}
-                  required
-                />
-              </div>
+
+              {selectedFile ? (
+                <p className="lms-project-note" role="status">
+                  Selected: <strong className="lms-project-filename">{selectedFile.name}</strong> (
+                  {formatBytes(selectedFile.size)}) — not uploaded yet
+                </p>
+              ) : null}
+
+              {hasStoredArtifact && uploadedArtifact ? (
+                <p className="lms-project-note" role="status">
+                  Uploaded artifact confirmed: <strong className="lms-project-filename">{uploadedArtifact.fileName}</strong>{' '}
+                  ({formatBytes(uploadedArtifact.byteSize)}). You may replace it by uploading another file.
+                </p>
+              ) : (
+                <p className="lms-project-note">No stored artifact yet.</p>
+              )}
+
+              <button
+                type="button"
+                className="lms-project-upload"
+                style={{ borderColor: accent.border, color: accent.text }}
+                onClick={() => void handleArtifactUpload()}
+                disabled={!selectedFile || uploadState === 'uploading'}
+              >
+                {uploadState === 'uploading' ? 'Uploading…' : 'Upload artifact'}
+              </button>
             </fieldset>
 
             {error ? (
@@ -419,7 +442,7 @@ export default function ProjectExperience({
               type="submit"
               className="lms-project-submit"
               style={{ background: accent.primary }}
-              disabled={submitting}
+              disabled={submitting || !hasStoredArtifact}
             >
               {submitting ? 'Submitting…' : 'Submit project'}
             </button>
