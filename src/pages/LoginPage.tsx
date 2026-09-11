@@ -3,6 +3,7 @@ import { useNavigate, useLocation, Link, type NavigateFunction } from 'react-rou
 import { useAuth } from '../context/AuthContext'
 import type { AuthUser, UserRole } from '../context/AuthContext'
 import { fulfillCatalogEnrollment, learnPathForWorkspace, type CatalogEnrollTarget, type LoginRedirectState } from '../lib/catalog-enrollment'
+import { safeReturnTo } from '../lib/auth-routing'
 import { buildGoogleOAuthStartUrl } from '../lib/auth-api'
 import { C, T } from '../tokens'
 import { Aurora, GlassSurface } from '../components/foundation'
@@ -74,8 +75,8 @@ function EntryVisual() {
     <div style={{ position: 'relative', maxWidth: 420 }}>
       <div style={{
         padding: '28px 0',
-        borderTop: `1px solid ${T.lineDark}`,
-        borderBottom: `1px solid ${T.lineDark}`,
+        borderTop: `1px solid ${T.lineLight}`,
+        borderBottom: `1px solid ${T.lineLight}`,
       }}>
         <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 380 }}>
           One account for learning, teaching, and institution operations. Sign in to continue where you left off.
@@ -103,7 +104,7 @@ function fieldStyle(focused: boolean, hasError?: boolean): CSSProperties {
   return {
     width: '100%',
         background: C.white,
-    border: `1px solid ${hasError ? 'rgba(239,68,68,0.55)' : focused ? accent.primary : T.lineDark}`,
+    border: `1px solid ${hasError ? 'rgba(239,68,68,0.55)' : focused ? accent.primary : T.lineLight}`,
     borderRadius: T.rControl,
     padding: '12px 14px',
     color: C.ink,
@@ -127,26 +128,25 @@ function readOAuthRedirectState(params: URLSearchParams): LoginRedirectState | n
   }
 
   if (!returnTo && !enrollTarget) return null
-  return { returnTo, enrollTarget }
+  return { returnTo: safeReturnTo(returnTo), enrollTarget }
 }
 
 function mergeRedirectState(
   locationState: LoginRedirectState | null,
   searchParams: URLSearchParams,
 ): LoginRedirectState | null {
-  if (searchParams.get('oauth') !== 'success') return locationState
-  const oauthState = readOAuthRedirectState(searchParams)
-  return {
-    returnTo: oauthState?.returnTo ?? locationState?.returnTo,
-    enrollTarget: oauthState?.enrollTarget ?? locationState?.enrollTarget,
-  }
+  const queryState = readOAuthRedirectState(searchParams)
+  const returnTo = safeReturnTo(queryState?.returnTo) ?? safeReturnTo(locationState?.returnTo)
+  const enrollTarget = queryState?.enrollTarget ?? locationState?.enrollTarget
+  if (!returnTo && !enrollTarget) return null
+  return { returnTo, enrollTarget }
 }
 
 function googleButtonStyle(disabled: boolean): CSSProperties {
   return {
     width: '100%',
     background: 'transparent',
-    border: `1px solid ${T.lineDark}`,
+    border: `1px solid ${T.lineLight}`,
     color: C.ink,
     borderRadius: T.rControl,
     padding: '12px',
@@ -215,7 +215,10 @@ export default function LoginPage() {
   function startGoogleAuth() {
     setError(null)
     setGoogleLoading(true)
-    const redirectState = (location.state ?? null) as LoginRedirectState | null
+    const redirectState = mergeRedirectState(
+      (location.state ?? null) as LoginRedirectState | null,
+      new URLSearchParams(location.search),
+    )
     const url = buildGoogleOAuthStartUrl({
       returnTo: redirectState?.returnTo,
       enrollTarget: redirectState?.enrollTarget,
@@ -235,7 +238,11 @@ export default function LoginPage() {
     setTimeout(() => {
       const { desc: _d, ...user } = demo
       loginDemo(user)
-      navigate(roleRoute(demo.role))
+      const redirectState = mergeRedirectState(
+        (location.state ?? null) as LoginRedirectState | null,
+        new URLSearchParams(location.search),
+      )
+      void finishAuthNavigation(navigate, demo.role, redirectState)
       setSubmitting(false)
     }, 80)
   }
@@ -257,7 +264,10 @@ export default function LoginPage() {
 
     try {
       const role = await login(siEmail.trim(), siPassword)
-      const redirectState = (location.state ?? null) as LoginRedirectState | null
+      const redirectState = mergeRedirectState(
+        (location.state ?? null) as LoginRedirectState | null,
+        new URLSearchParams(location.search),
+      )
       await finishAuthNavigation(navigate, role, redirectState)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to sign in.')
@@ -291,7 +301,10 @@ export default function LoginPage() {
 
     try {
       const role = await signup(suName.trim(), suEmail.trim(), suPassword)
-      const redirectState = (location.state ?? null) as LoginRedirectState | null
+      const redirectState = mergeRedirectState(
+        (location.state ?? null) as LoginRedirectState | null,
+        new URLSearchParams(location.search),
+      )
       await finishAuthNavigation(navigate, role, redirectState)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to create account.')
@@ -392,7 +405,7 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', borderRadius: T.rControl, padding: 3, marginBottom: 24, gap: 3, border: `1px solid ${T.lineDark}` }}>
+            <div style={{ display: 'flex', background: C.sand, borderRadius: T.rControl, padding: 3, marginBottom: 24, gap: 3, border: `1px solid ${T.lineLight}` }}>
               {(['signin', 'signup'] as const).map(t => (
                 <button
                   key={t}
@@ -472,17 +485,17 @@ export default function LoginPage() {
                     onBlur={() => setFocusedField(null)}
                   />
                 </div>
-                <div style={{ textAlign: 'right', marginBottom: 20 }}>
-                  <span style={{ color: C.slate, fontSize: 12 }}>Forgot password?</span>
-                </div>
+                <p style={{ textAlign: 'right', marginBottom: 20, color: C.slate, fontSize: 12 }}>
+                  Password reset is not available yet. Contact Skylent if you are locked out.
+                </p>
                 <button type="submit" disabled={submitting} style={submitStyle}>
                   {submitting ? 'Continuing…' : 'Continue'}
                 </button>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '20px 0' }}>
-                  <div style={{ flex: 1, height: 1, background: T.lineDark }} />
+                  <div style={{ flex: 1, height: 1, background: T.lineLight }} />
                   <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>or continue with</span>
-                  <div style={{ flex: 1, height: 1, background: T.lineDark }} />
+                  <div style={{ flex: 1, height: 1, background: T.lineLight }} />
                 </div>
 
                 <button
@@ -542,7 +555,7 @@ export default function LoginPage() {
                         onClick={() => setSuGoal(g === suGoal ? null : g)}
                         style={{
                           background: suGoal === g ? accent.subtle : 'rgba(255,255,255,0.04)',
-                          border: `1px solid ${suGoal === g ? accent.border : T.lineDark}`,
+                          border: `1px solid ${suGoal === g ? accent.border : T.lineLight}`,
                           borderRadius: T.rControl,
                           padding: '8px 14px',
                           color: suGoal === g ? accent.text : C.slate,
@@ -562,9 +575,9 @@ export default function LoginPage() {
                 </button>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '20px 0' }}>
-                  <div style={{ flex: 1, height: 1, background: T.lineDark }} />
+                  <div style={{ flex: 1, height: 1, background: T.lineLight }} />
                   <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>or continue with</span>
-                  <div style={{ flex: 1, height: 1, background: T.lineDark }} />
+                  <div style={{ flex: 1, height: 1, background: T.lineLight }} />
                 </div>
 
                 <button
@@ -588,7 +601,7 @@ export default function LoginPage() {
 
           {/* Demo mode — development only */}
           {demoMode && (
-          <div style={{ marginTop: 24, padding: '18px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
+          <div style={{ marginTop: 24, padding: '18px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
             <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 12 }}>
               Explore workspaces (demo mode)
             </div>
@@ -605,7 +618,7 @@ export default function LoginPage() {
                       flex: '1 1 calc(20% - 8px)',
                       minWidth: 88,
                       background: isActive ? accent.subtle : 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${isActive ? accent.border : T.lineDark}`,
+                      border: `1px solid ${isActive ? accent.border : T.lineLight}`,
                       borderRadius: T.rControl,
                       padding: '10px 6px',
                       cursor: submitting ? 'wait' : 'pointer',

@@ -8,7 +8,7 @@ import {
   programEnrollmentMessage,
   type CatalogEnrollmentStatus,
 } from '../lib/catalog-api'
-import { fulfillCatalogEnrollment, learnPathForWorkspace } from '../lib/catalog-enrollment'
+import { enrollReturnPath, fulfillCatalogEnrollment, learnPathForWorkspace } from '../lib/catalog-enrollment'
 import { C } from '../tokens'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 
@@ -65,7 +65,14 @@ export function EnrollmentModal({ item, onClose, themeId }: { item: CatalogEnrol
 
     if (!user) {
       onClose()
-      navigate('/login', { state: { enrollTarget: { kind: item.kind, slug: item.slug } } })
+      const enrollTarget = { kind: item.kind, slug: item.slug } as const
+      const returnTo = enrollReturnPath(enrollTarget)
+      const params = new URLSearchParams({
+        returnTo,
+        enrollKind: enrollTarget.kind,
+        enrollSlug: enrollTarget.slug,
+      })
+      navigate(`/login?${params.toString()}`, { state: { enrollTarget, returnTo } })
       return
     }
 

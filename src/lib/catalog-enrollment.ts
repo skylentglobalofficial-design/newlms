@@ -9,6 +9,10 @@ export type LoginRedirectState = {
   enrollTarget?: CatalogEnrollTarget
 }
 
+export function enrollReturnPath(target: CatalogEnrollTarget): string {
+  return target.kind === "program" ? `/programs/${target.slug}` : `/courses/${target.slug}`
+}
+
 export function learnPathForWorkspace(workspace: ApiCourseWorkspace): string {
   return `/learn/${workspace.enrollment.courseSlug}`
 }
