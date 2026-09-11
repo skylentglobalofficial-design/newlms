@@ -28,6 +28,7 @@ const CoursesPage = lazy(() => import('./pages/CoursesPage'))
 const CourseDetailPage = lazy(() => import('./pages/CourseDetailPage'))
 const WorkshopsPage = lazy(() => import('./pages/WorkshopsPage'))
 const WorkshopDetailPage = lazy(() => import('./pages/WorkshopDetailPage'))
+const CareerDestinationPage = lazy(() => import('./pages/CareerDestinationPage'))
 const CareerOSLayout = lazy(() => import('./pages/career/CareerOSLayout'))
 const CareerOSOverviewPage = lazy(() => import('./pages/career/CareerOSOverviewPage'))
 const CareerOSProfilePage = lazy(() => import('./pages/career/CareerOSProfilePage'))
@@ -58,7 +59,9 @@ function AppRoutes() {
         <Route path="/skills" element={<SkillsPage />} />
         <Route path="/exams" element={<ExamsPage />} />
         <Route path="/junior" element={<JuniorPage />} />
+        <Route path="/schooling" element={<Navigate to="/junior" replace />} />
         <Route path="/degrees" element={<DegreesPage />} />
+        <Route path="/career" element={<CareerDestinationPage />} />
         <Route path="/career-os" element={<CareerOSLayout />}>
           <Route index element={<CareerOSOverviewPage />} />
           <Route path="profile" element={<CareerOSProfilePage />} />
@@ -99,7 +102,6 @@ function AppRoutes() {
             </RoleRouteGuard>
           }
         />
-        <Route path="/career" element={<Navigate to="/career-os" replace />} />
         <Route path="/universities" element={<UniversitiesPage />} />
         <Route path="/labs" element={<LabsPage />} />
         <Route path="/labs/:labId" element={<LabDetailPage />} />

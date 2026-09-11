@@ -89,7 +89,7 @@ export default function JuniorPage() {
             </header>
             <div className="junior-v1-bands">
               {GRADE_BANDS.map(band => (
-                <article key={band.id}>
+                <article key={band.id} id={band.id} style={{ scrollMarginTop: 96 }}>
                   <span>{band.grades}</span>
                   <strong>{band.label}</strong>
                   <p>{band.focus}</p>

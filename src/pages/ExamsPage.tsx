@@ -32,7 +32,7 @@ export default function ExamsPage() {
               <div className="exams-v1-hero-actions">
                 <Link
                   className="home-primary-button"
-                  to={FEATURED ? `/programs/${FEATURED.slug}` : '/education#competitive-exams'}
+                  to={FEATURED ? `/programs/${FEATURED.slug}` : '/programs?type=EXAM_PREP'}
                 >
                   Open a prep programme <span aria-hidden="true">↗</span>
                 </Link>
@@ -93,7 +93,7 @@ export default function ExamsPage() {
             {EXAM_PROGRAMS.length === 0 ? (
               <p className="exams-v1-empty">
                 No exam prep programmes are published in the catalog yet.{' '}
-                <Link to="/education#competitive-exams">See the education overview →</Link>
+                <Link to="/programs?type=EXAM_PREP">Browse exam prep programmes →</Link>
               </p>
             ) : (
               <div className="exams-v1-program-grid">
@@ -129,11 +129,8 @@ export default function ExamsPage() {
                       <em>{program.duration}</em>
                     </Link>
                   ))}
-                  <Link className="exams-v1-program-all" to="/education#competitive-exams">
-                    Education · competitive exams →
-                  </Link>
-                  <Link className="exams-v1-program-all" to="/programs">
-                    Browse all programmes →
+                  <Link className="exams-v1-program-all" to="/programs?type=EXAM_PREP">
+                    Browse exam prep programmes →
                   </Link>
                 </div>
               </div>
@@ -170,16 +167,16 @@ export default function ExamsPage() {
           <div className="exams-v1-inner">
             <div className="home-section-label"><span />Next</div>
             <h2 id="exams-cta-heading">Pick a programme. Start the loop.</h2>
-            <p>Or read the broader education overview for competitive exams.</p>
+            <p>Stay in Exams — open a listed prep programme or browse the exam catalogue.</p>
             <div className="exams-v1-hero-actions">
               <Link
                 className="home-light-button"
-                to={FEATURED ? `/programs/${FEATURED.slug}` : '/programs'}
+                to={FEATURED ? `/programs/${FEATURED.slug}` : '/programs?type=EXAM_PREP'}
               >
                 Open prep programme <span aria-hidden="true">↗</span>
               </Link>
-              <Link className="home-secondary-button exams-v1-cta-secondary" to="/education#competitive-exams">
-                Education overview
+              <Link className="home-secondary-button exams-v1-cta-secondary" to="/programs?type=EXAM_PREP">
+                Exam prep catalogue
               </Link>
             </div>
           </div>

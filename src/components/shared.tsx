@@ -178,25 +178,13 @@ export function JobDrawer({ job, onClose, onApply }: { job: Job; onClose: () => 
 // ─── NAV (with mega menu) ─────────────────────────────────────────────────────
 const megaMenu = [
   {
-    label: 'Education',
-    to: '/education',
-    tagline: 'From schooling to postgraduate',
-    items: [
-      { label: 'Junior', sub: 'Class 1–12 schooling', to: '/junior' },
-      { label: 'Degrees', sub: 'Undergraduate & postgraduate pathways', to: '/degrees' },
-      { label: 'Undergraduate', sub: 'Degree-aligned programs', to: '/education#undergraduate' },
-      { label: 'Postgraduate', sub: 'Advanced specialisation', to: '/education#postgraduate' },
-    ],
-  },
-  {
-    label: 'Skills',
+    label: 'Learn',
     to: '/skills',
-    tagline: 'From learning to employability',
+    tagline: 'Professional, certificate, and short courses',
     items: [
-      { label: 'Webinars', sub: 'Live expert-led sessions', to: '/workshops' },
-      { label: 'Certificate Programs', sub: 'Focused, credentialed skills', to: '/programs' },
-      { label: 'Professional Programs', sub: 'Career-ready — includes Career OS', to: '/programs' },
-      { label: 'Job Assistance', sub: 'Career next steps from skills', to: '/skills#job-assistance' },
+      { label: 'Professional Programs', sub: 'Career-ready skills programmes', to: '/programs?type=PROFESSIONAL' },
+      { label: 'Certificate Programs', sub: 'Focused, credentialed skills', to: '/programs?type=CERTIFICATE' },
+      { label: 'Short Courses / Webinars', sub: 'Live expert-led sessions', to: '/workshops' },
     ],
   },
   {
@@ -204,28 +192,51 @@ const megaMenu = [
     to: '/exams',
     tagline: 'Diagnose, practice, improve, perform',
     items: [
-      { label: 'Exam Prep', sub: 'Competitive exam performance loop', to: '/exams' },
-      { label: 'Browse Prep Programs', sub: 'Listed exam-prep programs in catalog', to: '/programs' },
+      { label: 'JEE', sub: 'JEE Advanced preparation', to: '/programs/jee-advanced-prep' },
+      { label: 'CAT', sub: 'CAT preparation', to: '/programs/cat-prep' },
+      { label: 'NEET / Other Exams', sub: 'Not published in the live catalog yet', to: '/exams' },
     ],
   },
   {
-    label: 'Career OS',
-    to: '/career-os',
-    tagline: 'Profile, jobs, and applications',
+    label: 'Schooling',
+    to: '/junior',
+    tagline: 'Class 1–12, curiosity-led',
     items: [
-      { label: 'Interview Preparation', sub: 'Mock interviews & practice', to: '/career-os/interviews' },
-      { label: 'Job Board', sub: 'Curated opportunities', to: '/career-os/jobs' },
+      { label: 'Class 1–5', sub: 'Primary foundations', to: '/junior#primary' },
+      { label: 'Class 6–8', sub: 'Middle school depth', to: '/junior#middle' },
+      { label: 'Class 9–10', sub: 'Secondary / board-aware', to: '/junior#secondary' },
+      { label: 'Class 11–12', sub: 'Senior secondary pathways', to: '/junior#senior' },
     ],
   },
   {
-    label: 'For Institutions',
+    label: 'University',
+    to: '/degrees',
+    tagline: 'Undergraduate and postgraduate pathways',
+    items: [
+      { label: 'Undergraduate', sub: 'Degree-aligned learner pathways', to: '/degrees#degrees-undergrad' },
+      { label: 'Postgraduate', sub: 'Advanced specialisation', to: '/degrees#degrees-postgrad' },
+    ],
+  },
+  {
+    label: 'Career',
+    to: '/career',
+    tagline: 'CareerOS, jobs, and interview prep',
+    items: [
+      { label: 'CareerOS', sub: 'Signed-in career workspace', to: '/career-os' },
+      { label: 'Jobs', sub: 'Signed-in job board', to: '/career-os/jobs' },
+      { label: 'Interview Preparation', sub: 'Signed-in interview practice', to: '/career-os/interviews' },
+    ],
+  },
+  {
+    label: 'Institutions',
     to: '/institutions',
-    tagline: 'Dashboards for schools and colleges',
+    tagline: 'Schools, colleges, universities, and OS',
     items: [
-      { label: 'Schools', sub: 'Student learning & teacher tools', to: '/institutions' },
-      { label: 'Colleges', sub: 'Academic programs & career readiness', to: '/institutions' },
-      { label: 'Universities', sub: 'Curriculum, LMS & student lifecycle', to: '/institutions' },
-      { label: 'Skill Institutions', sub: 'Programs, batches & certification', to: '/institutions' },
+      { label: 'Schools', sub: 'K–12 partnership model', to: '/institutions#schools' },
+      { label: 'Colleges', sub: 'Degree college partnership model', to: '/institutions#colleges' },
+      { label: 'Universities', sub: 'Multi-program institutional model', to: '/institutions#universities' },
+      { label: 'Training Organisations', sub: 'Skill & training partnership model', to: '/institutions#skill-institutions' },
+      { label: 'Skylent OS', sub: 'Institution platform gateway', to: '/os' },
     ],
   },
 ]
@@ -477,10 +488,46 @@ export function Nav() {
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
 export function Footer() {
   const cols = [
-    { heading: 'Education', links: [['Overview', '/education'], ['Junior', '/junior'], ['Degrees', '/degrees'], ['Exams', '/exams']] },
-    { heading: 'Skills', links: [['Overview', '/skills'], ['Webinars', '/workshops'], ['Certificate Programs', '/programs'], ['Professional Programs', '/programs'], ['Job Assistance', '/skills#job-assistance']] },
-    { heading: 'Career OS', links: [['Overview', '/career-os'], ['Interview Prep', '/career-os/interviews'], ['Job Board', '/career-os/jobs'], ['Skylent OS', '/os']] },
-    { heading: 'Company', links: [['About', '/about'], ['For Institutions', '/institutions'], ['Stories', '/stories'], ['Blog', '/blog'], ['Contact', '/contact']] },
+    {
+      heading: 'Destinations',
+      links: [
+        ['Learn', '/skills'],
+        ['Exams', '/exams'],
+        ['Schooling', '/junior'],
+        ['University', '/degrees'],
+        ['Career', '/career'],
+        ['Institutions', '/institutions'],
+      ],
+    },
+    {
+      heading: 'Learn & Exams',
+      links: [
+        ['Professional Programs', '/programs?type=PROFESSIONAL'],
+        ['Certificate Programs', '/programs?type=CERTIFICATE'],
+        ['Short Courses / Webinars', '/workshops'],
+        ['JEE', '/programs/jee-advanced-prep'],
+        ['CAT', '/programs/cat-prep'],
+      ],
+    },
+    {
+      heading: 'Career',
+      links: [
+        ['Career overview', '/career'],
+        ['CareerOS', '/career-os'],
+        ['Jobs', '/career-os/jobs'],
+        ['Interview Prep', '/career-os/interviews'],
+      ],
+    },
+    {
+      heading: 'Company',
+      links: [
+        ['About', '/about'],
+        ['Stories', '/stories'],
+        ['Blog', '/blog'],
+        ['Contact', '/contact'],
+        ['Skylent OS', '/os'],
+      ],
+    },
   ]
   return (
     <footer className="skylent-site-footer" style={{ background: C.warmWhite, padding: `${T.sectionSm} ${T.gutter} 32px`, position: 'relative', borderTop: `1px solid ${T.lineLight}` }}>

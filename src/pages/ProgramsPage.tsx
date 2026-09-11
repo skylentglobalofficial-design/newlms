@@ -1,5 +1,5 @@
-import { useMemo, useState, type CSSProperties } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
 import {
   Button, T, Eyebrow, Section, SectionHeader, CTABand, Heading,
@@ -14,6 +14,25 @@ import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
 
 const accent = getDomainAccent('general')
 const careerAccent = getDomainAccent('career')
+
+type Pillar = 'All' | 'Education' | 'Skills' | 'Exams' | 'Career'
+
+const PROGRAM_TYPE_VALUES: ProgramType[] = [
+  'PROFESSIONAL',
+  'CERTIFICATE',
+  'WEBINAR',
+  'EXAM_PREP',
+  'SCHOOLING',
+  'UNDERGRADUATE',
+  'POSTGRADUATE',
+]
+
+function pillarForProgramType(type: ProgramType): Pillar {
+  if (type === 'EXAM_PREP') return 'Exams'
+  if (type === 'SCHOOLING' || type === 'UNDERGRADUATE' || type === 'POSTGRADUATE') return 'Education'
+  if (type === 'WEBINAR' || type === 'CERTIFICATE' || type === 'PROFESSIONAL') return 'Skills'
+  return 'All'
+}
 
 const TYPE_LABELS: Record<ProgramType, string> = {
   PROFESSIONAL: 'Professional Program',
@@ -40,8 +59,6 @@ const PROGRAM_TYPE_THEME: Record<ProgramType, AuroraThemeId> = {
   UNDERGRADUATE: 'undergraduate',
   POSTGRADUATE: 'postgraduate',
 }
-
-type Pillar = 'All' | 'Education' | 'Skills' | 'Exams' | 'Career'
 
 const FEATURED_SLUG = 'data-science-ai'
 
@@ -620,7 +637,7 @@ function DecisionSupportSection() {
   const paths = [
     { label: 'Education', desc: 'Structured academic pathways from school to postgraduate.', to: '/education', accent: getDomainAccent('schooling') },
     { label: 'Skills', desc: 'Practical, career-focused learning and credentials.', to: '/skills', accent: getDomainAccent('professional') },
-    { label: 'Exams', desc: 'Preparation and practice for competitive exams.', to: '/education#competitive-exams', accent: getDomainAccent('jee') },
+    { label: 'Exams', desc: 'Preparation and practice for competitive exams.', to: '/exams', accent: getDomainAccent('jee') },
     { label: 'Career', desc: 'Profile, applications, interview prep, and jobs.', to: '/career-os', accent: getDomainAccent('career') },
   ]
 
@@ -667,6 +684,7 @@ function DecisionSupportSection() {
 export default function ProgramsPage() {
   const catalog = useCatalogPrograms()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const [pillar, setPillar] = useState<Pillar>('All')
   const [type, setType] = useState<'All' | ProgramType>('All')
   const [level, setLevel] = useState('All')
@@ -686,6 +704,14 @@ export default function ProgramsPage() {
     { value: 'POSTGRADUATE', label: 'Postgraduate' },
   ]
   const typeOptions = allTypeOptions.filter(opt => opt.value === 'All' || programs.some(p => p.programType === opt.value))
+
+  useEffect(() => {
+    const raw = searchParams.get('type')?.toUpperCase()
+    if (!raw || !(PROGRAM_TYPE_VALUES as string[]).includes(raw)) return
+    const nextType = raw as ProgramType
+    setType(nextType)
+    setPillar(pillarForProgramType(nextType))
+  }, [searchParams])
 
   const filtered = useMemo(() => programs.filter(p => {
     if (pillar === 'Exams' && p.programType !== 'EXAM_PREP') return false

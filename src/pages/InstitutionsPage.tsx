@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
 import { Section, SectionHeader, Button, Eyebrow, CTABand, T, Heading } from '../components/ui'
 import { Aurora, MediaImage, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
@@ -153,6 +153,7 @@ function InstitutionTypesSection({
               return (
                 <button
                   key={t.id}
+                  id={t.id}
                   type="button"
                   onClick={() => setActiveType(t.id)}
                   style={{
@@ -166,6 +167,7 @@ function InstitutionTypesSection({
                     padding: '14px 16px',
                     cursor: 'pointer',
                     fontFamily: 'var(--font-body)',
+                    scrollMarginTop: T.navH + 24,
                   }}
                 >
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: selected ? 600 : 400, color: selected ? C.white : 'rgba(255,255,255,0.55)' }}>
@@ -365,8 +367,17 @@ function EnquiriesSection() {
 
 export default function InstitutionsPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [activeType, setActiveType] = useState<string>('colleges')
   const activeSection = useSectionSpy(INSTITUTION_NAV_ITEMS.map(i => i.id))
+
+  useEffect(() => {
+    const hash = location.hash.replace(/^#/, '')
+    if (!hash) return
+    if (institutionTypes.some(t => t.id === hash)) {
+      setActiveType(hash)
+    }
+  }, [location.hash])
 
   return (
     <PageShell auroraTheme="institution">
