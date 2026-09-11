@@ -317,14 +317,14 @@ export default function ProgramPage() {
                     <p className="panel-note">The brochure describes an 18-module machine-learning path. The live workspace today is Data Analytics plus Python for Data Science.</p>
                   ) : null}
                 </PdpBlock>
-              ) : enrollStatus === 'open' ? (
+              ) : (
                 <PdpBlock title="Live learning workspace">
                   <EmptyState
-                    title="LMS not linked yet"
-                    description="This programme is in the catalogue, but a live course workspace is not published. Enrolment stays unavailable until that link exists."
+                    title="Not in the live LMS yet"
+                    description="This programme is listed as coming soon. The outline below is planned curriculum, not a published course you can enrol into today."
                   />
                 </PdpBlock>
-              ) : null}
+              )}
 
               {program.whoIsItFor?.length ? (
                 <PdpBlock id="who" title="Who it is for">

@@ -32,12 +32,6 @@ const collaborationModel = [
   },
 ]
 
-const examplePrograms = [
-  { name: 'B.Sc. Data Science', dur: '3 years', focus: 'Analytics pathway with project portfolio' },
-  { name: 'PG Diploma in AI', dur: '1 year', focus: 'Applied ML with faculty-reviewed projects' },
-  { name: 'MBA Tech', dur: '2 years', focus: 'Product and technology management cases' },
-]
-
 export default function UniversitiesPage() {
   const navigate = useNavigate()
 
@@ -57,9 +51,12 @@ export default function UniversitiesPage() {
                 Curriculum design, delivery infrastructure, assessment, and career readiness — structured for multi-department universities.
               </p>
               <p style={{ color: 'rgba(255,255,255,0.32)', fontSize: 13, lineHeight: 1.65, maxWidth: 520, margin: '0 0 28px' }}>
-                Illustrative program examples below. No partner university names or placement statistics are published here.
+                Undergraduate and postgraduate catalogues stay empty until real degrees are published. Partner university names are not listed here.
               </p>
-              <Button variant="primary" onClick={() => navigate('/contact')}>Talk to partnerships</Button>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+                <Button variant="primary" onClick={() => navigate('/contact')}>Talk to partnerships</Button>
+                <Button variant="secondary" onClick={() => navigate('/degrees')}>Open University</Button>
+              </div>
             </FadeIn>
             <FadeIn delay={80}>
               <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', minHeight: 320 }}>
@@ -75,7 +72,7 @@ export default function UniversitiesPage() {
           <SectionHeader
             tone="dark"
             eyebrow="Collaboration model"
-            title="From academic design<br />to career handoff."
+            title={<>From academic design<br />to career handoff.</>}
             lead="A delivery model for universities — not a student course catalog."
           />
         </FadeIn>
@@ -121,21 +118,15 @@ export default function UniversitiesPage() {
         <FadeIn>
           <SectionHeader
             tone="dark"
-            eyebrow="Illustrative programs"
-            title="Example university pathways."
-            lead="Sample listings for product exploration — not verified partnerships or live enrollments."
+            eyebrow="Degree catalogue"
+            title="No university programmes are published yet."
+            lead="Degrees, departments, and campuses appear when they exist. Placeholder B.Sc., MBA, or diploma titles are not listed here."
           />
         </FadeIn>
-        <div style={{ marginTop: 36, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }} className="three-col">
-          {examplePrograms.map((p, i) => (
-            <FadeIn key={p.name} delay={i * 40}>
-              <GlassSurface level={2} padding="22px 24px">
-                <span className="skylent-label" style={{ color: 'rgba(255,255,255,0.32)', display: 'block', marginBottom: 12 }}>{p.dur} · example</span>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.white, margin: '0 0 8px' }}>{p.name}</h3>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{p.focus}</p>
-              </GlassSurface>
-            </FadeIn>
-          ))}
+        <div style={{ marginTop: 28 }}>
+          <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.7, maxWidth: 640 }}>
+            The University destination at <span style={{ fontFamily: 'var(--font-mono)' }}>/degrees</span> stays open as its own product. This page is for institutional partnership, not a student course catalog.
+          </p>
         </div>
       </Section>
 

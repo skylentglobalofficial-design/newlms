@@ -1,6 +1,7 @@
 import "dotenv/config"
 import { PrismaClient } from "@prisma/client"
 import { courses, programs, workshops } from "../src/data.js"
+import { expectedCourseSlugsForProgram } from "../src/lib/program-lms-map.js"
 
 const prisma = new PrismaClient()
 
@@ -81,6 +82,20 @@ async function main() {
           `Program "${program.slug}" has a live enrollment CTA but no ProgramCourse linkage in DB`,
         )
       }
+      const expected = expectedCourseSlugsForProgram(program.slug)
+      if (liveStatic && liveDb && expected.length > 0) {
+        const actual = [...linked].sort()
+        const wanted = [...expected].sort()
+        if (actual.join(",") !== wanted.join(",")) {
+          failures.push(
+            `Program "${program.slug}" LMS mapping mismatch. expected [${wanted.join(", ")}] got [${actual.join(", ")}]`,
+          )
+        }
+      }
+    } else if (linked.length > 0) {
+      failures.push(
+        `Coming-soon program "${program.slug}" should not have ProgramCourse links until the LMS path is published`,
+      )
     }
   }
 

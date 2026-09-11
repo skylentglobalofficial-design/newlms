@@ -41,17 +41,17 @@
   /* ── Skylent Glass System ───────────────────────────────────────────────── */
   --glass-01-bg: rgba(255, 253, 250, 0.9);
   --glass-01-border: rgba(8, 9, 9, 0.1);
-  --glass-01-blur: blur(16px);
+  --glass-01-blur: blur(8px);
   --glass-01-shadow: 0 4px 24px rgba(8, 9, 9, 0.08);
 
   --glass-02-bg: rgba(255, 253, 250, 0.96);
   --glass-02-border: rgba(8, 9, 9, 0.1);
-  --glass-02-blur: blur(16px);
+  --glass-02-blur: blur(8px);
   --glass-02-shadow: 0 8px 48px rgba(8, 9, 9, 0.08);
 
   --glass-03-bg: rgba(255, 253, 250, 0.98);
   --glass-03-border: rgba(8, 9, 9, 0.08);
-  --glass-03-blur: blur(28px);
+  --glass-03-blur: blur(12px);
   --glass-03-shadow: 0 24px 80px rgba(8, 9, 9, 0.12);
 }
 
@@ -1441,7 +1441,6 @@ html, body {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  backdrop-filter: blur(20px);
 }
 
 .lms-sidebar-overlay {

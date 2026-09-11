@@ -1,5 +1,6 @@
 import "dotenv/config"
 import { PrismaClient, RoleName } from "@prisma/client"
+import { LocalArtifactStorage, StorageError } from "../server/src/lib/object-storage.js"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
@@ -52,6 +53,40 @@ async function request(
   return { response, data }
 }
 
+async function requestMultipart(
+  jar: CookieJar,
+  path: string,
+  file: { name: string; type: string; bytes: Buffer },
+) {
+  const boundary = `----skylent${Date.now()}${Math.random().toString(16).slice(2)}`
+  const prefix = Buffer.from(
+    `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="${file.name}"\r\nContent-Type: ${file.type}\r\n\r\n`,
+  )
+  const suffix = Buffer.from(`\r\n--${boundary}--\r\n`)
+  const body = Buffer.concat([prefix, file.bytes, suffix])
+  const headers: Record<string, string> = {
+    "Content-Type": `multipart/form-data; boundary=${boundary}`,
+    "X-CSRF-Token": jar.get("csrf") ?? "",
+  }
+  const cookie = cookieHeader(jar)
+  if (cookie) headers.Cookie = cookie
+
+  const response = await fetch(`${API_BASE}${path}`, { method: "POST", headers, body })
+  parseSetCookie(response.headers.getSetCookie?.() ?? [], jar)
+  const text = await response.text()
+  let data: unknown = null
+  try {
+    data = text ? JSON.parse(text) : null
+  } catch {
+    data = text
+  }
+  return { response, data }
+}
+
+function pdfFixture() {
+  return Buffer.from("%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n")
+}
+
 function assert(condition: unknown, message: string) {
   if (!condition) throw new Error(message)
 }
@@ -79,10 +114,10 @@ async function completeLesson(jar: CookieJar, courseSlug: string, lessonKey: str
   return result.data
 }
 
-async function grantRole(email: string, role: "faculty" | "organisation", organisationSlug = "apex-college") {
+async function grantRole(email: string, role: "faculty" | "organisation" | "admin", organisationSlug = "apex-college") {
   const user = await prisma.user.findUnique({ where: { email } })
   assert(user, `User ${email} not found`)
-  const roleName = role === "faculty" ? RoleName.FACULTY : RoleName.ORGANISATION_ADMIN
+  const roleName = role === "faculty" ? RoleName.FACULTY : role === "admin" ? RoleName.ADMIN : RoleName.ORGANISATION_ADMIN
   const roleRecord = await prisma.role.upsert({
     where: { name: roleName },
     update: {},
@@ -235,7 +270,7 @@ async function main() {
   assert(attempt.response.status === 201, "Quiz attempt should persist")
   assert(attempt.data.data.passed === true, "Correct answers should pass quiz")
 
-  console.log("13. Assignment state persists with optional attachment metadata")
+  console.log("13. Assignment text submit persists without fake attachment metadata")
   await completeLesson(userAJar, courseSlug, "l5")
   const assignmentSubmit = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
     method: "POST",
@@ -266,10 +301,15 @@ async function main() {
     include: { attachments: true },
   })
   assert(assignmentRow, "Assignment progress should exist in database")
-  assert(assignmentRow.attachments.length === 1, "Attachment metadata should be stored")
-  assert(assignmentRow.attachments[0].storageProvider === "pending", "Storage provider should be server-controlled pending")
-  assert(assignmentRow.attachments[0].storageKey.startsWith("pending/"), "Storage key should be server-generated")
-  assert(!assignmentRow.attachments[0].storageKey.includes("data-analytics/l6"), "Client must not choose storage key")
+  assert(assignmentRow.attachments.length === 0, "JSON attachment metadata must not create stored files")
+
+  const evidence = await prisma.careerProject.findFirst({
+    where: { sourceRef: `lms_assignment:${assignmentRow.enrollmentId}:l6` },
+  })
+  assert(evidence, "LMS assignment should create Career OS evidence")
+  assert(evidence.sourceKind === "lms_assignment", "Evidence source should be lms_assignment")
+  assert(/not employer-verified/i.test(evidence.description ?? ""), "Evidence should state it is not employer-verified")
+  assert(/does not mean the learner is placed or job-ready/i.test(evidence.description ?? ""), "Evidence should refuse placement and job-ready claims")
 
   console.log("14. Program enrollment resolves course access correctly")
   const programJar: CookieJar = new Map()
@@ -346,7 +386,7 @@ async function main() {
   const outsiderOrg = await request(outsiderJar, "/organisation/dashboard")
   assert(outsiderOrg.response.status === 403, "Non-member must not access organisation dashboard")
 
-  console.log("19. Attachment storage provider/key are server-owned")
+  console.log("19. JSON cannot inject storage keys; real uploads persist and are owner-only")
   const attachmentJar: CookieJar = new Map()
   const attachmentUser = await signupUser(attachmentJar, "attachment")
   await request(attachmentJar, "/lms/enrollments", {
@@ -355,14 +395,30 @@ async function main() {
     body: { courseSlug },
   })
   for (const lessonKey of ["l1", "l2", "l3", "l4", "l5"]) {
-    await completeLesson(attachmentJar, courseSlug, lessonKey)
+    if (lessonKey === "l3") {
+      const quizNode = await prisma.curriculumNode.findFirst({
+        where: { sourceId: "l3", module: { courseId: course.id } },
+      })
+      assert(quizNode, "Quiz node l3 should exist")
+      const questions = await prisma.quizQuestion.findMany({
+        where: { nodeId: quizNode.id },
+        orderBy: { sortOrder: "asc" },
+      })
+      await request(attachmentJar, `/lms/courses/${courseSlug}/lessons/l3/quiz/attempts`, {
+        method: "POST",
+        csrf: true,
+        body: { answers: questions.map((q) => q.correctIndex) },
+      })
+    } else {
+      await completeLesson(attachmentJar, courseSlug, lessonKey)
+    }
   }
-  const maliciousAttachment = await request(attachmentJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+
+  const jsonInjection = await request(attachmentJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
     method: "POST",
     csrf: true,
     body: {
       action: "submit",
-      responseText: "Attachment metadata only.",
       attachments: [
         {
           fileName: "report.pdf",
@@ -374,20 +430,177 @@ async function main() {
       ],
     },
   })
-  assert(maliciousAttachment.response.ok, "Attachment submit with extra fields should still succeed using server-owned storage metadata")
+  assert(jsonInjection.response.status === 400, "Submit without stored file or text should fail")
 
-  const attachmentUserRow = await prisma.user.findUnique({ where: { email: attachmentUser.email } })
-  assert(attachmentUserRow, "Attachment test user should exist")
-  const maliciousRow = await prisma.assignmentProgress.findFirst({
-    where: { userId: attachmentUserRow.id, status: "submitted" },
-    include: { attachments: true },
-    orderBy: { updatedAt: "desc" },
+  const upload = await requestMultipart(
+    attachmentJar,
+    `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments`,
+    { name: "report.pdf", type: "application/pdf", bytes: pdfFixture() },
+  )
+  assert(upload.response.status === 201, `Upload should succeed: ${JSON.stringify(upload.data)}`)
+  const attachmentId = (upload.data as { data?: { attachment?: { id?: string } } }).data?.attachment?.id
+  assert(attachmentId, "Upload should return attachment id")
+  assert(!JSON.stringify(upload.data).includes("storageKey"), "Upload JSON must not expose storageKey")
+  const storageKey = (await prisma.assignmentAttachment.findUnique({ where: { id: attachmentId } }))?.storageKey
+  assert(storageKey && /^[a-f0-9]{64}$/.test(storageKey), "Storage key must be an opaque hex id")
+  assert(!storageKey.includes("report.pdf"), "Storage key must not include the filename")
+
+  try {
+    await new LocalArtifactStorage().get("../etc/passwd")
+    assert(false, "Path-like storage keys must be rejected")
+  } catch (error) {
+    assert(error instanceof StorageError, "Invalid storage keys should raise StorageError")
+  }
+
+  const htmlMime = await requestMultipart(
+    attachmentJar,
+    `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments`,
+    { name: "report.pdf", type: "text/html", bytes: pdfFixture() },
+  )
+  assert(htmlMime.response.status === 400, "text/html declared MIME must be rejected")
+
+  const exeUpload = await requestMultipart(
+    attachmentJar,
+    `/lms/courses/${courseSlug}/lessons/l6/assignment/attachments`,
+    { name: "payload.exe", type: "application/octet-stream", bytes: Buffer.from("MZ this is not an artifact") },
+  )
+  assert(exeUpload.response.status === 400, "Executables must be rejected")
+
+  const submitted = await request(attachmentJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "submit", responseText: "Workbook attached." },
   })
-  assert(maliciousRow, "Malicious attachment submission should persist")
-  assert(maliciousRow.attachments.length === 1, "Attachment metadata should be stored")
-  assert(maliciousRow.attachments[0].storageProvider === "pending", "Client cannot set storage provider")
-  assert(maliciousRow.attachments[0].storageKey.startsWith("pending/"), "Storage key must be server-generated")
-  assert(!maliciousRow.attachments[0].storageKey.includes("attacker/owned"), "Client cannot inject storage key")
+  assert(submitted.response.ok, "Submit after real upload should succeed")
+
+  const download = await fetch(
+    `${API_BASE}/lms/courses/${courseSlug}/lessons/l6/assignment/attachments/${attachmentId}`,
+    { headers: { Cookie: cookieHeader(attachmentJar) } },
+  )
+  assert(download.ok, "Owner should download their artifact")
+  assert(download.headers.get("content-type")?.includes("pdf"), "Download should use stored MIME")
+  const downloaded = Buffer.from(await download.arrayBuffer())
+  assert(downloaded.subarray(0, 4).toString() === "%PDF", "Downloaded bytes should match the stored PDF")
+
+  const outsiderDownload = await fetch(
+    `${API_BASE}/lms/courses/${courseSlug}/lessons/l6/assignment/attachments/${attachmentId}`,
+    { headers: { Cookie: cookieHeader(userBJar) } },
+  )
+  assert(outsiderDownload.status === 404 || outsiderDownload.status === 403, "Non-owner must not download another learner artifact")
+
+  const learnerFacultyDownload = await fetch(`${API_BASE}/faculty/attachments/${attachmentId}`, {
+    headers: { Cookie: cookieHeader(attachmentJar) },
+  })
+  assert(learnerFacultyDownload.status === 403, "Learners must not use the faculty attachment route")
+
+  const facultyJar: CookieJar = new Map()
+  const facultyUser = await signupUser(facultyJar, "faculty-review")
+  await grantRole(facultyUser.email, "faculty")
+  const facultyDownload = await fetch(`${API_BASE}/faculty/attachments/${attachmentId}`, {
+    headers: { Cookie: cookieHeader(facultyJar) },
+  })
+  assert(facultyDownload.status === 403, "Faculty without teaching scope must not download artifacts")
+
+  const adminJar: CookieJar = new Map()
+  const adminUser = await signupUser(adminJar, "admin-review")
+  await grantRole(adminUser.email, "admin")
+  const adminDash = await request(adminJar, "/faculty/dashboard")
+  assert(adminDash.response.ok, "Superadmin faculty dashboard should load")
+  assert(!JSON.stringify(adminDash.data).includes("storageKey"), "Faculty dashboard must not expose storageKey")
+  const adminDownload = await fetch(`${API_BASE}/faculty/attachments/${attachmentId}`, {
+    headers: { Cookie: cookieHeader(adminJar) },
+  })
+  assert(adminDownload.ok, "Superadmin should download a stored artifact for review")
+  const adminBytes = Buffer.from(await adminDownload.arrayBuffer())
+  assert(adminBytes.subarray(0, 4).toString() === "%PDF", "Faculty download should return the stored PDF")
+
+  console.log("20. Coming-soon programmes cannot enroll into a missing LMS")
+  const soonJar: CookieJar = new Map()
+  await signupUser(soonJar, "soon")
+  const soonEnroll = await request(soonJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { programSlug: "sql-certificate" },
+  })
+  assert(soonEnroll.response.status === 400, "sql-certificate enrollment must be rejected")
+
+  await request(soonJar, "/auth/csrf")
+  const interest = await request(soonJar, "/catalog/programs/sql-certificate/interest", {
+    method: "POST",
+    csrf: true,
+    body: { email: `interest-${Date.now()}@example.com`, name: "SQL waiter" },
+  })
+  assert(interest.response.status === 201 || interest.response.ok, `Interest registration should persist: ${JSON.stringify(interest.data)}`)
+
+  const contact = await request(soonJar, "/catalog/contact", {
+    method: "POST",
+    csrf: true,
+    body: { name: "SQL waiter", email: `contact-${Date.now()}@example.com`, message: "When does SQL certificate launch?" },
+  })
+  assert(contact.response.status === 201 || contact.response.ok, `Contact should persist: ${JSON.stringify(contact.data)}`)
+  assert(typeof (contact.data as { data?: { id?: string } }).data?.id === "string", "Contact should return an id")
+
+  console.log("21. Completing a course issues a certificate with ownership checks")
+  const certJar: CookieJar = new Map()
+  const certUser = await signupUser(certJar, "cert")
+  await request(certJar, "/lms/enrollments", { method: "POST", csrf: true, body: { courseSlug } })
+
+  const nodes = await prisma.curriculumNode.findMany({
+    where: { module: { courseId: course.id } },
+    include: { module: true, quizQuestions: { orderBy: { sortOrder: "asc" } } },
+    orderBy: [{ module: { order: "asc" } }, { order: "asc" }],
+  })
+  for (const node of nodes) {
+    const key = node.sourceId
+    if (!key) continue
+    if (node.nodeType === "QUIZ") {
+      const attempt = await request(certJar, `/lms/courses/${courseSlug}/lessons/${key}/quiz/attempts`, {
+        method: "POST",
+        csrf: true,
+        body: { answers: node.quizQuestions.map((q) => q.correctIndex) },
+      })
+      assert(attempt.response.status === 201 || attempt.response.ok, `Quiz ${key} should pass: ${JSON.stringify(attempt.data)}`)
+    } else if (node.nodeType === "ASSIGNMENT") {
+      const result = await request(certJar, `/lms/courses/${courseSlug}/lessons/${key}/assignment`, {
+        method: "POST",
+        csrf: true,
+        body: { action: "submit", responseText: `Submission for ${key}` },
+      })
+      assert(result.response.ok, `Assignment ${key} should submit: ${JSON.stringify(result.data)}`)
+    } else {
+      await completeLesson(certJar, courseSlug, key)
+    }
+  }
+
+  const certState = await request(certJar, `/lms/courses/${courseSlug}/certificate`)
+  assert(certState.response.ok, "Certificate state should load")
+  assert(certState.data.data.certificate?.publicId, "Completed course should issue a certificate record")
+  const publicId = certState.data.data.certificate.publicId as string
+  assert(/^SKY-[A-F0-9]{24}$/.test(publicId), "Certificate public id format")
+
+  const pdf = await fetch(`${API_BASE}/lms/courses/${courseSlug}/certificate/file`, {
+    headers: { Cookie: cookieHeader(certJar) },
+  })
+  assert(pdf.ok, "Owner should download the certificate PDF")
+  const pdfBytes = Buffer.from(await pdf.arrayBuffer())
+  assert(pdfBytes.subarray(0, 4).toString() === "%PDF", "Certificate download should be a PDF")
+
+  const stolen = await fetch(`${API_BASE}/lms/courses/${courseSlug}/certificate/file`, {
+    headers: { Cookie: cookieHeader(userBJar) },
+  })
+  assert(stolen.status === 403 || stolen.status === 404, "Non-owner must not download another learner certificate")
+
+  const verify = await request(anonJar, `/lms/certificates/${publicId}`)
+  assert(verify.response.ok, "Public verification should work with the certificate id")
+  assert(verify.data.data.publicId === publicId, "Verified certificate id should match")
+  assert(!JSON.stringify(verify.data).includes(certUser.email), "Public verification must not leak email")
+
+  const certRow = await prisma.courseCertificate.findUnique({ where: { publicId } })
+  assert(certRow, "Certificate row should exist")
+  const courseEvidence = await prisma.careerProject.findFirst({
+    where: { sourceRef: `lms_course:${certRow.enrollmentId}` },
+  })
+  assert(courseEvidence, "Course completion should create Career OS evidence")
 
   console.log("All LMS integration checks passed.")
   await prisma.$disconnect()

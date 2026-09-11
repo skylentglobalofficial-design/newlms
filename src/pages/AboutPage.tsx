@@ -442,7 +442,7 @@ function PlatformSection() {
 
   const surfaces = [
     { label: 'Education', desc: 'Schooling, undergraduate, postgraduate, and exam preparation products.', to: '/education', accent: getDomainAccent('schooling') },
-    { label: 'Skills', desc: 'Webinars, certificates, Professional Programs, and job assistance.', to: '/skills', accent: getDomainAccent('professional') },
+    { label: 'Skills', desc: 'Webinars, certificates, and Professional Programs.', to: '/skills', accent: getDomainAccent('professional') },
     { label: 'Career', desc: 'Career OS workspace for profile, prep, jobs, and applications.', to: '/career-os', accent: getDomainAccent('career') },
     { label: 'Institutions', desc: 'Partnership workflows for schools, colleges, and training institutes.', to: '/institutions', accent: getDomainAccent('institution') },
     { label: 'Programs', desc: 'The catalog connecting learners to every product surface.', to: '/programs', accent: accent },

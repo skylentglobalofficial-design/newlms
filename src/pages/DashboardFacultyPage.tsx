@@ -5,28 +5,7 @@ import { AuroraBand, GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
-import { fetchFacultyDashboard, type FacultyDashboard, type FacultySubmission } from '../lib/faculty-api'
-
-const TEACHING_COURSE_SLUG = 'data-analytics'
-
-const DEMO = {
-  moduleTitle: 'SQL for Analysis',
-  moduleIndex: 3,
-  moduleTotal: 18,
-  lessonTitle: 'Introduction to SQL',
-  sessionContext: 'Cohort A · Live session Thu 4:00 PM',
-  currentAssignment: 'SQL Query Assignment',
-  upcomingAssessment: 'SQL Module Quiz',
-  assessmentWhen: 'Next week',
-}
-
-const CURRICULUM_TEACHING_FALLBACK = [
-  { id: 'module', label: 'Module', detail: 'SQL for Analysis', status: 'complete' as const },
-  { id: 'lesson', label: 'Lesson', detail: 'Introduction to SQL', status: 'complete' as const },
-  { id: 'assignment', label: 'Assignment', detail: 'SQL Query Assignment', status: 'current' as const },
-  { id: 'assessment', label: 'Assessment', detail: 'SQL Module Quiz', status: 'upcoming' as const },
-  { id: 'review', label: 'Review', detail: 'Pending', status: 'upcoming' as const },
-]
+import { fetchFacultyDashboard, downloadFacultyAttachment, type FacultyDashboard, type FacultySubmission } from '../lib/faculty-api'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'faculty-overview' },
@@ -65,26 +44,20 @@ function NavIcon({ id }: { id: string }) {
 function FacultyWorkspace({
   courseName,
   courseContext,
-  moduleTitle,
-  moduleIndex,
-  moduleTotal,
-  lessonTitle,
-  sessionContext,
   nextAction,
   pendingCount,
-  professionalProgramCount,
+  catalogProgramCount,
+  teachingScopeAvailable,
+  teachingScopeMessage,
   onReview,
 }: {
   courseName: string
   courseContext: string
-  moduleTitle: string
-  moduleIndex: number
-  moduleTotal: number
-  lessonTitle: string
-  sessionContext: string
   nextAction: string
   pendingCount: number
-  professionalProgramCount: number
+  catalogProgramCount: number
+  teachingScopeAvailable: boolean
+  teachingScopeMessage: string | null
   onReview: () => void
 }) {
   return (
@@ -93,20 +66,17 @@ function FacultyWorkspace({
 
       <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 4vw, 36px)' }}>
         <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px', lineHeight: 1.1 }}>
-          What are you teaching today?
+          Teaching workspace
         </h1>
         <p style={{ color: C.slate, fontSize: 16, margin: '0 0 4px', lineHeight: 1.5 }}>
           {courseContext}
         </p>
-        <p style={{ color: C.slate, fontSize: 15, margin: '0 0 4px' }}>
-          {courseName} · {moduleTitle} · Module {moduleIndex}
+        <p style={{ color: C.slate, fontSize: 15, margin: '0 0 24px' }}>
+          {courseName}
         </p>
-        <p style={{ color: C.slate, fontSize: 14, margin: '0 0 4px' }}>
-          {lessonTitle}
-        </p>
-        <p style={{ color: C.slate, fontSize: 13, margin: '0 0 24px' }}>
-          {sessionContext}
-        </p>
+        {!teachingScopeAvailable && teachingScopeMessage ? (
+          <p style={{ color: C.slate, fontSize: 14, margin: '0 0 24px', lineHeight: 1.6 }}>{teachingScopeMessage}</p>
+        ) : null}
 
         <div style={{
           display: 'flex', flexWrap: 'wrap', gap: '16px 24px', alignItems: 'center',
@@ -118,29 +88,23 @@ function FacultyWorkspace({
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink }}>
               {pendingCount}
             </div>
-            <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>submissions waiting</div>
+            <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>submitted assignments</div>
           </div>
           <div style={{ flex: '1 1 120px', minWidth: 0 }}>
-            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Assigned programs</div>
-            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink }}>
-              {professionalProgramCount}
+            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>
+              {teachingScopeAvailable ? 'Catalogue programmes' : 'Assigned programmes'}
             </div>
-            <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>from catalog</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink }}>
+              {teachingScopeAvailable ? catalogProgramCount : 0}
+            </div>
+            <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>
+              {teachingScopeAvailable ? 'admin overview' : 'not modeled'}
+            </div>
           </div>
           <div style={{ flex: '1 1 140px', minWidth: 0 }}>
             <div style={{ color: C.slate, fontSize: 11, marginBottom: 6 }}>Cohort progress</div>
             <div style={{ color: C.slate, fontSize: 12 }}>—</div>
-            <div style={{ color: C.slate, fontSize: 10, marginTop: 4 }}>Requires cohort integration</div>
-          </div>
-          <div style={{ flexShrink: 0 }}>
-            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Module {moduleIndex} of {moduleTotal}</div>
-            <div style={{ color: C.slate, fontSize: 12 }}>{DEMO.currentAssignment}</div>
-          </div>
-        </div>
-
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ height: 4, background: 'rgba(11,13,15,0.08)', borderRadius: 2, overflow: 'hidden' }}>
-            <div style={{ width: `${(moduleIndex / moduleTotal) * 100}%`, height: '100%', background: accent.secondary, borderRadius: 2 }} />
+            <div style={{ color: C.slate, fontSize: 10, marginTop: 4 }}>Requires a cohort model</div>
           </div>
         </div>
 
@@ -160,7 +124,7 @@ function FacultyWorkspace({
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
           </button>
           <span style={{ color: C.slate, fontSize: 13 }}>
-            {DEMO.currentAssignment} · {pendingCount} submissions to review
+            {pendingCount} submission{pendingCount === 1 ? '' : 's'} waiting
           </span>
         </div>
       </div>
@@ -171,16 +135,24 @@ function FacultyWorkspace({
 // ─── CURRICULUM TEACHING PATH (Level 0 — canvas timeline) ─────────────────────
 
 function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curriculumSummary'] }) {
-  const curriculum = summary.length > 0
-    ? summary.map((node, index) => ({
-        id: `step-${index}`,
-        label: node.label,
-        detail: node.detail,
-        status: (node.status === 'complete' || node.status === 'current' || node.status === 'upcoming'
-          ? node.status
-          : 'upcoming') as 'complete' | 'current' | 'upcoming',
-      }))
-    : CURRICULUM_TEACHING_FALLBACK
+  if (summary.length === 0) {
+    return (
+      <div id="faculty-curriculum" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
+        <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+          No teaching curriculum is assigned to this account. Published course outlines appear here when faculty-to-course assignment exists.
+        </p>
+      </div>
+    )
+  }
+
+  const curriculum = summary.map((node, index) => ({
+    id: `step-${index}`,
+    label: node.label,
+    detail: node.detail,
+    status: (node.status === 'complete' || node.status === 'current' || node.status === 'upcoming'
+      ? node.status
+      : 'upcoming') as 'complete' | 'current' | 'upcoming',
+  }))
 
   return (
     <div id="faculty-curriculum" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
@@ -259,7 +231,7 @@ function AssignmentReview({
             Assignment review
           </div>
           <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, margin: 0 }}>
-            {featured?.lessonTitle ?? DEMO.currentAssignment}
+            {featured?.lessonTitle ?? 'Submitted assignments'}
           </h3>
         </div>
         <div style={{ display: 'flex', gap: 12, flexShrink: 0 }}>
@@ -287,25 +259,33 @@ function AssignmentReview({
                 </div>
                 <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>{formatSubmittedAt(row.submittedAt)}</div>
               </div>
-              <button
-                type="button"
-                onClick={onFocus}
-                style={{
-                  background: accent.subtle,
-                  border: `1px solid ${accent.border}`,
-                  color: accent.text,
-                  padding: '7px 14px',
-                  borderRadius: T.rControl,
-                  fontSize: 12,
-                  fontWeight: 500,
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-body)',
-                  whiteSpace: 'nowrap',
-                  flexShrink: 0,
-                }}
-              >
-                Review
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
+                {(row.attachments ?? []).map((file) => (
+                  <button
+                    key={file.id}
+                    type="button"
+                    onClick={() => void downloadFacultyAttachment(file.id, file.fileName)}
+                    style={{
+                      background: accent.subtle,
+                      border: `1px solid ${accent.border}`,
+                      color: accent.text,
+                      padding: '7px 14px',
+                      borderRadius: T.rControl,
+                      fontSize: 12,
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      fontFamily: 'var(--font-body)',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                    }}
+                  >
+                    Download {file.fileName}
+                  </button>
+                ))}
+                {row.attachmentCount === 0 ? (
+                  <span style={{ color: C.slate, fontSize: 12 }}>Text submission</span>
+                ) : null}
+              </div>
             </div>
           ))}
         </div>
@@ -341,48 +321,46 @@ function LearnerProgress({ dashboard }: { dashboard: FacultyDashboard | null }) 
 // ─── UPCOMING TEACHING (Level 0) ──────────────────────────────────────────────
 
 function UpcomingTeaching({ pendingCount }: { pendingCount: number }) {
-  const items = [
-    { type: 'session', title: DEMO.sessionContext, detail: DEMO.lessonTitle },
-    { type: 'assessment', title: DEMO.upcomingAssessment, detail: DEMO.assessmentWhen },
-    { type: 'assignment', title: DEMO.currentAssignment, detail: `${pendingCount} submissions pending review` },
-  ]
+  const items = pendingCount > 0
+    ? [{ title: 'Submitted assignments', detail: `${pendingCount} waiting for review` }]
+    : []
 
   return (
     <div style={canvasSectionStyle}>
       <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
-        Upcoming teaching
+        Review queue
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-        {items.map((item, i) => (
-          <div
-            key={item.title}
-            style={{
-              display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 14, alignItems: 'center',
-              padding: '14px 0',
-              borderBottom: i < items.length - 1 ? `1px solid ${T.lineLight}` : 'none',
-            }}
-          >
-            <div style={{
-              width: 32, height: 32, borderRadius: 6,
-              background: item.type === 'assessment' ? 'rgba(245,158,11,0.08)' : accent.subtle,
-              border: `1px solid ${item.type === 'assessment' ? 'rgba(245,158,11,0.2)' : accent.border}`,
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              {item.type === 'session' ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={accent.text} strokeWidth="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-              ) : item.type === 'assessment' ? (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" strokeWidth="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-              ) : (
+      {items.length === 0 ? (
+        <p style={{ color: C.slate, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
+          No live class times or quizzes are stored for this account. Upcoming sessions are not invented.
+        </p>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {items.map((item, i) => (
+            <div
+              key={item.title}
+              style={{
+                display: 'grid', gridTemplateColumns: 'auto 1fr', gap: 14, alignItems: 'center',
+                padding: '14px 0',
+                borderBottom: i < items.length - 1 ? `1px solid ${T.lineLight}` : 'none',
+              }}
+            >
+              <div style={{
+                width: 32, height: 32, borderRadius: 6,
+                background: accent.subtle,
+                border: `1px solid ${accent.border}`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={accent.text} strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              )}
+              </div>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</div>
+                <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{item.detail}</div>
+              </div>
             </div>
-            <div style={{ minWidth: 0 }}>
-              <div style={{ color: C.ink, fontSize: 14, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis' }}>{item.title}</div>
-              <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{item.detail}</div>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -392,40 +370,47 @@ function UpcomingTeaching({ pendingCount }: { pendingCount: number }) {
 function ClassesRail({
   programs,
   courses,
+  teachingScopeAvailable,
 }: {
   programs: FacultyDashboard['programs']
   courses: FacultyDashboard['courses']
+  teachingScopeAvailable: boolean
 }) {
-  const assignedPrograms = programs.filter(p => p.programType === 'PROFESSIONAL').slice(0, 4)
-  const teachingCourse = courses.find(c => c.slug === TEACHING_COURSE_SLUG) ?? courses[0]
+  const catalogPrograms = programs.filter(p => p.programType === 'PROFESSIONAL').slice(0, 4)
+  const teachingCourse = courses[0]
 
   return (
     <div style={{ ...canvasSectionStyle, marginTop: 20 }}>
       <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.12em', marginBottom: 18 }}>
-        Assigned programs & courses
+        {teachingScopeAvailable ? 'Catalogue overview' : 'Assigned programs & courses'}
       </div>
+      {!teachingScopeAvailable ? (
+        <p style={{ color: C.slate, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
+          Faculty-to-course assignment is not modeled, so this account has no teaching roster.
+        </p>
+      ) : (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-        {assignedPrograms.map((p, i) => (
+        {catalogPrograms.map((p, i) => (
           <div key={p.slug} style={{
             padding: '16px 0',
-            borderBottom: i < assignedPrograms.length - 1 ? `1px solid ${T.lineLight}` : 'none',
+            borderBottom: i < catalogPrograms.length - 1 ? `1px solid ${T.lineLight}` : 'none',
           }}>
             <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{p.name}</div>
             <div style={{ color: C.slate, fontSize: 12 }}>{p.duration} · {p.format}</div>
-            <div style={{ color: C.slate, fontSize: 11, marginTop: 6 }}>Cohort data —</div>
           </div>
         ))}
         {teachingCourse && (
-          <div style={{ padding: '16px 0', borderTop: assignedPrograms.length > 0 ? `1px solid ${T.lineLight}` : 'none', marginTop: assignedPrograms.length > 0 ? 8 : 0 }}>
+          <div style={{ padding: '16px 0', borderTop: catalogPrograms.length > 0 ? `1px solid ${T.lineLight}` : 'none', marginTop: catalogPrograms.length > 0 ? 8 : 0 }}>
             <div style={{ color: accent.text, fontSize: 10, letterSpacing: '0.08em', marginBottom: 6 }}>LMS course</div>
             <div style={{ color: C.ink, fontSize: 14, fontWeight: 600 }}>{teachingCourse.title}</div>
             <div style={{ color: C.slate, fontSize: 12, marginTop: 4 }}>{teachingCourse.moduleCount} modules · {teachingCourse.lessonCount} lessons</div>
           </div>
         )}
-        {assignedPrograms.length === 0 && !teachingCourse && (
+        {catalogPrograms.length === 0 && !teachingCourse && (
           <p style={{ color: C.slate, fontSize: 13, margin: 0 }}>No programs or courses available yet.</p>
         )}
       </div>
+      )}
     </div>
   )
 }
@@ -455,11 +440,11 @@ export default function DashboardFacultyPage() {
   const courses = dashboard?.courses ?? []
   const submissions = dashboard?.submissions ?? []
   const curriculumSummary = dashboard?.curriculumSummary ?? []
-  const program = programs.find(p => p.slug === 'data-science-ai') ?? programs[0]
-  const courseName = user.course || program?.name || 'Teaching workspace'
+  const teachingScopeAvailable = dashboard?.teachingScopeAvailable === true
+  const teachingCourse = courses[0]
+  const courseName = teachingCourse?.title ?? (teachingScopeAvailable ? 'Teaching workspace' : 'No teaching assignment')
   const displayName = user.name || 'Faculty'
-  const honorific = displayName.startsWith('Dr.') ? displayName : `Dr. ${displayName.split(' ').pop()}`
-  const courseContext = `${honorific} · ${submissions.length > 0 ? 'Review recent learner submissions' : 'No submissions pending review'}`
+  const courseContext = `${displayName} · ${submissions.length > 0 ? 'Review recent learner submissions' : 'No submissions pending review'}`
 
   function focusAssignments() {
     setActiveNav('assignments')
@@ -484,14 +469,11 @@ export default function DashboardFacultyPage() {
               <FacultyWorkspace
                 courseName={courseName}
                 courseContext={courseContext}
-                moduleTitle={DEMO.moduleTitle}
-                moduleIndex={DEMO.moduleIndex}
-                moduleTotal={DEMO.moduleTotal}
-                lessonTitle={DEMO.lessonTitle}
-                sessionContext={DEMO.sessionContext}
                 nextAction="Review submissions"
                 pendingCount={submissions.length}
-                professionalProgramCount={programs.filter(p => p.programType === 'PROFESSIONAL').length}
+                catalogProgramCount={programs.filter(p => p.programType === 'PROFESSIONAL').length}
+                teachingScopeAvailable={teachingScopeAvailable}
+                teachingScopeMessage={dashboard?.teachingScopeMessage ?? null}
                 onReview={focusAssignments}
               />
               <CurriculumTeachingPath summary={curriculumSummary} />
@@ -515,7 +497,7 @@ export default function DashboardFacultyPage() {
                 <UpcomingTeaching pendingCount={submissions.length} />
               </div>
               <div id="faculty-classes">
-                <ClassesRail programs={programs} courses={courses} />
+                <ClassesRail programs={programs} courses={courses} teachingScopeAvailable={teachingScopeAvailable} />
               </div>
             </>
           }

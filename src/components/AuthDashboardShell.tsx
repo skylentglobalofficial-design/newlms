@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
@@ -45,6 +45,15 @@ export function AuthDashboardShell({
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
+
+  useEffect(() => {
+    if (!mobileOpen) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMobileOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [mobileOpen])
 
   const mobileNav = bottomNavItems ?? navItems.slice(0, 5)
 
@@ -155,7 +164,6 @@ export function AuthDashboardShell({
       <aside className="auth-shell-sidebar-desktop" style={{
         position: 'fixed', top: 0, left: 0, bottom: 0, width: 236,
         background: C.warmWhite, borderRight: `1px solid ${T.lineLight}`,
-        backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
         display: 'flex', flexDirection: 'column', zIndex: 120,
       }}>
         {sidebarContent}

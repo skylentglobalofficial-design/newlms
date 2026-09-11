@@ -8,7 +8,9 @@ export function loginReturnPath(pathname: string, search = "", hash = ""): strin
 export function safeReturnTo(value: string | null | undefined): string | undefined {
   if (!value) return undefined
   const trimmed = value.trim()
-  if (!trimmed.startsWith("/") || trimmed.startsWith("//") || trimmed.includes("://")) return undefined
+  if (!trimmed.startsWith("/") || trimmed.startsWith("//") || trimmed.includes("://") || trimmed.includes("\\")) {
+    return undefined
+  }
   return trimmed
 }
 

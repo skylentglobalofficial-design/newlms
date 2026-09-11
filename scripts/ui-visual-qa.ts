@@ -11,7 +11,6 @@ const ROUTES = [
   "/blog",
   "/blog/data-skills-2026",
   "/workshops",
-  "/workshops/prompt-engineering",
   "/universities",
   "/career",
   "/career-os",

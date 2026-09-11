@@ -140,7 +140,7 @@ const megaMenu = [
       { label: 'Colleges', sub: 'Programmes and LMS', to: '/institutions?audience=colleges' },
       { label: 'Universities', sub: 'Curriculum and lifecycle', to: '/institutions?audience=universities' },
       { label: 'Training organisations', sub: 'Batches and certification', to: '/institutions?audience=training' },
-      { label: 'Skylent OS demo', sub: 'Illustrative, not live operations', to: '/os' },
+      { label: 'Skylent OS', sub: 'Authenticated workspaces', to: '/os' },
     ],
   },
 ]
@@ -378,7 +378,7 @@ export function Nav() {
 export function Footer() {
   const cols = [
     { heading: 'Worlds', links: [['Learn', '/skills'], ['Exams', '/exams'], ['Schooling', '/junior'], ['University', '/degrees']] },
-    { heading: 'Work', links: [['Career', '/career'], ['CareerOS', '/career-os'], ['Programmes', '/programs'], ['OS demo', '/os']] },
+    { heading: 'Work', links: [['Career', '/career'], ['CareerOS', '/career-os'], ['Programmes', '/programs'], ['Skylent OS', '/os']] },
     { heading: 'Institutions', links: [['Overview', '/institutions'], ['Contact', '/contact']] },
     { heading: 'Company', links: [['About', '/about'], ['Stories', '/stories'], ['Blog', '/blog']] },
   ]

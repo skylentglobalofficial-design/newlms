@@ -45,7 +45,15 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       port: parseInt(process.env.PORT || '5173', 10),
       strictPort: true,
-      watch: { ignored: ['**/.figma/**'] },
+      watch: {
+        ignored: [
+          '**/.figma/**',
+          '**/storage/**',
+          '**/qa-screenshots*/**',
+          '**/qa-results*.json',
+          '**/*.zip',
+        ],
+      },
       proxy: {
         '/api': {
           target: 'http://localhost:3000',

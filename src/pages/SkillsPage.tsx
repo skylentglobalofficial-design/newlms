@@ -149,7 +149,7 @@ export default function SkillsPage() {
             <>
               <SectionHeader
                 title="Webinars"
-                description="Sessions with published dates."
+                description="Dated sessions appear here when they are published. Registration is not live."
                 action={<Link className="product-btn-ghost" to="/workshops">All webinars</Link>}
               />
               <ProgrammeList

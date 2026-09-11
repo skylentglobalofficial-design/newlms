@@ -7,6 +7,7 @@ import {
   createOAuthState,
   verifySignedOAuthState,
 } from "../server/src/lib/oauth-state.js"
+import { sanitizeReturnTo } from "../server/src/lib/safe-redirect.js"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
@@ -252,6 +253,14 @@ async function main() {
   assert(firstGoogleUser.id === secondGoogleUser.id, "Same Google subject should resolve to one user")
   const googleUserCount = await prisma.user.count({ where: { email: googleEmail } })
   assert(googleUserCount === 1, "Duplicate Google login should not create duplicate users")
+
+  console.log("13. returnTo sanitization rejects open redirects")
+  assert(sanitizeReturnTo("/dashboard/student") === "/dashboard/student", "Same-origin path should be kept")
+  assert(sanitizeReturnTo("/courses/data-analytics?tab=overview") === "/courses/data-analytics?tab=overview", "Query on a relative path should be kept")
+  assert(sanitizeReturnTo("//evil.example") === null, "Protocol-relative returnTo must be rejected")
+  assert(sanitizeReturnTo("https://evil.example") === null, "Absolute returnTo must be rejected")
+  assert(sanitizeReturnTo("/\\evil") === null, "Backslash returnTo must be rejected")
+  assert(sanitizeReturnTo("courses") === null, "Missing leading slash must be rejected")
 
   console.log("All auth lifecycle checks passed.")
   await prisma.$disconnect()

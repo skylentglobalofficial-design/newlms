@@ -1,4 +1,5 @@
-import { courses, programs } from "../src/data.js"
+import { courses, programs, workshops, jobs } from "../src/data.js"
+import { expectedCourseSlugsForProgram, LIVE_PROGRAM_COURSE_LINKS } from "../src/lib/program-lms-map.js"
 
 type Failure = string
 
@@ -52,23 +53,45 @@ function main() {
         failures.push(`Program ${program.slug}: disallowed claim (${claim})`)
       }
     }
-    if (program.enrollmentStatus === "open" && !["data-analytics-pro", "data-science-ai", "full-stack", "generative-ai-program", "product-management"].includes(program.slug)) {
-      const expectedLinks: Record<string, string[]> = {
-        "data-analytics-pro": ["data-analytics"],
-        "data-science-ai": ["data-analytics", "python-programming"],
-        "full-stack": ["full-stack-web"],
-        "generative-ai-program": ["generative-ai"],
-        "product-management": ["product-management"],
+    if (program.enrollmentStatus === "open") {
+      const expected = expectedCourseSlugsForProgram(program.slug)
+      if (expected.length === 0) {
+        failures.push(`Open program ${program.slug} has no documented LMS mapping`)
       }
-      if (!(program.slug in expectedLinks) && program.programType !== "EXAM_PREP") {
-        warnings.push(`Open program ${program.slug} has no documented LMS mapping in this checker`)
+    } else if ((program.enrollmentStatus ?? "open") === "coming_soon") {
+      const expected = expectedCourseSlugsForProgram(program.slug)
+      if (expected.length > 0) {
+        failures.push(`Coming-soon program ${program.slug} must not advertise a live LMS mapping`)
       }
+    }
+    if (program.upcomingBatch !== "To be announced") {
+      failures.push(`Program ${program.slug}: upcomingBatch must stay TBA until a real schedule exists`)
     }
   }
 
   const openWithoutDocumentedLms = programs.filter((program) => program.enrollmentStatus === "open" && program.slug === "sql-certificate")
   if (openWithoutDocumentedLms.length) {
     failures.push("sql-certificate is open without a live LMS course")
+  }
+
+  if (programs.find((program) => program.slug === "sql-certificate")?.enrollmentStatus !== "coming_soon") {
+    failures.push("sql-certificate must stay coming_soon until a dedicated LMS course exists")
+  }
+
+  if (workshops.length > 0) {
+    failures.push("Workshops must stay unpublished until dated sessions and registration exist")
+  }
+
+  if (jobs.length > 0) {
+    failures.push("Static job listings must stay empty until a real employer feed exists")
+  }
+
+  const mappedPrograms = new Set(LIVE_PROGRAM_COURSE_LINKS.map((link) => link.programSlug))
+  for (const slug of mappedPrograms) {
+    const program = programs.find((row) => row.slug === slug)
+    if (!program || program.enrollmentStatus !== "open") {
+      failures.push(`Mapped program ${slug} must be open in the static catalogue`)
+    }
   }
 
   if (warnings.length) {

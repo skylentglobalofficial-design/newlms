@@ -305,7 +305,7 @@ export const programs: Program[] = [
     cert: 'Industry Certificate',
     outcome: 'Data Scientist / ML Engineer',
     desc: 'Master Python, machine learning, deep learning, and NLP through live classes, expert mentorship, and real-world projects.',
-    upcomingBatch: '15 September 2026',
+    upcomingBatch: 'To be announced',
     programType: 'PROFESSIONAL',
     level: 'Advanced',
     enrollmentStatus: 'open',
@@ -373,7 +373,7 @@ export const programs: Program[] = [
     cert: 'Professional Certificate',
     outcome: 'Data Analyst / BI Developer',
     desc: 'Build expertise in SQL, Excel, Power BI, and Python — with a dedicated Gen AI module for modern analytics workflows.',
-    upcomingBatch: '1 September 2026',
+    upcomingBatch: 'To be announced',
     programType: 'PROFESSIONAL',
     level: 'Intermediate',
     enrollmentStatus: 'open',
@@ -436,7 +436,7 @@ export const programs: Program[] = [
     cert: 'Professional Certificate',
     outcome: 'Full Stack Developer',
     desc: 'Build end-to-end web applications using React, Node.js, PostgreSQL, and cloud deployment — with real client-grade projects.',
-    upcomingBatch: '8 September 2026',
+    upcomingBatch: 'To be announced',
     programType: 'PROFESSIONAL',
     level: 'Intermediate',
     enrollmentStatus: 'open',
@@ -499,7 +499,7 @@ export const programs: Program[] = [
     cert: 'Specialization',
     outcome: 'AI/ML Engineer',
     desc: 'LLMs, prompt engineering, RAG systems, and AI product development with hands-on implementation across every module.',
-    upcomingBatch: '22 August 2026',
+    upcomingBatch: 'To be announced',
     programType: 'PROFESSIONAL',
     level: 'Intermediate',
     enrollmentStatus: 'open',
@@ -561,7 +561,7 @@ export const programs: Program[] = [
     cert: 'PM Certification',
     outcome: 'Product Manager / APM',
     desc: 'Develop product thinking, user research, roadmapping, and stakeholder management skills through live case studies and mentorship.',
-    upcomingBatch: '5 September 2026',
+    upcomingBatch: 'To be announced',
     programType: 'PROFESSIONAL',
     level: 'Intermediate',
     enrollmentStatus: 'open',
@@ -625,7 +625,7 @@ export const programs: Program[] = [
     cert: 'Completion Certificate',
     outcome: 'IIT / NIT Admission',
     desc: 'Structured subject-by-subject preparation for JEE Advanced — Physics, Chemistry, and Mathematics — with concept classes, practice sets, mock tests, and performance analytics.',
-    upcomingBatch: 'November 2026',
+    upcomingBatch: 'To be announced',
     programType: 'EXAM_PREP',
     level: 'Advanced',
     enrollmentStatus: 'coming_soon',
@@ -691,7 +691,7 @@ export const programs: Program[] = [
     cert: 'Completion Certificate',
     outcome: 'IIM / Top B-School Admission',
     desc: 'Section-oriented CAT preparation covering VARC, DILR, and QA — with concept building, intensive practice, sectional tests, and full mock CATs with percentile analytics.',
-    upcomingBatch: 'January 2027',
+    upcomingBatch: 'To be announced',
     programType: 'EXAM_PREP',
     level: 'Advanced',
     enrollmentStatus: 'coming_soon',
@@ -790,7 +790,7 @@ export const programs: Program[] = [
     faqs: [
       { q: 'Which SQL dialect does this cover?', a: 'Core SQL is covered, with examples in PostgreSQL. The concepts apply directly to MySQL, SQLite, BigQuery, and Snowflake.' },
       { q: 'How long will I have access?', a: 'Lifetime access to all content and updates.' },
-      { q: 'Is there a certificate?', a: 'A completion record will be stored when the live LMS for this certificate is published. Downloadable certificates are not issued yet.' },
+      { q: 'Is there a certificate?', a: 'A downloadable completion certificate is issued for published LMS courses after you finish their requirements. This SQL certificate programme does not have a live LMS yet, so it cannot issue that record today.' },
       { q: 'Can I enrol in the live LMS now?', a: 'Not yet. This certificate is listed so the catalogue is honest about the offering. SQL practice currently lives inside the Data Analytics course, not as a standalone published LMS.' },
     ],
     pricing: [
@@ -816,83 +816,7 @@ export type Workshop = {
   whatYouGet: string[]
 }
 
-export const workshops: Workshop[] = [
-  {
-    slug: 'ai-for-business',
-    title: 'AI for Business Leaders',
-    category: 'AI',
-    duration: '1 day',
-    date: '24 August 2026',
-    mode: 'Online',
-    instructor: 'Skylent Faculty',
-    seats: 120,
-    seatsLeft: 34,
-    price: 999,
-    originalPrice: 2499,
-    desc: 'How to evaluate, adopt, and lead AI transformation in your organisation without a technical background.',
-    whatYouGet: ['AI strategy frameworks', 'Use-case identification', 'ROI evaluation models', 'Q&A with industry practitioner', 'Resource toolkit'],
-  },
-  {
-    slug: 'prompt-engineering',
-    title: 'Prompt Engineering Masterclass',
-    category: 'AI',
-    duration: '1 day',
-    date: '30 August 2026',
-    mode: 'Online',
-    instructor: 'Skylent Faculty',
-    seats: 80,
-    seatsLeft: 12,
-    price: 1499,
-    originalPrice: 3499,
-    desc: 'From zero-shot to chain-of-thought to multi-agent prompting. Practical, hands-on, immediately applicable.',
-    whatYouGet: ['50+ prompt templates', 'Live hands-on exercises', 'Framework for any LLM', 'Access to recordings', 'Certificate of completion'],
-  },
-  {
-    slug: 'resume-masterclass',
-    title: 'Resume & LinkedIn Masterclass',
-    category: 'Career',
-    duration: '3 hours',
-    date: '28 August 2026',
-    mode: 'Online',
-    instructor: 'Skylent Career Team',
-    seats: 200,
-    seatsLeft: 67,
-    price: 499,
-    originalPrice: 1499,
-    desc: 'Build an ATS-optimised resume and a recruiter-ready LinkedIn profile with live feedback from Skylent career coaches.',
-    whatYouGet: ['Resume template pack', 'ATS check process', 'LinkedIn optimisation guide', 'Live coach feedback', 'Recording access'],
-  },
-  {
-    slug: 'interview-masterclass',
-    title: 'Data Interview Masterclass',
-    category: 'Career',
-    duration: '1 day',
-    date: '6 September 2026',
-    mode: 'Online',
-    instructor: 'Skylent Faculty',
-    seats: 100,
-    seatsLeft: 28,
-    price: 1999,
-    originalPrice: 4999,
-    desc: 'SQL, Python, statistics, and case interviews — the full data job interview preparation in one intensive session.',
-    whatYouGet: ['200+ interview questions', 'Live mock interview', 'SQL and Python drill', 'Case study walkthrough', 'Certificate'],
-  },
-  {
-    slug: 'power-bi-workshop',
-    title: 'Power BI Intensive',
-    category: 'Data',
-    duration: '2 days',
-    date: '13–14 September 2026',
-    mode: 'Online',
-    instructor: 'Skylent Faculty',
-    seats: 60,
-    seatsLeft: 19,
-    price: 2499,
-    originalPrice: 5999,
-    desc: 'Build three professional Power BI dashboards in two days. Hands-on from data import to published report.',
-    whatYouGet: ['3 real dashboard projects', 'DAX formula guide', 'Dataset access', 'Recordings', 'Certificate'],
-  },
-]
+export const workshops: Workshop[] = []
 
 // ─── BLOG POSTS ────────────────────────────────────────────────────────────────
 export type BlogPost = {
@@ -1043,28 +967,7 @@ export type Job = {
   postedDays: number
 }
 
-export const jobs: Job[] = [
-  { id: 'jr-data-analyst', role: 'Junior Data Analyst', company: 'XYZ Technologies', salary: '₹5–7 LPA', location: 'Bengaluru / Hybrid', mode: 'Hybrid', skills: ['SQL', 'Excel', 'Power BI', 'Python'], exp: '0–2 yrs', desc: 'Analyse business data, build dashboards, and generate insights to support decision-making across product and marketing teams.', postedDays: 2 },
-  { id: 'ml-engineer', role: 'ML Engineer', company: 'DataCraft Pvt Ltd', salary: '₹8–12 LPA', location: 'Mumbai / Remote', mode: 'Remote', skills: ['Python', 'TensorFlow', 'Sklearn', 'AWS'], exp: '1–3 yrs', desc: 'Build and deploy machine learning models for recommendation, fraud detection, and demand forecasting at scale.', postedDays: 5 },
-  { id: 'full-stack-dev', role: 'Full Stack Developer', company: 'NovaBridge Solutions', salary: '₹7–10 LPA', location: 'Hyderabad / On-site', mode: 'On-site', skills: ['React', 'Node.js', 'PostgreSQL', 'Docker'], exp: '1–3 yrs', desc: 'Design and develop end-to-end web applications for enterprise clients in fintech and logistics.', postedDays: 1 },
-  { id: 'product-analyst', role: 'Product Analyst', company: 'Finova Digital', salary: '₹6–9 LPA', location: 'Pune / Hybrid', mode: 'Hybrid', skills: ['SQL', 'Looker', 'Product Sense', 'Excel'], exp: '0–2 yrs', desc: 'Work with product managers to define metrics, analyse user behaviour, and drive growth decisions.', postedDays: 3 },
-  { id: 'ai-intern', role: 'AI Research Intern', company: 'Cognosphere Labs', salary: '₹3–5 LPA', location: 'Bengaluru / Hybrid', mode: 'Hybrid', skills: ['Python', 'PyTorch', 'NLP', 'Research'], exp: 'Fresher', desc: 'Contribute to applied NLP research projects and help deploy language models to production environments.', postedDays: 7 },
-]
-
-// ─── SUCCESS STORIES ──────────────────────────────────────────────────────────
-export const stories = [
-  { name: 'Ananya Krishnan', initials: 'AK', before: 'Commerce graduate. No technical background. No clear path into tech.', provided: 'Data Analytics program + 4 industry projects + career mentorship + placement prep.', outcome: 'Data Analyst', salary: '₹7.2 LPA', duration: '6 months', program: 'Data Analytics with Gen AI' },
-  { name: 'Rohan Mehta', initials: 'RM', before: 'Mechanical engineer. 3 years experience. No tech growth path.', provided: 'Full Stack program + 5 live projects + resume rebuild + 6 mock interviews.', outcome: 'Full Stack Developer', salary: '₹12 LPA', duration: '9 months', program: 'Full Stack Development' },
-  { name: 'Priya Nair', initials: 'PN', before: 'Recent graduate. Strong academics. No industry exposure or portfolio.', provided: 'Data Science & AI + Skylent Labs AI bootcamp + career support.', outcome: 'ML Engineer', salary: '₹14 LPA', duration: '11 months', program: 'Data Science & AI' },
-]
-
-// ─── DEMO USERS (for role dashboard switcher) ─────────────────────────────────
-export const demoUsers = [
-  { role: 'student' as const, name: 'Arjun Sharma', email: 'arjun@demo.skylent.in', avatar: 'AS', program: 'Data Science & AI', progress: 72 },
-  { role: 'faculty' as const, name: 'Dr. Priya Nair', email: 'priya@demo.skylent.in', avatar: 'PN', course: 'Data Science & AI', students: 128 },
-  { role: 'organisation' as const, name: 'Apex College', email: 'admin@apex.edu.in', avatar: 'AC', students: 1240, programs: 4 },
-  { role: 'superadmin' as const, name: 'Skylent Admin', email: 'admin@skylent.in', avatar: 'SA', totalUsers: 12450, totalOrgs: 48 },
-]
+export const jobs: Job[] = []
 
 // ─── LABS ─────────────────────────────────────────────────────────────────────
 
