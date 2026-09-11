@@ -185,6 +185,11 @@
   padding-bottom: 56px;
 }
 
+.product-layout > *,
+.product-main {
+  min-width: 0;
+}
+
 .product-layout--stack {
   display: block;
   padding-bottom: 56px;
@@ -303,8 +308,12 @@
 .product-tabs {
   overflow-x: auto;
   flex-wrap: nowrap;
-  padding-bottom: 2px;
+  max-width: 100%;
+  min-width: 0;
+  padding-bottom: 4px;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
 }
 
 .product-tabs button,
@@ -608,7 +617,7 @@
   display: none;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   .product-layout,
   .product-layout--pdp {
     grid-template-columns: 1fr;

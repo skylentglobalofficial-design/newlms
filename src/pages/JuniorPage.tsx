@@ -94,7 +94,6 @@ export default function JuniorPage() {
           title="Choose your class, then find what you need."
           description="For Class 1–12. Class first, then subjects, concepts, lessons, activities, and experiments — not a professional skills catalogue."
           breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Schooling' }]}
-          actions={<Link className="product-btn-ghost" to="/labs">Experiments</Link>}
         />
 
         <div className="product-toolbar">
