@@ -3,6 +3,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&display=swap');
 @import 'tailwindcss';
 @import './styles/worlds.css';
+@import './styles/product.css';
 
 @theme inline {
   --color-ink: #0B0D0F;

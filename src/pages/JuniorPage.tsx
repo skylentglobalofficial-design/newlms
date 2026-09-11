@@ -1,111 +1,142 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import WorldFrame from '../components/world/WorldFrame'
-import WorldScene from '../components/world/WorldScenes'
-import { programsForWorld, schoolBandForGrade } from '../skylent-worlds'
+import {
+  ComingSoonState,
+  ContentRail,
+  ContextHeader,
+  EmptyState,
+  FilterDrawer,
+  FilterToggle,
+  NavList,
+  ProductLayout,
+  ProgressPanel,
+  ProgrammeList,
+  SectionHeader,
+  SegmentedControl,
+  WorkspaceBlock,
+  programCard,
+} from '../components/product-ui'
+import { SCHOOL_BANDS, SCHOOL_LAYERS, programsForWorld } from '../skylent-worlds'
 
-const GRADES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+const BAND_TABS = SCHOOL_BANDS.map((band) => ({ id: band.id, label: band.label }))
+
+function bandFromSearch(value: string | null) {
+  return SCHOOL_BANDS.some((band) => band.id === value) ? value! : 'middle'
+}
 
 export default function JuniorPage() {
-  const [grade, setGrade] = useState(8)
-  const band = useMemo(() => schoolBandForGrade(grade), [grade])
+  const [params, setParams] = useSearchParams()
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const bandId = bandFromSearch(params.get('band'))
+  const band = SCHOOL_BANDS.find((item) => item.id === bandId) ?? SCHOOL_BANDS[1]
+  const subject = params.get('subject') ?? band.subjects[0]
   const published = programsForWorld('schooling')
+
+  const activeSubject = (band.subjects as readonly string[]).includes(subject) ? subject : band.subjects[0]
+
+  function setBand(next: string) {
+    const nextBand = SCHOOL_BANDS.find((item) => item.id === next) ?? SCHOOL_BANDS[1]
+    const nextParams = new URLSearchParams()
+    nextParams.set('band', nextBand.id)
+    nextParams.set('subject', nextBand.subjects[0])
+    setParams(nextParams, { replace: true })
+    setFiltersOpen(false)
+  }
+
+  function setSubject(next: string) {
+    const nextParams = new URLSearchParams(params)
+    nextParams.set('band', band.id)
+    nextParams.set('subject', next)
+    setParams(nextParams, { replace: true })
+    setFiltersOpen(false)
+  }
+
+  const sidebar = (
+    <div>
+      <h2 className="product-filter-title">Subjects</h2>
+      <NavList
+        items={band.subjects.map((item) => ({ id: item, label: item }))}
+        value={activeSubject}
+        onChange={setSubject}
+      />
+    </div>
+  )
+
+  const layerCopy = useMemo(() => ({
+    Subjects: `${activeSubject} for ${band.label}. Pick a subject in the rail, then open concepts when they are published.`,
+    Concepts: `Concept pages for ${activeSubject} are not in the catalogue yet.`,
+    Lessons: `Lessons for Class ${band.grades[0]}–${band.grades[band.grades.length - 1]} ${activeSubject} are not published.`,
+    Activities: 'Activities appear with class programmes. Nothing is invented as a live worksheet.',
+    Experiments: 'Experiments that exist today live in Labs — not as fake classroom animations.',
+    Progress: 'Progress appears after lessons exist. This page will not show a made-up streak.',
+  }), [activeSubject, band])
 
   return (
     <WorldFrame world="schooling">
-      <header className="world-hero">
-        <div className="world-rail world-split">
-          <div>
-            <p className="world-kicker">Schooling</p>
-            <h1 className="world-title">Choose your class, then find what you need to <em>learn</em>.</h1>
-            <p className="world-lede">
-              For Class 1–12. Grade first, then subjects, concepts, experiments, and activities — not a professional skills marketplace.
-            </p>
-            <div className="world-actions">
-              <a className="world-btn" href="#grades">Choose class</a>
-              <Link className="world-btn-ghost" to="/labs">Open experiments</Link>
-            </div>
-          </div>
-          <WorldScene world="schooling" />
-        </div>
-      </header>
+      <ContentRail>
+        <ContextHeader
+          world="schooling"
+          eyebrow="Schooling"
+          title="Choose your class, then find what you need."
+          description="For Class 1–12. Class first, then subjects, concepts, lessons, activities, and experiments — not a professional skills catalogue."
+          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Schooling' }]}
+          actions={<Link className="product-btn-ghost" to="/labs">Experiments</Link>}
+        />
 
-      <section className="world-section" id="grades">
-        <div className="world-rail">
-          <p className="world-kicker">Grade</p>
-          <h2 className="world-title" style={{ fontSize: 'clamp(26px, 3vw, 36px)', maxWidth: '20ch' }}>Class {grade}</h2>
-          <p className="world-lede">{band.focus}</p>
-          <div className="world-picker" style={{ marginTop: 20 }} role="listbox" aria-label="Select class">
-            {GRADES.map((n) => (
-              <button
-                key={n}
-                type="button"
-                className={`world-chip${grade === n ? ' is-active' : ''}`}
-                aria-pressed={grade === n}
-                onClick={() => setGrade(n)}
-              >
-                {n}
-              </button>
+        <div className="product-toolbar">
+          <FilterToggle open={filtersOpen} onClick={() => setFiltersOpen(true)} />
+          <SegmentedControl options={BAND_TABS} value={band.id} onChange={setBand} label="Choose your class" />
+        </div>
+
+        <FilterDrawer open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Subjects">
+          {sidebar}
+        </FilterDrawer>
+
+        <ProductLayout sidebar={sidebar}>
+          <SectionHeader
+            title={`${band.label} · ${activeSubject}`}
+            description={`${band.stage}. ${band.focus}`}
+          />
+
+          <div className="workspace-grid">
+            {SCHOOL_LAYERS.map((layer) => (
+              <WorkspaceBlock key={layer} title={layer}>
+                <p>{layerCopy[layer]}</p>
+                {layer === 'Experiments' ? (
+                  <p><Link className="product-btn-ghost" to="/labs">Open Labs</Link></p>
+                ) : null}
+              </WorkspaceBlock>
             ))}
           </div>
-        </div>
-      </section>
 
-      <section className="world-section" id="subjects">
-        <div className="world-rail world-split">
-          <div>
-            <p className="world-kicker">{band.stage}</p>
-            <h2 className="world-title" style={{ fontSize: 'clamp(26px, 3vw, 36px)' }}>{band.label}</h2>
-            <ul className="world-card-list" style={{ marginTop: 20 }}>
-              {band.subjects.map((subject) => (
-                <li key={subject} className="world-card">
-                  <b>{subject}</b>
-                  <p>Concepts, practice, and activities for Class {grade}.</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="world-panel" style={{ padding: 20 }}>
-            <p className="world-kicker">How a school day works here</p>
-            <ul className="world-flow">
-              <li>Grade</li>
-              <li>Subject</li>
-              <li>Concept</li>
-              <li>Experiment</li>
-              <li>Activity</li>
-              <li>Progress</li>
-            </ul>
-            <p className="world-note" style={{ marginTop: 18 }}>
-              Schooling is foundational learning. It is not a job-prep funnel and it is not a cartoon classroom.
-            </p>
-          </div>
-        </div>
-      </section>
+          <ProgressPanel
+            title="Continue learning"
+            steps={['Choose class', 'Choose subject', 'Open a lesson when published', 'Do the activity', 'Check progress']}
+            note="There is nothing to continue until class programmes are published."
+          />
 
-      <section className="world-section" id="programmes">
-        <div className="world-rail">
-          <p className="world-kicker">Catalogue</p>
-          <h2 className="world-title" style={{ fontSize: 'clamp(26px, 3vw, 36px)', maxWidth: '18ch' }}>Published class programmes</h2>
+          <SectionHeader title="Class programmes" description="Only published catalogue items appear here." />
           {published.length ? (
-            <div className="world-card-list" style={{ marginTop: 20 }}>
-              {published.map((program) => (
-                <Link key={program.slug} className="world-card" to={`/programs/${program.slug}`}>
-                  <b>{program.name}</b>
-                  <p>{program.desc}</p>
-                </Link>
-              ))}
-            </div>
+            <ProgrammeList
+              items={published.map((program) => programCard(program))}
+              empty={<EmptyState title="None published" description="Class programmes will list here." />}
+            />
           ) : (
-            <p className="world-empty">
-              Class 1–12 programmes are not in the published catalogue yet. You can still choose a class, see the subject map, and use experiments in Labs. Nothing here is invented as a live course.
-            </p>
+            <EmptyState
+              title="No class programmes published yet"
+              description="You can still choose a class and subject. Labs has experiments. Nothing here is invented as a live course."
+              action={<Link className="product-btn-ghost" to="/programs?type=SCHOOLING">Catalogue filter</Link>}
+            />
           )}
-          <div className="world-actions">
-            <Link className="world-btn-ghost" to="/programs?type=SCHOOLING">Open catalogue filter</Link>
-            <Link className="world-btn-ghost" to="/exams">Exam prep is a different world</Link>
-          </div>
-        </div>
-      </section>
+
+          <ComingSoonState
+            title="Exam prep is a different world"
+            description="JEE, CAT, and other papers live under Exams — not inside Class 11–12 schooling."
+          />
+          <p className="panel-note"><Link to="/exams">Open Exams</Link></p>
+        </ProductLayout>
+      </ContentRail>
     </WorldFrame>
   )
 }

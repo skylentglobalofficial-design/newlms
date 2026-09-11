@@ -4,8 +4,7 @@ import type { AuroraThemeId } from '../../aurora-themes'
 import { getDomainAccent } from '../../aurora-themes'
 import { FadeIn } from '../shared'
 import { Section, SectionHeader, Eyebrow, FlowStrip } from '../ui'
-import { GlassSurface } from '../foundation'
-import { ProductVisual, resolveProgramVisualId, type ModuleRailItem } from '../product/ProductVisuals'
+import { ProductVisual, type ModuleRailItem } from '../product/ProductVisuals'
 
 const SLUG_ACTIVITIES: Record<string, string[]> = {
   'data-analytics-pro': [
@@ -124,46 +123,35 @@ export function ProgramOutcomesSection({
   accent: ReturnType<typeof getDomainAccent>
 }) {
   const activities = getProgramActivities(program)
-  const visualId = resolveProgramVisualId(program.slug, program.programType)
 
   return (
     <Section id="outcomes" tone="canvas" divider>
       <FadeIn>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'start' }} className="two-col program-outcomes-split">
-          <div>
-            <SectionHeader
-              tone="dark"
-              eyebrow="What you will actually do"
-              title="Concrete work — not feature bullets."
-              lead={`This program is built around applied work that leads to: ${program.outcome}.`}
-            />
-            <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 0 }}>
-              {activities.map((activity, i) => (
-                <div
-                  key={activity}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '32px 1fr',
-                    gap: 14,
-                    padding: '16px 0',
-                    borderBottom: i < activities.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                    alignItems: 'start',
-                  }}
-                >
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, paddingTop: 2 }}>
-                    {String(i + 1).padStart(2, '0')}
-                  </div>
-                  <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 15, lineHeight: 1.65 }}>{activity}</div>
-                </div>
-              ))}
+        <SectionHeader
+          tone="dark"
+          eyebrow="What you will actually do"
+          title="Concrete work — not feature bullets."
+          lead={`This program is built around applied work that leads to: ${program.outcome}.`}
+        />
+        <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 0, maxWidth: 720 }}>
+          {activities.map((activity, i) => (
+            <div
+              key={activity}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '32px 1fr',
+                gap: 14,
+                padding: '16px 0',
+                borderBottom: i < activities.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                alignItems: 'start',
+              }}
+            >
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, paddingTop: 2 }}>
+                {String(i + 1).padStart(2, '0')}
+              </div>
+              <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 15, lineHeight: 1.65 }}>{activity}</div>
             </div>
-          </div>
-          <ProductVisual
-            id={visualId}
-            themeId={themeId}
-            className="program-outcomes-visual"
-            style={{ minHeight: 280 }}
-          />
+          ))}
         </div>
       </FadeIn>
     </Section>
@@ -213,8 +201,7 @@ export function ProgramLearningSection({
           title={isExamPrep ? 'How preparation is structured' : 'Learn → Practice → Build → Review → Prove'}
           lead="A learning system with clear phases — not six disconnected marketing cards."
         />
-        <div style={{ marginTop: 32, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }} className="two-col">
-          <ProductVisual id="learning-loop" themeId={themeId} style={{ minHeight: 200 }} />
+        <div style={{ marginTop: 32, maxWidth: 720 }}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {program.learningExperience.map((item, i) => (
               <div
@@ -295,8 +282,7 @@ export function ProgramCareerSection({
   return (
     <Section id="career" tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
       <FadeIn>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }} className="two-col">
-          <div>
+        <div style={{ maxWidth: 720 }}>
             <Eyebrow tone="dark" accent>Career support</Eyebrow>
             <h2 className="skylent-display-md" style={{ color: C.white, margin: '18px 0 16px' }}>
               From learning to application tracking.
@@ -312,8 +298,6 @@ export function ProgramCareerSection({
                 { label: 'Apply', sub: 'From job board' },
               ]}
             />
-          </div>
-          <ProductVisual id="career-workspace" themeId={themeId} style={{ minHeight: 300 }} />
         </div>
         <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
           {['Profile', 'Proof', 'Discover', 'Apply', 'Prepare', 'Track'].map(step => (

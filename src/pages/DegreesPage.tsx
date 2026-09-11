@@ -1,83 +1,212 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import WorldFrame from '../components/world/WorldFrame'
-import WorldScene from '../components/world/WorldScenes'
+import {
+  ContentRail,
+  ContextHeader,
+  EmptyState,
+  NavList,
+  ProductLayout,
+  ProgrammeList,
+  SectionHeader,
+  SegmentedControl,
+  WorkspaceBlock,
+  programCard,
+} from '../components/product-ui'
 import { PG_STUDIO, UG_STUDIO, programsByType } from '../skylent-worlds'
 
+const UG_NAV = [
+  { id: 'programmes', label: 'Programmes' },
+  { id: 'departments', label: 'Departments' },
+  { id: 'curriculum', label: 'Curriculum' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'labs', label: 'Labs' },
+  { id: 'internships', label: 'Internships' },
+  { id: 'pathways', label: 'Career pathways' },
+]
+
+const PG_NAV = [
+  { id: 'programmes', label: 'Specialisation' },
+  { id: 'curriculum', label: 'Advanced curriculum' },
+  { id: 'research', label: 'Research' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'dissertation', label: 'Dissertation / capstone' },
+  { id: 'pathways', label: 'Academic / industry pathways' },
+]
+
+const UG_COPY: Record<string, { title: string; body: string; items: string[] }> = {
+  programmes: {
+    title: 'Programmes',
+    body: 'Undergraduate programmes appear here when they are in the catalogue. No departments or campuses are invented.',
+    items: ['Degree name', 'Department', 'Duration', 'Curriculum outline'],
+  },
+  departments: {
+    title: 'Departments',
+    body: 'Department structure follows published degrees. This studio stays visible without fake faculty lists.',
+    items: ['Department pages publish with inventory', 'Shared assessment rules', 'Not a partner brochure'],
+  },
+  curriculum: {
+    title: 'Curriculum',
+    body: 'Degree → semester → subject → module → lesson → assignment / project.',
+    items: UG_STUDIO.model,
+  },
+  projects: {
+    title: 'Projects',
+    body: 'Studio and course projects attach to real programmes. Empty until those programmes exist.',
+    items: ['Course projects', 'Studio work', 'Assessed deliverables'],
+  },
+  labs: {
+    title: 'Labs',
+    body: 'Lab work belongs to the degree, not a separate marketing section.',
+    items: ['Subject labs', 'Shared equipment booking is operational, not shown as fake inventory'],
+  },
+  internships: {
+    title: 'Internships',
+    body: 'Internship pathways publish with programmes. Employer names are not invented here.',
+    items: ['Credit-bearing internships when offered', 'Evidence goes to Career when you have work to show'],
+  },
+  pathways: {
+    title: 'Career pathways',
+    body: 'Progression is curriculum plus evidence — not placement percentages.',
+    items: ['Further study', 'Professional programmes in Learn', 'Career OS after you have proof'],
+  },
+}
+
+const PG_COPY: Record<string, { title: string; body: string; items: string[] }> = {
+  programmes: {
+    title: 'Specialisation',
+    body: 'Postgraduate programmes appear when published. Specialisation names are not placeholder degrees.',
+    items: ['Named specialisation', 'Entry requirements', 'Duration'],
+  },
+  curriculum: {
+    title: 'Advanced curriculum',
+    body: 'Program → term → specialisation → module → case / project → assessment.',
+    items: PG_STUDIO.model,
+  },
+  research: {
+    title: 'Research',
+    body: 'Research supervision and labs publish with real postgraduate inventory.',
+    items: ['Research methods', 'Supervisor assignment when offered', 'No invented publications'],
+  },
+  projects: {
+    title: 'Projects',
+    body: 'Applied projects sit beside research — only when the programme exists.',
+    items: ['Industry project', 'Studio project', 'Assessed output'],
+  },
+  dissertation: {
+    title: 'Dissertation / capstone',
+    body: 'Capstone and dissertation requirements will attach to published PG programmes.',
+    items: ['Proposal', 'Supervision', 'Viva / defence when required'],
+  },
+  pathways: {
+    title: 'Academic / industry pathways',
+    body: 'Further research or professional practice — described when the degree exists.',
+    items: ['Doctoral progression', 'Industry practice', 'Not a placement statistic'],
+  },
+}
+
+function levelFromSearch(value: string | null, hash: string) {
+  const fromHash = hash.replace('#', '')
+  if (value === 'pg' || fromHash === 'postgraduate') return 'pg'
+  return 'ug'
+}
+
 export default function DegreesPage() {
-  const ug = programsByType('UNDERGRADUATE')
-  const pg = programsByType('POSTGRADUATE')
+  const location = useLocation()
+  const [params, setParams] = useSearchParams()
+  const level = levelFromSearch(params.get('level'), location.hash)
+  const nav = level === 'ug' ? UG_NAV : PG_NAV
+  const section = nav.some((item) => item.id === params.get('section'))
+    ? params.get('section')!
+    : 'programmes'
+  const programmes = programsByType(level === 'ug' ? 'UNDERGRADUATE' : 'POSTGRADUATE')
+  const copy = (level === 'ug' ? UG_COPY : PG_COPY)[section]
+
+  function setLevel(next: string) {
+    const nextParams = new URLSearchParams()
+    nextParams.set('level', next)
+    nextParams.set('section', 'programmes')
+    setParams(nextParams, { replace: true })
+  }
+
+  function setSection(next: string) {
+    const nextParams = new URLSearchParams(params)
+    nextParams.set('level', level)
+    nextParams.set('section', next)
+    setParams(nextParams, { replace: true })
+  }
+
+  const sidebar = (
+    <div>
+      <h2 className="product-filter-title">{level === 'ug' ? 'Undergraduate' : 'Postgraduate'}</h2>
+      <NavList items={nav} value={section} onChange={setSection} />
+    </div>
+  )
 
   return (
     <WorldFrame world="university">
-      <header className="world-hero">
-        <div className="world-rail world-split">
-          <div>
-            <p className="world-kicker">University</p>
-            <h1 className="world-title">Undergraduate and postgraduate are <em>different</em> studios.</h1>
-            <p className="world-lede">
-              Degrees, departments, curriculum, labs, and research — not a recycled skills hero. Programmes appear only when they exist in the catalogue.
-            </p>
-            <div className="world-actions">
-              <a className="world-btn" href="#undergraduate">Undergraduate</a>
-              <a className="world-btn-ghost" href="#postgraduate">Postgraduate</a>
-            </div>
-          </div>
-          <WorldScene world="university" />
-        </div>
-      </header>
+      <ContentRail>
+        <ContextHeader
+          world="university"
+          eyebrow="University"
+          title="Undergraduate and postgraduate are different studios."
+          description="Degrees, departments, curriculum, labs, and research. Institutional operations stay on Institutions. Programmes appear only when they exist in the catalogue."
+          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'University' }]}
+          actions={<Link className="product-btn-ghost" to="/institutions">Institutions</Link>}
+        />
 
-      <section className="world-section" id="undergraduate">
-        <div className="world-rail">
-          <p className="world-kicker">{UG_STUDIO.label}</p>
-          <h2 className="world-title" style={{ fontSize: 'clamp(26px, 3vw, 36px)' }}>A first degree is a curriculum you can follow.</h2>
-          <ul className="world-flow">
-            {UG_STUDIO.model.map((item) => <li key={item}>{item}</li>)}
-          </ul>
-          {ug.length ? (
-            <div className="world-card-list" style={{ marginTop: 24 }}>
-              {ug.map((program) => (
-                <Link key={program.slug} className="world-card" to={`/programs/${program.slug}`}>
-                  <b>{program.name}</b>
-                  <p>{program.desc}</p>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="world-empty">
-              No undergraduate programmes are published in the catalogue yet. This studio stays visible so University has a place to live — it does not invent departments, faculty, or campuses.
-            </p>
-          )}
+        <div className="product-toolbar">
+          <SegmentedControl
+            options={[
+              { id: 'ug', label: UG_STUDIO.label },
+              { id: 'pg', label: PG_STUDIO.label },
+            ]}
+            value={level}
+            onChange={setLevel}
+            label="Degree level"
+          />
         </div>
-      </section>
 
-      <section className="world-section" id="postgraduate">
-        <div className="world-rail">
-          <p className="world-kicker">{PG_STUDIO.label}</p>
-          <h2 className="world-title" style={{ fontSize: 'clamp(26px, 3vw, 36px)' }}>A later degree is specialisation and research.</h2>
-          <ul className="world-flow">
-            {PG_STUDIO.model.map((item) => <li key={item}>{item}</li>)}
-          </ul>
-          {pg.length ? (
-            <div className="world-card-list" style={{ marginTop: 24 }}>
-              {pg.map((program) => (
-                <Link key={program.slug} className="world-card" to={`/programs/${program.slug}`}>
-                  <b>{program.name}</b>
-                  <p>{program.desc}</p>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className="world-empty">
-              No postgraduate programmes are published yet. Dissertation, faculty, and industry pathways will appear with real inventory — not placeholder degrees.
+        <ProductLayout sidebar={sidebar}>
+          <div id={level === 'ug' ? 'undergraduate' : 'postgraduate'}>
+            <SectionHeader
+              title={copy.title}
+              description={copy.body}
+            />
+            <WorkspaceBlock title="In this studio">
+              <ul>
+                {copy.items.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+            </WorkspaceBlock>
+
+            {section === 'programmes' && (
+              programmes.length ? (
+                <ProgrammeList
+                  items={programmes.map((program) => programCard(program))}
+                  empty={<EmptyState title="None published" description="Degree programmes list here when they exist." />}
+                />
+              ) : (
+                <EmptyState
+                  title={level === 'ug' ? 'No undergraduate programmes published' : 'No postgraduate programmes published'}
+                  description={
+                    level === 'ug'
+                      ? 'This studio stays visible so University has a place to work. Departments, faculty, and campuses are not invented.'
+                      : 'Dissertation, faculty, and industry pathways will appear with real inventory — not placeholder degrees.'
+                  }
+                  action={
+                    <Link className="product-btn-ghost" to={level === 'ug' ? '/programs?type=UNDERGRADUATE' : '/programs?type=POSTGRADUATE'}>
+                      Catalogue filter
+                    </Link>
+                  }
+                />
+              )
+            )}
+
+            <p className="panel-note">
+              Professional certificates live in <Link to="/skills">Learn</Link>. Partnership and operations live in <Link to="/institutions">Institutions</Link>.
             </p>
-          )}
-          <div className="world-actions">
-            <Link className="world-btn-ghost" to="/programs?type=UNDERGRADUATE">Undergraduate filter</Link>
-            <Link className="world-btn-ghost" to="/programs?type=POSTGRADUATE">Postgraduate filter</Link>
-            <Link className="world-btn-ghost" to="/skills">Professional skills live in Learn</Link>
           </div>
-        </div>
-      </section>
+        </ProductLayout>
+      </ContentRail>
     </WorldFrame>
   )
 }

@@ -1,16 +1,21 @@
 import { PageShell } from '../shared'
 import { WORLD_THEME, type WorldId } from '../../skylent-worlds'
 
+export type ProductWorld = WorldId | 'home' | 'catalogue'
+
 export default function WorldFrame({
   world,
   children,
 }: {
-  world: WorldId
+  world: ProductWorld
   children: React.ReactNode
 }) {
+  const auroraTheme = world === 'home' || world === 'catalogue' ? undefined : WORLD_THEME[world]
   return (
-    <PageShell aurora={false} auroraTheme={WORLD_THEME[world]}>
-      <div className={`world-page world-page--${world}`}>{children}</div>
+    <PageShell aurora={false} auroraTheme={auroraTheme}>
+      <div className="product-shell" data-world={world}>
+        {children}
+      </div>
     </PageShell>
   )
 }

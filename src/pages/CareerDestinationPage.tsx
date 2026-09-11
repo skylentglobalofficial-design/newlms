@@ -1,15 +1,22 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import WorldFrame from '../components/world/WorldFrame'
-import WorldScene from '../components/world/WorldScenes'
+import {
+  ActionPanel,
+  ContentRail,
+  ContextHeader,
+  ProductLayout,
+  ProductTable,
+  SectionHeader,
+  WorkspaceBlock,
+} from '../components/product-ui'
 
 const ACTIONS = [
-  { label: 'Jobs', href: '/career-os/jobs', detail: 'Search and apply inside CareerOS — live listings are not invented on this page.' },
-  { label: 'Interviews', href: '/career-os/interviews', detail: 'Prepare and track interviews you actually have.' },
-  { label: 'Evidence', href: '/skills', detail: 'Projects and programmes that produce proof you can show.' },
-  { label: 'Profile', href: '/career-os/profile', detail: 'Keep a working profile before you send applications.' },
-  { label: 'Applications', href: '/career-os/applications', detail: 'Follow work you have applied to — not a decorative pipeline.' },
-  { label: 'CareerOS', href: '/career-os', detail: 'The authenticated career workspace. Sign in if you are not already.' },
+  { id: 'jobs', label: 'Find a job', href: '/career-os/jobs', detail: 'Search and apply inside CareerOS. Live listings are not invented on this page.' },
+  { id: 'interview', label: 'Prepare for an interview', href: '/career-os/interviews', detail: 'Track interviews you actually have. Practice stays in CareerOS.' },
+  { id: 'evidence', label: 'Build evidence', href: '/skills', detail: 'Programmes and projects that produce work you can show.' },
+  { id: 'careeros', label: 'Open CareerOS', href: '/career-os', detail: 'Authenticated workspace for jobs, applications, interviews, and profile.' },
+  { id: 'tools', label: 'Explore tools', href: '/career-os/profile', detail: 'Profile, applications, and interview tools live behind sign-in.' },
 ]
 
 const ROLE_TYPES = [
@@ -22,65 +29,69 @@ export default function CareerDestinationPage() {
   const { user } = useAuth()
   const osHref = user ? '/career-os' : '/login?returnTo=%2Fcareer-os'
 
+  function resolveHref(href: string, id: string) {
+    if (id === 'evidence') return href
+    if (id === 'careeros') return osHref
+    return user ? href : osHref
+  }
+
+  const sidebar = (
+    <ActionPanel title="CareerOS">
+      <p className="panel-note" style={{ marginTop: 0 }}>
+        {user ? 'Continue in the authenticated workspace.' : 'This page is public. CareerOS asks you to sign in.'}
+      </p>
+      <div style={{ display: 'grid', gap: 8, marginTop: 12 }}>
+        <Link className="product-btn" to={osHref}>{user ? 'Open CareerOS' : 'Sign in to CareerOS'}</Link>
+        <Link className="product-btn-ghost" to="/skills">Build evidence first</Link>
+      </div>
+    </ActionPanel>
+  )
+
   return (
     <WorldFrame world="career">
-      <header className="world-hero">
-        <div className="world-rail world-split">
+      <ContentRail>
+        <ContextHeader
+          world="career"
+          eyebrow="Career"
+          title="What do you want to do next?"
+          description="Find a job, prepare for an interview, build evidence, or open CareerOS. This is not a course catalogue and it is not an exam workspace."
+          breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Career' }]}
+        />
+
+        <ProductLayout sidebar={sidebar} variant="pdp">
           <div>
-            <p className="world-kicker">Career</p>
-            <h1 className="world-title">What can I do next?</h1>
-            <p className="world-lede">
-              A public action hub: jobs, interviews, evidence, profile, applications, tools. CareerOS stays behind sign-in. This page is not a login wall.
-            </p>
-            <div className="world-actions">
-              <Link className="world-btn" to={osHref}>{user ? 'Open CareerOS' : 'Sign in to CareerOS'}</Link>
-              <Link className="world-btn-ghost" to="/skills">Build evidence first</Link>
+            <SectionHeader title="Next actions" description="Pick the job to be done. CareerOS stays behind sign-in; this page does not fake a hiring market." />
+            <ProductTable
+              headers={['Action', 'What happens', 'Go']}
+              rows={ACTIONS.map((action) => [
+                <strong key={`${action.id}-l`}>{action.label}</strong>,
+                action.detail,
+                <Link key={`${action.id}-c`} className="product-btn-ghost" to={resolveHref(action.href, action.id)}>Open</Link>,
+              ])}
+            />
+
+            <div className="workspace-grid" style={{ marginTop: 28 }}>
+              <WorkspaceBlock title="Jobs">
+                <p>Listings belong in CareerOS. This public page does not invent employers, salaries, or openings.</p>
+              </WorkspaceBlock>
+              <WorkspaceBlock title="Interviews">
+                <p>Prepare for interviews you have. Tools open after sign-in.</p>
+              </WorkspaceBlock>
+              <WorkspaceBlock title="Evidence">
+                <p>Projects and programmes that produce proof live in Learn. Bring that work into CareerOS when you apply.</p>
+                <p><Link to="/skills">Open Learn</Link></p>
+              </WorkspaceBlock>
+              <WorkspaceBlock title="Role types people prepare for">
+                <ul>
+                  {ROLE_TYPES.map((item) => (
+                    <li key={item.role}><strong>{item.role}</strong> — {item.proof}</li>
+                  ))}
+                </ul>
+              </WorkspaceBlock>
             </div>
           </div>
-          <WorldScene world="career" />
-        </div>
-      </header>
-
-      <section className="world-section" id="next">
-        <div className="world-rail">
-          <p className="world-kicker">Next actions</p>
-          <div className="world-card-list">
-            {ACTIONS.map((action) => (
-              <Link key={action.label} className="world-card" to={action.label === 'CareerOS' ? osHref : (action.href.startsWith('/career-os') && !user ? osHref : action.href)}>
-                <b>{action.label}</b>
-                <p>{action.detail}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="world-section" id="jobs">
-        <div className="world-rail world-split">
-          <div>
-            <p className="world-kicker">Roles people prepare for</p>
-            <h2 className="world-title" style={{ fontSize: 'clamp(26px, 3vw, 36px)' }}>No invented employers here.</h2>
-            <p className="world-lede">
-              These are role types, not live partner jobs. Applications and listings belong in CareerOS when you have access.
-            </p>
-            <ul className="world-card-list" style={{ marginTop: 20 }}>
-              {ROLE_TYPES.map((item) => (
-                <li key={item.role} className="world-card">
-                  <b>{item.role}</b>
-                  <p>{item.proof}</p>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="world-panel" style={{ padding: 20 }}>
-            <p className="world-kicker">Tools</p>
-            <p className="world-note">Interview practice, applications, and profile editing stay in CareerOS so this public page cannot fake a hiring market.</p>
-            <div className="world-actions">
-              <Link className="world-btn" to={osHref}>Continue in CareerOS</Link>
-            </div>
-          </div>
-        </div>
-      </section>
+        </ProductLayout>
+      </ContentRail>
     </WorldFrame>
   )
 }

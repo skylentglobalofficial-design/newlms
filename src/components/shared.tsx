@@ -308,9 +308,10 @@ const megaMenu = [
     to: '/skills',
     tagline: 'Skills you can show',
     items: [
-      { label: 'Professional programmes', sub: 'Projects, practice, evidence', to: '/skills#professional' },
-      { label: 'Certificates', sub: 'A credential you can finish', to: '/skills#certificate' },
-      { label: 'Webinars', sub: 'Published sessions', to: '/workshops' },
+      { label: 'Professional programmes', sub: 'Projects, practice, evidence', to: '/skills?view=professional' },
+      { label: 'Certificates', sub: 'A credential you can finish', to: '/skills?view=certificates' },
+      { label: 'Short courses', sub: 'Shorter skill courses', to: '/skills?view=short-courses' },
+      { label: 'Webinars', sub: 'Published sessions', to: '/skills?view=webinars' },
       { label: 'Catalogue', sub: 'What is actually published', to: '/programs?type=PROFESSIONAL' },
     ],
   },
@@ -319,9 +320,9 @@ const megaMenu = [
     to: '/exams',
     tagline: 'The paper you are taking',
     items: [
-      { label: 'JEE', sub: 'Published programme', to: '/exams#jee' },
-      { label: 'CAT', sub: 'Published programme', to: '/exams#cat' },
-      { label: 'NEET', sub: 'Unpublished · coming soon', to: '/exams#neet' },
+      { label: 'JEE', sub: 'Published programme', to: '/exams?exam=jee' },
+      { label: 'CAT', sub: 'Published programme', to: '/exams?exam=cat' },
+      { label: 'NEET', sub: 'Unpublished · coming soon', to: '/exams?exam=neet' },
     ],
   },
   {
@@ -329,7 +330,10 @@ const megaMenu = [
     to: '/junior',
     tagline: 'Classes 1–12',
     items: [
-      { label: 'Choose class', sub: 'Grade first, then subjects', to: '/junior#grades' },
+      { label: 'Classes 1–5', sub: 'Foundational', to: '/junior?band=foundational' },
+      { label: 'Classes 6–8', sub: 'Middle school', to: '/junior?band=middle' },
+      { label: 'Classes 9–10', sub: 'Secondary', to: '/junior?band=secondary' },
+      { label: 'Classes 11–12', sub: 'Senior secondary', to: '/junior?band=senior' },
       { label: 'Experiments', sub: 'Labs and making', to: '/labs' },
     ],
   },
@@ -338,8 +342,8 @@ const megaMenu = [
     to: '/degrees',
     tagline: 'UG and PG studios',
     items: [
-      { label: 'Undergraduate', sub: 'Degrees, labs, projects', to: '/degrees#undergraduate' },
-      { label: 'Postgraduate', sub: 'Research and specialisation', to: '/degrees#postgraduate' },
+      { label: 'Undergraduate', sub: 'Degrees, labs, projects', to: '/degrees?level=ug' },
+      { label: 'Postgraduate', sub: 'Research and specialisation', to: '/degrees?level=pg' },
     ],
   },
   {
@@ -356,7 +360,10 @@ const megaMenu = [
     to: '/institutions',
     tagline: 'Operations, not a campus tour',
     items: [
-      { label: 'Schools & colleges', sub: 'Delivery and records', to: '/institutions#institution-types' },
+      { label: 'Schools', sub: 'Class delivery and records', to: '/institutions?audience=schools' },
+      { label: 'Colleges', sub: 'Programmes and LMS', to: '/institutions?audience=colleges' },
+      { label: 'Universities', sub: 'Curriculum and lifecycle', to: '/institutions?audience=universities' },
+      { label: 'Training organisations', sub: 'Batches and certification', to: '/institutions?audience=training' },
       { label: 'Skylent OS', sub: 'Institutional infrastructure', to: '/os' },
     ],
   },

@@ -9,6 +9,8 @@ export type WorldDoor = {
   href: string
   question: string
   promise: string
+  who: string
+  next: string
 }
 
 export const WORLD_DOORS: WorldDoor[] = [
@@ -16,8 +18,10 @@ export const WORLD_DOORS: WorldDoor[] = [
     id: 'learn',
     label: 'Learn',
     href: '/skills',
-    question: 'Build a skill you can show.',
+    question: 'Build skills you can show.',
     promise: 'Programmes, projects, practice, evidence.',
+    who: 'Professionals and career-switchers building a capability.',
+    next: 'Open the Learn catalogue',
   },
   {
     id: 'exams',
@@ -25,6 +29,8 @@ export const WORLD_DOORS: WorldDoor[] = [
     href: '/exams',
     question: 'Prepare for the exam you are taking.',
     promise: 'Syllabus, practice, tests, review.',
+    who: 'People sitting a specific paper.',
+    next: 'Choose an exam',
   },
   {
     id: 'schooling',
@@ -32,20 +38,26 @@ export const WORLD_DOORS: WorldDoor[] = [
     href: '/junior',
     question: 'Choose your class, then learn.',
     promise: 'Grades, subjects, concepts, experiments.',
+    who: 'Class 1–12 learners and families.',
+    next: 'Choose a class',
   },
   {
     id: 'university',
     label: 'University',
     href: '/degrees',
-    question: 'Study a degree, not a slogan.',
-    promise: 'Undergraduate and postgraduate studios.',
+    question: 'Study undergraduate or postgraduate work.',
+    promise: 'Curriculum, labs, research, pathways.',
+    who: 'Degree seekers — first degree or later specialisation.',
+    next: 'Open University',
   },
   {
     id: 'career',
     label: 'Career',
     href: '/career',
-    question: 'What can I do next?',
+    question: 'What do you want to do next?',
     promise: 'Jobs, interviews, evidence, CareerOS.',
+    who: 'People looking for work, interviews, or proof to show.',
+    next: 'Choose a next action',
   },
   {
     id: 'institutions',
@@ -53,8 +65,33 @@ export const WORLD_DOORS: WorldDoor[] = [
     href: '/institutions',
     question: 'Run learning as an operation.',
     promise: 'Programmes, delivery, Skylent OS.',
+    who: 'Schools, colleges, universities, and training organisations.',
+    next: 'Select institution type',
   },
 ]
+
+export const PROGRAM_TYPE_LABELS: Record<ProgramType, string> = {
+  PROFESSIONAL: 'Professional',
+  CERTIFICATE: 'Certificate',
+  WEBINAR: 'Webinar',
+  EXAM_PREP: 'Exam prep',
+  SCHOOLING: 'Schooling',
+  UNDERGRADUATE: 'Undergraduate',
+  POSTGRADUATE: 'Postgraduate',
+}
+
+export const EXAM_LOOP = ['Learn', 'Practice', 'Test', 'Review', 'Measure', 'Improve'] as const
+
+export const EXAM_WORKSPACE = [
+  { id: 'syllabus', label: 'Syllabus' },
+  { id: 'preparation', label: 'Preparation' },
+  { id: 'practice', label: 'Practice' },
+  { id: 'tests', label: 'Tests' },
+  { id: 'review', label: 'Review' },
+  { id: 'progress', label: 'Progress' },
+] as const
+
+export const SCHOOL_LAYERS = ['Subjects', 'Concepts', 'Lessons', 'Activities', 'Experiments', 'Progress'] as const
 
 export const WORLD_THEME: Record<WorldId, AuroraThemeId> = {
   learn: 'professional',

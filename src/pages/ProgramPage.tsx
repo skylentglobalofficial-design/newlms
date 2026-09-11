@@ -4,17 +4,21 @@ import { C, FadeIn, EnrollmentModal, PageShell } from '../components/shared'
 import {
   T, Section, SectionHeader, Eyebrow, Button, Badge,
 } from '../components/ui'
-import { GlassSurface } from '../components/foundation'
 import { resolveAuroraTheme, getDomainAccent, type AuroraThemeId } from '../aurora-themes'
-import ProgramWorkflowVisual from '../components/program/ProgramWorkflowVisual'
 import {
   ProgramOutcomesSection,
-  ProgramCurriculumRail,
   ProgramLearningSection,
   ProgramCareerSection,
   ProgramAssessmentSection,
 } from '../components/program/ProgramSections'
-import { ProductVisual, resolveProgramVisualId } from '../components/product/ProductVisuals'
+import {
+  AssessmentPanel,
+  ContentRail,
+  ContextHeader,
+  CurriculumNav,
+  ProductLayout,
+  StickyActionBar,
+} from '../components/product-ui'
 import { programs } from '../data'
 import type { ProgramType, EnrollmentStatus } from '../data'
 import { isProgramEnrollable } from '../lib/catalog-api'
@@ -103,7 +107,7 @@ function scrollToSection(id: string) {
 // ─── STICKY SECTION NAV ───────────────────────────────────────────────────────
 
 function StickyProgramNav({
-  sections, activeId, ctaLabel, onCTA, accent, ctaDisabled,
+  sections, activeId, ctaLabel, onCTA, ctaDisabled,
 }: {
   sections: NavSection[]
   activeId: string
@@ -113,40 +117,27 @@ function StickyProgramNav({
   ctaDisabled?: boolean
 }) {
   return (
-    <nav style={{
-      position: 'sticky', top: T.navH, zIndex: 80,
-      background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)',
-      WebkitBackdropFilter: 'var(--glass-01-blur)', borderBottom: '1px solid var(--glass-01-border)',
-    }}>
-      <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
-        <div className="program-sticky-nav-scroll" style={{ display: 'flex', overflowX: 'auto', scrollbarWidth: 'none' }}>
+    <nav className="product-header" style={{ position: 'sticky', top: T.navH, zIndex: 80, background: '#fff', marginBottom: 0, padding: '8px 0' }} aria-label="Programme sections">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div className="product-tabs program-sticky-nav-scroll">
           {sections.map(s => (
             <button
               key={s.id}
+              type="button"
               onClick={() => scrollToSection(s.id)}
-              style={{
-                background: 'none', border: 'none',
-                borderBottom: `2px solid ${activeId === s.id ? accent.primary : 'transparent'}`,
-                padding: '14px 14px', color: activeId === s.id ? accent.text : 'rgba(255,255,255,0.42)',
-                fontSize: 12.5, fontFamily: 'var(--font-body)', fontWeight: activeId === s.id ? 600 : 400,
-                cursor: 'pointer', transition: 'color 0.2s, border-color 0.2s', whiteSpace: 'nowrap', flexShrink: 0,
-              }}
+              aria-current={activeId === s.id ? 'location' : undefined}
             >
               {s.label}
             </button>
           ))}
         </div>
         <button
+          type="button"
+          className="product-btn"
           onClick={onCTA}
           disabled={ctaDisabled}
-          style={{
-            flexShrink: 0, background: accent.primary, border: 'none', color: C.black,
-            borderRadius: T.rControl, padding: '8px 18px', fontSize: 12.5, fontWeight: 600,
-            cursor: ctaDisabled ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
-            opacity: ctaDisabled ? 0.72 : 1,
-          }}
         >
-          {ctaLabel}{ctaDisabled ? '' : ' →'}
+          {ctaLabel}
         </button>
       </div>
     </nav>
@@ -179,34 +170,20 @@ function EnrollmentPanel({
   const isCareerOS = !!program.careerSupport
 
   return (
-    <GlassSurface level={2} padding="0" style={{ position: 'sticky', top: T.navH + 72 }}>
-      <div style={{ padding: '22px 24px 18px', borderBottom: `1px solid ${T.lineDark}` }}>
-        <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 6 }}>Starting from</div>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 30, fontWeight: 700, color: C.white, lineHeight: 1 }}>
-            ₹{lowestPrice.toLocaleString('en-IN')}
-          </div>
-        </div>
-        {multipleTiers && (
-          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 4 }}>Multiple plans below</div>
-        )}
-      </div>
-
-      <div style={{ padding: '16px 24px', borderBottom: `1px solid ${T.lineDark}` }}>
-        {[
-          { text: `${status === 'coming_soon' ? 'Planned: ' : 'Next batch: '}${program.upcomingBatch}` },
-          { text: `${program.duration} · ${program.format}` },
-          { text: program.cert },
-          ...(isCareerOS ? [{ text: 'Unlocks Career OS on completion', highlight: true }] : []),
-        ].map(({ text, highlight }, i) => (
-          <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 12 }}>
-            <div style={{ width: 4, height: 4, borderRadius: '50%', background: highlight ? accent.primary : 'rgba(255,255,255,0.25)', flexShrink: 0, marginTop: 6 }} />
-            <span style={{ color: highlight ? accent.text : 'rgba(255,255,255,0.72)', fontSize: 13, lineHeight: 1.45 }}>{text}</span>
-          </div>
-        ))}
-      </div>
-
-      <div style={{ padding: '18px 24px 22px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div>
+      <h2 className="product-filter-title">Programme summary</h2>
+      <p style={{ margin: '0 0 8px', fontSize: '1.45rem', fontWeight: 750, letterSpacing: '-0.03em' }}>
+        ₹{lowestPrice.toLocaleString('en-IN')}
+      </p>
+      {multipleTiers && <p className="panel-note" style={{ marginTop: 0 }}>Multiple plans below</p>}
+      <ul className="assessment-list">
+        <li><strong>{status === 'coming_soon' ? 'Planned' : 'Next batch'}</strong><span className="product-count">{program.upcomingBatch}</span></li>
+        <li><strong>Duration</strong><span className="product-count">{program.duration}</span></li>
+        <li><strong>Format</strong><span className="product-count">{program.format}</span></li>
+        <li><strong>Credential</strong><span className="product-count">{program.cert}</span></li>
+        {isCareerOS ? <li><strong>Career OS</strong><span className="product-count">Unlocks on completion</span></li> : null}
+      </ul>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
         <Button
           variant="primary"
           full
@@ -216,15 +193,10 @@ function EnrollmentPanel({
         >
           {catalogLoading ? ctaLabel : enrollable ? `${ctaLabel} →` : ctaLabel}
         </Button>
-        <Link to="/contact" style={{ display: 'block', textAlign: 'center', color: 'rgba(255,255,255,0.45)', fontSize: 13, textDecoration: 'none', padding: '6px 0' }}>
-          Talk to an advisor
-        </Link>
+        <Link to="/contact" className="product-btn-ghost">Talk to an advisor</Link>
       </div>
-
-      <div style={{ padding: '10px 24px', borderTop: `1px solid ${T.lineDark}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11 }}>Secure enrollment · Verified certificate</span>
-      </div>
-    </GlassSurface>
+      <p className="panel-note">Enrollment uses the live catalogue status. Assessment stays in the programme.</p>
+    </div>
   )
 }
 
@@ -320,103 +292,90 @@ export default function ProgramPage() {
 
   const highlightTier = pricingTiers.find(p => p.highlight) ?? pricingTiers[0]
   const allPricingFeatures = Array.from(new Set(pricingTiers.flatMap(p => p.features)))
-  const programVisualId = resolveProgramVisualId(program.slug, program.programType)
   const world = worldForProgramType(program.programType)
   const pathway = programPathway(program.programType)
+  const assessmentItems = isExamPrep
+    ? [
+        { title: 'Practice', detail: 'Timed questions, then worked solutions.' },
+        { title: 'Tests', detail: 'Section tests and mocks after you attempt them.' },
+        { title: 'Review', detail: 'Wrong-answer review in the learning workspace.' },
+      ]
+    : [
+        { title: 'Module work', detail: 'Exercises and checkpoints inside the curriculum.' },
+        { title: 'Projects', detail: projectCount ? `${projectCount} assessed project${projectCount === 1 ? '' : 's'}` : 'Project work as published in the curriculum.' },
+        { title: 'Credential', detail: program.cert },
+      ]
 
   return (
     <PageShell aurora={false} auroraTheme={auroraTheme}>
-      <div className={`program-pdp program-pdp--${world} world-page world-page--${world}`}>
-      {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <section id="program-hero" style={{ position: 'relative', overflow: 'hidden', padding: `32px ${T.gutter} 0` }}>
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <button
-            onClick={() => navigate('/programs')}
-            style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.45)', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-mono)', fontSize: 11, marginBottom: 24, padding: 0, letterSpacing: '0.06em' }}
-          >
-            ← ALL PROGRAMS
-          </button>
+      <div className={`product-shell program-pdp program-pdp--${world}`} data-world={world}>
+      <ContentRail>
+      <section id="program-hero">
+        <ContextHeader
+          world={world}
+          eyebrow={typeLabel}
+          title={program.name}
+          description={program.desc}
+          breadcrumbs={[
+            { label: 'Home', href: '/' },
+            { label: 'Programmes', href: '/programs' },
+            { label: program.name },
+          ]}
+          actions={
+            <>
+              <Button variant="primary" themeId={auroraTheme} onClick={catalogLoading ? undefined : () => setApplyOpen(true)} style={catalogLoading ? { opacity: 0.72, cursor: 'not-allowed' } : undefined}>{ctaLabel}</Button>
+              <Button variant="secondary" onClick={() => scrollToSection(program.curriculumDetail?.length ? 'curriculum' : 'assessment')}>
+                {isExamPrep ? 'View syllabus' : 'View curriculum'}
+              </Button>
+            </>
+          }
+        />
 
-          <div className="program-hero-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 0.88fr) minmax(0, 1.12fr) minmax(260px, 0.72fr)', gap: 'clamp(24px,4vw,40px)', alignItems: 'start' }}>
+        <p className="programme-meta" style={{ marginTop: -8, marginBottom: 18 }}>
+          <span>{program.level}</span>
+          <span>{program.duration}</span>
+          <span>{program.format}</span>
+          {isCareerOS ? <span>Career OS</span> : null}
+          {enrollStatus === 'coming_soon' ? <span>Coming soon</span> : null}
+        </p>
+
+        <ProductLayout
+          variant="pdp"
+          sidebar={
+            <EnrollmentPanel
+              program={program}
+              status={enrollStatus}
+              ctaLabel={panelCtaLabel}
+              onCTA={() => setApplyOpen(true)}
+              accent={domainAccent}
+              lowestPrice={lowestPrice}
+              multipleTiers={pricingTiers.length > 1}
+              enrollable={enrollable}
+              catalogLoading={catalogLoading}
+            />
+          }
+        >
+          <div className="pdp-main">
             <div>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
-                <Badge tone="dark" accent>{typeLabel}</Badge>
-                <Badge tone="dark">{program.level}</Badge>
-                {isCareerOS && <Badge tone="dark" accent>+ Career OS</Badge>}
-                {enrollStatus === 'coming_soon' && <Badge tone="dark">Coming Soon</Badge>}
-              </div>
-
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '0 0 12px', maxWidth: 560 }}>
-                {program.name}
-              </h1>
-              <p style={{ color: domainAccent.text, fontSize: 15, fontWeight: 500, margin: '0 0 14px', maxWidth: 520 }}>
-                Outcome: {program.outcome}
-              </p>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 12px' }}>
-                {program.desc}
-              </p>
+              <p style={{ margin: '0 0 10px', fontWeight: 650 }}>Who it is for / outcome</p>
+              <p className="product-lede" style={{ margin: 0 }}>{program.outcome}</p>
               <ul className="world-pathway" aria-label="Programme path">
                 {pathway.map((step) => <li key={step}>{step}</li>)}
               </ul>
-
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 0 }}>
-                <Button variant="primary" size="lg" themeId={auroraTheme} onClick={catalogLoading ? undefined : () => setApplyOpen(true)} style={catalogLoading ? { opacity: 0.72, cursor: 'not-allowed' } : undefined}>{ctaLabel}{catalogLoading ? '' : ' →'}</Button>
-                <Button
-                  variant="secondary"
-                  size="lg"
-                  onClick={() => scrollToSection(program.curriculumDetail?.length ? 'curriculum' : 'outcomes')}
-                >
-                  {isExamPrep ? 'View Subjects' : 'View Curriculum'}
-                </Button>
-              </div>
             </div>
-
-            <FadeIn delay={60}>
-              <div className="program-hero-visual-col" style={{ minHeight: 'clamp(360px, 48vh, 520px)' }}>
-                <ProgramWorkflowVisual slug={program.slug} programType={program.programType} programName={program.name} />
-              </div>
-            </FadeIn>
-
-            <FadeIn delay={80}>
-              <EnrollmentPanel
-                program={program}
-                status={enrollStatus}
-                ctaLabel={panelCtaLabel}
-                onCTA={() => setApplyOpen(true)}
-                accent={domainAccent}
-                lowestPrice={lowestPrice}
-                multipleTiers={pricingTiers.length > 1}
-                enrollable={enrollable}
-                catalogLoading={catalogLoading}
+            <AssessmentPanel items={assessmentItems} />
+            {program.curriculumDetail?.length ? (
+              <CurriculumNav
+                items={program.curriculumDetail.map((mod) => ({ id: mod.number, label: `${mod.number} ${mod.title}`, meta: mod.duration }))}
+                current={curriculumOpen ?? undefined}
               />
-            </FadeIn>
+            ) : null}
           </div>
-
-          {/* Quick facts strip */}
-          <div style={{ paddingTop: 28, paddingBottom: 28, marginTop: 4, borderTop: `1px solid ${T.lineDark}`, display: 'flex', gap: 'clamp(20px,4vw,48px)', flexWrap: 'wrap' }}>
-            {[
-              { label: 'Duration', value: program.duration },
-              { label: 'Format', value: program.format },
-              { label: 'Level', value: program.level },
-              ...(isExamPrep
-                ? [{ label: 'Sections', value: program.examSections?.join(' · ') ?? '—' }]
-                : [
-                    ...(moduleCount ? [{ label: 'Modules', value: String(moduleCount) }] : []),
-                    ...(projectCount ? [{ label: 'Projects', value: String(projectCount) }] : []),
-                  ]),
-              { label: 'Certificate', value: program.cert },
-              { label: enrollStatus === 'coming_soon' ? 'Planned Batch' : 'Next Batch', value: program.upcomingBatch },
-            ].filter(f => f.value).map(({ label, value }) => (
-              <div key={label}>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 5 }}>{label}</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{value}</div>
-              </div>
-            ))}
-          </div>
-        </div>
+        </ProductLayout>
       </section>
 
       <StickyProgramNav sections={navSections} activeId={activeSection} ctaLabel={ctaLabel} onCTA={() => setApplyOpen(true)} accent={domainAccent} ctaDisabled={catalogLoading} />
+      </ContentRail>
 
       {/* ── OVERVIEW ──────────────────────────────────────────────────────── */}
       <Section id="overview" tone="canvas" divider>
@@ -509,9 +468,9 @@ export default function ProgramPage() {
           <div style={{ marginTop: 48, display: 'grid', gridTemplateColumns: 'minmax(220px, 0.85fr) 1fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }} className="two-col program-curriculum-layout">
             {program.curriculumDetail && (
               <FadeIn>
-                <ProgramCurriculumRail
-                  themeId={auroraTheme}
-                  modules={program.curriculumDetail.map(m => ({ number: m.number, title: m.title, duration: m.duration }))}
+                <CurriculumNav
+                  items={program.curriculumDetail.map(m => ({ id: m.number, label: m.title, meta: m.duration }))}
+                  current={curriculumOpen ?? undefined}
                 />
               </FadeIn>
             )}
@@ -521,7 +480,7 @@ export default function ProgramPage() {
               const isLast = i === program.curriculumDetail!.length - 1
               return (
                 <FadeIn key={mod.number} delay={i * 30}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '48px 1fr', gap: '0 24px', position: 'relative' }} className="program-curriculum-row">
+                  <div id={`module-${mod.number}`} style={{ display: 'grid', gridTemplateColumns: '48px 1fr', gap: '0 24px', position: 'relative' }} className="program-curriculum-row">
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <div style={{
                         width: 36, height: 36, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -589,21 +548,15 @@ export default function ProgramPage() {
             const diffColor = proj.difficulty === 'Beginner' ? '#4ade80' : proj.difficulty === 'Intermediate' ? '#fbbf24' : '#f87171'
             return (
               <FadeIn delay={40}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'center', marginTop: 36 }} className="two-col program-project-featured">
-                  <ProductVisual
-                    id={programVisualId}
-                    themeId={auroraTheme}
-                    style={{ minHeight: 240 }}
-                    label={`${proj.title} · workspace`}
-                  />
+                <div style={{ marginTop: 36 }} className="program-project-featured">
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                      <span className="skylent-label" style={{ color: 'rgba(255,255,255,0.3)' }}>Project {String(featuredProject + 1).padStart(2, '0')}</span>
+                      <span className="skylent-label">Project {String(featuredProject + 1).padStart(2, '0')}</span>
                       <span style={{ color: diffColor, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.06em' }}>{proj.difficulty}</span>
                     </div>
-                    <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 14px' }}>{proj.title}</h3>
-                    <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 14px' }}>{proj.what}</p>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
+                    <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 14px' }}>{proj.title}</h3>
+                    <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: '0 0 14px' }}>{proj.what}</p>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.slate }}>
                       {proj.skills.join(' · ')}
                     </div>
                   </div>
@@ -733,21 +686,12 @@ export default function ProgramPage() {
       {/* ── CERTIFICATION + FAQ transition ────────────────────────────────── */}
       <Section tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionCompact }}>
         <FadeIn>
-          <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'center' }} className="program-cert-split">
-            <GlassSurface level={2} padding="24px 22px" style={{ textAlign: 'center' }}>
-              <div style={{
-                width: 56, height: 56, borderRadius: 14, margin: '0 auto 16px',
-                background: `linear-gradient(135deg, ${domainAccent.primary}, ${domainAccent.secondary})`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-              }}>
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="8" r="6"/><path d="M8.5 14.5L6 22l6-2 6 2-2.5-7.5"/></svg>
+            <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'center' }} className="program-cert-split">
+              <div className="action-panel" style={{ textAlign: 'center' }}>
+                <div className="skylent-label" style={{ marginBottom: 6 }}>Credential</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, lineHeight: 1.3 }}>{program.cert}</div>
+                <div className="panel-note">Verifiable on completion</div>
               </div>
-              <div className="skylent-label" style={{ color: domainAccent.textMuted, marginBottom: 6 }}>Credential</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.white, lineHeight: 1.3 }}>{program.cert}</div>
-              <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${T.lineDark}`, fontSize: 10, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)' }}>
-                Verifiable on completion
-              </div>
-            </GlassSurface>
             <div>
               <Eyebrow tone="dark">Certificate</Eyebrow>
               <h2 className="skylent-display-sm" style={{ color: C.white, margin: '14px 0 12px' }}>
@@ -862,22 +806,16 @@ export default function ProgramPage() {
       </Section>
 
       {/* ── FINAL CTA ─────────────────────────────────────────────────────── */}
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.sectionTight} ${T.gutter}` }}>
-        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+      <section style={{ padding: `${T.sectionTight} ${T.gutter}` }}>
+        <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center' }}>
           <FadeIn>
-            <ProductVisual
-              id={programVisualId}
-              themeId={auroraTheme}
-              className="program-final-visual"
-              style={{ marginBottom: 32, minHeight: 220 }}
-            />
             <Eyebrow tone="dark" accent>Get started</Eyebrow>
-            <h2 className="skylent-display-md" style={{ color: C.white, margin: '20px 0 16px' }}>
+            <h2 className="skylent-display-md" style={{ color: C.ink, margin: '20px 0 16px' }}>
               {enrollStatus === 'coming_soon'
                 ? `Be notified when ${program.name} opens`
                 : `Ready to begin ${program.name}?`}
             </h2>
-            <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.75, margin: '0 0 36px' }}>
+            <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, margin: '0 0 36px' }}>
               {enrollStatus === 'coming_soon'
                 ? 'Register your interest and we will notify you when enrollment opens.'
                 : `Next batch starts ${program.upcomingBatch}.`}
@@ -889,6 +827,16 @@ export default function ProgramPage() {
           </FadeIn>
         </div>
       </section>
+
+      <StickyActionBar>
+        <div>
+          <strong>{program.name}</strong>
+          <div className="panel-note" style={{ margin: 0 }}>₹{lowestPrice.toLocaleString('en-IN')} · {program.duration}</div>
+        </div>
+        <button type="button" className="product-btn" disabled={catalogLoading} onClick={() => setApplyOpen(true)}>
+          {ctaLabel}
+        </button>
+      </StickyActionBar>
 
       {applyOpen && (
         <EnrollmentModal
