@@ -1744,3 +1744,25 @@
 .lms-project-fieldset input[type="file"] {
   max-width: 100%;
 }
+.lms-project-dashboard-list > li {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(8, 9, 9, 0.08);
+}
+.lms-project-dashboard-list > li:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.lms-project-dashboard-title {
+  color: #080909 !important;
+  margin: 0 !important;
+}
+.lms-project-meta-label {
+  font-weight: 650;
+  color: #24553a;
+}
+.lms-project-upload:focus-visible {
+  outline: 2px solid #3b8e61;
+  outline-offset: 2px;
+}

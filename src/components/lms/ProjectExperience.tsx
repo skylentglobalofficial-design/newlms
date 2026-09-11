@@ -64,6 +64,7 @@ export default function ProjectExperience({
   const scenario = content.scenario
   const dataset = brief.dataset
   const hasStoredArtifact = Boolean(uploadedArtifact?.stored || uploadedArtifact?.storageProvider === 'local')
+  const showCurrency = Boolean(content.dataset?.netRevenueFormula && content.dataset?.currency)
 
   async function handleDatasetDownload() {
     if (!dataset?.downloadPath || !dataset.available) return
@@ -170,22 +171,6 @@ export default function ProjectExperience({
         ) : null}
       </header>
 
-      <section className="lms-project-section" aria-labelledby={`${formId}-objective`}>
-        <h3 id={`${formId}-objective`}>Objective</h3>
-        <p>{content.objective}</p>
-      </section>
-
-      {(content.learningObjectives?.length ?? 0) > 0 ? (
-        <section className="lms-project-section" aria-labelledby={`${formId}-learning-objectives`}>
-          <h3 id={`${formId}-learning-objectives`}>Learning objectives</h3>
-          <ol className="lms-project-list">
-            {(content.learningObjectives ?? []).map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ol>
-        </section>
-      ) : null}
-
       <section className="lms-project-section" aria-labelledby={`${formId}-scenario`}>
         <h3 id={`${formId}-scenario`}>Scenario</h3>
         {scenario?.caseName ? <p className="lms-project-case">{scenario.caseName}</p> : null}
@@ -202,6 +187,22 @@ export default function ProjectExperience({
           <p className="lms-project-note">{content.businessProblem.gradingNote}</p>
         ) : null}
       </section>
+
+      <section className="lms-project-section" aria-labelledby={`${formId}-objective`}>
+        <h3 id={`${formId}-objective`}>Objective</h3>
+        <p>{content.objective}</p>
+      </section>
+
+      {(content.learningObjectives?.length ?? 0) > 0 ? (
+        <section className="lms-project-section" aria-labelledby={`${formId}-learning-objectives`}>
+          <h3 id={`${formId}-learning-objectives`}>Learning objectives</h3>
+          <ol className="lms-project-list">
+            {(content.learningObjectives ?? []).map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
 
       <section className="lms-project-section" aria-labelledby={`${formId}-task`}>
         <h3 id={`${formId}-task`}>Your task</h3>
@@ -226,29 +227,61 @@ export default function ProjectExperience({
       {(content.dashboardRequirements?.length ?? 0) > 0 ? (
         <section className="lms-project-section" aria-labelledby={`${formId}-dashboard`}>
           <h3 id={`${formId}-dashboard`}>Dashboard requirements</h3>
-          <ul className="lms-project-list">
+          <p className="lms-project-note">
+            Build a coherent set of views that answer these questions. Chart type can vary if the metric is clear.
+          </p>
+          <ul className="lms-project-list lms-project-dashboard-list">
             {(content.dashboardRequirements ?? []).map((item) => (
               <li key={item.id}>
-                <strong>
-                  {item.id} — {item.view}.
-                </strong>{' '}
-                {item.questionAnswered} Metric: {item.metric}. Acceptable form: {item.acceptableVisualForm}.{' '}
-                {item.interpretationExpectation}
+                <p className="lms-project-dashboard-title">
+                  <strong>
+                    {item.id} — {item.view}
+                  </strong>
+                </p>
+                <p>
+                  <span className="lms-project-meta-label">Question.</span> {item.questionAnswered}
+                </p>
+                <p>
+                  <span className="lms-project-meta-label">Metric.</span> {item.metric}
+                </p>
+                <p>
+                  <span className="lms-project-meta-label">Acceptable form.</span> {item.acceptableVisualForm}
+                </p>
+                <p>
+                  <span className="lms-project-meta-label">Interpretation.</span> {item.interpretationExpectation}
+                </p>
               </li>
             ))}
           </ul>
         </section>
       ) : null}
 
-      <section className="lms-project-section" aria-labelledby={`${formId}-optional`}>
-        <h3 id={`${formId}-optional`}>Optional extensions</h3>
-        <ul className="lms-project-list">
-          {(content.optionalAnalysis ?? []).map((item) => (
+      {(content.optionalAnalysis?.length ?? 0) > 0 ? (
+        <section className="lms-project-section" aria-labelledby={`${formId}-optional`}>
+          <h3 id={`${formId}-optional`}>Optional extensions</h3>
+          <ul className="lms-project-list">
+            {(content.optionalAnalysis ?? []).map((item) => (
+              <li key={item.id}>
+                <strong>{item.id}.</strong> {item.text}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <section className="lms-project-section" aria-labelledby={`${formId}-milestones`}>
+        <h3 id={`${formId}-milestones`}>Workflow</h3>
+        <ol className="lms-project-milestones">
+          {(content.milestones ?? []).map((item) => (
             <li key={item.id}>
-              <strong>{item.id}.</strong> {item.text}
+              <strong>{item.label}</strong>
+              <span>{item.purpose}</span>
+              {item.evidenceBeforeNext ? (
+                <span className="lms-project-note">Before moving on: {item.evidenceBeforeNext}</span>
+              ) : null}
             </li>
           ))}
-        </ul>
+        </ol>
       </section>
 
       <section className="lms-project-section" aria-labelledby={`${formId}-dataset`}>
@@ -257,7 +290,12 @@ export default function ProjectExperience({
           <>
             <p>
               <strong>{dataset.name}</strong>
-              {dataset.fileName ? ` — ${dataset.fileName}` : null}
+              {dataset.fileName ? (
+                <>
+                  {' '}
+                  — <span className="lms-project-filename">{dataset.fileName}</span>
+                </>
+              ) : null}
             </p>
             {dataset.disclaimer ? (
               <p className="lms-project-honesty" role="note">
@@ -271,7 +309,7 @@ export default function ProjectExperience({
                 {content.dataset.analysisWindow.asOfDate
                   ? ` (as-of ${content.dataset.analysisWindow.asOfDate})`
                   : ''}
-                {content.dataset.currency ? `. Currency: ${content.dataset.currency}.` : '.'}
+                {showCurrency ? `. Currency: ${content.dataset.currency}.` : '.'}
               </p>
             ) : null}
             {content.dataset?.netRevenueFormula ? (
@@ -285,7 +323,7 @@ export default function ProjectExperience({
                 onClick={() => void handleDatasetDownload()}
                 disabled={downloading}
               >
-                {downloading ? 'Preparing download…' : `Download ${dataset.fileName ?? 'dataset'}`}
+                {downloading ? 'Preparing download…' : 'Download dataset'}
               </button>
             ) : (
               <p className="lms-project-note" role="status">
@@ -307,21 +345,6 @@ export default function ProjectExperience({
         </ul>
       </section>
 
-      <section className="lms-project-section" aria-labelledby={`${formId}-milestones`}>
-        <h3 id={`${formId}-milestones`}>Milestones</h3>
-        <ol className="lms-project-milestones">
-          {(content.milestones ?? []).map((item) => (
-            <li key={item.id}>
-              <strong>{item.label}</strong>
-              <span>{item.purpose}</span>
-              {item.evidenceBeforeNext ? (
-                <span className="lms-project-note">Evidence before next: {item.evidenceBeforeNext}</span>
-              ) : null}
-            </li>
-          ))}
-        </ol>
-      </section>
-
       <section className="lms-project-section" aria-labelledby={`${formId}-deliverables`}>
         <h3 id={`${formId}-deliverables`}>Deliverables</h3>
         <p>Choose one analytical path, then submit the written analysis.</p>
@@ -338,22 +361,6 @@ export default function ProjectExperience({
             {(content.deliverables.writtenAnalysis.mustInclude ?? []).join('; ')}.
           </p>
         ) : null}
-      </section>
-
-      <section className="lms-project-section" aria-labelledby={`${formId}-submission`}>
-        <h3 id={`${formId}-submission`}>Submission requirements</h3>
-        <ul className="lms-project-list">
-          {(content.submissionExpectations?.requiredArtifacts ?? []).map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-        {content.submissionExpectations?.naming ? (
-          <p>Suggested naming: {content.submissionExpectations.naming}</p>
-        ) : null}
-        {content.submissionExpectations?.attachmentNote ? (
-          <p className="lms-project-note">{content.submissionExpectations.attachmentNote}</p>
-        ) : null}
-        {content.completionRule ? <p className="lms-project-note">{content.completionRule}</p> : null}
       </section>
 
       <section className="lms-project-section" aria-labelledby={`${formId}-rubric`}>
@@ -381,6 +388,22 @@ export default function ProjectExperience({
         </div>
       </section>
 
+      <section className="lms-project-section" aria-labelledby={`${formId}-submission`}>
+        <h3 id={`${formId}-submission`}>Submission requirements</h3>
+        <ul className="lms-project-list">
+          {(content.submissionExpectations?.requiredArtifacts ?? []).map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+        {content.submissionExpectations?.naming ? (
+          <p>Suggested naming: {content.submissionExpectations.naming}</p>
+        ) : null}
+        {content.submissionExpectations?.attachmentNote ? (
+          <p className="lms-project-note">{content.submissionExpectations.attachmentNote}</p>
+        ) : null}
+        {content.completionRule ? <p className="lms-project-note">{content.completionRule}</p> : null}
+      </section>
+
       <section className="lms-project-section" aria-labelledby={`${formId}-work`}>
         <h3 id={`${formId}-work`}>Your submission</h3>
         {submitted ? (
@@ -394,7 +417,8 @@ export default function ProjectExperience({
             </p>
             {uploadedArtifact ? (
               <p>
-                Stored artifact: {uploadedArtifact.fileName} ({formatBytes(uploadedArtifact.byteSize)})
+                Stored artifact: <span className="lms-project-filename">{uploadedArtifact.fileName}</span> (
+                {formatBytes(uploadedArtifact.byteSize)})
                 {uploadedArtifact.stored || uploadedArtifact.storageProvider === 'local'
                   ? ' — binary stored on LMS server'
                   : ''}
@@ -455,11 +479,14 @@ export default function ProjectExperience({
 
               {hasStoredArtifact && uploadedArtifact ? (
                 <p className="lms-project-note" role="status">
-                  Uploaded artifact confirmed: <strong className="lms-project-filename">{uploadedArtifact.fileName}</strong>{' '}
-                  ({formatBytes(uploadedArtifact.byteSize)}). You may replace it by uploading another file.
+                  Uploaded artifact confirmed:{' '}
+                  <strong className="lms-project-filename">{uploadedArtifact.fileName}</strong> (
+                  {formatBytes(uploadedArtifact.byteSize)}). You may replace it by uploading another file.
                 </p>
               ) : (
-                <p className="lms-project-note">No stored artifact yet.</p>
+                <p className="lms-project-note" role="status">
+                  No stored artifact yet. Upload is required before submit.
+                </p>
               )}
 
               <button
@@ -479,11 +506,18 @@ export default function ProjectExperience({
               </p>
             ) : null}
 
+            {!hasStoredArtifact ? (
+              <p className="lms-project-note" id={`${formId}-submit-hint`}>
+                Submit stays disabled until a stored analytical artifact upload is confirmed.
+              </p>
+            ) : null}
+
             <button
               type="submit"
               className="lms-project-submit"
               style={{ background: accent.primary }}
               disabled={submitting || !hasStoredArtifact}
+              aria-describedby={!hasStoredArtifact ? `${formId}-submit-hint` : undefined}
             >
               {submitting ? 'Submitting…' : 'Submit project'}
             </button>

@@ -285,7 +285,7 @@
       "Presents the fictional case as a real client/employer",
       "Includes individual employee ranking, hiring automation claims, or protected-class profiling as the analysis deliverable"
     ],
-    "attachmentNote": "Conceptually compatible with the existing l13 artifact-submission model: analytical artifacts are uploaded to authenticated LMS server storage (local filesystem provider). Filename-only metadata without a stored binary does not satisfy completion. If a learner cannot submit a .pbix file, a PDF export of the Power BI report pages is an accepted fallback for the analytical artifact. This Phase 15 package does not implement or alter that API."
+    "attachmentNote": "Analytical artifacts are uploaded to authenticated LMS server storage (local filesystem provider). Filename-only metadata without a stored binary does not satisfy completion. If a learner cannot submit a .pbix file, a PDF export of the Power BI report pages is an accepted fallback for the analytical artifact."
   },
   "prerequisites": {
     "sourceDerivedPath": "m1 Foundations → m2 Excel (including Excel Assignment) → m3 SQL → m4 Power BI (including Dashboard Project) → m5 Capstone → l13 Project 1: Sales Analysis → l14 Project 2: HR Dashboard",
