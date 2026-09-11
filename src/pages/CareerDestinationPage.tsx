@@ -27,12 +27,12 @@ const ROLE_TYPES = [
 
 export default function CareerDestinationPage() {
   const { user } = useAuth()
-  const osHref = user ? '/career-os' : '/login?returnTo=%2Fcareer-os'
+  const osHref = user ? '/career-os' : `/login?returnTo=${encodeURIComponent('/career-os')}`
 
-  function resolveHref(href: string, id: string) {
-    if (id === 'evidence') return href
-    if (id === 'careeros') return osHref
-    return user ? href : osHref
+  function resolveHref(href: string) {
+    if (user) return href
+    if (href.startsWith('/career-os')) return `/login?returnTo=${encodeURIComponent(href)}`
+    return href
   }
 
   const sidebar = (
@@ -66,7 +66,7 @@ export default function CareerDestinationPage() {
               rows={ACTIONS.map((action) => [
                 <strong key={`${action.id}-l`}>{action.label}</strong>,
                 action.detail,
-                <Link key={`${action.id}-c`} className="product-btn-ghost" to={resolveHref(action.href, action.id)}>Open</Link>,
+                <Link key={`${action.id}-c`} className="product-btn-ghost" to={resolveHref(action.href)}>Open</Link>,
               ])}
             />
 
