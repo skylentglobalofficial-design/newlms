@@ -4,9 +4,6 @@ import { courses, programs, workshops } from "../src/data.js"
 
 const prisma = new PrismaClient()
 
-/** Slugs hard-linked from HomePage.tsx — must exist in static data and DB. */
-const HOMEPAGE_PROGRAM_SLUGS = ["data-analytics-pro", "product-management", "full-stack"] as const
-
 type Failure = string
 
 function isLiveEnrollmentProgram(enrollmentStatus: string | null | undefined): boolean {
@@ -47,12 +44,20 @@ async function main() {
     }
   }
 
-  for (const slug of HOMEPAGE_PROGRAM_SLUGS) {
-    if (!staticProgramSlugs.includes(slug)) {
-      failures.push(`Homepage program slug missing from static catalog: ${slug}`)
+  for (const course of courses) {
+    const lessonCount = course.modules.reduce((sum, module) => sum + module.lessons.length, 0)
+    const projectCount = course.modules.reduce(
+      (sum, module) => sum + module.lessons.filter((lesson) => lesson.type === "assignment").length,
+      0,
+    )
+    if (course.lessons !== lessonCount) {
+      failures.push(`Course "${course.slug}" lessons field ${course.lessons} != module lesson count ${lessonCount}`)
     }
-    if (!dbProgramSlugs.has(slug)) {
-      failures.push(`Homepage program slug missing from DB: ${slug}`)
+    if (course.projects !== projectCount) {
+      failures.push(`Course "${course.slug}" projects field ${course.projects} != assignment count ${projectCount}`)
+    }
+    if (course.rating !== 0 || course.reviews !== 0) {
+      failures.push(`Course "${course.slug}" still publishes rating/reviews without a verified review store`)
     }
   }
 
@@ -117,7 +122,6 @@ async function main() {
   console.log("Catalog parity check passed.")
   console.log(`  Static courses: ${staticCourseSlugs.length} (all present in DB)`)
   console.log(`  Static programs: ${staticProgramSlugs.length} (all present in DB)`)
-  console.log(`  Homepage program slugs: ${HOMEPAGE_PROGRAM_SLUGS.join(", ")}`)
   console.log(`  Workshops: ${workshopSlugs.length} (no backend enrollment)`)
 }
 

@@ -58,7 +58,10 @@ router.get('/courses', async (_request, response, next) => {
         originalPrice: course.originalPrice,
         moduleCount: course.curriculum.length,
         lessonCount: countLearnableNodes(course.curriculum),
-        projectCount: course.projectCount,
+        projectCount: course.curriculum.reduce(
+          (sum, module) => sum + module.nodes.filter((node) => node.nodeType === 'ASSIGNMENT').length,
+          0,
+        ),
       })),
     })
   } catch (error) {
@@ -109,6 +112,10 @@ router.get('/courses/:slug', async (request, response, next) => {
         ...course,
         moduleCount: course.curriculum.length,
         lessonCount: countLearnableNodes(course.curriculum),
+        projectCount: course.curriculum.reduce(
+          (sum, module) => sum + module.nodes.filter((node) => node.nodeType === 'ASSIGNMENT').length,
+          0,
+        ),
       },
     })
   } catch (error) {

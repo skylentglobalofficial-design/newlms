@@ -11,7 +11,7 @@ import {
   ProductLayout,
   StickyActionBar,
 } from '../components/product-ui'
-import { programs } from '../data'
+import { courses, programs } from '../data'
 import type { ProgramType, EnrollmentStatus } from '../data'
 import { isProgramEnrollable } from '../lib/catalog-api'
 import { useCatalogProgram } from '../hooks/useCatalog'
@@ -109,7 +109,7 @@ function EnrollmentPanel({
         <li><strong>Format</strong><span className="product-count">{program.format}</span></li>
         <li><strong>Level</strong><span className="product-count">{program.level}</span></li>
         <li><strong>Credential</strong><span className="product-count">{program.cert}</span></li>
-        {program.careerSupport ? <li><strong>Career OS</strong><span className="product-count">Unlocks on completion</span></li> : null}
+        {program.careerSupport ? <li><strong>Career OS</strong><span className="product-count">Signed-in workspace</span></li> : null}
       </ul>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
         <button
@@ -296,6 +296,36 @@ export default function ProgramPage() {
                 <p className="programme-meta">{pathway.map((step) => <span key={step}>{step}</span>)}</p>
               </PdpBlock>
 
+              {catalog.data?.linkedCourseSlugs?.length ? (
+                <PdpBlock title="Live learning workspace">
+                  <p>Enrolment opens the LMS for the published course{catalog.data.linkedCourseSlugs.length === 1 ? '' : 's'} below. Brochure units that are not listed here are not in the live product yet.</p>
+                  <ul>
+                    {catalog.data.linkedCourseSlugs.map((courseSlug) => {
+                      const linked = courses.find((item) => item.slug === courseSlug)
+                      return (
+                        <li key={courseSlug}>
+                          <Link to={`/courses/${courseSlug}`}>{linked?.title ?? courseSlug}</Link>
+                          {linked ? ` · ${linked.modules.reduce((n, module) => n + module.lessons.length, 0)} lessons` : null}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                  {program.slug === 'data-analytics-pro' ? (
+                    <p className="panel-note">Python and Generative AI units in the brochure are not in the live Data Analytics course yet.</p>
+                  ) : null}
+                  {program.slug === 'data-science-ai' ? (
+                    <p className="panel-note">The brochure describes an 18-module machine-learning path. The live workspace today is Data Analytics plus Python for Data Science.</p>
+                  ) : null}
+                </PdpBlock>
+              ) : enrollStatus === 'open' ? (
+                <PdpBlock title="Live learning workspace">
+                  <EmptyState
+                    title="LMS not linked yet"
+                    description="This programme is in the catalogue, but a live course workspace is not published. Enrolment stays unavailable until that link exists."
+                  />
+                </PdpBlock>
+              ) : null}
+
               {program.whoIsItFor?.length ? (
                 <PdpBlock id="who" title="Who it is for">
                   <ul>
@@ -378,8 +408,8 @@ export default function ProgramPage() {
 
               {isCareerOS ? (
                 <PdpBlock id="career" title="Career relevance">
-                  <p>Completing this programme unlocks Career OS so you can turn coursework into applications. No placement numbers are published here.</p>
-                  <p><Link to="/career">Open Career</Link></p>
+                  <p>Career OS is a signed-in workspace for profile, applications, and interview prep. It is not gated on finishing this programme, and it does not include placement numbers or a guaranteed job board.</p>
+                  <p><Link to="/career">Open the public Career directory</Link> · <Link to="/career-os">Open Career OS</Link></p>
                 </PdpBlock>
               ) : null}
 
