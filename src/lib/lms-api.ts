@@ -243,17 +243,154 @@ export async function submitQuizAttempt(slug: string, lessonKey: string, answers
   return result.data
 }
 
+export type AssignmentAttachmentMeta = {
+  id?: string
+  fileName: string
+  mimeType: string
+  byteSize: number
+  storageProvider?: string
+  stored?: boolean
+  downloadPath?: string | null
+}
+
+export type AssignmentBriefPayload = {
+  title: string
+  kicker: string | null
+  content: AssignmentBriefContent | unknown
+  dataset: {
+    available: boolean
+    name: string | null
+    fileName: string | null
+    mimeType: string | null
+    disclaimer: string | null
+    downloadPath: string | null
+  } | null
+  artifactUpload: {
+    required: boolean
+    maxBytes: number
+    allowedExtensions: string[]
+    uploadPath: string
+    storageProvider: "local"
+    honesty: string
+  } | null
+}
+
+export type AssignmentBriefContent = {
+  objective?: string
+  scenario?: {
+    caseName?: string
+    framing?: string
+    narrative?: string
+  }
+  businessProblem?: {
+    primaryQuestion?: string
+    decisionSupported?: string
+    gradingNote?: string
+  }
+  learnerTask?: string[]
+  requiredAnalysis?: Array<{ id: string; text: string }>
+  optionalAnalysis?: Array<{ id: string; text: string }>
+  deliverables?: {
+    analyticalArtifact?: {
+      required?: boolean
+      paths?: Array<{ id: string; label: string; description: string }>
+      chooseOne?: boolean
+    }
+    writtenAnalysis?: {
+      required?: boolean
+      wordCount?: string
+      mustInclude?: string[]
+    }
+    optional?: string[]
+  }
+  constraints?: string[]
+  milestones?: Array<{ id: string; label: string; purpose: string }>
+  rubric?: Array<{
+    criterion: string
+    meets: string
+    partial: string
+    doesNotMeet: string
+  }>
+  submissionExpectations?: {
+    requiredArtifacts?: string[]
+    naming?: string
+    completeWhen?: string
+    incompleteIf?: string[]
+    attachmentNote?: string
+  }
+  prerequisites?: {
+    sourceDerivedPath?: string
+    statement?: string
+  }
+  completionRule?: string
+  dataset?: {
+    name?: string
+    analysisWindow?: { start: string; end: string }
+    currency?: string
+    netRevenueFormula?: string
+    honesty?: string
+  }
+}
+
+export type AssignmentStatePayload = {
+  lessonKey: string
+  title?: string
+  status: string
+  submittedAt: string | null
+  responseText?: string | null
+  attachments: AssignmentAttachmentMeta[]
+  brief: AssignmentBriefPayload | null
+}
+
 export async function fetchAssignmentState(slug: string, lessonKey: string) {
-  const result = await lmsGet<{ data: { lessonKey: string; status: string; submittedAt: string | null } }>(
+  const result = await lmsGet<{ data: AssignmentStatePayload }>(
     `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
   )
   return result.data
 }
 
-export async function updateAssignment(slug: string, lessonKey: string, action: "start" | "submit", responseText?: string) {
-  const result = await lmsMutate<{ data: { lessonKey: string; status: string; submittedAt: string | null } }>(
+export async function updateAssignment(
+  slug: string,
+  lessonKey: string,
+  action: "start" | "submit",
+  responseText?: string,
+  attachments?: Array<{ fileName: string; mimeType: string; byteSize: number }>,
+) {
+  const result = await lmsMutate<{ data: AssignmentStatePayload }>(
     `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
-    { action, responseText },
+    { action, responseText, attachments },
+  )
+  return result.data
+}
+
+/** Upload a real analytical artifact binary for project assignments (multipart). */
+export async function uploadAssignmentArtifact(slug: string, lessonKey: string, file: File) {
+  const token = await ensureCsrfToken()
+  const form = new FormData()
+  form.append("artifact", file, file.name)
+  const response = await fetch(`${API_BASE}/lms/courses/${slug}/lessons/${lessonKey}/assignment/artifact`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "X-CSRF-Token": token,
+    },
+    body: form,
+  })
+  const payload = (await response.json().catch(() => null)) as
+    | { data: { lessonKey: string; status: string; attachment: AssignmentAttachmentMeta }; error?: string }
+    | { error: string }
+    | null
+  if (!response.ok) {
+    throw new LmsHttpError(response.status, (payload as { error?: string } | null)?.error ?? "Artifact upload failed")
+  }
+  return (payload as { data: { lessonKey: string; status: string; attachment: AssignmentAttachmentMeta } }).data
+}
+
+/** Submit project written analysis after a stored artifact upload exists. */
+export async function submitProjectAssignment(slug: string, lessonKey: string, responseText: string) {
+  const result = await lmsMutate<{ data: AssignmentStatePayload }>(
+    `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
+    { action: "submit", responseText },
   )
   return result.data
 }

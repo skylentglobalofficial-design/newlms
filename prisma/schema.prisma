@@ -374,10 +374,32 @@ model CurriculumNode {
   quizAttempts          QuizAttempt[]
   assignmentProgress    AssignmentProgress[]
   lessonPractice        LessonPractice?
+  assignmentBrief       AssignmentBrief?
   lastAccessedEnrollments UserEnrollment[]   @relation("LastAccessedNode")
 
   @@unique([moduleId, sourceId])
   @@index([moduleId, order])
+}
+
+/// Node-scoped assignment/project brief for LMS Project Content Foundation.
+/// One optional brief per ASSIGNMENT curriculum node. Not a second project system.
+model AssignmentBrief {
+  id                 String   @id @default(uuid()) @db.Uuid
+  nodeId             String   @unique @db.Uuid
+  title              String
+  kicker             String?
+  /// Full authored brief JSON (objective, scenario, tasks, rubric, etc.)
+  content            Json
+  datasetName        String?
+  datasetFileName    String?
+  datasetMimeType    String?
+  /// Repo-relative path under content/ for deterministic curriculum assets.
+  datasetRelativePath String?
+  datasetDisclaimer  String?  @db.Text
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  node CurriculumNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
 }
 
 /// Lesson-scoped Practice content for LMS Phase 3 (content foundation).

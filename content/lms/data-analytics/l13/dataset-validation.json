@@ -1,0 +1,52 @@
+{
+  "generatedAt": "2026-09-10T19:57:53.786Z",
+  "fileName": "skylent_aether_home_goods_sales_v1.xlsx",
+  "honesty": "Synthetic / fictional Skylent curriculum data",
+  "counts": {
+    "dim_region": 4,
+    "dim_product": 16,
+    "fact_orders": 3000
+  },
+  "integrity": {
+    "duplicatePrimaryKeys": 0,
+    "foreignKeyViolations": 0,
+    "nullishKeys": 0,
+    "outOfRangeDates": 0,
+    "badDiscounts": 0,
+    "badQuantities": 0
+  },
+  "statusDistribution": {
+    "Completed": 2751,
+    "Returned": 136,
+    "Cancelled": 113,
+    "nonCompletedPct": 8.3
+  },
+  "netRevenueCompletedInr": 32918489,
+  "monthRevenueSample": {
+    "2024-01": 2756757,
+    "2024-02": 2722809,
+    "2024-03": 2613620,
+    "2024-04": 2731431,
+    "2024-05": 3288607,
+    "2024-06": 2979179,
+    "2024-07": 2636456,
+    "2024-08": 2064693,
+    "2024-09": 3054264,
+    "2024-10": 2718051,
+    "2024-11": 2919135,
+    "2024-12": 2433489
+  },
+  "regionRevenue": {
+    "R-SOUTH": 9525134,
+    "R-NORTH": 10791215,
+    "R-EAST": 6981930,
+    "R-WEST": 5620211
+  },
+  "categoryRevenue": {
+    "Decor": 6442310,
+    "Storage": 7068390,
+    "Kitchen": 9486307,
+    "Furniture": 9921482
+  },
+  "passed": true
+}

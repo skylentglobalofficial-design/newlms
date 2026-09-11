@@ -78,7 +78,7 @@ export function AssessmentSurface({
           <div style={{ textAlign: 'center', padding: '24px 0' }}>
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Submit</div>
             <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Submission recorded</div>
-            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>Awaiting faculty review — this can become evidence once reviewed.</div>
+            <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>Awaiting faculty review. No automatic score is generated here.</div>
           </div>
         </div>
       )

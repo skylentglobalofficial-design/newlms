@@ -1,0 +1,166 @@
+{
+  "courseSlug": "data-analytics",
+  "moduleSourceId": "m5",
+  "lessonSourceId": "l13",
+  "title": "Project 1: Sales Analysis",
+  "kicker": "PROJECT 1",
+  "contentClass": "AUTHORING_DECISION",
+  "sourceNote": "Phase 10 curriculum authoring specification. New Skylent curriculum content — not pre-existing repository material.",
+  "objective": "Demonstrate that you can take a synthetic multi-table sales dataset, prepare it for analysis, define business-relevant measures, analyse performance across time, region, and product category, identify at least two evidence-backed patterns, and communicate findings in a short stakeholder-facing summary with clear assumptions and limitations.",
+  "scenario": {
+    "caseName": "Aether Home Goods — Curriculum Sales Case",
+    "framing": "This is a fictional Skylent curriculum case. It is not a real client, employer, or live business engagement.",
+    "narrative": "Aether Home Goods is a fictional mid-size retailer selling home products across four regions. The curriculum provides a synthetic order history for a fixed analysis window. A learning facilitator (role-played in the brief as an operations lead) asks for a sales performance review before planning next quarter’s focus. Treat the data as authored curriculum material. Do not claim it is a real-world client dataset."
+  },
+  "businessProblem": {
+    "primaryQuestion": "Where is sales performance strong or weak across time, region, and product category, and what two priorities should the team investigate next?",
+    "decisionSupported": "Recommend two focus areas for the next planning discussion (for example a weak region, a soft category, a time-period anomaly, or a return-rate concern) — each tied to evidence from the dataset.",
+    "gradingNote": "There is no single correct recommendation. Evaluators assess evidence quality and reasoning, not a hidden right answer."
+  },
+  "learnerTask": [
+    "Inspect the provided tables: row counts, key uniqueness, nulls, date range, and status values.",
+    "Prepare an analysis-ready table or model (joins, calculated fields, and documented filters for cancelled/returned orders).",
+    "Formulate measures needed for the business problem (at minimum: net revenue and order count; optionally average order value).",
+    "Analyse the required views (R1–R5).",
+    "Interpret patterns in plain language — what changed, where, and why it might matter as a hypothesis, not as proven causation.",
+    "Communicate findings in the required written summary and visual artifact."
+  ],
+  "requiredAnalysis": [
+    { "id": "R1", "text": "What is total net revenue and order count for the analysis window?" },
+    { "id": "R2", "text": "How does net revenue trend by month?" },
+    { "id": "R3", "text": "How does performance compare by region (revenue and order count)?" },
+    { "id": "R4", "text": "How does performance compare by product category?" },
+    { "id": "R5", "text": "What share of orders (or revenue) is affected by cancelled or returned statuses, after preparation rules?" },
+    { "id": "R6", "text": "Based on R1–R5, state two evidence-backed priorities for next-quarter discussion." }
+  ],
+  "optionalAnalysis": [
+    { "id": "O1", "text": "Average order value by region or category" },
+    { "id": "O2", "text": "Top / bottom products by revenue (with caveat on volume)" },
+    { "id": "O3", "text": "Month × region heatmap or matrix" },
+    { "id": "O4", "text": "Simple SQL queries that reproduce one required aggregate (if you elect SQL)" }
+  ],
+  "deliverables": {
+    "analyticalArtifact": {
+      "required": true,
+      "paths": [
+        {
+          "id": "excel",
+          "label": "Path A — Excel",
+          "description": "Workbook with prepared data (or Power Query steps documented), required views (pivots/charts), and a Findings sheet."
+        },
+        {
+          "id": "powerbi",
+          "label": "Path B — Power BI",
+          "description": "PBIX file, or PDF export of report pages if PBIX upload is not available, with model relationships, required visuals, and a findings page or text box."
+        }
+      ],
+      "chooseOne": true
+    },
+    "writtenAnalysis": {
+      "required": true,
+      "wordCount": "400–800 words",
+      "mustInclude": [
+        "Filters used",
+        "R1 headline metrics",
+        "R6 two priorities with evidence pointers",
+        "Limitations"
+      ]
+    },
+    "optional": ["SQL file verifying one aggregate"]
+  },
+  "constraints": [
+    "Permitted tools: Excel and/or Power BI; optional SQL for verification.",
+    "Scope: only the curriculum dataset for the stated analysis window.",
+    "External data is not permitted.",
+    "Document filters (for example exclude Cancelled from net revenue) in the write-up.",
+    "Out of scope: forecasting models, ML, A/B tests, hiring/placement claims, inventing data.",
+    "Correlation/patterns only — do not claim causation.",
+    "Another reviewer should be able to regenerate R1–R5 from the submitted artifact and stated filters.",
+    "Do not present Aether Home Goods as a real client."
+  ],
+  "milestones": [
+    { "id": "inspect", "label": "Inspect", "purpose": "Confirm understanding of tables, grain, and statuses." },
+    { "id": "prepare", "label": "Prepare", "purpose": "Build an analysis-ready model with documented filters." },
+    { "id": "analyse", "label": "Analyse", "purpose": "Complete R1–R5." },
+    { "id": "communicate", "label": "Communicate", "purpose": "Produce the artifact and written priorities (R6)." }
+  ],
+  "rubric": [
+    {
+      "criterion": "Data preparation",
+      "meets": "Joins/model correct; status filters documented; grain clear.",
+      "partial": "Model mostly usable; filters vague.",
+      "doesNotMeet": "Wrong joins, silent exclusion of data, or unusable prep."
+    },
+    {
+      "criterion": "Analytical coverage",
+      "meets": "R1–R5 addressed with views/numbers.",
+      "partial": "Most required views present; gaps in one area.",
+      "doesNotMeet": "Missing majority of required views."
+    },
+    {
+      "criterion": "Analytical correctness",
+      "meets": "Aggregations match stated filters; no contradictory totals.",
+      "partial": "Minor calculation issues that do not overturn conclusions.",
+      "doesNotMeet": "Systematic calculation errors."
+    },
+    {
+      "criterion": "Reasoning",
+      "meets": "Priorities (R6) tied to evidence; limitations noted.",
+      "partial": "Priorities weakly linked to charts.",
+      "doesNotMeet": "Opinions with no evidence, or invented facts."
+    },
+    {
+      "criterion": "Interpretation honesty",
+      "meets": "No fake causation; no client/employer claims.",
+      "partial": "Mild overclaim.",
+      "doesNotMeet": "Fabricated findings or real-client framing."
+    },
+    {
+      "criterion": "Communication",
+      "meets": "Clear stakeholder note and readable visuals.",
+      "partial": "Understandable but disorganized.",
+      "doesNotMeet": "Unreadable or missing written analysis."
+    },
+    {
+      "criterion": "Reproducibility",
+      "meets": "Reviewer can follow filters and recreate key totals.",
+      "partial": "Partial documentation.",
+      "doesNotMeet": "Cannot reproduce."
+    }
+  ],
+  "submissionExpectations": {
+    "requiredArtifacts": [
+      "Written analysis in the assignment response text (400–800 words)",
+      "Analytical artifact binary upload for Excel (.xlsx/.xls), Power BI (.pbix), PDF export, or optional .sql verification"
+    ],
+    "naming": "DA_l13_SalesAnalysis_<LearnerNameOrId>.<ext>",
+    "completeWhen": "Written analysis is present and at least one analytical artifact binary has been uploaded and stored.",
+    "incompleteIf": [
+      "Missing write-up",
+      "Missing analytical artifact binary",
+      "Uses external data",
+      "Presents the fictional case as a real client"
+    ],
+    "attachmentNote": "Analytical artifacts are uploaded to authenticated LMS server storage (local filesystem provider). Filename-only metadata without a stored binary does not satisfy completion."
+  },
+  "prerequisites": {
+    "sourceDerivedPath": "m1 Foundations → m2 Excel (including Excel Assignment) → m3 SQL → m4 Power BI (including Dashboard Project) → m5 Capstone → l13",
+    "statement": "From the curriculum sequence titles only, you are expected to have been exposed to spreadsheet work, SQL for analysis, and Power BI/DAX at a course-sequence level. This brief does not claim mastery of specific unpublished lesson scripts. LMS unlock requires sequential completion of prior lessons."
+  },
+  "completionRule": "Upload the analytical artifact binary, then submit the required written analysis through the existing assignment submission path. Completion marks the lesson complete and unlocks the next node when unlock rules allow. CareerOS evidence, mentor scores, and automatic insight grading are out of scope.",
+  "dataset": {
+    "name": "skylent_aether_home_goods_sales_v1",
+    "fileName": "skylent_aether_home_goods_sales_v1.xlsx",
+    "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "honesty": "Synthetic / fictional Skylent curriculum data. Not a real client extract, employer dataset, or production retail feed.",
+    "purpose": "Synthetic curriculum input for Project 1: Sales Analysis.",
+    "analysisWindow": {
+      "start": "2024-01-01",
+      "end": "2024-12-31"
+    },
+    "currency": "INR",
+    "targetLineCount": { "min": 2400, "max": 3600 },
+    "netRevenueFormula": "For lines where order_status = 'Completed': quantity * unit_price * (1 - discount_pct). Returned and Cancelled are excluded from net revenue but remain available for R5.",
+    "sheets": ["dim_region", "dim_product", "fact_orders"]
+  }
+}
