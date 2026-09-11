@@ -695,7 +695,220 @@ async function main() {
   assert(afterL13.data.data.lessonStates.l13?.complete === true, "l13 lesson progress should be complete")
   assert(afterL13.data.data.lessonStates.l14?.locked === false, "l14 should unlock after l13 completion")
 
-  console.log("23. Other title-only assignment nodes remain without authored briefs")
+  console.log("23. HR Dashboard project (l14) brief, dataset, artifact, submit, unlock")
+  const anonL14 = await request(anonJar, `/lms/courses/${courseSlug}/lessons/l14/assignment`)
+  assert(anonL14.response.status === 401, "Unauthenticated l14 assignment access must be rejected")
+
+  const blockedL14 = await request(userBJar, `/lms/courses/${courseSlug}/lessons/l14/assignment`)
+  assert(blockedL14.response.status === 403, "Unenrolled learner cannot load l14 brief")
+
+  const l14Get = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l14/assignment`)
+  assert(l14Get.response.ok, "Enrolled unlocked learner should load l14 assignment")
+  assert(l14Get.data.data.brief, "l14 should include project brief")
+  assert(l14Get.data.data.brief.title === "Project 2: HR Dashboard", "l14 brief title should match authored content")
+  assert(l14Get.data.data.brief.kicker === "PROJECT 2", "l14 brief kicker should be PROJECT 2")
+  assert(l14Get.data.data.brief.content?.objective, "l14 brief should include objective")
+  assert(
+    Array.isArray(l14Get.data.data.brief.content?.learningObjectives) &&
+      l14Get.data.data.brief.content.learningObjectives.length >= 5,
+    "l14 brief should include learning objectives",
+  )
+  assert(
+    Array.isArray(l14Get.data.data.brief.content?.requiredAnalysis) &&
+      l14Get.data.data.brief.content.requiredAnalysis.length === 7,
+    "l14 brief should include R1–R7",
+  )
+  assert(
+    Array.isArray(l14Get.data.data.brief.content?.dashboardRequirements) &&
+      l14Get.data.data.brief.content.dashboardRequirements.length === 7,
+    "l14 brief should include dashboard requirements D1–D7",
+  )
+  assert(
+    String(l14Get.data.data.brief.content?.scenario?.caseName ?? "").toLowerCase().includes("virelia"),
+    "l14 scenario should be Virelia HR case",
+  )
+  assert(
+    !String(JSON.stringify(l14Get.data.data.brief.content?.requiredAnalysis ?? [])).toLowerCase().includes("net revenue"),
+    "l14 required analysis must remain HR-specific (not sales revenue language)",
+  )
+  assert(l14Get.data.data.brief.dataset?.available === true, "l14 dataset should be available")
+  assert(
+    l14Get.data.data.brief.dataset?.name === "skylent_virelia_shared_services_hr_v1",
+    "l14 dataset name should match Phase 15/16 contract",
+  )
+  assert(
+    String(l14Get.data.data.brief.dataset?.disclaimer ?? "").toLowerCase().includes("synthetic"),
+    "l14 dataset disclaimer must identify synthetic curriculum data",
+  )
+  assert(l14Get.data.data.brief.artifactUpload?.required === true, "l14 brief should require artifact upload")
+
+  const fs = await import("node:fs")
+  const validationPath = "content/lms/data-analytics/l14/dataset-validation.json"
+  assert(fs.existsSync(validationPath), "l14 dataset-validation.json should exist")
+  const validation = JSON.parse(fs.readFileSync(validationPath, "utf8")) as {
+    passed?: boolean
+    datasetId?: string
+    counts?: Record<string, number>
+    sheets?: string[]
+  }
+  assert(validation.passed === true, "l14 dataset validation must pass")
+  assert(validation.datasetId === "skylent_virelia_shared_services_hr_v1", "validation datasetId must match")
+  assert(
+    Array.isArray(validation.sheets) &&
+      validation.sheets.includes("dim_employee") &&
+      validation.sheets.includes("fact_hr_events"),
+    "validation should list expected HR sheets",
+  )
+  assert(
+    (validation.counts?.dim_employee ?? 0) >= 420 && (validation.counts?.dim_employee ?? 0) <= 580,
+    "employee row count should be within authored range",
+  )
+
+  const anonL14Dataset = await request(anonJar, `/lms/courses/${courseSlug}/lessons/l14/assignment/dataset`)
+  assert(anonL14Dataset.response.status === 401, "Unauthenticated l14 dataset download must be rejected")
+  const blockedL14Dataset = await request(userBJar, `/lms/courses/${courseSlug}/lessons/l14/assignment/dataset`)
+  assert(blockedL14Dataset.response.status === 403, "Unenrolled l14 dataset download must be rejected")
+
+  // Locked learner enrolled but not unlocked through l13
+  const lockedL14Jar: CookieJar = new Map()
+  await signupUser(lockedL14Jar, "l14-locked")
+  await request(lockedL14Jar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { courseSlug },
+  })
+  for (const lessonKey of ["l1", "l2", "l3", "l4", "l5", "l6", "l7", "l8", "l9", "l10", "l11", "l12"]) {
+    await completeLesson(lockedL14Jar, courseSlug, lessonKey)
+  }
+  const lockedL14Assign = await request(lockedL14Jar, `/lms/courses/${courseSlug}/lessons/l14/assignment`)
+  assert(lockedL14Assign.response.status === 403, "l14 remains locked until l13 completes")
+  const lockedL14Dataset = await request(lockedL14Jar, `/lms/courses/${courseSlug}/lessons/l14/assignment/dataset`)
+  assert(lockedL14Dataset.response.status === 403, "locked l14 dataset download must be rejected")
+
+  const l14DatasetRes = await fetch(
+    `${API_BASE}/lms/courses/${courseSlug}/lessons/l14/assignment/dataset`,
+    { headers: { Cookie: cookieHeader(projectJar) } },
+  )
+  assert(l14DatasetRes.ok, "Enrolled unlocked learner should download l14 dataset")
+  const l14DatasetBuf = Buffer.from(await l14DatasetRes.arrayBuffer())
+  assert(l14DatasetBuf.byteLength > 10_000, "l14 dataset download should return substantial xlsx bytes")
+  assert(l14DatasetBuf[0] === 0x50 && l14DatasetBuf[1] === 0x4b, "l14 dataset should be a ZIP/xlsx signature")
+
+  async function uploadL14Artifact(jar: CookieJar, fileName: string, bytes: Buffer, mimeType: string) {
+    const form = new FormData()
+    form.append("artifact", new Blob([new Uint8Array(bytes)], { type: mimeType }), fileName)
+    const response = await fetch(`${API_BASE}/lms/courses/${courseSlug}/lessons/l14/assignment/artifact`, {
+      method: "POST",
+      headers: {
+        Cookie: cookieHeader(jar),
+        "X-CSRF-Token": jar.get("csrf") ?? "",
+      },
+      body: form,
+    })
+    const setCookie = response.headers.getSetCookie?.() ?? []
+    parseSetCookie(setCookie, jar)
+    const text = await response.text()
+    let data: any = null
+    try {
+      data = text ? JSON.parse(text) : null
+    } catch {
+      data = { error: text }
+    }
+    return { response, data }
+  }
+
+  const hrAnalysis =
+    "As-of 2024-12-31. Active = hire_date <= as-of and (exit_date null or exit_date > as-of). R1 active headcount from dim_employee. R2–R3 composition by department and job level. R4 monthly hire/exit movement from fact_hr_events. R5 exits concentrated in Customer Operations. R6 tenure bands for active staff. R7 findings: (1) observe elevated exits in Customer Operations — investigate further without claiming causation; (2) observe Technology headcount growth in the window — investigate hiring mix. Limitations: synthetic Virelia curriculum data; observation vs hypothesis kept distinct; no hiring recommendations."
+
+  const l14TextOnly = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l14/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "submit", responseText: hrAnalysis },
+  })
+  assert(l14TextOnly.response.status === 400, "l14 submit without stored artifact should fail")
+
+  const l14MetaOnly = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l14/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: {
+      action: "submit",
+      responseText: hrAnalysis,
+      attachments: [
+        {
+          fileName: "DA_l14_HRDashboard_test.xlsx",
+          mimeType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          byteSize: 4096,
+        },
+      ],
+    },
+  })
+  assert(l14MetaOnly.response.status === 400, "l14 submit with metadata-only attachments should fail")
+
+  const l14Exe = await uploadL14Artifact(projectJar, "malware.xlsx", exeBytes, "application/octet-stream")
+  assert(l14Exe.response.status === 400, "l14 executable disguised as xlsx must be rejected")
+
+  const l14BadExt = await uploadL14Artifact(projectJar, "notes.html", Buffer.from("<html></html>"), "text/html")
+  assert(l14BadExt.response.status === 400, "l14 disallowed extension must be rejected")
+
+  const l14NoCsrf = await fetch(`${API_BASE}/lms/courses/${courseSlug}/lessons/l14/assignment/artifact`, {
+    method: "POST",
+    headers: { Cookie: cookieHeader(projectJar) },
+    body: (() => {
+      const form = new FormData()
+      form.append(
+        "artifact",
+        new Blob([new Uint8Array(zipBytes)], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }),
+        "DA_l14_HRDashboard_test.xlsx",
+      )
+      return form
+    })(),
+  })
+  assert(l14NoCsrf.status === 403 || l14NoCsrf.status === 401, "l14 artifact upload without CSRF must fail")
+
+  const l14Upload = await uploadL14Artifact(
+    projectJar,
+    "DA_l14_HRDashboard_final.xlsx",
+    zipBytes,
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  )
+  assert(l14Upload.response.ok, `Valid l14 xlsx upload should succeed: ${JSON.stringify(l14Upload.data)}`)
+  assert(l14Upload.data.data.attachment?.stored === true, "Uploaded l14 xlsx should be marked stored")
+  const l14AttachmentId = l14Upload.data.data.attachment.id as string
+
+  const l14OwnerDownload = await fetch(
+    `${API_BASE}/lms/courses/${courseSlug}/lessons/l14/assignment/attachments/${l14AttachmentId}`,
+    { headers: { Cookie: cookieHeader(projectJar) } },
+  )
+  assert(l14OwnerDownload.ok, "Owner should download their l14 stored artifact")
+
+  const l14OtherDownload = await fetch(
+    `${API_BASE}/lms/courses/${courseSlug}/lessons/l14/assignment/attachments/${l14AttachmentId}`,
+    { headers: { Cookie: cookieHeader(userBJar) } },
+  )
+  assert(l14OtherDownload.status === 403, "Other learner must not download this l14 artifact (IDOR)")
+
+  const l14ArtifactOnly = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l14/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "submit" },
+  })
+  assert(l14ArtifactOnly.response.status === 400, "l14 artifact without written analysis should not complete")
+
+  const l14Submit = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l14/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "submit", responseText: hrAnalysis },
+  })
+  assert(l14Submit.response.ok, `l14 project submit should succeed: ${JSON.stringify(l14Submit.data)}`)
+  assert(l14Submit.data.data.status === "submitted", "l14 assignment status should be submitted")
+
+  const afterL14 = await request(projectJar, `/lms/courses/${courseSlug}`)
+  assert(afterL14.data.data.lessonStates.l14?.complete === true, "l14 lesson progress should be complete")
+  assert(afterL14.data.data.lessonStates.l15?.locked === false, "l15 should unlock after l14 completion")
+
+  console.log("24. Other title-only assignment nodes remain without authored briefs")
   const l6Brief = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`)
   assert(l6Brief.response.ok, "l6 assignment GET should still work")
   assert(l6Brief.data.data.brief === null, "l6 must remain title-only (no brief)")
@@ -703,11 +916,6 @@ async function main() {
   const l12Brief = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l12/assignment`)
   assert(l12Brief.response.ok, "l12 assignment GET should still work")
   assert(l12Brief.data.data.brief === null, "l12 must remain title-only (no brief)")
-
-  // l14 is unlocked after l13 submit above
-  const l14Brief = await request(projectJar, `/lms/courses/${courseSlug}/lessons/l14/assignment`)
-  assert(l14Brief.response.ok, "l14 assignment GET should work when unlocked")
-  assert(l14Brief.data.data.brief === null, "l14 must remain title-only (no brief)")
 
   for (const other of [
     { slug: "python-programming", lesson: "l6" },

@@ -277,6 +277,7 @@ export type AssignmentBriefPayload = {
 
 export type AssignmentBriefContent = {
   objective?: string
+  learningObjectives?: string[]
   scenario?: {
     caseName?: string
     framing?: string
@@ -290,6 +291,14 @@ export type AssignmentBriefContent = {
   learnerTask?: string[]
   requiredAnalysis?: Array<{ id: string; text: string }>
   optionalAnalysis?: Array<{ id: string; text: string }>
+  dashboardRequirements?: Array<{
+    id: string
+    view: string
+    questionAnswered: string
+    metric: string
+    acceptableVisualForm: string
+    interpretationExpectation: string
+  }>
   deliverables?: {
     analyticalArtifact?: {
       required?: boolean
@@ -304,7 +313,7 @@ export type AssignmentBriefContent = {
     optional?: string[]
   }
   constraints?: string[]
-  milestones?: Array<{ id: string; label: string; purpose: string }>
+  milestones?: Array<{ id: string; label: string; purpose: string; evidenceBeforeNext?: string }>
   rubric?: Array<{
     criterion: string
     meets: string
@@ -325,7 +334,7 @@ export type AssignmentBriefContent = {
   completionRule?: string
   dataset?: {
     name?: string
-    analysisWindow?: { start: string; end: string }
+    analysisWindow?: { start: string; end: string; asOfDate?: string }
     currency?: string
     netRevenueFormula?: string
     honesty?: string

@@ -175,6 +175,17 @@ export default function ProjectExperience({
         <p>{content.objective}</p>
       </section>
 
+      {(content.learningObjectives?.length ?? 0) > 0 ? (
+        <section className="lms-project-section" aria-labelledby={`${formId}-learning-objectives`}>
+          <h3 id={`${formId}-learning-objectives`}>Learning objectives</h3>
+          <ol className="lms-project-list">
+            {(content.learningObjectives ?? []).map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
+
       <section className="lms-project-section" aria-labelledby={`${formId}-scenario`}>
         <h3 id={`${formId}-scenario`}>Scenario</h3>
         {scenario?.caseName ? <p className="lms-project-case">{scenario.caseName}</p> : null}
@@ -212,6 +223,23 @@ export default function ProjectExperience({
         </ul>
       </section>
 
+      {(content.dashboardRequirements?.length ?? 0) > 0 ? (
+        <section className="lms-project-section" aria-labelledby={`${formId}-dashboard`}>
+          <h3 id={`${formId}-dashboard`}>Dashboard requirements</h3>
+          <ul className="lms-project-list">
+            {(content.dashboardRequirements ?? []).map((item) => (
+              <li key={item.id}>
+                <strong>
+                  {item.id} — {item.view}.
+                </strong>{' '}
+                {item.questionAnswered} Metric: {item.metric}. Acceptable form: {item.acceptableVisualForm}.{' '}
+                {item.interpretationExpectation}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
       <section className="lms-project-section" aria-labelledby={`${formId}-optional`}>
         <h3 id={`${formId}-optional`}>Optional extensions</h3>
         <ul className="lms-project-list">
@@ -239,7 +267,11 @@ export default function ProjectExperience({
             {content.dataset?.analysisWindow ? (
               <p>
                 Analysis window: {content.dataset.analysisWindow.start} through{' '}
-                {content.dataset.analysisWindow.end}. Currency: {content.dataset.currency ?? 'INR'}.
+                {content.dataset.analysisWindow.end}
+                {content.dataset.analysisWindow.asOfDate
+                  ? ` (as-of ${content.dataset.analysisWindow.asOfDate})`
+                  : ''}
+                {content.dataset.currency ? `. Currency: ${content.dataset.currency}.` : '.'}
               </p>
             ) : null}
             {content.dataset?.netRevenueFormula ? (
@@ -282,6 +314,9 @@ export default function ProjectExperience({
             <li key={item.id}>
               <strong>{item.label}</strong>
               <span>{item.purpose}</span>
+              {item.evidenceBeforeNext ? (
+                <span className="lms-project-note">Evidence before next: {item.evidenceBeforeNext}</span>
+              ) : null}
             </li>
           ))}
         </ol>
@@ -377,11 +412,17 @@ export default function ProjectExperience({
                 rows={14}
                 required
                 aria-describedby={`${formId}-wordcount`}
-                placeholder="Filters used, R1 headline metrics, R6 priorities with evidence, and limitations…"
+                placeholder="Document filters and metric definitions, headline metrics, evidence-backed findings, and limitations. Separate observation from interpretation."
               />
               <p id={`${formId}-wordcount`} className="lms-project-note">
-                Word count: {words} (target 400–800)
+                Word count: {words} (target{' '}
+                {content.deliverables?.writtenAnalysis?.wordCount ?? '400–800 words'})
               </p>
+              {content.deliverables?.writtenAnalysis?.mustInclude?.length ? (
+                <p className="lms-project-note">
+                  Must include: {content.deliverables.writtenAnalysis.mustInclude.join('; ')}.
+                </p>
+              ) : null}
             </div>
 
             <fieldset className="lms-project-fieldset">

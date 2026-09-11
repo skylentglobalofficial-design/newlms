@@ -1,0 +1,69 @@
+{
+  "generatedAt": "2026-09-11T05:44:28.533Z",
+  "datasetId": "skylent_virelia_shared_services_hr_v1",
+  "fileName": "skylent_virelia_shared_services_hr_v1.xlsx",
+  "honesty": "Synthetic / fictional Skylent curriculum data. Not a real HRIS extract, employer dataset, or production people-analytics feed. No real employee PII.",
+  "analysisWindow": {
+    "start": "2023-01-01",
+    "end": "2024-12-31",
+    "asOfDate": "2024-12-31"
+  },
+  "sheets": [
+    "dim_department",
+    "dim_location",
+    "dim_employee",
+    "fact_hr_events"
+  ],
+  "counts": {
+    "dim_department": 6,
+    "dim_location": 5,
+    "dim_employee": 500,
+    "fact_hr_events": 646
+  },
+  "integrity": {
+    "duplicateEmployeeKeys": 0,
+    "duplicateEventKeys": 0,
+    "foreignKeyViolations": 0,
+    "badDateSequences": 0,
+    "statusMismatch": 0,
+    "missingHireEvents": 0,
+    "exitEventMismatch": 0,
+    "salaryBandNullPct": 4.4
+  },
+  "analyticsSample": {
+    "activeHeadcount": 354,
+    "hiresInWindow": 130,
+    "exitsInWindow": 133,
+    "activeByDepartment": {
+      "D-FIN": 47,
+      "D-COM": 49,
+      "D-OPS": 99,
+      "D-TEC": 100,
+      "D-PEO": 20,
+      "D-QUA": 39
+    },
+    "activeByJobLevel": {
+      "Specialist": 105,
+      "Lead": 28,
+      "Associate": 111,
+      "Manager": 28,
+      "Senior": 82
+    },
+    "exitsInWindowByDepartment": {
+      "D-TEC": 33,
+      "D-OPS": 52,
+      "D-QUA": 13,
+      "D-PEO": 8,
+      "D-COM": 16,
+      "D-FIN": 11
+    }
+  },
+  "piiPolicy": {
+    "realNames": false,
+    "emails": false,
+    "phones": false,
+    "governmentIds": false,
+    "protectedClassFields": false
+  },
+  "passed": true
+}

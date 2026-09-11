@@ -293,8 +293,8 @@
   },
   "completionRule": "Upload the analytical artifact binary, then submit the required written analysis through the existing assignment submission path (same conceptual completion model as l13). Completion marks the lesson complete and unlocks the next node when unlock rules allow. CareerOS evidence generation, mentor auto-scoring, recruiter/placement behaviour, and automatic insight grading are out of scope.",
   "dataset": {
-    "status": "CONTRACT_ONLY",
-    "productionBinaryStatus": "not_authored_in_phase_15",
+    "status": "BINARY_ATTACHED",
+    "productionBinaryStatus": "authored_in_phase_16",
     "name": "skylent_virelia_shared_services_hr_v1",
     "fileName": "skylent_virelia_shared_services_hr_v1.xlsx",
     "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
