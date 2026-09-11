@@ -4,7 +4,7 @@ import { C, FadeIn, EnrollmentModal, PageShell } from '../components/shared'
 import {
   T, Section, SectionHeader, Eyebrow, Button, Badge,
 } from '../components/ui'
-import { Aurora, GlassSurface } from '../components/foundation'
+import { GlassSurface } from '../components/foundation'
 import { resolveAuroraTheme, getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 import ProgramWorkflowVisual from '../components/program/ProgramWorkflowVisual'
 import {
@@ -12,12 +12,14 @@ import {
   ProgramCurriculumRail,
   ProgramLearningSection,
   ProgramCareerSection,
+  ProgramAssessmentSection,
 } from '../components/program/ProgramSections'
 import { ProductVisual, resolveProgramVisualId } from '../components/product/ProductVisuals'
 import { programs } from '../data'
 import type { ProgramType, EnrollmentStatus } from '../data'
 import { isProgramEnrollable } from '../lib/catalog-api'
 import { useCatalogProgram } from '../hooks/useCatalog'
+import { worldForProgramType } from '../skylent-worlds'
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
 
@@ -153,8 +155,16 @@ function StickyProgramNav({
 
 // ─── ENROLLMENT PANEL ─────────────────────────────────────────────────────────
 
+function programPathway(type: ProgramType): string[] {
+  if (type === 'EXAM_PREP') return ['Syllabus', 'Preparation', 'Practice', 'Tests', 'Assessment', 'Admissions path']
+  if (type === 'SCHOOLING') return ['Grade', 'Subject', 'Concept', 'Activity', 'Assessment']
+  if (type === 'UNDERGRADUATE') return ['Degree', 'Curriculum', 'Labs', 'Projects', 'Internships', 'Progression']
+  if (type === 'POSTGRADUATE') return ['Specialisation', 'Coursework', 'Research', 'Capstone', 'Faculty', 'Pathways']
+  return ['Skills', 'Curriculum', 'Projects', 'Practice', 'Evidence', 'Career relevance']
+}
+
 function EnrollmentPanel({
-  program, status, ctaLabel, onCTA, accent, lowestPrice, originalPrice, multipleTiers, enrollable, catalogLoading,
+  program, status, ctaLabel, onCTA, accent, lowestPrice, multipleTiers, enrollable, catalogLoading,
 }: {
   program: NonNullable<ReturnType<typeof programs.find>>
   status: EnrollmentStatus
@@ -162,7 +172,6 @@ function EnrollmentPanel({
   onCTA: () => void
   accent: ReturnType<typeof getDomainAccent>
   lowestPrice: number
-  originalPrice: number
   multipleTiers: boolean
   enrollable: boolean
   catalogLoading: boolean
@@ -177,11 +186,6 @@ function EnrollmentPanel({
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 30, fontWeight: 700, color: C.white, lineHeight: 1 }}>
             ₹{lowestPrice.toLocaleString('en-IN')}
           </div>
-          {originalPrice > lowestPrice && (
-            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 13, textDecoration: 'line-through', fontFamily: 'var(--font-mono)' }}>
-              ₹{originalPrice.toLocaleString('en-IN')}
-            </div>
-          )}
         </div>
         {multipleTiers && (
           <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 4 }}>Multiple plans below</div>
@@ -274,6 +278,7 @@ export default function ProgramPage() {
   const navSections: NavSection[] = program ? [
     { id: 'overview', label: 'Overview' },
     { id: 'outcomes', label: 'Outcomes' },
+    { id: 'assessment', label: 'Assessment' },
     ...(program.curriculumDetail?.length ? [{ id: 'curriculum', label: 'Curriculum' }] : []),
     ...(program.projectsDetail?.length ? [{ id: 'projects', label: 'Projects' }] : []),
     ...(program.projectsDetail?.length ? [{ id: 'tools', label: 'Tools' }] : []),
@@ -316,12 +321,14 @@ export default function ProgramPage() {
   const highlightTier = pricingTiers.find(p => p.highlight) ?? pricingTiers[0]
   const allPricingFeatures = Array.from(new Set(pricingTiers.flatMap(p => p.features)))
   const programVisualId = resolveProgramVisualId(program.slug, program.programType)
+  const world = worldForProgramType(program.programType)
+  const pathway = programPathway(program.programType)
 
   return (
-    <PageShell auroraTheme={auroraTheme}>
+    <PageShell aurora={false} auroraTheme={auroraTheme}>
+      <div className={`program-pdp program-pdp--${world} world-page world-page--${world}`}>
       {/* ── HERO ──────────────────────────────────────────────────────────── */}
-      <section id="program-hero" style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 32}px ${T.gutter} 0` }}>
-        <Aurora themeId={auroraTheme} variant="hero" />
+      <section id="program-hero" style={{ position: 'relative', overflow: 'hidden', padding: `32px ${T.gutter} 0` }}>
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <button
             onClick={() => navigate('/programs')}
@@ -345,9 +352,12 @@ export default function ProgramPage() {
               <p style={{ color: domainAccent.text, fontSize: 15, fontWeight: 500, margin: '0 0 14px', maxWidth: 520 }}>
                 Outcome: {program.outcome}
               </p>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 24px' }}>
+              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 12px' }}>
                 {program.desc}
               </p>
+              <ul className="world-pathway" aria-label="Programme path">
+                {pathway.map((step) => <li key={step}>{step}</li>)}
+              </ul>
 
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 0 }}>
                 <Button variant="primary" size="lg" themeId={auroraTheme} onClick={catalogLoading ? undefined : () => setApplyOpen(true)} style={catalogLoading ? { opacity: 0.72, cursor: 'not-allowed' } : undefined}>{ctaLabel}{catalogLoading ? '' : ' →'}</Button>
@@ -375,7 +385,6 @@ export default function ProgramPage() {
                 onCTA={() => setApplyOpen(true)}
                 accent={domainAccent}
                 lowestPrice={lowestPrice}
-                originalPrice={pricingTiers[0]?.originalPrice ?? lowestPrice}
                 multipleTiers={pricingTiers.length > 1}
                 enrollable={enrollable}
                 catalogLoading={catalogLoading}
@@ -478,6 +487,7 @@ export default function ProgramPage() {
       </Section>
 
       <ProgramOutcomesSection program={program} themeId={auroraTheme} accent={domainAccent} />
+      <ProgramAssessmentSection program={program} />
 
       {/* ── CURRICULUM PATH ───────────────────────────────────────────────── */}
       {program.curriculumDetail && program.curriculumDetail.length > 0 && (
@@ -813,7 +823,6 @@ export default function ProgramPage() {
               {pricingTiers.map(tier => (
                 <div key={tier.name} style={{ padding: '20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? `${domainAccent.subtle}` : 'transparent' }}>
                   <div style={{ fontFamily: 'var(--font-mono)', fontSize: 24, fontWeight: 700, color: C.white }}>₹{tier.price.toLocaleString('en-IN')}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.22)', fontSize: 12, textDecoration: 'line-through', marginTop: 4 }}>₹{tier.originalPrice.toLocaleString('en-IN')}</div>
                 </div>
               ))}
             </div>
@@ -854,7 +863,6 @@ export default function ProgramPage() {
 
       {/* ── FINAL CTA ─────────────────────────────────────────────────────── */}
       <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.sectionTight} ${T.gutter}` }}>
-        <Aurora themeId={auroraTheme} />
         <div style={{ maxWidth: 720, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <FadeIn>
             <ProductVisual
@@ -897,6 +905,7 @@ export default function ProgramPage() {
           onClose={() => setApplyOpen(false)}
         />
       )}
+      </div>
     </PageShell>
   )
 }

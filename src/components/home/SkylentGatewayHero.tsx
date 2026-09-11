@@ -4,7 +4,7 @@ import GatewayStage from './GatewayStage'
 import { GATEWAY_INTENTS, type GatewayIntentId } from './gateway-intents'
 
 export default function SkylentGatewayHero() {
-  const [intentId, setIntentId] = useState<GatewayIntentId>('skills')
+  const [intentId, setIntentId] = useState<GatewayIntentId>('learn')
   const intent = GATEWAY_INTENTS.find(item => item.id === intentId) ?? GATEWAY_INTENTS[0]
 
   const onIntentKeyDown = useCallback((event: React.KeyboardEvent, id: GatewayIntentId) => {

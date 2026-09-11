@@ -1,670 +1,130 @@
-import { useNavigate, Link } from 'react-router-dom'
-import { C, FadeIn, PageShell } from '../components/shared'
-import {
-  Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader,
-} from '../components/ui'
-import { Aurora, MediaImage, GlassSurface, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
+import { Link } from 'react-router-dom'
+import WorldFrame from '../components/world/WorldFrame'
+import WorldScene from '../components/world/WorldScenes'
 import { ProductVisual } from '../components/product/ProductVisuals'
-import { getDomainAccent } from '../aurora-themes'
 import { programs, workshops } from '../data'
-import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
+import { PG_STUDIO, UG_STUDIO, programsByType } from '../skylent-worlds'
 
-// ─── DATA ─────────────────────────────────────────────────────────────────────
-
-const PROFESSIONAL = programs.filter(p => p.programType === 'PROFESSIONAL')
-const CERTIFICATES = programs.filter(p => p.programType === 'CERTIFICATE')
-const FEATURED_PRO = PROFESSIONAL.find(p => p.slug === 'data-science-ai') ?? PROFESSIONAL[0]
-const OTHER_PRO = PROFESSIONAL.filter(p => p.slug !== FEATURED_PRO?.slug)
-const FEATURED_WORKSHOP = workshops[0]
-const OTHER_WORKSHOPS = workshops.slice(1, 4)
-
-const accent = getDomainAccent('professional')
-
-const SKILLS_NAV_ITEMS: ContextualNavItem[] = [
-  { id: 'webinars', label: 'Webinars', sub: 'Live sessions' },
-  { id: 'certificate', label: 'Certificate Programs', sub: 'Credentials' },
-  { id: 'professional', label: 'Professional Programs', sub: 'Career products' },
-  { id: 'job-assistance', label: 'Job Assistance', sub: 'Career support' },
-]
-
-// ─── HERO VISUAL ──────────────────────────────────────────────────────────────
-
-function SkillsHeroVisual() {
-  return (
-    <div className="skills-hero-visual-wrap" style={{ position: 'relative', minHeight: 'clamp(380px, 48vh, 520px)' }}>
-      <ProductVisual id="skills-workspace" themeId="professional" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: '-6% -5%',
-          border: `1px dashed ${accent.border}`,
-          borderRadius: T.rCard,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-    </div>
-  )
-}
-
-// ─── SKILLS PATH ──────────────────────────────────────────────────────────────
-
-function SkillsPathSection() {
-  const steps = [
-    { num: '01', label: 'Learn', desc: 'Structured curriculum and live sessions' },
-    { num: '02', label: 'Practice', desc: 'Activities, drills, and assessments' },
-    { num: '03', label: 'Build', desc: 'Projects with real deliverables' },
-    { num: '04', label: 'Prove', desc: 'Certificates and portfolio work' },
-    { num: '05', label: 'Move Forward', desc: 'Career OS and job support' },
-  ]
-
-  return (
-    <Section tone="canvas" divider style={{ paddingTop: T.sectionTight }}>
-      <FadeIn>
-        <SectionHeader
-          tone="dark"
-          eyebrow="Skills path"
-          title="Learning → proof → career."
-          lead="Webinars, certificates, and professional programs are separate products. Professional Programs include Career OS."
-        />
-      </FadeIn>
-
-      <div className="skills-path" style={{ marginTop: 48, position: 'relative' }}>
-        <div
-          aria-hidden
-          className="skills-path-line"
-          style={{
-            position: 'absolute',
-            top: 20,
-            left: '4%',
-            right: '4%',
-            height: 1,
-            background: `linear-gradient(90deg, transparent, ${accent.border}, ${accent.border}, transparent)`,
-          }}
-        />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 0 }}>
-          {steps.map((step, i) => (
-            <FadeIn key={step.label} delay={i * 50}>
-              <div style={{ padding: '0 12px 0 0' }}>
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    background: accent.subtle,
-                    border: `1px solid ${accent.border}`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: accent.text,
-                    marginBottom: 16,
-                  }}
-                >
-                  {step.num}
-                </div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(16px, 1.8vw, 20px)', fontWeight: 600, color: C.white, margin: '0 0 6px' }}>
-                  {step.label}
-                </h3>
-                <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 12.5, lineHeight: 1.55, margin: 0, maxWidth: 160 }}>
-                  {step.desc}
-                </p>
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </div>
-    </Section>
-  )
-}
-
-// ─── WEBINARS ─────────────────────────────────────────────────────────────────
-
-function WebinarsSection() {
-  const navigate = useNavigate()
-  if (!FEATURED_WORKSHOP) return null
-
-  return (
-    <Section id="webinars" tone="canvas" divider>
-      <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col">
-        <FadeIn>
-          <Link to={`/workshops/${FEATURED_WORKSHOP.slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block', position: 'relative' }}>
-            <MediaImage
-              src={PHOTO.workshop}
-              alt={FEATURED_WORKSHOP.title}
-              aspect="16/9"
-              overlay="full"
-            />
-            <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 2 }}>
-              <span
-                style={{
-                  background: 'rgba(5,5,5,0.65)',
-                  border: `1px solid ${accent.border}`,
-                  borderRadius: 6,
-                  padding: '4px 10px',
-                  fontSize: 10,
-                  fontFamily: 'var(--font-mono)',
-                  color: accent.text,
-                  letterSpacing: '0.08em',
-                }}
-              >
-                {FEATURED_WORKSHOP.mode} · {FEATURED_WORKSHOP.duration}
-              </span>
-            </div>
-          </Link>
-        </FadeIn>
-
-        <FadeIn delay={80}>
-          <Eyebrow tone="dark">Webinars</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
-            Show up for a session. Leave with a topic mastered.
-          </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 24px', maxWidth: 480 }}>
-            Event-oriented: speaker, date, duration, live or recorded. Open to anyone who wants a first step.
-          </p>
-
-          <div style={{ padding: '20px 0', borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}`, marginBottom: 24 }}>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Next session</div>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.white, margin: '0 0 10px', lineHeight: 1.25 }}>
-              {FEATURED_WORKSHOP.title}
-            </h3>
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.65, margin: '0 0 16px' }}>{FEATURED_WORKSHOP.desc}</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <div>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>Date</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.date}</div>
-              </div>
-              <div>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>Speaker</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.instructor}</div>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 24 }}>
-            {OTHER_WORKSHOPS.map((w, i) => (
-              <Link
-                key={w.slug}
-                to={`/workshops/${w.slug}`}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr auto',
-                  gap: 12,
-                  padding: '14px 0',
-                  borderBottom: i < OTHER_WORKSHOPS.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                  textDecoration: 'none',
-                  color: 'inherit',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{w.title}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{w.date} · {w.duration}</div>
-                </div>
-                <span style={{ color: accent.textMuted, fontSize: 14 }}>→</span>
-              </Link>
-            ))}
-          </div>
-
-          <Button variant="primary" onClick={() => navigate('/workshops')}>All webinars →</Button>
-        </FadeIn>
-      </div>
-    </Section>
-  )
-}
-
-// ─── CERTIFICATE PROGRAMS ─────────────────────────────────────────────────────
-
-function CertificateSection() {
-  const navigate = useNavigate()
-  const cert = CERTIFICATES[0]
-
-  return (
-    <Section id="certificate" tone="canvas" divider>
-      <div style={{ display: 'grid', gridTemplateColumns: '0.95fr 1.05fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col skills-cert-grid">
-        <FadeIn>
-          <Eyebrow tone="dark">Certificate Programs</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
-            A credential you can finish.
-          </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 480 }}>
-            Shorter than a Professional Program. Structured curriculum, assessment, and certification — without Career OS access.
-          </p>
-
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Credential path</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: 'rgba(255,255,255,0.65)', marginBottom: 28 }}>
-            {['Module', 'Skill', 'Project', 'Credential'].map((s, i, arr) => (
-              <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <span>{s}</span>
-                {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
-              </span>
-            ))}
-          </div>
-
-          {cert ? (
-            <>
-              <div style={{ padding: '20px 0', borderTop: `1px solid ${T.lineDark}`, marginBottom: 24 }}>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.white, margin: '0 0 10px' }}>{cert.name}</h3>
-                <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.65, margin: '0 0 14px' }}>{cert.desc}</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
-                  <span>{cert.duration}</span>
-                  <span>{cert.level}</span>
-                  <span>{cert.format}</span>
-                  <span>{cert.cert}</span>
-                </div>
-              </div>
-              <Button variant="primary" onClick={() => navigate(`/programs/${cert.slug}`)}>View Program →</Button>
-            </>
-          ) : (
-            <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Certificate programs will appear here as they are published.</p>
-          )}
-        </FadeIn>
-
-        <FadeIn delay={80}>
-          <GlassSurface level={2} padding="28px 28px 24px" style={{ marginBottom: 20 }}>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Certificate of completion</div>
-            <div style={{ borderBottom: `1px solid ${T.lineDark}`, paddingBottom: 16, marginBottom: 16 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: C.white, marginBottom: 4 }}>
-                {cert?.name ?? 'Certificate Program'}
-              </div>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>
-                {cert?.cert ?? 'Skylent Certificate'}
-              </div>
-            </div>
-            {cert?.curriculumDetail && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                {cert.curriculumDetail.slice(0, 4).map((mod, i) => (
-                  <div
-                    key={mod.number}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '32px 1fr',
-                      gap: 12,
-                      padding: '10px 0',
-                      borderBottom: i < 3 ? `1px solid ${T.lineDark}` : 'none',
-                    }}
-                  >
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text }}>{mod.number}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>{mod.title}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </GlassSurface>
-          {cert && (
-            <MediaImage
-              src={PROGRAM_PHOTO[cert.slug] ?? DEFAULT_PROGRAM_PHOTO}
-              alt={cert.name}
-              aspect="16/9"
-              objectPosition="center"
-            />
-          )}
-        </FadeIn>
-      </div>
-    </Section>
-  )
-}
-
-// ─── PROFESSIONAL PROGRAMS ────────────────────────────────────────────────────
-
-function ProfessionalSection() {
-  const navigate = useNavigate()
-  if (!FEATURED_PRO) return null
-
-  const featuredPhoto = PROGRAM_PHOTO[FEATURED_PRO.slug] ?? DEFAULT_PROGRAM_PHOTO
-  const featuredProject = FEATURED_PRO.projectsDetail?.[0]
-  const lowestPrice = Math.min(...FEATURED_PRO.pricing.map(p => p.price))
-
-  return (
-    <Section id="professional" tone="canvas" divider>
-      <FadeIn>
-        <SectionHeader
-          tone="dark"
-          eyebrow="Professional Programs"
-          title="The deepest conversion product."
-          lead="Career outcome, curriculum, projects, tools, cohort, certification, and Career OS. This is the program that opens the door."
-        />
-      </FadeIn>
-
-      <div style={{ marginTop: 32, marginBottom: 40 }}>
-        <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Program flow</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: 'rgba(255,255,255,0.65)' }}>
-          {['Learning', 'Project', 'Assessment', 'Career Support'].map((s, i, arr) => (
-            <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: i === arr.length - 1 ? accent.text : C.white }}>{s}</span>
-              {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="skills-pro-featured" style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }}>
-        <FadeIn>
-          <GlassSurface level={2} padding="20px 22px" style={{ marginBottom: 20 }}>
-            {featuredProject ? (
-              <>
-                <div className="skylent-label" style={{ color: accent.text, marginBottom: 12 }}>Featured project</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
-                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: 12, minHeight: 64 }}>
-                    <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.3)', marginBottom: 8 }}>DATASET</div>
-                    <div style={{ height: 4, width: '80%', background: 'rgba(255,255,255,0.1)', borderRadius: 2, marginBottom: 4 }} />
-                    <div style={{ height: 4, width: '60%', background: 'rgba(255,255,255,0.08)', borderRadius: 2 }} />
-                  </div>
-                  <div style={{ background: accent.subtle, borderRadius: 8, padding: 12, minHeight: 64, border: `1px solid ${accent.border}` }}>
-                    <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: accent.textMuted, marginBottom: 8 }}>RESULT</div>
-                    <div style={{ fontSize: 10, color: C.white, lineHeight: 1.45 }}>{featuredProject.title}</div>
-                  </div>
-                </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>
-                  {featuredProject.skills.join(' · ')}
-                </div>
-              </>
-            ) : (
-              <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Portfolio projects included in every professional program.</div>
-            )}
-          </GlassSurface>
-          <MediaImage src={featuredPhoto} alt={FEATURED_PRO.name} aspect="16/9" overlay="full" />
-        </FadeIn>
-
-        <FadeIn delay={80}>
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Professional Program · Career OS</div>
-          <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 12px' }}>{FEATURED_PRO.name}</h3>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px' }}>{FEATURED_PRO.desc}</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 24 }}>
-            {[
-              { k: 'Outcome', v: FEATURED_PRO.outcome },
-              { k: 'Duration', v: FEATURED_PRO.duration },
-              { k: 'Projects', v: String(FEATURED_PRO.projects) },
-              { k: 'From', v: `₹${lowestPrice.toLocaleString('en-IN')}` },
-            ].map(({ k, v }) => (
-              <div key={k}>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>{k}</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
-              </div>
-            ))}
-          </div>
-          <Button variant="primary" onClick={() => navigate(`/programs/${FEATURED_PRO.slug}`)}>View Program →</Button>
-
-          <div style={{ marginTop: 36, paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
-            <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 16 }}>All professional programs</div>
-            {OTHER_PRO.map((p, i) => (
-              <Link
-                key={p.slug}
-                to={`/programs/${p.slug}`}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr auto',
-                  gap: 12,
-                  padding: '14px 0',
-                  borderBottom: i < OTHER_PRO.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                  textDecoration: 'none',
-                  color: 'inherit',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 3 }}>{p.name}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{p.outcome} · {p.duration}</div>
-                </div>
-                <span style={{ color: accent.textMuted, fontSize: 14 }}>→</span>
-              </Link>
-            ))}
-          </div>
-        </FadeIn>
-      </div>
-    </Section>
-  )
-}
-
-// ─── JOB ASSISTANCE ───────────────────────────────────────────────────────────
-
-function JobAssistanceSection() {
-  const navigate = useNavigate()
-  const steps = [
-    { label: 'Profile', desc: 'Resume and profile review' },
-    { label: 'Interview Prep', desc: 'Preparation and mock interviews' },
-    { label: 'Job Discovery', desc: 'Curated job board' },
-    { label: 'Applications', desc: 'Apply and track status' },
-    { label: 'Tracking', desc: 'Application progress visibility' },
-  ]
-
-  return (
-    <Section id="job-assistance" tone="canvas" divider>
-      <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col">
-        <FadeIn>
-          <MediaImage
-            src={PHOTO.career}
-            alt="Career conversation"
-            aspect="4/3"
-            overlay="full"
-            objectPosition="center"
-          />
-        </FadeIn>
-
-        <FadeIn delay={80}>
-          <Eyebrow tone="dark">Not a course</Eyebrow>
-          <Heading tone="dark" size="md" style={{ margin: '20px 0 16px' }}>
-            Job Assistance
-          </Heading>
-          <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 520 }}>
-            Career-support product layered on Professional Programs and Career OS. Resume, profile, interview preparation, mock interviews, job opportunities, and applications — the work after the curriculum.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 28 }}>
-            {steps.map((step, i) => (
-              <div
-                key={step.label}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '120px 1fr',
-                  gap: 16,
-                  padding: '16px 0',
-                  borderBottom: i < steps.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                  alignItems: 'start',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary, flexShrink: 0 }} />
-                  <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{step.label}</span>
-                </div>
-                <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.55 }}>{step.desc}</span>
-              </div>
-            ))}
-          </div>
-
-          <Button variant="primary" onClick={() => navigate('/career-os')}>Open Career OS →</Button>
-        </FadeIn>
-      </div>
-    </Section>
-  )
-}
-
-// ─── CAREER PROOF ─────────────────────────────────────────────────────────────
-
-function CareerProofSection() {
-  const proof = [
-    { title: 'Projects', desc: 'Portfolio work from professional and certificate programs' },
-    { title: 'Assessments', desc: 'Module tests and program evaluations' },
-    { title: 'Certificates', desc: 'Completion credentials on finishing programs' },
-    { title: 'Career OS', desc: 'Interview prep, applications, and job tracking on completion' },
-  ]
-
-  return (
-    <Section tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
-      <FadeIn>
-        <SectionHeader
-          tone="dark"
-          eyebrow="How skills become career proof"
-          title="Capability you can show."
-          lead="Skills on Skylent are designed to produce evidence — projects, assessments, certificates, and career support — not just course completion."
-        />
-        <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }} className="skills-proof-grid">
-          {proof.map((item, i) => (
-            <div
-              key={item.title}
-              style={{
-                padding: '0 20px 0 0',
-                borderRight: i < proof.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-              }}
-            >
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, marginBottom: 10 }}>
-                {String(i + 1).padStart(2, '0')}
-              </div>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.white, margin: '0 0 8px' }}>{item.title}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </FadeIn>
-    </Section>
-  )
-}
-
-// ─── PROGRAM DISCOVERY ────────────────────────────────────────────────────────
-
-function ProgramDiscoverySection() {
-  const navigate = useNavigate()
-  if (!FEATURED_PRO) return null
-
-  const featuredPhoto = PROGRAM_PHOTO[FEATURED_PRO.slug] ?? DEFAULT_PROGRAM_PHOTO
-  const lowestPrice = Math.min(...FEATURED_PRO.pricing.map(p => p.price))
-  const allSkillsPrograms = [...PROFESSIONAL, ...CERTIFICATES]
-
-  return (
-    <Section tone="canvas" divider>
-      <FadeIn>
-        <SectionHeader
-          tone="dark"
-          eyebrow="Program discovery"
-          title="Find the right depth."
-          lead="Each listing shows duration, format, price, and outcome — from a single webinar to a full professional program."
-        />
-      </FadeIn>
-
-      <div className="skills-discovery" style={{ marginTop: 48, display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }}>
-        <FadeIn>
-          <Link to={`/programs/${FEATURED_PRO.slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-            <MediaImage src={featuredPhoto} alt={FEATURED_PRO.name} aspect="16/9" overlay="full" />
-            <div style={{ paddingTop: 24 }}>
-              <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Featured · Professional Program</div>
-              <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 12px' }}>{FEATURED_PRO.name}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>{FEATURED_PRO.desc}</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 20 }}>
-                {[
-                  { k: 'Outcome', v: FEATURED_PRO.outcome },
-                  { k: 'Duration', v: FEATURED_PRO.duration },
-                  { k: 'From', v: `₹${lowestPrice.toLocaleString('en-IN')}` },
-                ].map(({ k, v }) => (
-                  <div key={k}>
-                    <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 4 }}>{k}</div>
-                    <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Link>
-          <Button variant="primary" onClick={() => navigate(`/programs/${FEATURED_PRO.slug}`)}>View Program →</Button>
-        </FadeIn>
-
-        <FadeIn delay={80}>
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 20 }}>All skills programs</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {allSkillsPrograms.filter(p => p.slug !== FEATURED_PRO.slug).map((program, i, arr) => {
-              const photo = PROGRAM_PHOTO[program.slug] ?? DEFAULT_PROGRAM_PHOTO
-              const price = Math.min(...program.pricing.map(p => p.price))
-              const typeLabel = program.programType === 'CERTIFICATE' ? 'Certificate' : 'Professional'
-              return (
-                <Link
-                  key={program.slug}
-                  to={`/programs/${program.slug}`}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '64px 1fr auto',
-                    gap: 14,
-                    alignItems: 'center',
-                    padding: '16px 0',
-                    borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                  }}
-                >
-                  <div style={{ width: 64, height: 48, borderRadius: 8, overflow: 'hidden', background: C.ink3 }}>
-                    <MediaImage src={photo} alt="" aspect="4/3" radius={8} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 3, letterSpacing: '0.06em' }}>{typeLabel}</div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 2 }}>{program.name}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>{program.duration} · {program.outcome}</div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
-                    <div style={{ color: accent.textMuted, fontSize: 11, marginTop: 2 }}>→</div>
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
-          <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
-            <Button variant="secondary" onClick={() => navigate('/programs')}>Browse all programs</Button>
-          </div>
-        </FadeIn>
-      </div>
-    </Section>
-  )
-}
-
-// ─── PAGE ─────────────────────────────────────────────────────────────────────
+const PROFESSIONAL = programs.filter((p) => p.programType === 'PROFESSIONAL')
+const CERTIFICATES = programs.filter((p) => p.programType === 'CERTIFICATE')
 
 export default function SkillsPage() {
-  const navigate = useNavigate()
-  const activeSection = useSectionSpy(SKILLS_NAV_ITEMS.map(i => i.id))
+  const featured = PROFESSIONAL.find((p) => p.slug === 'data-science-ai') ?? PROFESSIONAL[0]
+  const rest = PROFESSIONAL.filter((p) => p.slug !== featured?.slug)
+  const cert = CERTIFICATES[0]
+  const ugCount = programsByType('UNDERGRADUATE').length
+  const pgCount = programsByType('POSTGRADUATE').length
 
   return (
-    <PageShell auroraTheme="professional">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
-        <Aurora themeId="professional" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero skills-page-hero">
-            <FadeIn>
-              <Eyebrow tone="dark" accent>Skills</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
-                Capability that can<br />become a career.
-              </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
-                Webinars are events. Certificate programs are credentials. Professional Programs are career products. Job Assistance is support — not a course.
-              </p>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Professional Programs</Button>
-                <Button variant="secondary" size="lg" onClick={() => navigate('/workshops')}>Browse Webinars</Button>
-              </div>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <SkillsHeroVisual />
-            </FadeIn>
+    <WorldFrame world="learn">
+      <header className="world-hero">
+        <div className="world-rail world-split">
+          <div>
+            <p className="world-kicker">Learn</p>
+            <h1 className="world-title">Build skills you can show.</h1>
+            <p className="world-lede">
+              Professional programmes, certificates, short courses, webinars, projects, and practice. The work is learn → practice → build → prove → move — not a slogan wall.
+            </p>
+            <ul className="world-flow" aria-label="Skills loop">
+              <li>Learn</li>
+              <li>Practice</li>
+              <li>Build</li>
+              <li>Prove</li>
+              <li>Move</li>
+            </ul>
+            <div className="world-actions">
+              <a className="world-btn" href="#professional">Professional programmes</a>
+              <Link className="world-btn-ghost" to="/programs?type=PROFESSIONAL">Catalogue</Link>
+            </div>
+          </div>
+          <div style={{ minHeight: 280 }}>
+            <ProductVisual id="skills-workspace" themeId="professional" style={{ height: '100%', minHeight: 280 }} />
+          </div>
+        </div>
+      </header>
+
+      <section className="world-section" id="professional">
+        <div className="world-rail">
+          <p className="world-kicker">Professional programmes</p>
+          <h2 className="world-title" style={{ fontSize: 'clamp(26px, 3vw, 36px)', maxWidth: '18ch' }}>Long enough to produce evidence.</h2>
+          <div className="world-card-list" style={{ marginTop: 22 }}>
+            {featured && (
+              <Link className="world-card" to={`/programs/${featured.slug}`}>
+                <span className="world-status">Featured</span>
+                <b>{featured.name}</b>
+                <p>{featured.desc}</p>
+                <span className="world-meta">{featured.duration} · {featured.projects} projects · {featured.format}</span>
+              </Link>
+            )}
+            {rest.map((program) => (
+              <Link key={program.slug} className="world-card" to={`/programs/${program.slug}`}>
+                <b>{program.name}</b>
+                <p>{program.desc}</p>
+                <span className="world-meta">{program.duration} · {program.level}</span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>
 
-      <ContextualNavBar items={SKILLS_NAV_ITEMS} themeId="professional" activeId={activeSection} />
+      <section className="world-section" id="certificate">
+        <div className="world-rail world-split">
+          <div>
+            <p className="world-kicker">Certificates</p>
+            <h2 className="world-title" style={{ fontSize: 'clamp(26px, 3vw, 36px)' }}>A credential you can finish.</h2>
+            {cert ? (
+              <>
+                <p className="world-lede">{cert.name}. {cert.desc}</p>
+                <div className="world-actions">
+                  <Link className="world-btn" to={`/programs/${cert.slug}`}>Open {cert.name}</Link>
+                </div>
+              </>
+            ) : (
+              <p className="world-empty">No certificate programmes are published yet.</p>
+            )}
+          </div>
+          <WorldScene world="learn" />
+        </div>
+      </section>
 
-      <SkillsPathSection />
-      <WebinarsSection />
-      <CertificateSection />
-      <ProfessionalSection />
-      <JobAssistanceSection />
-      <CareerProofSection />
-      <ProgramDiscoverySection />
+      <section className="world-section" id="webinars">
+        <div className="world-rail">
+          <p className="world-kicker">Webinars</p>
+          <p className="world-lede">Sessions in the catalogue. Dates are as published — this is not a fake events calendar.</p>
+          <div className="world-card-list" style={{ marginTop: 20 }}>
+            {workshops.slice(0, 4).map((workshop) => (
+              <Link key={workshop.slug} className="world-card" to={`/workshops/${workshop.slug}`}>
+                <b>{workshop.title}</b>
+                <p>{workshop.desc}</p>
+                <span className="world-meta">{workshop.date} · {workshop.duration} · {workshop.mode}</span>
+              </Link>
+            ))}
+          </div>
+          <div className="world-actions">
+            <Link className="world-btn-ghost" to="/workshops">All webinars</Link>
+          </div>
+        </div>
+      </section>
 
-      <CTABand
-        eyebrow="Next step"
-        title={<>Ready to become<br />career-ready?</>}
-        lead="Start with a Professional Program for Career OS access, or join a webinar to begin."
-        primary={{ label: 'Explore Professional Programs', to: '/programs' }}
-        secondary={{ label: 'See Career OS', to: '/career-os' }}
-        auroraTheme="professional"
-      />
-    </PageShell>
+      <section className="world-section" id="practice">
+        <div className="world-rail world-split">
+          <div className="world-panel" style={{ padding: 20 }}>
+            <p className="world-kicker">Practice & tools</p>
+            <p className="world-note">Projects live inside programmes. Labs are for experiments. CareerOS is where proof becomes applications — after you have something to show.</p>
+            <div className="world-actions">
+              <Link className="world-btn-ghost" to="/labs">Labs</Link>
+              <Link className="world-btn-ghost" to="/career">Career hub</Link>
+            </div>
+          </div>
+          <div className="world-panel" style={{ padding: 20 }}>
+            <p className="world-kicker">Not this world</p>
+            <p className="world-note">
+              Undergraduate ({ugCount} published) and postgraduate ({pgCount} published) belong in University. {UG_STUDIO.label} and {PG_STUDIO.label} are not professional certificates with new labels.
+            </p>
+            <Link className="world-btn-ghost" to="/degrees">Open University</Link>
+          </div>
+        </div>
+      </section>
+    </WorldFrame>
   )
 }

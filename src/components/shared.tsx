@@ -304,45 +304,60 @@ export function JobDrawer({ job, onClose, onApply }: { job: Job; onClose: () => 
 // ─── NAV (with mega menu) ─────────────────────────────────────────────────────
 const megaMenu = [
   {
-    label: 'Education',
-    to: '/education',
-    tagline: 'From schooling to postgraduate & exams',
-    items: [
-      { label: 'Schooling', sub: 'Foundational academic learning', to: '/education#schooling' },
-      { label: 'Undergraduate', sub: 'Degree-aligned programs', to: '/education#undergraduate' },
-      { label: 'Postgraduate', sub: 'Advanced specialisation', to: '/education#postgraduate' },
-      { label: 'Competitive Exams', sub: 'JEE · NEET · CAT & more', to: '/education#competitive-exams' },
-    ],
-  },
-  {
-    label: 'Skills',
+    label: 'Learn',
     to: '/skills',
-    tagline: 'From learning to employability',
+    tagline: 'Skills you can show',
     items: [
-      { label: 'Webinars', sub: 'Live expert-led sessions', to: '/workshops' },
-      { label: 'Certificate Programs', sub: 'Focused, credentialed skills', to: '/programs' },
-      { label: 'Professional Programs', sub: 'Career-ready — includes Career OS', to: '/programs' },
-      { label: 'Job Assistance', sub: 'Placement & readiness support', to: '/skills#job-assistance' },
+      { label: 'Professional programmes', sub: 'Projects, practice, evidence', to: '/skills#professional' },
+      { label: 'Certificates', sub: 'A credential you can finish', to: '/skills#certificate' },
+      { label: 'Webinars', sub: 'Published sessions', to: '/workshops' },
+      { label: 'Catalogue', sub: 'What is actually published', to: '/programs?type=PROFESSIONAL' },
     ],
   },
   {
-    label: 'Career OS',
-    to: '/career-os',
-    tagline: 'Profile, jobs, and applications',
+    label: 'Exams',
+    to: '/exams',
+    tagline: 'The paper you are taking',
     items: [
-      { label: 'Interview Preparation', sub: 'Mock interviews & practice', to: '/career-os' },
-      { label: 'Job Board', sub: 'Curated opportunities', to: '/career-os' },
+      { label: 'JEE', sub: 'Published programme', to: '/exams#jee' },
+      { label: 'CAT', sub: 'Published programme', to: '/exams#cat' },
+      { label: 'NEET', sub: 'Unpublished · coming soon', to: '/exams#neet' },
     ],
   },
   {
-    label: 'For Institutions',
+    label: 'Schooling',
+    to: '/junior',
+    tagline: 'Classes 1–12',
+    items: [
+      { label: 'Choose class', sub: 'Grade first, then subjects', to: '/junior#grades' },
+      { label: 'Experiments', sub: 'Labs and making', to: '/labs' },
+    ],
+  },
+  {
+    label: 'University',
+    to: '/degrees',
+    tagline: 'UG and PG studios',
+    items: [
+      { label: 'Undergraduate', sub: 'Degrees, labs, projects', to: '/degrees#undergraduate' },
+      { label: 'Postgraduate', sub: 'Research and specialisation', to: '/degrees#postgraduate' },
+    ],
+  },
+  {
+    label: 'Career',
+    to: '/career',
+    tagline: 'What can I do next?',
+    items: [
+      { label: 'Career hub', sub: 'Jobs, interviews, evidence', to: '/career' },
+      { label: 'CareerOS', sub: 'Signed-in workspace', to: '/career-os' },
+    ],
+  },
+  {
+    label: 'Institutions',
     to: '/institutions',
-    tagline: 'Dashboards for schools and colleges',
+    tagline: 'Operations, not a campus tour',
     items: [
-      { label: 'Schools', sub: 'Student learning & teacher tools', to: '/institutions' },
-      { label: 'Colleges', sub: 'Academic programs & career readiness', to: '/institutions' },
-      { label: 'Universities', sub: 'Curriculum, LMS & student lifecycle', to: '/institutions' },
-      { label: 'Skill Institutions', sub: 'Programs, batches & certification', to: '/institutions' },
+      { label: 'Schools & colleges', sub: 'Delivery and records', to: '/institutions#institution-types' },
+      { label: 'Skylent OS', sub: 'Institutional infrastructure', to: '/os' },
     ],
   },
 ]
@@ -386,7 +401,7 @@ export function Nav() {
     if (!q) return
     setSearchOpen(false)
     setSearchQuery('')
-    navigate(`/courses?q=${encodeURIComponent(q)}`)
+    navigate(`/programs?q=${encodeURIComponent(q)}`)
   }
   const { user, logout } = useAuth()
 
@@ -413,10 +428,7 @@ export function Nav() {
     closeTimer.current = setTimeout(() => setActiveMenu(null), 120)
   }, [])
 
-  const simpleLinks = [
-    { label: 'Stories', to: '/stories' },
-    { label: 'About', to: '/about' },
-  ]
+  const simpleLinks: { label: string; to: string }[] = []
 
   return (
     <nav className="skylent-site-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, backdropFilter: navBlur, WebkitBackdropFilter: navBlur, borderBottom: navBorder, boxShadow: navShadow, transition: 'background 0.4s, backdrop-filter 0.4s, border-color 0.4s, box-shadow 0.4s' }}>
@@ -578,10 +590,10 @@ export function Nav() {
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
 export function Footer() {
   const cols = [
-    { heading: 'Education', links: [['Overview', '/education'], ['Schooling', '/education#schooling'], ['Undergraduate', '/education#undergraduate'], ['Postgraduate', '/education#postgraduate']] },
-    { heading: 'Skills', links: [['Overview', '/skills'], ['Webinars', '/workshops'], ['Certificate Programs', '/programs'], ['Professional Programs', '/programs'], ['Job Assistance', '/skills#job-assistance']] },
-    { heading: 'Career OS', links: [['Overview', '/career-os'], ['Interview Prep', '/career-os'], ['Job Board', '/career-os'], ['Skylent OS', '/os']] },
-    { heading: 'Company', links: [['About', '/about'], ['For Institutions', '/institutions'], ['Stories', '/stories'], ['Blog', '/blog'], ['Contact', '/contact']] },
+    { heading: 'Worlds', links: [['Learn', '/skills'], ['Exams', '/exams'], ['Schooling', '/junior'], ['University', '/degrees']] },
+    { heading: 'Work', links: [['Career', '/career'], ['CareerOS', '/career-os'], ['Programmes', '/programs'], ['Skylent OS', '/os']] },
+    { heading: 'Institutions', links: [['Overview', '/institutions'], ['Contact', '/contact']] },
+    { heading: 'Company', links: [['About', '/about'], ['Stories', '/stories'], ['Blog', '/blog']] },
   ]
   return (
     <footer className="skylent-site-footer" style={{ background: C.warmWhite, padding: `${T.sectionSm} ${T.gutter} 32px`, position: 'relative', borderTop: `1px solid ${T.lineLight}` }}>
@@ -589,7 +601,7 @@ export function Footer() {
         <div style={{ display: 'grid', gridTemplateColumns: '1.7fr repeat(4, 1fr)', gap: 40, marginBottom: 56 }} className="footer-grid">
           <div>
             <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.ink, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
-            <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Education, skills, and career workflows on one platform — for learners and institutions.</p>
+            <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>One platform. Six working experiences — Learn, Exams, Schooling, University, Career, Institutions.</p>
             <div style={{ display: 'flex', gap: 10 }}>
               {['in', 'tw', 'yt', 'ig'].map(s => (<div key={s} style={{ width: 32, height: 32, borderRadius: 6, border: `1px solid ${T.lineLight}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{s}</div>))}
             </div>

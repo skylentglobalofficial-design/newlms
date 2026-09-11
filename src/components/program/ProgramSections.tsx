@@ -241,6 +241,50 @@ export function ProgramLearningSection({
   )
 }
 
+export function ProgramAssessmentSection({
+  program,
+}: {
+  program: Program
+}) {
+  const isExam = program.programType === 'EXAM_PREP'
+  const steps = isExam
+    ? [
+        { label: 'Topic drills', detail: 'Practice against the syllabus, then mark what you missed.' },
+        { label: 'Section tests', detail: 'Timed papers by subject or CAT section.' },
+        { label: 'Full mocks', detail: 'Complete attempts with review — scores appear after you sit them.' },
+        { label: 'Performance log', detail: 'Accuracy by topic. No invented ranks on this page.' },
+      ]
+    : [
+        { label: 'Module checks', detail: 'Short assessments after each unit of work.' },
+        { label: 'Project review', detail: 'Artefacts you can show, not attendance claims.' },
+        { label: 'Timed practice', detail: 'Tools and problems under constraint.' },
+        { label: 'Credential', detail: 'Certificate on completion when the programme issues one.' },
+      ]
+
+  return (
+    <Section id="assessment" tone="canvas" divider>
+      <FadeIn>
+        <SectionHeader
+          tone="dark"
+          eyebrow="Assessment"
+          title={isExam ? 'Tests are first-class, not a footer.' : 'Proof is part of the programme.'}
+          lead={isExam
+            ? 'Syllabus → preparation → practice → tests → assessment → admissions pathway.'
+            : 'Skills → curriculum → projects → practice → evidence → career relevance.'}
+        />
+        <div className="world-card-list" style={{ marginTop: 28 }}>
+          {steps.map((step) => (
+            <div key={step.label} className="world-card">
+              <b>{step.label}</b>
+              <p>{step.detail}</p>
+            </div>
+          ))}
+        </div>
+      </FadeIn>
+    </Section>
+  )
+}
+
 export function ProgramCareerSection({
   themeId,
   accent,

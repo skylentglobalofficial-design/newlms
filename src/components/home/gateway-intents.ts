@@ -1,4 +1,4 @@
-export type GatewayIntentId = 'skills' | 'exams' | 'schooling' | 'university' | 'career'
+export type GatewayIntentId = 'learn' | 'exams' | 'schooling' | 'university' | 'career' | 'institutions'
 
 export type GatewayIntent = {
   id: GatewayIntentId
@@ -10,44 +10,10 @@ export type GatewayIntent = {
 }
 
 export const GATEWAY_INTENTS: GatewayIntent[] = [
-  {
-    id: 'skills',
-    index: '01',
-    label: 'Build skills',
-    cta: 'Explore Skills',
-    to: '/skills',
-    accent: '#6D58D9',
-  },
-  {
-    id: 'exams',
-    index: '02',
-    label: 'Prepare for exams',
-    cta: 'Explore exam prep',
-    to: '/education#competitive-exams',
-    accent: '#3478D4',
-  },
-  {
-    id: 'schooling',
-    index: '03',
-    label: 'Schooling',
-    cta: 'Explore schooling',
-    to: '/education#schooling',
-    accent: '#168C83',
-  },
-  {
-    id: 'university',
-    index: '04',
-    label: 'University',
-    cta: 'Explore university',
-    to: '/education#undergraduate',
-    accent: '#B87918',
-  },
-  {
-    id: 'career',
-    index: '05',
-    label: 'Career',
-    cta: 'Explore CareerOS',
-    to: '/career-os',
-    accent: '#2E73C8',
-  },
+  { id: 'learn', index: '01', label: 'Learn', cta: 'Open Learn', to: '/skills', accent: '#245A43' },
+  { id: 'exams', index: '02', label: 'Exams', cta: 'Open Exams', to: '/exams', accent: '#8A4B12' },
+  { id: 'schooling', index: '03', label: 'Schooling', cta: 'Open Schooling', to: '/junior', accent: '#1F5F68' },
+  { id: 'university', index: '04', label: 'University', cta: 'Open University', to: '/degrees', accent: '#3A4570' },
+  { id: 'career', index: '05', label: 'Career', cta: 'Open Career', to: '/career', accent: '#1E4A6E' },
+  { id: 'institutions', index: '06', label: 'Institutions', cta: 'Open Institutions', to: '/institutions', accent: '#2F4740' },
 ]

@@ -8,7 +8,7 @@ export default function CareerOSLayout() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (ready && !user) navigate("/login")
+    if (ready && !user) navigate("/login?returnTo=%2Fcareer-os")
   }, [ready, user, navigate])
 
   if (!ready || !user) return null

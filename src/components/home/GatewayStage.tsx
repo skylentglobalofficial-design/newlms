@@ -153,7 +153,7 @@ export default function GatewayStage({ intent }: { intent: GatewayIntent }) {
       style={{ '--stage-accent': intent.accent } as React.CSSProperties}
       key={intent.id}
     >
-      {intent.id === 'skills' && <SkillsArtifact />}
+      {intent.id === 'learn' && <SkillsArtifact />}
       {intent.id === 'exams' && <ExamsArtifact />}
       {intent.id === 'schooling' && <SchoolingArtifact />}
       {intent.id === 'university' && <UniversityArtifact />}

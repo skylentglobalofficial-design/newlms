@@ -44,14 +44,23 @@ const DashboardOrgPage = lazy(() => import('./pages/DashboardOrgPage'))
 const DashboardRecruiterPage = lazy(() => import('./pages/DashboardRecruiterPage'))
 const DashboardAdminPage = lazy(() => import('./pages/DashboardAdminPage'))
 const LearnPage = lazy(() => import('./pages/LearnPage'))
+const ExamsPage = lazy(() => import('./pages/ExamsPage'))
+const JuniorPage = lazy(() => import('./pages/JuniorPage'))
+const DegreesPage = lazy(() => import('./pages/DegreesPage'))
+const CareerDestinationPage = lazy(() => import('./pages/CareerDestinationPage'))
 
 function AppRoutes() {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        <Route path="/" element={<PublicCanvas themeId="general"><Nav /><HomePage /></PublicCanvas>} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/education" element={<EducationPage />} />
         <Route path="/skills" element={<SkillsPage />} />
+        <Route path="/exams" element={<ExamsPage />} />
+        <Route path="/junior" element={<JuniorPage />} />
+        <Route path="/schooling" element={<Navigate to="/junior" replace />} />
+        <Route path="/degrees" element={<DegreesPage />} />
+        <Route path="/career" element={<CareerDestinationPage />} />
         <Route path="/career-os" element={<CareerOSLayout />}>
           <Route index element={<CareerOSOverviewPage />} />
           <Route path="profile" element={<CareerOSProfilePage />} />
@@ -85,13 +94,12 @@ function AppRoutes() {
         <Route path="/dashboard/admin" element={<RoleRouteGuard allowedRoles={['superadmin']}><DashboardAdminPage /></RoleRouteGuard>} />
         <Route path="/learn/:slug" element={<RoleRouteGuard allowedRoles={['student']}><LearnPage /></RoleRouteGuard>} />
         <Route path="/learn/:slug/:lessonId" element={<RoleRouteGuard allowedRoles={['student']}><LearnPage /></RoleRouteGuard>} />
-        <Route path="/career" element={<Navigate to="/career-os" replace />} />
         <Route path="/universities" element={<UniversitiesPage />} />
         <Route path="/labs" element={<LabsPage />} />
         <Route path="/labs/:labId" element={<LabDetailPage />} />
         <Route path="/labs/:labId/:experimentId" element={<ExperimentPage />} />
-        <Route path="/jobs" element={<Navigate to="/career-os" replace />} />
-        <Route path="/jobs/:id" element={<Navigate to="/career-os" replace />} />
+        <Route path="/jobs" element={<Navigate to="/career" replace />} />
+        <Route path="/jobs/:id" element={<Navigate to="/career" replace />} />
         <Route path="*" element={<PublicCanvas themeId="general"><Nav /><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md" style={{ color: C.ink }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></PublicCanvas>} />
       </Routes>
     </Suspense>
