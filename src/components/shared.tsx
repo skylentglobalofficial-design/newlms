@@ -310,8 +310,8 @@ const megaMenu = [
     items: [
       { label: 'Professional programmes', sub: 'Projects, practice, evidence', to: '/skills?view=professional' },
       { label: 'Certificates', sub: 'A credential you can finish', to: '/skills?view=certificates' },
-      { label: 'Short courses', sub: 'Shorter skill courses', to: '/skills?view=short-courses' },
-      { label: 'Webinars', sub: 'Published sessions', to: '/skills?view=webinars' },
+      { label: 'Short courses', sub: 'LMS course catalogue', to: '/courses' },
+      { label: 'Workshops', sub: 'Dated sessions', to: '/workshops' },
       { label: 'Catalogue', sub: 'What is actually published', to: '/programs?type=PROFESSIONAL' },
     ],
   },
@@ -380,7 +380,6 @@ function dashRoute(role: UserRole): string {
 }
 
 export function Nav() {
-  const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
   const [searchOpen, setSearchOpen] = useState(false)
@@ -388,7 +387,6 @@ export function Nav() {
   const searchRef = useRef<HTMLInputElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
-  const isHome = location.pathname === '/'
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
@@ -413,18 +411,27 @@ export function Nav() {
   const { user, logout } = useAuth()
 
   useEffect(() => {
-    const h = () => { setScrolled(window.scrollY > 40); setActiveMenu(null) }
+    if (!menuOpen && !activeMenu && !searchOpen) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setMenuOpen(false)
+      setActiveMenu(null)
+      setSearchOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [menuOpen, activeMenu, searchOpen])
+
+  useEffect(() => {
+    const h = () => { setActiveMenu(null) }
     window.addEventListener('scroll', h, { passive: true })
     return () => window.removeEventListener('scroll', h)
   }, [])
+
   useEffect(() => { setMenuOpen(false); setActiveMenu(null) }, [location.pathname])
 
-  const showDark = true
-
-  const navBg = showDark ? 'var(--glass-01-bg)' : 'transparent'
-  const navBlur = showDark ? 'var(--glass-01-blur)' : 'none'
-  const navBorder = showDark ? '1px solid var(--glass-01-border)' : 'none'
-  const navShadow = showDark ? 'var(--glass-01-shadow)' : 'none'
+  const navBg = '#fff'
+  const navBorder = '1px solid rgba(8,9,9,0.08)'
 
   const handleMenuEnter = useCallback((label: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current)
@@ -435,41 +442,38 @@ export function Nav() {
     closeTimer.current = setTimeout(() => setActiveMenu(null), 120)
   }, [])
 
-  const simpleLinks: { label: string; to: string }[] = []
-
   return (
-    <nav className="skylent-site-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, backdropFilter: navBlur, WebkitBackdropFilter: navBlur, borderBottom: navBorder, boxShadow: navShadow, transition: 'background 0.4s, backdrop-filter 0.4s, border-color 0.4s, box-shadow 0.4s' }}>
+    <nav className="skylent-site-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, borderBottom: navBorder }}>
       <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH }}>
         {/* Logo */}
-        <button onClick={() => navigate('/')} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: C.ink, background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '-0.02em', padding: 0, flexShrink: 0 }}>
+        <button type="button" onClick={() => navigate('/')} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: C.ink, background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '-0.02em', padding: 0, flexShrink: 0 }}>
           Skylent<span style={{ color: C.orange }}>.</span>
         </button>
 
-        {/* Desktop links */}
-        <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div className="nav-mega" style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {megaMenu.map(group => (
             <div key={group.label} style={{ position: 'relative' }} onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave}>
-              <button onClick={() => navigate(group.to)} style={{ background: 'none', border: 'none', color: activeMenu === group.label ? C.ink : C.slate, fontSize: 13.5, cursor: 'pointer', padding: '8px 13px', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-body)', transition: 'color 0.2s', letterSpacing: '-0.01em' }}>
+              <button
+                type="button"
+                aria-expanded={activeMenu === group.label}
+                aria-haspopup="true"
+                onClick={() => navigate(group.to)}
+                style={{ background: 'none', border: 'none', color: activeMenu === group.label ? C.ink : C.slate, fontSize: 13.5, cursor: 'pointer', padding: '8px 13px', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-body)', transition: 'color 0.2s', letterSpacing: '-0.01em' }}
+              >
                 {group.label}
-                <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{ opacity: 0.5, transform: activeMenu === group.label ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l5 6 5-6z"/></svg>
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" style={{ opacity: 0.5, transform: activeMenu === group.label ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l5 6 5-6z"/></svg>
               </button>
               {activeMenu === group.label && (
-                <div className="nav-mega-dropdown" onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)', WebkitBackdropFilter: 'var(--glass-01-blur)', border: '1px solid var(--glass-01-border)', borderRadius: 12, padding: 6, minWidth: 260, maxWidth: 300, boxShadow: '0 18px 48px rgba(8,9,9,0.12)', zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
-                  <Link to={group.to} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px 12px', borderRadius: 8, textDecoration: 'none', marginBottom: 2, borderBottom: '1px solid rgba(8,9,9,0.08)' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(8,9,9,0.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                  >
+                <div className="nav-mega-dropdown" onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: '#fff', border: '1px solid var(--glass-01-border)', borderRadius: 12, padding: 6, minWidth: 260, maxWidth: 300, boxShadow: '0 18px 48px rgba(8,9,9,0.12)', zIndex: 300 }}>
+                  <Link to={group.to} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px 12px', borderRadius: 8, textDecoration: 'none', marginBottom: 2, borderBottom: '1px solid rgba(8,9,9,0.08)' }}>
                     <div>
-                      <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
+                      <div style={{ color: C.ink, fontSize: 14, fontWeight: 600 }}>{group.label}</div>
                       <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>{group.tagline}</div>
                     </div>
-                    <span style={{ color: navAccent.text, fontSize: 15 }}>→</span>
+                    <span style={{ color: navAccent.text, fontSize: 15 }} aria-hidden="true">→</span>
                   </Link>
                   {group.items.map(item => (
-                    <Link key={item.to + item.label} to={item.to} style={{ display: 'block', padding: '8px 12px', borderRadius: 8, textDecoration: 'none', transition: 'background 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(8,9,9,0.04)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
+                    <Link key={item.to + item.label} to={item.to} style={{ display: 'block', padding: '8px 12px', borderRadius: 8, textDecoration: 'none' }}>
                       <div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>{item.label}</div>
                       <div style={{ color: C.slate, fontSize: 11, marginTop: 1 }}>{item.sub}</div>
                     </Link>
@@ -478,35 +482,40 @@ export function Nav() {
               )}
             </div>
           ))}
-          {simpleLinks.map(l => (
-            <Link key={l.to} to={l.to} style={{ color: location.pathname === l.to ? C.ink : C.slate, fontSize: 13, textDecoration: 'none', padding: '8px 12px', transition: 'color 0.2s', whiteSpace: 'nowrap' }}
-              onMouseEnter={e => (e.currentTarget.style.color = C.ink)}
-              onMouseLeave={e => (e.currentTarget.style.color = location.pathname === l.to ? C.ink : C.slate)}
-            >{l.label}</Link>
-          ))}
         </div>
 
-        {/* Global search */}
-        <div className="nav-links" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        <nav className="nav-compact" aria-label="Skylent destinations">
+          {megaMenu.map(group => (
+            <Link
+              key={group.label}
+              to={group.to}
+              aria-current={location.pathname === group.to ? 'page' : undefined}
+            >
+              {group.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="nav-search" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
           {searchOpen ? (
-            <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 7, overflow: 'hidden' }}>
+            <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', background: '#fff', border: '1px solid rgba(8,9,9,0.16)', borderRadius: 7, overflow: 'hidden' }}>
               <input
                 ref={searchRef}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search courses, programs, jobs..."
+                placeholder="Search programmes"
+                aria-label="Search programmes"
                 onKeyDown={e => e.key === 'Escape' && setSearchOpen(false)}
-                style={{ background: 'transparent', border: 'none', outline: 'none', color: C.white, fontSize: 13, padding: '7px 12px', width: 220, fontFamily: 'var(--font-body)' }}
+                style={{ background: 'transparent', border: 'none', outline: 'none', color: C.ink, fontSize: 13, padding: '7px 12px', width: 200, fontFamily: 'var(--font-body)' }}
               />
-              <button type="submit" style={{ background: 'none', border: 'none', color: navAccent.text, padding: '7px 10px', cursor: 'pointer' }}>
+              <button type="submit" style={{ background: 'none', border: 'none', color: C.ink, padding: '7px 10px', cursor: 'pointer' }} aria-label="Submit search">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
-              <button type="button" onClick={() => setSearchOpen(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', padding: '7px 10px', cursor: 'pointer', fontSize: 13 }}>✕</button>
+              <button type="button" onClick={() => setSearchOpen(false)} style={{ background: 'none', border: 'none', color: C.slate, padding: '7px 10px', cursor: 'pointer', fontSize: 13 }} aria-label="Close search">✕</button>
             </form>
           ) : (
-            <button onClick={() => setSearchOpen(true)} style={{ background: 'none', border: 'none', color: C.slate, padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: 7, transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = C.ink)}
-              onMouseLeave={e => (e.currentTarget.style.color = C.slate)}
+            <button type="button" onClick={() => setSearchOpen(true)} style={{ background: 'none', border: 'none', color: C.slate, padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: 7 }}
+              aria-label="Search"
               title="Search"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -514,38 +523,27 @@ export function Nav() {
           )}
         </div>
 
-        {/* CTAs */}
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <div className="nav-cta" style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
           {user ? (
             <>
-              {/* Avatar chip */}
-              <div className="nav-links" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, padding: '5px 10px' }}>
-                <div style={{ width: 26, height: 26, borderRadius: '50%', background: navAccent.primary, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: C.white, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>{user.avatar}</div>
-                <span style={{ color: C.white, fontSize: 12, fontWeight: 500, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name.length > 14 ? user.name.slice(0, 14) + '...' : user.name}</span>
-                <span style={{ background: navAccent.subtle, border: `1px solid ${navAccent.border}`, borderRadius: 4, padding: '1px 6px', fontSize: 9, color: navAccent.text, fontFamily: 'var(--font-mono)', letterSpacing: '0.05em', flexShrink: 0 }}>{user.role}</span>
-              </div>
-              <Link to={dashRoute(user.role)} className="nav-links" style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: C.white, borderRadius: 7, padding: '7px 14px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'border-color 0.2s', whiteSpace: 'nowrap' }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.5)')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)')}
-              >Dashboard</Link>
-              <button className="nav-links" onClick={() => { logout(); navigate('/') }} style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)', borderRadius: 7, padding: '7px 14px', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
-                onMouseEnter={e => { e.currentTarget.style.color = C.white; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)' }}
-                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)' }}
-              >Sign Out</button>
+              <Link to={dashRoute(user.role)} className="nav-cta-link" style={{ background: 'transparent', border: '1px solid rgba(8,9,9,0.16)', color: C.ink, borderRadius: 7, padding: '7px 14px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>Dashboard</Link>
+              <button type="button" className="nav-cta-link" onClick={() => { logout(); navigate('/') }} style={{ background: '#fff', border: '1px solid rgba(8,9,9,0.16)', color: C.ink, borderRadius: 7, padding: '7px 14px', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>Sign Out</button>
             </>
           ) : (
             <>
-              <Link to="/login" className="nav-links" style={{ background: 'transparent', border: '1px solid rgba(8,9,9,0.16)', color: C.ink, borderRadius: 7, padding: '7px 16px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'border-color 0.2s', whiteSpace: 'nowrap' }}
-                onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(8,9,9,0.32)')}
-                onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(8,9,9,0.16)')}
-              >Sign In</Link>
-              <Link to="/programs" className="nav-links" style={{ background: navAccent.primary, border: 'none', color: C.white, borderRadius: 7, padding: '8px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
-                onMouseEnter={e => { e.currentTarget.style.background = navAccent.secondary }}
-                onMouseLeave={e => { e.currentTarget.style.background = navAccent.primary }}
-              >Explore Programs</Link>
+              <Link to="/login" className="nav-cta-link" style={{ background: 'transparent', border: '1px solid rgba(8,9,9,0.16)', color: C.ink, borderRadius: 7, padding: '7px 14px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>Sign In</Link>
+              <Link to="/programs" className="nav-cta-link" style={{ background: navAccent.primary, border: 'none', color: C.white, borderRadius: 7, padding: '8px 14px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>Explore programmes</Link>
             </>
           )}
-          <button className="show-mobile" onClick={() => setMenuOpen(o => !o)} style={{ background: 'none', border: 'none', color: C.ink, cursor: 'pointer', padding: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <button
+            type="button"
+            className="show-mobile"
+            aria-expanded={menuOpen}
+            aria-controls="skylent-mobile-nav"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => setMenuOpen(o => !o)}
+            style={{ background: 'none', border: 'none', color: C.ink, cursor: 'pointer', padding: 8, display: 'flex', flexDirection: 'column', gap: 4, minWidth: 40, minHeight: 40, alignItems: 'center', justifyContent: 'center' }}
+          >
             <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
             <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
             <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
@@ -553,40 +551,38 @@ export function Nav() {
         </div>
       </div>
 
-      {/* Mobile menu — full-screen overlay so page content does not bleed through */}
       {menuOpen && (
         <div
+          id="skylent-mobile-nav"
           className="mobile-nav-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu"
           style={{
             position: 'fixed',
             inset: `${T.navH}px 0 0 0`,
             zIndex: 250,
-            background: 'rgba(246, 244, 238, 0.98)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
-            borderTop: '1px solid rgba(255,255,255,0.07)',
-            padding: '12px 24px 28px',
+            background: '#f6f4ee',
+            borderTop: '1px solid rgba(8,9,9,0.08)',
+            padding: '8px 24px 28px',
             overflowY: 'auto',
           }}
         >
           {megaMenu.map(group => (
             <div key={group.label} style={{ marginBottom: 8 }}>
-              <Link to={group.to} onClick={() => setMenuOpen(false)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: navAccent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', padding: '12px 0 6px', textDecoration: 'none' }}>{group.label.toUpperCase()}<span style={{ opacity: 0.7 }}>→</span></Link>
+              <Link to={group.to} onClick={() => setMenuOpen(false)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: C.ink, fontSize: 15, fontWeight: 650, padding: '14px 0 8px', textDecoration: 'none' }}>{group.label}<span aria-hidden="true">→</span></Link>
               {group.items.map(item => (
-                <Link key={item.label} to={item.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '9px 0', color: C.slate, fontSize: 14, textDecoration: 'none', borderBottom: '1px solid rgba(8,9,9,0.08)' }}>{item.label}</Link>
+                <Link key={item.label} to={item.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '10px 0', color: C.slate, fontSize: 14, textDecoration: 'none', borderBottom: '1px solid rgba(8,9,9,0.08)', minHeight: 40 }}>{item.label}</Link>
               ))}
             </div>
           ))}
-          {simpleLinks.map(l => (
-            <Link key={l.to} to={l.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '10px 0', color: C.slate, fontSize: 14, textDecoration: 'none', borderBottom: '1px solid rgba(8,9,9,0.08)' }}>{l.label}</Link>
-          ))}
-          <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+          <div style={{ display: 'flex', gap: 10, marginTop: 16, flexWrap: 'wrap' }}>
             {user ? (
-              <button onClick={() => { logout(); navigate('/'); setMenuOpen(false) }} style={{ flex: 1, textAlign: 'center', padding: '11px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, color: C.white, background: 'none', textDecoration: 'none', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Sign Out</button>
+              <button type="button" onClick={() => { logout(); navigate('/'); setMenuOpen(false) }} style={{ flex: 1, textAlign: 'center', padding: '11px', border: '1px solid rgba(8,9,9,0.16)', borderRadius: 7, color: C.ink, background: '#fff', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', minHeight: 44 }}>Sign Out</button>
             ) : (
-              <Link to="/login" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13 }}>Sign In</Link>
+              <Link to="/login" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', border: '1px solid rgba(8,9,9,0.16)', borderRadius: 7, color: C.ink, background: '#fff', textDecoration: 'none', fontSize: 13, minHeight: 44 }}>Sign In</Link>
             )}
-            <Link to="/programs" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', background: navAccent.primary, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>Explore Programs</Link>
+            <Link to="/programs" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', background: navAccent.primary, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13, fontWeight: 600, minHeight: 44 }}>Explore programmes</Link>
           </div>
         </div>
       )}
@@ -685,8 +681,26 @@ export const globalCSS = `
 
   * { box-sizing: border-box; }
 
-  .nav-links { display: flex !important; }
+  .nav-mega { display: flex !important; align-items: center; }
+  .nav-compact { display: none !important; align-items: center; gap: 2px; }
+  .nav-compact a {
+    color: #5c6562;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 8px 9px;
+    white-space: nowrap;
+    border-radius: 8px;
+  }
+  .nav-compact a[aria-current="page"] { color: #080909; }
+  .nav-search { display: flex !important; }
+  .nav-cta { display: flex !important; }
   .show-mobile { display: none !important; }
+  .skylent-site-nav button:focus-visible,
+  .skylent-site-nav a:focus-visible {
+    outline: 2px solid #1f6f8b;
+    outline-offset: 2px;
+  }
 
   .skylent-section-divider {
     height: 1px;
@@ -699,9 +713,17 @@ export const globalCSS = `
   .contextual-nav-bar { display: none; }
   .contextual-nav-bar-scroll::-webkit-scrollbar { display: none; }
 
-  @media (max-width: 1100px) {
-    .nav-links { display: none !important; }
+  @media (max-width: 1279px) {
+    .nav-mega { display: none !important; }
+    .nav-compact { display: flex !important; }
+    .nav-search { display: none !important; }
+  }
+  @media (max-width: 1023px) {
+    .nav-mega, .nav-compact, .nav-search { display: none !important; }
+    .nav-cta-link { display: none !important; }
     .show-mobile { display: flex !important; }
+  }
+  @media (max-width: 1100px) {
     .contextual-nav-panel { display: none !important; }
     .contextual-nav-bar { display: block !important; }
     .career-hero-visual-wrap { display: block !important; }
