@@ -55,6 +55,16 @@ export const authCredentialsRateLimit = rateLimit({
   },
 })
 
+export const catalogWriteRateLimit = rateLimit({
+  windowMs: Number(process.env.CATALOG_RATE_LIMIT_WINDOW_MS ?? 15 * 60 * 1000),
+  max: Number(process.env.CATALOG_RATE_LIMIT_MAX ?? 20),
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler(_request, response) {
+    response.status(429).json({ error: "Too many attempts. Please try again later." })
+  },
+})
+
 export function jsonBodyParser() {
   return express.json({ limit: JSON_BODY_LIMIT })
 }

@@ -188,18 +188,70 @@ export async function submitQuizAttempt(slug: string, lessonKey: string, answers
 }
 
 export async function fetchAssignmentState(slug: string, lessonKey: string) {
-  const result = await lmsGet<{ data: { lessonKey: string; status: string; submittedAt: string | null } }>(
-    `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
-  )
+  const result = await lmsGet<{
+    data: {
+      lessonKey: string
+      status: string
+      submittedAt: string | null
+      attachments: Array<{ id: string; fileName: string; mimeType: string; byteSize: number; downloadable: boolean }>
+    }
+  }>(`/lms/courses/${slug}/lessons/${lessonKey}/assignment`)
   return result.data
 }
 
 export async function updateAssignment(slug: string, lessonKey: string, action: "start" | "submit", responseText?: string) {
-  const result = await lmsMutate<{ data: { lessonKey: string; status: string; submittedAt: string | null } }>(
+  const result = await lmsMutate<{
+    data: {
+      lessonKey: string
+      status: string
+      submittedAt: string | null
+      attachments?: Array<{ id: string; fileName: string; mimeType: string; byteSize: number; downloadable: boolean }>
+    }
+  }>(
     `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
     { action, responseText },
   )
   return result.data
+}
+
+export async function uploadAssignmentAttachment(slug: string, lessonKey: string, file: File) {
+  const token = await ensureCsrfToken()
+  const body = new FormData()
+  body.append("file", file, file.name)
+  const response = await fetch(`${API_BASE}/lms/courses/${slug}/lessons/${lessonKey}/assignment/attachments`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "X-CSRF-Token": token },
+    body,
+  })
+  return parseJson<{ data: { lessonKey: string; attachment: { id: string; fileName: string; mimeType: string; byteSize: number; downloadable: boolean } } }>(response)
+}
+
+export async function downloadAssignmentAttachment(slug: string, lessonKey: string, attachmentId: string, fileName: string) {
+  const response = await fetch(
+    `${API_BASE}/lms/courses/${slug}/lessons/${lessonKey}/assignment/attachments/${attachmentId}`,
+    { credentials: "include" },
+  )
+  if (!response.ok) throw new Error("Download failed")
+  const blob = await response.blob()
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
+}
+
+export type ApiCertificate = {
+  publicId: string
+  learnerName: string
+  courseTitle: string
+  courseSlug: string
+  issuerName: string
+  issuedAt: string
+  disclaimer: string
 }
 
 export async function fetchCertificateState(slug: string) {
@@ -207,10 +259,37 @@ export async function fetchCertificateState(slug: string) {
     data: {
       certificateEligible: boolean
       certificateStatus: string
+      issuerName: string | null
+      disclaimer: string
+      certificate: ApiCertificate | null
       allComplete: boolean
       requirements: Array<{ lessonKey: string; title: string; complete: boolean }>
     }
   }>(`/lms/courses/${slug}/certificate`)
+  return result.data
+}
+
+export async function issueCertificate(slug: string) {
+  const result = await lmsMutate<{ data: ApiCertificate }>(`/lms/courses/${slug}/certificate/issue`, {})
+  return result.data
+}
+
+export async function downloadCourseCertificate(slug: string) {
+  const response = await fetch(`${API_BASE}/lms/courses/${slug}/certificate/file`, { credentials: "include" })
+  if (!response.ok) throw new Error("Certificate download failed")
+  const blob = await response.blob()
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = `certificate-${slug}.pdf`
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
+}
+
+export async function fetchPublicCertificate(publicId: string) {
+  const result = await lmsGet<{ data: ApiCertificate }>(`/lms/certificates/${encodeURIComponent(publicId)}`)
   return result.data
 }
 

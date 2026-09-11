@@ -140,6 +140,7 @@ export function Button({
   style,
   type = 'button',
   themeId,
+  disabled,
 }: {
   children: React.ReactNode
   onClick?: () => void
@@ -149,6 +150,7 @@ export function Button({
   style?: React.CSSProperties
   type?: 'button' | 'submit'
   themeId?: AuroraThemeId
+  disabled?: boolean
 }) {
   const accent = themeId ? getDomainAccent(themeId) : brandAccent
   const pad = size === 'lg' ? '15px 32px' : size === 'sm' ? '9px 18px' : '13px 26px'
@@ -170,7 +172,8 @@ export function Button({
     <button
       type={type}
       onClick={onClick}
-      style={{ ...base, ...variants[variant], ...style }}
+      disabled={disabled}
+      style={{ ...base, ...variants[variant], ...style, opacity: disabled ? 0.65 : undefined, cursor: disabled ? 'wait' : 'pointer' }}
       onMouseEnter={e => {
         const t = e.currentTarget
         if (variant === 'primary') { t.style.background = accent.secondary; t.style.transform = 'translateY(-1px)' }

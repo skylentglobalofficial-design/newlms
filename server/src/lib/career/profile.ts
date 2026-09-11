@@ -169,6 +169,11 @@ export function serializeProject(entry: CareerProject) {
     repositoryUrl: entry.repositoryUrl,
     outcome: entry.outcome,
     sortOrder: entry.sortOrder,
+    sourceKind: entry.sourceKind,
+    sourceCourseSlug: entry.sourceCourseSlug,
+    sourceLessonKey: entry.sourceLessonKey,
+    artifactFileName: entry.artifactFileName,
+    sourceCompletedAt: entry.sourceCompletedAt?.toISOString() ?? null,
   }
 }
 

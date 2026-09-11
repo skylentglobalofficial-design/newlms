@@ -1,7 +1,9 @@
 import { Router } from "express"
+import { z } from "zod"
 import { prisma } from "../lib/prisma.js"
 import { requireAuth, type AuthenticatedRequest } from "../lib/auth.js"
 import { hasApiRole, requireRoles } from "../lib/roles.js"
+import { isStorageError, readAssignmentArtifact } from "../lib/assignment-attachments.js"
 
 export const facultyRouter = Router()
 
@@ -58,7 +60,7 @@ async function loadSuperadminFacultyDashboard() {
           },
         },
         attachments: {
-          select: { id: true, fileName: true, mimeType: true, byteSize: true, storageProvider: true },
+          select: { id: true, fileName: true, mimeType: true, byteSize: true },
         },
       },
     }),
@@ -68,17 +70,17 @@ async function loadSuperadminFacultyDashboard() {
   const curriculumSummary = teachingCourse
     ? [
         {
-          label: "Module",
-          detail: teachingCourse.curriculum[0]?.title ?? "—",
-          status: "complete",
+          label: "Course",
+          detail: teachingCourse.title,
+          status: "current",
         },
         {
-          label: "Lesson",
-          detail: teachingCourse.curriculum[0]?.nodes[0]?.title ?? "—",
-          status: "complete",
+          label: "Published modules",
+          detail: String(teachingCourse.curriculum.length),
+          status: "upcoming",
         },
         {
-          label: "Assignments pending",
+          label: "Submitted assignments",
           detail: String(submissions.length),
           status: "current",
         },
@@ -104,6 +106,12 @@ async function loadSuperadminFacultyDashboard() {
       programName: row.enrollment.program?.name ?? null,
       submittedAt: row.submittedAt?.toISOString() ?? null,
       attachmentCount: row.attachments.length,
+      attachments: row.attachments.map((file) => ({
+        id: file.id,
+        fileName: file.fileName,
+        mimeType: file.mimeType,
+        byteSize: file.byteSize,
+      })),
     })),
     pendingReviewCount: submissions.length,
     curriculumSummary,
@@ -122,3 +130,42 @@ facultyRouter.get("/dashboard", requireAuth, requireRoles("faculty", "superadmin
     res.status(500).json({ error: "Failed to load faculty dashboard" })
   }
 })
+
+const attachmentIdSchema = z.string().uuid()
+
+facultyRouter.get(
+  "/attachments/:attachmentId",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  async (req: AuthenticatedRequest, res) => {
+    const raw = req.params.attachmentId
+    const parsed = attachmentIdSchema.safeParse(Array.isArray(raw) ? raw[0] : raw)
+    if (!parsed.success) return res.status(400).json({ error: "Invalid attachment id" })
+    if (!hasApiRole(req, "superadmin")) {
+      return res.status(403).json({ error: TEACHING_SCOPE_UNAVAILABLE })
+    }
+
+    try {
+      const attachment = await prisma.assignmentAttachment.findUnique({
+        where: { id: parsed.data },
+        select: { id: true, fileName: true, mimeType: true, byteSize: true, storageKey: true },
+      })
+      if (!attachment?.storageKey) return res.status(404).json({ error: "Attachment not found" })
+
+      const bytes = await readAssignmentArtifact(attachment.storageKey)
+      res.setHeader("Content-Type", attachment.mimeType)
+      res.setHeader("Content-Length", String(bytes.length))
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${attachment.fileName.replace(/"/g, "")}"`,
+      )
+      res.setHeader("X-Content-Type-Options", "nosniff")
+      res.setHeader("Cache-Control", "private, no-store")
+      res.send(bytes)
+    } catch (error) {
+      if (isStorageError(error)) return res.status(error.status).json({ error: error.message })
+      console.error("Failed to download faculty attachment:", error)
+      res.status(500).json({ error: "Failed to download attachment" })
+    }
+  },
+)

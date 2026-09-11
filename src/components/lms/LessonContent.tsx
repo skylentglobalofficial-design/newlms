@@ -29,7 +29,7 @@ export function LessonContentView({
   quizQuestions?: QuizQuestion[]
   quizStatus?: 'idle' | 'loading' | 'ready'
   onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
-  onAssignmentSubmit?: (text: string) => Promise<void>
+  onAssignmentSubmit?: (text: string, file: File | null) => Promise<void>
   lessonMedia?: VideoPlaybackSource
   courseSlug?: string
 }) {
@@ -116,7 +116,7 @@ export function LessonContentView({
         subtitle="Submit the work in the brief. There is no automated score on this surface."
         accent={accent}
         passed={lessonState.complete || lessonState.assignmentSubmitted}
-        onSubmitAssignment={(text) => { void onAssignmentSubmit?.(text) }}
+        onSubmitAssignment={(text, file) => { void onAssignmentSubmit?.(text, file) }}
       />
     </div>
   )

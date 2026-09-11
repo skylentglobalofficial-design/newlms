@@ -1,3 +1,5 @@
+import { ensureCsrfToken } from "./auth-api"
+
 export type CatalogEnrollmentStatus = "open" | "waitlist" | "coming_soon"
 
 export type CatalogCourseSummary = {
@@ -166,4 +168,46 @@ export function catalogProgramBySlug(
 export function lowestProgramPrice(program: CatalogProgramSummary): number | null {
   if (!program.pricing.length) return null
   return Math.min(...program.pricing.map((tier) => tier.price))
+}
+
+export async function registerProgramInterest(slug: string, payload: { email: string; name?: string }) {
+  const token = await ensureCsrfToken()
+  const response = await fetch(`/api/v1/catalog/programs/${slug}/interest`, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": token,
+    },
+    body: JSON.stringify(payload),
+  })
+  if (!response.ok) {
+    const data = (await response.json().catch(() => null)) as { error?: string } | null
+    throw new Error(data?.error ?? "Unable to register interest")
+  }
+  return (await response.json()) as { data: { registered: boolean; alreadyRegistered: boolean } }
+}
+
+export async function submitContactMessage(payload: {
+  name: string
+  email: string
+  phone?: string
+  topic?: string
+  message: string
+}) {
+  const token = await ensureCsrfToken()
+  const response = await fetch("/api/v1/catalog/contact", {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": token,
+    },
+    body: JSON.stringify(payload),
+  })
+  if (!response.ok) {
+    const data = (await response.json().catch(() => null)) as { error?: string } | null
+    throw new Error(data?.error ?? "Unable to send message")
+  }
+  return (await response.json()) as { data: { id: string } }
 }

@@ -1,5 +1,12 @@
 const API_BASE = "/api/v1"
 
+export type FacultySubmissionAttachment = {
+  id: string
+  fileName: string
+  mimeType: string
+  byteSize: number
+}
+
 export type FacultySubmission = {
   id: string
   studentName: string
@@ -11,6 +18,7 @@ export type FacultySubmission = {
   programName: string | null
   submittedAt: string | null
   attachmentCount: number
+  attachments: FacultySubmissionAttachment[]
 }
 
 export type FacultyDashboard = {
@@ -50,4 +58,18 @@ export async function fetchFacultyDashboard(): Promise<FacultyDashboard> {
   const response = await fetch(`${API_BASE}/faculty/dashboard`, { credentials: "include" })
   const result = await parseJson<{ data: FacultyDashboard }>(response)
   return result.data
+}
+
+export async function downloadFacultyAttachment(attachmentId: string, fileName: string) {
+  const response = await fetch(`${API_BASE}/faculty/attachments/${attachmentId}`, { credentials: "include" })
+  if (!response.ok) throw new Error("Download failed")
+  const blob = await response.blob()
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = fileName
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  URL.revokeObjectURL(url)
 }

@@ -15,7 +15,7 @@ import {
   getRecentActivity,
 } from '../components/lms'
 import { useLmsDashboard } from '../hooks/useLms'
-import { enrollInCourse } from '../lib/lms-api'
+import { downloadCourseCertificate, enrollInCourse, fetchCertificateState, issueCertificate } from '../lib/lms-api'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'student-overview' },
@@ -173,20 +173,33 @@ export default function DashboardStudentPage() {
               <StudentProgressSurface course={course} lessonStates={lessonStates} accent={accent} certificateReady={allComplete} />
               <div id="student-certificates" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
                 <div className="skylent-label" style={{ color: C.slate, marginBottom: 10 }}>Certificate</div>
-                {workspace.enrollment.certificateEligible ? (
-                  <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-                    Eligible for certificate — status: {workspace.enrollment.certificateStatus}. Download will be available in a later phase.
-                  </p>
-                ) : allComplete ? (
-                  <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-                    Course complete — certificate eligibility is being finalized.
-                  </p>
+                {workspace.enrollment.certificateEligible || workspace.enrollment.certificateStatus === 'issued' ? (
+                  <>
+                    <p style={{ color: C.slate, fontSize: 14, margin: '0 0 12px', lineHeight: 1.6 }}>
+                      Completion certificate for this published course. It records your name, the course, the issuer, the issue date, and a unique ID. It is not an accredited or university credential.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        void (async () => {
+                          const state = await fetchCertificateState(learnSlug)
+                          if (!state.certificate) await issueCertificate(learnSlug)
+                          await downloadCourseCertificate(learnSlug)
+                        })()
+                      }}
+                      style={{ background: accent.primary, border: 'none', color: C.black, padding: '10px 16px', borderRadius: T.rControl, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      Download certificate
+                    </button>
+                  </>
                 ) : (
                   <p style={{ color: C.slate, fontSize: 14, margin: '0 0 12px', lineHeight: 1.6 }}>
                     Complete all lessons to unlock certificate eligibility.
                   </p>
                 )}
-                <Link to={`/learn/${learnSlug}/${resume?.lessonId ?? ''}`} style={{ color: accent.text, fontSize: 13, textDecoration: 'none' }}>Resume course →</Link>
+                <div style={{ marginTop: 12 }}>
+                  <Link to={`/learn/${learnSlug}/${resume?.lessonId ?? ''}`} style={{ color: accent.text, fontSize: 13, textDecoration: 'none' }}>Resume course →</Link>
+                </div>
               </div>
             </>
           }

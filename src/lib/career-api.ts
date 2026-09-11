@@ -62,6 +62,11 @@ export type CareerProject = {
   repositoryUrl: string | null
   outcome: string | null
   sortOrder: number
+  sourceKind?: string | null
+  sourceCourseSlug?: string | null
+  sourceLessonKey?: string | null
+  artifactFileName?: string | null
+  sourceCompletedAt?: string | null
 }
 
 export type CareerLink = {

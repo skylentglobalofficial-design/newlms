@@ -23,7 +23,7 @@ export function AssessmentSurface({
   accent: Accent
   passed?: boolean
   onPass?: () => void
-  onSubmitAssignment?: (text: string) => void
+  onSubmitAssignment?: (text: string, file: File | null) => void
   onSubmitAnswers?: (answers: Record<number, number>) => Promise<boolean>
 }) {
   const [answers, setAnswers] = useState<Record<number, number>>({})
@@ -31,6 +31,8 @@ export function AssessmentSurface({
   const [currentQ, setCurrentQ] = useState(0)
   const [elapsed, setElapsed] = useState(0)
   const [text, setText] = useState('')
+  const [assignmentFile, setAssignmentFile] = useState<File | null>(null)
+  const [assignmentError, setAssignmentError] = useState<string | null>(null)
   const [assignmentDone, setAssignmentDone] = useState(false)
   const [serverPassed, setServerPassed] = useState<boolean | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -77,15 +79,40 @@ export function AssessmentSurface({
           placeholder="Type your response..."
           style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: T.rControl, padding: 14, color: C.white, fontSize: 13, lineHeight: 1.7, resize: 'vertical', minHeight: 160, outline: 'none', boxSizing: 'border-box', marginBottom: 16 }}
         />
+        <label style={{ display: 'block', color: 'rgba(255,255,255,0.55)', fontSize: 13, marginBottom: 8 }}>
+          File upload (xlsx, xls, pbix, pdf, sql)
+          <input
+            type="file"
+            accept=".xlsx,.xls,.pbix,.pdf,.sql"
+            onChange={(event) => {
+              const next = event.target.files?.[0] ?? null
+              setAssignmentError(null)
+              if (next && next.size > 25_000_000) {
+                setAssignmentError('File exceeds the 25 MB limit.')
+                setAssignmentFile(null)
+                event.target.value = ''
+                return
+              }
+              setAssignmentFile(next)
+            }}
+            style={{ display: 'block', marginTop: 8, color: C.white }}
+          />
+        </label>
+        {assignmentFile ? (
+          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, marginBottom: 12 }}>{assignmentFile.name}</div>
+        ) : null}
+        {assignmentError ? (
+          <div style={{ color: '#fca5a5', fontSize: 12, marginBottom: 12 }}>{assignmentError}</div>
+        ) : null}
         <button
           type="button"
-          disabled={!text.trim()}
-          onClick={() => { setAssignmentDone(true); onSubmitAssignment?.(text) }}
+          disabled={!text.trim() && !assignmentFile}
+          onClick={() => { setAssignmentDone(true); onSubmitAssignment?.(text, assignmentFile) }}
           style={{
-            background: !text.trim() ? 'rgba(255,255,255,0.05)' : accent.primary,
-            border: 'none', color: !text.trim() ? 'rgba(255,255,255,0.25)' : C.black,
+            background: (!text.trim() && !assignmentFile) ? 'rgba(255,255,255,0.05)' : accent.primary,
+            border: 'none', color: (!text.trim() && !assignmentFile) ? 'rgba(255,255,255,0.25)' : C.black,
             padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600,
-            cursor: !text.trim() ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
+            cursor: (!text.trim() && !assignmentFile) ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
           }}
         >
           Submit assignment →

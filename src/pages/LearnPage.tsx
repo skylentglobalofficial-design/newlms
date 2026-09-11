@@ -18,13 +18,17 @@ import { useLmsCourse } from '../hooks/useLms'
 import LockedLessonState from '../components/lms/LockedLessonState'
 import type { VideoPlaybackSource } from '../lib/media/types'
 import {
+  downloadCourseCertificate,
+  fetchCertificateState,
   fetchCourseWorkspace,
   fetchLessonMedia,
   fetchQuizQuestions,
+  issueCertificate,
   markLessonAccess,
   markLessonComplete,
   submitQuizAttempt,
   updateAssignment,
+  uploadAssignmentAttachment,
 } from '../lib/lms-api'
 
 function dashRoute(role?: string) {
@@ -63,6 +67,8 @@ export default function LearnPage() {
   const [quizStatus, setQuizStatus] = useState<'idle' | 'loading' | 'ready'>('idle')
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
   const [enrolling, setEnrolling] = useState(false)
+  const [certificateBusy, setCertificateBusy] = useState(false)
+  const [certificateMessage, setCertificateMessage] = useState<string | null>(null)
 
   useEffect(() => {
     if (firstLessonId && !lessonId && access.status === 'ready') {
@@ -226,10 +232,26 @@ export default function LearnPage() {
     return result.passed
   }
 
-  async function handleAssignmentSubmit(text: string) {
+  async function handleAssignmentSubmit(text: string, file: File | null) {
     if (!slug || !selectedLesson) return
+    if (file) await uploadAssignmentAttachment(slug, selectedLesson.id, file)
     await updateAssignment(slug, selectedLesson.id, 'submit', text)
     await handleLessonComplete()
+  }
+
+  async function handleCertificateDownload() {
+    if (!slug) return
+    setCertificateBusy(true)
+    setCertificateMessage(null)
+    try {
+      const state = await fetchCertificateState(slug)
+      if (!state.certificate) await issueCertificate(slug)
+      await downloadCourseCertificate(slug)
+    } catch (error) {
+      setCertificateMessage(error instanceof Error ? error.message : 'Certificate is not available yet')
+    } finally {
+      setCertificateBusy(false)
+    }
   }
 
   return (
@@ -274,9 +296,22 @@ export default function LearnPage() {
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: C.white, marginBottom: 8 }}>{course.title}</div>
               <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginBottom: 16 }}>
                 {certificateEligible
-                  ? 'You are eligible for a certificate. Download and issuance will be available in a later phase.'
+                  ? 'You completed the published requirements. Download records your name, this course, the issuer, the issue date, and a unique certificate ID. It is not an accredited or university credential.'
                   : 'Complete all requirements to unlock certificate eligibility.'}
               </div>
+              {certificateEligible ? (
+                <button
+                  type="button"
+                  onClick={() => { void handleCertificateDownload() }}
+                  disabled={certificateBusy}
+                  style={{ background: roleAccent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: certificateBusy ? 'wait' : 'pointer' }}
+                >
+                  {certificateBusy ? 'Preparing certificate…' : 'Download certificate'}
+                </button>
+              ) : null}
+              {certificateMessage ? (
+                <div style={{ color: '#fca5a5', fontSize: 13, marginTop: 12 }}>{certificateMessage}</div>
+              ) : null}
             </div>
           )}
 

@@ -8,6 +8,7 @@ import type {
   QuizAttempt,
   UserEnrollment,
 } from "@prisma/client"
+import { issueCourseCertificate } from "./certificates.js"
 import { prisma } from "./prisma.js"
 
 export type LessonKey = string
@@ -487,13 +488,42 @@ export async function syncCertificateState(enrollmentId: string, courseId?: stri
 
   const lessonStates = await loadLessonStates(enrollment, course)
   const { allComplete } = computeProgress(course, lessonStates)
+  const existingCert = await prisma.courseCertificate.findUnique({
+    where: { enrollmentId },
+    select: { id: true },
+  })
+
+  if (allComplete) {
+    const user = await prisma.user.findUnique({
+      where: { id: enrollment.userId },
+      select: { displayName: true, email: true },
+    })
+    const learnerName = user?.displayName?.trim() || user?.email.split("@")[0] || "Learner"
+    await issueCourseCertificate({
+      enrollmentId,
+      userId: enrollment.userId,
+      courseId: course.id,
+      courseSlug: course.slug,
+      courseTitle: course.title,
+      learnerName,
+    })
+    await prisma.userEnrollment.update({
+      where: { id: enrollmentId },
+      data: {
+        certificateEligible: true,
+        certificateStatus: "issued",
+        status: "completed",
+      },
+    })
+    return
+  }
 
   await prisma.userEnrollment.update({
     where: { id: enrollmentId },
     data: {
-      certificateEligible: allComplete,
-      certificateStatus: allComplete ? "eligible" : "locked",
-      status: allComplete ? "completed" : "active",
+      certificateEligible: false,
+      certificateStatus: existingCert ? "issued" : "locked",
+      status: "active",
     },
   })
 }

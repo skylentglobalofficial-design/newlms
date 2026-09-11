@@ -34,7 +34,7 @@ export default function MuxVideoPlaceholder({
       >
         <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 70% 60% at 30% 20%, ${accent.subtle} 0%, transparent 70%)` }} />
         <div style={{ position: 'absolute', top: 12, left: 12, fontSize: 9, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.28)', letterSpacing: '0.06em' }}>
-          MUX · READY
+          VIDEO · UNAVAILABLE
         </div>
         <div style={{ position: 'relative', textAlign: 'center', padding: 24, maxWidth: 420 }}>
           <div style={{
@@ -50,7 +50,7 @@ export default function MuxVideoPlaceholder({
             <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, marginTop: 8, fontFamily: 'var(--font-mono)' }}>{duration}</div>
           )}
           <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, marginTop: 10, fontFamily: 'var(--font-mono)' }}>
-            Video player placeholder · no external stream
+            No video asset is published for this lesson
           </div>
         </div>
         {watched && (

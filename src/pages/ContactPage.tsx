@@ -3,6 +3,7 @@ import { C, FadeIn, PageShell } from '../components/shared'
 import { Button, Eyebrow, T } from '../components/ui'
 import { Aurora, GlassSurface } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
+import { submitContactMessage } from '../lib/catalog-api'
 
 const accent = getDomainAccent('general')
 
@@ -25,18 +26,34 @@ function fieldStyle(focused: boolean): CSSProperties {
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', iam: '', iwant: '', message: '' })
   const [submitted, setSubmitted] = useState(false)
-  const [refNo] = useState(`SKY-ENQ-${Date.now().toString().slice(-8)}`)
+  const [messageId, setMessageId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [sending, setSending] = useState(false)
   const [focused, setFocused] = useState<string | null>(null)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setSubmitted(true)
+    setSending(true)
+    setError(null)
+    try {
+      const result = await submitContactMessage({
+        name: form.name,
+        email: form.email,
+        phone: form.phone || undefined,
+        topic: [form.iam, form.iwant].filter(Boolean).join(' · ') || undefined,
+        message: form.message,
+      })
+      setMessageId(result.data.id)
+      setSubmitted(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to store this message')
+    } finally {
+      setSending(false)
+    }
   }
 
   const contactItems = [
     { label: 'Email', value: 'hello@skylent.in', href: 'mailto:hello@skylent.in' },
-    { label: 'Phone', value: '+91 88800 00000', href: 'tel:+918880000000' },
-    { label: 'Office', value: 'Bengaluru, India', href: undefined },
   ]
 
   return (
@@ -50,7 +67,7 @@ export default function ContactPage() {
               Reach the team directly.
             </h1>
             <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 480, margin: 0 }}>
-              Questions about programs, partnerships, or institutional delivery — send an enquiry and we will respond within one business day.
+              Questions about programs, partnerships, or institutional delivery. Messages are stored for the Skylent team. A published SLA is not listed here.
             </p>
           </FadeIn>
         </div>
@@ -64,12 +81,11 @@ export default function ContactPage() {
                 <GlassSurface level={2} padding="clamp(32px, 5vw, 48px)" style={{ textAlign: 'center' }}>
                   <div style={{ width: 56, height: 56, borderRadius: '50%', background: `linear-gradient(135deg, ${accent.primary}, ${accent.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 22, color: C.white, fontWeight: 700 }}>✓</div>
                   <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: C.white, margin: '0 0 10px', letterSpacing: '-0.02em' }}>Enquiry received</h2>
-                  <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>Thanks for reaching out. Our team will get back to you within 24 hours.</p>
+                  <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>Thanks for reaching out. Your message is stored in this environment.</p>
                   <div style={{ background: 'rgba(255,255,255,0.05)', border: `1px solid ${T.lineDark}`, borderRadius: 10, padding: '14px 20px', display: 'inline-block', marginBottom: 20 }}>
-                    <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>YOUR ENQUIRY REFERENCE</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: C.white, fontWeight: 700, letterSpacing: '0.05em' }}>{refNo}</div>
+                    <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>STORED MESSAGE ID</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 16, color: C.white, fontWeight: 700, letterSpacing: '0.04em' }}>{messageId}</div>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: 12, color: 'rgba(255,255,255,0.38)', fontSize: 12 }}>Demo submission — no real email was sent.</div>
                 </GlassSurface>
               </FadeIn>
             ) : (
@@ -142,6 +158,7 @@ export default function ContactPage() {
                       <textarea
                         rows={4}
                         placeholder="Tell us a bit about what you are looking for..."
+                        required
                         value={form.message}
                         onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
                         style={{ ...fieldStyle(focused === 'message'), resize: 'vertical' }}
@@ -149,7 +166,12 @@ export default function ContactPage() {
                         onBlur={() => setFocused(null)}
                       />
                     </div>
-                    <Button type="submit" variant="primary" style={{ width: '100%' }}>Submit Enquiry →</Button>
+                    {error ? (
+                      <div style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 8, padding: '10px 12px', color: '#fecaca', fontSize: 13, marginBottom: 14 }}>{error}</div>
+                    ) : null}
+                    <Button type="submit" variant="primary" style={{ width: '100%' }} disabled={sending}>
+                      {sending ? 'Storing…' : 'Submit enquiry →'}
+                    </Button>
                   </form>
                 </GlassSurface>
               </FadeIn>

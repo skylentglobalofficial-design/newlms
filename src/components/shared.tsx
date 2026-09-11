@@ -6,6 +6,7 @@ import { useDemoState } from '../demo/DemoStateContext'
 import {
   courseEnrollmentMessage,
   programEnrollmentMessage,
+  registerProgramInterest,
   type CatalogEnrollmentStatus,
 } from '../lib/catalog-api'
 import { enrollReturnPath, fulfillCatalogEnrollment, learnPathForWorkspace } from '../lib/catalog-enrollment'
@@ -41,6 +42,8 @@ export function EnrollmentModal({ item, onClose, themeId }: { item: CatalogEnrol
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [interestEmail, setInterestEmail] = useState(user?.email ?? '')
+  const [interestDone, setInterestDone] = useState(false)
 
   const helperMessage = item.kind === 'program'
     ? programEnrollmentMessage({
@@ -58,6 +61,26 @@ export function EnrollmentModal({ item, onClose, themeId }: { item: CatalogEnrol
 
   async function handlePrimaryAction() {
     if (!item.enrollable) {
+      if (item.kind === 'program') {
+        if (!interestEmail.trim()) {
+          setError('Enter an email so we can record your interest.')
+          return
+        }
+        setSubmitting(true)
+        setError(null)
+        try {
+          await registerProgramInterest(item.slug, {
+            email: interestEmail.trim(),
+            name: user?.name,
+          })
+          setInterestDone(true)
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Unable to register interest')
+        } finally {
+          setSubmitting(false)
+        }
+        return
+      }
       onClose()
       navigate('/contact')
       return
@@ -123,6 +146,24 @@ export function EnrollmentModal({ item, onClose, themeId }: { item: CatalogEnrol
 
         <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: '0 0 20px' }}>{helperMessage}</p>
 
+        {!item.enrollable && item.kind === 'program' && !interestDone ? (
+          <label style={{ display: 'block', color: C.slate, fontSize: 12, marginBottom: 16 }}>
+            Email
+            <input
+              type="email"
+              value={interestEmail}
+              onChange={(event) => setInterestEmail(event.target.value)}
+              style={{ display: 'block', width: '100%', marginTop: 6, padding: '10px 12px', borderRadius: 8, border: '1px solid rgba(11,13,15,0.12)', fontSize: 14, boxSizing: 'border-box' }}
+            />
+          </label>
+        ) : null}
+
+        {interestDone ? (
+          <p style={{ color: C.ink, fontSize: 14, lineHeight: 1.65, margin: '0 0 20px' }}>
+            Interest recorded for this programme. We stored your email against the catalogue entry. This is not an enrolment.
+          </p>
+        ) : null}
+
         {error && (
           <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, padding: '12px 14px', color: '#b91c1c', fontSize: 13, marginBottom: 16 }}>
             {error}
@@ -133,11 +174,11 @@ export function EnrollmentModal({ item, onClose, themeId }: { item: CatalogEnrol
           <button type="button" onClick={onClose} style={{ flex: 1, background: C.sand, border: 'none', color: C.ink, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Close</button>
           <button
             type="button"
-            onClick={handlePrimaryAction}
+            onClick={interestDone ? onClose : handlePrimaryAction}
             disabled={submitting}
             style={{ flex: 2, background: accent.primary, border: 'none', color: C.black, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: submitting ? 'wait' : 'pointer', fontFamily: 'var(--font-body)', opacity: submitting ? 0.7 : 1 }}
           >
-            {primaryLabel}
+            {interestDone ? 'Done' : primaryLabel}
           </button>
         </div>
       </div>

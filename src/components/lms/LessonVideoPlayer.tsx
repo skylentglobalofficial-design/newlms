@@ -1,4 +1,4 @@
-import { useEffect, useRef, createElement } from "react"
+import { useEffect, useRef, useState, createElement } from "react"
 import { C, T } from "../../tokens"
 import type { VideoPlaybackSource } from "../../lib/media/types"
 
@@ -49,10 +49,47 @@ function MuxPlaybackSurface({
   title: string
   accent: Accent
 }) {
+  const [failed, setFailed] = useState(false)
+  const frameRef = useRef<HTMLDivElement>(null)
   useMuxPlayerScript(true)
+
+  useEffect(() => {
+    const root = frameRef.current
+    if (!root) return
+    const player = root.querySelector("mux-player")
+    const onError = () => setFailed(true)
+    player?.addEventListener("error", onError)
+    return () => player?.removeEventListener("error", onError)
+  }, [playbackId])
+
+  if (failed) {
+    return (
+      <div
+        className="lms-media-frame lms-media-frame--error"
+        data-playback-provider="error"
+        style={{
+          background: "rgba(255,255,255,0.02)",
+          borderRadius: T.rCard,
+          aspectRatio: "16/9",
+          marginBottom: 20,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          border: `1px solid ${accent.border}`,
+          color: "rgba(255,255,255,0.55)",
+          fontSize: 13,
+          padding: 24,
+          textAlign: "center",
+        }}
+      >
+        The published video could not be loaded. Playback is unavailable until the source is reachable.
+      </div>
+    )
+  }
 
   return (
     <div
+      ref={frameRef}
       className="lms-media-frame lms-media-frame--mux"
       data-mux-ready="true"
       data-playback-provider="mux"
@@ -109,7 +146,7 @@ function VideoPreviewSurface({
       >
         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 70% 60% at 30% 20%, ${accent.subtle} 0%, transparent 70%)` }} />
         <div style={{ position: "absolute", top: 12, left: 12, fontSize: 9, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.28)", letterSpacing: "0.06em" }}>
-          VIDEO · PREVIEW
+        VIDEO · UNAVAILABLE
         </div>
         <div style={{ position: "relative", textAlign: "center", padding: 24, maxWidth: 420 }}>
           <div style={{
@@ -125,7 +162,7 @@ function VideoPreviewSurface({
             <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 8, fontFamily: "var(--font-mono)" }}>{duration}</div>
           )}
           <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 10, fontFamily: "var(--font-mono)" }}>
-            Stream not configured — playback ID will connect Mux when available
+            No video asset is published for this lesson
           </div>
         </div>
         {watched && (

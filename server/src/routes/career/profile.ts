@@ -378,18 +378,27 @@ profileRouter.patch("/projects/:id", requireAuth, requireCsrf, async (req: Authe
   const entry = await assertOwnedProject(req.auth!.user.id, idParsed.data)
   if (!entry) return res.status(404).json({ error: "Project not found" })
   try {
-    await prisma.careerProject.update({
-      where: { id: entry.id },
-      data: {
-        title: parsed.data.title,
-        description: parsed.data.description,
-        technologies: parsed.data.technologies,
-        projectUrl: parsed.data.projectUrl,
-        repositoryUrl: parsed.data.repositoryUrl,
-        outcome: parsed.data.outcome,
-        sortOrder: parsed.data.sortOrder,
-      },
-    })
+    if (entry.sourceKind) {
+      await prisma.careerProject.update({
+        where: { id: entry.id },
+        data: {
+          outcome: parsed.data.outcome,
+        },
+      })
+    } else {
+      await prisma.careerProject.update({
+        where: { id: entry.id },
+        data: {
+          title: parsed.data.title,
+          description: parsed.data.description,
+          technologies: parsed.data.technologies,
+          projectUrl: parsed.data.projectUrl,
+          repositoryUrl: parsed.data.repositoryUrl,
+          outcome: parsed.data.outcome,
+          sortOrder: parsed.data.sortOrder,
+        },
+      })
+    }
     res.json({ data: await reloadProfile(req.auth!.user.id) })
   } catch (error) {
     res.status(500).json({ error: "Failed to update project" })

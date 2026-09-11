@@ -120,7 +120,7 @@ export default function ProjectsSection({ profile, onProfileUpdate }: Props) {
     <SectionShell
       id="profile-projects"
       title="Projects"
-      description="Portfolio work that demonstrates what you can build."
+      description="Work you add here, plus LMS submissions recorded from published courses. LMS entries are not employer-verified."
       action={editingId === null ? (
         <button type="button" onClick={startNew} style={secondaryButtonStyle}>Add project</button>
       ) : undefined}
@@ -136,12 +136,22 @@ export default function ProjectsSection({ profile, onProfileUpdate }: Props) {
               key={entry.id}
               actions={(
                 <>
-                  <button type="button" onClick={() => startEdit(entry)} style={secondaryButtonStyle}>Edit</button>
+                  {entry.sourceKind ? null : (
+                    <button type="button" onClick={() => startEdit(entry)} style={secondaryButtonStyle}>Edit</button>
+                  )}
                   <button type="button" onClick={() => void handleDelete(entry.id)} disabled={pending} style={dangerButtonStyle}>Delete</button>
                 </>
               )}
             >
               <div style={{ color: C.white, fontWeight: 600 }}>{entry.title}</div>
+              {entry.sourceKind ? (
+                <p style={{ color: accent.text, fontSize: 12, margin: "6px 0 0" }}>
+                  {entry.sourceKind === "lms_course" ? "LMS course completion" : "LMS project submission"}
+                  {entry.sourceCourseSlug ? ` · ${entry.sourceCourseSlug}` : ""}
+                  {entry.artifactFileName ? ` · ${entry.artifactFileName}` : ""}
+                  {entry.sourceCompletedAt ? ` · ${entry.sourceCompletedAt.slice(0, 10)}` : ""}
+                </p>
+              ) : null}
               {entry.description && (
                 <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 13.5, lineHeight: 1.6, margin: "8px 0 0" }}>{entry.description}</p>
               )}

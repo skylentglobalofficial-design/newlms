@@ -8,7 +8,18 @@ import {
   requireCsrf,
   type AuthenticatedRequest,
 } from "../lib/auth.js"
-import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
+import {
+  ARTIFACT_MAX_BYTES,
+  isArtifactValidationError,
+  isStorageError,
+  publicAttachment,
+  readAssignmentArtifact,
+  storeAssignmentArtifact,
+  validateArtifactBytes,
+} from "../lib/assignment-attachments.js"
+import { CERTIFICATE_DISCLAIMER, renderCertificateHtml, renderCertificatePdf, serializeCertificate } from "../lib/certificates.js"
+import { recordLmsAssignmentEvidence } from "../lib/lms-evidence.js"
+import { MultipartError, readMultipartFile } from "../lib/multipart.js"
 import {
   assertLessonUnlocked,
   buildCourseWorkspace,
@@ -59,12 +70,6 @@ const enrollSchema = z
     path: ["courseSlug"],
   })
 
-const attachmentSchema = z.object({
-  fileName: z.string().min(1).max(255),
-  mimeType: z.string().min(1).max(120),
-  byteSize: z.number().int().min(1).max(50_000_000),
-})
-
 const progressPatchSchema = z.object({
   action: z.enum(["access", "complete"]),
 })
@@ -76,8 +81,10 @@ const quizAttemptSchema = z.object({
 const assignmentPatchSchema = z.object({
   action: z.enum(["start", "submit"]),
   responseText: z.string().max(10000).optional(),
-  attachments: z.array(attachmentSchema).max(5).optional(),
 })
+
+const uuidParamSchema = z.string().uuid()
+const certificatePublicIdSchema = z.string().regex(/^SKY-[A-F0-9]{24}$/)
 
 async function requireEnrollment(userId: string, courseId: string) {
   return resolveCourseEnrollment(userId, courseId)
@@ -155,6 +162,9 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
     if (parsed.data.programSlug) {
       const program = await findProgramBySlug(parsed.data.programSlug)
       if (!program) return res.status(404).json({ error: "Program not found" })
+      if (program.enrollmentStatus === "COMING_SOON" || program.enrollmentStatus === "WAITLIST") {
+        return res.status(400).json({ error: "Enrollment is not open for this program" })
+      }
       if (program.programCourses.length === 0) {
         return res.status(400).json({ error: "Program has no linked courses" })
       }
@@ -579,13 +589,7 @@ lmsRouter.get(
           lessonKey: lessonParsed.data.lessonKey,
           status: assignment?.status ?? "not_started",
           submittedAt: assignment?.submittedAt?.toISOString() ?? null,
-          attachments: assignment?.attachments.map((file) => ({
-            id: file.id,
-            fileName: file.fileName,
-            mimeType: file.mimeType,
-            byteSize: file.byteSize,
-            storageProvider: file.storageProvider,
-          })) ?? [],
+          attachments: assignment?.attachments.map((file) => publicAttachment(file)) ?? [],
         },
       })
     } catch (error) {
@@ -625,10 +629,16 @@ lmsRouter.post(
 
       const now = new Date()
       const isSubmit = bodyParsed.data.action === "submit"
+      const existing = await prisma.assignmentProgress.findUnique({
+        where: {
+          enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
+        },
+        include: { attachments: true },
+      })
       const hasText = Boolean(bodyParsed.data.responseText?.trim())
-      const hasAttachments = Boolean(bodyParsed.data.attachments?.length)
-      if (isSubmit && !hasText && !hasAttachments) {
-        return res.status(400).json({ error: "Response text or attachment metadata is required to submit" })
+      const hasStoredFiles = Boolean(existing?.attachments.length)
+      if (isSubmit && !hasText && !hasStoredFiles) {
+        return res.status(400).json({ error: "Response text or an uploaded file is required to submit" })
       }
 
       const assignment = await prisma.assignmentProgress.upsert({
@@ -648,17 +658,8 @@ lmsRouter.post(
           responseText: bodyParsed.data.responseText ?? undefined,
           submittedAt: isSubmit ? now : undefined,
         },
+        include: { attachments: true },
       })
-
-      if (isSubmit && bodyParsed.data.attachments?.length) {
-        await prisma.assignmentAttachment.deleteMany({ where: { assignmentProgressId: assignment.id } })
-        await prisma.assignmentAttachment.createMany({
-          data: bodyParsed.data.attachments.map((file) => ({
-            assignmentProgressId: assignment.id,
-            ...buildPendingAttachmentRecord(assignment.id, file),
-          })),
-        })
-      }
 
       if (isSubmit) {
         await prisma.lessonProgress.upsert({
@@ -682,6 +683,20 @@ lmsRouter.post(
           data: { lastAccessedNodeId: located.node.id },
         })
         await syncCertificateState(enrollment.id, course.id)
+        try {
+          await recordLmsAssignmentEvidence({
+            userId: req.auth!.user.id,
+            enrollmentId: enrollment.id,
+            courseSlug: course.slug,
+            courseTitle: course.title,
+            lessonKey: lessonParsed.data.lessonKey,
+            lessonTitle: located.node.title,
+            artifactFileName: assignment.attachments[0]?.fileName ?? null,
+            submittedAt: now,
+          })
+        } catch (error) {
+          console.error("Failed to record LMS assignment evidence:", error)
+        }
       } else {
         await prisma.lessonProgress.upsert({
           where: {
@@ -702,11 +717,131 @@ lmsRouter.post(
           lessonKey: lessonParsed.data.lessonKey,
           status: assignment.status,
           submittedAt: assignment.submittedAt?.toISOString() ?? null,
+          attachments: assignment.attachments.map((file) => publicAttachment(file)),
         },
       })
     } catch (error) {
       console.error("Failed to update assignment:", error)
       res.status(500).json({ error: "Failed to update assignment" })
+    }
+  },
+)
+
+lmsRouter.post(
+  "/courses/:slug/lessons/:lessonKey/assignment/attachments",
+  requireAuth,
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const slugParsed = slugParamSchema.safeParse(req.params)
+    const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
+    if (!slugParsed.success || !lessonParsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    try {
+      const course = await findCourseBySlug(slugParsed.data.slug)
+      if (!course) return res.status(404).json({ error: "Course not found" })
+
+      const enrollment = await requireEnrollment(req.auth!.user.id, course.id)
+      if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
+
+      const located = await findNodeByLessonKey(course, lessonParsed.data.lessonKey)
+      if (!located || located.node.nodeType !== CurriculumNodeType.ASSIGNMENT) {
+        return res.status(404).json({ error: "Assignment lesson not found" })
+      }
+
+      const lessonStates = await loadLessonStates(enrollment, course)
+      const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
+      if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
+
+      const { file } = await readMultipartFile(req, { maxBytes: ARTIFACT_MAX_BYTES, fieldName: "file" })
+      const validated = validateArtifactBytes(file.fileName, file.mimeType, file.bytes)
+
+      const assignment = await prisma.assignmentProgress.upsert({
+        where: {
+          enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
+        },
+        create: {
+          userId: req.auth!.user.id,
+          enrollmentId: enrollment.id,
+          nodeId: located.node.id,
+          status: AssignmentStatus.in_progress,
+        },
+        update: {},
+        include: { attachments: true },
+      })
+
+      if (assignment.attachments.length >= 5) {
+        return res.status(400).json({ error: "A maximum of 5 files can be stored for this assignment" })
+      }
+
+      const stored = await storeAssignmentArtifact(assignment.id, validated)
+      res.status(201).json({
+        data: {
+          lessonKey: lessonParsed.data.lessonKey,
+          attachment: publicAttachment(stored),
+        },
+      })
+    } catch (error) {
+      if (error instanceof MultipartError || isArtifactValidationError(error) || isStorageError(error)) {
+        return res.status(error.status).json({ error: error.message })
+      }
+      console.error("Failed to upload assignment attachment:", error)
+      res.status(500).json({ error: "Failed to upload assignment attachment" })
+    }
+  },
+)
+
+lmsRouter.get(
+  "/courses/:slug/lessons/:lessonKey/assignment/attachments/:attachmentId",
+  requireAuth,
+  async (req: AuthenticatedRequest, res) => {
+    const slugParsed = slugParamSchema.safeParse(req.params)
+    const lessonParsed = lessonKeySchema.safeParse({ lessonKey: req.params.lessonKey })
+    const attachmentParsed = uuidParamSchema.safeParse(req.params.attachmentId)
+    if (!slugParsed.success || !lessonParsed.success || !attachmentParsed.success) {
+      return res.status(400).json({ error: "Validation failed" })
+    }
+
+    try {
+      const course = await findCourseBySlug(slugParsed.data.slug)
+      if (!course) return res.status(404).json({ error: "Course not found" })
+
+      const enrollment = await requireEnrollment(req.auth!.user.id, course.id)
+      if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
+
+      const located = await findNodeByLessonKey(course, lessonParsed.data.lessonKey)
+      if (!located || located.node.nodeType !== CurriculumNodeType.ASSIGNMENT) {
+        return res.status(404).json({ error: "Assignment lesson not found" })
+      }
+
+      const attachment = await prisma.assignmentAttachment.findUnique({
+        where: { id: attachmentParsed.data },
+        include: { assignmentProgress: true },
+      })
+      if (
+        !attachment ||
+        attachment.assignmentProgress.userId !== req.auth!.user.id ||
+        attachment.assignmentProgress.enrollmentId !== enrollment.id ||
+        attachment.assignmentProgress.nodeId !== located.node.id
+      ) {
+        return res.status(404).json({ error: "Attachment not found" })
+      }
+
+      const bytes = await readAssignmentArtifact(attachment.storageKey)
+      res.setHeader("Content-Type", attachment.mimeType)
+      res.setHeader("Content-Length", String(bytes.length))
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${attachment.fileName.replace(/"/g, "")}"`,
+      )
+      res.setHeader("X-Content-Type-Options", "nosniff")
+      res.setHeader("Cache-Control", "private, no-store")
+      res.send(bytes)
+    } catch (error) {
+      if (isStorageError(error)) return res.status(error.status).json({ error: error.message })
+      console.error("Failed to download assignment attachment:", error)
+      res.status(500).json({ error: "Failed to download assignment attachment" })
     }
   },
 )
@@ -772,11 +907,17 @@ lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: Authenticat
       title: item.node.title,
       complete: lessonStates[item.lessonKey]?.complete ?? false,
     }))
+    const certificate = await prisma.courseCertificate.findUnique({
+      where: { enrollmentId: enrollment.id },
+    })
 
     res.json({
       data: {
-        certificateEligible: enrollment.certificateEligible,
-        certificateStatus: enrollment.certificateStatus,
+        certificateEligible: enrollment.certificateEligible || Boolean(certificate),
+        certificateStatus: certificate ? "issued" : enrollment.certificateStatus,
+        issuerName: certificate?.issuerName ?? null,
+        disclaimer: CERTIFICATE_DISCLAIMER,
+        certificate: certificate ? serializeCertificate(certificate) : null,
         requirements,
         allComplete: requirements.every((r) => r.complete),
       },
@@ -784,5 +925,117 @@ lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: Authenticat
   } catch (error) {
     console.error("Failed to load certificate state:", error)
     res.status(500).json({ error: "Failed to load certificate state" })
+  }
+})
+
+lmsRouter.post("/courses/:slug/certificate/issue", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const parsed = slugParamSchema.safeParse(req.params)
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Invalid slug" })
+  }
+
+  try {
+    const course = await findCourseBySlug(parsed.data.slug)
+    if (!course) return res.status(404).json({ error: "Course not found" })
+
+    const enrollment = await requireEnrollment(req.auth!.user.id, course.id)
+    if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
+
+    await syncCertificateState(enrollment.id, course.id)
+    const fresh = await prisma.userEnrollment.findUnique({ where: { id: enrollment.id } })
+    if (!fresh?.certificateEligible && fresh?.certificateStatus !== "issued") {
+      return res.status(403).json({ error: "Course requirements are not complete" })
+    }
+
+    const certificate = await prisma.courseCertificate.findUnique({
+      where: { enrollmentId: enrollment.id },
+    })
+    if (!certificate) {
+      return res.status(403).json({ error: "Course requirements are not complete" })
+    }
+    res.json({ data: serializeCertificate(certificate) })
+  } catch (error) {
+    console.error("Failed to issue certificate:", error)
+    res.status(500).json({ error: "Failed to issue certificate" })
+  }
+})
+
+async function sendOwnedCertificate(
+  req: AuthenticatedRequest,
+  res: import("express").Response,
+  slug: string,
+  format: "pdf" | "html",
+) {
+  const course = await findCourseBySlug(slug)
+  if (!course) return res.status(404).json({ error: "Course not found" })
+  const enrollment = await requireEnrollment(req.auth!.user.id, course.id)
+  if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
+  const certificate = await prisma.courseCertificate.findUnique({
+    where: { enrollmentId: enrollment.id },
+  })
+  if (!certificate || certificate.userId !== req.auth!.user.id) {
+    return res.status(404).json({ error: "Certificate not found" })
+  }
+  if (format === "html") {
+    res.setHeader("Content-Type", "text/html; charset=utf-8")
+    res.setHeader("Content-Disposition", `inline; filename="certificate-${certificate.publicId}.html"`)
+    return res.send(renderCertificateHtml(certificate))
+  }
+  const pdf = renderCertificatePdf(certificate)
+  res.setHeader("Content-Type", "application/pdf")
+  res.setHeader("Content-Disposition", `attachment; filename="certificate-${certificate.publicId}.pdf"`)
+  res.setHeader("X-Content-Type-Options", "nosniff")
+  return res.send(pdf)
+}
+
+lmsRouter.get("/courses/:slug/certificate/file", requireAuth, async (req: AuthenticatedRequest, res) => {
+  const parsed = slugParamSchema.safeParse(req.params)
+  if (!parsed.success) return res.status(400).json({ error: "Invalid slug" })
+  try {
+    await sendOwnedCertificate(req, res, parsed.data.slug, "pdf")
+  } catch (error) {
+    console.error("Failed to download certificate:", error)
+    res.status(500).json({ error: "Failed to download certificate" })
+  }
+})
+
+lmsRouter.get("/courses/:slug/certificate.html", requireAuth, async (req: AuthenticatedRequest, res) => {
+  const parsed = slugParamSchema.safeParse(req.params)
+  if (!parsed.success) return res.status(400).json({ error: "Invalid slug" })
+  try {
+    await sendOwnedCertificate(req, res, parsed.data.slug, "html")
+  } catch (error) {
+    console.error("Failed to view certificate:", error)
+    res.status(500).json({ error: "Failed to view certificate" })
+  }
+})
+
+lmsRouter.get("/certificates/:publicId", async (req, res) => {
+  const parsed = certificatePublicIdSchema.safeParse(req.params.publicId)
+  if (!parsed.success) return res.status(400).json({ error: "Invalid certificate id" })
+  try {
+    const certificate = await prisma.courseCertificate.findUnique({ where: { publicId: parsed.data } })
+    if (!certificate) return res.status(404).json({ error: "Certificate not found" })
+    res.json({ data: serializeCertificate(certificate) })
+  } catch (error) {
+    console.error("Failed to verify certificate:", error)
+    res.status(500).json({ error: "Failed to verify certificate" })
+  }
+})
+
+lmsRouter.get("/certificates/:publicId/file", async (req, res) => {
+  const parsed = certificatePublicIdSchema.safeParse(req.params.publicId)
+  if (!parsed.success) return res.status(400).json({ error: "Invalid certificate id" })
+  try {
+    const certificate = await prisma.courseCertificate.findUnique({ where: { publicId: parsed.data } })
+    if (!certificate) return res.status(404).json({ error: "Certificate not found" })
+    const pdf = renderCertificatePdf(certificate)
+    res.setHeader("Content-Type", "application/pdf")
+    res.setHeader("Content-Disposition", `inline; filename="certificate-${certificate.publicId}.pdf"`)
+    res.setHeader("X-Content-Type-Options", "nosniff")
+    res.send(pdf)
+  } catch (error) {
+    console.error("Failed to load certificate file:", error)
+    res.status(500).json({ error: "Failed to load certificate file" })
   }
 })
