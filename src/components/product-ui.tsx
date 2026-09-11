@@ -5,6 +5,7 @@ import { PROGRAM_TYPE_LABELS } from '../skylent-worlds'
 import type { ProductWorld } from './world/WorldFrame'
 export type { ProductWorld }
 export { default as AppShell } from './world/WorldFrame'
+export { default as ProductShell } from './world/WorldFrame'
 
 export type Crumb = { label: string; href?: string }
 

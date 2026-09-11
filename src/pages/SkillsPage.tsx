@@ -12,6 +12,7 @@ import {
   ProductLayout,
   ProgrammeList,
   SectionHeader,
+  WorkspaceBlock,
   formatInr,
   programCard,
 } from '../components/product-ui'
@@ -85,7 +86,7 @@ export default function SkillsPage() {
         <div className="product-toolbar">
           <FilterToggle open={filtersOpen} onClick={() => setFiltersOpen(true)} />
           <p className="panel-note" style={{ margin: 0 }}>
-            Learn → practice → build → prove. Degree programmes live in University ({ugCount} UG, {pgCount} PG published).
+            Degree programmes live in University ({ugCount} UG, {pgCount} PG published).
           </p>
         </div>
 
@@ -167,15 +168,22 @@ export default function SkillsPage() {
             <ComingSoonState title="Coming soon" description="Professional programmes will appear when they are published." />
           ) : null}
 
-          <p className="panel-note">
-            Projects live inside programmes. Labs are for experiments. CareerOS is where proof becomes applications — after you have something to show.
-            {' '}
-            <Link to="/labs">Labs</Link>
-            {' · '}
-            <Link to="/career">Career</Link>
-            {' · '}
-            <Link to="/degrees">University</Link>
-          </p>
+          <div className="workspace-grid" style={{ marginTop: 8 }}>
+            <WorkspaceBlock title="Projects">
+              <p>Projects sit inside each programme. Open a programme to see what you will build.</p>
+            </WorkspaceBlock>
+            <WorkspaceBlock title="Practice">
+              <p>Labs are for experiments. Programme practice is assessed work, not a decorative sandbox.</p>
+              <p><Link to="/labs">Open Labs</Link></p>
+            </WorkspaceBlock>
+            <WorkspaceBlock title="Evidence">
+              <p>Work you can show belongs in Career OS after you have something to submit.</p>
+              <p><Link to="/career">Open Career</Link></p>
+            </WorkspaceBlock>
+            <WorkspaceBlock title="Career relevance">
+              <p>Learn is for capability. University is for degrees. Career is for what you do next.</p>
+            </WorkspaceBlock>
+          </div>
         </ProductLayout>
       </ContentRail>
     </WorldFrame>

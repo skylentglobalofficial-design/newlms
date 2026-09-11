@@ -323,6 +323,7 @@
 }
 
 .product-tabs button[aria-selected="true"],
+.product-tabs button[aria-current="location"],
 .product-segments button[aria-pressed="true"] {
   border-color: var(--product-accent);
   background: color-mix(in srgb, var(--product-accent) 10%, white);
@@ -578,7 +579,12 @@
 
 .pdp-main {
   display: grid;
-  gap: 28px;
+  gap: 8px;
+}
+
+.pdp-block {
+  padding: 16px 0 18px;
+  border-bottom: 1px solid var(--product-line);
 }
 
 .pdp-block h2 {
@@ -589,8 +595,13 @@
 .pdp-block p,
 .pdp-block li {
   font-size: 0.92rem;
-  line-height: 1.6;
+  line-height: 1.55;
   color: #334155;
+}
+
+.pdp-block ul {
+  margin: 0;
+  padding-left: 18px;
 }
 
 .mobile-filters {

@@ -10,6 +10,7 @@ import {
   FilterToggle,
   NavList,
   ProductLayout,
+  ProductTabs,
   ProgressPanel,
   ProgrammeList,
   SectionHeader,
@@ -31,6 +32,10 @@ export default function JuniorPage() {
   const bandId = bandFromSearch(params.get('band'))
   const band = SCHOOL_BANDS.find((item) => item.id === bandId) ?? SCHOOL_BANDS[1]
   const subject = params.get('subject') ?? band.subjects[0]
+  const requestedLayer = params.get('layer')
+  const layer = (SCHOOL_LAYERS as readonly string[]).includes(requestedLayer ?? '')
+    ? (requestedLayer as (typeof SCHOOL_LAYERS)[number])
+    : 'Subjects'
   const published = programsForWorld('schooling')
 
   const activeSubject = (band.subjects as readonly string[]).includes(subject) ? subject : band.subjects[0]
@@ -50,6 +55,14 @@ export default function JuniorPage() {
     nextParams.set('subject', next)
     setParams(nextParams, { replace: true })
     setFiltersOpen(false)
+  }
+
+  function setLayer(next: string) {
+    const nextParams = new URLSearchParams(params)
+    nextParams.set('band', band.id)
+    nextParams.set('subject', activeSubject)
+    nextParams.set('layer', next)
+    setParams(nextParams, { replace: true })
   }
 
   const sidebar = (
@@ -99,16 +112,19 @@ export default function JuniorPage() {
             description={`${band.stage}. ${band.focus}`}
           />
 
-          <div className="workspace-grid">
-            {SCHOOL_LAYERS.map((layer) => (
-              <WorkspaceBlock key={layer} title={layer}>
-                <p>{layerCopy[layer]}</p>
-                {layer === 'Experiments' ? (
-                  <p><Link className="product-btn-ghost" to="/labs">Open Labs</Link></p>
-                ) : null}
-              </WorkspaceBlock>
-            ))}
-          </div>
+          <ProductTabs
+            tabs={SCHOOL_LAYERS.map((item) => ({ id: item, label: item }))}
+            value={layer}
+            onChange={setLayer}
+            label="Learning layer"
+          />
+
+          <WorkspaceBlock title={layer}>
+            <p>{layerCopy[layer]}</p>
+            {layer === 'Experiments' ? (
+              <p><Link className="product-btn-ghost" to="/labs">Open Labs</Link></p>
+            ) : null}
+          </WorkspaceBlock>
 
           <ProgressPanel
             title="Continue learning"
