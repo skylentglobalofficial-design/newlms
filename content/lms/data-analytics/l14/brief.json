@@ -1,0 +1,765 @@
+{
+  "courseSlug": "data-analytics",
+  "moduleSourceId": "m5",
+  "lessonSourceId": "l14",
+  "title": "Project 2: HR Dashboard",
+  "kicker": "PROJECT 2",
+  "contentClass": "AUTHORING_DECISION",
+  "sourceNote": "Phase 15 curriculum authoring specification. NEW Skylent curriculum content — not recovered pre-existing repository material. Title and sequence position are FIRST-PARTY catalogue evidence from src/data.ts (data-analytics / m5 / l14). Scenario, dataset contract, analyses, rubric, and deliverables are newly authored for this phase. No production dataset binary is attached in this phase.",
+  "objective": "Demonstrate that you can inspect and prepare a synthetic multi-table HR workforce dataset, define evidence-backed workforce metrics, analyse composition and movement patterns, build a coherent stakeholder-facing HR dashboard, and communicate findings with clear distinction between observation, interpretation, and hypothesis — including assumptions, limitations, and areas for further investigation.",
+  "learningObjectives": [
+    "Inspect and validate a multi-table synthetic HR dataset (keys, relationships, date coverage, status values, and null patterns).",
+    "Prepare an analysis-ready workforce model with documented filters and an explicit as-of / analysis-window definition.",
+    "Calculate and explain workforce metrics including active headcount, composition shares, hire/exit counts, attrition indicators supported by the data, and tenure distribution.",
+    "Analyse workforce distribution across department and job level, and workforce movement over time within the analysis window.",
+    "Build a stakeholder-facing dashboard that answers the required HR questions with readable KPI summaries and coherent analytical views.",
+    "Identify at least two evidence-backed patterns and state areas for further investigation without causal overclaim.",
+    "Communicate assumptions, limitations, PII boundaries, and metric definitions so another reviewer can reproduce key totals."
+  ],
+  "scenario": {
+    "caseName": "Virelia Shared Services — Curriculum HR Workforce Case",
+    "framing": "This is a fictional Skylent curriculum case. It is not a real client, employer, placement partner, or live HR engagement. The organisation and employees are synthetic.",
+    "narrative": "Virelia Shared Services is a fictional mid-size shared-services company supporting internal business units across several Indian cities. Departments include Customer Operations, Finance Operations, Technology, People Operations, and Commercial Support. A learning facilitator (role-played in the brief as a People Analytics lead) asks for a workforce dashboard covering the last two calendar years so leadership can discuss composition, movement, exits, and tenure patterns before planning deeper follow-up reviews. Treat every table as authored curriculum material. Do not claim this is a real employee extract. Do not invent individual performance scores, hiring recommendations, or placement outcomes."
+  },
+  "businessProblem": {
+    "primaryQuestion": "How is Virelia’s workforce composed and how has it moved over the analysis window — and which two workforce segments or patterns warrant further investigation?",
+    "decisionSupported": "Identify two evidence-backed areas for further People/HR investigation (for example a department with concentrated exits, an uneven tenure profile, a location with unusual movement, or a composition shift). Each area must be tied to metrics from the dataset and framed as investigation priority, not as a causal diagnosis or hiring action.",
+    "gradingNote": "There is no single correct recommendation. Evaluators assess metric correctness, analytical coverage, evidence quality, and interpretation honesty — not a hidden right answer. Observation, interpretation, and hypothesis must remain distinct. Causal claims about why employees leave or how to hire are not required and must not be graded as if they were."
+  },
+  "learnerTask": [
+    "Inspect the provided tables: row counts, primary-key uniqueness, foreign-key integrity, null patterns, date ranges, employment statuses, and event types.",
+    "Prepare an analysis-ready model (joins, calculated fields such as active flag and tenure band, and documented filters / as-of rules).",
+    "Define workforce metrics needed for the business problem (at minimum: active headcount, composition shares, hire/exit counts over time, attrition view supported by events, tenure distribution).",
+    "Complete required analyses R1–R7 and build the required dashboard views.",
+    "Interpret patterns in plain language — what is observed, what it might mean as a hypothesis, and what remains unknown.",
+    "Communicate findings in the required written analysis and dashboard artifact, including assumptions and limitations."
+  ],
+  "requiredAnalysis": [
+    {
+      "id": "R1",
+      "text": "What is active workforce size (active headcount) as of the analysis end date, using the documented active-employee definition?"
+    },
+    {
+      "id": "R2",
+      "text": "How is the active workforce composed by department (headcount and share)?"
+    },
+    {
+      "id": "R3",
+      "text": "How is the active workforce composed by job level (headcount and share)?"
+    },
+    {
+      "id": "R4",
+      "text": "How has workforce size and movement changed over time within the analysis window (monthly or quarterly active headcount and/or hire vs exit counts)?"
+    },
+    {
+      "id": "R5",
+      "text": "Where are exits concentrated (for example by department and/or location), using exit events in the analysis window?"
+    },
+    {
+      "id": "R6",
+      "text": "What does tenure distribution look like for the active workforce (and, optionally, for employees who exited in the window)?"
+    },
+    {
+      "id": "R7",
+      "text": "Based on R1–R6, state two evidence-backed findings and the areas for further investigation they imply. Separate observation from interpretation/hypothesis. Do not claim causation."
+    }
+  ],
+  "optionalAnalysis": [
+    {
+      "id": "O1",
+      "text": "Active workforce composition by location"
+    },
+    {
+      "id": "O2",
+      "text": "Tenure band × department cross-tab for active employees"
+    },
+    {
+      "id": "O3",
+      "text": "Exit reason mix (Voluntary / Involuntary / End of contract) within the analysis window"
+    },
+    {
+      "id": "O4",
+      "text": "Employment type mix (Full-time vs Contract) for active headcount"
+    },
+    {
+      "id": "O5",
+      "text": "Simple SQL queries that reproduce one required aggregate (if you elect SQL)"
+    }
+  ],
+  "dashboardRequirements": [
+    {
+      "id": "D1",
+      "view": "Headline workforce KPIs",
+      "questionAnswered": "What is the current active workforce size and what movement occurred in the analysis window?",
+      "metric": "Active headcount as of analysis end; hires in window; exits in window; optional simple attrition indicator defined in the write-up",
+      "acceptableVisualForm": "KPI cards, summary table, or equivalent headline metrics strip",
+      "interpretationExpectation": "State the definitions used. Do not present a single KPI as a hiring recommendation."
+    },
+    {
+      "id": "D2",
+      "view": "Workforce composition by department",
+      "questionAnswered": "How is the active workforce distributed across departments?",
+      "metric": "Active headcount and share by department",
+      "acceptableVisualForm": "Bar chart, stacked bar, treemap, or composition table",
+      "interpretationExpectation": "Describe concentration without claiming which department is 'best' or 'worst' for performance."
+    },
+    {
+      "id": "D3",
+      "view": "Workforce composition by job level",
+      "questionAnswered": "How is the active workforce distributed across job levels?",
+      "metric": "Active headcount and share by job_level",
+      "acceptableVisualForm": "Bar chart, stacked bar, or composition table",
+      "interpretationExpectation": "Note structure only; do not invent promotion or performance conclusions."
+    },
+    {
+      "id": "D4",
+      "view": "Workforce movement over time",
+      "questionAnswered": "How did headcount and/or hire–exit movement change during the analysis window?",
+      "metric": "Monthly or quarterly active headcount trend and/or hire vs exit counts",
+      "acceptableVisualForm": "Line chart, area chart, dual-series column chart, or trend table",
+      "interpretationExpectation": "Describe change over time; treat explanations of 'why' as hypotheses only."
+    },
+    {
+      "id": "D5",
+      "view": "Exits / attrition distribution",
+      "questionAnswered": "Where are exits concentrated in the available data?",
+      "metric": "Exit counts (and optional rates if denominator is defined) by department and/or location",
+      "acceptableVisualForm": "Bar chart, ranked table, or small-multiple comparison",
+      "interpretationExpectation": "Report concentration. Do not infer individual risk or prescribe surveillance actions."
+    },
+    {
+      "id": "D6",
+      "view": "Tenure distribution",
+      "questionAnswered": "What does tenure look like for the active workforce?",
+      "metric": "Tenure days or tenure bands for active employees as of analysis end",
+      "acceptableVisualForm": "Histogram, banded bar chart, or distribution table",
+      "interpretationExpectation": "Describe distribution shape; do not claim tenure causes performance or retention."
+    },
+    {
+      "id": "D7",
+      "view": "Comparison / filter context",
+      "questionAnswered": "Can a stakeholder compare meaningful segments without leaving the dashboard?",
+      "metric": "At least one comparison view or filter set using department and/or location (and optionally job level)",
+      "acceptableVisualForm": "Slicers/filters with dependent visuals, or an explicit comparison panel",
+      "interpretationExpectation": "Filters and comparison scope must be documented in the written analysis."
+    }
+  ],
+  "deliverables": {
+    "analyticalArtifact": {
+      "required": true,
+      "paths": [
+        {
+          "id": "excel",
+          "label": "Path A — Excel",
+          "description": "Workbook with prepared data (or documented Power Query steps), required KPI/summary and analytical views (pivots/charts), and a Findings sheet covering R7."
+        },
+        {
+          "id": "powerbi",
+          "label": "Path B — Power BI",
+          "description": "PBIX file with model relationships and required dashboard pages, or a PDF export of report pages if PBIX upload is not available, plus a findings page or text box covering R7."
+        }
+      ],
+      "chooseOne": true
+    },
+    "writtenAnalysis": {
+      "required": true,
+      "wordCount": "400–800 words",
+      "mustInclude": [
+        "As-of date / analysis window and filters used",
+        "Active-employee definition and key metric definitions",
+        "R1 headline workforce metrics",
+        "R7 two evidence-backed findings with investigation areas",
+        "Explicit separation of observation vs interpretation/hypothesis",
+        "Limitations (data coverage, what cannot be concluded, no causal claims)"
+      ]
+    },
+    "optional": [
+      "SQL file verifying one required aggregate (O5)"
+    ]
+  },
+  "constraints": [
+    "Permitted tools: Excel and/or Power BI; optional SQL for verification only.",
+    "Use only the provided synthetic curriculum HR dataset for the stated analysis window.",
+    "External data, scraped employer data, and real employee files are not permitted.",
+    "Document filters, joins, as-of rules, and metric formulas in the write-up.",
+    "Out of scope: forecasting, machine learning, automated hiring recommendations, individual employee ranking, performance scoring, surveillance use cases, protected-class profiling, placement/job guarantees, inventing data.",
+    "Patterns and associations only — do not claim causation about why people join, stay, or leave.",
+    "Do not present Virelia Shared Services as a real client, employer, or Skylent placement partner.",
+    "Another reviewer should be able to regenerate R1–R6 from the submitted artifact and stated definitions.",
+    "Avoid unnecessary sensitive personal attributes; do not add real PII.",
+    "Compensation fields, if present in a future binary, may be used only for optional high-level distribution analysis — never for individual ranking."
+  ],
+  "milestones": [
+    {
+      "id": "inspect",
+      "label": "Inspect",
+      "purpose": "Confirm table grains, keys, relationships, statuses, event types, and date coverage before transforming data.",
+      "evidenceBeforeNext": "Notes or checklist covering row counts, PK uniqueness, FK integrity, nulls, and date range."
+    },
+    {
+      "id": "prepare",
+      "label": "Prepare",
+      "purpose": "Build an analysis-ready model with documented active definition, tenure logic, and filters.",
+      "evidenceBeforeNext": "Prepared table(s)/model relationships and written metric definitions."
+    },
+    {
+      "id": "analyse",
+      "label": "Analyse",
+      "purpose": "Complete R1–R6 with reproducible numbers.",
+      "evidenceBeforeNext": "Working calculations or query/pivot outputs for each required analysis."
+    },
+    {
+      "id": "build",
+      "label": "Build",
+      "purpose": "Assemble a coherent dashboard covering D1–D7 (or Excel equivalent views).",
+      "evidenceBeforeNext": "Draft dashboard/workbook pages that answer the required questions."
+    },
+    {
+      "id": "communicate",
+      "label": "Communicate",
+      "purpose": "Produce the final artifact and written analysis including R7 findings and limitations.",
+      "evidenceBeforeNext": "Submission-ready written analysis + analytical artifact binary."
+    }
+  ],
+  "rubric": [
+    {
+      "criterion": "Data preparation / model integrity",
+      "meets": "Joins/model correct; active definition and filters documented; grain clear; no silent exclusion of required tables.",
+      "partial": "Model mostly usable; active definition or filters vague.",
+      "doesNotMeet": "Wrong joins, broken grain, silent data loss, or unusable preparation."
+    },
+    {
+      "criterion": "Metric correctness",
+      "meets": "Active headcount, composition shares, movement, exit, and tenure metrics match stated definitions; no contradictory totals.",
+      "partial": "Minor calculation issues that do not overturn the main findings.",
+      "doesNotMeet": "Systematic metric errors or undefined metrics presented as fact."
+    },
+    {
+      "criterion": "Analytical coverage",
+      "meets": "R1–R6 addressed with numbers and corresponding dashboard/workbook views.",
+      "partial": "Most required analyses present; one material gap.",
+      "doesNotMeet": "Missing majority of required analyses or views."
+    },
+    {
+      "criterion": "Dashboard usefulness",
+      "meets": "Views form a coherent workforce story (KPIs → composition → movement → exits → tenure) with readable hierarchy and filters/comparisons documented.",
+      "partial": "Required views exist but are hard to navigate or weakly connected.",
+      "doesNotMeet": "Arbitrary chart collection that does not answer the HR questions, or missing required views."
+    },
+    {
+      "criterion": "Reasoning / evidence",
+      "meets": "R7 findings tied to specific metrics/views; investigation areas follow from evidence.",
+      "partial": "Findings weakly linked to charts or only partially evidenced.",
+      "doesNotMeet": "Opinions with no evidence, invented facts, or findings unrelated to R1–R6."
+    },
+    {
+      "criterion": "Interpretation honesty",
+      "meets": "Observation / interpretation / hypothesis kept distinct; no fake causation; no real-client, hiring, placement, or surveillance claims.",
+      "partial": "Mild overclaim or blurred observation vs interpretation.",
+      "doesNotMeet": "Causal overclaim, fabricated findings, protected-class profiling, individual ranking, or real-employer framing."
+    },
+    {
+      "criterion": "Communication",
+      "meets": "Clear 400–800 word stakeholder note; visuals readable enough to support the argument.",
+      "partial": "Understandable but disorganized or incomplete write-up structure.",
+      "doesNotMeet": "Unreadable artifact, missing written analysis, or write-up that omits required elements."
+    },
+    {
+      "criterion": "Reproducibility",
+      "meets": "Reviewer can follow definitions/filters and recreate key R1–R6 totals from the artifact.",
+      "partial": "Partial documentation; some totals hard to recreate.",
+      "doesNotMeet": "Cannot reproduce key metrics."
+    }
+  ],
+  "submissionExpectations": {
+    "requiredArtifacts": [
+      "Written analysis in the assignment response text (400–800 words)",
+      "Analytical artifact binary upload for Excel (.xlsx/.xls), Power BI (.pbix), PDF export fallback, or optional .sql verification alongside the primary artifact"
+    ],
+    "naming": "DA_l14_HRDashboard_<LearnerNameOrId>.<ext>",
+    "completeWhen": "Written analysis is present and at least one analytical artifact binary has been uploaded and stored.",
+    "incompleteIf": [
+      "Missing write-up",
+      "Missing analytical artifact binary",
+      "Uses external or real employee data",
+      "Presents the fictional case as a real client/employer",
+      "Includes individual employee ranking, hiring automation claims, or protected-class profiling as the analysis deliverable"
+    ],
+    "attachmentNote": "Conceptually compatible with the existing l13 artifact-submission model: analytical artifacts are uploaded to authenticated LMS server storage (local filesystem provider). Filename-only metadata without a stored binary does not satisfy completion. If a learner cannot submit a .pbix file, a PDF export of the Power BI report pages is an accepted fallback for the analytical artifact. This Phase 15 package does not implement or alter that API."
+  },
+  "prerequisites": {
+    "sourceDerivedPath": "m1 Foundations → m2 Excel (including Excel Assignment) → m3 SQL → m4 Power BI (including Dashboard Project) → m5 Capstone → l13 Project 1: Sales Analysis → l14 Project 2: HR Dashboard",
+    "statement": "From the curriculum sequence titles only, learners are expected to have been exposed to spreadsheet work, SQL for analysis, and Power BI/DAX at a course-sequence level, and to have completed the Sales Analysis project pattern (l13) before this node where sequential unlock applies. This brief does not invent certifications, job experience, or mastery of unpublished lesson scripts. LMS unlock requires sequential completion of prior lessons when unlock rules are enabled."
+  },
+  "completionRule": "Upload the analytical artifact binary, then submit the required written analysis through the existing assignment submission path (same conceptual completion model as l13). Completion marks the lesson complete and unlocks the next node when unlock rules allow. CareerOS evidence generation, mentor auto-scoring, recruiter/placement behaviour, and automatic insight grading are out of scope.",
+  "dataset": {
+    "status": "CONTRACT_ONLY",
+    "productionBinaryStatus": "not_authored_in_phase_15",
+    "name": "skylent_virelia_shared_services_hr_v1",
+    "fileName": "skylent_virelia_shared_services_hr_v1.xlsx",
+    "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "intendedFormat": "Multi-sheet Excel workbook (.xlsx) with relational sheets suitable for Power Query / Power BI relationships",
+    "honesty": "Synthetic / fictional Skylent curriculum data. Not a real HRIS extract, employer dataset, client file, or production people-analytics feed. No real employee PII.",
+    "purpose": "Synthetic curriculum input for Project 2: HR Dashboard (people-analytics workforce case).",
+    "piiPolicy": "No real names, emails, phone numbers, government IDs, home addresses, or other real PII. Employee identifiers are synthetic codes (for example EMP-00001). Protected-class attributes (for example race, religion, disability, sexual orientation) are intentionally excluded from the required schema. Age and gender are not required for this project and must not be added by learners as external data.",
+    "syntheticDataDisclaimer": "All organisations, departments, locations, employees, and events in this contract are fictional and authored for learning. Patterns may be deliberately uneven for teachability, but they are not real organisational outcomes.",
+    "analysisWindow": {
+      "start": "2023-01-01",
+      "end": "2024-12-31",
+      "asOfDate": "2024-12-31"
+    },
+    "currency": "INR",
+    "currencyNote": "Currency applies only if optional compensation-band fields are generated in a future binary. Compensation is not required for R1–R7.",
+    "targetRowCounts": {
+      "dim_department": { "min": 5, "max": 8 },
+      "dim_location": { "min": 4, "max": 6 },
+      "dim_employee": { "min": 420, "max": 580 },
+      "fact_hr_events": { "min": 520, "max": 780 }
+    },
+    "sheets": [
+      "dim_department",
+      "dim_location",
+      "dim_employee",
+      "fact_hr_events"
+    ],
+    "tables": [
+      {
+        "name": "dim_department",
+        "grain": "One row per department",
+        "primaryKey": ["department_id"],
+        "foreignKeys": [],
+        "approximateRows": "5–8",
+        "requiredColumns": [
+          {
+            "name": "department_id",
+            "type": "string",
+            "nullable": false,
+            "notes": "Stable surrogate key, for example D-OPS"
+          },
+          {
+            "name": "department_name",
+            "type": "string",
+            "nullable": false,
+            "allowedValues": [
+              "Customer Operations",
+              "Finance Operations",
+              "Technology",
+              "People Operations",
+              "Commercial Support"
+            ],
+            "notes": "Exact set may include 5–8 departments; listed values are the core curriculum set. Additional fictional support departments allowed if documented in generation notes."
+          },
+          {
+            "name": "business_unit",
+            "type": "string",
+            "nullable": false,
+            "allowedValues": [
+              "Service Delivery",
+              "Corporate",
+              "Growth"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "dim_location",
+        "grain": "One row per work location / city site",
+        "primaryKey": ["location_id"],
+        "foreignKeys": [],
+        "approximateRows": "4–6",
+        "requiredColumns": [
+          {
+            "name": "location_id",
+            "type": "string",
+            "nullable": false,
+            "notes": "Stable surrogate key, for example L-BLR"
+          },
+          {
+            "name": "city",
+            "type": "string",
+            "nullable": false,
+            "allowedValues": [
+              "Bengaluru",
+              "Hyderabad",
+              "Pune",
+              "Gurugram",
+              "Chennai"
+            ],
+            "notes": "Fictional site cities for curriculum geography; not a claim of real Virelia offices."
+          },
+          {
+            "name": "region",
+            "type": "string",
+            "nullable": false,
+            "allowedValues": [
+              "South",
+              "West",
+              "North"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "dim_employee",
+        "grain": "One row per synthetic employee (current attribute snapshot for curriculum use)",
+        "primaryKey": ["employee_id"],
+        "foreignKeys": [
+          {
+            "columns": ["department_id"],
+            "references": "dim_department.department_id"
+          },
+          {
+            "columns": ["location_id"],
+            "references": "dim_location.location_id"
+          }
+        ],
+        "approximateRows": "420–580",
+        "requiredColumns": [
+          {
+            "name": "employee_id",
+            "type": "string",
+            "nullable": false,
+            "notes": "Synthetic ID only, for example EMP-00001. Not a real personnel number."
+          },
+          {
+            "name": "department_id",
+            "type": "string",
+            "nullable": false
+          },
+          {
+            "name": "location_id",
+            "type": "string",
+            "nullable": false
+          },
+          {
+            "name": "job_family",
+            "type": "string",
+            "nullable": false,
+            "allowedValues": [
+              "Operations",
+              "Analytics",
+              "Engineering",
+              "Finance",
+              "People",
+              "Sales Support"
+            ]
+          },
+          {
+            "name": "job_level",
+            "type": "string",
+            "nullable": false,
+            "allowedValues": [
+              "Associate",
+              "Specialist",
+              "Senior",
+              "Lead",
+              "Manager"
+            ]
+          },
+          {
+            "name": "employment_type",
+            "type": "string",
+            "nullable": false,
+            "allowedValues": [
+              "Full-time",
+              "Contract"
+            ]
+          },
+          {
+            "name": "employment_status",
+            "type": "string",
+            "nullable": false,
+            "allowedValues": [
+              "Active",
+              "Exited"
+            ],
+            "notes": "As of analysis end date. Active means no exit event on or before as_of_date."
+          },
+          {
+            "name": "hire_date",
+            "type": "date",
+            "nullable": false,
+            "notes": "May predate analysis window start for tenured employees."
+          },
+          {
+            "name": "exit_date",
+            "type": "date",
+            "nullable": true,
+            "nullExpectation": "Null for Active employees; required for Exited employees.",
+            "notes": "Must be >= hire_date when present."
+          },
+          {
+            "name": "salary_band",
+            "type": "string",
+            "nullable": true,
+            "allowedValues": [
+              "Band A",
+              "Band B",
+              "Band C",
+              "Band D",
+              "Band E"
+            ],
+            "nullExpectation": "May be null for a small minority (<5%) to practice null handling; not required for R1–R7.",
+            "notes": "Optional attribute for O-level exploration only. Bands are categorical; not individual negotiation data."
+          }
+        ]
+      },
+      {
+        "name": "fact_hr_events",
+        "grain": "One row per hire or exit event for an employee",
+        "primaryKey": ["event_id"],
+        "foreignKeys": [
+          {
+            "columns": ["employee_id"],
+            "references": "dim_employee.employee_id"
+          },
+          {
+            "columns": ["department_id"],
+            "references": "dim_department.department_id"
+          },
+          {
+            "columns": ["location_id"],
+            "references": "dim_location.location_id"
+          }
+        ],
+        "approximateRows": "520–780",
+        "requiredColumns": [
+          {
+            "name": "event_id",
+            "type": "string",
+            "nullable": false,
+            "notes": "Synthetic event key, for example EVT-000123"
+          },
+          {
+            "name": "employee_id",
+            "type": "string",
+            "nullable": false
+          },
+          {
+            "name": "event_date",
+            "type": "date",
+            "nullable": false
+          },
+          {
+            "name": "event_type",
+            "type": "string",
+            "nullable": false,
+            "allowedValues": [
+              "Hire",
+              "Exit"
+            ]
+          },
+          {
+            "name": "department_id",
+            "type": "string",
+            "nullable": false,
+            "notes": "Department associated with the event (hire department or exit department)."
+          },
+          {
+            "name": "location_id",
+            "type": "string",
+            "nullable": false,
+            "notes": "Location associated with the event."
+          },
+          {
+            "name": "exit_reason",
+            "type": "string",
+            "nullable": true,
+            "allowedValues": [
+              "Voluntary",
+              "Involuntary",
+              "End of contract"
+            ],
+            "nullExpectation": "Null for Hire events; required for Exit events."
+          }
+        ]
+      }
+    ],
+    "metricDefinitions": {
+      "activeEmployee": "An employee is Active as of as_of_date if hire_date <= as_of_date AND (exit_date is null OR exit_date > as_of_date). Prefer aligning dim_employee.employment_status with this rule in the generated binary.",
+      "activeHeadcount": "Count of active employees as of as_of_date.",
+      "hiresInWindow": "Count of fact_hr_events where event_type = 'Hire' and analysisWindow.start <= event_date <= analysisWindow.end.",
+      "exitsInWindow": "Count of fact_hr_events where event_type = 'Exit' and analysisWindow.start <= event_date <= analysisWindow.end.",
+      "attritionIndicator": "If used, must be explicitly defined by the learner (for example exitsInWindow / average active headcount). No single formula is mandated, but the chosen denominator must be stated.",
+      "tenureDaysActive": "as_of_date - hire_date for active employees.",
+      "tenureBands": "Suggested bands for dashboard consistency: 0–6 months, 6–12 months, 1–2 years, 2–5 years, 5+ years. Learners may use equivalent documented bands."
+    },
+    "nullAndMissingExpectations": [
+      "Primary keys never null.",
+      "Foreign keys never null and must resolve.",
+      "exit_date null only for Active employees.",
+      "exit_reason null only for Hire events.",
+      "salary_band may be null for a small share of employees.",
+      "No blank strings in place of typed nulls for key date/status fields."
+    ],
+    "analyticalIntegrityChecks": [
+      "No duplicate primary keys on any table.",
+      "No foreign-key violations across department, location, or employee references.",
+      "Every Exited employee has exactly one Exit event and a non-null exit_date.",
+      "Every employee has exactly one Hire event; hire_date matches the Hire event_date.",
+      "exit_date >= hire_date when exit_date is present.",
+      "No Exit event without a prior Hire for that employee_id.",
+      "employment_status agrees with active definition at as_of_date.",
+      "Event dates may extend slightly before analysisWindow.start for hires of tenured staff; exit events used in R5 should primarily fall inside the analysis window, with enough in-window exits for meaningful concentration analysis.",
+      "Department and location distributions are uneven enough that composition and exit concentration require calculation (not readable as a single obvious row).",
+      "Do not embed a dramatic fabricated crisis or an impossible perfect correlation as the 'correct' story."
+    ],
+    "controlledPatternIntent": [
+      "Multiple departments, levels, and locations with uneven headcount.",
+      "Visible but not cartoonish concentration of exits in at least one department or location.",
+      "Tenure distribution with meaningful spread across bands.",
+      "Headcount movement over time that is not perfectly flat.",
+      "Patterns discoverable through analysis rather than a single label column announcing the answer."
+    ],
+    "outOfScopeAttributes": [
+      "Real names, photos, emails, phones, government IDs",
+      "Race, religion, disability, sexual orientation, caste",
+      "Individual performance ratings or PIP flags",
+      "Manager surveillance fields or productivity keystroke metrics",
+      "Hiring-recommendation scores or ML labels"
+    ]
+  },
+  "crossCheckMap": {
+    "requiredAnalysisToEvidence": [
+      {
+        "analysisId": "R1",
+        "datasetFields": [
+          "dim_employee.hire_date",
+          "dim_employee.exit_date",
+          "dim_employee.employment_status"
+        ],
+        "metric": "activeHeadcount",
+        "outputs": [
+          "D1 KPI",
+          "writtenAnalysis R1"
+        ],
+        "rubric": [
+          "Metric correctness",
+          "Analytical coverage",
+          "Reproducibility"
+        ]
+      },
+      {
+        "analysisId": "R2",
+        "datasetFields": [
+          "dim_employee.department_id",
+          "dim_department.department_name",
+          "active definition"
+        ],
+        "metric": "active headcount and share by department",
+        "outputs": [
+          "D2",
+          "writtenAnalysis"
+        ],
+        "rubric": [
+          "Metric correctness",
+          "Analytical coverage",
+          "Dashboard usefulness"
+        ]
+      },
+      {
+        "analysisId": "R3",
+        "datasetFields": [
+          "dim_employee.job_level",
+          "active definition"
+        ],
+        "metric": "active headcount and share by job_level",
+        "outputs": [
+          "D3",
+          "writtenAnalysis"
+        ],
+        "rubric": [
+          "Metric correctness",
+          "Analytical coverage",
+          "Dashboard usefulness"
+        ]
+      },
+      {
+        "analysisId": "R4",
+        "datasetFields": [
+          "fact_hr_events.event_date",
+          "fact_hr_events.event_type",
+          "dim_employee hire/exit dates"
+        ],
+        "metric": "monthly/quarterly active headcount and/or hire vs exit counts",
+        "outputs": [
+          "D4",
+          "writtenAnalysis"
+        ],
+        "rubric": [
+          "Metric correctness",
+          "Analytical coverage",
+          "Dashboard usefulness",
+          "Reproducibility"
+        ]
+      },
+      {
+        "analysisId": "R5",
+        "datasetFields": [
+          "fact_hr_events.event_type",
+          "fact_hr_events.department_id",
+          "fact_hr_events.location_id",
+          "fact_hr_events.exit_reason"
+        ],
+        "metric": "exit counts (optional rates) by department/location",
+        "outputs": [
+          "D5",
+          "writtenAnalysis"
+        ],
+        "rubric": [
+          "Metric correctness",
+          "Analytical coverage",
+          "Interpretation honesty"
+        ]
+      },
+      {
+        "analysisId": "R6",
+        "datasetFields": [
+          "dim_employee.hire_date",
+          "dim_employee.exit_date",
+          "as_of_date"
+        ],
+        "metric": "tenure days / tenure bands for active workforce",
+        "outputs": [
+          "D6",
+          "writtenAnalysis"
+        ],
+        "rubric": [
+          "Metric correctness",
+          "Analytical coverage",
+          "Dashboard usefulness"
+        ]
+      },
+      {
+        "analysisId": "R7",
+        "datasetFields": [
+          "outputs of R1–R6"
+        ],
+        "metric": "two evidence-backed findings + investigation areas",
+        "outputs": [
+          "Findings sheet / page",
+          "writtenAnalysis mustInclude"
+        ],
+        "rubric": [
+          "Reasoning / evidence",
+          "Interpretation honesty",
+          "Communication"
+        ]
+      }
+    ],
+    "deliverablesToCompletion": [
+      {
+        "deliverable": "analyticalArtifact",
+        "learnerTask": "Build dashboard/workbook covering D1–D7 and R1–R6",
+        "submission": "Binary upload (.xlsx/.xls/.pbix or PDF fallback)",
+        "completion": "Stored analytical artifact binary required"
+      },
+      {
+        "deliverable": "writtenAnalysis",
+        "learnerTask": "Communicate definitions, R1, R7, limitations",
+        "submission": "Assignment response text 400–800 words",
+        "completion": "Written analysis required"
+      }
+    ]
+  }
+}
