@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { EnrollmentModal, PageShell } from '../components/shared'
-import { Button } from '../components/ui'
 import { resolveAuroraTheme, getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 import {
   AssessmentPanel,
@@ -113,15 +112,15 @@ function EnrollmentPanel({
         {program.careerSupport ? <li><strong>Career OS</strong><span className="product-count">Unlocks on completion</span></li> : null}
       </ul>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 16 }}>
-        <Button
-          variant="primary"
-          full
-          themeId={resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType)}
-          onClick={catalogLoading ? undefined : onCTA}
-          style={catalogLoading ? { opacity: 0.72, cursor: 'not-allowed' } : undefined}
+        <button
+          type="button"
+          className="product-btn"
+          disabled={catalogLoading}
+          onClick={onCTA}
+          style={{ width: '100%' }}
         >
           {catalogLoading ? ctaLabel : enrollable ? `${ctaLabel} →` : ctaLabel}
-        </Button>
+        </button>
         <Link to="/contact" className="product-btn-ghost">Talk to an advisor</Link>
       </div>
       <p className="panel-note">Enrollment follows the live catalogue. Assessment is part of the programme, not a footer.</p>
@@ -191,7 +190,7 @@ export default function ProgramPage() {
         <div style={{ minHeight: '50vh', display: 'grid', placeItems: 'center' }}>
           <div>
             <h1 className="product-title">Programme not found</h1>
-            <Button variant="primary" onClick={() => navigate('/programs')} style={{ marginTop: 16 }}>All programmes</Button>
+            <button type="button" className="product-btn" onClick={() => navigate('/programs')} style={{ marginTop: 16 }}>All programmes</button>
           </div>
         </div>
       </PageShell>
@@ -235,13 +234,17 @@ export default function ProgramPage() {
             ]}
             actions={
               <>
-                <Button variant="primary" themeId={auroraTheme} onClick={openEnroll} style={catalogLoading ? { opacity: 0.72, cursor: 'not-allowed' } : undefined}>{ctaLabel}</Button>
-                <Button variant="secondary" onClick={() => {
-                  const el = document.getElementById(program.curriculumDetail?.length ? 'curriculum' : 'assessment')
-                  el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                }}>
+                <button type="button" className="product-btn" disabled={catalogLoading} onClick={openEnroll}>{ctaLabel}</button>
+                <button
+                  type="button"
+                  className="product-btn-ghost"
+                  onClick={() => {
+                    const el = document.getElementById(program.curriculumDetail?.length ? 'curriculum' : 'assessment')
+                    el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  }}
+                >
                   {isExamPrep ? 'View syllabus' : 'View curriculum'}
-                </Button>
+                </button>
               </>
             }
           />
@@ -445,7 +448,7 @@ export default function ProgramPage() {
                   </table>
                 </div>
                 <div style={{ marginTop: 12 }}>
-                  <Button variant="primary" onClick={openEnroll}>{ctaLabel}</Button>
+                  <button type="button" className="product-btn" disabled={catalogLoading} onClick={openEnroll}>{ctaLabel}</button>
                 </div>
               </PdpBlock>
             </div>

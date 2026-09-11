@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { C, FadeIn, PageShell } from '../components/shared'
-import { T } from '../components/ui'
+import { T } from '../tokens'
 import { getDomainAccent } from '../aurora-themes'
 import { demoUsers, courses } from '../data'
 

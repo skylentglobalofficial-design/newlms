@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
-import { C, Nav, Footer, globalCSS } from './components/site-shell'
+import { C, Nav, Footer } from './components/site-shell'
 import { PublicCanvas } from './components/foundation'
 import { AuthProvider } from './context/AuthContext'
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard'
@@ -111,7 +111,6 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <DemoStateProvider>
-          <style>{globalCSS}</style>
           <AppRoutes />
         </DemoStateProvider>
       </AuthProvider>

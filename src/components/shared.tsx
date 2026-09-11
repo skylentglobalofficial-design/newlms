@@ -22,7 +22,6 @@ export {
   Nav,
   Footer,
   PageShell,
-  globalCSS,
 } from './site-shell'
 
 // ─── ENROLLMENT MODAL (product access — no payment gateway yet) ───────────────

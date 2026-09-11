@@ -1,7 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
 @import './styles/product.css';
+@import './styles/site-nav.css';
 
 @theme inline {
   --color-ink: #0B0D0F;
@@ -80,14 +79,15 @@ body {
   color: #080909;
 }
 
-/* Legacy page modules keep their behavior but inherit the light presentation. */
-.skylent-public-canvas main [style*="color: rgb(255, 255, 255)"],
-.skylent-public-canvas main [style*="color: #ffffff"],
-.skylent-public-canvas main [style*="color: #fff"] { color: #080909 !important; }
-.skylent-public-canvas main [style*="color: rgba(255, 255, 255"],
-.skylent-public-canvas main [style*="color: rgba(255,255,255"] { color: #667078 !important; }
-.skylent-public-canvas main [style*="background: rgba(255, 255, 255"],
-.skylent-public-canvas main [style*="background: rgba(255,255,255"] { background: #FFFDFC !important; }
+/* Legacy dark-inline invert. Product worlds already use light tokens; skip them so
+   attribute-substring matching does not run against every styled node on hover/scroll. */
+.skylent-public-canvas:not(:has(.product-shell)) main [style*="color: rgb(255, 255, 255)"],
+.skylent-public-canvas:not(:has(.product-shell)) main [style*="color: #ffffff"],
+.skylent-public-canvas:not(:has(.product-shell)) main [style*="color: #fff"] { color: #080909 !important; }
+.skylent-public-canvas:not(:has(.product-shell)) main [style*="color: rgba(255, 255, 255"],
+.skylent-public-canvas:not(:has(.product-shell)) main [style*="color: rgba(255,255,255"] { color: #667078 !important; }
+.skylent-public-canvas:not(:has(.product-shell)) main [style*="background: rgba(255, 255, 255"],
+.skylent-public-canvas:not(:has(.product-shell)) main [style*="background: rgba(255,255,255"] { background: #FFFDFC !important; }
 .skylent-light-atmosphere { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.62), transparent 38%); }
 .program-sticky-nav-scroll { scrollbar-width: none; }
 .program-sticky-nav-scroll::-webkit-scrollbar { display: none; }

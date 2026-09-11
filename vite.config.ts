@@ -13,7 +13,9 @@ export default defineConfig(({ mode }) => {
   return {
     base: process.env.FIGMA_PUBLIC_URL ? `${process.env.FIGMA_PUBLIC_URL}/` : '/',
     build: {
-      sourcemap: emitSourcemaps ? 'inline' : false,
+      // External maps for Figma --mode development previews. Inline maps are
+      // parsed with the script (~70% of vendor-react bytes) and can stall a laptop.
+      sourcemap: emitSourcemaps ? true : false,
       minify: !emitSourcemaps,
       rollupOptions: {
         output: {

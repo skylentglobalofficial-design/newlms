@@ -638,7 +638,8 @@
 
   .product-drawer {
     position: fixed;
-    inset: 0;
+    /* Sit below the fixed site nav so Close filters is not occluded (nav z-index 200). */
+    inset: var(--nav-h, 64px) 0 0 0;
     z-index: 80;
     display: none;
   }
