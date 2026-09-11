@@ -826,17 +826,10 @@ lmsRouter.post(
         },
       })
 
+      // Write the new object first so a failed store does not destroy the prior artifact.
       const existing = await prisma.assignmentAttachment.findMany({
         where: { assignmentProgressId: assignment.id },
       })
-      for (const old of existing) {
-        if (old.storageProvider === LOCAL_STORAGE_PROVIDER) {
-          await deleteLocalArtifact(old.storageKey)
-        }
-      }
-      if (existing.length) {
-        await prisma.assignmentAttachment.deleteMany({ where: { assignmentProgressId: assignment.id } })
-      }
 
       const attachmentId = crypto.randomUUID()
       const storageKey = buildLocalStorageKey({
@@ -848,17 +841,32 @@ lmsRouter.post(
       })
       await writeLocalArtifact(storageKey, file.buffer)
 
-      const created = await prisma.assignmentAttachment.create({
-        data: {
-          id: attachmentId,
-          assignmentProgressId: assignment.id,
-          fileName: originalName,
-          mimeType: validation.policy.canonicalMime,
-          byteSize: file.buffer.byteLength,
-          storageProvider: LOCAL_STORAGE_PROVIDER,
-          storageKey,
-        },
-      })
+      let created
+      try {
+        if (existing.length) {
+          await prisma.assignmentAttachment.deleteMany({ where: { assignmentProgressId: assignment.id } })
+        }
+        created = await prisma.assignmentAttachment.create({
+          data: {
+            id: attachmentId,
+            assignmentProgressId: assignment.id,
+            fileName: originalName,
+            mimeType: validation.policy.canonicalMime,
+            byteSize: file.buffer.byteLength,
+            storageProvider: LOCAL_STORAGE_PROVIDER,
+            storageKey,
+          },
+        })
+      } catch (error) {
+        await deleteLocalArtifact(storageKey)
+        throw error
+      }
+
+      for (const old of existing) {
+        if (old.storageProvider === LOCAL_STORAGE_PROVIDER && old.storageKey !== storageKey) {
+          await deleteLocalArtifact(old.storageKey)
+        }
+      }
 
       await prisma.lessonProgress.upsert({
         where: {
