@@ -60,6 +60,7 @@ export default function LearnPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showCertificate, setShowCertificate] = useState(false)
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
+  const [quizStatus, setQuizStatus] = useState<'idle' | 'loading' | 'ready'>('idle')
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
   const [enrolling, setEnrolling] = useState(false)
 
@@ -86,6 +87,7 @@ export default function LearnPage() {
     const state = lessonStates[selectedLessonId]
     if (state?.locked) {
       setQuizQuestions([])
+      setQuizStatus('idle')
       setLessonMedia(undefined)
       return
     }
@@ -93,11 +95,19 @@ export default function LearnPage() {
     void markLessonAccess(slug, selectedLessonId).catch(() => undefined)
 
     if (lesson.type === 'quiz') {
+      setQuizStatus('loading')
       fetchQuizQuestions(slug, selectedLessonId)
-        .then((questions) => setQuizQuestions(questions.map(q => ({ q: q.q, options: q.options }))))
-        .catch(() => setQuizQuestions([]))
+        .then((questions) => {
+          setQuizQuestions(questions.map(q => ({ q: q.q, options: q.options })))
+          setQuizStatus('ready')
+        })
+        .catch(() => {
+          setQuizQuestions([])
+          setQuizStatus('ready')
+        })
     } else {
       setQuizQuestions([])
+      setQuizStatus('idle')
     }
 
     if (lesson.type === 'video') {
@@ -316,9 +326,11 @@ export default function LearnPage() {
                       accent={{ ...tabAccent, text: roleAccent.text }}
                       onComplete={() => { void handleLessonComplete() }}
                       quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
+                      quizStatus={selectedLesson.type === 'quiz' ? quizStatus : 'idle'}
                       onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
                       onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
                       lessonMedia={lessonMedia}
+                      courseSlug={course.slug}
                     />
                   )}
                 </div>

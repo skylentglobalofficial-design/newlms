@@ -5,6 +5,7 @@ import type { LessonState } from '../../demo/types'
 import LessonVideoPlayer from './LessonVideoPlayer'
 import type { VideoPlaybackSource } from '../../lib/media/types'
 import { AssessmentSurface, type QuizQuestion } from './AssessmentSurface'
+import AssignmentBrief from './AssignmentBrief'
 import { lessonTypeLabel } from './lms-utils'
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
@@ -15,18 +16,22 @@ export function LessonContentView({
   accent,
   onComplete,
   quizQuestions,
+  quizStatus = 'idle',
   onQuizSubmit,
   onAssignmentSubmit,
   lessonMedia,
+  courseSlug,
 }: {
   lesson: CourseLesson
   lessonState: LessonState
   accent: Accent
   onComplete: () => void
   quizQuestions?: QuizQuestion[]
+  quizStatus?: 'idle' | 'loading' | 'ready'
   onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
   onAssignmentSubmit?: (text: string) => Promise<void>
   lessonMedia?: VideoPlaybackSource
+  courseSlug?: string
 }) {
   if (lesson.type === 'video') {
     return (
@@ -56,26 +61,14 @@ export function LessonContentView({
   }
 
   if (lesson.type === 'notes') {
-    const notes = `# ${lesson.title}\n\n## Key concepts\n\n- Foundational ideas for ${lesson.title}\n- How this connects to the module curriculum\n- Practice checkpoints before the next lesson\n\n## Summary\n\nRead through and mark complete when ready to continue.`
     return (
       <div className="lms-lesson-notes lms-activity-surface lms-activity-reading">
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 16 }}>
-          <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)', maxWidth: 720 }}>
-            {notes.split('\n').map((line, i) => {
-              if (line.startsWith('# ')) return <div key={i} style={{ color: C.white, fontSize: 20, fontWeight: 700, marginBottom: 16, fontFamily: 'var(--font-display)' }}>{line.slice(2)}</div>
-              if (line.startsWith('## ')) return <div key={i} style={{ color: C.white, fontSize: 15, fontWeight: 600, marginTop: 20, marginBottom: 10 }}>{line.slice(3)}</div>
-              if (line.startsWith('- ')) return <div key={i} style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, lineHeight: 1.7, marginBottom: 8, paddingLeft: 16, borderLeft: `2px solid ${accent.border}` }}>{line.slice(2)}</div>
-              if (line.trim() === '') return <div key={i} style={{ height: 8 }} />
-              return <div key={i} style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.7 }}>{line}</div>
-            })}
-          </div>
-          <div style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 16 }}>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Resources</div>
-            {['Course slides', 'Reference sheet', 'Practice set'].map(r => (
-              <div key={r} style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13, padding: '8px 0', borderBottom: `1px solid ${T.lineDark}` }}>{r}</div>
-            ))}
-          </div>
+        <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)', maxWidth: 720 }}>
+          <div style={{ color: C.white, fontSize: 20, fontWeight: 700, marginBottom: 16, fontFamily: 'var(--font-display)' }}>{lesson.title}</div>
+          <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, lineHeight: 1.7 }}>
+            Reading for this lesson. A slide deck and practice set are not published here yet — mark complete when you have gone through the accompanying video.
+          </p>
         </div>
         {!lessonState.complete && (
           <button type="button" onClick={onComplete} style={{ marginTop: 20, background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
@@ -91,8 +84,12 @@ export function LessonContentView({
     return (
       <div className="lms-lesson-quiz lms-activity-surface lms-activity-quiz" style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)' }}>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
-        {questions.length === 0 ? (
+        {quizStatus !== 'ready' ? (
           <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Quiz questions are loading…</div>
+        ) : questions.length === 0 ? (
+          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>
+            Quiz questions are not published for this lesson yet. This node cannot be auto-scored until a question bank is authored.
+          </div>
         ) : (
           <AssessmentSurface
             mode="timed"
@@ -112,10 +109,11 @@ export function LessonContentView({
   return (
     <div className="lms-lesson-assignment lms-activity-surface lms-activity-assignment" style={{ borderLeft: `3px solid ${accent.primary}`, paddingLeft: 20 }}>
       <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
+      <AssignmentBrief courseSlug={courseSlug} lessonId={lesson.id} />
       <AssessmentSurface
         mode="assignment"
         title={lesson.title}
-        subtitle="Apply concepts from this module. Faculty will review your submission."
+        subtitle="Submit the work in the brief. There is no automated score on this surface."
         accent={accent}
         passed={lessonState.complete || lessonState.assignmentSubmitted}
         onSubmitAssignment={(text) => { void onAssignmentSubmit?.(text) }}
