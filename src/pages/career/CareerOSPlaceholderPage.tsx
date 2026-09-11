@@ -8,15 +8,15 @@ const accent = getDomainAccent("career")
 const COPY: Record<string, { title: string; description: string }> = {
   jobs: {
     title: "Jobs",
-    description: "The job board will list open roles you can save and apply to. Phase A focuses on your profile — job browsing is coming next.",
+    description: "Search and save open roles when listings exist. An empty board means no live jobs are published — not a demo roster.",
   },
   applications: {
     title: "Applications",
-    description: "Track applications you submit through Career OS. This workspace will connect to your application history in a later phase.",
+    description: "Track applications you add or submit through Career OS. The list stays empty until you create one.",
   },
   interviews: {
     title: "Interviews",
-    description: "Interview preparation and practice sessions will live here. For now, build your profile so you are ready when prep opens.",
+    description: "Interview rounds and practice live here when you have them. Nothing is invented to fill the calendar.",
   },
   support: {
     title: "Support",

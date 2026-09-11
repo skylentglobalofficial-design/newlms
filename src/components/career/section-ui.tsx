@@ -4,6 +4,13 @@ import { getDomainAccent } from "../../aurora-themes"
 
 const accent = getDomainAccent("career")
 
+/** Career OS sits on the light AuthDashboardShell canvas. Use ink, not white, for text. */
+const ink = C.ink
+const muted = C.slate
+const line = T.lineLight
+const surface = C.white
+const surface2 = "#F5F3ED"
+
 export function SectionShell({
   id,
   title,
@@ -21,9 +28,9 @@ export function SectionShell({
     <section id={id} style={{ marginBottom: 32, minWidth: 0 }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
         <div style={{ minWidth: 0 }}>
-          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: C.white }}>{title}</h2>
+          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: ink }}>{title}</h2>
           {description && (
-            <p style={{ margin: "6px 0 0", color: "rgba(255,255,255,0.45)", fontSize: 13.5, lineHeight: 1.5 }}>{description}</p>
+            <p style={{ margin: "6px 0 0", color: muted, fontSize: 13.5, lineHeight: 1.5 }}>{description}</p>
           )}
         </div>
         {action}
@@ -38,10 +45,10 @@ export function EmptyBlock({ message, onAction, actionLabel }: { message: string
     <div style={{
       padding: "20px 18px",
       borderRadius: T.rControl,
-      border: `1px dashed ${T.lineDark}`,
-      background: "rgba(255,255,255,0.02)",
+      border: `1px dashed ${line}`,
+      background: surface2,
     }}>
-      <p style={{ margin: 0, color: "rgba(255,255,255,0.5)", fontSize: 14 }}>{message}</p>
+      <p style={{ margin: 0, color: muted, fontSize: 14 }}>{message}</p>
       {onAction && actionLabel && (
         <button type="button" onClick={onAction} style={secondaryButtonStyle}>
           {actionLabel}
@@ -52,13 +59,13 @@ export function EmptyBlock({ message, onAction, actionLabel }: { message: string
 }
 
 export function LoadingBlock({ label = "Loading…" }: { label?: string }) {
-  return <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 14, padding: "12px 0" }}>{label}</div>
+  return <div style={{ color: muted, fontSize: 14, padding: "12px 0" }}>{label}</div>
 }
 
 export function FeedbackBanner({ tone, message }: { tone: "success" | "error"; message: string }) {
-  const bg = tone === "success" ? "rgba(16,185,129,0.12)" : "rgba(239,68,68,0.12)"
-  const border = tone === "success" ? "rgba(16,185,129,0.35)" : "rgba(239,68,68,0.35)"
-  const color = tone === "success" ? "#6EE7B7" : "#FCA5A5"
+  const bg = tone === "success" ? "rgba(16,185,129,0.12)" : "rgba(185,28,28,0.08)"
+  const border = tone === "success" ? "rgba(16,185,129,0.35)" : "rgba(185,28,28,0.28)"
+  const color = tone === "success" ? "#047857" : "#B91C1C"
   return (
     <div style={{ marginBottom: 12, padding: "10px 12px", borderRadius: T.rControl, background: bg, border: `1px solid ${border}`, color, fontSize: 13 }}>
       {message}
@@ -69,7 +76,7 @@ export function FeedbackBanner({ tone, message }: { tone: "success" | "error"; m
 export const fieldLabelStyle: React.CSSProperties = {
   display: "block",
   marginBottom: 6,
-  color: "rgba(255,255,255,0.55)",
+  color: muted,
   fontSize: 12,
   fontWeight: 500,
 }
@@ -79,9 +86,9 @@ export const fieldInputStyle: React.CSSProperties = {
   boxSizing: "border-box",
   padding: "10px 12px",
   borderRadius: T.rControl,
-  border: `1px solid ${T.lineDark}`,
-  background: "rgba(255,255,255,0.04)",
-  color: C.white,
+  border: `1px solid ${line}`,
+  background: surface,
+  color: ink,
   fontSize: 14,
   fontFamily: "var(--font-body)",
   outline: "none",
@@ -103,7 +110,7 @@ export const secondaryButtonStyle: React.CSSProperties = {
   marginTop: 12,
   padding: "9px 16px",
   borderRadius: T.rControl,
-  border: `1px solid ${T.lineDark}`,
+  border: `1px solid ${line}`,
   background: "transparent",
   color: accent.text,
   fontSize: 13,
@@ -115,9 +122,9 @@ export const secondaryButtonStyle: React.CSSProperties = {
 export const dangerButtonStyle: React.CSSProperties = {
   padding: "9px 14px",
   borderRadius: T.rControl,
-  border: "1px solid rgba(239,68,68,0.35)",
+  border: "1px solid rgba(185,28,28,0.35)",
   background: "transparent",
-  color: "#FCA5A5",
+  color: "#B91C1C",
   fontSize: 13,
   cursor: "pointer",
   fontFamily: "var(--font-body)",
@@ -128,8 +135,8 @@ export function EntryCard({ children, actions }: { children: ReactNode; actions?
     <div style={{
       padding: "16px 18px",
       borderRadius: T.rControl,
-      border: `1px solid ${T.lineDark}`,
-      background: "rgba(255,255,255,0.03)",
+      border: `1px solid ${line}`,
+      background: surface,
       marginBottom: 10,
     }}>
       <div style={{ minWidth: 0 }}>{children}</div>

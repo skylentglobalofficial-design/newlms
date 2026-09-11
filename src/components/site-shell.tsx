@@ -140,7 +140,7 @@ const megaMenu = [
       { label: 'Colleges', sub: 'Programmes and LMS', to: '/institutions?audience=colleges' },
       { label: 'Universities', sub: 'Curriculum and lifecycle', to: '/institutions?audience=universities' },
       { label: 'Training organisations', sub: 'Batches and certification', to: '/institutions?audience=training' },
-      { label: 'Skylent OS', sub: 'Institutional infrastructure', to: '/os' },
+      { label: 'Skylent OS demo', sub: 'Illustrative, not live operations', to: '/os' },
     ],
   },
 ]
@@ -378,7 +378,7 @@ export function Nav() {
 export function Footer() {
   const cols = [
     { heading: 'Worlds', links: [['Learn', '/skills'], ['Exams', '/exams'], ['Schooling', '/junior'], ['University', '/degrees']] },
-    { heading: 'Work', links: [['Career', '/career'], ['CareerOS', '/career-os'], ['Programmes', '/programs'], ['Skylent OS', '/os']] },
+    { heading: 'Work', links: [['Career', '/career'], ['CareerOS', '/career-os'], ['Programmes', '/programs'], ['OS demo', '/os']] },
     { heading: 'Institutions', links: [['Overview', '/institutions'], ['Contact', '/contact']] },
     { heading: 'Company', links: [['About', '/about'], ['Stories', '/stories'], ['Blog', '/blog']] },
   ]
@@ -389,9 +389,6 @@ export function Footer() {
           <div>
             <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.ink, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
             <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>One platform. Six working experiences — Learn, Exams, Schooling, University, Career, Institutions.</p>
-            <div style={{ display: 'flex', gap: 10 }}>
-              {['in', 'tw', 'yt', 'ig'].map(s => (<div key={s} style={{ width: 32, height: 32, borderRadius: 6, border: `1px solid ${T.lineLight}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{s}</div>))}
-            </div>
           </div>
           {cols.map(col => (
             <div key={col.heading}>
@@ -409,7 +406,11 @@ export function Footer() {
         </div>
         <div style={{ borderTop: `1px solid ${T.lineLight}`, paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
           <div style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>© 2026 Skylent Global. All rights reserved.</div>
-          <div style={{ display: 'flex', gap: 20 }}>{['Privacy', 'Terms', 'Cookies'].map(l => <span key={l} style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{l}</span>)}</div>
+          <div style={{ display: 'flex', gap: 20 }}>
+            {([['Privacy', '/privacy'], ['Terms', '/terms'], ['Cookies', '/cookies']] as const).map(([label, to]) => (
+              <Link key={to} to={to} style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)', textDecoration: 'none' }}>{label}</Link>
+            ))}
+          </div>
         </div>
       </div>
     </footer>

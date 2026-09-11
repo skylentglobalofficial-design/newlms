@@ -148,13 +148,13 @@ function EcosystemSection() {
     },
     {
       label: 'Skills',
-      body: 'Webinars, certificate programs, Professional Programs, and job assistance — each with its own depth and conversion path.',
+      body: 'Webinars, certificate programmes, and Professional Programmes — each with its own catalogue, not a generic job-assistance claim.',
       to: '/skills',
       accent: getDomainAccent('professional'),
     },
     {
       label: 'Career OS',
-      body: 'Interview preparation, job board, and applications as a working product, unlocked by Professional Programs.',
+      body: 'Interview preparation, job board, and applications as a signed-in workspace. Access is not gated on programme completion in this product.',
       to: '/career-os',
       accent: getDomainAccent('career'),
     },
@@ -332,7 +332,7 @@ function WhoWeServeSection() {
     { label: 'Skill learners', desc: 'Webinars, certificates, and Professional Programs.', to: '/skills', accent: getDomainAccent('professional') },
     { label: 'Career seekers', desc: 'Career OS — profile, interview prep, jobs, applications.', to: '/career-os', accent: getDomainAccent('career') },
     { label: 'Institutions', desc: 'Schools, colleges, universities, and training partners.', to: '/institutions', accent: getDomainAccent('institution') },
-    { label: 'Employers & recruiters', desc: 'Job board and recruiter workflows for open roles.', to: '/career-os#jobs', accent: getDomainAccent('career') },
+    { label: 'Employers & recruiters', desc: 'Recruiter dashboard for roles you post. There is no public employer board on Career OS.', to: '/dashboard/recruiter', accent: getDomainAccent('career') },
   ]
 
   return (

@@ -40,7 +40,7 @@ export default function CareerOSShell({ children, header }: { children: ReactNod
   const activeNav = navIdFromPath(pathname)
 
   return (
-    <div style={{ position: "relative", minHeight: "100vh", overflowX: "hidden" }}>
+    <div className="career-os-workspace" style={{ position: "relative", minHeight: "100vh", overflowX: "hidden" }}>
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
         <AuroraBand themeId="career" />
       </div>

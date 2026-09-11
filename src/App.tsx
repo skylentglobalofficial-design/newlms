@@ -34,6 +34,7 @@ const CareerOSInterviewsPage = lazy(() => import('./pages/career/CareerOSIntervi
 const CareerOSInterviewDetailPage = lazy(() => import('./pages/career/CareerOSInterviewDetailPage'))
 const CareerOSSupportPage = lazy(() => import('./pages/career/CareerOSSupportPage'))
 const CareerOSSupportDetailPage = lazy(() => import('./pages/career/CareerOSSupportDetailPage'))
+const LegalPage = lazy(() => import('./pages/LegalPage'))
 const BlogPage = lazy(() => import('./pages/BlogPage'))
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
@@ -85,6 +86,9 @@ function AppRoutes() {
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:slug" element={<BlogPostPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/privacy" element={<LegalPage kind="privacy" />} />
+        <Route path="/terms" element={<LegalPage kind="terms" />} />
+        <Route path="/cookies" element={<LegalPage kind="cookies" />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<LoginPage />} />
         <Route path="/dashboard/student" element={<RoleRouteGuard allowedRoles={['student']}><DashboardStudentPage /></RoleRouteGuard>} />

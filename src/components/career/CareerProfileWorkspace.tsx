@@ -37,7 +37,7 @@ export default function CareerProfileWorkspace() {
         const top = el.getBoundingClientRect().top
         if (top <= 140) current = id
       }
-      setActiveSection(current)
+      setActiveSection(prev => prev === current ? prev : current)
     }
     window.addEventListener("scroll", onScroll, { passive: true })
     onScroll()

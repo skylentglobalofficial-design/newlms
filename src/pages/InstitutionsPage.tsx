@@ -85,7 +85,7 @@ const LAYERS = [
   {
     id: 'os',
     title: 'Skylent OS',
-    body: 'The shared platform under Learn, Exams, Schooling, University, and Career. Partnership starts from what you need to run.',
+    body: 'The shared platform under Learn, Exams, Schooling, University, and Career. The /os page is a labelled demo cockpit, not a live tenant.',
   },
 ]
 
@@ -139,7 +139,7 @@ export default function InstitutionsPage() {
           actions={
             <>
               <Link className="product-btn" to="/contact">Talk to Skylent</Link>
-              <Link className="product-btn-ghost" to="/os">Skylent OS</Link>
+              <Link className="product-btn-ghost" to="/os">View OS demo</Link>
             </>
           }
         />
@@ -180,7 +180,7 @@ export default function InstitutionsPage() {
               No invented partner logos, placement rates, or student counts. If a school or university is not named in the product, it is not named here.
             </p>
             <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              <Link className="product-btn" to="/os">View Skylent OS</Link>
+              <Link className="product-btn" to="/os">View OS demo</Link>
               <Link className="product-btn-ghost" to="/contact">Request a conversation</Link>
             </div>
           </ActionPanel>

@@ -124,7 +124,7 @@ export default function ExamsPage() {
 
         <ProductLayout sidebar={sidebar}>
           {exam && exam.published && (
-            <div className="workspace-grid" id={exam.id} role="tabpanel" aria-labelledby={`tab-${exam.id}`}>
+            <div className="workspace-grid" id={`panel-${exam.id}`} role="tabpanel" aria-labelledby={`tab-${exam.id}`}>
               <SectionLine name={exam.name} full={exam.full} target={exam.target} published />
               <p className="panel-note" style={{ marginTop: 0 }}>
                 Now: {section === 'syllabus' ? 'read the published syllabus' : `work ${section}`}. Next: {program ? `open the ${exam.name} programme` : 'wait until a programme is published'}.
@@ -228,7 +228,7 @@ export default function ExamsPage() {
           )}
 
           {exam && !exam.published && (
-            <div id={exam.id}>
+            <div id={`panel-${exam.id}`} role="tabpanel" aria-labelledby={`tab-${exam.id}`}>
               <SectionLine name={exam.name} full={exam.full} target={exam.target} published={false} />
               <ComingSoonState
                 title={`${exam.name} is not published`}
@@ -238,7 +238,7 @@ export default function ExamsPage() {
           )}
 
           {examId === 'other' && (
-            <div id="other-exams">
+            <div id="panel-other" role="tabpanel" aria-labelledby="tab-other">
               <ComingSoonState
                 title="Other papers are not published"
                 description={`${OTHER_EXAMS_UNPUBLISHED.join(', ')} are named so you can see the gap. There is no CUET, CLAT, GMAT, GRE, or UPSC product here yet.`}

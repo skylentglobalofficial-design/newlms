@@ -1,4 +1,4 @@
-import { useEffect, useId } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import type { Program } from '../data'
 import { PROGRAM_TYPE_LABELS } from '../skylent-worlds'
@@ -486,13 +486,20 @@ export function FilterDrawer({
   children: React.ReactNode
   title?: string
 }) {
+  const closeRef = useRef<HTMLButtonElement>(null)
+
   useEffect(() => {
     if (!open) return
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    closeRef.current?.focus()
     const onKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose()
     }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      previous?.focus()
+    }
   }, [open, onClose])
 
   return (
@@ -510,7 +517,7 @@ export function FilterDrawer({
         aria-modal="true"
         aria-label={title}
       >
-        <button type="button" className="drawer-close product-btn-ghost" onClick={onClose}>
+        <button type="button" ref={closeRef} className="drawer-close product-btn-ghost" onClick={onClose}>
           Close filters
         </button>
         {children}

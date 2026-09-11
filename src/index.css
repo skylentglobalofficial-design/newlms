@@ -2301,6 +2301,67 @@ html, body {
   }
 }
 
+/* Career OS: light AuthDashboardShell with ink text (not inverted dark UI). */
+.career-os-workspace {
+  color: #0b0d0f;
+}
+.career-os-workspace .skylent-aurora-band {
+  opacity: 0.4;
+}
+.career-os-workspace [style*="color: rgba(255,255,255"],
+.career-os-workspace [style*="color: rgba(255, 255, 255"] {
+  color: #667078 !important;
+}
+.career-os-workspace [style*="color: #FFFFFF"],
+.career-os-workspace [style*="color: rgb(255, 255, 255"] {
+  color: #0b0d0f !important;
+}
+.career-os-workspace h1,
+.career-os-workspace h2,
+.career-os-workspace h3 {
+  color: #0b0d0f !important;
+}
+.career-os-workspace [style*="border: 1px solid rgba(255,255,255"],
+.career-os-workspace [style*="border: 1px solid rgba(255, 255, 255"],
+.career-os-workspace [style*="border-bottom: 1px solid rgba(255,255,255"],
+.career-os-workspace [style*="border-top: 1px solid rgba(255,255,255"] {
+  border-color: rgba(11, 13, 15, 0.1) !important;
+}
+.career-os-workspace [style*="background: rgba(255,255,255"],
+.career-os-workspace [style*="background: rgba(255, 255, 255"] {
+  background: #fffdf9 !important;
+}
+.career-os-workspace input,
+.career-os-workspace textarea,
+.career-os-workspace select {
+  color: #0b0d0f !important;
+  background: #ffffff !important;
+  border-color: rgba(11, 13, 15, 0.14) !important;
+}
+.career-os-workspace button[style*="background: #3B82F6"],
+.career-os-workspace a[style*="background: #3B82F6"],
+.career-os-workspace button[style*="background: rgb(59, 130, 246)"],
+.career-os-workspace a[style*="background: rgb(59, 130, 246)"] {
+  color: #ffffff !important;
+}
+
+.assignment-brief {
+  margin: 0 0 16px;
+  padding: 16px 18px;
+  border-radius: 8px;
+  border: 1px solid rgba(8, 9, 9, 0.1);
+  background: #fffdf9;
+  color: #080909;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.assignment-brief p {
+  margin: 0 0 10px;
+}
+.assignment-brief p:last-child {
+  margin-bottom: 0;
+}
+
 /* Hide scrollbar by default, show while scrolling */
 * {
   scrollbar-width: thin;
