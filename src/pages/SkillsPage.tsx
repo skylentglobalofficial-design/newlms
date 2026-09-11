@@ -10,14 +10,15 @@ import {
   FilterPanel,
   FilterToggle,
   ProductLayout,
+  ProductTable,
   ProgrammeList,
   SectionHeader,
-  WorkspaceBlock,
+  StickyActionBar,
   formatInr,
   programCard,
 } from '../components/product-ui'
 import { courses, programs, workshops } from '../data'
-import { programsByType } from '../skylent-worlds'
+import { programsByType } from '../lib/world-programs'
 
 const VIEWS = [
   { id: 'professional', label: 'Professional' },
@@ -61,6 +62,8 @@ export default function SkillsPage() {
   }
 
   const featured = professional.find((program) => program.slug === 'data-science-ai') ?? professional[0]
+  const featuredProjects = featured?.projectsDetail?.length ?? featured?.projects ?? 0
+  const featuredHref = featured ? `/programs/${featured.slug}` : '/programs?type=PROFESSIONAL'
 
   const filter = (
     <FilterPanel
@@ -78,7 +81,7 @@ export default function SkillsPage() {
           world="learn"
           eyebrow="Learn"
           title="Build skills you can show."
-          description="Professional programmes, certificates, short courses, and webinars. Filter the catalogue, then open a programme for curriculum, projects, and enrollment."
+          description="Filter the catalogue, open a programme, then practise, build, and take the work into Career."
           breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Learn' }]}
           actions={<Link className="product-btn-ghost" to="/programs?type=PROFESSIONAL">All programmes</Link>}
         />
@@ -99,11 +102,11 @@ export default function SkillsPage() {
             <>
               <SectionHeader
                 title="Professional programmes"
-                description="Longer programmes with projects and assessment. Recommended is the published flagship, not a ranking."
+                description="Longer programmes with projects and assessment. Open one for curriculum and enrollment."
               />
               <ProgrammeList
                 items={professional.map((program) => programCard(program, {
-                  status: program.slug === featured?.slug ? 'Recommended' : undefined,
+                  status: program.slug === featured?.slug ? 'Flagship' : undefined,
                 }))}
                 empty={<EmptyState title="No professional programmes" description="Nothing is published in this category yet." />}
               />
@@ -146,7 +149,7 @@ export default function SkillsPage() {
             <>
               <SectionHeader
                 title="Webinars"
-                description="Sessions with published dates. This is not a fake events calendar."
+                description="Sessions with published dates."
                 action={<Link className="product-btn-ghost" to="/workshops">All webinars</Link>}
               />
               <ProgrammeList
@@ -168,23 +171,33 @@ export default function SkillsPage() {
             <ComingSoonState title="Coming soon" description="Professional programmes will appear when they are published." />
           ) : null}
 
-          <div className="workspace-grid" style={{ marginTop: 8 }}>
-            <WorkspaceBlock title="Projects">
-              <p>Projects sit inside each programme. Open a programme to see what you will build.</p>
-            </WorkspaceBlock>
-            <WorkspaceBlock title="Practice">
-              <p>Labs are for experiments. Programme practice is assessed work, not a decorative sandbox.</p>
-              <p><Link to="/labs">Open Labs</Link></p>
-            </WorkspaceBlock>
-            <WorkspaceBlock title="Evidence">
-              <p>Work you can show belongs in Career OS after you have something to submit.</p>
-              <p><Link to="/career">Open Career</Link></p>
-            </WorkspaceBlock>
-            <WorkspaceBlock title="Career relevance">
-              <p>Learn is for capability. University is for degrees. Career is for what you do next.</p>
-            </WorkspaceBlock>
-          </div>
+          {view === 'professional' && featured ? (
+            <>
+              <SectionHeader
+                title="Learn → practise → build → prove → move"
+                description="The loop lives in the programme, not as a homepage story."
+              />
+              <ProductTable
+                headers={['Step', 'What to do', 'Where']}
+                rows={[
+                  ['Discover', `${professional.length} professional, ${certificates.length} certificate, ${courses.length} short courses, ${workshops.length} webinars.`, 'This page'],
+                  ['Choose', `Open ${featured.name} for curriculum and enrollment.`, <Link key="choose" to={featuredHref}>Programme</Link>],
+                  ['Practise', 'Labs for experiments. Assessed practice sits inside the programme.', <Link key="labs" to="/labs">Labs</Link>],
+                  ['Build', `${featured.name}: ${featuredProjects} published project${featuredProjects === 1 ? '' : 's'}.`, <Link key="build" to={`${featuredHref}#projects`}>Projects</Link>],
+                  ['Prove', 'Assessment is on the programme page after you enroll.', <Link key="prove" to={`${featuredHref}#assessment`}>Assessment</Link>],
+                  ['Move', 'Take work you can show into Career.', <Link key="move" to="/career">Career</Link>],
+                ]}
+              />
+            </>
+          ) : null}
         </ProductLayout>
+
+        {featured ? (
+          <StickyActionBar>
+            <span>Start with {featured.name}</span>
+            <Link className="product-btn" to={featuredHref}>Open programme</Link>
+          </StickyActionBar>
+        ) : null}
       </ContentRail>
     </WorldFrame>
   )

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import WorldFrame from '../components/world/WorldFrame'
 import {
@@ -10,15 +10,15 @@ import {
   FilterToggle,
   NavList,
   ProductLayout,
+  ProductTable,
   ProductTabs,
-  ProgressPanel,
   ProgrammeList,
   SectionHeader,
   SegmentedControl,
-  WorkspaceBlock,
   programCard,
 } from '../components/product-ui'
-import { SCHOOL_BANDS, SCHOOL_LAYERS, programsForWorld } from '../skylent-worlds'
+import { SCHOOL_BANDS, SCHOOL_LAYERS } from '../skylent-worlds'
+import { programsForWorld } from '../lib/world-programs'
 
 const BAND_TABS = SCHOOL_BANDS.map((band) => ({ id: band.id, label: band.label }))
 
@@ -76,15 +76,6 @@ export default function JuniorPage() {
     </div>
   )
 
-  const layerCopy = useMemo(() => ({
-    Subjects: `${activeSubject} for ${band.label}. Pick a subject in the rail, then open concepts when they are published.`,
-    Concepts: `Concept pages for ${activeSubject} are not in the catalogue yet.`,
-    Lessons: `Lessons for Class ${band.grades[0]}–${band.grades[band.grades.length - 1]} ${activeSubject} are not published.`,
-    Activities: 'Activities appear with class programmes. Nothing is invented as a live worksheet.',
-    Experiments: 'Experiments that exist today live in Labs — not as fake classroom animations.',
-    Progress: 'Progress appears after lessons exist. This page will not show a made-up streak.',
-  }), [activeSubject, band])
-
   return (
     <WorldFrame world="schooling">
       <ContentRail>
@@ -92,7 +83,7 @@ export default function JuniorPage() {
           world="schooling"
           eyebrow="Schooling"
           title="Choose your class, then find what you need."
-          description="For Class 1–12. Class first, then subjects, concepts, lessons, activities, and experiments — not a professional skills catalogue."
+          description="Class → subject → concept → lesson → activity. This is not a professional skills catalogue."
           breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Schooling' }]}
         />
 
@@ -118,38 +109,57 @@ export default function JuniorPage() {
             label="Learning layer"
           />
 
-          <WorkspaceBlock title={layer}>
-            <p>{layerCopy[layer]}</p>
-            {layer === 'Experiments' ? (
-              <p><Link className="product-btn-ghost" to="/labs">Open Labs</Link></p>
-            ) : null}
-          </WorkspaceBlock>
+          {layer === 'Subjects' && (
+            published.length ? (
+              <ProgrammeList
+                items={published.map((program) => programCard(program))}
+                empty={<EmptyState title="None published" description="Class programmes will list here." />}
+              />
+            ) : (
+              <>
+                <ProductTable
+                  headers={['Subject', 'Status']}
+                  rows={band.subjects.map((item) => [
+                    item,
+                    item === activeSubject ? 'Selected — no lessons published' : 'No lessons published',
+                  ])}
+                />
+                <p className="panel-note">
+                  Concepts, lessons, and activities appear when they exist in the catalogue.
+                  {' '}<Link to="/programs?type=SCHOOLING">Catalogue filter</Link>
+                </p>
+              </>
+            )
+          )}
 
-          <ProgressPanel
-            title="Continue learning"
-            steps={['Choose class', 'Choose subject', 'Open a lesson when published', 'Do the activity', 'Check progress']}
-            note="There is nothing to continue until class programmes are published."
-          />
-
-          <SectionHeader title="Class programmes" description="Only published catalogue items appear here." />
-          {published.length ? (
-            <ProgrammeList
-              items={published.map((program) => programCard(program))}
-              empty={<EmptyState title="None published" description="Class programmes will list here." />}
-            />
-          ) : (
-            <EmptyState
-              title="No class programmes published yet"
-              description="You can still choose a class and subject. Labs has experiments. Nothing here is invented as a live course."
-              action={<Link className="product-btn-ghost" to="/programs?type=SCHOOLING">Catalogue filter</Link>}
+          {layer === 'Experiments' && (
+            <ComingSoonState
+              title="Class experiments are not published"
+              description={`No ${activeSubject} experiments are in the catalogue for ${band.label}. Labs has the experiments that exist today.`}
             />
           )}
 
-          <ComingSoonState
-            title="Exam prep is a different world"
-            description="JEE, CAT, and other papers live under Exams — not inside Class 11–12 schooling."
-          />
-          <p className="panel-note"><Link to="/exams">Open Exams</Link></p>
+          {layer === 'Experiments' && (
+            <p className="panel-note"><Link to="/labs">Open Labs</Link></p>
+          )}
+
+          {(layer === 'Concepts' || layer === 'Lessons' || layer === 'Activities') && (
+            <ComingSoonState
+              title={`${layer} not published`}
+              description={`${layer} for ${band.label} ${activeSubject} are not in the catalogue yet. Nothing is invented as a live worksheet.`}
+            />
+          )}
+
+          {layer === 'Progress' && (
+            <EmptyState
+              title="Nothing to continue yet"
+              description="Progress appears after lessons exist. This page will not show a made-up streak."
+            />
+          )}
+
+          <p className="panel-note">
+            JEE, CAT, and other papers live under <Link to="/exams">Exams</Link> — not inside Class 11–12 schooling.
+          </p>
         </ProductLayout>
       </ContentRail>
     </WorldFrame>

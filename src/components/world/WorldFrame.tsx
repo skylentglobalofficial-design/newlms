@@ -1,4 +1,4 @@
-import { PageShell } from '../shared'
+import { PageShell } from '../site-shell'
 import { WORLD_THEME, type WorldId } from '../../skylent-worlds'
 
 export type ProductWorld = WorldId | 'home' | 'catalogue'

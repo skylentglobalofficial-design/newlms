@@ -1,25 +1,28 @@
-import { useMemo } from 'react'
+import { useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import WorldFrame from '../components/world/WorldFrame'
 import {
   ActionPanel,
+  AssessmentPanel,
   ComingSoonState,
   ContentRail,
   ContextHeader,
+  EmptyState,
+  FilterDrawer,
+  FilterToggle,
   NavList,
   ProductLayout,
   ProductTabs,
-  ProgressPanel,
+  StickyActionBar,
   WorkspaceBlock,
 } from '../components/product-ui'
 import {
-  EXAM_LOOP,
   EXAM_WORKSPACE,
   OTHER_EXAMS_UNPUBLISHED,
   PUBLISHED_EXAMS,
   UNPUBLISHED_EXAMS,
-  programsByType,
 } from '../skylent-worlds'
+import { programsByType } from '../lib/world-programs'
 
 const EXAM_TABS = [
   ...PUBLISHED_EXAMS.map((exam) => ({ id: exam.id, label: exam.name })),
@@ -43,6 +46,7 @@ function sectionFromSearch(value: string | null) {
 export default function ExamsPage() {
   const location = useLocation()
   const [params, setParams] = useSearchParams()
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const examId = examFromSearch(params.get('exam'), location.hash)
   const section = sectionFromSearch(params.get('section'))
   const examPrograms = programsByType('EXAM_PREP')
@@ -60,6 +64,7 @@ export default function ExamsPage() {
       nextParams.set('section', 'syllabus')
     }
     setParams(nextParams, { replace: true })
+    setFiltersOpen(false)
   }
 
   function setSection(next: string) {
@@ -67,45 +72,8 @@ export default function ExamsPage() {
     nextParams.set('exam', examId)
     nextParams.set('section', next)
     setParams(nextParams, { replace: true })
+    setFiltersOpen(false)
   }
-
-  const workspaceCopy = useMemo(() => {
-    if (!exam || !('published' in exam) || !exam.published) return null
-    const subjectLine = exam.subjects.join(', ')
-    const map: Record<string, { title: string; body: string; items: string[] }> = {
-      syllabus: {
-        title: 'Syllabus',
-        body: `Subject coverage for ${exam.name}. This is the paper map, not a scoreboard.`,
-        items: exam.subjects.map((subject) => `${subject} — published topic list lives in the programme.`),
-      },
-      preparation: {
-        title: 'Preparation',
-        body: `Study the ${exam.full} with the published programme. ${exam.target}.`,
-        items: ['Follow the subject order in the programme', 'Use the curriculum modules as the weekly plan', subjectLine],
-      },
-      practice: {
-        title: 'Practice',
-        body: 'Timed questions and worked solutions are part of the programme. Attempts are not invented on this page.',
-        items: ['Section practice after you enroll', 'Worked solutions after an attempt', 'No fabricated accuracy charts here'],
-      },
-      tests: {
-        title: 'Tests',
-        body: 'Section tests and full mocks exist inside the learning workspace after enrollment.',
-        items: ['Section tests', 'Full mocks', 'Scores appear after you attempt them'],
-      },
-      review: {
-        title: 'Review',
-        body: 'Review is for mistakes you actually made — not a demo leaderboard.',
-        items: ['Wrong-answer review', 'Topic gaps after tests', 'Re-attempt when the workspace unlocks it'],
-      },
-      progress: {
-        title: 'Progress',
-        body: 'Progress is personal and appears after work. This public page does not invent ranks.',
-        items: EXAM_LOOP.map((step) => step),
-      },
-    }
-    return map[section]
-  }, [exam, section])
 
   const sidebar = examId !== 'other' && exam && exam.published ? (
     <div>
@@ -127,41 +95,127 @@ export default function ExamsPage() {
     </div>
   )
 
+  const enrollNote = program?.enrollmentStatus === 'coming_soon'
+    ? 'Enrollment is not open yet. Register interest on the programme page.'
+    : program?.enrollmentStatus === 'waitlist'
+      ? 'Join the waitlist on the programme page.'
+      : 'Enroll from the programme page, then practise and sit tests in the learning workspace.'
+
   return (
     <WorldFrame world="exams">
       <ContentRail>
         <ContextHeader
           world="exams"
           eyebrow="Exams"
-          title="Prepare for the exam you are actually taking."
-          description="Select the paper, then work the loop: syllabus, practice, tests, review, and measurement. Ranks and result boards are not invented here."
+          title="Prepare for the exam you are taking."
+          description="Pick the paper, then work syllabus, preparation, practice, tests, and review. Scores appear after you attempt work — not here."
           breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Exams' }]}
           actions={<Link className="product-btn-ghost" to="/programs?type=EXAM_PREP">Exam programmes</Link>}
         />
 
         <div className="product-toolbar">
+          {exam?.published ? <FilterToggle open={filtersOpen} onClick={() => setFiltersOpen(true)} /> : null}
           <ProductTabs tabs={EXAM_TABS} value={examId} onChange={setExam} label="Exam selector" />
         </div>
+
+        <FilterDrawer open={filtersOpen} onClose={() => setFiltersOpen(false)} title={`${exam?.name ?? 'Exam'} workspace`}>
+          {sidebar}
+        </FilterDrawer>
 
         <ProductLayout sidebar={sidebar}>
           {exam && exam.published && (
             <div className="workspace-grid" id={exam.id} role="tabpanel" aria-labelledby={`tab-${exam.id}`}>
               <SectionLine name={exam.name} full={exam.full} target={exam.target} published />
-              {workspaceCopy && (
-                <WorkspaceBlock title={workspaceCopy.title}>
-                  <p>{workspaceCopy.body}</p>
-                  <ul>
-                    {workspaceCopy.items.map((item) => <li key={item}>{item}</li>)}
-                  </ul>
+              <p className="panel-note" style={{ marginTop: 0 }}>
+                Now: {section === 'syllabus' ? 'read the published syllabus' : `work ${section}`}. Next: {program ? `open the ${exam.name} programme` : 'wait until a programme is published'}.
+              </p>
+
+              {section === 'syllabus' && (
+                <WorkspaceBlock title="Syllabus">
+                  {program?.curriculumDetail?.length ? (
+                    <ul>
+                      {program.curriculumDetail.map((module) => (
+                        <li key={module.number} id={`module-${module.number}`}>
+                          <strong>{module.title}</strong>
+                          {module.topics?.length ? ` — ${module.topics.join(', ')}` : null}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <ul>
+                      {exam.subjects.map((subject) => <li key={subject}>{subject}</li>)}
+                    </ul>
+                  )}
                 </WorkspaceBlock>
               )}
+
+              {section === 'preparation' && (
+                <WorkspaceBlock title="Preparation">
+                  <p>{exam.full}. {exam.target}.</p>
+                  {program?.whatYouWillLearn?.length ? (
+                    <ul>
+                      {program.whatYouWillLearn.map((item) => <li key={item}>{item}</li>)}
+                    </ul>
+                  ) : (
+                    <p>Preparation detail lives in the programme when it is published.</p>
+                  )}
+                </WorkspaceBlock>
+              )}
+
+              {section === 'practice' && (
+                <WorkspaceBlock title="Practice">
+                  {(() => {
+                    const items = (program?.learningExperience ?? []).filter((item) => /practice|sets|doubt|weekly/i.test(item))
+                    return items.length ? (
+                      <ul>{items.map((item) => <li key={item}>{item}</li>)}</ul>
+                    ) : (
+                      <p>Practice sets open after enrollment. Attempts are not invented on this page.</p>
+                    )
+                  })()}
+                  <p className="panel-note">No accuracy charts until you attempt work in the learning workspace.</p>
+                </WorkspaceBlock>
+              )}
+
+              {section === 'tests' && (
+                <>
+                  {program?.examPattern ? (
+                    <AssessmentPanel
+                      title="Tests"
+                      items={[
+                        { title: 'Paper pattern', detail: program.examPattern },
+                        ...(program.learningExperience ?? [])
+                          .filter((item) => /test|mock/i.test(item))
+                          .map((item) => ({ title: 'Included', detail: item })),
+                      ]}
+                    />
+                  ) : (
+                    <EmptyState title="No test series published" description="Section tests and mocks appear with the programme." />
+                  )}
+                </>
+              )}
+
+              {section === 'review' && (
+                <EmptyState
+                  title="Review after attempts"
+                  description="Wrong-answer review and topic gaps appear after you sit tests in the learning workspace. This page does not invent a leaderboard."
+                />
+              )}
+
+              {section === 'progress' && (
+                <EmptyState
+                  title="No attempts yet"
+                  description="Progress is personal. Ranks, percentiles, and streaks appear after you enroll and take tests — not as demo numbers here."
+                />
+              )}
+
               {program ? (
                 <ActionPanel title={`${exam.name} programme`}>
                   <p className="panel-note" style={{ marginTop: 0 }}>{program.desc}</p>
-                  <ProgrammeMetaLine duration={program.duration} format={program.format} />
+                  <p className="programme-meta"><span>{program.duration}</span><span>{program.format}</span></p>
+                  <p className="panel-note">{enrollNote}</p>
                   <div style={{ marginTop: 12, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <Link className="product-btn" to={`/programs/${program.slug}`}>Open {exam.name} programme</Link>
-                    <a className="product-btn-ghost" href="#assessment-note">Assessment</a>
+                    <Link className="product-btn-ghost" to={`/programs/${program.slug}#assessment`}>Assessment</Link>
                   </div>
                 </ActionPanel>
               ) : (
@@ -170,13 +224,6 @@ export default function ExamsPage() {
                   description="This exam is marked published in navigation, but the programme is not in the catalogue."
                 />
               )}
-              <ProgressPanel
-                steps={[...EXAM_LOOP]}
-                note="The loop is the product. Numbers appear after you attempt tests in the learning workspace."
-              />
-              <p id="assessment-note" className="panel-note">
-                Assessment stays inside the programme: practice, tests, and review. School board prep is in Schooling, not here.
-              </p>
             </div>
           )}
 
@@ -202,6 +249,13 @@ export default function ExamsPage() {
             </div>
           )}
         </ProductLayout>
+
+        {program ? (
+          <StickyActionBar>
+            <span>{exam?.name} programme</span>
+            <Link className="product-btn" to={`/programs/${program.slug}`}>Open programme</Link>
+          </StickyActionBar>
+        ) : null}
       </ContentRail>
     </WorldFrame>
   )
@@ -226,8 +280,4 @@ function SectionLine({
       </div>
     </div>
   )
-}
-
-function ProgrammeMetaLine({ duration, format }: { duration: string; format: string }) {
-  return <p className="programme-meta"><span>{duration}</span><span>{format}</span></p>
 }

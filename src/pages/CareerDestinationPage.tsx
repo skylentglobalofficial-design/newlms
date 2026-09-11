@@ -8,7 +8,7 @@ import {
   ProductLayout,
   ProductTable,
   SectionHeader,
-  WorkspaceBlock,
+  StickyActionBar,
 } from '../components/product-ui'
 
 const ACTIONS = [
@@ -54,13 +54,13 @@ export default function CareerDestinationPage() {
           world="career"
           eyebrow="Career"
           title="What do you want to do next?"
-          description="Find a job, prepare for an interview, build evidence, or open CareerOS. This is not a course catalogue and it is not an exam workspace."
+          description="Find a job, prepare for an interview, build evidence, or open CareerOS."
           breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Career' }]}
         />
 
         <ProductLayout sidebar={sidebar} variant="pdp">
           <div>
-            <SectionHeader title="Next actions" description="Pick the job to be done. CareerOS stays behind sign-in; this page does not fake a hiring market." />
+            <SectionHeader title="Next actions" description="Pick the job to be done. CareerOS stays behind sign-in." />
             <ProductTable
               headers={['Action', 'What happens', 'Go']}
               rows={ACTIONS.map((action) => [
@@ -70,27 +70,18 @@ export default function CareerDestinationPage() {
               ])}
             />
 
-            <div className="workspace-grid" style={{ marginTop: 28 }}>
-              <WorkspaceBlock title="Jobs">
-                <p>Listings belong in CareerOS. This public page does not invent employers, salaries, or openings.</p>
-              </WorkspaceBlock>
-              <WorkspaceBlock title="Interviews">
-                <p>Prepare for interviews you have. Tools open after sign-in.</p>
-              </WorkspaceBlock>
-              <WorkspaceBlock title="Evidence">
-                <p>Projects and programmes that produce proof live in Learn. Bring that work into CareerOS when you apply.</p>
-                <p><Link to="/skills">Open Learn</Link></p>
-              </WorkspaceBlock>
-              <WorkspaceBlock title="Role types people prepare for">
-                <ul>
-                  {ROLE_TYPES.map((item) => (
-                    <li key={item.role}><strong>{item.role}</strong> — {item.proof}</li>
-                  ))}
-                </ul>
-              </WorkspaceBlock>
-            </div>
+            <SectionHeader title="Roles people prepare for" description="Proof, not placement rates." />
+            <ProductTable
+              headers={['Role', 'Evidence to bring']}
+              rows={ROLE_TYPES.map((item) => [item.role, item.proof])}
+            />
           </div>
         </ProductLayout>
+
+        <StickyActionBar>
+          <span>{user ? 'Continue in CareerOS' : 'CareerOS requires sign-in'}</span>
+          <Link className="product-btn" to={osHref}>{user ? 'Open CareerOS' : 'Sign in'}</Link>
+        </StickyActionBar>
       </ContentRail>
     </WorldFrame>
   )

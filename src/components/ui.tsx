@@ -2,14 +2,15 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FadeIn } from './shared'
 import { C, T, type } from '../tokens'
-import { Aurora, GridField, MediaImage } from './foundation'
+import { Aurora, GridField } from './foundation'
+import { MediaImage } from './MediaImage'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 
 const brandAccent = getDomainAccent('general')
 
 // Re-export tokens for backward compatibility
 export { T } from '../tokens'
-export { MediaImage } from './foundation'
+export { MediaImage } from './MediaImage'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Skylent shared design-system primitives.

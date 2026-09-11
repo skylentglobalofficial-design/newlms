@@ -5,6 +5,8 @@ import {
   ActionPanel,
   ContentRail,
   ContextHeader,
+  FilterDrawer,
+  FilterToggle,
   NavList,
   ProductLayout,
   ProductTable,
@@ -89,16 +91,28 @@ const LAYERS = [
 
 export default function InstitutionsPage() {
   const [params, setParams] = useSearchParams()
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const activeId = TYPES.some((item) => item.id === params.get('audience'))
     ? params.get('audience')!
     : 'colleges'
   const active = TYPES.find((item) => item.id === activeId) ?? TYPES[1]
-  const [layer, setLayer] = useState('programmes')
+  const layer = LAYERS.some((item) => item.id === params.get('layer'))
+    ? params.get('layer')!
+    : 'programmes'
   const activeLayer = LAYERS.find((item) => item.id === layer) ?? LAYERS[0]
 
   function setAudience(next: string) {
     const nextParams = new URLSearchParams()
     nextParams.set('audience', next)
+    if (layer !== 'programmes') nextParams.set('layer', layer)
+    setParams(nextParams, { replace: true })
+    setFiltersOpen(false)
+  }
+
+  function setLayer(next: string) {
+    const nextParams = new URLSearchParams()
+    nextParams.set('audience', activeId)
+    nextParams.set('layer', next)
     setParams(nextParams, { replace: true })
   }
 
@@ -129,6 +143,13 @@ export default function InstitutionsPage() {
             </>
           }
         />
+
+        <div className="product-toolbar">
+          <FilterToggle open={filtersOpen} onClick={() => setFiltersOpen(true)} />
+        </div>
+        <FilterDrawer open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Audience">
+          {sidebar}
+        </FilterDrawer>
 
         <ProductLayout sidebar={sidebar}>
           <SectionHeader

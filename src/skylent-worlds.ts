@@ -1,4 +1,4 @@
-import { programs, type Program, type ProgramType } from './data'
+import type { ProgramType } from './data'
 import type { AuroraThemeId } from './aurora-themes'
 
 export type WorldId = 'learn' | 'exams' | 'schooling' | 'university' | 'career' | 'institutions'
@@ -118,15 +118,6 @@ export function worldForProgramType(type: ProgramType): WorldId {
   return 'learn'
 }
 
-export function programsForWorld(world: WorldId): Program[] {
-  const types = WORLD_PROGRAM_TYPES[world]
-  if (!types.length) return []
-  return programs.filter((program) => types.includes(program.programType))
-}
-
-export function programsByType(type: ProgramType): Program[] {
-  return programs.filter((program) => program.programType === type)
-}
 
 export const PUBLISHED_EXAMS = [
   {
