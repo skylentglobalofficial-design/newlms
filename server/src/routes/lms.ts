@@ -651,12 +651,16 @@ lmsRouter.post(
       })
 
       if (isSubmit && bodyParsed.data.attachments?.length) {
-        await prisma.assignmentAttachment.deleteMany({ where: { assignmentProgressId: assignment.id } })
-        await prisma.assignmentAttachment.createMany({
-          data: bodyParsed.data.attachments.map((file) => ({
-            assignmentProgressId: assignment.id,
-            ...buildPendingAttachmentRecord(assignment.id, file),
-          })),
+        await prisma.$transaction(async (tx) => {
+          await tx.assignmentAttachment.deleteMany({ where: { assignmentProgressId: assignment.id } })
+          for (const file of bodyParsed.data.attachments ?? []) {
+            await tx.assignmentAttachment.create({
+              data: {
+                assignmentProgressId: assignment.id,
+                ...buildPendingAttachmentRecord(assignment.id, file),
+              },
+            })
+          }
         })
       }
 

@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { z } from "zod"
-import { CareerEmploymentType, CareerWorkMode, JobStatus, Prisma } from "@prisma/client"
+import { CareerEmploymentType, CareerWorkMode, EmployerVerificationStatus, JobStatus, Prisma } from "@prisma/client"
 import { prisma } from "../../lib/prisma.js"
 import { attachAuth, type AuthenticatedRequest } from "../../lib/auth.js"
 import { serializeJob } from "../../lib/career/serializers.js"
@@ -34,6 +34,10 @@ jobsRouter.get("/", async (req: AuthenticatedRequest, res) => {
 
     const where: Prisma.JobWhereInput = {
       status: status ?? JobStatus.OPEN,
+      // The public board is only verified employers. Demo / pending fixtures
+      // stay in the database for seeded application history, but they are not
+      // listed as live roles.
+      employer: { verificationStatus: EmployerVerificationStatus.VERIFIED },
     }
     if (category) where.category = { equals: category, mode: "insensitive" }
     if (workMode) where.workMode = workMode
@@ -89,11 +93,15 @@ jobsRouter.get("/:idOrSlug", async (req: AuthenticatedRequest, res) => {
   try {
     const auth = await attachAuth(req)
     const job = await prisma.job.findFirst({
-      where: isUuid ? { id: param } : { slug: param },
+      where: {
+        ...(isUuid ? { id: param } : { slug: param }),
+        status: JobStatus.OPEN,
+        employer: { verificationStatus: EmployerVerificationStatus.VERIFIED },
+      },
       include: { employer: true },
     })
 
-    if (!job || job.status !== JobStatus.OPEN) {
+    if (!job) {
       return res.status(404).json({ error: "Job not found" })
     }
 

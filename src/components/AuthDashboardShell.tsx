@@ -16,6 +16,8 @@ export type AuthNavItem = {
 
 export type AuthDashboardShellProps = {
   themeId: AuroraThemeId
+  /** Pre-resolved accent; defaults to the accent derived from themeId. */
+  accent?: ReturnType<typeof getDomainAccent>
   /** Subtitle under Skylent logo, e.g. "Learning" */
   workspaceLabel: string
   roleLabel: string
@@ -31,6 +33,7 @@ export type AuthDashboardShellProps = {
 
 export function AuthDashboardShell({
   themeId,
+  accent: accentOverride,
   workspaceLabel,
   roleLabel,
   navItems,
@@ -41,7 +44,7 @@ export function AuthDashboardShell({
   children,
   header,
 }: AuthDashboardShellProps) {
-  const accent = getDomainAccent(themeId)
+  const accent = accentOverride ?? getDomainAccent(themeId)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)

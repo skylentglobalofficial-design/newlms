@@ -1,6 +1,7 @@
 import type { NavigateFunction } from "react-router-dom"
 import type { UserRole } from "../context/AuthContext"
 import { fulfillCatalogEnrollment, learnPathForWorkspace, type LoginRedirectState } from "./catalog-enrollment"
+import { safeInternalPath } from "./safe-return"
 
 export function roleRoute(role: UserRole): string {
   switch (role) {
@@ -31,8 +32,9 @@ export async function finishAuthNavigation(
       return err instanceof Error ? err.message : "Enrollment failed"
     }
   }
-  if (redirectState?.returnTo) {
-    navigate(redirectState.returnTo)
+  const returnTo = safeInternalPath(redirectState?.returnTo)
+  if (returnTo) {
+    navigate(returnTo)
     return null
   }
   navigate(roleRoute(role))

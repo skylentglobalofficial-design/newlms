@@ -308,7 +308,7 @@ export function getInstitutionTypeById(id: InstitutionTypeId): ResolvedInstituti
 }
 
 export const INSTITUTION_CAPABILITY_STATUS_LABELS: Record<InstitutionCapabilityStatus, string> = {
-  available: "Available",
+  available: "In partner workspace",
   inquiry: "Partnership inquiry",
   concept: "Co-design area",
 }

@@ -310,7 +310,7 @@ export default function DashboardRecruiterPage() {
         <div style={{ marginBottom: 8 }}>
           <h1 className="skylent-display-md" style={{ color: C.white, margin: '0 0 8px', lineHeight: 1.1 }}>Hiring workspace</h1>
           <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 15, margin: 0, maxWidth: 520 }}>
-            Review candidates, manage open roles, and track application stages.
+            Layout preview for a hiring workspace. The candidates and roles below are not a live pipeline.
           </p>
         </div>
       }

@@ -1,4 +1,5 @@
 import { courses, programs, workshops, type Course, type Program, type Workshop } from "../data"
+import { getCourseAvailability, getProgrammeAvailability, getWorkshopAvailability } from "./catalogue-status"
 
 export type SkillDomainId =
   | "data-science"
@@ -55,12 +56,6 @@ const SKILLS_PROGRAM_TYPES = new Set(["PROFESSIONAL", "CERTIFICATE"])
 const PROGRAM_TYPE_LABELS: Record<string, string> = {
   PROFESSIONAL: "Professional Program",
   CERTIFICATE: "Certificate Program",
-}
-
-const ENROLLMENT_STATUS_LABELS: Record<string, string> = {
-  open: "Open for enrollment",
-  waitlist: "Waitlist",
-  coming_soon: "Coming soon",
 }
 
 export const SKILL_DOMAIN_DEFS: SkillDomainDef[] = [
@@ -175,9 +170,7 @@ function programToCatalogItem(program: Program): SkillCatalogItem {
     format: program.format ?? null,
     certificate: program.cert ?? null,
     projects: program.projects > 0 ? program.projects : null,
-    status: program.enrollmentStatus
-      ? ENROLLMENT_STATUS_LABELS[program.enrollmentStatus] ?? program.enrollmentStatus
-      : null,
+    status: getProgrammeAvailability(program).label,
   }
 }
 
@@ -194,12 +187,12 @@ function courseToCatalogItem(course: Course): SkillCatalogItem {
     format: course.mode ?? null,
     certificate: null,
     projects: course.projects > 0 ? course.projects : null,
-    status: null,
+    status: getCourseAvailability(course.slug).label,
   }
 }
 
 function workshopToCatalogItem(workshop: Workshop): SkillCatalogItem {
-  const seatsAvailable = workshop.seatsLeft > 0
+  const availability = getWorkshopAvailability()
   return {
     kind: "workshop",
     slug: workshop.slug,
@@ -212,7 +205,7 @@ function workshopToCatalogItem(workshop: Workshop): SkillCatalogItem {
     format: workshop.mode ?? null,
     certificate: null,
     projects: null,
-    status: seatsAvailable ? `${workshop.seatsLeft} seats left` : "Full",
+    status: availability.label,
   }
 }
 

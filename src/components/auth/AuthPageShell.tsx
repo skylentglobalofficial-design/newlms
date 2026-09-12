@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom"
+import "../../design/auth.css"
 
 type AuthPageShellProps = {
   children: React.ReactNode
@@ -8,7 +9,7 @@ export default function AuthPageShell({ children }: AuthPageShellProps) {
   const navigate = useNavigate()
 
   return (
-    <div className="auth-page">
+    <div className="auth-page sk-auth">
       <a href="#auth-main" className="auth-skip-link">Skip to sign in</a>
 
       <button
@@ -21,8 +22,10 @@ export default function AuthPageShell({ children }: AuthPageShellProps) {
 
       <main id="auth-main" className="auth-page-main">
         <div className="auth-page-card">
-          <Link to="/" className="auth-brand-link">
-            <span className="auth-brand">SKYLENT</span>
+          <Link to="/" className="auth-brand-link" aria-label="Skylent home">
+            <span className="auth-brand">
+              Skylent<span aria-hidden style={{ color: "#F36B21" }}>.</span>
+            </span>
           </Link>
           {children}
         </div>

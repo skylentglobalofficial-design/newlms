@@ -71,7 +71,7 @@ export const EDUCATION_PATHWAY_DEFS: EducationPathwayDef[] = [
     description:
       "For school students and parents. Curriculum-aligned delivery with lesson rhythm, activities, assessments, and visible progress across grade bands.",
     programSlugs: [],
-    formats: ["Live + Self-paced", "School-aligned curriculum"],
+    formats: ["Self-paced", "School-aligned curriculum"],
     levels: ["Primary", "Middle", "Secondary", "Senior Secondary"],
     preparationWorkflow: ["Grade", "Subject", "Chapter", "Lesson", "Activity", "Assessment", "Progress"],
   },
@@ -81,9 +81,9 @@ export const EDUCATION_PATHWAY_DEFS: EducationPathwayDef[] = [
     sub: "Degree-aligned",
     tagline: "Degree study paired with skills, projects, and career direction.",
     description:
-      "Undergraduate learners get structured programs beside their degree — professional skills, project portfolios, and a path into Career OS where supported.",
+      "Undergraduate learners get structured programmes beside their degree — professional skills, project work, and a path into Career OS where supported.",
     programSlugs: [],
-    formats: ["Live + Self-paced", "Cohort-based"],
+    formats: ["Self-paced", "Degree-aligned"],
     levels: ["Foundation", "Intermediate", "Advanced"],
     preparationWorkflow: ["Program", "Modules", "Projects", "Assessments", "Career readiness"],
   },
@@ -93,9 +93,9 @@ export const EDUCATION_PATHWAY_DEFS: EducationPathwayDef[] = [
     sub: "Specialisation",
     tagline: "Specialisation tracks with cases, projects, and professional outcomes.",
     description:
-      "Postgraduate pathways focus on depth — advanced modules, applied projects, and career support for learners moving into specialist roles.",
+      "Postgraduate pathways focus on depth — advanced modules and applied project work for learners moving into specialist roles.",
     programSlugs: [],
-    formats: ["Live + Self-paced", "Specialist tracks"],
+    formats: ["Self-paced", "Specialist tracks"],
     levels: ["Advanced", "Professional"],
     preparationWorkflow: ["Specialisation", "Cases", "Projects", "Assessment", "Career support"],
   },
@@ -103,13 +103,13 @@ export const EDUCATION_PATHWAY_DEFS: EducationPathwayDef[] = [
     id: "competitive-exams",
     label: "Competitive / Entrance Exams",
     sub: "Exam preparation",
-    tagline: "Exam preparation with structured practice, mocks, and analytics.",
+    tagline: "Exam preparation organised around the published exam pattern and syllabus.",
     description:
-      "Entrance exam products built around exam patterns, subject mastery, sectional practice, mock tests, and performance visibility.",
+      "Entrance exam programmes organised around exam patterns and subject mastery. No practice tests or mock exams are in the platform yet.",
     programSlugs: ["jee-advanced-prep", "cat-prep"],
-    formats: ["Live + Self-paced", "Exam-pattern aligned"],
+    formats: ["Self-paced", "Exam-pattern aligned"],
     levels: ["Exam prep"],
-    preparationWorkflow: ["Syllabus", "Practice", "Mocks", "Analytics", "Revision"],
+    preparationWorkflow: ["Syllabus", "Lessons", "Notes", "Quizzes", "Revision"],
   },
 ]
 
