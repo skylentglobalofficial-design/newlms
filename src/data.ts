@@ -331,7 +331,7 @@ export const programs: Program[] = [
       { number: '03', title: 'Machine Learning', description: 'Supervised and unsupervised learning algorithms, model evaluation, feature engineering, and ensemble methods.', duration: '6 weeks', topics: ['Linear and logistic regression', 'Decision trees and random forests', 'SVM, KNN, Naive Bayes', 'K-Means, PCA, DBSCAN'] },
       { number: '04', title: 'Deep Learning & NLP', description: 'Neural network architectures, computer vision, sequence models, and applied NLP using transformers.', duration: '6 weeks', topics: ['Feed-forward and convolutional networks', 'RNNs, LSTMs, and attention', 'Transfer learning with HuggingFace', 'Prompt engineering basics'] },
       { number: '05', title: 'Applied Industry Projects', description: 'Three end-to-end projects built with public datasets and submitted as assignments in the platform.', duration: '6 weeks' },
-      { number: '06', title: 'Career Bootcamp', description: 'Resume review, LinkedIn optimisation, mock interviews, and Career OS access for job search readiness.', duration: '3 weeks' },
+      { number: '06', title: 'Career Bootcamp', description: 'Career OS access: profile, the job board, application tracking, and structured interview practice.', duration: '3 weeks' },
     ],
     projectsDetail: [
       { title: 'Customer Churn Prediction', what: 'Build a classification model to identify at-risk customers using telecom subscriber data', skills: ['Python', 'scikit-learn', 'Feature Engineering', 'XGBoost'], difficulty: 'Intermediate' },
@@ -544,9 +544,9 @@ export const programs: Program[] = [
       { q: 'Is Career OS included?', a: 'Yes. Completing this Professional Programme opens Career OS. Skylent does not place you in a job and makes no placement guarantee.' },
     ],
     pricing: [
-      { name: 'Self-paced', price: 14999, originalPrice: 29999, features: ['All recorded content', '10 modules', 'Projects', 'Certificate'] },
-      { name: 'Pro', price: 24999, originalPrice: 49999, highlight: true, features: ['Everything in Self-paced', 'Live sessions', '3 AI projects', 'Mentor reviews'] },
-      { name: 'Career', price: 34999, originalPrice: 69999, features: ['Everything in Pro', 'Interview prep', 'AI portfolio', 'Job assistance'] },
+      { name: 'Self-paced', price: 14999, originalPrice: 29999, features: ['All published lessons and notes', '6 published modules', 'Assignments submitted in the platform', 'Skylent completion certificate'] },
+      { name: 'Pro', price: 24999, originalPrice: 49999, highlight: true, features: ['Everything in Self-paced', '3 guided AI project briefs', 'Written feedback on submitted assignments', 'Career OS access on completion'] },
+      { name: 'Career', price: 34999, originalPrice: 69999, features: ['Everything in Pro', 'Career OS interview practice sets', 'Profile and portfolio review', 'Application tracking in Career OS'] },
     ],
   },
   {
@@ -810,81 +810,87 @@ export type Workshop = {
   whatYouGet: string[]
 }
 
+/**
+ * Planned short sessions — not a live calendar. `date`, `instructor`, `seats`
+ * and `originalPrice` are retained on the type so older surfaces compile, but
+ * they are not facts: no session is scheduled, no faculty is assigned, and
+ * seat counts are not published. Pages must not render those fields as live.
+ */
 export const workshops: Workshop[] = [
   {
     slug: 'ai-for-business',
     title: 'AI for Business Leaders',
     category: 'AI',
     duration: '1 day',
-    date: '24 August 2026',
+    date: '',
     mode: 'Online',
-    instructor: 'Skylent Faculty',
-    seats: 120,
-    seatsLeft: 34,
+    instructor: '',
+    seats: 0,
+    seatsLeft: 0,
     price: 999,
-    originalPrice: 2499,
-    desc: 'How to evaluate, adopt, and lead AI transformation in your organisation without a technical background.',
-    whatYouGet: ['AI strategy frameworks', 'Use-case identification', 'ROI evaluation models', 'Q&A with industry practitioner', 'Resource toolkit'],
+    originalPrice: 999,
+    desc: 'How to evaluate and adopt AI in an organisation without a technical background.',
+    whatYouGet: ['AI strategy frameworks', 'Use-case identification', 'ROI evaluation models', 'Reading list'],
   },
   {
     slug: 'prompt-engineering',
     title: 'Prompt Engineering Masterclass',
     category: 'AI',
     duration: '1 day',
-    date: '30 August 2026',
+    date: '',
     mode: 'Online',
-    instructor: 'Skylent Faculty',
-    seats: 80,
-    seatsLeft: 12,
+    instructor: '',
+    seats: 0,
+    seatsLeft: 0,
     price: 1499,
-    originalPrice: 3499,
-    desc: 'From zero-shot to chain-of-thought to multi-agent prompting. Practical, hands-on, immediately applicable.',
-    whatYouGet: ['50+ prompt templates', 'Live hands-on exercises', 'Framework for any LLM', 'Access to recordings', 'Certificate of completion'],
+    originalPrice: 1499,
+    desc: 'Zero-shot, chain-of-thought and multi-step prompting, written so you can apply it to any current LLM.',
+    whatYouGet: ['Prompt patterns', 'Worked examples', 'A framework you can reuse', 'Notes to keep'],
   },
   {
     slug: 'resume-masterclass',
     title: 'Resume & LinkedIn Masterclass',
     category: 'Career',
     duration: '3 hours',
-    date: '28 August 2026',
+    date: '',
     mode: 'Online',
-    instructor: 'Skylent Career Team',
-    seats: 200,
-    seatsLeft: 67,
+    instructor: '',
+    seats: 0,
+    seatsLeft: 0,
     price: 499,
-    originalPrice: 1499,
-    desc: 'Build an ATS-optimised resume and a recruiter-ready LinkedIn profile with live feedback from Skylent career coaches.',
-    whatYouGet: ['Resume template pack', 'ATS check process', 'LinkedIn optimisation guide', 'Live coach feedback', 'Recording access'],
+    originalPrice: 499,
+    desc: 'How to structure a resume and LinkedIn profile around work you have actually done.',
+    whatYouGet: ['Resume structure', 'ATS checklist', 'LinkedIn profile outline', 'Notes to keep'],
   },
   {
     slug: 'interview-masterclass',
     title: 'Data Interview Masterclass',
     category: 'Career',
     duration: '1 day',
-    date: '6 September 2026',
+    date: '',
     mode: 'Online',
-    instructor: 'Skylent Faculty',
-    seats: 100,
-    seatsLeft: 28,
+    instructor: '',
+    seats: 0,
+    seatsLeft: 0,
     price: 1999,
-    originalPrice: 4999,
-    desc: 'SQL, Python, statistics, and case interviews — the full data job interview preparation in one intensive session.',
-    whatYouGet: ['200+ interview questions', 'Live mock interview', 'SQL and Python drill', 'Case study walkthrough', 'Certificate'],
+    originalPrice: 1999,
+    desc: 'SQL, Python, statistics and case interviews — the kinds of questions data roles actually ask.',
+    whatYouGet: ['Question patterns', 'SQL and Python drills', 'Case-study walkthrough', 'Notes to keep'],
   },
   {
     slug: 'power-bi-workshop',
     title: 'Power BI Intensive',
     category: 'Data',
     duration: '2 days',
-    date: '13–14 September 2026',
+    date: '',
     mode: 'Online',
-    instructor: 'Skylent Faculty',
-    seats: 60,
-    seatsLeft: 19,
+    instructor: '',
+    seats: 0,
+    seatsLeft: 0,
     price: 2499,
-    originalPrice: 5999,
-    desc: 'Build three professional Power BI dashboards in two days. Hands-on from data import to published report.',
-    whatYouGet: ['3 real dashboard projects', 'DAX formula guide', 'Dataset access', 'Recordings', 'Certificate'],
+    originalPrice: 2499,
+    desc: 'From data import to a published report: the Power BI workflow in a short, focused session.',
+    whatYouGet: ['Import and model a dataset', 'DAX patterns', 'Dashboard layout', 'Publish and share'],
   },
 ]
 
@@ -1013,11 +1019,9 @@ The problem is that career outcomes are not produced by career services. They ar
 
 Career services at the end of a course is like adding a quality check at the end of a manufacturing line. By the time you get there, the product is already determined.
 
-Skylent's Career OS is built into the beginning of every program. Students track their career readiness score from week one. They build their portfolio in parallel with their learning. They practice interviews before they need to pass one.
+Skylent's Career OS sits alongside learning rather than after it. A learner can keep a profile, track applications, and work through structured interview practice while they are still on a programme — provided that programme actually opens Career OS.
 
-By the time a student finishes a Skylent program, their resume has already been reviewed. Their LinkedIn profile is already optimised. They have already done ten mock interviews and received feedback on each one. They have already mapped their target companies and understood what each role requires.
-
-The job search starts on the day of graduation not because we begin it then. It starts on the day of graduation because we have been preparing for it since day one.
+What the workspace does not do is review your resume for you, optimise your LinkedIn, or run a set number of mock interviews. Those services are not in the product. The job search still belongs to the learner.
 
 That is the difference between a career service and a career system.`,
   },
@@ -1037,20 +1041,33 @@ export type Job = {
   postedDays: number
 }
 
-export const jobs: Job[] = [
-  { id: 'jr-data-analyst', role: 'Junior Data Analyst', company: 'XYZ Technologies', salary: '₹5–7 LPA', location: 'Bengaluru / Hybrid', mode: 'Hybrid', skills: ['SQL', 'Excel', 'Power BI', 'Python'], exp: '0–2 yrs', desc: 'Analyse business data, build dashboards, and generate insights to support decision-making across product and marketing teams.', postedDays: 2 },
-  { id: 'ml-engineer', role: 'ML Engineer', company: 'DataCraft Pvt Ltd', salary: '₹8–12 LPA', location: 'Mumbai / Remote', mode: 'Remote', skills: ['Python', 'TensorFlow', 'Sklearn', 'AWS'], exp: '1–3 yrs', desc: 'Build and deploy machine learning models for recommendation, fraud detection, and demand forecasting at scale.', postedDays: 5 },
-  { id: 'full-stack-dev', role: 'Full Stack Developer', company: 'NovaBridge Solutions', salary: '₹7–10 LPA', location: 'Hyderabad / On-site', mode: 'On-site', skills: ['React', 'Node.js', 'PostgreSQL', 'Docker'], exp: '1–3 yrs', desc: 'Design and develop end-to-end web applications for enterprise clients in fintech and logistics.', postedDays: 1 },
-  { id: 'product-analyst', role: 'Product Analyst', company: 'Finova Digital', salary: '₹6–9 LPA', location: 'Pune / Hybrid', mode: 'Hybrid', skills: ['SQL', 'Looker', 'Product Sense', 'Excel'], exp: '0–2 yrs', desc: 'Work with product managers to define metrics, analyse user behaviour, and drive growth decisions.', postedDays: 3 },
-  { id: 'ai-intern', role: 'AI Research Intern', company: 'Cognosphere Labs', salary: '₹3–5 LPA', location: 'Bengaluru / Hybrid', mode: 'Hybrid', skills: ['Python', 'PyTorch', 'NLP', 'Research'], exp: 'Fresher', desc: 'Contribute to applied NLP research projects and help deploy language models to production environments.', postedDays: 7 },
-]
+/**
+ * Empty by design. The public Career OS page reads from this list, and the only
+ * roles that belong in it are ones a verified employer has actually posted.
+ * Invented companies and salary bands would make an empty board look like a
+ * working one, which is the thing this list must never do.
+ */
+export const jobs: Job[] = []
 
-// ─── SUCCESS STORIES ──────────────────────────────────────────────────────────
-export const stories = [
-  { name: 'Ananya Krishnan', initials: 'AK', before: 'Commerce graduate. No technical background. No clear path into tech.', provided: 'Data Analytics program + 4 industry projects + career mentorship + placement prep.', outcome: 'Data Analyst', salary: '₹7.2 LPA', duration: '6 months', program: 'Data Analytics with Gen AI' },
-  { name: 'Rohan Mehta', initials: 'RM', before: 'Mechanical engineer. 3 years experience. No tech growth path.', provided: 'Full Stack program + 5 live projects + resume rebuild + 6 mock interviews.', outcome: 'Full Stack Developer', salary: '₹12 LPA', duration: '9 months', program: 'Full Stack Development' },
-  { name: 'Priya Nair', initials: 'PN', before: 'Recent graduate. Strong academics. No industry exposure or portfolio.', provided: 'Data Science & AI + Skylent Labs AI bootcamp + career support.', outcome: 'ML Engineer', salary: '₹14 LPA', duration: '11 months', program: 'Data Science & AI' },
-]
+// ─── LEARNER STORIES ──────────────────────────────────────────────────────────
+/**
+ * Empty by design. A learner story may only be added here once the person, the
+ * programme they took and the outcome they describe have all been verified.
+ * Names, salaries and placement claims that cannot be verified are not sample
+ * content — they are false advertising, so there is nothing to fall back on.
+ */
+export type LearnerStory = {
+  name: string
+  initials: string
+  before: string
+  provided: string
+  outcome: string
+  salary: string
+  duration: string
+  program: string
+}
+
+export const stories: LearnerStory[] = []
 
 // ─── DEMO USERS (for role dashboard switcher) ─────────────────────────────────
 export const demoUsers = [

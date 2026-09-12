@@ -96,6 +96,15 @@ export function notYetAvailable(explanation: string): Availability {
   return { ...AVAILABILITY['not-available'], explanation }
 }
 
+/** Every listed webinar is a planned topic. None have a date, host or seats. */
+export function getWorkshopAvailability(): Availability {
+  return {
+    ...AVAILABILITY['interest-open'],
+    explanation:
+      'No session is on the calendar. Registering interest starts a conversation — it does not book a seat or take payment.',
+  }
+}
+
 /**
  * Resolves what a learner can genuinely do with a programme today.
  * Derived from live LMS links rather than the editorial status alone, so a

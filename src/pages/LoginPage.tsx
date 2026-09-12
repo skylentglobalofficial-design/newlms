@@ -5,9 +5,9 @@ import { type CatalogEnrollTarget, type LoginRedirectState } from "../lib/catalo
 import { buildGoogleOAuthStartUrl } from "../lib/auth-api"
 import { finishAuthNavigation } from "../lib/auth-routing"
 import AuthPageShell, { AuthDivider, AuthDevDemoAccounts, AuthError, authFieldClass } from "../components/auth/AuthPageShell"
-import { getDomainAccent } from "../aurora-themes"
+import { getSurfaceAccent } from "../design/accent"
 
-const accent = getDomainAccent("general")
+const accent = getSurfaceAccent("general")
 
 function readOAuthRedirectState(params: URLSearchParams): LoginRedirectState | null {
   const returnTo = params.get("returnTo") ?? undefined

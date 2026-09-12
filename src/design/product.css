@@ -495,3 +495,57 @@
     transform: none;
   }
 }
+
+/* ── Long-form article (blog, about) ──────────────────────────────────────── */
+.sk-article {
+  max-width: 68ch;
+}
+
+.sk-article p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--sk-ink-secondary);
+  margin: 0 0 1.15em;
+}
+
+.sk-article h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--sk-ink);
+  margin: 1.8em 0 0.55em;
+}
+
+.sk-article h3 {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--sk-ink);
+  margin: 1.4em 0 0.4em;
+}
+
+.sk-chip-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.sk-chip {
+  appearance: none;
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line-strong);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  color: var(--sk-ink-secondary);
+  cursor: pointer;
+}
+
+.sk-chip.is-active {
+  background: var(--sk-ink);
+  border-color: var(--sk-ink);
+  color: #fff;
+}

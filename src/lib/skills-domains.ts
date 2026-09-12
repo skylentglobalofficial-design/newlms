@@ -1,4 +1,5 @@
 import { courses, programs, workshops, type Course, type Program, type Workshop } from "../data"
+import { getWorkshopAvailability } from "./catalogue-status"
 
 export type SkillDomainId =
   | "data-science"
@@ -199,7 +200,7 @@ function courseToCatalogItem(course: Course): SkillCatalogItem {
 }
 
 function workshopToCatalogItem(workshop: Workshop): SkillCatalogItem {
-  const seatsAvailable = workshop.seatsLeft > 0
+  const availability = getWorkshopAvailability()
   return {
     kind: "workshop",
     slug: workshop.slug,
@@ -212,7 +213,7 @@ function workshopToCatalogItem(workshop: Workshop): SkillCatalogItem {
     format: workshop.mode ?? null,
     certificate: null,
     projects: null,
-    status: seatsAvailable ? `${workshop.seatsLeft} seats left` : "Full",
+    status: availability.label,
   }
 }
 

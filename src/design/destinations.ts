@@ -44,7 +44,7 @@ export const DESTINATIONS: Destination[] = [
     id: 'exams',
     label: 'Competitive exams',
     question: 'I am preparing for an entrance exam',
-    promise: 'Exam preparation built around syllabus, practice and mocks.',
+    promise: 'Exam preparation organised around the published exam pattern and syllabus.',
     to: '/education#competitive-exams',
     themeId: 'jee',
   },
@@ -82,7 +82,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: 'Professional programmes', sub: 'Long-form, career-focused', to: '/programs?type=PROFESSIONAL' },
       { label: 'Certificate programmes', sub: 'Focused credentials', to: '/programs?type=CERTIFICATE' },
       { label: 'Courses', sub: 'Self-paced, open in the platform', to: '/courses' },
-      { label: 'Webinars', sub: 'Single live sessions', to: '/workshops' },
+      { label: 'Webinars', sub: 'Short sessions — none scheduled yet', to: '/workshops' },
     ],
   },
   {

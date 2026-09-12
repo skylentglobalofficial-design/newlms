@@ -1,6 +1,5 @@
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
-import { C, Nav, Footer, globalCSS } from './components/shared'
-import { PublicCanvas } from './components/foundation'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { globalCSS } from './components/shared'
 import LabDetailPage from './pages/LabDetailPage'
 import ExperimentPage from './pages/ExperimentPage'
 import { AuthProvider } from './context/AuthContext'
@@ -41,6 +40,7 @@ import DashboardOrgPage from './pages/DashboardOrgPage'
 import DashboardRecruiterPage from './pages/DashboardRecruiterPage'
 import DashboardAdminPage from './pages/DashboardAdminPage'
 import LearnPage from './pages/LearnPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 function AppRoutes() {
   return (
@@ -97,7 +97,7 @@ function AppRoutes() {
       <Route path="/labs/:labId/:experimentId" element={<ExperimentPage />} />
       <Route path="/jobs" element={<Navigate to="/career-os" replace />} />
       <Route path="/jobs/:id" element={<Navigate to="/career-os" replace />} />
-      <Route path="*" element={<PublicCanvas themeId="general"><Nav /><main id="main-content"><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md" style={{ color: C.white }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></main></PublicCanvas>} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }
