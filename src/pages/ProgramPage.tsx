@@ -5,7 +5,7 @@ import AnchorNav, { scrollToSection, useActiveSection } from '../design/AnchorNa
 import { ButtonLink, EmptyState, Note, Rail, StatusPill } from '../design/primitives'
 import { PROGRAM_TYPE_LABEL, formatInr } from '../design/CatalogueCard'
 import { getProgrammeAvailability, liveCourseSlugsForProgram } from '../lib/catalogue-status'
-import { labsForProgram } from '../lib/virtual-labs'
+import { emptySubjectLabCopy, labsForProgram } from '../lib/virtual-labs'
 import { useCatalogEnrollment } from '../hooks/useCatalogEnrollment'
 import { courses, programs } from '../data'
 import type { Program } from '../data'
@@ -16,6 +16,7 @@ const SECTIONS = [
   { id: 'curriculum', label: 'Curriculum' },
   { id: 'projects', label: 'Projects' },
   { id: 'platform', label: 'In the platform' },
+  { id: 'labs', label: 'Labs' },
   { id: 'delivery', label: 'How it runs' },
   { id: 'fees', label: 'Fees' },
   { id: 'faq', label: 'FAQ' },
@@ -323,15 +324,25 @@ export default function ProgramPage() {
                   body="No lessons for this programme have been published. The curriculum above describes what is planned."
                 />
               )}
-              {relatedLabs.length > 0 && (
-                <div className="sk-pdp-live" style={{ marginTop: 16 }}>
+            </section>
+
+            <section id="labs" className="sk-pdp-section">
+              <h2>Virtual labs</h2>
+              <p className="sk-pdp-lead">
+                Labs follow the subjects in this programme. Python work opens Python experiments — not HTML, and not
+                a topic that is not in the syllabus.
+              </p>
+              {relatedLabs.length > 0 ? (
+                <div className="sk-pdp-live">
                   {relatedLabs.map(lab => (
                     <Link key={lab.id} to={`/labs/${lab.id}/run`}>
                       <strong>{lab.title}</strong>
-                      <span>Virtual lab · {lab.duration} · runs in your browser</span>
+                      <span>{lab.subject} · {lab.duration} · runs in your browser</span>
                     </Link>
                   ))}
                 </div>
+              ) : (
+                <EmptyState compact title="No lab for this programme" body={emptySubjectLabCopy(program.name)} />
               )}
             </section>
 

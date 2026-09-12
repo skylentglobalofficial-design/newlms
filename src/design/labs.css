@@ -68,6 +68,137 @@
   color: var(--sk-ink-muted);
 }
 
+.sk-lab-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 8px;
+}
+
+.sk-lab-filter {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--sk-line-strong);
+  background: #fff;
+  color: var(--sk-ink);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sk-lab-filter.is-on {
+  background: #f36b21;
+  border-color: #f36b21;
+  color: #fff;
+}
+
+.sk-lab-context {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--sk-ink-secondary);
+}
+
+.sk-lab-context a,
+.sk-labs .sk-inline-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: #c24e12;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.sk-lab-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 14px;
+}
+
+.sk-lab-table caption {
+  caption-side: top;
+  text-align: left;
+  font-size: 12.5px;
+  color: var(--sk-ink-muted);
+  margin-bottom: 8px;
+}
+
+.sk-lab-table th,
+.sk-lab-table td {
+  border-bottom: 1px solid var(--sk-line);
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.sk-lab-table th {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sk-ink-muted);
+}
+
+.sk-lab-code {
+  margin: 0 0 8px;
+  padding: 12px 14px;
+  background: #1f1b16;
+  color: #f4f1ea;
+  border-radius: 12px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.sk-lab-controls select {
+  grid-column: 1 / -1;
+  min-height: 38px;
+  border: 1px solid var(--sk-line-strong);
+  border-radius: 10px;
+  padding: 0 10px;
+  background: #fff;
+  font: inherit;
+}
+
+.sk-lab-box-stage {
+  min-height: 240px;
+  display: grid;
+  place-items: center;
+  background: #f7f4ee;
+  border-radius: 12px;
+  border: 1px solid var(--sk-line);
+  overflow: auto;
+  padding: 16px;
+}
+
+.sk-lab-box-margin {
+  background: rgba(243, 107, 33, 0.18);
+}
+
+.sk-lab-box-border {
+  border-style: solid;
+  border-color: #2d5bd6;
+  background: rgba(45, 91, 214, 0.12);
+}
+
+.sk-lab-box-padding {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.sk-lab-box-content {
+  min-height: 48px;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  border: 1px dashed var(--sk-line-strong);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sk-ink-muted);
+}
+
 .sk-lab-shell {
   display: grid;
   grid-template-columns: minmax(0, 1.4fr) minmax(240px, 0.7fr);

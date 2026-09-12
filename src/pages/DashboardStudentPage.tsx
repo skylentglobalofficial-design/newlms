@@ -28,6 +28,7 @@ import { enrollInCourse } from '../lib/lms-api'
 import type { ApiEnrollment } from '../lib/lms-api'
 import type { LessonState } from '../demo/types'
 import type { CourseLesson } from '../data'
+import { emptySubjectLabCopy, labsForLearningContext } from '../lib/virtual-labs'
 
 const THEME = 'data-science' as const
 const accent: SurfaceAccent = getSurfaceAccent(THEME)
@@ -499,6 +500,42 @@ function ActivityPanel({ items }: { items: { id: string; label: string; detail: 
   )
 }
 
+function LabsPanel({
+  courseSlug,
+  moduleTitle,
+  lessonTitle,
+}: {
+  courseSlug: string
+  moduleTitle?: string
+  lessonTitle?: string
+}) {
+  const labs = labsForLearningContext({ moduleTitle, lessonTitle })
+  return (
+    <RailPanel title="Virtual labs">
+      {labs.length === 0 ? (
+        <p style={{ ...TY.bodySm, color: S.inkSecondary, margin: '0 0 12px' }}>
+          {emptySubjectLabCopy(moduleTitle || lessonTitle || 'this lesson')}
+        </p>
+      ) : (
+        <div className="sk-dash-timeline" style={{ marginBottom: 12 }}>
+          {labs.map(lab => (
+            <Link key={lab.id} to={`/labs/${lab.id}/run`} className="sk-dash-time">
+              <span className="sk-dash-time-dot" aria-hidden />
+              <span>
+                <span className="sk-dash-row-title" style={{ display: 'block' }}>{lab.title}</span>
+                <span className="sk-dash-row-meta" style={{ display: 'block' }}>{lab.subject} · {lab.duration}</span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
+      <ButtonLink to={`/labs?course=${encodeURIComponent(courseSlug)}`} variant="secondary" size="sm" themeId={THEME}>
+        Labs for this course
+      </ButtonLink>
+    </RailPanel>
+  )
+}
+
 function CareerPanel() {
   const { profile, loading } = useCareerProfile()
   const headline = profile?.headline?.trim()
@@ -550,9 +587,13 @@ export default function DashboardStudentPage() {
 
   if (!ready || !authorized || !user) return null
 
-  const navItems = NAV_ITEMS.map(item =>
-    item.id === 'tasks' ? { ...item, count: pending.length } : item,
-  )
+  const navItems = NAV_ITEMS.map(item => {
+    if (item.id === 'tasks') return { ...item, count: pending.length }
+    if (item.id === 'labs' && course?.slug) {
+      return { ...item, href: `/labs?course=${encodeURIComponent(course.slug)}` }
+    }
+    return item
+  })
 
   function shell(children: React.ReactNode, title?: React.ReactNode) {
     return (
@@ -708,6 +749,11 @@ export default function DashboardStudentPage() {
 
         <aside className="sk-ws-rail">
           <UpcomingRail tasks={tasks} />
+          <LabsPanel
+            courseSlug={course.slug}
+            moduleTitle={resume?.moduleTitle}
+            lessonTitle={resume?.lessonTitle}
+          />
           <ActivityPanel items={activity} />
           <CareerPanel />
           <CertificateCard

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, Link } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { useAuth } from '../context/AuthContext'
 import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
@@ -28,6 +28,7 @@ import {
   submitQuizAttempt,
   updateAssignment,
 } from '../lib/lms-api'
+import { labsForLearningContext } from '../lib/virtual-labs'
 
 function dashRoute(role?: string) {
   switch (role) {
@@ -218,6 +219,10 @@ export default function LearnPage() {
   }
 
   const selectedLesson = allLessons.find(l => l.id === selectedLessonId)
+  const selectedModule = course.modules.find(module => module.lessons.some(lesson => lesson.id === selectedLessonId))
+  const moduleLabs = selectedLesson
+    ? labsForLearningContext({ moduleTitle: selectedModule?.title, lessonTitle: selectedLesson.title })
+    : []
   const selectedState = selectedLessonId ? (lessonStates[selectedLessonId] ?? { ...EMPTY_LESSON_STATE }) : { ...EMPTY_LESSON_STATE }
   const { progressPct, allComplete } = computeCourseProgress(allLessons, lessonStates)
   const tabAccent = getLmsTabAccent(selectedLesson ? defaultTabForLesson(selectedLesson) : 'video')
@@ -365,6 +370,20 @@ export default function LearnPage() {
                   onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
                   lessonMedia={lessonMedia}
                 />
+              )}
+              {!selectedState.locked && moduleLabs.length > 0 && (
+                <aside className="lms-lab-cta">
+                  <p className="lms-lab-cta-kicker">Virtual lab for this lesson</p>
+                  <p>Practice the same subject. We do not open an unrelated experiment from another course.</p>
+                  <ul>
+                    {moduleLabs.map(lab => (
+                      <li key={lab.id}>
+                        <Link to={`/labs/${lab.id}/run`}>{lab.title}</Link>
+                        <span>{lab.subject} · {lab.duration} · runs in your browser</span>
+                      </li>
+                    ))}
+                  </ul>
+                </aside>
               )}
               <LessonNavigation
                 prev={prev}

@@ -6,7 +6,7 @@ import { ButtonLink, EmptyState, Note, Rail, StatusPill } from '../design/primit
 import { PROGRAM_TYPE_LABEL, formatInr } from '../design/CatalogueCard'
 import { getCourseAvailability, liveProgramSlugsForCourse, publishedLessonCount } from '../lib/catalogue-status'
 import { useCatalogEnrollment } from '../hooks/useCatalogEnrollment'
-import { labsForCourse } from '../lib/virtual-labs'
+import { emptySubjectLabCopy, labsForCourse } from '../lib/virtual-labs'
 import { courses, programs } from '../data'
 import type { Course } from '../data'
 import '../design/detail.css'
@@ -14,6 +14,7 @@ import '../design/detail.css'
 const SECTIONS = [
   { id: 'overview', label: 'Overview' },
   { id: 'curriculum', label: 'Curriculum' },
+  { id: 'labs', label: 'Labs' },
   { id: 'audience', label: 'Who it is for' },
 ]
 
@@ -200,6 +201,25 @@ export default function CourseDetailPage() {
               )}
             </section>
 
+            <section id="labs" className="sk-pdp-section">
+              <h2>Virtual labs</h2>
+              <p className="sk-pdp-lead">
+                Only experiments that match this course are listed. A Python course does not open an HTML lab.
+              </p>
+              {relatedLabs.length > 0 ? (
+                <div className="sk-pdp-live">
+                  {relatedLabs.map(lab => (
+                    <Link key={lab.id} to={`/labs/${lab.id}/run`}>
+                      <strong>{lab.title}</strong>
+                      <span>{lab.subject} · {lab.duration} · runs in your browser</span>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState compact title="No lab for this subject" body={emptySubjectLabCopy(course.title)} />
+              )}
+            </section>
+
             <section id="audience" className="sk-pdp-section">
               <h2>Who this is for</h2>
               <ul className="sk-pdp-plain">
@@ -207,20 +227,6 @@ export default function CourseDetailPage() {
                   <li key={item}>{item}</li>
                 ))}
               </ul>
-
-              {relatedLabs.length > 0 && (
-                <div className="sk-pdp-audience" style={{ marginTop: 28 }}>
-                  <h3>Virtual labs</h3>
-                  <div className="sk-pdp-live">
-                    {relatedLabs.map(lab => (
-                      <Link key={lab.id} to={`/labs/${lab.id}/run`}>
-                        <strong>{lab.title}</strong>
-                        <span>{lab.subject} · {lab.duration} · runs in your browser</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
 
               {parentPrograms.length > 0 && (
                 <div className="sk-pdp-audience">

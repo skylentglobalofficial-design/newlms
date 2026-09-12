@@ -6,6 +6,10 @@ import { getInteractiveLab, interactiveLabAvailability } from '../lib/virtual-la
 import '../design/labs.css'
 
 const ClassificationLab = lazy(() => import('../labs/ClassificationLab'))
+const PythonFilterLab = lazy(() => import('../labs/PythonFilterLab'))
+const SqlFilterLab = lazy(() => import('../labs/SqlFilterLab'))
+const ExcelGroupLab = lazy(() => import('../labs/ExcelGroupLab'))
+const CssBoxLab = lazy(() => import('../labs/CssBoxLab'))
 
 export default function VirtualLabWorkspacePage() {
   const { labId } = useParams<{ labId: string }>()
@@ -45,6 +49,10 @@ export default function VirtualLabWorkspacePage() {
         <div className="sk-lab-shell">
           <Suspense fallback={<p>Loading experiment…</p>}>
             {lab.workspace === 'knn' && <ClassificationLab />}
+            {lab.workspace === 'python' && <PythonFilterLab />}
+            {lab.workspace === 'sql' && <SqlFilterLab />}
+            {lab.workspace === 'excel' && <ExcelGroupLab />}
+            {lab.workspace === 'css' && <CssBoxLab />}
           </Suspense>
           <aside className="sk-lab-side">
             <h2>How to use</h2>
