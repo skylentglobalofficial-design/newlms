@@ -159,8 +159,10 @@ body {
   }
 }
 
+/* `clip` guards against horizontal overflow without turning the document into a
+   scroll container — `hidden` here would break every `position: sticky` rail. */
 html, body {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Product visual frames inside MediaImage */

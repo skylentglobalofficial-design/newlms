@@ -1,0 +1,280 @@
+/* Two-column product detail: programme and course pages. */
+
+.sk-detail-head {
+  padding-block: clamp(22px, 3vw, 34px) clamp(14px, 2vw, 20px);
+}
+
+.sk-detail-head-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.sk-stack-sm > * + * {
+  margin-top: 14px;
+}
+
+/* ── Anchor nav ───────────────────────────────────────────────────────────── */
+.sk-anchor-nav {
+  display: flex;
+  gap: 2px;
+  border-bottom: 1px solid var(--sk-line);
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: sticky;
+  top: 62px;
+  z-index: 60;
+  background: rgba(245, 246, 248, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  margin-bottom: clamp(22px, 3vw, 32px);
+}
+
+.sk-anchor-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.sk-anchor {
+  appearance: none;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sk-ink-muted);
+  padding: 12px 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-bottom: -1px;
+}
+
+.sk-anchor:hover {
+  color: var(--sk-ink);
+}
+
+.sk-anchor.is-active {
+  font-weight: 600;
+}
+
+/* ── Lists ────────────────────────────────────────────────────────────────── */
+.sk-check-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 24px;
+}
+
+.sk-check-list li {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--sk-ink-secondary);
+}
+
+.sk-plain-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sk-plain-list li {
+  position: relative;
+  padding-left: 18px;
+  padding-block: 5px;
+  font-size: 14px;
+  line-height: 1.58;
+  color: var(--sk-ink-secondary);
+}
+
+.sk-plain-list li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 12px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(12, 14, 18, 0.28);
+}
+
+.sk-topic-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 20px;
+}
+
+.sk-topic-list li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--sk-ink-secondary);
+}
+
+.sk-topic-list li::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 9px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(12, 14, 18, 0.26);
+}
+
+/* ── Accordion ────────────────────────────────────────────────────────────── */
+.sk-accordion {
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: var(--sk-r-card);
+  overflow: hidden;
+  box-shadow: var(--sk-shadow-sm);
+}
+
+.sk-accordion-item + .sk-accordion-item {
+  border-top: 1px solid var(--sk-line);
+}
+
+.sk-accordion-trigger {
+  appearance: none;
+  background: none;
+  border: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.sk-accordion-trigger:hover {
+  background: var(--sk-surface-muted);
+}
+
+.sk-accordion-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 28px;
+  border-radius: 7px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.sk-accordion-chevron {
+  color: var(--sk-ink-muted);
+  display: inline-flex;
+  transition: transform 0.18s ease;
+  flex-shrink: 0;
+}
+
+.sk-accordion-panel {
+  padding: 0 18px 18px 64px;
+}
+
+/* ── FAQ (native details) ─────────────────────────────────────────────────── */
+.sk-faq summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 15px 18px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--sk-ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.sk-faq summary::-webkit-details-marker {
+  display: none;
+}
+
+.sk-faq summary::after {
+  content: '+';
+  color: var(--sk-ink-muted);
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.sk-faq[open] summary::after {
+  content: '−';
+}
+
+.sk-faq summary:hover {
+  background: var(--sk-surface-muted);
+}
+
+.sk-faq p {
+  margin: 0;
+  padding: 0 18px 17px;
+  font-size: 14px;
+  line-height: 1.62;
+  color: var(--sk-ink-secondary);
+}
+
+/* ── Linked course card ───────────────────────────────────────────────────── */
+.sk-linked-course {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: var(--sk-r-card);
+  padding: 18px;
+  text-decoration: none;
+  box-shadow: var(--sk-shadow-sm);
+}
+
+/* ── Inline link ──────────────────────────────────────────────────────────── */
+.sk-inline-link {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .sk-anchor-nav {
+    top: 62px;
+  }
+
+  .sk-price-grid.sk-grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .sk-check-list,
+  .sk-topic-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sk-price-grid.sk-grid-3 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sk-accordion-panel {
+    padding-left: 18px;
+  }
+}
