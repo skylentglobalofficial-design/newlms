@@ -2,8 +2,8 @@ import { lazy, Suspense } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
 import { Rail, StatusPill, EmptyState, ButtonLink, Note } from '../design/primitives'
-import { getInteractiveLab, interactiveLabAvailability } from '../lib/virtual-labs'
-import { labBackLabel, safeInternalPath } from '../lib/safe-return'
+import { INTERACTIVE_LABS, getInteractiveLab, interactiveLabAvailability } from '../lib/virtual-labs'
+import { labBackLabel, labRunPath, safeInternalPath } from '../lib/safe-return'
 import '../design/labs.css'
 
 const ClassificationLab = lazy(() => import('../labs/ClassificationLab'))
@@ -35,6 +35,8 @@ export default function VirtualLabWorkspacePage() {
   }
 
   const availability = interactiveLabAvailability(lab)
+  const otherLabs = INTERACTIVE_LABS.filter(item => item.id !== lab.id && item.workspace)
+  const backTo = from ?? `/labs/${lab.id}/run`
 
   return (
     <ProductShell className="sk-labs" footer={false}>
@@ -63,20 +65,36 @@ export default function VirtualLabWorkspacePage() {
             {lab.workspace === 'css' && <CssBoxLab />}
           </Suspense>
           <aside className="sk-lab-side">
+            <h2>Concept</h2>
+            <p className="sk-lab-concept">{lab.concept}</p>
             <h2>How to use</h2>
             <ol>
               {lab.howToUse.map(step => (
                 <li key={step}>{step}</li>
               ))}
             </ol>
-            <h2 style={{ marginTop: 22 }}>What to observe</h2>
+            <h2>What to observe</h2>
             <ul>
               {lab.observe.map(item => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
+            {otherLabs.length > 0 && (
+              <>
+                <h2>Other experiments</h2>
+                <ul className="sk-lab-others">
+                  {otherLabs.map(item => (
+                    <li key={item.id}>
+                      <Link to={labRunPath(item.id, backTo)}>{item.title}</Link>
+                      <span>{item.subject}</span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
             <Note>
               Completion is stored only in this browser. It does not unlock a certificate or Career OS evidence.
+              These are browser experiments, not full interpreters or production infrastructure.
             </Note>
           </aside>
         </div>

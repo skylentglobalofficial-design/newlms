@@ -42,7 +42,7 @@ function EnrolButton({
 
   if (!availability.canStartLearning) {
     return (
-      <Link to="/contact" className={className}>
+      <Link to="/contact" className={`${className ?? ''} is-interest`.trim()}>
         {availability.ctaLabel}
       </Link>
     )
@@ -202,8 +202,66 @@ export default function ProgramPage() {
   const relatedLabs = labsForProgram(program.slug)
   const price = lowestFee(program)
 
+  const pathway = [
+    program.outcome
+      ? {
+          label: 'Become',
+          title: program.outcome,
+          body: 'The role this programme is built around — not a placement promise.',
+        }
+      : null,
+    {
+      label: 'Work through',
+      title: modules.length
+        ? `${modules.length} modules`
+        : `${program.modules} planned modules`,
+      body: modules.length
+        ? modules.map(module => module.title).join(' · ')
+        : 'The syllabus has not been written up as named modules yet.',
+    },
+    program.projectsDetail?.length
+      ? {
+          label: 'Build',
+          title: `${program.projectsDetail.length} project brief${program.projectsDetail.length === 1 ? '' : 's'}`,
+          body: program.projectsDetail[0].what,
+        }
+      : null,
+    {
+      label: 'Access today',
+      title: liveCourses.length
+        ? `${liveCourses.length} live course${liveCourses.length === 1 ? '' : 's'}`
+        : 'Interest open',
+      body: liveCourses.length
+        ? liveCourses.map(course => course.title).join(' · ')
+        : 'Register interest until a live course exists on this pathway.',
+    },
+    {
+      label: 'Practise',
+      title: relatedLabs.length
+        ? `${relatedLabs.length} matching lab${relatedLabs.length === 1 ? '' : 's'}`
+        : 'No matching lab yet',
+      body: relatedLabs.length
+        ? relatedLabs.map(lab => lab.title).join(' · ')
+        : 'Labs appear here only when a subject actually matches.',
+    },
+    program.cert
+      ? {
+          label: 'Prove',
+          title: program.cert,
+          body: 'Completion is recorded on the learner dashboard. Certificate download and public verification are not live.',
+        }
+      : null,
+    program.careerSupport
+      ? {
+          label: 'Connects to',
+          title: 'Career OS',
+          body: 'The same account can open Profile, Job board, Applications and Practice. LMS evidence is not auto-synced yet.',
+        }
+      : null,
+  ].filter((item): item is { label: string; title: string; body: string } => item !== null)
+
   return (
-    <ProductShell className="sk-pdp sk-has-sticky-bar">
+    <ProductShell className="sk-pdp sk-pdp-program sk-has-sticky-bar">
       <Rail>
         <Link to="/programs" className="sk-pdp-back"><span aria-hidden>←</span> All programmes</Link>
 
@@ -228,6 +286,18 @@ export default function ProgramPage() {
             </ul>
           </div>
         </header>
+
+        {pathway.length > 0 && (
+          <ol className="sk-pdp-pathway" aria-label="How this programme is structured">
+            {pathway.map(item => (
+              <li key={item.label} className={item.label === 'Connects to' ? 'is-connect' : undefined}>
+                <span>{item.label}</span>
+                <strong>{item.title}</strong>
+                <p>{item.body}</p>
+              </li>
+            ))}
+          </ol>
+        )}
       </Rail>
 
       <AnchorNav sections={SECTIONS} active={activeSection} label="Programme sections" />

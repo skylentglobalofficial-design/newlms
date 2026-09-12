@@ -98,6 +98,92 @@
   font-weight: 600;
 }
 
+.sk-pdp-kicker {
+  margin: 0 0 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sk-brand-ink, #4338ca);
+  font-weight: 600;
+}
+
+.sk-pdp-course-job {
+  margin: 10px 0 0;
+  max-width: 54ch;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--sk-ink-muted);
+}
+
+.sk-pdp-course .sk-pdp-hero {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 68ch;
+}
+
+.sk-pdp-pathway {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  list-style: none;
+  margin: 4px 0 28px;
+  padding: 0;
+  background: var(--sk-line);
+  border: 1px solid var(--sk-line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.sk-pdp-pathway li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 14px 16px 16px;
+  background: #fff;
+}
+
+.sk-pdp-pathway li.is-connect {
+  flex-basis: 100%;
+  flex-direction: row;
+  align-items: baseline;
+  gap: 14px 24px;
+}
+
+.sk-pdp-pathway span {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4338ca;
+  font-weight: 600;
+}
+
+.sk-pdp-pathway strong {
+  font-family: var(--font-display);
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.sk-pdp-pathway p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--sk-ink-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sk-pdp-pathway li.is-connect p {
+  -webkit-line-clamp: 2;
+  flex: 1 1 auto;
+}
+
 .sk-pdp-hero-copy > p {
   margin: 14px 0 0;
   max-width: 54ch;
@@ -594,6 +680,16 @@
   background: #4338ca;
 }
 
+.sk-pdp-cta.is-interest {
+  background: transparent;
+  color: var(--sk-ink);
+  border: 1px solid var(--sk-line-strong);
+}
+
+.sk-pdp-cta.is-interest:hover {
+  background: var(--sk-surface-muted);
+}
+
 .sk-pdp-cta:disabled {
   opacity: 0.55;
   cursor: not-allowed;
@@ -653,11 +749,60 @@
     position: static;
     order: -1;
   }
+
+  .sk-pdp-program .sk-pdp-pathway {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    background: transparent;
+    border: none;
+    gap: 10px;
+  }
+
+  .sk-pdp-program .sk-pdp-pathway::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sk-pdp-program .sk-pdp-pathway li,
+  .sk-pdp-program .sk-pdp-pathway li.is-connect {
+    flex: 0 0 220px;
+    flex-direction: column;
+    border: 1px solid var(--sk-line);
+    border-radius: 12px;
+    background: #fff;
+  }
 }
 
 @media (max-width: 767px) {
   .sk-pdp-cover {
     display: none;
+  }
+
+  .sk-pdp-pathway {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    background: transparent;
+    border: none;
+    gap: 10px;
+  }
+
+  .sk-pdp-pathway::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sk-pdp-pathway li,
+  .sk-pdp-pathway li.is-connect {
+    flex: 0 0 220px;
+    flex-direction: column;
+    border: 1px solid var(--sk-line);
+    border-radius: 12px;
+    background: #fff;
   }
 
   .sk-pdp-hero-facts {
@@ -683,35 +828,31 @@
     padding-left: 18px;
   }
 
-  .sk-pdp .sk-anchor-nav::after {
-    display: none;
-  }
-
   .sk-pdp .sk-anchor-nav-scroll {
-    overflow: visible;
+    overflow-x: auto;
   }
 
   .sk-pdp .sk-anchor-nav-scroll > .sk-rail {
     display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-    min-width: 0;
-    padding-right: 0;
-    gap: 6px;
-    padding-bottom: 18px;
+    flex-wrap: nowrap;
+    width: max-content;
+    min-width: 100%;
+    padding-right: 48px;
+    gap: 2px;
+    padding-bottom: 0;
   }
 
   .sk-pdp .sk-anchor {
-    border: 1px solid var(--sk-line-strong);
-    border-radius: 999px;
-    margin-bottom: 0;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    margin-bottom: -1px;
   }
 
   .sk-pdp .sk-anchor.is-active {
-    background: #16120c;
-    color: #fff !important;
-    border-color: #16120c;
-    border-bottom-color: #16120c !important;
+    background: transparent;
+    color: var(--sk-ink) !important;
+    border-bottom-color: var(--sk-brand) !important;
   }
 }
 

@@ -72,6 +72,40 @@
   background: var(--sk-action-hover);
 }
 
+.sk-learn-intents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px 0 0;
+  max-width: 720px;
+}
+
+.sk-learn-intent {
+  appearance: none;
+  border: 1px solid var(--sk-line-strong);
+  background: var(--sk-surface-pure, #fff);
+  color: var(--sk-ink-secondary);
+  border-radius: 999px;
+  min-height: 32px;
+  padding: 0 12px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sk-learn-intent:hover,
+.sk-learn-intent:focus-visible {
+  border-color: var(--sk-action);
+  color: var(--sk-ink);
+}
+
+.sk-learn-intent.is-active {
+  background: var(--sk-action-soft);
+  border-color: var(--sk-action-line, rgba(79, 70, 229, 0.28));
+  color: var(--sk-action);
+}
+
 .sk-learn-layout {
   display: grid;
   grid-template-columns: 232px minmax(0, 1fr);

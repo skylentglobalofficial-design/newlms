@@ -246,8 +246,19 @@
 .sk-home-doors {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas:
+    "learn learn education"
+    "exams school career"
+    "institution institution institution";
   gap: 12px;
 }
+
+.sk-home-door.is-learn { grid-area: learn; }
+.sk-home-door.is-study { grid-area: education; }
+.sk-home-door.is-exam { grid-area: exams; }
+.sk-home-door.is-school { grid-area: school; }
+.sk-home-door.is-career { grid-area: career; }
+.sk-home-door.is-institution { grid-area: institution; }
 
 .sk-home-door {
   display: flex;
@@ -303,6 +314,48 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.sk-home-door.is-learn {
+  padding: 22px 22px 18px;
+  background: #fff;
+  border-color: rgba(79, 70, 229, 0.22);
+}
+
+.sk-home-door.is-learn .sk-home-door-label {
+  font-size: clamp(26px, 2.2vw, 32px);
+}
+
+.sk-home-door.is-institution {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.4fr);
+  grid-template-rows: auto auto;
+  align-items: start;
+  column-gap: 20px;
+  row-gap: 4px;
+  padding: 16px 20px;
+}
+
+.sk-home-door.is-institution .sk-home-door-index {
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+
+.sk-home-door.is-institution .sk-home-door-label {
+  margin-top: 0;
+  font-size: 22px;
+}
+
+.sk-home-door.is-institution .sk-home-door-q {
+  grid-column: 2;
+}
+
+.sk-home-door.is-institution .sk-home-door-promise {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  padding-top: 0;
+  align-self: center;
+  -webkit-line-clamp: 3;
 }
 
 .sk-home-intent-row {
@@ -906,10 +959,27 @@
 
   .sk-home-store-grid,
   .sk-home-os-grid,
-  .sk-home-doors,
   .sk-home-how-list,
   .sk-home-worlds-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sk-home-doors {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "learn learn"
+      "education exams"
+      "school career"
+      "institution institution";
+  }
+
+  .sk-home-door.is-institution {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .sk-home-door.is-institution .sk-home-door-promise {
+    grid-column: 2;
+    grid-row: auto;
   }
 }
 
@@ -936,6 +1006,24 @@
 
   .sk-home-doors {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "learn learn"
+      "education exams"
+      "school career"
+      "institution institution";
+  }
+
+  .sk-home-door.is-institution {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 14px 16px;
+  }
+
+  .sk-home-door.is-institution .sk-home-door-index,
+  .sk-home-door.is-institution .sk-home-door-label,
+  .sk-home-door.is-institution .sk-home-door-q,
+  .sk-home-door.is-institution .sk-home-door-promise {
+    grid-column: auto;
+    grid-row: auto;
   }
 
   .sk-home-pcard {

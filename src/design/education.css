@@ -111,6 +111,105 @@
   color: var(--sk-ink-secondary);
 }
 
+.sk-edu-structure {
+  margin: 0 0 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: #4338ca;
+}
+
+.sk-edu-block.is-undergraduate {
+  background: #fffdf8;
+}
+
+.sk-edu-block.is-postgraduate {
+  background: #fff;
+  border: 1px solid var(--sk-line);
+  border-radius: 16px;
+  padding-inline: 18px;
+}
+
+.sk-edu-block.is-postgraduate header > span {
+  color: #15171a;
+}
+
+.sk-degrees-split {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  padding: 28px 0 72px;
+  align-items: start;
+}
+
+.sk-degree-stage {
+  min-width: 0;
+  padding: 22px 22px 8px;
+  border: 1px solid var(--sk-line);
+  border-radius: 16px;
+  background: var(--sk-surface);
+  scroll-margin-top: 110px;
+}
+
+.sk-degree-kicker {
+  margin: 0 0 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+.sk-degree-stage.is-postgraduate .sk-degree-kicker {
+  color: #4338ca;
+}
+
+.sk-degree-stage.is-postgraduate {
+  background: #fff;
+}
+
+.sk-degree-stage h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: -0.03em;
+}
+
+.sk-degree-stage > p {
+  margin: 8px 0 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--sk-ink-secondary);
+}
+
+.sk-degree-stage .sk-edu-structure {
+  margin-top: 10px;
+}
+
+.sk-degree-stage .sk-degree-row {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+
+.sk-degree-row-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+}
+
+.sk-degree-row-status a {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--sk-ink);
+  text-decoration: none;
+}
+
+.sk-degree-row-status a:hover {
+  color: #4338ca;
+}
+
 .sk-edu-rows {
   list-style: none;
   margin: 0;
@@ -277,7 +376,8 @@
     flex-wrap: wrap;
   }
 
-  .sk-edu-inst-grid {
+  .sk-edu-inst-grid,
+  .sk-degrees-split {
     grid-template-columns: minmax(0, 1fr);
   }
 }
@@ -301,35 +401,31 @@
     white-space: normal;
   }
 
-  .sk-edu .sk-anchor-nav::after {
-    display: none;
-  }
-
   .sk-edu .sk-anchor-nav-scroll {
-    overflow: visible;
+    overflow-x: auto;
   }
 
   .sk-edu .sk-anchor-nav-scroll > .sk-rail {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
-    min-width: 0;
-    padding-right: 0;
-    gap: 8px;
-    padding-bottom: 12px;
+    display: flex;
+    flex-wrap: nowrap;
+    width: max-content;
+    min-width: 100%;
+    padding-right: 48px;
+    gap: 2px;
+    padding-bottom: 0;
   }
 
   .sk-edu .sk-anchor {
-    justify-content: center;
-    border: 1px solid var(--sk-line-strong);
-    border-radius: 999px;
-    margin-bottom: 0;
+    justify-content: flex-start;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    margin-bottom: -1px;
   }
 
   .sk-edu .sk-anchor.is-active {
-    background: #1b1710;
-    color: #fff !important;
-    border-color: #1b1710;
-    border-bottom-color: #1b1710 !important;
+    background: transparent;
+    color: var(--sk-ink) !important;
+    border-bottom-color: #1d4ed8 !important;
   }
 }

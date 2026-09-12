@@ -87,14 +87,14 @@ function Hero({ featured }: { featured: Program | null }) {
       <Rail>
         <div className={`sk-home-hero-grid${featured ? '' : ' is-solo'}`}>
           <div className="sk-home-hero-copy">
-            <p className="sk-home-kicker">One platform</p>
+            <p className="sk-home-kicker">Education · skills · career</p>
             <h1 className="sk-home-title">
               Skylent
-              <span>Skills, education and a career workspace.</span>
+              <span>One platform. Different jobs.</span>
             </h1>
             <p className="sk-home-lead">
-              Find something to learn, follow an academic path, or open a professional workspace. Every product says
-              whether it is open today.
+              Find something to learn, follow an academic path, or open a professional workspace. Every product
+              says whether it is open today.
             </p>
             <div className="sk-home-hero-actions">
               <Link to="/skills" className="sk-home-btn">Learn</Link>
@@ -118,11 +118,15 @@ function Destinations() {
       <Rail>
         <div className="sk-home-section-head">
           <h2>Where should I go next?</h2>
-          <p>Six product destinations. Same platform — different jobs.</p>
+          <p>Same platform — six different jobs. Start with the one that matches why you are here.</p>
         </div>
         <div className="sk-home-doors">
           {DESTINATIONS.map((destination, index) => (
-            <Link key={destination.id} to={destination.to} className="sk-home-door">
+            <Link
+              key={destination.id}
+              to={destination.to}
+              className={`sk-home-door is-${destination.role}`}
+            >
               <span className="sk-home-door-index" aria-hidden>
                 {String(index + 1).padStart(2, '0')}
               </span>
@@ -332,27 +336,6 @@ function HowItWorks() {
   )
 }
 
-function Worlds() {
-  return (
-    <section className="sk-home-worlds">
-      <Rail>
-        <div className="sk-home-worlds-grid">
-          <Link to="/career-os" className="sk-home-world">
-            <span className="sk-home-os-kicker">Career</span>
-            <strong>Career OS</strong>
-            <p>A signed-in workspace for profile, applications and interview practice. Not a jobs marketplace with invented employers.</p>
-          </Link>
-          <Link to="/institutions" className="sk-home-world">
-            <span className="sk-home-os-kicker">Institutions</span>
-            <strong>Skylent for schools and colleges</strong>
-            <p>Programmes, learners and faculty in an institution workspace. Partnership starts with a conversation.</p>
-          </Link>
-        </div>
-      </Rail>
-    </section>
-  )
-}
-
 function Closing() {
   return (
     <section className="sk-home-close">
@@ -380,7 +363,6 @@ export default function HomePage() {
       <Destinations />
       <OpenNow />
       <HowItWorks />
-      <Worlds />
       <Closing />
     </ProductShell>
   )

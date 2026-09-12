@@ -4,6 +4,8 @@ import type { AuroraThemeId } from '../aurora-themes'
  * The six primary Skylent destinations. Every entry points at a route that
  * exists. Copy is honest about what is open today.
  */
+export type DestinationRole = 'learn' | 'study' | 'exam' | 'school' | 'career' | 'institution'
+
 export type Destination = {
   id: string
   label: string
@@ -13,6 +15,7 @@ export type Destination = {
   promise: string
   to: string
   themeId: AuroraThemeId
+  role: DestinationRole
 }
 
 export const DESTINATIONS: Destination[] = [
@@ -23,22 +26,7 @@ export const DESTINATIONS: Destination[] = [
     promise: 'Search programmes, courses and webinars. Status on every card is real.',
     to: '/skills',
     themeId: 'professional',
-  },
-  {
-    id: 'exams',
-    label: 'Exams',
-    question: 'I am preparing for an entrance exam',
-    promise: 'JEE Advanced and CAT only. Both are coming soon — no mocks, ranks or live batches.',
-    to: '/exams',
-    themeId: 'jee',
-  },
-  {
-    id: 'schooling',
-    label: 'Schooling',
-    question: 'I am a student, parent or school',
-    promise: 'A junior path by class and subject. No grade-band lessons are published yet.',
-    to: '/junior',
-    themeId: 'schooling',
+    role: 'learn',
   },
   {
     id: 'education',
@@ -47,6 +35,25 @@ export const DESTINATIONS: Destination[] = [
     promise: 'An academic map — not a university. Skylent does not award degrees.',
     to: '/education',
     themeId: 'undergraduate',
+    role: 'study',
+  },
+  {
+    id: 'exams',
+    label: 'Exams',
+    question: 'I am preparing for an entrance exam',
+    promise: 'JEE Advanced and CAT only. Both are coming soon — no mocks, ranks or live batches.',
+    to: '/exams',
+    themeId: 'jee',
+    role: 'exam',
+  },
+  {
+    id: 'schooling',
+    label: 'Schooling',
+    question: 'I am a student, parent or school',
+    promise: 'A junior path by class and subject. No grade-band lessons are published yet.',
+    to: '/junior',
+    themeId: 'schooling',
+    role: 'school',
   },
   {
     id: 'career',
@@ -55,6 +62,7 @@ export const DESTINATIONS: Destination[] = [
     promise: 'Profile, applications and interview practice. Not a placement promise. The job board is empty.',
     to: '/career-os',
     themeId: 'career',
+    role: 'career',
   },
   {
     id: 'institutions',
@@ -63,6 +71,7 @@ export const DESTINATIONS: Destination[] = [
     promise: 'An operating layer for programmes, learners and faculty — starting with a conversation.',
     to: '/institutions',
     themeId: 'institution',
+    role: 'institution',
   },
 ]
 

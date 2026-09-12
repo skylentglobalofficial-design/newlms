@@ -45,9 +45,9 @@ const SORT_OPTIONS: { value: LearnSort; label: string }[] = [
 ]
 
 function resultActionLabel(item: LearnInventoryItem) {
-  if (item.availability.canStartLearning) return item.availability.ctaLabel
+  if (item.availability.canStartLearning) return 'Start learning'
   if (item.availabilityGroup === 'interest') return 'Register interest'
-  return item.ctaLabel
+  return 'Coming soon'
 }
 
 function resultCardClass(item: LearnInventoryItem, leadId: string | null) {
@@ -178,10 +178,10 @@ export default function SkillsPage() {
       <Rail>
         <header className="sk-learn-hero">
           <p className="sk-eyebrow">Learn</p>
-          <h1>Find something useful to learn.</h1>
+          <h1>What can you learn here?</h1>
           <p>
-            Programmes, courses and webinars that actually exist in Skylent. Filter by what you need — not by
-            a pasted catalogue of domain headings.
+            Search the programmes, courses and webinars that actually exist. Status on every result is real — open,
+            interest, or coming soon.
           </p>
           <form className="sk-learn-search" onSubmit={handleSearch} role="search">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -194,11 +194,30 @@ export default function SkillsPage() {
               onChange={event => {
                 setQuery(event.target.value)
               }}
-              placeholder="What do you want to learn?"
-              aria-label="What do you want to learn?"
+              placeholder="What are you trying to learn or become?"
+              aria-label="What are you trying to learn or become?"
             />
             <button type="submit">Search</button>
           </form>
+          {domains.length > 0 && (
+            <div className="sk-learn-intents" role="group" aria-label="Domains with catalogue">
+              {domains.map(entry => (
+                <button
+                  key={entry.id}
+                  type="button"
+                  className={`sk-learn-intent${domain === entry.id ? ' is-active' : ''}`}
+                  aria-pressed={domain === entry.id}
+                  onClick={() => {
+                    const next = domain === entry.id ? ALL : entry.id
+                    setDomain(next)
+                    persist({ q: query, domain: next, kind, level, format, duration, availability, sort })
+                  }}
+                >
+                  {entry.label}
+                </button>
+              ))}
+            </div>
+          )}
         </header>
 
         <div className="sk-learn-layout">
@@ -352,7 +371,7 @@ export default function SkillsPage() {
                       <h2>{item.title}</h2>
                       <p className="sk-learn-desc">{item.description}</p>
                       {item.forWhom && <p className="sk-learn-who">For {item.forWhom}</p>}
-                      {item.outcomes.length > 0 && (
+                      {item.id === leadId && item.outcomes.length > 0 && (
                         <p className="sk-learn-outcomes">
                           You’ll learn: {item.outcomes.slice(0, 2).join(' · ')}
                         </p>
