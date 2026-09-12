@@ -33,7 +33,9 @@ export function getRoleThemeId(role: UserRole): AuroraThemeId {
   return ROLE_THEME_MAP[role]
 }
 
-export function getRoleAccent(role: UserRole) {
+export type RoleAccent = ReturnType<typeof getDomainAccent>
+
+export function getRoleAccent(role: UserRole): RoleAccent {
   return getDomainAccent(getRoleThemeId(role))
 }
 

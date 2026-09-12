@@ -146,6 +146,77 @@ export function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) 
   )
 }
 
+// ─── ENROLLMENT MODAL (workshop / session registration) ───────────────────────
+export type EnrollmentItem = {
+  id: string
+  title: string
+  price: number
+  type: 'workshop' | 'course' | 'program'
+}
+
+export function EnrollmentModal({
+  item,
+  onClose,
+  themeId = 'general',
+}: {
+  item: EnrollmentItem
+  onClose: () => void
+  themeId?: AuroraThemeId
+}) {
+  const accent = getDomainAccent(themeId)
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKey) }
+  }, [onClose])
+
+  return (
+    <>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.55)', zIndex: 500, backdropFilter: 'blur(5px)' }} aria-hidden="true" />
+      <div role="dialog" aria-modal="true" aria-labelledby="enroll-modal-title" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.white, borderRadius: 16, padding: 36, width: 460, maxWidth: '92vw', zIndex: 501, boxShadow: '0 32px 100px rgba(0,0,0,0.35)', maxHeight: '90vh', overflowY: 'auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 22 }}>
+          <div>
+            <div style={{ color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 6 }}>Registration</div>
+            <div id="enroll-modal-title" style={{ color: C.ink, fontSize: 17, fontWeight: 600, lineHeight: 1.35 }}>{item.title}</div>
+          </div>
+          <button type="button" onClick={onClose} aria-label="Close registration dialog" style={{ background: C.sand, border: 'none', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', color: C.slate, fontSize: 15, flexShrink: 0 }}>✕</button>
+        </div>
+
+        <div style={{ background: C.sand, borderRadius: 10, padding: 20, marginBottom: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
+            <span style={{ color: C.slate, fontSize: 12 }}>Listed fee</span>
+            <span style={{ color: C.ink, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-mono)' }}>₹{item.price.toLocaleString('en-IN')}</span>
+          </div>
+          <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.65, margin: 0 }}>
+            Online registration and payment are not open for this session yet. Nothing is charged here and no seat is
+            reserved. Send us a request and we will confirm dates and availability before anything is booked.
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button
+            type="button"
+            onClick={() => { onClose(); navigate('/contact') }}
+            style={{ flex: 2, background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+          >
+            Request a place
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            style={{ flex: 1, background: 'transparent', border: `1px solid ${T.lineStrong}`, color: C.ink, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </>
+  )
+}
+
 // ─── JOB DRAWER ───────────────────────────────────────────────────────────────
 export function JobDrawer({ job, onClose, onApply }: { job: Job; onClose: () => void; onApply: () => void }) {
   const careerAccent = getDomainAccent('career')
