@@ -1,27 +1,27 @@
 import { AURORA_THEMES, type AuroraThemeId } from '../aurora-themes'
 
 /**
- * The Aurora accents were chosen to glow on a near-black canvas. Several of
- * them (sky, cyan, amber) fall below 4.5:1 against white, so light surfaces use
- * a hand-tuned ink-safe pair: `solid` for fills, `text` for type on white.
+ * Public product accents on ivory. Indigo is the default action colour.
+ * Domain hues stay distinct for marks and academic maps, but green/teal is
+ * not a brand accent — those remain semantic (available / completed).
  */
 const ON_LIGHT: Record<AuroraThemeId, { solid: string; text: string }> = {
   general: { solid: '#4F46E5', text: '#4338CA' },
-  'data-science': { solid: '#7C3AED', text: '#6D28D9' },
-  'data-analytics': { solid: '#0E7490', text: '#155E75' },
-  'full-stack': { solid: '#047857', text: '#065F46' },
+  'data-science': { solid: '#4F46E5', text: '#4338CA' },
+  'data-analytics': { solid: '#2563EB', text: '#1D4ED8' },
+  'full-stack': { solid: '#4F46E5', text: '#4338CA' },
   jee: { solid: '#B45309', text: '#92400E' },
   neet: { solid: '#BE185D', text: '#9D174D' },
-  cat: { solid: '#7E22CE', text: '#6B21A8' },
-  schooling: { solid: '#0369A1', text: '#075985' },
+  cat: { solid: '#6D28D9', text: '#5B21B6' },
+  schooling: { solid: '#2563EB', text: '#1D4ED8' },
   undergraduate: { solid: '#1D4ED8', text: '#1E40AF' },
-  postgraduate: { solid: '#6D28D9', text: '#5B21B6' },
-  professional: { solid: '#047857', text: '#065F46' },
-  certificate: { solid: '#0E7490', text: '#155E75' },
-  webinar: { solid: '#BE185D', text: '#9D174D' },
+  postgraduate: { solid: '#4F46E5', text: '#4338CA' },
+  professional: { solid: '#4F46E5', text: '#4338CA' },
+  certificate: { solid: '#4F46E5', text: '#4338CA' },
+  webinar: { solid: '#4F46E5', text: '#4338CA' },
   career: { solid: '#1D4ED8', text: '#1E40AF' },
-  institution: { solid: '#0F766E', text: '#115E59' },
-  superadmin: { solid: '#1D4ED8', text: '#1E40AF' },
+  institution: { solid: '#1E3A5F', text: '#1E3A5F' },
+  superadmin: { solid: '#4F46E5', text: '#4338CA' },
 }
 
 export type SurfaceAccent = {

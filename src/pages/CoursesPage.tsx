@@ -64,7 +64,8 @@ export default function CoursesPage() {
         <PageHeader
           eyebrow="Learn"
           title="Courses"
-          lead="Self-paced courses that open in the learning platform as soon as you enrol. Lesson counts below are the lessons actually published, not a planned total."
+          lead="Self-paced courses that open in the learning platform as soon as you enrol. Lesson counts below are the lessons actually published. Search programmes and courses together on Learn."
+          actions={<ButtonLink to="/skills" variant="secondary">Learn discovery</ButtonLink>}
         />
 
         <div className="sk-filterbar">

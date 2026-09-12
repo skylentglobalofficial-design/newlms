@@ -4,6 +4,8 @@ import type { AuroraThemeId } from '../aurora-themes'
  * The six primary Skylent destinations. Every entry points at a route that
  * exists. Copy is honest about what is open today.
  */
+export type DestinationRole = 'learn' | 'study' | 'exam' | 'school' | 'career' | 'institution'
+
 export type Destination = {
   id: string
   label: string
@@ -13,48 +15,54 @@ export type Destination = {
   promise: string
   to: string
   themeId: AuroraThemeId
+  role: DestinationRole
 }
 
 export const DESTINATIONS: Destination[] = [
   {
-    id: 'programmes',
-    label: 'Skills & programmes',
-    question: 'I want a career-focused programme',
-    promise: 'Professional and certificate programmes. Only two have published lessons today.',
-    to: '/programs',
+    id: 'learn',
+    label: 'Learn',
+    question: 'I want to find something useful to learn',
+    promise: 'Search programmes, courses and webinars. Status on every card is real.',
+    to: '/skills',
     themeId: 'professional',
-  },
-  {
-    id: 'courses',
-    label: 'Courses',
-    question: 'I want to start learning today',
-    promise: 'Self-paced courses that open in the learning platform when lessons exist.',
-    to: '/courses',
-    themeId: 'certificate',
+    role: 'learn',
   },
   {
     id: 'education',
-    label: 'Schooling & degrees',
-    question: 'I am studying at school, college or university',
-    promise: 'Academic pathways. Schooling and degrees are mapped — none are open to enrol yet.',
+    label: 'Education',
+    question: 'I am looking at undergraduate or postgraduate study',
+    promise: 'An academic map — not a university. Skylent does not award degrees.',
     to: '/education',
-    themeId: 'schooling',
+    themeId: 'undergraduate',
+    role: 'study',
   },
   {
     id: 'exams',
-    label: 'Competitive exams',
+    label: 'Exams',
     question: 'I am preparing for an entrance exam',
     promise: 'JEE Advanced and CAT only. Both are coming soon — no mocks, ranks or live batches.',
     to: '/exams',
     themeId: 'jee',
+    role: 'exam',
+  },
+  {
+    id: 'schooling',
+    label: 'Schooling',
+    question: 'I am a student, parent or school',
+    promise: 'A junior path by class and subject. No grade-band lessons are published yet.',
+    to: '/junior',
+    themeId: 'schooling',
+    role: 'school',
   },
   {
     id: 'career',
-    label: 'Career OS',
+    label: 'Career',
     question: 'I need a career workspace',
     promise: 'Profile, applications and interview practice. Not a placement promise. The job board is empty.',
     to: '/career-os',
     themeId: 'career',
+    role: 'career',
   },
   {
     id: 'institutions',
@@ -63,6 +71,7 @@ export const DESTINATIONS: Destination[] = [
     promise: 'An operating layer for programmes, learners and faculty — starting with a conversation.',
     to: '/institutions',
     themeId: 'institution',
+    role: 'institution',
   },
 ]
 
@@ -80,12 +89,12 @@ export const NAV_GROUPS: NavGroup[] = [
     label: 'Learn',
     to: '/skills',
     match: ['/skills', '/programs', '/courses', '/workshops', '/labs'],
-    tagline: 'Skills, courses, labs and programmes',
+    tagline: 'Find a programme, course or lab',
     items: [
-      { label: 'Skills', sub: 'Learn by domain', to: '/skills' },
-      { label: 'Professional programmes', sub: 'Long-form, career-focused', to: '/programs?type=PROFESSIONAL' },
+      { label: 'Find something to learn', sub: 'Search and filter real inventory', to: '/skills' },
+      { label: 'Programmes', sub: 'Long-form and certificate programmes', to: '/programs' },
       { label: 'Courses', sub: 'Self-paced, open in the platform', to: '/courses' },
-      { label: 'Virtual labs', sub: 'Experiments you can run', to: '/labs' },
+      { label: 'Virtual labs', sub: 'Browser experiments, subject-matched', to: '/labs' },
       { label: 'Webinars', sub: 'None scheduled yet', to: '/workshops' },
     ],
   },

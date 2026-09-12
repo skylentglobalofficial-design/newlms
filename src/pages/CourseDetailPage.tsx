@@ -33,7 +33,7 @@ function EnrolButton({
   const availability = getCourseAvailability(course.slug)
   if (!availability.canStartLearning) {
     return (
-      <Link to="/contact" className={className}>
+      <Link to="/contact" className={`${className ?? ''} is-interest`.trim()}>
         Register interest
       </Link>
     )
@@ -138,18 +138,15 @@ export default function CourseDetailPage() {
   }
 
   return (
-    <ProductShell className="sk-pdp sk-has-sticky-bar">
+    <ProductShell className="sk-pdp sk-pdp-course sk-has-sticky-bar">
       <Rail>
         <Link to="/courses" className="sk-pdp-back">
           <span aria-hidden>←</span> All courses
         </Link>
 
         <header className="sk-pdp-hero">
-          <div className="sk-pdp-cover" aria-hidden>
-            <span>{course.category}</span>
-            <strong>{course.title}</strong>
-          </div>
           <div className="sk-pdp-hero-copy">
+            <p className="sk-pdp-kicker">Course</p>
             <div className="sk-pdp-hero-tags">
               <StatusPill availability={availability} />
               <span>{course.level}</span>
@@ -157,11 +154,14 @@ export default function CourseDetailPage() {
             </div>
             <h1>{course.title}</h1>
             <p>{course.desc}</p>
+            <p className="sk-pdp-course-job">
+              A focused learning product — not a full professional programme. What exists now is listed below.
+            </p>
             <ul className="sk-pdp-hero-facts">
               <li><em>{lessons || '—'}</em> published lessons</li>
               <li><em>{course.modules.length}</em> modules</li>
               <li><em>{course.duration}</em> duration</li>
-              <li><em>{formatInr(course.price)}</em> one-time fee</li>
+              <li><em>{relatedLabs.length || 'None'}</em> matching labs</li>
             </ul>
           </div>
         </header>

@@ -5,6 +5,8 @@ import { getProgrammeAvailability } from '../lib/catalogue-status'
 import { programs } from '../data'
 import '../design/exams.css'
 
+const PREP_PATH = ['Exam', 'Syllabus', 'Preparation', 'Practice', 'Mocks', 'Review'] as const
+
 const EXAMS = [
   {
     slug: 'jee-advanced-prep',
@@ -36,7 +38,7 @@ export default function ExamsPage() {
       <section className="sk-exam-hero">
         <Rail>
           <p className="sk-exam-kicker">Competitive exams</p>
-          <h1>Prepare when the material exists.</h1>
+          <h1>Exam preparation — when the material exists.</h1>
           <p>
             Skylent has programmes for two exams only: JEE Advanced and CAT. Neither is open to study yet.
             There are no mock-test counts, ranks, batches or live classes to show.
@@ -46,8 +48,19 @@ export default function ExamsPage() {
 
       <Rail>
         <Note tone="caution">
-          Exam pattern notes below describe the public exam, not a Skylent product that is already running.
+          The path below is the intended product shape. It is not built. Registering interest starts a conversation —
+          it does not start a course.
         </Note>
+
+        <ol className="sk-exam-track" aria-label="Planned exam-preparation path — not built">
+          {PREP_PATH.map((step, index) => (
+            <li key={step}>
+              <span>{String(index + 1).padStart(2, '0')}</span>
+              <strong>{step}</strong>
+              <em>Not built</em>
+            </li>
+          ))}
+        </ol>
 
         <div className="sk-exam-list">
           {EXAMS.map(exam => {
@@ -71,25 +84,16 @@ export default function ExamsPage() {
                   <p className="lead">{exam.name}</p>
                   <p className="sk-exam-meta">{exam.pattern}</p>
                   <div className="sk-exam-actions">
-                    <ButtonLink to="/contact" themeId="jee">{availability.ctaLabel}</ButtonLink>
+                    <ButtonLink to="/contact" variant="secondary">{availability.ctaLabel}</ButtonLink>
                     {program && (
-                      <ButtonLink to={`/programs/${program.slug}`} variant="secondary" themeId="jee">
+                      <ButtonLink to={`/programs/${program.slug}`} variant="quiet">
                         Programme outline
                       </ButtonLink>
                     )}
                   </div>
                 </div>
                 <div>
-                  <p className="lead" style={{ marginTop: 0 }}>Planned shape — not built:</p>
-                  <ol className="sk-exam-plan">
-                    <li>Syllabus</li>
-                    <li>Preparation</li>
-                    <li>Practice</li>
-                    <li>Tests</li>
-                    <li>Review</li>
-                    <li>Progress</li>
-                  </ol>
-                  <p className="lead">Planned inside Skylent:</p>
+                  <p className="lead" style={{ marginTop: 0 }}>Planned inside Skylent — not live:</p>
                   <ul className="sk-exam-plan">
                     {exam.planned.map(item => (
                       <li key={item}>{item}</li>
@@ -101,7 +105,7 @@ export default function ExamsPage() {
           })}
         </div>
 
-        <p style={{ paddingBottom: 48, color: 'var(--sk-ink-muted)', fontSize: 14 }}>
+        <p className="sk-exam-foot">
           No other entrance exam is on Skylent. Schooling is on{' '}
           <Link to="/junior">Junior</Link>. Degrees are on{' '}
           <Link to="/degrees">Education — degrees</Link>.

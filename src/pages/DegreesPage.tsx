@@ -2,19 +2,24 @@ import { Link } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
 import { Rail, PageHeader, StatusPill, ButtonLink, Note } from '../design/primitives'
 import { resolveAcademicStages, type ResolvedStream } from '../lib/academic-streams'
-import { S, TY } from '../design/tokens'
+import '../design/education.css'
+
+const STRUCTURE = {
+  undergraduate: 'Degree → Year → Semester → Subject → Module',
+  postgraduate: 'Programme → Term → Specialisation → Case → Project',
+} as const
 
 function Stream({ stream }: { stream: ResolvedStream }) {
   return (
     <article className="sk-degree-row">
-      <div>
-        <div style={{ ...TY.h2, fontFamily: 'var(--font-display)', margin: 0 }}>{stream.abbr}</div>
-        <div style={{ ...TY.meta, color: S.inkMuted }}>{stream.name}</div>
+      <div className="sk-edu-row-id">
+        <strong>{stream.abbr}</strong>
+        <span>{stream.name}</span>
       </div>
-      <p style={{ ...TY.bodySm, color: S.inkSecondary, margin: 0 }}>{stream.audience}</p>
+      <p>{stream.audience}</p>
       <div className="sk-degree-row-status">
         <StatusPill availability={stream.availability} size="sm" />
-        <Link to={stream.href} style={{ ...TY.bodySm, fontWeight: 600, color: S.ink, textDecoration: 'none' }}>
+        <Link to={stream.href}>
           {stream.availability.ctaLabel} →
         </Link>
       </div>
@@ -26,11 +31,11 @@ export default function DegreesPage() {
   const stages = resolveAcademicStages().filter(stage => stage.id === 'undergraduate' || stage.id === 'postgraduate')
 
   return (
-    <ProductShell>
+    <ProductShell className="sk-edu">
       <Rail>
         <PageHeader
           eyebrow="Degrees"
-          title="Undergraduate and postgraduate pathways."
+          title="Undergraduate and postgraduate are different jobs."
           lead="These are academic categories, not Skylent-awarded degrees. Nothing in either stage is open to enrol."
           actions={<ButtonLink to="/education" variant="secondary">Full education map</ButtonLink>}
         />
@@ -39,11 +44,17 @@ export default function DegreesPage() {
           Skylent is not a university and does not award B.Tech, BCA, MBA or MCA qualifications.
         </Note>
 
-        <div style={{ padding: '12px 0 72px' }}>
+        <div className="sk-degrees-split">
           {stages.map(stage => (
-            <section key={stage.id} id={stage.id} style={{ marginTop: 36 }}>
-              <h2 style={{ ...TY.h2, fontFamily: 'var(--font-display)', margin: '0 0 6px' }}>{stage.label}</h2>
-              <p style={{ ...TY.bodySm, color: S.inkSecondary, margin: '0 0 8px' }}>{stage.intro}</p>
+            <section key={stage.id} id={stage.id} className={`sk-degree-stage is-${stage.id}`}>
+              <p className="sk-degree-kicker">
+                {stage.id === 'postgraduate' ? 'Specialisation · cases · projects' : 'Degree pathway'}
+              </p>
+              <h2>{stage.label}</h2>
+              <p className="sk-edu-structure">
+                {stage.id === 'postgraduate' ? STRUCTURE.postgraduate : STRUCTURE.undergraduate}
+              </p>
+              <p>{stage.intro}</p>
               {stage.streams.map(stream => (
                 <Stream key={stream.id} stream={stream} />
               ))}

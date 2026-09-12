@@ -56,9 +56,16 @@ function StreamRow({ stream }: { stream: ResolvedStream }) {
   )
 }
 
+const STAGE_STRUCTURE: Record<ResolvedStage['id'], string> = {
+  schooling: 'Grade band → Subject → Chapter → Lesson → Practice',
+  undergraduate: 'Degree → Year → Semester → Subject → Module',
+  postgraduate: 'Programme → Term → Specialisation → Case → Project',
+  'competitive-exams': 'Exam → Syllabus → Preparation → Practice → Tests',
+}
+
 function StageBlock({ stage }: { stage: ResolvedStage }) {
   return (
-    <section id={stage.id} className="sk-edu-block">
+    <section id={stage.id} className={`sk-edu-block is-${stage.id}`}>
       <header>
         <span>{stage.numeral}</span>
         <div>
@@ -66,6 +73,7 @@ function StageBlock({ stage }: { stage: ResolvedStage }) {
           <p>{stage.sub}</p>
         </div>
       </header>
+      <p className="sk-edu-structure">{STAGE_STRUCTURE[stage.id]}</p>
       <p className="sk-edu-block-intro">{stage.intro}</p>
       <ul className="sk-edu-rows">
         {stage.streams.map(stream => (
@@ -84,10 +92,16 @@ function StageBlock({ stage }: { stage: ResolvedStage }) {
           <Link to="/junior">Open Junior</Link>. No grade-band lessons are published yet.
         </p>
       )}
-      {(stage.id === 'undergraduate' || stage.id === 'postgraduate') && (
+      {stage.id === 'undergraduate' && (
         <p className="sk-edu-exam-note">
-          These are academic categories, not Skylent-awarded degrees.{' '}
-          <Link to="/degrees">Open the degrees map</Link>.
+          Undergraduate is a degree pathway alongside university study. Skylent does not award the degree.{' '}
+          <Link to="/degrees#undergraduate">Open undergraduate pathways</Link>.
+        </p>
+      )}
+      {stage.id === 'postgraduate' && (
+        <p className="sk-edu-exam-note">
+          Postgraduate is specialisation, cases and projects — not undergraduate with different wording.{' '}
+          <Link to="/degrees#postgraduate">Open postgraduate pathways</Link>.
         </p>
       )}
     </section>
@@ -156,7 +170,7 @@ export default function EducationPage() {
                 Degree and school material would reach learners through a partner institution. None are live in the
                 public catalogue. Skylent would provide dashboards for programmes, learners, faculty and progress.
               </p>
-              <ButtonLink to="/institutions" variant="secondary" themeId="institution">For institutions</ButtonLink>
+              <ButtonLink to="/institutions" variant="secondary">For institutions</ButtonLink>
             </div>
             <dl>
               <div>

@@ -82,7 +82,7 @@ export default function SiteHeader() {
       <a href="#main-content" className="sk-skip-link">Skip to content</a>
       <div className="sk-header-inner">
         <Link to="/" className="sk-wordmark" aria-label="Skylent home">
-          Skylent<span aria-hidden style={{ color: '#F36B21' }}>.</span>
+          Skylent<span aria-hidden style={{ color: '#F97316' }}>.</span>
         </Link>
 
         <nav className="sk-header-nav" aria-label="Main navigation">
@@ -142,7 +142,7 @@ export default function SiteHeader() {
           ) : (
             <>
               <Link to="/login" className="sk-header-signin">Sign in</Link>
-              <Link to="/programs" className="sk-header-cta sk-header-browse">Browse programmes</Link>
+              <Link to="/skills" className="sk-header-cta sk-header-browse">Find a course</Link>
             </>
           )}
           <button
@@ -189,7 +189,7 @@ export default function SiteHeader() {
             ) : (
               <>
                 <Link to="/login" className="sk-header-signin">Sign in</Link>
-                <Link to="/programs" className="sk-header-cta" style={{ flex: 1 }}>Browse programmes</Link>
+                <Link to="/skills" className="sk-header-cta" style={{ flex: 1 }}>Find a course</Link>
               </>
             )}
           </div>

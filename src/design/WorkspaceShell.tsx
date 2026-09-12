@@ -130,7 +130,7 @@ export default function WorkspaceShell({
           <Link to="/" className="sk-ws-brand">
             <span>
               <span className="sk-ws-brand-mark">
-                Skylent<span style={{ color: accent.solid }}>.</span>
+                Skylent<span style={{ color: '#F97316' }}>.</span>
               </span>
               <span className="sk-ws-brand-label" style={{ display: 'block' }}>{workspaceLabel}</span>
             </span>

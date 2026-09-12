@@ -85,7 +85,8 @@ export default function ProgramsPage() {
         <PageHeader
           eyebrow="Learn"
           title="Programmes"
-          lead="Long-form programmes with published curriculum, duration, level and fees. Every card states whether its course material is open in the learning platform yet."
+          lead="Long-form programmes with published curriculum, duration, level and fees. To search programmes and courses together, use Learn."
+          actions={<ButtonLink to="/skills" variant="secondary">Learn discovery</ButtonLink>}
         />
 
         <div className="sk-filterbar">

@@ -26,7 +26,7 @@ export default function ProductShell({
       requestAnimationFrame(() => {
         const el = document.getElementById(id)
         if (el) {
-          const y = el.getBoundingClientRect().top + window.scrollY - 80
+          const y = el.getBoundingClientRect().top + window.scrollY - 120
           window.scrollTo({ top: y, behavior: 'smooth' })
         }
       })

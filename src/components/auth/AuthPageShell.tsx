@@ -24,7 +24,7 @@ export default function AuthPageShell({ children }: AuthPageShellProps) {
         <div className="auth-page-card">
           <Link to="/" className="auth-brand-link" aria-label="Skylent home">
             <span className="auth-brand">
-              Skylent<span aria-hidden style={{ color: "#F36B21" }}>.</span>
+              Skylent<span aria-hidden style={{ color: "#F97316" }}>.</span>
             </span>
           </Link>
           {children}

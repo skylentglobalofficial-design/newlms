@@ -1,86 +1,417 @@
-import { Link } from 'react-router-dom'
+import { useMemo, useState, type FormEvent } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
-import { Rail, PageHeader, Card, ButtonLink, Note, Tag, EmptyState } from '../design/primitives'
-import { getSurfaceAccent } from '../design/accent'
-import { S, TY } from '../design/tokens'
+import { Rail, StatusPill, EmptyState, Button } from '../design/primitives'
 import { getSkillDomains } from '../lib/skills-domains'
+import {
+  filterLearnInventory,
+  getEmptyLearnDomains,
+  getLearnInventory,
+  sortLearnInventory,
+  uniqueLearnValues,
+  type LearnInventoryItem,
+  type LearnSort,
+} from '../lib/learn-inventory'
+import '../design/learn.css'
 
-const accent = getSurfaceAccent('professional')
+const ALL = 'all'
+
+const KIND_OPTIONS = [
+  { value: ALL, label: 'Any type' },
+  { value: 'program', label: 'Programme' },
+  { value: 'course', label: 'Course' },
+  { value: 'workshop', label: 'Webinar' },
+]
+
+const AVAILABILITY_OPTIONS = [
+  { value: ALL, label: 'Any status' },
+  { value: 'available', label: 'Available now' },
+  { value: 'interest', label: 'Interest open' },
+  { value: 'coming-soon', label: 'Coming soon' },
+]
+
+const DURATION_OPTIONS = [
+  { value: ALL, label: 'Any duration' },
+  { value: 'under-8', label: 'Under 8 weeks' },
+  { value: '8-16', label: '8–16 weeks' },
+  { value: '16-plus', label: '16 weeks or more' },
+  { value: 'unspecified', label: 'Not specified' },
+]
+
+const SORT_OPTIONS: { value: LearnSort; label: string }[] = [
+  { value: 'recommended', label: 'Recommended' },
+  { value: 'title', label: 'Title' },
+  { value: 'duration', label: 'Duration' },
+]
+
+function resultActionLabel(item: LearnInventoryItem) {
+  if (item.availability.canStartLearning) return 'Start learning'
+  if (item.availabilityGroup === 'interest') return 'Register interest'
+  return 'Coming soon'
+}
+
+function resultCardClass(item: LearnInventoryItem, leadId: string | null) {
+  const quiet = item.availabilityGroup === 'coming-soon'
+  const wait = item.availabilityGroup === 'interest'
+  return [
+    'sk-learn-card',
+    `is-${item.kind}`,
+    item.availability.canStartLearning ? 'is-open' : '',
+    quiet ? 'is-quiet' : '',
+    wait ? 'is-wait' : '',
+    item.id === leadId ? 'is-lead' : '',
+  ].filter(Boolean).join(' ')
+}
+
+function RadioGroup({
+  legend,
+  name,
+  value,
+  onChange,
+  options,
+}: {
+  legend: string
+  name: string
+  value: string
+  onChange: (value: string) => void
+  options: { value: string; label: string }[]
+}) {
+  return (
+    <fieldset>
+      <legend>{legend}</legend>
+      <div className="sk-learn-options">
+        {options.map(option => (
+          <label key={option.value} className="sk-learn-option">
+            <input
+              type="radio"
+              name={name}
+              value={option.value}
+              checked={value === option.value}
+              onChange={() => onChange(option.value)}
+            />
+            {option.label}
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  )
+}
 
 export default function SkillsPage() {
-  const domains = getSkillDomains()
-  const withCatalog = domains.filter(domain => domain.hasCatalog)
-  const withoutCatalog = domains.filter(domain => !domain.hasCatalog)
+  const inventory = useMemo(() => getLearnInventory(), [])
+  const domains = useMemo(() => getSkillDomains().filter(domain => domain.hasCatalog), [])
+  const emptyDomains = useMemo(() => getEmptyLearnDomains(), [])
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [query, setQuery] = useState(searchParams.get('q') ?? '')
+  const [domain, setDomain] = useState(searchParams.get('domain') ?? ALL)
+  const [kind, setKind] = useState(searchParams.get('kind') ?? ALL)
+  const [level, setLevel] = useState(searchParams.get('level') ?? ALL)
+  const [format, setFormat] = useState(searchParams.get('format') ?? ALL)
+  const [duration, setDuration] = useState(searchParams.get('duration') ?? ALL)
+  const [availability, setAvailability] = useState(searchParams.get('availability') ?? ALL)
+  const [sort, setSort] = useState<LearnSort>(
+    searchParams.get('sort') === 'title' || searchParams.get('sort') === 'duration'
+      ? searchParams.get('sort') as LearnSort
+      : 'recommended',
+  )
+  const [filtersOpen, setFiltersOpen] = useState(false)
+
+  const levels = useMemo(() => uniqueLearnValues(inventory, 'level'), [inventory])
+  const formats = useMemo(() => uniqueLearnValues(inventory, 'format'), [inventory])
+
+  const results = useMemo(() => {
+    const filtered = filterLearnInventory(inventory, {
+      query,
+      domain,
+      kind,
+      level,
+      format,
+      duration,
+      availability,
+    })
+    return sortLearnInventory(filtered, sort)
+  }, [inventory, query, domain, kind, level, format, duration, availability, sort])
+
+  const openCount = results.filter(item => item.availability.canStartLearning).length
+  const leadId = sort === 'recommended'
+    ? results.find(item => item.availability.canStartLearning)?.id ?? null
+    : null
+  const filtersActive =
+    query.trim() !== '' ||
+    domain !== ALL ||
+    kind !== ALL ||
+    level !== ALL ||
+    format !== ALL ||
+    duration !== ALL ||
+    availability !== ALL ||
+    sort !== 'recommended'
+
+  function persist(next: Record<string, string>) {
+    const params = new URLSearchParams()
+    for (const [key, value] of Object.entries(next)) {
+      if (value && value !== ALL && !(key === 'sort' && value === 'recommended') && !(key === 'q' && value.trim() === '')) {
+        params.set(key, value)
+      }
+    }
+    setSearchParams(params, { replace: true })
+  }
+
+  function handleSearch(event: FormEvent) {
+    event.preventDefault()
+    persist({ q: query, domain, kind, level, format, duration, availability, sort })
+  }
+
+  function reset() {
+    setQuery('')
+    setDomain(ALL)
+    setKind(ALL)
+    setLevel(ALL)
+    setFormat(ALL)
+    setDuration(ALL)
+    setAvailability(ALL)
+    setSort('recommended')
+    setSearchParams({}, { replace: true })
+  }
 
   return (
     <ProductShell>
       <Rail>
-        <PageHeader
-          eyebrow="Learn"
-          title="Build skills you can show."
-          lead="Professional programmes, short courses and webinars grouped by domain. Empty domains stay empty. Virtual labs sit beside the courses that actually use them."
-          actions={
-            <>
-              <ButtonLink to="/programs">Browse programmes</ButtonLink>
-              <ButtonLink to="/labs" variant="secondary">Virtual labs</ButtonLink>
-            </>
-          }
-        />
+        <header className="sk-learn-hero">
+          <p className="sk-eyebrow">Learn</p>
+          <h1>What can you learn here?</h1>
+          <p>
+            Search the programmes, courses and webinars that actually exist. Status on every result is real — open,
+            interest, or coming soon.
+          </p>
+          <form className="sk-learn-search" onSubmit={handleSearch} role="search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <circle cx="11" cy="11" r="7" />
+              <line x1="20" y1="20" x2="16.7" y2="16.7" />
+            </svg>
+            <input
+              type="search"
+              value={query}
+              onChange={event => {
+                setQuery(event.target.value)
+              }}
+              placeholder="What are you trying to learn or become?"
+              aria-label="What are you trying to learn or become?"
+            />
+            <button type="submit">Search</button>
+          </form>
+          {domains.length > 0 && (
+            <div className="sk-learn-intents" role="group" aria-label="Domains with catalogue">
+              {domains.map(entry => (
+                <button
+                  key={entry.id}
+                  type="button"
+                  className={`sk-learn-intent${domain === entry.id ? ' is-active' : ''}`}
+                  aria-pressed={domain === entry.id}
+                  onClick={() => {
+                    const next = domain === entry.id ? ALL : entry.id
+                    setDomain(next)
+                    persist({ q: query, domain: next, kind, level, format, duration, availability, sort })
+                  }}
+                >
+                  {entry.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </header>
 
-        <div style={{ paddingBottom: 72 }}>
-          {withCatalog.map(domain => (
-            <section key={domain.id} style={{ marginBottom: 40 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', alignItems: 'baseline', marginBottom: 14 }}>
-                <div>
-                  <h2 style={{ ...TY.h2, color: S.ink, margin: 0, fontFamily: 'var(--font-display)' }}>{domain.label}</h2>
-                  <p style={{ ...TY.bodySm, color: S.inkSecondary, margin: '6px 0 0' }}>{domain.tagline}</p>
-                </div>
-                <Link to={domain.cta.href} style={{ ...TY.bodySm, color: accent.text, fontWeight: 600, textDecoration: 'none' }}>
-                  {domain.cta.label} →
-                </Link>
-              </div>
-              <div className="sk-grid sk-grid-3">
-                {domain.catalogItems.map(item => (
-                  <Link key={`${item.kind}-${item.slug}`} to={item.href} style={{ textDecoration: 'none', color: 'inherit', minWidth: 0 }}>
-                    <Card interactive padding={18} style={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-                        <Tag>{item.typeLabel}</Tag>
-                        {item.status && <span style={{ ...TY.meta, color: S.inkMuted }}>{item.status}</span>}
+        <div className="sk-learn-layout">
+          <aside className={`sk-learn-filters${filtersOpen ? ' is-open' : ''}`} aria-label="Discovery filters">
+            <div className="sk-learn-filters-head">
+              <h2>Filters</h2>
+              <button
+                type="button"
+                className="sk-learn-filters-toggle"
+                aria-expanded={filtersOpen}
+                aria-controls="learn-filter-body"
+                onClick={() => setFiltersOpen(open => !open)}
+              >
+                {filtersOpen ? 'Hide filters' : 'Show filters'}
+              </button>
+            </div>
+            <div id="learn-filter-body" className="sk-learn-filters-body">
+            <RadioGroup
+              legend="Domain"
+              name="learn-domain"
+              value={domain}
+              onChange={value => {
+                setDomain(value)
+                persist({ q: query, domain: value, kind, level, format, duration, availability, sort })
+              }}
+              options={[{ value: ALL, label: 'All domains' }, ...domains.map(entry => ({ value: entry.id, label: entry.label }))]}
+            />
+            <RadioGroup
+              legend="Type"
+              name="learn-kind"
+              value={kind}
+              onChange={value => {
+                setKind(value)
+                persist({ q: query, domain, kind: value, level, format, duration, availability, sort })
+              }}
+              options={KIND_OPTIONS}
+            />
+            <RadioGroup
+              legend="Availability"
+              name="learn-availability"
+              value={availability}
+              onChange={value => {
+                setAvailability(value)
+                persist({ q: query, domain, kind, level, format, duration, availability: value, sort })
+              }}
+              options={AVAILABILITY_OPTIONS}
+            />
+            <fieldset>
+              <legend>Level</legend>
+              <select
+                className="sk-select"
+                value={level}
+                onChange={event => {
+                  setLevel(event.target.value)
+                  persist({ q: query, domain, kind, level: event.target.value, format, duration, availability, sort })
+                }}
+                aria-label="Filter by level"
+              >
+                <option value={ALL}>All levels</option>
+                {levels.map(entry => (
+                  <option key={entry} value={entry}>{entry}</option>
+                ))}
+              </select>
+            </fieldset>
+            <fieldset>
+              <legend>Format</legend>
+              <select
+                className="sk-select"
+                value={format}
+                onChange={event => {
+                  setFormat(event.target.value)
+                  persist({ q: query, domain, kind, level, format: event.target.value, duration, availability, sort })
+                }}
+                aria-label="Filter by format"
+              >
+                <option value={ALL}>All formats</option>
+                {formats.map(entry => (
+                  <option key={entry} value={entry}>{entry}</option>
+                ))}
+              </select>
+            </fieldset>
+            <fieldset>
+              <legend>Duration</legend>
+              <select
+                className="sk-select"
+                value={duration}
+                onChange={event => {
+                  setDuration(event.target.value)
+                  persist({ q: query, domain, kind, level, format, duration: event.target.value, availability, sort })
+                }}
+                aria-label="Filter by duration"
+              >
+                {DURATION_OPTIONS.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </fieldset>
+            <fieldset>
+              <legend>Sort</legend>
+              <select
+                className="sk-select"
+                value={sort}
+                onChange={event => {
+                  const next = event.target.value as LearnSort
+                  setSort(next)
+                  persist({ q: query, domain, kind, level, format, duration, availability, sort: next })
+                }}
+                aria-label="Sort results"
+              >
+                {SORT_OPTIONS.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </fieldset>
+            {filtersActive && (
+              <Button variant="quiet" size="sm" onClick={reset}>Clear filters</Button>
+            )}
+            </div>
+          </aside>
+
+          <div>
+            <div className="sk-learn-results-head">
+              <p>
+                <strong>{results.length}</strong> {results.length === 1 ? 'result' : 'results'}
+                {openCount > 0 ? ` · ${openCount} open today` : ''}
+              </p>
+              <p>
+                <Link to="/programs">Programmes</Link>
+                {' · '}
+                <Link to="/courses">Courses</Link>
+                {' · '}
+                <Link to="/labs">Labs</Link>
+              </p>
+            </div>
+
+            {results.length === 0 ? (
+              <EmptyState
+                title="Nothing matches these filters"
+                body="Clear a filter or search for a subject that is actually in the catalogue — for example Python, SQL, or data analytics."
+                action={filtersActive ? <Button variant="secondary" onClick={reset}>Clear filters</Button> : undefined}
+              />
+            ) : (
+              <div className="sk-learn-grid">
+                {results.map(item => (
+                  <Link key={item.id} to={item.href} className={resultCardClass(item, leadId)}>
+                    <div>
+                      <div className="sk-learn-card-top">
+                        <span className="sk-learn-kind">{item.kindLabel}</span>
+                        <StatusPill availability={item.availability} size="sm" />
                       </div>
-                      <div style={{ ...TY.body, color: S.ink, fontWeight: 600 }}>{item.title}</div>
-                      <p style={{ ...TY.bodySm, color: S.inkSecondary, margin: 0, flex: 1 }}>{item.description}</p>
-                      <span style={{ ...TY.meta, color: S.inkMuted }}>
-                        {[item.duration, item.level, item.format].filter(Boolean).join(' · ')}
-                      </span>
-                    </Card>
+                      <h2>{item.title}</h2>
+                      <p className="sk-learn-desc">{item.description}</p>
+                      {item.forWhom && <p className="sk-learn-who">For {item.forWhom}</p>}
+                      {item.id === leadId && item.outcomes.length > 0 && (
+                        <p className="sk-learn-outcomes">
+                          You’ll learn: {item.outcomes.slice(0, 2).join(' · ')}
+                        </p>
+                      )}
+                      <p className="sk-learn-meta">
+                        {[
+                          item.duration,
+                          item.level,
+                          item.format,
+                          item.kind === 'workshop'
+                            ? null
+                            : item.labCount > 0
+                              ? `${item.labCount} matching ${item.labCount === 1 ? 'lab' : 'labs'}`
+                              : 'No matching lab',
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </p>
+                    </div>
+                    <span className={`sk-learn-cta${item.availability.canStartLearning ? '' : ' is-ghost'}`}>
+                      {resultActionLabel(item)}
+                    </span>
                   </Link>
                 ))}
               </div>
-            </section>
-          ))}
+            )}
 
-          {withoutCatalog.length > 0 && (
-            <section>
-              <h2 style={{ ...TY.h3, color: S.ink, margin: '0 0 12px', fontFamily: 'var(--font-display)' }}>
-                No catalogue yet
-              </h2>
-              <Note>
-                These domains are named so the map is complete. They have no programme, course or webinar behind them.
-              </Note>
-              <div className="sk-grid sk-grid-3" style={{ marginTop: 16 }}>
-                {withoutCatalog.map(domain => (
-                  <Card key={domain.id} padding={18} tone="muted">
-                    <div style={{ ...TY.body, color: S.ink, fontWeight: 600 }}>{domain.label}</div>
-                    <p style={{ ...TY.bodySm, color: S.inkMuted, margin: '6px 0 0' }}>{domain.tagline}</p>
-                  </Card>
-                ))}
-              </div>
-            </section>
-          )}
+            {emptyDomains.length > 0 && (
+              <section className="sk-learn-empty-domains">
+                <h2>No catalogue yet</h2>
+                <p>These domains are named so the map is complete. They have no programme, course or webinar behind them.</p>
+                <div className="sk-learn-chips">
+                  {emptyDomains.map(entry => (
+                    <span key={entry.id} className="sk-learn-chip">{entry.label}</span>
+                  ))}
+                </div>
+              </section>
+            )}
 
-          {withCatalog.length === 0 && (
-            <EmptyState title="No skills catalogue" body="Nothing has been published against a skills domain yet." />
-          )}
+          </div>
         </div>
       </Rail>
     </ProductShell>
