@@ -15,6 +15,7 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
   {
     title: 'Education',
     links: [
+      { label: 'Education overview', to: '/education' },
       { label: 'Schooling', to: '/junior' },
       { label: 'Degrees', to: '/degrees' },
       { label: 'Exams', to: '/exams' },

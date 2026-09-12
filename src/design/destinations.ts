@@ -95,6 +95,7 @@ export const NAV_GROUPS: NavGroup[] = [
     match: ['/education', '/exams', '/junior', '/degrees', '/certificates'],
     tagline: 'Schooling, degrees and exams',
     items: [
+      { label: 'Education overview', sub: 'Schooling, degrees and exams', to: '/education' },
       { label: 'Schooling', sub: 'Junior — grades 1–12', to: '/junior' },
       { label: 'Degrees', sub: 'B.Tech · BCA · MBA · MCA', to: '/degrees' },
       { label: 'Competitive exams', sub: 'JEE Advanced · CAT', to: '/exams' },
@@ -108,9 +109,7 @@ export const NAV_GROUPS: NavGroup[] = [
     tagline: 'The workspace after a programme',
     items: [
       { label: 'Career OS', sub: 'A workspace, not a placement desk', to: '/career-os' },
-      { label: 'Profile', sub: 'Skills, projects and resume', to: '/career-os/app/profile' },
-      { label: 'Job board', sub: 'Empty until an employer posts', to: '/career-os/app/jobs' },
-      { label: 'Interview practice', sub: 'Structured question sets', to: '/career-os/app/interviews' },
+      { label: 'Open the workspace', sub: 'Requires sign-in', to: '/login?returnTo=%2Fcareer-os%2Fapp' },
     ],
   },
   {

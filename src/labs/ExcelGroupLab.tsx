@@ -87,9 +87,10 @@ export default function ExcelGroupLab() {
       </div>
 
       <div className="sk-lab-controls">
-        <label>
+        <label htmlFor="excel-group">
           Group by
           <select
+            id="excel-group"
             value={groupBy}
             onChange={event => {
               setGroupBy(event.target.value as GroupBy)
@@ -100,9 +101,10 @@ export default function ExcelGroupLab() {
             <option value="product">product</option>
           </select>
         </label>
-        <label>
+        <label htmlFor="excel-agg">
           Aggregation
           <select
+            id="excel-agg"
             value={agg}
             onChange={event => {
               setAgg(event.target.value as Agg)

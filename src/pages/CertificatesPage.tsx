@@ -1,6 +1,7 @@
 import ProductShell from '../design/ProductShell'
 import { Rail, PageHeader, Card, ButtonLink, Note } from '../design/primitives'
 import { S, TY } from '../design/tokens'
+import { useAuth } from '../context/AuthContext'
 
 const FACTS = [
   {
@@ -18,6 +19,11 @@ const FACTS = [
 ]
 
 export default function CertificatesPage() {
+  const { user } = useAuth()
+  const dashboardHref = user
+    ? '/dashboard/student'
+    : '/login?returnTo=%2Fdashboard%2Fstudent'
+
   return (
     <ProductShell>
       <Rail>
@@ -25,7 +31,14 @@ export default function CertificatesPage() {
           eyebrow="Certificates"
           title="Completion, not accreditation."
           lead="If you finish the required work, Skylent can record that completion. That is the whole claim."
-          actions={<ButtonLink to="/dashboard/student" variant="secondary">Learner dashboard</ButtonLink>}
+          actions={
+            <>
+              <ButtonLink to={dashboardHref} variant="secondary">
+                {user ? 'Learner dashboard' : 'Sign in to see eligibility'}
+              </ButtonLink>
+              <ButtonLink to="/programs" variant="quiet">Browse programmes</ButtonLink>
+            </>
+          }
         />
 
         <Note>

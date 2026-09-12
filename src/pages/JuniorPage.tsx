@@ -12,10 +12,10 @@ export default function JuniorPage() {
       <section className="sk-junior-hero">
         <Rail>
           <p className="sk-junior-kicker">Schooling</p>
-          <h1>Learn a concept. Then try it.</h1>
+          <h1>A school path. Not published yet.</h1>
           <p>
-            Junior is Skylent’s school path: class, then subject, then concept, then a short lesson and a little
-            practice. It is not an adult skills catalogue.
+            Junior is Skylent's school path: class, then subject, then concept, then a short lesson and a little
+            practice. It is not an adult skills catalogue, and no grade-band lessons are in the platform today.
           </p>
         </Rail>
       </section>

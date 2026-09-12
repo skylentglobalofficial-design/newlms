@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { readLabCompletion, writeLabCompletion } from '../lib/virtual-labs'
+import LabRange from './LabRange'
 
 type Point = { x: number; y: number; label: 0 | 1 }
 
@@ -138,13 +139,27 @@ export default function ClassificationLab() {
           })}
           {points.map((point, index) => {
             const { cx, cy } = toPx(point.x, point.y)
+            if (point.label === 1) {
+              return (
+                <rect
+                  key={index}
+                  x={cx - 5}
+                  y={cy - 5}
+                  width={10}
+                  height={10}
+                  fill="#2D5BD6"
+                  stroke="#fff"
+                  strokeWidth="1.5"
+                />
+              )
+            }
             return (
               <circle
                 key={index}
                 cx={cx}
                 cy={cy}
                 r={5.5}
-                fill={point.label === 1 ? '#2D5BD6' : '#F36B21'}
+                fill="#F36B21"
                 stroke="#fff"
                 strokeWidth="1.5"
               />
@@ -152,47 +167,41 @@ export default function ClassificationLab() {
           })}
         </svg>
         <p className="sk-lab-legend">
-          <span><i className="is-a" /> Class A</span>
-          <span><i className="is-b" /> Class B</span>
+          <span><i className="is-a" /> Class A · circle</span>
+          <span><i className="is-b" /> Class B · square</span>
           {ran && <span>Shaded cells show the predicted class across the plane.</span>}
         </p>
       </div>
 
       <div className="sk-lab-controls">
-        <label>
-          Samples per class
-          <input
-            type="range"
-            min={8}
-            max={40}
-            value={samples}
-            onChange={event => { setSamples(Number(event.target.value)); setRan(false) }}
-          />
-          <em>{samples}</em>
-        </label>
-        <label>
-          Noise
-          <input
-            type="range"
-            min={0}
-            max={100}
-            value={Math.round(noise * 100)}
-            onChange={event => { setNoise(Number(event.target.value) / 100); setRan(false) }}
-          />
-          <em>{noise.toFixed(2)}</em>
-        </label>
-        <label>
-          k neighbours
-          <input
-            type="range"
-            min={1}
-            max={15}
-            step={2}
-            value={k}
-            onChange={event => { setK(Number(event.target.value)); setRan(false) }}
-          />
-          <em>{k}</em>
-        </label>
+        <LabRange
+          id="knn-samples"
+          label="Samples per class"
+          min={8}
+          max={40}
+          value={samples}
+          display={`${samples}`}
+          onChange={value => { setSamples(value); setRan(false) }}
+        />
+        <LabRange
+          id="knn-noise"
+          label="Noise"
+          min={0}
+          max={100}
+          value={Math.round(noise * 100)}
+          display={noise.toFixed(2)}
+          onChange={value => { setNoise(value / 100); setRan(false) }}
+        />
+        <LabRange
+          id="knn-k"
+          label="k neighbours"
+          min={1}
+          max={15}
+          step={2}
+          value={k}
+          display={`${k}`}
+          onChange={value => { setK(value); setRan(false) }}
+        />
 
         <div className="sk-lab-actions">
           <button type="button" className="sk-lab-run" onClick={run}>Run experiment</button>

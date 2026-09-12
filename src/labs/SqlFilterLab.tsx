@@ -91,9 +91,10 @@ export default function SqlFilterLab() {
       </div>
 
       <div className="sk-lab-controls">
-        <label>
+        <label htmlFor="sql-dept">
           Department
           <select
+            id="sql-dept"
             value={dept}
             onChange={event => {
               setDept(event.target.value as (typeof DEPTS)[number])
@@ -105,9 +106,10 @@ export default function SqlFilterLab() {
             ))}
           </select>
         </label>
-        <label>
+        <label htmlFor="sql-order">
           Order by
           <select
+            id="sql-order"
             value={order}
             onChange={event => {
               setOrder(event.target.value as (typeof ORDERS)[number])

@@ -29,6 +29,7 @@ import {
   updateAssignment,
 } from '../lib/lms-api'
 import { labsForLearningContext } from '../lib/virtual-labs'
+import { labRunPath } from '../lib/safe-return'
 
 function dashRoute(role?: string) {
   switch (role) {
@@ -378,7 +379,7 @@ export default function LearnPage() {
                   <ul>
                     {moduleLabs.map(lab => (
                       <li key={lab.id}>
-                        <Link to={`/labs/${lab.id}/run`}>{lab.title}</Link>
+                        <Link to={labRunPath(lab.id, `/learn/${slug}/${selectedLessonId}`)}>{lab.title}</Link>
                         <span>{lab.subject} · {lab.duration} · runs in your browser</span>
                       </li>
                     ))}

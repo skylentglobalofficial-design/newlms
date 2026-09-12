@@ -208,7 +208,7 @@ export function StudentProgressSurface({
           { label: 'Lessons', value: allLessons.length ? `${completed}/${allLessons.length}` : '—', sub: 'completed' },
           { label: 'Quizzes', value: quizzes.length ? `${quizzesDone}/${quizzes.length}` : '—', sub: 'passed' },
           { label: 'Assignments', value: assignments.length ? `${assignmentsDone}/${assignments.length}` : '—', sub: 'submitted' },
-          { label: 'Certificate', value: certificateReady ? 'Ready' : '—', sub: certificateReady ? 'course complete' : 'not yet' },
+          { label: 'Certificate', value: certificateReady ? 'Eligible' : '—', sub: certificateReady ? 'not issued yet' : 'not yet' },
         ].map(item => (
           <div key={item.label} style={{ padding: '14px 16px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
             <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 10, letterSpacing: '0.06em', marginBottom: 6 }}>{item.label}</div>

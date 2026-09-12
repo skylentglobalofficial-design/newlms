@@ -93,11 +93,15 @@ jobsRouter.get("/:idOrSlug", async (req: AuthenticatedRequest, res) => {
   try {
     const auth = await attachAuth(req)
     const job = await prisma.job.findFirst({
-      where: isUuid ? { id: param } : { slug: param },
+      where: {
+        ...(isUuid ? { id: param } : { slug: param }),
+        status: JobStatus.OPEN,
+        employer: { verificationStatus: EmployerVerificationStatus.VERIFIED },
+      },
       include: { employer: true },
     })
 
-    if (!job || job.status !== JobStatus.OPEN) {
+    if (!job) {
       return res.status(404).json({ error: "Job not found" })
     }
 

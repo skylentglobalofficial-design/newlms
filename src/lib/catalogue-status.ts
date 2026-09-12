@@ -133,7 +133,7 @@ export function getProgrammeAvailability(program: Program): Availability {
       ...AVAILABILITY.enrolling,
       label: 'Waitlist',
       ctaLabel: 'Join waitlist',
-      explanation: 'This programme is full. Join the waitlist to be contacted when a place opens.',
+      explanation: 'No cohort is running yet. Join the interest list to be contacted when one opens.',
     }
   }
 

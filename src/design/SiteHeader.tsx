@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useAuth, type UserRole } from '../context/AuthContext'
 import { NAV_GROUPS } from './destinations'
 import { S } from './tokens'
@@ -22,7 +22,6 @@ export default function SiteHeader() {
   const headerRef = useRef<HTMLElement>(null)
   const burgerRef = useRef<HTMLButtonElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
-  const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth()
 
@@ -99,7 +98,7 @@ export default function SiteHeader() {
                 className={`sk-navlink${isGroupActive(group.match) ? ' is-active' : ''}`}
                 aria-expanded={openGroup === group.label}
                 aria-haspopup="true"
-                onClick={() => navigate(group.to)}
+                onClick={() => setOpenGroup(current => current === group.label ? null : group.label)}
                 onFocus={() => openMenu(group.label)}
                 onBlur={event => {
                   if (!event.currentTarget.parentElement?.contains(event.relatedTarget as Node)) {
@@ -136,14 +135,14 @@ export default function SiteHeader() {
         </nav>
 
         <div className="sk-header-actions">
-          {user ? (
+            {user ? (
             <Link to={dashboardRoute(user.role)} className="sk-header-cta">
               Dashboard
             </Link>
           ) : (
             <>
               <Link to="/login" className="sk-header-signin">Sign in</Link>
-              <Link to="/programs" className="sk-header-cta">Browse programmes</Link>
+              <Link to="/programs" className="sk-header-cta sk-header-browse">Browse programmes</Link>
             </>
           )}
           <button

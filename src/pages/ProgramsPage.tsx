@@ -165,7 +165,7 @@ export default function ProgramsPage() {
 
             <div style={{ marginTop: 44, paddingTop: 26, borderTop: `1px solid ${S.line}`, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
               <p style={{ ...TY.bodySm, color: S.inkSecondary, margin: 0, flex: '1 1 320px' }}>
-                Looking for something shorter? Courses are self-paced and open as soon as you enrol.
+                Looking for something shorter? Courses are self-paced when their lessons are published — each course card shows that status.
               </p>
               <ButtonLink to="/courses" variant="secondary" size="sm">Browse courses</ButtonLink>
             </div>

@@ -80,7 +80,7 @@ export default function ExamsPage() {
                   </div>
                 </div>
                 <div>
-                  <p className="lead" style={{ marginTop: 0 }}>When it launches, the path is:</p>
+                  <p className="lead" style={{ marginTop: 0 }}>Planned shape — not built:</p>
                   <ol className="sk-exam-plan">
                     <li>Syllabus</li>
                     <li>Preparation</li>

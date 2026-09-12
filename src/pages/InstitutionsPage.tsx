@@ -15,7 +15,7 @@ const STATUS_AVAILABILITY: Record<InstitutionCapabilityStatus, Availability> = {
     label: INSTITUTION_CAPABILITY_STATUS_LABELS.available,
     tone: 'positive',
     ctaLabel: 'View',
-    canStartLearning: true,
+    canStartLearning: false,
     explanation: '',
   },
   inquiry: {

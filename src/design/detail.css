@@ -656,6 +656,10 @@
 }
 
 @media (max-width: 767px) {
+  .sk-pdp-cover {
+    display: none;
+  }
+
   .sk-pdp-hero-facts {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
@@ -694,7 +698,7 @@
     min-width: 0;
     padding-right: 0;
     gap: 6px;
-    padding-bottom: 10px;
+    padding-bottom: 18px;
   }
 
   .sk-pdp .sk-anchor {

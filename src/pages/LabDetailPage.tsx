@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
 import { Rail, PageHeader, Card, Tag, EmptyState, ButtonLink, Button, Progress, Note, StatusPill } from '../design/primitives'
 import { S, TY } from '../design/tokens'
@@ -8,6 +8,7 @@ import type { LabExperimentStatus, LabType } from '../data'
 import { useAuth } from '../context/AuthContext'
 import { useDemoState } from '../demo/DemoStateContext'
 import { getInteractiveLab, interactiveLabAvailability, labGroupingLabel } from '../lib/virtual-labs'
+import { labBackLabel, labRunPath, safeInternalPath } from '../lib/safe-return'
 import '../design/labs.css'
 
 const labTypeLabels: Record<LabType, string> = {
@@ -30,6 +31,8 @@ export default function LabDetailPage() {
   const { user, ready } = useAuth()
   const demo = useDemoState()
   const interactive = labId ? getInteractiveLab(labId) : undefined
+  const [params] = useSearchParams()
+  const from = safeInternalPath(params.get('from'))
 
   useEffect(() => {
     if (interactive) return
@@ -42,7 +45,12 @@ export default function LabDetailPage() {
       <ProductShell className="sk-labs">
         <Rail>
           <div className="sk-lab-hero">
-            <Link to="/labs" className="sk-backlink">← All labs</Link>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px' }}>
+              <Link to={from ?? '/labs'} className="sk-backlink">{labBackLabel(from)}</Link>
+              {from && from !== '/labs' && (
+                <Link to="/labs" className="sk-backlink">All labs</Link>
+              )}
+            </div>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 12 }}>
               <StatusPill availability={availability} />
               <Tag>{interactive.subject}</Tag>
@@ -50,7 +58,7 @@ export default function LabDetailPage() {
             <h1>{interactive.title}</h1>
             <p>{interactive.objective}</p>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 20 }}>
-              <ButtonLink to={`/labs/${interactive.id}/run`}>Open experiment</ButtonLink>
+              <ButtonLink to={labRunPath(interactive.id, from)}>Open experiment</ButtonLink>
               <ButtonLink to="/labs" variant="secondary">All labs</ButtonLink>
             </div>
           </div>

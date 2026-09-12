@@ -29,6 +29,7 @@ import type { ApiEnrollment } from '../lib/lms-api'
 import type { LessonState } from '../demo/types'
 import type { CourseLesson } from '../data'
 import { emptySubjectLabCopy, labsForLearningContext } from '../lib/virtual-labs'
+import { labRunPath } from '../lib/safe-return'
 
 const THEME = 'data-science' as const
 const accent: SurfaceAccent = getSurfaceAccent(THEME)
@@ -502,14 +503,17 @@ function ActivityPanel({ items }: { items: { id: string; label: string; detail: 
 
 function LabsPanel({
   courseSlug,
+  lessonId,
   moduleTitle,
   lessonTitle,
 }: {
   courseSlug: string
+  lessonId?: string
   moduleTitle?: string
   lessonTitle?: string
 }) {
   const labs = labsForLearningContext({ moduleTitle, lessonTitle })
+  const from = lessonId ? `/learn/${courseSlug}/${lessonId}` : `/learn/${courseSlug}`
   return (
     <RailPanel title="Virtual labs">
       {labs.length === 0 ? (
@@ -519,7 +523,7 @@ function LabsPanel({
       ) : (
         <div className="sk-dash-timeline" style={{ marginBottom: 12 }}>
           {labs.map(lab => (
-            <Link key={lab.id} to={`/labs/${lab.id}/run`} className="sk-dash-time">
+            <Link key={lab.id} to={labRunPath(lab.id, from)} className="sk-dash-time">
               <span className="sk-dash-time-dot" aria-hidden />
               <span>
                 <span className="sk-dash-row-title" style={{ display: 'block' }}>{lab.title}</span>
@@ -751,6 +755,7 @@ export default function DashboardStudentPage() {
           <UpcomingRail tasks={tasks} />
           <LabsPanel
             courseSlug={course.slug}
+            lessonId={resume?.lessonId}
             moduleTitle={resume?.moduleTitle}
             lessonTitle={resume?.lessonTitle}
           />

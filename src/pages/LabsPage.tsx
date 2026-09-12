@@ -18,6 +18,7 @@ import {
   type VirtualLab,
 } from '../lib/virtual-labs'
 import { domainsForCourse, domainsForProgram, LAB_DOMAIN_LABEL } from '../lib/lab-domains'
+import { labRunPath } from '../lib/safe-return'
 import '../design/labs.css'
 
 const SUBJECT_CHIPS: { domain: LabDomain; label: string }[] = [
@@ -65,6 +66,13 @@ export default function LabsPage() {
   }
 
   const archived = filterActive ? [] : archivedBriefSubjects()
+  const catalogueFrom = course
+    ? `/labs?course=${course.slug}`
+    : program
+      ? `/labs?program=${program.slug}`
+      : domainFilter
+        ? `/labs?domain=${domainFilter}`
+        : '/labs'
 
   function setFilter(next: { course?: string; program?: string; domain?: string }) {
     const nextParams = new URLSearchParams()
@@ -142,7 +150,7 @@ export default function LabsPage() {
               {interactive.map(lab => {
                 const availability = interactiveLabAvailability(lab)
                 return (
-                  <Link key={lab.id} to={`/labs/${lab.id}/run`} className="sk-lab-card">
+                  <Link key={lab.id} to={labRunPath(lab.id, catalogueFrom)} className="sk-lab-card">
                     <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
                       <Tag>{lab.subject}</Tag>
                       <StatusPill availability={availability} size="sm" />

@@ -5,6 +5,7 @@ import {
   findCatalogueCourse,
   findCatalogueProgram,
 } from '../src/lib/lab-domains.ts'
+import { labRunPath, safeInternalPath } from '../src/lib/safe-return.ts'
 import {
   labsForCourse,
   labsForLearningContext,
@@ -113,6 +114,18 @@ assert(domainsForLesson({ moduleTitle: 'Python Basics', lessonTitle: 'Variables 
 assert(!domainsForLesson({ moduleTitle: 'Python Basics', lessonTitle: 'Variables and Data Types' }).includes('html'))
 assert(!domainsForProgram(da).includes('ml'))
 assert(domainsForProgram(ds).includes('ml'))
+
+assert(safeInternalPath('//evil.com') === null, 'protocol-relative returnTo must be rejected')
+assert(safeInternalPath('https://evil.com/learn') === null, 'absolute URL returnTo must be rejected')
+assert(safeInternalPath('/\\evil.com') === null, 'backslash returnTo must be rejected')
+assert(safeInternalPath('/login') === null, 'login is not a return target')
+assert(safeInternalPath('/learn/python-programming') === '/learn/python-programming', 'learn paths must be allowed')
+assert(labRunPath('knn-classifier', '//evil.com') === '/labs/knn-classifier/run', 'unsafe from must be dropped')
+assert(
+  labRunPath('knn-classifier', '/courses/python-programming') ===
+    '/labs/knn-classifier/run?from=%2Fcourses%2Fpython-programming',
+  'safe from must be preserved',
+)
 
 console.log('lab-domain matching assertions passed')
 console.log({

@@ -313,9 +313,8 @@
     display: inline-flex;
   }
 
-  /* Sign-in and the catalogue CTA live in the drawer once the burger is out. */
-  .sk-header-actions > .sk-header-signin,
-  .sk-header-actions > .sk-header-cta {
+  /* Keep Sign in / Dashboard in the bar. Browse programmes lives in the drawer. */
+  .sk-header-actions > .sk-header-browse {
     display: none;
   }
 

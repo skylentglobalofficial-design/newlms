@@ -7,6 +7,7 @@ import { PROGRAM_TYPE_LABEL, formatInr } from '../design/CatalogueCard'
 import { getCourseAvailability, liveProgramSlugsForCourse, publishedLessonCount } from '../lib/catalogue-status'
 import { useCatalogEnrollment } from '../hooks/useCatalogEnrollment'
 import { emptySubjectLabCopy, labsForCourse } from '../lib/virtual-labs'
+import { labRunPath } from '../lib/safe-return'
 import { courses, programs } from '../data'
 import type { Course } from '../data'
 import '../design/detail.css'
@@ -209,7 +210,7 @@ export default function CourseDetailPage() {
               {relatedLabs.length > 0 ? (
                 <div className="sk-pdp-live">
                   {relatedLabs.map(lab => (
-                    <Link key={lab.id} to={`/labs/${lab.id}/run`}>
+                    <Link key={lab.id} to={labRunPath(lab.id, `/courses/${course.slug}`)}>
                       <strong>{lab.title}</strong>
                       <span>{lab.subject} · {lab.duration} · runs in your browser</span>
                     </Link>

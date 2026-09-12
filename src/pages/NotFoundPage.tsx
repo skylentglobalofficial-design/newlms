@@ -13,7 +13,7 @@ export default function NotFoundPage() {
               <>
                 <ButtonLink to="/">Home</ButtonLink>
                 <ButtonLink to="/programs" variant="secondary">Browse programmes</ButtonLink>
-                <ButtonLink to="/exams" variant="quiet">Exams</ButtonLink>
+                <ButtonLink to="/education" variant="quiet">Education</ButtonLink>
               </>
             }
           />

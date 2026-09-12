@@ -1,8 +1,9 @@
 import { lazy, Suspense } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
 import { Rail, StatusPill, EmptyState, ButtonLink, Note } from '../design/primitives'
 import { getInteractiveLab, interactiveLabAvailability } from '../lib/virtual-labs'
+import { labBackLabel, safeInternalPath } from '../lib/safe-return'
 import '../design/labs.css'
 
 const ClassificationLab = lazy(() => import('../labs/ClassificationLab'))
@@ -13,7 +14,9 @@ const CssBoxLab = lazy(() => import('../labs/CssBoxLab'))
 
 export default function VirtualLabWorkspacePage() {
   const { labId } = useParams<{ labId: string }>()
+  const [params] = useSearchParams()
   const lab = labId ? getInteractiveLab(labId) : undefined
+  const from = safeInternalPath(params.get('from'))
 
   if (!lab || !lab.workspace) {
     return (
@@ -37,7 +40,12 @@ export default function VirtualLabWorkspacePage() {
     <ProductShell className="sk-labs" footer={false}>
       <Rail>
         <div className="sk-lab-hero">
-          <Link to="/labs" className="sk-backlink">← All labs</Link>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px' }}>
+            <Link to={from ?? '/labs'} className="sk-backlink">{labBackLabel(from)}</Link>
+            {from && from !== '/labs' && (
+              <Link to="/labs" className="sk-backlink">All labs</Link>
+            )}
+          </div>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginTop: 12 }}>
             <StatusPill availability={availability} size="sm" />
             <span style={{ fontSize: 12.5, color: 'var(--sk-ink-muted)' }}>{lab.subject} · {lab.duration}</span>

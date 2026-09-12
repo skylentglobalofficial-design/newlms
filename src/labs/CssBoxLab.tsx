@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import LabCompletion from './LabCompletion'
+import LabRange from './LabRange'
 
 export default function CssBoxLab() {
   const [width, setWidth] = useState(180)
@@ -33,26 +34,42 @@ export default function CssBoxLab() {
       </div>
 
       <div className="sk-lab-controls">
-        <label>
-          Content width
-          <input type="range" min={80} max={260} value={width} onChange={event => { setWidth(Number(event.target.value)); setRan(false) }} />
-          <em>{width}px</em>
-        </label>
-        <label>
-          Padding
-          <input type="range" min={0} max={40} value={padding} onChange={event => { setPadding(Number(event.target.value)); setRan(false) }} />
-          <em>{padding}px</em>
-        </label>
-        <label>
-          Border
-          <input type="range" min={0} max={16} value={border} onChange={event => { setBorder(Number(event.target.value)); setRan(false) }} />
-          <em>{border}px</em>
-        </label>
-        <label>
-          Margin
-          <input type="range" min={0} max={48} value={margin} onChange={event => { setMargin(Number(event.target.value)); setRan(false) }} />
-          <em>{margin}px</em>
-        </label>
+        <LabRange
+          id="css-width"
+          label="Content width"
+          min={80}
+          max={260}
+          value={width}
+          display={`${width}px`}
+          onChange={value => { setWidth(value); setRan(false) }}
+        />
+        <LabRange
+          id="css-padding"
+          label="Padding"
+          min={0}
+          max={40}
+          value={padding}
+          display={`${padding}px`}
+          onChange={value => { setPadding(value); setRan(false) }}
+        />
+        <LabRange
+          id="css-border"
+          label="Border"
+          min={0}
+          max={16}
+          value={border}
+          display={`${border}px`}
+          onChange={value => { setBorder(value); setRan(false) }}
+        />
+        <LabRange
+          id="css-margin"
+          label="Margin"
+          min={0}
+          max={48}
+          value={margin}
+          display={`${margin}px`}
+          onChange={value => { setMargin(value); setRan(false) }}
+        />
 
         <div className="sk-lab-actions">
           <button type="button" className="sk-lab-run" onClick={() => setRan(true)}>Read the totals</button>
@@ -72,26 +89,28 @@ export default function CssBoxLab() {
         </div>
 
         <div className="sk-lab-metrics" aria-live="polite">
+          <dl>
+            <div>
+              <dt>Content</dt>
+              <dd>{contentBox}px</dd>
+            </div>
+            <div>
+              <dt>Border box</dt>
+              <dd>{borderBox}px</dd>
+            </div>
+            <div>
+              <dt>Outer width</dt>
+              <dd>{total}px</dd>
+            </div>
+          </dl>
           {ran ? (
-            <dl>
-              <div>
-                <dt>Content</dt>
-                <dd>{contentBox}px</dd>
-              </div>
-              <div>
-                <dt>Border box</dt>
-                <dd>{borderBox}px</dd>
-              </div>
-              <div>
-                <dt>Outer width</dt>
-                <dd>{total}px</dd>
-              </div>
-            </dl>
-          ) : (
             <p>
-              Move padding, border and margin, then read the totals. This is a box-model diagram in your browser —
-              not a webpage editor and not a CSS runtime for your own files.
+              Content stays {contentBox}px. Padding {padding}px on each side and a {border}px border make the
+              border box {borderBox}px. Margin {margin}px on each side makes the outer width {total}px. This is a
+              box-model diagram in your browser — not a webpage editor.
             </p>
+          ) : (
+            <p>Widths update as you move the sliders. Read the totals to log the observation locally.</p>
           )}
         </div>
 

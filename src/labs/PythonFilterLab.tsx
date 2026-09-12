@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import LabCompletion from './LabCompletion'
+import LabRange from './LabRange'
 
 type Row = { name: string; city: string; score: number }
 
@@ -86,23 +87,19 @@ export default function PythonFilterLab() {
       </div>
 
       <div className="sk-lab-controls">
-        <label>
-          Minimum score
-          <input
-            type="range"
-            min={40}
-            max={95}
-            value={minScore}
-            onChange={event => {
-              setMinScore(Number(event.target.value))
-              setRan(false)
-            }}
-          />
-          <em>{minScore}</em>
-        </label>
-        <label>
+        <LabRange
+          id="python-score"
+          label="Minimum score"
+          min={40}
+          max={95}
+          value={minScore}
+          display={`${minScore}`}
+          onChange={value => { setMinScore(value); setRan(false) }}
+        />
+        <label htmlFor="python-city">
           City
           <select
+            id="python-city"
             value={city}
             onChange={event => {
               setCity(event.target.value as (typeof CITIES)[number])

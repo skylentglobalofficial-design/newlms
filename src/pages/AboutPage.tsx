@@ -6,6 +6,7 @@ import '../design/detail.css'
 const PRODUCTS = [
   { title: 'Learn', body: 'Programmes and courses with a published syllabus, a real price, and a status that says whether lessons are in the platform.', to: '/programs' },
   { title: 'Education', body: 'Schooling, undergraduate, postgraduate and entrance exams — structured as academic stages, with empty stages labelled empty.', to: '/education' },
+  { title: 'Virtual labs', body: 'Browser experiments matched to the subject you are studying. Not a Python interpreter or a live classroom.', to: '/labs' },
   { title: 'Career OS', body: 'A signed-in workspace for profile, jobs, applications and interview practice. Not a placement service.', to: '/career-os' },
   { title: 'Institutions', body: 'The same infrastructure, scoped to a school, college or training institute. Partnership starts with a conversation.', to: '/institutions' },
 ]
@@ -52,7 +53,7 @@ export default function AboutPage() {
             <ul className="sk-plain-list">
               <li>Not a university, and not accredited by one.</li>
               <li>Not a placement agency. Completing a programme does not guarantee a job.</li>
-              <li>Not a live-cohort campus. Lessons that exist are self-paced and recorded.</li>
+              <li>Not a live-cohort campus. Lessons that exist are self-paced. A video file is only shown when one is published.</li>
             </ul>
           </section>
 

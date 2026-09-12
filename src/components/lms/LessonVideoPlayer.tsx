@@ -92,7 +92,7 @@ function VideoPreviewSurface({
     <div>
       <div
         className="lms-media-frame lms-media-frame--preview"
-        data-mux-ready="true"
+        data-mux-ready="false"
         data-playback-provider="unavailable"
         style={{
           background: "rgba(255,255,255,0.02)",
@@ -109,18 +109,10 @@ function VideoPreviewSurface({
       >
         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 70% 60% at 30% 20%, ${accent.subtle} 0%, transparent 70%)` }} />
         <div style={{ position: "absolute", top: 12, left: 12, fontSize: 9, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.28)", letterSpacing: "0.06em" }}>
-          VIDEO
+          VIDEO · NOT PUBLISHED
         </div>
         <div style={{ position: "relative", textAlign: "center", padding: 24, maxWidth: 420 }}>
-          <div style={{
-            width: 64, height: 64, borderRadius: "50%",
-            background: accent.subtle, border: `2px solid ${accent.border}`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            margin: "0 auto", cursor: "default",
-          }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill={accent.primary}><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          </div>
-          <div style={{ color: C.white, fontSize: 13, fontWeight: 500, marginTop: 14, lineHeight: 1.4 }}>{title}</div>
+          <div style={{ color: C.white, fontSize: 13, fontWeight: 500, marginTop: 0, lineHeight: 1.4 }}>{title}</div>
           {duration && (
             <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 8, fontFamily: "var(--font-mono)" }}>{duration}</div>
           )}

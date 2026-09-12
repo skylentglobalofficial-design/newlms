@@ -72,7 +72,7 @@ function FeaturedPoster({ program }: { program: Program }) {
         {lowestPrice !== null && <li>From {formatInr(lowestPrice)}</li>}
       </ul>
       <span className="sk-home-poster-cta">
-        {availability.ctaLabel}
+        View programme
         <span aria-hidden>→</span>
       </span>
     </Link>
@@ -170,13 +170,8 @@ function ProgramProductCard({ program, featured = false }: { program: Program; f
       </div>
       <div className="sk-home-pcard-actions">
         <Link to={detailsTo} className={featured ? 'sk-home-pcard-primary' : 'sk-home-pcard-fill'}>
-          {availability.canStartLearning ? availability.ctaLabel : 'View details'}
+          View programme
         </Link>
-        {availability.canStartLearning && (
-          <Link to={detailsTo} className="sk-home-pcard-ghost">
-            View details
-          </Link>
-        )}
       </div>
     </article>
   )
@@ -210,13 +205,8 @@ function CourseProductCard({ course }: { course: Course }) {
       </div>
       <div className="sk-home-pcard-actions">
         <Link to={detailsTo} className="sk-home-pcard-fill">
-          {availability.canStartLearning ? 'Start learning' : 'View details'}
+          View course
         </Link>
-        {availability.canStartLearning && (
-          <Link to={detailsTo} className="sk-home-pcard-ghost">
-            View details
-          </Link>
-        )}
       </div>
     </article>
   )

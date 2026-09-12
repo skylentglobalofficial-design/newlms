@@ -19,8 +19,7 @@ function EducationHeader({ stages }: { stages: ResolvedStage[] }) {
         <p className="sk-edu-kicker">Education</p>
         <h1>A map of academic study.</h1>
         <p className="sk-edu-lead">
-          Schooling, degrees and entrance exams — organised the way a campus is organised, not the way a course
-          catalogue is organised.
+          Schooling, degrees and entrance exams — mapped by stage of study, not mixed into the skills catalogue.
         </p>
         <Note tone="caution">
           Skylent is not a university. It does not award degrees and it is not accredited by any university or
@@ -152,10 +151,10 @@ export default function EducationPage() {
           <div className="sk-edu-inst-grid">
             <div>
               <p className="sk-edu-kicker">For schools and universities</p>
-              <h2>Academic delivery runs through institutions</h2>
+              <h2>Institutions would teach this coursework</h2>
               <p>
-                Degree and school coursework reaches learners through the institution that teaches them. Skylent
-                provides dashboards for programmes, learners, faculty and progress.
+                Degree and school material would reach learners through a partner institution. None are live in the
+                public catalogue. Skylent would provide dashboards for programmes, learners, faculty and progress.
               </p>
               <ButtonLink to="/institutions" variant="secondary" themeId="institution">For institutions</ButtonLink>
             </div>

@@ -6,6 +6,7 @@ import { ButtonLink, EmptyState, Note, Rail, StatusPill } from '../design/primit
 import { PROGRAM_TYPE_LABEL, formatInr } from '../design/CatalogueCard'
 import { getProgrammeAvailability, liveCourseSlugsForProgram } from '../lib/catalogue-status'
 import { emptySubjectLabCopy, labsForProgram } from '../lib/virtual-labs'
+import { labRunPath } from '../lib/safe-return'
 import { useCatalogEnrollment } from '../hooks/useCatalogEnrollment'
 import { courses, programs } from '../data'
 import type { Program } from '../data'
@@ -335,7 +336,7 @@ export default function ProgramPage() {
               {relatedLabs.length > 0 ? (
                 <div className="sk-pdp-live">
                   {relatedLabs.map(lab => (
-                    <Link key={lab.id} to={`/labs/${lab.id}/run`}>
+                    <Link key={lab.id} to={labRunPath(lab.id, `/programs/${program.slug}`)}>
                       <strong>{lab.title}</strong>
                       <span>{lab.subject} · {lab.duration} · runs in your browser</span>
                     </Link>

@@ -6,22 +6,26 @@ const LAYERS = [
   {
     title: 'Learner LMS',
     body: 'Courses, lessons, quizzes and assignments for a signed-in learner. Progress is the work they have actually completed.',
-    to: '/dashboard/student',
+    to: '/login?returnTo=%2Fdashboard%2Fstudent',
+    cta: 'Sign in to open',
   },
   {
     title: 'Faculty workspace',
     body: 'The teaching view of those same courses. It does not invent a class that has not been assigned.',
-    to: '/dashboard/faculty',
+    to: '/login?returnTo=%2Fdashboard%2Ffaculty',
+    cta: 'Sign in to open',
   },
   {
     title: 'Organisation workspace',
-    body: 'Programmes, learners, faculty and progress for a partner institution.',
-    to: '/dashboard/organisation',
+    body: 'Programmes, learners, faculty and progress for a partner institution. Layout is a preview until the organisation is live.',
+    to: '/login?returnTo=%2Fdashboard%2Forganisation',
+    cta: 'Sign in to open',
   },
   {
     title: 'Career OS',
     body: 'Profile, job board, applications and interview practice — a workspace, not a placement desk.',
     to: '/career-os',
+    cta: 'How it works',
   },
 ]
 
@@ -46,7 +50,7 @@ export default function OSPage() {
               <Card key={layer.title} padding={22} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <h2 style={{ ...TY.h3, color: S.ink, margin: 0, fontFamily: 'var(--font-display)' }}>{layer.title}</h2>
                 <p style={{ ...TY.bodySm, color: S.inkSecondary, margin: 0, flex: 1 }}>{layer.body}</p>
-                <ButtonLink to={layer.to} variant="quiet" size="sm">Open →</ButtonLink>
+                <ButtonLink to={layer.to} variant="quiet" size="sm">{layer.cta} →</ButtonLink>
               </Card>
             ))}
           </div>

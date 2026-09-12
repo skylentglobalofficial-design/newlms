@@ -425,7 +425,7 @@ export default function DashboardFacultyPage() {
   const teachingCourse = courses.find(c => c.slug === TEACHING_COURSE_SLUG) ?? courses[0]
   const courseName = user.course || program?.name || teachingCourse?.title || 'Teaching workspace'
   const displayName = user.name || 'Faculty'
-  const honorific = displayName.startsWith('Dr.') ? displayName : `Dr. ${displayName.split(' ').pop()}`
+  const honorific = displayName
   const courseContext = `${honorific} · ${submissions.length > 0 ? 'Review recent learner submissions' : 'No submissions pending review'}`
   const currentCurriculum = curriculumSummary.find(n => n.status === 'current')
   const teachingLine = teachingCourse

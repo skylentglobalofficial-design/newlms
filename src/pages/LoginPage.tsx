@@ -4,13 +4,14 @@ import { useAuth } from "../context/AuthContext"
 import { type CatalogEnrollTarget, type LoginRedirectState } from "../lib/catalog-enrollment"
 import { buildGoogleOAuthStartUrl } from "../lib/auth-api"
 import { finishAuthNavigation } from "../lib/auth-routing"
+import { safeInternalPath } from "../lib/safe-return"
 import AuthPageShell, { AuthDivider, AuthDevDemoAccounts, AuthError, authFieldClass } from "../components/auth/AuthPageShell"
 import { getSurfaceAccent } from "../design/accent"
 
 const accent = getSurfaceAccent("general")
 
 function readOAuthRedirectState(params: URLSearchParams): LoginRedirectState | null {
-  const returnTo = params.get("returnTo") ?? undefined
+  const returnTo = safeInternalPath(params.get("returnTo")) ?? undefined
   const enrollKind = params.get("enrollKind")
   const enrollSlug = params.get("enrollSlug")?.trim()
   let enrollTarget: CatalogEnrollTarget | undefined
@@ -41,7 +42,13 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const isSignup = location.pathname === "/signup"
-  const redirectState = (location.state ?? null) as LoginRedirectState | null
+  const locationRedirect = (location.state ?? null) as LoginRedirectState | null
+  const searchRedirect = readOAuthRedirectState(new URLSearchParams(location.search))
+  const returnTo = safeInternalPath(locationRedirect?.returnTo) ?? searchRedirect?.returnTo ?? undefined
+  const enrollTarget = locationRedirect?.enrollTarget ?? searchRedirect?.enrollTarget
+  const redirectState: LoginRedirectState | null = returnTo || enrollTarget
+    ? { returnTo, enrollTarget }
+    : null
 
   const [siEmail, setSiEmail] = useState("")
   const [siPassword, setSiPassword] = useState("")

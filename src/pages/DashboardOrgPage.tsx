@@ -343,7 +343,7 @@ export default function DashboardOrgPage() {
                 Institution settings
               </div>
               <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-                Configure programs, faculty assignments, and academic calendar for {institutionName}.
+                Institution settings are not connected yet. Programme, faculty and calendar configuration will appear here when this organisation workspace is live.
               </p>
             </div>
           </>
