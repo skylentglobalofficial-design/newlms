@@ -1,0 +1,419 @@
+/* ───────────────────────────────────────────────────────────────────────────
+   Skylent workspace chrome — the signed-in counterpart to product.css.
+
+   Same tokens, same rhythm, different job: a persistent sidebar + topbar frame
+   that stays put while the learner works. Scoped under .sk-workspace, which is
+   always nested inside .sk-surface so the --sk-* tokens resolve.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.sk-workspace {
+  --sk-ws-sidebar: 244px;
+  --sk-ws-topbar: 64px;
+
+  min-height: 100vh;
+  background: var(--sk-canvas);
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────────── */
+.sk-ws-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sk-ws-sidebar);
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  background: var(--sk-surface);
+  border-right: 1px solid var(--sk-line);
+}
+
+.sk-ws-brand {
+  display: flex;
+  align-items: center;
+  height: var(--sk-ws-topbar);
+  padding: 0 20px;
+  border-bottom: 1px solid var(--sk-line);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.sk-ws-brand-mark {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--sk-ink);
+  line-height: 1;
+}
+
+.sk-ws-brand-label {
+  font-size: 11px;
+  color: var(--sk-ink-muted);
+  margin-top: 3px;
+  letter-spacing: 0.02em;
+}
+
+.sk-ws-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sk-ws-nav-group {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sk-ink-muted);
+  padding: 16px 12px 7px;
+}
+
+.sk-ws-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  text-align: left;
+  padding: 9px 12px;
+  border: none;
+  border-radius: var(--sk-r-control);
+  background: transparent;
+  color: var(--sk-ink-secondary);
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.sk-ws-nav-item:hover {
+  background: var(--sk-surface-muted);
+  color: var(--sk-ink);
+}
+
+.sk-ws-nav-item.is-active {
+  font-weight: 600;
+}
+
+.sk-ws-nav-icon {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.sk-ws-nav-item .sk-ws-nav-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sk-ws-nav-tail {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  border-radius: 999px;
+  padding: 1px 7px;
+  flex-shrink: 0;
+}
+
+/* ── Sidebar footer / account ─────────────────────────────────────────────── */
+.sk-ws-account {
+  border-top: 1px solid var(--sk-line);
+  padding: 14px;
+  flex-shrink: 0;
+}
+
+.sk-ws-account-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  margin-bottom: 10px;
+}
+
+.sk-ws-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: 0.02em;
+}
+
+.sk-ws-account-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sk-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sk-ws-account-role {
+  font-size: 11.5px;
+  color: var(--sk-ink-muted);
+}
+
+.sk-ws-signout {
+  width: 100%;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid var(--sk-line-strong);
+  border-radius: var(--sk-r-control);
+  color: var(--sk-ink-secondary);
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+.sk-ws-signout:hover {
+  background: var(--sk-surface-muted);
+  color: var(--sk-ink);
+}
+
+/* ── Main column ──────────────────────────────────────────────────────────── */
+.sk-ws-main {
+  margin-left: var(--sk-ws-sidebar);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.sk-ws-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  height: var(--sk-ws-topbar);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 clamp(16px, 3vw, 32px);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--sk-line);
+}
+
+
+.sk-ws-topbar-title {
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--sk-ink);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sk-ws-topbar-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.sk-ws-burger,
+.sk-ws-drawer-close {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--sk-line-strong);
+  border-radius: var(--sk-r-control);
+  background: var(--sk-surface);
+  color: var(--sk-ink);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.sk-ws-body {
+  flex: 1;
+  min-width: 0;
+  padding: clamp(22px, 3vw, 34px) clamp(16px, 3vw, 32px) 72px;
+}
+
+
+.sk-ws-body-rail {
+  width: 100%;
+  max-width: 1180px;
+  margin-inline: auto;
+  min-width: 0;
+}
+
+/* ── Dashboard grid ───────────────────────────────────────────────────────── */
+.sk-ws-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 316px;
+  gap: clamp(20px, 2.4vw, 28px);
+  align-items: start;
+}
+
+.sk-ws-col {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(18px, 2.2vw, 26px);
+}
+
+.sk-ws-rail {
+  min-width: 0;
+  position: sticky;
+  top: calc(var(--sk-ws-topbar) + 20px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Mobile drawer + bottom nav ───────────────────────────────────────────── */
+.sk-ws-scrim {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 115;
+  background: rgba(12, 14, 18, 0.45);
+}
+
+
+.sk-ws-bottomnav {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 110;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid var(--sk-line);
+  padding: 7px 4px max(7px, env(safe-area-inset-bottom));
+}
+
+.sk-ws-bottomnav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 5px 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--sk-ink-muted);
+  font-family: var(--font-body);
+  text-decoration: none;
+  min-width: 0;
+}
+
+
+.sk-ws-bottomnav-item span {
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Responsive
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 1320px) {
+  .sk-ws-grid {
+    grid-template-columns: minmax(0, 1fr) 288px;
+  }
+}
+
+/* With the 244px sidebar still in play, a side rail below this width starves
+   the main column — stack instead of squeezing both. */
+@media (max-width: 1140px) {
+  .sk-ws-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sk-ws-rail {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+@media (max-width: 760px) {
+  .sk-ws-rail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Below this the fixed sidebar costs more than it gives — swap to a drawer. */
+@media (max-width: 900px) {
+  .sk-ws-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.24s ease;
+    width: 276px;
+    box-shadow: none;
+  }
+
+
+  .sk-ws-sidebar.is-open {
+    transform: translateX(0);
+    z-index: 120;
+    box-shadow: var(--sk-shadow-lg);
+  }
+
+  .sk-ws-main {
+    margin-left: 0;
+  }
+
+
+  .sk-ws-burger {
+    display: inline-flex;
+  }
+
+  .sk-ws-drawer-close {
+    display: inline-flex;
+  }
+
+  .sk-ws-scrim.is-open {
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  .sk-ws-bottomnav {
+    display: flex;
+  }
+
+  .sk-ws-body {
+    padding-bottom: 88px;
+  }
+
+  .sk-ws-topbar-actions .sk-ws-topbar-hide-sm {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-ws-sidebar,
+  .sk-ws-nav-item {
+    transition: none;
+  }
+}
