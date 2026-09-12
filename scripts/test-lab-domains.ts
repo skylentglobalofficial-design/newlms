@@ -11,6 +11,11 @@ import {
   labsForLearningContext,
   labsForProgram,
 } from '../src/lib/virtual-labs.ts'
+import {
+  filterLearnInventory,
+  getLearnInventory,
+  sortLearnInventory,
+} from '../src/lib/learn-inventory.ts'
 
 function ids(labs: { id: string }[]) {
   return labs.map(lab => lab.id).sort()
@@ -126,6 +131,44 @@ assert(
     '/labs/knn-classifier/run?from=%2Fcourses%2Fpython-programming',
   'safe from must be preserved',
 )
+
+const learn = getLearnInventory()
+assert(learn.length > 0, 'Learn inventory must not be empty')
+assert(learn.every(item => item.title && item.href && item.kindLabel && item.availability.label), 'Learn items need honest labels')
+assert(new Set(learn.map(item => item.id)).size === learn.length, 'Learn inventory must be unique by kind+slug')
+assert(learn.some(item => item.kind === 'program'), 'Learn inventory includes programmes')
+assert(learn.some(item => item.kind === 'course'), 'Learn inventory includes courses')
+assert(learn.some(item => item.kind === 'workshop'), 'Learn inventory includes webinars')
+assert(
+  !learn.some(item => item.availability.canStartLearning && item.availabilityGroup !== 'available'),
+  'Open items must be grouped as available',
+)
+
+const pythonHits = filterLearnInventory(learn, {
+  query: 'python',
+  domain: 'all',
+  kind: 'all',
+  level: 'all',
+  format: 'all',
+  duration: 'all',
+  availability: 'all',
+})
+assert(pythonHits.length > 0, 'Python search must return real inventory')
+assert(pythonHits.every(item => `${item.title} ${item.description} ${item.domains.map(d => d.label).join(' ')}`.toLowerCase().includes('python') || item.outcomes.some(o => o.toLowerCase().includes('python'))), 'Python search should stay on-topic')
+
+const openOnly = filterLearnInventory(learn, {
+  query: '',
+  domain: 'all',
+  kind: 'all',
+  level: 'all',
+  format: 'all',
+  duration: 'all',
+  availability: 'available',
+})
+assert(openOnly.every(item => item.availability.canStartLearning), 'Available filter must only return startable items')
+
+const recommended = sortLearnInventory(learn, 'recommended')
+assert(recommended[0].availability.canStartLearning, 'Recommended sort puts open inventory first')
 
 console.log('lab-domain matching assertions passed')
 console.log({

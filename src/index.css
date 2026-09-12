@@ -433,7 +433,7 @@ html, body {
   font-family: var(--font-mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #f36b21;
+  color: #a5b4fc;
 }
 
 .lms-lab-cta p {
@@ -458,7 +458,7 @@ html, body {
 }
 
 .lms-lab-cta a:hover {
-  color: #f36b21;
+  color: #c7d2fe;
 }
 
 .lms-lab-cta span {

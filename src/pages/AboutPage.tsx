@@ -4,7 +4,7 @@ import { S, TY } from '../design/tokens'
 import '../design/detail.css'
 
 const PRODUCTS = [
-  { title: 'Learn', body: 'Programmes and courses with a published syllabus, a real price, and a status that says whether lessons are in the platform.', to: '/programs' },
+  { title: 'Learn', body: 'Programmes and courses with a published syllabus, a real price, and a status that says whether lessons are in the platform.', to: '/skills' },
   { title: 'Education', body: 'Schooling, undergraduate, postgraduate and entrance exams — structured as academic stages, with empty stages labelled empty.', to: '/education' },
   { title: 'Virtual labs', body: 'Browser experiments matched to the subject you are studying. Not a Python interpreter or a live classroom.', to: '/labs' },
   { title: 'Career OS', body: 'A signed-in workspace for profile, jobs, applications and interview practice. Not a placement service.', to: '/career-os' },
@@ -21,7 +21,7 @@ export default function AboutPage() {
           lead="Skylent is a learning platform. It is not a university, it does not award degrees, and it does not place people in jobs. We publish what is actually available, and we say so when something is not."
           actions={
             <>
-              <ButtonLink to="/programs">Browse programmes</ButtonLink>
+              <ButtonLink to="/skills">Find something to learn</ButtonLink>
               <ButtonLink to="/contact" variant="secondary">Contact</ButtonLink>
             </>
           }

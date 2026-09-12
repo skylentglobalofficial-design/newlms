@@ -87,18 +87,18 @@ function Hero({ featured }: { featured: Program | null }) {
       <Rail>
         <div className={`sk-home-hero-grid${featured ? '' : ' is-solo'}`}>
           <div className="sk-home-hero-copy">
-            <p className="sk-home-kicker">Skylent OS</p>
+            <p className="sk-home-kicker">One platform</p>
             <h1 className="sk-home-title">
-              Learn something specific.
-              <span>Then do something with it.</span>
+              Skylent
+              <span>Skills, education and a career workspace.</span>
             </h1>
             <p className="sk-home-lead">
-              Academic pathways, skills programmes and a career workspace — with a clear line between what you can
-              open today and what is still being built.
+              Find something to learn, follow an academic path, or open a professional workspace. Every product says
+              whether it is open today.
             </p>
             <div className="sk-home-hero-actions">
-              <Link to="/programs" className="sk-home-btn">Browse programmes</Link>
-              <Link to="/courses" className="sk-home-btn-ghost">See courses</Link>
+              <Link to="/skills" className="sk-home-btn">Learn</Link>
+              <Link to="/education" className="sk-home-btn-ghost">Education</Link>
             </div>
             <p className="sk-home-facts">
               Open today: {openPrograms.length} {openPrograms.length === 1 ? 'programme' : 'programmes'},{' '}
@@ -117,8 +117,8 @@ function Destinations() {
     <section className="sk-home-intent">
       <Rail>
         <div className="sk-home-section-head">
-          <h2>What are you here for?</h2>
-          <p>Six doors. Pick the one that matches the job you came to do.</p>
+          <h2>Where should I go next?</h2>
+          <p>Six product destinations. Same platform — different jobs.</p>
         </div>
         <div className="sk-home-doors">
           {DESTINATIONS.map((destination, index) => (
@@ -221,8 +221,7 @@ function OpenNow({ featuredSlug }: { featuredSlug: string | null }) {
   function handleSearch(event: FormEvent) {
     event.preventDefault()
     const trimmed = query.trim()
-    const path = tab === 'courses' ? '/courses' : '/programs'
-    navigate(trimmed ? `${path}?q=${encodeURIComponent(trimmed)}` : path)
+    navigate(trimmed ? `/skills?q=${encodeURIComponent(trimmed)}` : '/skills')
   }
 
   const programCards = openPrograms
@@ -241,7 +240,7 @@ function OpenNow({ featuredSlug }: { featuredSlug: string | null }) {
             value={query}
             onChange={setQuery}
             onSubmit={handleSearch}
-            placeholder={tab === 'courses' ? 'Search courses' : 'Search programmes'}
+            placeholder="What do you want to learn?"
           />
         </div>
 
@@ -308,69 +307,51 @@ function OpenNow({ featuredSlug }: { featuredSlug: string | null }) {
   )
 }
 
-const OS_COLUMNS = [
-  {
-    id: 'education',
-    kicker: 'Education',
-    title: 'Schooling to postgraduate',
-    to: '/education',
-    items: [
-      { label: 'Schooling', sub: 'Grades 1–12' },
-      { label: 'Undergraduate', sub: 'B.Tech · BCA' },
-      { label: 'Postgraduate', sub: 'MBA · MCA' },
-      { label: 'Entrance exams', sub: 'JEE Advanced · CAT' },
-    ],
-  },
-  {
-    id: 'skills',
-    kicker: 'Skills',
-    title: 'Programmes you can take',
-    to: '/programs',
-    items: [
-      { label: 'Professional programmes', sub: 'Long-form, career-focused' },
-      { label: 'Certificate programmes', sub: 'Focused credentials' },
-      { label: 'Courses', sub: 'Self-paced, open in the platform' },
-      { label: 'Virtual labs', sub: 'Experiments you run yourself' },
-      { label: 'Webinars', sub: 'None scheduled yet' },
-    ],
-  },
-  {
-    id: 'career',
-    kicker: 'Career OS',
-    title: 'After a professional programme',
-    to: '/career-os',
-    items: [
-      { label: 'Profile', sub: 'Skills, projects, resume' },
-      { label: 'Job board', sub: 'Empty until an employer posts' },
-      { label: 'Applications', sub: 'Track what you have sent' },
-      { label: 'Interview practice', sub: 'Structured question sets' },
-    ],
-  },
+const HOW_IT_WORKS = [
+  { label: 'Learn', body: 'A programme or course with published lessons.' },
+  { label: 'Practise', body: 'A virtual lab only when the subject has one.' },
+  { label: 'Build', body: 'Projects and assignments in the curriculum.' },
+  { label: 'Prove', body: 'Quizzes and a completion record — not a degree.' },
+  { label: 'Move', body: 'Career OS: profile, jobs and applications you actually send.' },
 ]
 
-function Ecosystem() {
+function HowItWorks() {
   return (
-    <section className="sk-home-os">
+    <section className="sk-home-how">
       <Rail>
         <div className="sk-home-section-head">
-          <h2>How Skylent OS connects</h2>
-          <p>Learn, practice, prove — then a career workspace. One platform, not three brochures.</p>
+          <h2>How Skylent works</h2>
+          <p>A short path. Nothing here invents a classroom, a ranking or a placement.</p>
         </div>
-        <div className="sk-home-os-grid">
-          {OS_COLUMNS.map(column => (
-            <Link key={column.id} to={column.to} className="sk-home-os-col">
-              <span className="sk-home-os-kicker">{column.kicker}</span>
-              <span className="sk-home-os-title">{column.title}</span>
-              <ul>
-                {column.items.map(item => (
-                  <li key={item.label}>
-                    <strong>{item.label}</strong>
-                    <span>{item.sub}</span>
-                  </li>
-                ))}
-              </ul>
-            </Link>
+        <ol className="sk-home-how-list">
+          {HOW_IT_WORKS.map((step, index) => (
+            <li key={step.label}>
+              <span className="sk-home-how-index" aria-hidden>{String(index + 1).padStart(2, '0')}</span>
+              <strong>{step.label}</strong>
+              <span>{step.body}</span>
+            </li>
           ))}
+        </ol>
+      </Rail>
+    </section>
+  )
+}
+
+function Worlds() {
+  return (
+    <section className="sk-home-worlds">
+      <Rail>
+        <div className="sk-home-worlds-grid">
+          <Link to="/career-os" className="sk-home-world">
+            <span className="sk-home-os-kicker">Career</span>
+            <strong>Career OS</strong>
+            <p>A signed-in workspace for profile, applications and interview practice. Not a jobs marketplace with invented employers.</p>
+          </Link>
+          <Link to="/institutions" className="sk-home-world">
+            <span className="sk-home-os-kicker">Institutions</span>
+            <strong>Skylent for schools and colleges</strong>
+            <p>Programmes, learners and faculty in an institution workspace. Partnership starts with a conversation.</p>
+          </Link>
         </div>
       </Rail>
     </section>
@@ -385,7 +366,7 @@ function Closing() {
           <h2>Start with what is actually open.</h2>
           <p>Check the status on every card. If lessons are not published, it will say so.</p>
           <div className="sk-home-hero-actions">
-            <Link to="/programs" className="sk-home-btn">Browse programmes</Link>
+            <Link to="/skills" className="sk-home-btn">Find something to learn</Link>
             <Link to="/education" className="sk-home-btn-ghost">Explore education</Link>
           </div>
         </div>
@@ -403,7 +384,8 @@ export default function HomePage() {
       <Hero featured={featured} />
       <Destinations />
       <OpenNow featuredSlug={featured?.slug ?? null} />
-      <Ecosystem />
+      <HowItWorks />
+      <Worlds />
       <Closing />
     </ProductShell>
   )

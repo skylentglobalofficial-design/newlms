@@ -1,30 +1,39 @@
 /* ───────────────────────────────────────────────────────────────────────────
-   Skylent product surface — light design system.
+   Skylent product surface — light-first ivory / indigo system.
 
-   Scoped under .sk-surface so the near-black marketing canvas is untouched.
+   Scoped under .sk-surface so dark LMS / Career OS shells stay untouched.
    Token values mirror src/design/tokens.ts.
    ─────────────────────────────────────────────────────────────────────────── */
 
 .sk-surface {
-  --sk-canvas: #f5f6f8;
-  --sk-surface: #ffffff;
-  --sk-surface-muted: #f0f2f5;
-  --sk-surface-dark: #141820;
+  --sk-canvas: #f7f4ec;
+  --sk-surface: #fffdf8;
+  --sk-surface-pure: #ffffff;
+  --sk-surface-muted: #efebe1;
+  --sk-surface-dark: #15171a;
+  --sk-selected: #eef2ff;
 
-  --sk-ink: #0c0e12;
-  --sk-ink-secondary: #495062;
-  --sk-ink-muted: #767e8e;
+  --sk-ink: #15171a;
+  --sk-ink-secondary: #626875;
+  --sk-ink-muted: #8a909a;
 
-  --sk-line: rgba(12, 14, 18, 0.09);
-  --sk-line-strong: rgba(12, 14, 18, 0.16);
+  --sk-line: #e6e1d7;
+  --sk-line-strong: #d9d3c8;
 
-  --sk-r-control: 10px;
-  --sk-r-card: 14px;
-  --sk-r-panel: 18px;
+  --sk-action: #4f46e5;
+  --sk-action-hover: #4338ca;
+  --sk-action-soft: #eef2ff;
+  --sk-action-line: rgba(79, 70, 229, 0.28);
+  --sk-blue: #2563eb;
+  --sk-orange: #f97316;
 
-  --sk-shadow-sm: 0 1px 2px rgba(12, 14, 18, 0.05);
-  --sk-shadow-md: 0 2px 8px rgba(12, 14, 18, 0.06);
-  --sk-shadow-lg: 0 12px 32px rgba(12, 14, 18, 0.1);
+  --sk-r-control: 8px;
+  --sk-r-card: 12px;
+  --sk-r-panel: 14px;
+
+  --sk-shadow-sm: 0 1px 2px rgba(21, 23, 26, 0.04);
+  --sk-shadow-md: 0 2px 8px rgba(21, 23, 26, 0.05);
+  --sk-shadow-lg: 0 12px 28px rgba(21, 23, 26, 0.08);
 
   --sk-gutter: clamp(16px, 4vw, 32px);
 
@@ -249,7 +258,7 @@
   bottom: 0;
   width: 42px;
   pointer-events: none;
-  background: linear-gradient(to right, transparent, var(--sk-canvas, #f5f6f8));
+  background: linear-gradient(to right, transparent, var(--sk-canvas, #f7f4ec));
 }
 
 .sk-anchor-nav-scroll {
@@ -318,7 +327,8 @@
 }
 
 .sk-search:focus-within {
-  border-color: var(--sk-ink);
+  border-color: var(--sk-action);
+  box-shadow: 0 0 0 3px var(--sk-action-soft);
 }
 
 .sk-search input {
@@ -355,7 +365,7 @@
 }
 
 .sk-select:focus-visible {
-  border-color: var(--sk-ink);
+  border-color: var(--sk-action);
 }
 
 /* ── Filter bar ───────────────────────────────────────────────────────────── */
@@ -438,9 +448,18 @@
 
 /* ── Accessibility ────────────────────────────────────────────────────────── */
 .sk-surface :focus-visible {
-  outline: 2px solid #2d5bd6;
+  outline: 2px solid var(--sk-action);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-surface,
+  .sk-surface * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
 }
 
 /* ───────────────────────────────────────────────────────────────────────────

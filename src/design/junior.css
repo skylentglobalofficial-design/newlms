@@ -1,13 +1,13 @@
 /* Junior / schooling — curious, visual, not an adult catalogue. */
 
 .sk-junior.sk-surface {
-  --sk-canvas: #f3f6ef;
-  --sk-surface: #fffcf7;
+  --sk-canvas: #f7f4ec;
+  --sk-surface: #fffdf8;
 }
 
 .sk-junior.sk-surface > .sk-header,
 .sk-junior.sk-surface > .sk-footer {
-  background: #f3f6ef;
+  background: #f7f4ec;
   backdrop-filter: none;
 }
 
@@ -21,7 +21,7 @@
   font-size: 11px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #2f6b45;
+  color: #4338ca;
   font-weight: 600;
 }
 
@@ -66,7 +66,7 @@
 .sk-junior-stage span {
   display: block;
   margin-top: 4px;
-  color: #2f6b45;
+  color: #4338ca;
   font-size: 13px;
   font-weight: 600;
 }

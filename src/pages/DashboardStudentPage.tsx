@@ -31,7 +31,7 @@ import type { CourseLesson } from '../data'
 import { emptySubjectLabCopy, labsForLearningContext } from '../lib/virtual-labs'
 import { labRunPath } from '../lib/safe-return'
 
-const THEME = 'data-science' as const
+const THEME = 'general' as const
 const accent: SurfaceAccent = getSurfaceAccent(THEME)
 
 const NAV_ITEMS: WorkspaceNavItem[] = [
@@ -41,7 +41,7 @@ const NAV_ITEMS: WorkspaceNavItem[] = [
   { id: 'progress', label: 'Curriculum', short: 'Progress', sectionId: 'dash-curriculum', group: 'Learning' },
   { id: 'certificate', label: 'Certificate', short: 'Cert', sectionId: 'dash-certificate', group: 'Learning' },
   { id: 'labs', label: 'Virtual labs', short: 'Labs', href: '/labs', group: 'Elsewhere' },
-  { id: 'catalog', label: 'Browse catalogue', href: '/courses', group: 'Elsewhere' },
+  { id: 'catalog', label: 'Browse catalogue', href: '/skills', group: 'Elsewhere' },
   { id: 'career', label: 'Career OS', short: 'Career', href: '/career-os/app', group: 'Elsewhere' },
 ]
 
@@ -214,7 +214,7 @@ function CourseCards({
       <EmptyState
         title="No enrolments yet"
         body="Browse the catalogue to enrol in a course and open your learning workspace."
-        action={<ButtonLink to="/courses" themeId={THEME}>Browse catalogue</ButtonLink>}
+        action={<ButtonLink to="/skills" themeId={THEME}>Find something to learn</ButtonLink>}
         compact
       />
     )
@@ -611,8 +611,8 @@ export default function DashboardStudentPage() {
         onNavChange={setActiveNav}
         title={title}
         actions={
-          <ButtonLink to="/courses" variant="secondary" size="sm" themeId={THEME}>
-            Browse catalogue
+          <ButtonLink to="/skills" variant="secondary" size="sm" themeId={THEME}>
+            Find something to learn
           </ButtonLink>
         }
       >
@@ -659,7 +659,7 @@ export default function DashboardStudentPage() {
               >
                 {enrolling ? 'Enrolling…' : 'Enrol in Data Analytics'}
               </Button>
-              <ButtonLink to="/courses" variant="secondary" themeId={THEME}>Browse catalogue</ButtonLink>
+              <ButtonLink to="/skills" variant="secondary" themeId={THEME}>Find something to learn</ButtonLink>
             </>
           }
         />

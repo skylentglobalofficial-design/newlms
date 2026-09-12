@@ -54,16 +54,16 @@
   margin-top: 22px;
   min-height: 46px;
   padding: 0 22px;
-  border-radius: 999px;
-  background: #fff;
-  color: #17141f;
+  border-radius: 8px;
+  background: #4f46e5;
+  color: #fff;
   font-size: 14.5px;
   font-weight: 600;
   text-decoration: none;
 }
 
 .sk-dash-continue:hover {
-  background: #f3eee4;
+  background: #4338ca;
 }
 
 .sk-dash-fan {
@@ -82,7 +82,7 @@
   border-radius: 18px;
   text-decoration: none;
   color: #17141f;
-  background: #ead9ff;
+  background: #eef2ff;
 }
 
 .sk-dash-fan-card + .sk-dash-fan-card {
@@ -90,17 +90,17 @@
 }
 
 .sk-dash-fan-card:nth-child(2) {
-  background: #f8e2b8;
+  background: #fff7ed;
   transform: translateY(8px);
 }
 
 .sk-dash-fan-card:nth-child(3) {
-  background: #e3f19a;
+  background: #f7f4ec;
   transform: translateY(-4px);
 }
 
 .sk-dash-fan-card:nth-child(4) {
-  background: #d5e6ff;
+  background: #eff6ff;
 }
 
 @media (min-width: 768px) {

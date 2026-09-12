@@ -40,7 +40,7 @@ export default function SiteFooter() {
         <div className="sk-footer-grid">
           <div>
             <Link to="/" className="sk-wordmark" style={{ fontSize: 20 }}>
-              Skylent<span aria-hidden style={{ color: '#F36B21' }}>.</span>
+              Skylent<span aria-hidden style={{ color: '#F97316' }}>.</span>
             </Link>
             <p style={{ fontSize: 13.5, lineHeight: 1.65, color: S.inkSecondary, margin: '12px 0 0', maxWidth: 300 }}>
               Learning, academic pathways and career workflows in one platform. We publish what is actually

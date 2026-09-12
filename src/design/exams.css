@@ -1,13 +1,13 @@
 /* Exams — diagnostic, structured, not a course catalogue. */
 
 .sk-exams.sk-surface {
-  --sk-canvas: #eef1f4;
-  --sk-surface: #ffffff;
+  --sk-canvas: #f7f4ec;
+  --sk-surface: #fffdf8;
 }
 
 .sk-exams.sk-surface > .sk-header,
 .sk-exams.sk-surface > .sk-footer {
-  background: #eef1f4;
+  background: #f7f4ec;
   backdrop-filter: none;
 }
 
@@ -21,7 +21,7 @@
   font-size: 11px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #2d5bd6;
+  color: #4338ca;
   font-weight: 600;
 }
 

@@ -1,30 +1,30 @@
-/* Homepage — product storefront. Warm paper, dark featured product, orange action. */
+/* Homepage — ivory canvas, indigo action, orange only as a micro accent. */
 
 .sk-home.sk-surface {
-  --sk-canvas: #f3eee4;
+  --sk-canvas: #f7f4ec;
   --sk-surface: #fffdf8;
-  --sk-surface-muted: #ebe4d6;
-  --sk-ink: #16120c;
-  --sk-ink-secondary: #5a5348;
-  --sk-ink-muted: #8a8174;
-  --sk-line: rgba(22, 18, 12, 0.1);
-  --sk-line-strong: rgba(22, 18, 12, 0.18);
-  --sk-brand: #f36b21;
-  --sk-brand-ink: #c24a12;
+  --sk-surface-muted: #efebe1;
+  --sk-ink: #15171a;
+  --sk-ink-secondary: #626875;
+  --sk-ink-muted: #8a909a;
+  --sk-line: #e6e1d7;
+  --sk-line-strong: #d9d3c8;
+  --sk-brand: #4f46e5;
+  --sk-brand-ink: #4338ca;
   background: var(--sk-canvas);
   color: var(--sk-ink);
 }
 
 .sk-home.sk-surface > .sk-header {
-  background: #f3eee4;
+  background: rgba(247, 244, 236, 0.92);
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
-  border-bottom-color: rgba(22, 18, 12, 0.08);
+  border-bottom-color: #e6e1d7;
 }
 
 .sk-home.sk-surface > .sk-footer {
-  background: #f3eee4;
-  border-top-color: rgba(22, 18, 12, 0.08);
+  background: #f7f4ec;
+  border-top-color: #e6e1d7;
   margin-top: 0;
 }
 
@@ -36,7 +36,7 @@
 
 /* ── Hero ─────────────────────────────────────────────────────────────────── */
 .sk-home-hero {
-  padding: clamp(36px, 6vw, 72px) 0 clamp(28px, 4vw, 48px);
+  padding: clamp(28px, 4.5vw, 48px) 0 clamp(20px, 3vw, 32px);
 }
 
 .sk-home-hero-grid {
@@ -63,9 +63,9 @@
 .sk-home-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(38px, 5.6vw, 70px);
-  line-height: 1.02;
-  letter-spacing: -0.038em;
+  font-size: clamp(36px, 4.6vw, 52px);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
   font-weight: 600;
   color: var(--sk-ink);
   text-wrap: balance;
@@ -73,8 +73,12 @@
 
 .sk-home-title span {
   display: block;
+  margin-top: 6px;
+  font-size: clamp(20px, 2.2vw, 26px);
   font-weight: 400;
-  color: #3d3830;
+  letter-spacing: -0.02em;
+  color: #3d4248;
+  line-height: 1.25;
 }
 
 .sk-home-lead {
@@ -112,7 +116,7 @@
 }
 
 .sk-home-btn:hover {
-  background: #dc5714;
+  background: var(--sk-brand-ink);
 }
 
 .sk-home-btn-ghost {
@@ -135,7 +139,7 @@
 .sk-home-poster {
   display: flex;
   flex-direction: column;
-  min-height: 420px;
+  min-height: 300px;
   padding: 28px 28px 24px;
   background: #14120f;
   color: #fff;
@@ -206,7 +210,7 @@
 }
 
 .sk-home-poster:hover .sk-home-poster-cta {
-  background: #dc5714;
+  background: var(--sk-brand-ink);
 }
 
 /* ── Intent ───────────────────────────────────────────────────────────────── */
@@ -225,9 +229,9 @@
 .sk-home-close h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(26px, 3vw, 36px);
-  line-height: 1.12;
-  letter-spacing: -0.03em;
+  font-size: clamp(22px, 2.4vw, 28px);
+  line-height: 1.18;
+  letter-spacing: -0.022em;
   font-weight: 600;
 }
 
@@ -248,11 +252,11 @@
 .sk-home-door {
   display: flex;
   flex-direction: column;
-  min-height: 196px;
-  padding: 20px 20px 18px;
+  min-height: 168px;
+  padding: 18px 18px 16px;
   background: #fffdf8;
   border: 1px solid var(--sk-line);
-  border-radius: 16px;
+  border-radius: 12px;
   text-decoration: none;
   color: inherit;
 }
@@ -414,7 +418,7 @@
   height: 36px;
   padding: 0 16px;
   border-radius: 9px;
-  background: var(--sk-ink);
+  background: var(--sk-brand);
   color: #fff;
   font-family: var(--font-body);
   font-size: 13.5px;
@@ -737,6 +741,90 @@
   color: var(--sk-ink-muted);
 }
 
+.sk-home-how {
+  padding: clamp(20px, 3vw, 36px) 0;
+}
+
+.sk-home-how-list {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sk-home-how-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 14px 14px 16px;
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: 12px;
+}
+
+.sk-home-how-index {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--sk-brand-ink);
+}
+
+.sk-home-how-list strong {
+  font-family: var(--font-display);
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+.sk-home-how-list span:last-child {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--sk-ink-secondary);
+}
+
+.sk-home-worlds {
+  padding: 8px 0 clamp(36px, 5vw, 56px);
+}
+
+.sk-home-worlds-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sk-home-world {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 20px 20px 18px;
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.sk-home-world:hover {
+  border-color: var(--sk-line-strong);
+}
+
+.sk-home-world strong {
+  font-family: var(--font-display);
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
+.sk-home-world p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--sk-ink-secondary);
+}
+
 /* ── Close ────────────────────────────────────────────────────────────────── */
 .sk-home-close {
   padding: 0 0 clamp(48px, 6vw, 72px);
@@ -782,7 +870,9 @@
 
   .sk-home-store-grid,
   .sk-home-os-grid,
-  .sk-home-doors {
+  .sk-home-doors,
+  .sk-home-how-list,
+  .sk-home-worlds-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -803,7 +893,9 @@
 
   .sk-home-store-grid,
   .sk-home-os-grid,
-  .sk-home-doors {
+  .sk-home-doors,
+  .sk-home-how-list,
+  .sk-home-worlds-grid {
     grid-template-columns: minmax(0, 1fr);
   }
 

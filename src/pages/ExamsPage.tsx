@@ -71,9 +71,9 @@ export default function ExamsPage() {
                   <p className="lead">{exam.name}</p>
                   <p className="sk-exam-meta">{exam.pattern}</p>
                   <div className="sk-exam-actions">
-                    <ButtonLink to="/contact" themeId="jee">{availability.ctaLabel}</ButtonLink>
+                    <ButtonLink to="/contact">{availability.ctaLabel}</ButtonLink>
                     {program && (
-                      <ButtonLink to={`/programs/${program.slug}`} variant="secondary" themeId="jee">
+                      <ButtonLink to={`/programs/${program.slug}`} variant="secondary">
                         Programme outline
                       </ButtonLink>
                     )}
