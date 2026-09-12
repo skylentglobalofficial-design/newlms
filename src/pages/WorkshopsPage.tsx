@@ -1,144 +1,84 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { C, FadeIn, PageShell, EnrollmentModal } from '../components/shared'
-import { Button, Eyebrow, Section, SectionHeader, T } from '../components/ui'
-import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
-import { getDomainAccent } from '../aurora-themes'
+import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import ProductShell from '../design/ProductShell'
+import { Rail, PageHeader, Card, StatusPill, Tag, EmptyState, Note } from '../design/primitives'
+import { formatInr } from '../design/CatalogueCard'
+import { getSurfaceAccent } from '../design/accent'
+import { S, TY } from '../design/tokens'
+import { getWorkshopAvailability } from '../lib/catalogue-status'
 import { workshops } from '../data'
 import type { Workshop } from '../data'
-import { PHOTO } from '../media'
 
-const accent = getDomainAccent('webinar')
+const accent = getSurfaceAccent('webinar')
+const availability = getWorkshopAvailability()
 
 export default function WorkshopsPage() {
   const [category, setCategory] = useState('All')
-  const [mode, setMode] = useState('All')
-  const [enrollItem, setEnrollItem] = useState<Workshop | null>(null)
-  const navigate = useNavigate()
+  const categories = useMemo(
+    () => ['All', ...Array.from(new Set(workshops.map(item => item.category)))],
+    [],
+  )
 
-  const categories = ['All', ...Array.from(new Set(workshops.map(w => w.category)))]
-  const modes = ['All', 'Online', 'Offline', 'Hybrid']
-
-  const filtered = workshops.filter(w => {
-    const matchCat = category === 'All' || w.category === category
-    const matchMode = mode === 'All' || w.mode.includes(mode)
-    return matchCat && matchMode
-  })
+  const filtered = workshops.filter(item => category === 'All' || item.category === category)
 
   return (
-    <PageShell auroraTheme="webinar">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 32}px ${T.gutter} clamp(40px, 5vw, 56px)` }}>
-        <Aurora themeId="webinar" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div className="two-col" style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px, 5vw, 48px)', alignItems: 'center' }}>
-            <FadeIn>
-              <Eyebrow tone="dark" accent>Workshops</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '18px 0 14px' }}>
-                Focused sessions.<br />
-                <span style={{ color: accent.text }}>Practical outcomes.</span>
-              </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 480, margin: 0 }}>
-                Short live workshops on specific skills — register, attend, and leave with something you can apply the same week.
-              </p>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <GlassSurface level={2} padding="0" style={{ overflow: 'hidden' }}>
-                <MediaImage src={PHOTO.workshop} alt="Workshop session" style={{ minHeight: 240 }} />
-              </GlassSurface>
-            </FadeIn>
+    <ProductShell>
+      <Rail>
+        <PageHeader
+          eyebrow="Webinars"
+          title="Short sessions, when they exist."
+          lead="These are planned topics — not a timetable. No date, host or seat count is published because no session is on the calendar."
+        />
+
+        <div style={{ paddingBottom: 72 }}>
+          <Note>
+            Registering interest does not book a place and nothing is charged. A webinar becomes bookable only when a
+            date is actually announced.
+          </Note>
+
+          <div className="sk-chip-row" style={{ margin: '22px 0 28px' }}>
+            {categories.map(item => (
+              <button
+                key={item}
+                type="button"
+                className={`sk-chip${category === item ? ' is-active' : ''}`}
+                onClick={() => setCategory(item)}
+              >
+                {item}
+              </button>
+            ))}
           </div>
-        </div>
-      </section>
 
-      <Section tone="canvas" divider>
-        <FadeIn>
-          <SectionHeader
-            tone="dark"
-            eyebrow="Upcoming"
-            title={`${filtered.length} workshop${filtered.length !== 1 ? 's' : ''}`}
-            lead="Filter by topic or delivery mode. Seat counts are illustrative for this demo catalog."
-          />
-        </FadeIn>
-
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 28, marginBottom: 32 }}>
-          {[['Category', categories, category, setCategory], ['Mode', modes, mode, setMode]].map(([label, opts, val, setter]) => (
-            <div key={label as string} style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)' }}>{label as string}</span>
-              {(opts as string[]).map(o => (
-                <button
-                  key={o}
-                  type="button"
-                  onClick={() => (setter as (v: string) => void)(o)}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: 100,
-                    border: `1px solid ${(val as string) === o ? accent.border : T.lineDark}`,
-                    background: (val as string) === o ? accent.subtle : 'transparent',
-                    color: (val as string) === o ? accent.text : 'rgba(255,255,255,0.5)',
-                    fontSize: 12,
-                    cursor: 'pointer',
-                    fontFamily: 'var(--font-body)',
-                  }}
-                >
-                  {o}
-                </button>
+          {filtered.length === 0 ? (
+            <EmptyState title="Nothing in that topic" body="Try another filter, or clear it to see every planned session." />
+          ) : (
+            <div className="sk-grid sk-grid-3">
+              {filtered.map(workshop => (
+                <WorkshopCard key={workshop.slug} workshop={workshop} />
               ))}
             </div>
-          ))}
+          )}
         </div>
+      </Rail>
+    </ProductShell>
+  )
+}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }} className="three-col">
-          {filtered.map((w, i) => {
-            const pct = Math.round(((w.seats - w.seatsLeft) / w.seats) * 100)
-            return (
-              <FadeIn key={w.slug} delay={i * 50}>
-                <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }}>
-                  <div style={{ padding: '22px 22px 18px', borderBottom: `1px solid ${T.lineDark}` }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10, gap: 8 }}>
-                      <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 5, padding: '3px 10px', color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{w.category}</span>
-                      <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, fontFamily: 'var(--font-mono)' }}>{w.duration}</span>
-                    </div>
-                    <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 19, fontWeight: 600, color: C.white, letterSpacing: '-0.02em', lineHeight: 1.25, margin: 0 }}>{w.title}</h3>
-                  </div>
-                  <div style={{ padding: '18px 22px 22px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 13, lineHeight: 1.65, margin: '0 0 16px' }}>{w.desc}</p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
-                      {[['Date', w.date], ['Mode', w.mode], ['Host', w.instructor.split(' ').slice(0, 2).join(' ')], ['Duration', w.duration]].map(([l, v]) => (
-                        <div key={l} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '8px 10px' }}>
-                          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 2 }}>{l}</div>
-                          <div style={{ color: C.white, fontSize: 11, fontWeight: 600 }}>{v}</div>
-                        </div>
-                      ))}
-                    </div>
-                    <div style={{ marginBottom: 16 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>{w.seatsLeft} seats left (demo)</span>
-                        <span style={{ color: pct > 70 ? '#f87171' : 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
-                      </div>
-                      <div style={{ height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2 }}>
-                        <div style={{ width: `${pct}%`, height: '100%', background: pct > 70 ? '#f87171' : accent.primary, borderRadius: 2 }} />
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', gap: 12, flexWrap: 'wrap' }}>
-                      <div>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: C.white }}>₹{w.price.toLocaleString('en-IN')}</span>
-                        {w.originalPrice > w.price && (
-                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.35)', textDecoration: 'line-through', marginLeft: 7 }}>₹{w.originalPrice.toLocaleString('en-IN')}</span>
-                        )}
-                      </div>
-                      <Button variant="primary" size="sm" onClick={() => navigate(`/workshops/${w.slug}`)}>View details</Button>
-                    </div>
-                  </div>
-                </GlassSurface>
-              </FadeIn>
-            )
-          })}
+function WorkshopCard({ workshop }: { workshop: Workshop }) {
+  return (
+    <Link to={`/workshops/${workshop.slug}`} style={{ textDecoration: 'none', color: 'inherit', minWidth: 0 }}>
+      <Card interactive padding={20} style={{ height: '100%', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, alignItems: 'flex-start' }}>
+          <Tag>{workshop.category}</Tag>
+          <StatusPill availability={availability} size="sm" />
         </div>
-      </Section>
-
-      {enrollItem && (
-        <EnrollmentModal item={{ id: enrollItem.slug, title: enrollItem.title, price: enrollItem.price, type: 'workshop' }} onClose={() => setEnrollItem(null)} themeId="webinar" />
-      )}
-    </PageShell>
+        <h2 style={{ ...TY.h3, color: S.ink, margin: 0, fontFamily: 'var(--font-display)' }}>{workshop.title}</h2>
+        <p style={{ ...TY.bodySm, color: S.inkSecondary, margin: 0, flex: 1 }}>{workshop.desc}</p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'baseline' }}>
+          <span style={{ ...TY.meta, color: S.inkMuted }}>{workshop.duration} · {workshop.mode}</span>
+          <span style={{ ...TY.body, color: accent.text, fontWeight: 600 }}>{formatInr(workshop.price)}</span>
+        </div>
+      </Card>
+    </Link>
   )
 }

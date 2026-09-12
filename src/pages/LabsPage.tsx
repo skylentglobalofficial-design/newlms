@@ -1,226 +1,217 @@
-import { useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { C, FadeIn, PageShell } from '../components/shared'
-import { Section, T } from '../components/ui'
-import { Aurora, GlassSurface } from '../components/foundation'
-import { getDomainAccent } from '../aurora-themes'
-import { labSubjects } from '../data'
-import type { LabType } from '../data'
+import { Link, useSearchParams } from 'react-router-dom'
+import ProductShell from '../design/ProductShell'
+import { Rail, StatusPill, Note, Tag, EmptyState } from '../design/primitives'
+import { S, TY } from '../design/tokens'
+import { courses, programs } from '../data'
+import {
+  INTERACTIVE_LABS,
+  archivedBriefSubjects,
+  emptySubjectLabCopy,
+  interactiveLabAvailability,
+  labGroupingLabel,
+  labsForCourse,
+  labsForDomain,
+  labsForProgram,
+  practiceBriefsMatchingDomains,
+  practiceBriefSubjects,
+  type LabDomain,
+  type VirtualLab,
+} from '../lib/virtual-labs'
+import { domainsForCourse, domainsForProgram, LAB_DOMAIN_LABEL } from '../lib/lab-domains'
+import { labRunPath } from '../lib/safe-return'
+import '../design/labs.css'
 
-const accent = getDomainAccent('professional')
+const SUBJECT_CHIPS: { domain: LabDomain; label: string }[] = [
+  { domain: 'python', label: 'Python' },
+  { domain: 'excel', label: 'Excel' },
+  { domain: 'sql', label: 'SQL' },
+  { domain: 'html', label: 'HTML & CSS' },
+  { domain: 'ml', label: 'Machine learning' },
+]
 
-const programs = ['All', 'Data Centric AI', 'BCA Full Stack Development', 'MBA', 'BBA', 'MCA', 'M.Com Fintech', 'SSU Semester 3', 'SSU Semester 5']
-const semesters = ['All', 'Semester 1', 'Semester 2', 'Semester 3', 'Semester 5']
-const labTypes: Array<'All' | LabType> = ['All', 'coding', 'data', 'business', 'simulation']
-
-const labTypeLabels: Record<LabType, string> = {
-  coding: 'Coding',
-  data: 'Data',
-  business: 'Business',
-  simulation: 'Simulation',
-}
-
-const labTypeColors: Record<LabType, { bg: string; text: string; border: string }> = {
-  coding: { bg: 'rgba(59,130,246,0.12)', text: '#60a5fa', border: 'rgba(59,130,246,0.25)' },
-  data: { bg: 'rgba(139,92,246,0.12)', text: '#a78bfa', border: 'rgba(139,92,246,0.25)' },
-  business: { bg: 'rgba(34,197,94,0.12)', text: '#4ade80', border: 'rgba(34,197,94,0.25)' },
-  simulation: { bg: 'rgba(168,85,247,0.12)', text: '#c084fc', border: 'rgba(168,85,247,0.25)' },
+function isDomain(value: string | null): value is LabDomain {
+  return SUBJECT_CHIPS.some(chip => chip.domain === value)
 }
 
 export default function LabsPage() {
-  const navigate = useNavigate()
-  const [selectedProgram, setSelectedProgram] = useState('All')
-  const [selectedSemester, setSelectedSemester] = useState('All')
-  const [selectedType, setSelectedType] = useState<'All' | LabType>('All')
+  const [params, setParams] = useSearchParams()
+  const courseSlug = params.get('course')
+  const programSlug = params.get('program')
+  const domainParam = params.get('domain')
+  const domainFilter = isDomain(domainParam) ? domainParam : null
 
-  const filtered = labSubjects.filter(s => {
-    const matchProgram = selectedProgram === 'All' || s.program === selectedProgram
-    const matchSemester = selectedSemester === 'All' || s.semester === selectedSemester
-    const matchType = selectedType === 'All' || s.labType === selectedType
-    return matchProgram && matchSemester && matchType
-  })
+  const course = courseSlug ? courses.find(item => item.slug === courseSlug) : undefined
+  const program = programSlug ? programs.find(item => item.slug === programSlug) : undefined
 
-  const catalogStats = useMemo(() => {
-    const programCount = new Set(labSubjects.map(s => s.program)).size
-    const subjectCount = labSubjects.length
-    const experimentCount = labSubjects.reduce((sum, s) => sum + s.experiments.length, 0)
-    return [
-      { value: String(programCount), label: 'Programs' },
-      { value: String(subjectCount), label: 'Subjects' },
-      { value: String(experimentCount), label: 'Experiments' },
-    ]
-  }, [])
+  let interactive: VirtualLab[] = INTERACTIVE_LABS
+  let practice = practiceBriefSubjects()
+  let contextLabel = 'all subjects'
+  let filterActive = false
+
+  if (course) {
+    interactive = labsForCourse(course.slug)
+    practice = practiceBriefsMatchingDomains(domainsForCourse(course))
+    contextLabel = course.title
+    filterActive = true
+  } else if (program) {
+    interactive = labsForProgram(program.slug)
+    practice = practiceBriefsMatchingDomains(domainsForProgram(program))
+    contextLabel = program.name
+    filterActive = true
+  } else if (domainFilter) {
+    interactive = labsForDomain(domainFilter)
+    practice = practiceBriefsMatchingDomains([domainFilter])
+    contextLabel = LAB_DOMAIN_LABEL[domainFilter]
+    filterActive = true
+  }
+
+  const archived = filterActive ? [] : archivedBriefSubjects()
+  const catalogueFrom = course
+    ? `/labs?course=${course.slug}`
+    : program
+      ? `/labs?program=${program.slug}`
+      : domainFilter
+        ? `/labs?domain=${domainFilter}`
+        : '/labs'
+
+  function setFilter(next: { course?: string; program?: string; domain?: string }) {
+    const nextParams = new URLSearchParams()
+    if (next.course) nextParams.set('course', next.course)
+    if (next.program) nextParams.set('program', next.program)
+    if (next.domain) nextParams.set('domain', next.domain)
+    setParams(nextParams, { replace: true })
+  }
 
   return (
-    <PageShell auroraTheme="professional">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 32}px ${T.gutter} clamp(48px, 6vw, 72px)` }}>
-        <Aurora themeId="professional" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <FadeIn>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 20 }}>Skylent Labs</div>
-            <h1 className="skylent-display-lg" style={{ color: C.white, margin: '0 0 16px', maxWidth: 560 }}>
-              Practice in structured lab environments.
-            </h1>
-            <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.55)', maxWidth: 480, margin: '0 0 36px' }}>
-              Run coding, data, and simulation exercises connected to your coursework — with clear objectives and submission steps.
-            </p>
-            <div style={{ display: 'flex', gap: 28, flexWrap: 'wrap', marginBottom: 8 }}>
-              {catalogStats.map(({ value, label }) => (
-                <div key={label}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, color: C.white, letterSpacing: '-0.03em' }}>{value}</div>
-                  <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.32)', marginTop: 4 }}>{label}</div>
-                </div>
-              ))}
-            </div>
-            <p style={{ color: 'rgba(255,255,255,0.32)', fontSize: 12, margin: 0 }}>Counts reflect the current lab catalog in this demo environment.</p>
-          </FadeIn>
+    <ProductShell className="sk-labs">
+      <Rail>
+        <div className="sk-lab-hero">
+          <p className="sk-eyebrow">Virtual labs</p>
+          <h1>Practice the subject you are studying.</h1>
+          <p>
+            Labs follow the course and module in front of you. A Python lesson opens a Python experiment — not HTML,
+            not a classifier you have not reached yet. Live classes are not part of this yet.
+          </p>
         </div>
-      </section>
 
-      {/* Filter bar */}
-      <section style={{ background: C.canvas, borderBottom: `1px solid ${T.lineDark}`, position: 'sticky', top: T.navH, zIndex: 40 }}>
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}` }}>
-          <div className="scroll-control-strip">
-            <div className="scroll-control-strip-scroll labs-filter-bar" style={{ display: 'flex', gap: 16, flexWrap: 'wrap', padding: '16px 0' }}>
-              {/* Program filter */}
-              <div className="labs-filter-group" style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flexShrink: 0 }}>
-              {programs.map(p => (
-                <button
-                  key={p}
-                  onClick={() => setSelectedProgram(p)}
-                  style={{ padding: '6px 14px', borderRadius: 100, border: `1px solid ${selectedProgram === p ? accent.border : 'rgba(255,255,255,0.12)'}`, background: selectedProgram === p ? accent.subtle : 'transparent', color: selectedProgram === p ? accent.text : 'rgba(255,255,255,0.45)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
-                >
-                  {p}
-                </button>
-              ))}
-            </div>
-            <div className="labs-filter-divider" style={{ width: 1, background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
-            {/* Semester filter */}
-            <div className="labs-filter-group" style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flexShrink: 0 }}>
-              {semesters.map(s => (
-                <button
-                  key={s}
-                  onClick={() => setSelectedSemester(s)}
-                  style={{ padding: '6px 14px', borderRadius: 100, border: `1px solid ${selectedSemester === s ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.1)'}`, background: selectedSemester === s ? 'rgba(255,255,255,0.08)' : 'transparent', color: selectedSemester === s ? C.white : 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-            <div className="labs-filter-divider" style={{ width: 1, background: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
-            {/* Type filter */}
-            <div className="labs-filter-group" style={{ display: 'flex', gap: 6, flexWrap: 'wrap', flexShrink: 0 }}>
-              {labTypes.map(t => {
-                const colors = t !== 'All' ? labTypeColors[t] : null
-                const active = selectedType === t
+        <Note>
+          Each interactive lab runs in your browser. They are not a Python interpreter, a SQL database, or Microsoft
+          Excel. Older briefs are written exercises with a simulated workspace — they are not degree programmes.
+        </Note>
+
+        <div className="sk-lab-filters" role="group" aria-label="Filter labs by subject">
+          <button
+            type="button"
+            className={`sk-lab-filter${!filterActive ? ' is-on' : ''}`}
+            onClick={() => setFilter({})}
+          >
+            All subjects
+          </button>
+          {SUBJECT_CHIPS.map(chip => (
+            <button
+              key={chip.domain}
+              type="button"
+              className={`sk-lab-filter${domainFilter === chip.domain && !course && !program ? ' is-on' : ''}`}
+              onClick={() => setFilter({ domain: chip.domain })}
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
+
+        {course && (
+          <p className="sk-lab-context">
+            Showing labs that match <strong>{course.title}</strong>.{' '}
+            <Link to={`/courses/${course.slug}`}>Open the course</Link>
+            {' · '}
+            <button type="button" className="sk-inline-link" onClick={() => setFilter({})}>Clear</button>
+          </p>
+        )}
+        {program && !course && (
+          <p className="sk-lab-context">
+            Showing labs that match <strong>{program.name}</strong>.{' '}
+            <Link to={`/programs/${program.slug}`}>Open the programme</Link>
+            {' · '}
+            <button type="button" className="sk-inline-link" onClick={() => setFilter({})}>Clear</button>
+          </p>
+        )}
+
+        <section style={{ marginTop: 32 }}>
+          <h2 style={{ ...TY.h2, fontFamily: 'var(--font-display)', margin: '0 0 14px' }}>
+            {filterActive ? `Interactive now · ${contextLabel}` : 'Interactive now'}
+          </h2>
+          {interactive.length === 0 ? (
+            <EmptyState
+              title="No lab for this subject"
+              body={emptySubjectLabCopy(contextLabel)}
+            />
+          ) : (
+            <div className="sk-lab-grid">
+              {interactive.map(lab => {
+                const availability = interactiveLabAvailability(lab)
                 return (
-                  <button
-                    key={t}
-                    onClick={() => setSelectedType(t)}
-                    style={{ padding: '6px 14px', borderRadius: 100, border: `1px solid ${active && colors ? colors.border : active ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.1)'}`, background: active && colors ? colors.bg : active ? 'rgba(255,255,255,0.07)' : 'transparent', color: active && colors ? colors.text : active ? C.white : 'rgba(255,255,255,0.4)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', transition: 'all 0.15s' }}
-                  >
-                    {t === 'All' ? 'All Types' : labTypeLabels[t]}
-                  </button>
+                  <Link key={lab.id} to={labRunPath(lab.id, catalogueFrom)} className="sk-lab-card">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
+                      <Tag>{lab.subject}</Tag>
+                      <StatusPill availability={availability} size="sm" />
+                    </div>
+                    <h2>{lab.title}</h2>
+                    <p>{lab.objective}</p>
+                    <span className="sk-lab-card-meta">{lab.duration} · {lab.kind}</span>
+                  </Link>
                 )
               })}
             </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Cards */}
-      <Section tone="canvas">
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', width: '100%' }}>
-          {filtered.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '80px 0', color: 'rgba(255,255,255,0.45)' }}>
-              <div style={{ fontSize: 24, marginBottom: 12, color: C.white }}>No labs found</div>
-              <div style={{ fontSize: 15 }}>Try adjusting your filters.</div>
-            </div>
-          ) : (
-            <>
-              <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 28 }}>
-                {filtered.length} lab{filtered.length !== 1 ? 's' : ''} found
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }} className="labs-grid">
-                {filtered.map(subject => {
-                  const typeColors = labTypeColors[subject.labType]
-                  return (
-                    <div
-                      key={subject.id}
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => navigate(`/labs/${subject.id}`)}
-                      onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') navigate(`/labs/${subject.id}`) }}
-                      style={{ cursor: 'pointer' }}
-                    >
-                      <GlassSurface
-                        level={2}
-                        padding="24px"
-                        style={{ display: 'flex', flexDirection: 'column', height: '100%', transition: 'transform 0.2s' }}
-                      >
-                      {/* Badges */}
-                      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-                        <span style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.07em', padding: '3px 10px', borderRadius: 100 }}>
-                          {subject.program}
-                        </span>
-                        <span style={{ background: 'rgba(255,255,255,0.04)', color: 'rgba(255,255,255,0.45)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.07em', padding: '3px 10px', borderRadius: 100 }}>
-                          {subject.semester}
-                        </span>
-                      </div>
-
-                      {/* Subject name */}
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: C.white, lineHeight: 1.2, marginBottom: 10 }}>
-                        {subject.subject}
-                      </div>
-
-                      {/* Desc */}
-                      <div style={{ color: 'rgba(255,255,255,0.48)', fontSize: 13.5, lineHeight: 1.65, marginBottom: 20, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                        {subject.desc}
-                      </div>
-
-                      <div style={{ flex: 1 }} />
-
-                      {/* Type badge */}
-                      <div style={{ marginBottom: 16 }}>
-                        <span style={{ background: typeColors.bg, color: typeColors.text, border: `1px solid ${typeColors.border}`, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.07em', padding: '4px 10px', borderRadius: 100 }}>
-                          {labTypeLabels[subject.labType]}
-                        </span>
-                      </div>
-
-                      {/* Experiment count + Progress */}
-                      <div style={{ marginBottom: 16 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{subject.experiments.length} experiments</span>
-                          <span style={{ color: 'rgba(255,255,255,0.28)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>Demo</span>
-                        </div>
-                        <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 3, height: 3 }}>
-                          <div style={{ background: accent.primary, width: '0%', height: '100%', borderRadius: 3 }} />
-                        </div>
-                      </div>
-
-                      {/* Launch button */}
-                      <button
-                        type="button"
-                        onClick={e => { e.stopPropagation(); navigate(`/labs/${subject.id}`) }}
-                        style={{ width: '100%', background: accent.primary, border: 'none', color: C.white, padding: '11px 20px', borderRadius: 9, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', transition: 'opacity 0.2s', textAlign: 'center' }}
-                      >
-                        Open lab →
-                      </button>
-                      </GlassSurface>
-                    </div>
-                  )
-                })}
-              </div>
-            </>
           )}
-        </div>
-      </Section>
+        </section>
 
-      <style>{`
-        @media (max-width: 1024px) { .labs-grid { grid-template-columns: repeat(2, 1fr) !important; } }
-        @media (max-width: 640px) { .labs-grid { grid-template-columns: 1fr !important; } }
-      `}</style>
-    </PageShell>
+        <section>
+          <h2 style={{ ...TY.h2, fontFamily: 'var(--font-display)', margin: '0 0 8px' }}>Practice briefs</h2>
+          <p style={{ ...TY.bodySm, color: S.inkSecondary, margin: '0 0 16px', maxWidth: '62ch' }}>
+            Structured exercises from the existing lab catalogue, shown only when they match this subject. Opening one
+            still requires sign-in. Output you see there is a walkthrough, not code executed on a server.
+          </p>
+          {practice.length === 0 ? (
+            <EmptyState
+              title="No practice briefs"
+              body={filterActive ? emptySubjectLabCopy(contextLabel) : 'Nothing in this grouping is published.'}
+            />
+          ) : (
+            <div className="sk-lab-grid">
+              {practice.map(subject => (
+                <Link key={subject.id} to={`/labs/${subject.id}`} className="sk-lab-card">
+                  <Tag>{labGroupingLabel(subject.program)}</Tag>
+                  <h2>{subject.title}</h2>
+                  <p>{subject.desc}</p>
+                  <span className="sk-lab-card-meta">
+                    {subject.experiments.length} experiments · simulated workspace
+                  </span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {archived.length > 0 && (
+          <section style={{ paddingBottom: 72 }}>
+            <h2 style={{ ...TY.h2, fontFamily: 'var(--font-display)', margin: '0 0 8px' }}>Archived academic briefs</h2>
+            <p style={{ ...TY.bodySm, color: S.inkMuted, margin: '0 0 16px', maxWidth: '62ch' }}>
+              These outlines used degree-style labels (MBA, BCA, MCA). They are not Skylent degrees and they are
+              not matched to live courses. Kept here so the exercises are not silently deleted.
+            </p>
+            <ul style={{ margin: 0, paddingLeft: 18, color: S.inkSecondary, fontSize: 14, lineHeight: 1.7 }}>
+              {archived.map(subject => (
+                <li key={subject.id}>
+                  <Link to={`/labs/${subject.id}`} style={{ color: 'inherit', fontWeight: 600 }}>
+                    {subject.title}
+                  </Link>
+                  {' — '}{subject.experiments.length} experiments · {labGroupingLabel(subject.program)}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </Rail>
+    </ProductShell>
   )
 }

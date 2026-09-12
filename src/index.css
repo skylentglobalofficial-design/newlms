@@ -159,8 +159,10 @@ body {
   }
 }
 
+/* `clip` guards against horizontal overflow without turning the document into a
+   scroll container — `hidden` here would break every `position: sticky` rail. */
 html, body {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Product visual frames inside MediaImage */
@@ -417,6 +419,55 @@ html, body {
   margin: 0 auto;
 }
 
+.lms-lab-cta {
+  margin-top: 28px;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.lms-lab-cta-kicker {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #f36b21;
+}
+
+.lms-lab-cta p {
+  margin: 0 0 12px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.lms-lab-cta ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+
+.lms-lab-cta a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.lms-lab-cta a:hover {
+  color: #f36b21;
+}
+
+.lms-lab-cta span {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
 .skylent-content-container {
   width: 100%;
   max-width: var(--max-w);
@@ -549,6 +600,62 @@ html, body {
 .lms-empty-state__action:disabled {
   opacity: 0.7;
   cursor: wait;
+}
+
+.role-workspace-banner {
+  margin-bottom: 24px;
+  padding: 14px 16px;
+  border-left: 3px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+}
+
+.role-workspace-banner__label {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.role-workspace-banner__title {
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.role-workspace-banner__copy {
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.role-section-empty {
+  padding: 4px 0;
+}
+
+.role-section-empty__title {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.role-section-empty__copy {
+  color: rgba(255, 255, 255, 0.42);
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.role-section-shell {
+  margin-top: clamp(28px, 4vw, 40px);
+}
+
+.role-section-shell__label {
+  margin-bottom: 16px;
 }
 
 .lms-section-shell {

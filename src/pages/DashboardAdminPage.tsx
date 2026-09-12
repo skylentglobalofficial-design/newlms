@@ -5,6 +5,8 @@ import { AuroraBand, GlassSurface } from '../components/foundation'
 import { AuthDashboardShell, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useRequireRole } from '../hooks/useRequireRole'
+import RoleWorkspaceBanner from '../components/auth/RoleWorkspaceBanner'
+import RoleSectionEmpty from '../components/auth/RoleSectionEmpty'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'admin-overview' },
@@ -126,9 +128,12 @@ export default function DashboardAdminPage() {
       renderNavIcon={id => <NavIcon id={id} />}
     >
       <div id="admin-overview">
-        <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 20, padding: '10px 14px', background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rControl }}>
-          Demo data — figures are illustrative only.
-        </div>
+        <RoleWorkspaceBanner
+          variant="fixture"
+          accent={accent}
+          title="Platform admin workspace"
+          description="All metrics, enrollments, organisations, and system health figures are illustrative sample data. No admin API is connected — this workspace previews the intended layout only."
+        />
 
         <AdminWorkspace />
 
@@ -215,7 +220,13 @@ export default function DashboardAdminPage() {
           </div>
         </div>
 
-        <div id="admin-payments" style={{ height: 1, marginTop: 32 }} aria-hidden />
+        <div id="admin-payments" style={{ ...canvasRow }}>
+          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 16 }}>Payments & revenue</div>
+          <RoleSectionEmpty
+            title="Payment administration not available"
+            description="Revenue reporting, refunds, and payment gateway management require a payments API that is not yet implemented."
+          />
+        </div>
       </div>
     </AuthDashboardShell>
   )

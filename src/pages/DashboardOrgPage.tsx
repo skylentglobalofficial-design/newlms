@@ -6,15 +6,8 @@ import { getRoleAccent } from '../role-themes'
 import { useRequireRole } from '../hooks/useRequireRole'
 import { fetchOrganisationDashboard, type OrganisationDashboard } from '../lib/organisation-api'
 import { ProductVisual } from '../components/product/ProductVisuals'
-
-const ACADEMIC_PIPELINE = [
-  { id: 'program', label: 'Program', detail: 'Data Science & AI', status: 'complete' as const },
-  { id: 'offering', label: 'Offering', detail: 'Cohort 12', status: 'complete' as const },
-  { id: 'batch', label: 'Batch', detail: 'Batch 12', status: 'current' as const },
-  { id: 'curriculum', label: 'Curriculum', detail: 'SQL for Analysis', status: 'upcoming' as const },
-  { id: 'modules', label: 'Modules', detail: 'Module 3 of 18', status: 'upcoming' as const },
-  { id: 'assessments', label: 'Assessments', detail: 'SQL Module Quiz', status: 'upcoming' as const },
-]
+import RoleWorkspaceBanner from '../components/auth/RoleWorkspaceBanner'
+import RoleSectionEmpty from '../components/auth/RoleSectionEmpty'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'org-overview' },
@@ -96,67 +89,42 @@ function InstitutionWorkspace({
   )
 }
 
-// ─── ACADEMIC PIPELINE (Level 0 — canvas timeline) ────────────────────────────
+// ─── COURSE CATALOG (Level 0 — from organisation API) ─────────────────────────
 
-function AcademicPipeline() {
+function CourseCatalog({ courses }: { courses: OrganisationDashboard['courses'] }) {
   return (
     <div id="org-curriculum" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
       <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.35)', marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
-        Curriculum operations
+        Course catalog
       </div>
-      <div className="org-academic-pipeline" style={{ width: '100%', maxWidth: '100%' }}>
-        {ACADEMIC_PIPELINE.map((node, i) => {
-          const isCurrent = node.status === 'current'
-          const isComplete = node.status === 'complete'
-          return (
-            <div key={node.id} className="org-pipeline-node" style={{ display: 'flex', alignItems: 'center', flex: i < ACADEMIC_PIPELINE.length - 1 ? '1 1 0' : '0 0 auto', minWidth: 0 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, minWidth: 0 }}>
-                <div style={{
-                  width: isCurrent ? 32 : 24,
-                  height: isCurrent ? 32 : 24,
-                  borderRadius: '50%',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  background: isCurrent ? accent.subtleStrong : isComplete ? 'rgba(255,255,255,0.06)' : 'rgba(255,255,255,0.03)',
-                  border: `1.5px solid ${isCurrent ? accent.border : isComplete ? 'rgba(255,255,255,0.2)' : T.lineDark}`,
-                }}>
-                  {isComplete ? (
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={accent.text} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                  ) : isCurrent ? (
-                    <div style={{ width: 7, height: 7, borderRadius: '50%', background: accent.primary }} />
-                  ) : (
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
-                  )}
+
+      {courses.length > 0 ? (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+          {courses.map((course, i) => (
+            <div key={course.slug} style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr auto',
+              gap: 12,
+              alignItems: 'center',
+              padding: '14px 0',
+              borderBottom: i < courses.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+            }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ color: C.white, fontSize: 14, fontWeight: 600 }}>{course.title}</div>
+                <div style={{ color: 'rgba(255,255,255,0.38)', fontSize: 12, marginTop: 3 }}>
+                  {course.category} · {course.level}
                 </div>
-                <span style={{
-                  fontSize: isCurrent ? 11 : 10,
-                  fontWeight: isCurrent ? 600 : 400,
-                  color: isCurrent ? C.white : 'rgba(255,255,255,0.4)',
-                  textAlign: 'center',
-                }}>
-                  {node.label}
-                </span>
-                <span style={{
-                  fontSize: 9,
-                  color: isCurrent ? accent.textMuted : 'rgba(255,255,255,0.25)',
-                  textAlign: 'center',
-                  maxWidth: 72,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}>
-                  {node.detail}
-                </span>
               </div>
-              {i < ACADEMIC_PIPELINE.length - 1 && (
-                <div className="org-pipeline-connector" style={{
-                  flex: 1, height: 1, minWidth: 6, margin: '0 3px 28px',
-                  background: isComplete ? `linear-gradient(90deg, ${accent.primary}66, ${T.lineDark})` : T.lineDark,
-                }} />
-              )}
+              <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11, flexShrink: 0 }}>Cohort mapping —</div>
             </div>
-          )
-        })}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <RoleSectionEmpty
+          title="No courses in catalog"
+          description="LMS courses linked to your organisation will appear here. Batch and cohort assignment requires additional backend models."
+        />
+      )}
     </div>
   )
 }
@@ -323,7 +291,9 @@ export default function DashboardOrgPage() {
   const institutionLearners = dashboard?.totals.enrollmentCount ?? 0
   const programCount = dashboard?.totals.programCount ?? 0
   const programs = dashboard?.programs ?? []
+  const courses = dashboard?.courses ?? []
   const batchMessage = dashboard?.batchModelRequired ?? 'Batch/Cohort model not yet in schema — batch analytics unavailable'
+  const hasLiveData = dashboard !== null
 
   return (
     <AuthDashboardShell
@@ -340,6 +310,15 @@ export default function DashboardOrgPage() {
       <AuthDashboardLayout
         primary={
           <>
+            <RoleWorkspaceBanner
+              variant={hasLiveData ? 'functional' : 'unavailable'}
+              accent={accent}
+              title="Institution workspace"
+              description={hasLiveData
+                ? 'Programs, enrollments, and course catalog load from the organisation API. Batches, cohorts, faculty workload, and completion analytics are not yet available.'
+                : 'Could not load organisation dashboard data. Sign in with a demo institution account after seeding the database.'}
+            />
+
             <InstitutionWorkspace
               institutionName={institutionName}
               institutionLearners={institutionLearners}
@@ -347,7 +326,7 @@ export default function DashboardOrgPage() {
               batchMessage={batchMessage}
             />
 
-            <AcademicPipeline />
+            <CourseCatalog courses={courses} />
 
             <div className="org-two-col" style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 'clamp(16px, 2vw, 24px)', marginTop: 'clamp(28px, 4vw, 40px)' }}>
               <ProgramOperations programs={programs} />
@@ -364,7 +343,7 @@ export default function DashboardOrgPage() {
                 Institution settings
               </div>
               <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-                Configure programs, faculty assignments, and academic calendar for {institutionName}.
+                Institution settings are not connected yet. Programme, faculty and calendar configuration will appear here when this organisation workspace is live.
               </p>
             </div>
           </>

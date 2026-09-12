@@ -5,12 +5,40 @@ export type OAuthEnrollTarget = {
 
 export function sanitizeReturnTo(returnTo: unknown): string | null {
   if (typeof returnTo !== "string") return null
-  const trimmed = returnTo.trim()
-  if (!trimmed.startsWith("/")) return null
-  if (trimmed.startsWith("//")) return null
-  if (trimmed.includes("://")) return null
-  if (trimmed.includes("\\")) return null
-  return trimmed
+  let path = returnTo.trim()
+  try {
+    path = decodeURIComponent(path)
+  } catch {
+    return null
+  }
+  if (!path.startsWith("/")) return null
+  if (path.startsWith("//")) return null
+  if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(path)) return null
+  if (/[\n\r\\]/.test(path)) return null
+  const pathname = path.split(/[?#]/)[0] ?? path
+  if (pathname === "/") return path
+  const allowed = [
+    "/learn",
+    "/courses",
+    "/programs",
+    "/labs",
+    "/dashboard",
+    "/career-os",
+    "/education",
+    "/skills",
+    "/certificates",
+    "/exams",
+    "/junior",
+    "/degrees",
+    "/institutions",
+    "/os",
+    "/contact",
+    "/about",
+    "/workshops",
+    "/stories",
+    "/blog",
+  ]
+  return allowed.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)) ? path : null
 }
 
 export function parseEnrollTarget(

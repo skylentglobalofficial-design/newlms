@@ -45,7 +45,7 @@ export const courses: Course[] = [
     level: 'Beginner',
     duration: '10 weeks',
     mode: 'Self-paced',
-    lessons: 48,
+    lessons: 15,
     projects: 3,
     rating: 4.8,
     reviews: 312,
@@ -90,7 +90,7 @@ export const courses: Course[] = [
     level: 'Beginner',
     duration: '8 weeks',
     mode: 'Self-paced',
-    lessons: 36,
+    lessons: 6,
     projects: 2,
     rating: 4.9,
     reviews: 245,
@@ -119,8 +119,8 @@ export const courses: Course[] = [
     category: 'AI',
     level: 'Intermediate',
     duration: '6 weeks',
-    mode: 'Live + Self-paced',
-    lessons: 28,
+    mode: 'Self-paced',
+    lessons: 6,
     projects: 2,
     rating: 4.9,
     reviews: 189,
@@ -150,7 +150,7 @@ export const courses: Course[] = [
     level: 'Beginner',
     duration: '5 weeks',
     mode: 'Self-paced',
-    lessons: 24,
+    lessons: 3,
     projects: 2,
     rating: 4.7,
     reviews: 198,
@@ -174,15 +174,15 @@ export const courses: Course[] = [
     category: 'Business',
     level: 'Intermediate',
     duration: '8 weeks',
-    mode: 'Live Classes',
-    lessons: 32,
+    mode: 'Self-paced',
+    lessons: 3,
     projects: 3,
     rating: 4.8,
     reviews: 156,
     price: 6999,
     originalPrice: 14999,
-    desc: 'Product thinking, user research, roadmapping, and stakeholder management through live case studies.',
-    longDesc: 'Develop the complete product management skillset — from discovery to delivery. Live sessions, real case studies, mentor feedback, and a final product portfolio.',
+    desc: 'Product thinking, user research, roadmapping, and stakeholder management worked through written case studies.',
+    longDesc: 'Develop the complete product management skillset — from discovery to delivery — through recorded lessons, written case studies, and assignments you submit in the platform.',
     outcomes: ['Conduct user research and validation', 'Build product roadmaps', 'Write user stories and PRDs', 'Work with engineering and design', 'Build a PM portfolio'],
     forWhom: ['Engineers moving into PM roles', 'Business analysts wanting product roles', 'MBA grads targeting product management'],
     modules: [
@@ -199,14 +199,14 @@ export const courses: Course[] = [
     category: 'Engineering',
     level: 'Intermediate',
     duration: '14 weeks',
-    mode: 'Live + Self-paced',
-    lessons: 64,
+    mode: 'Self-paced',
+    lessons: 6,
     projects: 4,
     rating: 4.8,
     reviews: 203,
     price: 7999,
     originalPrice: 16999,
-    desc: 'Build complete web applications — React, Node.js, PostgreSQL, and cloud deployment with real client projects.',
+    desc: 'Build complete web applications — React, Node.js, PostgreSQL, and cloud deployment — through projects you build and submit yourself.',
     longDesc: 'A thorough full-stack development course that takes you from HTML fundamentals to building and deploying real-world web applications with modern tools and frameworks.',
     outcomes: ['Build full-stack web apps with React & Node', 'Design and query PostgreSQL databases', 'Deploy to cloud platforms', 'Contribute to real-world projects', 'Build a development portfolio'],
     forWhom: ['Beginners wanting software development careers', 'Designers moving into development', 'Non-CS graduates targeting tech roles'],
@@ -301,11 +301,11 @@ export const programs: Program[] = [
     duration: '11 months',
     modules: 18,
     projects: 6,
-    format: 'Live + Self-paced',
-    cert: 'Industry Certificate',
+    format: 'Self-paced',
+    cert: 'Skylent completion certificate',
     outcome: 'Data Scientist / ML Engineer',
-    desc: 'Master Python, machine learning, deep learning, and NLP through live classes, expert mentorship, and real-world projects.',
-    upcomingBatch: '15 September 2026',
+    desc: 'Python, machine learning, deep learning and NLP, taught through recorded lessons, notes and assignments you submit in the platform.',
+    upcomingBatch: 'Start when you enrol',
     programType: 'PROFESSIONAL',
     level: 'Advanced',
     enrollmentStatus: 'open',
@@ -330,8 +330,8 @@ export const programs: Program[] = [
       { number: '02', title: 'Statistics & Probability', description: 'Statistical thinking, distributions, hypothesis testing, and Bayesian foundations essential for ML.', duration: '3 weeks', topics: ['Descriptive statistics', 'Probability distributions', 'Hypothesis testing', 'A/B testing fundamentals'] },
       { number: '03', title: 'Machine Learning', description: 'Supervised and unsupervised learning algorithms, model evaluation, feature engineering, and ensemble methods.', duration: '6 weeks', topics: ['Linear and logistic regression', 'Decision trees and random forests', 'SVM, KNN, Naive Bayes', 'K-Means, PCA, DBSCAN'] },
       { number: '04', title: 'Deep Learning & NLP', description: 'Neural network architectures, computer vision, sequence models, and applied NLP using transformers.', duration: '6 weeks', topics: ['Feed-forward and convolutional networks', 'RNNs, LSTMs, and attention', 'Transfer learning with HuggingFace', 'Prompt engineering basics'] },
-      { number: '05', title: 'Applied Industry Projects', description: 'Three end-to-end projects built with real-world datasets, reviewed by industry mentors, and portfolio-ready.', duration: '6 weeks' },
-      { number: '06', title: 'Career Bootcamp', description: 'Resume review, LinkedIn optimisation, mock interviews, and Career OS access for job search readiness.', duration: '3 weeks' },
+      { number: '05', title: 'Applied Industry Projects', description: 'Three end-to-end projects built with public datasets and submitted as assignments in the platform.', duration: '6 weeks' },
+      { number: '06', title: 'Career Bootcamp', description: 'Career OS access: profile, the job board, application tracking, and structured interview practice.', duration: '3 weeks' },
     ],
     projectsDetail: [
       { title: 'Customer Churn Prediction', what: 'Build a classification model to identify at-risk customers using telecom subscriber data', skills: ['Python', 'scikit-learn', 'Feature Engineering', 'XGBoost'], difficulty: 'Intermediate' },
@@ -339,28 +339,27 @@ export const programs: Program[] = [
       { title: 'NLP Sentiment Pipeline', what: 'Fine-tune a transformer model on domain-specific review data and deploy as an inference API', skills: ['HuggingFace Transformers', 'PyTorch', 'FastAPI', 'Docker'], difficulty: 'Advanced' },
     ],
     learningExperience: [
-      'Weekly live classes with industry practitioners',
-      'Recorded sessions accessible anytime',
-      'Live doubt resolution sessions twice per week',
-      'Mentor-reviewed project submissions',
-      'Peer learning community and group challenges',
-      'Career OS unlocked on program completion',
+      'Recorded lessons, written notes and quizzes you work through at your own pace',
+      'Assignments you submit in the platform, with your files stored against your progress',
+      'Lessons unlock in order so the sequence stays deliberate',
+      'Progress is saved per lesson and visible on your dashboard',
+      'Career OS access once the programme is completed',
     ],
     faqs: [
       { q: 'Do I need prior programming experience?', a: 'A basic familiarity with any programming language helps, but we begin from Python fundamentals. Learners from engineering, mathematics, or science backgrounds adapt well.' },
-      { q: 'How many hours per week does this require?', a: 'Plan for 10–15 hours per week — including live sessions, recorded modules, assignments, and project work.' },
-      { q: 'Is Career OS included?', a: 'Yes. Completing a Professional Program grants full Career OS access: interview preparation, curated job board, and placement support.' },
-      { q: 'What if I miss a live session?', a: 'All live sessions are recorded and available within 24 hours. You can submit doubts asynchronously and get responses from the faculty team.' },
-      { q: 'What certification do I receive?', a: 'A Skylent Industry Certificate on completing the program and passing the final assessment. The credential includes a verifiable credential ID.' },
+      { q: 'How many hours per week does this require?', a: 'Plan for 10–15 hours per week — recorded lessons, notes, quizzes, assignments, and project work.' },
+      { q: 'Is Career OS included?', a: 'Yes. Completing a Professional Programme opens Career OS: your profile, the job board, application tracking, and structured interview practice. Skylent does not place you in a job and makes no placement guarantee.' },
+      { q: 'How is the material delivered?', a: 'Through the Skylent learning platform: recorded lessons, written notes, quizzes and assignments you submit online. Lessons unlock in order and your progress is saved as you go.' },
+      { q: 'What certification do I receive?', a: 'A Skylent completion certificate once you finish the required lessons and assessments. It records what you completed on Skylent; it is not an accredited or university-recognised qualification.' },
     ],
     faculty: [
       { name: 'Faculty Lead · Data Science', role: 'Program Lead', expertise: 'Machine Learning & Applied AI', placeholder: true },
       { name: 'Industry Mentor · ML Engineering', role: 'Mentor', expertise: 'MLOps & Model Deployment', placeholder: true },
     ],
     pricing: [
-      { name: 'Self-paced', price: 29999, originalPrice: 59999, features: ['All recorded content', '18 modules', 'Self-paced projects', 'Skylent certificate', 'Community access'] },
-      { name: 'Pro', price: 44999, originalPrice: 89999, highlight: true, features: ['Everything in Self-paced', 'Weekly live classes', '6 industry projects', 'Mentor reviews', 'Career resources', 'LinkedIn profile support'] },
-      { name: 'Career', price: 59999, originalPrice: 119999, features: ['Everything in Pro', 'Interview preparation', '10 mock interviews', 'Resume & portfolio build', 'Job application support', 'Dedicated career manager'] },
+      { name: 'Self-paced', price: 29999, originalPrice: 59999, features: ['Published lessons in linked courses', 'Assignments submitted in the platform', 'Skylent completion certificate'] },
+      { name: 'Pro', price: 44999, originalPrice: 89999, highlight: true, features: ['Everything in Self-paced', '3 guided project briefs', 'Written feedback on submitted assignments', 'Career OS access on completion'] },
+      { name: 'Career', price: 59999, originalPrice: 119999, features: ['Everything in Pro', 'Career OS interview practice sets', 'Profile and portfolio review', 'Application tracking in Career OS'] },
     ],
   },
   {
@@ -369,11 +368,11 @@ export const programs: Program[] = [
     duration: '8 months',
     modules: 14,
     projects: 5,
-    format: 'Live + Self-paced',
-    cert: 'Professional Certificate',
+    format: 'Self-paced',
+    cert: 'Skylent completion certificate',
     outcome: 'Data Analyst / BI Developer',
     desc: 'Build expertise in SQL, Excel, Power BI, and Python — with a dedicated Gen AI module for modern analytics workflows.',
-    upcomingBatch: '1 September 2026',
+    upcomingBatch: 'Start when you enrol',
     programType: 'PROFESSIONAL',
     level: 'Intermediate',
     enrollmentStatus: 'open',
@@ -407,22 +406,22 @@ export const programs: Program[] = [
       { title: 'Financial Analytics Model', what: 'Build a multi-year financial model in Excel with scenario analysis and dynamic visualisations', skills: ['Excel', 'Financial Modelling', 'Data Visualisation'], difficulty: 'Beginner' },
     ],
     learningExperience: [
-      'Weekly live classes with practicing analytics professionals',
-      'Recorded sessions for flexible learning',
-      'Hands-on SQL and Python exercises in every module',
-      'Mentor-reviewed project submissions',
-      'Career OS unlocked on program completion',
+      'Recorded lessons and written notes covering Excel, SQL, Power BI and Python',
+      'Quizzes and assignments submitted and stored in the platform',
+      'Lessons unlock in order so the sequence stays deliberate',
+      'Progress is saved per lesson and visible on your dashboard',
+      'Career OS access once the programme is completed',
     ],
     faqs: [
       { q: 'Do I need a technical background?', a: 'No. This program is specifically designed for non-technical learners. We start from Excel and build up through SQL, Python, and Power BI step by step.' },
-      { q: 'Is this suitable for working professionals?', a: 'Yes. The format combines recorded content and weekly live sessions so you can pace learning around your schedule.' },
+      { q: 'Is this suitable for working professionals?', a: 'Yes. Everything is recorded and self-paced, so you can fit it around your schedule.' },
       { q: 'What jobs does this program prepare me for?', a: 'Common roles include Data Analyst, Business Analyst, BI Analyst, and Reporting Analyst across industries like e-commerce, banking, consulting, and operations.' },
-      { q: 'Is Career OS included?', a: 'Yes. Completing a Professional Program grants full Career OS access: interview preparation, curated job board, and placement support.' },
+      { q: 'Is Career OS included?', a: 'Yes. Completing a Professional Programme opens Career OS: your profile, the job board, application tracking, and structured interview practice. Skylent does not place you in a job and makes no placement guarantee.' },
     ],
     pricing: [
-      { name: 'Self-paced', price: 19999, originalPrice: 39999, features: ['All recorded content', '14 modules', 'Self-paced projects', 'Skylent certificate', 'Community access'] },
-      { name: 'Pro', price: 29999, originalPrice: 59999, highlight: true, features: ['Everything in Self-paced', 'Weekly live classes', '5 industry projects', 'Mentor reviews', 'Career resources'] },
-      { name: 'Career', price: 39999, originalPrice: 79999, features: ['Everything in Pro', 'Interview prep', 'Mock interviews', 'Resume build', 'Job assistance'] },
+      { name: 'Self-paced', price: 19999, originalPrice: 39999, features: ['Published lessons in linked courses', 'Assignments submitted in the platform', 'Skylent completion certificate'] },
+      { name: 'Pro', price: 29999, originalPrice: 59999, highlight: true, features: ['Everything in Self-paced', '3 guided project briefs', 'Written feedback on submitted assignments', 'Career OS access on completion'] },
+      { name: 'Career', price: 39999, originalPrice: 79999, features: ['Everything in Pro', 'Career OS interview practice sets', 'Profile and portfolio review', 'Application tracking in Career OS'] },
     ],
   },
   {
@@ -431,11 +430,11 @@ export const programs: Program[] = [
     duration: '9 months',
     modules: 16,
     projects: 5,
-    format: 'Live + Self-paced',
-    cert: 'Professional Certificate',
+    format: 'Self-paced',
+    cert: 'Skylent completion certificate',
     outcome: 'Full Stack Developer',
-    desc: 'Build end-to-end web applications using React, Node.js, PostgreSQL, and cloud deployment — with real client-grade projects.',
-    upcomingBatch: '8 September 2026',
+    desc: 'Build end-to-end web applications using React, Node.js, PostgreSQL, and cloud deployment — with projects you build and submit in the platform.',
+    upcomingBatch: 'Not yet teaching',
     programType: 'PROFESSIONAL',
     level: 'Intermediate',
     enrollmentStatus: 'open',
@@ -470,22 +469,22 @@ export const programs: Program[] = [
       { title: 'REST API Service', what: 'Design and build a production-grade REST API with authentication, rate limiting, and documentation', skills: ['Node.js', 'Express', 'JWT', 'Swagger'], difficulty: 'Intermediate' },
     ],
     learningExperience: [
-      'Weekly live sessions with senior software engineers',
-      'Code reviews on every project submission',
-      'Weekly hackathons and pair programming challenges',
-      'Doubt resolution via dedicated Discord channel',
-      'Career OS unlocked on program completion',
+      'Recorded lessons, written notes and quizzes you work through at your own pace',
+      'Assignments you submit in the platform, with your files stored against your progress',
+      'Lessons unlock in order so the sequence stays deliberate',
+      'Progress is saved per lesson and visible on your dashboard',
+      'A completion certificate once the course requirements are met',
     ],
     faqs: [
       { q: 'Do I need prior coding experience?', a: 'No prior experience is required. We start from the very basics of HTML and build up to deploying full applications over 9 months.' },
-      { q: 'How is this different from self-learning?', a: 'Structured curriculum, live mentorship, real project reviews, and a community of learners — plus Career OS access on completion.' },
+      { q: 'How is this different from self-learning?', a: 'A sequenced curriculum with assignments you submit and progress that is tracked for you, plus Career OS access on completion.' },
       { q: 'What kind of jobs will I be qualified for?', a: 'Junior Full Stack Developer, Frontend Developer, Backend Developer, and Associate Software Engineer roles across product and service companies.' },
-      { q: 'Is Career OS included?', a: 'Yes. Completing this Professional Program grants full Career OS access.' },
+      { q: 'Is Career OS included?', a: 'Yes. Completing this Professional Programme opens Career OS. Skylent does not place you in a job and makes no placement guarantee.' },
     ],
     pricing: [
-      { name: 'Self-paced', price: 24999, originalPrice: 49999, features: ['All recorded content', '16 modules', 'Projects', 'Certificate', 'Community'] },
-      { name: 'Pro', price: 39999, originalPrice: 79999, highlight: true, features: ['Everything in Self-paced', 'Live classes', '5 client projects', 'Code reviews', 'Career resources'] },
-      { name: 'Career', price: 54999, originalPrice: 109999, features: ['Everything in Pro', 'Interview prep', 'Portfolio review', 'Job assistance', 'Dedicated coach'] },
+      { name: 'Self-paced', price: 24999, originalPrice: 49999, features: ['Planned curriculum', 'Assignments when lessons exist', 'Skylent completion certificate'] },
+      { name: 'Pro', price: 39999, originalPrice: 79999, highlight: true, features: ['Everything in Self-paced', '3 guided project briefs', 'Written feedback on submitted assignments', 'Career OS access on completion'] },
+      { name: 'Career', price: 54999, originalPrice: 109999, features: ['Everything in Pro', 'Career OS interview practice sets', 'Profile and portfolio review', 'Application tracking in Career OS'] },
     ],
   },
   {
@@ -494,11 +493,11 @@ export const programs: Program[] = [
     duration: '4 months',
     modules: 10,
     projects: 3,
-    format: 'Live + Self-paced',
-    cert: 'Specialization',
+    format: 'Self-paced',
+    cert: 'Skylent completion certificate',
     outcome: 'AI/ML Engineer',
     desc: 'LLMs, prompt engineering, RAG systems, and AI product development with hands-on implementation across every module.',
-    upcomingBatch: '22 August 2026',
+    upcomingBatch: 'Not yet teaching',
     programType: 'PROFESSIONAL',
     level: 'Intermediate',
     enrollmentStatus: 'open',
@@ -524,7 +523,7 @@ export const programs: Program[] = [
       { number: '03', title: 'RAG Architecture', description: 'Retrieval-augmented generation: chunking, embeddings, vector stores, retrieval strategies, and evaluation.', duration: '4 weeks' },
       { number: '04', title: 'AI Application Development', description: 'Building end-to-end AI apps with LangChain, LlamaIndex, and streaming APIs.', duration: '3 weeks' },
       { number: '05', title: 'Production & Evaluation', description: 'Testing LLM systems, handling hallucinations, latency, cost, and deploying with FastAPI and Docker.', duration: '2 weeks' },
-      { number: '06', title: 'Capstone Projects', description: 'Three AI product builds with mentor review — portfolio-ready and deployable.', duration: '3 weeks' },
+      { number: '06', title: 'Capstone Projects', description: 'Three AI product builds submitted as assignments in the platform.', duration: '3 weeks' },
     ],
     projectsDetail: [
       { title: 'Document Q&A System', what: 'Build a RAG-based question-answering system over a private document corpus with source attribution', skills: ['LangChain', 'ChromaDB', 'OpenAI API', 'FastAPI'], difficulty: 'Intermediate' },
@@ -532,22 +531,22 @@ export const programs: Program[] = [
       { title: 'Multi-Agent Research Tool', what: 'Build an autonomous multi-agent system that researches topics, synthesises information, and generates reports', skills: ['LangGraph', 'Tool use', 'Agent evaluation', 'Python'], difficulty: 'Advanced' },
     ],
     learningExperience: [
-      'Live sessions covering the latest developments in LLMs and AI',
-      'Hands-on coding in every module — no passive watching',
-      'Mentor-reviewed project builds with architectural feedback',
-      'Community of AI practitioners and weekly paper discussions',
-      'Career OS unlocked on program completion',
+      'Recorded lessons, written notes and quizzes you work through at your own pace',
+      'Assignments you submit in the platform, with your files stored against your progress',
+      'Lessons unlock in order so the sequence stays deliberate',
+      'Progress is saved per lesson and visible on your dashboard',
+      'A completion certificate once the course requirements are met',
     ],
     faqs: [
       { q: 'What prior knowledge do I need?', a: 'Comfortable Python programming is required. Familiarity with basic ML concepts is helpful but not mandatory.' },
       { q: 'Does this cover open-source models as well as commercial APIs?', a: 'Yes. We cover both OpenAI and Anthropic APIs as well as open-weight models like Llama and Mistral.' },
-      { q: 'How quickly is this content updated?', a: 'The generative AI space moves fast. We update module content and add new sessions as the field evolves.' },
-      { q: 'Is Career OS included?', a: 'Yes. Completing this Professional Program grants full Career OS access.' },
+      { q: 'How quickly is this content updated?', a: 'The generative AI space moves fast, so module content is revised as the field changes. Published lessons always show what is currently in the platform.' },
+      { q: 'Is Career OS included?', a: 'Yes. Completing this Professional Programme opens Career OS. Skylent does not place you in a job and makes no placement guarantee.' },
     ],
     pricing: [
-      { name: 'Self-paced', price: 14999, originalPrice: 29999, features: ['All recorded content', '10 modules', 'Projects', 'Certificate'] },
-      { name: 'Pro', price: 24999, originalPrice: 49999, highlight: true, features: ['Everything in Self-paced', 'Live sessions', '3 AI projects', 'Mentor reviews'] },
-      { name: 'Career', price: 34999, originalPrice: 69999, features: ['Everything in Pro', 'Interview prep', 'AI portfolio', 'Job assistance'] },
+      { name: 'Self-paced', price: 14999, originalPrice: 29999, features: ['Planned curriculum', 'Assignments when lessons exist', 'Skylent completion certificate'] },
+      { name: 'Pro', price: 24999, originalPrice: 49999, highlight: true, features: ['Everything in Self-paced', '3 guided AI project briefs', 'Written feedback on submitted assignments', 'Career OS access on completion'] },
+      { name: 'Career', price: 34999, originalPrice: 69999, features: ['Everything in Pro', 'Career OS interview practice sets', 'Profile and portfolio review', 'Application tracking in Career OS'] },
     ],
   },
   {
@@ -556,11 +555,11 @@ export const programs: Program[] = [
     duration: '5 months',
     modules: 10,
     projects: 3,
-    format: 'Live Classes',
-    cert: 'PM Certification',
+    format: 'Self-paced',
+    cert: 'Skylent completion certificate',
     outcome: 'Product Manager / APM',
-    desc: 'Develop product thinking, user research, roadmapping, and stakeholder management skills through live case studies and mentorship.',
-    upcomingBatch: '5 September 2026',
+    desc: 'Develop product thinking, user research, roadmapping, and stakeholder management skills through written case studies and assignments.',
+    upcomingBatch: 'Not yet teaching',
     programType: 'PROFESSIONAL',
     level: 'Intermediate',
     enrollmentStatus: 'open',
@@ -594,22 +593,22 @@ export const programs: Program[] = [
       { title: 'Case Study Portfolio', what: 'Solve 3 PM case studies (product design, metrics, and strategy) in interview-ready format', skills: ['Product Design', 'Metrics', 'Strategy', 'Communication'], difficulty: 'Advanced' },
     ],
     learningExperience: [
-      'Weekly live sessions with practicing PMs from product-led companies',
-      'Real case studies from Indian and global product companies',
-      'Mentor feedback on every project submission',
-      'Mock PM interviews with feedback from interviewers',
-      'Career OS unlocked on program completion',
+      'Recorded lessons, written notes and quizzes you work through at your own pace',
+      'Assignments you submit in the platform, with your files stored against your progress',
+      'Lessons unlock in order so the sequence stays deliberate',
+      'Progress is saved per lesson and visible on your dashboard',
+      'A completion certificate once the course requirements are met',
     ],
     faqs: [
       { q: 'Do I need a technical background?', a: 'No. While engineers who transition to PM have strong technical credibility, the program is designed for learners from any background — business, design, or technical.' },
       { q: 'What companies do Skylent PM graduates join?', a: 'We do not publish placement data we cannot verify. Our focus is on giving you the skills and preparation to compete for PM roles on your own merit.' },
-      { q: 'How are the live sessions structured?', a: 'Two live sessions per week — one focused on concept and case study, one on mock interview practice and peer feedback.' },
-      { q: 'Is Career OS included?', a: 'Yes. Completing this Professional Program grants full Career OS access.' },
+      { q: 'How is the programme structured?', a: 'Ten modules of recorded lessons and notes, each with case studies and an assignment you submit in the platform.' },
+      { q: 'Is Career OS included?', a: 'Yes. Completing this Professional Programme opens Career OS. Skylent does not place you in a job and makes no placement guarantee.' },
     ],
     pricing: [
-      { name: 'Self-paced', price: 17999, originalPrice: 35999, features: ['Recorded sessions', '10 modules', 'Case studies', 'Certificate'] },
-      { name: 'Pro', price: 27999, originalPrice: 55999, highlight: true, features: ['Everything in Self-paced', 'Weekly live classes', '3 PM projects', 'Mentor feedback'] },
-      { name: 'Career', price: 37999, originalPrice: 75999, features: ['Everything in Pro', 'PM interview prep', 'Portfolio build', 'Job assistance'] },
+      { name: 'Self-paced', price: 17999, originalPrice: 35999, features: ['Planned curriculum', 'Case studies when published', 'Skylent completion certificate'] },
+      { name: 'Pro', price: 27999, originalPrice: 55999, highlight: true, features: ['Everything in Self-paced', '3 guided project briefs', 'Written feedback on submitted assignments'] },
+      { name: 'Career', price: 37999, originalPrice: 75999, features: ['Everything in Pro', 'Career OS interview practice sets', 'Profile and portfolio review'] },
     ],
   },
 
@@ -620,11 +619,11 @@ export const programs: Program[] = [
     duration: '12 months',
     modules: 3,
     projects: 0,
-    format: 'Live + Self-paced',
-    cert: 'Completion Certificate',
-    outcome: 'IIT / NIT Admission',
-    desc: 'Structured subject-by-subject preparation for JEE Advanced — Physics, Chemistry, and Mathematics — with concept classes, practice sets, mock tests, and performance analytics.',
-    upcomingBatch: 'November 2026',
+    format: 'Self-paced',
+    cert: 'Skylent completion certificate',
+    outcome: 'JEE Advanced preparation',
+    desc: 'A planned subject-by-subject JEE Advanced programme covering Physics, Chemistry and Mathematics. The syllabus below is an outline — no material has been published yet.',
+    upcomingBatch: 'To be announced',
     programType: 'EXAM_PREP',
     level: 'Advanced',
     enrollmentStatus: 'coming_soon',
@@ -641,7 +640,7 @@ export const programs: Program[] = [
       'Chemistry: Physical, Organic, and Inorganic Chemistry with problem-solving approaches',
       'Mathematics: Calculus, Algebra, Coordinate Geometry, Vectors, Probability',
       'Exam strategy: time management, paper pattern, negative marking approach',
-      'Mock test technique and performance analytics interpretation',
+      'Planned: exam strategy and timed practice, once material is published',
     ],
     curriculumDetail: [
       {
@@ -658,17 +657,15 @@ export const programs: Program[] = [
       },
     ],
     learningExperience: [
-      'Live concept classes per subject, three days per week',
-      'Weekly practice sets with increasing difficulty',
-      'Fortnightly chapter tests with detailed solutions',
-      'Full-length mock tests in JEE Advanced exam format',
-      'Performance analytics: topic-wise accuracy and rank projection',
-      'Doubt resolution via subject-specific sessions',
+      'Planned: recorded concept lessons for each subject',
+      'Planned: practice sets and chapter tests inside the platform',
+      'Planned: full-length mock papers in the exam format',
+      'None of this material is in the platform yet — the programme has not launched',
     ],
     faqs: [
       { q: 'Is this for JEE Mains or JEE Advanced?', a: 'This program covers the full syllabus for both JEE Mains and JEE Advanced, with a focus on Advanced-level depth and problem-solving.' },
-      { q: 'When does the batch start?', a: 'The next batch is planned for November 2026. Register your interest and we will notify you when enrollment opens.' },
-      { q: 'Is there a test series included?', a: 'Yes. Chapter tests, part tests, and full-length mock tests are included. Each test comes with detailed performance analytics.' },
+      { q: 'When does this start?', a: 'No start date has been set. Register your interest and we will contact you when there is a date to share.' },
+      { q: 'Is there a test series?', a: 'A test series is planned, but nothing has been published yet. Nothing is available to practise on today.' },
     ],
     faculty: [
       { name: 'Physics Faculty · JEE', role: 'Physics', expertise: 'Mechanics, Optics, Modern Physics', placeholder: true },
@@ -676,8 +673,8 @@ export const programs: Program[] = [
       { name: 'Mathematics Faculty · JEE', role: 'Mathematics', expertise: 'Calculus, Algebra, Coordinate Geometry', placeholder: true },
     ],
     pricing: [
-      { name: 'Foundation', price: 39999, originalPrice: 79999, features: ['All recorded content', 'Chapter tests', 'Practice sets', 'Completion certificate'] },
-      { name: 'Full Prep', price: 59999, originalPrice: 119999, highlight: true, features: ['Everything in Foundation', 'Live concept classes', 'Full mock test series', 'Performance analytics', 'Doubt resolution sessions'] },
+      { name: 'Foundation', price: 39999, originalPrice: 79999, features: ['Planned: recorded lessons', 'Planned: chapter tests', 'Planned: practice sets', 'Nothing published yet'] },
+      { name: 'Full Prep', price: 59999, originalPrice: 119999, highlight: true, features: ['Planned: everything in Foundation', 'Planned: full mock test series', 'Planned: performance analytics', 'Nothing published yet'] },
     ],
   },
   {
@@ -686,11 +683,11 @@ export const programs: Program[] = [
     duration: '9 months',
     modules: 3,
     projects: 0,
-    format: 'Live + Self-paced',
-    cert: 'Completion Certificate',
-    outcome: 'IIM / Top B-School Admission',
-    desc: 'Section-oriented CAT preparation covering VARC, DILR, and QA — with concept building, intensive practice, sectional tests, and full mock CATs with percentile analytics.',
-    upcomingBatch: 'January 2027',
+    format: 'Self-paced',
+    cert: 'Skylent completion certificate',
+    outcome: 'CAT preparation',
+    desc: 'A planned CAT programme covering VARC, DILR and QA. The syllabus below is an outline — no material has been published yet.',
+    upcomingBatch: 'To be announced',
     programType: 'EXAM_PREP',
     level: 'Advanced',
     enrollmentStatus: 'coming_soon',
@@ -707,7 +704,7 @@ export const programs: Program[] = [
       'DILR: Data Interpretation (tables, charts, caselets) and Logical Reasoning sets',
       'QA: Arithmetic, Algebra, Geometry, Number System, and Modern Math',
       'Sectional time management and question selection strategies',
-      'Mock analysis: diagnosing accuracy vs. attempt rate by section',
+      'Planned: mock analysis once a test engine exists',
     ],
     curriculumDetail: [
       {
@@ -724,16 +721,15 @@ export const programs: Program[] = [
       },
     ],
     learningExperience: [
-      'Live sessions per section, twice per week',
-      'Weekly sectional tests with timed practice',
-      'Full-length mock CATs in the actual exam format',
-      'Detailed mock analysis: percentile, accuracy, time-per-question',
-      'GD-PI preparation included for shortlisted candidates',
+      'Planned: recorded concept lessons for each subject',
+      'Planned: practice sets and chapter tests inside the platform',
+      'Planned: full-length mock papers in the exam format',
+      'None of this material is in the platform yet — the programme has not launched',
     ],
     faqs: [
-      { q: 'Is this for working professionals?', a: 'Yes. The program is structured around a live + recorded format so working professionals can attend sessions in the evening and catch up via recordings.' },
-      { q: 'How many mock tests are included?', a: 'The full prep track includes 30 full-length mock CATs plus unlimited sectional tests. Every mock comes with detailed percentile and accuracy analytics.' },
-      { q: 'Is GD-PI preparation included?', a: 'Yes — for students who receive interview calls, a GD-PI preparation module is included in the Full Prep track.' },
+      { q: 'Is this for working professionals?', a: 'It is intended to be, but the programme has not launched and no material is available yet.' },
+      { q: 'How many mock tests are included?', a: 'The mock test series has not been built yet, so we cannot commit to a number.' },
+      { q: 'Is GD-PI preparation included?', a: 'It is planned for a later stage. No GD-PI material exists in the platform today.' },
     ],
     faculty: [
       { name: 'VARC Faculty · CAT', role: 'VARC', expertise: 'Reading Comprehension & Verbal Ability', placeholder: true },
@@ -741,8 +737,8 @@ export const programs: Program[] = [
       { name: 'QA Faculty · CAT', role: 'Quantitative Ability', expertise: 'Arithmetic, Algebra, Geometry', placeholder: true },
     ],
     pricing: [
-      { name: 'Foundation', price: 24999, originalPrice: 49999, features: ['All recorded content', 'Sectional tests', 'Practice sets', 'Completion certificate'] },
-      { name: 'Full Prep', price: 39999, originalPrice: 79999, highlight: true, features: ['Everything in Foundation', 'Live concept sessions', '30 full mock CATs', 'Detailed analytics', 'GD-PI preparation'] },
+      { name: 'Foundation', price: 24999, originalPrice: 49999, features: ['Planned: recorded lessons', 'Planned: sectional tests', 'Planned: practice sets', 'Nothing published yet'] },
+      { name: 'Full Prep', price: 39999, originalPrice: 79999, highlight: true, features: ['Planned: everything in Foundation', 'Planned: full mock CATs', 'Planned: detailed analytics', 'Nothing published yet'] },
     ],
   },
 
@@ -754,10 +750,10 @@ export const programs: Program[] = [
     modules: 5,
     projects: 2,
     format: 'Self-paced',
-    cert: 'Certificate of Completion',
+    cert: 'Skylent completion certificate',
     outcome: 'SQL-fluent Analyst',
     desc: 'A focused, practical SQL course for business analysts and professionals — from foundational queries to advanced window functions and business reporting.',
-    upcomingBatch: 'Enroll anytime',
+    upcomingBatch: 'Not yet teaching',
     programType: 'CERTIFICATE',
     level: 'Beginner to Intermediate',
     enrollmentStatus: 'open',
@@ -792,7 +788,7 @@ export const programs: Program[] = [
       { q: 'Is there a certificate?', a: 'Yes. A Skylent Certificate of Completion is issued on passing the final assessment.' },
     ],
     pricing: [
-      { name: 'Full Access', price: 4999, originalPrice: 9999, highlight: true, features: ['All 5 modules', '2 analytics projects', 'SQL practice sets', 'Certificate', 'Community access'] },
+      { name: 'Full Access', price: 4999, originalPrice: 9999, highlight: true, features: ['5 planned modules', '2 project briefs', 'SQL practice sets when published', 'Skylent completion certificate'] },
     ],
   },
 ]
@@ -814,81 +810,87 @@ export type Workshop = {
   whatYouGet: string[]
 }
 
+/**
+ * Planned short sessions — not a live calendar. `date`, `instructor`, `seats`
+ * and `originalPrice` are retained on the type so older surfaces compile, but
+ * they are not facts: no session is scheduled, no faculty is assigned, and
+ * seat counts are not published. Pages must not render those fields as live.
+ */
 export const workshops: Workshop[] = [
   {
     slug: 'ai-for-business',
     title: 'AI for Business Leaders',
     category: 'AI',
     duration: '1 day',
-    date: '24 August 2026',
+    date: '',
     mode: 'Online',
-    instructor: 'Skylent Faculty',
-    seats: 120,
-    seatsLeft: 34,
+    instructor: '',
+    seats: 0,
+    seatsLeft: 0,
     price: 999,
-    originalPrice: 2499,
-    desc: 'How to evaluate, adopt, and lead AI transformation in your organisation without a technical background.',
-    whatYouGet: ['AI strategy frameworks', 'Use-case identification', 'ROI evaluation models', 'Q&A with industry practitioner', 'Resource toolkit'],
+    originalPrice: 999,
+    desc: 'How to evaluate and adopt AI in an organisation without a technical background.',
+    whatYouGet: ['AI strategy frameworks', 'Use-case identification', 'ROI evaluation models', 'Reading list'],
   },
   {
     slug: 'prompt-engineering',
     title: 'Prompt Engineering Masterclass',
     category: 'AI',
     duration: '1 day',
-    date: '30 August 2026',
+    date: '',
     mode: 'Online',
-    instructor: 'Skylent Faculty',
-    seats: 80,
-    seatsLeft: 12,
+    instructor: '',
+    seats: 0,
+    seatsLeft: 0,
     price: 1499,
-    originalPrice: 3499,
-    desc: 'From zero-shot to chain-of-thought to multi-agent prompting. Practical, hands-on, immediately applicable.',
-    whatYouGet: ['50+ prompt templates', 'Live hands-on exercises', 'Framework for any LLM', 'Access to recordings', 'Certificate of completion'],
+    originalPrice: 1499,
+    desc: 'Zero-shot, chain-of-thought and multi-step prompting, written so you can apply it to any current LLM.',
+    whatYouGet: ['Prompt patterns', 'Worked examples', 'A framework you can reuse', 'Notes to keep'],
   },
   {
     slug: 'resume-masterclass',
     title: 'Resume & LinkedIn Masterclass',
     category: 'Career',
     duration: '3 hours',
-    date: '28 August 2026',
+    date: '',
     mode: 'Online',
-    instructor: 'Skylent Career Team',
-    seats: 200,
-    seatsLeft: 67,
+    instructor: '',
+    seats: 0,
+    seatsLeft: 0,
     price: 499,
-    originalPrice: 1499,
-    desc: 'Build an ATS-optimised resume and a recruiter-ready LinkedIn profile with live feedback from Skylent career coaches.',
-    whatYouGet: ['Resume template pack', 'ATS check process', 'LinkedIn optimisation guide', 'Live coach feedback', 'Recording access'],
+    originalPrice: 499,
+    desc: 'How to structure a resume and LinkedIn profile around work you have actually done.',
+    whatYouGet: ['Resume structure', 'ATS checklist', 'LinkedIn profile outline', 'Notes to keep'],
   },
   {
     slug: 'interview-masterclass',
     title: 'Data Interview Masterclass',
     category: 'Career',
     duration: '1 day',
-    date: '6 September 2026',
+    date: '',
     mode: 'Online',
-    instructor: 'Skylent Faculty',
-    seats: 100,
-    seatsLeft: 28,
+    instructor: '',
+    seats: 0,
+    seatsLeft: 0,
     price: 1999,
-    originalPrice: 4999,
-    desc: 'SQL, Python, statistics, and case interviews — the full data job interview preparation in one intensive session.',
-    whatYouGet: ['200+ interview questions', 'Live mock interview', 'SQL and Python drill', 'Case study walkthrough', 'Certificate'],
+    originalPrice: 1999,
+    desc: 'SQL, Python, statistics and case interviews — the kinds of questions data roles actually ask.',
+    whatYouGet: ['Question patterns', 'SQL and Python drills', 'Case-study walkthrough', 'Notes to keep'],
   },
   {
     slug: 'power-bi-workshop',
     title: 'Power BI Intensive',
     category: 'Data',
     duration: '2 days',
-    date: '13–14 September 2026',
+    date: '',
     mode: 'Online',
-    instructor: 'Skylent Faculty',
-    seats: 60,
-    seatsLeft: 19,
+    instructor: '',
+    seats: 0,
+    seatsLeft: 0,
     price: 2499,
-    originalPrice: 5999,
-    desc: 'Build three professional Power BI dashboards in two days. Hands-on from data import to published report.',
-    whatYouGet: ['3 real dashboard projects', 'DAX formula guide', 'Dataset access', 'Recordings', 'Certificate'],
+    originalPrice: 2499,
+    desc: 'From data import to a published report: the Power BI workflow in a short, focused session.',
+    whatYouGet: ['Import and model a dataset', 'DAX patterns', 'Dashboard layout', 'Publish and share'],
   },
 ]
 
@@ -1017,11 +1019,9 @@ The problem is that career outcomes are not produced by career services. They ar
 
 Career services at the end of a course is like adding a quality check at the end of a manufacturing line. By the time you get there, the product is already determined.
 
-Skylent's Career OS is built into the beginning of every program. Students track their career readiness score from week one. They build their portfolio in parallel with their learning. They practice interviews before they need to pass one.
+Skylent's Career OS sits alongside learning rather than after it. A learner can keep a profile, track applications, and work through structured interview practice while they are still on a programme — provided that programme actually opens Career OS.
 
-By the time a student finishes a Skylent program, their resume has already been reviewed. Their LinkedIn profile is already optimised. They have already done ten mock interviews and received feedback on each one. They have already mapped their target companies and understood what each role requires.
-
-The job search starts on the day of graduation not because we begin it then. It starts on the day of graduation because we have been preparing for it since day one.
+What the workspace does not do is review your resume for you, optimise your LinkedIn, or run a set number of mock interviews. Those services are not in the product. The job search still belongs to the learner.
 
 That is the difference between a career service and a career system.`,
   },
@@ -1041,20 +1041,33 @@ export type Job = {
   postedDays: number
 }
 
-export const jobs: Job[] = [
-  { id: 'jr-data-analyst', role: 'Junior Data Analyst', company: 'XYZ Technologies', salary: '₹5–7 LPA', location: 'Bengaluru / Hybrid', mode: 'Hybrid', skills: ['SQL', 'Excel', 'Power BI', 'Python'], exp: '0–2 yrs', desc: 'Analyse business data, build dashboards, and generate insights to support decision-making across product and marketing teams.', postedDays: 2 },
-  { id: 'ml-engineer', role: 'ML Engineer', company: 'DataCraft Pvt Ltd', salary: '₹8–12 LPA', location: 'Mumbai / Remote', mode: 'Remote', skills: ['Python', 'TensorFlow', 'Sklearn', 'AWS'], exp: '1–3 yrs', desc: 'Build and deploy machine learning models for recommendation, fraud detection, and demand forecasting at scale.', postedDays: 5 },
-  { id: 'full-stack-dev', role: 'Full Stack Developer', company: 'NovaBridge Solutions', salary: '₹7–10 LPA', location: 'Hyderabad / On-site', mode: 'On-site', skills: ['React', 'Node.js', 'PostgreSQL', 'Docker'], exp: '1–3 yrs', desc: 'Design and develop end-to-end web applications for enterprise clients in fintech and logistics.', postedDays: 1 },
-  { id: 'product-analyst', role: 'Product Analyst', company: 'Finova Digital', salary: '₹6–9 LPA', location: 'Pune / Hybrid', mode: 'Hybrid', skills: ['SQL', 'Looker', 'Product Sense', 'Excel'], exp: '0–2 yrs', desc: 'Work with product managers to define metrics, analyse user behaviour, and drive growth decisions.', postedDays: 3 },
-  { id: 'ai-intern', role: 'AI Research Intern', company: 'Cognosphere Labs', salary: '₹3–5 LPA', location: 'Bengaluru / Hybrid', mode: 'Hybrid', skills: ['Python', 'PyTorch', 'NLP', 'Research'], exp: 'Fresher', desc: 'Contribute to applied NLP research projects and help deploy language models to production environments.', postedDays: 7 },
-]
+/**
+ * Empty by design. The public Career OS page reads from this list, and the only
+ * roles that belong in it are ones a verified employer has actually posted.
+ * Invented companies and salary bands would make an empty board look like a
+ * working one, which is the thing this list must never do.
+ */
+export const jobs: Job[] = []
 
-// ─── SUCCESS STORIES ──────────────────────────────────────────────────────────
-export const stories = [
-  { name: 'Ananya Krishnan', initials: 'AK', before: 'Commerce graduate. No technical background. No clear path into tech.', provided: 'Data Analytics program + 4 industry projects + career mentorship + placement prep.', outcome: 'Data Analyst', salary: '₹7.2 LPA', duration: '6 months', program: 'Data Analytics with Gen AI' },
-  { name: 'Rohan Mehta', initials: 'RM', before: 'Mechanical engineer. 3 years experience. No tech growth path.', provided: 'Full Stack program + 5 live projects + resume rebuild + 6 mock interviews.', outcome: 'Full Stack Developer', salary: '₹12 LPA', duration: '9 months', program: 'Full Stack Development' },
-  { name: 'Priya Nair', initials: 'PN', before: 'Recent graduate. Strong academics. No industry exposure or portfolio.', provided: 'Data Science & AI + Skylent Labs AI bootcamp + career support.', outcome: 'ML Engineer', salary: '₹14 LPA', duration: '11 months', program: 'Data Science & AI' },
-]
+// ─── LEARNER STORIES ──────────────────────────────────────────────────────────
+/**
+ * Empty by design. A learner story may only be added here once the person, the
+ * programme they took and the outcome they describe have all been verified.
+ * Names, salaries and placement claims that cannot be verified are not sample
+ * content — they are false advertising, so there is nothing to fall back on.
+ */
+export type LearnerStory = {
+  name: string
+  initials: string
+  before: string
+  provided: string
+  outcome: string
+  salary: string
+  duration: string
+  program: string
+}
+
+export const stories: LearnerStory[] = []
 
 // ─── DEMO USERS (for role dashboard switcher) ─────────────────────────────────
 export const demoUsers = [

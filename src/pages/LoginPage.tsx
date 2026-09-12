@@ -4,13 +4,14 @@ import { useAuth } from "../context/AuthContext"
 import { type CatalogEnrollTarget, type LoginRedirectState } from "../lib/catalog-enrollment"
 import { buildGoogleOAuthStartUrl } from "../lib/auth-api"
 import { finishAuthNavigation } from "../lib/auth-routing"
+import { safeInternalPath } from "../lib/safe-return"
 import AuthPageShell, { AuthDivider, AuthDevDemoAccounts, AuthError, authFieldClass } from "../components/auth/AuthPageShell"
-import { getDomainAccent } from "../aurora-themes"
+import { getSurfaceAccent } from "../design/accent"
 
-const accent = getDomainAccent("general")
+const accent = getSurfaceAccent("general")
 
 function readOAuthRedirectState(params: URLSearchParams): LoginRedirectState | null {
-  const returnTo = params.get("returnTo") ?? undefined
+  const returnTo = safeInternalPath(params.get("returnTo")) ?? undefined
   const enrollKind = params.get("enrollKind")
   const enrollSlug = params.get("enrollSlug")?.trim()
   let enrollTarget: CatalogEnrollTarget | undefined
@@ -41,7 +42,13 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const isSignup = location.pathname === "/signup"
-  const redirectState = (location.state ?? null) as LoginRedirectState | null
+  const locationRedirect = (location.state ?? null) as LoginRedirectState | null
+  const searchRedirect = readOAuthRedirectState(new URLSearchParams(location.search))
+  const returnTo = safeInternalPath(locationRedirect?.returnTo) ?? searchRedirect?.returnTo ?? undefined
+  const enrollTarget = locationRedirect?.enrollTarget ?? searchRedirect?.enrollTarget
+  const redirectState: LoginRedirectState | null = returnTo || enrollTarget
+    ? { returnTo, enrollTarget }
+    : null
 
   const [siEmail, setSiEmail] = useState("")
   const [siPassword, setSiPassword] = useState("")
@@ -60,7 +67,7 @@ export default function LoginPage() {
     if (errorParam?.startsWith("oauth")) {
       setError(
         errorParam === "oauth_config"
-          ? "Google sign-in is misconfigured. Confirm GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your root .env match the OAuth client in Google Cloud Console, then restart the API."
+          ? "Google sign-in is not available right now. Use email and password, or try again later."
           : "Google sign-in failed. Please try again or use email and password.",
       )
       navigate(location.pathname, { replace: true, state: location.state })

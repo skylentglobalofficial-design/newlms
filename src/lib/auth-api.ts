@@ -1,3 +1,5 @@
+import { safeInternalPath } from "./safe-return"
+
 const API_BASE = "/api/v1"
 
 export type ApiRole = "student" | "faculty" | "organisation" | "recruiter" | "superadmin"
@@ -12,7 +14,8 @@ export type GoogleOAuthStartOptions = {
 
 export function buildGoogleOAuthStartUrl(options: GoogleOAuthStartOptions = {}): string {
   const params = new URLSearchParams()
-  if (options.returnTo) params.set("returnTo", options.returnTo)
+  const returnTo = safeInternalPath(options.returnTo)
+  if (returnTo) params.set("returnTo", returnTo)
   if (options.enrollTarget) {
     params.set("enrollKind", options.enrollTarget.kind)
     params.set("enrollSlug", options.enrollTarget.slug)

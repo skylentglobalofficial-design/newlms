@@ -5,6 +5,7 @@ import { AuthDashboardShell, type AuthNavItem } from '../components/AuthDashboar
 import { getRoleAccent } from '../role-themes'
 import { useRequireRole } from '../hooks/useRequireRole'
 import { useDemoState } from '../demo/DemoStateContext'
+import RoleWorkspaceBanner from '../components/auth/RoleWorkspaceBanner'
 
 // ─── DEMO DATA (local workspace preview) ─────────────────────────────────────
 
@@ -56,21 +57,6 @@ function NavIcon({ id }: { id: string }) {
   if (id === 'review') return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
   if (id === 'shortlist') return <svg {...s}><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
   return <svg {...s}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-}
-
-function DemoBanner() {
-  return (
-    <div style={{
-      padding: '12px 16px', marginBottom: 28,
-      borderLeft: `3px solid ${accent.border}`,
-      background: accent.subtle,
-    }}>
-      <div style={{ color: accent.text, fontSize: 12, fontWeight: 500, marginBottom: 2 }}>Demo workspace</div>
-      <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, lineHeight: 1.5 }}>
-        Candidate names and counts below are sample data for UI preview — not a live talent pool.
-      </div>
-    </div>
-  )
 }
 
 function OpenRolesSection() {
@@ -324,12 +310,17 @@ export default function DashboardRecruiterPage() {
         <div style={{ marginBottom: 8 }}>
           <h1 className="skylent-display-md" style={{ color: C.white, margin: '0 0 8px', lineHeight: 1.1 }}>Hiring workspace</h1>
           <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 15, margin: 0, maxWidth: 520 }}>
-            Review candidates, manage open roles, and track application stages.
+            Layout preview for a hiring workspace. The candidates and roles below are not a live pipeline.
           </p>
         </div>
       }
     >
-      <DemoBanner />
+      <RoleWorkspaceBanner
+        variant="fixture"
+        accent={accent}
+        title="Recruiter workspace"
+        description="All candidates, roles, and application stages below are development preview data. Shortlist actions persist locally in your browser only — there is no recruiter backend API yet."
+      />
       {scheduleNote && (
         <div style={{ padding: '12px 16px', marginBottom: 20, borderLeft: `3px solid ${accent.border}`, background: accent.subtle }}>
           <div style={{ color: accent.text, fontSize: 12, fontWeight: 500, marginBottom: 2 }}>Interview scheduling — demo only</div>

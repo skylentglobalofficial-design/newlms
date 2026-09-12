@@ -18,7 +18,7 @@ export default function MuxVideoPlaceholder({
     <div>
       <div
         className="lms-media-frame"
-        data-mux-ready="true"
+        data-mux-ready="false"
         style={{
           background: 'rgba(255,255,255,0.02)',
           borderRadius: T.rCard,
@@ -34,23 +34,15 @@ export default function MuxVideoPlaceholder({
       >
         <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse 70% 60% at 30% 20%, ${accent.subtle} 0%, transparent 70%)` }} />
         <div style={{ position: 'absolute', top: 12, left: 12, fontSize: 9, fontFamily: 'var(--font-mono)', color: 'rgba(255,255,255,0.28)', letterSpacing: '0.06em' }}>
-          MUX · READY
+          VIDEO · NOT PUBLISHED
         </div>
         <div style={{ position: 'relative', textAlign: 'center', padding: 24, maxWidth: 420 }}>
-          <div style={{
-            width: 64, height: 64, borderRadius: '50%',
-            background: accent.subtle, border: `2px solid ${accent.border}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto', cursor: watched ? 'default' : 'pointer',
-          }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill={accent.primary}><polygon points="5 3 19 12 5 21 5 3"/></svg>
-          </div>
-          <div style={{ color: C.white, fontSize: 13, fontWeight: 500, marginTop: 14, lineHeight: 1.4 }}>{title}</div>
+          <div style={{ color: C.white, fontSize: 13, fontWeight: 500, lineHeight: 1.4 }}>{title}</div>
           {duration && (
             <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, marginTop: 8, fontFamily: 'var(--font-mono)' }}>{duration}</div>
           )}
-          <div style={{ color: 'rgba(255,255,255,0.25)', fontSize: 10, marginTop: 10, fontFamily: 'var(--font-mono)' }}>
-            Video player placeholder · no external stream
+          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, marginTop: 12, lineHeight: 1.5 }}>
+            No video file is published for this lesson yet. You can still mark it as watched to continue.
           </div>
         </div>
         {watched && (

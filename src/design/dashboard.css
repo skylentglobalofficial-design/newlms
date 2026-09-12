@@ -1,0 +1,594 @@
+/* ───────────────────────────────────────────────────────────────────────────
+   Learner dashboard surfaces.
+
+   One dark band (the resume hero) carries the emphasis; everything below it is
+   light and quiet so the first viewport answers "where am I, what next, how far
+   in am I" without competing for attention.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* ── Continue banner (Caplen-inspired, Skylent-owned) ─────────────────────── */
+.sk-dash-banner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(220px, 0.95fr);
+  gap: clamp(18px, 2.5vw, 32px);
+  align-items: stretch;
+  background: #17141f;
+  color: #fff;
+  border-radius: 24px;
+  padding: clamp(22px, 2.8vw, 32px);
+  overflow: visible;
+}
+
+.sk-dash-banner-kicker {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.sk-dash-banner h2 {
+  margin: 10px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3vw, 36px);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.sk-dash-banner-meta {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.sk-dash-continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 22px;
+  min-height: 46px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: #fff;
+  color: #17141f;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sk-dash-continue:hover {
+  background: #f3eee4;
+}
+
+.sk-dash-fan {
+  display: flex;
+  align-items: stretch;
+  min-width: 0;
+}
+
+.sk-dash-fan-card {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 16px 14px;
+  border-radius: 18px;
+  text-decoration: none;
+  color: #17141f;
+  background: #ead9ff;
+}
+
+.sk-dash-fan-card + .sk-dash-fan-card {
+  margin-left: -18px;
+}
+
+.sk-dash-fan-card:nth-child(2) {
+  background: #f8e2b8;
+  transform: translateY(8px);
+}
+
+.sk-dash-fan-card:nth-child(3) {
+  background: #e3f19a;
+  transform: translateY(-4px);
+}
+
+.sk-dash-fan-card:nth-child(4) {
+  background: #d5e6ff;
+}
+
+@media (min-width: 768px) {
+  .sk-dash-fan-card:only-child {
+    max-width: 280px;
+    margin-left: auto;
+    min-height: 176px;
+  }
+}
+
+.sk-dash-fan-index {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(23, 20, 31, 0.45);
+}
+
+.sk-dash-fan-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.sk-dash-fan-meta {
+  margin-top: auto;
+  font-size: 12px;
+  color: rgba(23, 20, 31, 0.6);
+}
+
+.sk-dash-fan-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(23, 20, 31, 0.12);
+  overflow: hidden;
+}
+
+.sk-dash-fan-bar > span {
+  display: block;
+  height: 100%;
+  background: #17141f;
+}
+
+.sk-dash-greeting h1 {
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3vw, 34px);
+  letter-spacing: -0.03em;
+}
+
+.sk-dash-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sk-dash-stat {
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: 18px;
+  padding: 18px 18px 16px;
+  min-width: 0;
+}
+
+.sk-dash-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sk-dash-time {
+  display: grid;
+  grid-template-columns: 14px minmax(0, 1fr);
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  padding: 10px 0;
+}
+
+.sk-dash-time-dot {
+  width: 10px;
+  height: 10px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: #17141f;
+  box-shadow: 0 0 0 4px #efeaf8;
+}
+
+.sk-dash-time + .sk-dash-time .sk-dash-time-dot {
+  background: #c4b5e8;
+}
+
+/* ── Greeting ─────────────────────────────────────────────────────────────── */
+.sk-dash-greeting {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: clamp(18px, 2.2vw, 24px);
+}
+
+/* ── Resume hero ──────────────────────────────────────────────────────────── */
+.sk-dash-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--sk-r-panel);
+  background: var(--sk-surface-dark);
+  color: #fff;
+  padding: clamp(22px, 2.8vw, 32px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(20px, 3vw, 40px);
+  align-items: center;
+}
+
+.sk-dash-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: var(--sk-hero-wash);
+  opacity: 0.5;
+}
+
+.sk-dash-hero > * {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+
+.sk-dash-hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(21px, 2.3vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  margin: 10px 0 0;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.sk-dash-hero-meta {
+  margin: 9px 0 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.sk-dash-hero-actions {
+  margin-top: clamp(18px, 2.2vw, 24px);
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.sk-dash-hero-next {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.sk-dash-ring {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.sk-dash-ring-caption {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Stat tiles ───────────────────────────────────────────────────────────── */
+.sk-dash-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sk-dash-stat {
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: var(--sk-r-card);
+  padding: 15px 16px;
+  box-shadow: var(--sk-shadow-sm);
+  min-width: 0;
+}
+
+.sk-dash-stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--sk-ink);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.15;
+}
+
+.sk-dash-stat-value em {
+  font-style: normal;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sk-ink-muted);
+}
+
+.sk-dash-stat-label {
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--sk-ink-secondary);
+  margin-top: 6px;
+  text-wrap: balance;
+}
+
+/* ── List rows (tasks, activity, courses) ─────────────────────────────────── */
+.sk-dash-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--sk-line);
+  text-decoration: none;
+  color: inherit;
+  min-width: 0;
+}
+
+.sk-dash-row:last-child {
+  border-bottom: none;
+}
+
+
+a.sk-dash-row:hover {
+  background: var(--sk-surface-muted);
+  border-radius: var(--sk-r-control);
+  border-bottom-color: transparent;
+  padding-inline: 10px;
+  margin-inline: -6px;
+}
+
+.sk-dash-row-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sk-dash-row-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sk-ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sk-dash-row-meta {
+  font-size: 12.5px;
+  color: var(--sk-ink-muted);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sk-dash-row-chevron {
+  margin-left: auto;
+  color: var(--sk-ink-muted);
+  flex-shrink: 0;
+  display: flex;
+}
+
+/* ── Course progress cards ────────────────────────────────────────────────── */
+.sk-dash-courses {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+
+.sk-dash-course {
+  display: block;
+  text-decoration: none;
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: var(--sk-r-card);
+  padding: 17px 18px;
+  box-shadow: var(--sk-shadow-sm);
+  min-width: 0;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+a.sk-dash-course:hover {
+  border-color: var(--sk-line-strong);
+  box-shadow: var(--sk-shadow-md);
+}
+
+.sk-dash-course-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.sk-dash-course-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--sk-ink);
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+/* ── Curriculum position ──────────────────────────────────────────────────── */
+.sk-dash-module {
+  border: 1px solid var(--sk-line);
+  border-radius: var(--sk-r-card);
+  background: var(--sk-surface);
+  overflow: hidden;
+}
+
+.sk-dash-module + .sk-dash-module {
+  margin-top: 10px;
+}
+
+.sk-dash-module-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  text-align: left;
+}
+
+
+.sk-dash-module-head:hover {
+  background: var(--sk-surface-muted);
+}
+
+.sk-dash-module-index {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--sk-ink-muted);
+  flex-shrink: 0;
+}
+
+.sk-dash-module-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sk-ink);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sk-dash-module-count {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--sk-ink-muted);
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+
+.sk-dash-module-bar {
+  height: 3px;
+  background: var(--sk-surface-muted);
+}
+
+.sk-dash-module-bar > span {
+  display: block;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+
+.sk-dash-lessons {
+  padding: 6px 16px 12px;
+  border-top: 1px solid var(--sk-line);
+}
+
+.sk-dash-lesson {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 13.5px;
+  color: var(--sk-ink-secondary);
+  text-decoration: none;
+  min-width: 0;
+}
+
+a.sk-dash-lesson:hover .sk-dash-lesson-title {
+  color: var(--sk-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.sk-dash-lesson.is-locked {
+  color: var(--sk-ink-muted);
+  cursor: not-allowed;
+}
+
+.sk-dash-lesson-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sk-dash-lesson-now {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  border-radius: 999px;
+  padding: 2px 7px;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ── Rail panels ──────────────────────────────────────────────────────────── */
+.sk-dash-panel {
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line);
+  border-radius: var(--sk-r-card);
+  padding: 17px 18px;
+  box-shadow: var(--sk-shadow-sm);
+  min-width: 0;
+}
+
+.sk-dash-panel-title {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sk-ink-muted);
+  margin-bottom: 12px;
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Responsive
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 760px) {
+  .sk-dash-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .sk-dash-banner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sk-dash-fan-card + .sk-dash-fan-card {
+    margin-left: -12px;
+  }
+
+  .sk-dash-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sk-dash-courses {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sk-dash-hero-actions > .sk-btn {
+    flex: 1 1 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-dash-course,
+  .sk-dash-module-bar > span {
+    transition: none;
+  }
+}

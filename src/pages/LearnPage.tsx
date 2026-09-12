@@ -16,6 +16,8 @@ import {
 } from '../components/lms/lms-utils'
 import { useLmsCourse } from '../hooks/useLms'
 import LockedLessonState from '../components/lms/LockedLessonState'
+import ProductShell from '../design/ProductShell'
+import { Rail, EmptyState, ButtonLink, Button } from '../design/primitives'
 import type { VideoPlaybackSource } from '../lib/media/types'
 import {
   fetchCourseWorkspace,
@@ -26,6 +28,8 @@ import {
   submitQuizAttempt,
   updateAssignment,
 } from '../lib/lms-api'
+import { labsForLearningContext } from '../lib/virtual-labs'
+import { labRunPath } from '../lib/safe-return'
 
 function dashRoute(role?: string) {
   switch (role) {
@@ -114,71 +118,112 @@ export default function LearnPage() {
 
   if (!slug) {
     return (
-      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: C.white }}>Course not found</div>
-      </div>
+      <ProductShell footer={false}>
+        <Rail>
+          <div style={{ paddingBlock: 80 }}>
+            <EmptyState
+              title="Course not found"
+              body="That address is not a course in the learning platform."
+              action={<ButtonLink to="/courses">Back to courses</ButtonLink>}
+            />
+          </div>
+        </Rail>
+      </ProductShell>
     )
   }
 
   if (!authReady || access.status === 'loading') {
     return (
-      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: 'var(--text-muted)', fontSize: 14 }}>Loading course…</div>
-      </div>
+      <ProductShell footer={false}>
+        <Rail>
+          <div style={{ paddingBlock: 80 }}>
+            <EmptyState title="Loading course…" body="Fetching your lessons and progress." />
+          </div>
+        </Rail>
+      </ProductShell>
     )
   }
 
   if (access.status === 'login_required') {
     return (
-      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
-        <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>Sign in to continue learning</div>
-        <p style={{ color: 'var(--text-secondary)', fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>Course content is available to enrolled learners after authentication.</p>
-        <Link to="/login" state={{ enrollTarget: { kind: 'course', slug } }} style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Go to login →</Link>
-      </div>
+      <ProductShell footer={false}>
+        <Rail>
+          <div style={{ paddingBlock: 80 }}>
+            <EmptyState
+              title="Sign in to continue learning"
+              body="Course content is available to enrolled learners after authentication."
+              action={
+                <Button
+                  variant="secondary"
+                  onClick={() => navigate('/login', { state: { enrollTarget: { kind: 'course', slug } } })}
+                >
+                  Go to sign in
+                </Button>
+              }
+            />
+          </div>
+        </Rail>
+      </ProductShell>
     )
   }
 
   if (access.status === 'not_enrolled') {
     return (
-      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
-        <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>{access.courseTitle}</div>
-        <p style={{ color: 'var(--text-secondary)', fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>You are signed in but not enrolled in this course yet.</p>
-        {enrollError && (
-          <p role="alert" style={{ color: 'rgba(255,255,255,0.72)', fontSize: 13, margin: 0, textAlign: 'center', maxWidth: 420 }}>
-            {enrollError} Please try again.
-          </p>
-        )}
-        <button
-          type="button"
-          disabled={enrolling}
-          onClick={() => {
-            setEnrollError(null)
-            setEnrolling(true)
-            void enroll()
-              .catch((err: unknown) => {
-                setEnrollError(err instanceof Error ? err.message : 'Enrollment failed')
-              })
-              .finally(() => setEnrolling(false))
-          }}
-          style={{ background: roleAccent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer' }}
-        >
-          {enrolling ? 'Enrolling…' : 'Enroll to start learning'}
-        </button>
-        <Link to="/dashboard/student" style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 13 }}>← Back to dashboard</Link>
-      </div>
+      <ProductShell footer={false}>
+        <Rail>
+          <div style={{ paddingBlock: 80 }}>
+            <EmptyState
+              title={access.courseTitle}
+              body={enrollError
+                ? `${enrollError} Please try again.`
+                : 'You are signed in but not enrolled in this course yet.'}
+              action={
+                <>
+                  <Button
+                    disabled={enrolling}
+                    onClick={() => {
+                      setEnrollError(null)
+                      setEnrolling(true)
+                      void enroll()
+                        .catch((err: unknown) => {
+                          setEnrollError(err instanceof Error ? err.message : 'Enrollment failed')
+                        })
+                        .finally(() => setEnrolling(false))
+                    }}
+                  >
+                    {enrolling ? 'Enrolling…' : 'Enrol to start learning'}
+                  </Button>
+                  <ButtonLink to="/dashboard/student" variant="ghost">Back to dashboard</ButtonLink>
+                </>
+              }
+            />
+          </div>
+        </Rail>
+      </ProductShell>
     )
   }
 
   if (!course) {
     return (
-      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
-        <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>Course not found</div>
-        <Link to="/courses" style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 14 }}>← Back to courses</Link>
-      </div>
+      <ProductShell footer={false}>
+        <Rail>
+          <div style={{ paddingBlock: 80 }}>
+            <EmptyState
+              title="Course not found"
+              body="That course is not in the learning platform."
+              action={<ButtonLink to="/courses">Back to courses</ButtonLink>}
+            />
+          </div>
+        </Rail>
+      </ProductShell>
     )
   }
 
   const selectedLesson = allLessons.find(l => l.id === selectedLessonId)
+  const selectedModule = course.modules.find(module => module.lessons.some(lesson => lesson.id === selectedLessonId))
+  const moduleLabs = selectedLesson
+    ? labsForLearningContext({ moduleTitle: selectedModule?.title, lessonTitle: selectedLesson.title })
+    : []
   const selectedState = selectedLessonId ? (lessonStates[selectedLessonId] ?? { ...EMPTY_LESSON_STATE }) : { ...EMPTY_LESSON_STATE }
   const { progressPct, allComplete } = computeCourseProgress(allLessons, lessonStates)
   const tabAccent = getLmsTabAccent(selectedLesson ? defaultTabForLesson(selectedLesson) : 'video')
@@ -326,6 +371,20 @@ export default function LearnPage() {
                   onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
                   lessonMedia={lessonMedia}
                 />
+              )}
+              {!selectedState.locked && moduleLabs.length > 0 && (
+                <aside className="lms-lab-cta">
+                  <p className="lms-lab-cta-kicker">Virtual lab for this lesson</p>
+                  <p>Practice the same subject. We do not open an unrelated experiment from another course.</p>
+                  <ul>
+                    {moduleLabs.map(lab => (
+                      <li key={lab.id}>
+                        <Link to={labRunPath(lab.id, `/learn/${slug}/${selectedLessonId}`)}>{lab.title}</Link>
+                        <span>{lab.subject} · {lab.duration} · runs in your browser</span>
+                      </li>
+                    ))}
+                  </ul>
+                </aside>
               )}
               <LessonNavigation
                 prev={prev}

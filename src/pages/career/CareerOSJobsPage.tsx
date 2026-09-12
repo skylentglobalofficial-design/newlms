@@ -74,7 +74,7 @@ export default function CareerOSJobsPage() {
           Job board
         </h1>
         <p style={{ margin: 0, color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.6 }}>
-          Search open roles, save opportunities, and apply when you are ready.
+          Only verified employers appear here. If the board is empty, no verified employer has posted a role yet — this is not a list of sample companies.
         </p>
       </div>
 
@@ -158,8 +158,8 @@ export default function CareerOSJobsPage() {
           ) : board.displayedJobs.length === 0 ? (
             <EmptyBlock
               message={board.view === "browse"
-                ? "No open roles match your search. Try different filters or check back later."
-                : "You have not saved any jobs yet. Browse open roles and save the ones you want to track."}
+                ? "Your job board is empty because no verified employer has posted a role yet. Nothing here is a sample company."
+                : "You have not saved any jobs yet. Nothing is listed until an employer posts a role."}
               onAction={board.view === "saved" ? () => board.setView("browse") : undefined}
               actionLabel={board.view === "saved" ? "Browse jobs" : undefined}
             />
