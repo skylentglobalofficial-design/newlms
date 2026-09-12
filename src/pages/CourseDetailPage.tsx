@@ -204,7 +204,7 @@ export default function CourseDetailPage() {
             <section id="labs" className="sk-pdp-section">
               <h2>Virtual labs</h2>
               <p className="sk-pdp-lead">
-                Only experiments that match this course are listed. A Python course does not open an HTML lab.
+                Only experiments that match this course are listed. We do not substitute an unrelated subject.
               </p>
               {relatedLabs.length > 0 ? (
                 <div className="sk-pdp-live">
