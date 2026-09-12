@@ -43,13 +43,16 @@
 
 .sk-exam-track {
   display: flex;
-  gap: 10px;
+  flex-wrap: nowrap;
+  gap: 0;
   overflow-x: auto;
   scrollbar-width: none;
   list-style: none;
-  margin: 18px 0 8px;
-  padding: 0 0 4px;
+  margin: 22px 0 12px;
+  padding: 0 0 8px;
   -webkit-overflow-scrolling: touch;
+  border-top: 1px solid var(--sk-line-strong);
+  border-bottom: 1px solid var(--sk-line);
 }
 
 .sk-exam-track::-webkit-scrollbar {
@@ -57,14 +60,19 @@
 }
 
 .sk-exam-track li {
-  flex: 1 0 112px;
+  flex: 1 0 120px;
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 12px 12px 14px;
-  background: #fff;
-  border: 1px solid var(--sk-line);
-  border-radius: 12px;
+  padding: 14px 18px 14px 0;
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--sk-line);
+}
+
+.sk-exam-track li:last-child {
+  border-right: none;
+  padding-right: 0;
 }
 
 .sk-exam-track span {
@@ -76,7 +84,7 @@
 
 .sk-exam-track strong {
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 16px;
   letter-spacing: -0.02em;
 }
 
@@ -93,26 +101,28 @@
 }
 
 .sk-exam-list {
-  display: grid;
-  gap: 16px;
-  padding: 12px 0 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 8px 0 28px;
 }
 
 .sk-exam-item {
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-  gap: 24px;
-  padding: 28px;
-  background: #fff;
-  border: 1px solid var(--sk-line);
-  border-radius: 18px;
+  gap: 24px 40px;
+  padding: 28px 0;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--sk-line-strong);
+  border-radius: 0;
 }
 
 .sk-exam-item h2 {
   margin: 8px 0 0;
   font-family: var(--font-display);
-  font-size: clamp(26px, 2.4vw, 34px);
-  letter-spacing: -0.03em;
+  font-size: clamp(28px, 3vw, 40px);
+  letter-spacing: -0.032em;
 }
 
 .sk-exam-item .lead {
@@ -152,6 +162,6 @@
 @media (max-width: 767px) {
   .sk-exam-item {
     grid-template-columns: 1fr;
-    padding: 22px;
+    padding: 22px 0;
   }
 }

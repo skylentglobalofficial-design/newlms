@@ -52,26 +52,28 @@ function SearchBar({
   )
 }
 
-function FeaturedPoster({ program }: { program: Program }) {
+function FeaturedTicket({ program }: { program: Program }) {
   const availability = getProgrammeAvailability(program)
   const modules = publishedModuleCount(program)
   const lowestPrice = program.pricing.length ? Math.min(...program.pricing.map(tier => tier.price)) : null
 
   return (
-    <Link to={`/programs/${program.slug}`} className="sk-home-poster">
-      <div className="sk-home-poster-top">
-        <StatusPill availability={availability} size="sm" />
-        <span className="sk-home-poster-type">{PROGRAM_TYPE_LABEL[program.programType]}</span>
+    <Link to={`/programs/${program.slug}`} className="sk-home-ticket">
+      <div className="sk-home-ticket-copy">
+        <div className="sk-home-ticket-top">
+          <StatusPill availability={availability} size="sm" />
+          <span className="sk-home-ticket-type">{PROGRAM_TYPE_LABEL[program.programType]}</span>
+        </div>
+        <h2 className="sk-home-ticket-title">{program.name}</h2>
+        <p className="sk-home-ticket-lead">{availability.explanation}</p>
       </div>
-      <h2 className="sk-home-poster-title">{program.name}</h2>
-      <p className="sk-home-poster-lead">{availability.explanation}</p>
-      <ul className="sk-home-poster-meta">
+      <ul className="sk-home-ticket-meta">
         {modules > 0 && <li>{modules} published modules</li>}
         <li>{program.duration}</li>
         <li>{program.level}</li>
         {lowestPrice !== null && <li>From {formatInr(lowestPrice)}</li>}
       </ul>
-      <span className="sk-home-poster-cta">
+      <span className="sk-home-ticket-cta">
         View programme
         <span aria-hidden>→</span>
       </span>
@@ -85,34 +87,33 @@ function Hero({ featured }: { featured: Program | null }) {
   return (
     <section className="sk-home-hero">
       <Rail>
-        <div className={`sk-home-hero-grid${featured ? '' : ' is-solo'}`}>
-          <div className="sk-home-hero-copy">
-            <p className="sk-home-kicker">Education · skills · career</p>
-            <h1 className="sk-home-title">
-              Skylent
-              <span>One platform. Different jobs.</span>
-            </h1>
-            <p className="sk-home-lead">
-              Find something to learn, follow an academic path, or open a professional workspace. Every product
-              says whether it is open today.
-            </p>
-            <div className="sk-home-hero-actions">
-              <Link to="/skills" className="sk-home-btn">Learn</Link>
-              <Link to="/education" className="sk-home-btn-ghost">Education</Link>
-            </div>
-            <p className="sk-home-facts">
-              Open today: {openPrograms.length} {openPrograms.length === 1 ? 'programme' : 'programmes'},{' '}
-              {openCourses.length} {openCourses.length === 1 ? 'course' : 'courses'}, {lessons} lessons.
-            </p>
-          </div>
-          {featured && <FeaturedPoster program={featured} />}
+        <p className="sk-home-kicker">Education · skills · career</p>
+        <h1 className="sk-home-title">
+          One platform.
+          <span>Different jobs.</span>
+        </h1>
+        <p className="sk-home-lead">
+          Find something to learn, follow an academic path, or open a professional workspace. Every product
+          says whether it is open today.
+        </p>
+        <div className="sk-home-hero-actions">
+          <Link to="/skills" className="sk-home-btn">Find something to learn</Link>
+          <Link to="/education" className="sk-home-btn-ghost">Education map</Link>
         </div>
+        <p className="sk-home-facts">
+          Open today: {openPrograms.length} {openPrograms.length === 1 ? 'programme' : 'programmes'},{' '}
+          {openCourses.length} {openCourses.length === 1 ? 'course' : 'courses'}, {lessons} lessons.
+        </p>
+        {featured && <FeaturedTicket program={featured} />}
       </Rail>
     </section>
   )
 }
 
 function Destinations() {
+  const learn = DESTINATIONS[0]
+  const rest = DESTINATIONS.slice(1)
+
   return (
     <section className="sk-home-intent">
       <Rail>
@@ -120,19 +121,31 @@ function Destinations() {
           <h2>Where should I go next?</h2>
           <p>Same platform — six different jobs. Start with the one that matches why you are here.</p>
         </div>
-        <div className="sk-home-doors">
-          {DESTINATIONS.map((destination, index) => (
+
+        <Link to={learn.to} className="sk-home-door is-learn">
+          <span className="sk-home-door-index" aria-hidden>01</span>
+          <span className="sk-home-door-label">{learn.label}</span>
+          <span className="sk-home-door-q">{learn.question}</span>
+          <span className="sk-home-door-promise">{learn.promise}</span>
+        </Link>
+
+        <div className="sk-home-index" role="list">
+          {rest.map((destination, index) => (
             <Link
               key={destination.id}
               to={destination.to}
-              className={`sk-home-door is-${destination.role}`}
+              className="sk-home-intent-row"
+              role="listitem"
             >
-              <span className="sk-home-door-index" aria-hidden>
-                {String(index + 1).padStart(2, '0')}
+              <span className="sk-home-intent-index" aria-hidden>
+                {String(index + 2).padStart(2, '0')}
               </span>
-              <span className="sk-home-door-label">{destination.label}</span>
-              <span className="sk-home-door-q">{destination.question}</span>
-              <span className="sk-home-door-promise">{destination.promise}</span>
+              <span>
+                <span className="sk-home-intent-q">{destination.question}</span>
+                <span className="sk-home-intent-label">{destination.label}</span>
+                <span className="sk-home-intent-promise">{destination.promise}</span>
+              </span>
+              <span className="sk-home-intent-go" aria-hidden>→</span>
             </Link>
           ))}
         </div>
@@ -141,78 +154,84 @@ function Destinations() {
   )
 }
 
-function ProgramProductCard({ program }: { program: Program }) {
-  const availability = getProgrammeAvailability(program)
-  const modules = publishedModuleCount(program)
-  const lowestPrice = program.pricing.length ? Math.min(...program.pricing.map(tier => tier.price)) : null
-  const detailsTo = `/programs/${program.slug}`
-
+function CatalogRow({
+  kind,
+  title,
+  href,
+  meta,
+  price,
+  availability,
+  action,
+}: {
+  kind: string
+  title: string
+  href: string
+  meta: string
+  price: string | null
+  availability: ReturnType<typeof getProgrammeAvailability>
+  action: string
+}) {
   return (
-    <article className="sk-home-pcard">
-      <div className="sk-home-pcard-body">
-        <div className="sk-home-pcard-head">
-          <span className="sk-home-pcard-type">{PROGRAM_TYPE_LABEL[program.programType]}</span>
-          <StatusPill availability={availability} size="sm" />
-        </div>
-        <h3 className="sk-home-pcard-title">
-          <Link to={detailsTo}>{program.name}</Link>
+    <article className="sk-home-crow">
+      <span className="sk-home-crow-kind">{kind}</span>
+      <div className="sk-home-crow-copy">
+        <h3>
+          <Link to={href}>{title}</Link>
         </h3>
-        <p className="sk-home-pcard-meta">
-          {[
-            modules > 0 ? `${modules} modules` : null,
-            program.duration,
-            program.level,
-          ]
-            .filter(Boolean)
-            .join(' · ')}
-        </p>
-        {lowestPrice !== null && (
-          <p className="sk-home-pcard-price">
-            From <strong>{formatInr(lowestPrice)}</strong>
-          </p>
-        )}
+        <p>{meta}</p>
       </div>
-      <div className="sk-home-pcard-actions">
-        <Link to={detailsTo} className="sk-home-pcard-fill">
-          View programme
-        </Link>
-      </div>
+      <StatusPill availability={availability} size="sm" />
+      {price && <p className="sk-home-crow-price">{price}</p>}
+      <Link to={href} className="sk-home-crow-go">
+        {action}
+        <span aria-hidden> →</span>
+      </Link>
     </article>
   )
 }
 
-function CourseProductCard({ course }: { course: Course }) {
-  const availability = getCourseAvailability(course.slug)
-  const lessons = publishedLessonCount(course.slug)
-  const detailsTo = `/courses/${course.slug}`
+function ProgramProductRow({ program }: { program: Program }) {
+  const availability = getProgrammeAvailability(program)
+  const modules = publishedModuleCount(program)
+  const lowestPrice = program.pricing.length ? Math.min(...program.pricing.map(tier => tier.price)) : null
 
   return (
-    <article className="sk-home-pcard">
-      <div className="sk-home-pcard-body">
-        <div className="sk-home-pcard-head">
-          <span className="sk-home-pcard-type">{course.category}</span>
-          <StatusPill availability={availability} size="sm" />
-        </div>
-        <h3 className="sk-home-pcard-title">
-          <Link to={detailsTo}>{course.title}</Link>
-        </h3>
-        <p className="sk-home-pcard-meta">
-          {[
-            lessons > 0 ? `${lessons} lessons` : 'No lessons yet',
-            course.duration,
-            course.level,
-          ].join(' · ')}
-        </p>
-        <p className="sk-home-pcard-price">
-          <strong>{formatInr(course.price)}</strong>
-        </p>
-      </div>
-      <div className="sk-home-pcard-actions">
-        <Link to={detailsTo} className="sk-home-pcard-fill">
-          View course
-        </Link>
-      </div>
-    </article>
+    <CatalogRow
+      kind={PROGRAM_TYPE_LABEL[program.programType]}
+      title={program.name}
+      href={`/programs/${program.slug}`}
+      meta={[
+        modules > 0 ? `${modules} modules` : null,
+        program.duration,
+        program.level,
+      ]
+        .filter(Boolean)
+        .join(' · ')}
+      price={lowestPrice !== null ? `From ${formatInr(lowestPrice)}` : null}
+      availability={availability}
+      action="View programme"
+    />
+  )
+}
+
+function CourseProductRow({ course }: { course: Course }) {
+  const availability = getCourseAvailability(course.slug)
+  const lessons = publishedLessonCount(course.slug)
+
+  return (
+    <CatalogRow
+      kind={course.category}
+      title={course.title}
+      href={`/courses/${course.slug}`}
+      meta={[
+        lessons > 0 ? `${lessons} lessons` : 'No lessons yet',
+        course.duration,
+        course.level,
+      ].join(' · ')}
+      price={formatInr(course.price)}
+      availability={availability}
+      action="View course"
+    />
   )
 }
 
@@ -269,18 +288,18 @@ function OpenNow() {
           openPrograms.length === 0 ? (
             <p className="sk-home-empty">No programme currently has published course material.</p>
           ) : (
-            <div className="sk-home-store-grid">
+            <div className="sk-home-crows">
               {openPrograms.map(program => (
-                <ProgramProductCard key={program.slug} program={program} />
+                <ProgramProductRow key={program.slug} program={program} />
               ))}
             </div>
           )
         ) : openCourses.length === 0 ? (
           <p className="sk-home-empty">No course currently has published lessons.</p>
         ) : (
-          <div className="sk-home-store-grid">
+          <div className="sk-home-crows">
             {openCourses.map(course => (
-              <CourseProductCard key={course.slug} course={course} />
+              <CourseProductRow key={course.slug} course={course} />
             ))}
           </div>
         )}
@@ -342,7 +361,7 @@ function Closing() {
       <Rail>
         <div className="sk-home-close-inner">
           <h2>Start with what is actually open.</h2>
-          <p>Check the status on every card. If lessons are not published, it will say so.</p>
+          <p>Check the status on every result. If lessons are not published, it will say so.</p>
           <div className="sk-home-hero-actions">
             <Link to="/skills" className="sk-home-btn">Find something to learn</Link>
             <Link to="/education" className="sk-home-btn-ghost">Explore education</Link>

@@ -44,7 +44,7 @@ export default function DegreesPage() {
           Skylent is not a university and does not award B.Tech, BCA, MBA or MCA qualifications.
         </Note>
 
-        <div className="sk-degrees-split">
+        <div className="sk-degrees-stack">
           {stages.map(stage => (
             <section key={stage.id} id={stage.id} className={`sk-degree-stage is-${stage.id}`}>
               <p className="sk-degree-kicker">

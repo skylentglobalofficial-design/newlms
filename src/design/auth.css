@@ -1,7 +1,7 @@
 /* Light auth surface — scoped so the dark marketing canvas is untouched. */
 .sk-auth.auth-page {
   min-height: 100vh;
-  background: #f7f4ee;
+  background: #f7f4ec;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -52,7 +52,7 @@
 }
 
 .sk-auth .auth-back-link:focus-visible {
-  outline: 2px solid #2d5bd6;
+  outline: 2px solid #4f46e5;
   outline-offset: 2px;
 }
 

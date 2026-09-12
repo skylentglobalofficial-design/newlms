@@ -15,7 +15,7 @@
 }
 
 .sk-pdp.sk-surface > .sk-header {
-  background: rgba(247, 244, 236, 0.92);
+  background: #f7f4ec;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   border-bottom-color: #e6e1d7;
@@ -55,47 +55,29 @@
 
 .sk-pdp-hero {
   display: grid;
-  grid-template-columns: minmax(220px, 0.82fr) minmax(0, 1.18fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(20px, 3vw, 40px);
   align-items: stretch;
   padding-bottom: clamp(24px, 3vw, 36px);
 }
 
 .sk-pdp-cover {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 16px;
-  min-height: 280px;
-  padding: 28px;
-  background: #14120f;
-  color: #fff;
-  border-radius: 22px;
-}
-
-.sk-pdp-cover span {
-  font-size: 11.5px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.sk-pdp-cover strong {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 3.2vw, 42px);
-  line-height: 1.08;
-  letter-spacing: -0.035em;
-  font-weight: 600;
+  display: none;
 }
 
 .sk-pdp-hero-copy h1 {
   margin: 12px 0 0;
   font-family: var(--font-display);
-  font-size: clamp(32px, 4vw, 48px);
-  line-height: 1.08;
+  font-size: clamp(32px, 4.2vw, 48px);
+  line-height: 1.06;
   letter-spacing: -0.035em;
   font-weight: 600;
+  max-width: 16ch;
+}
+
+.sk-pdp-program .sk-pdp-hero-copy h1 {
+  font-size: clamp(36px, 5vw, 56px);
+  max-width: 14ch;
 }
 
 .sk-pdp-kicker {
@@ -116,39 +98,47 @@
   color: var(--sk-ink-muted);
 }
 
-.sk-pdp-course .sk-pdp-hero {
-  grid-template-columns: minmax(0, 1fr);
-  max-width: 68ch;
+.sk-pdp-course .sk-pdp-hero-facts {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .sk-pdp-pathway {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
   list-style: none;
   margin: 4px 0 28px;
   padding: 0;
-  background: var(--sk-line);
-  border: 1px solid var(--sk-line);
-  border-radius: 14px;
-  overflow: hidden;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--sk-line-strong);
+  border-radius: 0;
+  overflow: visible;
 }
 
 .sk-pdp-pathway li {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  flex: 1 1 160px;
   min-width: 0;
-  padding: 14px 16px 16px;
-  background: #fff;
+  padding: 16px 20px 18px 0;
+  background: transparent;
+  border-right: 1px solid var(--sk-line);
+  border-bottom: 1px solid var(--sk-line);
+}
+
+.sk-pdp-pathway li:nth-child(3n) {
+  border-right: none;
+  padding-right: 0;
 }
 
 .sk-pdp-pathway li.is-connect {
-  flex-basis: 100%;
+  grid-column: 1 / -1;
   flex-direction: row;
   align-items: baseline;
   gap: 14px 24px;
+  border-right: none;
+  padding-right: 0;
 }
 
 .sk-pdp-pathway span {
@@ -210,11 +200,13 @@
 
 .sk-pdp-hero-facts {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px 18px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px 24px;
   list-style: none;
-  margin: 26px 0 0;
-  padding: 0;
+  margin: 28px 0 0;
+  padding: 16px 0;
+  border-top: 1px solid var(--sk-line-strong);
+  border-bottom: 1px solid var(--sk-line);
 }
 
 .sk-pdp-hero-facts li {
@@ -309,28 +301,30 @@
 .sk-pdp-curriculum {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0;
+  border-top: 1px solid var(--sk-line);
 }
 
 .sk-pdp-module {
-  background: var(--sk-surface);
-  border: 1px solid var(--sk-line);
-  border-radius: 16px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--sk-line);
+  border-radius: 0;
   overflow: hidden;
 }
 
 .sk-pdp-module.is-open {
-  border-color: var(--sk-line-strong);
+  border-color: var(--sk-line);
 }
 
 .sk-pdp-module-trigger {
   appearance: none;
   width: 100%;
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) auto;
+  grid-template-columns: 48px minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
-  padding: 16px 16px 16px 12px;
+  padding: 16px 0;
   background: none;
   border: none;
   text-align: left;
@@ -341,14 +335,14 @@
 .sk-pdp-module-num {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: #14120f;
-  color: #fff;
+  justify-content: flex-start;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  background: transparent;
+  color: var(--sk-ink);
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 600;
 }
 
@@ -375,7 +369,7 @@
 }
 
 .sk-pdp-module-panel {
-  padding: 0 18px 18px 68px;
+  padding: 0 0 18px 48px;
 }
 
 .sk-pdp-module-panel p {
@@ -406,14 +400,16 @@
 .sk-pdp-projects {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0;
+  border-top: 1px solid var(--sk-line);
 }
 
 .sk-pdp-projects article {
-  background: var(--sk-surface);
-  border: 1px solid var(--sk-line);
-  border-radius: 16px;
-  padding: 18px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--sk-line);
+  border-radius: 0;
+  padding: 18px 0;
 }
 
 .sk-pdp-projects header {
@@ -462,22 +458,28 @@
 }
 
 .sk-pdp-live {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   margin-bottom: 14px;
+  border-top: 1px solid var(--sk-line);
 }
 
 .sk-pdp-live a {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 18px;
-  background: var(--sk-surface);
-  border: 1px solid var(--sk-line);
-  border-radius: 16px;
+  gap: 4px;
+  padding: 14px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--sk-line);
+  border-radius: 0;
   text-decoration: none;
   color: inherit;
+}
+
+.sk-pdp-live a:hover strong {
+  color: #4338ca;
 }
 
 .sk-pdp-live strong {
@@ -493,10 +495,11 @@
 
 .sk-pdp-callout {
   margin-top: 18px;
-  padding: 18px 20px;
-  background: var(--sk-surface);
-  border-radius: 16px;
-  border: 1px solid var(--sk-line);
+  padding: 18px 0 0;
+  background: transparent;
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid var(--sk-line);
 }
 
 .sk-pdp-callout p {
@@ -513,9 +516,9 @@
 }
 
 .sk-pdp-prices article {
-  background: var(--sk-surface);
+  background: transparent;
   border: 1px solid var(--sk-line);
-  border-radius: 16px;
+  border-radius: 8px;
   padding: 18px;
 }
 
@@ -601,7 +604,7 @@
   padding: 22px;
   background: var(--sk-surface);
   border: 1px solid var(--sk-line);
-  border-radius: 20px;
+  border-radius: 10px;
   min-width: 0;
 }
 
@@ -735,12 +738,11 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .sk-pdp-cover {
-    min-height: 180px;
+  .sk-pdp-hero-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .sk-pdp-learn,
-  .sk-pdp-live,
   .sk-pdp-prices {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -759,7 +761,8 @@
     -webkit-overflow-scrolling: touch;
     background: transparent;
     border: none;
-    gap: 10px;
+    border-top: 1px solid var(--sk-line-strong);
+    gap: 0;
   }
 
   .sk-pdp-program .sk-pdp-pathway::-webkit-scrollbar {
@@ -770,9 +773,11 @@
   .sk-pdp-program .sk-pdp-pathway li.is-connect {
     flex: 0 0 220px;
     flex-direction: column;
-    border: 1px solid var(--sk-line);
-    border-radius: 12px;
-    background: #fff;
+    border: none;
+    border-right: 1px solid var(--sk-line);
+    border-radius: 0;
+    background: transparent;
+    padding: 16px 20px 16px 0;
   }
 }
 
@@ -789,7 +794,8 @@
     -webkit-overflow-scrolling: touch;
     background: transparent;
     border: none;
-    gap: 10px;
+    border-top: 1px solid var(--sk-line-strong);
+    gap: 0;
   }
 
   .sk-pdp-pathway::-webkit-scrollbar {
@@ -800,9 +806,11 @@
   .sk-pdp-pathway li.is-connect {
     flex: 0 0 220px;
     flex-direction: column;
-    border: 1px solid var(--sk-line);
-    border-radius: 12px;
-    background: #fff;
+    border: none;
+    border-right: 1px solid var(--sk-line);
+    border-radius: 0;
+    background: transparent;
+    padding: 16px 20px 16px 0;
   }
 
   .sk-pdp-hero-facts {
@@ -814,18 +822,18 @@
   }
 
   .sk-pdp-module-trigger {
-    grid-template-columns: 44px minmax(0, 1fr) auto;
-    padding-left: 10px;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    padding-left: 0;
   }
 
   .sk-pdp-module-num {
-    width: 38px;
-    height: 38px;
-    font-size: 13px;
+    width: auto;
+    height: auto;
+    font-size: 15px;
   }
 
   .sk-pdp-module-panel {
-    padding-left: 18px;
+    padding-left: 0;
   }
 
   .sk-pdp .sk-anchor-nav-scroll {

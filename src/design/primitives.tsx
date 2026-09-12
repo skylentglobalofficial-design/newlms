@@ -139,6 +139,7 @@ function buttonStyle(variant: ButtonVariant, size: ButtonSize, accent: SurfaceAc
     justifyContent: 'center',
     gap: 8,
     padding: pad,
+    minHeight: size === 'lg' ? 48 : size === 'sm' ? 36 : 44,
     fontSize,
     fontWeight: 600,
     fontFamily: 'var(--font-body)',
@@ -230,7 +231,7 @@ export function ButtonLink({
 const TONE_STYLE: Record<AvailabilityTone, CSSProperties> = {
   positive: { background: S.positiveSoft, color: S.positive, borderColor: S.positiveLine },
   active: { background: S.activeSoft, color: S.active, borderColor: S.activeLine },
-  neutral: { background: S.cautionSoft, color: S.caution, borderColor: S.cautionLine },
+  neutral: { background: S.surfaceMuted, color: S.ink, borderColor: S.lineStrong },
   muted: { background: S.neutralSoft, color: S.inkMuted, borderColor: S.neutralLine },
 }
 
