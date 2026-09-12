@@ -16,49 +16,6 @@
   margin-top: 14px;
 }
 
-/* ── Anchor nav ───────────────────────────────────────────────────────────── */
-.sk-anchor-nav {
-  display: flex;
-  gap: 2px;
-  border-bottom: 1px solid var(--sk-line);
-  overflow-x: auto;
-  scrollbar-width: none;
-  position: sticky;
-  top: 62px;
-  z-index: 60;
-  background: rgba(245, 246, 248, 0.94);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  margin-bottom: clamp(22px, 3vw, 32px);
-}
-
-.sk-anchor-nav::-webkit-scrollbar {
-  display: none;
-}
-
-.sk-anchor {
-  appearance: none;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--sk-ink-muted);
-  padding: 12px 13px;
-  cursor: pointer;
-  white-space: nowrap;
-  margin-bottom: -1px;
-}
-
-.sk-anchor:hover {
-  color: var(--sk-ink);
-}
-
-.sk-anchor.is-active {
-  font-weight: 600;
-}
-
 /* ── Lists ────────────────────────────────────────────────────────────────── */
 .sk-check-list {
   list-style: none;
@@ -255,10 +212,6 @@
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 1023px) {
-  .sk-anchor-nav {
-    top: 62px;
-  }
-
   .sk-price-grid.sk-grid-3 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }

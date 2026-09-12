@@ -82,6 +82,14 @@ const AVAILABILITY: Record<AvailabilityId, Omit<Availability, 'explanation'>> = 
 }
 
 /**
+ * Status for something the platform intends to offer but has not built yet.
+ * Callers supply the sentence so the reason is specific rather than generic.
+ */
+export function notYetAvailable(explanation: string): Availability {
+  return { ...AVAILABILITY['not-available'], explanation }
+}
+
+/**
  * Resolves what a learner can genuinely do with a programme today.
  * Derived from live LMS links rather than the editorial status alone, so a
  * programme with no lessons behind it can never render as fully operational.
