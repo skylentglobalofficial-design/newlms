@@ -62,7 +62,7 @@ export default function CoursesPage() {
     <ProductShell>
       <Rail>
         <PageHeader
-          eyebrow="Catalogue"
+          eyebrow="Learn"
           title="Courses"
           lead="Self-paced courses that open in the learning platform as soon as you enrol. Lesson counts below are the lessons actually published, not a planned total."
         />

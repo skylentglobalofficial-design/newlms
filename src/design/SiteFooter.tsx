@@ -5,27 +5,28 @@ const COLUMNS: { title: string; links: { label: string; to: string }[] }[] = [
   {
     title: 'Learn',
     links: [
+      { label: 'Skills', to: '/skills' },
       { label: 'Programmes', to: '/programs' },
       { label: 'Courses', to: '/courses' },
+      { label: 'Virtual labs', to: '/labs' },
       { label: 'Webinars', to: '/workshops' },
-      { label: 'Skills', to: '/skills' },
     ],
   },
   {
     title: 'Education',
     links: [
-      { label: 'Schooling', to: '/education#schooling' },
-      { label: 'Undergraduate', to: '/education#undergraduate' },
-      { label: 'Postgraduate', to: '/education#postgraduate' },
-      { label: 'Competitive exams', to: '/education#competitive-exams' },
+      { label: 'Schooling', to: '/junior' },
+      { label: 'Degrees', to: '/degrees' },
+      { label: 'Exams', to: '/exams' },
+      { label: 'Certificates', to: '/certificates' },
     ],
   },
   {
-    title: 'Company',
+    title: 'Career & institutions',
     links: [
+      { label: 'Career OS', to: '/career-os' },
+      { label: 'Institutions', to: '/institutions' },
       { label: 'About', to: '/about' },
-      { label: 'Stories', to: '/stories' },
-      { label: 'Blog', to: '/blog' },
       { label: 'Contact', to: '/contact' },
     ],
   },

@@ -75,12 +75,15 @@ function CodingWorkspace({ title, subject }: { title: string; subject: string })
         </div>
       </div>
 
+      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, margin: 0, lineHeight: 1.5 }}>
+        This is a walkthrough of expected output — not a live Python runtime.
+      </p>
       <button
         onClick={() => setRan(true)}
         style={{ alignSelf: 'flex-start', background: C.orange, border: 'none', color: C.white, padding: '10px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', display: 'flex', alignItems: 'center', gap: 8 }}
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-        Run Code
+        Show sample output
       </button>
 
       {ran && (
@@ -286,7 +289,7 @@ export default function ExperimentPage() {
   const demo = useDemoState()
 
   useEffect(() => {
-    if (!user) navigate('/login')
+    if (!user) navigate('/login', { state: { returnTo: `/labs/${labId}/${experimentId}` } })
   }, [user, navigate])
 
   const subject = labSubjects.find(s => s.id === labId)
@@ -479,13 +482,13 @@ export default function ExperimentPage() {
             {currentStatus === 'submitted' && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                 <div style={{ background: 'rgba(96,165,250,0.1)', border: '1px solid rgba(96,165,250,0.25)', borderRadius: 8, padding: '12px 14px', textAlign: 'center' }}>
-                  <div style={{ color: '#60a5fa', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Under Review</div>
-                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11 }}>Your submission is being reviewed</div>
+                  <div style={{ color: '#60a5fa', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Recorded on this device</div>
+                  <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11 }}>Faculty review is not connected yet.</div>
                 </div>
                 <button
                   onClick={handleMarkComplete}
                   style={{ width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', padding: '10px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)' }}
-                >Mark Complete (Admin)</button>
+                >Mark complete on this device</button>
                 <button onClick={() => navigate(`/labs/${labId}`)} style={{ width: '100%', background: 'none', border: 'none', color: 'rgba(255,255,255,0.35)', padding: '6px', borderRadius: 8, fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Return to Lab</button>
               </div>
             )}
@@ -496,9 +499,8 @@ export default function ExperimentPage() {
                   <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(34,197,94,0.15)', border: '2px solid rgba(34,197,94,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 10px' }}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>
-                  <div style={{ color: '#4ade80', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Completed</div>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, fontWeight: 700, color: C.white }}>88<span style={{ fontSize: 13, color: 'rgba(255,255,255,0.3)' }}>/100</span></div>
-                  <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, marginTop: 4 }}>Score</div>
+                  <div style={{ color: '#4ade80', fontSize: 13, fontWeight: 600, marginBottom: 4 }}>Completed on this device</div>
+                  <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12, lineHeight: 1.5 }}>No grade is assigned. This is local demo state, not a certificate.</div>
                 </div>
                 <button onClick={() => navigate(`/labs/${labId}`)} style={{ width: '100%', background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)', color: '#4ade80', padding: '10px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Return to Lab</button>
               </div>

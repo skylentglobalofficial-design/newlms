@@ -1,0 +1,106 @@
+/* Exams — diagnostic, structured, not a course catalogue. */
+
+.sk-exams.sk-surface {
+  --sk-canvas: #eef1f4;
+  --sk-surface: #ffffff;
+}
+
+.sk-exams.sk-surface > .sk-header,
+.sk-exams.sk-surface > .sk-footer {
+  background: #eef1f4;
+  backdrop-filter: none;
+}
+
+.sk-exam-hero {
+  padding: clamp(32px, 5vw, 56px) 0 20px;
+}
+
+.sk-exam-kicker {
+  margin: 0 0 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #2d5bd6;
+  font-weight: 600;
+}
+
+.sk-exam-hero h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(34px, 4.6vw, 56px);
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+  max-width: 16ch;
+}
+
+.sk-exam-hero p {
+  max-width: 58ch;
+  color: var(--sk-ink-secondary);
+  font-size: 16.5px;
+  line-height: 1.55;
+}
+
+.sk-exam-list {
+  display: grid;
+  gap: 16px;
+  padding: 12px 0 72px;
+}
+
+.sk-exam-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: 24px;
+  padding: 28px;
+  background: #fff;
+  border: 1px solid var(--sk-line);
+  border-radius: 18px;
+}
+
+.sk-exam-item h2 {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 2.4vw, 34px);
+  letter-spacing: -0.03em;
+}
+
+.sk-exam-item .lead {
+  color: var(--sk-ink-secondary);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.sk-exam-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--sk-ink-muted);
+}
+
+.sk-exam-plan {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--sk-ink-secondary);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.sk-exam-plan li + li {
+  margin-top: 6px;
+}
+
+.sk-exam-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+@media (max-width: 767px) {
+  .sk-exam-item {
+    grid-template-columns: 1fr;
+    padding: 22px;
+  }
+}

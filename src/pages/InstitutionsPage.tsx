@@ -52,7 +52,8 @@ export default function InstitutionsPage() {
         <div style={{ paddingBottom: 72 }}>
           <Note>
             Skylent OS dashboards exist for signed-in organisation accounts. Schooling and degree delivery for a
-            partner is by enquiry — those academic programmes are not in the public catalogue yet.
+            partner is by enquiry — those academic programmes are not in the public catalogue yet. Live classroom
+            sessions are planned; there is no meeting system to join today.
           </Note>
 
           <div className="sk-stack" style={{ marginTop: 36 }}>

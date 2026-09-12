@@ -3,6 +3,7 @@ import crypto from "node:crypto"
 import {
   CareerEmploymentType,
   CareerWorkMode,
+  EmployerVerificationStatus,
   InterviewQuestionDifficulty,
   JobStatus,
   PrismaClient,
@@ -75,6 +76,7 @@ async function createTestJobFixture() {
       slug: `test-employer-${suffix}`,
       description: "Integration test fixture",
       location: "Remote",
+      verificationStatus: EmployerVerificationStatus.VERIFIED,
     },
   })
   const job = await prisma.job.create({

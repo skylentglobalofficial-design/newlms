@@ -1,7 +1,7 @@
 /* Light auth surface — scoped so the dark marketing canvas is untouched. */
 .sk-auth.auth-page {
   min-height: 100vh;
-  background: #f5f6f8;
+  background: #f7f4ee;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -126,8 +126,8 @@
 
 .sk-auth .auth-field.is-focused,
 .sk-auth .auth-field:focus-visible {
-  border-color: #4f46e5;
-  outline: 2px solid rgba(79, 70, 229, 0.28);
+  border-color: #f36b21;
+  outline: 2px solid rgba(243, 107, 33, 0.28);
   outline-offset: 1px;
 }
 
@@ -138,7 +138,7 @@
 .sk-auth .auth-submit {
   width: 100%;
   margin-top: 4px;
-  background: #4f46e5;
+  background: #f36b21;
   border: none;
   color: #fff;
   border-radius: 10px;
@@ -156,7 +156,7 @@
 
 .sk-auth .auth-submit:focus-visible,
 .sk-auth .auth-google-button:focus-visible {
-  outline: 2px solid #4f46e5;
+  outline: 2px solid #f36b21;
   outline-offset: 2px;
 }
 

@@ -22,7 +22,6 @@ import {
   getPendingTasks,
   getRecentActivity,
   isLessonUnlocked,
-  lessonTypeLabel,
   type LmsCourseView,
 } from '../components/lms'
 import { enrollInCourse } from '../lib/lms-api'
@@ -39,67 +38,18 @@ const NAV_ITEMS: WorkspaceNavItem[] = [
   { id: 'tasks', label: 'Up next', short: 'Next', sectionId: 'dash-tasks', group: 'Learning' },
   { id: 'progress', label: 'Curriculum', short: 'Progress', sectionId: 'dash-curriculum', group: 'Learning' },
   { id: 'certificate', label: 'Certificate', short: 'Cert', sectionId: 'dash-certificate', group: 'Learning' },
+  { id: 'labs', label: 'Virtual labs', short: 'Labs', href: '/labs', group: 'Elsewhere' },
   { id: 'catalog', label: 'Browse catalogue', href: '/courses', group: 'Elsewhere' },
   { id: 'career', label: 'Career OS', short: 'Career', href: '/career-os/app', group: 'Elsewhere' },
 ]
 
 const BOTTOM_NAV = NAV_ITEMS.filter(item => ['overview', 'courses', 'tasks', 'progress', 'career'].includes(item.id))
 
-function greeting() {
-  const hour = new Date().getHours()
-  if (hour < 12) return 'Good morning'
-  if (hour < 17) return 'Good afternoon'
-  return 'Good evening'
-}
-
 function firstName(name: string | undefined) {
   if (!name) return 'there'
   return name.trim().split(/\s+/)[0] ?? 'there'
 }
 
-// ── Progress ring ────────────────────────────────────────────────────────────
-function ProgressRing({ pct, size = 108 }: { pct: number; size?: number }) {
-  const stroke = 8
-  const radius = (size - stroke) / 2
-  const circumference = 2 * Math.PI * radius
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} role="img" aria-label={`${pct}% of this course complete`}>
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={radius}
-        fill="none"
-        stroke="rgba(255,255,255,0.14)"
-        strokeWidth={stroke}
-      />
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={radius}
-        fill="none"
-        stroke={accent.glow}
-        strokeWidth={stroke}
-        strokeLinecap="round"
-        strokeDasharray={circumference}
-        strokeDashoffset={circumference * (1 - pct / 100)}
-        transform={`rotate(-90 ${size / 2} ${size / 2})`}
-        style={{ transition: 'stroke-dashoffset 0.5s ease' }}
-      />
-      <text
-        x="50%"
-        y="50%"
-        textAnchor="middle"
-        dominantBaseline="central"
-        fill="#fff"
-        style={{ fontSize: 23, fontWeight: 600, letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}
-      >
-        {pct}%
-      </text>
-    </svg>
-  )
-}
-
-// ── Lesson type glyphs ───────────────────────────────────────────────────────
 function LessonGlyph({ type, color }: { type: CourseLesson['type']; color: string }) {
   const p = { width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: color, strokeWidth: 1.8, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
   if (type === 'quiz') return <svg {...p}><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3" /><path d="M12 17h.01" /><circle cx="12" cy="12" r="9.5" /></svg>
@@ -133,74 +83,87 @@ function Chevron() {
   )
 }
 
-// ── Resume hero ──────────────────────────────────────────────────────────────
-function ResumeHero({
+// ── Continue banner ──────────────────────────────────────────────────────────
+function ContinueBanner({
+  first,
   courseTitle,
   moduleIndex,
   moduleTotal,
   moduleTitle,
   lessonTitle,
-  lessonType,
   nextLessonTitle,
   completedCount,
   totalLessons,
   pct,
   resumeHref,
+  enrollments,
+  activeCourseSlug,
 }: {
+  first: string
   courseTitle: string
   moduleIndex: number
   moduleTotal: number
   moduleTitle: string
   lessonTitle: string
-  lessonType: CourseLesson['type']
   nextLessonTitle: string | null
   completedCount: number
   totalLessons: number
   pct: number
   resumeHref: string
+  enrollments: ApiEnrollment[]
+  activeCourseSlug: string
 }) {
+  const courseCards = enrollments.filter(entry => entry.courseSlug).slice(0, 3)
+
   return (
-    <section
-      className="sk-dash-hero"
-      style={{ ['--sk-hero-wash' as string]: `radial-gradient(120% 140% at 88% 0%, ${accent.glow}40, transparent 62%)` }}
-    >
+    <section className="sk-dash-banner">
       <div>
-        <div style={{ ...TY.label, color: 'rgba(255,255,255,0.5)' }}>
-          {completedCount === 0 ? 'Start learning' : 'Continue learning'}
-        </div>
-        <h2 className="sk-dash-hero-title">{lessonTitle}</h2>
-        <p className="sk-dash-hero-meta">
+        <p className="sk-dash-banner-kicker">Hi, {first}</p>
+        <h2>
+          {completedCount === 0
+            ? `Start ${courseTitle}`
+            : progressLine(completedCount, totalLessons)}
+        </h2>
+        <p className="sk-dash-banner-meta">
+          Continue with {lessonTitle}
+          <br />
           {courseTitle} · Module {moduleIndex} of {moduleTotal} — {moduleTitle}
-          <br />
-          {lessonTypeLabel(lessonType)}
+          {nextLessonTitle ? <><br />After this: {nextLessonTitle}</> : null}
         </p>
-
-        <div className="sk-dash-hero-actions">
-          <ButtonLink to={resumeHref} variant="primary" size="lg" themeId={THEME}>
-            {completedCount === 0 ? 'Start first lesson' : 'Resume lesson'}
-            <Chevron />
-          </ButtonLink>
-        </div>
-
-        <div className="sk-dash-hero-next">
-          {nextLessonTitle ? (
-            <>After this: <span style={{ color: 'rgba(255,255,255,0.82)' }}>{nextLessonTitle}</span></>
-          ) : (
-            'This is the last lesson in the course.'
-          )}
-        </div>
+        <Link to={resumeHref} className="sk-dash-continue">
+          {completedCount === 0 ? 'Start first lesson' : 'Continue lesson'}
+          <Chevron />
+        </Link>
       </div>
 
-      <div className="sk-dash-ring">
-        <ProgressRing pct={pct} />
-        <div className="sk-dash-ring-caption">
-          {completedCount} of {totalLessons} lessons
-          <br />
-          complete
+      {courseCards.length > 0 && (
+        <div className="sk-dash-fan">
+          {courseCards.map((entry, index) => {
+            const isActive = entry.courseSlug === activeCourseSlug
+            return (
+              <Link key={entry.id} to={`/learn/${entry.courseSlug}`} className="sk-dash-fan-card">
+                <span className="sk-dash-fan-index">{String(index + 1).padStart(2, '0')}</span>
+                <span className="sk-dash-fan-title">{entry.courseTitle}</span>
+                <span className="sk-dash-fan-meta">
+                  {isActive
+                    ? `${completedCount} / ${totalLessons} lessons · ${pct}%`
+                    : 'Open to see your progress'}
+                </span>
+                <span className="sk-dash-fan-bar">
+                  <span style={{ width: isActive ? `${pct}%` : '0%' }} />
+                </span>
+              </Link>
+            )
+          })}
         </div>
-      </div>
+      )}
     </section>
   )
+}
+
+function progressLine(completedCount: number, totalLessons: number) {
+  if (completedCount >= totalLessons && totalLessons > 0) return 'You have finished this course.'
+  return `You have completed ${completedCount} ${completedCount === 1 ? 'lesson' : 'lessons'}.`
 }
 
 // ── Real-count statistics ────────────────────────────────────────────────────
@@ -209,11 +172,9 @@ function StatTiles({ course, lessonStates }: { course: LmsCourseView; lessonStat
   const done = (list: CourseLesson[]) => list.filter(l => lessonStates[l.id]?.complete).length
   const quizzes = lessons.filter(l => l.type === 'quiz')
   const assignments = lessons.filter(l => l.type === 'assignment')
-  const modulesComplete = course.modules.filter(m => computeModuleProgress(m, lessonStates).complete).length
 
   const tiles = [
     { value: done(lessons), total: lessons.length, label: 'Lessons completed' },
-    { value: modulesComplete, total: course.modules.length, label: 'Modules completed' },
     { value: done(quizzes), total: quizzes.length, label: 'Quizzes passed' },
     { value: done(assignments), total: assignments.length, label: 'Assignments submitted' },
   ]
@@ -455,6 +416,29 @@ function RailPanel({ title, children }: { title: string; children: React.ReactNo
   )
 }
 
+function UpcomingRail({ tasks }: { tasks: TaskRow[] }) {
+  const upcoming = tasks.slice(0, 4)
+  return (
+    <RailPanel title="Upcoming">
+      {upcoming.length === 0 ? (
+        <p style={{ ...TY.bodySm, color: S.inkMuted, margin: 0 }}>Nothing waiting. You are caught up.</p>
+      ) : (
+        <div className="sk-dash-timeline">
+          {upcoming.map(task => (
+            <Link key={task.key} to={task.href} className="sk-dash-time">
+              <span className="sk-dash-time-dot" aria-hidden />
+              <span>
+                <span className="sk-dash-row-title" style={{ display: 'block' }}>{task.title}</span>
+                <span className="sk-dash-row-meta" style={{ display: 'block' }}>{task.kind} · {task.meta}</span>
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
+    </RailPanel>
+  )
+}
+
 function CertificateCard({
   completedCount,
   totalLessons,
@@ -642,7 +626,6 @@ export default function DashboardStudentPage() {
   }
 
   const resume = workspace.resume
-  const currentLesson = allLessons.find(l => l.id === resume?.lessonId) ?? null
   const resumeHref = resume?.lessonId
     ? `/learn/${course.slug}/${resume.lessonId}`
     : `/learn/${course.slug}`
@@ -665,39 +648,28 @@ export default function DashboardStudentPage() {
 
   return shell(
     <div id="dash-overview">
-      <div className="sk-dash-greeting">
-        <div style={{ minWidth: 0 }}>
-          <h1 style={{ ...TY.h2, color: S.ink, margin: 0, fontFamily: 'var(--font-display)' }}>
-            {greeting()}, {firstName(user.name)}
-          </h1>
-          <p style={{ ...TY.body, color: S.inkSecondary, margin: '6px 0 0' }}>
-            {progress.completedCount === 0
-              ? `You are enrolled in ${course.title} and have not started yet.`
-              : progress.allComplete
-                ? `You have completed every lesson in ${course.title}.`
-                : `You are ${progress.progressPct}% through ${course.title}.`}
-          </p>
-        </div>
+      <ContinueBanner
+        first={firstName(user.name)}
+        courseTitle={course.title}
+        moduleIndex={resume?.moduleIndex ?? 1}
+        moduleTotal={resume?.moduleTotal ?? course.modules.length}
+        moduleTitle={resume?.moduleTitle ?? course.modules[0]?.title ?? ''}
+        lessonTitle={resume?.lessonTitle ?? allLessons[0]?.title ?? 'Start learning'}
+        nextLessonTitle={resume?.nextLessonTitle ?? null}
+        completedCount={progress.completedCount}
+        totalLessons={progress.totalLessons}
+        pct={progress.progressPct}
+        resumeHref={resumeHref}
+        enrollments={enrollments}
+        activeCourseSlug={course.slug}
+      />
+
+      <div style={{ marginTop: 18 }}>
+        <StatTiles course={course} lessonStates={lessonStates} />
       </div>
 
-      <div className="sk-ws-grid">
+      <div className="sk-ws-grid" style={{ marginTop: 22 }}>
         <div className="sk-ws-col">
-          <ResumeHero
-            courseTitle={course.title}
-            moduleIndex={resume?.moduleIndex ?? 1}
-            moduleTotal={resume?.moduleTotal ?? course.modules.length}
-            moduleTitle={resume?.moduleTitle ?? course.modules[0]?.title ?? ''}
-            lessonTitle={resume?.lessonTitle ?? allLessons[0]?.title ?? 'Start learning'}
-            lessonType={currentLesson?.type ?? 'video'}
-            nextLessonTitle={resume?.nextLessonTitle ?? null}
-            completedCount={progress.completedCount}
-            totalLessons={progress.totalLessons}
-            pct={progress.progressPct}
-            resumeHref={resumeHref}
-          />
-
-          <StatTiles course={course} lessonStates={lessonStates} />
-
           <section id="dash-tasks">
             <SectionHeading
               title="Up next"
@@ -735,14 +707,15 @@ export default function DashboardStudentPage() {
         </div>
 
         <aside className="sk-ws-rail">
+          <UpcomingRail tasks={tasks} />
+          <ActivityPanel items={activity} />
+          <CareerPanel />
           <CertificateCard
             completedCount={progress.completedCount}
             totalLessons={progress.totalLessons}
             eligible={workspace.enrollment.certificateEligible}
             status={workspace.enrollment.certificateStatus}
           />
-          <ActivityPanel items={activity} />
-          <CareerPanel />
         </aside>
       </div>
     </div>,

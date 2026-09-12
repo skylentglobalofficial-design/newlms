@@ -165,7 +165,12 @@ export function publishedLessonCount(courseSlug: string): number {
   return course.modules.reduce((total, module) => total + module.lessons.length, 0)
 }
 
-/** Real module count from published curriculum detail. */
+/** Real module count from published LMS courses — never the marketed syllabus length. */
 export function publishedModuleCount(program: Program): number {
-  return program.curriculumDetail?.length ?? 0
+  const slugs = liveCourseSlugsForProgram(program.slug)
+  if (slugs.length === 0) return 0
+  return slugs.reduce((total, slug) => {
+    const course = courses.find(item => item.slug === slug)
+    return total + (course?.modules.length ?? 0)
+  }, 0)
 }

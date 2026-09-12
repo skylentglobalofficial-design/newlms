@@ -207,6 +207,7 @@ export function ButtonLink({
   full,
   themeId = 'general',
   style,
+  state,
 }: {
   children: ReactNode
   to: string
@@ -215,10 +216,11 @@ export function ButtonLink({
   full?: boolean
   themeId?: AuroraThemeId
   style?: CSSProperties
+  state?: unknown
 }) {
   const accent = getSurfaceAccent(themeId)
   return (
-    <Link to={to} className={`sk-btn sk-btn-${variant}`} style={{ ...buttonStyle(variant, size, accent, full), ...style }}>
+    <Link to={to} state={state} className={`sk-btn sk-btn-${variant}`} style={{ ...buttonStyle(variant, size, accent, full), ...style }}>
       {children}
     </Link>
   )

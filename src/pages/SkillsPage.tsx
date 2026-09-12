@@ -16,10 +16,15 @@ export default function SkillsPage() {
     <ProductShell>
       <Rail>
         <PageHeader
-          eyebrow="Skills"
-          title="Learn by domain."
-          lead="Each domain lists the programmes, courses and webinars that actually exist for it. Empty domains stay empty — they are not filled with placeholders."
-          actions={<ButtonLink to="/programs" variant="secondary">All programmes</ButtonLink>}
+          eyebrow="Learn"
+          title="Build skills you can show."
+          lead="Professional programmes, short courses and webinars grouped by domain. Empty domains stay empty. Virtual labs sit beside the courses that actually use them."
+          actions={
+            <>
+              <ButtonLink to="/programs">Browse programmes</ButtonLink>
+              <ButtonLink to="/labs" variant="secondary">Virtual labs</ButtonLink>
+            </>
+          }
         />
 
         <div style={{ paddingBottom: 72 }}>

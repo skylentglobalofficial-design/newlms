@@ -19,6 +19,9 @@ export default function SiteHeader() {
   const [openGroup, setOpenGroup] = useState<string | null>(null)
   const [mobileOpen, setMobileOpen] = useState(false)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const headerRef = useRef<HTMLElement>(null)
+  const burgerRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
   const { user } = useAuth()
@@ -33,7 +36,10 @@ export default function SiteHeader() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setOpenGroup(null)
-        setMobileOpen(false)
+        if (mobileOpen) {
+          setMobileOpen(false)
+          burgerRef.current?.focus()
+        }
       }
     }
     window.addEventListener('keydown', onKey)
@@ -41,9 +47,22 @@ export default function SiteHeader() {
   }, [openGroup, mobileOpen])
 
   useEffect(() => {
+    if (!openGroup) return
+    const onPointer = (event: PointerEvent) => {
+      const target = event.target as Node | null
+      if (target && headerRef.current?.contains(target)) return
+      setOpenGroup(null)
+    }
+    document.addEventListener('pointerdown', onPointer)
+    return () => document.removeEventListener('pointerdown', onPointer)
+  }, [openGroup])
+
+  useEffect(() => {
     if (!mobileOpen) return
     const previous = document.body.style.overflow
     document.body.style.overflow = 'hidden'
+    const first = menuRef.current?.querySelector<HTMLElement>('a, button')
+    first?.focus()
     return () => { document.body.style.overflow = previous }
   }, [mobileOpen])
 
@@ -56,10 +75,11 @@ export default function SiteHeader() {
     closeTimer.current = setTimeout(() => setOpenGroup(null), 130)
   }, [])
 
-  const isActive = (to: string) => location.pathname === to || location.pathname.startsWith(`${to}/`)
+  const isGroupActive = (match: string[]) =>
+    match.some(path => location.pathname === path || location.pathname.startsWith(`${path}/`))
 
   return (
-    <header className="sk-header">
+    <header className="sk-header" ref={headerRef}>
       <a href="#main-content" className="sk-skip-link">Skip to content</a>
       <div className="sk-header-inner">
         <Link to="/" className="sk-wordmark" aria-label="Skylent home">
@@ -76,11 +96,16 @@ export default function SiteHeader() {
             >
               <button
                 type="button"
-                className={`sk-navlink${isActive(group.to) ? ' is-active' : ''}`}
+                className={`sk-navlink${isGroupActive(group.match) ? ' is-active' : ''}`}
                 aria-expanded={openGroup === group.label}
                 aria-haspopup="true"
                 onClick={() => navigate(group.to)}
                 onFocus={() => openMenu(group.label)}
+                onBlur={event => {
+                  if (!event.currentTarget.parentElement?.contains(event.relatedTarget as Node)) {
+                    setOpenGroup(null)
+                  }
+                }}
               >
                 {group.label}
                 <svg width="9" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden
@@ -123,9 +148,11 @@ export default function SiteHeader() {
           )}
           <button
             type="button"
+            ref={burgerRef}
             className="sk-header-burger"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
+            aria-controls="sk-mobile-menu"
             onClick={() => setMobileOpen(v => !v)}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -138,7 +165,14 @@ export default function SiteHeader() {
       </div>
 
       {mobileOpen && (
-        <div className="sk-mobile-menu">
+        <div
+          id="sk-mobile-menu"
+          className="sk-mobile-menu"
+          ref={menuRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site navigation"
+        >
           {NAV_GROUPS.map(group => (
             <section key={group.label} className="sk-mobile-group">
               <Link to={group.to} className="sk-mobile-group-title">{group.label}</Link>

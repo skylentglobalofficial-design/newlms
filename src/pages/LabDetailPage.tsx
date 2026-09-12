@@ -1,12 +1,14 @@
 import { useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
-import { Rail, PageHeader, Card, Tag, EmptyState, ButtonLink, Button, Progress } from '../design/primitives'
+import { Rail, PageHeader, Card, Tag, EmptyState, ButtonLink, Button, Progress, Note, StatusPill } from '../design/primitives'
 import { S, TY } from '../design/tokens'
 import { labSubjects } from '../data'
 import type { LabExperimentStatus, LabType } from '../data'
 import { useAuth } from '../context/AuthContext'
 import { useDemoState } from '../demo/DemoStateContext'
+import { getInteractiveLab, interactiveLabAvailability, labGroupingLabel } from '../lib/virtual-labs'
+import '../design/labs.css'
 
 const labTypeLabels: Record<LabType, string> = {
   coding: 'Coding',
@@ -27,10 +29,45 @@ export default function LabDetailPage() {
   const navigate = useNavigate()
   const { user, ready } = useAuth()
   const demo = useDemoState()
+  const interactive = labId ? getInteractiveLab(labId) : undefined
 
   useEffect(() => {
+    if (interactive) return
     if (ready && !user) navigate('/login', { state: { returnTo: `/labs/${labId}` } })
-  }, [ready, user, navigate, labId])
+  }, [ready, user, navigate, labId, interactive])
+
+  if (interactive) {
+    const availability = interactiveLabAvailability(interactive)
+    return (
+      <ProductShell className="sk-labs">
+        <Rail>
+          <div className="sk-lab-hero">
+            <Link to="/labs" className="sk-backlink">← All labs</Link>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 12 }}>
+              <StatusPill availability={availability} />
+              <Tag>{interactive.subject}</Tag>
+            </div>
+            <h1>{interactive.title}</h1>
+            <p>{interactive.objective}</p>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginTop: 20 }}>
+              <ButtonLink to={`/labs/${interactive.id}/run`}>Open experiment</ButtonLink>
+              <ButtonLink to="/labs" variant="secondary">All labs</ButtonLink>
+            </div>
+          </div>
+          <div className="sk-lab-shell">
+            <div className="sk-lab-side">
+              <h2>Concept</h2>
+              <p style={{ ...TY.bodySm, color: S.inkSecondary }}>{interactive.concept}</p>
+            </div>
+            <div className="sk-lab-side">
+              <h2>How to use</h2>
+              <ol>{interactive.howToUse.map(step => <li key={step}>{step}</li>)}</ol>
+            </div>
+          </div>
+        </Rail>
+      </ProductShell>
+    )
+  }
 
   const subject = labSubjects.find(item => item.id === labId)
   const labProgress = labId ? demo.getLabProgress(labId) : { launched: false, complete: false, experiments: {} }
@@ -74,7 +111,7 @@ export default function LabDetailPage() {
       <Rail>
         <PageHeader
           back={{ label: 'All labs', to: '/labs' }}
-          eyebrow={subject.program}
+          eyebrow={labGroupingLabel(subject.program)}
           title={subject.title}
           lead={subject.desc}
           meta={
@@ -87,7 +124,11 @@ export default function LabDetailPage() {
         />
 
         <div style={{ paddingBottom: 72 }}>
-          <div style={{ marginBottom: 28, maxWidth: 420 }}>
+          <Note>
+            This is a written exercise with a simulated workspace. It does not execute your code on a server,
+            and the grouping label is not a Skylent degree.
+          </Note>
+          <div style={{ margin: '28px 0', maxWidth: 420 }}>
             <Progress value={completedCount} total={subject.experiments.length} themeId="professional" label="Completed" />
           </div>
 

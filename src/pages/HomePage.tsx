@@ -1,174 +1,316 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
-import { Rail, SectionHeading, Card, ButtonLink, MetaRow } from '../design/primitives'
-import { FeaturedProgrammeCard, ProgrammeCard } from '../design/CatalogueCard'
-import { getSurfaceAccent } from '../design/accent'
-import { DESTINATIONS } from '../design/destinations'
-import { R, S, TY } from '../design/tokens'
-import { getProgrammeAvailability } from '../lib/catalogue-status'
+import { Rail, StatusPill } from '../design/primitives'
+import { PROGRAM_TYPE_LABEL, formatInr } from '../design/CatalogueCard'
+import { getCourseAvailability, getProgrammeAvailability, publishedLessonCount, publishedModuleCount } from '../lib/catalogue-status'
 import { courses, programs } from '../data'
+import type { Course, Program } from '../data'
+import { DESTINATIONS } from '../design/destinations'
 import '../design/home.css'
 
-/**
- * Counts read straight off the catalogue so the hero states the real size of
- * the platform rather than an aspirational one.
- */
-function PlatformFacts() {
-  const facts = useMemo(() => {
-    const openProgrammes = programs.filter(program => getProgrammeAvailability(program).canStartLearning).length
-    const publishedCourses = courses.filter(course => course.modules.some(module => module.lessons.length > 0)).length
-    const lessons = courses.reduce(
-      (total, course) => total + course.modules.reduce((sum, module) => sum + module.lessons.length, 0),
-      0,
-    )
-    return [
-      { value: openProgrammes, label: openProgrammes === 1 ? 'programme open now' : 'programmes open now' },
-      { value: publishedCourses, label: publishedCourses === 1 ? 'course published' : 'courses published' },
-      { value: lessons, label: 'lessons in the platform' },
-    ]
+function useInventory() {
+  return useMemo(() => {
+    const withAvailability = programs.map(program => ({
+      program,
+      availability: getProgrammeAvailability(program),
+    }))
+    const openPrograms = withAvailability.filter(entry => entry.availability.canStartLearning).map(entry => entry.program)
+    const upcomingPrograms = withAvailability.filter(entry => !entry.availability.canStartLearning).map(entry => entry.program)
+    const openCourses = courses.filter(course => getCourseAvailability(course.slug).canStartLearning)
+    const lessons = openCourses.reduce((total, course) => total + publishedLessonCount(course.slug), 0)
+    return { openPrograms, upcomingPrograms, openCourses, lessons }
   }, [])
+}
 
+function SearchBar({
+  value,
+  onChange,
+  onSubmit,
+  placeholder,
+}: {
+  value: string
+  onChange: (value: string) => void
+  onSubmit: (event: FormEvent) => void
+  placeholder: string
+}) {
   return (
-    <dl className="sk-hero-facts">
-      {facts.map(fact => (
-        <div key={fact.label}>
-          <dt>{fact.value}</dt>
-          <dd>{fact.label}</dd>
-        </div>
-      ))}
-    </dl>
+    <form className="sk-home-search" onSubmit={onSubmit} role="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <circle cx="11" cy="11" r="7" />
+        <line x1="20" y1="20" x2="16.7" y2="16.7" />
+      </svg>
+      <input
+        type="search"
+        value={value}
+        onChange={event => onChange(event.target.value)}
+        placeholder={placeholder}
+        aria-label={placeholder}
+      />
+      <button type="submit">Search</button>
+    </form>
   )
 }
 
-// ── Hero ─────────────────────────────────────────────────────────────────────
-function Hero() {
+function FeaturedPoster({ program }: { program: Program }) {
+  const availability = getProgrammeAvailability(program)
+  const modules = publishedModuleCount(program)
+  const lowestPrice = program.pricing.length ? Math.min(...program.pricing.map(tier => tier.price)) : null
+
+  return (
+    <Link to={`/programs/${program.slug}`} className="sk-home-poster">
+      <div className="sk-home-poster-top">
+        <StatusPill availability={availability} size="sm" />
+        <span className="sk-home-poster-type">{PROGRAM_TYPE_LABEL[program.programType]}</span>
+      </div>
+      <h2 className="sk-home-poster-title">{program.name}</h2>
+      <p className="sk-home-poster-lead">{availability.explanation}</p>
+      <ul className="sk-home-poster-meta">
+        {modules > 0 && <li>{modules} published modules</li>}
+        <li>{program.duration}</li>
+        <li>{program.level}</li>
+        {lowestPrice !== null && <li>From {formatInr(lowestPrice)}</li>}
+      </ul>
+      <span className="sk-home-poster-cta">
+        {availability.ctaLabel}
+        <span aria-hidden>→</span>
+      </span>
+    </Link>
+  )
+}
+
+function Hero({ featured }: { featured: Program | null }) {
+  const { openPrograms, openCourses, lessons } = useInventory()
+
+  return (
+    <section className="sk-home-hero">
+      <Rail>
+        <div className={`sk-home-hero-grid${featured ? '' : ' is-solo'}`}>
+          <div className="sk-home-hero-copy">
+            <p className="sk-home-kicker">Skylent OS</p>
+            <h1 className="sk-home-title">
+              Learn something specific.
+              <span>Then do something with it.</span>
+            </h1>
+            <p className="sk-home-lead">
+              Academic pathways, skills programmes and a career workspace — with a clear line between what you can
+              open today and what is still being built.
+            </p>
+            <div className="sk-home-hero-actions">
+              <Link to="/programs" className="sk-home-btn">Browse programmes</Link>
+              <Link to="/courses" className="sk-home-btn-ghost">See courses</Link>
+            </div>
+            <p className="sk-home-facts">
+              Open today: {openPrograms.length} {openPrograms.length === 1 ? 'programme' : 'programmes'},{' '}
+              {openCourses.length} {openCourses.length === 1 ? 'course' : 'courses'}, {lessons} lessons.
+            </p>
+          </div>
+          {featured && <FeaturedPoster program={featured} />}
+        </div>
+      </Rail>
+    </section>
+  )
+}
+
+function Destinations() {
+  return (
+    <section className="sk-home-intent">
+      <Rail>
+        <div className="sk-home-section-head">
+          <h2>What are you here for?</h2>
+          <p>Six doors. Pick the one that matches the job you came to do.</p>
+        </div>
+        <div className="sk-home-doors">
+          {DESTINATIONS.map((destination, index) => (
+            <Link key={destination.id} to={destination.to} className="sk-home-door">
+              <span className="sk-home-door-index" aria-hidden>
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span className="sk-home-door-label">{destination.label}</span>
+              <span className="sk-home-door-q">{destination.question}</span>
+              <span className="sk-home-door-promise">{destination.promise}</span>
+            </Link>
+          ))}
+        </div>
+      </Rail>
+    </section>
+  )
+}
+
+function ProgramProductCard({ program, featured = false }: { program: Program; featured?: boolean }) {
+  const availability = getProgrammeAvailability(program)
+  const modules = publishedModuleCount(program)
+  const lowestPrice = program.pricing.length ? Math.min(...program.pricing.map(tier => tier.price)) : null
+  const detailsTo = `/programs/${program.slug}`
+
+  return (
+    <article className={`sk-home-pcard${featured ? ' is-featured' : ''}`}>
+      <div className="sk-home-pcard-body">
+        <div className="sk-home-pcard-head">
+          <span className="sk-home-pcard-type">{PROGRAM_TYPE_LABEL[program.programType]}</span>
+          <StatusPill availability={availability} size="sm" />
+        </div>
+        <h3 className="sk-home-pcard-title">
+          <Link to={detailsTo}>{program.name}</Link>
+        </h3>
+        <p className="sk-home-pcard-meta">
+          {[
+            modules > 0 ? `${modules} modules` : null,
+            program.duration,
+            program.level,
+          ]
+            .filter(Boolean)
+            .join(' · ')}
+        </p>
+        {lowestPrice !== null && (
+          <p className="sk-home-pcard-price">
+            From <strong>{formatInr(lowestPrice)}</strong>
+          </p>
+        )}
+      </div>
+      <div className="sk-home-pcard-actions">
+        <Link to={detailsTo} className={featured ? 'sk-home-pcard-primary' : 'sk-home-pcard-fill'}>
+          {availability.canStartLearning ? availability.ctaLabel : 'View details'}
+        </Link>
+        {availability.canStartLearning && (
+          <Link to={detailsTo} className="sk-home-pcard-ghost">
+            View details
+          </Link>
+        )}
+      </div>
+    </article>
+  )
+}
+
+function CourseProductCard({ course }: { course: Course }) {
+  const availability = getCourseAvailability(course.slug)
+  const lessons = publishedLessonCount(course.slug)
+  const detailsTo = `/courses/${course.slug}`
+
+  return (
+    <article className="sk-home-pcard">
+      <div className="sk-home-pcard-body">
+        <div className="sk-home-pcard-head">
+          <span className="sk-home-pcard-type">{course.category}</span>
+          <StatusPill availability={availability} size="sm" />
+        </div>
+        <h3 className="sk-home-pcard-title">
+          <Link to={detailsTo}>{course.title}</Link>
+        </h3>
+        <p className="sk-home-pcard-meta">
+          {[
+            lessons > 0 ? `${lessons} lessons` : 'No lessons yet',
+            course.duration,
+            course.level,
+          ].join(' · ')}
+        </p>
+        <p className="sk-home-pcard-price">
+          <strong>{formatInr(course.price)}</strong>
+        </p>
+      </div>
+      <div className="sk-home-pcard-actions">
+        <Link to={detailsTo} className="sk-home-pcard-fill">
+          {availability.canStartLearning ? 'Start learning' : 'View details'}
+        </Link>
+        {availability.canStartLearning && (
+          <Link to={detailsTo} className="sk-home-pcard-ghost">
+            View details
+          </Link>
+        )}
+      </div>
+    </article>
+  )
+}
+
+function OpenNow({ featuredSlug }: { featuredSlug: string | null }) {
   const navigate = useNavigate()
+  const { openPrograms, upcomingPrograms, openCourses } = useInventory()
+  const [tab, setTab] = useState<'programmes' | 'courses'>('programmes')
   const [query, setQuery] = useState('')
 
   function handleSearch(event: FormEvent) {
     event.preventDefault()
     const trimmed = query.trim()
-    navigate(trimmed ? `/courses?q=${encodeURIComponent(trimmed)}` : '/courses')
+    const path = tab === 'courses' ? '/courses' : '/programs'
+    navigate(trimmed ? `${path}?q=${encodeURIComponent(trimmed)}` : path)
   }
 
-  return (
-    <section className="sk-hero">
-      <Rail>
-        <div className="sk-hero-copy">
-          <h1 className="sk-hero-title">
-            <span>Learn something specific.</span>{' '}
-            <span>Then do something with it.</span>
-          </h1>
-          <p className="sk-hero-lead">
-            Skylent brings academic pathways, skills programmes and career workflows into one platform — and tells
-            you plainly what is open today and what is still being built.
-          </p>
-
-          <form className="sk-hero-search" onSubmit={handleSearch} role="search">
-            <span className="sk-hero-search-field">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                <circle cx="11" cy="11" r="7" />
-                <line x1="20" y1="20" x2="16.7" y2="16.7" />
-              </svg>
-              <input
-                type="search"
-                value={query}
-                onChange={event => setQuery(event.target.value)}
-                placeholder="Search courses and programmes"
-                aria-label="Search courses and programmes"
-              />
-            </span>
-            <button type="submit">Search</button>
-          </form>
-
-          <PlatformFacts />
-        </div>
-      </Rail>
-    </section>
-  )
-}
-
-// ── Six destinations ─────────────────────────────────────────────────────────
-function Destinations() {
-  return (
-    <section className="sk-section-tight">
-      <Rail>
-        <SectionHeading
-          title="What are you here for?"
-          lead="Six places to start. Each one leads to a different product with its own structure."
-        />
-        <div className="sk-destination-grid">
-          {DESTINATIONS.map(destination => {
-            const accent = getSurfaceAccent(destination.themeId)
-            return (
-              <Link
-                key={destination.id}
-                to={destination.to}
-                className="sk-destination"
-                style={{ borderRadius: R.card }}
-              >
-                <span className="sk-destination-bar" style={{ background: accent.solid }} aria-hidden />
-                <span className="sk-destination-question" style={{ color: accent.text }}>
-                  {destination.question}
-                </span>
-                <span className="sk-destination-label">{destination.label}</span>
-                <span className="sk-destination-promise">{destination.promise}</span>
-                <span className="sk-destination-go" aria-hidden>→</span>
-              </Link>
-            )
-          })}
-        </div>
-      </Rail>
-    </section>
-  )
-}
-
-// ── Real content discovery ───────────────────────────────────────────────────
-function Discovery() {
-  const { openNow, upcoming } = useMemo(() => {
-    const withAvailability = programs.map(program => ({ program, availability: getProgrammeAvailability(program) }))
-    return {
-      openNow: withAvailability.filter(entry => entry.availability.canStartLearning).map(entry => entry.program),
-      upcoming: withAvailability.filter(entry => !entry.availability.canStartLearning).map(entry => entry.program),
-    }
-  }, [])
+  const programCards = openPrograms
+  const featuredInGrid = featuredSlug ? programCards.find(program => program.slug === featuredSlug) : programCards[0]
+  const restPrograms = programCards.filter(program => program.slug !== featuredInGrid?.slug)
 
   return (
-    <section className="sk-section">
+    <section className="sk-home-store" id="open-now">
       <Rail>
-        <SectionHeading
-          title="Open in the learning platform today"
-          lead={
-            openNow.length
-              ? 'These programmes have published course material you can open as soon as you enrol.'
-              : 'No programme currently has published course material.'
-          }
-          action={<ButtonLink to="/programs" variant="secondary" size="sm">All programmes</ButtonLink>}
-        />
-
-        {openNow.length > 0 && (
-          <div className="sk-grid sk-grid-3">
-            {openNow.map((program, index) =>
-              index === 0
-                ? <FeaturedProgrammeCard key={program.slug} program={program} />
-                : <ProgrammeCard key={program.slug} program={program} />,
-            )}
+        <div className="sk-home-store-head">
+          <div>
+            <h2>Open to start today</h2>
+            <p>Only programmes and courses with published lessons. Nothing here is a placeholder.</p>
           </div>
-        )}
+          <SearchBar
+            value={query}
+            onChange={setQuery}
+            onSubmit={handleSearch}
+            placeholder={tab === 'courses' ? 'Search courses' : 'Search programmes'}
+          />
+        </div>
 
-        {upcoming.length > 0 && (
-          <div style={{ marginTop: 34 }}>
-            <SectionHeading
-              size="sm"
-              title="Accepting interest, not yet teaching"
-              lead="Applications are open or planned for these, but the lessons are not in the platform yet."
-            />
-            <div className="sk-grid sk-grid-3">
-              {upcoming.slice(0, 6).map(program => (
-                <ProgrammeCard key={program.slug} program={program} compact />
+        <div className="sk-home-tabs" role="tablist" aria-label="Open catalogue">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'programmes'}
+            className={tab === 'programmes' ? 'is-active' : ''}
+            onClick={() => setTab('programmes')}
+          >
+            Programmes <span>{openPrograms.length}</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={tab === 'courses'}
+            className={tab === 'courses' ? 'is-active' : ''}
+            onClick={() => setTab('courses')}
+          >
+            Courses <span>{openCourses.length}</span>
+          </button>
+        </div>
+
+        {tab === 'programmes' ? (
+          openPrograms.length === 0 ? (
+            <p className="sk-home-empty">No programme currently has published course material.</p>
+          ) : (
+            <div className="sk-home-store-grid">
+              {featuredInGrid && <ProgramProductCard program={featuredInGrid} featured />}
+              {restPrograms.map(program => (
+                <ProgramProductCard key={program.slug} program={program} />
               ))}
             </div>
+          )
+        ) : openCourses.length === 0 ? (
+          <p className="sk-home-empty">No course currently has published lessons.</p>
+        ) : (
+          <div className="sk-home-store-grid">
+            {openCourses.map(course => (
+              <CourseProductCard key={course.slug} course={course} />
+            ))}
+          </div>
+        )}
+
+        {tab === 'programmes' && upcomingPrograms.length > 0 && (
+          <div className="sk-home-waitlist">
+            <h3>Accepting interest, not yet teaching</h3>
+            <ul>
+              {upcomingPrograms.map(program => {
+                const availability = getProgrammeAvailability(program)
+                return (
+                  <li key={program.slug}>
+                    <Link to={`/programs/${program.slug}`}>{program.name}</Link>
+                    <span>{availability.label}</span>
+                  </li>
+                )
+              })}
+            </ul>
           </div>
         )}
       </Rail>
@@ -176,110 +318,85 @@ function Discovery() {
   )
 }
 
-// ── How it fits together ─────────────────────────────────────────────────────
-const STEPS = [
+const OS_COLUMNS = [
   {
-    step: '01',
-    title: 'Pick a programme or course',
-    body: 'Every listing shows its real curriculum, duration, fee and whether material is published.',
+    id: 'education',
+    kicker: 'Education',
+    title: 'Schooling to postgraduate',
+    to: '/education',
+    items: [
+      { label: 'Schooling', sub: 'Grades 1–12' },
+      { label: 'Undergraduate', sub: 'B.Tech · BCA' },
+      { label: 'Postgraduate', sub: 'MBA · MCA' },
+      { label: 'Entrance exams', sub: 'JEE Advanced · CAT' },
+    ],
   },
   {
-    step: '02',
-    title: 'Learn in the platform',
-    body: 'Lessons, notes, quizzes and assignments unlock in order, with your progress saved.',
+    id: 'skills',
+    kicker: 'Skills',
+    title: 'Programmes you can take',
+    to: '/programs',
+    items: [
+      { label: 'Professional programmes', sub: 'Long-form, career-focused' },
+      { label: 'Certificate programmes', sub: 'Focused credentials' },
+      { label: 'Courses', sub: 'Self-paced, open in the platform' },
+      { label: 'Virtual labs', sub: 'Experiments you run yourself' },
+      { label: 'Webinars', sub: 'None scheduled yet' },
+    ],
   },
   {
-    step: '03',
-    title: 'Keep the work you produce',
-    body: 'Assignments you submit become evidence you can attach to your career profile.',
-  },
-  {
-    step: '04',
-    title: 'Use Career OS',
-    body: 'Profile, job board, applications and interview practice — opened by completing a professional programme.',
+    id: 'career',
+    kicker: 'Career OS',
+    title: 'After a professional programme',
+    to: '/career-os',
+    items: [
+      { label: 'Profile', sub: 'Skills, projects, resume' },
+      { label: 'Job board', sub: 'Empty until an employer posts' },
+      { label: 'Applications', sub: 'Track what you have sent' },
+      { label: 'Interview practice', sub: 'Structured question sets' },
+    ],
   },
 ]
 
-function HowItWorks() {
+function Ecosystem() {
   return (
-    <section className="sk-section" style={{ background: S.surface, borderBlock: `1px solid ${S.line}` }}>
+    <section className="sk-home-os">
       <Rail>
-        <SectionHeading
-          title="How Skylent fits together"
-          lead="One sequence, four stages. Institutions run the same sequence with their own dashboards."
-        />
-        <ol className="sk-steps">
-          {STEPS.map(item => (
-            <li key={item.step} className="sk-step">
-              <span className="sk-step-index">{item.step}</span>
-              <h3 style={{ ...TY.h3, color: S.ink, margin: '0 0 6px', fontFamily: 'var(--font-display)' }}>{item.title}</h3>
-              <p style={{ ...TY.bodySm, color: S.inkSecondary, margin: 0 }}>{item.body}</p>
-            </li>
+        <div className="sk-home-section-head">
+          <h2>How Skylent OS connects</h2>
+          <p>Learn, practice, prove — then a career workspace. One platform, not three brochures.</p>
+        </div>
+        <div className="sk-home-os-grid">
+          {OS_COLUMNS.map(column => (
+            <Link key={column.id} to={column.to} className="sk-home-os-col">
+              <span className="sk-home-os-kicker">{column.kicker}</span>
+              <span className="sk-home-os-title">{column.title}</span>
+              <ul>
+                {column.items.map(item => (
+                  <li key={item.label}>
+                    <strong>{item.label}</strong>
+                    <span>{item.sub}</span>
+                  </li>
+                ))}
+              </ul>
+            </Link>
           ))}
-        </ol>
-      </Rail>
-    </section>
-  )
-}
-
-// ── Career + Institutions ────────────────────────────────────────────────────
-function Pathways() {
-  const career = getSurfaceAccent('career')
-  const institution = getSurfaceAccent('institution')
-
-  return (
-    <section className="sk-section">
-      <Rail>
-        <div className="sk-grid sk-grid-2">
-          <Card padding={26} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <span style={{ ...TY.label, color: career.text }}>For learners</span>
-            <h3 style={{ ...TY.h2, color: S.ink, margin: 0, fontFamily: 'var(--font-display)' }}>Career OS</h3>
-            <p style={{ ...TY.body, color: S.inkSecondary, margin: 0 }}>
-              A career workspace rather than a promise: your profile, the roles on the board, the applications you
-              have sent, and structured interview practice. It opens once you complete a professional programme.
-            </p>
-            <MetaRow items={['Profile', 'Job board', 'Applications', 'Interview practice']} />
-            <div style={{ marginTop: 'auto', paddingTop: 8 }}>
-              <ButtonLink to="/career-os" variant="secondary" themeId="career">Explore Career OS</ButtonLink>
-            </div>
-          </Card>
-
-          <Card padding={26} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <span style={{ ...TY.label, color: institution.text }}>For institutions</span>
-            <h3 style={{ ...TY.h2, color: S.ink, margin: 0, fontFamily: 'var(--font-display)' }}>Run your programmes on Skylent</h3>
-            <p style={{ ...TY.body, color: S.inkSecondary, margin: 0 }}>
-              Schools, colleges, universities and training institutes get dashboards for programmes, learners,
-              faculty and progress — the same infrastructure, scoped to your organisation.
-            </p>
-            <MetaRow items={['Programmes', 'Learners', 'Faculty', 'Progress']} />
-            <div style={{ marginTop: 'auto', paddingTop: 8 }}>
-              <ButtonLink to="/institutions" variant="secondary" themeId="institution">For institutions</ButtonLink>
-            </div>
-          </Card>
         </div>
       </Rail>
     </section>
   )
 }
 
-// ── Closing CTA ──────────────────────────────────────────────────────────────
-function ClosingCta() {
+function Closing() {
   return (
-    <section className="sk-section-tight">
+    <section className="sk-home-close">
       <Rail>
-        <div className="sk-cta">
-          <div style={{ minWidth: 0 }}>
-            <h2 style={{ ...TY.h2, color: S.inkOnDark, margin: 0, fontFamily: 'var(--font-display)' }}>
-              Start with what is actually open
-            </h2>
-            <p style={{ ...TY.body, color: S.inkOnDarkSecondary, margin: '8px 0 0', maxWidth: '52ch' }}>
-              Browse the catalogue, check the status on each card, and begin with a programme that has lessons
-              waiting for you.
-            </p>
-          </div>
-          <div className="sk-cta-actions">
-            <Link to="/programs" className="sk-cta-primary">Browse programmes</Link>
-            <Link to="/courses" className="sk-cta-secondary">See courses</Link>
+        <div className="sk-home-close-inner">
+          <h2>Start with what is actually open.</h2>
+          <p>Check the status on every card. If lessons are not published, it will say so.</p>
+          <div className="sk-home-hero-actions">
+            <Link to="/programs" className="sk-home-btn">Browse programmes</Link>
+            <Link to="/education" className="sk-home-btn-ghost">Explore education</Link>
           </div>
         </div>
       </Rail>
@@ -288,14 +405,16 @@ function ClosingCta() {
 }
 
 export default function HomePage() {
+  const { openPrograms } = useInventory()
+  const featured = openPrograms[0] ?? null
+
   return (
-    <ProductShell>
-      <Hero />
+    <ProductShell className="sk-home">
+      <Hero featured={featured} />
       <Destinations />
-      <Discovery />
-      <HowItWorks />
-      <Pathways />
-      <ClosingCta />
+      <OpenNow featuredSlug={featured?.slug ?? null} />
+      <Ecosystem />
+      <Closing />
     </ProductShell>
   )
 }

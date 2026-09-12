@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
 import { Rail, PageHeader, SectionHeading, SearchField, Select, EmptyState, Button, ButtonLink, Note } from '../design/primitives'
-import { ProgrammeCard } from '../design/CatalogueCard'
+import { ProgrammeCard, FeaturedProgrammeCard } from '../design/CatalogueCard'
 import { PROGRAM_TYPE_LABEL } from '../design/CatalogueCard'
 import { S, TY } from '../design/tokens'
 import { getProgrammeAvailability } from '../lib/catalogue-status'
@@ -83,7 +83,7 @@ export default function ProgramsPage() {
     <ProductShell>
       <Rail>
         <PageHeader
-          eyebrow="Catalogue"
+          eyebrow="Learn"
           title="Programmes"
           lead="Long-form programmes with published curriculum, duration, level and fees. Every card states whether its course material is open in the learning platform yet."
         />
@@ -119,11 +119,18 @@ export default function ProgramsPage() {
                   title="Open in the learning platform"
                   lead="Course material for these is published — enrol and you can start today."
                 />
-                <div className="sk-grid sk-grid-3">
-                  {open.map(program => (
-                    <ProgrammeCard key={program.slug} program={program} />
-                  ))}
-                </div>
+                {open.length > 0 && (
+                  <div style={{ marginBottom: 18 }}>
+                    <FeaturedProgrammeCard program={open[0]} />
+                  </div>
+                )}
+                {open.length > 1 && (
+                  <div className="sk-grid sk-grid-3">
+                    {open.slice(1).map(program => (
+                      <ProgrammeCard key={program.slug} program={program} />
+                    ))}
+                  </div>
+                )}
               </section>
             )}
 

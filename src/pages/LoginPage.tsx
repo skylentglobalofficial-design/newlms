@@ -60,7 +60,7 @@ export default function LoginPage() {
     if (errorParam?.startsWith("oauth")) {
       setError(
         errorParam === "oauth_config"
-          ? "Google sign-in is misconfigured. Confirm GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in your root .env match the OAuth client in Google Cloud Console, then restart the API."
+          ? "Google sign-in is not available right now. Use email and password, or try again later."
           : "Google sign-in failed. Please try again or use email and password.",
       )
       navigate(location.pathname, { replace: true, state: location.state })

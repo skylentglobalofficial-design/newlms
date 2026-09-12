@@ -1,15 +1,17 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { globalCSS } from './components/shared'
-import LabDetailPage from './pages/LabDetailPage'
-import ExperimentPage from './pages/ExperimentPage'
 import { AuthProvider } from './context/AuthContext'
 import { DemoStateProvider } from './demo/DemoStateContext'
 import HomePage from './pages/HomePage'
 import EducationPage from './pages/EducationPage'
+import ExamsPage from './pages/ExamsPage'
+import JuniorPage from './pages/JuniorPage'
+import DegreesPage from './pages/DegreesPage'
+import CertificatesPage from './pages/CertificatesPage'
 import OSPage from './pages/OSPage'
 import InstitutionsPage from './pages/InstitutionsPage'
-import UniversitiesPage from './pages/UniversitiesPage'
 import LabsPage from './pages/LabsPage'
+import LabDetailPage from './pages/LabDetailPage'
 import StoriesPage from './pages/StoriesPage'
 import AboutPage from './pages/AboutPage'
 import ProgramPage from './pages/ProgramPage'
@@ -20,33 +22,41 @@ import CourseDetailPage from './pages/CourseDetailPage'
 import WorkshopsPage from './pages/WorkshopsPage'
 import WorkshopDetailPage from './pages/WorkshopDetailPage'
 import CareerOSPage from './pages/CareerOSPage'
-import CareerOSLayout from './pages/career/CareerOSLayout'
-import CareerOSOverviewPage from './pages/career/CareerOSOverviewPage'
-import CareerOSProfilePage from './pages/career/CareerOSProfilePage'
-import CareerOSJobsPage from './pages/career/CareerOSJobsPage'
-import CareerOSApplicationsPage from './pages/career/CareerOSApplicationsPage'
-import CareerOSApplicationDetailPage from './pages/career/CareerOSApplicationDetailPage'
-import CareerOSInterviewsPage from './pages/career/CareerOSInterviewsPage'
-import CareerOSInterviewDetailPage from './pages/career/CareerOSInterviewDetailPage'
-import CareerOSSupportPage from './pages/career/CareerOSSupportPage'
-import CareerOSSupportDetailPage from './pages/career/CareerOSSupportDetailPage'
 import BlogPage from './pages/BlogPage'
 import BlogPostPage from './pages/BlogPostPage'
 import ContactPage from './pages/ContactPage'
 import LoginPage from './pages/LoginPage'
-import DashboardStudentPage from './pages/DashboardStudentPage'
-import DashboardFacultyPage from './pages/DashboardFacultyPage'
-import DashboardOrgPage from './pages/DashboardOrgPage'
-import DashboardRecruiterPage from './pages/DashboardRecruiterPage'
-import DashboardAdminPage from './pages/DashboardAdminPage'
-import LearnPage from './pages/LearnPage'
 import NotFoundPage from './pages/NotFoundPage'
+import { withLazyPage } from './pages/RouteFallback'
+
+const CareerOSLayout = withLazyPage(() => import('./pages/career/CareerOSLayout'))
+const CareerOSOverviewPage = withLazyPage(() => import('./pages/career/CareerOSOverviewPage'))
+const CareerOSProfilePage = withLazyPage(() => import('./pages/career/CareerOSProfilePage'))
+const CareerOSJobsPage = withLazyPage(() => import('./pages/career/CareerOSJobsPage'))
+const CareerOSApplicationsPage = withLazyPage(() => import('./pages/career/CareerOSApplicationsPage'))
+const CareerOSApplicationDetailPage = withLazyPage(() => import('./pages/career/CareerOSApplicationDetailPage'))
+const CareerOSInterviewsPage = withLazyPage(() => import('./pages/career/CareerOSInterviewsPage'))
+const CareerOSInterviewDetailPage = withLazyPage(() => import('./pages/career/CareerOSInterviewDetailPage'))
+const CareerOSSupportPage = withLazyPage(() => import('./pages/career/CareerOSSupportPage'))
+const CareerOSSupportDetailPage = withLazyPage(() => import('./pages/career/CareerOSSupportDetailPage'))
+const DashboardStudentPage = withLazyPage(() => import('./pages/DashboardStudentPage'))
+const DashboardFacultyPage = withLazyPage(() => import('./pages/DashboardFacultyPage'))
+const DashboardOrgPage = withLazyPage(() => import('./pages/DashboardOrgPage'))
+const DashboardRecruiterPage = withLazyPage(() => import('./pages/DashboardRecruiterPage'))
+const DashboardAdminPage = withLazyPage(() => import('./pages/DashboardAdminPage'))
+const LearnPage = withLazyPage(() => import('./pages/LearnPage'))
+const ExperimentPage = withLazyPage(() => import('./pages/ExperimentPage'))
+const VirtualLabWorkspacePage = withLazyPage(() => import('./pages/VirtualLabWorkspacePage'))
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/education" element={<EducationPage />} />
+      <Route path="/exams" element={<ExamsPage />} />
+      <Route path="/junior" element={<JuniorPage />} />
+      <Route path="/degrees" element={<DegreesPage />} />
+      <Route path="/certificates" element={<CertificatesPage />} />
       <Route path="/skills" element={<SkillsPage />} />
       <Route path="/career-os" element={<CareerOSPage />} />
       <Route path="/career-os/app" element={<CareerOSLayout />}>
@@ -71,8 +81,10 @@ function AppRoutes() {
       <Route path="/institutions" element={<InstitutionsPage />} />
       <Route path="/os" element={<OSPage />} />
       <Route path="/programs" element={<ProgramsPage />} />
+      <Route path="/programs/full-stack-web" element={<Navigate to="/programs/full-stack" replace />} />
       <Route path="/programs/:slug" element={<ProgramPage />} />
       <Route path="/courses" element={<CoursesPage />} />
+      <Route path="/courses/full-stack" element={<Navigate to="/courses/full-stack-web" replace />} />
       <Route path="/courses/:slug" element={<CourseDetailPage />} />
       <Route path="/workshops" element={<WorkshopsPage />} />
       <Route path="/workshops/:slug" element={<WorkshopDetailPage />} />
@@ -88,11 +100,13 @@ function AppRoutes() {
       <Route path="/dashboard/organisation" element={<DashboardOrgPage />} />
       <Route path="/dashboard/recruiter" element={<DashboardRecruiterPage />} />
       <Route path="/dashboard/admin" element={<DashboardAdminPage />} />
+      <Route path="/learn" element={<Navigate to="/courses" replace />} />
       <Route path="/learn/:slug" element={<LearnPage />} />
       <Route path="/learn/:slug/:lessonId" element={<LearnPage />} />
       <Route path="/career" element={<Navigate to="/career-os" replace />} />
-      <Route path="/universities" element={<UniversitiesPage />} />
+      <Route path="/universities" element={<Navigate to="/education" replace />} />
       <Route path="/labs" element={<LabsPage />} />
+      <Route path="/labs/:labId/run" element={<VirtualLabWorkspacePage />} />
       <Route path="/labs/:labId" element={<LabDetailPage />} />
       <Route path="/labs/:labId/:experimentId" element={<ExperimentPage />} />
       <Route path="/jobs" element={<Navigate to="/career-os" replace />} />

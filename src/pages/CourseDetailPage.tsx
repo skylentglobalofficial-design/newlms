@@ -1,32 +1,15 @@
 import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
 import AnchorNav, { useActiveSection } from '../design/AnchorNav'
-import {
-  Rail,
-  SectionHeading,
-  StatusPill,
-  Tag,
-  Card,
-  Button,
-  ButtonLink,
-  DefinitionList,
-  EmptyState,
-  Note,
-  MetaRow,
-  getSurfaceAccent,
-} from '../design/primitives'
+import { ButtonLink, EmptyState, Note, Rail, StatusPill } from '../design/primitives'
 import { PROGRAM_TYPE_LABEL, formatInr } from '../design/CatalogueCard'
-import { R, S, TY } from '../design/tokens'
 import { getCourseAvailability, liveProgramSlugsForCourse, publishedLessonCount } from '../lib/catalogue-status'
 import { useCatalogEnrollment } from '../hooks/useCatalogEnrollment'
-import { resolveAuroraTheme } from '../aurora-themes'
+import { labsForCourse } from '../lib/virtual-labs'
 import { courses, programs } from '../data'
 import type { Course } from '../data'
 import '../design/detail.css'
-
-const THEME = resolveAuroraTheme('/courses')
-const accent = getSurfaceAccent(THEME)
 
 const SECTIONS = [
   { id: 'overview', label: 'Overview' },
@@ -34,67 +17,29 @@ const SECTIONS = [
   { id: 'audience', label: 'Who it is for' },
 ]
 
-function EnrolRail({ course }: { course: Course }) {
+function EnrolButton({
+  course,
+  className,
+  enrolling,
+  onEnrol,
+}: {
+  course: Course
+  className?: string
+  enrolling: boolean
+  onEnrol: () => void
+}) {
   const availability = getCourseAvailability(course.slug)
-  const lessons = publishedLessonCount(course.slug)
-  const { startCourseEnrollment, enrolling, enrollError, clearEnrollError } = useCatalogEnrollment()
-
+  if (!availability.canStartLearning) {
+    return (
+      <Link to="/contact" className={className}>
+        Register interest
+      </Link>
+    )
+  }
   return (
-    <Card padding={20} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      <div>
-        <StatusPill availability={availability} />
-        <p style={{ ...TY.bodySm, color: S.inkSecondary, margin: '10px 0 0' }}>{availability.explanation}</p>
-      </div>
-
-      <div style={{ paddingTop: 14, borderTop: `1px solid ${S.line}` }}>
-        <div style={{ fontSize: 26, fontWeight: 600, color: S.ink, letterSpacing: '-0.02em', fontVariantNumeric: 'tabular-nums' }}>
-          {formatInr(course.price)}
-        </div>
-        <div style={{ ...TY.meta, color: S.inkMuted, marginTop: 4 }}>One-time fee, including GST.</div>
-      </div>
-
-      <DefinitionList
-        items={[
-          { term: 'Published lessons', value: lessons > 0 ? lessons : 'None yet' },
-          { term: 'Modules', value: course.modules.length },
-          { term: 'Duration', value: course.duration },
-          { term: 'Level', value: course.level },
-          { term: 'Mode', value: course.mode },
-          { term: 'Credential', value: 'Skylent completion certificate' },
-        ]}
-      />
-
-      <div className="sk-rail-cta">
-        {availability.canStartLearning ? (
-          <>
-            <Button
-              full
-              size="lg"
-              themeId={THEME}
-              disabled={enrolling}
-              onClick={() => {
-                if (enrolling) return
-                clearEnrollError()
-                startCourseEnrollment(course.slug)
-              }}
-            >
-              {enrolling ? 'Enrolling…' : 'Enrol and start learning'}
-            </Button>
-            <p style={{ ...TY.meta, color: S.inkMuted, margin: 0, textAlign: 'center' }}>
-              Lessons open straight after enrolment.
-            </p>
-          </>
-        ) : (
-          <ButtonLink to="/contact" full size="lg" variant="secondary" themeId={THEME}>
-            Register interest
-          </ButtonLink>
-        )}
-      </div>
-
-      {enrollError && (
-        <p role="alert" style={{ ...TY.bodySm, color: S.caution, margin: 0 }}>{enrollError} Please try again.</p>
-      )}
-    </Card>
+    <button type="button" className={className} disabled={enrolling} onClick={onEnrol}>
+      {enrolling ? 'Enrolling…' : className?.includes('compact') ? 'Enrol' : 'Enrol and start learning'}
+    </button>
   )
 }
 
@@ -112,44 +57,36 @@ function Curriculum({ course }: { course: Course }) {
   }
 
   return (
-    <div className="sk-accordion">
+    <div className="sk-pdp-curriculum">
       {course.modules.map((mod, index) => {
         const isOpen = openId === mod.id
         return (
-          <div key={mod.id} className="sk-accordion-item">
+          <div key={mod.id} className={`sk-pdp-module${isOpen ? ' is-open' : ''}`}>
             <button
               type="button"
-              className="sk-accordion-trigger"
-              onClick={() => setOpenId(isOpen ? null : mod.id)}
+              className="sk-pdp-module-trigger"
               aria-expanded={isOpen}
+              onClick={() => setOpenId(isOpen ? null : mod.id)}
             >
-              <span className="sk-accordion-index" style={{ background: accent.soft, color: accent.text }}>
-                {String(index + 1).padStart(2, '0')}
+              <span className="sk-pdp-module-num">{String(index + 1).padStart(2, '0')}</span>
+              <span className="sk-pdp-module-copy">
+                <span className="sk-pdp-module-title">{mod.title}</span>
+                <span className="sk-pdp-module-duration">
+                  {mod.lessons.length} {mod.lessons.length === 1 ? 'lesson' : 'lessons'}
+                </span>
               </span>
-              <span style={{ ...TY.body, color: S.ink, fontWeight: 600, flex: 1, minWidth: 0 }}>{mod.title}</span>
-              <span style={{ ...TY.bodySm, color: S.inkMuted, flexShrink: 0 }}>
-                {mod.lessons.length} {mod.lessons.length === 1 ? 'lesson' : 'lessons'}
-              </span>
-              <span className="sk-accordion-chevron" style={{ transform: isOpen ? 'rotate(90deg)' : 'none' }}>
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="m9 18 6-6-6-6" />
-                </svg>
-              </span>
+              <span className="sk-pdp-module-chevron" aria-hidden>{isOpen ? '−' : '+'}</span>
             </button>
             {isOpen && (
-              <div className="sk-accordion-panel">
+              <div className="sk-pdp-module-panel">
                 {mod.lessons.length === 0 ? (
-                  <p style={{ ...TY.bodySm, color: S.inkMuted, margin: 0 }}>No lessons published in this module yet.</p>
+                  <p>No lessons published in this module yet.</p>
                 ) : (
-                  <ul className="sk-plain-list">
+                  <ul className="sk-pdp-topics">
                     {mod.lessons.map(lesson => (
                       <li key={lesson.id}>
                         {lesson.title}
-                        <span style={{ ...TY.meta, color: S.inkMuted }}>
-                          {' · '}
-                          {lesson.type}
-                          {lesson.duration ? ` · ${lesson.duration}` : ''}
-                        </span>
+                        {lesson.duration ? ` · ${lesson.duration}` : ''}
                       </li>
                     ))}
                   </ul>
@@ -167,10 +104,11 @@ export default function CourseDetailPage() {
   const { slug } = useParams()
   const course = courses.find(item => item.slug === slug)
   const activeSection = useActiveSection(SECTIONS.map(section => section.id))
+  const { startCourseEnrollment, enrolling, enrollError, clearEnrollError } = useCatalogEnrollment()
 
   if (!course) {
     return (
-      <ProductShell>
+      <ProductShell className="sk-pdp">
         <Rail>
           <div style={{ paddingBlock: 80 }}>
             <EmptyState
@@ -189,72 +127,68 @@ export default function CourseDetailPage() {
   const parentPrograms = liveProgramSlugsForCourse(course.slug)
     .map(programSlug => programs.find(program => program.slug === programSlug))
     .filter((program): program is NonNullable<typeof program> => !!program)
+  const relatedLabs = labsForCourse(course.slug)
+
+  function enrol() {
+    if (enrolling || !course) return
+    clearEnrollError()
+    startCourseEnrollment(course.slug)
+  }
 
   return (
-    <ProductShell className="sk-has-sticky-bar">
+    <ProductShell className="sk-pdp sk-has-sticky-bar">
       <Rail>
-        <div className="sk-detail-head">
-          <Link to="/courses" className="sk-backlink">
-            <span aria-hidden>←</span> All courses
-          </Link>
-          <div className="sk-detail-head-row">
-            <div style={{ minWidth: 0 }}>
-              <div style={{ ...TY.meta, color: accent.text, fontWeight: 600, marginBottom: 8 }}>Course</div>
-              <h1 style={{ ...TY.display, color: S.ink, margin: 0, fontFamily: 'var(--font-display)' }}>{course.title}</h1>
-              <p style={{ ...TY.bodyLg, color: S.inkSecondary, margin: '14px 0 0', maxWidth: '62ch' }}>{course.desc}</p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', marginTop: 16 }}>
-                <StatusPill availability={availability} />
-                <Tag>{course.category}</Tag>
-                <Tag>{course.level}</Tag>
-                <Tag>{course.mode}</Tag>
-              </div>
-            </div>
+        <Link to="/courses" className="sk-pdp-back">
+          <span aria-hidden>←</span> All courses
+        </Link>
+
+        <header className="sk-pdp-hero">
+          <div className="sk-pdp-cover" aria-hidden>
+            <span>{course.category}</span>
+            <strong>{course.title}</strong>
           </div>
-        </div>
+          <div className="sk-pdp-hero-copy">
+            <div className="sk-pdp-hero-tags">
+              <StatusPill availability={availability} />
+              <span>{course.level}</span>
+              <span>{course.mode}</span>
+            </div>
+            <h1>{course.title}</h1>
+            <p>{course.desc}</p>
+            <ul className="sk-pdp-hero-facts">
+              <li><em>{lessons || '—'}</em> published lessons</li>
+              <li><em>{course.modules.length}</em> modules</li>
+              <li><em>{course.duration}</em> duration</li>
+              <li><em>{formatInr(course.price)}</em> one-time fee</li>
+            </ul>
+          </div>
+        </header>
       </Rail>
 
-      <AnchorNav sections={SECTIONS} active={activeSection} themeId={THEME} />
+      <AnchorNav sections={SECTIONS} active={activeSection} label="Course sections" />
 
       <Rail>
         <div className="sk-detail">
-          <div className="sk-detail-main sk-stack">
-            <section id="overview">
-              <SectionHeading title="What this course covers" />
-              <p style={{ ...TY.body, color: S.inkSecondary, margin: '0 0 18px' }}>{course.longDesc}</p>
-              <MetaRow
-                items={[
-                  `${course.modules.length} ${course.modules.length === 1 ? 'module' : 'modules'}`,
-                  lessons > 0 ? `${lessons} published ${lessons === 1 ? 'lesson' : 'lessons'}` : 'No lessons published',
-                  course.duration,
-                ]}
-              />
-
+          <div className="sk-detail-main">
+            <section id="overview" className="sk-pdp-section">
+              <h2>What this course covers</h2>
+              <p className="sk-pdp-lead">{course.longDesc}</p>
               {course.outcomes.length > 0 && (
-                <div style={{ marginTop: 26 }}>
-                  <SectionHeading size="sm" title="What you will learn" />
-                  <ul className="sk-check-list">
-                    {course.outcomes.map(outcome => (
-                      <li key={outcome}>
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={accent.solid} strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0, marginTop: 3 }}>
-                          <path d="m20 6-11 11-5-5" />
-                        </svg>
-                        {outcome}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <ul className="sk-pdp-learn">
+                  {course.outcomes.map(outcome => (
+                    <li key={outcome}>{outcome}</li>
+                  ))}
+                </ul>
               )}
             </section>
 
-            <section id="curriculum">
-              <SectionHeading
-                title="Curriculum"
-                lead={
-                  lessons > 0
-                    ? 'Lessons unlock in order. Your progress is saved as you go.'
-                    : 'This syllabus is published, but no lessons have been added to the platform yet.'
-                }
-              />
+            <section id="curriculum" className="sk-pdp-section">
+              <h2>Curriculum</h2>
+              <p className="sk-pdp-lead">
+                {lessons > 0
+                  ? 'Lessons unlock in order. Your progress is saved as you go.'
+                  : 'This syllabus is published, but no lessons have been added to the platform yet.'}
+              </p>
               <Curriculum course={course} />
               {lessons > 0 && lessons < course.lessons && (
                 <div style={{ marginTop: 16 }}>
@@ -266,74 +200,88 @@ export default function CourseDetailPage() {
               )}
             </section>
 
-            <section id="audience">
-              <SectionHeading title="Who this is for" />
-              <ul className="sk-plain-list">
+            <section id="audience" className="sk-pdp-section">
+              <h2>Who this is for</h2>
+              <ul className="sk-pdp-plain">
                 {course.forWhom.map(item => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
-            </section>
 
-            {parentPrograms.length > 0 && (
-              <section>
-                <SectionHeading
-                  title="Part of these programmes"
-                  lead="Longer programmes that deliver this course as part of a wider track."
-                />
-                <div className="sk-grid sk-grid-2">
-                  {parentPrograms.map(program => (
-                    <Link key={program.slug} to={`/programs/${program.slug}`} className="sk-linked-course">
-                      <div style={{ ...TY.meta, color: accent.text, fontWeight: 600 }}>
-                        {PROGRAM_TYPE_LABEL[program.programType]}
-                      </div>
-                      <div style={{ ...TY.body, color: S.ink, fontWeight: 600 }}>{program.name}</div>
-                      <div style={{ ...TY.bodySm, color: S.inkMuted }}>
-                        {program.duration} · {program.level}
-                      </div>
-                    </Link>
-                  ))}
+              {relatedLabs.length > 0 && (
+                <div className="sk-pdp-audience" style={{ marginTop: 28 }}>
+                  <h3>Virtual labs</h3>
+                  <div className="sk-pdp-live">
+                    {relatedLabs.map(lab => (
+                      <Link key={lab.id} to={`/labs/${lab.id}/run`}>
+                        <strong>{lab.title}</strong>
+                        <span>{lab.subject} · {lab.duration} · runs in your browser</span>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </section>
-            )}
+              )}
+
+              {parentPrograms.length > 0 && (
+                <div className="sk-pdp-audience">
+                  <h3>Part of these programmes</h3>
+                  <div className="sk-pdp-live">
+                    {parentPrograms.map(program => (
+                      <Link key={program.slug} to={`/programs/${program.slug}`}>
+                        <strong>{program.name}</strong>
+                        <span>
+                          {PROGRAM_TYPE_LABEL[program.programType]} · {program.duration} · {program.level}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </section>
           </div>
 
-          <aside className="sk-detail-rail">
-            <EnrolRail course={course} />
+          <aside className="sk-pdp-buy">
+            <StatusPill availability={availability} />
+            <div className="sk-pdp-buy-price">
+              <span>One-time fee, including GST</span>
+              <strong>{formatInr(course.price)}</strong>
+            </div>
+            <div className="sk-rail-cta">
+              <EnrolButton course={course} className="sk-pdp-cta" enrolling={enrolling} onEnrol={enrol} />
+            </div>
+            <p className="sk-pdp-buy-explain">{availability.explanation}</p>
+            <dl className="sk-pdp-buy-facts">
+              <div><dt>Published lessons</dt><dd>{lessons > 0 ? lessons : 'None yet'}</dd></div>
+              <div><dt>Modules</dt><dd>{course.modules.length}</dd></div>
+              <div><dt>Duration</dt><dd>{course.duration}</dd></div>
+              <div><dt>Level</dt><dd>{course.level}</dd></div>
+              <div><dt>Mode</dt><dd>{course.mode}</dd></div>
+            </dl>
+            {enrollError && <p role="alert" className="sk-pdp-buy-note">{enrollError} Please try again.</p>}
+            <p className="sk-pdp-buy-note">
+              {availability.canStartLearning
+                ? 'Lessons open straight after enrolment.'
+                : 'Registering interest starts a conversation. It does not reserve a place or take payment.'}
+            </p>
+            <p className="sk-pdp-buy-note">
+              Credential: Skylent completion certificate. It is not an accredited qualification.
+            </p>
           </aside>
         </div>
       </Rail>
 
       <div className="sk-sticky-bar">
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ ...TY.meta, color: S.inkMuted }}>{availability.label}</div>
-          <div style={{ ...TY.bodySm, color: S.ink, fontWeight: 600 }}>{formatInr(course.price)}</div>
+        <div className="sk-sticky-bar-copy">
+          <div>{availability.label}</div>
+          <strong>{formatInr(course.price)}</strong>
         </div>
-        <StickyEnrol course={course} />
+        <EnrolButton
+          course={course}
+          className="sk-pdp-cta sk-pdp-cta-compact"
+          enrolling={enrolling}
+          onEnrol={enrol}
+        />
       </div>
     </ProductShell>
-  )
-}
-
-function StickyEnrol({ course }: { course: Course }) {
-  const availability = getCourseAvailability(course.slug)
-  const { startCourseEnrollment, enrolling, clearEnrollError } = useCatalogEnrollment()
-
-  if (!availability.canStartLearning) {
-    return <ButtonLink to="/contact" variant="secondary" themeId={THEME} style={{ borderRadius: R.control }}>Register interest</ButtonLink>
-  }
-
-  return (
-    <Button
-      themeId={THEME}
-      disabled={enrolling}
-      onClick={() => {
-        if (enrolling) return
-        clearEnrollError()
-        startCourseEnrollment(course.slug)
-      }}
-    >
-      {enrolling ? 'Enrolling…' : 'Enrol'}
-    </Button>
   )
 }

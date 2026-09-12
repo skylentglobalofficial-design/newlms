@@ -5,6 +5,7 @@ import {
   ProgramType,
   RoleName,
   JobStatus,
+  EmployerVerificationStatus,
   CareerEmploymentType,
   CareerWorkMode,
   CareerSkillProficiency,
@@ -708,12 +709,16 @@ async function seedLearnerInterviewPractice(userId: string) {
 async function seedDemoJobs() {
   const employer = await prisma.employer.upsert({
     where: { slug: 'skylent-demo-employer' },
-    update: { name: 'Skylent Demo Employer' },
+    update: {
+      name: 'Skylent Demo Employer',
+      verificationStatus: EmployerVerificationStatus.UNVERIFIED,
+    },
     create: {
       slug: 'skylent-demo-employer',
       name: 'Skylent Demo Employer',
       description: 'Development fixture employer for Career OS job board previews.',
       location: 'Remote',
+      verificationStatus: EmployerVerificationStatus.UNVERIFIED,
     },
   })
 

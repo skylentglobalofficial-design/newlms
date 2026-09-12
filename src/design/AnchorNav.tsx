@@ -69,35 +69,44 @@ export default function AnchorNav({
   label?: string
   offset?: number
 }) {
+  const scroller = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const current = scroller.current?.querySelector<HTMLElement>('.sk-anchor.is-active')
+    current?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' })
+  }, [active])
+
   return (
     <nav className="sk-anchor-nav" aria-label={label}>
-      <Rail>
-        {sections.map(section => {
-          const isActive = active === section.id
-          const accent = getSurfaceAccent(section.themeId ?? themeId)
-          return (
-            <a
-              key={section.id}
-              href={`#${section.id}`}
-              className={`sk-anchor${isActive ? ' is-active' : ''}`}
-              aria-current={isActive ? 'true' : undefined}
-              style={{
-                textDecoration: 'none',
-                color: isActive ? S.ink : undefined,
-                borderBottomColor: isActive ? accent.solid : 'transparent',
-              }}
-              onClick={event => {
-                if (event.metaKey || event.ctrlKey || event.shiftKey) return
-                event.preventDefault()
-                scrollToSection(section.id, offset)
-                window.history.replaceState(null, '', `#${section.id}`)
-              }}
-            >
-              {section.label}
-            </a>
-          )
-        })}
-      </Rail>
+      <div className="sk-anchor-nav-scroll" ref={scroller}>
+        <Rail>
+          {sections.map(section => {
+            const isActive = active === section.id
+            const accent = getSurfaceAccent(section.themeId ?? themeId)
+            return (
+              <a
+                key={section.id}
+                href={`#${section.id}`}
+                className={`sk-anchor${isActive ? ' is-active' : ''}`}
+                aria-current={isActive ? 'true' : undefined}
+                style={{
+                  textDecoration: 'none',
+                  color: isActive ? S.ink : undefined,
+                  borderBottomColor: isActive ? accent.solid : 'transparent',
+                }}
+                onClick={event => {
+                  if (event.metaKey || event.ctrlKey || event.shiftKey) return
+                  event.preventDefault()
+                  scrollToSection(section.id, offset)
+                  window.history.replaceState(null, '', `#${section.id}`)
+                }}
+              >
+                {section.label}
+              </a>
+            )
+          })}
+        </Rail>
+      </div>
     </nav>
   )
 }

@@ -109,7 +109,7 @@ function VideoPreviewSurface({
       >
         <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 70% 60% at 30% 20%, ${accent.subtle} 0%, transparent 70%)` }} />
         <div style={{ position: "absolute", top: 12, left: 12, fontSize: 9, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,0.28)", letterSpacing: "0.06em" }}>
-          VIDEO · PREVIEW
+          VIDEO
         </div>
         <div style={{ position: "relative", textAlign: "center", padding: 24, maxWidth: 420 }}>
           <div style={{
@@ -124,8 +124,8 @@ function VideoPreviewSurface({
           {duration && (
             <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12, marginTop: 8, fontFamily: "var(--font-mono)" }}>{duration}</div>
           )}
-          <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 10, fontFamily: "var(--font-mono)" }}>
-            Stream not configured — playback ID will connect Mux when available
+          <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, marginTop: 12, lineHeight: 1.5 }}>
+            No video file is published for this lesson yet. You can still mark it as watched to continue.
           </div>
         </div>
         {watched && (

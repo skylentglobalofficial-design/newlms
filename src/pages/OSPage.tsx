@@ -32,7 +32,7 @@ export default function OSPage() {
         <PageHeader
           eyebrow="Skylent OS"
           title="The operating layer."
-          lead="Signed-in workspaces for learners, faculty, institutions and career workflows. This page does not preview them with invented student counts or sample organisations."
+          lead="Signed-in workspaces for learners, faculty, institutions and career workflows. This page does not preview them with invented student counts or sample organisations. Live classes are not available yet."
           actions={<ButtonLink to="/login" variant="secondary">Sign in</ButtonLink>}
         />
 
