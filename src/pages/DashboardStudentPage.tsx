@@ -143,7 +143,7 @@ function ContinueBanner({
           {courseCards.map((entry, index) => {
             const isActive = entry.courseSlug === activeCourseSlug
             return (
-              <Link key={entry.id} to={`/learn/${entry.courseSlug}`} className="sk-dash-fan-card">
+              <Link key={entry.id} to={`/learn/${entry.courseSlug}`} className={`sk-dash-fan-card${isActive ? ' is-active' : ''}`}>
                 <span className="sk-dash-fan-index">{String(index + 1).padStart(2, '0')}</span>
                 <span className="sk-dash-fan-title">{entry.courseTitle}</span>
                 <span className="sk-dash-fan-meta">

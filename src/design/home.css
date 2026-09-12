@@ -252,8 +252,8 @@
 .sk-home-door {
   display: flex;
   flex-direction: column;
-  min-height: 168px;
-  padding: 18px 18px 16px;
+  min-height: 0;
+  padding: 14px 16px 14px;
   background: #fffdf8;
   border: 1px solid var(--sk-line);
   border-radius: 12px;
@@ -265,6 +265,11 @@
   border-color: var(--sk-line-strong);
 }
 
+.sk-home-door:focus-visible {
+  outline: 2px solid var(--sk-brand);
+  outline-offset: 2px;
+}
+
 .sk-home-door-index {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -273,9 +278,9 @@
 }
 
 .sk-home-door-label {
-  margin-top: 12px;
+  margin-top: 8px;
   font-family: var(--font-display);
-  font-size: clamp(20px, 1.8vw, 24px);
+  font-size: clamp(18px, 1.7vw, 22px);
   letter-spacing: -0.03em;
   font-weight: 600;
   line-height: 1.15;
@@ -290,10 +295,14 @@
 
 .sk-home-door-promise {
   margin-top: auto;
-  padding-top: 14px;
-  font-size: 13.5px;
+  padding-top: 10px;
+  font-size: 12.5px;
   line-height: 1.45;
   color: var(--sk-ink-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .sk-home-intent-row {
@@ -831,31 +840,36 @@
 }
 
 .sk-home-close-inner {
-  padding: clamp(28px, 4vw, 40px);
-  background: #14120f;
-  color: #fff;
-  border-radius: 22px;
+  padding: clamp(22px, 3vw, 32px);
+  background: #fffdf8;
+  color: inherit;
+  border: 1px solid var(--sk-line);
+  border-radius: 14px;
 }
 
 .sk-home-close h2 {
-  color: #fff;
+  color: var(--sk-ink);
 }
 
 .sk-home-close p {
   margin: 10px 0 0;
-  max-width: 48ch;
+  max-width: 52ch;
   font-size: 15.5px;
   line-height: 1.55;
-  color: rgba(255, 255, 255, 0.68);
+  color: var(--sk-ink-secondary);
+}
+
+.sk-home-close .sk-home-hero-actions {
+  margin-top: 20px;
 }
 
 .sk-home-close .sk-home-btn-ghost {
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.22);
+  color: var(--sk-ink);
+  border-color: var(--sk-line-strong);
 }
 
 .sk-home-close .sk-home-btn-ghost:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--sk-surface-muted);
 }
 
 /* ── Responsive ───────────────────────────────────────────────────────────── */
@@ -866,6 +880,28 @@
 
   .sk-home-poster {
     min-height: 0;
+    padding: 16px 16px 14px;
+    border-radius: 14px;
+  }
+
+  .sk-home-poster-title {
+    margin-top: 10px;
+    font-size: 22px;
+  }
+
+  .sk-home-poster-lead {
+    margin-top: 8px;
+    font-size: 13.5px;
+  }
+
+  .sk-home-poster-meta {
+    margin-top: 12px;
+  }
+
+  .sk-home-poster-cta {
+    padding-top: 14px;
+    min-height: 42px;
+    border-radius: 10px;
   }
 
   .sk-home-store-grid,
@@ -893,10 +929,13 @@
 
   .sk-home-store-grid,
   .sk-home-os-grid,
-  .sk-home-doors,
   .sk-home-how-list,
   .sk-home-worlds-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sk-home-doors {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .sk-home-pcard {
@@ -930,9 +969,5 @@
 @media (max-width: 430px) {
   .sk-home-pcard-actions {
     grid-template-columns: 1fr;
-  }
-
-  .sk-home-hero-actions > * {
-    flex-basis: 100%;
   }
 }

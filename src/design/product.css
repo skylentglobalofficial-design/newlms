@@ -437,9 +437,9 @@
   right: 0;
   bottom: 0;
   z-index: 120;
-  background: rgba(255, 255, 255, 0.94);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: #fffdf8;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   border-top: 1px solid var(--sk-line-strong);
   padding: 10px var(--sk-gutter) max(10px, env(safe-area-inset-bottom));
   gap: 12px;

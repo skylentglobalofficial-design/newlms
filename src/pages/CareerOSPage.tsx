@@ -54,9 +54,9 @@ export default function CareerOSPage() {
           actions={
             <>
               {user ? (
-                <ButtonLink to="/career-os/app" themeId="career">Open Career OS</ButtonLink>
+                <ButtonLink to="/career-os/app">Open Career OS</ButtonLink>
               ) : (
-                <ButtonLink to="/login" state={loginState} themeId="career">Sign in to open Career OS</ButtonLink>
+                <ButtonLink to="/login" state={loginState}>Sign in to open Career OS</ButtonLink>
               )}
               <ButtonLink to="/programs?type=PROFESSIONAL" variant="secondary">Professional programmes</ButtonLink>
             </>

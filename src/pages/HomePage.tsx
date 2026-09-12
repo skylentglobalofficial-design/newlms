@@ -137,14 +137,14 @@ function Destinations() {
   )
 }
 
-function ProgramProductCard({ program, featured = false }: { program: Program; featured?: boolean }) {
+function ProgramProductCard({ program }: { program: Program }) {
   const availability = getProgrammeAvailability(program)
   const modules = publishedModuleCount(program)
   const lowestPrice = program.pricing.length ? Math.min(...program.pricing.map(tier => tier.price)) : null
   const detailsTo = `/programs/${program.slug}`
 
   return (
-    <article className={`sk-home-pcard${featured ? ' is-featured' : ''}`}>
+    <article className="sk-home-pcard">
       <div className="sk-home-pcard-body">
         <div className="sk-home-pcard-head">
           <span className="sk-home-pcard-type">{PROGRAM_TYPE_LABEL[program.programType]}</span>
@@ -169,7 +169,7 @@ function ProgramProductCard({ program, featured = false }: { program: Program; f
         )}
       </div>
       <div className="sk-home-pcard-actions">
-        <Link to={detailsTo} className={featured ? 'sk-home-pcard-primary' : 'sk-home-pcard-fill'}>
+        <Link to={detailsTo} className="sk-home-pcard-fill">
           View programme
         </Link>
       </div>
@@ -212,7 +212,7 @@ function CourseProductCard({ course }: { course: Course }) {
   )
 }
 
-function OpenNow({ featuredSlug }: { featuredSlug: string | null }) {
+function OpenNow() {
   const navigate = useNavigate()
   const { openPrograms, upcomingPrograms, openCourses } = useInventory()
   const [tab, setTab] = useState<'programmes' | 'courses'>('programmes')
@@ -223,10 +223,6 @@ function OpenNow({ featuredSlug }: { featuredSlug: string | null }) {
     const trimmed = query.trim()
     navigate(trimmed ? `/skills?q=${encodeURIComponent(trimmed)}` : '/skills')
   }
-
-  const programCards = openPrograms
-  const featuredInGrid = featuredSlug ? programCards.find(program => program.slug === featuredSlug) : programCards[0]
-  const restPrograms = programCards.filter(program => program.slug !== featuredInGrid?.slug)
 
   return (
     <section className="sk-home-store" id="open-now">
@@ -270,8 +266,7 @@ function OpenNow({ featuredSlug }: { featuredSlug: string | null }) {
             <p className="sk-home-empty">No programme currently has published course material.</p>
           ) : (
             <div className="sk-home-store-grid">
-              {featuredInGrid && <ProgramProductCard program={featuredInGrid} featured />}
-              {restPrograms.map(program => (
+              {openPrograms.map(program => (
                 <ProgramProductCard key={program.slug} program={program} />
               ))}
             </div>
@@ -383,7 +378,7 @@ export default function HomePage() {
     <ProductShell className="sk-home">
       <Hero featured={featured} />
       <Destinations />
-      <OpenNow featuredSlug={featured?.slug ?? null} />
+      <OpenNow />
       <HowItWorks />
       <Worlds />
       <Closing />

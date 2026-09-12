@@ -1,7 +1,7 @@
 import { useMemo, useState, type FormEvent } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
-import { Rail, StatusPill, EmptyState, Button, Note } from '../design/primitives'
+import { Rail, StatusPill, EmptyState, Button } from '../design/primitives'
 import { getSkillDomains } from '../lib/skills-domains'
 import {
   filterLearnInventory,
@@ -9,6 +9,7 @@ import {
   getLearnInventory,
   sortLearnInventory,
   uniqueLearnValues,
+  type LearnInventoryItem,
   type LearnSort,
 } from '../lib/learn-inventory'
 import '../design/learn.css'
@@ -42,6 +43,25 @@ const SORT_OPTIONS: { value: LearnSort; label: string }[] = [
   { value: 'title', label: 'Title' },
   { value: 'duration', label: 'Duration' },
 ]
+
+function resultActionLabel(item: LearnInventoryItem) {
+  if (item.availability.canStartLearning) return item.availability.ctaLabel
+  if (item.availabilityGroup === 'interest') return 'Register interest'
+  return item.ctaLabel
+}
+
+function resultCardClass(item: LearnInventoryItem, leadId: string | null) {
+  const quiet = item.availabilityGroup === 'coming-soon'
+  const wait = item.availabilityGroup === 'interest'
+  return [
+    'sk-learn-card',
+    `is-${item.kind}`,
+    item.availability.canStartLearning ? 'is-open' : '',
+    quiet ? 'is-quiet' : '',
+    wait ? 'is-wait' : '',
+    item.id === leadId ? 'is-lead' : '',
+  ].filter(Boolean).join(' ')
+}
 
 function RadioGroup({
   legend,
@@ -113,6 +133,9 @@ export default function SkillsPage() {
   }, [inventory, query, domain, kind, level, format, duration, availability, sort])
 
   const openCount = results.filter(item => item.availability.canStartLearning).length
+  const leadId = sort === 'recommended'
+    ? results.find(item => item.availability.canStartLearning)?.id ?? null
+    : null
   const filtersActive =
     query.trim() !== '' ||
     domain !== ALL ||
@@ -257,16 +280,22 @@ export default function SkillsPage() {
                 ))}
               </select>
             </fieldset>
-            <RadioGroup
-              legend="Duration"
-              name="learn-duration"
-              value={duration}
-              onChange={value => {
-                setDuration(value)
-                persist({ q: query, domain, kind, level, format, duration: value, availability, sort })
-              }}
-              options={DURATION_OPTIONS}
-            />
+            <fieldset>
+              <legend>Duration</legend>
+              <select
+                className="sk-select"
+                value={duration}
+                onChange={event => {
+                  setDuration(event.target.value)
+                  persist({ q: query, domain, kind, level, format, duration: event.target.value, availability, sort })
+                }}
+                aria-label="Filter by duration"
+              >
+                {DURATION_OPTIONS.map(option => (
+                  <option key={option.value} value={option.value}>{option.label}</option>
+                ))}
+              </select>
+            </fieldset>
             <fieldset>
               <legend>Sort</legend>
               <select
@@ -314,7 +343,7 @@ export default function SkillsPage() {
             ) : (
               <div className="sk-learn-grid">
                 {results.map(item => (
-                  <Link key={item.id} to={item.href} className="sk-learn-card">
+                  <Link key={item.id} to={item.href} className={resultCardClass(item, leadId)}>
                     <div>
                       <div className="sk-learn-card-top">
                         <span className="sk-learn-kind">{item.kindLabel}</span>
@@ -324,25 +353,28 @@ export default function SkillsPage() {
                       <p className="sk-learn-desc">{item.description}</p>
                       {item.forWhom && <p className="sk-learn-who">For {item.forWhom}</p>}
                       {item.outcomes.length > 0 && (
-                        <ul className="sk-learn-outcomes">
-                          {item.outcomes.map(outcome => (
-                            <li key={outcome}>{outcome}</li>
-                          ))}
-                        </ul>
+                        <p className="sk-learn-outcomes">
+                          You’ll learn: {item.outcomes.slice(0, 2).join(' · ')}
+                        </p>
                       )}
                       <p className="sk-learn-meta">
                         {[
                           item.duration,
                           item.level,
                           item.format,
-                          item.labCount > 0 ? `${item.labCount} matching ${item.labCount === 1 ? 'lab' : 'labs'}` : null,
-                          item.domains.map(entry => entry.label).join(', '),
+                          item.kind === 'workshop'
+                            ? null
+                            : item.labCount > 0
+                              ? `${item.labCount} matching ${item.labCount === 1 ? 'lab' : 'labs'}`
+                              : 'No matching lab',
                         ]
                           .filter(Boolean)
                           .join(' · ')}
                       </p>
                     </div>
-                    <span className="sk-learn-cta">{item.ctaLabel}</span>
+                    <span className={`sk-learn-cta${item.availability.canStartLearning ? '' : ' is-ghost'}`}>
+                      {resultActionLabel(item)}
+                    </span>
                   </Link>
                 ))}
               </div>
@@ -360,12 +392,6 @@ export default function SkillsPage() {
               </section>
             )}
 
-            <div style={{ marginTop: 28 }}>
-              <Note>
-                Cards distinguish programme, course and webinar, and whether you can start today. Coming soon is not
-                dressed as live. Virtual labs only appear when the subject actually has one.
-              </Note>
-            </div>
           </div>
         </div>
       </Rail>

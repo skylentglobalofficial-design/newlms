@@ -156,7 +156,7 @@ export default function EducationPage() {
                 Degree and school material would reach learners through a partner institution. None are live in the
                 public catalogue. Skylent would provide dashboards for programmes, learners, faculty and progress.
               </p>
-              <ButtonLink to="/institutions" variant="secondary" themeId="institution">For institutions</ButtonLink>
+              <ButtonLink to="/institutions" variant="secondary">For institutions</ButtonLink>
             </div>
             <dl>
               <div>

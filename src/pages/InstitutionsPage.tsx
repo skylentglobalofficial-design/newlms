@@ -46,7 +46,7 @@ export default function InstitutionsPage() {
           eyebrow="For institutions"
           title="Run your programmes on Skylent."
           lead="Schools, colleges, universities and training institutes get the same infrastructure — programmes, learners, faculty and progress — scoped to the organisation. Partnership starts with a conversation, not a checkout."
-          actions={<ButtonLink to="/contact" themeId="institution">Discuss a partnership</ButtonLink>}
+          actions={<ButtonLink to="/contact">Discuss a partnership</ButtonLink>}
         />
 
         <div style={{ paddingBottom: 72 }}>
