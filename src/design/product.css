@@ -350,6 +350,16 @@
   min-width: 0;
 }
 
+/* Ragged half-width controls read worse than a clean stack on a phone. */
+@media (max-width: 560px) {
+  .sk-filterbar > .sk-search,
+  .sk-filterbar > .sk-select {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: none;
+  }
+}
+
 /* ── Grids ────────────────────────────────────────────────────────────────── */
 .sk-grid {
   display: grid;
