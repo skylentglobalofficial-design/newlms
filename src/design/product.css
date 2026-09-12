@@ -477,6 +477,10 @@
     padding-bottom: 78px;
   }
 
+  .sk-has-sticky-bar .sk-footer {
+    padding-bottom: 88px;
+  }
+
   /* The sticky bar already carries the primary action, so the summary rail
      drops its duplicate copy and reads as a facts panel instead. */
   .sk-rail-cta {
@@ -548,4 +552,9 @@
   background: var(--sk-ink);
   border-color: var(--sk-ink);
   color: #fff;
+}
+
+.sk-status-pill {
+  white-space: nowrap;
+  flex-shrink: 0;
 }

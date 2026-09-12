@@ -250,6 +250,7 @@ export function StatusPill({ availability, size = 'md' }: { availability: Availa
         alignItems: 'center',
         gap: 6,
         whiteSpace: 'nowrap',
+        flexShrink: 0,
       }}
     >
       <span

@@ -65,8 +65,8 @@ export default function InstitutionsPage() {
                 <div className="sk-grid sk-grid-2">
                   {type.capabilities.map(capability => (
                     <Card key={capability.id} padding={18}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'flex-start' }}>
-                        <div style={{ ...TY.body, color: S.ink, fontWeight: 600 }}>{capability.label}</div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                        <div style={{ ...TY.body, color: S.ink, fontWeight: 600, flex: '1 1 8rem', minWidth: 0 }}>{capability.label}</div>
                         <StatusPill availability={STATUS_AVAILABILITY[capability.status]} size="sm" />
                       </div>
                       <p style={{ ...TY.bodySm, color: S.inkSecondary, margin: '8px 0 0' }}>{capability.description}</p>

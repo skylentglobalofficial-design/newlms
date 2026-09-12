@@ -151,6 +151,7 @@
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+  margin-left: auto;
 }
 
 .sk-header-signin {
@@ -302,6 +303,12 @@
     display: inline-flex;
   }
 
+  /* Sign-in and the catalogue CTA live in the drawer once the burger is out. */
+  .sk-header-actions > .sk-header-signin,
+  .sk-header-actions > .sk-header-cta {
+    display: none;
+  }
+
   .sk-mobile-menu {
     display: block;
   }
@@ -312,20 +319,12 @@
 }
 
 @media (max-width: 767px) {
-  .sk-header-signin {
-    display: none;
-  }
-
   .sk-mobile-footer .sk-header-signin {
     display: inline-flex;
   }
 }
 
 @media (max-width: 479px) {
-  .sk-header-cta {
-    display: none;
-  }
-
   .sk-mobile-footer .sk-header-cta {
     display: inline-flex;
   }
