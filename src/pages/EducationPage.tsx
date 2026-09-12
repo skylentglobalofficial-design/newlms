@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
+import AnchorNav, { useActiveSection } from '../design/AnchorNav'
 import { Rail, SectionHeading, ButtonLink, StatusPill, Note, Card, MetaRow } from '../design/primitives'
 import { ProgrammeCard, CourseCard } from '../design/CatalogueCard'
 import { getSurfaceAccent } from '../design/accent'
@@ -9,32 +10,6 @@ import { resolveAcademicStages, type ResolvedStage, type ResolvedStream } from '
 import { getProgrammeAvailability, publishedLessonCount } from '../lib/catalogue-status'
 import { courses, programs } from '../data'
 import '../design/education.css'
-
-/** Tracks which stage section is currently in view for the anchor nav. */
-function useActiveStage(ids: string[]) {
-  const [active, setActive] = useState(ids[0] ?? '')
-  const idsRef = useRef(ids)
-  idsRef.current = ids
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      entries => {
-        const visible = entries
-          .filter(entry => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
-        if (visible[0]) setActive(visible[0].target.id)
-      },
-      { rootMargin: '-140px 0px -55% 0px', threshold: 0 },
-    )
-    for (const id of idsRef.current) {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
-    }
-    return () => observer.disconnect()
-  }, [])
-
-  return active
-}
 
 // ── Header ───────────────────────────────────────────────────────────────────
 function EducationHeader({ stages }: { stages: ResolvedStage[] }) {
@@ -75,33 +50,6 @@ function EducationHeader({ stages }: { stages: ResolvedStage[] }) {
 }
 
 // ── Stage anchor nav ─────────────────────────────────────────────────────────
-function StageNav({ stages, active }: { stages: ResolvedStage[]; active: string }) {
-  return (
-    <div className="sk-anchor-nav">
-      <Rail>
-        {stages.map(stage => {
-          const accent = getSurfaceAccent(stage.themeId)
-          const isActive = active === stage.id
-          return (
-            <a
-              key={stage.id}
-              href={`#${stage.id}`}
-              className={`sk-anchor${isActive ? ' is-active' : ''}`}
-              style={{
-                color: isActive ? S.ink : undefined,
-                borderBottomColor: isActive ? accent.solid : 'transparent',
-                textDecoration: 'none',
-              }}
-            >
-              {stage.label}
-            </a>
-          )
-        })}
-      </Rail>
-    </div>
-  )
-}
-
 // ── Stream card ──────────────────────────────────────────────────────────────
 function StreamCard({ stream, themeId }: { stream: ResolvedStream; themeId: ResolvedStage['themeId'] }) {
   const accent = getSurfaceAccent(themeId)
@@ -294,12 +242,16 @@ function ClosingCta() {
 
 export default function EducationPage() {
   const stages = useMemo(() => resolveAcademicStages(), [])
-  const active = useActiveStage(stages.map(stage => stage.id))
+  const sections = useMemo(
+    () => stages.map(stage => ({ id: stage.id, label: stage.label, themeId: stage.themeId })),
+    [stages],
+  )
+  const active = useActiveSection(stages.map(stage => stage.id))
 
   return (
     <ProductShell>
       <EducationHeader stages={stages} />
-      <StageNav stages={stages} active={active} />
+      <AnchorNav sections={sections} active={active} label="Academic stages" />
       <Rail>
         {stages.map(stage => (
           <Stage key={stage.id} stage={stage} />

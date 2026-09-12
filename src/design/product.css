@@ -393,6 +393,11 @@
 }
 
 /* ── Sticky mobile action bar ─────────────────────────────────────────────── */
+.sk-rail-cta {
+  display: grid;
+  gap: 10px;
+}
+
 .sk-sticky-bar {
   display: none;
   position: fixed;
@@ -470,6 +475,12 @@
 
   .sk-has-sticky-bar {
     padding-bottom: 78px;
+  }
+
+  /* The sticky bar already carries the primary action, so the summary rail
+     drops its duplicate copy and reads as a facts panel instead. */
+  .sk-rail-cta {
+    display: none;
   }
 }
 

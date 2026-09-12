@@ -21,6 +21,13 @@ export function liveCourseSlugsForProgram(programSlug: string): string[] {
     .filter(slug => courses.some(course => course.slug === slug))
 }
 
+/** The inverse link: programmes that actually deliver this course. */
+export function liveProgramSlugsForCourse(courseSlug: string): string[] {
+  return LIVE_PROGRAM_COURSE_LINKS
+    .filter(link => link.courseSlug === courseSlug)
+    .map(link => link.programSlug)
+}
+
 export type AvailabilityId =
   | 'available'
   | 'enrolling'

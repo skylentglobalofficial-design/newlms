@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
+import AnchorNav, { scrollToSection, useActiveSection } from '../design/AnchorNav'
 import {
   Button, ButtonLink, Card, DefinitionList, EmptyState, MetaRow, Note,
   Rail, SectionHeading, StatusPill, Tag,
@@ -23,12 +24,6 @@ const SECTIONS = [
   { id: 'fees', label: 'Fees' },
   { id: 'faq', label: 'FAQ' },
 ]
-
-function scrollToSection(id: string) {
-  const el = document.getElementById(id)
-  if (!el) return
-  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 84, behavior: 'smooth' })
-}
 
 // ── Summary rail ─────────────────────────────────────────────────────────────
 function SummaryRail({ program }: { program: Program }) {
@@ -68,15 +63,17 @@ function SummaryRail({ program }: { program: Program }) {
         ]}
       />
 
-      {availability.canStartLearning ? (
-        <Button themeId={themeId} full size="lg" disabled={enrolling} onClick={() => startProgramEnrollment(program.slug)}>
-          {enrolling ? 'Enrolling…' : availability.ctaLabel}
-        </Button>
-      ) : (
-        <ButtonLink to="/contact" themeId={themeId} full size="lg">
-          {availability.ctaLabel}
-        </ButtonLink>
-      )}
+      <div className="sk-rail-cta">
+        {availability.canStartLearning ? (
+          <Button themeId={themeId} full size="lg" disabled={enrolling} onClick={() => startProgramEnrollment(program.slug)}>
+            {enrolling ? 'Enrolling…' : availability.ctaLabel}
+          </Button>
+        ) : (
+          <ButtonLink to="/contact" themeId={themeId} full size="lg">
+            {availability.ctaLabel}
+          </ButtonLink>
+        )}
+      </div>
 
       {enrollError && <Note tone="caution">{enrollError}</Note>}
 
@@ -151,7 +148,7 @@ function Curriculum({ program }: { program: Program }) {
 export default function ProgramPage() {
   const { slug } = useParams<{ slug: string }>()
   const program = useMemo(() => programs.find(p => p.slug === slug), [slug])
-  const [activeSection, setActiveSection] = useState('overview')
+  const activeSection = useActiveSection(SECTIONS.map(section => section.id))
 
   if (!program) {
     return (
@@ -199,21 +196,11 @@ export default function ProgramPage() {
             </div>
           </div>
         </div>
+      </Rail>
 
-        <nav className="sk-anchor-nav" aria-label="Sections on this page">
-          {SECTIONS.map(section => (
-            <button
-              key={section.id}
-              type="button"
-              className={`sk-anchor${activeSection === section.id ? ' is-active' : ''}`}
-              style={activeSection === section.id ? { color: S.ink, borderBottomColor: accent.solid } : undefined}
-              onClick={() => { setActiveSection(section.id); scrollToSection(section.id) }}
-            >
-              {section.label}
-            </button>
-          ))}
-        </nav>
+      <AnchorNav sections={SECTIONS} active={activeSection} themeId={themeId} />
 
+      <Rail>
         <div className="sk-detail">
           <div className="sk-detail-main sk-stack">
             {/* Overview */}
