@@ -23,7 +23,7 @@ export const DESTINATIONS: Destination[] = [
     id: 'learn',
     label: 'Learn',
     question: 'I want to find something useful to learn',
-    promise: 'Search programmes, courses and webinars. Status on every card is real.',
+    promise: 'Search programmes, courses and webinars. Status on every result is real.',
     to: '/skills',
     themeId: 'professional',
     role: 'learn',

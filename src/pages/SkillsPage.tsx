@@ -50,17 +50,35 @@ function resultActionLabel(item: LearnInventoryItem) {
   return 'Coming soon'
 }
 
-function resultCardClass(item: LearnInventoryItem, leadId: string | null) {
+function resultRowClass(item: LearnInventoryItem) {
   const quiet = item.availabilityGroup === 'coming-soon'
   const wait = item.availabilityGroup === 'interest'
   return [
-    'sk-learn-card',
+    'sk-learn-row',
     `is-${item.kind}`,
     item.availability.canStartLearning ? 'is-open' : '',
     quiet ? 'is-quiet' : '',
     wait ? 'is-wait' : '',
-    item.id === leadId ? 'is-lead' : '',
   ].filter(Boolean).join(' ')
+}
+
+function ResultMeta({ item }: { item: LearnInventoryItem }) {
+  return (
+    <p className="sk-learn-meta">
+      {[
+        item.duration,
+        item.level,
+        item.format,
+        item.kind === 'workshop'
+          ? null
+          : item.labCount > 0
+            ? `${item.labCount} matching ${item.labCount === 1 ? 'lab' : 'labs'}`
+            : 'No matching lab',
+      ]
+        .filter(Boolean)
+        .join(' · ')}
+    </p>
+  )
 }
 
 function RadioGroup({
@@ -360,42 +378,47 @@ export default function SkillsPage() {
                 action={filtersActive ? <Button variant="secondary" onClick={reset}>Clear filters</Button> : undefined}
               />
             ) : (
-              <div className="sk-learn-grid">
-                {results.map(item => (
-                  <Link key={item.id} to={item.href} className={resultCardClass(item, leadId)}>
-                    <div>
-                      <div className="sk-learn-card-top">
-                        <span className="sk-learn-kind">{item.kindLabel}</span>
-                        <StatusPill availability={item.availability} size="sm" />
+              <div className="sk-learn-results">
+                {results.map(item => {
+                  const isLead = item.id === leadId
+                  if (isLead) {
+                    return (
+                      <Link key={item.id} to={item.href} className="sk-learn-lead">
+                        <div className="sk-learn-lead-copy">
+                          <div className="sk-learn-card-top">
+                            <span className="sk-learn-kind">{item.kindLabel}</span>
+                            <StatusPill availability={item.availability} size="sm" />
+                          </div>
+                          <h2>{item.title}</h2>
+                          <p className="sk-learn-desc">{item.description}</p>
+                          {item.forWhom && <p className="sk-learn-who">For {item.forWhom}</p>}
+                          {item.outcomes.length > 0 && (
+                            <p className="sk-learn-outcomes">
+                              You’ll learn: {item.outcomes.slice(0, 2).join(' · ')}
+                            </p>
+                          )}
+                          <ResultMeta item={item} />
+                        </div>
+                        <span className="sk-learn-cta">{resultActionLabel(item)}</span>
+                      </Link>
+                    )
+                  }
+
+                  return (
+                    <Link key={item.id} to={item.href} className={resultRowClass(item)}>
+                      <span className="sk-learn-kind">{item.kindLabel}</span>
+                      <div className="sk-learn-row-copy">
+                        <h2>{item.title}</h2>
+                        <p className="sk-learn-desc">{item.description}</p>
+                        <ResultMeta item={item} />
                       </div>
-                      <h2>{item.title}</h2>
-                      <p className="sk-learn-desc">{item.description}</p>
-                      {item.forWhom && <p className="sk-learn-who">For {item.forWhom}</p>}
-                      {item.id === leadId && item.outcomes.length > 0 && (
-                        <p className="sk-learn-outcomes">
-                          You’ll learn: {item.outcomes.slice(0, 2).join(' · ')}
-                        </p>
-                      )}
-                      <p className="sk-learn-meta">
-                        {[
-                          item.duration,
-                          item.level,
-                          item.format,
-                          item.kind === 'workshop'
-                            ? null
-                            : item.labCount > 0
-                              ? `${item.labCount} matching ${item.labCount === 1 ? 'lab' : 'labs'}`
-                              : 'No matching lab',
-                        ]
-                          .filter(Boolean)
-                          .join(' · ')}
-                      </p>
-                    </div>
-                    <span className={`sk-learn-cta${item.availability.canStartLearning ? '' : ' is-ghost'}`}>
-                      {resultActionLabel(item)}
-                    </span>
-                  </Link>
-                ))}
+                      <StatusPill availability={item.availability} size="sm" />
+                      <span className={`sk-learn-go${item.availability.canStartLearning ? '' : ' is-quiet'}`}>
+                        {resultActionLabel(item)}
+                      </span>
+                    </Link>
+                  )
+                })}
               </div>
             )}
 

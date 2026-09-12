@@ -13,7 +13,7 @@
 }
 
 .sk-edu.sk-surface > .sk-header {
-  background: rgba(247, 244, 236, 0.92);
+  background: #f7f4ec;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -120,35 +120,44 @@
 }
 
 .sk-edu-block.is-undergraduate {
-  background: #fffdf8;
+  background: transparent;
 }
 
 .sk-edu-block.is-postgraduate {
-  background: #fff;
-  border: 1px solid var(--sk-line);
-  border-radius: 16px;
-  padding-inline: 18px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding-inline: 0;
 }
 
-.sk-edu-block.is-postgraduate header > span {
-  color: #15171a;
-}
-
-.sk-degrees-split {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
-  padding: 28px 0 72px;
-  align-items: start;
+.sk-degrees-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 12px 0 72px;
 }
 
 .sk-degree-stage {
   min-width: 0;
-  padding: 22px 22px 8px;
-  border: 1px solid var(--sk-line);
-  border-radius: 16px;
-  background: var(--sk-surface);
+  padding: 28px 0 12px;
+  border: none;
+  border-top: 1px solid var(--sk-line-strong);
+  border-radius: 0;
+  background: transparent;
   scroll-margin-top: 110px;
+}
+
+.sk-degree-stage.is-undergraduate {
+  padding-top: 8px;
+  border-top: none;
+}
+
+.sk-degree-stage.is-postgraduate {
+  background: transparent;
+}
+
+.sk-degree-stage.is-postgraduate h2 {
+  font-size: 30px;
 }
 
 .sk-degree-kicker {
@@ -165,31 +174,43 @@
   color: #4338ca;
 }
 
-.sk-degree-stage.is-postgraduate {
-  background: #fff;
-}
-
 .sk-degree-stage h2 {
   margin: 0;
   font-family: var(--font-display);
-  font-size: 28px;
-  letter-spacing: -0.03em;
+  font-size: clamp(32px, 3.6vw, 40px);
+  letter-spacing: -0.032em;
 }
 
 .sk-degree-stage > p {
   margin: 8px 0 0;
-  font-size: 14.5px;
+  max-width: 62ch;
+  font-size: 15px;
   line-height: 1.55;
   color: var(--sk-ink-secondary);
 }
 
 .sk-degree-stage .sk-edu-structure {
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
-.sk-degree-stage .sk-degree-row {
-  grid-template-columns: minmax(0, 1fr);
-  gap: 6px;
+.sk-degree-row {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.7fr) minmax(0, 1.4fr) minmax(180px, 0.7fr);
+  gap: 12px 24px;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--sk-line);
+}
+
+.sk-degree-row > p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--sk-ink-secondary);
+}
+
+.sk-degree-stage.is-postgraduate .sk-degree-row {
+  padding: 14px 0;
 }
 
 .sk-degree-row-status {
@@ -197,6 +218,7 @@
   flex-wrap: wrap;
   gap: 8px 14px;
   align-items: center;
+  justify-content: flex-end;
 }
 
 .sk-degree-row-status a {
@@ -376,9 +398,17 @@
     flex-wrap: wrap;
   }
 
-  .sk-edu-inst-grid,
-  .sk-degrees-split {
+  .sk-edu-inst-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sk-degree-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  .sk-degree-row-status {
+    justify-content: flex-start;
   }
 }
 

@@ -1,6 +1,6 @@
 import { Link, useSearchParams } from 'react-router-dom'
 import ProductShell from '../design/ProductShell'
-import { Rail, StatusPill, Note, Tag, EmptyState } from '../design/primitives'
+import { Rail, StatusPill, Note, EmptyState } from '../design/primitives'
 import { S, TY } from '../design/tokens'
 import { courses, programs } from '../data'
 import {
@@ -151,13 +151,13 @@ export default function LabsPage() {
                 const availability = interactiveLabAvailability(lab)
                 return (
                   <Link key={lab.id} to={labRunPath(lab.id, catalogueFrom)} className="sk-lab-card">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-                      <Tag>{lab.subject}</Tag>
-                      <StatusPill availability={availability} size="sm" />
+                    <span className="sk-lab-card-kind">{lab.subject}</span>
+                    <div className="sk-lab-card-copy">
+                      <h2>{lab.title}</h2>
+                      <p>{lab.objective}</p>
+                      <span className="sk-lab-card-meta">{lab.duration} · {lab.kind}</span>
                     </div>
-                    <h2>{lab.title}</h2>
-                    <p>{lab.objective}</p>
-                    <span className="sk-lab-card-meta">{lab.duration} · {lab.kind}</span>
+                    <StatusPill availability={availability} size="sm" />
                   </Link>
                 )
               })}
@@ -180,12 +180,14 @@ export default function LabsPage() {
             <div className="sk-lab-grid">
               {practice.map(subject => (
                 <Link key={subject.id} to={`/labs/${subject.id}`} className="sk-lab-card">
-                  <Tag>{labGroupingLabel(subject.program)}</Tag>
-                  <h2>{subject.title}</h2>
-                  <p>{subject.desc}</p>
-                  <span className="sk-lab-card-meta">
-                    {subject.experiments.length} experiments · simulated workspace
-                  </span>
+                  <span className="sk-lab-card-kind">{labGroupingLabel(subject.program)}</span>
+                  <div className="sk-lab-card-copy">
+                    <h2>{subject.title}</h2>
+                    <p>{subject.desc}</p>
+                    <span className="sk-lab-card-meta">
+                      {subject.experiments.length} experiments · simulated workspace
+                    </span>
+                  </div>
                 </Link>
               ))}
             </div>

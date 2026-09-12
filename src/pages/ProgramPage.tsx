@@ -266,11 +266,8 @@ export default function ProgramPage() {
         <Link to="/programs" className="sk-pdp-back"><span aria-hidden>←</span> All programmes</Link>
 
         <header className="sk-pdp-hero">
-          <div className="sk-pdp-cover" aria-hidden>
-            <span>{PROGRAM_TYPE_LABEL[program.programType]}</span>
-            <strong>{program.name}</strong>
-          </div>
           <div className="sk-pdp-hero-copy">
+            <p className="sk-pdp-kicker">{PROGRAM_TYPE_LABEL[program.programType]}</p>
             <div className="sk-pdp-hero-tags">
               <StatusPill availability={availability} />
               <span>{program.level}</span>

@@ -101,9 +101,9 @@ export const SP = {
  * Page titles are large but controlled — not poster-size SaaS type.
  */
 export const TY = {
-  display: { fontSize: 'clamp(28px, 3.2vw, 40px)', lineHeight: 1.12, letterSpacing: '-0.022em', fontWeight: 600 },
-  h1: { fontSize: 'clamp(24px, 2.4vw, 32px)', lineHeight: 1.2, letterSpacing: '-0.02em', fontWeight: 600 },
-  h2: { fontSize: 'clamp(18px, 1.7vw, 22px)', lineHeight: 1.3, letterSpacing: '-0.014em', fontWeight: 600 },
+  display: { fontSize: 'clamp(30px, 3.6vw, 44px)', lineHeight: 1.1, letterSpacing: '-0.028em', fontWeight: 600 },
+  h1: { fontSize: 'clamp(28px, 3.2vw, 40px)', lineHeight: 1.12, letterSpacing: '-0.028em', fontWeight: 600 },
+  h2: { fontSize: 'clamp(20px, 1.9vw, 24px)', lineHeight: 1.25, letterSpacing: '-0.018em', fontWeight: 600 },
   h3: { fontSize: 16.5, lineHeight: 1.35, letterSpacing: '-0.01em', fontWeight: 600 },
   bodyLg: { fontSize: 16, lineHeight: 1.62, letterSpacing: '-0.005em' },
   body: { fontSize: 14.5, lineHeight: 1.6 },
