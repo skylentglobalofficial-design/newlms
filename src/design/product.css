@@ -1,0 +1,427 @@
+/* ───────────────────────────────────────────────────────────────────────────
+   Skylent product surface — light design system.
+
+   Scoped under .sk-surface so the near-black marketing canvas is untouched.
+   Token values mirror src/design/tokens.ts.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.sk-surface {
+  --sk-canvas: #f5f6f8;
+  --sk-surface: #ffffff;
+  --sk-surface-muted: #f0f2f5;
+  --sk-surface-dark: #141820;
+
+  --sk-ink: #0c0e12;
+  --sk-ink-secondary: #495062;
+  --sk-ink-muted: #767e8e;
+
+  --sk-line: rgba(12, 14, 18, 0.09);
+  --sk-line-strong: rgba(12, 14, 18, 0.16);
+
+  --sk-r-control: 10px;
+  --sk-r-card: 14px;
+  --sk-r-panel: 18px;
+
+  --sk-shadow-sm: 0 1px 2px rgba(12, 14, 18, 0.05);
+  --sk-shadow-md: 0 2px 8px rgba(12, 14, 18, 0.06);
+  --sk-shadow-lg: 0 12px 32px rgba(12, 14, 18, 0.1);
+
+  --sk-gutter: clamp(16px, 4vw, 32px);
+
+  background: var(--sk-canvas);
+  color: var(--sk-ink);
+  font-family: var(--font-body);
+  min-height: 100vh;
+}
+
+/* ── Rail ─────────────────────────────────────────────────────────────────── */
+.sk-rail {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--sk-gutter);
+}
+
+/* ── Vertical rhythm ──────────────────────────────────────────────────────── */
+.sk-section {
+  padding-block: clamp(36px, 5vw, 60px);
+}
+
+.sk-section-tight {
+  padding-block: clamp(24px, 3.5vw, 40px);
+}
+
+.sk-stack > * + * {
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+/* ── Page header ──────────────────────────────────────────────────────────── */
+.sk-page-header {
+  padding-block: clamp(24px, 3.5vw, 40px) clamp(18px, 2.5vw, 26px);
+}
+
+.sk-page-header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.sk-page-header-copy {
+  min-width: 0;
+  max-width: 680px;
+}
+
+.sk-page-header-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.sk-page-header-meta {
+  margin-top: 14px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.sk-page-lead {
+  margin: 12px 0 0;
+  font-size: 15.5px;
+  line-height: 1.62;
+  color: var(--sk-ink-secondary);
+  max-width: 60ch;
+}
+
+.sk-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sk-ink-muted);
+  margin-bottom: 12px;
+}
+
+.sk-backlink {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--sk-ink-muted);
+  text-decoration: none;
+  margin-bottom: 18px;
+}
+
+.sk-backlink:hover {
+  color: var(--sk-ink);
+}
+
+/* ── Section heading ──────────────────────────────────────────────────────── */
+.sk-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.sk-section-lead {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--sk-ink-secondary);
+  max-width: 62ch;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────── */
+.sk-card {
+  min-width: 0;
+}
+
+.sk-card-interactive {
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
+}
+
+.sk-card-interactive:hover {
+  border-color: var(--sk-line-strong);
+  box-shadow: var(--sk-shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+.sk-btn:hover {
+  filter: brightness(0.94);
+}
+
+.sk-btn-secondary:hover,
+.sk-btn-ghost:hover {
+  filter: none;
+  border-color: var(--sk-line-strong);
+  background: var(--sk-surface-muted);
+}
+
+.sk-btn-quiet:hover {
+  filter: none;
+  background: var(--sk-surface-muted);
+  color: var(--sk-ink);
+}
+
+.sk-btn:disabled:hover {
+  filter: none;
+}
+
+/* ── Definition list ──────────────────────────────────────────────────────── */
+.sk-deflist-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 10px;
+  border-bottom: 1px solid var(--sk-line);
+}
+
+.sk-deflist-row:last-child {
+  border-bottom: none;
+}
+
+/* ── Tabs ─────────────────────────────────────────────────────────────────── */
+.sk-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--sk-line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sk-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.sk-tab {
+  appearance: none;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 11px 12px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: -1px;
+  transition:
+    color 0.16s ease,
+    border-color 0.16s ease;
+}
+
+.sk-tab-count {
+  border-radius: 999px;
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Form controls ────────────────────────────────────────────────────────── */
+.sk-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-line-strong);
+  border-radius: var(--sk-r-control);
+  padding: 0 12px;
+  height: 38px;
+  color: var(--sk-ink-muted);
+  min-width: 0;
+  flex: 1 1 200px;
+  max-width: 340px;
+}
+
+.sk-search:focus-within {
+  border-color: var(--sk-ink);
+}
+
+.sk-search input {
+  appearance: none;
+  border: none;
+  background: none;
+  outline: none;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--sk-ink);
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+}
+
+.sk-search input::placeholder {
+  color: var(--sk-ink-muted);
+}
+
+.sk-select {
+  appearance: none;
+  background:
+    var(--sk-surface)
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23767e8e' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")
+    no-repeat right 11px center;
+  border: 1px solid var(--sk-line-strong);
+  border-radius: var(--sk-r-control);
+  padding: 0 32px 0 12px;
+  height: 38px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--sk-ink);
+  cursor: pointer;
+}
+
+.sk-select:focus-visible {
+  border-color: var(--sk-ink);
+}
+
+/* ── Filter bar ───────────────────────────────────────────────────────────── */
+.sk-filterbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.sk-filterbar-spacer {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* ── Grids ────────────────────────────────────────────────────────────────── */
+.sk-grid {
+  display: grid;
+  gap: clamp(14px, 1.6vw, 20px);
+}
+
+.sk-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sk-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sk-grid-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* ── Two-column product detail layout ─────────────────────────────────────── */
+.sk-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: clamp(24px, 3vw, 40px);
+  align-items: start;
+}
+
+.sk-detail-rail {
+  position: sticky;
+  top: 84px;
+  min-width: 0;
+}
+
+/* ── Sticky mobile action bar ─────────────────────────────────────────────── */
+.sk-sticky-bar {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 120;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--sk-line-strong);
+  padding: 10px var(--sk-gutter) max(10px, env(safe-area-inset-bottom));
+  gap: 12px;
+  align-items: center;
+}
+
+/* ── Accessibility ────────────────────────────────────────────────────────── */
+.sk-surface :focus-visible {
+  outline: 2px solid #2d5bd6;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Responsive — 1024 / 768 / 430 / 390 / 375
+   ─────────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 1080px) {
+  .sk-detail {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .sk-grid-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sk-grid-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sk-detail {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sk-detail-rail {
+    position: static;
+    order: -1;
+  }
+}
+
+@media (max-width: 767px) {
+  .sk-grid-2,
+  .sk-grid-3,
+  .sk-grid-4 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sk-page-header-row {
+    align-items: flex-start;
+  }
+
+  .sk-page-header-actions {
+    width: 100%;
+  }
+
+  .sk-page-header-actions > * {
+    flex: 1 1 auto;
+  }
+
+  .sk-sticky-bar {
+    display: flex;
+  }
+
+  .sk-has-sticky-bar {
+    padding-bottom: 78px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sk-card-interactive,
+  .sk-btn,
+  .sk-tab {
+    transition: none;
+  }
+
+  .sk-card-interactive:hover {
+    transform: none;
+  }
+}

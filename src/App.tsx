@@ -45,7 +45,7 @@ import LearnPage from './pages/LearnPage'
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<PublicCanvas themeId="general"><Nav /><main id="main-content"><HomePage /></main></PublicCanvas>} />
+      <Route path="/" element={<HomePage />} />
       <Route path="/education" element={<EducationPage />} />
       <Route path="/skills" element={<SkillsPage />} />
       <Route path="/career-os" element={<CareerOSPage />} />
