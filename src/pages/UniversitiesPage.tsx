@@ -108,7 +108,7 @@ export default function UniversitiesPage() {
               {['Curriculum mapping across schools and departments', 'Faculty dashboards and assessment workflows', 'Learner progress parents and admins can audit', 'Career OS for qualifying professional pathways'].map((line, i) => (
                 <div key={line} style={{ display: 'flex', gap: 12, padding: '14px 0', borderBottom: `1px solid ${T.lineDark}`, alignItems: 'flex-start' }}>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, paddingTop: 2 }}>{String(i + 1).padStart(2, '0')}</span>
-                  <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: 14, lineHeight: 1.55 }}>{line}</span>
+                  <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{line}</span>
                 </div>
               ))}
             </div>

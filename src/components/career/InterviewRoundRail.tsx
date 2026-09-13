@@ -22,14 +22,14 @@ export default function InterviewRoundRail({ rounds, selectedId, onSelect }: Pro
         padding: "18px 16px",
         borderRadius: T.rControl,
         border: `1px dashed ${T.lineDark}`,
-        background: "rgba(255,255,255,0.02)",
+        background: C.cream,
       }}>
-        <p style={{ margin: "0 0 12px", color: "rgba(255,255,255,0.5)", fontSize: 14, lineHeight: 1.6 }}>
+        <p style={{ margin: "0 0 12px", color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
           Your interview rounds will appear here.
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           <Link to="/career-os/applications" style={{ color: accent.text, fontSize: 13, textDecoration: "none" }}>View applications →</Link>
-          <Link to="/career-os/jobs" style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, textDecoration: "none" }}>Browse jobs →</Link>
+          <Link to="/career-os/jobs" style={{ color: C.slate, fontSize: 13, textDecoration: "none" }}>Browse jobs →</Link>
         </div>
       </div>
     )
@@ -80,7 +80,7 @@ function RoundGroup({
 }) {
   return (
     <div className="interview-round-group" style={{ minWidth: 0 }}>
-      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>
+      <div style={{ fontSize: 11, color: C.slate, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>
         {label}
       </div>
       {rounds.map(round => {
@@ -99,17 +99,17 @@ function RoundGroup({
               marginBottom: 6,
               borderRadius: T.rControl,
               border: `1px solid ${active ? accent.border : T.lineDark}`,
-              background: active ? accent.subtle : "rgba(255,255,255,0.02)",
+              background: active ? accent.subtle : C.cream,
               cursor: "pointer",
               fontFamily: "var(--font-body)",
             }}
           >
-            <div style={{ color: C.white, fontWeight: 600, fontSize: 14, wordBreak: "break-word" }}>{round.title}</div>
-            <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12.5, marginTop: 4 }}>
+            <div style={{ color: C.ink, fontWeight: 600, fontSize: 14, wordBreak: "break-word" }}>{round.title}</div>
+            <div style={{ color: C.slate, fontSize: 12.5, marginTop: 4 }}>
               {formatRoundType(round.type)} · {formatRoundStatus(round.status)}
             </div>
             {scheduled && (
-              <div style={{ color: "rgba(255,255,255,0.38)", fontSize: 12, marginTop: 4 }}>{scheduled}</div>
+              <div style={{ color: C.slate, fontSize: 12, marginTop: 4 }}>{scheduled}</div>
             )}
           </button>
         )

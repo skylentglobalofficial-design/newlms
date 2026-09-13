@@ -28,10 +28,10 @@ export default function InterviewWorkspace() {
   return (
     <div className="interview-workspace" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.white }}>
+        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
           Interview prep
         </h1>
-        <p style={{ margin: 0, color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.6 }}>
+        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
           See your interview rounds, practice questions, and track your preparation.
         </p>
       </div>
@@ -67,10 +67,10 @@ export default function InterviewWorkspace() {
               <GlassSurface level={2} padding="18px 20px">
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", alignItems: "flex-start" }}>
                   <div style={{ minWidth: 0 }}>
-                    <h2 style={{ margin: "0 0 6px", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: C.white, wordBreak: "break-word" }}>
+                    <h2 style={{ margin: "0 0 6px", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: C.ink, wordBreak: "break-word" }}>
                       {selectedRound.title}
                     </h2>
-                    <p style={{ margin: 0, color: "rgba(255,255,255,0.5)", fontSize: 13.5 }}>
+                    <p style={{ margin: 0, color: C.slate, fontSize: 13.5 }}>
                       {formatRoundType(selectedRound.type)} · {formatRoundStatus(selectedRound.status)}
                       {selectedRound.scheduledAt ? ` · ${formatInterviewDateTime(selectedRound.scheduledAt)}` : ""}
                     </p>
@@ -91,7 +91,7 @@ export default function InterviewWorkspace() {
                   </Link>
                 </div>
                 {selectedRound.notes && (
-                  <p style={{ margin: "14px 0 0", color: "rgba(255,255,255,0.55)", fontSize: 14, lineHeight: 1.6, wordBreak: "break-word" }}>
+                  <p style={{ margin: "14px 0 0", color: C.slate, fontSize: 14, lineHeight: 1.6, wordBreak: "break-word" }}>
                     {selectedRound.notes}
                   </p>
                 )}

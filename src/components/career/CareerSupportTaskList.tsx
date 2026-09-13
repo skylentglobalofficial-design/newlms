@@ -24,7 +24,7 @@ export default function CareerSupportTaskList({
 
   if (tasks.length === 0) {
     return (
-      <p style={{ margin: 0, color: "rgba(255,255,255,0.45)", fontSize: 14, lineHeight: 1.6 }}>
+      <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
         {emptyMessage}
       </p>
     )
@@ -60,7 +60,7 @@ function TaskGroup({
 }) {
   return (
     <div style={{ marginBottom: 16 }}>
-      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>
+      <div style={{ fontSize: 11, color: C.slate, marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>
         {label}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -90,16 +90,16 @@ function TaskCard({
       padding: "14px 16px",
       borderRadius: T.rControl,
       border: `1px solid ${open ? accent.border : T.lineDark}`,
-      background: open ? accent.subtle : "rgba(255,255,255,0.02)",
+      background: open ? accent.subtle : C.cream,
       minWidth: 0,
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 10, flexWrap: "wrap", marginBottom: 6 }}>
-        <div style={{ color: C.white, fontWeight: 600, fontSize: 14, wordBreak: "break-word", minWidth: 0 }}>{task.title}</div>
+        <div style={{ color: C.ink, fontWeight: 600, fontSize: 14, wordBreak: "break-word", minWidth: 0 }}>{task.title}</div>
         <span style={{
           padding: "3px 8px",
           borderRadius: 100,
           border: `1px solid ${T.lineDark}`,
-          color: open ? accent.text : "rgba(255,255,255,0.45)",
+          color: open ? accent.text : C.slate,
           fontSize: 11,
           flexShrink: 0,
         }}>
@@ -107,11 +107,11 @@ function TaskCard({
         </span>
       </div>
       {task.description && (
-        <p style={{ margin: "0 0 8px", color: "rgba(255,255,255,0.55)", fontSize: 13.5, lineHeight: 1.6, wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
+        <p style={{ margin: "0 0 8px", color: C.slate, fontSize: 13.5, lineHeight: 1.6, wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
           {task.description}
         </p>
       )}
-      <div style={{ color: "rgba(255,255,255,0.38)", fontSize: 12 }}>
+      <div style={{ color: C.slate, fontSize: 12 }}>
         {[due ? `Due ${due}` : null, completed ? `Completed ${completed}` : null].filter(Boolean).join(" · ")}
       </div>
       {!requestSubject && requestId && (

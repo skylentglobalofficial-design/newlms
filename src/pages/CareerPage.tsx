@@ -34,12 +34,12 @@ export default function CareerPage() {
               {['Learn', 'Projects', 'Portfolio', 'Resume', 'Mock Interview', 'Interview', 'Job'].map((s, i) => (
                 <div key={s} style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }}>
                   <div style={{ textAlign: 'center' }}>
-                    <div style={{ width: 44, height: 44, borderRadius: '50%', background: i === 6 ? C.orange : 'rgba(255,255,255,0.07)', border: `1px solid ${i === 6 ? C.orange : 'rgba(255,255,255,0.12)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, margin: '0 auto 8px' }}>
+                    <div style={{ width: 44, height: 44, borderRadius: '50%', background: i === 6 ? C.orange : C.cream, border: `1px solid ${i === 6 ? C.orange : C.cream}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, margin: '0 auto 8px' }}>
                       {['📚', '🛠️', '🗂️', '📄', '🎙️', '🏢', '✅'][i]}
                     </div>
-                    <div style={{ color: i === 6 ? C.orange : 'rgba(255,255,255,0.45)', fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>{s}</div>
+                    <div style={{ color: i === 6 ? C.orange : C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>{s}</div>
                   </div>
-                  {i < 6 && <div style={{ width: 40, height: 1, background: 'rgba(255,255,255,0.12)', margin: '0 4px', marginBottom: 22, flexShrink: 0 }} />}
+                  {i < 6 && <div style={{ width: 40, height: 1, background: C.cream, margin: '0 4px', marginBottom: 22, flexShrink: 0 }} />}
                 </div>
               ))}
             </div>

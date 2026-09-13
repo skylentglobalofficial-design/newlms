@@ -227,7 +227,7 @@ function LearningSection() {
                     </div>
                     <div style={{ textAlign: 'right' }}>
                       <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>DIFFICULTY</div>
-                      <div style={{ color: C.white, fontSize: 13 }}>{project.difficulty}</div>
+                      <div style={{ color: C.ink, fontSize: 13 }}>{project.difficulty}</div>
                     </div>
                   </div>
                 </GlassSurface>
@@ -335,7 +335,7 @@ function InstitutionWorkflowSection() {
                 <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: instAccent.textMuted }}>{String(i + 1).padStart(2, '0')}</span>
                   <span style={{ color: C.slate, fontSize: 13.5 }}>{item}</span>
-                  {i < workflow.length - 1 && <span style={{ color: 'rgba(255,255,255,0.15)', marginLeft: 4 }}>→</span>}
+                  {i < workflow.length - 1 && <span style={{ color: C.slate, marginLeft: 4 }}>→</span>}
                 </div>
               ))}
             </div>

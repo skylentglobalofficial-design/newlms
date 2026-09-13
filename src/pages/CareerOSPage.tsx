@@ -151,7 +151,7 @@ function ProfileResumeSection() {
                   alignItems: 'start',
                 }}
               >
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{slot}</span>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink }}>{slot}</span>
                 <span style={{ color: C.slate, fontSize: 13, lineHeight: 1.55 }}>Waiting for your program data</span>
               </div>
             ))}
@@ -177,7 +177,7 @@ function ProfileResumeSection() {
                   —
                 </div>
                 <div>
-                  <div style={{ color: C.white, fontSize: 16, fontWeight: 600 }}>Your name</div>
+                  <div style={{ color: C.ink, fontSize: 16, fontWeight: 600 }}>Your name</div>
                   <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>Program · Outcome</div>
                 </div>
               </div>
@@ -191,7 +191,7 @@ function ProfileResumeSection() {
                 }}
               >
                 <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: C.slate, marginBottom: 6 }}>{slot.toUpperCase()}</div>
-                <div style={{ height: 6, borderRadius: 3, background: 'rgba(255,255,255,0.06)', width: '100%' }} />
+                <div style={{ height: 6, borderRadius: 3, background: C.cream, width: '100%' }} />
                 <div style={{ color: C.slate, fontSize: 11, marginTop: 6 }}>Empty until program completion</div>
               </div>
             ))}
@@ -252,7 +252,7 @@ function InterviewPrepSection({
               borderRadius: 8,
               border: `1px solid ${interviewRound === r ? accent.border : T.lineDark}`,
               background: interviewRound === r ? accent.subtle : 'transparent',
-              color: interviewRound === r ? accent.text : 'rgba(255,255,255,0.45)',
+              color: interviewRound === r ? accent.text : C.slate,
               fontSize: 13,
               cursor: 'pointer',
               fontFamily: 'var(--font-body)',
@@ -284,7 +284,7 @@ function InterviewPrepSection({
                 }}
               >
                 <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text }}>{String(i + 1).padStart(2, '0')}</span>
-                <span style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.55 }}>{topic}</span>
+                <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{topic}</span>
               </div>
             ))}
           </div>
@@ -321,8 +321,8 @@ function InterviewPrepSection({
                     fontFamily: 'var(--font-body)',
                     marginBottom: 14,
                     boxSizing: 'border-box',
-                    background: 'rgba(255,255,255,0.03)',
-                    color: C.white,
+                    background: C.cream,
+                    color: C.ink,
                     resize: 'vertical',
                   }}
                 />
@@ -412,7 +412,7 @@ function JobBoardSection({
               }}
             >
               <div>
-                <div style={{ color: C.white, fontSize: 15, fontWeight: 600, marginBottom: 6 }}>{job.role}</div>
+                <div style={{ color: C.ink, fontSize: 15, fontWeight: 600, marginBottom: 6 }}>{job.role}</div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {job.skills.slice(0, 3).map(s => (
                     <span key={s} style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{s}</span>
@@ -473,7 +473,7 @@ function ApplicationTrackingSection() {
           </p>
 
           <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Application flow</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: 'rgba(255,255,255,0.65)', marginBottom: 28 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: C.slate, marginBottom: 28 }}>
             {APPLY_STEPS.map((s, i, arr) => (
               <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <span>{s}</span>
@@ -504,7 +504,7 @@ function ApplicationTrackingSection() {
                     padding: '12px 0', borderBottom: i < demo.applications.length - 1 ? `1px solid ${T.lineDark}` : 'none',
                   }}>
                     <div>
-                      <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{app.role}</div>
+                      <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{app.role}</div>
                       <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{app.company}</div>
                     </div>
                     <span style={{ color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{app.status}</span>
@@ -531,7 +531,7 @@ function ApplicationTrackingSection() {
                       width: 24,
                       height: 24,
                       borderRadius: '50%',
-                      background: 'rgba(255,255,255,0.04)',
+                      background: C.cream,
                       border: `1px solid ${T.lineDark}`,
                       display: 'flex',
                       alignItems: 'center',
@@ -544,7 +544,7 @@ function ApplicationTrackingSection() {
                   >
                     {i + 1}
                   </div>
-                  <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>{step}</span>
+                  <span style={{ color: C.slate, fontSize: 13 }}>{step}</span>
                 </div>
               ))}
             </div>
@@ -592,7 +592,7 @@ function CareerSupportSection() {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary, flexShrink: 0 }} />
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white }}>{item.label}</span>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.ink }}>{item.label}</span>
               </div>
               <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{item.desc}</span>
             </div>

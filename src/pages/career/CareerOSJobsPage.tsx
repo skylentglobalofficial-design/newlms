@@ -70,10 +70,10 @@ export default function CareerOSJobsPage() {
   return (
     <div className="career-jobs-page" style={{ maxWidth: 1200, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.white }}>
+        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
           Job board
         </h1>
-        <p style={{ margin: 0, color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.6 }}>
+        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
           Search open roles, save opportunities, and apply when you are ready.
         </p>
       </div>
@@ -91,7 +91,7 @@ export default function CareerOSJobsPage() {
                 borderRadius: T.rControl,
                 border: `1px solid ${active ? accent.border : T.lineDark}`,
                 background: active ? accent.subtle : "transparent",
-                color: active ? accent.text : "rgba(255,255,255,0.5)",
+                color: active ? accent.text : C.slate,
                 fontSize: 13,
                 fontWeight: active ? 600 : 400,
                 cursor: "pointer",
@@ -103,12 +103,12 @@ export default function CareerOSJobsPage() {
           )
         })}
         {board.view === "browse" && board.meta.total > 0 && (
-          <span style={{ alignSelf: "center", color: "rgba(255,255,255,0.38)", fontSize: 12.5, marginLeft: 4 }}>
+          <span style={{ alignSelf: "center", color: C.slate, fontSize: 12.5, marginLeft: 4 }}>
             {board.meta.total} open {board.meta.total === 1 ? "role" : "roles"}
           </span>
         )}
         {board.view === "saved" && !board.loading && (
-          <span style={{ alignSelf: "center", color: "rgba(255,255,255,0.38)", fontSize: 12.5, marginLeft: 4 }}>
+          <span style={{ alignSelf: "center", color: C.slate, fontSize: 12.5, marginLeft: 4 }}>
             {board.savedEntries.length} saved
           </span>
         )}
@@ -186,7 +186,7 @@ export default function CareerOSJobsPage() {
                     padding: "12px",
                     borderRadius: T.rControl,
                     border: `1px solid ${T.lineDark}`,
-                    background: "rgba(255,255,255,0.02)",
+                    background: C.cream,
                     color: accent.text,
                     fontSize: 13,
                     cursor: "pointer",
@@ -214,7 +214,7 @@ export default function CareerOSJobsPage() {
               padding: "24px 20px",
               borderRadius: T.rControl,
               border: `1px dashed ${T.lineDark}`,
-              color: "rgba(255,255,255,0.45)",
+              color: C.slate,
               fontSize: 14,
               textAlign: "center",
             }}>

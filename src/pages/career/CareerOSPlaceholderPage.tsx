@@ -33,10 +33,10 @@ export default function CareerOSPlaceholderPage({ area }: { area: keyof typeof C
         <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--font-mono)" }}>
           Coming next
         </div>
-        <h1 style={{ margin: "0 0 10px", fontFamily: "var(--font-display)", fontSize: "clamp(24px, 3vw, 30px)", fontWeight: 700, color: C.white }}>
+        <h1 style={{ margin: "0 0 10px", fontFamily: "var(--font-display)", fontSize: "clamp(24px, 3vw, 30px)", fontWeight: 700, color: C.ink }}>
           {content.title}
         </h1>
-        <p style={{ margin: "0 0 20px", color: "rgba(255,255,255,0.5)", fontSize: 14, lineHeight: 1.7 }}>
+        <p style={{ margin: "0 0 20px", color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
           {content.description}
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>

@@ -64,26 +64,26 @@ export default function WorkshopDetailPage() {
                   ].map(row => (
                     <div key={row.label} style={{ paddingBottom: 14, borderBottom: `1px solid ${T.lineDark}` }}>
                       <div className="skylent-label" style={{ color: C.slate, marginBottom: 6 }}>{row.label}</div>
-                      <div style={{ color: C.white, fontSize: row.emphasis ? 20 : 15, fontWeight: row.emphasis ? 600 : 500, fontFamily: row.emphasis ? 'var(--font-display)' : 'var(--font-body)' }}>{row.value}</div>
+                      <div style={{ color: C.ink, fontSize: row.emphasis ? 20 : 15, fontWeight: row.emphasis ? 600 : 500, fontFamily: row.emphasis ? 'var(--font-display)' : 'var(--font-body)' }}>{row.value}</div>
                     </div>
                   ))}
                 </div>
                 <div style={{ marginBottom: 18 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
                     <span style={{ color: C.slate, fontSize: 12 }}>{workshop.seatsLeft} seats left (illustrative)</span>
-                    <span style={{ color: pct > 70 ? '#f87171' : 'rgba(255,255,255,0.35)', fontSize: 12, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
+                    <span style={{ color: pct > 70 ? '#f87171' : C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
                   </div>
-                  <div style={{ height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2 }}>
+                  <div style={{ height: 4, background: C.cream, borderRadius: 2 }}>
                     <div style={{ width: `${pct}%`, height: '100%', background: pct > 70 ? '#f87171' : accent.primary, borderRadius: 2 }} />
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: C.white }}>₹{workshop.price.toLocaleString('en-IN')}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: C.ink }}>₹{workshop.price.toLocaleString('en-IN')}</span>
                   {workshop.originalPrice > workshop.price && (
                     <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: C.slate, textDecoration: 'line-through' }}>₹{workshop.originalPrice.toLocaleString('en-IN')}</span>
                   )}
                 </div>
-                <div style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, borderRadius: 10, padding: '14px 16px', marginBottom: 16 }}>
+                <div style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 10, padding: '14px 16px', marginBottom: 16 }}>
                   <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.65, margin: 0 }}>
                     Workshop registration is not live yet. This page is marketing information only until a workshop backend is added.
                   </p>
@@ -107,7 +107,7 @@ export default function WorkshopDetailPage() {
                 {workshop.whatYouGet.map((item, i) => (
                   <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 0', borderBottom: i < workshop.whatYouGet.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: accent.primary, marginTop: 7, flexShrink: 0 }} />
-                    <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: 14, lineHeight: 1.55 }}>{item}</span>
+                    <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{item}</span>
                   </div>
                 ))}
               </GlassSurface>

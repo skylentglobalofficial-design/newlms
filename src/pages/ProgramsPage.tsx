@@ -77,7 +77,7 @@ function CatalogHeroVisual({ preview }: { preview: Program[] }) {
       <GlassSurface level={2} padding="0" style={{ overflow: 'hidden' }}>
         <div style={{ padding: '14px 18px', borderBottom: `1px solid ${T.lineDark}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className="skylent-label" style={{ color: accent.text }}>Program catalog</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '6px 10px', minWidth: 140 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '6px 10px', minWidth: 140 }}>
             <span style={{ color: C.slate, fontSize: 12 }}>Search</span>
             <span style={{ color: C.slate, fontSize: 12 }}>programs…</span>
           </div>
@@ -99,7 +99,7 @@ function CatalogHeroVisual({ preview }: { preview: Program[] }) {
                   <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: typeAccent.text, marginBottom: 4 }}>
                     {TYPE_LABELS[program.programType]}
                   </div>
-                  <div style={{ color: isActive ? C.white : 'rgba(255,255,255,0.55)', fontSize: 13, fontWeight: isActive ? 600 : 400 }}>
+                  <div style={{ color: isActive ? C.ink : C.slate, fontSize: 13, fontWeight: isActive ? 600 : 400 }}>
                     {program.name}
                   </div>
                 </div>
@@ -122,7 +122,7 @@ function CatalogHeroVisual({ preview }: { preview: Program[] }) {
                 ].map(({ k, v }) => (
                   <div key={k}>
                     <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: C.slate, marginBottom: 3 }}>{k}</div>
-                    <div style={{ color: C.white, fontSize: 12 }}>{v}</div>
+                    <div style={{ color: C.ink, fontSize: 12 }}>{v}</div>
                   </div>
                 ))}
               </div>
@@ -305,8 +305,8 @@ function FilterControls({
     borderRadius: 8,
     padding: '10px 12px',
     fontFamily: 'var(--font-body)',
-    background: 'rgba(255,255,255,0.04)',
-    color: C.white,
+    background: C.cream,
+    color: C.ink,
     fontSize: 13,
     width: '100%',
   }
@@ -356,7 +356,7 @@ function FilterControls({
                 borderRadius: 8,
                 border: `1px solid ${pillar === f ? accent.border : T.lineDark}`,
                 background: pillar === f ? accent.subtle : 'transparent',
-                color: pillar === f ? accent.text : 'rgba(255,255,255,0.55)',
+                color: pillar === f ? accent.text : C.slate,
                 fontSize: 12.5,
                 cursor: 'pointer',
                 fontFamily: 'var(--font-body)',
@@ -378,8 +378,8 @@ function FilterControls({
             marginBottom: filtersOpen ? 16 : 0,
             borderRadius: 8,
             border: `1px solid ${T.lineDark}`,
-            background: 'rgba(255,255,255,0.04)',
-            color: C.white,
+            background: C.cream,
+            color: C.ink,
             fontSize: 13,
             cursor: 'pointer',
             fontFamily: 'var(--font-body)',
@@ -466,7 +466,7 @@ function FeaturedProgramSection({ program, catalog }: { program: Program; catalo
               ].map(({ k, v }) => (
                 <div key={k}>
                   <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{k}</div>
-                  <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                  <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{v}</div>
                 </div>
               ))}
             </div>
@@ -514,7 +514,7 @@ function ProgramResultRow({ program, prominent, catalog }: { program: Program; p
                 <span style={{ color: status.color, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{status.text}</span>
               </div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: C.ink, marginBottom: 10 }}>{program.name}</div>
-              <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.65, margin: '0 0 16px' }}>{program.desc}</p>
+              <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: '0 0 16px' }}>{program.desc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 12, color: C.slate }}>
                 <span>{program.duration}</span>
                 <span>{program.format}</span>
@@ -528,7 +528,7 @@ function ProgramResultRow({ program, prominent, catalog }: { program: Program; p
             </div>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 26px', borderTop: `1px solid ${T.lineDark}` }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 15, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 15, color: C.ink }}>₹{price.toLocaleString('en-IN')}</div>
             <span style={{ color: typeAccent.text, fontSize: 13, fontWeight: 600 }}>View Program →</span>
           </div>
         </GlassSurface>
@@ -555,7 +555,7 @@ function ProgramResultRow({ program, prominent, catalog }: { program: Program; p
             </div>
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: C.ink }}>₹{price.toLocaleString('en-IN')}</div>
             <div style={{ color: typeAccent.textMuted, fontSize: 12, marginTop: 4 }}>→</div>
           </div>
         </>

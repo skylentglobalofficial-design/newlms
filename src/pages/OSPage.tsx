@@ -7,10 +7,10 @@ import { demoUsers, courses } from '../data'
 const accent = getDomainAccent('general')
 
 const glass = {
-  panel: { background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' },
-  card: { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.08)' },
-  stat: { background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)' },
-  inset: { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' },
+  panel: { background: C.cream, border: `1px solid ${T.lineLight}` },
+  card: { background: C.cream, border: `1px solid ${T.lineLight}` },
+  stat: { background: C.cream, border: `1px solid ${T.lineLight}` },
+  inset: { background: C.cream, border: `1px solid ${T.lineLight}` },
 }
 
 function DemoDataBanner({ label = 'Illustrative demo data' }: { label?: string }) {
@@ -211,7 +211,7 @@ function StudentDash({ user, onOpenLMS }: { user: typeof demoUsers[0]; onOpenLMS
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
         <div>
           <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>GOOD MORNING</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: C.white }}>{user.name}</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: C.ink }}>{user.name}</div>
         </div>
         <div style={{ width: 42, height: 42, borderRadius: '50%', background: `linear-gradient(135deg, ${accent.primary}, ${accent.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.white, fontSize: 14, fontWeight: 700 }}>{user.avatar}</div>
       </div>
@@ -220,7 +220,7 @@ function StudentDash({ user, onOpenLMS }: { user: typeof demoUsers[0]; onOpenLMS
       <div style={{ background: `linear-gradient(135deg, ${accent.primary}18, ${accent.primary}08)`, border: `1px solid ${accent.primary}30`, borderRadius: 12, padding: '16px 20px', marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
           <div style={{ color: accent.text, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>NEXT ACTION</div>
-          <div style={{ color: C.white, fontSize: 15, fontWeight: 600 }}>Complete the Foundations Quiz to unlock Module 2</div>
+          <div style={{ color: C.ink, fontSize: 15, fontWeight: 600 }}>Complete the Foundations Quiz to unlock Module 2</div>
         </div>
         <button onClick={onOpenLMS} style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 7, padding: '9px 18px', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', whiteSpace: 'nowrap' }}>Take Quiz →</button>
       </div>
@@ -229,16 +229,16 @@ function StudentDash({ user, onOpenLMS }: { user: typeof demoUsers[0]; onOpenLMS
         {[['Program', user.program ?? 'N/A'], ['Progress', `${user.progress ?? 0}%`], ['Streak', '14 days']].map(([l, v]) => (
           <div key={l} style={{ ...glass.stat, borderRadius: 10, padding: '14px 16px' }}>
             <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{(l as string).toUpperCase()}</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: C.white, fontWeight: 600 }}>{v}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: C.ink, fontWeight: 600 }}>{v}</div>
           </div>
         ))}
       </div>
 
-      <div style={{ background: `linear-gradient(135deg, ${C.ink}, #1a1e22)`, borderRadius: 14, padding: 22, marginBottom: 16 }}>
+      <div style={{ background: C.cream, borderRadius: 14, padding: 22, marginBottom: 16 }}>
         <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 8 }}>CONTINUE LEARNING</div>
-        <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 10 }}>Data Analytics — Module 2: Excel</div>
+        <div style={{ color: C.ink, fontSize: 16, fontWeight: 600, marginBottom: 10 }}>Data Analytics — Module 2: Excel</div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-          <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 2 }}><div style={{ width: `${user.progress ?? 0}%`, height: '100%', background: accent.primary, borderRadius: 2 }} /></div>
+          <div style={{ flex: 1, height: 4, background: T.lineLight, borderRadius: 2 }}><div style={{ width: `${user.progress ?? 0}%`, height: '100%', background: accent.primary, borderRadius: 2 }} /></div>
           <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{user.progress ?? 0}%</span>
         </div>
         <button onClick={onOpenLMS} style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 7, padding: '10px 20px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Open Course →</button>
@@ -246,9 +246,9 @@ function StudentDash({ user, onOpenLMS }: { user: typeof demoUsers[0]; onOpenLMS
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }} className="two-col">
         {[['Next Live Class', 'Tomorrow · 10:00 AM', false], ['Pending Assignments', '2 due this week', true], ['Career Readiness', '72% — needs attention', true], ['Certificates Earned', '1 of 5', false]].map(([l, v, warn]) => (
-          <div key={l as string} style={{ ...glass.card, border: `1px solid ${warn ? `${accent.primary}33` : 'rgba(255,255,255,0.08)'}`, borderRadius: 10, padding: '14px 16px' }}>
+          <div key={l as string} style={{ ...glass.card, border: `1px solid ${warn ? `${accent.primary}33` : T.lineLight}`, borderRadius: 10, padding: '14px 16px' }}>
             <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>{l as string}</div>
-            <div style={{ color: warn ? accent.text : C.white, fontSize: 14, fontWeight: 600 }}>{v as string}</div>
+            <div style={{ color: warn ? accent.text : C.ink, fontSize: 14, fontWeight: 600 }}>{v as string}</div>
           </div>
         ))}
       </div>
@@ -262,7 +262,7 @@ function FacultyDash({ user }: { user: typeof demoUsers[0] }) {
       <DemoDataBanner />
       <div style={{ marginBottom: 22 }}>
         <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>FACULTY DASHBOARD</div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: C.white }}>{user.name}</div>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: C.ink }}>{user.name}</div>
         <div style={{ color: C.slate, fontSize: 13, marginTop: 2 }}>{user.course ?? 'N/A'}</div>
       </div>
 
@@ -272,10 +272,10 @@ function FacultyDash({ user }: { user: typeof demoUsers[0] }) {
           { label: '12 assignments pending review', action: 'Review submissions', urgent: true },
           { label: 'Live class in 2 hours', action: 'Prepare session', urgent: false },
         ].map(a => (
-          <div key={a.label} style={{ background: a.urgent ? `${accent.primary}10` : 'rgba(255,255,255,0.04)', border: `1px solid ${a.urgent ? `${accent.primary}30` : T.lineDark}`, borderRadius: 10, padding: '14px 18px' }}>
-            <div style={{ color: a.urgent ? accent.text : 'rgba(255,255,255,0.35)', fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 5 }}>{a.urgent ? 'NEEDS ATTENTION' : 'UPCOMING'}</div>
-            <div style={{ color: C.white, fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{a.label}</div>
-            <button style={{ color: a.urgent ? accent.text : 'rgba(255,255,255,0.45)', background: 'none', border: 'none', fontSize: 12, cursor: 'pointer', fontWeight: 600, padding: 0, fontFamily: 'var(--font-body)' }}>{a.action} →</button>
+          <div key={a.label} style={{ background: a.urgent ? `${accent.primary}10` : C.cream, border: `1px solid ${a.urgent ? `${accent.primary}30` : T.lineDark}`, borderRadius: 10, padding: '14px 18px' }}>
+            <div style={{ color: a.urgent ? accent.text : C.muted, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 5 }}>{a.urgent ? 'NEEDS ATTENTION' : 'UPCOMING'}</div>
+            <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, marginBottom: 6 }}>{a.label}</div>
+            <button style={{ color: a.urgent ? accent.text : C.slate, background: 'none', border: 'none', fontSize: 12, cursor: 'pointer', fontWeight: 600, padding: 0, fontFamily: 'var(--font-body)' }}>{a.action} →</button>
           </div>
         ))}
       </div>
@@ -284,7 +284,7 @@ function FacultyDash({ user }: { user: typeof demoUsers[0] }) {
         {[['Students', user.students ?? 0], ['Live Sessions', '3'], ['Pending Reviews', '12'], ['Avg Score', '78%']].map(([l, v]) => (
           <div key={l} style={{ ...glass.stat, borderRadius: 10, padding: '14px 16px' }}>
             <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{(l as string).toUpperCase()}</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: C.white, fontWeight: 600 }}>{v}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: C.ink, fontWeight: 600 }}>{v}</div>
           </div>
         ))}
       </div>
@@ -293,10 +293,10 @@ function FacultyDash({ user }: { user: typeof demoUsers[0] }) {
         <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 14 }}>STUDENT PROGRESS — AT-RISK FLAGGED</div>
         {[['Priya M.', 82, false], ['Rahul K.', 65, false], ['Sneha R.', 91, false], ['Amit D.', 48, true]].map(([s, pct, risk]) => (
           <div key={s as string} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderBottom: `1px solid ${T.lineDark}` }}>
-            <div style={{ width: 28, height: 28, borderRadius: '50%', background: risk ? 'rgba(220,38,38,0.15)' : 'rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: risk ? '#f87171' : 'rgba(255,255,255,0.45)', flexShrink: 0 }}>{(s as string)[0]}</div>
-            <div style={{ color: C.white, fontSize: 13, width: 80, flexShrink: 0 }}>{s as string}</div>
-            <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2 }}><div style={{ width: `${pct as number}%`, height: '100%', background: (pct as number) < 60 ? '#dc2626' : (pct as number) > 80 ? '#16a34a' : accent.primary, borderRadius: 2 }} /></div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: risk ? '#f87171' : C.white, width: 34, textAlign: 'right' }}>{pct as number}%</div>
+            <div style={{ width: 28, height: 28, borderRadius: '50%', background: risk ? 'rgba(220,38,38,0.15)' : C.cream, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: risk ? C.indigo : C.slate, flexShrink: 0 }}>{(s as string)[0]}</div>
+            <div style={{ color: C.ink, fontSize: 13, width: 80, flexShrink: 0 }}>{s as string}</div>
+            <div style={{ flex: 1, height: 4, background: C.cream, borderRadius: 2 }}><div style={{ width: `${pct as number}%`, height: '100%', background: (pct as number) < 60 ? '#dc2626' : (pct as number) > 80 ? '#16a34a' : accent.primary, borderRadius: 2 }} /></div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: risk ? '#dc2626' : C.ink, width: 34, textAlign: 'right' }}>{pct as number}%</div>
             {risk && <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: '#dc2626', background: 'rgba(220,38,38,0.08)', borderRadius: 4, padding: '2px 7px' }}>AT RISK</span>}
           </div>
         ))}
@@ -311,7 +311,7 @@ function OrgDash({ user }: { user: typeof demoUsers[0] }) {
       <DemoDataBanner />
       <div style={{ marginBottom: 22 }}>
         <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>ORGANISATION DASHBOARD</div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: C.white }}>{user.name}</div>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: C.ink }}>{user.name}</div>
       </div>
 
       {/* Actionable alerts */}
@@ -320,7 +320,7 @@ function OrgDash({ user }: { user: typeof demoUsers[0] }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {['42 learners inactive for 7+ days', '18 assignments overdue across Cohort 2024-B', '3 cohorts below 60% completion target'].map(alert => (
             <div key={alert} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: 13 }}>{alert}</span>
+              <span style={{ color: C.slate, fontSize: 13 }}>{alert}</span>
               <button style={{ color: '#f87171', background: 'none', border: 'none', fontSize: 12, cursor: 'pointer', fontWeight: 600, padding: 0, fontFamily: 'var(--font-body)', whiteSpace: 'nowrap', marginLeft: 12 }}>View →</button>
             </div>
           ))}
@@ -331,7 +331,7 @@ function OrgDash({ user }: { user: typeof demoUsers[0] }) {
         {[['Total Students', user.students ?? 0], ['Programs', user.programs ?? 0], ['Avg Completion', '78%'], ['Certificates', '942']].map(([l, v]) => (
           <div key={l} style={{ ...glass.stat, borderRadius: 10, padding: '14px 16px' }}>
             <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{(l as string).toUpperCase()}</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: C.white, fontWeight: 600 }}>{v}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: C.ink, fontWeight: 600 }}>{v}</div>
           </div>
         ))}
       </div>
@@ -340,9 +340,9 @@ function OrgDash({ user }: { user: typeof demoUsers[0] }) {
         <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 14 }}>COHORT COMPLETION</div>
         {[['Cohort 2024-A', 91, false], ['Cohort 2024-B', 58, true], ['Cohort 2025-A', 74, false]].map(([c, pct, warn]) => (
           <div key={c as string} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '11px 0', borderBottom: `1px solid ${T.lineDark}` }}>
-            <div style={{ color: warn ? '#f87171' : C.white, fontSize: 13, width: 120, flexShrink: 0, fontWeight: warn ? 600 : 400 }}>{c as string}</div>
-            <div style={{ flex: 1, height: 5, background: 'rgba(255,255,255,0.08)', borderRadius: 3 }}><div style={{ width: `${pct as number}%`, height: '100%', background: (pct as number) < 65 ? '#dc2626' : accent.primary, borderRadius: 3 }} /></div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: warn ? '#f87171' : C.white, width: 36, textAlign: 'right' }}>{pct as number}%</div>
+            <div style={{ color: warn ? '#dc2626' : C.ink, fontSize: 13, width: 120, flexShrink: 0, fontWeight: warn ? 600 : 400 }}>{c as string}</div>
+            <div style={{ flex: 1, height: 5, background: C.cream, borderRadius: 3 }}><div style={{ width: `${pct as number}%`, height: '100%', background: (pct as number) < 65 ? '#dc2626' : accent.primary, borderRadius: 3 }} /></div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: warn ? '#dc2626' : C.ink, width: 36, textAlign: 'right' }}>{pct as number}%</div>
             {warn && <span style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: '#dc2626', background: 'rgba(220,38,38,0.08)', borderRadius: 4, padding: '2px 7px', whiteSpace: 'nowrap' }}>BELOW TARGET</span>}
           </div>
         ))}
@@ -357,14 +357,14 @@ function AdminDash({ user }: { user: typeof demoUsers[0] }) {
       <DemoDataBanner label="Illustrative demo data — super admin view" />
       <div style={{ marginBottom: 26 }}>
         <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>SUPER ADMIN — DEMO ENVIRONMENT</div>
-        <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: C.white }}>{user.name}</div>
+        <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: C.ink }}>{user.name}</div>
         <div style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.22)', borderRadius: 5, padding: '4px 10px', display: 'inline-block', marginTop: 6, color: '#f87171', fontSize: 10, fontFamily: 'var(--font-mono)' }}>DEMO DATA — NOT PRODUCTION</div>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginBottom: 24 }} className="three-col">
         {[['Total Users', user.totalUsers ?? 0], ['Organisations', user.totalOrgs ?? 0], ['Active Courses', '64'], ['Enrollments', '8,420'], ['Revenue', '₹1.2 Cr'], ['Certificates', '5,840']].map(([l, v]) => (
           <div key={l as string} style={{ ...glass.stat, borderRadius: 10, padding: '16px 18px' }}>
             <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 5 }}>{(l as string).toUpperCase()}</div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: C.white, fontWeight: 600 }}>{typeof v === 'number' ? v.toLocaleString('en-IN') : v}</div>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: C.ink, fontWeight: 600 }}>{typeof v === 'number' ? v.toLocaleString('en-IN') : v}</div>
           </div>
         ))}
       </div>
@@ -375,7 +375,7 @@ function AdminDash({ user }: { user: typeof demoUsers[0] }) {
           <tbody>
             {[['Priya S.', 'Data Science & AI', 'Apex College', '₹24,999', 'Active'], ['Rahul K.', 'Full Stack Dev', 'ITM Hyd', '₹29,999', 'Active'], ['Sneha N.', 'Data Analytics', 'Self-enroll', '₹4,999', 'Active']].map((r, i) => (
               <tr key={i} style={{ borderTop: `1px solid ${T.lineDark}` }}>
-                {r.map((cell, j) => <td key={j} style={{ padding: '11px 12px 11px 0', color: j === 4 ? '#4ade80' : 'rgba(255,255,255,0.72)', fontSize: 13 }}>{cell}</td>)}
+                {r.map((cell, j) => <td key={j} style={{ padding: '11px 12px 11px 0', color: j === 4 ? C.indigo : C.slate, fontSize: 13 }}>{cell}</td>)}
               </tr>
             ))}
           </tbody>
@@ -411,7 +411,7 @@ export default function OSPage() {
               <div className="scroll-control-strip" style={{ flex: 1, minWidth: 0 }}>
                 <div className="scroll-control-strip-scroll" style={{ display: 'flex', gap: 6 }}>
                 {(['student', 'faculty', 'organisation', 'superadmin'] as Role[]).map(r => (
-                  <button key={r} onClick={() => setActiveRole(r)} style={{ padding: '7px 14px', borderRadius: 7, border: `1px solid ${activeRole === r ? accent.primary : T.lineDark}`, background: activeRole === r ? accent.subtle : 'transparent', color: activeRole === r ? accent.text : 'rgba(255,255,255,0.45)', fontSize: 11, cursor: 'pointer', fontFamily: 'var(--font-mono)', textTransform: 'capitalize', transition: 'all 0.2s', flexShrink: 0, whiteSpace: 'nowrap' }}>{r === 'superadmin' ? 'Super Admin' : r.charAt(0).toUpperCase() + r.slice(1)}</button>
+                  <button key={r} onClick={() => setActiveRole(r)} style={{ padding: '7px 14px', borderRadius: 7, border: `1px solid ${activeRole === r ? accent.primary : T.lineDark}`, background: activeRole === r ? accent.subtle : 'transparent', color: activeRole === r ? accent.text : C.slate, fontSize: 11, cursor: 'pointer', fontFamily: 'var(--font-mono)', textTransform: 'capitalize', transition: 'all 0.2s', flexShrink: 0, whiteSpace: 'nowrap' }}>{r === 'superadmin' ? 'Super Admin' : r.charAt(0).toUpperCase() + r.slice(1)}</button>
                 ))}
                 </div>
               </div>

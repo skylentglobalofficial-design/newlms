@@ -62,10 +62,10 @@ export default function CareerProfileWorkspace() {
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0 }}>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.white }}>
+        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
           Career profile
         </h1>
-        <p style={{ margin: 0, color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.6 }}>
+        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
           Build the profile employers see when you apply through Career OS.
         </p>
       </div>

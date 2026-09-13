@@ -174,11 +174,11 @@ function WebinarsSection() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
               <div>
                 <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>Date</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.date}</div>
+                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.date}</div>
               </div>
               <div>
                 <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>Speaker</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.instructor}</div>
+                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.instructor}</div>
               </div>
             </div>
           </div>
@@ -234,7 +234,7 @@ function CertificateSection() {
           </p>
 
           <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Credential path</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: 'rgba(255,255,255,0.65)', marginBottom: 28 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: C.slate, marginBottom: 28 }}>
             {['Module', 'Skill', 'Project', 'Credential'].map((s, i, arr) => (
               <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <span>{s}</span>
@@ -330,7 +330,7 @@ function ProfessionalSection() {
 
       <div style={{ marginTop: 32, marginBottom: 40 }}>
         <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Program flow</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: 'rgba(255,255,255,0.65)' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: C.slate }}>
           {['Learning', 'Project', 'Assessment', 'Career Support'].map((s, i, arr) => (
             <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
               <span style={{ color: i === arr.length - 1 ? accent.text : C.white }}>{s}</span>
@@ -347,10 +347,10 @@ function ProfessionalSection() {
               <>
                 <div className="skylent-label" style={{ color: accent.text, marginBottom: 12 }}>Featured project</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
-                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: 12, minHeight: 64 }}>
+                  <div style={{ background: C.cream, borderRadius: 8, padding: 12, minHeight: 64 }}>
                     <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: C.slate, marginBottom: 8 }}>DATASET</div>
-                    <div style={{ height: 4, width: '80%', background: 'rgba(255,255,255,0.1)', borderRadius: 2, marginBottom: 4 }} />
-                    <div style={{ height: 4, width: '60%', background: 'rgba(255,255,255,0.08)', borderRadius: 2 }} />
+                    <div style={{ height: 4, width: '80%', background: C.cream, borderRadius: 2, marginBottom: 4 }} />
+                    <div style={{ height: 4, width: '60%', background: C.cream, borderRadius: 2 }} />
                   </div>
                   <div style={{ background: accent.subtle, borderRadius: 8, padding: 12, minHeight: 64, border: `1px solid ${accent.border}` }}>
                     <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: accent.textMuted, marginBottom: 8 }}>RESULT</div>
@@ -381,7 +381,7 @@ function ProfessionalSection() {
             ].map(({ k, v }) => (
               <div key={k}>
                 <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{k}</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{v}</div>
               </div>
             ))}
           </div>
@@ -467,7 +467,7 @@ function JobAssistanceSection() {
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <div style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary, flexShrink: 0 }} />
-                  <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{step.label}</span>
+                  <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink }}>{step.label}</span>
                 </div>
                 <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{step.desc}</span>
               </div>
@@ -559,7 +559,7 @@ function ProgramDiscoverySection() {
                 ].map(({ k, v }) => (
                   <div key={k}>
                     <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{k}</div>
-                    <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                    <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{v}</div>
                   </div>
                 ))}
               </div>
@@ -599,7 +599,7 @@ function ProgramDiscoverySection() {
                     <div style={{ color: C.slate, fontSize: 12 }}>{program.duration} · {program.outcome}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.ink }}>₹{price.toLocaleString('en-IN')}</div>
                     <div style={{ color: accent.textMuted, fontSize: 11, marginTop: 2 }}>→</div>
                   </div>
                 </Link>

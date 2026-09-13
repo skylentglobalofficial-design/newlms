@@ -52,7 +52,7 @@ export default function BlogPage() {
                   borderRadius: 100,
                   border: `1px solid ${category === c ? accent.border : T.lineDark}`,
                   background: category === c ? accent.subtle : 'transparent',
-                  color: category === c ? accent.text : 'rgba(255,255,255,0.5)',
+                  color: category === c ? accent.text : C.slate,
                   fontSize: 13,
                   cursor: 'pointer',
                   fontFamily: 'var(--font-body)',
@@ -73,7 +73,7 @@ export default function BlogPage() {
                       <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{featured.readTime} read</span>
                     </div>
                     <h2 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 14px' }}>{featured.title}</h2>
-                    <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 15, lineHeight: 1.75, margin: '0 0 18px' }}>{featured.excerpt}</p>
+                    <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 18px' }}>{featured.excerpt}</p>
                     <span style={{ color: accent.text, fontSize: 14, fontWeight: 600 }}>Read article →</span>
                   </div>
                   <MediaImage src={PHOTO.study} alt="" aspect="4/3" radius={12} />
@@ -88,7 +88,7 @@ export default function BlogPage() {
                 <Link to={`/blog/${post.slug}`} style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
                   <GlassSurface level={2} padding="22px 24px" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14, gap: 8, flexWrap: 'wrap' }}>
-                      <span style={{ background: 'rgba(255,255,255,0.06)', borderRadius: 5, padding: '3px 10px', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{post.category}</span>
+                      <span style={{ background: C.cream, borderRadius: 5, padding: '3px 10px', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{post.category}</span>
                       <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.readTime}</span>
                     </div>
                     <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, letterSpacing: '-0.02em', lineHeight: 1.25, margin: '0 0 10px', flex: 1 }}>{post.title}</h3>

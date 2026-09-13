@@ -88,7 +88,7 @@ function CheckItem({ label, accent }: { label: string; accent: string }) {
         <rect width="16" height="16" rx="4" fill={`${color}22`} stroke={`${color}55`} strokeWidth="0.8" />
         <path d="M4.5 8.5L7 11L11.5 5.5" stroke={color} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
-      <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: 14, lineHeight: 1.55 }}>{label}</span>
+      <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{label}</span>
     </div>
   )
 }
@@ -125,7 +125,7 @@ function StickyProgramNav({
               style={{
                 background: 'none', border: 'none',
                 borderBottom: `2px solid ${activeId === s.id ? accent.primary : 'transparent'}`,
-                padding: '14px 14px', color: activeId === s.id ? accent.text : 'rgba(255,255,255,0.42)',
+                padding: '14px 14px', color: activeId === s.id ? accent.text : C.slate,
                 fontSize: 12.5, fontFamily: 'var(--font-body)', fontWeight: activeId === s.id ? 600 : 400,
                 cursor: 'pointer', transition: 'color 0.2s, border-color 0.2s', whiteSpace: 'nowrap', flexShrink: 0,
               }}
@@ -197,7 +197,7 @@ function EnrollmentPanel({
         ].map(({ text, highlight }, i) => (
           <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 12 }}>
             <div style={{ width: 4, height: 4, borderRadius: '50%', background: highlight ? accent.primary : 'rgba(255,255,255,0.25)', flexShrink: 0, marginTop: 6 }} />
-            <span style={{ color: highlight ? accent.text : 'rgba(255,255,255,0.72)', fontSize: 13, lineHeight: 1.45 }}>{text}</span>
+            <span style={{ color: highlight ? accent.text : C.slate, fontSize: 13, lineHeight: 1.45 }}>{text}</span>
           </div>
         ))}
       </div>
@@ -400,7 +400,7 @@ export default function ProgramPage() {
             ].filter(f => f.value).map(({ label, value }) => (
               <div key={label}>
                 <div className="skylent-label" style={{ color: C.slate, marginBottom: 5 }}>{label}</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{value}</div>
+                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{value}</div>
               </div>
             ))}
           </div>
@@ -433,7 +433,7 @@ export default function ProgramPage() {
               ].map(([k, v], i, arr) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '12px 0', borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
                   <span style={{ color: C.slate, fontSize: 13 }}>{k}</span>
-                  <span style={{ color: C.white, fontSize: 13, fontWeight: 600, textAlign: 'right' }}>{v}</span>
+                  <span style={{ color: C.ink, fontSize: 13, fontWeight: 600, textAlign: 'right' }}>{v}</span>
                 </div>
               ))}
             </div>
@@ -468,7 +468,7 @@ export default function ProgramPage() {
                 {program.whoIsItFor.map((who, i) => (
                   <div key={i} style={{ display: 'flex', gap: 16, alignItems: 'flex-start', padding: '16px 0', borderBottom: i < program.whoIsItFor!.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: domainAccent.primary, flexShrink: 0, marginTop: 7 }} />
-                    <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: 15, lineHeight: 1.65 }}>{who}</span>
+                    <span style={{ color: C.slate, fontSize: 15, lineHeight: 1.65 }}>{who}</span>
                   </div>
                 ))}
               </div>
@@ -515,9 +515,9 @@ export default function ProgramPage() {
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                       <div style={{
                         width: 36, height: 36, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        background: isOpen ? domainAccent.subtleStrong : 'rgba(255,255,255,0.04)',
+                        background: isOpen ? domainAccent.subtleStrong : C.cream,
                         border: `1px solid ${isOpen ? domainAccent.border : T.lineDark}`,
-                        fontFamily: 'var(--font-mono)', fontSize: 11, color: isOpen ? domainAccent.text : 'rgba(255,255,255,0.4)',
+                        fontFamily: 'var(--font-mono)', fontSize: 11, color: isOpen ? domainAccent.text : C.slate,
                       }}>
                         {mod.number}
                       </div>
@@ -616,10 +616,10 @@ export default function ProgramPage() {
                   }}
                 >
                   <div>
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: featuredProject === i ? domainAccent.text : 'rgba(255,255,255,0.3)' }}>
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: featuredProject === i ? domainAccent.text : C.slate }}>
                       {String(i + 1).padStart(2, '0')}
                     </span>
-                    <span style={{ color: featuredProject === i ? C.white : 'rgba(255,255,255,0.55)', fontSize: 15, fontWeight: featuredProject === i ? 600 : 400, marginLeft: 14 }}>
+                    <span style={{ color: featuredProject === i ? C.ink : C.slate, fontSize: 15, fontWeight: featuredProject === i ? 600 : 400, marginLeft: 14 }}>
                       {proj.title}
                     </span>
                   </div>
@@ -641,7 +641,7 @@ export default function ProgramPage() {
               <div
                 key={tool}
                 style={{
-                  padding: '14px 22px', fontSize: 14, color: 'rgba(255,255,255,0.65)',
+                  padding: '14px 22px', fontSize: 14, color: C.slate,
                   borderRight: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}`,
                   fontFamily: i === 0 ? 'var(--font-display)' : 'var(--font-body)',
                   fontWeight: i === 0 ? 600 : 400,
@@ -812,8 +812,8 @@ export default function ProgramPage() {
               <div style={{ padding: '20px 0', color: C.slate, fontSize: 13 }}>Price</div>
               {pricingTiers.map(tier => (
                 <div key={tier.name} style={{ padding: '20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? `${domainAccent.subtle}` : 'transparent' }}>
-                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 24, fontWeight: 700, color: C.white }}>₹{tier.price.toLocaleString('en-IN')}</div>
-                  <div style={{ color: 'rgba(255,255,255,0.22)', fontSize: 12, textDecoration: 'line-through', marginTop: 4 }}>₹{tier.originalPrice.toLocaleString('en-IN')}</div>
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 24, fontWeight: 700, color: C.ink }}>₹{tier.price.toLocaleString('en-IN')}</div>
+                  <div style={{ color: C.slate, fontSize: 12, textDecoration: 'line-through', marginTop: 4 }}>₹{tier.originalPrice.toLocaleString('en-IN')}</div>
                 </div>
               ))}
             </div>
@@ -824,9 +824,9 @@ export default function ProgramPage() {
                 {pricingTiers.map(tier => (
                   <div key={tier.name} style={{ padding: '14px 20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? `${domainAccent.subtle}` : 'transparent' }}>
                     {tier.features.includes(feature) ? (
-                      <span style={{ color: tier.highlight ? domainAccent.text : 'rgba(255,255,255,0.5)', fontSize: 14 }}>✓</span>
+                      <span style={{ color: tier.highlight ? domainAccent.text : C.slate, fontSize: 14 }}>✓</span>
                     ) : (
-                      <span style={{ color: 'rgba(255,255,255,0.12)', fontSize: 14 }}>—</span>
+                      <span style={{ color: C.slate, fontSize: 14 }}>—</span>
                     )}
                   </div>
                 ))}

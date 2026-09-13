@@ -183,7 +183,7 @@ export default function HomePage() {
           <div className="home-hero-inner">
             <div className="home-hero-copy">
               <SectionLabel>Education, skills and opportunity</SectionLabel>
-              <h1>Don&apos;t just learn.<br /><em>Do something</em> with it.</h1>
+              <h1>Don&apos;t just learn.<br /><em>Do something with it.</em></h1>
               <p>Academic education, exams, practical skills, real work and future opportunities, connected in one place.</p>
               <div className="home-hero-actions">
                 <Link className="home-primary-button" to="/programs">Experience Skylent <span>↗</span></Link>

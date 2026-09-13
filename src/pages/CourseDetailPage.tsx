@@ -55,7 +55,7 @@ export default function CourseDetailPage() {
             <FadeIn>
               <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
                 <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 12px', color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{course.category}</span>
-                <span style={{ background: 'rgba(255,255,255,0.06)', border: `1px solid ${T.lineDark}`, borderRadius: 6, padding: '4px 12px', color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{course.level}</span>
+                <span style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 6, padding: '4px 12px', color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{course.level}</span>
               </div>
               <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 16px' }}>{course.title}</h1>
               <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 560, margin: '0 0 28px' }}>{course.longDesc}</p>
@@ -63,7 +63,7 @@ export default function CourseDetailPage() {
                 {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', String(lessonCount)], ['Projects', String(projectCount)]].map(([l, v]) => (
                   <div key={l}>
                     <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{l}</div>
-                    <div style={{ color: C.white, fontSize: 15, fontWeight: 500 }}>{v}</div>
+                    <div style={{ color: C.ink, fontSize: 15, fontWeight: 500 }}>{v}</div>
                   </div>
                 ))}
               </div>
@@ -88,7 +88,7 @@ export default function CourseDetailPage() {
                   {course.outcomes.map(o => (
                     <div key={o} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                       <div style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary, marginTop: 7, flexShrink: 0 }} />
-                      <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: 13, lineHeight: 1.55 }}>{o}</span>
+                      <span style={{ color: C.slate, fontSize: 13, lineHeight: 1.55 }}>{o}</span>
                     </div>
                   ))}
                 </div>
@@ -108,20 +108,20 @@ export default function CourseDetailPage() {
                     >
                       <div style={{ display: 'flex', gap: 14, alignItems: 'center', textAlign: 'left' }}>
                         <span style={{ color: accent.text, fontFamily: 'var(--font-mono)', fontSize: 12, width: 28 }}>0{mi + 1}</span>
-                        <span style={{ color: C.white, fontSize: 15, fontWeight: 600 }}>{mod.title}</span>
+                        <span style={{ color: C.ink, fontSize: 15, fontWeight: 600 }}>{mod.title}</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         <span style={{ color: C.slate, fontSize: 12 }}>{mod.lessons.length} lessons</span>
-                        <svg width="12" height="8" viewBox="0 0 12 8" fill="rgba(255,255,255,0.4)" style={{ transform: expandedModule === mod.id ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l6 8 6-8z"/></svg>
+                        <svg width="12" height="8" viewBox="0 0 12 8" fill={C.slate} style={{ transform: expandedModule === mod.id ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l6 8 6-8z"/></svg>
                       </div>
                     </button>
                     {expandedModule === mod.id && (
                       <div style={{ paddingBottom: 14, paddingLeft: 42 }}>
                         {mod.lessons.map(lesson => (
                           <div key={lesson.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderTop: `1px solid ${T.lineDark}`, flexWrap: 'wrap' }}>
-                            <div style={{ width: 16, height: 16, borderRadius: '50%', background: lesson.completed ? accent.primary : 'transparent', border: `1.5px solid ${lesson.completed ? accent.primary : 'rgba(255,255,255,0.2)'}`, flexShrink: 0 }} />
-                            <span style={{ color: lesson.completed ? 'rgba(255,255,255,0.45)' : 'rgba(255,255,255,0.75)', fontSize: 13, flex: '1 1 160px' }}>{lesson.title}</span>
-                            <span style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', background: 'rgba(255,255,255,0.05)', borderRadius: 4, padding: '2px 8px' }}>{lesson.type.toUpperCase()}</span>
+                            <div style={{ width: 16, height: 16, borderRadius: '50%', background: lesson.completed ? accent.primary : 'transparent', border: `1.5px solid ${lesson.completed ? accent.primary : T.lineStrong}`, flexShrink: 0 }} />
+                            <span style={{ color: C.slate, fontSize: 13, flex: '1 1 160px' }}>{lesson.title}</span>
+                            <span style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', background: C.cream, borderRadius: 4, padding: '2px 8px' }}>{lesson.type.toUpperCase()}</span>
                             {lesson.duration && <span style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{lesson.duration}</span>}
                           </div>
                         ))}
@@ -139,7 +139,7 @@ export default function CourseDetailPage() {
                 {course.forWhom.map(fw => (
                   <div key={fw} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '10px 0', borderBottom: `1px solid ${T.lineDark}` }}>
                     <div style={{ width: 5, height: 5, borderRadius: '50%', background: accent.primary, marginTop: 7, flexShrink: 0 }} />
-                    <span style={{ color: 'rgba(255,255,255,0.72)', fontSize: 14 }}>{fw}</span>
+                    <span style={{ color: C.slate, fontSize: 14 }}>{fw}</span>
                   </div>
                 ))}
               </GlassSurface>
@@ -150,7 +150,7 @@ export default function CourseDetailPage() {
             <FadeIn>
               <GlassSurface level={2} padding="24px 28px">
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: C.white }}>₹{price.toLocaleString('en-IN')}</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: C.ink }}>₹{price.toLocaleString('en-IN')}</span>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: C.slate, textDecoration: 'line-through' }}>₹{originalPrice.toLocaleString('en-IN')}</span>
                   <span style={{ background: 'rgba(74,222,128,0.12)', color: '#4ade80', fontSize: 11, padding: '2px 8px', borderRadius: 5, fontFamily: 'var(--font-mono)' }}>{discount}% off</span>
                 </div>
@@ -167,7 +167,7 @@ export default function CourseDetailPage() {
                   {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', `${lessonCount} lessons`], ['Projects', `${projectCount} projects`], ['Certificate', 'Skylent certificate']].map(([l, v]) => (
                     <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${T.lineDark}` }}>
                       <span style={{ color: C.slate, fontSize: 13 }}>{l}</span>
-                      <span style={{ color: C.white, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
+                      <span style={{ color: C.ink, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
                     </div>
                   ))}
                 </div>

@@ -121,21 +121,21 @@ export default function ProfileOverview({ profile, onProfileUpdate }: Props) {
         <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start", justifyContent: "space-between" }}>
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 700, color: C.white, marginBottom: 4 }}>{displayName}</div>
+              <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 700, color: C.ink, marginBottom: 4 }}>{displayName}</div>
               <div style={{ color: accent.text, fontSize: 14, marginBottom: 8 }}>{profile.headline || "Add a professional headline"}</div>
-              <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 13 }}>
+              <div style={{ color: C.slate, fontSize: 13 }}>
                 {[profile.preferredRole, profile.location].filter(Boolean).join(" · ") || "Set your target role and location"}
               </div>
             </div>
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 28, fontWeight: 700, color: C.white, fontFamily: "var(--font-display)" }}>{profile.completeness.percent}%</div>
-              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)" }}>Profile complete</div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: C.ink, fontFamily: "var(--font-display)" }}>{profile.completeness.percent}%</div>
+              <div style={{ fontSize: 12, color: C.slate }}>Profile complete</div>
             </div>
           </div>
         </GlassSurface>
 
         {editing ? (
-          <div style={{ padding: "18px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.02)" }}>
+          <div style={{ padding: "18px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
             <FormGrid>
               <Field label="Headline">
                 <input value={form.headline} onChange={e => setForm(f => ({ ...f, headline: e.target.value }))} style={fieldInputStyle} maxLength={160} />
@@ -186,7 +186,7 @@ export default function ProfileOverview({ profile, onProfileUpdate }: Props) {
             </div>
           </div>
         ) : (
-          <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 14, lineHeight: 1.7 }}>
+          <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
             {profile.summary || "Write a short summary about your background and what you are looking for next."}
           </div>
         )}
@@ -200,7 +200,7 @@ export default function ProfileOverview({ profile, onProfileUpdate }: Props) {
         {resumeFeedback && <FeedbackBanner tone={resumeFeedback.tone} message={resumeFeedback.message} />}
 
         {profile.resumeVersions.length === 0 ? (
-          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 14, margin: "0 0 14px" }}>No resume versions yet. Add a label to track versions.</p>
+          <p style={{ color: C.slate, fontSize: 14, margin: "0 0 14px" }}>No resume versions yet. Add a label to track versions.</p>
         ) : (
           profile.resumeVersions.map(resume => (
             <EntryCard
@@ -211,8 +211,8 @@ export default function ProfileOverview({ profile, onProfileUpdate }: Props) {
                 </button>
               )}
             >
-              <div style={{ color: C.white, fontWeight: 600, fontSize: 14 }}>{resume.label}</div>
-              <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12.5, marginTop: 4 }}>
+              <div style={{ color: C.ink, fontWeight: 600, fontSize: 14 }}>{resume.label}</div>
+              <div style={{ color: C.slate, fontSize: 12.5, marginTop: 4 }}>
                 v{resume.version}
                 {resume.isPrimary ? " · Primary" : ""}
                 {resume.fileName ? ` · ${resume.fileName}` : ""}
@@ -239,7 +239,7 @@ export default function ProfileOverview({ profile, onProfileUpdate }: Props) {
       {profile.completeness.nextRecommended && (
         <div style={{ padding: "14px 16px", borderRadius: T.rControl, border: `1px solid ${accent.border}`, background: accent.subtle }}>
           <div style={{ fontSize: 12, color: accent.text, marginBottom: 4 }}>Suggested next step</div>
-          <div style={{ color: C.white, fontSize: 14 }}>{profile.completeness.nextRecommended}</div>
+          <div style={{ color: C.ink, fontSize: 14 }}>{profile.completeness.nextRecommended}</div>
           <Link to="/career-os/profile" style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 13, textDecoration: "none" }}>
             Continue in profile →
           </Link>

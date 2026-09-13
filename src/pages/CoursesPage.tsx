@@ -112,7 +112,7 @@ export default function CoursesPage() {
                     borderRadius: 100,
                     border: `1px solid ${(val as string) === o ? accent.border : T.lineDark}`,
                     background: (val as string) === o ? accent.subtle : 'transparent',
-                    color: (val as string) === o ? accent.text : 'rgba(255,255,255,0.5)',
+                    color: (val as string) === o ? accent.text : C.slate,
                     fontSize: 12,
                     cursor: 'pointer',
                     fontFamily: 'var(--font-body)',
@@ -149,7 +149,7 @@ export default function CoursesPage() {
                     />
                     <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 6 }}>
                       <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 5, padding: '3px 10px', color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{course.category}</span>
-                      <span style={{ background: 'rgba(0,0,0,0.45)', border: `1px solid ${T.lineDark}`, borderRadius: 5, padding: '3px 10px', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{course.level}</span>
+                      <span style={{ background: C.cream, border: `1px solid ${T.lineStrong}`, borderRadius: 5, padding: '3px 10px', color: C.ink, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{course.level}</span>
                     </div>
                   </div>
                   <div style={{ padding: '20px 22px', flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -157,7 +157,7 @@ export default function CoursesPage() {
                     <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.65, margin: '0 0 16px', flex: 1 }}>{course.desc}</p>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 18 }}>
                       {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', String(lessonCount)], ['Projects', String(projectCount)]].map(([l, v]) => (
-                        <div key={l} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '8px 10px' }}>
+                        <div key={l} style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '8px 10px' }}>
                           <div className="skylent-label" style={{ color: C.slate, marginBottom: 3 }}>{l}</div>
                           <div style={{ color: C.ink, fontSize: 12, fontWeight: 600 }}>{v}</div>
                         </div>

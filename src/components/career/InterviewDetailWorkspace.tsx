@@ -145,7 +145,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
   }
 
   if (loading) {
-    return <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 14 }}>Loading interview round…</p>
+    return <p style={{ color: C.slate, fontSize: 14 }}>Loading interview round…</p>
   }
 
   if (error || !round) {
@@ -170,10 +170,10 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
       <GlassSurface level={2} padding="22px" style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div style={{ minWidth: 0 }}>
-            <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: C.white, wordBreak: "break-word" }}>
+            <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: C.ink, wordBreak: "break-word" }}>
               {round.title}
             </h1>
-            <p style={{ margin: 0, color: "rgba(255,255,255,0.5)", fontSize: 14 }}>
+            <p style={{ margin: 0, color: C.slate, fontSize: 14 }}>
               {formatRoundType(round.type)} · {formatRoundStatus(round.status)}
             </p>
           </div>
@@ -191,9 +191,9 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
         </div>
 
         {application && (
-          <div style={{ marginTop: 16, padding: "12px 14px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.02)" }}>
+          <div style={{ marginTop: 16, padding: "12px 14px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
             <div style={{ fontSize: 11, color: accent.text, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>Linked application</div>
-            <Link to={`/career-os/applications/${application.id}`} style={{ color: C.white, fontSize: 14, fontWeight: 600, textDecoration: "none", wordBreak: "break-word" }}>
+            <Link to={`/career-os/applications/${application.id}`} style={{ color: C.ink, fontSize: 14, fontWeight: 600, textDecoration: "none", wordBreak: "break-word" }}>
               {applicationRoleTitle(application)}
             </Link>
           </div>
@@ -202,19 +202,19 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
         <dl style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 160px), 1fr))", gap: 14, margin: "18px 0 0" }}>
           {round.scheduledAt && (
             <div>
-              <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Scheduled</dt>
-              <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{formatInterviewDateTime(round.scheduledAt)}</dd>
+              <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Scheduled</dt>
+              <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{formatInterviewDateTime(round.scheduledAt)}</dd>
             </div>
           )}
           <div>
-            <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Updated</dt>
-            <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{formatInterviewDateTime(round.updatedAt)}</dd>
+            <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Updated</dt>
+            <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{formatInterviewDateTime(round.updatedAt)}</dd>
           </div>
         </dl>
       </GlassSurface>
 
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginBottom: 10 }}>Update status</div>
+        <div style={{ fontSize: 12, color: C.slate, marginBottom: 10 }}>Update status</div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {ALL_STATUSES.filter(s => s !== round.status).map(status => (
             <button
@@ -241,7 +241,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
 
       <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
-          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white }}>Round notes</h2>
+          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>Round notes</h2>
           {!editing && <button type="button" onClick={() => setEditing(true)} style={{ ...secondaryButtonStyle, marginTop: 0 }}>Edit</button>}
         </div>
         {editing ? (
@@ -260,7 +260,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
             </div>
           </>
         ) : (
-          <p style={{ margin: 0, color: "rgba(255,255,255,0.55)", fontSize: 14, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+          <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
             {round.notes || "No notes yet."}
           </p>
         )}

@@ -65,7 +65,7 @@ export default function InterviewPracticeSurface({
 
   return (
     <section style={{ minWidth: 0 }}>
-      <h2 style={{ margin: "0 0 14px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white }}>
+      <h2 style={{ margin: "0 0 14px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>
         Practice
       </h2>
 
@@ -78,11 +78,11 @@ export default function InterviewPracticeSurface({
           padding: "16px",
           borderRadius: T.rControl,
           border: `1px solid ${T.lineDark}`,
-          background: "rgba(255,255,255,0.02)",
+          background: C.cream,
         }}
       >
         {!selectedQuestionId && (
-          <p style={{ margin: "0 0 12px", color: "rgba(255,255,255,0.45)", fontSize: 13 }}>
+          <p style={{ margin: "0 0 12px", color: C.slate, fontSize: 13 }}>
             Select a question above to link this practice attempt, or write a free-form response.
           </p>
         )}
@@ -124,12 +124,12 @@ export default function InterviewPracticeSurface({
         </button>
       </form>
 
-      <h3 style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 600, color: "rgba(255,255,255,0.55)" }}>
+      <h3 style={{ margin: "0 0 12px", fontSize: 14, fontWeight: 600, color: C.slate }}>
         {selectedRoundId ? "Practice for this round" : "Practice history"}
       </h3>
 
       {filteredHistory.length === 0 ? (
-        <p style={{ margin: 0, color: "rgba(255,255,255,0.45)", fontSize: 14 }}>
+        <p style={{ margin: 0, color: C.slate, fontSize: 14 }}>
           No practice attempts yet.
         </p>
       ) : (
@@ -143,7 +143,7 @@ export default function InterviewPracticeSurface({
                   padding: "14px 16px",
                   borderRadius: T.rControl,
                   border: `1px solid ${T.lineDark}`,
-                  background: "rgba(255,255,255,0.02)",
+                  background: C.cream,
                   minWidth: 0,
                 }}
               >
@@ -152,17 +152,17 @@ export default function InterviewPracticeSurface({
                   {record.score !== null ? ` · Score ${record.score}` : ""}
                 </div>
                 {question && (
-                  <div style={{ color: C.white, fontWeight: 600, fontSize: 13.5, marginBottom: 6, wordBreak: "break-word" }}>
+                  <div style={{ color: C.ink, fontWeight: 600, fontSize: 13.5, marginBottom: 6, wordBreak: "break-word" }}>
                     {question.question}
                   </div>
                 )}
                 {record.answer && (
-                  <p style={{ margin: "0 0 6px", color: "rgba(255,255,255,0.58)", fontSize: 13.5, lineHeight: 1.6, wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
+                  <p style={{ margin: "0 0 6px", color: C.slate, fontSize: 13.5, lineHeight: 1.6, wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
                     {record.answer}
                   </p>
                 )}
                 {record.feedback && (
-                  <p style={{ margin: 0, color: "rgba(255,255,255,0.42)", fontSize: 12.5, lineHeight: 1.5, wordBreak: "break-word" }}>
+                  <p style={{ margin: 0, color: C.slate, fontSize: 12.5, lineHeight: 1.5, wordBreak: "break-word" }}>
                     Notes: {record.feedback}
                   </p>
                 )}

@@ -392,7 +392,7 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <div style={{ display: 'flex', background: 'rgba(255,255,255,0.04)', borderRadius: T.rControl, padding: 3, marginBottom: 24, gap: 3, border: `1px solid ${T.lineDark}` }}>
+            <div style={{ display: 'flex', background: C.cream, borderRadius: T.rControl, padding: 3, marginBottom: 24, gap: 3, border: `1px solid ${T.lineDark}` }}>
               {(['signin', 'signup'] as const).map(t => (
                 <button
                   key={t}
@@ -541,7 +541,7 @@ export default function LoginPage() {
                         type="button"
                         onClick={() => setSuGoal(g === suGoal ? null : g)}
                         style={{
-                          background: suGoal === g ? accent.subtle : 'rgba(255,255,255,0.04)',
+                          background: suGoal === g ? accent.subtle : C.cream,
                           border: `1px solid ${suGoal === g ? accent.border : T.lineDark}`,
                           borderRadius: T.rControl,
                           padding: '8px 14px',
@@ -612,7 +612,7 @@ export default function LoginPage() {
                       textAlign: 'center',
                     }}
                   >
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? accent.primary : C.sand, color: isActive ? C.white : C.ink, fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px', fontFamily: 'var(--font-mono)' }}>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? accent.primary : C.sand, color: isActive ? C.ink : C.ink, fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px', fontFamily: 'var(--font-mono)' }}>
                       {demo.avatar}
                     </div>
                     <div style={{ color: C.ink, fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{ROLE_LABELS[demo.role]}</div>

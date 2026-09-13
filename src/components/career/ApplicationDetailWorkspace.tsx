@@ -131,7 +131,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
   }
 
   if (loading) {
-    return <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 14 }}>Loading application…</p>
+    return <p style={{ color: C.slate, fontSize: 14 }}>Loading application…</p>
   }
 
   if (error || !application) {
@@ -165,13 +165,13 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
       <GlassSurface level={2} padding="22px" style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", alignItems: "flex-start" }}>
           <div style={{ minWidth: 0 }}>
-            <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: C.white, wordBreak: "break-word" }}>
+            <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: C.ink, wordBreak: "break-word" }}>
               {role}
             </h1>
             {employer && (
-              <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 14, wordBreak: "break-word" }}>{employer}</div>
+              <div style={{ color: C.slate, fontSize: 14, wordBreak: "break-word" }}>{employer}</div>
             )}
-            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, marginTop: 6, wordBreak: "break-word" }}>
+            <div style={{ color: C.slate, fontSize: 13, marginTop: 6, wordBreak: "break-word" }}>
               {[location, workMode, application.job?.employmentType?.replace("_", " ")].filter(Boolean).join(" · ")}
             </div>
           </div>
@@ -193,33 +193,33 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
         <dl style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 160px), 1fr))", gap: 14, margin: "20px 0 0" }}>
           {formatApplicationDate(application.appliedAt) && (
             <div>
-              <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Applied</dt>
-              <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{formatApplicationDate(application.appliedAt)}</dd>
+              <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Applied</dt>
+              <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{formatApplicationDate(application.appliedAt)}</dd>
             </div>
           )}
           {formatApplicationDate(application.nextActionAt) && (
             <div>
-              <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Next action</dt>
-              <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{formatApplicationDateTime(application.nextActionAt)}</dd>
+              <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Next action</dt>
+              <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{formatApplicationDateTime(application.nextActionAt)}</dd>
             </div>
           )}
           {application.source && (
             <div>
-              <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Source</dt>
-              <dd style={{ margin: 0, color: C.white, fontSize: 13.5, wordBreak: "break-word" }}>{application.source}</dd>
+              <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Source</dt>
+              <dd style={{ margin: 0, color: C.ink, fontSize: 13.5, wordBreak: "break-word" }}>{application.source}</dd>
             </div>
           )}
           <div>
-            <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Updated</dt>
-            <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{formatApplicationDateTime(application.updatedAt)}</dd>
+            <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Updated</dt>
+            <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{formatApplicationDateTime(application.updatedAt)}</dd>
           </div>
         </dl>
 
         {application.job && (
-          <div style={{ marginTop: 18, padding: "14px 16px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.02)" }}>
+          <div style={{ marginTop: 18, padding: "14px 16px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
             <div style={{ fontSize: 11, color: accent.text, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Linked job</div>
-            <div style={{ color: C.white, fontWeight: 600, fontSize: 14 }}>{application.job.title}</div>
-            <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 13, marginTop: 4 }}>
+            <div style={{ color: C.ink, fontWeight: 600, fontSize: 14 }}>{application.job.title}</div>
+            <div style={{ color: C.slate, fontSize: 13, marginTop: 4 }}>
               {[application.job.location, formatWorkMode(application.job.workMode)].filter(Boolean).join(" · ")}
             </div>
             <Link to="/career-os/jobs" style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
@@ -231,7 +231,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
 
       {nextStatuses.length > 0 && (
         <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginBottom: 10 }}>Move to next status</div>
+          <div style={{ fontSize: 12, color: C.slate, marginBottom: 10 }}>Move to next status</div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
             {nextStatuses.map(status => (
               <button
@@ -260,7 +260,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
 
       <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
-          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white }}>Notes & follow-up</h2>
+          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>Notes & follow-up</h2>
           {!editing && (
             <button type="button" onClick={() => setEditing(true)} style={{ ...secondaryButtonStyle, marginTop: 0 }}>Edit</button>
           )}
@@ -285,7 +285,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
           </>
         ) : (
           <>
-            <p style={{ margin: "0 0 12px", color: "rgba(255,255,255,0.55)", fontSize: 14, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+            <p style={{ margin: "0 0 12px", color: C.slate, fontSize: 14, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
               {application.notes || "No notes yet."}
             </p>
           </>
@@ -293,11 +293,11 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
       </GlassSurface>
 
       <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
-        <h2 style={{ margin: "0 0 12px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white }}>
+        <h2 style={{ margin: "0 0 12px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>
           Interview rounds
         </h2>
         {interviewRounds.length === 0 ? (
-          <p style={{ margin: "0 0 10px", color: "rgba(255,255,255,0.45)", fontSize: 14 }}>
+          <p style={{ margin: "0 0 10px", color: C.slate, fontSize: 14 }}>
             No interview rounds yet.
           </p>
         ) : (
@@ -312,11 +312,11 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
                 marginBottom: 8,
                 borderRadius: T.rControl,
                 border: `1px solid ${T.lineDark}`,
-                background: "rgba(255,255,255,0.02)",
+                background: C.cream,
               }}
             >
-              <div style={{ color: C.white, fontWeight: 600, fontSize: 14, wordBreak: "break-word" }}>{round.title}</div>
-              <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12.5, marginTop: 4 }}>
+              <div style={{ color: C.ink, fontWeight: 600, fontSize: 14, wordBreak: "break-word" }}>{round.title}</div>
+              <div style={{ color: C.slate, fontSize: 12.5, marginTop: 4 }}>
                 {formatRoundType(round.type)} · {formatRoundStatus(round.status)}
                 {round.scheduledAt ? ` · ${formatInterviewDateTime(round.scheduledAt)}` : ""}
               </div>

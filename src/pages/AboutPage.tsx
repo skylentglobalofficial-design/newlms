@@ -123,7 +123,7 @@ function GapSection() {
                   <div style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.5 }}>{stage.sub}</div>
                 </div>
                 {i < stages.length - 1 && (
-                  <span style={{ color: 'rgba(255,255,255,0.18)', fontSize: 14, flexShrink: 0 }}>↓</span>
+                  <span style={{ color: C.slate, fontSize: 14, flexShrink: 0 }}>↓</span>
                 )}
               </div>
             ))}
@@ -265,7 +265,7 @@ function JourneySection() {
             {learnerSteps.map((step, i) => (
               <div key={step.label} style={{ display: 'flex', alignItems: 'center', flex: '1 1 120px', minWidth: 0 }}>
                 <div style={{ padding: '10px 0' }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{step.label}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink }}>{step.label}</div>
                   <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>{step.sub}</div>
                 </div>
                 {i < learnerSteps.length - 1 && (

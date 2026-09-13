@@ -236,7 +236,7 @@ function SchoolingSection() {
                 }}
               >
                 <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, margin: '0 auto 6px' }} />
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 600, color: C.white }}>{band}</div>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontWeight: 600, color: C.ink }}>{band}</div>
                 <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2 }}>Gr {grades}</div>
               </div>
             ))}
@@ -294,7 +294,7 @@ function SchoolingSection() {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 6 }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.white }}>{band}</span>
+                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.ink }}>{band}</span>
                     <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>Grade {grades}</span>
                   </div>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -309,7 +309,7 @@ function SchoolingSection() {
 
           <div style={{ marginBottom: 28, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
             <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Learning journey</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 12, color: 'rgba(255,255,255,0.65)' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 12, color: C.slate }}>
               {['Grade', 'Subject', 'Chapter', 'Lesson', 'Activity', 'Assessment', 'Progress'].map((s, i, arr) => (
                 <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                   <span>{s}</span>
@@ -589,7 +589,7 @@ function ProgramDiscoverySection() {
                   ].map(({ k, v }) => (
                     <div key={k}>
                       <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{k}</div>
-                      <div style={{ color: C.white, fontSize: 14, fontWeight: 500 }}>{v}</div>
+                      <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{v}</div>
                     </div>
                   ))}
                 </div>
@@ -630,7 +630,7 @@ function ProgramDiscoverySection() {
                     <div style={{ color: C.slate, fontSize: 12 }}>{program.duration} · {program.outcome}</div>
                   </div>
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: C.white }}>₹{price.toLocaleString('en-IN')}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: C.ink }}>₹{price.toLocaleString('en-IN')}</div>
                     <div style={{ color: accent.textMuted, fontSize: 11, marginTop: 2 }}>→</div>
                   </div>
                 </Link>
@@ -669,7 +669,7 @@ function CompetitiveExamsSection() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 40, alignItems: 'center' }}>
           <span className="skylent-label" style={{ color: C.slate, marginRight: 8 }}>Prep system</span>
           {['Exam', 'Subject / Section', 'Topic', 'Practice', 'Test', 'Mock', 'Analytics'].map((s, i, arr) => (
-            <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: 'rgba(255,255,255,0.65)', fontSize: 12 }}>
+            <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, color: C.slate, fontSize: 12 }}>
               <span>{s}</span>
               {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
             </span>
@@ -702,7 +702,7 @@ function CompetitiveExamsSection() {
                     <div key={name} style={{ padding: '14px 0', borderBottom: `1px solid ${T.lineDark}` }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                         <div style={{ width: 6, height: 6, borderRadius: '50%', background: color, flexShrink: 0 }} />
-                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white }}>{name}</span>
+                        <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink }}>{name}</span>
                       </div>
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                         {topics.map(t => (
@@ -770,7 +770,7 @@ function CompetitiveExamsSection() {
                     <div style={{ fontFamily: 'var(--font-mono)', fontSize: 13, fontWeight: 600, color }}>{abbr}</div>
                     <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginTop: 2 }}>{weight}</div>
                   </div>
-                  <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 14, lineHeight: 1.45 }}>{label}</div>
+                  <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.45 }}>{label}</div>
                 </div>
               ))}
             </div>

@@ -56,7 +56,7 @@ export default function ApplicationTimeline({ applicationId, events, onEventAdde
   return (
     <section style={{ minWidth: 0 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 16, flexWrap: "wrap" }}>
-        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white }}>
+        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>
           Timeline
         </h2>
         {!adding && (
@@ -76,7 +76,7 @@ export default function ApplicationTimeline({ applicationId, events, onEventAdde
             padding: "16px",
             borderRadius: T.rControl,
             border: `1px solid ${T.lineDark}`,
-            background: "rgba(255,255,255,0.02)",
+            background: C.cream,
           }}
         >
           <Field label="Event type">
@@ -126,7 +126,7 @@ export default function ApplicationTimeline({ applicationId, events, onEventAdde
       )}
 
       {events.length === 0 ? (
-        <p style={{ margin: 0, color: "rgba(255,255,255,0.45)", fontSize: 14, lineHeight: 1.6 }}>
+        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
           No timeline events yet. Add notes as your application progresses.
         </p>
       ) : (
@@ -158,15 +158,15 @@ export default function ApplicationTimeline({ applicationId, events, onEventAdde
               <div style={{ fontSize: 11, color: accent.text, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 4 }}>
                 {event.type}
               </div>
-              <div style={{ color: C.white, fontWeight: 600, fontSize: 14, wordBreak: "break-word" }}>
+              <div style={{ color: C.ink, fontWeight: 600, fontSize: 14, wordBreak: "break-word" }}>
                 {event.title}
               </div>
               {event.description && (
-                <p style={{ margin: "6px 0 0", color: "rgba(255,255,255,0.55)", fontSize: 13.5, lineHeight: 1.6, wordBreak: "break-word" }}>
+                <p style={{ margin: "6px 0 0", color: C.slate, fontSize: 13.5, lineHeight: 1.6, wordBreak: "break-word" }}>
                   {event.description}
                 </p>
               )}
-              <div style={{ marginTop: 6, fontSize: 12, color: "rgba(255,255,255,0.38)" }}>
+              <div style={{ marginTop: 6, fontSize: 12, color: C.slate }}>
                 {formatApplicationDateTime(event.occurredAt)}
               </div>
             </li>

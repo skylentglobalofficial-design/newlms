@@ -168,7 +168,7 @@ function InstitutionTypesSection({
                     fontFamily: 'var(--font-body)',
                   }}
                 >
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: selected ? 600 : 400, color: selected ? C.white : 'rgba(255,255,255,0.55)' }}>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: selected ? 600 : 400, color: selected ? C.ink : C.slate }}>
                     {t.label}
                   </div>
                   <div style={{ fontSize: 11, color: C.slate, marginTop: 3 }}>{t.sub}</div>
@@ -185,7 +185,7 @@ function InstitutionTypesSection({
               <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{active.sub}</div>
               <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 14px' }}>{active.label}</h3>
               <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 12px' }}>
-                <strong style={{ color: C.white, fontWeight: 600 }}>Problem. </strong>{active.problem}
+                <strong style={{ color: C.ink, fontWeight: 600 }}>Problem. </strong>{active.problem}
               </p>
               <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>{active.value}</p>
               <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '0 0 24px' }}>{active.description}</p>
@@ -197,7 +197,7 @@ function InstitutionTypesSection({
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(24px,4vw,48px)' }} className="two-col-sm">
               <div>
                 <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Workflow</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: C.slate }}>
                   {active.workflow.map((step, i, arr) => (
                     <span key={step} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                       <span>{step}</span>
@@ -353,7 +353,7 @@ function EnquiriesSection() {
             ].map(({ k, v }, i, arr) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '12px 0', borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
                 <span style={{ color: C.slate, fontSize: 13 }}>{k}</span>
-                <span style={{ color: C.white, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
+                <span style={{ color: C.ink, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
               </div>
             ))}
           </GlassSurface>

@@ -21,9 +21,9 @@ export function SectionShell({
     <section id={id} style={{ marginBottom: 32, minWidth: 0 }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
         <div style={{ minWidth: 0 }}>
-          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: C.white }}>{title}</h2>
+          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: C.ink }}>{title}</h2>
           {description && (
-            <p style={{ margin: "6px 0 0", color: "rgba(255,255,255,0.45)", fontSize: 13.5, lineHeight: 1.5 }}>{description}</p>
+            <p style={{ margin: "6px 0 0", color: C.slate, fontSize: 13.5, lineHeight: 1.5 }}>{description}</p>
           )}
         </div>
         {action}
@@ -39,9 +39,9 @@ export function EmptyBlock({ message, onAction, actionLabel }: { message: string
       padding: "20px 18px",
       borderRadius: T.rControl,
       border: `1px dashed ${T.lineDark}`,
-      background: "rgba(255,255,255,0.02)",
+      background: C.cream,
     }}>
-      <p style={{ margin: 0, color: "rgba(255,255,255,0.5)", fontSize: 14 }}>{message}</p>
+      <p style={{ margin: 0, color: C.slate, fontSize: 14 }}>{message}</p>
       {onAction && actionLabel && (
         <button type="button" onClick={onAction} style={secondaryButtonStyle}>
           {actionLabel}
@@ -52,7 +52,7 @@ export function EmptyBlock({ message, onAction, actionLabel }: { message: string
 }
 
 export function LoadingBlock({ label = "Loading…" }: { label?: string }) {
-  return <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 14, padding: "12px 0" }}>{label}</div>
+  return <div style={{ color: C.slate, fontSize: 14, padding: "12px 0" }}>{label}</div>
 }
 
 export function FeedbackBanner({ tone, message }: { tone: "success" | "error"; message: string }) {
@@ -69,7 +69,7 @@ export function FeedbackBanner({ tone, message }: { tone: "success" | "error"; m
 export const fieldLabelStyle: React.CSSProperties = {
   display: "block",
   marginBottom: 6,
-  color: "rgba(255,255,255,0.55)",
+  color: C.slate,
   fontSize: 12,
   fontWeight: 500,
 }
@@ -80,8 +80,8 @@ export const fieldInputStyle: React.CSSProperties = {
   padding: "10px 12px",
   borderRadius: T.rControl,
   border: `1px solid ${T.lineDark}`,
-  background: "rgba(255,255,255,0.04)",
-  color: C.white,
+  background: C.cream,
+  color: C.ink,
   fontSize: 14,
   fontFamily: "var(--font-body)",
   outline: "none",
@@ -129,7 +129,7 @@ export function EntryCard({ children, actions }: { children: ReactNode; actions?
       padding: "16px 18px",
       borderRadius: T.rControl,
       border: `1px solid ${T.lineDark}`,
-      background: "rgba(255,255,255,0.03)",
+      background: C.cream,
       marginBottom: 10,
     }}>
       <div style={{ minWidth: 0 }}>{children}</div>

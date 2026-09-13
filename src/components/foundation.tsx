@@ -210,7 +210,7 @@ export function MediaImage({
             left: 0,
             right: 0,
             padding: '16px 18px',
-            color: 'rgba(255,255,255,0.92)',
+            color: C.slate,
             fontSize: 13,
             fontWeight: 500,
             lineHeight: 1.45,
@@ -323,11 +323,11 @@ function NavButton({
         flexShrink: 0,
       }}
     >
-      <div style={{ fontSize: compact ? 12.5 : 13.5, fontWeight: active ? 600 : 400, color: active ? C.white : 'rgba(255,255,255,0.55)', lineHeight: 1.35 }}>
+      <div style={{ fontSize: compact ? 12.5 : 13.5, fontWeight: active ? 600 : 400, color: active ? C.ink : C.slate, lineHeight: 1.35 }}>
         {item.label}
       </div>
       {item.sub && !compact && (
-        <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3, lineHeight: 1.4 }}>{item.sub}</div>
+        <div style={{ fontSize: 11, color: C.slate, marginTop: 3, lineHeight: 1.4 }}>{item.sub}</div>
       )}
     </button>
   )
@@ -420,7 +420,7 @@ export function ContextualNavBar({
                   border: 'none',
                   borderBottom: `2px solid ${active ? accent.primary : 'transparent'}`,
                   padding: '12px 16px',
-                  color: active ? accent.text : 'rgba(255,255,255,0.42)',
+                  color: active ? accent.text : C.slate,
                   fontSize: 12.5,
                   fontWeight: active ? 600 : 400,
                   cursor: 'pointer',

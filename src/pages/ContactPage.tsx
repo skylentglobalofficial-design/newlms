@@ -9,12 +9,12 @@ const accent = getDomainAccent('general')
 function fieldStyle(focused: boolean): CSSProperties {
   return {
     width: '100%',
-    background: 'rgba(255,255,255,0.04)',
+    background: C.cream,
     border: `1px solid ${focused ? accent.primary : T.lineDark}`,
     borderRadius: T.rControl,
     padding: '11px 14px',
     fontSize: 14,
-    color: C.white,
+    color: C.ink,
     fontFamily: 'var(--font-body)',
     outline: 'none',
     transition: 'border-color 0.2s',
@@ -65,11 +65,11 @@ export default function ContactPage() {
                   <div style={{ width: 56, height: 56, borderRadius: '50%', background: `linear-gradient(135deg, ${accent.primary}, ${accent.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px', fontSize: 22, color: C.white, fontWeight: 700 }}>✓</div>
                   <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 700, color: C.ink, margin: '0 0 10px', letterSpacing: '-0.02em' }}>Enquiry received</h2>
                   <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>Thanks for reaching out. Our team will get back to you within 24 hours.</p>
-                  <div style={{ background: 'rgba(255,255,255,0.05)', border: `1px solid ${T.lineDark}`, borderRadius: 10, padding: '14px 20px', display: 'inline-block', marginBottom: 20 }}>
+                  <div style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 10, padding: '14px 20px', display: 'inline-block', marginBottom: 20 }}>
                     <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>YOUR ENQUIRY REFERENCE</div>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: C.white, fontWeight: 700, letterSpacing: '0.05em' }}>{refNo}</div>
+                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: C.ink, fontWeight: 700, letterSpacing: '0.05em' }}>{refNo}</div>
                   </div>
-                  <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 8, padding: 12, color: C.slate, fontSize: 12 }}>Demo submission — no real email was sent.</div>
+                  <div style={{ background: C.cream, borderRadius: 8, padding: 12, color: C.slate, fontSize: 12 }}>Demo submission — no real email was sent.</div>
                 </GlassSurface>
               </FadeIn>
             ) : (
@@ -114,7 +114,7 @@ export default function ContactPage() {
                           required
                           value={form.iam}
                           onChange={e => setForm(f => ({ ...f, iam: e.target.value }))}
-                          style={{ ...fieldStyle(focused === 'iam'), cursor: 'pointer', color: form.iam ? C.white : 'rgba(255,255,255,0.35)' }}
+                          style={{ ...fieldStyle(focused === 'iam'), cursor: 'pointer', color: form.iam ? C.ink : C.slate }}
                           onFocus={() => setFocused('iam')}
                           onBlur={() => setFocused(null)}
                         >
@@ -128,7 +128,7 @@ export default function ContactPage() {
                           required
                           value={form.iwant}
                           onChange={e => setForm(f => ({ ...f, iwant: e.target.value }))}
-                          style={{ ...fieldStyle(focused === 'iwant'), cursor: 'pointer', color: form.iwant ? C.white : 'rgba(255,255,255,0.35)' }}
+                          style={{ ...fieldStyle(focused === 'iwant'), cursor: 'pointer', color: form.iwant ? C.ink : C.slate }}
                           onFocus={() => setFocused('iwant')}
                           onBlur={() => setFocused(null)}
                         >
@@ -164,9 +164,9 @@ export default function ContactPage() {
                   <GlassSurface key={label} level={1} padding="16px 18px" style={{ marginBottom: 10 }}>
                     <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>{label.toUpperCase()}</div>
                     {href ? (
-                      <a href={href} style={{ color: C.white, fontSize: 15, fontWeight: 500, textDecoration: 'none' }}>{value}</a>
+                      <a href={href} style={{ color: C.ink, fontSize: 15, fontWeight: 500, textDecoration: 'none' }}>{value}</a>
                     ) : (
-                      <div style={{ color: C.white, fontSize: 15, fontWeight: 500 }}>{value}</div>
+                      <div style={{ color: C.ink, fontSize: 15, fontWeight: 500 }}>{value}</div>
                     )}
                   </GlassSurface>
                 ))}
@@ -179,7 +179,7 @@ export default function ContactPage() {
                   {['LinkedIn', 'Twitter', 'YouTube', 'Instagram'].map(s => (
                     <span
                       key={s}
-                      style={{ background: 'rgba(255,255,255,0.05)', border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '8px 14px', color: 'rgba(255,255,255,0.5)', fontSize: 13 }}
+                      style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '8px 14px', color: C.slate, fontSize: 13 }}
                     >
                       {s}
                     </span>

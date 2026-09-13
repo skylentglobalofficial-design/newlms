@@ -94,7 +94,7 @@ export default function CareerSupportDetailWorkspace({ requestId }: Props) {
   }
 
   if (loading) {
-    return <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 14 }}>Loading support request…</p>
+    return <p style={{ color: C.slate, fontSize: 14 }}>Loading support request…</p>
   }
 
   if (error || !request) {
@@ -119,10 +119,10 @@ export default function CareerSupportDetailWorkspace({ requestId }: Props) {
       <GlassSurface level={2} padding="22px" style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div style={{ minWidth: 0 }}>
-            <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: C.white, wordBreak: "break-word" }}>
+            <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: C.ink, wordBreak: "break-word" }}>
               {request.subject}
             </h1>
-            <p style={{ margin: 0, color: "rgba(255,255,255,0.5)", fontSize: 14 }}>
+            <p style={{ margin: 0, color: C.slate, fontSize: 14 }}>
               {formatRequestType(request.type)} · {formatRequestStatus(request.status)}
             </p>
           </div>
@@ -141,24 +141,24 @@ export default function CareerSupportDetailWorkspace({ requestId }: Props) {
 
         <dl style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 160px), 1fr))", gap: 14, margin: "18px 0 0" }}>
           <div>
-            <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Created</dt>
-            <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{formatSupportDateTime(request.createdAt)}</dd>
+            <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Created</dt>
+            <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{formatSupportDateTime(request.createdAt)}</dd>
           </div>
           <div>
-            <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Updated</dt>
-            <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{formatSupportDateTime(request.updatedAt)}</dd>
+            <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Updated</dt>
+            <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{formatSupportDateTime(request.updatedAt)}</dd>
           </div>
           {request.assignedTo && (
             <div>
-              <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Assigned</dt>
-              <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>Support team</dd>
+              <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Assigned</dt>
+              <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>Support team</dd>
             </div>
           )}
         </dl>
       </GlassSurface>
 
       <div style={{ marginBottom: 20 }}>
-        <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginBottom: 10 }}>Update status</div>
+        <div style={{ fontSize: 12, color: C.slate, marginBottom: 10 }}>Update status</div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
           {ALL_STATUSES.filter(s => s !== request.status).map(status => (
             <button
@@ -185,7 +185,7 @@ export default function CareerSupportDetailWorkspace({ requestId }: Props) {
 
       <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
-          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white }}>Request details</h2>
+          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>Request details</h2>
           {!editing && <button type="button" onClick={() => setEditing(true)} style={{ ...secondaryButtonStyle, marginTop: 0 }}>Edit</button>}
         </div>
         {editing ? (
@@ -209,14 +209,14 @@ export default function CareerSupportDetailWorkspace({ requestId }: Props) {
             </div>
           </>
         ) : (
-          <p style={{ margin: 0, color: "rgba(255,255,255,0.62)", fontSize: 14, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+          <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
             {request.description}
           </p>
         )}
       </GlassSurface>
 
       <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
-        <h2 style={{ margin: "0 0 14px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white }}>Tasks</h2>
+        <h2 style={{ margin: "0 0 14px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>Tasks</h2>
         <CareerSupportTaskList
           tasks={request.tasks}
           requestSubject={request.subject}

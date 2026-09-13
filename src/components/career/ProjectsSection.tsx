@@ -141,9 +141,9 @@ export default function ProjectsSection({ profile, onProfileUpdate }: Props) {
                 </>
               )}
             >
-              <div style={{ color: C.white, fontWeight: 600 }}>{entry.title}</div>
+              <div style={{ color: C.ink, fontWeight: 600 }}>{entry.title}</div>
               {entry.description && (
-                <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 13.5, lineHeight: 1.6, margin: "8px 0 0" }}>{entry.description}</p>
+                <p style={{ color: C.slate, fontSize: 13.5, lineHeight: 1.6, margin: "8px 0 0" }}>{entry.description}</p>
               )}
               {entry.technologies.length > 0 && (
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 10 }}>
@@ -158,7 +158,7 @@ export default function ProjectsSection({ profile, onProfileUpdate }: Props) {
                 {entry.projectUrl && <a href={entry.projectUrl} target="_blank" rel="noreferrer" style={{ color: accent.text, textDecoration: "none" }}>Project link</a>}
                 {entry.repositoryUrl && <a href={entry.repositoryUrl} target="_blank" rel="noreferrer" style={{ color: accent.text, textDecoration: "none" }}>Repository</a>}
               </div>
-              {entry.outcome && <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 12.5, margin: "10px 0 0" }}>Outcome: {entry.outcome}</p>}
+              {entry.outcome && <p style={{ color: C.slate, fontSize: 12.5, margin: "10px 0 0" }}>Outcome: {entry.outcome}</p>}
             </EntryCard>
           )
         ))

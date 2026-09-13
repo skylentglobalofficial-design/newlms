@@ -37,22 +37,22 @@ export default function ApplicationCard({ application, selected }: Props) {
         padding: "14px 16px",
         borderRadius: T.rControl,
         border: `1px solid ${selected ? accent.border : T.lineDark}`,
-        background: selected ? accent.subtle : "rgba(255,255,255,0.02)",
+        background: selected ? accent.subtle : C.cream,
         marginBottom: 8,
         minWidth: 0,
       }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", alignItems: "flex-start" }}>
         <div style={{ minWidth: 0, flex: "1 1 180px" }}>
-          <div style={{ color: C.white, fontWeight: 600, fontSize: 15, wordBreak: "break-word", marginBottom: 4 }}>
+          <div style={{ color: C.ink, fontWeight: 600, fontSize: 15, wordBreak: "break-word", marginBottom: 4 }}>
             {role}
           </div>
           {meta && (
-            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, lineHeight: 1.5, wordBreak: "break-word" }}>
+            <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.5, wordBreak: "break-word" }}>
               {meta}
             </div>
           )}
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 8, fontSize: 12, color: "rgba(255,255,255,0.38)" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 8, fontSize: 12, color: C.slate }}>
             {applied && <span>Applied {applied}</span>}
             {nextAction && <span>Next action {nextAction}</span>}
             {application.source && <span>Source: {application.source}</span>}

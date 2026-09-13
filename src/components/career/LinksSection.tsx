@@ -131,7 +131,7 @@ export default function LinksSection({ profile, onProfileUpdate }: Props) {
                 </>
               )}
             >
-              <div style={{ color: C.white, fontWeight: 600 }}>{linkLabel(entry)}</div>
+              <div style={{ color: C.ink, fontWeight: 600 }}>{linkLabel(entry)}</div>
               <a href={entry.url} target="_blank" rel="noreferrer" style={{ color: accent.text, fontSize: 13, textDecoration: "none", wordBreak: "break-all" }}>
                 {entry.url}
               </a>

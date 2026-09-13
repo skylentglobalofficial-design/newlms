@@ -82,10 +82,10 @@ export default function CareerSupportWorkspace() {
   return (
     <div className="support-workspace" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.white }}>
+        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
           Career support
         </h1>
-        <p style={{ margin: 0, color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.6 }}>
+        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
           See your support requests, track assigned tasks, and request help when you need it.
         </p>
       </div>
@@ -110,8 +110,8 @@ export default function CareerSupportWorkspace() {
               <SummaryStat label="Active requests" value={activeCount} />
               <SummaryStat label="Open tasks" value={openTaskCount} />
               <div style={{ minWidth: 0 }}>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>Next action</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500, wordBreak: "break-word" }}>
+                <div style={{ fontSize: 11, color: C.slate, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>Next action</div>
+                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500, wordBreak: "break-word" }}>
                   {nextTask ? nextTask.title : activeCount > 0 ? "Waiting on support team" : "Submit a support request"}
                 </div>
               </div>
@@ -141,7 +141,7 @@ export default function CareerSupportWorkspace() {
             <div style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: 20 }}>
               {showForm && (
                 <GlassSurface level={2} padding="18px 20px">
-                  <h2 style={{ margin: "0 0 14px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white }}>
+                  <h2 style={{ margin: "0 0 14px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>
                     Request support
                   </h2>
                   <form onSubmit={e => void handleCreate(e)}>
@@ -181,13 +181,13 @@ export default function CareerSupportWorkspace() {
                   <GlassSurface level={2} padding="18px 20px">
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", alignItems: "flex-start" }}>
                       <div style={{ minWidth: 0 }}>
-                        <h2 style={{ margin: "0 0 6px", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: C.white, wordBreak: "break-word" }}>
+                        <h2 style={{ margin: "0 0 6px", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: C.ink, wordBreak: "break-word" }}>
                           {selected.subject}
                         </h2>
-                        <p style={{ margin: 0, color: "rgba(255,255,255,0.5)", fontSize: 13.5 }}>
+                        <p style={{ margin: 0, color: C.slate, fontSize: 13.5 }}>
                           {formatRequestType(selected.type)} · {formatRequestStatus(selected.status)} · {formatPriority(selected.priority)}
                         </p>
-                        <p style={{ margin: "8px 0 0", color: "rgba(255,255,255,0.38)", fontSize: 12 }}>
+                        <p style={{ margin: "8px 0 0", color: C.slate, fontSize: 12 }}>
                           Created {formatSupportDateTime(selected.createdAt)} · Updated {formatSupportDateTime(selected.updatedAt)}
                         </p>
                         {selected.assignedTo && (
@@ -198,13 +198,13 @@ export default function CareerSupportWorkspace() {
                         Open request →
                       </Link>
                     </div>
-                    <p style={{ margin: "14px 0 0", color: "rgba(255,255,255,0.62)", fontSize: 14, lineHeight: 1.7, wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
+                    <p style={{ margin: "14px 0 0", color: C.slate, fontSize: 14, lineHeight: 1.7, wordBreak: "break-word", whiteSpace: "pre-wrap" }}>
                       {selected.description}
                     </p>
                   </GlassSurface>
 
                   <GlassSurface level={2} padding="18px 20px">
-                    <h2 style={{ margin: "0 0 14px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white }}>
+                    <h2 style={{ margin: "0 0 14px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>
                       Tasks
                     </h2>
                     <CareerSupportTaskList
@@ -217,7 +217,7 @@ export default function CareerSupportWorkspace() {
                 </>
               ) : board.requests.length === 0 && !showForm ? (
                 <GlassSurface level={2} padding="18px 20px">
-                  <p style={{ margin: "0 0 12px", color: "rgba(255,255,255,0.5)", fontSize: 14, lineHeight: 1.6 }}>
+                  <p style={{ margin: "0 0 12px", color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
                     Submit a support request for resume feedback, interview preparation, or job search guidance.
                   </p>
                   <button type="button" onClick={() => setShowForm(true)} style={primaryButtonStyle}>
@@ -242,8 +242,8 @@ export default function CareerSupportWorkspace() {
 function SummaryStat({ label, value }: { label: string; value: number }) {
   return (
     <div style={{ minWidth: 0 }}>
-      <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</div>
-      <div style={{ fontSize: 28, fontWeight: 700, color: C.white, fontFamily: "var(--font-display)" }}>{value}</div>
+      <div style={{ fontSize: 11, color: C.slate, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</div>
+      <div style={{ fontSize: 28, fontWeight: 700, color: C.ink, fontFamily: "var(--font-display)" }}>{value}</div>
     </div>
   )
 }

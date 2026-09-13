@@ -72,7 +72,7 @@ export default function WorkshopsPage() {
                     borderRadius: 100,
                     border: `1px solid ${(val as string) === o ? accent.border : T.lineDark}`,
                     background: (val as string) === o ? accent.subtle : 'transparent',
-                    color: (val as string) === o ? accent.text : 'rgba(255,255,255,0.5)',
+                    color: (val as string) === o ? accent.text : C.slate,
                     fontSize: 12,
                     cursor: 'pointer',
                     fontFamily: 'var(--font-body)',
@@ -102,24 +102,24 @@ export default function WorkshopsPage() {
                     <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.65, margin: '0 0 16px' }}>{w.desc}</p>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
                       {[['Date', w.date], ['Mode', w.mode], ['Host', w.instructor.split(' ').slice(0, 2).join(' ')], ['Duration', w.duration]].map(([l, v]) => (
-                        <div key={l} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '8px 10px' }}>
+                        <div key={l} style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '8px 10px' }}>
                           <div className="skylent-label" style={{ color: C.slate, marginBottom: 2 }}>{l}</div>
-                          <div style={{ color: C.white, fontSize: 11, fontWeight: 600 }}>{v}</div>
+                          <div style={{ color: C.ink, fontSize: 11, fontWeight: 600 }}>{v}</div>
                         </div>
                       ))}
                     </div>
                     <div style={{ marginBottom: 16 }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                         <span style={{ color: C.slate, fontSize: 11 }}>{w.seatsLeft} seats left (demo)</span>
-                        <span style={{ color: pct > 70 ? '#f87171' : 'rgba(255,255,255,0.35)', fontSize: 11, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
+                        <span style={{ color: pct > 70 ? '#f87171' : C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
                       </div>
-                      <div style={{ height: 4, background: 'rgba(255,255,255,0.08)', borderRadius: 2 }}>
+                      <div style={{ height: 4, background: C.cream, borderRadius: 2 }}>
                         <div style={{ width: `${pct}%`, height: '100%', background: pct > 70 ? '#f87171' : accent.primary, borderRadius: 2 }} />
                       </div>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', gap: 12, flexWrap: 'wrap' }}>
                       <div>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: C.white }}>₹{w.price.toLocaleString('en-IN')}</span>
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: C.ink }}>₹{w.price.toLocaleString('en-IN')}</span>
                         {w.originalPrice > w.price && (
                           <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate, textDecoration: 'line-through', marginLeft: 7 }}>₹{w.originalPrice.toLocaleString('en-IN')}</span>
                         )}

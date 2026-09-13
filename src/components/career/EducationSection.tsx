@@ -148,9 +148,9 @@ export default function EducationSection({ profile, onProfileUpdate }: Props) {
                 </>
               )}
             >
-              <div style={{ color: C.white, fontWeight: 600 }}>{entry.degree}{entry.fieldOfStudy ? ` · ${entry.fieldOfStudy}` : ""}</div>
-              <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 13.5, marginTop: 4 }}>{entry.institution}</div>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12.5, marginTop: 4 }}>{formatDates(entry)}{entry.grade ? ` · ${entry.grade}` : ""}</div>
+              <div style={{ color: C.ink, fontWeight: 600 }}>{entry.degree}{entry.fieldOfStudy ? ` · ${entry.fieldOfStudy}` : ""}</div>
+              <div style={{ color: C.slate, fontSize: 13.5, marginTop: 4 }}>{entry.institution}</div>
+              <div style={{ color: C.slate, fontSize: 12.5, marginTop: 4 }}>{formatDates(entry)}{entry.grade ? ` · ${entry.grade}` : ""}</div>
             </EntryCard>
           )
         ))
@@ -178,7 +178,7 @@ export default function EducationSection({ profile, onProfileUpdate }: Props) {
               <input value={form.grade} onChange={e => setForm(f => ({ ...f, grade: e.target.value }))} style={fieldInputStyle} />
             </Field>
           </FormGrid>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, color: "rgba(255,255,255,0.55)", fontSize: 13 }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, color: C.slate, fontSize: 13 }}>
             <input type="checkbox" checked={form.currentlyStudying} onChange={e => setForm(f => ({ ...f, currentlyStudying: e.target.checked }))} />
             Currently studying here
           </label>

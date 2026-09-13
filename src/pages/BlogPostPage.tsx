@@ -59,7 +59,7 @@ export default function BlogPostPage() {
               <article
                 className="skylent-article"
                 style={{
-                  color: 'rgba(255,255,255,0.78)',
+                  color: C.slate,
                   fontSize: 'clamp(16px, 2.1vw, 17px)',
                   lineHeight: 1.85,
                   fontFamily: 'var(--font-body)',
@@ -100,7 +100,7 @@ export default function BlogPostPage() {
                           fontSize: 13,
                           lineHeight: 1.6,
                           fontFamily: 'var(--font-mono)',
-                          color: 'rgba(255,255,255,0.72)',
+                          color: C.slate,
                           margin: '0 0 1.5em',
                         }}
                       >
