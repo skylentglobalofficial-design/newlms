@@ -17,6 +17,7 @@ import { ProductVisual, resolveProgramVisualId } from '../components/product/Pro
 import { programs } from '../data'
 import type { ProgramType, EnrollmentStatus } from '../data'
 import { isProgramEnrollable } from '../lib/catalog-api'
+import { displayProgramModuleCount } from '../lib/curriculum-counts'
 import { useCatalogProgram } from '../hooks/useCatalog'
 
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
@@ -218,7 +219,7 @@ function EnrollmentPanel({
       </div>
 
       <div style={{ padding: '10px 24px', borderTop: `1px solid ${T.lineDark}`, display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ color: C.slate, fontSize: 11 }}>Secure enrollment · Verified certificate</span>
+        <span style={{ color: C.slate, fontSize: 11 }}>LMS enrollment · Certificate issuance later</span>
       </div>
     </GlassSurface>
   )
@@ -243,7 +244,7 @@ export default function ProgramPage() {
   const enrollStatus = (catalog.data?.enrollmentStatus ?? program?.enrollmentStatus ?? 'open') as EnrollmentStatus
   const catalogLoading = catalog.loading
   const enrollable = Boolean(catalog.data && isProgramEnrollable(catalog.data))
-  const moduleCount = catalog.data?.moduleCount ?? program?.modules ?? 0
+  const moduleCount = displayProgramModuleCount(catalog.data?.moduleCount, program?.curriculumDetail?.length ?? 0)
   const projectCount = catalog.data?.projectCount ?? program?.projects ?? 0
   const catalogPricing = catalog.data?.pricing.length ? catalog.data.pricing : null
   const staticPricing = program?.pricing ?? []
@@ -395,7 +396,7 @@ export default function ProgramPage() {
                     ...(moduleCount ? [{ label: 'Modules', value: String(moduleCount) }] : []),
                     ...(projectCount ? [{ label: 'Projects', value: String(projectCount) }] : []),
                   ]),
-              { label: 'Certificate', value: program.cert },
+              { label: 'Certificate eligibility', value: program.cert },
               { label: enrollStatus === 'coming_soon' ? 'Planned Batch' : 'Next Batch', value: program.upcomingBatch },
             ].filter(f => f.value).map(({ label, value }) => (
               <div key={label}>
@@ -732,20 +733,20 @@ export default function ProgramPage() {
               }}>
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><circle cx="12" cy="8" r="6"/><path d="M8.5 14.5L6 22l6-2 6 2-2.5-7.5"/></svg>
               </div>
-              <div className="skylent-label" style={{ color: domainAccent.textMuted, marginBottom: 6 }}>Credential</div>
+              <div className="skylent-label" style={{ color: domainAccent.textMuted, marginBottom: 6 }}>Certificate eligibility</div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink, lineHeight: 1.3 }}>{program.cert}</div>
               <div style={{ marginTop: 14, paddingTop: 14, borderTop: `1px solid ${T.lineDark}`, fontSize: 10, fontFamily: 'var(--font-mono)', color: C.slate }}>
-                Verifiable on completion
+                Issuance in a later phase
               </div>
             </GlassSurface>
             <div>
               <Eyebrow tone="light">Certificate</Eyebrow>
               <h2 className="skylent-display-sm" style={{ color: C.ink, margin: '14px 0 12px' }}>
-                Credential issued on successful completion
+                Eligibility after completion — not a live credential yet
               </h2>
               <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 520 }}>
-                Issued by Skylent when you complete the program and pass the final assessment. Each certificate includes a verifiable credential reference.
-                {enrollStatus === 'coming_soon' ? ' Available when enrollment opens.' : ''}
+                Completing the program and passing the final assessment will establish certificate eligibility. Download, issuance, and public verification are not available yet.
+                {enrollStatus === 'coming_soon' ? ' This programme is not open for enrollment yet.' : ''}
               </p>
             </div>
           </div>
@@ -791,7 +792,7 @@ export default function ProgramPage() {
             tone="light"
             eyebrow="Fees & enrollment"
             title="Choose your plan"
-            lead="Every plan includes the full curriculum and Skylent certificate."
+            lead="Every plan includes the published curriculum. Certificate issuance is a later phase."
           />
         </FadeIn>
 

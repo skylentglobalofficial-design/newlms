@@ -32,6 +32,7 @@
   --type-body-sm: 13.5px;
   --type-label: 11px;
   --type-caption: 10px;
+  --skylent-focus-ring: #4F46E5;
 
   /* Layout */
   --section-pad: clamp(88px, 12vw, 140px);
@@ -497,6 +498,8 @@ body {
   .home-orbit-metrics { flex-direction: row; flex-wrap: wrap; }
   .home-metric { flex: 1 1 calc(50% - 8px); min-width: 120px; }
   .home-mini-chart { flex: 1 1 100%; }
+  .home-journey-track { overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; }
+  .home-journey-item { flex-shrink: 0; }
 }
 @media (max-width: 700px) {
   .home-hero-new, .home-section, .home-opportunity-section, .home-institution-section { padding-top: 76px; padding-bottom: 76px; }
@@ -592,7 +595,7 @@ body {
 }
 
 html, body {
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 /* Product visual frames inside MediaImage */
@@ -1285,9 +1288,29 @@ html, body {
   .lms-lesson-frame > div:first-child { margin-bottom: 16px !important; }
 }
 
-/* Public page section overflow guard */
-.skylent-public-canvas {
-  overflow-x: hidden;
+/* Public page: do not clip overflow globally; contain media instead. */
+.skylent-public-canvas img,
+.skylent-public-canvas video,
+.skylent-public-canvas canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+:where(a, button, input, select, textarea, [role="button"], [tabindex]):focus-visible {
+  outline: 2px solid var(--skylent-focus-ring);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Faculty teaching workspace: presentation-only light treatment. */

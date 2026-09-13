@@ -1,11 +1,10 @@
 import { ensureCsrfToken } from "./auth-api"
+import { parseApiJson } from "./http"
 import type { LmsCourseView } from "../components/lms/lms-utils"
 
 export type { LmsCourseView }
 
 const API_BASE = "/api/v1"
-
-type ApiError = { error: string }
 
 export type ApiLessonState = {
   started: boolean
@@ -86,14 +85,7 @@ export type ApiQuizQuestion = {
 }
 
 async function parseJson<T>(response: Response): Promise<T> {
-  const data = (await response.json()) as T | ApiError
-  if (!response.ok) {
-    const message = typeof data === "object" && data && "error" in data
-      ? String((data as ApiError).error)
-      : "Request failed"
-    throw new Error(message)
-  }
-  return data as T
+  return parseApiJson<T>(response)
 }
 
 async function lmsGet<T>(path: string): Promise<T> {

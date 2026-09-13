@@ -1,3 +1,5 @@
+import { parseApiJson } from "./http"
+
 const API_BASE = "/api/v1"
 
 export type OrganisationDashboard = {
@@ -32,14 +34,7 @@ export type OrganisationDashboard = {
 }
 
 async function parseJson<T>(response: Response): Promise<T> {
-  const data = await response.json()
-  if (!response.ok) {
-    const message = typeof data === "object" && data && "error" in data
-      ? String((data as { error: string }).error)
-      : "Request failed"
-    throw new Error(message)
-  }
-  return data as T
+  return parseApiJson<T>(response)
 }
 
 export async function fetchOrganisationDashboard(): Promise<OrganisationDashboard> {

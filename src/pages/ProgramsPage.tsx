@@ -9,6 +9,7 @@ import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 import { programs } from '../data'
 import type { Program, ProgramType } from '../data'
 import { catalogProgramBySlug, type CatalogProgramSummary } from '../lib/catalog-api'
+import { displayProgramModuleCount, formatModuleCount } from '../lib/curriculum-counts'
 import { useCatalogPrograms } from '../hooks/useCatalog'
 import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
 
@@ -116,7 +117,7 @@ function CatalogHeroVisual({ preview }: { preview: Program[] }) {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 {[
                   { k: 'Duration', v: active.duration },
-                  { k: 'Modules', v: String(active.modules) },
+                  { k: 'Modules', v: formatModuleCount(displayProgramModuleCount(undefined, active.curriculumDetail?.length ?? 0)) },
                   { k: 'Projects', v: String(active.projects) },
                   { k: 'Level', v: active.level },
                 ].map(({ k, v }) => (
@@ -440,7 +441,7 @@ function FeaturedProgramSection({ program, catalog }: { program: Program; catalo
   const facts = programFacts(catalog, program.slug)
   const price = displayProgramPrice(program, facts)
   const status = displayProgramStatus(program, facts)
-  const moduleCount = facts?.moduleCount ?? program.modules
+  const moduleCount = displayProgramModuleCount(facts?.moduleCount, program.curriculumDetail?.length ?? 0)
   const projectCount = facts?.projectCount ?? program.projects
 
   return (
@@ -459,7 +460,7 @@ function FeaturedProgramSection({ program, catalog }: { program: Program; catalo
                 { k: 'Duration', v: program.duration },
                 { k: 'Format', v: program.format },
                 { k: 'Level', v: program.level },
-                { k: 'Modules', v: String(moduleCount) },
+                { k: 'Modules', v: formatModuleCount(moduleCount) },
                 { k: 'Projects', v: String(projectCount) },
                 { k: 'Outcome', v: program.outcome },
                 { k: 'From', v: `₹${price.toLocaleString('en-IN')}` },
@@ -487,7 +488,7 @@ function ProgramResultRow({ program, prominent, catalog }: { program: Program; p
   const facts = programFacts(catalog, program.slug)
   const price = displayProgramPrice(program, facts)
   const status = displayProgramStatus(program, facts)
-  const moduleCount = facts?.moduleCount ?? program.modules
+  const moduleCount = displayProgramModuleCount(facts?.moduleCount, program.curriculumDetail?.length ?? 0)
   const projectCount = facts?.projectCount ?? program.projects
 
   return (
@@ -519,7 +520,7 @@ function ProgramResultRow({ program, prominent, catalog }: { program: Program; p
                 <span>{program.duration}</span>
                 <span>{program.format}</span>
                 <span>{program.level}</span>
-                <span>{moduleCount} modules</span>
+                <span>{moduleCount > 0 ? `${moduleCount} modules` : 'Curriculum available inside the program'}</span>
                 <span>{projectCount} projects</span>
               </div>
             </div>

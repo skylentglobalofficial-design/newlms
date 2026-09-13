@@ -155,10 +155,12 @@ export default function CareerOSJobsPage() {
         <div className="career-jobs-results" style={{ minWidth: 0 }}>
           {board.loading ? (
             <LoadingBlock label={board.view === "browse" ? "Loading jobs…" : "Loading saved jobs…"} />
+          ) : board.error ? (
+            <EmptyBlock message="Unable to load this workspace. Try again using Retry above." />
           ) : board.displayedJobs.length === 0 ? (
             <EmptyBlock
               message={board.view === "browse"
-                ? "No open roles match your search. Try different filters or check back later."
+                ? "No open roles are listed yet. Live jobs appear here when partners publish them — none are invented for this view."
                 : "You have not saved any jobs yet. Browse open roles and save the ones you want to track."}
               onAction={board.view === "saved" ? () => board.setView("browse") : undefined}
               actionLabel={board.view === "saved" ? "Browse jobs" : undefined}

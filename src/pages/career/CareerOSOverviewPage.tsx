@@ -10,6 +10,7 @@ import { applicationEmployerName, applicationRoleTitle, formatStatusLabel } from
 import { formatInterviewDateTime, formatRoundStatus, formatRoundType, isUpcomingRound, sortRoundsBySchedule } from "../../components/career/interview-utils"
 import { countOpenTasks, formatRequestStatus, formatRequestType, getNextOpenTask, isActiveRequest } from "../../components/career/support-utils"
 import { LoadingBlock, FeedbackBanner } from "../../components/career/section-ui"
+import { workspaceErrorMessage } from "../../lib/http"
 
 const accent = getDomainAccent("career")
 
@@ -33,7 +34,7 @@ export default function CareerOSOverviewPage() {
         }
       })
       .catch(err => {
-        if (!cancelled) setAppsError(err instanceof Error ? err.message : "Failed to load applications")
+        if (!cancelled) setAppsError(workspaceErrorMessage(err))
       })
     return () => { cancelled = true }
   }, [])
@@ -45,7 +46,7 @@ export default function CareerOSOverviewPage() {
   if (error || !profile) {
     return (
       <div style={{ maxWidth: 520 }}>
-        <FeedbackBanner tone="error" message={error ?? "Workspace unavailable"} />
+        <FeedbackBanner tone="error" message={error ?? "Unable to load this workspace. Try again."} />
         <button type="button" onClick={() => void reload()} style={{ marginTop: 12, padding: "10px 16px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "transparent", color: accent.text, cursor: "pointer" }}>
           Try again
         </button>

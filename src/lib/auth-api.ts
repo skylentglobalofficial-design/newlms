@@ -1,3 +1,5 @@
+import { parseApiJson } from "./http"
+
 const API_BASE = "/api/v1"
 
 export type ApiRole = "student" | "faculty" | "organisation" | "recruiter" | "superadmin"
@@ -35,11 +37,6 @@ export type AuthResponse = {
   role: ApiRole
 }
 
-type ApiError = {
-  error: string
-  details?: Record<string, string[] | undefined>
-}
-
 let csrfToken: string | null = null
 
 function readCsrfCookie(): string | null {
@@ -59,20 +56,13 @@ export async function ensureCsrfToken(): Promise<string> {
     throw new Error("Failed to fetch CSRF token")
   }
 
-  const data = (await response.json()) as { csrfToken: string }
-  csrfToken = data.csrfToken
+  const parsed = await parseApiJson<{ csrfToken: string }>(response)
+  csrfToken = parsed.csrfToken
   return csrfToken
 }
 
 async function parseJson<T>(response: Response): Promise<T> {
-  const data = (await response.json()) as T | ApiError
-  if (!response.ok) {
-    const message = typeof data === "object" && data && "error" in data
-      ? String((data as ApiError).error)
-      : "Request failed"
-    throw new Error(message)
-  }
-  return data as T
+  return parseApiJson<T>(response)
 }
 
 async function authRequest<T>(

@@ -155,6 +155,13 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
     if (parsed.data.programSlug) {
       const program = await findProgramBySlug(parsed.data.programSlug)
       if (!program) return res.status(404).json({ error: "Program not found" })
+      if (program.enrollmentStatus !== "OPEN") {
+        const message =
+          program.enrollmentStatus === "WAITLIST"
+            ? "This programme is on waitlist and cannot be enrolled through this API"
+            : "This programme is not open for enrollment"
+        return res.status(400).json({ error: message })
+      }
       if (program.programCourses.length === 0) {
         return res.status(400).json({ error: "Program has no linked courses" })
       }

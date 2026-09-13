@@ -286,6 +286,54 @@ async function main() {
   assert(programCourseAccess.response.ok, "Program-enrolled user should access linked course")
   assert(programCourseAccess.data.data.lessonStates.l1?.locked === false, "Program enrollment should include unlock rules")
 
+  console.log("14b. Coming-soon program enrollment is rejected")
+  const comingSoon = await request(programJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { programSlug: "sql-certificate" },
+  })
+  assert(comingSoon.response.status === 400, `Coming-soon enrollment should be 400, got ${comingSoon.response.status}`)
+
+  const jeeSoon = await request(programJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { programSlug: "jee-advanced-prep" },
+  })
+  assert(jeeSoon.response.status === 400, `JEE coming-soon enrollment should be 400, got ${jeeSoon.response.status}`)
+
+  console.log("14c. OPEN program without linked courses is rejected")
+  const unlinkedSlug = `phase1-open-unlinked-${Date.now()}`
+  await prisma.program.create({
+    data: {
+      slug: unlinkedSlug,
+      name: "Temp Open Unlinked",
+      duration: "1 month",
+      moduleCount: 0,
+      projectCount: 0,
+      format: "Self-paced",
+      cert: "None",
+      outcome: "Test",
+      desc: "Temporary program for enrollment enforcement",
+      upcomingBatch: "N/A",
+      programType: "CERTIFICATE",
+      level: "Beginner",
+      whoIsItFor: [],
+      whatYouWillLearn: [],
+      learningExperience: [],
+      enrollmentStatus: "OPEN",
+    },
+  })
+  try {
+    const unlinked = await request(programJar, "/lms/enrollments", {
+      method: "POST",
+      csrf: true,
+      body: { programSlug: unlinkedSlug },
+    })
+    assert(unlinked.response.status === 400, `OPEN + unlinked enrollment should be 400, got ${unlinked.response.status}`)
+  } finally {
+    await prisma.program.delete({ where: { slug: unlinkedSlug } })
+  }
+
   console.log("15. Faculty and organisation routes enforce authorization")
   const studentFaculty = await request(userAJar, "/faculty/dashboard")
   assert(studentFaculty.response.status === 403, "Student should not access faculty dashboard")

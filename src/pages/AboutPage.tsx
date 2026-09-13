@@ -400,7 +400,7 @@ function InstitutionsEmployersSection() {
             Infrastructure institutions run on.
           </Heading>
           <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>
-            Long-term, Skylent OS is curriculum, assessment, skills, and placement readiness as shared infrastructure — for schools through universities, training partners, and industry.
+            Long-term, Skylent OS is curriculum, assessment, skills, and career readiness as shared infrastructure — for schools through universities, training partners, and industry.
           </p>
           <GlassSurface level={1} padding="18px 22px" style={{ marginBottom: 24 }}>
             <div className="skylent-label" style={{ color: instAccent.text, marginBottom: 14 }}>Institution OS</div>

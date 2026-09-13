@@ -451,7 +451,7 @@ export default function HomePage() {
                 <div>
                   <span>CAREER SIGNALS</span>
                   <strong>Next steps</strong>
-                  <small>Portfolios, placements and progression in view.</small>
+                  <small>Portfolios, career workspace, and progression in view.</small>
                 </div>
               </div>
               <div className="institution-progress">

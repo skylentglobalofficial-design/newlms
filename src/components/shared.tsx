@@ -322,7 +322,7 @@ const megaMenu = [
       { label: 'Webinars', sub: 'Live expert-led sessions', to: '/workshops' },
       { label: 'Certificate Programs', sub: 'Focused, credentialed skills', to: '/programs' },
       { label: 'Professional Programs', sub: 'Career-ready — includes Career OS', to: '/programs' },
-      { label: 'Job Assistance', sub: 'Placement & readiness support', to: '/skills#job-assistance' },
+      { label: 'Job Assistance', sub: 'Career workspace & interview prep', to: '/skills#job-assistance' },
     ],
   },
   {
@@ -429,8 +429,16 @@ export function Nav() {
         {/* Desktop links */}
         <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
           {megaMenu.map(group => (
-            <div key={group.label} style={{ position: 'relative' }} onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave}>
-              <button onClick={() => navigate(group.to)} style={{ background: 'none', border: 'none', color: activeMenu === group.label ? C.ink : C.slate, fontSize: 13.5, cursor: 'pointer', padding: '8px 13px', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-body)', transition: 'color 0.2s', letterSpacing: '-0.01em' }}>
+            <div key={group.label} style={{ position: 'relative' }} onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} onFocusCapture={() => handleMenuEnter(group.label)} onBlurCapture={(e) => {
+              const next = e.relatedTarget as Node | null
+              if (!e.currentTarget.contains(next)) handleMenuLeave()
+            }} onKeyDown={(e) => {
+              if (e.key === 'Escape') {
+                e.stopPropagation()
+                setActiveMenu(null)
+              }
+            }}>
+              <button type="button" aria-expanded={activeMenu === group.label} aria-haspopup="true" onClick={() => navigate(group.to)} style={{ background: 'none', border: 'none', color: activeMenu === group.label ? C.ink : C.slate, fontSize: 13.5, cursor: 'pointer', padding: '8px 13px', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-body)', transition: 'color 0.2s', letterSpacing: '-0.01em' }}>
                 {group.label}
                 <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{ opacity: 0.5, transform: activeMenu === group.label ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l5 6 5-6z"/></svg>
               </button>
@@ -485,7 +493,7 @@ export function Nav() {
               <button type="button" onClick={() => setSearchOpen(false)} style={{ background: 'none', border: 'none', color: C.slate, padding: '7px 10px', cursor: 'pointer', fontSize: 13 }}>✕</button>
             </form>
           ) : (
-            <button onClick={() => setSearchOpen(true)} style={{ background: 'none', border: 'none', color: C.slate, padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: 7, transition: 'color 0.2s' }}
+            <button type="button" onClick={() => setSearchOpen(true)} aria-label="Search" style={{ background: 'none', border: 'none', color: C.slate, padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: 7, transition: 'color 0.2s' }}
               onMouseEnter={e => (e.currentTarget.style.color = C.ink)}
               onMouseLeave={e => (e.currentTarget.style.color = C.slate)}
               title="Search"
@@ -526,7 +534,7 @@ export function Nav() {
               >Explore Programs</Link>
             </>
           )}
-          <button className="show-mobile" onClick={() => setMenuOpen(o => !o)} style={{ background: 'none', border: 'none', color: C.ink, cursor: 'pointer', padding: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
+          <button type="button" className="show-mobile" aria-expanded={menuOpen} aria-label={menuOpen ? 'Close menu' : 'Open menu'} onClick={() => setMenuOpen(o => !o)} style={{ background: 'none', border: 'none', color: C.ink, cursor: 'pointer', padding: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
             <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
             <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
             <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
@@ -591,7 +599,9 @@ export function Footer() {
             <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.ink, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
             <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Education, skills, and career workflows on one platform — for learners and institutions.</p>
             <div style={{ display: 'flex', gap: 10 }}>
-              {['in', 'tw', 'yt', 'ig'].map(s => (<div key={s} style={{ width: 32, height: 32, borderRadius: 6, border: `1px solid ${T.lineLight}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{s}</div>))}
+              {['in', 'tw', 'yt', 'ig'].map(s => (
+                <div key={s} aria-hidden style={{ width: 32, height: 32, borderRadius: 6, border: `1px solid ${T.lineLight}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{s}</div>
+              ))}
             </div>
           </div>
           {cols.map(col => (
@@ -610,7 +620,14 @@ export function Footer() {
         </div>
         <div style={{ borderTop: `1px solid ${T.lineLight}`, paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
           <div style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>© 2026 Skylent Global. All rights reserved.</div>
-          <div style={{ display: 'flex', gap: 20 }}>{['Privacy', 'Terms', 'Cookies'].map(l => <span key={l} style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)', cursor: 'pointer' }}>{l}</span>)}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+            <div style={{ display: 'flex', gap: 20 }}>
+              {['Privacy', 'Terms', 'Cookies'].map(l => (
+                <span key={l} style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{l}</span>
+              ))}
+            </div>
+            <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>Legal pages will be published here.</span>
+          </div>
         </div>
       </div>
     </footer>
@@ -679,6 +696,7 @@ export const globalCSS = `
   .contextual-nav-panel { display: block; }
   .contextual-nav-bar { display: none; }
   .contextual-nav-bar-scroll::-webkit-scrollbar { display: none; }
+  .hero-grid > *, .two-col > *, .two-col-sm > *, .institution-partnership-grid > * { min-width: 0; }
 
   @media (max-width: 1100px) {
     .nav-links { display: none !important; }
@@ -741,6 +759,7 @@ export const globalCSS = `
     .career-journey > div { grid-template-columns: repeat(3, 1fr) !important; gap: 24px !important; }
     .career-journey-line { display: none !important; }
     .career-ecosystem > div { grid-template-columns: repeat(3, 1fr) !important; gap: 24px !important; }
+    .institution-partnership-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 16px !important; }
   }
   @media (max-width: 375px) {
     .program-tools-strip > div { padding: 12px 16px !important; font-size: 13px !important; }
@@ -753,14 +772,15 @@ export const globalCSS = `
     .career-job-header { display: none !important; }
     .career-job-row { grid-template-columns: 1fr auto !important; gap: 12px !important; }
     .career-support-row { grid-template-columns: 1fr !important; gap: 8px !important; }
-    .career-hero-visual { min-height: 340px !important; }
     .institution-type-grid { grid-template-columns: 1fr !important; }
-    .institution-ecosystem-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
-    .institution-ecosystem-grid > div { border-right: none !important; padding: 0 !important; }
-    .institution-partnership-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
-    .institution-partnership-line { display: none !important; }
+    .career-hero-visual { min-height: 340px !important; }
   }
   @media (max-width: 640px) {
+    .institution-partnership-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+    .institution-ecosystem-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+    .institution-ecosystem-grid > div { border-right: none !important; padding: 0 !important; }
+    .institution-partnership-line { display: none !important; }
+    .institution-type-grid { grid-template-columns: 1fr !important; }
     .three-col { grid-template-columns: 1fr !important; }
     .programs-grid { grid-template-columns: 1fr !important; }
     .intent-grid { grid-template-columns: 1fr 1fr !important; }
