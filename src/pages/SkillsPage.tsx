@@ -1,4 +1,5 @@
 import { useNavigate, Link } from 'react-router-dom'
+import { useState } from 'react'
 import { C, FadeIn, PageShell } from '../components/shared'
 import {
   Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader,
@@ -8,6 +9,7 @@ import { getDomainAccent } from '../aurora-themes'
 import { programs, workshops } from '../data'
 import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
 import { CAREER_OS_IA } from '../lib/product-architecture'
+import { LEARN_INTENTS, liveMatchesForIntent, type LearnIntentId } from '../lib/live-intents'
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 
@@ -576,47 +578,85 @@ function ProgramDiscoverySection() {
 export default function SkillsPage() {
   const navigate = useNavigate()
   const activeSection = useSectionSpy(SKILLS_NAV_ITEMS.map(i => i.id))
+  const [intentId, setIntentId] = useState<LearnIntentId | null>(null)
+  const matches = intentId ? liveMatchesForIntent(intentId) : []
 
   return (
     <PageShell auroraTheme="professional">
       <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
         <Aurora themeId="professional" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div className="skylent-page-hero skills-page-hero" style={{ maxWidth: 720 }}>
+          <div className="skylent-page-hero skills-page-hero" style={{ maxWidth: 760 }}>
             <FadeIn>
               <div className="skylent-label" style={{ color: C.indigo, marginBottom: 14 }}>Learn · live</div>
               <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 16px', maxWidth: 640 }}>
                 What are you trying to learn or become?
               </h1>
               <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 520, margin: '0 0 28px' }}>
-                Start from intent, then pick a live course or professional programme. Workshop listings exist, but registration is not live. Certificate tracks are focused skills. Career OS is a workspace — not a placement service.
+                Pick an intent. Matches are live courses and open programmes from the catalogue — not a generated list.
               </p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
-                {[
-                  { label: 'Build a professional skill', to: '/programs' },
-                  { label: 'Take a focused course', to: '/courses' },
-                  { label: 'See workshop listings', to: '/workshops' },
-                  { label: 'Open Career OS', to: '/career-os' },
-                ].map((item) => (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() => navigate(item.to)}
-                    style={{
-                      background: C.cream,
-                      border: `1px solid ${T.lineStrong}`,
-                      borderRadius: 100,
-                      padding: '8px 14px',
-                      fontSize: 13,
-                      color: C.ink,
-                      cursor: 'pointer',
-                      fontFamily: 'var(--font-body)',
-                    }}
-                  >
-                    {item.label}
-                  </button>
-                ))}
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
+                {LEARN_INTENTS.map((item) => {
+                  const selected = intentId === item.id
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setIntentId(item.id)}
+                      aria-pressed={selected}
+                      style={{
+                        background: selected ? C.cream : 'transparent',
+                        border: `1px solid ${selected ? C.indigo : T.lineStrong}`,
+                        borderRadius: 100,
+                        padding: '8px 14px',
+                        fontSize: 13,
+                        color: C.ink,
+                        cursor: 'pointer',
+                        fontFamily: 'var(--font-body)',
+                      }}
+                    >
+                      {item.label}
+                    </button>
+                  )
+                })}
               </div>
+              {intentId && (
+                <div style={{ marginBottom: 22, maxWidth: 640 }}>
+                  <div className="skylent-label" style={{ color: C.slate, marginBottom: 8 }}>
+                    {LEARN_INTENTS.find((item) => item.id === intentId)?.question} · live catalogue
+                  </div>
+                  {matches.length === 0 ? (
+                    <p style={{ color: C.slate, fontSize: 14, margin: 0 }}>No open course or programme matches this intent yet.</p>
+                  ) : (
+                    matches.map((match, index) => (
+                      <Link
+                        key={`${match.kind}-${match.slug}`}
+                        to={match.to}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'auto minmax(0, 1fr) auto',
+                          gap: 12,
+                          padding: '12px 0',
+                          borderBottom: index < matches.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                          textDecoration: 'none',
+                          color: 'inherit',
+                          minWidth: 0,
+                        }}
+                        className="learner-evidence-row"
+                      >
+                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.indigo, alignSelf: 'center' }}>
+                          {match.kind === 'programme' ? 'Programme' : 'Course'}
+                        </span>
+                        <span>
+                          <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink }}>{match.title}</div>
+                          <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{match.note}</div>
+                        </span>
+                        <span style={{ color: C.indigo, fontSize: 13, fontWeight: 600, alignSelf: 'center' }}>Start →</span>
+                      </Link>
+                    ))
+                  )}
+                </div>
+              )}
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Professional programmes</Button>
                 <Button variant="secondary" size="lg" onClick={() => navigate('/courses')}>Courses</Button>

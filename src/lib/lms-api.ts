@@ -112,6 +112,24 @@ export async function fetchLmsDashboard(): Promise<ApiCourseWorkspace | null> {
   return result.data
 }
 
+export type ApiEnrollmentSummary = {
+  id: string
+  status: string
+  courseSlug: string | null
+  courseTitle: string | null
+  programSlug: string | null
+  programName: string | null
+  certificateEligible: boolean
+  certificateStatus: string
+  createdAt: string
+  updatedAt: string
+}
+
+export async function fetchLmsEnrollments(): Promise<ApiEnrollmentSummary[]> {
+  const result = await lmsGet<{ data: ApiEnrollmentSummary[] }>("/lms/enrollments")
+  return result.data ?? []
+}
+
 export async function fetchCourseAccess(slug: string): Promise<ApiCourseAccess> {
   const result = await lmsGet<{ data: ApiCourseAccess }>(`/lms/courses/${slug}/access`)
   return result.data

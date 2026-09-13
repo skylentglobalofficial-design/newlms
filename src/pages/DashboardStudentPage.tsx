@@ -4,7 +4,6 @@ import { C, T } from '../tokens'
 import { AuthDashboardShell, AuthDashboardLayout, type AuthNavItem } from '../components/AuthDashboardShell'
 import { getRoleAccent } from '../role-themes'
 import { useAuth } from '../context/AuthContext'
-import { programs } from '../data'
 import {
   LearningWorkspacePanel,
   CurriculumProgressRail,
@@ -15,7 +14,8 @@ import {
   getRecentActivity,
 } from '../components/lms'
 import { useLmsDashboard } from '../hooks/useLms'
-import { enrollInCourse } from '../lib/lms-api'
+import { enrollInCourse, fetchLmsEnrollments, type ApiEnrollmentSummary } from '../lib/lms-api'
+import EnrollmentEvidence from '../components/learner/EnrollmentEvidence'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'student-overview' },
@@ -47,13 +47,30 @@ export default function DashboardStudentPage() {
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
   const [enrolling, setEnrolling] = useState(false)
+  const [enrollments, setEnrollments] = useState<ApiEnrollmentSummary[]>([])
 
   useEffect(() => {
     if (ready && !user) navigate('/login')
   }, [ready, user, navigate])
 
-  const program = programs.find(p => p.slug === 'data-science-ai') ?? programs[0]
-  const programName = user?.program || program?.name || 'Your program'
+  useEffect(() => {
+    if (!user) return
+    let cancelled = false
+    void fetchLmsEnrollments()
+      .then((rows) => {
+        if (!cancelled) setEnrollments(rows)
+      })
+      .catch(() => {
+        if (!cancelled) setEnrollments([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [user, workspace])
+
+  const programName = workspace?.enrollment.courseTitle
+    ? workspace.course.title
+    : 'Your learning'
 
   const learnSlug = workspace?.course.slug ?? ''
   const allLessons = course?.modules.flatMap(m => m.lessons) ?? []
@@ -66,7 +83,14 @@ export default function DashboardStudentPage() {
     ? getRecentActivity([course], () => lessonStates)
     : []
 
-  const activeProject = program?.projectsDetail?.[Math.min(workspace?.progress.completedCount ?? 0, (program?.projectsDetail?.length ?? 1) - 1)] ?? program?.projectsDetail?.[0]
+  const submittedAssignments = allLessons.filter(
+    (lesson) => lesson.type === 'assignment' && (lessonStates[lesson.id]?.assignmentSubmitted || lessonStates[lesson.id]?.complete),
+  )
+  const evidenceLesson = submittedAssignments[submittedAssignments.length - 1]
+  const projectTitle = evidenceLesson ? evidenceLesson.title : 'No submitted assignments yet'
+  const projectWhat = evidenceLesson
+    ? 'This is evidence from your LMS. Add it to Career OS when you want it on your profile.'
+    : 'Assignments you submit in the LMS become evidence you can record in Career OS. Nothing is invented here.'
 
   if (!ready || !user) return null
 
@@ -102,7 +126,7 @@ export default function DashboardStudentPage() {
         <div id="student-overview" style={{ maxWidth: 560 }}>
           <div style={{ color: C.ink, fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, marginBottom: 12 }}>Start your learning journey</div>
           <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '0 0 20px' }}>
-            Enroll in a course to open your learner dashboard, curriculum progress, and resume learning.
+            Enroll in a live course to open the LMS, track progress, and carry evidence into Career OS.
           </p>
           <button
             type="button"
@@ -115,9 +139,12 @@ export default function DashboardStudentPage() {
             }}
             style={{ background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer', marginRight: 12 }}
           >
-            {enrolling ? 'Enrolling…' : 'Enroll in Data Analytics'}
+            {enrolling ? 'Enrolling…' : 'Start Data Analytics'}
           </button>
-          <Link to="/courses" style={{ color: accent.text, fontSize: 13, textDecoration: 'none' }}>Browse courses →</Link>
+          <Link to="/courses" style={{ color: accent.text, fontSize: 13, textDecoration: 'none' }}>Browse live courses →</Link>
+          <div style={{ marginTop: 28 }}>
+            <EnrollmentEvidence items={enrollments} />
+          </div>
         </div>
       </AuthDashboardShell>
     )
@@ -169,6 +196,12 @@ export default function DashboardStudentPage() {
                   accent={accent}
                 />
               </div>
+              {enrollments.filter((item) => item.courseSlug).length > 1 && (
+                <div style={{ margin: '8px 0 24px' }}>
+                  <div className="skylent-label" style={{ color: C.slate, marginBottom: 8 }}>All enrollments</div>
+                  <EnrollmentEvidence items={enrollments} />
+                </div>
+              )}
               <CurriculumProgressRail course={course} lessonStates={lessonStates} accent={accent} learnSlug={learnSlug} />
               <StudentProgressSurface course={course} lessonStates={lessonStates} accent={accent} certificateReady={allComplete} />
               <div id="student-certificates" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
@@ -186,7 +219,8 @@ export default function DashboardStudentPage() {
                     Complete all lessons to unlock certificate eligibility.
                   </p>
                 )}
-                <Link to={`/learn/${learnSlug}/${resume?.lessonId ?? ''}`} style={{ color: accent.text, fontSize: 13, textDecoration: 'none' }}>Resume course →</Link>
+                <Link to={`/learn/${learnSlug}/${resume?.lessonId ?? ''}`} style={{ color: accent.text, fontSize: 13, textDecoration: 'none', marginRight: 16 }}>Resume course →</Link>
+                <Link to="/career-os" style={{ color: accent.text, fontSize: 13, textDecoration: 'none' }}>Record evidence in Career OS →</Link>
               </div>
             </>
           }
@@ -194,8 +228,8 @@ export default function DashboardStudentPage() {
             <StudentActionRail
               pendingTasks={pendingRail}
               recentActivity={recentRail}
-              projectTitle={activeProject?.title ?? 'Capstone project'}
-              projectWhat={activeProject?.what ?? 'Portfolio artifact from your program.'}
+              projectTitle={projectTitle}
+              projectWhat={projectWhat}
               accent={accent}
             />
           }

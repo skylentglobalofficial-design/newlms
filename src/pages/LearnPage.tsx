@@ -267,6 +267,9 @@ export default function LearnPage() {
                   ? 'You are eligible for a certificate. Download and issuance will be available in a later phase.'
                   : 'Complete all requirements to unlock certificate eligibility.'}
               </div>
+              <Link to="/career-os" style={{ color: roleAccent.text, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+                Record this progress on Career OS →
+              </Link>
             </div>
           )}
 
