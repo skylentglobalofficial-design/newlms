@@ -38,14 +38,14 @@ const institutionTypes = [
     label: 'Colleges',
     sub: 'Degree Colleges · Autonomous Institutions',
     problem: 'Degrees finish. Employability does not arrive automatically.',
-    value: 'Programs, departments, LMS, skills, projects, and placement readiness alongside the academic calendar.',
-    workflow: ['Programs', 'Departments', 'Students', 'LMS', 'Projects', 'Placement'],
+    value: 'Programs, departments, LMS, skills, projects, and career readiness alongside the academic calendar.',
+    workflow: ['Programs', 'Departments', 'Students', 'LMS', 'Projects', 'Career OS'],
     description: 'Pair undergraduate study with professional programs, projects, and a path into Career OS for qualifying students.',
     offers: [
       'Professional Programs beside the degree',
       'Skills tracks and project portfolios',
       'Career OS for qualifying students',
-      'Placement preparation workflow',
+      'Interview and application workflow',
     ],
     photo: PHOTO.college,
   },
@@ -120,7 +120,7 @@ const partnershipSteps = [
   { n: '02', label: 'Co-design', desc: 'Faculty, curriculum leads, and Skylent design the program together.' },
   { n: '03', label: 'Deployment', desc: 'Skylent OS is configured and deployed for your institution.' },
   { n: '04', label: 'Delivery', desc: 'Live program delivery with ongoing support and analytics.' },
-  { n: '05', label: 'Outcomes', desc: 'Graduate career readiness, placements, and continuous improvement.' },
+  { n: '05', label: 'Outcomes', desc: 'Graduate career readiness, opportunity discovery, and continuous improvement.' },
 ]
 
 function InstitutionTypesSection({

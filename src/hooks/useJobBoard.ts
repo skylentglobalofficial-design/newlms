@@ -6,6 +6,7 @@ import {
   type JobListParams,
   type SavedJobEntry,
 } from "../lib/career-api"
+import { workspaceErrorMessage } from "../lib/http"
 
 export type JobsView = "browse" | "saved"
 
@@ -35,7 +36,7 @@ export function useJobBoard() {
         return result.jobs[0].id
       })
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load jobs")
+      setError(workspaceErrorMessage(err))
       setJobs([])
     } finally {
       setLoading(false)
@@ -56,7 +57,7 @@ export function useJobBoard() {
       setMeta(result.meta)
       setFilters((f: JobListParams) => ({ ...f, offset: String(nextOffset) }))
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load more jobs")
+      setError(workspaceErrorMessage(err))
     } finally {
       setLoadingMore(false)
     }
@@ -75,7 +76,7 @@ export function useJobBoard() {
         return savedJobs[0].id
       })
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load saved jobs")
+      setError(workspaceErrorMessage(err))
       setSavedEntries([])
     } finally {
       setLoading(false)

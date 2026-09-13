@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { fetchCareerProfile, type CareerProfile } from "../lib/career-api"
+import { workspaceErrorMessage } from "../lib/http"
 
 export function useCareerProfile() {
   const [profile, setProfile] = useState<CareerProfile | null>(null)
@@ -13,7 +14,7 @@ export function useCareerProfile() {
       const data = await fetchCareerProfile()
       setProfile(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load career profile")
+      setError(workspaceErrorMessage(err))
       setProfile(null)
     } finally {
       setLoading(false)

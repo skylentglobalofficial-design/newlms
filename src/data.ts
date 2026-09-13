@@ -45,7 +45,7 @@ export const courses: Course[] = [
     level: 'Beginner',
     duration: '10 weeks',
     mode: 'Self-paced',
-    lessons: 48,
+    lessons: 15,
     projects: 3,
     rating: 4.8,
     reviews: 312,
@@ -90,7 +90,7 @@ export const courses: Course[] = [
     level: 'Beginner',
     duration: '8 weeks',
     mode: 'Self-paced',
-    lessons: 36,
+    lessons: 6,
     projects: 2,
     rating: 4.9,
     reviews: 245,
@@ -120,7 +120,7 @@ export const courses: Course[] = [
     level: 'Intermediate',
     duration: '6 weeks',
     mode: 'Live + Self-paced',
-    lessons: 28,
+    lessons: 6,
     projects: 2,
     rating: 4.9,
     reviews: 189,
@@ -150,7 +150,7 @@ export const courses: Course[] = [
     level: 'Beginner',
     duration: '5 weeks',
     mode: 'Self-paced',
-    lessons: 24,
+    lessons: 3,
     projects: 2,
     rating: 4.7,
     reviews: 198,
@@ -175,14 +175,14 @@ export const courses: Course[] = [
     level: 'Intermediate',
     duration: '8 weeks',
     mode: 'Live Classes',
-    lessons: 32,
+    lessons: 3,
     projects: 3,
     rating: 4.8,
     reviews: 156,
     price: 6999,
     originalPrice: 14999,
     desc: 'Product thinking, user research, roadmapping, and stakeholder management through live case studies.',
-    longDesc: 'Develop the complete product management skillset — from discovery to delivery. Live sessions, real case studies, mentor feedback, and a final product portfolio.',
+    longDesc: 'Develop the complete product management skillset — from discovery to delivery. Case studies, structured practice, and a final product portfolio in the LMS.',
     outcomes: ['Conduct user research and validation', 'Build product roadmaps', 'Write user stories and PRDs', 'Work with engineering and design', 'Build a PM portfolio'],
     forWhom: ['Engineers moving into PM roles', 'Business analysts wanting product roles', 'MBA grads targeting product management'],
     modules: [
@@ -200,7 +200,7 @@ export const courses: Course[] = [
     level: 'Intermediate',
     duration: '14 weeks',
     mode: 'Live + Self-paced',
-    lessons: 64,
+    lessons: 6,
     projects: 4,
     rating: 4.8,
     reviews: 203,
@@ -304,7 +304,7 @@ export const programs: Program[] = [
     format: 'Live + Self-paced',
     cert: 'Industry Certificate',
     outcome: 'Data Scientist / ML Engineer',
-    desc: 'Master Python, machine learning, deep learning, and NLP through live classes, expert mentorship, and real-world projects.',
+    desc: 'Master Python, machine learning, deep learning, and NLP through structured modules, mentor-style curriculum, and real-world projects.',
     upcomingBatch: '15 September 2026',
     programType: 'PROFESSIONAL',
     level: 'Advanced',
@@ -330,8 +330,8 @@ export const programs: Program[] = [
       { number: '02', title: 'Statistics & Probability', description: 'Statistical thinking, distributions, hypothesis testing, and Bayesian foundations essential for ML.', duration: '3 weeks', topics: ['Descriptive statistics', 'Probability distributions', 'Hypothesis testing', 'A/B testing fundamentals'] },
       { number: '03', title: 'Machine Learning', description: 'Supervised and unsupervised learning algorithms, model evaluation, feature engineering, and ensemble methods.', duration: '6 weeks', topics: ['Linear and logistic regression', 'Decision trees and random forests', 'SVM, KNN, Naive Bayes', 'K-Means, PCA, DBSCAN'] },
       { number: '04', title: 'Deep Learning & NLP', description: 'Neural network architectures, computer vision, sequence models, and applied NLP using transformers.', duration: '6 weeks', topics: ['Feed-forward and convolutional networks', 'RNNs, LSTMs, and attention', 'Transfer learning with HuggingFace', 'Prompt engineering basics'] },
-      { number: '05', title: 'Applied Industry Projects', description: 'Three end-to-end projects built with real-world datasets, reviewed by industry mentors, and portfolio-ready.', duration: '6 weeks' },
-      { number: '06', title: 'Career Bootcamp', description: 'Resume review, LinkedIn optimisation, mock interviews, and Career OS access for job search readiness.', duration: '3 weeks' },
+      { number: '05', title: 'Applied Industry Projects', description: 'Three end-to-end projects built with real-world datasets, kept as portfolio artifacts.', duration: '6 weeks' },
+      { number: '06', title: 'Career Bootcamp', description: 'Resume structure, interview practice, and Career OS access for job-search readiness.', duration: '3 weeks' },
     ],
     projectsDetail: [
       { title: 'Customer Churn Prediction', what: 'Build a classification model to identify at-risk customers using telecom subscriber data', skills: ['Python', 'scikit-learn', 'Feature Engineering', 'XGBoost'], difficulty: 'Intermediate' },
@@ -339,28 +339,26 @@ export const programs: Program[] = [
       { title: 'NLP Sentiment Pipeline', what: 'Fine-tune a transformer model on domain-specific review data and deploy as an inference API', skills: ['HuggingFace Transformers', 'PyTorch', 'FastAPI', 'Docker'], difficulty: 'Advanced' },
     ],
     learningExperience: [
-      'Weekly live classes with industry practitioners',
+      'Structured modules with recorded lessons and applied practice',
       'Recorded sessions accessible anytime',
-      'Live doubt resolution sessions twice per week',
-      'Mentor-reviewed project submissions',
-      'Peer learning community and group challenges',
+      'Project submissions in the LMS',
       'Career OS unlocked on program completion',
     ],
     faqs: [
       { q: 'Do I need prior programming experience?', a: 'A basic familiarity with any programming language helps, but we begin from Python fundamentals. Learners from engineering, mathematics, or science backgrounds adapt well.' },
-      { q: 'How many hours per week does this require?', a: 'Plan for 10–15 hours per week — including live sessions, recorded modules, assignments, and project work.' },
-      { q: 'Is Career OS included?', a: 'Yes. Completing a Professional Program grants full Career OS access: interview preparation, curated job board, and placement support.' },
-      { q: 'What if I miss a live session?', a: 'All live sessions are recorded and available within 24 hours. You can submit doubts asynchronously and get responses from the faculty team.' },
-      { q: 'What certification do I receive?', a: 'A Skylent Industry Certificate on completing the program and passing the final assessment. The credential includes a verifiable credential ID.' },
+      { q: 'How many hours per week does this require?', a: 'Plan for 10–15 hours per week — including recorded modules, assignments, and project work.' },
+      { q: 'Is Career OS included?', a: 'Yes. Completing a Professional Program grants Career OS access: interview preparation, a job board for opportunity discovery, and application tracking. This is career preparation — not a placement guarantee.' },
+      { q: 'What if I have questions while studying?', a: 'Use the LMS workspace to work through recorded modules and assignments. A live classroom and faculty Q&A layer is a later phase.' },
+      { q: 'What certification do I receive?', a: 'Completing the program and passing the final assessment establishes certificate eligibility. Issuance, download, and public verification are a later phase — there is no live verifiable credential ID yet.' },
     ],
     faculty: [
       { name: 'Faculty Lead · Data Science', role: 'Program Lead', expertise: 'Machine Learning & Applied AI', placeholder: true },
       { name: 'Industry Mentor · ML Engineering', role: 'Mentor', expertise: 'MLOps & Model Deployment', placeholder: true },
     ],
     pricing: [
-      { name: 'Self-paced', price: 29999, originalPrice: 59999, features: ['All recorded content', '18 modules', 'Self-paced projects', 'Skylent certificate', 'Community access'] },
-      { name: 'Pro', price: 44999, originalPrice: 89999, highlight: true, features: ['Everything in Self-paced', 'Weekly live classes', '6 industry projects', 'Mentor reviews', 'Career resources', 'LinkedIn profile support'] },
-      { name: 'Career', price: 59999, originalPrice: 119999, features: ['Everything in Pro', 'Interview preparation', '10 mock interviews', 'Resume & portfolio build', 'Job application support', 'Dedicated career manager'] },
+      { name: 'Self-paced', price: 29999, originalPrice: 59999, features: ['All recorded content', 'Curriculum in the LMS', 'Self-paced projects', 'Certificate eligibility (later phase)', 'Community access'] },
+      { name: 'Pro', price: 44999, originalPrice: 89999, highlight: true, features: ['Everything in Self-paced', 'Structured practitioner curriculum', '6 industry projects', 'Project reviews in the LMS', 'Career resources', 'LinkedIn profile support'] },
+      { name: 'Career', price: 59999, originalPrice: 119999, features: ['Everything in Pro', 'Interview preparation', 'Mock interview practice', 'Resume & portfolio build', 'Job application support', 'Career workspace guidance'] },
     ],
   },
   {
@@ -407,22 +405,22 @@ export const programs: Program[] = [
       { title: 'Financial Analytics Model', what: 'Build a multi-year financial model in Excel with scenario analysis and dynamic visualisations', skills: ['Excel', 'Financial Modelling', 'Data Visualisation'], difficulty: 'Beginner' },
     ],
     learningExperience: [
-      'Weekly live classes with practicing analytics professionals',
+      'Structured modules with recorded lessons and applied SQL/Python practice',
       'Recorded sessions for flexible learning',
       'Hands-on SQL and Python exercises in every module',
-      'Mentor-reviewed project submissions',
+      'Project submissions in the LMS',
       'Career OS unlocked on program completion',
     ],
     faqs: [
       { q: 'Do I need a technical background?', a: 'No. This program is specifically designed for non-technical learners. We start from Excel and build up through SQL, Python, and Power BI step by step.' },
-      { q: 'Is this suitable for working professionals?', a: 'Yes. The format combines recorded content and weekly live sessions so you can pace learning around your schedule.' },
+      { q: 'Is this suitable for working professionals?', a: 'Yes. Recorded modules and project work can be paced around your schedule. A live classroom layer is planned, not shipping yet.' },
       { q: 'What jobs does this program prepare me for?', a: 'Common roles include Data Analyst, Business Analyst, BI Analyst, and Reporting Analyst across industries like e-commerce, banking, consulting, and operations.' },
-      { q: 'Is Career OS included?', a: 'Yes. Completing a Professional Program grants full Career OS access: interview preparation, curated job board, and placement support.' },
+      { q: 'Is Career OS included?', a: 'Yes. Completing a Professional Program grants Career OS access: interview preparation, a job board for opportunity discovery, and application tracking. This is career preparation — not a placement guarantee.' },
     ],
     pricing: [
-      { name: 'Self-paced', price: 19999, originalPrice: 39999, features: ['All recorded content', '14 modules', 'Self-paced projects', 'Skylent certificate', 'Community access'] },
-      { name: 'Pro', price: 29999, originalPrice: 59999, highlight: true, features: ['Everything in Self-paced', 'Weekly live classes', '5 industry projects', 'Mentor reviews', 'Career resources'] },
-      { name: 'Career', price: 39999, originalPrice: 79999, features: ['Everything in Pro', 'Interview prep', 'Mock interviews', 'Resume build', 'Job assistance'] },
+      { name: 'Self-paced', price: 19999, originalPrice: 39999, features: ['All recorded content', 'Curriculum in the LMS', 'Self-paced projects', 'Certificate eligibility (later phase)', 'Community access'] },
+      { name: 'Pro', price: 29999, originalPrice: 59999, highlight: true, features: ['Everything in Self-paced', 'Structured practitioner curriculum', '5 industry projects', 'Project reviews in the LMS', 'Career resources'] },
+      { name: 'Career', price: 39999, originalPrice: 79999, features: ['Everything in Pro', 'Interview prep', 'Mock interviews', 'Resume build', 'Career workspace support'] },
     ],
   },
   {
@@ -470,22 +468,21 @@ export const programs: Program[] = [
       { title: 'REST API Service', what: 'Design and build a production-grade REST API with authentication, rate limiting, and documentation', skills: ['Node.js', 'Express', 'JWT', 'Swagger'], difficulty: 'Intermediate' },
     ],
     learningExperience: [
-      'Weekly live sessions with senior software engineers',
-      'Code reviews on every project submission',
-      'Weekly hackathons and pair programming challenges',
-      'Doubt resolution via dedicated Discord channel',
+      'Recorded modules with hands-on builds in the LMS',
+      'Project submissions you can keep in a portfolio',
+      'Structured practice across frontend and backend',
       'Career OS unlocked on program completion',
     ],
     faqs: [
       { q: 'Do I need prior coding experience?', a: 'No prior experience is required. We start from the very basics of HTML and build up to deploying full applications over 9 months.' },
-      { q: 'How is this different from self-learning?', a: 'Structured curriculum, live mentorship, real project reviews, and a community of learners — plus Career OS access on completion.' },
+      { q: 'How is this different from self-learning?', a: 'Structured curriculum, project reviews in the LMS, and a community of learners — plus Career OS access on completion. Live classroom delivery is a later phase.' },
       { q: 'What kind of jobs will I be qualified for?', a: 'Junior Full Stack Developer, Frontend Developer, Backend Developer, and Associate Software Engineer roles across product and service companies.' },
       { q: 'Is Career OS included?', a: 'Yes. Completing this Professional Program grants full Career OS access.' },
     ],
     pricing: [
-      { name: 'Self-paced', price: 24999, originalPrice: 49999, features: ['All recorded content', '16 modules', 'Projects', 'Certificate', 'Community'] },
-      { name: 'Pro', price: 39999, originalPrice: 79999, highlight: true, features: ['Everything in Self-paced', 'Live classes', '5 client projects', 'Code reviews', 'Career resources'] },
-      { name: 'Career', price: 54999, originalPrice: 109999, features: ['Everything in Pro', 'Interview prep', 'Portfolio review', 'Job assistance', 'Dedicated coach'] },
+      { name: 'Self-paced', price: 24999, originalPrice: 49999, features: ['All recorded content', 'Curriculum in the LMS', 'Projects', 'Certificate eligibility (later phase)', 'Community'] },
+      { name: 'Pro', price: 39999, originalPrice: 79999, highlight: true, features: ['Everything in Self-paced', 'Structured build track', '5 client-style projects', 'Code reviews in the LMS', 'Career resources'] },
+      { name: 'Career', price: 54999, originalPrice: 109999, features: ['Everything in Pro', 'Interview prep', 'Portfolio review', 'Career workspace support'] },
     ],
   },
   {
@@ -532,10 +529,9 @@ export const programs: Program[] = [
       { title: 'Multi-Agent Research Tool', what: 'Build an autonomous multi-agent system that researches topics, synthesises information, and generates reports', skills: ['LangGraph', 'Tool use', 'Agent evaluation', 'Python'], difficulty: 'Advanced' },
     ],
     learningExperience: [
-      'Live sessions covering the latest developments in LLMs and AI',
+      'Recorded modules covering LLMs, prompting, and application patterns',
       'Hands-on coding in every module — no passive watching',
-      'Mentor-reviewed project builds with architectural feedback',
-      'Community of AI practitioners and weekly paper discussions',
+      'Project builds in the LMS with a documented architecture',
       'Career OS unlocked on program completion',
     ],
     faqs: [
@@ -545,9 +541,9 @@ export const programs: Program[] = [
       { q: 'Is Career OS included?', a: 'Yes. Completing this Professional Program grants full Career OS access.' },
     ],
     pricing: [
-      { name: 'Self-paced', price: 14999, originalPrice: 29999, features: ['All recorded content', '10 modules', 'Projects', 'Certificate'] },
-      { name: 'Pro', price: 24999, originalPrice: 49999, highlight: true, features: ['Everything in Self-paced', 'Live sessions', '3 AI projects', 'Mentor reviews'] },
-      { name: 'Career', price: 34999, originalPrice: 69999, features: ['Everything in Pro', 'Interview prep', 'AI portfolio', 'Job assistance'] },
+      { name: 'Self-paced', price: 14999, originalPrice: 29999, features: ['All recorded content', 'Curriculum in the LMS', 'Projects', 'Certificate eligibility (later phase)'] },
+      { name: 'Pro', price: 24999, originalPrice: 49999, highlight: true, features: ['Everything in Self-paced', 'Guided project sessions (planned)', '3 AI projects', 'Project reviews in the LMS'] },
+      { name: 'Career', price: 34999, originalPrice: 69999, features: ['Everything in Pro', 'Interview prep', 'AI portfolio', 'Career workspace support'] },
     ],
   },
   {
@@ -556,10 +552,10 @@ export const programs: Program[] = [
     duration: '5 months',
     modules: 10,
     projects: 3,
-    format: 'Live Classes',
+    format: 'Recorded + case practice',
     cert: 'PM Certification',
     outcome: 'Product Manager / APM',
-    desc: 'Develop product thinking, user research, roadmapping, and stakeholder management skills through live case studies and mentorship.',
+    desc: 'Develop product thinking, user research, roadmapping, and stakeholder management skills through case studies and structured practice.',
     upcomingBatch: '5 September 2026',
     programType: 'PROFESSIONAL',
     level: 'Intermediate',
@@ -594,22 +590,22 @@ export const programs: Program[] = [
       { title: 'Case Study Portfolio', what: 'Solve 3 PM case studies (product design, metrics, and strategy) in interview-ready format', skills: ['Product Design', 'Metrics', 'Strategy', 'Communication'], difficulty: 'Advanced' },
     ],
     learningExperience: [
-      'Weekly live sessions with practicing PMs from product-led companies',
-      'Real case studies from Indian and global product companies',
-      'Mentor feedback on every project submission',
-      'Mock PM interviews with feedback from interviewers',
+      'Case studies and recorded modules in the LMS',
+      'Practice from Indian and global product examples',
+      'Project submissions for a PM portfolio',
+      'Interview-style prompts you can rehearse in Career OS',
       'Career OS unlocked on program completion',
     ],
     faqs: [
       { q: 'Do I need a technical background?', a: 'No. While engineers who transition to PM have strong technical credibility, the program is designed for learners from any background — business, design, or technical.' },
       { q: 'What companies do Skylent PM graduates join?', a: 'We do not publish placement data we cannot verify. Our focus is on giving you the skills and preparation to compete for PM roles on your own merit.' },
-      { q: 'How are the live sessions structured?', a: 'Two live sessions per week — one focused on concept and case study, one on mock interview practice and peer feedback.' },
+      { q: 'How is the program structured?', a: 'Recorded modules and case-study practice are available in the LMS. A live classroom layer is planned for a later phase — it is not a live product today.' },
       { q: 'Is Career OS included?', a: 'Yes. Completing this Professional Program grants full Career OS access.' },
     ],
     pricing: [
-      { name: 'Self-paced', price: 17999, originalPrice: 35999, features: ['Recorded sessions', '10 modules', 'Case studies', 'Certificate'] },
-      { name: 'Pro', price: 27999, originalPrice: 55999, highlight: true, features: ['Everything in Self-paced', 'Weekly live classes', '3 PM projects', 'Mentor feedback'] },
-      { name: 'Career', price: 37999, originalPrice: 75999, features: ['Everything in Pro', 'PM interview prep', 'Portfolio build', 'Job assistance'] },
+      { name: 'Self-paced', price: 17999, originalPrice: 35999, features: ['Recorded sessions', 'Curriculum in the LMS', 'Case studies', 'Certificate eligibility (later phase)'] },
+      { name: 'Pro', price: 27999, originalPrice: 55999, highlight: true, features: ['Everything in Self-paced', 'Structured case practice', '3 PM projects', 'Feedback in the LMS'] },
+      { name: 'Career', price: 37999, originalPrice: 75999, features: ['Everything in Pro', 'PM interview prep', 'Portfolio build', 'Career workspace support'] },
     ],
   },
 
@@ -622,7 +618,7 @@ export const programs: Program[] = [
     projects: 0,
     format: 'Live + Self-paced',
     cert: 'Completion Certificate',
-    outcome: 'IIT / NIT Admission',
+    outcome: 'JEE Advanced preparation',
     desc: 'Structured subject-by-subject preparation for JEE Advanced — Physics, Chemistry, and Mathematics — with concept classes, practice sets, mock tests, and performance analytics.',
     upcomingBatch: 'November 2026',
     programType: 'EXAM_PREP',
@@ -676,7 +672,7 @@ export const programs: Program[] = [
       { name: 'Mathematics Faculty · JEE', role: 'Mathematics', expertise: 'Calculus, Algebra, Coordinate Geometry', placeholder: true },
     ],
     pricing: [
-      { name: 'Foundation', price: 39999, originalPrice: 79999, features: ['All recorded content', 'Chapter tests', 'Practice sets', 'Completion certificate'] },
+      { name: 'Foundation', price: 39999, originalPrice: 79999, features: ['All recorded content', 'Chapter tests', 'Practice sets', 'Certificate eligibility (later phase)'] },
       { name: 'Full Prep', price: 59999, originalPrice: 119999, highlight: true, features: ['Everything in Foundation', 'Live concept classes', 'Full mock test series', 'Performance analytics', 'Doubt resolution sessions'] },
     ],
   },
@@ -688,7 +684,7 @@ export const programs: Program[] = [
     projects: 0,
     format: 'Live + Self-paced',
     cert: 'Completion Certificate',
-    outcome: 'IIM / Top B-School Admission',
+    outcome: 'CAT exam preparation',
     desc: 'Section-oriented CAT preparation covering VARC, DILR, and QA — with concept building, intensive practice, sectional tests, and full mock CATs with percentile analytics.',
     upcomingBatch: 'January 2027',
     programType: 'EXAM_PREP',
@@ -741,7 +737,7 @@ export const programs: Program[] = [
       { name: 'QA Faculty · CAT', role: 'Quantitative Ability', expertise: 'Arithmetic, Algebra, Geometry', placeholder: true },
     ],
     pricing: [
-      { name: 'Foundation', price: 24999, originalPrice: 49999, features: ['All recorded content', 'Sectional tests', 'Practice sets', 'Completion certificate'] },
+      { name: 'Foundation', price: 24999, originalPrice: 49999, features: ['All recorded content', 'Sectional tests', 'Practice sets', 'Certificate eligibility (later phase)'] },
       { name: 'Full Prep', price: 39999, originalPrice: 79999, highlight: true, features: ['Everything in Foundation', 'Live concept sessions', '30 full mock CATs', 'Detailed analytics', 'GD-PI preparation'] },
     ],
   },
@@ -789,10 +785,10 @@ export const programs: Program[] = [
     faqs: [
       { q: 'Which SQL dialect does this cover?', a: 'Core SQL is covered, with examples in PostgreSQL. The concepts apply directly to MySQL, SQLite, BigQuery, and Snowflake.' },
       { q: 'How long will I have access?', a: 'Lifetime access to all content and updates.' },
-      { q: 'Is there a certificate?', a: 'Yes. A Skylent Certificate of Completion is issued on passing the final assessment.' },
+      { q: 'Is there a certificate?', a: 'Certificate eligibility is planned after the final assessment. Issuance and verification are not live yet, and this programme is not open for enrollment.' },
     ],
     pricing: [
-      { name: 'Full Access', price: 4999, originalPrice: 9999, highlight: true, features: ['All 5 modules', '2 analytics projects', 'SQL practice sets', 'Certificate', 'Community access'] },
+      { name: 'Full Access', price: 4999, originalPrice: 9999, highlight: true, features: ['All 5 modules', '2 analytics projects', 'SQL practice sets', 'Certificate eligibility (later phase)', 'Community access'] },
     ],
   },
 ]
@@ -873,7 +869,7 @@ export const workshops: Workshop[] = [
     price: 1999,
     originalPrice: 4999,
     desc: 'SQL, Python, statistics, and case interviews — the full data job interview preparation in one intensive session.',
-    whatYouGet: ['200+ interview questions', 'Live mock interview', 'SQL and Python drill', 'Case study walkthrough', 'Certificate'],
+    whatYouGet: ['200+ interview questions', 'Mock interview practice (illustrative)', 'SQL and Python drill', 'Case study walkthrough'],
   },
   {
     slug: 'power-bi-workshop',
@@ -888,7 +884,7 @@ export const workshops: Workshop[] = [
     price: 2499,
     originalPrice: 5999,
     desc: 'Build three professional Power BI dashboards in two days. Hands-on from data import to published report.',
-    whatYouGet: ['3 real dashboard projects', 'DAX formula guide', 'Dataset access', 'Recordings', 'Certificate'],
+    whatYouGet: ['3 real dashboard projects', 'DAX formula guide', 'Dataset access', 'Recordings'],
   },
 ]
 
@@ -1050,11 +1046,17 @@ export const jobs: Job[] = [
 ]
 
 // ─── SUCCESS STORIES ──────────────────────────────────────────────────────────
-export const stories = [
-  { name: 'Ananya Krishnan', initials: 'AK', before: 'Commerce graduate. No technical background. No clear path into tech.', provided: 'Data Analytics program + 4 industry projects + career mentorship + placement prep.', outcome: 'Data Analyst', salary: '₹7.2 LPA', duration: '6 months', program: 'Data Analytics with Gen AI' },
-  { name: 'Rohan Mehta', initials: 'RM', before: 'Mechanical engineer. 3 years experience. No tech growth path.', provided: 'Full Stack program + 5 live projects + resume rebuild + 6 mock interviews.', outcome: 'Full Stack Developer', salary: '₹12 LPA', duration: '9 months', program: 'Full Stack Development' },
-  { name: 'Priya Nair', initials: 'PN', before: 'Recent graduate. Strong academics. No industry exposure or portfolio.', provided: 'Data Science & AI + Skylent Labs AI bootcamp + career support.', outcome: 'ML Engineer', salary: '₹14 LPA', duration: '11 months', program: 'Data Science & AI' },
-]
+/** Unpublished. StoriesPage refuses unverified names, salaries, and placement claims. */
+export const stories: Array<{
+  name: string
+  initials: string
+  before: string
+  provided: string
+  outcome: string
+  salary: string
+  duration: string
+  program: string
+}> = []
 
 // ─── DEMO USERS (for role dashboard switcher) ─────────────────────────────────
 export const demoUsers = [

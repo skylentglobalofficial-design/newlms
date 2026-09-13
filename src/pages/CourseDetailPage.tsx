@@ -6,6 +6,7 @@ import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { courses } from '../data'
 import { useCatalogCourse } from '../hooks/useCatalog'
+import { displayLessonCount, displayLessonStat } from '../lib/curriculum-counts'
 import { coursePhoto } from '../media'
 
 const accent = getDomainAccent('professional')
@@ -33,7 +34,7 @@ export default function CourseDetailPage() {
 
   const price = catalog.data?.price ?? course.price
   const originalPrice = catalog.data?.originalPrice ?? course.originalPrice
-  const lessonCount = catalog.data?.lessonCount ?? course.lessons
+  const lessonCount = displayLessonCount(catalog.data?.lessonCount, course)
   const projectCount = catalog.data?.projectCount ?? course.projects
   const enrollable = Boolean(catalog.data)
   const discount = Math.round((1 - price / originalPrice) * 100)
@@ -60,7 +61,7 @@ export default function CourseDetailPage() {
               <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 16px' }}>{course.title}</h1>
               <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 560, margin: '0 0 28px' }}>{course.longDesc}</p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
-                {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', String(lessonCount)], ['Projects', String(projectCount)]].map(([l, v]) => (
+                {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', lessonCount], ['Projects', String(projectCount)]].map(([l, v]) => (
                   <div key={l}>
                     <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{l}</div>
                     <div style={{ color: C.ink, fontSize: 15, fontWeight: 500 }}>{v}</div>
@@ -164,7 +165,7 @@ export default function CourseDetailPage() {
                   {enrollable ? 'Enroll now' : catalog.loading ? 'Checking availability…' : 'Enrollment unavailable'}
                 </Button>
                 <div style={{ display: 'grid', gap: 8 }}>
-                  {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', `${lessonCount} lessons`], ['Projects', `${projectCount} projects`], ['Certificate', 'Skylent certificate']].map(([l, v]) => (
+                  {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', displayLessonStat(lessonCount)], ['Projects', `${projectCount} projects`], ['Certificate', 'Eligibility after completion']].map(([l, v]) => (
                     <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${T.lineDark}` }}>
                       <span style={{ color: C.slate, fontSize: 13 }}>{l}</span>
                       <span style={{ color: C.ink, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>

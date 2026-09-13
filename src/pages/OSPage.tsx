@@ -86,7 +86,7 @@ function StudentLMS({ onBack }: { onBack: () => void }) {
             {(['video', 'notes', 'quiz', 'assignment'] as LMSView[]).map(v => (
               <button key={v} onClick={() => setView(v)} style={{ padding: '7px 14px', borderRadius: 6, border: `1px solid ${view === v ? accent.primary : T.lineDark}`, background: view === v ? accent.subtle : 'transparent', color: view === v ? accent.text : 'rgba(255,255,255,0.45)', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', transition: 'all 0.2s' }}>{v}</button>
             ))}
-            {assignSubmitted && currentIndex >= allLessons.length - 1 && <button onClick={() => setView('certificate')} style={{ padding: '7px 14px', borderRadius: 6, border: '1px solid #16a34a', background: view === 'certificate' ? '#16a34a' : 'transparent', color: view === 'certificate' ? C.white : '#4ade80', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-mono)' }}>CERTIFICATE</button>}
+            {assignSubmitted && currentIndex >= allLessons.length - 1 && <button onClick={() => setView('certificate')} style={{ padding: '7px 14px', borderRadius: 6, border: '1px solid #16a34a', background: view === 'certificate' ? '#16a34a' : 'transparent', color: view === 'certificate' ? C.white : '#4ade80', fontSize: 12, cursor: 'pointer', fontFamily: 'var(--font-mono)' }}>CERTIFICATE (DEMO)</button>}
           </div>
           <div style={{ padding: 28 }}>
             <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 6 }}>{activeModule.title} / {activeLesson.title}</div>
@@ -161,7 +161,7 @@ function StudentLMS({ onBack }: { onBack: () => void }) {
                       {currentIndex < allLessons.length - 1 ? (
                         <button onClick={nextLesson} style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Next Lesson</button>
                       ) : (
-                        <button onClick={() => setView('certificate')} style={{ background: '#16a34a', border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Get Certificate</button>
+                        <button onClick={() => setView('certificate')} style={{ background: '#16a34a', border: 'none', color: C.white, borderRadius: 8, padding: '11px 22px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Preview certificate (demo)</button>
                       )}
                     </div>
                   )}
@@ -176,7 +176,7 @@ function StudentLMS({ onBack }: { onBack: () => void }) {
                   <div style={{ color: C.slate, fontSize: 14, marginBottom: 6 }}>has successfully completed</div>
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, color: accent.text, fontWeight: 600, marginBottom: 14 }}>{course.title}</div>
                   <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 22 }}>August 2026 · SKY-CERT-DA-2408</div>
-                  <button style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: '11px 24px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Download Certificate</button>
+                  <button type="button" disabled style={{ background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: '11px 24px', fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-body)', opacity: 0.7, cursor: 'not-allowed' }}>Demo only — not issued</button>
                 </div>
                 <div style={{ ...glass.inset, borderRadius: 14, padding: 22 }}>
                   <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 16 }}>LEARNING PROOF — ILLUSTRATIVE DEMO DATA</div>

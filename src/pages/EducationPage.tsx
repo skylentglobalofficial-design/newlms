@@ -870,7 +870,7 @@ function ValueSection() {
                 Skills and Career OS come next.
               </Heading>
               <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 24px', maxWidth: 440 }}>
-                When academic work is done, learners move into credentialed skills programs. Professional Programs open Career OS — profile, jobs, and applications.
+                When academic work is done, learners can move into skills programs. Professional Programs open Career OS — profile, jobs, and applications.
               </p>
               <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 <Button variant="primary" onClick={() => navigate('/skills')}>Explore Skills</Button>
@@ -880,8 +880,8 @@ function ValueSection() {
             <div>
               {[
                 { name: 'Education', desc: 'Academic foundations across all levels', to: '/education', current: true },
-                { name: 'Skills', desc: 'Practical, credentialed upskilling', to: '/skills' },
-                { name: 'Career OS', desc: 'Interview prep, jobs, placement support', to: '/career-os' },
+                { name: 'Skills', desc: 'Practical, career-focused upskilling', to: '/skills' },
+                { name: 'Career OS', desc: 'Interview prep, jobs, and application tracking', to: '/career-os' },
               ].map(({ name, desc, to, current }, i) => (
                 <button
                   key={name}

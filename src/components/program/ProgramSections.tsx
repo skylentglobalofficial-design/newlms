@@ -61,7 +61,7 @@ const SLUG_ACTIVITIES: Record<string, string[]> = {
 const TYPE_ACTIVITIES: Record<ProgramType, string[]> = {
   PROFESSIONAL: [
     'Complete structured modules with hands-on work',
-    'Build portfolio projects reviewed by mentors',
+    'Build portfolio projects from coursework',
     'Pass assessments that prove applied skill',
     'Move into Career OS after program completion',
   ],
@@ -69,7 +69,7 @@ const TYPE_ACTIVITIES: Record<ProgramType, string[]> = {
     'Complete module exercises on a fixed schedule',
     'Build a capstone project for your credential',
     'Pass the program assessment',
-    'Receive a verifiable certificate',
+    'Build toward certificate eligibility',
   ],
   WEBINAR: [
     'Attend a live session with Q&A',
