@@ -2,404 +2,156 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useState } from 'react'
 import { C, FadeIn, PageShell } from '../components/shared'
 import {
-  Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader,
+  Section, Button, Eyebrow, Heading, SectionHeader,
 } from '../components/ui'
-import { Aurora, MediaImage, GlassSurface, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
-import { getDomainAccent } from '../aurora-themes'
-import { programs, workshops } from '../data'
-import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
+import { Aurora } from '../components/foundation'
 import { CAREER_OS_IA } from '../lib/product-architecture'
-import { LEARN_INTENTS, liveMatchesForIntent, type LearnIntentId } from '../lib/live-intents'
+import {
+  LEARN_INTENTS,
+  capabilitiesForIntent,
+  liveMatchesForIntent,
+  type LearnIntentId,
+  type LiveMatch,
+} from '../lib/live-intents'
+import { T } from '../tokens'
 
-// ─── DATA ─────────────────────────────────────────────────────────────────────
-
-const PROFESSIONAL = programs.filter(p => p.programType === 'PROFESSIONAL')
-const CERTIFICATES = programs.filter(p => p.programType === 'CERTIFICATE')
-const FEATURED_PRO = PROFESSIONAL.find(p => p.slug === 'data-science-ai') ?? PROFESSIONAL[0]
-const OTHER_PRO = PROFESSIONAL.filter(p => p.slug !== FEATURED_PRO?.slug)
-const FEATURED_WORKSHOP = workshops[0]
-const OTHER_WORKSHOPS = workshops.slice(1, 4)
-
-const accent = getDomainAccent('professional')
-
-const SKILLS_NAV_ITEMS: ContextualNavItem[] = [
-  { id: 'webinars', label: 'Webinars', sub: 'Coming soon' },
-  { id: 'certificate', label: 'Certificate Programs', sub: 'Focused tracks' },
-  { id: 'professional', label: 'Professional Programs', sub: 'Career products' },
-  { id: 'job-assistance', label: 'Career workspace', sub: 'Career OS' },
+const NEXT_STEPS = [
+  { label: 'Course', detail: 'Open a live course or programme from the catalogue.' },
+  { label: 'LMS', detail: 'Enroll to continue lessons, quizzes, and assignments.' },
+  { label: 'Evidence', detail: 'Progress stays on your enrollments — not a generated transcript.' },
+  { label: 'Career OS', detail: 'Learning evidence can sit beside profile, applications, and interviews.' },
 ]
 
-// ─── SKILLS PATH ──────────────────────────────────────────────────────────────
-
-function SkillsPathSection() {
-  const steps = [
-    { num: '01', label: 'Learn', desc: 'Structured curriculum in the LMS' },
-    { num: '02', label: 'Practice', desc: 'Activities, drills, and assessments' },
-    { num: '03', label: 'Build', desc: 'Projects with real deliverables' },
-    { num: '04', label: 'Prove', desc: 'Portfolio work and certificate eligibility' },
-    { num: '05', label: 'Move Forward', desc: 'Career OS and interview prep' },
-  ]
-
+function MatchRow({ match, last }: { match: LiveMatch; last: boolean }) {
   return (
-    <Section tone="canvas" divider style={{ paddingTop: T.sectionTight }}>
-      <FadeIn>
-        <SectionHeader
-          tone="light"
-          eyebrow="Skills path"
-          title="Learning → proof → career."
-          lead="Certificates and professional programs are live products. Workshop registration is not. Professional Programs include Career OS."
-        />
-      </FadeIn>
-
-      <div className="skills-path" style={{ marginTop: 48, position: 'relative' }}>
-        <div
-          aria-hidden
-          className="skills-path-line"
-          style={{
-            position: 'absolute',
-            top: 20,
-            left: '4%',
-            right: '4%',
-            height: 1,
-            background: `linear-gradient(90deg, transparent, ${accent.border}, ${accent.border}, transparent)`,
-          }}
-        />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 0 }}>
-          {steps.map((step, i) => (
-            <FadeIn key={step.label} delay={i * 50}>
-              <div style={{ padding: '0 12px 0 0' }}>
-                <div
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    background: accent.subtle,
-                    border: `1px solid ${accent.border}`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: 10,
-                    color: accent.text,
-                    marginBottom: 16,
-                  }}
-                >
-                  {step.num}
-                </div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(16px, 1.8vw, 20px)', fontWeight: 600, color: C.ink, margin: '0 0 6px' }}>
-                  {step.label}
-                </h3>
-                <p style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.55, margin: 0, maxWidth: 160 }}>
-                  {step.desc}
-                </p>
-              </div>
-            </FadeIn>
-          ))}
-        </div>
-      </div>
-    </Section>
-  )
-}
-
-// ─── WEBINARS ─────────────────────────────────────────────────────────────────
-
-function WebinarsSection() {
-  const navigate = useNavigate()
-  if (!FEATURED_WORKSHOP) return null
-
-  return (
-    <Section id="webinars" tone="canvas" divider>
-      <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col">
-        <FadeIn>
-          <Link to={`/workshops/${FEATURED_WORKSHOP.slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block', position: 'relative' }}>
-            <MediaImage
-              src={PHOTO.workshop}
-              alt={FEATURED_WORKSHOP.title}
-              aspect="16/9"
-              overlay="full"
-            />
-            <div style={{ position: 'absolute', top: 16, left: 16, zIndex: 2 }}>
-              <span
-                style={{
-                  background: 'rgba(5,5,5,0.65)',
-                  border: `1px solid ${accent.border}`,
-                  borderRadius: 6,
-                  padding: '4px 10px',
-                  fontSize: 10,
-                  fontFamily: 'var(--font-mono)',
-                  color: accent.text,
-                  letterSpacing: '0.08em',
-                }}
-              >
-                {FEATURED_WORKSHOP.mode} · {FEATURED_WORKSHOP.duration}
-              </span>
-            </div>
-          </Link>
-        </FadeIn>
-
-        <FadeIn delay={80}>
-          <Eyebrow tone="light">Webinars · coming soon</Eyebrow>
-          <Heading tone="light" size="md" style={{ margin: '20px 0 16px' }}>
-            Short sessions, when registration ships.
-          </Heading>
-          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 24px', maxWidth: 480 }}>
-            Event-oriented listings: speaker, date, duration. There is no workshop enrollment, attendance, or payment backend yet.
-          </p>
-
-          <div style={{ padding: '20px 0', borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}`, marginBottom: 24 }}>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Listed session · not open for registration</div>
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.ink, margin: '0 0 10px', lineHeight: 1.25 }}>
-              {FEATURED_WORKSHOP.title}
-            </h3>
-            <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: '0 0 16px' }}>{FEATURED_WORKSHOP.desc}</p>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-              <div>
-                <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>Date</div>
-                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.date}</div>
-              </div>
-              <div>
-                <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>Speaker</div>
-                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{FEATURED_WORKSHOP.instructor}</div>
-              </div>
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 24 }}>
-            {OTHER_WORKSHOPS.map((w, i) => (
-              <Link
-                key={w.slug}
-                to={`/workshops/${w.slug}`}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr auto',
-                  gap: 12,
-                  padding: '14px 0',
-                  borderBottom: i < OTHER_WORKSHOPS.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                  textDecoration: 'none',
-                  color: 'inherit',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{w.title}</div>
-                  <div style={{ color: C.slate, fontSize: 12 }}>{w.date} · {w.duration}</div>
-                </div>
-                <span style={{ color: accent.textMuted, fontSize: 14 }}>→</span>
-              </Link>
-            ))}
-          </div>
-
-          <Button variant="primary" onClick={() => navigate('/workshops')}>All webinars →</Button>
-        </FadeIn>
-      </div>
-    </Section>
-  )
-}
-
-// ─── CERTIFICATE PROGRAMS ─────────────────────────────────────────────────────
-
-function CertificateSection() {
-  const navigate = useNavigate()
-  const cert = CERTIFICATES[0]
-
-  return (
-    <Section id="certificate" tone="canvas" divider>
-      <div style={{ display: 'grid', gridTemplateColumns: '0.95fr 1.05fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col skills-cert-grid">
-        <FadeIn>
-          <Eyebrow tone="light">Certificate Programs</Eyebrow>
-          <Heading tone="light" size="md" style={{ margin: '20px 0 16px' }}>
-            A focused skills program.
-          </Heading>
-          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 480 }}>
-            Shorter than a Professional Program. Structured curriculum and assessment — without Career OS access. Certificate issuance is a later phase.
-          </p>
-
-          <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Credential path</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: C.slate, marginBottom: 28 }}>
-            {['Module', 'Skill', 'Project', 'Portfolio'].map((s, i, arr) => (
-              <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                <span>{s}</span>
-                {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
-              </span>
-            ))}
-          </div>
-
-          {cert ? (
+    <Link
+      to={match.to}
+      className="live-intent-row skills-match-row"
+      style={{
+        borderBottom: last ? 'none' : `1px solid ${T.lineDark}`,
+      }}
+    >
+      <div className="skills-match-row__body">
+        <div className="skills-match-row__meta">
+          <span>{match.kind === 'programme' ? 'Programme' : 'Course'}</span>
+          <span aria-hidden="true">·</span>
+          <span>{match.availability}</span>
+          {match.duration ? (
             <>
-              <div style={{ padding: '20px 0', borderTop: `1px solid ${T.lineDark}`, marginBottom: 24 }}>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink, margin: '0 0 10px' }}>{cert.name}</h3>
-                <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: '0 0 14px' }}>{cert.desc}</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, fontSize: 13, color: C.slate }}>
-                  <span>{cert.duration}</span>
-                  <span>{cert.level}</span>
-                  <span>{cert.format}</span>
-                  <span>{cert.cert}</span>
-                </div>
-              </div>
-              <Button variant="primary" onClick={() => navigate(`/programs/${cert.slug}`)}>View Program →</Button>
+              <span aria-hidden="true">·</span>
+              <span>{match.duration}</span>
             </>
-          ) : (
-            <p style={{ color: C.slate, fontSize: 14 }}>Certificate programs will appear here as they are published.</p>
-          )}
-        </FadeIn>
-
-        <FadeIn delay={80}>
-          <GlassSurface level={2} padding="28px 28px 24px" style={{ marginBottom: 20 }}>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Certificate of completion</div>
-            <div style={{ borderBottom: `1px solid ${T.lineDark}`, paddingBottom: 16, marginBottom: 16 }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 24, fontWeight: 600, color: C.ink, marginBottom: 4 }}>
-                {cert?.name ?? 'Certificate Program'}
-              </div>
-              <div style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>
-                {cert?.cert ?? 'Skylent Certificate'}
-              </div>
-            </div>
-            {cert?.curriculumDetail && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-                {cert.curriculumDetail.slice(0, 4).map((mod, i) => (
-                  <div
-                    key={mod.number}
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '32px 1fr',
-                      gap: 12,
-                      padding: '10px 0',
-                      borderBottom: i < 3 ? `1px solid ${T.lineDark}` : 'none',
-                    }}
-                  >
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text }}>{mod.number}</span>
-                    <span style={{ color: C.slate, fontSize: 13 }}>{mod.title}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </GlassSurface>
-          {cert && (
-            <MediaImage
-              src={PROGRAM_PHOTO[cert.slug] ?? DEFAULT_PROGRAM_PHOTO}
-              alt={cert.name}
-              aspect="16/9"
-              objectPosition="center"
-            />
-          )}
-        </FadeIn>
+          ) : null}
+        </div>
+        <div className="skills-match-row__title">{match.title}</div>
+        <div className="skills-match-row__capability">{match.capability}</div>
       </div>
-    </Section>
+      <span className="skills-match-row__action">
+        {match.actionLabel} →
+      </span>
+    </Link>
   )
 }
 
-// ─── PROFESSIONAL PROGRAMS ────────────────────────────────────────────────────
-
-function ProfessionalSection() {
+function IntentResults({
+  intentId,
+  onSelectIntent,
+}: {
+  intentId: LearnIntentId
+  onSelectIntent: (id: LearnIntentId) => void
+}) {
   const navigate = useNavigate()
-  if (!FEATURED_PRO) return null
-
-  const featuredPhoto = PROGRAM_PHOTO[FEATURED_PRO.slug] ?? DEFAULT_PROGRAM_PHOTO
-  const featuredProject = FEATURED_PRO.projectsDetail?.[0]
-  const lowestPrice = Math.min(...FEATURED_PRO.pricing.map(p => p.price))
+  const intent = LEARN_INTENTS.find((item) => item.id === intentId)
+  const matches = liveMatchesForIntent(intentId)
+  const capabilities = capabilitiesForIntent(intentId)
+  const otherIntents = LEARN_INTENTS.filter((item) => item.id !== intentId)
 
   return (
-    <Section id="professional" tone="canvas" divider>
+    <div id="your-direction" className="skills-direction">
+      <div className="skills-direction__capabilities">
+        <div className="skylent-label" style={{ color: C.slate, marginBottom: 10 }}>
+          What you will actually learn to do
+        </div>
+        <h2 className="skills-direction__heading">{intent?.label}</h2>
+        <p className="skills-direction__question">{intent?.question}</p>
+        {capabilities.length > 0 ? (
+          <ul className="skills-capability-list">
+            {capabilities.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="skills-direction__empty-copy">
+            No live curriculum statements are attached to this intent yet.
+          </p>
+        )}
+      </div>
+
+      <div className="skills-direction__path">
+        <div className="skylent-label" style={{ color: C.slate, marginBottom: 10 }}>
+          Available learning now
+        </div>
+        {matches.length === 0 ? (
+          <div className="skills-empty">
+            <p className="skills-empty__title">Nothing live for this intent yet.</p>
+            <p className="skills-empty__copy">
+              There is no open course or programme in the catalogue for this direction. Browse what is live, or pick another intent.
+            </p>
+            <div className="skills-empty__actions">
+              <Button variant="primary" onClick={() => navigate('/courses')}>Browse available learning</Button>
+              <Button variant="secondary" onClick={() => navigate('/programs')}>Programmes</Button>
+            </div>
+            <div className="skills-empty__alts">
+              <span className="skills-empty__alts-label">Explore another intent</span>
+              {otherIntents.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="intent-chip"
+                  onClick={() => onSelectIntent(item.id)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="live-intent-list">
+            {matches.map((match, index) => (
+              <MatchRow key={`${match.kind}-${match.slug}`} match={match} last={index === matches.length - 1} />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function WhatHappensNextSection() {
+  return (
+    <Section id="what-next" tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
       <FadeIn>
         <SectionHeader
           tone="light"
-          eyebrow="Professional Programs"
-          title="The deepest conversion product."
-          lead="Career outcome, curriculum, projects, tools, cohort, certification, and Career OS. This is the program that opens the door."
+          eyebrow="What happens next"
+          title="Course → LMS → Evidence → Career OS"
+          lead="This is the live loop after you enrol. Certificate issuance, payments, and job placement are not part of it."
         />
-      </FadeIn>
-
-      <div style={{ marginTop: 32, marginBottom: 40 }}>
-        <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Program flow</div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: C.slate }}>
-          {['Learning', 'Project', 'Assessment', 'Career Support'].map((s, i, arr) => (
-            <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: i === arr.length - 1 ? accent.text : C.ink }}>{s}</span>
-              {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="skills-pro-featured" style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }}>
-        <FadeIn>
-          <GlassSurface level={2} padding="20px 22px" style={{ marginBottom: 20 }}>
-            {featuredProject ? (
-              <>
-                <div className="skylent-label" style={{ color: accent.text, marginBottom: 12 }}>Featured project</div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
-                  <div style={{ background: C.cream, borderRadius: 8, padding: 12, minHeight: 64 }}>
-                    <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: C.slate, marginBottom: 8 }}>DATASET</div>
-                    <div style={{ height: 4, width: '80%', background: C.cream, borderRadius: 2, marginBottom: 4 }} />
-                    <div style={{ height: 4, width: '60%', background: C.cream, borderRadius: 2 }} />
-                  </div>
-                  <div style={{ background: accent.subtle, borderRadius: 8, padding: 12, minHeight: 64, border: `1px solid ${accent.border}` }}>
-                    <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: accent.textMuted, marginBottom: 8 }}>RESULT</div>
-                    <div style={{ fontSize: 10, color: C.ink, lineHeight: 1.45 }}>{featuredProject.title}</div>
-                  </div>
-                </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.slate }}>
-                  {featuredProject.skills.join(' · ')}
-                </div>
-              </>
-            ) : (
-              <div style={{ color: C.slate, fontSize: 14 }}>Portfolio projects included in every professional program.</div>
-            )}
-          </GlassSurface>
-          <MediaImage src={featuredPhoto} alt={FEATURED_PRO.name} aspect="16/9" overlay="full" />
-        </FadeIn>
-
-        <FadeIn delay={80}>
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Professional Program · Career OS</div>
-          <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 12px' }}>{FEATURED_PRO.name}</h3>
-          <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: '0 0 20px' }}>{FEATURED_PRO.desc}</p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 24 }}>
-            {[
-              { k: 'Outcome', v: FEATURED_PRO.outcome },
-              { k: 'Duration', v: FEATURED_PRO.duration },
-              { k: 'Projects', v: String(FEATURED_PRO.projects) },
-              { k: 'From', v: `₹${lowestPrice.toLocaleString('en-IN')}` },
-            ].map(({ k, v }) => (
-              <div key={k}>
-                <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{k}</div>
-                <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{v}</div>
+        <ol className="skills-next-flow">
+          {NEXT_STEPS.map((step, index) => (
+            <li key={step.label} className="skills-next-step">
+              <div className="skills-next-step__label">
+                <span className="skills-next-step__index">{String(index + 1).padStart(2, '0')}</span>
+                {step.label}
               </div>
-            ))}
-          </div>
-          <Button variant="primary" onClick={() => navigate(`/programs/${FEATURED_PRO.slug}`)}>View Program →</Button>
-
-          <div style={{ marginTop: 36, paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
-            <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>All professional programs</div>
-            {OTHER_PRO.map((p, i) => (
-              <Link
-                key={p.slug}
-                to={`/programs/${p.slug}`}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr auto',
-                  gap: 12,
-                  padding: '14px 0',
-                  borderBottom: i < OTHER_PRO.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                  textDecoration: 'none',
-                  color: 'inherit',
-                  alignItems: 'center',
-                }}
-              >
-                <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{p.name}</div>
-                  <div style={{ color: C.slate, fontSize: 12 }}>{p.outcome} · {p.duration}</div>
-                </div>
-                <span style={{ color: accent.textMuted, fontSize: 14 }}>→</span>
-              </Link>
-            ))}
-          </div>
-        </FadeIn>
-      </div>
+              <p className="skills-next-step__detail">{step.detail}</p>
+            </li>
+          ))}
+        </ol>
+      </FadeIn>
     </Section>
   )
 }
-
-// ─── JOB ASSISTANCE ───────────────────────────────────────────────────────────
 
 function JobAssistanceSection() {
   const navigate = useNavigate()
@@ -439,163 +191,25 @@ function JobAssistanceSection() {
   )
 }
 
-// ─── CAREER PROOF ─────────────────────────────────────────────────────────────
-
-function CareerProofSection() {
-  const proof = [
-    { title: 'Projects', desc: 'Portfolio work from professional and certificate programs' },
-    { title: 'Assessments', desc: 'Module tests and program evaluations' },
-    { title: 'Certificates', desc: 'Certificate eligibility after program requirements — issuance is a later phase' },
-    { title: 'Career OS', desc: 'Interview prep, applications, and job tracking on completion' },
-  ]
-
-  return (
-    <Section tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
-      <FadeIn>
-        <SectionHeader
-          tone="light"
-          eyebrow="How skills become career proof"
-          title="Capability you can show."
-          lead="Skills on Skylent are designed to produce evidence — projects, assessments, and career workspace access — not just course completion."
-        />
-        <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }} className="skills-proof-grid">
-          {proof.map((item, i) => (
-            <div
-              key={item.title}
-              style={{
-                padding: '0 20px 0 0',
-                borderRight: i < proof.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-              }}
-            >
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, marginBottom: 10 }}>
-                {String(i + 1).padStart(2, '0')}
-              </div>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, margin: '0 0 8px' }}>{item.title}</h3>
-              <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </FadeIn>
-    </Section>
-  )
-}
-
-// ─── PROGRAM DISCOVERY ────────────────────────────────────────────────────────
-
-function ProgramDiscoverySection() {
-  const navigate = useNavigate()
-  if (!FEATURED_PRO) return null
-
-  const featuredPhoto = PROGRAM_PHOTO[FEATURED_PRO.slug] ?? DEFAULT_PROGRAM_PHOTO
-  const lowestPrice = Math.min(...FEATURED_PRO.pricing.map(p => p.price))
-  const allSkillsPrograms = [...PROFESSIONAL, ...CERTIFICATES]
-
-  return (
-    <Section tone="canvas" divider>
-      <FadeIn>
-        <SectionHeader
-          tone="light"
-          eyebrow="Program discovery"
-          title="Find the right depth."
-          lead="Each listing shows duration, format, price, and outcome for live courses and programmes. Workshop pages are listings only."
-        />
-      </FadeIn>
-
-      <div className="skills-discovery" style={{ marginTop: 48, display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }}>
-        <FadeIn>
-          <Link to={`/programs/${FEATURED_PRO.slug}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-            <MediaImage src={featuredPhoto} alt={FEATURED_PRO.name} aspect="16/9" overlay="full" />
-            <div style={{ paddingTop: 24 }}>
-              <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Featured · Professional Program</div>
-              <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 12px' }}>{FEATURED_PRO.name}</h3>
-              <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: '0 0 20px', maxWidth: 520 }}>{FEATURED_PRO.desc}</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 20, marginBottom: 20 }}>
-                {[
-                  { k: 'Outcome', v: FEATURED_PRO.outcome },
-                  { k: 'Duration', v: FEATURED_PRO.duration },
-                  { k: 'From', v: `₹${lowestPrice.toLocaleString('en-IN')}` },
-                ].map(({ k, v }) => (
-                  <div key={k}>
-                    <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{k}</div>
-                    <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>{v}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Link>
-          <Button variant="primary" onClick={() => navigate(`/programs/${FEATURED_PRO.slug}`)}>View Program →</Button>
-        </FadeIn>
-
-        <FadeIn delay={80}>
-          <div className="skylent-label" style={{ color: C.slate, marginBottom: 20 }}>All skills programs</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {allSkillsPrograms.filter(p => p.slug !== FEATURED_PRO.slug).map((program, i, arr) => {
-              const photo = PROGRAM_PHOTO[program.slug] ?? DEFAULT_PROGRAM_PHOTO
-              const price = Math.min(...program.pricing.map(p => p.price))
-              const typeLabel = program.programType === 'CERTIFICATE' ? 'Certificate' : 'Professional'
-              return (
-                <Link
-                  key={program.slug}
-                  to={`/programs/${program.slug}`}
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '64px 1fr auto',
-                    gap: 14,
-                    alignItems: 'center',
-                    padding: '16px 0',
-                    borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                    textDecoration: 'none',
-                    color: 'inherit',
-                  }}
-                >
-                  <div style={{ width: 64, height: 48, borderRadius: 8, overflow: 'hidden', background: C.ink3 }}>
-                    <MediaImage src={photo} alt="" aspect="4/3" radius={8} />
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 10, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 3, letterSpacing: '0.06em' }}>{typeLabel}</div>
-                    <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 2 }}>{program.name}</div>
-                    <div style={{ color: C.slate, fontSize: 12 }}>{program.duration} · {program.outcome}</div>
-                  </div>
-                  <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.ink }}>₹{price.toLocaleString('en-IN')}</div>
-                    <div style={{ color: accent.textMuted, fontSize: 11, marginTop: 2 }}>→</div>
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
-          <div style={{ marginTop: 24, paddingTop: 20, borderTop: `1px solid ${T.lineDark}` }}>
-            <Button variant="secondary" onClick={() => navigate('/programs')}>Browse all programs</Button>
-          </div>
-        </FadeIn>
-      </div>
-    </Section>
-  )
-}
-
-// ─── PAGE ─────────────────────────────────────────────────────────────────────
-
 export default function SkillsPage() {
   const navigate = useNavigate()
-  const activeSection = useSectionSpy(SKILLS_NAV_ITEMS.map(i => i.id))
   const [intentId, setIntentId] = useState<LearnIntentId | null>(null)
-  const matches = intentId ? liveMatchesForIntent(intentId) : []
 
   return (
     <PageShell auroraTheme="professional">
       <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
         <Aurora themeId="professional" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div className="skylent-page-hero skills-page-hero" style={{ maxWidth: 760 }}>
-            <FadeIn>
+        <div className="skills-rail" style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+          <FadeIn>
+            <div className="skills-intent">
               <div className="skylent-label" style={{ color: C.indigo, marginBottom: 14 }}>Learn · live</div>
-              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 16px', maxWidth: 640 }}>
+              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 16px', maxWidth: 720 }}>
                 What are you trying to learn or become?
               </h1>
-              <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 520, margin: '0 0 28px' }}>
-                Pick an intent. Matches are live courses and open programmes from the catalogue — not a generated list.
+              <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 560, margin: '0 0 28px' }}>
+                Tell Skylent a direction. Matches are live courses and open programmes from the catalogue — not a generated list.
               </p>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 18 }}>
+              <div className="skills-intent-chips" role="group" aria-label="Learning intents">
                 {LEARN_INTENTS.map((item) => {
                   const selected = intentId === item.id
                   return (
@@ -605,88 +219,47 @@ export default function SkillsPage() {
                       className="intent-chip"
                       onClick={() => setIntentId(item.id)}
                       aria-pressed={selected}
-                      style={{
-                        background: selected ? C.cream : 'transparent',
-                        border: `1px solid ${selected ? C.indigo : T.lineStrong}`,
-                        borderRadius: 100,
-                        padding: '8px 14px',
-                        fontSize: 13,
-                        color: C.ink,
-                        cursor: 'pointer',
-                        fontFamily: 'var(--font-body)',
-                      }}
                     >
                       {item.label}
                     </button>
                   )
                 })}
               </div>
-              {intentId && (
-                <div style={{ marginBottom: 22, maxWidth: 640 }}>
-                  <div className="skylent-label" style={{ color: C.slate, marginBottom: 8 }}>
-                    {LEARN_INTENTS.find((item) => item.id === intentId)?.question} · live catalogue
+            </div>
+
+            {intentId ? (
+              <IntentResults intentId={intentId} onSelectIntent={setIntentId} />
+            ) : (
+              <div id="your-direction" className="skills-direction skills-direction--idle">
+                <div className="skills-direction__capabilities">
+                  <div className="skylent-label" style={{ color: C.slate, marginBottom: 10 }}>
+                    What you will actually learn to do
                   </div>
-                  {matches.length === 0 ? (
-                    <p style={{ color: C.slate, fontSize: 14, margin: 0 }}>No open course or programme matches this intent yet.</p>
-                  ) : (
-                    <div className="live-intent-list">
-                    {matches.map((match, index) => (
-                      <Link
-                        key={`${match.kind}-${match.slug}`}
-                        to={match.to}
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: 'auto minmax(0, 1fr) auto',
-                          gap: 12,
-                          padding: '12px 0',
-                          borderBottom: index < matches.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                          textDecoration: 'none',
-                          color: 'inherit',
-                          minWidth: 0,
-                        }}
-                        className="live-intent-row"
-                      >
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.indigo, alignSelf: 'center' }}>
-                          {match.kind === 'programme' ? 'Programme' : 'Course'}
-                        </span>
-                        <span>
-                          <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink }}>{match.title}</div>
-                          <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{match.note}</div>
-                        </span>
-                        <span style={{ color: C.indigo, fontSize: 13, fontWeight: 600, alignSelf: 'center' }}>Start →</span>
-                      </Link>
-                    ))}
-                    </div>
-                  )}
+                  <p className="skills-direction__empty-copy">
+                    Choose an intent. Skylent will show capabilities from the live curriculum, then the real path available today.
+                  </p>
                 </div>
-              )}
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Professional programmes</Button>
-                <Button variant="secondary" size="lg" onClick={() => navigate('/courses')}>Courses</Button>
+                <div className="skills-direction__path">
+                  <div className="skylent-label" style={{ color: C.slate, marginBottom: 10 }}>
+                    Available learning now
+                  </div>
+                  <p className="skills-direction__empty-copy">
+                    Pick an intent to see the matching course or programme available today.
+                  </p>
+                </div>
               </div>
-            </FadeIn>
-          </div>
+            )}
+
+            <div className="skills-intent-browse">
+              <Button variant="secondary" onClick={() => navigate('/courses')}>Courses</Button>
+              <Button variant="secondary" onClick={() => navigate('/programs')}>Programmes</Button>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
-      <ContextualNavBar items={SKILLS_NAV_ITEMS} themeId="professional" activeId={activeSection} />
-
-      <SkillsPathSection />
-      <WebinarsSection />
-      <CertificateSection />
-      <ProfessionalSection />
+      <WhatHappensNextSection />
       <JobAssistanceSection />
-      <CareerProofSection />
-      <ProgramDiscoverySection />
-
-      <CTABand
-        eyebrow="Next step"
-        title={<>Ready to become<br />career-ready?</>}
-        lead="Start with a Professional Program for Career OS access, or a focused course."
-        primary={{ label: 'Explore Professional Programs', to: '/programs' }}
-        secondary={{ label: 'See Career OS', to: '/career-os' }}
-        auroraTheme="professional"
-      />
     </PageShell>
   )
 }
