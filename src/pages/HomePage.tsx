@@ -284,16 +284,18 @@ export default function HomePage() {
                 <b>0{intent + 1} / 04</b>
               </div>
               <div className="engine-task">
-                <span className="engine-task-label">TODAY&apos;S TASK</span>
-                <h3>
-                  {intent === 0
-                    ? 'Test the idea before you memorise it.'
-                    : intent === 1
-                      ? 'Make a decision. See what changes.'
-                      : intent === 2
-                        ? 'Build a useful thing from the brief.'
-                        : 'Practice with feedback that tells you why.'}
-                </h3>
+                <div className="engine-task-copy">
+                  <span className="engine-task-label">TODAY&apos;S TASK</span>
+                  <h3>
+                    {intent === 0
+                      ? 'Test the idea before you memorise it.'
+                      : intent === 1
+                        ? 'Make a decision. See what changes.'
+                        : intent === 2
+                          ? 'Build a useful thing from the brief.'
+                          : 'Practice with feedback that tells you why.'}
+                  </h3>
+                </div>
                 {intent === 0 && (
                   <div className="engine-visual engine-simulation">
                     <div className="engine-sim-controls">
