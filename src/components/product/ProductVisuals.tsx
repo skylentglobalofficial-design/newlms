@@ -423,10 +423,10 @@ function CareerWorkspace({ accent }: { accent: Accent }) {
 function InstitutionPipeline({ accent }: { accent: Accent }) {
   const steps = ['Institution', 'Programs', 'Learners', 'Assessment', 'Progress', 'Outcomes']
   return (
-    <div>
-      <div style={{ display: 'flex', gap: 4, overflowX: 'auto', paddingBottom: 10, marginBottom: 10 }}>
+    <div style={{ minWidth: 0 }}>
+      <div style={{ display: 'flex', gap: 4, overflowX: 'auto', paddingBottom: 10, marginBottom: 10, minWidth: 0 }}>
         {steps.map((step, i) => (
-          <div key={step} style={{ flex: '1 0 64px', textAlign: 'center' }}>
+          <div key={step} style={{ flex: '1 1 0', minWidth: 48, textAlign: 'center' }}>
             <div style={{
               height: 4, borderRadius: 2, marginBottom: 6,
               background: i <= 2 ? accent.primary : 'rgba(21,23,26,0.08)',
@@ -436,7 +436,7 @@ function InstitutionPipeline({ accent }: { accent: Accent }) {
           </div>
         ))}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 8, minWidth: 0 }}>
         <div style={{ padding: 10, background: 'rgba(21,23,26,0.035)', border: `1px solid ${T.lineDark}`, borderRadius: 8 }}>
           <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 6 }}>Batch · Sem 4</div>
           <div style={{ fontSize: 10, color: '#5C6168' }}>Modules · assessments</div>

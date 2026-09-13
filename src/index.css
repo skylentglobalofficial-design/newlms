@@ -498,6 +498,8 @@ body {
   .home-orbit-metrics { flex-direction: row; flex-wrap: wrap; }
   .home-metric { flex: 1 1 calc(50% - 8px); min-width: 120px; }
   .home-mini-chart { flex: 1 1 100%; }
+  .home-journey-track { overflow-x: auto; justify-content: flex-start; padding-bottom: 4px; }
+  .home-journey-item { flex-shrink: 0; }
 }
 @media (max-width: 700px) {
   .home-hero-new, .home-section, .home-opportunity-section, .home-institution-section { padding-top: 76px; padding-bottom: 76px; }
