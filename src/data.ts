@@ -760,7 +760,7 @@ export const programs: Program[] = [
     upcomingBatch: 'Enroll anytime',
     programType: 'CERTIFICATE',
     level: 'Beginner to Intermediate',
-    enrollmentStatus: 'open',
+    enrollmentStatus: 'coming_soon',
     careerSupport: false,
     whoIsItFor: [
       'Business analysts wanting to query data without relying on engineers',
