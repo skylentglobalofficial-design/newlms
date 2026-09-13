@@ -174,7 +174,7 @@ function DomainsSection({
       pillar: 'Skills' as Pillar,
       label: 'Skills',
       accent: getDomainAccent('professional'),
-      desc: 'Practical learning from live webinars to career-ready professional programs.',
+      desc: 'Practical learning from certificate tracks to career-ready professional programs.',
       items: [
         { label: 'Webinars', type: 'WEBINAR' as ProgramType },
         { label: 'Certificate Programs', type: 'CERTIFICATE' as ProgramType },

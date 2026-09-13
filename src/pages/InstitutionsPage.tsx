@@ -245,7 +245,7 @@ function EcosystemSection() {
     {
       name: 'Skills',
       note: 'Live core',
-      items: ['Workshops', 'Certificate programmes', 'Professional programmes'],
+      items: ['Courses', 'Certificate programmes', 'Professional programmes'],
       accent: true,
     },
     {

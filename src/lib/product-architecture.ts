@@ -145,7 +145,7 @@ export const MEGA_NAV: MegaNavGroup[] = [
       { label: "Courses", sub: "Focused skills units", to: "/courses", mark: "live" },
       { label: "Programmes", sub: "Professional pathways", to: "/programs", mark: "live" },
       { label: "Skills discovery", sub: "What are you trying to become?", to: "/skills", mark: "live" },
-      { label: "Workshops", sub: "Scheduled events", to: "/workshops", mark: "live" },
+      { label: "Workshops", sub: "Listings only · registration not live", to: "/workshops", mark: "coming_soon" },
       { label: "Labs", sub: "Browser experiments", to: "/labs", mark: "demo" },
     ],
   },

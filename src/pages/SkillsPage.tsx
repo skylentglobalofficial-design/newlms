@@ -21,7 +21,7 @@ const OTHER_WORKSHOPS = workshops.slice(1, 4)
 const accent = getDomainAccent('professional')
 
 const SKILLS_NAV_ITEMS: ContextualNavItem[] = [
-  { id: 'webinars', label: 'Webinars', sub: 'Events' },
+  { id: 'webinars', label: 'Webinars', sub: 'Coming soon' },
   { id: 'certificate', label: 'Certificate Programs', sub: 'Focused tracks' },
   { id: 'professional', label: 'Professional Programs', sub: 'Career products' },
   { id: 'job-assistance', label: 'Career workspace', sub: 'Career OS' },
@@ -45,7 +45,7 @@ function SkillsPathSection() {
           tone="light"
           eyebrow="Skills path"
           title="Learning → proof → career."
-          lead="Webinars, certificates, and professional programs are separate products. Professional Programs include Career OS."
+          lead="Certificates and professional programs are live products. Workshop registration is not. Professional Programs include Career OS."
         />
       </FadeIn>
 
@@ -136,16 +136,16 @@ function WebinarsSection() {
         </FadeIn>
 
         <FadeIn delay={80}>
-          <Eyebrow tone="light">Webinars</Eyebrow>
+          <Eyebrow tone="light">Webinars · coming soon</Eyebrow>
           <Heading tone="light" size="md" style={{ margin: '20px 0 16px' }}>
-            Show up for a session. Leave with a topic mastered.
+            Short sessions, when registration ships.
           </Heading>
           <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 24px', maxWidth: 480 }}>
-            Event-oriented: speaker, date, duration, live or recorded. Open to anyone who wants a first step.
+            Event-oriented listings: speaker, date, duration. There is no workshop enrollment, attendance, or payment backend yet.
           </p>
 
           <div style={{ padding: '20px 0', borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}`, marginBottom: 24 }}>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Next session</div>
+            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Listed session · not open for registration</div>
             <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.ink, margin: '0 0 10px', lineHeight: 1.25 }}>
               {FEATURED_WORKSHOP.title}
             </h3>
@@ -495,7 +495,7 @@ function ProgramDiscoverySection() {
           tone="light"
           eyebrow="Program discovery"
           title="Find the right depth."
-          lead="Each listing shows duration, format, price, and outcome — from a single webinar to a full professional program."
+          lead="Each listing shows duration, format, price, and outcome for live courses and programmes. Workshop pages are listings only."
         />
       </FadeIn>
 
@@ -589,13 +589,13 @@ export default function SkillsPage() {
                 What are you trying to learn or become?
               </h1>
               <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 520, margin: '0 0 28px' }}>
-                Start from intent, then pick a live course or professional programme. Webinars are events. Certificate tracks are focused skills. Career OS is a workspace — not a placement service.
+                Start from intent, then pick a live course or professional programme. Workshop listings exist, but registration is not live. Certificate tracks are focused skills. Career OS is a workspace — not a placement service.
               </p>
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
                 {[
                   { label: 'Build a professional skill', to: '/programs' },
                   { label: 'Take a focused course', to: '/courses' },
-                  { label: 'Join an event', to: '/workshops' },
+                  { label: 'See workshop listings', to: '/workshops' },
                   { label: 'Open Career OS', to: '/career-os' },
                 ].map((item) => (
                   <button
@@ -639,7 +639,7 @@ export default function SkillsPage() {
       <CTABand
         eyebrow="Next step"
         title={<>Ready to become<br />career-ready?</>}
-        lead="Start with a Professional Program for Career OS access, or join a webinar to begin."
+        lead="Start with a Professional Program for Career OS access, or a focused course."
         primary={{ label: 'Explore Professional Programs', to: '/programs' }}
         secondary={{ label: 'See Career OS', to: '/career-os' }}
         auroraTheme="professional"
