@@ -250,10 +250,12 @@ export default function SkillsPage() {
               </div>
             )}
 
-            <div className="skills-intent-browse">
-              <Button variant="secondary" onClick={() => navigate('/courses')}>Courses</Button>
-              <Button variant="secondary" onClick={() => navigate('/programs')}>Programmes</Button>
-            </div>
+            {!intentId && (
+              <div className="skills-intent-browse">
+                <Button variant="secondary" onClick={() => navigate('/courses')}>Courses</Button>
+                <Button variant="secondary" onClick={() => navigate('/programs')}>Programmes</Button>
+              </div>
+            )}
           </FadeIn>
         </div>
       </section>
