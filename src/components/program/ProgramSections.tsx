@@ -132,7 +132,7 @@ export function ProgramOutcomesSection({
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'start' }} className="two-col program-outcomes-split">
           <div>
             <SectionHeader
-              tone="dark"
+              tone="light"
               eyebrow="What you will actually do"
               title="Concrete work — not feature bullets."
               lead={`This program is built around applied work that leads to: ${program.outcome}.`}
@@ -153,7 +153,7 @@ export function ProgramOutcomesSection({
                   <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, paddingTop: 2 }}>
                     {String(i + 1).padStart(2, '0')}
                   </div>
-                  <div style={{ color: 'rgba(255,255,255,0.72)', fontSize: 15, lineHeight: 1.65 }}>{activity}</div>
+                  <div style={{ color: C.slate, fontSize: 15, lineHeight: 1.65 }}>{activity}</div>
                 </div>
               ))}
             </div>
@@ -208,7 +208,7 @@ export function ProgramLearningSection({
     <Section id="experience" tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          tone="light"
           eyebrow="Learning experience"
           title={isExamPrep ? 'How preparation is structured' : 'Learn → Practice → Build → Review → Prove'}
           lead="A learning system with clear phases — not six disconnected marketing cards."
@@ -231,7 +231,7 @@ export function ProgramLearningSection({
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: accent.text }}>
                   {phases[i % phases.length]}
                 </div>
-                <div style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.65 }}>{item}</div>
+                <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.65 }}>{item}</div>
               </div>
             ))}
           </div>
@@ -253,15 +253,15 @@ export function ProgramCareerSection({
       <FadeIn>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'center' }} className="two-col">
           <div>
-            <Eyebrow tone="dark" accent>Career support</Eyebrow>
-            <h2 className="skylent-display-md" style={{ color: C.white, margin: '18px 0 16px' }}>
+            <Eyebrow tone="light" accent>Career support</Eyebrow>
+            <h2 className="skylent-display-md" style={{ color: C.ink, margin: '18px 0 16px' }}>
               From learning to application tracking.
             </h2>
-            <p style={{ color: 'rgba(255,255,255,0.48)', fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 440 }}>
+            <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 440 }}>
               Completing this Professional Program activates Career OS. Build proof from coursework, then discover roles, apply, prepare, and track — without unsupported placement claims.
             </p>
             <FlowStrip
-              tone="dark"
+              tone="light"
               steps={[
                 { label: 'Learning', sub: 'Finish program' },
                 { label: 'Proof', sub: 'Portfolio work', highlight: true },
@@ -274,8 +274,8 @@ export function ProgramCareerSection({
         <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 12 }}>
           {['Profile', 'Proof', 'Discover', 'Apply', 'Prepare', 'Track'].map(step => (
             <div key={step} style={{ padding: '14px 16px', borderTop: `1px solid ${T.lineDark}` }}>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.white, marginBottom: 4 }}>{step}</div>
-              <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, lineHeight: 1.45 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{step}</div>
+              <div style={{ color: C.muted, fontSize: 11, lineHeight: 1.45 }}>
                 {step === 'Track' ? 'See what happens after you apply' : `Career OS · ${step.toLowerCase()}`}
               </div>
             </div>

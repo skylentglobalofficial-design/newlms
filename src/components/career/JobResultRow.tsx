@@ -24,7 +24,7 @@ export default function JobResultRow({ job, selected, onSelect, onToggleSave, sa
         padding: "16px 18px",
         borderRadius: T.rControl,
         border: `1px solid ${selected ? accent.border : T.lineDark}`,
-        background: selected ? accent.subtle : "rgba(255,255,255,0.02)",
+        background: selected ? accent.subtle : C.cream,
         marginBottom: 10,
         cursor: "pointer",
         minWidth: 0,
@@ -50,18 +50,18 @@ export default function JobResultRow({ job, selected, onSelect, onToggleSave, sa
             fontFamily: "var(--font-display)",
             fontSize: 16,
             fontWeight: 600,
-            color: C.white,
+            color: C.ink,
             wordBreak: "break-word",
           }}>
             {job.title}
           </h3>
           {meta && (
-            <p style={{ margin: "0 0 4px", color: "rgba(255,255,255,0.5)", fontSize: 13, lineHeight: 1.5, wordBreak: "break-word" }}>
+            <p style={{ margin: "0 0 4px", color: C.slate, fontSize: 13, lineHeight: 1.5, wordBreak: "break-word" }}>
               {meta}
             </p>
           )}
           {secondary && (
-            <p style={{ margin: 0, color: "rgba(255,255,255,0.38)", fontSize: 12.5, lineHeight: 1.5 }}>
+            <p style={{ margin: 0, color: C.slate, fontSize: 12.5, lineHeight: 1.5 }}>
               {secondary}
             </p>
           )}
@@ -73,13 +73,13 @@ export default function JobResultRow({ job, selected, onSelect, onToggleSave, sa
                   padding: "3px 8px",
                   borderRadius: 100,
                   border: `1px solid ${T.lineDark}`,
-                  color: "rgba(255,255,255,0.45)",
+                  color: C.slate,
                 }}>
                   {skill}
                 </span>
               ))}
               {job.skills.length > 4 && (
-                <span style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", alignSelf: "center" }}>
+                <span style={{ fontSize: 11, color: C.slate, alignSelf: "center" }}>
                   +{job.skills.length - 4}
                 </span>
               )}
@@ -98,7 +98,7 @@ export default function JobResultRow({ job, selected, onSelect, onToggleSave, sa
             borderRadius: T.rControl,
             border: `1px solid ${job.saved ? accent.border : T.lineDark}`,
             background: job.saved ? accent.subtle : "transparent",
-            color: job.saved ? accent.text : "rgba(255,255,255,0.55)",
+            color: job.saved ? accent.text : C.slate,
             fontSize: 12,
             fontWeight: 500,
             cursor: savePending ? "wait" : "pointer",

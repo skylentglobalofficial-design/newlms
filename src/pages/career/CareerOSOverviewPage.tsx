@@ -62,10 +62,10 @@ export default function CareerOSOverviewPage() {
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0 }}>
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.white }}>
+        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
           Career OS
         </h1>
-        <p style={{ margin: 0, color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.6 }}>
+        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
           Your profile, applications, and interview prep in one workspace.
         </p>
       </div>
@@ -77,20 +77,20 @@ export default function CareerOSOverviewPage() {
               <div style={{ display: "flex", flexWrap: "wrap", gap: 20, justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 12, color: accent.text, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--font-mono)" }}>Profile state</div>
-                  <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: C.white, marginBottom: 6 }}>{displayName}</div>
-                  <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 14 }}>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: C.ink, marginBottom: 6 }}>{displayName}</div>
+                  <div style={{ color: C.slate, fontSize: 14 }}>
                     {profile.headline || "No headline yet"}
                   </div>
-                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, marginTop: 8 }}>
+                  <div style={{ color: C.slate, fontSize: 13, marginTop: 8 }}>
                     {[profile.preferredRole, profile.location, profile.preferredWorkMode?.replace("_", " ")].filter(Boolean).join(" · ") || "Complete your basics to help employers understand your goals"}
                   </div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 36, fontWeight: 700, color: C.white, fontFamily: "var(--font-display)", lineHeight: 1 }}>{profile.completeness.percent}%</div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 4 }}>Profile completeness</div>
+                  <div style={{ fontSize: 36, fontWeight: 700, color: C.ink, fontFamily: "var(--font-display)", lineHeight: 1 }}>{profile.completeness.percent}%</div>
+                  <div style={{ fontSize: 12, color: C.slate, marginTop: 4 }}>Profile completeness</div>
                 </div>
               </div>
-              <div style={{ marginTop: 18, height: 6, borderRadius: 100, background: "rgba(255,255,255,0.08)", overflow: "hidden" }}>
+              <div style={{ marginTop: 18, height: 6, borderRadius: 100, background: C.cream, overflow: "hidden" }}>
                 <div style={{ width: `${profile.completeness.percent}%`, height: "100%", background: `linear-gradient(90deg, ${accent.primary}, ${accent.secondary})`, borderRadius: 100 }} />
               </div>
             </GlassSurface>
@@ -103,9 +103,9 @@ export default function CareerOSOverviewPage() {
                 { label: "Projects", value: profile.projects.length },
                 { label: "Links", value: profile.links.length },
               ].map(item => (
-                <div key={item.label} style={{ padding: "14px 16px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.02)" }}>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: C.white }}>{item.value}</div>
-                  <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)", marginTop: 2 }}>{item.label}</div>
+                <div key={item.label} style={{ padding: "14px 16px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
+                  <div style={{ fontSize: 22, fontWeight: 700, color: C.ink }}>{item.value}</div>
+                  <div style={{ fontSize: 12, color: C.slate, marginTop: 2 }}>{item.label}</div>
                 </div>
               ))}
             </div>
@@ -113,7 +113,7 @@ export default function CareerOSOverviewPage() {
             {nextAction && (
               <div style={{ padding: "16px 18px", borderRadius: T.rControl, border: `1px solid ${accent.border}`, background: accent.subtle, marginBottom: 20 }}>
                 <div style={{ fontSize: 12, color: accent.text, marginBottom: 4 }}>Next action</div>
-                <div style={{ color: C.white, fontSize: 15, marginBottom: 12 }}>{nextAction}</div>
+                <div style={{ color: C.ink, fontSize: 15, marginBottom: 12 }}>{nextAction}</div>
                 <Link to="/career-os/profile" style={{ color: accent.text, fontSize: 13, textDecoration: "none", fontWeight: 600 }}>
                   Open profile workspace →
                 </Link>
@@ -122,8 +122,8 @@ export default function CareerOSOverviewPage() {
 
             {profile.completeness.percent < 100 && profile.completeness.missing.length > 0 && (
               <div style={{ marginBottom: 20 }}>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white, margin: "0 0 12px" }}>Still to complete</h2>
-                <ul style={{ margin: 0, paddingLeft: 18, color: "rgba(255,255,255,0.5)", fontSize: 14, lineHeight: 1.8 }}>
+                <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink, margin: "0 0 12px" }}>Still to complete</h2>
+                <ul style={{ margin: 0, paddingLeft: 18, color: C.slate, fontSize: 14, lineHeight: 1.8 }}>
                   {profile.completeness.missing.map(item => <li key={item}>{item}</li>)}
                 </ul>
               </div>
@@ -135,19 +135,19 @@ export default function CareerOSOverviewPage() {
             <GlassSurface level={2} padding="18px">
               <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Quick actions</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <Link to="/career-os/profile" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                <Link to="/career-os/profile" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
                   Edit profile
                 </Link>
-                <Link to="/career-os/jobs" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                <Link to="/career-os/jobs" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
                   Browse jobs
                 </Link>
-                <Link to="/career-os/applications" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                <Link to="/career-os/applications" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
                   View applications
                 </Link>
-                <Link to="/career-os/interviews" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                <Link to="/career-os/interviews" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
                   Interview prep
                 </Link>
-                <Link to="/career-os/support" style={{ color: C.white, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.03)" }}>
+                <Link to="/career-os/support" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
                   Career support
                 </Link>
               </div>
@@ -156,8 +156,8 @@ export default function CareerOSOverviewPage() {
             {activeSupport.length > 0 && (
               <GlassSurface level={2} padding="18px">
                 <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Career support</div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: C.white, marginBottom: 4 }}>{activeSupport.length} active request{activeSupport.length === 1 ? "" : "s"}</div>
-                <p style={{ margin: "0 0 10px", color: "rgba(255,255,255,0.42)", fontSize: 12.5 }}>
+                <div style={{ fontSize: 22, fontWeight: 700, color: C.ink, marginBottom: 4 }}>{activeSupport.length} active request{activeSupport.length === 1 ? "" : "s"}</div>
+                <p style={{ margin: "0 0 10px", color: C.slate, fontSize: 12.5 }}>
                   {openSupportTasks > 0
                     ? `${openSupportTasks} open task${openSupportTasks === 1 ? "" : "s"}`
                     : nextSupportTask
@@ -172,14 +172,14 @@ export default function CareerOSOverviewPage() {
                     padding: "10px 12px",
                     borderRadius: T.rControl,
                     border: `1px solid ${T.lineDark}`,
-                    background: "rgba(255,255,255,0.02)",
+                    background: C.cream,
                     marginBottom: 8,
                   }}
                 >
-                  <div style={{ color: C.white, fontSize: 13, fontWeight: 500, wordBreak: "break-word" }}>
+                  <div style={{ color: C.ink, fontSize: 13, fontWeight: 500, wordBreak: "break-word" }}>
                     {activeSupport[0].subject}
                   </div>
-                  <div style={{ color: "rgba(255,255,255,0.42)", fontSize: 12, marginTop: 2 }}>
+                  <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>
                     {[formatRequestType(activeSupport[0].type), formatRequestStatus(activeSupport[0].status)].join(" · ")}
                   </div>
                 </Link>
@@ -202,13 +202,13 @@ export default function CareerOSOverviewPage() {
                         padding: "10px 12px",
                         borderRadius: T.rControl,
                         border: `1px solid ${T.lineDark}`,
-                        background: "rgba(255,255,255,0.02)",
+                        background: C.cream,
                       }}
                     >
-                      <div style={{ color: C.white, fontSize: 13, fontWeight: 500, wordBreak: "break-word" }}>
+                      <div style={{ color: C.ink, fontSize: 13, fontWeight: 500, wordBreak: "break-word" }}>
                         {round.title}
                       </div>
-                      <div style={{ color: "rgba(255,255,255,0.42)", fontSize: 12, marginTop: 2 }}>
+                      <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>
                         {[formatRoundType(round.type), formatRoundStatus(round.status), round.scheduledAt ? formatInterviewDateTime(round.scheduledAt) : null].filter(Boolean).join(" · ")}
                       </div>
                     </Link>
@@ -223,11 +223,11 @@ export default function CareerOSOverviewPage() {
             <GlassSurface level={2} padding="18px">
               <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Applications</div>
               {appsError ? (
-                <p style={{ margin: 0, color: "rgba(255,255,255,0.45)", fontSize: 13 }}>{appsError}</p>
+                <p style={{ margin: 0, color: C.slate, fontSize: 13 }}>{appsError}</p>
               ) : (
-                <div style={{ fontSize: 28, fontWeight: 700, color: C.white }}>{applicationCount ?? "—"}</div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: C.ink }}>{applicationCount ?? "—"}</div>
               )}
-              <p style={{ margin: "8px 0 0", color: "rgba(255,255,255,0.4)", fontSize: 12.5 }}>Tracked applications from Career OS</p>
+              <p style={{ margin: "8px 0 0", color: C.slate, fontSize: 12.5 }}>Tracked applications from Career OS</p>
               {recentApplications.length > 0 && (
                 <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8 }}>
                   {recentApplications.map((app: JobApplication) => (
@@ -239,13 +239,13 @@ export default function CareerOSOverviewPage() {
                         padding: "10px 12px",
                         borderRadius: T.rControl,
                         border: `1px solid ${T.lineDark}`,
-                        background: "rgba(255,255,255,0.02)",
+                        background: C.cream,
                       }}
                     >
-                      <div style={{ color: C.white, fontSize: 13, fontWeight: 500, wordBreak: "break-word" }}>
+                      <div style={{ color: C.ink, fontSize: 13, fontWeight: 500, wordBreak: "break-word" }}>
                         {applicationRoleTitle(app)}
                       </div>
-                      <div style={{ color: "rgba(255,255,255,0.42)", fontSize: 12, marginTop: 2 }}>
+                      <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>
                         {[applicationEmployerName(app), formatStatusLabel(app.status)].filter(Boolean).join(" · ")}
                       </div>
                     </Link>

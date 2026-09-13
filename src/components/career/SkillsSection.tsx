@@ -125,9 +125,9 @@ export default function SkillsSection({ profile, onProfileUpdate }: Props) {
                 </>
               )}
             >
-              <span style={{ color: C.white, fontWeight: 600 }}>{skill.name}</span>
+              <span style={{ color: C.ink, fontWeight: 600 }}>{skill.name}</span>
               {(skill.category || skill.proficiency) && (
-                <span style={{ color: "rgba(255,255,255,0.45)", fontSize: 12.5, marginLeft: 8 }}>
+                <span style={{ color: C.slate, fontSize: 12.5, marginLeft: 8 }}>
                   {[skill.category, skill.proficiency].filter(Boolean).join(" · ")}
                 </span>
               )}

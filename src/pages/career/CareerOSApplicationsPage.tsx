@@ -42,10 +42,10 @@ export default function CareerOSApplicationsPage() {
     <div style={{ maxWidth: 900, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, marginBottom: 24, flexWrap: "wrap" }}>
         <div style={{ minWidth: 0 }}>
-          <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.white }}>
+          <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
             Applications
           </h1>
-          <p style={{ margin: 0, color: "rgba(255,255,255,0.48)", fontSize: 14, lineHeight: 1.6 }}>
+          <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
             Track every role you apply to and where each application stands.
           </p>
         </div>
@@ -64,7 +64,7 @@ export default function CareerOSApplicationsPage() {
             padding: "16px 18px",
             borderRadius: T.rControl,
             border: `1px solid ${T.lineDark}`,
-            background: "rgba(255,255,255,0.03)",
+            background: C.cream,
           }}
         >
           <Field label="Role title">
@@ -76,7 +76,7 @@ export default function CareerOSApplicationsPage() {
               maxLength={200}
             />
           </Field>
-          <p style={{ margin: "10px 0 0", color: "rgba(255,255,255,0.4)", fontSize: 12.5 }}>
+          <p style={{ margin: "10px 0 0", color: C.slate, fontSize: 12.5 }}>
             Use this to track applications outside the job board. Roles applied from Jobs are added automatically.
           </p>
           <button type="submit" disabled={addPending || !roleTitle.trim()} style={{ ...primaryButtonStyle, marginTop: 14 }}>
@@ -107,7 +107,7 @@ export default function CareerOSApplicationsPage() {
               padding: "10px 16px",
               borderRadius: T.rControl,
               background: accent.primary,
-              color: C.white,
+              color: C.ink,
               fontSize: 13,
               fontWeight: 600,
               textDecoration: "none",

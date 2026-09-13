@@ -155,17 +155,17 @@ export default function ExperienceSection({ profile, onProfileUpdate }: Props) {
                 </>
               )}
             >
-              <div style={{ color: C.white, fontWeight: 600 }}>{entry.role}</div>
-              <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 13.5, marginTop: 4 }}>
+              <div style={{ color: C.ink, fontWeight: 600 }}>{entry.role}</div>
+              <div style={{ color: C.slate, fontSize: 13.5, marginTop: 4 }}>
                 {entry.company}
                 {entry.location ? ` · ${entry.location}` : ""}
               </div>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12.5, marginTop: 4 }}>
+              <div style={{ color: C.slate, fontSize: 12.5, marginTop: 4 }}>
                 {formatDates(entry)}
                 {entry.employmentType ? ` · ${entry.employmentType.replace("_", " ")}` : ""}
               </div>
               {entry.description && (
-                <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13.5, lineHeight: 1.6, margin: "10px 0 0" }}>{entry.description}</p>
+                <p style={{ color: C.slate, fontSize: 13.5, lineHeight: 1.6, margin: "10px 0 0" }}>{entry.description}</p>
               )}
             </EntryCard>
           )
@@ -200,7 +200,7 @@ export default function ExperienceSection({ profile, onProfileUpdate }: Props) {
           <Field label="Description">
             <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} rows={4} style={{ ...fieldInputStyle, resize: "vertical", marginTop: 14 }} />
           </Field>
-          <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, color: "rgba(255,255,255,0.55)", fontSize: 13 }}>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 12, color: C.slate, fontSize: 13 }}>
             <input type="checkbox" checked={form.currentlyWorking} onChange={e => setForm(f => ({ ...f, currentlyWorking: e.target.checked }))} />
             I currently work here
           </label>

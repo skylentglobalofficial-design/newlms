@@ -53,12 +53,12 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
           fontFamily: "var(--font-display)",
           fontSize: "clamp(18px, 2.2vw, 22px)",
           fontWeight: 700,
-          color: C.white,
+          color: C.ink,
           wordBreak: "break-word",
         }}>
           {job.title}
         </h2>
-        <p style={{ margin: 0, color: "rgba(255,255,255,0.5)", fontSize: 13.5, lineHeight: 1.6, wordBreak: "break-word" }}>
+        <p style={{ margin: 0, color: C.slate, fontSize: 13.5, lineHeight: 1.6, wordBreak: "break-word" }}>
           {jobMetaLine(job)}
         </p>
       </div>
@@ -69,51 +69,51 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
         <dl style={{ margin: "0 0 18px", display: "grid", gap: 10 }}>
           {formatWorkMode(job.workMode) && (
             <div>
-              <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Work mode</dt>
-              <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{formatWorkMode(job.workMode)}</dd>
+              <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Work mode</dt>
+              <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{formatWorkMode(job.workMode)}</dd>
             </div>
           )}
           {formatEmploymentType(job.employmentType) && (
             <div>
-              <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Employment type</dt>
-              <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{formatEmploymentType(job.employmentType)}</dd>
+              <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Employment type</dt>
+              <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{formatEmploymentType(job.employmentType)}</dd>
             </div>
           )}
           {job.location && (
             <div>
-              <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Location</dt>
-              <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{job.location}</dd>
+              <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Location</dt>
+              <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{job.location}</dd>
             </div>
           )}
           {experience && (
             <div>
-              <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Experience</dt>
-              <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{experience}</dd>
+              <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Experience</dt>
+              <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{experience}</dd>
             </div>
           )}
           {salary && (
             <div>
-              <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Compensation range</dt>
-              <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{salary}</dd>
+              <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Compensation range</dt>
+              <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{salary}</dd>
             </div>
           )}
           {posted && (
             <div>
-              <dt style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 2 }}>Posted</dt>
-              <dd style={{ margin: 0, color: C.white, fontSize: 13.5 }}>{posted}</dd>
+              <dt style={{ fontSize: 11, color: C.slate, marginBottom: 2 }}>Posted</dt>
+              <dd style={{ margin: 0, color: C.ink, fontSize: 13.5 }}>{posted}</dd>
             </div>
           )}
         </dl>
 
         {job.employer && (
-          <div style={{ marginBottom: 18, padding: "12px 14px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "rgba(255,255,255,0.02)" }}>
+          <div style={{ marginBottom: 18, padding: "12px 14px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
             <div style={{ fontSize: 11, color: accent.text, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Employer</div>
-            <div style={{ color: C.white, fontWeight: 600, fontSize: 14, wordBreak: "break-word" }}>{job.employer.name}</div>
+            <div style={{ color: C.ink, fontWeight: 600, fontSize: 14, wordBreak: "break-word" }}>{job.employer.name}</div>
             {job.employer.location && (
-              <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12.5, marginTop: 4 }}>{job.employer.location}</div>
+              <div style={{ color: C.slate, fontSize: 12.5, marginTop: 4 }}>{job.employer.location}</div>
             )}
             {job.employer.description && (
-              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, lineHeight: 1.6, margin: "10px 0 0", wordBreak: "break-word" }}>
+              <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: "10px 0 0", wordBreak: "break-word" }}>
                 {job.employer.description}
               </p>
             )}
@@ -126,15 +126,15 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
         )}
 
         <div style={{ marginBottom: 16 }}>
-          <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Role description</div>
-          <p style={{ margin: 0, color: "rgba(255,255,255,0.62)", fontSize: 14, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
+          <div style={{ fontSize: 11, color: C.slate, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Role description</div>
+          <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.7, whiteSpace: "pre-wrap", wordBreak: "break-word" }}>
             {job.description}
           </p>
         </div>
 
         {job.skills.length > 0 && (
           <div style={{ marginBottom: 8 }}>
-            <div style={{ fontSize: 11, color: "rgba(255,255,255,0.4)", marginBottom: 8 }}>Skills</div>
+            <div style={{ fontSize: 11, color: C.slate, marginBottom: 8 }}>Skills</div>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
               {job.skills.map(skill => (
                 <span key={skill} style={{
@@ -205,8 +205,8 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
               padding: "10px 16px",
               borderRadius: T.rControl,
               border: "none",
-              background: alreadyApplied ? "rgba(255,255,255,0.12)" : accent.primary,
-              color: C.white,
+              background: alreadyApplied ? C.cream : accent.primary,
+              color: C.ink,
               fontSize: 13,
               fontWeight: 600,
               cursor: applyPending || alreadyApplied ? "default" : "pointer",

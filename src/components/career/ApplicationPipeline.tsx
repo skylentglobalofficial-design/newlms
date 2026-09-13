@@ -87,11 +87,11 @@ export default function ApplicationPipeline({ applications, statusFilter, onStat
                 fontFamily: "var(--font-display)",
                 fontSize: 16,
                 fontWeight: 600,
-                color: C.white,
+                color: C.ink,
               }}>
                 {formatStatusLabel(status)}
               </h2>
-              <span style={{ fontSize: 12, color: "rgba(255,255,255,0.38)" }}>
+              <span style={{ fontSize: 12, color: C.slate }}>
                 {groups[status].length} {groups[status].length === 1 ? "application" : "applications"}
               </span>
             </div>
@@ -125,7 +125,7 @@ export default function ApplicationPipeline({ applications, statusFilter, onStat
       borderRadius: T.rControl,
       border: `1px solid ${active ? accent.border : T.lineDark}`,
       background: active ? accent.subtle : "transparent",
-      color: active ? accent.text : "rgba(255,255,255,0.5)",
+      color: active ? accent.text : C.slate,
       fontSize: 12.5,
       fontWeight: active ? 600 : 400,
       cursor: "pointer",

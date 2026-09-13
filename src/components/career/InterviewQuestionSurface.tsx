@@ -36,7 +36,7 @@ export default function InterviewQuestionSurface({
   return (
     <section style={{ minWidth: 0 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
-        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white }}>
+        <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>
           Practice questions
         </h2>
       </div>
@@ -63,7 +63,7 @@ export default function InterviewQuestionSurface({
       </div>
 
       {questions.length === 0 ? (
-        <p style={{ margin: 0, color: "rgba(255,255,255,0.45)", fontSize: 14 }}>
+        <p style={{ margin: 0, color: C.slate, fontSize: 14 }}>
           No interview questions are available yet.
         </p>
       ) : (
@@ -78,7 +78,7 @@ export default function InterviewQuestionSurface({
                   padding: "14px 16px",
                   borderRadius: T.rControl,
                   border: `1px solid ${active ? accent.border : T.lineDark}`,
-                  background: active ? accent.subtle : "rgba(255,255,255,0.02)",
+                  background: active ? accent.subtle : C.cream,
                   minWidth: 0,
                 }}
               >
@@ -97,7 +97,7 @@ export default function InterviewQuestionSurface({
                   </div>
                 </div>
                 {revealed && (
-                  <p style={{ margin: 0, color: "rgba(255,255,255,0.72)", fontSize: 14, lineHeight: 1.7, wordBreak: "break-word" }}>
+                  <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.7, wordBreak: "break-word" }}>
                     {q.question}
                   </p>
                 )}
@@ -110,7 +110,7 @@ export default function InterviewQuestionSurface({
       {selected && (
         <div style={{ marginTop: 16, padding: "14px 16px", borderRadius: T.rControl, border: `1px solid ${accent.border}`, background: accent.subtle }}>
           <div style={{ fontSize: 11, color: accent.text, marginBottom: 6 }}>Selected for practice</div>
-          <p style={{ margin: 0, color: C.white, fontSize: 14, lineHeight: 1.7, wordBreak: "break-word" }}>{selected.question}</p>
+          <p style={{ margin: 0, color: C.ink, fontSize: 14, lineHeight: 1.7, wordBreak: "break-word" }}>{selected.question}</p>
         </div>
       )}
     </section>
@@ -121,8 +121,8 @@ const filterStyle: CSSProperties = {
   padding: "8px 12px",
   borderRadius: T.rControl,
   border: `1px solid ${T.lineDark}`,
-  background: "rgba(255,255,255,0.04)",
-  color: C.white,
+  background: C.cream,
+  color: C.ink,
   fontSize: 13,
   fontFamily: "var(--font-body)",
 }
@@ -132,7 +132,7 @@ const chipButtonStyle: CSSProperties = {
   borderRadius: T.rControl,
   border: `1px solid ${T.lineDark}`,
   background: "transparent",
-  color: "rgba(255,255,255,0.65)",
+  color: C.slate,
   fontSize: 12,
   cursor: "pointer",
   fontFamily: "var(--font-body)",

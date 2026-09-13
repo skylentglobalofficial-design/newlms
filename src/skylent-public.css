@@ -1,0 +1,132 @@
+/* Skylent public brand — light-first, editorial, academic.
+   LMS workspaces keep their own shell. Do not import dark SaaS aesthetics here. */
+
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap');
+
+:root {
+  --color-ink: #15171A;
+  --color-ink-2: #1C1F24;
+  --color-ink-3: #2A2E35;
+  --color-orange: #F97316;
+  --color-indigo: #4F46E5;
+  --color-blue: #2563EB;
+  --color-warm-white: #F7F4EC;
+  --color-cream: #FFFDF8;
+  --color-sand: #E8E2D6;
+  --color-slate: #5C6168;
+  --color-canvas: #F7F4EC;
+  --color-line: rgba(21, 23, 26, 0.10);
+  --color-line-strong: rgba(21, 23, 26, 0.16);
+  --font-display: 'Source Serif 4', 'Iowan Old Style', Georgia, serif;
+  --glass-01-bg: rgba(255, 253, 248, 0.92);
+  --glass-01-border: rgba(21, 23, 26, 0.10);
+  --glass-01-shadow: 0 8px 28px rgba(21, 23, 26, 0.06);
+  --glass-02-bg: #FFFDF8;
+  --glass-02-border: rgba(21, 23, 26, 0.10);
+  --glass-02-shadow: 0 10px 32px rgba(21, 23, 26, 0.06);
+  --glass-03-bg: #FFFDF8;
+  --glass-03-border: rgba(21, 23, 26, 0.08);
+  --glass-03-shadow: 0 16px 40px rgba(21, 23, 26, 0.07);
+}
+
+html, body {
+  background-color: #F7F4EC;
+  color: #15171A;
+}
+
+.skylent-public-canvas {
+  background: #F7F4EC;
+  color: #15171A;
+}
+
+.skylent-display-xl,
+.skylent-display-lg,
+.skylent-display-md,
+.skylent-display-sm {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: #15171A;
+}
+
+.skylent-label {
+  color: #5C6168;
+}
+
+/* Public content written for a former dark canvas */
+.skylent-public-canvas main h1,
+.skylent-public-canvas main h2,
+.skylent-public-canvas main h3,
+.skylent-public-canvas main h4 {
+  color: #15171A !important;
+}
+
+.skylent-public-canvas main p[style*="color: rgba(255"],
+.skylent-public-canvas main div[style*="color: rgba(255, 255, 255"],
+.skylent-public-canvas main div[style*="color: rgba(255,255,255"],
+.skylent-public-canvas main span[style*="color: rgba(255, 255, 255"],
+.skylent-public-canvas main span[style*="color: rgba(255,255,255"] {
+  color: #5C6168 !important;
+}
+
+.skylent-public-canvas main div[style*="color: #FFFFFF"],
+.skylent-public-canvas main span[style*="color: #FFFFFF"],
+.skylent-public-canvas main p[style*="color: #FFFFFF"],
+.skylent-public-canvas main li[style*="color: #FFFFFF"],
+.skylent-public-canvas main strong[style*="color: #FFFFFF"],
+.skylent-public-canvas main td[style*="color: #FFFFFF"] {
+  color: #15171A !important;
+}
+
+.skylent-public-canvas main input,
+.skylent-public-canvas main textarea,
+.skylent-public-canvas main select {
+  color: #15171A;
+}
+
+.skylent-public-canvas main input::placeholder,
+.skylent-public-canvas main textarea::placeholder {
+  color: #8A8F96;
+}
+
+.skylent-public-canvas .scroll-control-strip::before {
+  background: linear-gradient(to right, #F7F4EC 0%, transparent 100%);
+}
+.skylent-public-canvas .scroll-control-strip::after {
+  background: linear-gradient(to left, #F7F4EC 0%, transparent 100%);
+}
+
+@media (max-width: 768px) {
+  .skylent-public-canvas .labs-filter-group {
+    border-right: 1px solid rgba(21, 23, 26, 0.10);
+  }
+}
+
+/* Labs / OS / lab workspace shells */
+.skylent-lab-shell {
+  background: #F7F4EC !important;
+  color: #15171A;
+  font-family: var(--font-body);
+}
+
+.skylent-lab-shell [style*="color: rgba(255,255,255"],
+.skylent-lab-shell [style*="color: rgba(255, 255, 255"] {
+  color: #5C6168 !important;
+}
+
+.skylent-lab-shell :not(button)[style*="color: #FFFFFF"],
+.skylent-lab-shell :not(button)[style*="color: #fff"] {
+  color: #15171A !important;
+}
+
+.skylent-lab-shell [style*="background: #0a0c0e"],
+.skylent-lab-shell [style*="background: #0d1117"],
+.skylent-lab-shell [style*="background: #0d0f11"],
+.skylent-lab-shell [style*="background: #161b22"],
+.skylent-lab-shell [style*="background: #111318"] {
+  background: #FFFDF8 !important;
+}
+
+.os-gateway {
+  background: #F7F4EC !important;
+  color: #15171A;
+}
