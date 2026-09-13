@@ -70,7 +70,7 @@ export function AuthDashboardShell({
       <div style={{ padding: '22px 20px 18px', borderBottom: `1px solid ${T.lineLight}` }}>
         <Link to="/" style={{ textDecoration: 'none' }}>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: C.ink, letterSpacing: '-0.02em' }}>
-            Skylent<span style={{ color: accent.primary }}>.</span>
+            Skylent<span style={{ color: C.orange }}>.</span>
           </div>
         </Link>
         <div style={{ color: C.slate, fontSize: 11, marginTop: 4, letterSpacing: '0.04em' }}>{workspaceLabel}</div>
@@ -185,14 +185,14 @@ export function AuthDashboardShell({
         {/* Level 1 — mobile header chrome */}
         <header className="auth-shell-mobile-header" style={{
           display: 'none', position: 'sticky', top: 0, zIndex: 90,
-          padding: '12px 16px', background: 'rgba(246,244,238,0.92)', borderBottom: `1px solid ${T.lineLight}`,
+          padding: '12px 16px', background: 'rgba(247,244,236,0.92)', borderBottom: `1px solid ${T.lineLight}`,
           backdropFilter: 'blur(16px)', alignItems: 'center', justifyContent: 'space-between',
         }}>
           <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu" style={{ background: 'none', border: 'none', color: C.ink, padding: 8, cursor: 'pointer' }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
           <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink }}>
-            Skylent<span style={{ color: accent.primary }}>.</span>
+            Skylent<span style={{ color: C.orange }}>.</span>
           </span>
           <div style={{ width: 36 }} />
         </header>
@@ -206,7 +206,7 @@ export function AuthDashboardShell({
       {/* Level 1 — mobile bottom nav */}
       <nav className="auth-shell-bottom-nav" style={{
         position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
-        background: 'rgba(246,244,238,0.94)', borderTop: `1px solid ${T.lineLight}`,
+        background: 'rgba(247,244,236,0.94)', borderTop: `1px solid ${T.lineLight}`,
         backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
         display: 'none', justifyContent: 'space-around',
         padding: '8px 4px max(8px, env(safe-area-inset-bottom))',

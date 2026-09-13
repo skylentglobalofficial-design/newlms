@@ -1,4 +1,5 @@
-// Semantic Aurora themes — color shifts by domain/page; design system stays identical.
+// Semantic accent themes. Public Skylent is light-first: indigo + selective blue.
+// Do not use these as full-page colour washes or rainbow category systems.
 
 export type AuroraThemeId =
   | 'general'
@@ -22,27 +23,30 @@ export type AuroraTheme = {
   id: AuroraThemeId
   primary: string
   secondary: string
-  /** CSS opacity suffix for radial gradients (hex alpha) */
+  /** CSS opacity suffix for radial gradients (hex alpha) — keep extremely low */
   strength: string
 }
 
+const INDIGO = '#4F46E5'
+const BLUE = '#2563EB'
+
 export const AURORA_THEMES: Record<AuroraThemeId, AuroraTheme> = {
-  general: { id: 'general', primary: '#6366F1', secondary: '#3B82F6', strength: '18' },
-  'data-science': { id: 'data-science', primary: '#8B5CF6', secondary: '#6366F1', strength: '28' },
-  'data-analytics': { id: 'data-analytics', primary: '#06B6D4', secondary: '#3B82F6', strength: '20' },
-  'full-stack': { id: 'full-stack', primary: '#10B981', secondary: '#14B8A6', strength: '20' },
-  jee: { id: 'jee', primary: '#F59E0B', secondary: '#F97316', strength: '18' },
-  neet: { id: 'neet', primary: '#EC4899', secondary: '#D946EF', strength: '20' },
-  cat: { id: 'cat', primary: '#A855F7', secondary: '#3B82F6', strength: '20' },
-  schooling: { id: 'schooling', primary: '#38BDF8', secondary: '#3B82F6', strength: '18' },
-  undergraduate: { id: 'undergraduate', primary: '#3B82F6', secondary: '#06B6D4', strength: '18' },
-  postgraduate: { id: 'postgraduate', primary: '#8B5CF6', secondary: '#7C3AED', strength: '20' },
-  professional: { id: 'professional', primary: '#10B981', secondary: '#14B8A6', strength: '18' },
-  certificate: { id: 'certificate', primary: '#06B6D4', secondary: '#3B82F6', strength: '18' },
-  webinar: { id: 'webinar', primary: '#EC4899', secondary: '#D946EF', strength: '18' },
-  career: { id: 'career', primary: '#3B82F6', secondary: '#8B5CF6', strength: '20' },
-  institution: { id: 'institution', primary: '#14B8A6', secondary: '#10B981', strength: '18' },
-  superadmin: { id: 'superadmin', primary: '#2563EB', secondary: '#1D4ED8', strength: '16' },
+  general: { id: 'general', primary: INDIGO, secondary: BLUE, strength: '08' },
+  'data-science': { id: 'data-science', primary: INDIGO, secondary: BLUE, strength: '08' },
+  'data-analytics': { id: 'data-analytics', primary: BLUE, secondary: INDIGO, strength: '08' },
+  'full-stack': { id: 'full-stack', primary: INDIGO, secondary: BLUE, strength: '08' },
+  jee: { id: 'jee', primary: BLUE, secondary: INDIGO, strength: '08' },
+  neet: { id: 'neet', primary: BLUE, secondary: INDIGO, strength: '08' },
+  cat: { id: 'cat', primary: INDIGO, secondary: BLUE, strength: '08' },
+  schooling: { id: 'schooling', primary: INDIGO, secondary: BLUE, strength: '08' },
+  undergraduate: { id: 'undergraduate', primary: INDIGO, secondary: BLUE, strength: '08' },
+  postgraduate: { id: 'postgraduate', primary: INDIGO, secondary: BLUE, strength: '08' },
+  professional: { id: 'professional', primary: INDIGO, secondary: BLUE, strength: '08' },
+  certificate: { id: 'certificate', primary: INDIGO, secondary: BLUE, strength: '08' },
+  webinar: { id: 'webinar', primary: BLUE, secondary: INDIGO, strength: '08' },
+  career: { id: 'career', primary: INDIGO, secondary: BLUE, strength: '08' },
+  institution: { id: 'institution', primary: INDIGO, secondary: BLUE, strength: '08' },
+  superadmin: { id: 'superadmin', primary: BLUE, secondary: INDIGO, strength: '08' },
 }
 
 const PROGRAM_SLUG_THEME: Record<string, AuroraThemeId> = {
@@ -117,15 +121,15 @@ export function getAuroraTheme(id: AuroraThemeId): AuroraTheme {
   return AURORA_THEMES[id]
 }
 
-/** Domain accent tokens derived from Aurora theme — use for nav, workflow, selected states. */
+/** Domain accent tokens — indigo/blue hierarchy, not rainbow decoration. */
 export function getDomainAccent(themeId: AuroraThemeId) {
   const t = AURORA_THEMES[themeId]
   return {
     primary: t.primary,
     secondary: t.secondary,
-    subtle: `${t.primary}1A`,
-    subtleStrong: `${t.primary}28`,
-    border: `${t.primary}45`,
+    subtle: `${t.primary}14`,
+    subtleStrong: `${t.primary}22`,
+    border: `${t.primary}40`,
     text: t.primary,
     textMuted: `${t.primary}CC`,
   }

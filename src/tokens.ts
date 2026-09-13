@@ -1,22 +1,35 @@
 // Skylent public-site design tokens — single source of truth for JS inline styles.
 // CSS custom properties live in index.css; keep both in sync.
+//
+// PUBLIC BRAND (non-negotiable):
+//   canvas  #F7F4EC  warm ivory
+//   cream   #FFFDF8  warm cream
+//   ink     #15171A  dark ink
+//   indigo  #4F46E5  primary action
+//   blue    #2563EB  semantic secondary
+//   orange  #F97316  brand mark only
+// LMS workspaces may stay focused/dark. Public Skylent must not.
 
 export const C = {
-  ink: '#0B0D0F',
-  ink2: '#14171A',
-  ink3: '#1D2126',
-  orange: '#F36B21',
-  warmWhite: '#F6F4EE',
-  sand: '#E8E5DC',
-  slate: '#667078',
+  ink: '#15171A',
+  ink2: '#1C1F24',
+  ink3: '#2A2E35',
+  orange: '#F97316',
+  indigo: '#4F46E5',
+  blue: '#2563EB',
+  warmWhite: '#F7F4EC',
+  cream: '#FFFDF8',
+  sand: '#E8E2D6',
+  slate: '#5C6168',
+  muted: '#6E737A',
   white: '#FFFFFF',
-  black: '#080909',
-  canvas: '#F6F4EE',
+  black: '#15171A',
+  canvas: '#F7F4EC',
 } as const
 
 export const T = {
   rControl: 8,
-  rCard: 16,
+  rCard: 12,
   rPill: 100,
   section: 'clamp(88px, 12vw, 140px)',
   sectionSm: 'clamp(64px, 8vw, 96px)',
@@ -25,10 +38,10 @@ export const T = {
   gutter: 'clamp(20px, 5vw, 32px)',
   maxW: 1240,
   navH: 64,
-  lineLight: 'rgba(11,13,15,0.08)',
-  lineStrong: 'rgba(11,13,15,0.14)',
-  lineDark: 'rgba(255,255,255,0.09)',
-  lineDarkStrong: 'rgba(255,255,255,0.16)',
+  lineLight: 'rgba(21,23,26,0.10)',
+  lineStrong: 'rgba(21,23,26,0.16)',
+  lineDark: 'rgba(21,23,26,0.10)',
+  lineDarkStrong: 'rgba(21,23,26,0.16)',
 } as const
 
 export const type = {

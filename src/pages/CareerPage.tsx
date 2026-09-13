@@ -18,14 +18,14 @@ export default function CareerPage() {
   return (
     <PageShell>
       {/* Hero */}
-      <section style={{ background: C.ink, padding: '100px 32px 80px' }}>
+      <section style={{ background: C.canvas, padding: '100px 32px 80px' }}>
         <div style={{ maxWidth: 1280, margin: '0 auto' }}>
           <FadeIn>
-            <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 20 }}>SKYLENT CAREER</div>
-            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(40px, 5.5vw, 72px)', fontWeight: 700, color: C.white, letterSpacing: '-0.03em', lineHeight: 1.02, margin: '0 0 20px' }}>
-              Where learning<br /><span style={{ color: C.orange }}>becomes opportunity.</span>
+            <div style={{ color: C.indigo, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', marginBottom: 20 }}>SKYLENT CAREER</div>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(40px, 5.5vw, 72px)', fontWeight: 600, color: C.ink, letterSpacing: '-0.03em', lineHeight: 1.02, margin: '0 0 20px' }}>
+              Where learning<br /><em style={{ fontStyle: 'italic', fontWeight: 500 }}>becomes opportunity.</em>
             </h1>
-            <p style={{ color: 'rgba(255,255,255,0.44)', fontSize: 18, lineHeight: 1.75, maxWidth: 520, margin: 0 }}>Build your profile, apply to roles, and track applications. Sample job listings below until partners are onboarded.</p>
+            <p style={{ color: C.slate, fontSize: 18, lineHeight: 1.75, maxWidth: 520, margin: 0 }}>Build your profile, apply to roles, and track applications. Sample job listings below until partners are onboarded.</p>
           </FadeIn>
 
           {/* Pipeline */}

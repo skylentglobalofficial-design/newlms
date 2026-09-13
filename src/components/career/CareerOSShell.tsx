@@ -1,7 +1,6 @@
 import { type ReactNode } from "react"
 import { useLocation } from "react-router-dom"
 import { AuthDashboardShell, type AuthNavItem } from "../AuthDashboardShell"
-import { AuroraBand } from "../foundation"
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: "overview", label: "Overview", short: "Home", href: "/career-os" },
@@ -40,25 +39,18 @@ export default function CareerOSShell({ children, header }: { children: ReactNod
   const activeNav = navIdFromPath(pathname)
 
   return (
-    <div style={{ position: "relative", minHeight: "100vh", overflowX: "hidden" }}>
-      <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-        <AuroraBand themeId="career" />
-      </div>
-      <div style={{ position: "relative", zIndex: 1 }}>
-        <AuthDashboardShell
-          themeId="career"
-          workspaceLabel="Career OS"
-          roleLabel="Career workspace"
-          navItems={NAV_ITEMS}
-          bottomNavItems={BOTTOM_NAV}
-          activeNav={activeNav}
-          onNavChange={() => undefined}
-          renderNavIcon={id => <NavIcon id={id} />}
-          header={header}
-        >
-          {children}
-        </AuthDashboardShell>
-      </div>
-    </div>
+    <AuthDashboardShell
+      themeId="career"
+      workspaceLabel="Career OS"
+      roleLabel="Career workspace"
+      navItems={NAV_ITEMS}
+      bottomNavItems={BOTTOM_NAV}
+      activeNav={activeNav}
+      onNavChange={() => undefined}
+      renderNavIcon={id => <NavIcon id={id} />}
+      header={header}
+    >
+      {children}
+    </AuthDashboardShell>
   )
 }

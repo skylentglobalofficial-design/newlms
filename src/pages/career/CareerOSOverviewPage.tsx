@@ -77,7 +77,7 @@ export default function CareerOSOverviewPage() {
               <div style={{ display: "flex", flexWrap: "wrap", gap: 20, justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontSize: 12, color: accent.text, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--font-mono)" }}>Profile state</div>
-                  <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: C.white, marginBottom: 6 }}>{displayName}</div>
+                  <div style={{ fontFamily: "var(--font-display)", fontSize: 24, fontWeight: 700, color: C.ink, marginBottom: 6 }}>{displayName}</div>
                   <div style={{ color: "rgba(255,255,255,0.55)", fontSize: 14 }}>
                     {profile.headline || "No headline yet"}
                   </div>
@@ -122,7 +122,7 @@ export default function CareerOSOverviewPage() {
 
             {profile.completeness.percent < 100 && profile.completeness.missing.length > 0 && (
               <div style={{ marginBottom: 20 }}>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.white, margin: "0 0 12px" }}>Still to complete</h2>
+                <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink, margin: "0 0 12px" }}>Still to complete</h2>
                 <ul style={{ margin: 0, paddingLeft: 18, color: "rgba(255,255,255,0.5)", fontSize: 14, lineHeight: 1.8 }}>
                   {profile.completeness.missing.map(item => <li key={item}>{item}</li>)}
                 </ul>
@@ -156,7 +156,7 @@ export default function CareerOSOverviewPage() {
             {activeSupport.length > 0 && (
               <GlassSurface level={2} padding="18px">
                 <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Career support</div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: C.white, marginBottom: 4 }}>{activeSupport.length} active request{activeSupport.length === 1 ? "" : "s"}</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: C.ink, marginBottom: 4 }}>{activeSupport.length} active request{activeSupport.length === 1 ? "" : "s"}</div>
                 <p style={{ margin: "0 0 10px", color: "rgba(255,255,255,0.42)", fontSize: 12.5 }}>
                   {openSupportTasks > 0
                     ? `${openSupportTasks} open task${openSupportTasks === 1 ? "" : "s"}`

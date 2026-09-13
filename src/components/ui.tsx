@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FadeIn } from './shared'
 import { C, T, type } from '../tokens'
-import { Aurora, GridField, MediaImage } from './foundation'
+import { MediaImage } from './foundation'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 
 const brandAccent = getDomainAccent('general')
@@ -150,6 +150,7 @@ export function Button({
   themeId?: AuroraThemeId
 }) {
   const accent = themeId ? getDomainAccent(themeId) : brandAccent
+  const primaryFill = accent.primary
   const pad = size === 'lg' ? '15px 32px' : size === 'sm' ? '9px 18px' : '13px 26px'
   const fontSize = size === 'lg' ? 16 : size === 'sm' ? 13 : 14.5
   const base: React.CSSProperties = {
@@ -159,11 +160,11 @@ export function Button({
     width: full ? '100%' : undefined, whiteSpace: 'nowrap', letterSpacing: '-0.01em',
   }
   const variants: Record<BtnVariant, React.CSSProperties> = {
-    primary: { background: accent.primary, color: C.white },
-    secondary: { background: 'transparent', color: C.white, borderColor: T.lineDarkStrong },
+    primary: { background: primaryFill, color: C.white },
+    secondary: { background: 'transparent', color: C.ink, borderColor: T.lineStrong },
     ghost: { background: 'transparent', color: C.ink, borderColor: T.lineStrong },
-    dark: { background: C.ink, color: C.white },
-    light: { background: C.white, color: C.ink },
+    dark: { background: primaryFill, color: C.white },
+    light: { background: C.cream, color: C.ink, borderColor: T.lineLight },
   }
   return (
     <button
@@ -173,17 +174,17 @@ export function Button({
       onMouseEnter={e => {
         const t = e.currentTarget
         if (variant === 'primary') { t.style.background = accent.secondary; t.style.transform = 'translateY(-1px)' }
-        else if (variant === 'dark') { t.style.opacity = '0.85'; t.style.transform = 'translateY(-1px)' }
-        else if (variant === 'light') { t.style.transform = 'translateY(-1px)'; t.style.boxShadow = '0 10px 30px rgba(0,0,0,0.14)' }
-        else if (variant === 'secondary') t.style.borderColor = 'rgba(255,255,255,0.4)'
+        else if (variant === 'dark') { t.style.background = accent.secondary; t.style.transform = 'translateY(-1px)' }
+        else if (variant === 'light') { t.style.transform = 'translateY(-1px)'; t.style.boxShadow = '0 10px 30px rgba(21,23,26,0.08)' }
+        else if (variant === 'secondary') t.style.borderColor = C.ink
         else t.style.borderColor = C.ink
       }}
       onMouseLeave={e => {
         const t = e.currentTarget
-        if (variant === 'primary') { t.style.background = accent.primary; t.style.transform = 'none' }
-        else if (variant === 'dark') { t.style.opacity = '1'; t.style.transform = 'none' }
+        if (variant === 'primary') { t.style.background = primaryFill; t.style.transform = 'none' }
+        else if (variant === 'dark') { t.style.background = primaryFill; t.style.transform = 'none' }
         else if (variant === 'light') { t.style.transform = 'none'; t.style.boxShadow = 'none' }
-        else if (variant === 'secondary') t.style.borderColor = T.lineDarkStrong
+        else if (variant === 'secondary') t.style.borderColor = T.lineStrong
         else t.style.borderColor = T.lineStrong
       }}
     >
@@ -194,7 +195,7 @@ export function Button({
 
 // ── Text link with underline reveal ──────────────────────────────────────────
 export function TextLink({ children, onClick, tone = 'light' }: { children: React.ReactNode; onClick?: () => void; tone?: Tone }) {
-  const color = tone === 'dark' ? C.white : C.ink
+  const color = C.ink
   return (
     <button onClick={onClick} style={{ background: 'none', border: 'none', cursor: 'pointer', color, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-body)', padding: 0, display: 'inline-flex', alignItems: 'center', gap: 7, borderBottom: `1px solid ${color}`, paddingBottom: 2 }}>
       {children} <span aria-hidden>→</span>
@@ -206,9 +207,7 @@ export function TextLink({ children, onClick, tone = 'light' }: { children: Reac
 export function Badge({ children, tone = 'light', accent }: { children: React.ReactNode; tone?: Tone; accent?: boolean }) {
   const styles: React.CSSProperties = accent
     ? { background: brandAccent.subtle, border: `1px solid ${brandAccent.border}`, color: brandAccent.text }
-    : tone === 'dark'
-      ? { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.7)' }
-      : { background: C.white, border: `1px solid ${T.lineStrong}`, color: C.slate }
+    : { background: C.cream, border: `1px solid ${T.lineStrong}`, color: C.slate }
   return (
     <span style={{ ...styles, borderRadius: 6, padding: '4px 11px', fontSize: 10.5, fontFamily: 'var(--font-mono)', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
       {children}
@@ -230,22 +229,20 @@ export function Card({
   onClick?: () => void
   style?: React.CSSProperties
 }) {
-  const base: React.CSSProperties = tone === 'dark'
-    ? { background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}` }
-    : { background: C.white, border: `1px solid ${T.lineLight}` }
+  const base: React.CSSProperties = { background: C.cream, border: `1px solid ${T.lineLight}` }
   return (
     <div
       onClick={onClick}
       style={{ borderRadius: T.rCard, padding: 30, transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease', cursor: onClick ? 'pointer' : 'default', ...base, ...style }}
       onMouseEnter={hover ? e => {
         e.currentTarget.style.transform = 'translateY(-4px)'
-        e.currentTarget.style.boxShadow = tone === 'dark' ? '0 24px 60px rgba(0,0,0,0.4)' : '0 20px 50px rgba(11,13,15,0.1)'
-        e.currentTarget.style.borderColor = tone === 'dark' ? T.lineDarkStrong : T.lineStrong
+        e.currentTarget.style.boxShadow = '0 18px 40px rgba(21,23,26,0.08)'
+        e.currentTarget.style.borderColor = T.lineStrong
       } : undefined}
       onMouseLeave={hover ? e => {
         e.currentTarget.style.transform = 'none'
         e.currentTarget.style.boxShadow = 'none'
-        e.currentTarget.style.borderColor = tone === 'dark' ? T.lineDark : T.lineLight
+        e.currentTarget.style.borderColor = T.lineLight
       } : undefined}
     >
       {children}
@@ -271,8 +268,8 @@ export function ProductSurface({ children, style, depth = 2 }: { children: React
 export function Stat({ value, label, tone = 'light' }: { value: string; label: string; tone?: Tone }) {
   return (
     <div>
-      <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(30px, 3.6vw, 46px)', fontWeight: 600, letterSpacing: '-0.03em', color: tone === 'dark' ? C.white : C.ink }}>{value}</div>
-      <div style={{ color: tone === 'dark' ? 'rgba(255,255,255,0.4)' : C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 8, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{label}</div>
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(30px, 3.6vw, 46px)', fontWeight: 600, letterSpacing: '-0.03em', color: C.ink }}>{value}</div>
+      <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginTop: 8, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{label}</div>
     </div>
   )
 }
@@ -281,8 +278,8 @@ export function Stat({ value, label, tone = 'light' }: { value: string; label: s
 export { GridField } from './foundation'
 
 // ── Glow (single restrained radial accent) ───────────────────────────────────
-export function Glow({ x = '50%', y = '30%', size = 560, color = C.orange, strength = '16' }: { x?: string; y?: string; size?: number; color?: string; strength?: string }) {
-  return <div style={{ position: 'absolute', left: x, top: y, width: size, height: size, transform: 'translate(-50%,-50%)', background: `radial-gradient(circle, ${color}${strength} 0%, transparent 65%)`, pointerEvents: 'none' }} />
+export function Glow(_props?: { x?: string; y?: string; size?: number; color?: string; strength?: string }) {
+  return null
 }
 
 // ── Page hero (shared editorial hero for interior pages) ─────────────────────
@@ -290,8 +287,8 @@ export function PageHero({
   eyebrow,
   title,
   lead,
-  tone = 'dark',
-  bg = C.ink,
+  tone = 'light',
+  bg = C.canvas,
   actions,
   children,
   photo,
@@ -311,20 +308,17 @@ export function PageHero({
   auroraTheme?: AuroraThemeId
   photoAspect?: '4/3' | '16/9' | '4/5' | '3/2'
 }) {
-  const isDark = tone !== 'light'
   return (
     <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `clamp(88px, 10vw, 120px) ${T.gutter} clamp(48px, 6vw, 72px)` }}>
-      {isDark && auroraTheme && <Aurora themeId={auroraTheme} />}
-      {isDark && <GridField opacity={0.02} />}
       <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'grid', gridTemplateColumns: photo ? '1.05fr 0.95fr' : '1fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }} className="two-col skylent-page-hero">
           <div>
-            <div style={{ marginBottom: 20 }}><Eyebrow tone={tone} accent>{eyebrow}</Eyebrow></div>
-            <h1 className="skylent-display-lg" style={{ color: isDark ? C.white : C.ink, margin: 0, maxWidth: 720 }}>
+            <div style={{ marginBottom: 20 }}><Eyebrow tone="light" accent>{eyebrow}</Eyebrow></div>
+            <h1 className="skylent-display-lg" style={{ color: C.ink, margin: 0, maxWidth: 720 }}>
               {title}
             </h1>
             {lead && (
-              <p className="skylent-body-lg" style={{ color: isDark ? 'rgba(255,255,255,0.62)' : C.slate, margin: '20px 0 0', maxWidth: 520 }}>{lead}</p>
+              <p className="skylent-body-lg" style={{ color: C.slate, margin: '20px 0 0', maxWidth: 520 }}>{lead}</p>
             )}
             {actions && <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 32 }}>{actions}</div>}
             {children}
@@ -345,16 +339,16 @@ export function PageHero({
 }
 
 // ── Flow / journey strip (Professional Program → Career OS style) ─────────────
-export function FlowStrip({ steps, tone = 'dark' }: { steps: { label: string; sub?: string; highlight?: boolean }[]; tone?: Tone }) {
+export function FlowStrip({ steps }: { steps: { label: string; sub?: string; highlight?: boolean }[]; tone?: Tone }) {
   return (
     <div className="flow-strip" style={{ display: 'flex', alignItems: 'stretch', gap: 0, flexWrap: 'wrap' }}>
       {steps.map((s, i) => (
         <div key={s.label} style={{ display: 'flex', alignItems: 'center', flex: '1 1 auto', minWidth: 0 }}>
-          <div style={{ flex: 1, minWidth: 130, padding: '18px 20px', borderRadius: 12, background: s.highlight ? brandAccent.subtle : tone === 'dark' ? 'rgba(255,255,255,0.04)' : C.white, border: `1px solid ${s.highlight ? brandAccent.border : tone === 'dark' ? T.lineDark : T.lineLight}` }}>
-            <div style={{ color: s.highlight ? brandAccent.text : tone === 'dark' ? C.white : C.ink, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{s.label}</div>
-            {s.sub && <div style={{ color: tone === 'dark' ? 'rgba(255,255,255,0.4)' : C.slate, fontSize: 11.5, marginTop: 4 }}>{s.sub}</div>}
+          <div style={{ flex: 1, minWidth: 130, padding: '16px 0', borderTop: `1px solid ${s.highlight ? brandAccent.border : T.lineLight}` }}>
+            <div style={{ color: s.highlight ? brandAccent.text : C.ink, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{s.label}</div>
+            {s.sub && <div style={{ color: C.slate, fontSize: 11.5, marginTop: 4 }}>{s.sub}</div>}
           </div>
-          {i < steps.length - 1 && <div className="flow-arrow" style={{ color: tone === 'dark' ? 'rgba(255,255,255,0.28)' : C.slate, padding: '0 10px', fontSize: 16, flexShrink: 0 }}>→</div>}
+          {i < steps.length - 1 && <div className="flow-arrow" style={{ color: C.slate, padding: '0 14px', fontSize: 16, flexShrink: 0 }}>→</div>}
         </div>
       ))}
     </div>
@@ -368,9 +362,9 @@ export function CTABand({
   lead,
   primary,
   secondary,
-  bg = C.ink,
-  tone = 'dark',
-  auroraTheme,
+  bg = C.cream,
+  tone = 'light',
+  auroraTheme: _auroraTheme,
 }: {
   eyebrow?: string
   title: React.ReactNode
@@ -382,18 +376,16 @@ export function CTABand({
   auroraTheme?: AuroraThemeId
 }) {
   const navigate = useNavigate()
-  const isDark = tone !== 'light'
   return (
-    <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `${T.section} ${T.gutter}` }}>
-      {isDark && auroraTheme && <Aurora themeId={auroraTheme} />}
+    <section className="skylent-cta-band" style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `${T.section} ${T.gutter}`, borderTop: `1px solid ${T.lineLight}` }}>
       <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
         <FadeIn>
-          {eyebrow && <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'center' }}><Eyebrow tone={tone} accent>{eyebrow}</Eyebrow></div>}
-          <Heading tone={tone} size="lg" style={{ textAlign: 'center' }}>{title}</Heading>
-          {lead && <p style={{ color: isDark ? 'rgba(255,255,255,0.55)' : C.slate, fontSize: 19, lineHeight: 1.6, margin: '24px auto 0', maxWidth: 560 }}>{lead}</p>}
+          {eyebrow && <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'center' }}><Eyebrow tone="light" accent>{eyebrow}</Eyebrow></div>}
+          <Heading tone="light" size="lg" style={{ textAlign: 'center' }}>{title}</Heading>
+          {lead && <p style={{ color: C.slate, fontSize: 18, lineHeight: 1.65, margin: '24px auto 0', maxWidth: 560 }}>{lead}</p>}
           <div style={{ display: 'flex', gap: 14, justifyContent: 'center', flexWrap: 'wrap', marginTop: 44 }}>
             <Button variant="primary" size="lg" onClick={() => navigate(primary.to)}>{primary.label} →</Button>
-            {secondary && <Button variant={isDark ? 'secondary' : 'ghost'} size="lg" onClick={() => navigate(secondary.to)}>{secondary.label}</Button>}
+            {secondary && <Button variant="ghost" size="lg" onClick={() => navigate(secondary.to)}>{secondary.label}</Button>}
           </div>
         </FadeIn>
       </div>
@@ -425,27 +417,25 @@ export function PillarCard({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       style={{
-        position: 'relative', cursor: 'pointer', borderRadius: T.rCard, padding: 34,
-        background: accent ? C.ink : 'rgba(255,255,255,0.03)',
-        border: `1px solid ${hover ? (accent ? 'rgba(243,107,33,0.5)' : T.lineDarkStrong) : T.lineDark}`,
-        transition: 'transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
-        transform: hover ? 'translateY(-6px)' : 'none',
-        boxShadow: hover ? '0 30px 70px rgba(0,0,0,0.45)' : 'none',
-        display: 'flex', flexDirection: 'column', minHeight: 340, overflow: 'hidden',
+        position: 'relative', cursor: 'pointer', borderRadius: 0, padding: '28px 0',
+        background: 'transparent',
+        borderBottom: `1px solid ${T.lineLight}`,
+        transition: 'opacity 0.2s',
+        opacity: hover ? 1 : 0.92,
+        display: 'flex', flexDirection: 'column', minHeight: 0,
       }}
     >
-      {accent && <Glow x="90%" y="0%" size={320} strength="20" />}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28, position: 'relative' }}>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 13, color: C.orange, letterSpacing: '0.1em' }}>{index}</span>
-        <span style={{ color: hover ? C.orange : 'rgba(255,255,255,0.3)', fontSize: 20, transition: 'all 0.3s', transform: hover ? 'translate(2px,-2px)' : 'none' }}>↗</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 18 }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.indigo, letterSpacing: '0.1em' }}>{index}</span>
+        <span style={{ color: hover ? C.indigo : C.slate, fontSize: 18, transition: 'color 0.2s' }}>↗</span>
       </div>
-      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 600, color: C.white, margin: '0 0 12px', letterSpacing: '-0.02em', position: 'relative' }}>{name}</h3>
-      <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14.5, lineHeight: 1.65, margin: '0 0 26px', position: 'relative' }}>{tagline}</p>
-      <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 0, position: 'relative' }}>
+      <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 600, color: C.ink, margin: '0 0 10px', letterSpacing: '-0.02em' }}>{name}</h3>
+      <p style={{ color: C.slate, fontSize: 14.5, lineHeight: 1.65, margin: '0 0 20px' }}>{tagline}</p>
+      <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: 0 }}>
         {steps.map((s, i) => (
-          <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderTop: i === 0 ? `1px solid ${T.lineDark}` : 'none', borderBottom: `1px solid ${T.lineDark}` }}>
-            <span style={{ width: 5, height: 5, borderRadius: '50%', background: C.orange, flexShrink: 0, opacity: hover ? 1 : 0.5, transition: 'opacity 0.3s' }} />
-            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13.5 }}>{s}</span>
+          <div key={s} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '9px 0', borderTop: i === 0 ? `1px solid ${T.lineLight}` : 'none', borderBottom: `1px solid ${T.lineLight}` }}>
+            <span style={{ width: 5, height: 5, borderRadius: '50%', background: C.indigo, flexShrink: 0, opacity: hover ? 1 : 0.55 }} />
+            <span style={{ color: C.ink, fontSize: 13.5 }}>{s}</span>
           </div>
         ))}
       </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { getAuroraTheme, getDomainAccent, resolveAuroraTheme, type AuroraThemeId } from '../aurora-themes'
+import { getDomainAccent, resolveAuroraTheme, type AuroraThemeId } from '../aurora-themes'
 import { C, T, glass, type GlassLevel } from '../tokens'
 import { parseSkylentVisualRef, isSkylentVisualRef } from '../media'
 import { ProductVisual } from './product/ProductVisuals'
@@ -8,82 +8,37 @@ import { ProductVisual } from './product/ProductVisuals'
 // ─── Aurora ───────────────────────────────────────────────────────────────────
 // Lightweight CSS radial gradients — atmospheric, low-cost, readable.
 
-/** Focused atmospheric band for primary workspace headers — not full-page. */
-export function AuroraBand({ themeId = 'general' }: { themeId?: AuroraThemeId }) {
-  const theme = getAuroraTheme(themeId)
+/** Public pages: no coloured blobs. LMS/workspace may still import this as a no-op wash. */
+export function AuroraBand(_props: { themeId?: AuroraThemeId }) {
   return (
     <div
       aria-hidden
       className="skylent-aurora-band"
-      style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          top: '-45%',
-          left: '-8%',
-          width: 'min(92%, 720px)',
-          height: 'min(140%, 420px)',
-          background: `radial-gradient(ellipse 75% 55% at 28% 35%, ${theme.primary}48 0%, transparent 72%)`,
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          top: '-25%',
-          right: '-12%',
-          width: 'min(58%, 520px)',
-          height: 'min(120%, 360px)',
-          background: `radial-gradient(ellipse at center, ${theme.secondary}38 0%, transparent 68%)`,
-        }}
-      />
-    </div>
+      style={{
+        position: 'absolute',
+        inset: 0,
+        pointerEvents: 'none',
+        zIndex: 0,
+        background: 'linear-gradient(180deg, #FFFDF8 0%, transparent 42%)',
+      }}
+    />
   )
 }
 
-export function Aurora({ themeId = 'general', variant = 'default' }: { themeId?: AuroraThemeId; variant?: 'default' | 'hero' }) {
-  const theme = getAuroraTheme(themeId)
-  const base = Number(theme.strength)
-  const s = String(variant === 'hero' ? Math.min(base + 6, 34) : base)
-  const s2 = String(Math.max(Number(s) - 3, 12))
-
+export function Aurora(_props: { themeId?: AuroraThemeId; variant?: 'default' | 'hero' }) {
   return (
     <div
       aria-hidden
       className="skylent-aurora"
-      style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none', zIndex: 0 }}
-    >
-      <div
-        style={{
-          position: 'absolute',
-          top: variant === 'hero' ? '-22%' : '-18%',
-          left: '5%',
-          width: variant === 'hero' ? 'min(80vw, 980px)' : 'min(72vw, 900px)',
-          height: variant === 'hero' ? 'min(62vh, 580px)' : 'min(55vh, 520px)',
-          background: `radial-gradient(ellipse at center, ${theme.primary}${s} 0%, transparent 68%)`,
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          top: '2%',
-          right: variant === 'hero' ? '-12%' : '-8%',
-          width: variant === 'hero' ? 'min(64vw, 800px)' : 'min(58vw, 720px)',
-          height: variant === 'hero' ? 'min(52vh, 500px)' : 'min(48vh, 460px)',
-          background: `radial-gradient(ellipse at center, ${theme.secondary}${s2} 0%, transparent 65%)`,
-        }}
-      />
-      <div
-        style={{
-          position: 'absolute',
-          bottom: '-12%',
-          left: '28%',
-          width: 'min(50vw, 640px)',
-          height: 'min(40vh, 380px)',
-          background: `radial-gradient(ellipse at center, ${theme.primary}12 0%, transparent 70%)`,
-        }}
-      />
-    </div>
+      style={{
+        position: 'absolute',
+        inset: 0,
+        overflow: 'hidden',
+        pointerEvents: 'none',
+        zIndex: 0,
+        background: 'linear-gradient(180deg, #F7F4EC 0%, #FFFDF8 48%, #F7F4EC 100%)',
+      }}
+    />
   )
 }
 
@@ -198,9 +153,9 @@ export function MediaImage({
   const autoTheme = useAuroraTheme()
   const overlayGrad =
     overlay === 'bottom'
-      ? 'linear-gradient(to top, rgba(5,5,5,0.75) 0%, transparent 55%)'
+      ? 'linear-gradient(to top, rgba(247,244,236,0.92) 0%, transparent 58%)'
       : overlay === 'full'
-        ? 'linear-gradient(to top, rgba(5,5,5,0.55) 0%, rgba(5,5,5,0.12) 50%, transparent 100%)'
+        ? 'linear-gradient(to top, rgba(247,244,236,0.55) 0%, transparent 62%)'
         : undefined
 
   const visualId = isSkylentVisualRef(src) ? parseSkylentVisualRef(src) : null
@@ -216,7 +171,7 @@ export function MediaImage({
         borderRadius: radius,
         overflow: 'hidden',
         aspectRatio: ASPECT[aspect],
-        background: C.ink3,
+        background: C.cream,
         ...style,
       }}
     >

@@ -102,7 +102,7 @@ function EntryVisual() {
 function fieldStyle(focused: boolean, hasError?: boolean): CSSProperties {
   return {
     width: '100%',
-        background: C.white,
+        background: C.cream,
     border: `1px solid ${hasError ? 'rgba(239,68,68,0.55)' : focused ? accent.primary : T.lineDark}`,
     borderRadius: T.rControl,
     padding: '12px 14px',
@@ -588,8 +588,8 @@ export default function LoginPage() {
 
           {/* Demo mode — development only */}
           {demoMode && (
-          <div style={{ marginTop: 24, padding: '18px', background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard }}>
-            <div style={{ color: 'rgba(255,255,255,0.32)', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 12 }}>
+          <div style={{ marginTop: 24, padding: '18px', background: C.cream, border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+            <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 12 }}>
               Explore workspaces (demo mode)
             </div>
             <div className="login-demo-grid" style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -604,19 +604,19 @@ export default function LoginPage() {
                     style={{
                       flex: '1 1 calc(20% - 8px)',
                       minWidth: 88,
-                      background: isActive ? accent.subtle : 'rgba(255,255,255,0.03)',
-                      border: `1px solid ${isActive ? accent.border : T.lineDark}`,
+                      background: isActive ? accent.subtle : 'transparent',
+                      border: `1px solid ${isActive ? accent.border : T.lineLight}`,
                       borderRadius: T.rControl,
                       padding: '10px 6px',
                       cursor: submitting ? 'wait' : 'pointer',
                       textAlign: 'center',
                     }}
                   >
-                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? accent.primary : 'rgba(255,255,255,0.08)', color: isActive ? C.black : 'rgba(255,255,255,0.5)', fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px', fontFamily: 'var(--font-mono)' }}>
+                    <div style={{ width: 28, height: 28, borderRadius: '50%', background: isActive ? accent.primary : C.sand, color: isActive ? C.white : C.ink, fontSize: 9, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 6px', fontFamily: 'var(--font-mono)' }}>
                       {demo.avatar}
                     </div>
-                    <div style={{ color: isActive ? C.white : 'rgba(255,255,255,0.55)', fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{ROLE_LABELS[demo.role]}</div>
-                    <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: 9, fontFamily: 'var(--font-mono)' }}>{demo.desc}</div>
+                    <div style={{ color: C.ink, fontSize: 10, fontWeight: 600, marginBottom: 2 }}>{ROLE_LABELS[demo.role]}</div>
+                    <div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)' }}>{demo.desc}</div>
                   </button>
                 )
               })}

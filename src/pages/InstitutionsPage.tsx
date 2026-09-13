@@ -137,7 +137,7 @@ function InstitutionTypesSection({
     <Section id="institution-types" tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          tone="light"
           eyebrow="Institution types"
           title="What can Skylent provide to your institution?"
           lead="Every institution type has a distinct partnership model. Select yours to see what Skylent delivers."
@@ -146,7 +146,7 @@ function InstitutionTypesSection({
 
       <div style={{ marginTop: 48, display: 'grid', gridTemplateColumns: 'minmax(200px, 0.35fr) 1fr', gap: 'clamp(28px,4vw,48px)', alignItems: 'start' }} className="institution-type-grid">
         <FadeIn>
-          <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Select type</div>
+          <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Select type</div>
           <nav aria-label="Institution types" style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
             {institutionTypes.map((t, i) => {
               const selected = activeType === t.id
@@ -171,7 +171,7 @@ function InstitutionTypesSection({
                   <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: selected ? 600 : 400, color: selected ? C.white : 'rgba(255,255,255,0.55)' }}>
                     {t.label}
                   </div>
-                  <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 3 }}>{t.sub}</div>
+                  <div style={{ fontSize: 11, color: C.slate, marginTop: 3 }}>{t.sub}</div>
                 </button>
               )
             })}
@@ -183,12 +183,12 @@ function InstitutionTypesSection({
             <MediaImage src={active.photo} alt={active.label} aspect="4/3" overlay="full" />
             <div>
               <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{active.sub}</div>
-              <h3 className="skylent-display-sm" style={{ color: C.white, margin: '0 0 14px' }}>{active.label}</h3>
-              <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 15, lineHeight: 1.75, margin: '0 0 12px' }}>
+              <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 14px' }}>{active.label}</h3>
+              <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 12px' }}>
                 <strong style={{ color: C.white, fontWeight: 600 }}>Problem. </strong>{active.problem}
               </p>
-              <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>{active.value}</p>
-              <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.7, margin: '0 0 24px' }}>{active.description}</p>
+              <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>{active.value}</p>
+              <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '0 0 24px' }}>{active.description}</p>
               <Button variant="primary" themeId="institution" onClick={() => navigate('/contact')}>Enquire now →</Button>
             </div>
           </div>
@@ -196,7 +196,7 @@ function InstitutionTypesSection({
           <div style={{ marginTop: 36, paddingTop: 28, borderTop: `1px solid ${T.lineDark}` }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(24px,4vw,48px)' }} className="two-col-sm">
               <div>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Workflow</div>
+                <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Workflow</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: 'rgba(255,255,255,0.6)' }}>
                   {active.workflow.map((step, i, arr) => (
                     <span key={step} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -207,12 +207,12 @@ function InstitutionTypesSection({
                 </div>
               </div>
               <div>
-                <div className="skylent-label" style={{ color: 'rgba(255,255,255,0.28)', marginBottom: 14 }}>Capability</div>
+                <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Capability</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                   {active.offers.map((offer, i) => (
                     <div key={offer} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: i < active.offers.length - 1 ? `1px solid ${T.lineDark}` : 'none', alignItems: 'flex-start' }}>
                       <div style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary, flexShrink: 0, marginTop: 7 }} />
-                      <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14, lineHeight: 1.55 }}>{offer}</span>
+                      <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{offer}</span>
                     </div>
                   ))}
                 </div>
@@ -246,7 +246,7 @@ function EcosystemSection() {
     <Section id="ecosystem" tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          tone="light"
           eyebrow="Product coverage"
           title="Education, Skills, and Career OS for partners."
           lead="Schools, colleges, and training partners choose which products to run. Each ships with the workflows that match their learners."
@@ -264,7 +264,7 @@ function EcosystemSection() {
                 {col.items.map((item, j) => (
                   <div key={item} style={{ display: 'flex', gap: 10, padding: '12px 0', borderBottom: j < col.items.length - 1 ? `1px solid ${T.lineDark}` : 'none', alignItems: 'center' }}>
                     <div style={{ width: 4, height: 4, borderRadius: '50%', background: col.accent ? accent.primary : 'rgba(255,255,255,0.25)', flexShrink: 0 }} />
-                    <span style={{ color: 'rgba(255,255,255,0.55)', fontSize: 14 }}>{item}</span>
+                    <span style={{ color: C.slate, fontSize: 14 }}>{item}</span>
                   </div>
                 ))}
               </div>
@@ -281,7 +281,7 @@ function PartnershipSection() {
     <Section id="partnership" tone="canvas" divider>
       <FadeIn>
         <SectionHeader
-          tone="dark"
+          tone="light"
           eyebrow="How it works"
           title="The partnership process."
           lead="From the first conversation to a live program — a structured, collaborative approach."
@@ -306,8 +306,8 @@ function PartnershipSection() {
             <FadeIn key={step.n} delay={i * 50}>
               <div style={{ padding: '0 16px 0 0' }}>
                 <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text, marginBottom: 14 }}>{step.n}</div>
-                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.white, margin: '0 0 8px' }}>{step.label}</h3>
-                <p style={{ color: 'rgba(255,255,255,0.42)', fontSize: 13, lineHeight: 1.6, margin: 0 }}>{step.desc}</p>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.ink, margin: '0 0 8px' }}>{step.label}</h3>
+                <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: 0 }}>{step.desc}</p>
               </div>
             </FadeIn>
           ))}
@@ -326,16 +326,16 @@ function EnquiriesSection() {
       <FadeIn>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px,5vw,64px)', alignItems: 'start' }} className="two-col">
           <div>
-            <Eyebrow tone="dark">Institution enquiries</Eyebrow>
-            <Heading tone="dark" size="sm" style={{ margin: '20px 0 16px' }}>
+            <Eyebrow tone="light">Institution enquiries</Eyebrow>
+            <Heading tone="light" size="sm" style={{ margin: '20px 0 16px' }}>
               Ready to explore a partnership?
             </Heading>
-            <p style={{ color: 'rgba(255,255,255,0.52)', fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 480 }}>
+            <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 480 }}>
               Get in touch to discuss your institution's needs. We'll map a partnership that fits your learners, your curriculum, and your goals.
             </p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 20px', marginBottom: 28 }}>
               {features.map(f => (
-                <span key={f} style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <span key={f} style={{ color: C.slate, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ width: 4, height: 4, borderRadius: '50%', background: accent.primary }} />
                   {f}
                 </span>
@@ -352,7 +352,7 @@ function EnquiriesSection() {
               { k: 'Support', v: 'Dedicated partnership team' },
             ].map(({ k, v }, i, arr) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '12px 0', borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
-                <span style={{ color: 'rgba(255,255,255,0.38)', fontSize: 13 }}>{k}</span>
+                <span style={{ color: C.slate, fontSize: 13 }}>{k}</span>
                 <span style={{ color: C.white, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
               </div>
             ))}
@@ -375,11 +375,11 @@ export default function InstitutionsPage() {
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero institution-page-hero">
             <FadeIn>
-              <Eyebrow tone="dark" accent>For Institutions</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.white, margin: '20px 0 16px', maxWidth: 640 }}>
+              <Eyebrow tone="light" accent>For Institutions</Eyebrow>
+              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '20px 0 16px', maxWidth: 640 }}>
                 Institution OS for education delivery.
               </h1>
-              <p className="skylent-body-lg" style={{ color: 'rgba(255,255,255,0.62)', maxWidth: 520, margin: '0 0 28px' }}>
+              <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 520, margin: '0 0 28px' }}>
                 Programs, batches, learners, assessment, and progress — operational workflows for schools, colleges, universities, and training partners.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>

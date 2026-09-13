@@ -3,20 +3,22 @@
 @import 'tailwindcss';
 
 @theme inline {
-  --color-ink: #0B0D0F;
-  --color-ink-2: #14171A;
-  --color-ink-3: #1D2126;
-  --color-orange: #F36B21;
-  --color-warm-white: #F6F4EE;
-  --color-sand: #E8E5DC;
-  --color-slate: #667078;
-  --color-canvas: #F6F4EE;
-  --color-line: rgba(11, 13, 15, 0.08);
-  --color-line-strong: rgba(11, 13, 15, 0.14);
+  --color-ink: #15171A;
+  --color-ink-2: #1C1F24;
+  --color-ink-3: #2A2E35;
+  --color-orange: #F97316;
+  --color-indigo: #4F46E5;
+  --color-blue: #2563EB;
+  --color-warm-white: #F7F4EC;
+  --color-sand: #E8E2D6;
+  --color-slate: #5C6168;
+  --color-canvas: #F7F4EC;
+  --color-line: rgba(21, 23, 26, 0.10);
+  --color-line-strong: rgba(21, 23, 26, 0.16);
 }
 
 :root {
-  --font-display: 'DM Sans', system-ui, sans-serif;
+  --font-display: 'Source Serif 4', 'Iowan Old Style', Georgia, serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'DM Mono', monospace;
 
@@ -66,7 +68,7 @@ html {
 body {
   font-family: var(--font-body);
   background-color: var(--color-canvas);
-  color: #080909;
+  color: #15171A;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
@@ -76,17 +78,16 @@ body {
 /* Public page shell — warm light canvas */
 .skylent-public-canvas {
   background-color: var(--color-canvas);
-  color: #080909;
+  color: #15171A;
 }
 
-/* Legacy page modules keep their behavior but inherit the light presentation. */
-.skylent-public-canvas main [style*="color: rgb(255, 255, 255)"],
-.skylent-public-canvas main [style*="color: #ffffff"],
-.skylent-public-canvas main [style*="color: #fff"] { color: #080909 !important; }
-.skylent-public-canvas main [style*="color: rgba(255, 255, 255"],
-.skylent-public-canvas main [style*="color: rgba(255,255,255"] { color: #667078 !important; }
+/* Legacy page modules: map dark-canvas text to ink, without touching indigo CTAs. */
+.skylent-public-canvas main p[style*="color: rgb(255, 255, 255)"],
+.skylent-public-canvas main h1[style*="color: #fff"],
+.skylent-public-canvas main h2[style*="color: #fff"],
+.skylent-public-canvas main h3[style*="color: #fff"] { color: #15171A !important; }
 .skylent-public-canvas main [style*="background: rgba(255, 255, 255"],
-.skylent-public-canvas main [style*="background: rgba(255,255,255"] { background: #FFFDFC !important; }
+.skylent-public-canvas main [style*="background: rgba(255,255,255"] { background: #FFFDF8 !important; }
 .skylent-light-atmosphere { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.62), transparent 38%); }
 .program-sticky-nav-scroll { scrollbar-width: none; }
 .program-sticky-nav-scroll::-webkit-scrollbar { display: none; }

@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom'
 import { PageShell } from '../components/shared'
 
 const domains = [
-  { label: 'NEET / MBBS', copy: 'Anatomy, clinical reasoning and exam practice.', accent: '#168C83', scene: 'biology', to: '/education#competitive-exams' },
-  { label: 'JEE / Engineering', copy: 'Physics, systems and building with purpose.', accent: '#3478D4', scene: 'engineering', to: '/education#competitive-exams' },
-  { label: 'Analytics', copy: 'Investigate data and make better decisions.', accent: '#6D58D9', scene: 'analytics', to: '/programs/data-analytics-pro' },
-  { label: 'IIM / Business', copy: 'Cases, markets, operations and leadership.', accent: '#B87918', scene: 'business', to: '/programs/product-management' },
-  { label: 'Coding & Tech', copy: 'Build software, workflows and useful products.', accent: '#2E73C8', scene: 'coding', to: '/programs/full-stack' },
-  { label: 'Design & Creative', copy: 'Research, prototype and shape better experiences.', accent: '#B45A86', scene: 'design', to: '/skills' },
-  { label: 'Humanities & Social', copy: 'Understand people, culture and the world around them.', accent: '#4E765B', scene: 'humanities', to: '/education' },
+  { label: 'NEET / MBBS', copy: 'Anatomy, clinical reasoning and exam practice.', scene: 'biology', to: '/education#competitive-exams' },
+  { label: 'JEE / Engineering', copy: 'Physics, systems and building with purpose.', scene: 'engineering', to: '/education#competitive-exams' },
+  { label: 'Analytics', copy: 'Investigate data and make better decisions.', scene: 'analytics', to: '/programs/data-analytics-pro' },
+  { label: 'IIM / Business', copy: 'Cases, markets, operations and leadership.', scene: 'business', to: '/programs/product-management' },
+  { label: 'Coding & Tech', copy: 'Build software, workflows and useful products.', scene: 'coding', to: '/programs/full-stack' },
+  { label: 'Design & Creative', copy: 'Research, prototype and shape better experiences.', scene: 'design', to: '/skills' },
+  { label: 'Humanities & Social', copy: 'Understand people, culture and the world around them.', scene: 'humanities', to: '/education' },
 ]
 
 const intents = [
@@ -79,12 +79,12 @@ function HeroInformationVisual() {
   )
 }
 
-function DomainInfoVisual({ scene, accent }: { scene: string; accent: string }) {
+function DomainInfoVisual({ scene, accent = '#4F46E5' }: { scene: string; accent?: string }) {
   return (
     <div className={`home-domain-info home-domain-info--${scene}`} style={{ '--domain-accent': accent } as React.CSSProperties} aria-hidden="true">
       {scene === 'biology' && (
         <svg viewBox="0 0 320 180" className="home-domain-svg">
-          <rect width="320" height="180" fill="#f3f7f4" />
+          <rect width="320" height="180" fill="#FFFDF8" />
           <ellipse cx="160" cy="92" rx="38" ry="58" fill="none" stroke={accent} strokeWidth="1.5" opacity=".5" />
           <circle cx="160" cy="78" r="14" fill={accent} opacity=".22" />
           <circle cx="148" cy="98" r="9" fill={accent} opacity=".35" />
@@ -96,7 +96,7 @@ function DomainInfoVisual({ scene, accent }: { scene: string; accent: string }) 
       )}
       {scene === 'engineering' && (
         <svg viewBox="0 0 320 180" className="home-domain-svg">
-          <rect width="320" height="180" fill="#f2f6fb" />
+          <rect width="320" height="180" fill="#FFFDF8" />
           <rect x="118" y="72" width="84" height="44" fill="#fff" stroke={accent} strokeWidth="1.5" rx="4" />
           <line x1="88" y1="94" x2="118" y2="94" stroke={accent} strokeWidth="2" markerEnd="url(#arrow)" />
           <line x1="202" y1="94" x2="232" y2="94" stroke={accent} strokeWidth="2" />
@@ -108,7 +108,7 @@ function DomainInfoVisual({ scene, accent }: { scene: string; accent: string }) 
       )}
       {scene === 'analytics' && (
         <svg viewBox="0 0 320 180" className="home-domain-svg">
-          <rect width="320" height="180" fill="#f5f3fa" />
+          <rect width="320" height="180" fill="#FFFDF8" />
           <text x="24" y="28" fill={accent} fontSize="10" fontFamily="var(--font-mono)">DATASET / TREND</text>
           {[48, 72, 58, 90, 68, 110, 84].map((h, i) => (
             <rect key={i} x={36 + i * 32} y={150 - h} width="18" height={h} fill={accent} opacity={0.25 + i * 0.08} rx="2" />
@@ -119,7 +119,7 @@ function DomainInfoVisual({ scene, accent }: { scene: string; accent: string }) 
       )}
       {scene === 'business' && (
         <svg viewBox="0 0 320 180" className="home-domain-svg">
-          <rect width="320" height="180" fill="#fbf7ef" />
+          <rect width="320" height="180" fill="#FFFDF8" />
           <text x="24" y="28" fill={accent} fontSize="10" fontFamily="var(--font-mono)">STRATEGY MAP</text>
           <rect x="130" y="44" width="60" height="28" rx="4" fill="#fff" stroke={accent} strokeWidth="1.2" />
           <line x1="160" y1="72" x2="100" y2="108" stroke={accent} strokeWidth="1.2" />
@@ -131,7 +131,7 @@ function DomainInfoVisual({ scene, accent }: { scene: string; accent: string }) 
       )}
       {scene === 'coding' && (
         <svg viewBox="0 0 320 180" className="home-domain-svg">
-          <rect width="320" height="180" fill="#f0f5fa" />
+          <rect width="320" height="180" fill="#FFFDF8" />
           <text x="24" y="28" fill={accent} fontSize="10" fontFamily="var(--font-mono)">SYSTEM FLOW</text>
           {[{ x: 32, label: 'API' }, { x: 120, label: 'Service' }, { x: 208, label: 'Store' }].map((node, i) => (
             <g key={node.label}>
@@ -145,7 +145,7 @@ function DomainInfoVisual({ scene, accent }: { scene: string; accent: string }) 
       )}
       {scene === 'design' && (
         <svg viewBox="0 0 320 180" className="home-domain-svg">
-          <rect width="320" height="180" fill="#faf3f7" />
+          <rect width="320" height="180" fill="#FFFDF8" />
           <text x="24" y="28" fill={accent} fontSize="10" fontFamily="var(--font-mono)">PROTOTYPE FLOW</text>
           <rect x="32" y="56" width="256" height="18" rx="3" fill="#fff" stroke={accent} strokeWidth="1" opacity=".7" />
           <rect x="32" y="84" width="180" height="52" rx="4" fill="#fff" stroke={accent} strokeWidth="1.2" />
@@ -156,7 +156,7 @@ function DomainInfoVisual({ scene, accent }: { scene: string; accent: string }) 
       )}
       {scene === 'humanities' && (
         <svg viewBox="0 0 320 180" className="home-domain-svg">
-          <rect width="320" height="180" fill="#f2f6f3" />
+          <rect width="320" height="180" fill="#FFFDF8" />
           <text x="24" y="28" fill={accent} fontSize="10" fontFamily="var(--font-mono)">TIMELINE / CONTEXT</text>
           <line x1="40" y1="110" x2="280" y2="110" stroke={accent} strokeWidth="1.5" opacity=".5" />
           {[{ x: 56, y: '1962' }, { x: 120, y: '1991' }, { x: 188, y: '2008' }, { x: 256, y: '2024' }].map((point) => (
@@ -224,21 +224,28 @@ export default function HomePage() {
             </div>
             <p>Choose a direction, then move between understanding, practice, projects and opportunities as your goals evolve.</p>
           </div>
-          <div className="home-domain-grid">
-            {domains.map((domain, index) => (
-              <Link
-                to={domain.to}
-                className={`home-domain-card domain-card-${index + 1}`}
-                key={domain.label}
-                style={{ '--domain-accent': domain.accent } as React.CSSProperties}
-              >
-                <DomainInfoVisual scene={domain.scene} accent={domain.accent} />
-                <div className="home-domain-content">
+
+          <div className="home-interest-featured">
+            {domains.slice(0, 2).map((domain, index) => (
+              <Link to={domain.to} className="home-featured-item" key={domain.label}>
+                <DomainInfoVisual scene={domain.scene} />
+                <div className="home-featured-copy">
                   <span className="home-domain-number">0{index + 1}</span>
                   <h3>{domain.label}</h3>
                   <p>{domain.copy}</p>
                   <span className="home-card-arrow">Explore <b>→</b></span>
                 </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="home-interest-index">
+            {domains.slice(2).map((domain, index) => (
+              <Link to={domain.to} className="home-index-row" key={domain.label}>
+                <span className="home-domain-number">0{index + 3}</span>
+                <h3>{domain.label}</h3>
+                <p>{domain.copy}</p>
+                <span className="home-card-arrow">Explore <b>→</b></span>
               </Link>
             ))}
           </div>
