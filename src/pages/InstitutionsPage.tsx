@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
-import { Section, SectionHeader, Button, Eyebrow, CTABand, T, Heading } from '../components/ui'
-import { Aurora, MediaImage, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
-import { ProductVisual } from '../components/product/ProductVisuals'
+import { Section, SectionHeader, Button, Eyebrow, T, Heading } from '../components/ui'
+import { ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
+import { CapabilityRail, MaturityMark } from '../components/product/Architecture'
+import { INSTITUTION_OS_LAYERS } from '../lib/product-architecture'
 import { getDomainAccent } from '../aurora-themes'
-import { PHOTO } from '../media'
 
 const accent = getDomainAccent('institution')
 
@@ -31,7 +31,6 @@ const institutionTypes = [
       'Parent-visible progress',
       'Faculty development resources',
     ],
-    photo: PHOTO.schoolBuilding,
   },
   {
     id: 'colleges',
@@ -47,7 +46,6 @@ const institutionTypes = [
       'Career OS for qualifying students',
       'Interview and application workflow',
     ],
-    photo: PHOTO.college,
   },
   {
     id: 'universities',
@@ -63,7 +61,6 @@ const institutionTypes = [
       'Career readiness at graduate scale',
       'Postgraduate specialisation tracks',
     ],
-    photo: PHOTO.university,
   },
   {
     id: 'skill-institutions',
@@ -77,9 +74,8 @@ const institutionTypes = [
       'Batch and trainer operations',
       'Certification framework',
       'Career OS for qualifying learners',
-      'Job board connection',
+      'Job board connection — when roles are published',
     ],
-    photo: PHOTO.training,
   },
   {
     id: 'assessment',
@@ -95,7 +91,6 @@ const institutionTypes = [
       'Link scores to learning pathways',
       'Exam-prep product collaboration',
     ],
-    photo: PHOTO.assessment,
   },
   {
     id: 'industry',
@@ -109,18 +104,17 @@ const institutionTypes = [
       'Custom program co-design',
       'Expert and project collaboration',
       'Employability-aligned curriculum',
-      'Hiring pathway into Career OS jobs',
+      'Hiring pathway into Career OS when roles exist',
     ],
-    photo: PHOTO.industry,
   },
 ]
 
 const partnershipSteps = [
   { n: '01', label: 'Discovery', desc: 'We map your institution\'s needs, learner profile, and current gaps.' },
   { n: '02', label: 'Co-design', desc: 'Faculty, curriculum leads, and Skylent design the program together.' },
-  { n: '03', label: 'Deployment', desc: 'Skylent OS is configured and deployed for your institution.' },
-  { n: '04', label: 'Delivery', desc: 'Live program delivery with ongoing support and analytics.' },
-  { n: '05', label: 'Outcomes', desc: 'Graduate career readiness, opportunity discovery, and continuous improvement.' },
+  { n: '03', label: 'Deployment', desc: 'Configure what already ships: organisation accounts, live programmes, LMS progress.' },
+  { n: '04', label: 'Delivery', desc: 'Learners enrol on open programmes. Batches and faculty assignment are not built yet.' },
+  { n: '05', label: 'Review', desc: 'Partnership review against real enrolment and LMS progress — not a reporting suite.' },
 ]
 
 function InstitutionTypesSection({
@@ -138,9 +132,9 @@ function InstitutionTypesSection({
       <FadeIn>
         <SectionHeader
           tone="light"
-          eyebrow="Institution types"
-          title="What can Skylent provide to your institution?"
-          lead="Every institution type has a distinct partnership model. Select yours to see what Skylent delivers."
+          eyebrow="Operating models"
+          title="Partnership by institution type — intended workflow, not a live OS."
+          lead="Select a type to see the operating spine we would build with that partner. Batches, faculty assignment, and reporting are not shipping."
         />
       </FadeIn>
 
@@ -179,35 +173,51 @@ function InstitutionTypesSection({
         </FadeIn>
 
         <FadeIn delay={60}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(24px,4vw,40px)', alignItems: 'start' }} className="two-col">
-            <MediaImage src={active.photo} alt={active.label} aspect="4/3" overlay="full" />
-            <div>
-              <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{active.sub}</div>
-              <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 14px' }}>{active.label}</h3>
-              <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 12px' }}>
-                <strong style={{ color: C.ink, fontWeight: 600 }}>Problem. </strong>{active.problem}
-              </p>
-              <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>{active.value}</p>
-              <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '0 0 24px' }}>{active.description}</p>
-              <Button variant="primary" themeId="institution" onClick={() => navigate('/contact')}>Enquire now →</Button>
-            </div>
+          <div
+            style={{
+              background: C.cream,
+              border: `1px solid ${T.lineDark}`,
+              borderRadius: 12,
+              padding: '24px 26px',
+              minWidth: 0,
+            }}
+          >
+            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{active.sub}</div>
+            <h3 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 6px' }}>{active.label}</h3>
+            <p style={{ color: C.slate, fontSize: 12.5, fontFamily: 'var(--font-mono)', margin: '0 0 18px' }}>Product direction · not a live control panel</p>
+            <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 12px' }}>
+              <strong style={{ color: C.ink, fontWeight: 600 }}>Problem. </strong>{active.problem}
+            </p>
+            <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 12px' }}>{active.value}</p>
+            <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '0 0 22px' }}>{active.description}</p>
+            <Button variant="primary" themeId="institution" onClick={() => navigate('/contact')}>Enquire now →</Button>
           </div>
 
-          <div style={{ marginTop: 36, paddingTop: 28, borderTop: `1px solid ${T.lineDark}` }}>
+          <div style={{ marginTop: 28, paddingTop: 24, borderTop: `1px solid ${T.lineDark}` }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(24px,4vw,48px)' }} className="two-col-sm">
               <div>
-                <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Workflow</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: C.slate }}>
+                <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Intended workflow</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                   {active.workflow.map((step, i, arr) => (
-                    <span key={step} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                      <span>{step}</span>
-                      {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
-                    </span>
+                    <div
+                      key={step}
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '28px minmax(0, 1fr)',
+                        gap: 10,
+                        padding: '10px 0',
+                        borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.indigo }}>{String(i + 1).padStart(2, '0')}</span>
+                      <span style={{ color: C.ink, fontSize: 14 }}>{step}</span>
+                    </div>
                   ))}
                 </div>
               </div>
               <div>
-                <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Capability</div>
+                <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Intended capability</div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                   {active.offers.map((offer, i) => (
                     <div key={offer} style={{ display: 'flex', gap: 10, padding: '10px 0', borderBottom: i < active.offers.length - 1 ? `1px solid ${T.lineDark}` : 'none', alignItems: 'flex-start' }}>
@@ -229,16 +239,19 @@ function EcosystemSection() {
   const columns = [
     {
       name: 'Education',
-      items: ['Schooling programs', 'Undergraduate tracks', 'Postgraduate pathways'],
+      note: 'Coming soon',
+      items: ['Schooling pathway', 'Undergraduate tracks', 'Postgraduate specialisation'],
     },
     {
       name: 'Skills',
-      items: ['Webinars & workshops', 'Certificate programs', 'Professional programs', 'Job assistance'],
+      note: 'Live core',
+      items: ['Courses', 'Certificate programmes', 'Professional programmes'],
       accent: true,
     },
     {
       name: 'Career OS',
-      items: ['Interview preparation', 'Job Board access', 'Application support'],
+      note: 'Live workspace',
+      items: ['Profile and evidence', 'Opportunities when published', 'Applications and interviews'],
     },
   ]
 
@@ -248,8 +261,8 @@ function EcosystemSection() {
         <SectionHeader
           tone="light"
           eyebrow="Product coverage"
-          title="Education, Skills, and Career OS for partners."
-          lead="Schools, colleges, and training partners choose which products to run. Each ships with the workflows that match their learners."
+          title="What a partner can actually run today."
+          lead="Live professional programmes, LMS progress, and Career OS are real. Academic lines and institutional reporting are not."
         />
       </FadeIn>
 
@@ -257,13 +270,14 @@ function EcosystemSection() {
         {columns.map((col, i) => (
           <FadeIn key={col.name} delay={i * 50}>
             <div style={{ padding: '0 28px 0 0', borderRight: i < columns.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
-              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: col.accent ? accent.text : C.white, margin: '0 0 20px' }}>
+              <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: col.accent ? accent.text : C.ink, margin: '0 0 6px' }}>
                 {col.name}
               </h3>
+              <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>{col.note}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
                 {col.items.map((item, j) => (
                   <div key={item} style={{ display: 'flex', gap: 10, padding: '12px 0', borderBottom: j < col.items.length - 1 ? `1px solid ${T.lineDark}` : 'none', alignItems: 'center' }}>
-                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: col.accent ? accent.primary : 'rgba(255,255,255,0.25)', flexShrink: 0 }} />
+                    <div style={{ width: 4, height: 4, borderRadius: '50%', background: col.accent ? accent.primary : C.indigo, flexShrink: 0 }} />
                     <span style={{ color: C.slate, fontSize: 14 }}>{item}</span>
                   </div>
                 ))}
@@ -284,7 +298,7 @@ function PartnershipSection() {
           tone="light"
           eyebrow="How it works"
           title="The partnership process."
-          lead="From the first conversation to a live program — a structured, collaborative approach."
+          lead="Partnership starts with a conversation. Full Institution OS — batches, faculty, reporting — is the intended product, not what an organisation account can run today."
         />
       </FadeIn>
 
@@ -319,7 +333,7 @@ function PartnershipSection() {
 
 function EnquiriesSection() {
   const navigate = useNavigate()
-  const features = ['No long lock-ins', 'Co-designed programs', 'Full Skylent OS deployment', 'Ongoing support']
+  const features = ['No long lock-ins', 'Co-designed programmes', 'Organisation accounts exist', 'Honest capability map']
 
   return (
     <Section id="enquiries" tone="canvas" divider>
@@ -343,20 +357,20 @@ function EnquiriesSection() {
             </div>
             <Button variant="primary" themeId="institution" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent →</Button>
           </div>
-          <GlassSurface level={2} padding="24px 26px">
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Partnership scope</div>
+          <div style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 12, padding: '24px 26px' }}>
+            <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>What is in scope now</div>
             {[
-              { k: 'Institution types', v: 'Schools through industry partners' },
-              { k: 'Delivery', v: 'Skylent OS deployment' },
-              { k: 'Programs', v: 'Co-designed with your faculty' },
-              { k: 'Support', v: 'Dedicated partnership team' },
+              { k: 'Live for learners', v: 'Programmes, LMS, Career OS' },
+              { k: 'Organisation account', v: 'Sign-in shell exists' },
+              { k: 'Not built', v: 'Batches, faculty assignment, reporting' },
+              { k: 'Next conversation', v: 'Co-design around what already ships' },
             ].map(({ k, v }, i, arr) => (
               <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '12px 0', borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
                 <span style={{ color: C.slate, fontSize: 13 }}>{k}</span>
                 <span style={{ color: C.ink, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
               </div>
             ))}
-          </GlassSurface>
+          </div>
         </div>
       </FadeIn>
     </Section>
@@ -369,32 +383,31 @@ export default function InstitutionsPage() {
   const activeSection = useSectionSpy(INSTITUTION_NAV_ITEMS.map(i => i.id))
 
   return (
-    <PageShell auroraTheme="institution">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
-        <Aurora themeId="institution" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero institution-page-hero">
-            <FadeIn>
-              <Eyebrow tone="light" accent>For Institutions</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '20px 0 16px', maxWidth: 640 }}>
-                Institution OS for education delivery.
-              </h1>
-              <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 520, margin: '0 0 28px' }}>
-                Programs, batches, learners, assessment, and progress — operational workflows for schools, colleges, universities, and training partners.
-              </p>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Button variant="primary" themeId="institution" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent</Button>
-                <Button variant="secondary" size="lg" onClick={() => navigate('/os')}>Explore Skylent OS</Button>
-              </div>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <div className="institution-hero-visual-wrap" style={{ minHeight: 'clamp(380px, 48vh, 520px)' }}>
-                <ProductVisual id="institution-pipeline" themeId="institution" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
-              </div>
-            </FadeIn>
+    <PageShell aurora={false}>
+      <div className="arch-academic-shell" style={{ paddingTop: T.navH + 28 }}>
+        <div className="arch-academic-inner">
+          <header className="arch-line-header" style={{ marginBottom: 28 }}>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 14 }}>
+              <div className="skylent-label" style={{ color: C.indigo, margin: 0 }}>Institution OS</div>
+              <MaturityMark maturity="direction" />
+            </div>
+            <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 14px', maxWidth: 740 }}>
+              An operating layer for delivery — not a consumer landing page.
+            </h1>
+            <p className="skylent-body-lg" style={{ color: C.slate, margin: 0, maxWidth: 580 }}>
+              Institution OS is how a school, college, university, or training partner would run programmes, people, and reporting. The organisation dashboard today is an honest shell. Batches, faculty assignment, and institutional reporting are not built.
+            </p>
+          </header>
+          <section className="arch-section">
+            <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Capability vs what ships</div>
+            <CapabilityRail items={INSTITUTION_OS_LAYERS} />
+          </section>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
+            <Button variant="primary" themeId="institution" onClick={() => navigate('/contact')}>Talk to partnerships</Button>
+            <Button variant="secondary" onClick={() => navigate('/login')}>Organisation sign in</Button>
           </div>
         </div>
-      </section>
+      </div>
 
       <ContextualNavBar items={INSTITUTION_NAV_ITEMS} themeId="institution" activeId={activeSection} />
 
@@ -402,15 +415,6 @@ export default function InstitutionsPage() {
       <EcosystemSection />
       <PartnershipSection />
       <EnquiriesSection />
-
-      <CTABand
-        eyebrow="Get in touch"
-        title={<>Bring Skylent OS<br />to your institution.</>}
-        lead="Let's map your needs and co-design a program that moves your learners from education to employability."
-        primary={{ label: 'Partner With Skylent', to: '/contact' }}
-        secondary={{ label: 'View Skylent OS', to: '/os' }}
-        auroraTheme="institution"
-      />
     </PageShell>
   )
 }

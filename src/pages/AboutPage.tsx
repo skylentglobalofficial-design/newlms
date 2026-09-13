@@ -148,7 +148,7 @@ function EcosystemSection() {
     },
     {
       label: 'Skills',
-      body: 'Webinars, certificate programs, Professional Programs, and job assistance — each with its own depth and conversion path.',
+      body: 'Certificate programs and Professional Programs are the live skills products. Workshop registration is not live.',
       to: '/skills',
       accent: getDomainAccent('professional'),
     },
@@ -329,7 +329,7 @@ function WhoWeServeSection() {
     { label: 'Undergraduate learners', desc: 'Degree-aligned programs, projects, and career direction.', to: '/education#undergraduate', accent: getDomainAccent('undergraduate') },
     { label: 'Postgraduate learners', desc: 'Specialisation tracks with professional outcomes.', to: '/education#postgraduate', accent: getDomainAccent('postgraduate') },
     { label: 'Exam aspirants', desc: 'JEE, NEET, CAT — practice, mocks, and analytics.', to: '/education#competitive-exams', accent: getDomainAccent('jee') },
-    { label: 'Skill learners', desc: 'Webinars, certificates, and Professional Programs.', to: '/skills', accent: getDomainAccent('professional') },
+    { label: 'Skill learners', desc: 'Certificates and Professional Programs. Workshop listings are coming soon.', to: '/skills', accent: getDomainAccent('professional') },
     { label: 'Career seekers', desc: 'Career OS — profile, interview prep, jobs, applications.', to: '/career-os', accent: getDomainAccent('career') },
     { label: 'Institutions', desc: 'Schools, colleges, universities, and training partners.', to: '/institutions', accent: getDomainAccent('institution') },
     { label: 'Employers & recruiters', desc: 'Job board and recruiter workflows for open roles.', to: '/career-os#jobs', accent: getDomainAccent('career') },
@@ -442,7 +442,7 @@ function PlatformSection() {
 
   const surfaces = [
     { label: 'Education', desc: 'Schooling, undergraduate, postgraduate, and exam preparation products.', to: '/education', accent: getDomainAccent('schooling') },
-    { label: 'Skills', desc: 'Webinars, certificates, Professional Programs, and job assistance.', to: '/skills', accent: getDomainAccent('professional') },
+    { label: 'Skills', desc: 'Certificates, Professional Programs, and Career OS. Workshops are listings only.', to: '/skills', accent: getDomainAccent('professional') },
     { label: 'Career', desc: 'Career OS workspace for profile, prep, jobs, and applications.', to: '/career-os', accent: getDomainAccent('career') },
     { label: 'Institutions', desc: 'Partnership workflows for schools, colleges, and training institutes.', to: '/institutions', accent: getDomainAccent('institution') },
     { label: 'Programs', desc: 'The catalog connecting learners to every product surface.', to: '/programs', accent: accent },

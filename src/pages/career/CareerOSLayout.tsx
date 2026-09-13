@@ -1,17 +1,20 @@
-import { useEffect } from "react"
-import { Outlet, useNavigate } from "react-router-dom"
+import { Outlet } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import CareerOSShell from "../../components/career/CareerOSShell"
+import CareerOSPublicPage from "./CareerOSPublicPage"
 
 export default function CareerOSLayout() {
   const { user, ready } = useAuth()
-  const navigate = useNavigate()
 
-  useEffect(() => {
-    if (ready && !user) navigate("/login")
-  }, [ready, user, navigate])
+  if (!ready) {
+    return (
+      <div style={{ minHeight: "40vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#5C6168", fontSize: 14 }}>
+        Loading Career OS…
+      </div>
+    )
+  }
 
-  if (!ready || !user) return null
+  if (!user) return <CareerOSPublicPage />
 
   return (
     <CareerOSShell>

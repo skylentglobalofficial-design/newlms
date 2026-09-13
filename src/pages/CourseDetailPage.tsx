@@ -2,12 +2,11 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell, EnrollmentModal } from '../components/shared'
 import { Button, Eyebrow, Section, T } from '../components/ui'
-import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
+import { Aurora, GlassSurface } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { courses } from '../data'
 import { useCatalogCourse } from '../hooks/useCatalog'
 import { displayLessonCount, displayLessonStat } from '../lib/curriculum-counts'
-import { coursePhoto } from '../media'
 
 const accent = getDomainAccent('professional')
 
@@ -38,7 +37,6 @@ export default function CourseDetailPage() {
   const projectCount = catalog.data?.projectCount ?? course.projects
   const enrollable = Boolean(catalog.data)
   const discount = Math.round((1 - price / originalPrice) * 100)
-  const visual = coursePhoto(course.slug)
 
   return (
     <PageShell auroraTheme="professional">
@@ -52,27 +50,24 @@ export default function CourseDetailPage() {
           >
             ← Back to courses
           </button>
-          <div className="two-col hero-grid" style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px, 5vw, 56px)', alignItems: 'start' }}>
+          <div style={{ maxWidth: 720 }}>
             <FadeIn>
               <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-                <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 12px', color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{course.category}</span>
+                <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 12px', color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)' }}>Course</span>
+                <span style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 6, padding: '4px 12px', color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{course.category}</span>
                 <span style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 6, padding: '4px 12px', color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{course.level}</span>
               </div>
-              <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 16px' }}>{course.title}</h1>
-              <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 560, margin: '0 0 28px' }}>{course.longDesc}</p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
-                {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', lessonCount], ['Projects', String(projectCount)]].map(([l, v]) => (
-                  <div key={l}>
+              <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 12px' }}>{course.title}</h1>
+              <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.7, maxWidth: 560, margin: '0 0 24px' }}>{course.longDesc}</p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 0, borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}` }} className="course-spec-grid">
+                {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', lessonCount], ['Projects', String(projectCount)]].map(([l, v], i) => (
+                  <div key={l} style={{ padding: '14px 12px 14px 0', borderRight: i < 3 ? `1px solid ${T.lineDark}` : 'none', minWidth: 0 }}>
                     <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{l}</div>
                     <div style={{ color: C.ink, fontSize: 15, fontWeight: 500 }}>{v}</div>
                   </div>
                 ))}
               </div>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <GlassSurface level={2} padding="0" style={{ overflow: 'hidden' }}>
-                <MediaImage src={visual} alt={course.title} className="skylent-hero-visual" style={{ minHeight: 280 }} />
-              </GlassSurface>
+              <p style={{ color: C.slate, fontSize: 13, margin: '16px 0 0' }}>A course is a focused unit. Programmes are longer pathways with Career OS on professional tracks.</p>
             </FadeIn>
           </div>
         </div>
