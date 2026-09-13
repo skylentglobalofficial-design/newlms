@@ -696,6 +696,7 @@ export const globalCSS = `
   .contextual-nav-panel { display: block; }
   .contextual-nav-bar { display: none; }
   .contextual-nav-bar-scroll::-webkit-scrollbar { display: none; }
+  .hero-grid > *, .two-col > *, .two-col-sm > *, .institution-partnership-grid > * { min-width: 0; }
 
   @media (max-width: 1100px) {
     .nav-links { display: none !important; }
@@ -758,6 +759,7 @@ export const globalCSS = `
     .career-journey > div { grid-template-columns: repeat(3, 1fr) !important; gap: 24px !important; }
     .career-journey-line { display: none !important; }
     .career-ecosystem > div { grid-template-columns: repeat(3, 1fr) !important; gap: 24px !important; }
+    .institution-partnership-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 16px !important; }
   }
   @media (max-width: 375px) {
     .program-tools-strip > div { padding: 12px 16px !important; font-size: 13px !important; }
@@ -770,14 +772,15 @@ export const globalCSS = `
     .career-job-header { display: none !important; }
     .career-job-row { grid-template-columns: 1fr auto !important; gap: 12px !important; }
     .career-support-row { grid-template-columns: 1fr !important; gap: 8px !important; }
-    .career-hero-visual { min-height: 340px !important; }
     .institution-type-grid { grid-template-columns: 1fr !important; }
-    .institution-ecosystem-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
-    .institution-ecosystem-grid > div { border-right: none !important; padding: 0 !important; }
-    .institution-partnership-grid { grid-template-columns: 1fr !important; gap: 28px !important; }
-    .institution-partnership-line { display: none !important; }
+    .career-hero-visual { min-height: 340px !important; }
   }
   @media (max-width: 640px) {
+    .institution-partnership-grid { grid-template-columns: 1fr !important; gap: 20px !important; }
+    .institution-ecosystem-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+    .institution-ecosystem-grid > div { border-right: none !important; padding: 0 !important; }
+    .institution-partnership-line { display: none !important; }
+    .institution-type-grid { grid-template-columns: 1fr !important; }
     .three-col { grid-template-columns: 1fr !important; }
     .programs-grid { grid-template-columns: 1fr !important; }
     .intent-grid { grid-template-columns: 1fr 1fr !important; }

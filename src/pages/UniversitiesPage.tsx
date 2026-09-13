@@ -78,7 +78,7 @@ export default function UniversitiesPage() {
             lead="A delivery model for universities — not a student course catalog."
           />
         </FadeIn>
-        <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }} className="institution-partnership-grid">
+        <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 16 }} className="institution-partnership-grid">
           {collaborationModel.map((item, i) => (
             <FadeIn key={item.step} delay={i * 50}>
               <GlassSurface level={2} padding="22px 24px" style={{ height: '100%' }}>

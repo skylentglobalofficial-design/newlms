@@ -238,7 +238,7 @@ function EcosystemSection() {
     },
     {
       name: 'Career OS',
-      items: ['Interview preparation', 'Job Board access', 'Placement support'],
+      items: ['Interview preparation', 'Job Board access', 'Application support'],
     },
   ]
 
