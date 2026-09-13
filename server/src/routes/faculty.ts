@@ -64,27 +64,6 @@ async function loadSuperadminFacultyDashboard() {
     }),
   ])
 
-  const teachingCourse = courses[0]
-  const curriculumSummary = teachingCourse
-    ? [
-        {
-          label: "Module",
-          detail: teachingCourse.curriculum[0]?.title ?? "—",
-          status: "complete",
-        },
-        {
-          label: "Lesson",
-          detail: teachingCourse.curriculum[0]?.nodes[0]?.title ?? "—",
-          status: "complete",
-        },
-        {
-          label: "Assignments pending",
-          detail: String(submissions.length),
-          status: "current",
-        },
-      ]
-    : []
-
   return {
     programs,
     courses: courses.map((course) => ({
@@ -106,7 +85,7 @@ async function loadSuperadminFacultyDashboard() {
       attachmentCount: row.attachments.length,
     })),
     pendingReviewCount: submissions.length,
-    curriculumSummary,
+    curriculumSummary: [],
     teachingScopeAvailable: true,
     teachingScopeMessage: null,
     cohortAnalyticsAvailable: false,

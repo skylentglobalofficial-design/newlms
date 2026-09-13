@@ -52,11 +52,11 @@ function SkillsHeroVisual() {
 
 function SkillsPathSection() {
   const steps = [
-    { num: '01', label: 'Learn', desc: 'Structured curriculum and live sessions' },
+    { num: '01', label: 'Learn', desc: 'Structured curriculum in the LMS' },
     { num: '02', label: 'Practice', desc: 'Activities, drills, and assessments' },
     { num: '03', label: 'Build', desc: 'Projects with real deliverables' },
-    { num: '04', label: 'Prove', desc: 'Certificates and portfolio work' },
-    { num: '05', label: 'Move Forward', desc: 'Career OS and job support' },
+    { num: '04', label: 'Prove', desc: 'Portfolio work and certificate eligibility' },
+    { num: '05', label: 'Move Forward', desc: 'Career OS and interview prep' },
   ]
 
   return (
@@ -227,15 +227,15 @@ function CertificateSection() {
         <FadeIn>
           <Eyebrow tone="light">Certificate Programs</Eyebrow>
           <Heading tone="light" size="md" style={{ margin: '20px 0 16px' }}>
-            A credential you can finish.
+            A focused skills program.
           </Heading>
           <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 480 }}>
-            Shorter than a Professional Program. Structured curriculum, assessment, and certification — without Career OS access.
+            Shorter than a Professional Program. Structured curriculum and assessment — without Career OS access. Certificate issuance is a later phase.
           </p>
 
           <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Credential path</div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: C.slate, marginBottom: 28 }}>
-            {['Module', 'Skill', 'Project', 'Credential'].map((s, i, arr) => (
+            {['Module', 'Skill', 'Project', 'Portfolio'].map((s, i, arr) => (
               <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                 <span>{s}</span>
                 {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
@@ -487,7 +487,7 @@ function CareerProofSection() {
   const proof = [
     { title: 'Projects', desc: 'Portfolio work from professional and certificate programs' },
     { title: 'Assessments', desc: 'Module tests and program evaluations' },
-    { title: 'Certificates', desc: 'Completion credentials on finishing programs' },
+    { title: 'Certificates', desc: 'Certificate eligibility after program requirements — issuance is a later phase' },
     { title: 'Career OS', desc: 'Interview prep, applications, and job tracking on completion' },
   ]
 
@@ -498,7 +498,7 @@ function CareerProofSection() {
           tone="light"
           eyebrow="How skills become career proof"
           title="Capability you can show."
-          lead="Skills on Skylent are designed to produce evidence — projects, assessments, certificates, and career support — not just course completion."
+          lead="Skills on Skylent are designed to produce evidence — projects, assessments, and career workspace access — not just course completion."
         />
         <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }} className="skills-proof-grid">
           {proof.map((item, i) => (
@@ -633,7 +633,7 @@ export default function SkillsPage() {
                 Capability that can<br />become a career.
               </h1>
               <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 520, margin: '0 0 28px' }}>
-                Webinars are events. Certificate programs are credentials. Professional Programs are career products. Job Assistance is support — not a course.
+                Webinars are events. Certificate programs are focused skills tracks. Professional Programs include Career OS. Job Assistance is career workspace support — not a placement service.
               </p>
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
                 <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Professional Programs</Button>

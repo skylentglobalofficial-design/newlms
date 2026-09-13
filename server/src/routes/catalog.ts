@@ -16,7 +16,17 @@ const curriculumInclude = {
 const programCourseInclude = {
   programCourses: {
     orderBy: { sortOrder: 'asc' as const },
-    include: { course: { select: { slug: true } } },
+    include: {
+      course: {
+        select: {
+          slug: true,
+          curriculum: {
+            orderBy: { order: 'asc' as const },
+            include: { nodes: { select: { nodeType: true } } },
+          },
+        },
+      },
+    },
   },
 }
 
@@ -29,13 +39,28 @@ function countLearnableNodes(
   )
 }
 
-function withProgramFacts<T extends { programCourses: Array<{ course: { slug: string } }> }>(
-  program: T,
-) {
-  const { programCourses, ...rest } = program
+function withProgramFacts<
+  T extends {
+    moduleCount: number
+    curriculum?: Array<{ nodes?: Array<{ nodeType: string }> }>
+    programCourses: Array<{
+      course: {
+        slug: string
+        curriculum: Array<{ nodes: Array<{ nodeType: string }> }>
+      }
+    }>
+  },
+>(program: T) {
+  const { programCourses, curriculum, ...rest } = program
+  const moduleCountFromCourses = programCourses.reduce(
+    (sum, link) => sum + link.course.curriculum.length,
+    0,
+  )
+  const moduleCountFromProgram = curriculum?.length ?? 0
   return {
     ...rest,
     linkedCourseSlugs: programCourses.map((link) => link.course.slug),
+    moduleCount: moduleCountFromCourses || moduleCountFromProgram,
   }
 }
 

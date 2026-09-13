@@ -1,8 +1,7 @@
 import { ensureCsrfToken } from "./auth-api"
+import { parseApiJson } from "./http"
 
 const API_BASE = "/api/v1"
-
-type ApiError = { error: string }
 
 export type CareerWorkMode = "REMOTE" | "HYBRID" | "ONSITE" | "FLEXIBLE"
 export type CareerProfileVisibility = "PRIVATE" | "NETWORK" | "PUBLIC"
@@ -281,14 +280,7 @@ export type CareerSupportRequest = {
 }
 
 async function parseJson<T>(response: Response): Promise<T> {
-  const data = (await response.json()) as T | ApiError
-  if (!response.ok) {
-    const message = typeof data === "object" && data && "error" in data
-      ? String((data as ApiError).error)
-      : "Request failed"
-    throw new Error(message)
-  }
-  return data as T
+  return parseApiJson<T>(response)
 }
 
 async function careerGet<T>(path: string): Promise<T> {

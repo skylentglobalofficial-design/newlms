@@ -6,6 +6,7 @@ import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { courses } from '../data'
 import { catalogCourseBySlug } from '../lib/catalog-api'
+import { displayLessonCount } from '../lib/curriculum-counts'
 import { useCatalogCourses } from '../hooks/useCatalog'
 import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO, coursePhoto } from '../media'
 
@@ -136,7 +137,7 @@ export default function CoursesPage() {
               const facts = catalogCourseBySlug(catalog.data, course.slug)
               const price = facts?.price ?? course.price
               const originalPrice = facts?.originalPrice ?? course.originalPrice
-              const lessonCount = facts?.lessonCount ?? course.lessons
+              const lessonCount = displayLessonCount(facts?.lessonCount, course)
               const projectCount = facts?.projectCount ?? course.projects
               return (
               <FadeIn key={course.slug} delay={i * 40}>

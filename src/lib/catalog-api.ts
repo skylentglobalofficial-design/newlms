@@ -1,3 +1,5 @@
+import { parseApiJson } from "./http"
+
 export type CatalogEnrollmentStatus = "open" | "waitlist" | "coming_soon"
 
 export type CatalogCourseSummary = {
@@ -36,10 +38,7 @@ const API_BASE = "/api/v1/catalog"
 
 async function catalogFetch<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`)
-  if (!response.ok) {
-    throw new Error(`Catalog request failed (${response.status})`)
-  }
-  return response.json() as Promise<T>
+  return parseApiJson<T>(response)
 }
 
 export function normalizeEnrollmentStatus(

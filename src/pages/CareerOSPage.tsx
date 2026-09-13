@@ -59,7 +59,7 @@ function CareerJourneySection() {
     { num: '02', label: 'Proof', desc: 'Projects and program work' },
     { num: '03', label: 'Application', desc: 'Submit from the job board' },
     { num: '04', label: 'Interview', desc: 'Prep rounds and mocks' },
-    { num: '05', label: 'Outcome', desc: 'Offers and placement status' },
+    { num: '05', label: 'Outcome', desc: 'Track applications and interview progress' },
   ]
 
   return (
@@ -372,8 +372,8 @@ function JobBoardSection({
         <SectionHeader
           tone="light"
           eyebrow="Job board"
-          title="Open roles you can inspect and apply to."
-          lead={`${jobs.length} open roles in the board. Click a role to view details, or apply directly.`}
+          title="Illustrative roles — workflow exploration only."
+          lead="Sample listings for exploring how Career OS could work. Live jobs appear in the signed-in Career OS workspace when partners publish them."
         />
       </FadeIn>
 

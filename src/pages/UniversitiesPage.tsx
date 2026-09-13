@@ -74,7 +74,7 @@ export default function UniversitiesPage() {
           <SectionHeader
             tone="light"
             eyebrow="Collaboration model"
-            title="From academic design<br />to career handoff."
+            title={<>From academic design<br />to career handoff.</>}
             lead="A delivery model for universities — not a student course catalog."
           />
         </FadeIn>
