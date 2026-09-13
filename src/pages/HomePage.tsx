@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 import { PageShell } from '../components/shared'
 
 const domains = [
-  { label: 'NEET / MBBS', copy: 'Anatomy, clinical reasoning and exam practice.', scene: 'biology', to: '/education#competitive-exams' },
-  { label: 'JEE / Engineering', copy: 'Physics, systems and building with purpose.', scene: 'engineering', to: '/education#competitive-exams' },
+  { label: 'NEET / MBBS', copy: 'Anatomy, clinical reasoning and exam practice.', scene: 'biology', to: '/education/exams' },
+  { label: 'JEE / Engineering', copy: 'Physics, systems and building with purpose.', scene: 'engineering', to: '/education/exams' },
   { label: 'Analytics', copy: 'Investigate data and make better decisions.', scene: 'analytics', to: '/programs/data-analytics-pro' },
   { label: 'IIM / Business', copy: 'Cases, markets, operations and leadership.', scene: 'business', to: '/programs/product-management' },
   { label: 'Coding & Tech', copy: 'Build software, workflows and useful products.', scene: 'coding', to: '/programs/full-stack' },
@@ -18,8 +18,6 @@ const intents = [
   { label: 'Prepare for an exam', copy: 'Diagnose, practice, improve.', icon: '03' },
   { label: 'Build a project', copy: 'Turn learning into evidence.', icon: '04' },
 ]
-
-const journey = ['Schooling', 'Undergraduate', 'Postgraduate', 'Exams', 'Skills', 'Career']
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return <div className="home-section-label"><span />{children}</div>
@@ -205,14 +203,29 @@ export default function HomePage() {
           <div className="home-journey-inner">
             <SectionLabel>One connected journey</SectionLabel>
             <div className="home-journey-track">
-              {journey.map((item, index) => (
-                <div key={item} className="home-journey-item">
+              {[
+                { label: 'Schooling', to: '/education/schooling', live: false },
+                { label: 'Undergraduate', to: '/education/undergraduate', live: false },
+                { label: 'Postgraduate', to: '/education/postgraduate', live: false },
+                { label: 'Exams', to: '/education/exams', live: false },
+                { label: 'Skills', to: '/skills', live: true },
+                { label: 'Career', to: '/career-os', live: true },
+              ].map((item, index, arr) => (
+                <Link key={item.label} to={item.to} className="home-journey-item" style={{ textDecoration: 'none' }}>
                   <span>{String(index + 1).padStart(2, '0')}</span>
-                  <strong>{item}</strong>
-                  {index < journey.length - 1 && <i>→</i>}
-                </div>
+                  <strong>{item.label}</strong>
+                  <em style={{ fontStyle: 'normal', fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.06em', color: item.live ? '#166534' : '#5C6168' }}>{item.live ? 'LIVE' : 'SOON'}</em>
+                  {index < arr.length - 1 && <i>→</i>}
+                </Link>
               ))}
             </div>
+            <p className="home-journey-live" style={{ margin: '18px 0 0', color: '#5C6168', fontSize: 13 }}>
+              Start with what is live: <Link to="/programs" style={{ color: '#15171A', fontWeight: 600 }}>programmes</Link>
+              {' · '}
+              <Link to="/courses" style={{ color: '#15171A', fontWeight: 600 }}>courses</Link>
+              {' · '}
+              <Link to="/career-os" style={{ color: '#15171A', fontWeight: 600 }}>Career OS</Link>
+            </p>
           </div>
         </section>
 

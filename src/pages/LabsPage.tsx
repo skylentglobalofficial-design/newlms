@@ -54,13 +54,17 @@ export default function LabsPage() {
           <FadeIn>
             <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.2fr) minmax(220px, 0.6fr)', gap: 48, alignItems: 'end' }} className="two-col">
               <div>
-                <div className="skylent-label" style={{ color: C.indigo, marginBottom: 18 }}>Skylent Labs</div>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 14 }}>
+                  <div className="skylent-label" style={{ color: C.indigo, margin: 0 }}>Skylent Labs</div>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#9A3412', border: '1px solid rgba(154,52,18,0.28)', background: 'rgba(249,115,22,0.08)', borderRadius: 4, padding: '2px 7px' }}>Local demo</span>
+                </div>
                 <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 16px', maxWidth: 560 }}>
-                  Practice in structured lab environments.
+                  Experiment workbenches, in the browser.
                 </h1>
-                <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 480, margin: 0 }}>
-                  Coding, data, and simulation exercises connected to coursework — with objectives, a workspace, and a submission step.
+                <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 480, margin: '0 0 18px' }}>
+                  Lab → experiment → workspace → run → result. Runs are simulated in this session. Progress is stored locally in the browser, not on Skylent servers.
                 </p>
+                <div className="skylent-label" style={{ color: C.slate }}>Lab · subject · experiment · workspace · run · takeaway</div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, paddingBottom: 8, borderBottom: `1px solid ${T.lineLight}` }}>
                 {catalogStats.map(({ value, label }) => (

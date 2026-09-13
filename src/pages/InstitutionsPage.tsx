@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
-import { Section, SectionHeader, Button, Eyebrow, CTABand, T, Heading } from '../components/ui'
-import { Aurora, MediaImage, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
-import { ProductVisual } from '../components/product/ProductVisuals'
+import { Section, SectionHeader, Button, Eyebrow, T, Heading } from '../components/ui'
+import { MediaImage, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
+import { CapabilityRail, MaturityMark } from '../components/product/Architecture'
+import { INSTITUTION_OS_LAYERS } from '../lib/product-architecture'
 import { getDomainAccent } from '../aurora-themes'
 import { PHOTO } from '../media'
 
@@ -369,32 +370,31 @@ export default function InstitutionsPage() {
   const activeSection = useSectionSpy(INSTITUTION_NAV_ITEMS.map(i => i.id))
 
   return (
-    <PageShell auroraTheme="institution">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
-        <Aurora themeId="institution" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero institution-page-hero">
-            <FadeIn>
-              <Eyebrow tone="light" accent>For Institutions</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '20px 0 16px', maxWidth: 640 }}>
-                Institution OS for education delivery.
-              </h1>
-              <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 520, margin: '0 0 28px' }}>
-                Programs, batches, learners, assessment, and progress — operational workflows for schools, colleges, universities, and training partners.
-              </p>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Button variant="primary" themeId="institution" size="lg" onClick={() => navigate('/contact')}>Partner With Skylent</Button>
-                <Button variant="secondary" size="lg" onClick={() => navigate('/os')}>Explore Skylent OS</Button>
-              </div>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <div className="institution-hero-visual-wrap" style={{ minHeight: 'clamp(380px, 48vh, 520px)' }}>
-                <ProductVisual id="institution-pipeline" themeId="institution" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
-              </div>
-            </FadeIn>
+    <PageShell aurora={false}>
+      <div className="arch-academic-shell" style={{ paddingTop: T.navH + 28 }}>
+        <div className="arch-academic-inner">
+          <header className="arch-line-header" style={{ marginBottom: 28 }}>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap', marginBottom: 14 }}>
+              <div className="skylent-label" style={{ color: C.indigo, margin: 0 }}>Institution OS</div>
+              <MaturityMark maturity="direction" />
+            </div>
+            <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 14px', maxWidth: 740 }}>
+              An operating layer for delivery — not a consumer landing page.
+            </h1>
+            <p className="skylent-body-lg" style={{ color: C.slate, margin: 0, maxWidth: 580 }}>
+              Institution OS is how a school, college, university, or training partner would run programmes, people, and reporting. The organisation dashboard today is an honest shell. Batches, faculty assignment, and institutional reporting are not built.
+            </p>
+          </header>
+          <section className="arch-section">
+            <div className="skylent-label" style={{ color: C.slate, marginBottom: 14 }}>Capability vs what ships</div>
+            <CapabilityRail items={INSTITUTION_OS_LAYERS} />
+          </section>
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 24 }}>
+            <Button variant="primary" themeId="institution" onClick={() => navigate('/contact')}>Talk to partnerships</Button>
+            <Button variant="secondary" onClick={() => navigate('/login')}>Organisation sign in</Button>
           </div>
         </div>
-      </section>
+      </div>
 
       <ContextualNavBar items={INSTITUTION_NAV_ITEMS} themeId="institution" activeId={activeSection} />
 
@@ -402,15 +402,6 @@ export default function InstitutionsPage() {
       <EcosystemSection />
       <PartnershipSection />
       <EnquiriesSection />
-
-      <CTABand
-        eyebrow="Get in touch"
-        title={<>Bring Skylent OS<br />to your institution.</>}
-        lead="Let's map your needs and co-design a program that moves your learners from education to employability."
-        primary={{ label: 'Partner With Skylent', to: '/contact' }}
-        secondary={{ label: 'View Skylent OS', to: '/os' }}
-        auroraTheme="institution"
-      />
     </PageShell>
   )
 }
