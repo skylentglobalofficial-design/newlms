@@ -18,7 +18,7 @@ export default function CareerOSPublicPage() {
               A career workspace — not a placement desk.
             </h1>
             <p className="skylent-body-lg" style={{ color: C.slate, margin: 0, maxWidth: 560 }}>
-              Career OS is where you keep a profile, watch for published roles, apply, and practise interviews. Jobs appear when partners publish them. None are invented for the marketing page.
+              Career OS is where you keep a profile, watch for published roles, apply, and practise interviews. After you enroll in a live course, LMS progress appears here as evidence — jobs are not invented for this page.
             </p>
           </header>
 

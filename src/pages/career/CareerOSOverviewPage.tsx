@@ -6,6 +6,8 @@ import { GlassSurface } from "../../components/foundation"
 import { AuthDashboardLayout } from "../../components/AuthDashboardShell"
 import { useCareerProfile } from "../../hooks/useCareerProfile"
 import { listApplications, listInterviewRounds, listSupportRequests, type CareerSupportRequest, type InterviewRound, type JobApplication } from "../../lib/career-api"
+import { fetchLmsEnrollments, type ApiEnrollmentSummary } from "../../lib/lms-api"
+import EnrollmentEvidence from "../../components/learner/EnrollmentEvidence"
 import { applicationEmployerName, applicationRoleTitle, formatStatusLabel } from "../../components/career/application-utils"
 import { formatInterviewDateTime, formatRoundStatus, formatRoundType, isUpcomingRound, sortRoundsBySchedule } from "../../components/career/interview-utils"
 import { countOpenTasks, formatRequestStatus, formatRequestType, getNextOpenTask, isActiveRequest } from "../../components/career/support-utils"
@@ -21,6 +23,8 @@ export default function CareerOSOverviewPage() {
   const [appsError, setAppsError] = useState<string | null>(null)
   const [upcomingInterviews, setUpcomingInterviews] = useState<InterviewRound[]>([])
   const [supportRequests, setSupportRequests] = useState<CareerSupportRequest[]>([])
+  const [enrollments, setEnrollments] = useState<ApiEnrollmentSummary[]>([])
+  const [enrollmentsError, setEnrollmentsError] = useState<string | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -35,6 +39,13 @@ export default function CareerOSOverviewPage() {
       })
       .catch(err => {
         if (!cancelled) setAppsError(workspaceErrorMessage(err))
+      })
+    void fetchLmsEnrollments()
+      .then((learning) => {
+        if (!cancelled) setEnrollments(learning)
+      })
+      .catch(() => {
+        if (!cancelled) setEnrollmentsError("Learning enrollments could not be loaded.")
       })
     return () => { cancelled = true }
   }, [])
@@ -67,7 +78,7 @@ export default function CareerOSOverviewPage() {
           Career OS
         </h1>
         <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
-          Your profile, applications, and interview prep in one workspace.
+          Profile, applications, interview prep — and evidence from courses you actually enrolled in.
         </p>
       </div>
 
@@ -95,6 +106,18 @@ export default function CareerOSOverviewPage() {
                 <div style={{ width: `${profile.completeness.percent}%`, height: "100%", background: `linear-gradient(90deg, ${accent.primary}, ${accent.secondary})`, borderRadius: 100 }} />
               </div>
             </GlassSurface>
+
+            <div style={{ marginBottom: 24 }}>
+              <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink, margin: "0 0 8px" }}>Learning evidence</h2>
+              <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: "0 0 12px" }}>
+                Pulled from your LMS enrollments. Submitted work is yours to add to Projects — nothing is auto-invented.
+              </p>
+              {enrollmentsError ? (
+                <p style={{ color: C.slate, fontSize: 13 }}>{enrollmentsError}</p>
+              ) : (
+                <EnrollmentEvidence items={enrollments} />
+              )}
+            </div>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: 12, marginBottom: 24 }}>
               {[
@@ -138,6 +161,9 @@ export default function CareerOSOverviewPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <Link to="/career-os/profile" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
                   Edit profile
+                </Link>
+                <Link to="/dashboard/student" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
+                  Open learner dashboard
                 </Link>
                 <Link to="/career-os/jobs" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
                   Browse jobs

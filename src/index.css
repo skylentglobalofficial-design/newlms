@@ -1816,7 +1816,12 @@ html, body {
     gap: 6px;
   }
 }
+.live-intent-row {
+  min-width: 0;
+}
 @media (max-width: 640px) {
   .course-spec-grid { grid-template-columns: 1fr 1fr !important; }
   .arch-career-ia-row { grid-template-columns: 1fr !important; }
+  .learner-evidence-row { grid-template-columns: 1fr !important; }
+  .live-intent-row { grid-template-columns: auto minmax(0, 1fr) auto !important; }
 }

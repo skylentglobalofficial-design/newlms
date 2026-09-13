@@ -136,6 +136,14 @@ async function main() {
   assert(workspace.response.ok, "Enrolled user should access course workspace")
   assert(workspace.data.data.enrollment.courseSlug === courseSlug, "Workspace course slug mismatch")
 
+  console.log("2b. Enrollments list returns the enrolled course")
+  const listed = await request(userAJar, "/lms/enrollments")
+  assert(listed.response.ok, "Enrollments list should succeed")
+  assert(
+    Array.isArray(listed.data.data) && listed.data.data.some((row: { courseSlug?: string }) => row.courseSlug === courseSlug),
+    "Enrollments list should include the enrolled course",
+  )
+
   console.log("3. Non-enrolled user cannot access enrolled content")
   await signupUser(userBJar, "b")
   const blocked = await request(userBJar, `/lms/courses/${courseSlug}`)

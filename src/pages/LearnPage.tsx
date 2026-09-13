@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import { C, T } from '../tokens'
 import { useAuth } from '../context/AuthContext'
 import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
@@ -26,6 +26,7 @@ import {
   submitQuizAttempt,
   updateAssignment,
 } from '../lib/lms-api'
+import { workspaceErrorMessage } from '../lib/http'
 
 function dashRoute(role?: string) {
   switch (role) {
@@ -47,6 +48,7 @@ function lessonPhase(type: string) {
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, ready: authReady } = useAuth()
   const { access, lessonStates, reload, enroll } = useLmsCourse(slug)
   const roleAccent = getLmsRoleAccent(user?.role)
@@ -62,6 +64,10 @@ export default function LearnPage() {
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
   const [enrolling, setEnrolling] = useState(false)
+  const [enrollError, setEnrollError] = useState<string | null>(null)
+
+  const selectedLessonType = allLessons.find((lesson) => lesson.id === selectedLessonId)?.type ?? null
+  const selectedLessonLocked = Boolean(selectedLessonId && lessonStates[selectedLessonId]?.locked)
 
   useEffect(() => {
     if (firstLessonId && !lessonId && access.status === 'ready') {
@@ -70,21 +76,19 @@ export default function LearnPage() {
   }, [firstLessonId, lessonId, access.status])
 
   useEffect(() => {
-    if (selectedLessonId && slug && access.status === 'ready') {
-      navigate(`/learn/${slug}/${selectedLessonId}`, { replace: true })
-    }
-  }, [selectedLessonId, slug, navigate, access.status])
+    if (!selectedLessonId || !slug || access.status !== 'ready') return
+    const target = `/learn/${slug}/${selectedLessonId}`
+    if (location.pathname === target) return
+    navigate(target, { replace: true })
+  }, [selectedLessonId, slug, navigate, access.status, location.pathname])
 
   useEffect(() => {
-    if (lessonId && allLessons.some(l => l.id === lessonId)) setSelectedLessonId(lessonId)
-  }, [lessonId, allLessons])
+    if (lessonId) setSelectedLessonId(lessonId)
+  }, [lessonId])
 
   useEffect(() => {
     if (!slug || access.status !== 'ready' || !selectedLessonId) return
-    const lesson = allLessons.find(l => l.id === selectedLessonId)
-    if (!lesson) return
-    const state = lessonStates[selectedLessonId]
-    if (state?.locked) {
+    if (selectedLessonLocked) {
       setQuizQuestions([])
       setLessonMedia(undefined)
       return
@@ -92,7 +96,7 @@ export default function LearnPage() {
 
     void markLessonAccess(slug, selectedLessonId).catch(() => undefined)
 
-    if (lesson.type === 'quiz') {
+    if (selectedLessonType === 'quiz') {
       fetchQuizQuestions(slug, selectedLessonId)
         .then((questions) => setQuizQuestions(questions.map(q => ({ q: q.q, options: q.options }))))
         .catch(() => setQuizQuestions([]))
@@ -100,14 +104,14 @@ export default function LearnPage() {
       setQuizQuestions([])
     }
 
-    if (lesson.type === 'video') {
+    if (selectedLessonType === 'video') {
       fetchLessonMedia(slug, selectedLessonId)
         .then((payload) => setLessonMedia(payload.media))
-        .catch(() => setLessonMedia(lesson.media ?? { provider: 'unavailable' }))
+        .catch(() => setLessonMedia({ provider: 'unavailable' }))
     } else {
       setLessonMedia(undefined)
     }
-  }, [slug, access.status, selectedLessonId, allLessons, lessonStates])
+  }, [slug, access.status, selectedLessonId, selectedLessonType, selectedLessonLocked])
 
   const refreshWorkspace = useCallback(async () => {
     if (!slug) return
@@ -150,12 +154,16 @@ export default function LearnPage() {
           disabled={enrolling}
           onClick={() => {
             setEnrolling(true)
-            void enroll().finally(() => setEnrolling(false))
+            setEnrollError(null)
+            void enroll()
+              .catch((err) => setEnrollError(workspaceErrorMessage(err)))
+              .finally(() => setEnrolling(false))
           }}
           style={{ background: roleAccent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer' }}
         >
           {enrolling ? 'Enrolling…' : 'Enroll to start learning'}
         </button>
+        {enrollError ? <p style={{ color: C.slate, fontSize: 13, margin: 0, textAlign: 'center', maxWidth: 420 }}>{enrollError}</p> : null}
         <Link to="/dashboard/student" style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 13 }}>← Back to dashboard</Link>
       </div>
     )
@@ -267,6 +275,9 @@ export default function LearnPage() {
                   ? 'You are eligible for a certificate. Download and issuance will be available in a later phase.'
                   : 'Complete all requirements to unlock certificate eligibility.'}
               </div>
+              <Link to="/career-os" style={{ color: roleAccent.text, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+                Record this progress on Career OS →
+              </Link>
             </div>
           )}
 
