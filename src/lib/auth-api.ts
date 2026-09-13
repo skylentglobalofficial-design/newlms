@@ -45,11 +45,12 @@ function readCsrfCookie(): string | null {
 }
 
 export async function ensureCsrfToken(): Promise<string> {
-  const existing = csrfToken ?? readCsrfCookie()
-  if (existing) {
-    csrfToken = existing
-    return existing
+  const fromCookie = readCsrfCookie()
+  if (fromCookie) {
+    csrfToken = fromCookie
+    return fromCookie
   }
+  if (csrfToken) return csrfToken
 
   const response = await fetch(`${API_BASE}/auth/csrf`, { credentials: "include" })
   if (!response.ok) {
@@ -57,7 +58,7 @@ export async function ensureCsrfToken(): Promise<string> {
   }
 
   const parsed = await parseApiJson<{ csrfToken: string }>(response)
-  csrfToken = parsed.csrfToken
+  csrfToken = readCsrfCookie() ?? parsed.csrfToken
   return csrfToken
 }
 

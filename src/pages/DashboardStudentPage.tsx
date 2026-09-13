@@ -16,6 +16,7 @@ import {
 import { useLmsDashboard } from '../hooks/useLms'
 import { enrollInCourse, fetchLmsEnrollments, type ApiEnrollmentSummary } from '../lib/lms-api'
 import EnrollmentEvidence from '../components/learner/EnrollmentEvidence'
+import { workspaceErrorMessage } from '../lib/http'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'student-overview' },
@@ -43,10 +44,11 @@ function NavIcon({ id }: { id: string }) {
 
 export default function DashboardStudentPage() {
   const { user, ready } = useAuth()
-  const { workspace, course, lessonStates, loading, reload } = useLmsDashboard()
+  const { workspace, course, lessonStates, loading, error, reload } = useLmsDashboard()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('overview')
   const [enrolling, setEnrolling] = useState(false)
+  const [enrollError, setEnrollError] = useState<string | null>(null)
   const [enrollments, setEnrollments] = useState<ApiEnrollmentSummary[]>([])
 
   useEffect(() => {
@@ -94,6 +96,33 @@ export default function DashboardStudentPage() {
 
   if (!ready || !user) return null
 
+  if (error && !workspace) {
+    return (
+      <AuthDashboardShell
+        themeId="data-science"
+        workspaceLabel="Learning"
+        roleLabel="Learner"
+        navItems={NAV_ITEMS}
+        bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'learning', 'assignments', 'progress', 'career'].includes(n.id))}
+        activeNav={activeNav}
+        onNavChange={setActiveNav}
+        renderNavIcon={id => <NavIcon id={id} />}
+      >
+        <div id="student-overview" style={{ maxWidth: 560 }}>
+          <div style={{ color: C.ink, fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 700, marginBottom: 12 }}>Learning workspace unavailable</div>
+          <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '0 0 16px' }}>{error}</p>
+          <button
+            type="button"
+            onClick={() => void reload()}
+            style={{ background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+          >
+            Try again
+          </button>
+        </div>
+      </AuthDashboardShell>
+    )
+  }
+
   if (loading) {
     return (
       <AuthDashboardShell
@@ -133,8 +162,10 @@ export default function DashboardStudentPage() {
             disabled={enrolling}
             onClick={() => {
               setEnrolling(true)
+              setEnrollError(null)
               void enrollInCourse('data-analytics')
                 .then(() => reload())
+                .catch((err) => setEnrollError(workspaceErrorMessage(err)))
                 .finally(() => setEnrolling(false))
             }}
             style={{ background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer', marginRight: 12 }}
@@ -142,6 +173,9 @@ export default function DashboardStudentPage() {
             {enrolling ? 'Enrolling…' : 'Start Data Analytics'}
           </button>
           <Link to="/courses" style={{ color: accent.text, fontSize: 13, textDecoration: 'none' }}>Browse live courses →</Link>
+          {enrollError ? (
+            <p style={{ color: C.slate, fontSize: 13, margin: '12px 0 0' }}>{enrollError}</p>
+          ) : null}
           <div style={{ marginTop: 28 }}>
             <EnrollmentEvidence items={enrollments} />
           </div>

@@ -107,6 +107,18 @@ export default function CareerOSOverviewPage() {
               </div>
             </GlassSurface>
 
+            <div style={{ marginBottom: 24 }}>
+              <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink, margin: "0 0 8px" }}>Learning evidence</h2>
+              <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: "0 0 12px" }}>
+                Pulled from your LMS enrollments. Submitted work is yours to add to Projects — nothing is auto-invented.
+              </p>
+              {enrollmentsError ? (
+                <p style={{ color: C.slate, fontSize: 13 }}>{enrollmentsError}</p>
+              ) : (
+                <EnrollmentEvidence items={enrollments} />
+              )}
+            </div>
+
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: 12, marginBottom: 24 }}>
               {[
                 { label: "Education", value: profile.education.length },
@@ -131,18 +143,6 @@ export default function CareerOSOverviewPage() {
                 </Link>
               </div>
             )}
-
-            <div style={{ marginBottom: 24, paddingTop: 8 }}>
-              <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink, margin: "0 0 8px" }}>Learning evidence</h2>
-              <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: "0 0 12px" }}>
-                Pulled from your LMS enrollments. Submitted work is yours to add to Projects — nothing is auto-invented.
-              </p>
-              {enrollmentsError ? (
-                <p style={{ color: C.slate, fontSize: 13 }}>{enrollmentsError}</p>
-              ) : (
-                <EnrollmentEvidence items={enrollments} />
-              )}
-            </div>
 
             {profile.completeness.percent < 100 && profile.completeness.missing.length > 0 && (
               <div style={{ marginBottom: 20 }}>

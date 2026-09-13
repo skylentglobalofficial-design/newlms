@@ -602,6 +602,7 @@ export default function SkillsPage() {
                     <button
                       key={item.id}
                       type="button"
+                      className="intent-chip"
                       onClick={() => setIntentId(item.id)}
                       aria-pressed={selected}
                       style={{
@@ -628,7 +629,8 @@ export default function SkillsPage() {
                   {matches.length === 0 ? (
                     <p style={{ color: C.slate, fontSize: 14, margin: 0 }}>No open course or programme matches this intent yet.</p>
                   ) : (
-                    matches.map((match, index) => (
+                    <div className="live-intent-list">
+                    {matches.map((match, index) => (
                       <Link
                         key={`${match.kind}-${match.slug}`}
                         to={match.to}
@@ -642,7 +644,7 @@ export default function SkillsPage() {
                           color: 'inherit',
                           minWidth: 0,
                         }}
-                        className="learner-evidence-row"
+                        className="live-intent-row"
                       >
                         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.indigo, alignSelf: 'center' }}>
                           {match.kind === 'programme' ? 'Programme' : 'Course'}
@@ -653,7 +655,8 @@ export default function SkillsPage() {
                         </span>
                         <span style={{ color: C.indigo, fontSize: 13, fontWeight: 600, alignSelf: 'center' }}>Start →</span>
                       </Link>
-                    ))
+                    ))}
+                    </div>
                   )}
                 </div>
               )}

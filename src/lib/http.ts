@@ -13,7 +13,14 @@ export function workspaceErrorMessage(err: unknown): string {
 
 export function userFacingApiError(data: unknown, status: number): string {
   if (status === 401) return "Sign in to continue."
-  if (status === 403) return "You do not have access to this workspace."
+  if (status === 403) {
+    if (typeof data === "object" && data && "error" in data) {
+      const raw = String((data as { error: unknown }).error ?? "")
+      if (raw === "Invalid CSRF token") return "Reload the page and try again."
+      if (raw && !looksLikeParserNoise(raw) && raw.length <= 160) return raw
+    }
+    return "You do not have access to this workspace."
+  }
   if (status === 404) return "This resource is not available."
 
   if (typeof data === "object" && data && "error" in data) {

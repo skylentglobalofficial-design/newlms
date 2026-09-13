@@ -17,7 +17,7 @@ export const LEARN_INTENTS: LearnIntent[] = [
 
 const COURSE_MATCH: Record<LearnIntentId, RegExp> = {
   data: /data|sql|analytics|power.?bi/i,
-  software: /full.?stack|web|python|programming/i,
+  software: /full.?stack|\bweb\b/i,
   ai: /ai|generative/i,
   product: /product/i,
 }
@@ -37,9 +37,20 @@ export type LiveMatch = {
   note: string
 }
 
+function courseHaystack(course: { title: string; category: string; slug: string }) {
+  return `${course.title} ${course.category} ${course.slug}`
+}
+
+function courseFitsIntent(id: LearnIntentId, haystack: string): boolean {
+  if (!COURSE_MATCH[id].test(haystack)) return false
+  // Data-oriented Python/SQL courses must not appear under "Build software".
+  if (id === "software" && COURSE_MATCH.data.test(haystack)) return false
+  return true
+}
+
 export function liveMatchesForIntent(id: LearnIntentId): LiveMatch[] {
   const courseHits: LiveMatch[] = courses
-    .filter((course) => COURSE_MATCH[id].test(`${course.title} ${course.category} ${course.slug}`))
+    .filter((course) => courseFitsIntent(id, courseHaystack(course)))
     .map((course) => ({
       kind: "course" as const,
       slug: course.slug,
