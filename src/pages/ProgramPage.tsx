@@ -346,8 +346,11 @@ export default function ProgramPage() {
               <p style={{ color: domainAccent.text, fontSize: 15, fontWeight: 500, margin: '0 0 14px', maxWidth: 520 }}>
                 Outcome: {program.outcome}
               </p>
-              <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 520, margin: '0 0 24px' }}>
+              <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 520, margin: '0 0 8px' }}>
                 {program.desc}
+              </p>
+              <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.55, maxWidth: 520, margin: '0 0 20px' }}>
+                This is a programme pathway (outcome → structure → practice → assessment). Courses are shorter, lesson-first units.
               </p>
 
               <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 0 }}>

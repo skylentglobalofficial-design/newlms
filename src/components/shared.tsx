@@ -10,6 +10,8 @@ import {
 } from '../lib/catalog-api'
 import { fulfillCatalogEnrollment, learnPathForWorkspace } from '../lib/catalog-enrollment'
 import type { UserRole } from '../context/AuthContext'
+import { MEGA_NAV, FOOTER_COLS } from '../lib/product-architecture'
+import { MaturityMark } from './product/Architecture'
 import { C, T } from '../tokens'
 import { PublicCanvas, useAuroraTheme } from './foundation'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
@@ -302,50 +304,7 @@ export function JobDrawer({ job, onClose, onApply }: { job: Job; onClose: () => 
 }
 
 // ─── NAV (with mega menu) ─────────────────────────────────────────────────────
-const megaMenu = [
-  {
-    label: 'Education',
-    to: '/education',
-    tagline: 'From schooling to postgraduate & exams',
-    items: [
-      { label: 'Schooling', sub: 'Foundational academic learning', to: '/education#schooling' },
-      { label: 'Undergraduate', sub: 'Degree-aligned programs', to: '/education#undergraduate' },
-      { label: 'Postgraduate', sub: 'Advanced specialisation', to: '/education#postgraduate' },
-      { label: 'Competitive Exams', sub: 'JEE · NEET · CAT & more', to: '/education#competitive-exams' },
-    ],
-  },
-  {
-    label: 'Skills',
-    to: '/skills',
-    tagline: 'From learning to employability',
-    items: [
-      { label: 'Webinars', sub: 'Live expert-led sessions', to: '/workshops' },
-      { label: 'Certificate Programs', sub: 'Focused, credentialed skills', to: '/programs' },
-      { label: 'Professional Programs', sub: 'Career-ready — includes Career OS', to: '/programs' },
-      { label: 'Job Assistance', sub: 'Career workspace & interview prep', to: '/skills#job-assistance' },
-    ],
-  },
-  {
-    label: 'Career OS',
-    to: '/career-os',
-    tagline: 'Profile, jobs, and applications',
-    items: [
-      { label: 'Interview Preparation', sub: 'Mock interviews & practice', to: '/career-os' },
-      { label: 'Job Board', sub: 'Curated opportunities', to: '/career-os' },
-    ],
-  },
-  {
-    label: 'For Institutions',
-    to: '/institutions',
-    tagline: 'Dashboards for schools and colleges',
-    items: [
-      { label: 'Schools', sub: 'Student learning & teacher tools', to: '/institutions' },
-      { label: 'Colleges', sub: 'Academic programs & career readiness', to: '/institutions' },
-      { label: 'Universities', sub: 'Curriculum, LMS & student lifecycle', to: '/institutions' },
-      { label: 'Skill Institutions', sub: 'Programs, batches & certification', to: '/institutions' },
-    ],
-  },
-]
+const megaMenu = MEGA_NAV
 
 function dashRoute(role: UserRole): string {
   switch (role) {
@@ -459,7 +418,10 @@ export function Nav() {
                       onMouseEnter={e => (e.currentTarget.style.background = 'rgba(8,9,9,0.04)')}
                       onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                     >
-                      <div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>{item.label}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                        <div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>{item.label}</div>
+                        {item.mark && <MaturityMark maturity={item.mark} compact />}
+                      </div>
                       <div style={{ color: C.slate, fontSize: 11, marginTop: 1 }}>{item.sub}</div>
                     </Link>
                   ))}
@@ -585,12 +547,7 @@ export function Nav() {
 
 // ─── FOOTER ───────────────────────────────────────────────────────────────────
 export function Footer() {
-  const cols = [
-    { heading: 'Education', links: [['Overview', '/education'], ['Schooling', '/education#schooling'], ['Undergraduate', '/education#undergraduate'], ['Postgraduate', '/education#postgraduate']] },
-    { heading: 'Skills', links: [['Overview', '/skills'], ['Webinars', '/workshops'], ['Certificate Programs', '/programs'], ['Professional Programs', '/programs'], ['Job Assistance', '/skills#job-assistance']] },
-    { heading: 'Career OS', links: [['Overview', '/career-os'], ['Interview Prep', '/career-os'], ['Job Board', '/career-os'], ['Skylent OS', '/os']] },
-    { heading: 'Company', links: [['About', '/about'], ['For Institutions', '/institutions'], ['Stories', '/stories'], ['Blog', '/blog'], ['Contact', '/contact']] },
-  ]
+  const cols = FOOTER_COLS
   return (
     <footer className="skylent-site-footer" style={{ background: C.warmWhite, padding: `${T.sectionSm} ${T.gutter} 32px`, position: 'relative', borderTop: `1px solid ${T.lineLight}` }}>
       <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>

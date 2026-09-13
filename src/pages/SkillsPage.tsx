@@ -4,10 +4,10 @@ import {
   Section, Button, Eyebrow, CTABand, T, Heading, SectionHeader,
 } from '../components/ui'
 import { Aurora, MediaImage, GlassSurface, ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
-import { ProductVisual } from '../components/product/ProductVisuals'
 import { getDomainAccent } from '../aurora-themes'
 import { programs, workshops } from '../data'
 import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
+import { CAREER_OS_IA } from '../lib/product-architecture'
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 
@@ -21,32 +21,11 @@ const OTHER_WORKSHOPS = workshops.slice(1, 4)
 const accent = getDomainAccent('professional')
 
 const SKILLS_NAV_ITEMS: ContextualNavItem[] = [
-  { id: 'webinars', label: 'Webinars', sub: 'Live sessions' },
-  { id: 'certificate', label: 'Certificate Programs', sub: 'Credentials' },
+  { id: 'webinars', label: 'Webinars', sub: 'Coming soon' },
+  { id: 'certificate', label: 'Certificate Programs', sub: 'Focused tracks' },
   { id: 'professional', label: 'Professional Programs', sub: 'Career products' },
-  { id: 'job-assistance', label: 'Job Assistance', sub: 'Career support' },
+  { id: 'job-assistance', label: 'Career workspace', sub: 'Career OS' },
 ]
-
-// ─── HERO VISUAL ──────────────────────────────────────────────────────────────
-
-function SkillsHeroVisual() {
-  return (
-    <div className="skills-hero-visual-wrap" style={{ position: 'relative', minHeight: 'clamp(380px, 48vh, 520px)' }}>
-      <ProductVisual id="skills-workspace" themeId="professional" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: '-6% -5%',
-          border: `1px dashed ${accent.border}`,
-          borderRadius: T.rCard,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-    </div>
-  )
-}
 
 // ─── SKILLS PATH ──────────────────────────────────────────────────────────────
 
@@ -66,7 +45,7 @@ function SkillsPathSection() {
           tone="light"
           eyebrow="Skills path"
           title="Learning → proof → career."
-          lead="Webinars, certificates, and professional programs are separate products. Professional Programs include Career OS."
+          lead="Certificates and professional programs are live products. Workshop registration is not. Professional Programs include Career OS."
         />
       </FadeIn>
 
@@ -157,16 +136,16 @@ function WebinarsSection() {
         </FadeIn>
 
         <FadeIn delay={80}>
-          <Eyebrow tone="light">Webinars</Eyebrow>
+          <Eyebrow tone="light">Webinars · coming soon</Eyebrow>
           <Heading tone="light" size="md" style={{ margin: '20px 0 16px' }}>
-            Show up for a session. Leave with a topic mastered.
+            Short sessions, when registration ships.
           </Heading>
           <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 24px', maxWidth: 480 }}>
-            Event-oriented: speaker, date, duration, live or recorded. Open to anyone who wants a first step.
+            Event-oriented listings: speaker, date, duration. There is no workshop enrollment, attendance, or payment backend yet.
           </p>
 
           <div style={{ padding: '20px 0', borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}`, marginBottom: 24 }}>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Next session</div>
+            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Listed session · not open for registration</div>
             <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.ink, margin: '0 0 10px', lineHeight: 1.25 }}>
               {FEATURED_WORKSHOP.title}
             </h3>
@@ -333,7 +312,7 @@ function ProfessionalSection() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: C.slate }}>
           {['Learning', 'Project', 'Assessment', 'Career Support'].map((s, i, arr) => (
             <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: i === arr.length - 1 ? accent.text : C.white }}>{s}</span>
+              <span style={{ color: i === arr.length - 1 ? accent.text : C.ink }}>{s}</span>
               {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
             </span>
           ))}
@@ -422,61 +401,38 @@ function ProfessionalSection() {
 
 function JobAssistanceSection() {
   const navigate = useNavigate()
-  const steps = [
-    { label: 'Profile', desc: 'Resume and profile review' },
-    { label: 'Interview Prep', desc: 'Preparation and mock interviews' },
-    { label: 'Job Discovery', desc: 'Curated job board' },
-    { label: 'Applications', desc: 'Apply and track status' },
-    { label: 'Tracking', desc: 'Application progress visibility' },
-  ]
 
   return (
     <Section id="job-assistance" tone="canvas" divider>
-      <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col">
-        <FadeIn>
-          <MediaImage
-            src={PHOTO.career}
-            alt="Career conversation"
-            aspect="4/3"
-            overlay="full"
-            objectPosition="center"
-          />
-        </FadeIn>
-
-        <FadeIn delay={80}>
-          <Eyebrow tone="light">Not a course</Eyebrow>
-          <Heading tone="light" size="md" style={{ margin: '20px 0 16px' }}>
-            Job Assistance
-          </Heading>
-          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 520 }}>
-            Career-support product layered on Professional Programs and Career OS. Resume, profile, interview preparation, mock interviews, job opportunities, and applications — the work after the curriculum.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 28 }}>
-            {steps.map((step, i) => (
-              <div
-                key={step.label}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '120px 1fr',
-                  gap: 16,
-                  padding: '16px 0',
-                  borderBottom: i < steps.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                  alignItems: 'start',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary, flexShrink: 0 }} />
-                  <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink }}>{step.label}</span>
-                </div>
-                <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{step.desc}</span>
-              </div>
-            ))}
-          </div>
-
-          <Button variant="primary" onClick={() => navigate('/career-os')}>Open Career OS →</Button>
-        </FadeIn>
-      </div>
+      <FadeIn>
+        <Eyebrow tone="light">Not a course</Eyebrow>
+        <Heading tone="light" size="md" style={{ margin: '20px 0 16px' }}>
+          Career OS is a workspace.
+        </Heading>
+        <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 560 }}>
+          Professional programmes include Career OS: profile, published opportunities, applications, interviews, and support. Jobs appear when partners publish them — the board is not filled with demo employers.
+        </p>
+        <div style={{ maxWidth: 720, marginBottom: 28 }}>
+          {CAREER_OS_IA.map((item, i, arr) => (
+            <div
+              key={item.label}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'minmax(140px, 0.4fr) minmax(0, 1fr)',
+                gap: 16,
+                padding: '14px 0',
+                borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                minWidth: 0,
+              }}
+              className="arch-career-ia-row"
+            >
+              <strong style={{ fontFamily: 'var(--font-display)', fontSize: 16, color: C.ink }}>{item.label}</strong>
+              <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{item.sub}</span>
+            </div>
+          ))}
+        </div>
+        <Button variant="primary" onClick={() => navigate('/career-os')}>Open Career OS →</Button>
+      </FadeIn>
     </Section>
   )
 }
@@ -539,7 +495,7 @@ function ProgramDiscoverySection() {
           tone="light"
           eyebrow="Program discovery"
           title="Find the right depth."
-          lead="Each listing shows duration, format, price, and outcome — from a single webinar to a full professional program."
+          lead="Each listing shows duration, format, price, and outcome for live courses and programmes. Workshop pages are listings only."
         />
       </FadeIn>
 
@@ -626,22 +582,45 @@ export default function SkillsPage() {
       <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
         <Aurora themeId="professional" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px,5vw,64px)', alignItems: 'start' }} className="two-col skylent-page-hero skills-page-hero">
+          <div className="skylent-page-hero skills-page-hero" style={{ maxWidth: 720 }}>
             <FadeIn>
-              <Eyebrow tone="light" accent>Skills</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '20px 0 16px', maxWidth: 640 }}>
-                Capability that can<br />become a career.
+              <div className="skylent-label" style={{ color: C.indigo, marginBottom: 14 }}>Learn · live</div>
+              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 16px', maxWidth: 640 }}>
+                What are you trying to learn or become?
               </h1>
               <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 520, margin: '0 0 28px' }}>
-                Webinars are events. Certificate programs are focused skills tracks. Professional Programs include Career OS. Job Assistance is career workspace support — not a placement service.
+                Start from intent, then pick a live course or professional programme. Workshop listings exist, but registration is not live. Certificate tracks are focused skills. Career OS is a workspace — not a placement service.
               </p>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Professional Programs</Button>
-                <Button variant="secondary" size="lg" onClick={() => navigate('/workshops')}>Browse Webinars</Button>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
+                {[
+                  { label: 'Build a professional skill', to: '/programs' },
+                  { label: 'Take a focused course', to: '/courses' },
+                  { label: 'See workshop listings', to: '/workshops' },
+                  { label: 'Open Career OS', to: '/career-os' },
+                ].map((item) => (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => navigate(item.to)}
+                    style={{
+                      background: C.cream,
+                      border: `1px solid ${T.lineStrong}`,
+                      borderRadius: 100,
+                      padding: '8px 14px',
+                      fontSize: 13,
+                      color: C.ink,
+                      cursor: 'pointer',
+                      fontFamily: 'var(--font-body)',
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                ))}
               </div>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <SkillsHeroVisual />
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Professional programmes</Button>
+                <Button variant="secondary" size="lg" onClick={() => navigate('/courses')}>Courses</Button>
+              </div>
             </FadeIn>
           </div>
         </div>
@@ -660,7 +639,7 @@ export default function SkillsPage() {
       <CTABand
         eyebrow="Next step"
         title={<>Ready to become<br />career-ready?</>}
-        lead="Start with a Professional Program for Career OS access, or join a webinar to begin."
+        lead="Start with a Professional Program for Career OS access, or a focused course."
         primary={{ label: 'Explore Professional Programs', to: '/programs' }}
         secondary={{ label: 'See Career OS', to: '/career-os' }}
         auroraTheme="professional"

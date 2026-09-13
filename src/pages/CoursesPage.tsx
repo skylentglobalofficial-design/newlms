@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
-import { Button, Eyebrow, Section, SectionHeader, T } from '../components/ui'
+import { Button, Section, SectionHeader, T } from '../components/ui'
 import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
 import { courses } from '../data'
 import { catalogCourseBySlug } from '../lib/catalog-api'
 import { displayLessonCount } from '../lib/curriculum-counts'
 import { useCatalogCourses } from '../hooks/useCatalog'
-import { PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO, coursePhoto } from '../media'
+import { coursePhoto } from '../media'
 
 const accent = getDomainAccent('professional')
 
@@ -49,43 +49,33 @@ export default function CoursesPage() {
       >
         <Aurora themeId="professional" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div className="hero-grid two-col" style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px, 5vw, 56px)', alignItems: 'center' }}>
-            <FadeIn>
-              <Eyebrow tone="light" accent>Courses</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '20px 0 16px', maxWidth: 560 }}>
-                Short courses with<br />
-                <span style={{ color: accent.text }}>hands-on work.</span>
-              </h1>
-              <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 480, margin: '0 0 28px' }}>
-                Practice SQL, Python, dashboards, and more — with structured lessons and projects you can show in a portfolio.
-              </p>
-              <GlassSurface level={2} padding="12px 16px" style={{ maxWidth: 420 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-                    <circle cx="7" cy="7" r="5" stroke="#5C6168" strokeWidth="1.5" />
-                    <path d="M11 11l3 3" stroke="#5C6168" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                  <input
-                    value={search}
-                    onChange={e => setSearch(e.target.value)}
-                    placeholder="Search courses…"
-                    aria-label="Search courses"
-                    style={{ background: 'none', border: 'none', outline: 'none', color: C.ink, fontSize: 14, width: '100%', fontFamily: 'var(--font-body)' }}
-                  />
-                </div>
-              </GlassSurface>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', minHeight: 320 }}>
-                <MediaImage
-                  src={PROGRAM_PHOTO['data-analytics-pro'] ?? DEFAULT_PROGRAM_PHOTO}
-                  alt="Course workspace preview"
-                  className="skylent-hero-visual"
-                  style={{ minHeight: 300 }}
+          <FadeIn>
+            <div className="skylent-label" style={{ color: C.indigo, marginBottom: 14 }}>Courses · live</div>
+            <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 12px', maxWidth: 560 }}>
+              Focused units you can finish.
+            </h1>
+            <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 480, margin: '0 0 8px' }}>
+              A course is a skills unit with lessons and projects. A programme is a longer pathway. Search the live catalogue — counts come from actual curriculum.
+            </p>
+            <p style={{ color: C.slate, fontSize: 13, margin: '0 0 22px' }}>
+              Looking for a pathway instead? <Link to="/programs" style={{ color: C.indigo, fontWeight: 600, textDecoration: 'none' }}>Browse programmes →</Link>
+            </p>
+            <GlassSurface level={2} padding="12px 16px" style={{ maxWidth: 420 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
+                  <circle cx="7" cy="7" r="5" stroke="#5C6168" strokeWidth="1.5" />
+                  <path d="M11 11l3 3" stroke="#5C6168" strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+                <input
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  placeholder="Search courses…"
+                  aria-label="Search courses"
+                  style={{ background: 'none', border: 'none', outline: 'none', color: C.ink, fontSize: 14, width: '100%', fontFamily: 'var(--font-body)' }}
                 />
-              </GlassSurface>
-            </FadeIn>
-          </div>
+              </div>
+            </GlassSurface>
+          </FadeIn>
         </div>
       </section>
 

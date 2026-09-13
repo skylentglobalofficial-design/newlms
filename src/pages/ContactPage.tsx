@@ -141,7 +141,7 @@ export default function ContactPage() {
                         onBlur={() => setFocused(null)}
                       >
                         <option value="">Select...</option>
-                        {['Explore Courses', 'Join a Program', 'Attend a Workshop', 'Partner With Skylent', 'Institutional LMS', 'Career Support', 'General Enquiry'].map(o => <option key={o} value={o}>{o}</option>)}
+                        {['Explore Courses', 'Join a Program', 'Workshop enquiry', 'Partner With Skylent', 'Institutional LMS', 'Career Support', 'General Enquiry'].map(o => <option key={o} value={o}>{o}</option>)}
                       </select>
                     </div>
                   </div>

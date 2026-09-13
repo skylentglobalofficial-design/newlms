@@ -30,13 +30,13 @@ export default function WorkshopsPage() {
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div className="two-col" style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px, 5vw, 48px)', alignItems: 'center' }}>
             <FadeIn>
-              <Eyebrow tone="light" accent>Workshops</Eyebrow>
+              <Eyebrow tone="light" accent>Workshops · coming soon</Eyebrow>
               <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '18px 0 14px' }}>
                 Focused sessions.<br />
                 <span style={{ color: accent.text }}>Practical outcomes.</span>
               </h1>
               <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 480, margin: 0 }}>
-                Short live workshops on specific skills — register, attend, and leave with something you can apply the same week.
+                Short skill sessions are the intended workshop product. Registration, attendance, and payment are not built — these pages are listings only.
               </p>
             </FadeIn>
             <FadeIn delay={80}>
@@ -52,7 +52,7 @@ export default function WorkshopsPage() {
         <FadeIn>
           <SectionHeader
             tone="light"
-            eyebrow="Upcoming"
+            eyebrow="Listings"
             title={`${filtered.length} workshop${filtered.length !== 1 ? 's' : ''}`}
             lead="Filter by topic or delivery mode. Workshop registration is not live yet — these listings are marketing information only."
           />

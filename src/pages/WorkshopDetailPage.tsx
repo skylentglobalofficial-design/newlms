@@ -43,7 +43,7 @@ export default function WorkshopDetailPage() {
 
           <div className="workshop-event-hero two-col" style={{ display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 'clamp(28px, 5vw, 48px)', alignItems: 'start' }}>
             <FadeIn>
-              <Eyebrow tone="light" accent>Live workshop</Eyebrow>
+              <Eyebrow tone="light" accent>Workshop · coming soon</Eyebrow>
               <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 12px', color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)', display: 'inline-block', margin: '14px 0 18px' }}>{workshop.category}</span>
               <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 16px' }}>{workshop.title}</h1>
               <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 520, margin: '0 0 24px' }}>{workshop.desc}</p>

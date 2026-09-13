@@ -9,6 +9,10 @@ import RouteFallback from './components/RouteFallback'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
 const EducationPage = lazy(() => import('./pages/EducationPage'))
+const SchoolingPage = lazy(() => import('./pages/education/SchoolingPage'))
+const UndergraduatePage = lazy(() => import('./pages/education/UndergraduatePage'))
+const PostgraduatePage = lazy(() => import('./pages/education/PostgraduatePage'))
+const ExamsPage = lazy(() => import('./pages/education/ExamsPage'))
 const OSPage = lazy(() => import('./pages/OSPage'))
 const InstitutionsPage = lazy(() => import('./pages/InstitutionsPage'))
 const UniversitiesPage = lazy(() => import('./pages/UniversitiesPage'))
@@ -51,6 +55,10 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<PublicCanvas themeId="general"><Nav /><HomePage /></PublicCanvas>} />
         <Route path="/education" element={<EducationPage />} />
+        <Route path="/education/schooling" element={<SchoolingPage />} />
+        <Route path="/education/undergraduate" element={<UndergraduatePage />} />
+        <Route path="/education/postgraduate" element={<PostgraduatePage />} />
+        <Route path="/education/exams" element={<ExamsPage />} />
         <Route path="/skills" element={<SkillsPage />} />
         <Route path="/career-os" element={<CareerOSLayout />}>
           <Route index element={<CareerOSOverviewPage />} />
