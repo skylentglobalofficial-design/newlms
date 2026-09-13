@@ -35,6 +35,11 @@ export type LiveMatch = {
   title: string
   to: string
   note: string
+  duration: string
+  availability: string
+  capability: string
+  capabilities: string[]
+  actionLabel: string
 }
 
 function courseHaystack(course: { title: string; category: string; slug: string }) {
@@ -48,16 +53,38 @@ function courseFitsIntent(id: LearnIntentId, haystack: string): boolean {
   return true
 }
 
+function uniqueStatements(values: Array<string | undefined>): string[] {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const value of values) {
+    const text = value?.trim()
+    if (!text) continue
+    const key = text.toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    out.push(text)
+  }
+  return out
+}
+
 export function liveMatchesForIntent(id: LearnIntentId): LiveMatch[] {
   const courseHits: LiveMatch[] = courses
     .filter((course) => courseFitsIntent(id, courseHaystack(course)))
-    .map((course) => ({
-      kind: "course" as const,
-      slug: course.slug,
-      title: course.title,
-      to: `/courses/${course.slug}`,
-      note: `${course.level} · ${course.duration}`,
-    }))
+    .map((course) => {
+      const capabilities = uniqueStatements(course.outcomes.length ? course.outcomes : [course.desc])
+      return {
+        kind: "course" as const,
+        slug: course.slug,
+        title: course.title,
+        to: `/courses/${course.slug}`,
+        note: `${course.level} · ${course.duration}`,
+        duration: course.duration,
+        availability: "Available",
+        capability: capabilities[0] ?? course.desc,
+        capabilities,
+        actionLabel: "Start",
+      }
+    })
 
   const programHits: LiveMatch[] = programs
     .filter(
@@ -65,13 +92,23 @@ export function liveMatchesForIntent(id: LearnIntentId): LiveMatch[] {
         program.enrollmentStatus === "open" &&
         PROGRAM_MATCH[id].test(`${program.name} ${program.slug}`),
     )
-    .map((program) => ({
-      kind: "programme" as const,
-      slug: program.slug,
-      title: program.name,
-      to: `/programs/${program.slug}`,
-      note: "Open programme",
-    }))
+    .map((program) => {
+      const capabilities = uniqueStatements(
+        program.whatYouWillLearn?.length ? program.whatYouWillLearn : [program.desc],
+      )
+      return {
+        kind: "programme" as const,
+        slug: program.slug,
+        title: program.name,
+        to: `/programs/${program.slug}`,
+        note: "Open programme",
+        duration: program.duration,
+        availability: "Open",
+        capability: capabilities[0] ?? program.desc,
+        capabilities,
+        actionLabel: "View programme",
+      }
+    })
 
   const seen = new Set<string>()
   const merged: LiveMatch[] = []
@@ -82,4 +119,23 @@ export function liveMatchesForIntent(id: LearnIntentId): LiveMatch[] {
     merged.push(item)
   }
   return merged.slice(0, 4)
+}
+
+export function capabilitiesForIntent(id: LearnIntentId): string[] {
+  const matches = liveMatchesForIntent(id)
+  const seen = new Set<string>()
+  const out: string[] = []
+  const rounds = Math.max(0, ...matches.map((match) => match.capabilities.length))
+  for (let round = 0; round < rounds && out.length < 4; round++) {
+    for (const match of matches) {
+      const statement = match.capabilities[round]
+      if (!statement) continue
+      const key = statement.toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
+      out.push(statement)
+      if (out.length >= 4) return out
+    }
+  }
+  return out
 }
