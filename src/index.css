@@ -1818,4 +1818,5 @@ html, body {
 }
 @media (max-width: 640px) {
   .course-spec-grid { grid-template-columns: 1fr 1fr !important; }
+  .arch-career-ia-row { grid-template-columns: 1fr !important; }
 }

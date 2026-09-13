@@ -43,7 +43,6 @@ export default function CareerOSPublicPage() {
                 </div>
               ))}
             </div>
-            <style>{`@media (max-width: 640px) { .arch-career-ia-row { grid-template-columns: 1fr !important; } }`}</style>
           </section>
 
           <section className="arch-section">

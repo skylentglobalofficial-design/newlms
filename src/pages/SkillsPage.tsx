@@ -7,6 +7,7 @@ import { Aurora, MediaImage, GlassSurface, ContextualNavBar, useSectionSpy, type
 import { getDomainAccent } from '../aurora-themes'
 import { programs, workshops } from '../data'
 import { PHOTO, PROGRAM_PHOTO, DEFAULT_PROGRAM_PHOTO } from '../media'
+import { CAREER_OS_IA } from '../lib/product-architecture'
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
 
@@ -311,7 +312,7 @@ function ProfessionalSection() {
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center', fontSize: 13, color: C.slate }}>
           {['Learning', 'Project', 'Assessment', 'Career Support'].map((s, i, arr) => (
             <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-              <span style={{ color: i === arr.length - 1 ? accent.text : C.white }}>{s}</span>
+              <span style={{ color: i === arr.length - 1 ? accent.text : C.ink }}>{s}</span>
               {i < arr.length - 1 && <span style={{ color: accent.textMuted }}>→</span>}
             </span>
           ))}
@@ -400,61 +401,38 @@ function ProfessionalSection() {
 
 function JobAssistanceSection() {
   const navigate = useNavigate()
-  const steps = [
-    { label: 'Profile', desc: 'Resume and profile review' },
-    { label: 'Interview Prep', desc: 'Preparation and mock interviews' },
-    { label: 'Job Discovery', desc: 'Curated job board' },
-    { label: 'Applications', desc: 'Apply and track status' },
-    { label: 'Tracking', desc: 'Application progress visibility' },
-  ]
 
   return (
     <Section id="job-assistance" tone="canvas" divider>
-      <div style={{ display: 'grid', gridTemplateColumns: '0.9fr 1.1fr', gap: 'clamp(36px,6vw,72px)', alignItems: 'start' }} className="two-col">
-        <FadeIn>
-          <MediaImage
-            src={PHOTO.career}
-            alt="Career conversation"
-            aspect="4/3"
-            overlay="full"
-            objectPosition="center"
-          />
-        </FadeIn>
-
-        <FadeIn delay={80}>
-          <Eyebrow tone="light">Not a course</Eyebrow>
-          <Heading tone="light" size="md" style={{ margin: '20px 0 16px' }}>
-            Job Assistance
-          </Heading>
-          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 32px', maxWidth: 520 }}>
-            Career-support product layered on Professional Programs and Career OS. Resume, profile, interview preparation, mock interviews, job opportunities, and applications — the work after the curriculum.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0, marginBottom: 28 }}>
-            {steps.map((step, i) => (
-              <div
-                key={step.label}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '120px 1fr',
-                  gap: 16,
-                  padding: '16px 0',
-                  borderBottom: i < steps.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                  alignItems: 'start',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <div style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary, flexShrink: 0 }} />
-                  <span style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink }}>{step.label}</span>
-                </div>
-                <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{step.desc}</span>
-              </div>
-            ))}
-          </div>
-
-          <Button variant="primary" onClick={() => navigate('/career-os')}>Open Career OS →</Button>
-        </FadeIn>
-      </div>
+      <FadeIn>
+        <Eyebrow tone="light">Not a course</Eyebrow>
+        <Heading tone="light" size="md" style={{ margin: '20px 0 16px' }}>
+          Career OS is a workspace.
+        </Heading>
+        <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 560 }}>
+          Professional programmes include Career OS: profile, published opportunities, applications, interviews, and support. Jobs appear when partners publish them — the board is not filled with demo employers.
+        </p>
+        <div style={{ maxWidth: 720, marginBottom: 28 }}>
+          {CAREER_OS_IA.map((item, i, arr) => (
+            <div
+              key={item.label}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'minmax(140px, 0.4fr) minmax(0, 1fr)',
+                gap: 16,
+                padding: '14px 0',
+                borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none',
+                minWidth: 0,
+              }}
+              className="arch-career-ia-row"
+            >
+              <strong style={{ fontFamily: 'var(--font-display)', fontSize: 16, color: C.ink }}>{item.label}</strong>
+              <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{item.sub}</span>
+            </div>
+          ))}
+        </div>
+        <Button variant="primary" onClick={() => navigate('/career-os')}>Open Career OS →</Button>
+      </FadeIn>
     </Section>
   )
 }
