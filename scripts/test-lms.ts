@@ -294,6 +294,17 @@ async function main() {
   assert(programCourseAccess.response.ok, "Program-enrolled user should access linked course")
   assert(programCourseAccess.data.data.lessonStates.l1?.locked === false, "Program enrollment should include unlock rules")
 
+  const programListed = await request(programJar, "/lms/enrollments")
+  assert(programListed.response.ok, "Program enrollments list should succeed")
+  assert(
+    Array.isArray(programListed.data.data) &&
+      programListed.data.data.some(
+        (row: { programSlug?: string; courseSlug?: string | null }) =>
+          row.programSlug === "data-science-ai" && row.courseSlug === courseSlug,
+      ),
+    "Programme enrollment must expose the linked LMS course so Resume/evidence can open it",
+  )
+
   console.log("14b. Coming-soon program enrollment is rejected")
   const comingSoon = await request(programJar, "/lms/enrollments", {
     method: "POST",

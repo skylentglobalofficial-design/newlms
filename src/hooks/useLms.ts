@@ -15,6 +15,7 @@ import { EMPTY_LESSON_STATE } from "../demo/DemoStateContext"
 export type LmsAccessState =
   | { status: "loading" }
   | { status: "login_required" }
+  | { status: "unavailable" }
   | { status: "not_enrolled"; courseSlug: string; courseTitle: string }
   | { status: "ready"; workspace: ApiCourseWorkspace; course: LmsCourseView }
 
@@ -77,8 +78,13 @@ export function useLmsCourse(slug: string | undefined) {
         workspace,
         course: workspaceToCourse(workspace),
       })
-    } catch {
-      setAccess({ status: "login_required" })
+    } catch (err) {
+      const message = err instanceof Error ? err.message : ""
+      if (message === "Sign in to continue.") {
+        setAccess({ status: "login_required" })
+        return
+      }
+      setAccess({ status: "unavailable" })
     }
   }, [slug])
 

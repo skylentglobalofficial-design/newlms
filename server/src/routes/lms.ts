@@ -116,23 +116,36 @@ lmsRouter.get("/enrollments", requireAuth, async (req: AuthenticatedRequest, res
       orderBy: { updatedAt: "desc" },
       include: {
         course: { select: { slug: true, title: true } },
-        program: { select: { slug: true, name: true } },
+        program: {
+          select: {
+            slug: true,
+            name: true,
+            programCourses: {
+              orderBy: { sortOrder: "asc" },
+              take: 1,
+              select: { course: { select: { slug: true, title: true } } },
+            },
+          },
+        },
       },
     })
 
     res.json({
-      data: enrollments.map((entry) => ({
-        id: entry.id,
-        status: entry.status,
-        courseSlug: entry.course?.slug ?? null,
-        courseTitle: entry.course?.title ?? null,
-        programSlug: entry.program?.slug ?? null,
-        programName: entry.program?.name ?? null,
-        certificateEligible: entry.certificateEligible,
-        certificateStatus: entry.certificateStatus,
-        createdAt: entry.createdAt.toISOString(),
-        updatedAt: entry.updatedAt.toISOString(),
-      })),
+      data: enrollments.map((entry) => {
+        const linkedCourse = entry.course ?? entry.program?.programCourses[0]?.course ?? null
+        return {
+          id: entry.id,
+          status: entry.status,
+          courseSlug: linkedCourse?.slug ?? null,
+          courseTitle: linkedCourse?.title ?? null,
+          programSlug: entry.program?.slug ?? null,
+          programName: entry.program?.name ?? null,
+          certificateEligible: entry.certificateEligible,
+          certificateStatus: entry.certificateStatus,
+          createdAt: entry.createdAt.toISOString(),
+          updatedAt: entry.updatedAt.toISOString(),
+        }
+      }),
     })
   } catch (error) {
     console.error("Failed to list enrollments:", error)
