@@ -229,7 +229,11 @@ export default function LearnPage() {
     )
     const remaining = allLessons.filter(l => l.id !== selectedLesson.id && !updatedStates[l.id]?.complete)
     if (remaining.length === 0) setTimeout(() => setShowCertificate(true), 600)
-    else if (next && isLessonUnlocked(next.id, allLessons, updatedStates)) {
+    else if (
+      selectedLesson.type === 'notes'
+      && next
+      && isLessonUnlocked(next.id, allLessons, updatedStates)
+    ) {
       setTimeout(() => setSelectedLessonId(next.id), 400)
     }
   }

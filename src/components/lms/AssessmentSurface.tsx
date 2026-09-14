@@ -102,9 +102,26 @@ export function AssessmentSurface({
 
   if (passed) {
     return (
-      <div style={{ textAlign: 'center', padding: '32px 0' }}>
-        <div style={{ color: '#22c55e', fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Assessment passed</div>
-        <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>Continue to the next lesson</div>
+      <div style={{ padding: '12px 0 8px' }}>
+        <div style={{ textAlign: 'center', padding: '12px 0 20px' }}>
+          <div style={{ color: '#22c55e', fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Assessment passed</div>
+          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>Read the explanations, then continue to the next lesson</div>
+        </div>
+        {qs.some((q) => q.explanation) && (
+          <div className="lms-quiz-review">
+            {qs.map((q, qi) => (
+              <div key={qi} style={{ marginBottom: 16 }}>
+                <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 6 }}>Question {qi + 1}</div>
+                <div style={{ color: C.white, fontSize: 14, fontWeight: 500, marginBottom: 8, lineHeight: 1.5 }}>{q.q}</div>
+                {q.explanation && (
+                  <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.65, background: 'rgba(255,255,255,0.03)', borderRadius: T.rControl, padding: '10px 12px' }}>
+                    {q.explanation}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     )
   }
