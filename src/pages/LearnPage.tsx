@@ -169,15 +169,16 @@ export default function LearnPage() {
     )
   }
 
-  if (!course) {
+  if (access.status !== "ready") {
     return (
-      <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
-        <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>Course not found</div>
-        <Link to="/courses" style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 14 }}>← Back to courses</Link>
+      <div className="skylent-lms-state" style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
+        <div style={{ fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>Course not found</div>
+        <Link to="/courses" style={{ textDecoration: 'none', fontSize: 14 }}>← Back to courses</Link>
       </div>
     )
   }
 
+  const readyCourse = access.course
   const selectedLesson = allLessons.find(l => l.id === selectedLessonId)
   const selectedState = selectedLessonId ? (lessonStates[selectedLessonId] ?? { ...EMPTY_LESSON_STATE }) : { ...EMPTY_LESSON_STATE }
   const { progressPct, allComplete } = computeCourseProgress(allLessons, lessonStates)
@@ -237,7 +238,7 @@ export default function LearnPage() {
       )}
       <aside className={`lms-sidebar${sidebarOpen ? ' open' : ''}`}>
         <CurriculumRail
-          course={course}
+          course={readyCourse}
           lessonStates={lessonStates}
           selectedLessonId={selectedLessonId}
           accent={roleAccent}
@@ -255,7 +256,7 @@ export default function LearnPage() {
             Dashboard
           </button>
           <span className="lms-header-sep">·</span>
-          <span className="lms-header-course">{course.title}</span>
+          <span className="lms-header-course">{readyCourse.title}</span>
           {selectedLesson && (
             <>
               <span className="lms-header-lesson-sep">·</span>
@@ -269,7 +270,7 @@ export default function LearnPage() {
           {(allComplete || showCertificate) && (
             <div className="lms-certificate-banner" style={{ background: roleAccent.subtle, border: `1px solid ${roleAccent.border}`, borderRadius: T.rCard, padding: '24px', marginBottom: 24, textAlign: 'center' }}>
               <div style={{ color: roleAccent.text, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 10 }}>COURSE COMPLETE</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: C.white, marginBottom: 8 }}>{course.title}</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: C.white, marginBottom: 8 }}>{readyCourse.title}</div>
               <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginBottom: 16 }}>
                 {certificateEligible
                   ? 'You are eligible for a certificate. Download and issuance will be available in a later phase.'
@@ -285,7 +286,7 @@ export default function LearnPage() {
             <>
             <div className={`lms-learning-context lms-context-${selectedLesson.type}`}>
               <div className="lms-context-kicker"><span>{lessonTypeLabel(selectedLesson.type)}</span><span>{selectedLesson.duration ?? 'Self-paced'}</span></div>
-              <div className="lms-context-module">{course.modules.find(module => module.lessons.some(lesson => lesson.id === selectedLesson.id))?.title ?? 'Current module'}</div>
+              <div className="lms-context-module">{readyCourse.modules.find(module => module.lessons.some(lesson => lesson.id === selectedLesson.id))?.title ?? 'Current module'}</div>
               <h1>{selectedLesson.title}</h1>
               <p>{selectedLesson.type === 'video' ? 'Build a clear mental model, then use it in the next activity.' : selectedLesson.type === 'quiz' ? 'Work through the question carefully and use the feedback to sharpen your understanding.' : selectedLesson.type === 'assignment' ? 'Turn the brief into evidence you can stand behind.' : 'Read the key ideas, make a connection, and decide what you can do next.'}</p>
             </div>
@@ -337,7 +338,7 @@ export default function LearnPage() {
               <LessonNavigation
                 prev={prev}
                 next={next && isLessonUnlocked(next.id, allLessons, lessonStates) ? next : null}
-                courseSlug={course.slug}
+                courseSlug={readyCourse.slug}
                 accent={roleAccent}
                 onNavigate={handleLessonSelect}
               />
