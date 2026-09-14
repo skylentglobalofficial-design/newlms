@@ -42,7 +42,7 @@ export const DA_QUIZZES: Record<string, DaQuizBank> = {
         options: [
           'We should cut Furniture SKUs next quarter',
           'Online should get a bigger marketing budget',
-          'Home & Kitchen is the largest share of valid net revenue in this extract',
+          'Electronics is the largest share of valid net revenue in this extract',
           'Hire two more analysts',
         ],
         correctIndex: 2,
