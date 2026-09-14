@@ -1,0 +1,57 @@
+employee_id,department,role,hire_date,work_mode,monthly_salary_inr,performance_rating,attrition,region
+E-101,Finance,Analyst,2023-01-15,remote,42083.333333333336,4,no,South
+E-102,Retail Ops,Store Manager,2023-06-15,hybrid,44166.666666666664,4,no,East
+E-103,Customer Care,Support Agent,2024-12-15,hybrid,44166.666666666664,4,no,East
+E-104,Retail Ops,Store Associate,2022-12-15,hybrid,29583.333333333332,2,no,West
+E-105,Finance,Analyst,2025-03-15,hybrid,42083.333333333336,2,no,South
+E-106,Finance,Accountant,2022-05-15,onsite,27500,2,no,East
+E-107,,Buyer,2022-10-15,remote,35833.333333333336,4,no,North
+E-108,Warehouse,Picker,2025-05-15,hybrid,29583.333333333332,3,no,East
+E-109,Merchandising,Planner,2023-12-15,onsite,31666.666666666668,4,no,South
+E-110,Retail Ops,Shift Lead,2025-11-15,remote,23333.333333333332,2,no,East
+E-111,Merchandising,Planner,2022-12-15,hybrid,37916.666666666664,5,no,North
+E-112,Finance,Accountant,2025-05-15,remote,40000,3,no,South
+E-113,Customer Care,Support Agent,2023-03-15,remote,31666.666666666668,2,no,North
+E-114,Customer Care,Support Agent,2023-08-15,remote,29583.333333333332,4,no,East
+E-115,Merchandising,Buyer,2022-06-15,onsite,31666.666666666668,2,no,South
+E-116,Customer Care,Support Agent,2022-05-15,remote,33750,3,no,West
+E-117,Retail Ops,Shift Lead,2022-02-15,onsite,35833.333333333336,3,no,East
+E-118,Warehouse,Picker,2024-04-15,remote,37916.666666666664,2,no,North
+E-119,Merchandising,Buyer,2024-06-15,onsite,25416.666666666668,N/A,no,South
+E-120,Warehouse,Supervisor,2024-05-15,hybrid,44166.666666666664,3,no,North
+E-121,Finance,Analyst,2022-12-15,hybrid,42083.333333333336,4,no,South
+E-122,Merchandising,Buyer,2023-01-15,onsite,27500,5,no,East
+E-123,Retail Ops,Store Associate,2023-01-15,remote,25416.666666666668,5,no,South
+E-124,Retail Ops,Store Manager,2025-08-15,onsite,46250,4,no,West
+E-125,Warehouse,Supervisor,2023-11-15,remote,40000,3,no,West
+E-126,Retail Ops,Shift Lead,2025-06-15,remote,42083.333333333336,5,no,East
+E-127,Merchandising,Planner,2022-07-15,onsite,35833.333333333336,5,no,West
+E-128,Warehouse,Picker,2023-09-15,onsite,44166.666666666664,2,no,North
+E-129,Merchandising,Buyer,2025-11-15,hybrid,40000,3,yes,South
+E-130,Finance,Analyst,2023-02-15,remote,40000,3,yes,North
+E-131,Finance,Analyst,2024-04-15,hybrid,37916.666666666664,2,no,East
+E-132,Retail Ops,Store Manager,2024-02-15,onsite,27500,4,no,West
+E-133,Retail Ops,Shift Lead,2024-04-15,hybrid,"46,250",5,yes,East
+E-134,Finance,Accountant,2022-11-15,remote,46250,3,no,West
+E-135,Warehouse,Picker,2025-03-15,onsite,29583.333333333332,2,no,North
+E-136,Retail Ops,Store Associate,2025-12-15,onsite,40000,3,yes,East
+E-137,Customer Care,Support Agent,2022-05-15,hybrid,27500,3,no,North
+E-138,Retail Ops,Store Associate,2022-09-15,remote,42083.333333333336,3,no,North
+E-139,Customer Care,Support Agent,2024-09-15,hybrid,44166.666666666664,4,yes,East
+E-140,Finance,Analyst,2023-04-15,remote,31666.666666666668,5,no,North
+E-141,Finance,Accountant,2024-02-15,remote,29583.333333333332,4,no,West
+E-142,Finance,Accountant,2023-02-15,remote,23333.333333333332,2,no,West
+E-143,Customer Care,Support Agent,2025-06-15,onsite,40000,4,no,North
+E-144,Warehouse,Supervisor,2023-07-15,onsite,35833.333333333336,5,no,East
+E-145,Merchandising,Planner,2025-05-15,hybrid,44166.666666666664,3,no,North
+E-146,Merchandising,Planner,2022-08-15,onsite,37916.666666666664,3,no,South
+E-147,Retail Ops,Store Associate,2023-09-15,hybrid,29583.333333333332,2,no,North
+E-148,Retail Ops,Store Associate,2024-08-15,hybrid,27500,5,yes,East
+E-149,Customer Care,Team Lead,2023-02-15,onsite,31666.666666666668,4,no,South
+E-150,Retail Ops,Shift Lead,2024-08-15,hybrid,44166.666666666664,2,no,East
+E-151,Warehouse,Supervisor,2024-09-15,remote,44166.666666666664,5,no,South
+E-152,Customer Care,Support Agent,2023-08-15,remote,35833.333333333336,3,no,North
+E-153,Finance,Accountant,2025-10-15,hybrid,40000,3,no,South
+E-154,Merchandising,Planner,2023-04-15,onsite,25416.666666666668,3,no,North
+E-155,Finance,Analyst,2024-05-15,remote,37916.666666666664,2,no,East
+E-156,Finance,Accountant,2023-10-15,remote,44166.666666666664,3,no,West

@@ -218,6 +218,27 @@ async function main() {
   assert(quiz.response.ok, "Quiz questions should load for unlocked lesson")
   const questions = quiz.data.data.questions
   assert(Array.isArray(questions) && questions.length > 0, "Quiz should have questions")
+  assert(questions.length === 5, "Data Analytics foundations quiz should have five course-specific questions")
+  assert(
+    questions.some((row: { q?: string }) => /northwind|measurable|net revenue|alias/i.test(row.q ?? "")),
+    "Data Analytics quiz must be specific to this course",
+  )
+  assert(
+    questions.every((row: { q?: string }) => !/what does sql stand for|primary goal of data analytics/i.test(row.q ?? "")),
+    "Data Analytics quiz must not use the old shared trivia bank",
+  )
+
+  const pythonCourse = await prisma.course.findUnique({ where: { slug: "python-programming" } })
+  assert(pythonCourse, "Python course should exist")
+  const pythonQuizNode = await prisma.curriculumNode.findFirst({
+    where: { sourceId: "l3", module: { courseId: pythonCourse.id } },
+    include: { quizQuestions: true },
+  })
+  assert(pythonQuizNode && pythonQuizNode.quizQuestions.length > 0, "Python l3 should keep its own quiz bank")
+  assert(
+    pythonQuizNode.quizQuestions.every((row) => !/northwind/i.test(row.question)),
+    "Python quiz must not receive Data Analytics questions",
+  )
 
   const course = await prisma.course.findUnique({ where: { slug: courseSlug } })
   assert(course, "Course should exist in database")

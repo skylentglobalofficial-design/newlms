@@ -150,7 +150,7 @@ export default function CourseDetailPage() {
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: C.slate, textDecoration: 'line-through' }}>₹{originalPrice.toLocaleString('en-IN')}</span>
                   <span style={{ background: 'rgba(74,222,128,0.12)', color: '#4ade80', fontSize: 11, padding: '2px 8px', borderRadius: 5, fontFamily: 'var(--font-mono)' }}>{discount}% off</span>
                 </div>
-                <div style={{ color: C.slate, fontSize: 12, marginBottom: 20 }}>Including GST · Lifetime access</div>
+                <div style={{ color: C.slate, fontSize: 12, marginBottom: 20 }}>Listed price. This environment enrolls for free — payment is not collected.</div>
                 <Button
                   variant="primary"
                   size="lg"
@@ -160,7 +160,7 @@ export default function CourseDetailPage() {
                   {enrollable ? 'Enroll now' : catalog.loading ? 'Checking availability…' : 'Enrollment unavailable'}
                 </Button>
                 <div style={{ display: 'grid', gap: 8 }}>
-                  {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', displayLessonStat(lessonCount)], ['Projects', `${projectCount} projects`], ['Certificate', 'Eligibility after completion']].map(([l, v]) => (
+                  {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', displayLessonStat(lessonCount)], ['Projects', `${projectCount} projects`], ['Certificate', 'Not issued in this pilot']].map(([l, v]) => (
                     <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${T.lineDark}` }}>
                       <span style={{ color: C.slate, fontSize: 13 }}>{l}</span>
                       <span style={{ color: C.ink, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>

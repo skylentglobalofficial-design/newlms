@@ -1,5 +1,6 @@
 import { PrismaClient, CurriculumNodeType, EnrollmentStatus, ProgramType } from '@prisma/client'
 
+import { DA_QUIZZES, daQuizSeedKey } from '../src/content/data-analytics/quizzes.ts'
 import { courses, programs } from '../src/data.js'
 
 const prisma = new PrismaClient()
@@ -157,40 +158,42 @@ async function seedCourse(course: (typeof courses)[number]) {
   }
 }
 
+function quizBankFromDa(lessonId: keyof typeof DA_QUIZZES) {
+  return DA_QUIZZES[lessonId].questions.map((entry) => ({
+    question: entry.prompt,
+    options: entry.options,
+    correctIndex: entry.correctIndex,
+  }))
+}
+
 const QUIZ_BANK: Record<string, Array<{ question: string; options: string[]; correctIndex: number }>> = {
-  l3: [
-    { question: "What is the primary goal of data analytics?", options: ["Store data", "Turn data into insights", "Delete duplicates", "Encrypt files"], correctIndex: 1 },
-    { question: "Which role commonly uses dashboards?", options: ["Data analyst", "Chef", "Pilot", "Architect"], correctIndex: 0 },
-    { question: "Analytics starts with a clear:", options: ["Logo", "Business question", "Font choice", "Server rack"], correctIndex: 1 },
-  ],
-  l9: [
-    { question: "What does SQL stand for?", options: ["Structured Query Language", "Simple Query Logic", "Structured Queue List", "Standard Query Link"], correctIndex: 0 },
-    { question: "Which SQL clause filters rows after grouping?", options: ["WHERE", "HAVING", "GROUP BY", "ORDER BY"], correctIndex: 1 },
-    { question: "What type of JOIN returns all rows from both tables?", options: ["INNER JOIN", "LEFT JOIN", "RIGHT JOIN", "FULL OUTER JOIN"], correctIndex: 3 },
-  ],
-  l15: [
-    { question: "A KPI should be:", options: ["Vague", "Measurable", "Secret", "Optional"], correctIndex: 1 },
-    { question: "Power BI uses which language for calculated columns?", options: ["Python", "DAX", "HTML", "Bash"], correctIndex: 1 },
-    { question: "The final step in analytics is often:", options: ["Data deletion", "Storytelling", "Hardware upgrade", "Random sampling only"], correctIndex: 1 },
-  ],
-  "python-l3": [
-    { question: "Which type is mutable in Python?", options: ["tuple", "list", "str", "int"], correctIndex: 1 },
-    { question: "How do you start a comment?", options: ["//", "#", "--", "/*"], correctIndex: 1 },
-    { question: "What keyword defines a function?", options: ["func", "def", "fn", "lambda only"], correctIndex: 1 },
+  [daQuizSeedKey('l3')]: quizBankFromDa('l3'),
+  [daQuizSeedKey('l9')]: quizBankFromDa('l9'),
+  [daQuizSeedKey('l15')]: quizBankFromDa('l15'),
+  'python-programming:l3': [
+    { question: 'Which type is mutable in Python?', options: ['tuple', 'list', 'str', 'int'], correctIndex: 1 },
+    { question: 'How do you start a comment?', options: ['//', '#', '--', '/*'], correctIndex: 1 },
+    { question: 'What keyword defines a function?', options: ['func', 'def', 'fn', 'lambda only'], correctIndex: 1 },
   ],
 }
 
 async function seedQuizQuestions() {
   const quizNodes = await prisma.curriculumNode.findMany({
     where: { nodeType: CurriculumNodeType.QUIZ },
-    select: { id: true, sourceId: true, title: true },
+    select: {
+      id: true,
+      sourceId: true,
+      title: true,
+      module: { select: { course: { select: { slug: true } } } },
+    },
   })
 
   for (const node of quizNodes) {
-    const key = node.sourceId ?? ""
+    const slug = node.module.course?.slug
+    const key = slug && node.sourceId ? `${slug}:${node.sourceId}` : ''
     const bank = QUIZ_BANK[key]
     if (!bank) {
-      console.warn(`No quiz bank for node ${key} (${node.title}) — skipping`)
+      console.warn(`No quiz bank for node ${key || node.sourceId} (${node.title}) — skipping`)
       continue
     }
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { C, T } from '../../tokens'
 
-export type QuizQuestion = { q: string; options: string[]; correct?: number }
+export type QuizQuestion = { q: string; options: string[]; correct?: number; explanation?: string }
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
@@ -15,6 +15,7 @@ export function AssessmentSurface({
   onPass,
   onSubmitAssignment,
   onSubmitAnswers,
+  completionNote,
 }: {
   mode: 'mcq' | 'timed' | 'assignment'
   title: string
@@ -25,10 +26,10 @@ export function AssessmentSurface({
   onPass?: () => void
   onSubmitAssignment?: (text: string) => void
   onSubmitAnswers?: (answers: Record<number, number>) => Promise<boolean>
+  completionNote?: string
 }) {
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [submitted, setSubmitted] = useState(false)
-  const [currentQ, setCurrentQ] = useState(0)
   const [elapsed, setElapsed] = useState(0)
   const [text, setText] = useState('')
   const [assignmentDone, setAssignmentDone] = useState(false)
@@ -57,7 +58,12 @@ export function AssessmentSurface({
       return (
         <div style={{ textAlign: 'center', padding: '32px 0' }}>
           <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Submission recorded</div>
-          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>Awaiting faculty review</div>
+          <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.7, maxWidth: 520, margin: '0 auto' }}>
+            {completionNote ?? 'There is no faculty grading in this pilot. Record the artifact on Career OS → Projects if you want portfolio evidence.'}
+          </div>
+          <a href="/career-os/profile" style={{ display: 'inline-block', marginTop: 14, color: accent.text, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+            Open Career OS Projects →
+          </a>
         </div>
       )
     }
@@ -145,17 +151,17 @@ export function AssessmentSurface({
               : `${correct} of ${qs.length} correct. Try again.`}
         </div>
       )}
-      {qs.filter((_, qi) => qi === currentQ).map((q) => {
-        const qi = currentQ
+      {qs.map((q, qi) => {
+        const reveal = submitted && q.correct !== undefined
         return (
-          <div key={qi} style={{ marginBottom: 20 }}>
+          <div key={qi} style={{ marginBottom: 24 }}>
             <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 8 }}>Question {qi + 1} of {qs.length}</div>
             <div style={{ color: C.white, fontSize: 16, fontWeight: 500, marginBottom: 16, lineHeight: 1.5 }}>{q.q}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {q.options.map((opt, oi) => {
                 const selected = answers[qi] === oi
-                const isCorrect = !usesServerGrading && submitted && oi === q.correct
-                const isWrong = !usesServerGrading && submitted && selected && oi !== q.correct
+                const isCorrect = reveal && oi === q.correct
+                const isWrong = reveal && selected && oi !== q.correct
                 return (
                   <button
                     key={oi}
@@ -174,6 +180,11 @@ export function AssessmentSurface({
                 )
               })}
             </div>
+            {submitted && q.explanation && (
+              <div style={{ marginTop: 10, color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.65, background: 'rgba(255,255,255,0.03)', borderRadius: T.rControl, padding: '10px 12px' }}>
+                {q.explanation}
+              </div>
+            )}
           </div>
         )
       })}
@@ -192,7 +203,7 @@ export function AssessmentSurface({
           Submit
         </button>
       ) : !allCorrect ? (
-        <button type="button" onClick={() => { setSubmitted(false); setAnswers({}); setCurrentQ(0); setServerPassed(null) }} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, color: C.white, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Try again</button>
+        <button type="button" onClick={() => { setSubmitted(false); setAnswers({}); setServerPassed(null) }} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, color: C.white, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Try again</button>
       ) : null}
     </div>
   )
