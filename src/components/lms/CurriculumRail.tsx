@@ -25,19 +25,19 @@ export default function CurriculumRail({
 
   return (
     <div className="lms-curriculum-rail skylent-curriculum-rail">
-      <div style={{ padding: '20px', borderBottom: `1px solid ${T.lineDark}` }}>
+      <div style={{ padding: '20px', borderBottom: `1px solid ${T.lineDark}`, background: C.cream }}>
         <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 12 }}>
-          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 18, color: C.white }}>
-            Skylent<span style={{ color: accent.primary }}>.</span>
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 18, color: C.ink }}>
+            Skylent<span style={{ color: C.orange }}>.</span>
           </span>
         </Link>
-        <div style={{ color: C.white, fontSize: 14, fontWeight: 600, lineHeight: 1.3 }}>{course.title}</div>
+        <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, lineHeight: 1.3 }}>{course.title}</div>
         <div style={{ marginTop: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-            <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11 }}>Course progress</span>
+            <span style={{ color: C.slate, fontSize: 11 }}>Course progress</span>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text }}>{progressPct}%</span>
           </div>
-          <div style={{ background: 'rgba(255,255,255,0.08)', borderRadius: 3, height: 4 }}>
+          <div style={{ background: C.sand, borderRadius: 3, height: 4 }}>
             <div style={{ background: accent.primary, width: `${progressPct}%`, height: '100%', borderRadius: 3, transition: 'width 0.4s ease' }} />
           </div>
         </div>
@@ -45,7 +45,7 @@ export default function CurriculumRail({
       <div className="skylent-curriculum-scroll" style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
         {course.modules.map((mod: CourseModule, mi: number) => (
           <div key={mod.id}>
-            <div className="skylent-module-label" style={{ padding: '12px 16px 6px', color: 'rgba(255,255,255,0.3)', fontSize: 10, letterSpacing: '0.06em' }}>
+            <div className="skylent-module-label" style={{ padding: '12px 16px 6px', color: C.muted, fontSize: 10, letterSpacing: '0.06em' }}>
               Module {mi + 1} · {mod.title}
             </div>
             {mod.lessons.map((lesson: CourseLesson) => {
@@ -62,7 +62,7 @@ export default function CurriculumRail({
                   className={`lms-curriculum-lesson${isActive ? ' active' : ''}`}
                   style={{
                     display: 'flex', width: '100%', textAlign: 'left', padding: '9px 16px', gap: 10, alignItems: 'center',
-                    background: isActive ? accent.subtle : isCurrent ? 'rgba(255,255,255,0.02)' : 'transparent',
+                    background: isActive ? accent.subtle : 'transparent',
                     borderLeft: isActive ? `2px solid ${accent.primary}` : '2px solid transparent',
                     border: 'none', cursor: unlocked ? 'pointer' : 'not-allowed',
                   }}
@@ -71,16 +71,16 @@ export default function CurriculumRail({
                     {state?.complete ? (
                       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={accent.primary} strokeWidth="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                     ) : !unlocked ? (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={C.sand} strokeWidth="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                     ) : (
-                      <LessonIcon type={lesson.type} color={isActive ? accent.text : 'rgba(255,255,255,0.35)'} />
+                      <LessonIcon type={lesson.type} color={isActive ? accent.text : C.slate} />
                     )}
                   </div>
                   <div style={{ flex: 1, overflow: 'hidden', minWidth: 0 }}>
-                    <div style={{ color: unlocked ? (isActive ? C.white : 'rgba(255,255,255,0.65)') : 'rgba(255,255,255,0.2)', fontSize: 12, lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ color: unlocked ? C.ink : C.muted, fontSize: 12, lineHeight: 1.3, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       {lesson.title}
                     </div>
-                    <div style={{ color: 'rgba(255,255,255,0.28)', fontSize: 9, fontFamily: 'var(--font-mono)', marginTop: 2, textTransform: 'uppercase' }}>
+                    <div style={{ color: C.muted, fontSize: 9, fontFamily: 'var(--font-mono)', marginTop: 2, textTransform: 'uppercase' }}>
                       {lesson.type}{lesson.duration ? ` · ${lesson.duration}` : ''}
                     </div>
                   </div>

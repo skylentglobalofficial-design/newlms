@@ -130,94 +130,60 @@ export type MegaNavItem = {
 
 export type MegaNavGroup = {
   label: string
-  to: string
+  /** Omit to keep the label as a dropdown only (no hub landing). */
+  to?: string
   tagline: string
   items: MegaNavItem[]
 }
 
-/** Global nav: live product first, academic lines marked upcoming. */
+/** Global nav: education areas and live skills. Career OS is reached from the homepage path, not a primary item. */
 export const MEGA_NAV: MegaNavGroup[] = [
   {
-    label: "Learn",
-    to: "/skills",
-    tagline: "The live operating core",
-    items: [
-      { label: "Courses", sub: "Focused skills units", to: "/courses", mark: "live" },
-      { label: "Programmes", sub: "Professional pathways", to: "/programs", mark: "live" },
-      { label: "Skills discovery", sub: "What are you trying to become?", to: "/skills", mark: "live" },
-      { label: "Workshops", sub: "Listings only · registration not live", to: "/workshops", mark: "coming_soon" },
-      { label: "Labs", sub: "Browser experiments", to: "/labs", mark: "demo" },
-    ],
-  },
-  {
     label: "Education",
-    to: "/education",
-    tagline: "Academic lines in development",
+    tagline: "Stages of one academic path",
     items: [
-      { label: "Schooling", sub: "Grade to progression", to: "/education/schooling", mark: "coming_soon" },
-      { label: "Undergraduate", sub: "Degree-aligned pathway", to: "/education/undergraduate", mark: "coming_soon" },
-      { label: "Postgraduate", sub: "Term, specialisation, case", to: "/education/postgraduate", mark: "coming_soon" },
-      { label: "Exams", sub: "JEE · NEET · CAT direction", to: "/education/exams", mark: "coming_soon" },
+      { label: "Schooling", sub: "School years", to: "/education/schooling", mark: "coming_soon" },
+      { label: "Undergraduate", sub: "A first degree", to: "/education/undergraduate", mark: "coming_soon" },
+      { label: "Postgraduate", sub: "Study after a degree", to: "/education/postgraduate", mark: "coming_soon" },
+      { label: "Examinations", sub: "JEE · NEET · CAT", to: "/education/exams", mark: "coming_soon" },
     ],
   },
   {
-    label: "Career",
-    to: "/career-os",
-    tagline: "Professional workspace",
+    label: "Skills",
+    to: "/skills",
+    tagline: "What is live to enrol in today",
     items: [
-      { label: "Career OS", sub: "How the workspace works", to: "/career-os", mark: "live" },
-      { label: "Profile", sub: "Identity and evidence", to: "/career-os/profile", mark: "live" },
-      { label: "Opportunities", sub: "Job board when roles exist", to: "/career-os/jobs", mark: "live" },
-      { label: "Interviews", sub: "Practice and rounds", to: "/career-os/interviews", mark: "live" },
-    ],
-  },
-  {
-    label: "Institutions",
-    to: "/institutions",
-    tagline: "B2B operating layer",
-    items: [
-      { label: "Institution OS", sub: "Programmes to reporting", to: "/institutions", mark: "direction" },
-      { label: "Universities", sub: "Illustrative delivery model", to: "/universities", mark: "direction" },
+      { label: "Professional Programs", sub: "Structured professional pathways", to: "/programs", mark: "live" },
+      { label: "Certification Courses", sub: "Focused skills units", to: "/courses", mark: "live" },
+      { label: "Workshops", sub: "Listings · registration not live", to: "/workshops", mark: "coming_soon" },
     ],
   },
 ]
 
 export const FOOTER_COLS = [
   {
-    heading: "Learn",
-    links: [
-      ["Courses", "/courses"],
-      ["Programmes", "/programs"],
-      ["Skills", "/skills"],
-      ["Workshops", "/workshops"],
-      ["Labs", "/labs"],
-    ],
-  },
-  {
     heading: "Education",
     links: [
-      ["Overview", "/education"],
       ["Schooling", "/education/schooling"],
       ["Undergraduate", "/education/undergraduate"],
       ["Postgraduate", "/education/postgraduate"],
-      ["Exams", "/education/exams"],
+      ["Examinations", "/education/exams"],
     ],
   },
   {
-    heading: "Career",
+    heading: "Skills",
     links: [
-      ["Career OS", "/career-os"],
-      ["Profile", "/career-os/profile"],
-      ["Opportunities", "/career-os/jobs"],
-      ["Interviews", "/career-os/interviews"],
+      ["Professional Programs", "/programs"],
+      ["Certification Courses", "/courses"],
+      ["Workshops", "/workshops"],
     ],
   },
   {
     heading: "Company",
     links: [
-      ["About", "/about"],
       ["Institutions", "/institutions"],
-      ["Stories", "/stories"],
+      ["Success Stories", "/stories"],
+      ["About Us", "/about"],
       ["Blog", "/blog"],
       ["Contact", "/contact"],
     ],

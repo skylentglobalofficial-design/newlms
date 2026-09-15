@@ -81,8 +81,9 @@ export function useCountUp(target: number, inView: boolean, duration = 1600) {
 
 // ─── FADE IN COMPONENT ────────────────────────────────────────────────────────
 export function FadeIn({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
+  const capped = Math.min(delay, 80)
   return (
-    <div className={className} style={{ animation: `fadeIn 0.3s ${delay}ms ease both` }}>
+    <div className={`skylent-fade-in${className ? ` ${className}` : ''}`} style={capped ? { animationDelay: `${capped}ms` } : undefined}>
       {children}
     </div>
   )
@@ -158,8 +159,8 @@ export function EnrollmentModal({ item, onClose, themeId }: { item: CatalogEnrol
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.6)', zIndex: 500, backdropFilter: 'blur(6px)' }} aria-hidden="true" />
-      <div role="dialog" aria-modal="true" aria-labelledby="enrollment-modal-title" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.white, borderRadius: 18, padding: '36px 40px', width: 540, maxWidth: '94vw', zIndex: 501, boxShadow: '0 40px 120px rgba(0,0,0,0.32)', overflowY: 'auto', maxHeight: '92vh' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(21,23,26,0.35)', zIndex: 500 }} aria-hidden="true" />
+      <div role="dialog" aria-modal="true" aria-labelledby="enrollment-modal-title" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.cream, border: `1px solid ${T.lineStrong}`, borderRadius: 12, padding: '32px 32px', width: 540, maxWidth: '94vw', zIndex: 501, boxShadow: T.shadowLg, overflowY: 'auto', maxHeight: '92vh' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
           <div>
             <div style={{ color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 3 }}>
@@ -192,7 +193,7 @@ export function EnrollmentModal({ item, onClose, themeId }: { item: CatalogEnrol
             type="button"
             onClick={handlePrimaryAction}
             disabled={submitting}
-            style={{ flex: 2, background: accent.primary, border: 'none', color: C.black, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: submitting ? 'wait' : 'pointer', fontFamily: 'var(--font-body)', opacity: submitting ? 0.7 : 1 }}
+            style={{ flex: 2, background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: submitting ? 'wait' : 'pointer', fontFamily: 'var(--font-body)', opacity: submitting ? 0.7 : 1 }}
           >
             {primaryLabel}
           </button>
@@ -231,8 +232,8 @@ export function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) 
 
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.55)', zIndex: 500, backdropFilter: 'blur(5px)' }} aria-hidden="true" />
-      <div role="dialog" aria-modal="true" aria-labelledby="apply-modal-title" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.white, borderRadius: 16, padding: 40, width: 520, maxWidth: '92vw', zIndex: 501, boxShadow: '0 32px 100px rgba(0,0,0,0.35)', overflowY: 'auto', maxHeight: '90vh' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(21,23,26,0.35)', zIndex: 500 }} aria-hidden="true" />
+      <div role="dialog" aria-modal="true" aria-labelledby="apply-modal-title" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.cream, border: `1px solid ${T.lineStrong}`, borderRadius: 12, padding: 32, width: 520, maxWidth: '92vw', zIndex: 501, boxShadow: T.shadowLg, overflowY: 'auto', maxHeight: '90vh' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 28 }}>
           <div>
             <div style={{ color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>Job application</div>
@@ -273,8 +274,8 @@ export function JobDrawer({ job, onClose, onApply }: { job: Job; onClose: () => 
   const careerAccent = getDomainAccent('career')
   return (
     <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(11,13,15,0.5)', zIndex: 400, backdropFilter: 'blur(4px)' }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 480, maxWidth: '95vw', background: C.white, zIndex: 401, padding: 36, overflowY: 'auto', boxShadow: '-16px 0 60px rgba(0,0,0,0.2)' }}>
+      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(21,23,26,0.35)', zIndex: 400 }} />
+      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 480, maxWidth: '95vw', background: C.cream, zIndex: 401, padding: 36, overflowY: 'auto', boxShadow: T.shadowLg, borderLeft: `1px solid ${T.lineLight}` }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
           <div>
             <h3 style={{ color: C.ink, fontSize: 21, fontFamily: 'var(--font-display)', fontWeight: 600, margin: '0 0 4px' }}>{job.role}</h3>
@@ -358,10 +359,9 @@ export function Nav() {
 
   const showDark = true
 
-  const navBg = showDark ? 'var(--glass-01-bg)' : 'transparent'
-  const navBlur = showDark ? 'var(--glass-01-blur)' : 'none'
-  const navBorder = showDark ? '1px solid var(--glass-01-border)' : 'none'
-  const navShadow = showDark ? 'var(--glass-01-shadow)' : 'none'
+  const navBg = showDark ? C.cream : 'transparent'
+  const navBorder = showDark ? `1px solid ${T.lineLight}` : 'none'
+  const navShadow = showDark ? '0 1px 0 rgba(21,23,26,0.04)' : 'none'
 
   const handleMenuEnter = useCallback((label: string) => {
     if (closeTimer.current) clearTimeout(closeTimer.current)
@@ -373,12 +373,13 @@ export function Nav() {
   }, [])
 
   const simpleLinks = [
-    { label: 'Stories', to: '/stories' },
-    { label: 'About', to: '/about' },
+    { label: 'Institutions', to: '/institutions' },
+    { label: 'Success Stories', to: '/stories' },
+    { label: 'About Us', to: '/about' },
   ]
 
   return (
-    <nav className="skylent-site-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, backdropFilter: navBlur, WebkitBackdropFilter: navBlur, borderBottom: navBorder, boxShadow: navShadow, transition: 'background 0.4s, backdrop-filter 0.4s, border-color 0.4s, box-shadow 0.4s' }}>
+    <nav className="skylent-site-nav" style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, borderBottom: navBorder, boxShadow: navShadow }}>
       <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH }}>
         {/* Logo */}
         <button onClick={() => navigate('/')} style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: C.ink, background: 'none', border: 'none', cursor: 'pointer', letterSpacing: '-0.02em', padding: 0, flexShrink: 0 }}>
@@ -397,22 +398,32 @@ export function Nav() {
                 setActiveMenu(null)
               }
             }}>
-              <button type="button" aria-expanded={activeMenu === group.label} aria-haspopup="true" onClick={() => navigate(group.to)} style={{ background: 'none', border: 'none', color: activeMenu === group.label ? C.ink : C.slate, fontSize: 13.5, cursor: 'pointer', padding: '8px 13px', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-body)', transition: 'color 0.2s', letterSpacing: '-0.01em' }}>
+              <button type="button" aria-expanded={activeMenu === group.label} aria-haspopup="true" onClick={() => {
+                if (group.to) navigate(group.to)
+                else setActiveMenu(activeMenu === group.label ? null : group.label)
+              }} style={{ background: 'none', border: 'none', color: activeMenu === group.label ? C.ink : C.slate, fontSize: 13.5, cursor: 'pointer', padding: '8px 13px', display: 'flex', alignItems: 'center', gap: 5, fontFamily: 'var(--font-body)', transition: 'color 0.2s', letterSpacing: '-0.01em' }}>
                 {group.label}
                 <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{ opacity: 0.5, transform: activeMenu === group.label ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l5 6 5-6z"/></svg>
               </button>
               {activeMenu === group.label && (
-                <div className="nav-mega-dropdown" onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)', WebkitBackdropFilter: 'var(--glass-01-blur)', border: '1px solid var(--glass-01-border)', borderRadius: 12, padding: 6, minWidth: 260, maxWidth: 300, boxShadow: '0 18px 48px rgba(8,9,9,0.12)', zIndex: 300, animation: 'fadeUp 0.18s ease' }}>
-                  <Link to={group.to} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px 12px', borderRadius: 8, textDecoration: 'none', marginBottom: 2, borderBottom: '1px solid rgba(8,9,9,0.08)' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(8,9,9,0.04)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                  >
-                    <div>
+                <div className="nav-mega-dropdown" onMouseEnter={() => handleMenuEnter(group.label)} onMouseLeave={handleMenuLeave} style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: 6, minWidth: 260, maxWidth: 300, boxShadow: T.shadow, zIndex: 300 }}>
+                  {group.to ? (
+                    <Link to={group.to} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 12px 12px', borderRadius: 8, textDecoration: 'none', marginBottom: 2, borderBottom: '1px solid rgba(8,9,9,0.08)' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(8,9,9,0.04)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <div>
+                        <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
+                        <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>{group.tagline}</div>
+                      </div>
+                      <span style={{ color: navAccent.text, fontSize: 15 }}>→</span>
+                    </Link>
+                  ) : (
+                    <div style={{ padding: '10px 12px 12px', marginBottom: 2, borderBottom: '1px solid rgba(8,9,9,0.08)' }}>
                       <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
                       <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>{group.tagline}</div>
                     </div>
-                    <span style={{ color: navAccent.text, fontSize: 15 }}>→</span>
-                  </Link>
+                  )}
                   {group.items.map(item => (
                     <Link key={item.to + item.label} to={item.to} style={{ display: 'block', padding: '8px 12px', borderRadius: 8, textDecoration: 'none', transition: 'background 0.15s' }}
                       onMouseEnter={e => (e.currentTarget.style.background = 'rgba(8,9,9,0.04)')}
@@ -490,10 +501,6 @@ export function Nav() {
                 onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(8,9,9,0.32)')}
                 onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(8,9,9,0.16)')}
               >Sign In</Link>
-              <Link to="/programs" style={{ background: C.indigo, border: 'none', color: C.white, borderRadius: 7, padding: '8px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', transition: 'all 0.2s', whiteSpace: 'nowrap' }}
-                onMouseEnter={e => { e.currentTarget.style.background = C.blue }}
-                onMouseLeave={e => { e.currentTarget.style.background = C.indigo }}
-              >Explore Programs</Link>
             </>
           )}
           <button type="button" className="show-mobile" aria-expanded={menuOpen} aria-label={menuOpen ? 'Close menu' : 'Open menu'} onClick={() => setMenuOpen(o => !o)} style={{ background: 'none', border: 'none', color: C.ink, cursor: 'pointer', padding: 6, display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -512,9 +519,7 @@ export function Nav() {
             position: 'fixed',
             inset: `${T.navH}px 0 0 0`,
             zIndex: 250,
-            background: 'rgba(247, 244, 236, 0.98)',
-            backdropFilter: 'blur(16px)',
-            WebkitBackdropFilter: 'blur(16px)',
+            background: C.cream,
             borderTop: '1px solid rgba(21,23,26,0.10)',
             padding: '12px 24px 28px',
             overflowY: 'auto',
@@ -522,7 +527,11 @@ export function Nav() {
         >
           {megaMenu.map(group => (
             <div key={group.label} style={{ marginBottom: 8 }}>
-              <Link to={group.to} onClick={() => setMenuOpen(false)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: navAccent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', padding: '12px 0 6px', textDecoration: 'none' }}>{group.label.toUpperCase()}<span style={{ opacity: 0.7 }}>→</span></Link>
+              {group.to ? (
+                <Link to={group.to} onClick={() => setMenuOpen(false)} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: navAccent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', padding: '12px 0 6px', textDecoration: 'none' }}>{group.label.toUpperCase()}<span style={{ opacity: 0.7 }}>→</span></Link>
+              ) : (
+                <div style={{ color: navAccent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.12em', padding: '12px 0 6px' }}>{group.label.toUpperCase()}</div>
+              )}
               {group.items.map(item => (
                 <Link key={item.label} to={item.to} onClick={() => setMenuOpen(false)} style={{ display: 'block', padding: '9px 0', color: C.slate, fontSize: 14, textDecoration: 'none', borderBottom: '1px solid rgba(8,9,9,0.08)' }}>{item.label}</Link>
               ))}
@@ -537,7 +546,6 @@ export function Nav() {
             ) : (
               <Link to="/login" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', border: `1px solid ${T.lineStrong}`, borderRadius: 7, color: C.ink, textDecoration: 'none', fontSize: 13 }}>Sign In</Link>
             )}
-            <Link to="/programs" onClick={() => setMenuOpen(false)} style={{ flex: 1, textAlign: 'center', padding: '11px', background: C.indigo, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 13, fontWeight: 600 }}>Explore Programs</Link>
           </div>
         </div>
       )}
@@ -551,10 +559,10 @@ export function Footer() {
   return (
     <footer className="skylent-site-footer" style={{ background: C.warmWhite, padding: `${T.sectionSm} ${T.gutter} 32px`, position: 'relative', borderTop: `1px solid ${T.lineLight}` }}>
       <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1.7fr repeat(4, 1fr)', gap: 40, marginBottom: 56 }} className="footer-grid">
+        <div style={{ display: 'grid', gridTemplateColumns: '1.7fr repeat(3, 1fr)', gap: 40, marginBottom: 56 }} className="footer-grid">
           <div>
             <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.ink, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
-            <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Education, skills, and career workflows on one platform — for learners and institutions.</p>
+            <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Education, skills, and what can come next — one connected path.</p>
             <div style={{ display: 'flex', gap: 10 }}>
               {['in', 'tw', 'yt', 'ig'].map(s => (
                 <div key={s} aria-hidden style={{ width: 32, height: 32, borderRadius: 6, border: `1px solid ${T.lineLight}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{s}</div>

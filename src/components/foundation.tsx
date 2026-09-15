@@ -92,19 +92,22 @@ export function GlassSurface({
   className?: string
 }) {
   const g = glass[level]
+  const surface: React.CSSProperties = {
+    background: g.bg,
+    border: `1px solid ${g.border}`,
+    boxShadow: g.shadow,
+    borderRadius: radius,
+    padding,
+    ...style,
+  }
+  if (g.blur && g.blur !== 'none') {
+    surface.backdropFilter = g.blur
+    surface.WebkitBackdropFilter = g.blur
+  }
   return (
     <div
       className={className}
-      style={{
-        background: g.bg,
-        border: `1px solid ${g.border}`,
-        backdropFilter: g.blur,
-        WebkitBackdropFilter: g.blur,
-        boxShadow: g.shadow,
-        borderRadius: radius,
-        padding,
-        ...style,
-      }}
+      style={surface}
     >
       {children}
     </div>
@@ -249,7 +252,7 @@ export function GridField({ opacity = 0.025, size = 64 }: { opacity?: number; si
       style={{
         position: 'absolute',
         inset: 0,
-        backgroundImage: `linear-gradient(rgba(255,255,255,${opacity}) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,${opacity}) 1px, transparent 1px)`,
+        backgroundImage: `linear-gradient(rgba(21,23,26,${opacity}) 1px, transparent 1px), linear-gradient(90deg, rgba(21,23,26,${opacity}) 1px, transparent 1px)`,
         backgroundSize: `${size}px ${size}px`,
         pointerEvents: 'none',
       }}
@@ -388,9 +391,7 @@ export function ContextualNavBar({
         position: 'sticky',
         top: T.navH,
         zIndex: 70,
-        background: 'var(--glass-01-bg)',
-        backdropFilter: 'var(--glass-01-blur)',
-        WebkitBackdropFilter: 'var(--glass-01-blur)',
+        background: '#FFFDF8',
         borderBottom: `1px solid ${T.lineDark}`,
       }}
     >

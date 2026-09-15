@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FadeIn } from './shared'
-import { C, T, type } from '../tokens'
+import { C, T, glass, type } from '../tokens'
 import { MediaImage } from './foundation'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 
@@ -235,8 +235,8 @@ export function Card({
       onClick={onClick}
       style={{ borderRadius: T.rCard, padding: 30, transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease', cursor: onClick ? 'pointer' : 'default', ...base, ...style }}
       onMouseEnter={hover ? e => {
-        e.currentTarget.style.transform = 'translateY(-4px)'
-        e.currentTarget.style.boxShadow = '0 18px 40px rgba(21,23,26,0.08)'
+        e.currentTarget.style.transform = 'translateY(-2px)'
+        e.currentTarget.style.boxShadow = T.shadow
         e.currentTarget.style.borderColor = T.lineStrong
       } : undefined}
       onMouseLeave={hover ? e => {
@@ -250,15 +250,11 @@ export function Card({
   )
 }
 
-// ── Product surface (dark glass, for UI mockups) ─────────────────────────────
+// ── Product surface (solid cream/white, for UI mockups) ─────────────────────
 export function ProductSurface({ children, style, depth = 2 }: { children: React.ReactNode; style?: React.CSSProperties; depth?: 1 | 2 | 3 }) {
-  const level = depth as 1 | 2 | 3
-  const glassVar = level === 3 ? 'var(--glass-03-bg)' : level === 1 ? 'var(--glass-01-bg)' : 'var(--glass-02-bg)'
-  const borderVar = level === 3 ? 'var(--glass-03-border)' : level === 1 ? 'var(--glass-01-border)' : 'var(--glass-02-border)'
-  const blurVar = level === 3 ? 'var(--glass-03-blur)' : level === 1 ? 'var(--glass-01-blur)' : 'var(--glass-02-blur)'
-  const shadowVar = level === 3 ? 'var(--glass-03-shadow)' : level === 1 ? 'var(--glass-01-shadow)' : 'var(--glass-02-shadow)'
+  const g = glass[depth]
   return (
-    <div style={{ background: glassVar, border: `1px solid ${borderVar}`, backdropFilter: blurVar, WebkitBackdropFilter: blurVar, borderRadius: 18, boxShadow: shadowVar, ...style }}>
+    <div style={{ background: g.bg, border: `1px solid ${g.border}`, borderRadius: T.rCard, boxShadow: g.shadow, ...style }}>
       {children}
     </div>
   )

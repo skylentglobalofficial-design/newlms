@@ -22,11 +22,11 @@ export type LmsTabId = 'video' | 'notes' | 'quiz' | 'assignment' | 'lab'
 
 /** Contextual micro-accents for LMS tabs — do not recolor the whole app. */
 export const LMS_TAB_ACCENTS: Record<LmsTabId, { primary: string; subtle: string; border: string }> = {
-  video: { primary: '#8B5CF6', subtle: 'rgba(139,92,246,0.12)', border: 'rgba(139,92,246,0.35)' },
-  notes: { primary: '#3B82F6', subtle: 'rgba(59,130,246,0.12)', border: 'rgba(59,130,246,0.35)' },
-  quiz: { primary: '#F59E0B', subtle: 'rgba(245,158,11,0.12)', border: 'rgba(245,158,11,0.35)' },
-  assignment: { primary: '#22C55E', subtle: 'rgba(34,197,94,0.12)', border: 'rgba(34,197,94,0.35)' },
-  lab: { primary: '#06B6D4', subtle: 'rgba(6,182,212,0.12)', border: 'rgba(6,182,212,0.35)' },
+  video: { primary: '#4F46E5', subtle: 'rgba(79,70,229,0.10)', border: 'rgba(79,70,229,0.28)' },
+  notes: { primary: '#2563EB', subtle: 'rgba(37,99,235,0.10)', border: 'rgba(37,99,235,0.28)' },
+  quiz: { primary: '#F97316', subtle: 'rgba(249,115,22,0.10)', border: 'rgba(249,115,22,0.28)' },
+  assignment: { primary: '#15803D', subtle: 'rgba(21,128,61,0.10)', border: 'rgba(21,128,61,0.28)' },
+  lab: { primary: '#4F46E5', subtle: 'rgba(79,70,229,0.10)', border: 'rgba(79,70,229,0.28)' },
 }
 
 export function getRoleThemeId(role: UserRole): AuroraThemeId {

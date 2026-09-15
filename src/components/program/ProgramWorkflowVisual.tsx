@@ -268,7 +268,7 @@ function NeetExamWorkspace({ accent }: { accent: Accent }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="program-workflow-panels">
       <Panel label="BIOLOGY · DIAGRAM" accent={accent}>
-        <div style={{ height: 52, borderRadius: 6, border: `1px dashed ${bioAccent.border}`, background: bioAccent.subtle, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: 'rgba(255,255,255,0.4)', marginBottom: 8 }}>
+        <div style={{ height: 52, borderRadius: 6, border: `1px dashed ${bioAccent.border}`, background: bioAccent.subtle, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: C.slate, marginBottom: 8 }}>
           Cell · NCERT Fig 8.2
         </div>
         <div style={{ fontSize: 10, color: C.slate }}>Label organelles · guided practice</div>

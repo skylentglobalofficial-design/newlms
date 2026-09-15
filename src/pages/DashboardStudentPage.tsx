@@ -114,7 +114,7 @@ export default function DashboardStudentPage() {
           <button
             type="button"
             onClick={() => void reload()}
-            style={{ background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
+            style={{ background: accent.primary, border: 'none', color: C.white, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}
           >
             Try again
           </button>
@@ -168,7 +168,7 @@ export default function DashboardStudentPage() {
                 .catch((err) => setEnrollError(workspaceErrorMessage(err)))
                 .finally(() => setEnrolling(false))
             }}
-            style={{ background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer', marginRight: 12 }}
+            style={{ background: accent.primary, border: 'none', color: C.white, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer', marginRight: 12 }}
           >
             {enrolling ? 'Enrolling…' : 'Start Data Analytics'}
           </button>

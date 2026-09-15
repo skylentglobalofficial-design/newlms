@@ -60,7 +60,7 @@ function StoriesHeroVisual() {
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{item.label}</div>
                 <div style={{ color: C.slate, fontSize: 11.5, fontFamily: 'var(--font-mono)' }}>{item.status}</div>
               </div>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: 'rgba(255,255,255,0.15)' }} />
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: C.sand }} />
             </div>
           ))}
         </div>
