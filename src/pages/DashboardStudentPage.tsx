@@ -131,7 +131,7 @@ export default function DashboardStudentPage() {
                 setEnrolling(true)
                 setEnrollError(null)
                 void enrollInCourse('data-analytics')
-                  .then(() => reload())
+                  .then(() => reload({ silent: true }))
                   .catch((err) => setEnrollError(workspaceErrorMessage(err)))
                   .finally(() => setEnrolling(false))
               }}
@@ -141,9 +141,6 @@ export default function DashboardStudentPage() {
             <Link className="os-btn os-btn-ghost" to="/courses">Browse courses</Link>
           </div>
           {enrollError ? <p className="os-error">{enrollError}</p> : null}
-          <div style={{ marginTop: 32 }}>
-            <EnrollmentEvidence items={enrollments} />
-          </div>
         </div>
       </AuthDashboardShell>
     )

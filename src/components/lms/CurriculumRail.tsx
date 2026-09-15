@@ -35,7 +35,7 @@ export default function CurriculumRail({
     <div className="os-curriculum">
       <div className="os-rail-head">
         {onClose ? (
-          <button type="button" className="os-rail-close" onClick={onClose}>
+          <button type="button" className="os-rail-close" onClick={onClose} aria-label="Close curriculum">
             Close curriculum
           </button>
         ) : null}
@@ -61,7 +61,7 @@ export default function CurriculumRail({
               const unlocked = isLessonUnlocked(lesson.id, allLessons, lessonStates)
               const state = lessonStates[lesson.id]
               const isActive = selectedLessonId === lesson.id
-              const status = lessonStatusLabel(state, unlocked && !state?.complete)
+                  const status = lessonStatusLabel(state, isActive && unlocked && !state?.complete)
               return (
                 <button
                   key={lesson.id}

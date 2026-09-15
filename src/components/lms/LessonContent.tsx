@@ -76,18 +76,18 @@ function AssignmentBriefView({ brief, accent }: { brief: AssignmentBrief; accent
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Extension</div>
         <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: 0 }}>{brief.extension}</p>
       </section>
-      <section style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 16 }}>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Keep this work</div>
-        <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, margin: '0 0 8px' }}>
+      <section className="os-note">
+        <p className="os-rail-kicker">Keep this work</p>
+        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '8px 0 8px' }}>
           <strong style={{ color: C.ink }}>Learning →</strong> {brief.careerEvidence.learning}
         </p>
-        <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, margin: '0 0 8px' }}>
+        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '0 0 8px' }}>
           <strong style={{ color: C.ink }}>Artifact →</strong> {brief.careerEvidence.artifact}
         </p>
-        <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, margin: '0 0 8px' }}>
+        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '0 0 8px' }}>
           <strong style={{ color: C.ink }}>Skill →</strong> {brief.careerEvidence.skill}
         </p>
-        <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, margin: 0 }}>
+        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: 0 }}>
           <strong style={{ color: C.ink }}>Evidence →</strong> {brief.careerEvidence.evidence} Add it yourself under Career OS Projects — this product does not create the entry automatically.
         </p>
       </section>
@@ -140,9 +140,7 @@ export function LessonContentView({
           onMarkWatched={lessonState.complete ? undefined : () => onComplete()}
         />
         {(lessonState.complete || lessonState.videoWatched) && (
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: T.rControl, padding: '10px 18px', color: '#22c55e', fontSize: 13 }}>
-            Lesson complete
-          </div>
+          <p className="os-status is-done">Lesson complete</p>
         )}
       </div>
     )
@@ -153,7 +151,7 @@ export function LessonContentView({
     const notes = material?.body ?? fallback
     return (
       <div className="lms-lesson-notes">
-        <LessonDocument markdown={notes} accent={accent} />
+        <LessonDocument markdown={notes} accent={accent} skipHeading={lesson.title} />
         {material?.datasets.length ? (
           <div className="os-resources">
             <p className="os-rail-kicker">Practice files</p>
@@ -177,7 +175,7 @@ export function LessonContentView({
       <div className="lms-lesson-quiz">
         {material?.body && (
           <div style={{ marginBottom: 20, maxWidth: 720 }}>
-            <LessonDocument markdown={material.body} accent={accent} />
+            <LessonDocument markdown={material.body} accent={accent} skipHeading={lesson.title} />
           </div>
         )}
         {quizStatus === 'loading' ? (
@@ -204,7 +202,7 @@ export function LessonContentView({
     <div className="lms-lesson-assignment">
       {material?.body && (
         <div style={{ marginBottom: 16, maxWidth: 720 }}>
-          <LessonDocument markdown={material.body} accent={accent} />
+          <LessonDocument markdown={material.body} accent={accent} skipHeading={lesson.title} />
         </div>
       )}
       {material?.assignment && <AssignmentBriefView brief={material.assignment} accent={accent} />}

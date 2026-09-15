@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { C, T } from '../../tokens'
 import type { CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
-import { computeModuleProgress, lessonTypeLabel, type LmsCourseView } from './lms-utils'
+import { computeModuleProgress, isLessonUnlocked, lessonTypeLabel, type LmsCourseView } from './lms-utils'
 import LessonIcon from './LessonIcon'
 
 type Accent = { primary: string; secondary: string; subtle: string; subtleStrong: string; border: string; text: string }
@@ -55,7 +55,6 @@ export function LearningWorkspacePanel({
       <div className="os-progress" style={{ maxWidth: 420, marginTop: 18 }}>
         <div className="os-progress-meta">
           <span>{completedCount} of {totalLessons} lessons complete</span>
-          <span>{progressPct}%</span>
         </div>
         <div className="os-progress-bar" aria-hidden="true">
           <span style={{ width: `${progressPct}%`, background: accent.primary }} />
@@ -87,32 +86,36 @@ export function CurriculumProgressRail({
   accent: Accent
   learnSlug: string
 }) {
+  const allLessons = course.modules.flatMap((module) => module.lessons)
   return (
     <div id="student-curriculum" style={{ marginTop: 28 }}>
       <p className="os-rail-kicker">Where you are</p>
       {course.modules.map((mod: CourseModule, mi: number) => {
         const mp = computeModuleProgress(mod, lessonStates)
+        const currentUnlocked = Boolean(mp.current && isLessonUnlocked(mp.current.id, allLessons, lessonStates))
         return (
           <div key={mod.id} style={{ padding: '16px 0', borderTop: mi === 0 ? 'none' : `1px solid ${T.lineLight}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
               <div style={{ minWidth: 0 }}>
-                <div style={{ color: C.ink, fontSize: 15, fontWeight: mp.current ? 600 : 500 }}>
+                <div style={{ color: C.ink, fontSize: 15, fontWeight: currentUnlocked ? 600 : 500 }}>
                   Module {mi + 1} · {mod.title}
                 </div>
-                {mp.current ? (
+                {currentUnlocked && mp.current ? (
                   <div style={{ color: C.slate, fontSize: 13, marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
                     <LessonIcon type={mp.current.type} size={12} color={accent.text} />
                     {mp.current.title} · {lessonTypeLabel(mp.current.type, mp.current.title)}
                   </div>
                 ) : mp.complete ? (
                   <div style={{ color: C.success, fontSize: 13, marginTop: 6 }}>Completed</div>
-                ) : null}
+                ) : (
+                  <div style={{ color: C.slate, fontSize: 13, marginTop: 6 }}>Locked until earlier lessons are complete</div>
+                )}
               </div>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate }}>
                 {mp.completed}/{mp.total}
               </span>
             </div>
-            {mp.current ? (
+            {currentUnlocked && mp.current ? (
               <Link className="os-link" to={`/learn/${learnSlug}/${mp.current.id}`} style={{ display: 'inline-block', marginTop: 10 }}>
                 Continue this module
               </Link>

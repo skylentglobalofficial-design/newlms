@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
@@ -54,12 +54,14 @@ export default function LearnPage() {
 
   const [selectedLessonId, setSelectedLessonId] = useState(lessonId ?? firstLessonId)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [compact, setCompact] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches)
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
   const [quizStatus, setQuizStatus] = useState<'loading' | 'ready'>('ready')
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
   const [enrolling, setEnrolling] = useState(false)
   const [enrollError, setEnrollError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+  const menuBtnRef = useRef<HTMLButtonElement>(null)
 
   const selectedLessonType = allLessons.find((lesson) => lesson.id === selectedLessonId)?.type ?? null
   const selectedLessonLocked = Boolean(selectedLessonId && lessonStates[selectedLessonId]?.locked)
@@ -82,17 +84,45 @@ export default function LearnPage() {
   }, [lessonId])
 
   useEffect(() => {
+    const mq = window.matchMedia('(max-width: 900px)')
+    const apply = () => setCompact(mq.matches)
+    apply()
+    mq.addEventListener('change', apply)
+    return () => mq.removeEventListener('change', apply)
+  }, [])
+
+  useEffect(() => {
     if (!sidebarOpen) return
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setSidebarOpen(false)
+      if (event.key === 'Escape') {
+        setSidebarOpen(false)
+        menuBtnRef.current?.focus()
+        return
+      }
+      if (event.key !== 'Tab' || !compact) return
+      const root = document.getElementById('os-curriculum')
+      if (!root) return
+      const items = [...root.querySelectorAll<HTMLElement>('button:not([disabled]), a[href]')]
+      if (!items.length) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
     }
-    document.body.style.overflow = 'hidden'
+    document.body.style.overflow = compact ? 'hidden' : ''
+    const closeBtn = document.querySelector<HTMLButtonElement>('#os-curriculum .os-rail-close')
+    closeBtn?.focus()
     window.addEventListener('keydown', onKey)
     return () => {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', onKey)
     }
-  }, [sidebarOpen])
+  }, [sidebarOpen, compact])
 
   useEffect(() => {
     if (!slug || access.status !== 'ready' || !selectedLessonId) return
@@ -138,7 +168,7 @@ export default function LearnPage() {
 
   const refreshWorkspace = useCallback(async () => {
     if (!slug) return
-    await reload()
+    await reload({ silent: true })
   }, [slug, reload])
 
   if (!slug) {
@@ -209,6 +239,7 @@ export default function LearnPage() {
   const { progressPct, completedCount, totalLessons, allComplete } = computeCourseProgress(allLessons, lessonStates)
   const tabAccent = getLmsTabAccent(selectedLesson ? defaultTabForLesson(selectedLesson) : 'notes')
   const { prev, next } = getAdjacentLessons(allLessons, selectedLessonId)
+  const prevUnlocked = prev && isLessonUnlocked(prev.id, allLessons, lessonStates) ? prev : null
   const currentModule = selectedLesson
     ? readyCourse.modules.find((module) => module.lessons.some((lesson) => lesson.id === selectedLesson.id))
     : null
@@ -266,7 +297,9 @@ export default function LearnPage() {
         className={sidebarOpen ? 'os-rail is-open' : 'os-rail'}
         id="os-curriculum"
         aria-label="Course curriculum"
-        {...(sidebarOpen ? { role: 'dialog', 'aria-modal': true } : {})}
+        aria-hidden={compact && !sidebarOpen}
+        {...(compact && !sidebarOpen ? { inert: true } : {})}
+        {...(sidebarOpen && compact ? { role: 'dialog', 'aria-modal': true } : {})}
       >
         <CurriculumRail
           course={readyCourse}
@@ -274,13 +307,16 @@ export default function LearnPage() {
           selectedLessonId={selectedLessonId}
           accent={roleAccent}
           onSelectLesson={handleLessonSelect}
-          onClose={() => setSidebarOpen(false)}
+          onClose={() => {
+            setSidebarOpen(false)
+            menuBtnRef.current?.focus()
+          }}
         />
       </aside>
 
       <div className="os-main">
         <header className="os-top">
-          <button type="button" className="os-menu" onClick={() => setSidebarOpen(true)} aria-label="Open curriculum" aria-expanded={sidebarOpen} aria-controls="os-curriculum">
+          <button ref={menuBtnRef} type="button" className="os-menu" onClick={() => setSidebarOpen(true)} aria-label="Open curriculum" aria-expanded={sidebarOpen} aria-controls="os-curriculum">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
           <button type="button" className="os-top-link" onClick={() => navigate(dashRoute(user?.role))}>
@@ -325,7 +361,16 @@ export default function LearnPage() {
                           ? allLessons.find((lesson) => lesson.id === selectedState.requiredLessonKey)?.title
                           : null
                       }
-                      accent={{ ...tabAccent, text: roleAccent.text }}
+                      continueTitle={
+                        allLessons.find((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates) && !lessonStates[lesson.id]?.complete)?.title
+                        ?? allLessons.find((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates))?.title
+                        ?? null
+                      }
+                      onContinue={() => {
+                        const target = allLessons.find((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates) && !lessonStates[lesson.id]?.complete)
+                          ?? allLessons.find((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates))
+                        if (target) handleLessonSelect(target.id)
+                      }}
                     />
                   ) : (
                     <LessonContentView
@@ -344,7 +389,7 @@ export default function LearnPage() {
                 </div>
                 {actionError ? <p className="os-error">{actionError}</p> : null}
                 <LessonNavigation
-                  prev={prev}
+                  prev={prevUnlocked}
                   next={nextUnlocked}
                   courseSlug={readyCourse.slug}
                   accent={roleAccent}
