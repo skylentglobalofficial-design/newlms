@@ -1,235 +1,176 @@
-import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { ACADEMIC_LINES } from "../lib/product-architecture"
+import { courses } from "../data"
+import { countStaticCourseLessons } from "../lib/curriculum-counts"
 import "./HomePage.css"
 
-function SectionLabel({ children }: { children: ReactNode }) {
-  return (
-    <div className="hp-label">
-      <span />
-      {children}
-    </div>
-  )
-}
+const FLAGSHIP_SLUG = "data-analytics"
+const flagship = courses.find((course) => course.slug === FLAGSHIP_SLUG)
 
-const journeyStages = [
-  {
-    id: "schooling",
-    title: ACADEMIC_LINES[0].label,
-    line: "School years, with families able to follow along.",
-    to: ACADEMIC_LINES[0].to,
-    live: false,
-  },
-  {
-    id: "undergraduate",
-    title: ACADEMIC_LINES[1].label,
-    line: "A first university degree, taken one stage at a time.",
-    to: ACADEMIC_LINES[1].to,
-    live: false,
-  },
-  {
-    id: "postgraduate",
-    title: ACADEMIC_LINES[2].label,
-    line: "Further study after a first degree.",
-    to: ACADEMIC_LINES[2].to,
-    live: false,
-  },
-  {
-    id: "exams",
-    title: "Examinations",
-    line: "Preparation for papers such as JEE, NEET, and CAT.",
-    to: ACADEMIC_LINES[3].to,
-    live: false,
-  },
-  {
-    id: "skills",
-    title: "Skills",
-    line: "Programmes and courses you can start now.",
-    to: "/skills",
-    live: true,
-  },
-  {
-    id: "opportunity",
-    title: "Opportunity",
-    line: "What you might do next with what you have learned.",
-    to: "/career-os",
-    live: true,
-  },
+const studyLoop = [
+  { title: "Learn", copy: "Understand the concept." },
+  { title: "Practise", copy: "Test whether you can use it." },
+  { title: "Build", copy: "Turn the lesson into useful work." },
+  { title: "Keep", copy: "Save the evidence of what you built." },
 ] as const
 
-const startPoints = [
-  { label: "Schooling", prompt: "I am in school", to: "/education/schooling", live: false },
-  { label: "Undergraduate", prompt: "I am doing a first degree", to: "/education/undergraduate", live: false },
-  { label: "Postgraduate", prompt: "I am studying after a degree", to: "/education/postgraduate", live: false },
-  { label: "Examination", prompt: "I am preparing for an exam", to: "/education/exams", live: false },
-  { label: "Skills", prompt: "I want to build a skill", to: "/skills", live: true },
-] as const
+function HeroCourseVisual() {
+  if (!flagship) return null
+  const firstLesson = flagship.modules[0]?.lessons[0]
+  const firstQuiz = flagship.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")
+  const capstone = flagship.modules.flatMap((module) => module.lessons).find((lesson) => /capstone/i.test(lesson.title))
 
-const progressSteps = [
-  { n: "01", title: "Learn", copy: "Lessons and practice in enrolled courses." },
-  { n: "02", title: "Build", copy: "Projects and artefacts you keep." },
-  { n: "03", title: "Probe", copy: "Quizzes and assignments that check understanding." },
-  { n: "04", title: "Move", copy: "Career OS records what you completed." },
-] as const
+  const rows = [
+    { label: "Course", value: flagship.title },
+    { label: "Lesson", value: firstLesson?.title ?? "Open the first lesson" },
+    { label: "Practice", value: firstQuiz?.title ?? "A short check after the lesson" },
+    { label: "Work you keep", value: capstone?.title ?? "A capstone you can show" },
+  ]
 
-const outcomes = [
-  { title: "Career", copy: "Take learned work toward roles when they are published.", to: "/career-os" },
-  { title: "Further study", copy: "Continue into the next academic stage when it opens.", to: "/education/undergraduate" },
-  { title: "Building something", copy: "Turn study into something you can show.", to: "/programs" },
-  { title: "Community", copy: "Join workshops and stories when they are published.", to: "/stories" },
-] as const
-
-function JourneyConnectors() {
-  return (
-    <svg className="hp-u-svg" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      <path
-        className="hp-u-line"
-        d="M 16.7 16.7 H 50 H 83.3 V 50 H 50 H 16.7 V 83.3"
-        fill="none"
-        stroke="rgba(21,23,26,0.2)"
-        strokeWidth="1.25"
-        vectorEffect="non-scaling-stroke"
-      />
-      <path
-        className="hp-u-travel"
-        d="M 16.7 16.7 H 50 H 83.3 V 50 H 50 H 16.7 V 83.3"
-        fill="none"
-        stroke="#4F46E5"
-        strokeWidth="0.7"
-        strokeDasharray="4 18"
-        strokeLinecap="round"
-        vectorEffect="non-scaling-stroke"
-      />
-    </svg>
-  )
-}
-
-function HeroJourneyVisual() {
   return (
     <figure className="hp-hero-visual">
-      <ol className="hp-u hp-u-hero" aria-label="From schooling to opportunity">
-        <JourneyConnectors />
-        <li className="hp-u-schooling"><span>Schooling</span></li>
-        <li className="hp-u-undergraduate"><span>Undergraduate</span></li>
-        <li className="hp-u-postgraduate"><span>Postgraduate</span></li>
-        <li className="hp-u-exams"><span>Examinations</span></li>
-        <li className="hp-u-skills"><span>Skills</span></li>
-        <li className="hp-u-opportunity"><span>Opportunity</span></li>
+      <figcaption className="hp-visual-kicker">How a course is built</figcaption>
+      <ol className="hp-visual-list" aria-label="Course, lesson, practice, work you keep">
+        {rows.map((row) => (
+          <li key={row.label}>
+            <span>{row.label}</span>
+            <strong>{row.value}</strong>
+          </li>
+        ))}
       </ol>
     </figure>
   )
 }
 
 export default function HomePage() {
+  const lessonCount = flagship ? countStaticCourseLessons(flagship) : 0
+  const outcomes = flagship?.outcomes.slice(0, 3) ?? []
+
   return (
     <PageShell aurora={false}>
-      <div className="home-p1">
+      <div className="home-p3">
         <section className="hp-hero">
           <div className="hp-rail hp-hero-grid">
             <div className="hp-hero-copy">
-              <SectionLabel>Education · Skills · Opportunity</SectionLabel>
-              <h1>One connected journey.</h1>
+              <p className="hp-label">A place to learn</p>
+              <h1>Learn something useful.</h1>
               <p>
-                Start from school, university, an exam, or a skill. Then keep going. These are stages of one path, not separate departments.
+                Skylent is for learning, practice, and useful work. Take a focused course, try the ideas, and keep what you build.
               </p>
               <div className="hp-actions">
-                <Link className="hp-btn hp-btn-primary" to="/skills">
-                  Start with skills
+                <Link className="hp-btn hp-btn-primary" to="/courses/data-analytics">
+                  Start learning
                 </Link>
-                <a className="hp-btn hp-btn-ghost" href="#journey">
-                  See the path
-                </a>
+                <Link className="hp-btn hp-btn-ghost" to="/courses">
+                  Explore courses
+                </Link>
               </div>
               <p className="hp-hero-note">
-                Skills programmes and courses are live. School, university, and exam paths are coming soon.
+                Data Analytics is open now: spreadsheets, SQL, dashboards, and a capstone on a practice dataset.
               </p>
             </div>
-            <HeroJourneyVisual />
+            <HeroCourseVisual />
           </div>
         </section>
 
-        <section id="journey" className="hp-band">
+        <section className="hp-section hp-section-alt" id="start-learning" aria-labelledby="start-learning-heading">
           <div className="hp-rail">
-            <SectionLabel>One connected journey</SectionLabel>
-            <h2 className="hp-h2">A path, not a catalogue of silos.</h2>
-            <ol className="hp-u hp-u-detail">
-              <JourneyConnectors />
-              {journeyStages.map((stage) => (
-                <li key={stage.id} className={`hp-u-${stage.id}`}>
-                  <Link to={stage.to} className="hp-u-card">
-                    <span className="hp-u-stop">
-                      <strong>{stage.title}</strong>
-                      <em className={stage.live ? "is-live" : "is-soon"}>{stage.live ? "Live" : "Coming soon"}</em>
-                    </span>
-                    <span className="hp-u-note">{stage.line}</span>
-                  </Link>
+            <p className="hp-label">Start learning</p>
+            <h2 id="start-learning-heading" className="hp-h2">A real course you can open today.</h2>
+            {flagship ? (
+              <article className="hp-flagship">
+                <div className="hp-flagship-copy">
+                  <p className="hp-flagship-kicker">Flagship course</p>
+                  <h3>{flagship.title}</h3>
+                  <p>{flagship.desc}</p>
+                  <ul>
+                    {outcomes.map((outcome) => (
+                      <li key={outcome}>{outcome}</li>
+                    ))}
+                  </ul>
+                  <p className="hp-flagship-meta">
+                    {flagship.duration}
+                    {lessonCount > 0 ? ` · ${lessonCount} lessons` : ""}
+                    {flagship.projects > 0 ? ` · ${flagship.projects} assignments` : ""}
+                    {" · Self-paced"}
+                  </p>
+                  <div className="hp-actions">
+                    <Link className="hp-btn hp-btn-primary" to={`/courses/${flagship.slug}`}>
+                      Open Data Analytics
+                    </Link>
+                    <Link className="hp-btn hp-btn-ghost" to="/courses">
+                      Explore courses
+                    </Link>
+                  </div>
+                </div>
+                <ol className="hp-flagship-path" aria-label="Data Analytics path">
+                  {flagship.modules.map((module, index) => (
+                    <li key={module.id}>
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      <strong>{module.title}</strong>
+                    </li>
+                  ))}
+                </ol>
+              </article>
+            ) : (
+              <p className="hp-lead">Open the course catalogue to see what is live.</p>
+            )}
+            <p className="hp-fine">
+              Other catalogue listings are thinner than Data Analytics. This is the course with a full practice path.
+            </p>
+          </div>
+        </section>
+
+        <section className="hp-section" aria-labelledby="how-study-heading">
+          <div className="hp-rail">
+            <p className="hp-label">How study works</p>
+            <h2 id="how-study-heading" className="hp-h2">Learn. Practise. Build. Keep.</h2>
+            <ol className="hp-loop">
+              {studyLoop.map((step) => (
+                <li key={step.title}>
+                  <strong>{step.title}</strong>
+                  <p>{step.copy}</p>
                 </li>
               ))}
             </ol>
           </div>
         </section>
 
-        <section id="start" className="hp-section">
-          <div className="hp-rail">
-            <SectionLabel>Start where you are</SectionLabel>
-            <h2 className="hp-h2">Where do I start?</h2>
-            <p className="hp-lead">Choose the stage that matches you now.</p>
-            <nav className="hp-start" aria-label="Starting points">
-              {startPoints.map((point, index) => (
-                <Link
-                  key={point.label}
-                  to={point.to}
-                  className={`hp-start-item${point.live ? " is-open" : ""}`}
-                >
-                  <span className="hp-start-n">{String(index + 1).padStart(2, "0")}</span>
-                  <span className="hp-start-copy">
-                    <strong>{point.label}</strong>
-                    <span>{point.prompt}</span>
-                  </span>
-                  <em className={point.live ? "is-live" : "is-soon"}>{point.live ? "Open now" : "Coming soon"}</em>
-                </Link>
-              ))}
-            </nav>
-          </div>
-        </section>
-
-        <section className="hp-section hp-section-alt">
-          <div className="hp-rail">
-            <SectionLabel>Progress with purpose</SectionLabel>
-            <h2 className="hp-h2">Learn → Build → Probe → Move</h2>
-            <div className="hp-progress" aria-label="How progress works on Skylent">
-              <div className="hp-progress-rail" aria-hidden="true">
-                <i />
-              </div>
-              <ol className="hp-progress-steps">
-                {progressSteps.map((step) => (
-                  <li key={step.title}>
-                    <span>{step.n}</span>
-                    <strong>{step.title}</strong>
-                    <p>{step.copy}</p>
-                  </li>
-                ))}
-              </ol>
+        <section className="hp-section hp-section-alt" aria-labelledby="work-heading">
+          <div className="hp-rail hp-career-grid">
+            <div>
+              <p className="hp-label">After you build something</p>
+              <h2 id="work-heading" className="hp-h2">What happens to the work you build?</h2>
+              <p className="hp-lead">
+                Your learning evidence can stay with you in Career OS. It is a workspace for your profile, projects, and career activity — not a job guarantee.
+              </p>
+              <Link className="hp-text-link" to="/career-os">
+                See Career OS
+              </Link>
             </div>
           </div>
         </section>
 
-        <section className="hp-section hp-outcomes-section">
+        <section className="hp-section hp-future" aria-labelledby="future-heading">
           <div className="hp-rail">
-            <SectionLabel>What learning can lead to</SectionLabel>
-            <h2 className="hp-h2">I learned something. What now?</h2>
-            <ul className="hp-outcomes">
-              {outcomes.map((item) => (
-                <li key={item.title}>
-                  <Link to={item.to}>
-                    <strong>{item.title}</strong>
-                    <span>{item.copy}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <p className="hp-fine">Skylent does not promise jobs or placements.</p>
+            <h2 id="future-heading" className="hp-future-title">More ways to learn are coming.</h2>
+            <p>
+              Academic paths for school, degrees, and exams are being built later. They are not the product you start with today.
+            </p>
+          </div>
+        </section>
+
+        <section className="hp-section hp-final" aria-labelledby="final-heading">
+          <div className="hp-rail">
+            <h2 id="final-heading" className="hp-h2">Ready to start learning?</h2>
+            <div className="hp-actions">
+              <Link className="hp-btn hp-btn-primary" to="/courses/data-analytics">
+                Start learning
+              </Link>
+              <Link className="hp-btn hp-btn-ghost" to="/courses">
+                Explore courses
+              </Link>
+            </div>
           </div>
         </section>
       </div>
