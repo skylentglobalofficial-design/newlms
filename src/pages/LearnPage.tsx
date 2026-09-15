@@ -7,6 +7,7 @@ import { getLmsRoleAccent, getLmsTabAccent } from '../role-themes'
 import CurriculumRail from '../components/lms/CurriculumRail'
 import { LessonContentView, LessonNavigation } from '../components/lms/LessonContent'
 import type { QuizQuestion } from '../components/lms/AssessmentSurface'
+import { getDaQuiz } from '../content/data-analytics/quizzes'
 import {
   computeCourseProgress,
   defaultTabForLesson,
@@ -62,6 +63,7 @@ export default function LearnPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [showCertificate, setShowCertificate] = useState(false)
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
+  const [quizStatus, setQuizStatus] = useState<'loading' | 'ready'>('ready')
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
   const [enrolling, setEnrolling] = useState(false)
   const [enrollError, setEnrollError] = useState<string | null>(null)
@@ -90,6 +92,7 @@ export default function LearnPage() {
     if (!slug || access.status !== 'ready' || !selectedLessonId) return
     if (selectedLessonLocked) {
       setQuizQuestions([])
+      setQuizStatus('ready')
       setLessonMedia(undefined)
       return
     }
@@ -97,11 +100,25 @@ export default function LearnPage() {
     void markLessonAccess(slug, selectedLessonId).catch(() => undefined)
 
     if (selectedLessonType === 'quiz') {
+      setQuizStatus('loading')
       fetchQuizQuestions(slug, selectedLessonId)
-        .then((questions) => setQuizQuestions(questions.map(q => ({ q: q.q, options: q.options }))))
-        .catch(() => setQuizQuestions([]))
+        .then((questions) => {
+          const bank = slug === 'data-analytics' ? getDaQuiz(selectedLessonId) : undefined
+          setQuizQuestions(questions.map((q, index) => ({
+            q: q.q,
+            options: q.options,
+            explanation: bank?.questions[index]?.explanation,
+            correct: bank?.questions[index]?.correctIndex,
+          })))
+          setQuizStatus('ready')
+        })
+        .catch(() => {
+          setQuizQuestions([])
+          setQuizStatus('ready')
+        })
     } else {
       setQuizQuestions([])
+      setQuizStatus('ready')
     }
 
     if (selectedLessonType === 'video') {
@@ -212,7 +229,11 @@ export default function LearnPage() {
     )
     const remaining = allLessons.filter(l => l.id !== selectedLesson.id && !updatedStates[l.id]?.complete)
     if (remaining.length === 0) setTimeout(() => setShowCertificate(true), 600)
-    else if (next && isLessonUnlocked(next.id, allLessons, updatedStates)) {
+    else if (
+      selectedLesson.type === 'notes'
+      && next
+      && isLessonUnlocked(next.id, allLessons, updatedStates)
+    ) {
       setTimeout(() => setSelectedLessonId(next.id), 400)
     }
   }
@@ -304,7 +325,7 @@ export default function LearnPage() {
                   <div className="lms-workspace-brief-label">YOUR BRIEF</div>
                   <div className="lms-workspace-phase">{lessonPhase(selectedLesson.type).label}</div>
                   <h2>{lessonPhase(selectedLesson.type).capability}</h2>
-                  <p>{selectedLesson.type === 'video' ? 'Watch for the idea that changes how you see the problem. Pause, take notes, then continue.' : selectedLesson.type === 'quiz' ? 'Choose an answer, look at the feedback, and use it to decide what you understand next.' : selectedLesson.type === 'assignment' ? 'Make your thinking visible. A considered submission becomes evidence of what you can do.' : 'Read for the connection, not just the completion tick.'}</p>
+                  <p>{selectedLesson.type === 'video' ? 'Watch for the idea that changes how you see the problem. Pause, take notes, then continue.' : selectedLesson.type === 'quiz' ? 'Choose an answer, look at the explanation after submit, and use it to decide what you understand next.' : selectedLesson.type === 'assignment' ? 'Follow the brief. Paste the artifact. Faculty review is not part of this pilot.' : 'Study the written lesson. Practice on the dataset. Mark complete when you can do the output, not when you have only scrolled.'}</p>
                   <div className="lms-capability-list">
                     {['Explain', selectedLesson.type === 'assignment' ? 'Build' : selectedLesson.type === 'quiz' ? 'Solve' : 'Apply', 'Next step'].map((item, index) => <span key={item} className={index === 0 ? 'is-active' : ''}>{item}</span>)}
                   </div>
@@ -328,9 +349,11 @@ export default function LearnPage() {
                       accent={{ ...tabAccent, text: roleAccent.text }}
                       onComplete={() => { void handleLessonComplete() }}
                       quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
+                      quizStatus={selectedLesson.type === 'quiz' ? quizStatus : undefined}
                       onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
                       onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
                       lessonMedia={lessonMedia}
+                      courseSlug={readyCourse.slug}
                     />
                   )}
                 </div>
