@@ -85,7 +85,7 @@ export function coursePublicView(course: Course): CoursePublicView {
     summary: authored ? course.desc : listingSummary(course),
     maturity: authored ? "ready" : "listing",
     maturityLabel: authored ? "Ready to start" : "Catalogue listing",
-    delivery: authored ? "Written lessons + practice" : "Catalogue listing",
+    delivery: authored ? "Written lessons + practice" : "LMS outline",
     duration: course.duration,
     stats,
     outcomes: course.outcomes,
@@ -129,13 +129,13 @@ export type ProgrammePublicView = {
 function programmeHonesty(program: Program, linked: LinkedLearning[]): string {
   const authored = linked.filter((item) => item.authored)
   if (program.enrollmentStatus === "coming_soon") {
-    return "This programme is not open yet. There is no live classroom or batch behind the listing."
+    return "This programme is not open yet. There is no classroom session or batch behind the listing."
   }
   if (authored.length && linked.length === authored.length) {
     return `Enrolment opens the ${authored[0].title} course — the authored learning path. Brochure modules beyond that course are not teachable here yet.`
   }
   if (authored.length) {
-    return `Live teaching today is ${authored.map((item) => item.title).join(" and ")}. Other linked listings are thinner than Data Analytics. Brochure topics such as machine learning or live classes are not taught yet.`
+    return `What you can study today is ${authored.map((item) => item.title).join(" and ")}. Other linked listings are thinner than Data Analytics. Brochure topics such as machine learning are not taught yet.`
   }
   if (linked.length) {
     return "This programme enrols you into a thinner catalogue course. It is not as complete as Data Analytics."

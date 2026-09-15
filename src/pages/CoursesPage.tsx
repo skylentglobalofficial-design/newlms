@@ -101,7 +101,7 @@ export default function CoursesPage() {
 function CourseRow({ view }: { view: ReturnType<typeof coursePublicView> }) {
   const stats = view.showLiveCurriculum
     ? `${view.stats.lessonCount} lessons · ${view.delivery}`
-    : view.maturityLabel
+    : `${view.stats.lessonCount} outline lessons`
 
   return (
     <Link className="cat-row" to={`/courses/${view.slug}`}>

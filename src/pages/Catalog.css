@@ -108,7 +108,8 @@
 }
 
 .cat-text-link {
-  display: inline-block;
+  display: block;
+  width: fit-content;
   margin-top: 14px;
   color: #4f46e5;
   font-size: 14px;

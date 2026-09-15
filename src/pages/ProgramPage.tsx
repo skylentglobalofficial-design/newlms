@@ -121,7 +121,7 @@ export default function ProgramPage() {
 
             <aside className="cat-access">
               <p className="cat-label">Access</p>
-              {view.listedPrice > 0 ? (
+              {view.listedPrice > 0 && view.maturity !== "coming_later" ? (
                 <p className="cat-price">₹{view.listedPrice.toLocaleString("en-IN")}</p>
               ) : null}
               <p className="cat-fine">Listed price. Payment is not collected here yet.</p>
