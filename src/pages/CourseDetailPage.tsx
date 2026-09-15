@@ -1,185 +1,211 @@
-import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { C, FadeIn, PageShell, EnrollmentModal } from '../components/shared'
-import { Button, Eyebrow, Section, T } from '../components/ui'
-import { Aurora, GlassSurface } from '../components/foundation'
-import { getDomainAccent } from '../aurora-themes'
-import { courses } from '../data'
-import { useCatalogCourse } from '../hooks/useCatalog'
-import { displayLessonCount, displayLessonStat } from '../lib/curriculum-counts'
-
-const accent = getDomainAccent('professional')
+import { useState } from "react"
+import { Link, useParams } from "react-router-dom"
+import { EnrollmentModal, PageShell } from "../components/shared"
+import { coursePublicView, publicLessonKind } from "../lib/catalog-maturity"
+import { courses } from "../data"
+import { useCatalogCourse } from "../hooks/useCatalog"
+import "./Catalog.css"
 
 export default function CourseDetailPage() {
   const { slug } = useParams()
-  const navigate = useNavigate()
-  const course = courses.find(c => c.slug === slug)
+  const course = courses.find((item) => item.slug === slug)
   const catalog = useCatalogCourse(slug)
-  const [expandedModule, setExpandedModule] = useState<string | null>(course?.modules[0]?.id ?? null)
+  const [openModule, setOpenModule] = useState<string | null>(course?.modules[0]?.id ?? null)
   const [enrollOpen, setEnrollOpen] = useState(false)
 
   if (!course) {
     return (
-      <PageShell auroraTheme="professional">
-        <Section tone="canvas" style={{ minHeight: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ textAlign: 'center' }}>
-            <h2 className="skylent-display-md" style={{ color: C.ink }}>Course not found</h2>
-            <Button variant="secondary" onClick={() => navigate('/courses')} style={{ marginTop: 16 }}>← Back to courses</Button>
-          </div>
-        </Section>
+      <PageShell aurora={false}>
+        <div className="cat-page">
+          <section className="cat-hero">
+            <div className="cat-rail">
+              <h1>Course not found</h1>
+              <Link className="cat-btn cat-btn-ghost" to="/courses">Back to courses</Link>
+            </div>
+          </section>
+        </div>
       </PageShell>
     )
   }
 
-  const price = catalog.data?.price ?? course.price
-  const originalPrice = catalog.data?.originalPrice ?? course.originalPrice
-  const lessonCount = displayLessonCount(catalog.data?.lessonCount, course)
-  const projectCount = catalog.data?.projectCount ?? course.projects
+  const view = coursePublicView(course)
   const enrollable = Boolean(catalog.data)
-  const discount = Math.round((1 - price / originalPrice) * 100)
+  const practice = course.modules.flatMap((module) => module.lessons).filter((lesson) => lesson.type === "quiz" || lesson.type === "assignment")
 
   return (
-    <PageShell auroraTheme="professional">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} clamp(40px, 5vw, 64px)` }}>
-        <Aurora themeId="professional" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <button
-            type="button"
-            onClick={() => navigate('/courses')}
-            style={{ background: 'none', border: 'none', color: C.slate, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', marginBottom: 24, padding: 0 }}
-          >
-            ← Back to courses
-          </button>
-          <div style={{ maxWidth: 720 }}>
-            <FadeIn>
-              <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
-                <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 12px', color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)' }}>Course</span>
-                <span style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 6, padding: '4px 12px', color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{course.category}</span>
-                <span style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 6, padding: '4px 12px', color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{course.level}</span>
+    <PageShell aurora={false}>
+      <div className="cat-page">
+        <section className="cat-hero">
+          <div className="cat-rail">
+            <Link className="cat-back" to="/courses">← Courses</Link>
+            <p className="cat-label">Course</p>
+            <h1>{view.title}</h1>
+            <p className="cat-lead">{view.summary}</p>
+            <div className="cat-meta" style={{ marginTop: 16 }}>
+              <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
+                {view.maturityLabel}
+              </span>
+              <span>{view.course.level}</span>
+              <span>{view.delivery}</span>
+            </div>
+            {view.honesty ? <p className="cat-note">{view.honesty}</p> : null}
+            <p className="cat-fine" style={{ maxWidth: "36em" }}>
+              {view.showLiveCurriculum
+                ? "How you learn: written lessons, quizzes, and assignments in Skylent OS. Self-paced. No live classroom and no video stream."
+                : "How you learn: this listing is not a finished teaching path yet. Enrolment opens the LMS outline."}
+            </p>
+            <div className="cat-specs" aria-label="Course facts">
+              <div>
+                <p className="cat-label">Duration</p>
+                <strong>{view.showLiveCurriculum ? view.duration : "Not a finished course yet"}</strong>
               </div>
-              <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 12px' }}>{course.title}</h1>
-              <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.7, maxWidth: 560, margin: '0 0 24px' }}>{course.longDesc}</p>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: 0, borderTop: `1px solid ${T.lineDark}`, borderBottom: `1px solid ${T.lineDark}` }} className="course-spec-grid">
-                {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', lessonCount], ['Projects', String(projectCount)]].map(([l, v], i) => (
-                  <div key={l} style={{ padding: '14px 12px 14px 0', borderRight: i < 3 ? `1px solid ${T.lineDark}` : 'none', minWidth: 0 }}>
-                    <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>{l}</div>
-                    <div style={{ color: C.ink, fontSize: 15, fontWeight: 500 }}>{v}</div>
-                  </div>
-                ))}
+              <div>
+                <p className="cat-label">Lessons</p>
+                <strong>{view.stats.lessonCount}</strong>
               </div>
-              <p style={{ color: C.slate, fontSize: 13, margin: '16px 0 0' }}>A course is a focused unit. Programmes are longer pathways with Career OS on professional tracks.</p>
-            </FadeIn>
+              <div>
+                <p className="cat-label">How you learn</p>
+                <strong>{view.delivery}</strong>
+              </div>
+              <div>
+                <p className="cat-label">Practice</p>
+                <strong>
+                  {view.showLiveCurriculum
+                    ? `${view.stats.quizCount} quizzes · ${view.stats.assignmentCount} assignments`
+                    : "Outline only"}
+                </strong>
+              </div>
+            </div>
+            <div className="cat-actions">
+              <button
+                type="button"
+                className="cat-btn cat-btn-primary"
+                disabled={catalog.loading && !enrollable}
+                onClick={() => { if (enrollable || !catalog.loading) setEnrollOpen(true) }}
+              >
+                {enrollable ? "Enrol" : catalog.loading ? "Checking availability…" : "Enrollment unavailable"}
+              </button>
+              <Link className="cat-btn cat-btn-ghost" to="/skills">Back to Skills</Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <Section tone="canvas" divider>
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 340px', gap: 'clamp(28px, 4vw, 48px)', alignItems: 'start' }} className="edu-grid">
-          <div>
-            <FadeIn>
-              <GlassSurface level={2} padding="24px 28px" style={{ marginBottom: 24 }}>
-                <Eyebrow tone="light" accent>Outcomes</Eyebrow>
-                <h2 className="skylent-display-sm" style={{ color: C.ink, margin: '12px 0 20px' }}>What you will learn</h2>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
-                  {course.outcomes.map(o => (
-                    <div key={o} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: accent.primary, marginTop: 7, flexShrink: 0 }} />
-                      <span style={{ color: C.slate, fontSize: 13, lineHeight: 1.55 }}>{o}</span>
-                    </div>
-                  ))}
-                </div>
-              </GlassSurface>
-            </FadeIn>
-
-            <FadeIn delay={60}>
-              <GlassSurface level={2} padding="24px 28px" style={{ marginBottom: 24 }}>
-                <Eyebrow tone="light">Curriculum</Eyebrow>
-                <h2 className="skylent-display-sm" style={{ color: C.ink, margin: '12px 0 20px' }}>Modules and lessons</h2>
-                {course.modules.map((mod, mi) => (
-                  <div key={mod.id} style={{ borderBottom: mi < course.modules.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
-                    <button
-                      type="button"
-                      onClick={() => setExpandedModule(expandedModule === mod.id ? null : mod.id)}
-                      style={{ width: '100%', background: 'none', border: 'none', padding: '14px 0', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontFamily: 'var(--font-body)' }}
-                    >
-                      <div style={{ display: 'flex', gap: 14, alignItems: 'center', textAlign: 'left' }}>
-                        <span style={{ color: accent.text, fontFamily: 'var(--font-mono)', fontSize: 12, width: 28 }}>0{mi + 1}</span>
-                        <span style={{ color: C.ink, fontSize: 15, fontWeight: 600 }}>{mod.title}</span>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <span style={{ color: C.slate, fontSize: 12 }}>{mod.lessons.length} lessons</span>
-                        <svg width="12" height="8" viewBox="0 0 12 8" fill={C.slate} style={{ transform: expandedModule === mod.id ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}><path d="M0 0l6 8 6-8z"/></svg>
-                      </div>
-                    </button>
-                    {expandedModule === mod.id && (
-                      <div style={{ paddingBottom: 14, paddingLeft: 42 }}>
-                        {mod.lessons.map(lesson => (
-                          <div key={lesson.id} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderTop: `1px solid ${T.lineDark}`, flexWrap: 'wrap' }}>
-                            <div style={{ width: 16, height: 16, borderRadius: '50%', background: lesson.completed ? accent.primary : 'transparent', border: `1.5px solid ${lesson.completed ? accent.primary : T.lineStrong}`, flexShrink: 0 }} />
-                            <span style={{ color: C.slate, fontSize: 13, flex: '1 1 160px' }}>{lesson.title}</span>
-                            <span style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', background: C.cream, borderRadius: 4, padding: '2px 8px' }}>{lesson.type.toUpperCase()}</span>
-                            {lesson.duration && <span style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{lesson.duration}</span>}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+        <section className="cat-section" aria-labelledby="learn-heading">
+          <div className="cat-rail cat-split">
+            <div>
+              <p className="cat-label">What you will learn</p>
+              <h2 id="learn-heading">{view.showLiveCurriculum ? "Capabilities in this course" : "Listed capabilities"}</h2>
+              {!view.showLiveCurriculum ? (
+                <p className="cat-fine">These statements come from the catalogue listing, not a full authored course.</p>
+              ) : null}
+              <ul className="cat-bullets">
+                {view.outcomes.map((item) => (
+                  <li key={item}>{item}</li>
                 ))}
-              </GlassSurface>
-            </FadeIn>
+              </ul>
 
-            <FadeIn delay={100}>
-              <GlassSurface level={2} padding="24px 28px">
-                <Eyebrow tone="light">Audience</Eyebrow>
-                <h2 className="skylent-display-sm" style={{ color: C.ink, margin: '12px 0 16px' }}>Who this is for</h2>
-                {course.forWhom.map(fw => (
-                  <div key={fw} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '10px 0', borderBottom: `1px solid ${T.lineDark}` }}>
-                    <div style={{ width: 5, height: 5, borderRadius: '50%', background: accent.primary, marginTop: 7, flexShrink: 0 }} />
-                    <span style={{ color: C.slate, fontSize: 14 }}>{fw}</span>
-                  </div>
-                ))}
-              </GlassSurface>
-            </FadeIn>
-          </div>
-
-          <div style={{ position: 'sticky', top: T.navH + 16 }}>
-            <FadeIn>
-              <GlassSurface level={2} padding="24px 28px">
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 6, flexWrap: 'wrap' }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: C.ink }}>₹{price.toLocaleString('en-IN')}</span>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: C.slate, textDecoration: 'line-through' }}>₹{originalPrice.toLocaleString('en-IN')}</span>
-                  <span style={{ background: 'rgba(74,222,128,0.12)', color: '#4ade80', fontSize: 11, padding: '2px 8px', borderRadius: 5, fontFamily: 'var(--font-mono)' }}>{discount}% off</span>
+              {view.forWhom.length > 0 ? (
+                <div className="cat-group">
+                  <p className="cat-label">Who it is for</p>
+                  <ul className="cat-bullets">
+                    {view.forWhom.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
                 </div>
-                <div style={{ color: C.slate, fontSize: 12, marginBottom: 20 }}>Listed price. This environment enrolls for free — payment is not collected.</div>
-                <Button
-                  variant="primary"
-                  size="lg"
+              ) : null}
+
+              <div className="cat-group">
+                <p className="cat-label">{view.showLiveCurriculum ? "Curriculum" : "Course outline"}</p>
+                <h2>{view.showLiveCurriculum ? `${view.stats.moduleCount} modules · ${view.stats.lessonCount} lessons` : "What exists in the LMS today"}</h2>
+                {!view.showLiveCurriculum ? (
+                  <p className="cat-fine">Full learning content is being built. Titles below are an outline, not a finished teaching path.</p>
+                ) : null}
+                <div className="cat-curriculum">
+                  {course.modules.map((module, index) => {
+                    const open = openModule === module.id
+                    return (
+                      <div className="cat-module" key={module.id}>
+                        <button
+                          type="button"
+                          aria-expanded={open}
+                          onClick={() => setOpenModule(open ? null : module.id)}
+                        >
+                          <span>
+                            <span className="cat-kind">{String(index + 1).padStart(2, "0")}</span>
+                            {" "}
+                            <strong>{module.title}</strong>
+                          </span>
+                          <span className="cat-fine" style={{ margin: 0 }}>{module.lessons.length} lessons</span>
+                        </button>
+                        {open ? (
+                          <ol>
+                            {module.lessons.map((lesson) => (
+                              <li key={lesson.id}>
+                                <span>{lesson.title}</span>
+                                <span className="cat-kind">{publicLessonKind(lesson, view.showLiveCurriculum)}</span>
+                                {view.showLiveCurriculum && lesson.duration ? <span>{lesson.duration}</span> : null}
+                              </li>
+                            ))}
+                          </ol>
+                        ) : null}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {view.showLiveCurriculum ? (
+                <div className="cat-group">
+                  <p className="cat-label">Practice / work</p>
+                  <h2>What you actually do</h2>
+                  <p className="cat-fine">
+                    Practice uses a synthetic Northwind Retail dataset. There is no live classroom and no video stream.
+                  </p>
+                  <ul className="cat-bullets">
+                    {practice.map((lesson) => (
+                      <li key={lesson.id}>{lesson.title}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+
+              <div className="cat-group">
+                <p className="cat-label">What you keep</p>
+                <p className="cat-fine">
+                  Progress and submitted work stay on your enrollment. You can carry learning evidence into Career OS. Career OS is a workspace — not a job guarantee.
+                </p>
+              </div>
+            </div>
+
+            <aside className="cat-access">
+              <p className="cat-label">Access</p>
+              <p className="cat-price">₹{view.listedPrice.toLocaleString("en-IN")}</p>
+              <p className="cat-fine">Listed price. Payment is not collected here yet.</p>
+              <p className="cat-fine">Certificate: not issued in this pilot.</p>
+              <div className="cat-actions">
+                <button
+                  type="button"
+                  className="cat-btn cat-btn-primary"
+                  disabled={catalog.loading && !enrollable}
                   onClick={() => { if (enrollable || !catalog.loading) setEnrollOpen(true) }}
-                  style={{ width: '100%', marginBottom: 16, opacity: !enrollable && !catalog.loading ? 0.55 : 1 }}
                 >
-                  {enrollable ? 'Enroll now' : catalog.loading ? 'Checking availability…' : 'Enrollment unavailable'}
-                </Button>
-                <div style={{ display: 'grid', gap: 8 }}>
-                  {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', displayLessonStat(lessonCount)], ['Projects', `${projectCount} projects`], ['Certificate', 'Not issued in this pilot']].map(([l, v]) => (
-                    <div key={l} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: `1px solid ${T.lineDark}` }}>
-                      <span style={{ color: C.slate, fontSize: 13 }}>{l}</span>
-                      <span style={{ color: C.ink, fontSize: 13, fontWeight: 500, textAlign: 'right' }}>{v}</span>
-                    </div>
-                  ))}
-                </div>
-              </GlassSurface>
-            </FadeIn>
+                  {enrollable ? "Enrol" : catalog.loading ? "Checking availability…" : "Enrollment unavailable"}
+                </button>
+              </div>
+              <p className="cat-fine">After you enrol: Get learning access → Skylent OS → first lesson.</p>
+            </aside>
           </div>
-        </div>
-      </Section>
+        </section>
+      </div>
 
-      {enrollOpen && (
+      {enrollOpen ? (
         <EnrollmentModal
-          item={{ kind: 'course', slug: course.slug, title: course.title, price, enrollable }}
+          item={{ kind: "course", slug: course.slug, title: course.title, price: view.listedPrice, enrollable }}
           onClose={() => setEnrollOpen(false)}
           themeId="professional"
         />
-      )}
+      ) : null}
     </PageShell>
   )
 }

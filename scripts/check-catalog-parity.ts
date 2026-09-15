@@ -1,6 +1,7 @@
 import "dotenv/config"
 import { PrismaClient } from "@prisma/client"
 import { courses, programs, workshops } from "../src/data.js"
+import { PROGRAM_COURSE_LINKS } from "../src/lib/catalog-maturity.ts"
 
 const prisma = new PrismaClient()
 
@@ -75,6 +76,18 @@ async function main() {
         failures.push(
           `Program "${program.slug}" has a live enrollment CTA but no ProgramCourse linkage in DB`,
         )
+      }
+    }
+
+    const expected = PROGRAM_COURSE_LINKS.filter((link) => link.programSlug === program.slug).map((link) => link.courseSlug)
+    if (expected.length) {
+      for (const slug of expected) {
+        if (!linked.includes(slug)) {
+          failures.push(`Program "${program.slug}" is missing ProgramCourse link to ${slug}`)
+        }
+        if (!dbCourseSlugs.has(slug)) {
+          failures.push(`Program "${program.slug}" linked course missing from DB: ${slug}`)
+        }
       }
     }
   }

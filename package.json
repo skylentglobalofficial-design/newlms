@@ -25,7 +25,7 @@
     "test:lms": "tsx scripts/test-lms.ts",
     "test:da-content": "tsx scripts/test-da-content.ts",
     "test:career": "tsx scripts/test-career.ts",
-    "test:catalog-parity": "tsx scripts/check-catalog-parity.ts",
+    "test:catalog-parity": "tsx scripts/test-catalog-truth.ts && tsx scripts/check-catalog-parity.ts",
     "test:live-intents": "tsx scripts/test-live-intents.ts",
     "test:roles": "tsx scripts/test-role-provisioning.ts",
     "test:integration": "tsx scripts/run-integration-tests.ts",
