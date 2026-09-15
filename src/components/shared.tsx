@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import type { Job } from '../data'
 import { useAuth } from '../context/AuthContext'
@@ -343,7 +343,6 @@ export function Nav() {
   const navRef = useRef<HTMLElement>(null)
   const navigate = useNavigate()
   const location = useLocation()
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const { user, logout } = useAuth()
 
   const primaryNav = buildPrimaryNav({
@@ -405,16 +404,6 @@ export function Nav() {
   const navBorder = `1px solid ${T.lineLight}`
   const navShadow = '0 1px 0 rgba(21,23,26,0.04)'
 
-  const handleMenuEnter = useCallback((label: string) => {
-    if (closeTimer.current) clearTimeout(closeTimer.current)
-    setAccountOpen(false)
-    setActiveMenu(label)
-  }, [])
-
-  const handleMenuLeave = useCallback(() => {
-    closeTimer.current = setTimeout(() => setActiveMenu(null), 120)
-  }, [])
-
   const accountPath = user ? dashRoute(user.role) : '/login'
 
   return (
@@ -437,12 +426,9 @@ export function Nav() {
               <div
                 key={group.label}
                 style={{ position: 'relative' }}
-                onMouseEnter={() => handleMenuEnter(group.label)}
-                onMouseLeave={handleMenuLeave}
-                onFocusCapture={() => handleMenuEnter(group.label)}
                 onBlurCapture={(e) => {
                   const next = e.relatedTarget as Node | null
-                  if (!e.currentTarget.contains(next)) handleMenuLeave()
+                  if (!e.currentTarget.contains(next)) setActiveMenu(null)
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'stretch' }}>
@@ -460,7 +446,10 @@ export function Nav() {
                       aria-expanded={open}
                       aria-controls={menuId}
                       aria-haspopup="true"
-                      onClick={() => setActiveMenu(open ? null : group.label)}
+                      onClick={() => {
+                        setAccountOpen(false)
+                        setActiveMenu(open ? null : group.label)
+                      }}
                       style={{ background: 'none', border: 'none', color: open ? C.ink : C.slate, fontSize: 14, cursor: 'pointer', padding: '8px 8px 8px 12px', display: 'inline-flex', alignItems: 'center', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em', fontWeight: 500 }}
                     >
                       {group.label}
@@ -472,7 +461,10 @@ export function Nav() {
                     aria-controls={menuId}
                     aria-haspopup="true"
                     aria-label={`${group.label} menu`}
-                    onClick={() => setActiveMenu(open ? null : group.label)}
+                    onClick={() => {
+                      setAccountOpen(false)
+                      setActiveMenu(open ? null : group.label)
+                    }}
                     style={{ background: 'none', border: 'none', color: open ? C.ink : C.slate, cursor: 'pointer', padding: '8px 10px 8px 2px', display: 'inline-flex', alignItems: 'center' }}
                   >
                     <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" style={{ opacity: 0.5, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><path d="M0 0l5 6 5-6z"/></svg>
@@ -484,8 +476,6 @@ export function Nav() {
                     className="nav-mega-dropdown"
                     role="group"
                     aria-label={group.label}
-                    onMouseEnter={() => handleMenuEnter(group.label)}
-                    onMouseLeave={handleMenuLeave}
                     style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: 6, minWidth: 260, maxWidth: 300, boxShadow: T.shadow, zIndex: 300 }}
                   >
                     <div style={{ padding: '10px 12px 12px', marginBottom: 2, borderBottom: '1px solid rgba(8,9,9,0.08)' }}>

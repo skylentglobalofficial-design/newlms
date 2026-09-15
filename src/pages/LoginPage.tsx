@@ -72,16 +72,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
 function EntryVisual() {
   return (
     <div style={{ position: 'relative', maxWidth: 420 }}>
-      <div style={{
-        padding: '28px 0',
-        borderTop: `1px solid ${T.lineDark}`,
-        borderBottom: `1px solid ${T.lineDark}`,
-      }}>
-        <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 380 }}>
-          Sign in to continue your learning.
-        </p>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginTop: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, paddingTop: 8, borderTop: `1px solid ${T.lineDark}` }}>
         {[
           { label: 'Learn', detail: 'Skills, courses, and programmes' },
           { label: 'Study', detail: 'Your enrolled learning workspace' },
