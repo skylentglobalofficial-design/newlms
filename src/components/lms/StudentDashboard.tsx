@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom'
 import { C, T } from '../../tokens'
-import { GlassSurface } from '../foundation'
 import type { CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
-import { computeModuleProgress, type LmsCourseView } from './lms-utils'
+import { computeModuleProgress, isLessonUnlocked, lessonTypeLabel, type LmsCourseView } from './lms-utils'
 import LessonIcon from './LessonIcon'
 
 type Accent = { primary: string; secondary: string; subtle: string; subtleStrong: string; border: string; text: string }
@@ -23,9 +22,10 @@ export function LearningWorkspacePanel({
   learnSlug,
   lessonId,
   accent,
+  started,
 }: {
   courseTitle: string
-  programName: string
+  programName: string | null
   progressPct: number
   completedCount: number
   totalLessons: number
@@ -38,51 +38,40 @@ export function LearningWorkspacePanel({
   learnSlug: string
   lessonId: string
   accent: Accent
+  started: boolean
 }) {
   return (
-    <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', position: 'relative' }} className="student-learning-workspace">
-      <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 3.5vw, 36px)' }}>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Continue learning</div>
-        <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px', lineHeight: 1.1 }}>
-          {lessonTitle}
-        </h1>
-        <p style={{ color: C.slate, fontSize: 15, margin: '0 0 4px' }}>
-          {courseTitle} · {programName}
-        </p>
-        <p style={{ color: C.slate, fontSize: 13, margin: '0 0 20px' }}>
-          Module {moduleIndex} of {moduleTotal} · {moduleTitle} · <span style={{ textTransform: 'uppercase', fontFamily: 'var(--font-mono)', fontSize: 11 }}>{lessonType}</span>
-        </p>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 16, padding: '16px 0', marginBottom: 20, borderTop: `1px solid ${T.lineLight}`, borderBottom: `1px solid ${T.lineLight}` }}>
-          <div>
-            <div style={{ color: C.slate, fontSize: 11, marginBottom: 6 }}>Course progress</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ flex: 1, height: 4, background: 'rgba(11,13,15,0.08)', borderRadius: 2 }}>
-                <div style={{ width: `${progressPct}%`, height: '100%', background: accent.primary, borderRadius: 2 }} />
-              </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>{progressPct}%</span>
-            </div>
-            <div style={{ color: C.slate, fontSize: 11, marginTop: 6 }}>{completedCount} of {totalLessons} lessons</div>
-          </div>
-          <div>
-            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Next action</div>
-            <div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>{nextLessonTitle ?? 'Finish current lesson'}</div>
-          </div>
+    <section className="dash-continue" id="student-learning">
+      <p className="os-rail-kicker">Continue learning</p>
+      <h1>{lessonTitle}</h1>
+      <p>
+        {courseTitle}
+        {programName ? ` · Opened through ${programName}` : ''}
+      </p>
+      <p>
+        Module {moduleIndex} of {moduleTotal} · {moduleTitle}
+        {lessonType ? ` · ${lessonType}` : ''}
+      </p>
+      <div className="os-progress" style={{ maxWidth: 420, marginTop: 18 }}>
+        <div className="os-progress-meta">
+          <span>{completedCount} of {totalLessons} lessons complete</span>
         </div>
-
-        <Link
-          to={lessonId ? `/learn/${learnSlug}/${lessonId}` : `/learn/${learnSlug}`}
-          style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: accent.primary, color: C.white, textDecoration: 'none',
-            padding: '13px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600,
-          }}
-        >
-          Resume lesson
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        <div className="os-progress-bar" aria-hidden="true">
+          <span style={{ width: `${progressPct}%`, background: accent.primary }} />
+        </div>
+      </div>
+      {programName ? (
+        <p>This workspace is the linked course, not a separate taught programme.</p>
+      ) : null}
+      <p style={{ marginTop: 12 }}>
+        {nextLessonTitle ? `After this: ${nextLessonTitle}` : 'Finish the current lesson, then continue.'}
+      </p>
+      <div className="os-actions">
+        <Link className="os-btn os-btn-primary" to={lessonId ? `/learn/${learnSlug}/${lessonId}` : `/learn/${learnSlug}`}>
+          {started ? 'Continue' : 'Start'}
         </Link>
       </div>
-    </GlassSurface>
+    </section>
   )
 }
 
@@ -97,88 +86,43 @@ export function CurriculumProgressRail({
   accent: Accent
   learnSlug: string
 }) {
+  const allLessons = course.modules.flatMap((module) => module.lessons)
   return (
-    <div id="student-curriculum" className="student-curriculum-rail" style={{ marginTop: 'clamp(28px, 4vw, 40px)' }}>
-      <div style={{ color: C.slate, fontSize: 11, letterSpacing: '0.08em', marginBottom: 16 }}>Curriculum · current position</div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-        {course.modules.map((mod: CourseModule, mi: number) => {
-          const mp = computeModuleProgress(mod, lessonStates)
-          const isCurrentModule = !!mp.current
-          return (
-            <div key={mod.id} style={{ padding: '16px 0', borderTop: mi === 0 ? 'none' : `1px solid ${T.lineLight}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 10 }}>
-                <div style={{ minWidth: 0 }}>
-                  <div style={{ color: isCurrentModule ? C.ink : C.slate, fontSize: 14, fontWeight: isCurrentModule ? 600 : 400 }}>
-                    Module {mi + 1} · {mod.title}
+    <div id="student-curriculum" style={{ marginTop: 28 }}>
+      <p className="os-rail-kicker">Where you are</p>
+      {course.modules.map((mod: CourseModule, mi: number) => {
+        const mp = computeModuleProgress(mod, lessonStates)
+        const currentUnlocked = Boolean(mp.current && isLessonUnlocked(mp.current.id, allLessons, lessonStates))
+        return (
+          <div key={mod.id} style={{ padding: '16px 0', borderTop: mi === 0 ? 'none' : `1px solid ${T.lineLight}` }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+              <div style={{ minWidth: 0 }}>
+                <div style={{ color: C.ink, fontSize: 15, fontWeight: currentUnlocked ? 600 : 500 }}>
+                  Module {mi + 1} · {mod.title}
+                </div>
+                {currentUnlocked && mp.current ? (
+                  <div style={{ color: C.slate, fontSize: 13, marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <LessonIcon type={mp.current.type} size={12} color={accent.text} />
+                    {mp.current.title} · {lessonTypeLabel(mp.current.type, mp.current.title)}
                   </div>
-                  {mp.current && (
-                    <div style={{ color: accent.text, fontSize: 12, marginTop: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <LessonIcon type={mp.current.type} size={12} color={accent.text} />
-                      {mp.current.title}
-                    </div>
-                  )}
-                </div>
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  {mp.total > 0 ? (
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.slate }}>{mp.completed}/{mp.total}</span>
-                  ) : (
-                    <span style={{ color: C.slate, fontSize: 11 }}>—</span>
-                  )}
-                </div>
+                ) : mp.complete ? (
+                  <div style={{ color: C.success, fontSize: 13, marginTop: 6 }}>Completed</div>
+                ) : (
+                  <div style={{ color: C.slate, fontSize: 13, marginTop: 6 }}>Locked until earlier lessons are complete</div>
+                )}
               </div>
-              {mp.total > 0 && (
-                <div style={{ height: 3, background: 'rgba(11,13,15,0.08)', borderRadius: 2 }}>
-                  <div style={{ width: `${mp.pct}%`, height: '100%', background: isCurrentModule ? accent.primary : 'rgba(11,13,15,0.15)', borderRadius: 2 }} />
-                </div>
-              )}
-              {isCurrentModule && mp.current && (
-                <Link to={`/learn/${learnSlug}/${mp.current.id}`} style={{ display: 'inline-block', marginTop: 10, color: accent.text, fontSize: 12, textDecoration: 'none' }}>
-                  Continue module →
-                </Link>
-              )}
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate }}>
+                {mp.completed}/{mp.total}
+              </span>
             </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-export function StudentProgressSurface({
-  course,
-  lessonStates,
-  accent,
-  certificateReady,
-}: {
-  course: LmsCourseView
-  lessonStates: Record<string, LessonState>
-  accent: Accent
-  certificateReady: boolean
-}) {
-  const allLessons = course.modules.flatMap(m => m.lessons)
-  const completed = allLessons.filter(l => lessonStates[l.id]?.complete).length
-  const quizzes = allLessons.filter(l => l.type === 'quiz')
-  const quizzesDone = quizzes.filter(l => lessonStates[l.id]?.complete).length
-  const assignments = allLessons.filter(l => l.type === 'assignment')
-  const assignmentsDone = assignments.filter(l => lessonStates[l.id]?.complete).length
-
-  return (
-    <div id="student-progress" style={{ marginTop: 32, paddingTop: 24, borderTop: `1px solid ${T.lineLight}` }}>
-      <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>Progress</div>
-      <div className="student-progress-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 16 }}>
-        {[
-          { label: 'Lessons', value: allLessons.length ? `${completed}/${allLessons.length}` : '—', sub: 'completed' },
-          { label: 'Quizzes', value: quizzes.length ? `${quizzesDone}/${quizzes.length}` : '—', sub: 'passed' },
-          { label: 'Assignments', value: assignments.length ? `${assignmentsDone}/${assignments.length}` : '—', sub: 'submitted' },
-          { label: 'Certificate', value: certificateReady ? 'Ready' : '—', sub: certificateReady ? 'course complete' : 'not yet' },
-        ].map(item => (
-          <div key={item.label} style={{ padding: '14px 16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
-            <div style={{ color: C.slate, fontSize: 10, letterSpacing: '0.06em', marginBottom: 6 }}>{item.label}</div>
-            <div style={{ color: item.value === '—' ? C.slate : C.ink, fontFamily: 'var(--font-mono)', fontSize: 18, marginBottom: 4 }}>{item.value}</div>
-            <div style={{ color: C.slate, fontSize: 11 }}>{item.sub}</div>
+            {currentUnlocked && mp.current ? (
+              <Link className="os-link" to={`/learn/${learnSlug}/${mp.current.id}`} style={{ display: 'inline-block', marginTop: 10 }}>
+                Continue this module
+              </Link>
+            ) : null}
           </div>
-        ))}
-      </div>
+        )
+      })}
     </div>
   )
 }
@@ -186,26 +130,26 @@ export function StudentProgressSurface({
 export function StudentActionRail({
   pendingTasks,
   recentActivity,
-  projectTitle,
-  projectWhat,
+  evidenceTitle,
+  evidenceDetail,
   accent,
 }: {
   pendingTasks: Array<{ title: string; detail: string; href: string; label: string }>
   recentActivity: Array<{ label: string; detail: string; href: string }>
-  projectTitle: string
-  projectWhat: string
+  evidenceTitle: string
+  evidenceDetail: string
   accent: Accent
 }) {
   return (
-    <div id="student-rail" className="student-action-rail">
+    <div id="student-rail">
       <div style={{ marginBottom: 24 }}>
-        <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Up next</div>
+        <p className="os-rail-kicker">Up next</p>
         {pendingTasks.length === 0 ? (
-          <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.6 }}>No pending lessons — you are caught up on this course.</div>
+          <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.6 }}>No practice waiting. Continue from your current lesson.</p>
         ) : (
           pendingTasks.map((item, i) => (
             <Link key={item.label + item.title} to={item.href} style={{ display: 'block', padding: '14px 0', borderBottom: i < pendingTasks.length - 1 ? `1px solid ${T.lineLight}` : 'none', textDecoration: 'none', color: 'inherit' }}>
-              <div style={{ color: accent.text, fontSize: 10, letterSpacing: '0.08em', marginBottom: 4 }}>{item.label}</div>
+              <div style={{ color: accent.text, fontSize: 11, letterSpacing: '0.08em', marginBottom: 4, fontFamily: 'var(--font-mono)' }}>{item.label}</div>
               <div style={{ color: C.ink, fontSize: 14, fontWeight: 500, marginBottom: 3 }}>{item.title}</div>
               <div style={{ color: C.slate, fontSize: 12 }}>{item.detail}</div>
             </Link>
@@ -213,23 +157,23 @@ export function StudentActionRail({
         )}
       </div>
       <div style={{ marginBottom: 24, paddingTop: 20, borderTop: `1px solid ${T.lineLight}` }}>
-        <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Recent activity</div>
+        <p className="os-rail-kicker">Recent learning</p>
         {recentActivity.length === 0 ? (
-          <div style={{ color: C.slate, fontSize: 13 }}>Complete a lesson to see activity here.</div>
+          <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.6 }}>No completed work yet. It will appear here as you finish lessons.</p>
         ) : (
           recentActivity.map((item, i) => (
             <Link key={item.label} to={item.href} style={{ display: 'block', padding: '10px 0', borderBottom: i < recentActivity.length - 1 ? `1px solid ${T.lineLight}` : 'none', textDecoration: 'none', color: 'inherit' }}>
               <div style={{ color: C.slate, fontSize: 13 }}>{item.label}</div>
-              <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>{item.detail}</div>
+              <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{item.detail}</div>
             </Link>
           ))
         )}
       </div>
       <div style={{ paddingTop: 20, borderTop: `1px solid ${T.lineLight}` }}>
-        <div className="skylent-label" style={{ color: C.slate, marginBottom: 8 }}>Project track</div>
-        <div style={{ color: C.ink, fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{projectTitle}</div>
-        <div style={{ color: C.slate, fontSize: 12, lineHeight: 1.5, marginBottom: 12 }}>{projectWhat}</div>
-        <Link to="/career-os" style={{ color: accent.text, fontSize: 12, textDecoration: 'none' }}>Career OS →</Link>
+        <p className="os-rail-kicker">Learning evidence</p>
+        <div style={{ color: C.ink, fontSize: 14, fontWeight: 500, margin: '8px 0 6px' }}>{evidenceTitle}</div>
+        <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.55, marginBottom: 12 }}>{evidenceDetail}</div>
+        <Link className="os-link" to="/career-os">View in Career OS</Link>
       </div>
     </div>
   )

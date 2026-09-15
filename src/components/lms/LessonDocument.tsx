@@ -5,7 +5,7 @@ type Accent = { primary: string; subtle: string; border: string; text: string }
 
 function renderInline(text: string, keyPrefix: string): ReactNode[] {
   const parts: ReactNode[] = []
-  const pattern = /(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g
+  const pattern = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g
   let last = 0
   let match: RegExpExecArray | null
   let i = 0
@@ -16,6 +16,8 @@ function renderInline(text: string, keyPrefix: string): ReactNode[] {
     const token = match[0]
     if (token.startsWith('**')) {
       parts.push(<strong key={`${keyPrefix}-b-${i}`} style={{ color: C.ink, fontWeight: 600 }}>{token.slice(2, -2)}</strong>)
+    } else if (token.startsWith('*')) {
+      parts.push(<em key={`${keyPrefix}-i-${i}`}>{token.slice(1, -1)}</em>)
     } else if (token.startsWith('`')) {
       parts.push(
         <code key={`${keyPrefix}-c-${i}`} style={{ fontFamily: 'var(--font-mono)', fontSize: 12.5, color: C.ink, background: C.sand, padding: '1px 6px', borderRadius: 4 }}>
@@ -68,16 +70,18 @@ function splitRow(line: string) {
 export default function LessonDocument({
   markdown,
   accent,
+  skipHeading,
 }: {
   markdown: string
   accent: Accent
+  skipHeading?: string
 }) {
   const lines = markdown.replace(/\r\n/g, '\n').split('\n')
   const blocks: ReactNode[] = []
   let i = 0
   let fence: string[] | null = null
 
-  const paraStyle: CSSProperties = { color: C.slate, fontSize: 14.5, lineHeight: 1.75, margin: '0 0 12px' }
+  const paraStyle: CSSProperties = { color: C.ink2, fontSize: 16, lineHeight: 1.75, margin: '0 0 16px' }
 
   while (i < lines.length) {
     const line = lines[i]
@@ -94,8 +98,8 @@ export default function LessonDocument({
               padding: '14px 16px',
               overflowX: 'auto',
               fontFamily: 'var(--font-mono)',
-              fontSize: 12.5,
-              lineHeight: 1.6,
+              fontSize: 13,
+              lineHeight: 1.65,
               color: C.ink,
               margin: '0 0 16px',
             }}
@@ -128,7 +132,7 @@ export default function LessonDocument({
         const body = rows.slice(1)
         blocks.push(
           <div key={`tbl-${i}`} style={{ overflowX: 'auto', margin: '0 0 16px' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
               <thead>
                 <tr>
                   {header.map((cell, ci) => (
@@ -157,8 +161,13 @@ export default function LessonDocument({
     }
 
     if (line.startsWith('# ')) {
+      const heading = line.slice(2).trim()
+      if (skipHeading && heading.toLowerCase() === skipHeading.trim().toLowerCase()) {
+        i += 1
+        continue
+      }
       blocks.push(
-        <h2 key={`h1-${i}`} style={{ color: C.ink, fontSize: 22, fontWeight: 700, margin: '0 0 16px', fontFamily: 'var(--font-display)', lineHeight: 1.25 }}>
+        <h2 key={`h1-${i}`} style={{ color: C.ink, fontSize: 22, fontWeight: 600, margin: '8px 0 16px', fontFamily: 'var(--font-display)', lineHeight: 1.3, letterSpacing: '-0.02em' }}>
           {line.slice(2)}
         </h2>,
       )
@@ -167,7 +176,7 @@ export default function LessonDocument({
     }
     if (line.startsWith('## ')) {
       blocks.push(
-        <h3 key={`h2-${i}`} style={{ color: C.ink, fontSize: 16, fontWeight: 600, margin: '22px 0 10px' }}>
+        <h3 key={`h2-${i}`} style={{ color: C.ink, fontSize: 18, fontWeight: 600, margin: '28px 0 10px', lineHeight: 1.35 }}>
           {line.slice(3)}
         </h3>,
       )
@@ -176,7 +185,7 @@ export default function LessonDocument({
     }
     if (line.startsWith('### ')) {
       blocks.push(
-        <h4 key={`h3-${i}`} style={{ color: accent.text, fontSize: 14, fontWeight: 600, margin: '18px 0 8px' }}>
+        <h4 key={`h3-${i}`} style={{ color: C.ink, fontSize: 15, fontWeight: 600, margin: '22px 0 8px' }}>
           {line.slice(4)}
         </h4>,
       )
@@ -191,7 +200,7 @@ export default function LessonDocument({
         i += 1
       }
       blocks.push(
-        <blockquote key={`q-${i}`} style={{ margin: '0 0 16px', padding: '12px 16px', borderLeft: `3px solid ${accent.primary}`, background: accent.subtle, color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
+        <blockquote key={`q-${i}`} style={{ margin: '0 0 20px', padding: '4px 0 4px 16px', borderLeft: `3px solid ${accent.primary}`, background: 'transparent', color: C.ink2, fontSize: 16, lineHeight: 1.7 }}>
           {quote.map((q, qi) => <div key={qi}>{renderInline(q, `q-${i}-${qi}`)}</div>)}
         </blockquote>,
       )
@@ -219,7 +228,7 @@ export default function LessonDocument({
       }
       const Tag = ordered ? 'ol' : 'ul'
       blocks.push(
-        <Tag key={`list-${i}`} style={{ margin: '0 0 16px', paddingLeft: 20, color: C.slate, fontSize: 14.5, lineHeight: 1.7 }}>
+        <Tag key={`list-${i}`} style={{ margin: '0 0 18px', paddingLeft: 22, color: C.ink2, fontSize: 16, lineHeight: 1.7 }}>
           {items.map((item, ii) => (
             <li key={ii} style={{ marginBottom: 6 }}>{renderInline(item, `li-${i}-${ii}`)}</li>
           ))}

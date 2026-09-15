@@ -9,7 +9,7 @@ export function courseEnrollments(items: ApiEnrollmentSummary[]): ApiEnrollmentS
 export default function EnrollmentEvidence({
   items,
   emptyHref = "/courses",
-  emptyLabel = "Browse live courses",
+  emptyLabel = "Browse courses",
 }: {
   items: ApiEnrollmentSummary[]
   emptyHref?: string
@@ -21,7 +21,7 @@ export default function EnrollmentEvidence({
     return (
       <div>
         <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: "0 0 12px" }}>
-          No enrollments yet. Progress from the LMS appears here after you start a live course or programme.
+          No courses yet. Choose something to learn and it will appear here.
         </p>
         <Link to={emptyHref} style={{ color: C.indigo, fontSize: 13, fontWeight: 600, textDecoration: "none" }}>
           {emptyLabel} →
@@ -55,8 +55,7 @@ export default function EnrollmentEvidence({
                 {item.courseTitle ?? item.courseSlug}
               </div>
               <div style={{ color: C.slate, fontSize: 12.5, marginTop: 4 }}>
-                {[item.programName ? `Programme · ${item.programName}` : "Course", item.status].join(" · ")}
-                {item.certificateEligible ? " · certificate eligible (issuance later)" : ""}
+                {[item.programName ? `Opened through ${item.programName}` : "Course", item.status].join(" · ")}
               </div>
             </div>
             <span style={{ color: C.indigo, fontSize: 13, fontWeight: 600, alignSelf: "center" }}>Resume →</span>

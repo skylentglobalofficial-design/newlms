@@ -24,15 +24,15 @@ export function useLmsDashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const reload = useCallback(async () => {
-    setLoading(true)
+  const reload = useCallback(async (options?: { silent?: boolean }) => {
+    if (!options?.silent) setLoading(true)
     setError(null)
     try {
       const data = await fetchLmsDashboard()
       setWorkspace(data)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load dashboard")
-      setWorkspace(null)
+      if (!options?.silent) setWorkspace(null)
     } finally {
       setLoading(false)
     }
@@ -55,9 +55,9 @@ export function useLmsDashboard() {
 export function useLmsCourse(slug: string | undefined) {
   const [access, setAccess] = useState<LmsAccessState>({ status: "loading" })
 
-  const reload = useCallback(async () => {
+  const reload = useCallback(async (options?: { silent?: boolean }) => {
     if (!slug) return
-    setAccess({ status: "loading" })
+    if (!options?.silent) setAccess({ status: "loading" })
     try {
       const accessInfo = await fetchCourseAccess(slug)
       if (!accessInfo.authenticated) {
@@ -84,7 +84,11 @@ export function useLmsCourse(slug: string | undefined) {
         setAccess({ status: "login_required" })
         return
       }
-      setAccess({ status: "unavailable" })
+      if (!options?.silent) {
+        setAccess({ status: "unavailable" })
+        return
+      }
+      throw err
     }
   }, [slug])
 

@@ -996,7 +996,7 @@ html, body {
   color: #5C6168;
 }
 .lms-context-video .lms-context-kicker > span:first-child { color: #4F46E5; }
-.lms-context-quiz .lms-context-kicker > span:first-child { color: #F97316; }
+.lms-context-quiz .lms-context-kicker > span:first-child { color: #4F46E5; }
 .lms-context-assignment .lms-context-kicker > span:first-child { color: #15803D; }
 .lms-context-notes .lms-context-kicker > span:first-child { color: #2563EB; }
 .lms-context-module {
@@ -1129,9 +1129,9 @@ html, body {
   color: #4F46E5;
 }
 .lms-lesson-type-quiz .lms-workspace-phase {
-  border-color: #FED7AA;
-  background: #FFF7ED;
-  color: #C2410C;
+  border-color: #C7D2FE;
+  background: #EEF2FF;
+  color: #4F46E5;
 }
 .lms-lesson-type-assignment .lms-workspace-phase {
   border-color: #BBF7D0;
@@ -1144,7 +1144,7 @@ html, body {
   color: #2563EB;
 }
 .lms-lesson-type-video .lms-capability-list span.is-active { border-color: #C7D2FE; background: #EEF2FF; color: #4F46E5; }
-.lms-lesson-type-quiz .lms-capability-list span.is-active { border-color: #FED7AA; background: #FFF7ED; color: #C2410C; }
+.lms-lesson-type-quiz .lms-capability-list span.is-active { border-color: #C7D2FE; background: #EEF2FF; color: #4F46E5; }
 .lms-lesson-type-assignment .lms-capability-list span.is-active { border-color: #BBF7D0; background: #F0FDF4; color: #15803D; }
 .lms-lesson-type-notes .lms-capability-list span.is-active { border-color: #BFDBFE; background: #EFF6FF; color: #2563EB; }
 .lms-quiz-workspace,

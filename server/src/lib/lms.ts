@@ -365,7 +365,9 @@ export function computeResume(
     : undefined
 
   const firstIncomplete = items.find((item) => !lessonStates[item.lessonKey]?.complete)
-  const current = lastAccessed ?? firstIncomplete ?? items[0]
+  const lastAccessedIncomplete =
+    lastAccessed && !lessonStates[lastAccessed.lessonKey]?.complete ? lastAccessed : undefined
+  const current = lastAccessedIncomplete ?? firstIncomplete ?? lastAccessed ?? items[0]
   const currentIndex = items.findIndex((item) => item.lessonKey === current.lessonKey)
   const next = currentIndex >= 0 && currentIndex < items.length - 1 ? items[currentIndex + 1] : null
 

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { C, T } from '../../tokens'
 
 export type QuizQuestion = { q: string; options: string[]; correct?: number; explanation?: string }
@@ -24,13 +25,12 @@ export function AssessmentSurface({
   accent: Accent
   passed?: boolean
   onPass?: () => void
-  onSubmitAssignment?: (text: string) => void
+  onSubmitAssignment?: (text: string) => void | Promise<void>
   onSubmitAnswers?: (answers: Record<number, number>) => Promise<boolean>
   completionNote?: string
 }) {
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [submitted, setSubmitted] = useState(false)
-  const [elapsed, setElapsed] = useState(0)
   const [text, setText] = useState('')
   const [assignmentDone, setAssignmentDone] = useState(false)
   const [serverPassed, setServerPassed] = useState<boolean | null>(null)
@@ -43,15 +43,6 @@ export function AssessmentSurface({
     ? (serverPassed ? qs.length : 0)
     : qs.filter((q, i) => q.correct !== undefined && answers[i] === q.correct).length
   const allCorrect = usesServerGrading ? serverPassed === true : correct === qs.length
-  const timed = mode === 'timed'
-
-  useEffect(() => {
-    if (mode === 'assignment' || passed) return
-    const id = window.setInterval(() => setElapsed(s => s + 1), 1000)
-    return () => window.clearInterval(id)
-  }, [mode, passed])
-
-  const timerLabel = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`
 
   if (mode === 'assignment') {
     if (assignmentDone || passed) {
@@ -59,11 +50,11 @@ export function AssessmentSurface({
         <div style={{ textAlign: 'center', padding: '32px 0' }}>
           <div style={{ color: C.ink, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Submission recorded</div>
           <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, maxWidth: 520, margin: '0 auto' }}>
-            {completionNote ?? 'There is no faculty grading in this pilot. Record the artifact on Career OS → Projects if you want portfolio evidence.'}
+            {completionNote ?? 'There is no grading in this pilot. Record the artifact on Career OS → Projects if you want portfolio evidence.'}
           </div>
-          <a href="/career-os/profile" style={{ display: 'inline-block', marginTop: 14, color: accent.text, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
-            Open Career OS Projects →
-          </a>
+          <Link className="os-link" to="/career-os/profile" style={{ display: 'inline-block', marginTop: 14 }}>
+            Open Career OS Projects
+          </Link>
         </div>
       )
     }
@@ -71,11 +62,11 @@ export function AssessmentSurface({
       <div className="lms-assignment-workspace">
         <div style={{ color: C.ink, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>{title}</div>
         {subtitle && <div style={{ color: C.slate, fontSize: 13, marginBottom: 20, lineHeight: 1.6 }}>{subtitle}</div>}
-        <div style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 16, marginBottom: 16 }}>
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Submission workspace</div>
-          <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.7 }}>
+        <div className="os-note">
+          <p className="os-rail-kicker">Submission workspace</p>
+          <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '8px 0 0' }}>
             Document your approach, include queries or calculations, and explain assumptions.
-          </div>
+          </p>
         </div>
         <textarea
           value={text}
@@ -85,16 +76,17 @@ export function AssessmentSurface({
         />
         <button
           type="button"
-          disabled={!text.trim()}
-          onClick={() => { setAssignmentDone(true); onSubmitAssignment?.(text) }}
-          style={{
-            background: !text.trim() ? C.sand : accent.primary,
-            border: 'none', color: !text.trim() ? C.muted : C.white,
-            padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600,
-            cursor: !text.trim() ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
+          className="os-btn os-btn-primary"
+          disabled={!text.trim() || submitting}
+          onClick={() => {
+            if (!text.trim() || submitting) return
+            setSubmitting(true)
+            void Promise.resolve(onSubmitAssignment?.(text))
+              .then(() => setAssignmentDone(true))
+              .finally(() => setSubmitting(false))
           }}
         >
-          Submit assignment →
+          {submitting ? 'Submitting…' : 'Submit assignment'}
         </button>
       </div>
     )
@@ -128,36 +120,33 @@ export function AssessmentSurface({
 
   async function handleSubmitAsync() {
     setSubmitting(true)
-    setSubmitted(true)
-    if (onSubmitAnswers) {
-      const passedResult = await onSubmitAnswers(answers)
-      setServerPassed(passedResult)
+    try {
+      if (onSubmitAnswers) {
+        const passedResult = await onSubmitAnswers(answers)
+        setServerPassed(passedResult)
+        setSubmitted(true)
+        if (passedResult) onPass?.()
+        return
+      }
+      setSubmitted(true)
+      if (correct === qs.length) onPass?.()
+    } finally {
       setSubmitting(false)
-      if (passedResult) onPass?.()
-      return
     }
-    setSubmitting(false)
-    if (correct === qs.length) onPass?.()
   }
 
   return (
     <div className="lms-quiz-workspace">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 8, flexWrap: 'wrap' }}>
-        <div>
-          <div style={{ color: C.ink, fontSize: 16, fontWeight: 600 }}>{title}</div>
-          {subtitle && <div style={{ color: C.slate, fontSize: 13, marginTop: 4 }}>{subtitle}</div>}
-        </div>
-        {timed && (
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text, background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rPill, padding: '5px 12px' }}>
-            {timerLabel}
-          </div>
-        )}
-      </div>
+      {subtitle ? (
+        <p style={{ color: C.slate, fontSize: 14, margin: '0 0 16px', lineHeight: 1.6 }}>{subtitle}</p>
+      ) : title ? (
+        <div style={{ color: C.ink, fontSize: 16, fontWeight: 600, marginBottom: 8 }}>{title}</div>
+      ) : null}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-        <div style={{ flex: 1, height: 4, background: C.sand, borderRadius: 2, maxWidth: 280 }}>
-          <div style={{ width: `${qs.length ? (answeredCount / qs.length) * 100 : 0}%`, height: '100%', background: accent.primary, borderRadius: 2 }} />
+        <div className="os-progress-bar" style={{ flex: 1, maxWidth: 280, marginTop: 0 }} aria-hidden="true">
+          <span style={{ width: `${qs.length ? (answeredCount / qs.length) * 100 : 0}%`, background: accent.primary }} />
         </div>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: C.slate }}>{answeredCount}/{qs.length}</span>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate }}>{answeredCount} of {qs.length} answered</span>
       </div>
       {submitted && !submitting && (
         <div style={{ background: allCorrect ? 'rgba(21,128,61,0.08)' : 'rgba(185,28,28,0.08)', border: `1px solid ${allCorrect ? 'rgba(21,128,61,0.28)' : 'rgba(185,28,28,0.28)'}`, borderRadius: T.rControl, padding: '12px 18px', marginBottom: 16, color: allCorrect ? C.success : C.danger, fontSize: 13 }}>
@@ -169,30 +158,36 @@ export function AssessmentSurface({
         </div>
       )}
       {qs.map((q, qi) => {
-        const reveal = submitted && q.correct !== undefined
+            const reveal = submitted && !submitting && q.correct !== undefined
         return (
           <div key={qi} style={{ marginBottom: 24 }}>
             <div style={{ color: C.muted, fontSize: 11, marginBottom: 8 }}>Question {qi + 1} of {qs.length}</div>
             <div style={{ color: C.ink, fontSize: 16, fontWeight: 500, marginBottom: 16, lineHeight: 1.5 }}>{q.q}</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div role="radiogroup" aria-label={`Answers for question ${qi + 1}`} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {q.options.map((opt, oi) => {
                 const selected = answers[qi] === oi
                 const isCorrect = reveal && oi === q.correct
                 const isWrong = reveal && selected && oi !== q.correct
+                const status = isCorrect ? 'Correct. ' : isWrong ? 'Not correct. ' : selected ? 'Selected. ' : ''
                 return (
                   <button
                     key={oi}
                     type="button"
-                    onClick={() => !submitted && setAnswers(prev => ({ ...prev, [qi]: oi }))}
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => !submitted && !submitting && setAnswers(prev => ({ ...prev, [qi]: oi }))}
                     style={{
-                      textAlign: 'left', padding: '11px 16px',
+                      textAlign: 'left', padding: '12px 16px', minHeight: 44,
                       background: isCorrect ? 'rgba(21,128,61,0.08)' : isWrong ? 'rgba(185,28,28,0.08)' : selected ? accent.subtle : C.cream,
-                      border: `1px solid ${isCorrect ? 'rgba(21,128,61,0.35)' : isWrong ? 'rgba(185,28,28,0.35)' : selected ? accent.border : T.lineDark}`,
-                      borderRadius: T.rControl, color: isCorrect ? C.success : isWrong ? C.danger : selected ? accent.text : C.ink,
-                      fontSize: 13, cursor: submitted ? 'default' : 'pointer', fontFamily: 'var(--font-body)',
+                      border: `1.5px solid ${isCorrect ? 'rgba(21,128,61,0.45)' : isWrong ? 'rgba(185,28,28,0.45)' : selected ? accent.primary : T.lineDark}`,
+                      borderRadius: T.rControl, color: isCorrect ? C.success : isWrong ? C.danger : C.ink,
+                      fontSize: 14, cursor: submitted ? 'default' : 'pointer', fontFamily: 'var(--font-body)',
                     }}
                   >
+                    <span className="sr-only">{status}</span>
                     {opt}
+                    {isCorrect ? <span style={{ display: 'block', marginTop: 4, fontSize: 12, fontWeight: 600 }}>Correct</span> : null}
+                    {isWrong ? <span style={{ display: 'block', marginTop: 4, fontSize: 12, fontWeight: 600 }}>Your answer</span> : null}
                   </button>
                 )
               })}
@@ -208,19 +203,14 @@ export function AssessmentSurface({
       {!submitted ? (
         <button
           type="button"
+          className="os-btn os-btn-primary"
           onClick={() => { void handleSubmitAsync() }}
           disabled={answeredCount < qs.length || submitting}
-          style={{
-            background: answeredCount < qs.length ? C.sand : accent.primary,
-            border: 'none', color: answeredCount < qs.length ? C.muted : C.white,
-            padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600,
-            cursor: answeredCount < qs.length ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
-          }}
         >
-          Submit
+          {submitting ? 'Submitting…' : 'Submit quiz'}
         </button>
       ) : !allCorrect ? (
-        <button type="button" onClick={() => { setSubmitted(false); setAnswers({}); setServerPassed(null) }} style={{ background: C.cream, border: `1px solid ${T.lineDark}`, color: C.ink, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Try again</button>
+        <button type="button" className="os-btn os-btn-ghost" onClick={() => { setSubmitted(false); setAnswers({}); setServerPassed(null) }}>Try again</button>
       ) : null}
     </div>
   )
