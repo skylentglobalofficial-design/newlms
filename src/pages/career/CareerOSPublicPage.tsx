@@ -15,10 +15,10 @@ export default function CareerOSPublicPage() {
               <MaturityMark maturity="live" />
             </div>
             <h1 className="skylent-display-md" style={{ color: C.ink, margin: "0 0 14px", maxWidth: 720 }}>
-              A career workspace — not a placement desk.
+              Keep your learning evidence in one place.
             </h1>
             <p className="skylent-body-lg" style={{ color: C.slate, margin: 0, maxWidth: 560 }}>
-              Career OS is where you keep a profile, watch for published roles, apply, and practise interviews. After you enroll in a live course, LMS progress appears here as evidence — jobs are not invented for this page.
+              Career OS is where you keep a profile and the work you build while learning. Published roles appear on the job board when they exist — none are invented for this page.
             </p>
           </header>
 
@@ -64,13 +64,13 @@ export default function CareerOSPublicPage() {
               >
                 Sign in to Career OS
               </Link>
-              <Link to="/programs" style={{ color: C.slate, fontSize: 14, alignSelf: "center", textDecoration: "none" }}>
-                Professional programmes include Career OS access
+              <Link to="/skills" style={{ color: C.slate, fontSize: 14, alignSelf: "center", textDecoration: "none" }}>
+                Keep your profile and learning evidence in one place
               </Link>
             </div>
           </section>
 
-          <LiveCoreRail lead="Career OS sits after real coursework. It does not replace programmes or the LMS." />
+          <LiveCoreRail lead="Career OS sits alongside real coursework. It is the place for evidence — not a placement guarantee." />
         </div>
       </div>
     </PageShell>

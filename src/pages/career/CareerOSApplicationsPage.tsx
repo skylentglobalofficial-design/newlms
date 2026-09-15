@@ -113,7 +113,7 @@ export default function CareerOSApplicationsPage() {
               textDecoration: "none",
             }}
           >
-            Browse jobs
+            Open opportunities
           </Link>
         </>
       )}

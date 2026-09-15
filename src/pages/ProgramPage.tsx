@@ -193,7 +193,7 @@ function EnrollmentPanel({
           { text: `${status === 'coming_soon' ? 'Planned: ' : 'Next batch: '}${program.upcomingBatch}` },
           { text: `${program.duration} · ${program.format}` },
           { text: program.cert },
-          ...(isCareerOS ? [{ text: 'Unlocks Career OS on completion', highlight: true }] : []),
+          ...(isCareerOS ? [{ text: 'Keep your learning evidence in Career OS', highlight: true }] : []),
         ].map(({ text, highlight }, i) => (
           <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 12 }}>
             <div style={{ width: 4, height: 4, borderRadius: '50%', background: highlight ? accent.primary : C.sand, flexShrink: 0, marginTop: 6 }} />
@@ -432,7 +432,7 @@ export default function ProgramPage() {
                 ['Duration', program.duration],
                 ['Mode', program.format],
                 ['Certification', program.cert],
-                ...(isCareerOS ? [['Career support', 'Career OS on completion']] : []),
+                ...(isCareerOS ? [['Career support', 'Keep evidence in Career OS']] : []),
               ].map(([k, v], i, arr) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: 16, padding: '12px 0', borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
                   <span style={{ color: C.slate, fontSize: 13 }}>{k}</span>

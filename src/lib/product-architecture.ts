@@ -10,10 +10,11 @@ export const MATURITY_LABEL: Record<ProductMaturity, string> = {
 }
 
 export const LIVE_CORE = [
-  { label: "Courses", to: "/courses", note: "Focused skills units" },
-  { label: "Programmes", to: "/programs", note: "Professional pathways" },
-  { label: "LMS", to: "/login", note: "Enrolled learning workspace" },
-  { label: "Career OS", to: "/career-os", note: "Profile, jobs, interviews" },
+  { label: "Learn", to: "/skills", note: "Discover skills, courses, and programmes" },
+  { label: "Courses", to: "/courses", note: "Focused learning units" },
+  { label: "Programmes", to: "/programs", note: "Structured learning pathways" },
+  { label: "Skylent OS", to: "/os", note: "Your learning workspace" },
+  { label: "Career OS", to: "/career-os", note: "Profile and learning evidence" },
 ] as const
 
 export const ACADEMIC_LINES = [
@@ -136,56 +137,113 @@ export type MegaNavGroup = {
   items: MegaNavItem[]
 }
 
-/** Global nav: education areas and live skills. Career OS is reached from the homepage path, not a primary item. */
-export const MEGA_NAV: MegaNavGroup[] = [
-  {
-    label: "Education",
-    tagline: "Stages of one academic path",
+export const LEARN_NAV: MegaNavGroup = {
+  label: "Learn",
+  to: "/skills",
+  tagline: "Discover and choose what to learn",
+  items: [
+    { label: "Skills", sub: "What do you want to be able to do?", to: "/skills" },
+    { label: "Courses", sub: "Focused learning units.", to: "/courses" },
+    { label: "Programmes", sub: "Longer structured learning pathways.", to: "/programs" },
+  ],
+}
+
+export const CAREER_NAV: MegaNavGroup = {
+  label: "Career",
+  to: "/career-os",
+  tagline: "Keep track of the work and evidence you build while learning.",
+  items: [
+    { label: "Career OS", sub: "Keep your profile and learning evidence in one place.", to: "/career-os" },
+  ],
+}
+
+export function studyNavGroup(session: { signedIn: boolean; isStudent: boolean }): MegaNavGroup {
+  if (session.isStudent) {
+    return {
+      label: "Study",
+      to: "/dashboard/student",
+      tagline: "Continue what you are learning",
+      items: [
+        {
+          label: "Your learning workspace",
+          sub: "Student dashboard — Skylent OS",
+          to: "/dashboard/student",
+        },
+      ],
+    }
+  }
+
+  if (session.signedIn) {
+    return {
+      label: "Study",
+      to: "/courses",
+      tagline: "The learner workspace for enrolled courses",
+      items: [
+        { label: "Browse courses", sub: "Find a course to study", to: "/courses" },
+        { label: "Skylent OS", sub: "How the learning workspace works", to: "/os" },
+      ],
+    }
+  }
+
+  return {
+    label: "Study",
+    tagline: "Continue what you are learning",
     items: [
-      { label: "Schooling", sub: "School years", to: "/education/schooling", mark: "coming_soon" },
-      { label: "Undergraduate", sub: "A first degree", to: "/education/undergraduate", mark: "coming_soon" },
-      { label: "Postgraduate", sub: "Study after a degree", to: "/education/postgraduate", mark: "coming_soon" },
-      { label: "Examinations", sub: "JEE · NEET · CAT", to: "/education/exams", mark: "coming_soon" },
+      { label: "Sign in", sub: "Continue your enrolled courses", to: "/login" },
+      { label: "Start learning", sub: "Browse courses", to: "/courses" },
     ],
-  },
-  {
-    label: "Skills",
-    to: "/skills",
-    tagline: "What is live to enrol in today",
-    items: [
-      { label: "Professional Programs", sub: "Structured professional pathways", to: "/programs", mark: "live" },
-      { label: "Certification Courses", sub: "Focused skills units", to: "/courses", mark: "live" },
-      { label: "Workshops", sub: "Listings · registration not live", to: "/workshops", mark: "coming_soon" },
-    ],
-  },
+  }
+}
+
+export function buildPrimaryNav(session: { signedIn: boolean; isStudent: boolean }): MegaNavGroup[] {
+  return [LEARN_NAV, studyNavGroup(session), CAREER_NAV]
+}
+
+/** Primary student destinations. Study is assembled per session via buildPrimaryNav. */
+export const MEGA_NAV: MegaNavGroup[] = [LEARN_NAV, CAREER_NAV]
+
+/** Future / secondary destinations — footer and mobile More only. Not first-row nav. */
+export const MORE_NAV: MegaNavItem[] = [
+  { label: "Education", sub: "Schooling, degrees, and exams — future", to: "/education", mark: "coming_soon" },
+  { label: "Institutions", sub: "Institution tools — not the student product", to: "/institutions", mark: "direction" },
 ]
 
 export const FOOTER_COLS = [
   {
-    heading: "Education",
+    heading: "Learn",
     links: [
-      ["Schooling", "/education/schooling"],
-      ["Undergraduate", "/education/undergraduate"],
-      ["Postgraduate", "/education/postgraduate"],
-      ["Examinations", "/education/exams"],
+      ["Skills", "/skills"],
+      ["Courses", "/courses"],
+      ["Programmes", "/programs"],
     ],
   },
   {
-    heading: "Skills",
+    heading: "Study",
     links: [
-      ["Professional Programs", "/programs"],
-      ["Certification Courses", "/courses"],
-      ["Workshops", "/workshops"],
+      ["Student dashboard", "/dashboard/student"],
+      ["Skylent OS", "/os"],
+    ],
+  },
+  {
+    heading: "Career",
+    links: [
+      ["Career OS", "/career-os"],
     ],
   },
   {
     heading: "Company",
     links: [
-      ["Institutions", "/institutions"],
-      ["Success Stories", "/stories"],
-      ["About Us", "/about"],
-      ["Blog", "/blog"],
+      ["About", "/about"],
       ["Contact", "/contact"],
+      ["Blog", "/blog"],
+      ["Stories", "/stories"],
+    ],
+  },
+  {
+    heading: "Future",
+    links: [
+      ["Education", "/education"],
+      ["Institutions", "/institutions"],
     ],
   },
 ] as const
