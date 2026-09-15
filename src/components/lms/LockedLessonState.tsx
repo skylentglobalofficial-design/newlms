@@ -12,7 +12,7 @@ export default function LockedLessonState({
 }) {
   return (
     <div className="os-locked">
-      <p className="os-rail-kicker">Lesson locked</p>
+      <p className="os-eyebrow">Locked</p>
       <h2>{lessonTitle}</h2>
       <p className="os-lead">
         {requiredLessonTitle
@@ -20,7 +20,7 @@ export default function LockedLessonState({
           : 'Complete the previous lesson to unlock this content.'}
       </p>
       {continueTitle && onContinue ? (
-        <div className="os-actions" style={{ borderTop: 'none', paddingTop: 8 }}>
+        <div className="os-actions">
           <button type="button" className="os-btn os-btn-primary" onClick={onContinue}>
             Go to {continueTitle}
           </button>

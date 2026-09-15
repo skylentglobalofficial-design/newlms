@@ -9,14 +9,17 @@ import {
   CurriculumProgressRail,
   StudentActionRail,
   computeCourseProgress,
-  getPendingTasks,
   getRecentActivity,
+  isLessonUnlocked,
+  isCapstoneLesson,
   lessonTypeLabel,
 } from '../components/lms'
 import { useLmsDashboard } from '../hooks/useLms'
 import { enrollInCourse, fetchLmsEnrollments, type ApiEnrollmentSummary } from '../lib/lms-api'
 import EnrollmentEvidence from '../components/learner/EnrollmentEvidence'
 import { workspaceErrorMessage } from '../lib/http'
+import { courses } from '../data'
+import { AUTHORED_COURSE_SLUG } from '../lib/live-intents'
 import './LearnWorkspace.css'
 
 const NAV_ITEMS: AuthNavItem[] = [
@@ -26,6 +29,7 @@ const NAV_ITEMS: AuthNavItem[] = [
 ]
 
 const accent = getRoleAccent('student')
+const recommendedCourse = courses.find((course) => course.slug === AUTHORED_COURSE_SLUG) ?? courses[0]
 
 function NavIcon({ id }: { id: string }) {
   const stroke = 'currentColor'
@@ -68,9 +72,20 @@ export default function DashboardStudentPage() {
   const { progressPct } = course ? computeCourseProgress(allLessons, lessonStates) : { progressPct: 0 }
   const resume = workspace?.resume
   const currentLesson = allLessons.find((lesson) => lesson.id === resume?.lessonId)
-  const pending = course ? getPendingTasks(course, lessonStates) : []
   const recent = course ? getRecentActivity([course], () => lessonStates) : []
   const viaProgram = enrollments.find((item) => item.courseSlug === learnSlug && item.programName)?.programName ?? null
+  const firstName = user?.name?.split(' ')[0] || 'there'
+
+  const lessonModuleTitle = (lessonId: string) =>
+    course?.modules.find((mod) => mod.lessons.some((lesson) => lesson.id === lessonId))?.title ?? course?.title ?? ''
+  const currentIndex = resume?.lessonId ? allLessons.findIndex((lesson) => lesson.id === resume.lessonId) : 0
+  const upcomingItems = allLessons
+    .slice(Math.max(currentIndex, 0) + 1, Math.max(currentIndex, 0) + 4)
+    .map((lesson) => ({ lesson, moduleTitle: lessonModuleTitle(lesson.id) }))
+  const practiceItems = allLessons
+    .filter((lesson) => lesson.type === 'quiz' || lesson.type === 'assignment')
+    .filter((lesson) => isLessonUnlocked(lesson.id, allLessons, lessonStates) && !lessonStates[lesson.id]?.complete)
+    .map((lesson) => ({ lesson, moduleTitle: lessonModuleTitle(lesson.id) }))
 
   const submittedAssignments = allLessons.filter(
     (lesson) => lesson.type === 'assignment' && (lessonStates[lesson.id]?.assignmentSubmitted || lessonStates[lesson.id]?.complete),
@@ -80,6 +95,8 @@ export default function DashboardStudentPage() {
   const evidenceDetail = evidenceLesson
     ? 'This is work recorded in the course. Add it to Career OS when you want it on your profile. Nothing is created automatically.'
     : 'Assignments you submit in the course can be recorded in Career OS. Nothing is invented here.'
+
+  const extraEnrollments = enrollments.filter((item) => item.courseSlug && item.courseSlug !== learnSlug)
 
   const shell = {
     themeId: 'data-science' as const,
@@ -97,9 +114,10 @@ export default function DashboardStudentPage() {
   if (error && !workspace) {
     return (
       <AuthDashboardShell {...shell}>
-        <div className="dash-error" id="student-overview" style={{ maxWidth: 560 }}>
+        <div className="dash-error" id="student-overview">
+          <p className="os-eyebrow">Learning</p>
           <h1>Learning workspace unavailable</h1>
-          <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7 }}>{error}</p>
+          <p className="dash-empty-copy">{error}</p>
           <button type="button" className="os-btn os-btn-primary" onClick={() => void reload()}>Try again</button>
         </div>
       </AuthDashboardShell>
@@ -117,40 +135,65 @@ export default function DashboardStudentPage() {
   if (!course || !workspace) {
     return (
       <AuthDashboardShell {...shell}>
-        <div className="dash-empty" id="student-overview" style={{ maxWidth: 560 }}>
-          <h1>No courses yet.</h1>
-          <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: '0 0 20px' }}>
-            Choose something to learn and it will appear here.
-          </p>
-          <div className="os-actions">
-            <button
-              type="button"
-              className="os-btn os-btn-primary"
-              disabled={enrolling}
-              onClick={() => {
-                setEnrolling(true)
-                setEnrollError(null)
-                void enrollInCourse('data-analytics')
-                  .then(() => reload({ silent: true }))
-                  .catch((err) => setEnrollError(workspaceErrorMessage(err)))
-                  .finally(() => setEnrolling(false))
-              }}
-            >
-              {enrolling ? 'Enrolling…' : 'Start Data Analytics'}
-            </button>
-            <Link className="os-btn os-btn-ghost" to="/courses">Browse courses</Link>
+        <div className="dash-empty" id="student-overview">
+          <div className="dash-welcome">
+            <p className="os-eyebrow">Your learning</p>
+            <h1>Welcome, {firstName}</h1>
+            <p>
+              You are signed in. Enrol in a live course to open a workspace with lessons, practice, and a place to keep the work.
+            </p>
           </div>
-          {enrollError ? <p className="os-error">{enrollError}</p> : null}
+          {recommendedCourse ? (
+            <div className="dash-empty-card">
+              <p className="os-eyebrow">Ready to start</p>
+              <h2>{recommendedCourse.title}</h2>
+              <p>{recommendedCourse.desc}</p>
+              <p className="dash-continue-meta">
+                {recommendedCourse.duration} · {recommendedCourse.lessons} lessons · {recommendedCourse.level}
+              </p>
+              <div className="os-actions">
+                <button
+                  type="button"
+                  className="os-btn os-btn-primary"
+                  disabled={enrolling}
+                  onClick={() => {
+                    setEnrolling(true)
+                    setEnrollError(null)
+                    void enrollInCourse(recommendedCourse.slug)
+                      .then(() => reload({ silent: true }))
+                      .catch((err) => setEnrollError(workspaceErrorMessage(err)))
+                      .finally(() => setEnrolling(false))
+                  }}
+                >
+                  {enrolling ? 'Enrolling…' : `Start ${recommendedCourse.title}`}
+                </button>
+                <Link className="os-btn os-btn-ghost" to="/courses">Browse courses</Link>
+              </div>
+              {enrollError ? <p className="os-error">{enrollError}</p> : null}
+            </div>
+          ) : (
+            <div className="os-actions">
+              <Link className="os-btn os-btn-primary" to="/courses">Browse courses</Link>
+            </div>
+          )}
         </div>
       </AuthDashboardShell>
     )
   }
 
-  const pendingRail = pending.map((task) => ({
-    label: task.kind === 'quiz' ? 'Quiz' : task.kind === 'assignment' ? 'Assignment' : 'Lesson',
-    title: task.title,
-    detail: `${task.moduleTitle} · ${task.courseTitle}`,
-    href: `/learn/${task.courseSlug}/${task.lessonId}`,
+  const pendingRail = upcomingItems.map((item) => ({
+    label: lessonTypeLabel(item.lesson.type, item.lesson.title),
+    title: item.lesson.title,
+    detail: `${item.moduleTitle}${item.lesson.duration ? ` · ${item.lesson.duration}` : ''}`,
+    href: `/learn/${course.slug}/${item.lesson.id}`,
+    locked: !isLessonUnlocked(item.lesson.id, allLessons, lessonStates),
+  }))
+
+  const practiceRail = practiceItems.map((item) => ({
+    label: isCapstoneLesson(item.lesson) ? 'Capstone' : lessonTypeLabel(item.lesson.type, item.lesson.title),
+    title: item.lesson.title,
+    detail: `${item.moduleTitle} · ${item.lesson.duration ?? 'Self-paced'}`,
+    href: `/learn/${course.slug}/${item.lesson.id}`,
   }))
 
   const recentRail = recent.map((item) => ({
@@ -162,7 +205,17 @@ export default function DashboardStudentPage() {
   return (
     <AuthDashboardShell {...shell}>
       <div id="student-overview">
+        <div className="dash-welcome">
+          <p className="os-eyebrow">Your learning</p>
+          <h1>Welcome back, {firstName}</h1>
+          <p>
+            {resume?.lessonTitle
+              ? `Continue ${course.title} from ${resume.lessonTitle}.`
+              : `Start ${course.title} when you are ready.`}
+          </p>
+        </div>
         <AuthDashboardLayout
+          className="dash-layout"
           primary={
             <>
               <LearningWorkspacePanel
@@ -176,16 +229,17 @@ export default function DashboardStudentPage() {
                 moduleTotal={resume?.moduleTotal ?? course.modules.length}
                 lessonTitle={resume?.lessonTitle ?? 'Start learning'}
                 lessonType={currentLesson ? lessonTypeLabel(currentLesson.type, currentLesson.title) : ''}
+                lessonDuration={currentLesson?.duration}
                 nextLessonTitle={resume?.nextLessonTitle ?? null}
                 learnSlug={learnSlug}
                 lessonId={resume?.lessonId ?? ''}
                 accent={accent}
                 started={workspace.progress.completedCount > 0 || Boolean(resume?.lessonId)}
               />
-              {enrollments.filter((item) => item.courseSlug).length > 1 ? (
-                <div style={{ margin: '24px 0' }}>
-                  <p className="os-rail-kicker">Enrolled courses</p>
-                  <EnrollmentEvidence items={enrollments} />
+              {extraEnrollments.length > 0 ? (
+                <div className="dash-card dash-enrollments">
+                  <h2>Other enrolled courses</h2>
+                  <EnrollmentEvidence items={extraEnrollments} />
                 </div>
               ) : null}
               <CurriculumProgressRail course={course} lessonStates={lessonStates} accent={accent} learnSlug={learnSlug} />
@@ -194,6 +248,7 @@ export default function DashboardStudentPage() {
           rail={
             <StudentActionRail
               pendingTasks={pendingRail}
+              practiceTasks={practiceRail}
               recentActivity={recentRail}
               evidenceTitle={evidenceTitle}
               evidenceDetail={evidenceDetail}

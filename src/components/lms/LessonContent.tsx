@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { C, T } from '../../tokens'
+import { C } from '../../tokens'
 import type { CourseLesson } from '../../data'
 import type { LessonState } from '../../demo/types'
 import { getCareerEvidence, getCourseLessonContent } from '../../content/course-material'
@@ -12,84 +12,87 @@ import { lessonTypeLabel } from './lms-utils'
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
-function AssignmentBriefView({ brief, accent }: { brief: AssignmentBrief; accent: Accent }) {
+function AssignmentBriefView({ brief }: { brief: AssignmentBrief; accent: Accent }) {
   return (
-    <div style={{ display: 'grid', gap: 16, marginBottom: 20 }}>
-      <section>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Scenario</div>
-        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: 0 }}>{brief.scenario}</p>
+    <div className="as-brief">
+      <section className="as-block">
+        <h3>Context</h3>
+        <p>{brief.scenario}</p>
       </section>
-      <section>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Objective</div>
-        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: 0 }}>{brief.objective}</p>
+      <section className="as-block">
+        <h3>Objective</h3>
+        <p>{brief.objective}</p>
       </section>
-      <section>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Dataset</div>
-        <a href={brief.datasetHref} download style={{ color: C.blue, fontSize: 14 }}>{brief.datasetName}</a>
+      <section className="as-block">
+        <h3>Dataset</h3>
+        <p>
+          <a href={brief.datasetHref} download className="lx-file">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            {brief.datasetName}
+          </a>
+        </p>
       </section>
-      <section>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Instructions</div>
-        <ol style={{ margin: 0, paddingLeft: 20, color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
-          {brief.instructions.map((item) => <li key={item} style={{ marginBottom: 8 }}>{item}</li>)}
-        </ol>
-      </section>
-      <section>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Required output</div>
-        <ul style={{ margin: 0, paddingLeft: 20, color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
-          {brief.requiredOutput.map((item) => <li key={item} style={{ marginBottom: 6 }}>{item}</li>)}
+      <section className="as-block">
+        <h3>Deliverables</h3>
+        <ul>
+          {brief.requiredOutput.map((item) => <li key={item}>{item}</li>)}
         </ul>
       </section>
-      <section>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Submission format</div>
-        <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, margin: 0 }}>{brief.submissionFormat}</p>
+      <section className="as-block">
+        <h3>Instructions</h3>
+        <ol>
+          {brief.instructions.map((item) => <li key={item}>{item}</li>)}
+        </ol>
       </section>
-      <section>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>What a complete submission includes</div>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+      <section className="as-block">
+        <h3>Rubric</h3>
+        <p style={{ marginBottom: 10, color: '#5c6168', fontSize: 13 }}>What complete work shows. This is not a grade.</p>
+        <div className="lx-table-wrap" style={{ margin: 0 }}>
+          <table>
             <thead>
               <tr>
                 {['Criterion', 'Weight', 'What complete work shows'].map((h) => (
-                  <th key={h} style={{ textAlign: 'left', color: C.ink, padding: '8px 10px', borderBottom: `1px solid ${accent.border}` }}>{h}</th>
+                  <th key={h}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {brief.evaluationCriteria.map((row) => (
                 <tr key={row.criterion}>
-                  <td style={{ color: C.ink, padding: '8px 10px', borderBottom: `1px solid ${T.lineDark}`, verticalAlign: 'top' }}>{row.criterion}</td>
-                  <td style={{ color: C.slate, padding: '8px 10px', borderBottom: `1px solid ${T.lineDark}`, verticalAlign: 'top', fontFamily: 'var(--font-mono)', fontSize: 12 }}>{row.weight}</td>
-                  <td style={{ color: C.slate, padding: '8px 10px', borderBottom: `1px solid ${T.lineDark}`, verticalAlign: 'top' }}>{row.description}</td>
+                  <td>{row.criterion}</td>
+                  <td>{row.weight}</td>
+                  <td>{row.description}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       </section>
-      <section>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Common mistakes</div>
-        <ul style={{ margin: 0, paddingLeft: 20, color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
-          {brief.commonMistakes.map((item) => <li key={item} style={{ marginBottom: 6 }}>{item}</li>)}
+      <section className="as-block">
+        <h3>Submission</h3>
+        <p>{brief.submissionFormat}</p>
+      </section>
+      <section className="as-block">
+        <h3>Common mistakes</h3>
+        <ul>
+          {brief.commonMistakes.map((item) => <li key={item}>{item}</li>)}
         </ul>
       </section>
-      <section>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Extension</div>
-        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: 0 }}>{brief.extension}</p>
-      </section>
-      <section className="os-note">
-        <p className="os-rail-kicker">Keep this work</p>
-        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '8px 0 8px' }}>
-          <strong style={{ color: C.ink }}>Learning →</strong> {brief.careerEvidence.learning}
-        </p>
-        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '0 0 8px' }}>
-          <strong style={{ color: C.ink }}>Artifact →</strong> {brief.careerEvidence.artifact}
-        </p>
-        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: '0 0 8px' }}>
-          <strong style={{ color: C.ink }}>Skill →</strong> {brief.careerEvidence.skill}
-        </p>
-        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: 0 }}>
-          <strong style={{ color: C.ink }}>Evidence →</strong> {brief.careerEvidence.evidence} Add it yourself under Career OS Projects — this product does not create the entry automatically.
-        </p>
+      {brief.extension ? (
+        <section className="as-block">
+          <h3>Extension</h3>
+          <p>{brief.extension}</p>
+        </section>
+      ) : null}
+      <section className="as-block as-evidence">
+        <h3>Career OS evidence</h3>
+        <p style={{ marginBottom: 8 }}><strong>Learning.</strong> {brief.careerEvidence.learning}</p>
+        <p style={{ marginBottom: 8 }}><strong>Artifact.</strong> {brief.careerEvidence.artifact}</p>
+        <p style={{ marginBottom: 8 }}><strong>Skill.</strong> {brief.careerEvidence.skill}</p>
+        <p>{brief.careerEvidence.evidence} Add it yourself under Career OS Projects — this product does not create the entry automatically.</p>
       </section>
     </div>
   )
@@ -124,13 +127,6 @@ export function LessonContentView({
   if (lesson.type === 'video') {
     return (
       <div className="lms-lesson-video lms-activity-surface lms-activity-video">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
-          <div>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type, lesson.title)}</div>
-            <h2 style={{ color: C.ink, fontSize: 18, fontWeight: 600, margin: 0, lineHeight: 1.3 }}>{lesson.title}</h2>
-          </div>
-          {lesson.duration && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate }}>{lesson.duration}</span>}
-        </div>
         <LessonVideoPlayer
           media={lessonMedia}
           title={lesson.title}
@@ -154,17 +150,18 @@ export function LessonContentView({
         <LessonDocument markdown={notes} accent={accent} skipHeading={lesson.title} />
         {material?.datasets.length ? (
           <div className="os-resources">
-            <p className="os-rail-kicker">Practice files</p>
+            <p className="os-eyebrow">Practice files</p>
             {material.datasets.map((dataset) => (
-              <a key={dataset.filename} href={dataset.href} download>{dataset.filename}</a>
+              <a key={dataset.filename} href={dataset.href} download className="lx-file">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                  <polyline points="14 2 14 8 20 8" />
+                </svg>
+                {dataset.filename}
+              </a>
             ))}
           </div>
         ) : null}
-        {!lessonState.complete && (
-          <button type="button" className="os-btn os-btn-primary" onClick={onComplete} style={{ marginTop: 24 }}>
-            Mark reading complete
-          </button>
-        )}
       </div>
     )
   }
@@ -174,7 +171,7 @@ export function LessonContentView({
     return (
       <div className="lms-lesson-quiz">
         {material?.body && (
-          <div style={{ marginBottom: 20, maxWidth: 720 }}>
+          <div style={{ marginBottom: 16 }}>
             <LessonDocument markdown={material.body} accent={accent} skipHeading={lesson.title} />
           </div>
         )}
@@ -200,8 +197,9 @@ export function LessonContentView({
 
   return (
     <div className="lms-lesson-assignment">
+      <p className="os-eyebrow" style={{ marginBottom: 8 }}>Assignment</p>
       {material?.body && (
-        <div style={{ marginBottom: 16, maxWidth: 720 }}>
+        <div style={{ marginBottom: 16 }}>
           <LessonDocument markdown={material.body} accent={accent} skipHeading={lesson.title} />
         </div>
       )}
@@ -231,28 +229,48 @@ export function LessonContentView({
 export function LessonNavigation({
   prev,
   next,
+  nextPreview,
   courseSlug,
-  accent,
   onNavigate,
+  completeAction,
 }: {
   prev: CourseLesson | null
   next: CourseLesson | null
+  nextPreview?: CourseLesson | null
   courseSlug: string
   accent: Accent
   onNavigate: (id: string) => void
+  completeAction?: { label: string; onClick: () => void }
 }) {
+  const upcoming = next ?? nextPreview ?? null
   return (
-    <div className="os-actions">
-      {prev ? (
-        <button type="button" className="os-btn os-btn-ghost" onClick={() => onNavigate(prev.id)}>
-          Previous: {prev.title}
+    <div className="lx-footer">
+      {completeAction ? (
+        <button type="button" className="os-btn os-btn-primary" onClick={completeAction.onClick}>
+          {completeAction.label}
         </button>
-      ) : <div />}
-      {next ? (
-        <Link className="os-btn os-btn-primary" to={`/learn/${courseSlug}/${next.id}`} onClick={() => onNavigate(next.id)}>
-          Next: {next.title}
-        </Link>
       ) : null}
+      {upcoming ? (
+        <p className="lx-next-label" style={{ marginTop: completeAction ? 16 : 0 }}>
+          Next: <strong>{upcoming.title}</strong>
+        </p>
+      ) : (
+        <p className="lx-next-label" style={{ marginTop: completeAction ? 16 : 0 }}>
+          This is the last activity in the course.
+        </p>
+      )}
+      <div className="os-actions">
+        {prev ? (
+          <button type="button" className="os-btn os-btn-ghost" onClick={() => onNavigate(prev.id)}>
+            Previous
+          </button>
+        ) : null}
+        {next ? (
+          <Link className="os-btn os-btn-primary" to={`/learn/${courseSlug}/${next.id}`} onClick={() => onNavigate(next.id)}>
+            Next lesson →
+          </Link>
+        ) : null}
+      </div>
     </div>
   )
 }
