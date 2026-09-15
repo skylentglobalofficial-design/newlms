@@ -138,7 +138,7 @@ export default function LearnPage() {
   if (!slug) {
     return (
       <div className="skylent-lms-state" style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: C.white }}>Course not found</div>
+        <div style={{ color: C.ink }}>Course not found</div>
       </div>
     )
   }
@@ -146,7 +146,7 @@ export default function LearnPage() {
   if (!authReady || access.status === 'loading') {
     return (
       <div className="skylent-lms-state" style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Loading course…</div>
+        <div style={{ color: C.slate, fontSize: 14 }}>Loading course…</div>
       </div>
     )
   }
@@ -154,8 +154,8 @@ export default function LearnPage() {
   if (access.status === 'login_required') {
     return (
       <div className="skylent-lms-state" style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
-        <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>Sign in to continue learning</div>
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>Course content is available to enrolled learners after authentication.</p>
+        <div style={{ color: C.ink, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>Sign in to continue learning</div>
+        <p style={{ color: C.slate, fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>Course content is available to enrolled learners after authentication.</p>
         <Link to="/login" style={{ color: roleAccent.text, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>Go to login →</Link>
       </div>
     )
@@ -164,8 +164,8 @@ export default function LearnPage() {
   if (access.status === 'not_enrolled') {
     return (
       <div className="skylent-lms-state" style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
-        <div style={{ color: C.white, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>{access.courseTitle}</div>
-        <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>You are signed in but not enrolled in this course yet.</p>
+        <div style={{ color: C.ink, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>{access.courseTitle}</div>
+        <p style={{ color: C.slate, fontSize: 14, margin: 0, textAlign: 'center', maxWidth: 420 }}>You are signed in but not enrolled in this course yet.</p>
         <button
           type="button"
           disabled={enrolling}
@@ -176,7 +176,7 @@ export default function LearnPage() {
               .catch((err) => setEnrollError(workspaceErrorMessage(err)))
               .finally(() => setEnrolling(false))
           }}
-          style={{ background: roleAccent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer' }}
+          style={{ background: roleAccent.primary, border: 'none', color: C.white, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: enrolling ? 'wait' : 'pointer' }}
         >
           {enrolling ? 'Enrolling…' : 'Enroll to start learning'}
         </button>
@@ -189,7 +189,7 @@ export default function LearnPage() {
   if (access.status !== "ready") {
     return (
       <div className="skylent-lms-state" style={{ minHeight: '100vh', background: C.canvas, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, padding: 24 }}>
-        <div style={{ fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700 }}>Course not found</div>
+        <div style={{ fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 700, color: C.ink }}>Course not found</div>
         <Link to="/courses" style={{ textDecoration: 'none', fontSize: 14 }}>← Back to courses</Link>
       </div>
     )
@@ -291,8 +291,8 @@ export default function LearnPage() {
           {(allComplete || showCertificate) && (
             <div className="lms-certificate-banner" style={{ background: roleAccent.subtle, border: `1px solid ${roleAccent.border}`, borderRadius: T.rCard, padding: '24px', marginBottom: 24, textAlign: 'center' }}>
               <div style={{ color: roleAccent.text, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 10 }}>COURSE COMPLETE</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: C.white, marginBottom: 8 }}>{readyCourse.title}</div>
-              <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14, marginBottom: 16 }}>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: C.ink, marginBottom: 8 }}>{readyCourse.title}</div>
+              <div style={{ color: C.slate, fontSize: 14, marginBottom: 16 }}>
                 {certificateEligible
                   ? 'You are eligible for a certificate. Download and issuance will be available in a later phase.'
                   : 'Complete all requirements to unlock certificate eligibility.'}
@@ -311,12 +311,12 @@ export default function LearnPage() {
               <h1>{selectedLesson.title}</h1>
               <p>{selectedLesson.type === 'video' ? 'Build a clear mental model, then use it in the next activity.' : selectedLesson.type === 'quiz' ? 'Work through the question carefully and use the feedback to sharpen your understanding.' : selectedLesson.type === 'assignment' ? 'Turn the brief into evidence you can stand behind.' : 'Read the key ideas, make a connection, and decide what you can do next.'}</p>
             </div>
-            <div className={`lms-lesson-panel lms-lesson-frame lms-lesson-type-${selectedLesson.type}`} style={{ border: `1px solid ${tabAccent.border}`, borderLeft: `3px solid ${tabAccent.primary}`, borderRadius: T.rCard, background: 'rgba(255,255,255,0.015)', padding: 'clamp(20px, 3vw, 28px)' }}>
+            <div className={`lms-lesson-panel lms-lesson-frame lms-lesson-type-${selectedLesson.type}`} style={{ border: `1px solid ${tabAccent.border}`, borderLeft: `3px solid ${tabAccent.primary}`, borderRadius: T.rCard, background: C.cream, padding: 'clamp(20px, 3vw, 28px)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 20, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: tabAccent.primary, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
                   {lessonTypeLabel(selectedLesson.type)}
                 </span>
-                <span style={{ fontSize: 11, color: selectedState.complete ? '#22c55e' : 'rgba(255,255,255,0.35)' }}>
+                <span style={{ fontSize: 11, color: selectedState.complete ? C.success : C.slate }}>
                   {selectedState.complete ? 'Complete' : 'In progress'}
                 </span>
               </div>
@@ -368,7 +368,7 @@ export default function LearnPage() {
             </div>
             </>
           ) : (
-            <div style={{ textAlign: 'center', padding: '60px 0', color: 'rgba(255,255,255,0.3)' }}>Select a lesson from the curriculum.</div>
+            <div style={{ textAlign: 'center', padding: '60px 0', color: C.slate }}>Select a lesson from the curriculum.</div>
           )}
         </div>
       </div>

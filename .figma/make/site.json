@@ -1,8 +1,8 @@
 {
-  "title": "demo",
-  "description": "Streamline your workflow with a user-friendly platform that allows teams to collaborate, manage tasks, and track project progress efficiently.",
+  "title": "Skylent — Learn. Practise. Build.",
+  "description": "Learn useful skills, practise through real work, and keep evidence of what you learn.",
   "robots": {
-    "index": false
+    "index": true
   },
   "accessibility": {
     "addBypassLinks": false,

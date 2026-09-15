@@ -1,14 +1,17 @@
-// Skylent public-site design tokens — single source of truth for JS inline styles.
+// Skylent design tokens — single source of truth for JS inline styles.
 // CSS custom properties live in index.css; keep both in sync.
 //
-// PUBLIC BRAND (non-negotiable):
+// LIGHT ONLY (non-negotiable — public site, login, dashboard, LMS / Skylent OS, Career OS):
 //   canvas  #F7F4EC  warm ivory
 //   cream   #FFFDF8  warm cream
+//   white   #FFFFFF
 //   ink     #15171A  dark ink
+//   slate   #5C6168
+//   sand    #E8E2D6  borders
 //   indigo  #4F46E5  primary action
 //   blue    #2563EB  semantic secondary
 //   orange  #F97316  brand mark only
-// LMS workspaces may stay focused/dark. Public Skylent must not.
+// There is no dark mode and no separate dark LMS theme.
 
 export const C = {
   ink: '#15171A',
@@ -25,6 +28,8 @@ export const C = {
   white: '#FFFFFF',
   black: '#15171A',
   canvas: '#F7F4EC',
+  success: '#15803D',
+  danger: '#B91C1C',
 } as const
 
 export const T = {
@@ -42,6 +47,8 @@ export const T = {
   lineStrong: 'rgba(21,23,26,0.16)',
   lineDark: 'rgba(21,23,26,0.10)',
   lineDarkStrong: 'rgba(21,23,26,0.16)',
+  shadow: '0 8px 24px rgba(21,23,26,0.06)',
+  shadowLg: '0 16px 40px rgba(21,23,26,0.08)',
 } as const
 
 export const type = {
@@ -58,23 +65,24 @@ export const type = {
 
 export type GlassLevel = 1 | 2 | 3
 
+/** Raised surfaces — solid cream/white, thin border, no blur. */
 export const glass = {
   1: {
-    bg: 'var(--glass-01-bg)',
-    border: 'var(--glass-01-border)',
-    blur: 'var(--glass-01-blur)',
-    shadow: 'var(--glass-01-shadow)',
+    bg: '#FFFDF8',
+    border: 'rgba(21,23,26,0.10)',
+    blur: 'none',
+    shadow: '0 4px 16px rgba(21,23,26,0.05)',
   },
   2: {
-    bg: 'var(--glass-02-bg)',
-    border: 'var(--glass-02-border)',
-    blur: 'var(--glass-02-blur)',
-    shadow: 'var(--glass-02-shadow)',
+    bg: '#FFFFFF',
+    border: 'rgba(21,23,26,0.10)',
+    blur: 'none',
+    shadow: '0 8px 24px rgba(21,23,26,0.06)',
   },
   3: {
-    bg: 'var(--glass-03-bg)',
-    border: 'var(--glass-03-border)',
-    blur: 'var(--glass-03-blur)',
-    shadow: 'var(--glass-03-shadow)',
+    bg: '#FFFFFF',
+    border: 'rgba(21,23,26,0.10)',
+    blur: 'none',
+    shadow: '0 12px 32px rgba(21,23,26,0.07)',
   },
 } as const

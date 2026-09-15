@@ -53,7 +53,7 @@ function AppRoutes() {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        <Route path="/" element={<PublicCanvas themeId="general"><Nav /><HomePage /></PublicCanvas>} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/education" element={<EducationPage />} />
         <Route path="/education/schooling" element={<SchoolingPage />} />
         <Route path="/education/undergraduate" element={<UndergraduatePage />} />

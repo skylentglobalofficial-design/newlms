@@ -3,7 +3,7 @@ import type { CourseLesson } from '../../data'
 export default function LessonIcon({
   type,
   size = 14,
-  color = 'rgba(255,255,255,0.35)',
+  color = '#5C6168',
 }: {
   type: CourseLesson['type']
   size?: number

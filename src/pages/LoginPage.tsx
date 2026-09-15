@@ -306,7 +306,7 @@ export default function LoginPage() {
     width: '100%',
     background: submitting ? `${accent.primary}99` : accent.primary,
     border: 'none',
-    color: C.black,
+    color: C.white,
     borderRadius: T.rControl,
     padding: '13px',
     fontSize: 14,

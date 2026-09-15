@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { C, T } from '../../tokens'
-import { AuroraBand, GlassSurface } from '../foundation'
+import { GlassSurface } from '../foundation'
 import type { CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
 import { computeModuleProgress, type LmsCourseView } from './lms-utils'
@@ -41,7 +41,6 @@ export function LearningWorkspacePanel({
 }) {
   return (
     <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', position: 'relative' }} className="student-learning-workspace">
-      <AuroraBand themeId="data-science" />
       <div style={{ position: 'relative', zIndex: 1, padding: 'clamp(24px, 3.5vw, 36px)' }}>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 10 }}>Continue learning</div>
         <h1 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 8px', lineHeight: 1.1 }}>
@@ -75,7 +74,7 @@ export function LearningWorkspacePanel({
           to={lessonId ? `/learn/${learnSlug}/${lessonId}` : `/learn/${learnSlug}`}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: accent.primary, color: C.black, textDecoration: 'none',
+            background: accent.primary, color: C.white, textDecoration: 'none',
             padding: '13px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600,
           }}
         >

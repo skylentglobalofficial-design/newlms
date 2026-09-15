@@ -114,8 +114,7 @@ function StickyProgramNav({
   return (
     <nav style={{
       position: 'sticky', top: T.navH, zIndex: 80,
-      background: 'var(--glass-01-bg)', backdropFilter: 'var(--glass-01-blur)',
-      WebkitBackdropFilter: 'var(--glass-01-blur)', borderBottom: '1px solid var(--glass-01-border)',
+      background: C.cream, borderBottom: '1px solid var(--glass-01-border)',
     }}>
       <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
         <div className="program-sticky-nav-scroll" style={{ display: 'flex', overflowX: 'auto', scrollbarWidth: 'none' }}>
@@ -139,7 +138,7 @@ function StickyProgramNav({
           onClick={onCTA}
           disabled={ctaDisabled}
           style={{
-            flexShrink: 0, background: accent.primary, border: 'none', color: C.black,
+            flexShrink: 0, background: accent.primary, border: 'none', color: C.white,
             borderRadius: T.rControl, padding: '8px 18px', fontSize: 12.5, fontWeight: 600,
             cursor: ctaDisabled ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
             opacity: ctaDisabled ? 0.72 : 1,
@@ -197,7 +196,7 @@ function EnrollmentPanel({
           ...(isCareerOS ? [{ text: 'Unlocks Career OS on completion', highlight: true }] : []),
         ].map(({ text, highlight }, i) => (
           <div key={i} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 12 }}>
-            <div style={{ width: 4, height: 4, borderRadius: '50%', background: highlight ? accent.primary : 'rgba(255,255,255,0.25)', flexShrink: 0, marginTop: 6 }} />
+            <div style={{ width: 4, height: 4, borderRadius: '50%', background: highlight ? accent.primary : C.sand, flexShrink: 0, marginTop: 6 }} />
             <span style={{ color: highlight ? accent.text : C.slate, fontSize: 13, lineHeight: 1.45 }}>{text}</span>
           </div>
         ))}
@@ -806,7 +805,7 @@ export default function ProgramPage() {
               <div style={{ padding: '16px 0', color: C.slate, fontSize: 12 }}>Plan</div>
               {pricingTiers.map(tier => (
                 <div key={tier.name} style={{ padding: '16px 20px', textAlign: 'center', borderLeft: `1px solid ${T.lineDark}`, background: tier.highlight ? domainAccent.subtle : 'transparent' }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: tier.highlight ? domainAccent.text : C.white }}>{tier.name}</div>
+                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: tier.highlight ? domainAccent.text : C.ink }}>{tier.name}</div>
                   {tier.highlight && <div className="skylent-label" style={{ color: domainAccent.text, fontSize: 9, marginTop: 4 }}>Recommended</div>}
                 </div>
               ))}

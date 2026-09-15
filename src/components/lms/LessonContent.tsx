@@ -17,31 +17,31 @@ function AssignmentBriefView({ brief, accent }: { brief: AssignmentBrief; accent
     <div style={{ display: 'grid', gap: 16, marginBottom: 20 }}>
       <section>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Scenario</div>
-        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{brief.scenario}</p>
+        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: 0 }}>{brief.scenario}</p>
       </section>
       <section>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Objective</div>
-        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{brief.objective}</p>
+        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: 0 }}>{brief.objective}</p>
       </section>
       <section>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Dataset</div>
-        <a href={brief.datasetHref} download style={{ color: '#93c5fd', fontSize: 14 }}>{brief.datasetName}</a>
+        <a href={brief.datasetHref} download style={{ color: C.blue, fontSize: 14 }}>{brief.datasetName}</a>
       </section>
       <section>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Instructions</div>
-        <ol style={{ margin: 0, paddingLeft: 20, color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.7 }}>
+        <ol style={{ margin: 0, paddingLeft: 20, color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
           {brief.instructions.map((item) => <li key={item} style={{ marginBottom: 8 }}>{item}</li>)}
         </ol>
       </section>
       <section>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Required output</div>
-        <ul style={{ margin: 0, paddingLeft: 20, color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.7 }}>
+        <ul style={{ margin: 0, paddingLeft: 20, color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
           {brief.requiredOutput.map((item) => <li key={item} style={{ marginBottom: 6 }}>{item}</li>)}
         </ul>
       </section>
       <section>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Submission format</div>
-        <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.7, margin: 0 }}>{brief.submissionFormat}</p>
+        <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, margin: 0 }}>{brief.submissionFormat}</p>
       </section>
       <section>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Evaluation criteria</div>
@@ -50,16 +50,16 @@ function AssignmentBriefView({ brief, accent }: { brief: AssignmentBrief; accent
             <thead>
               <tr>
                 {['Criterion', 'Weight', 'What a reviewer looks for'].map((h) => (
-                  <th key={h} style={{ textAlign: 'left', color: C.white, padding: '8px 10px', borderBottom: `1px solid ${accent.border}` }}>{h}</th>
+                  <th key={h} style={{ textAlign: 'left', color: C.ink, padding: '8px 10px', borderBottom: `1px solid ${accent.border}` }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {brief.evaluationCriteria.map((row) => (
                 <tr key={row.criterion}>
-                  <td style={{ color: C.white, padding: '8px 10px', borderBottom: `1px solid ${T.lineDark}`, verticalAlign: 'top' }}>{row.criterion}</td>
-                  <td style={{ color: 'rgba(255,255,255,0.5)', padding: '8px 10px', borderBottom: `1px solid ${T.lineDark}`, verticalAlign: 'top', fontFamily: 'var(--font-mono)', fontSize: 12 }}>{row.weight}</td>
-                  <td style={{ color: 'rgba(255,255,255,0.62)', padding: '8px 10px', borderBottom: `1px solid ${T.lineDark}`, verticalAlign: 'top' }}>{row.description}</td>
+                  <td style={{ color: C.ink, padding: '8px 10px', borderBottom: `1px solid ${T.lineDark}`, verticalAlign: 'top' }}>{row.criterion}</td>
+                  <td style={{ color: C.slate, padding: '8px 10px', borderBottom: `1px solid ${T.lineDark}`, verticalAlign: 'top', fontFamily: 'var(--font-mono)', fontSize: 12 }}>{row.weight}</td>
+                  <td style={{ color: C.slate, padding: '8px 10px', borderBottom: `1px solid ${T.lineDark}`, verticalAlign: 'top' }}>{row.description}</td>
                 </tr>
               ))}
             </tbody>
@@ -68,27 +68,27 @@ function AssignmentBriefView({ brief, accent }: { brief: AssignmentBrief; accent
       </section>
       <section>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Common mistakes</div>
-        <ul style={{ margin: 0, paddingLeft: 20, color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.7 }}>
+        <ul style={{ margin: 0, paddingLeft: 20, color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
           {brief.commonMistakes.map((item) => <li key={item} style={{ marginBottom: 6 }}>{item}</li>)}
         </ul>
       </section>
       <section>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Extension</div>
-        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 14, lineHeight: 1.7, margin: 0 }}>{brief.extension}</p>
+        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: 0 }}>{brief.extension}</p>
       </section>
       <section style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 16 }}>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Career OS evidence</div>
-        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, lineHeight: 1.7, margin: '0 0 8px' }}>
-          <strong style={{ color: C.white }}>Learning →</strong> {brief.careerEvidence.learning}
+        <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, margin: '0 0 8px' }}>
+          <strong style={{ color: C.ink }}>Learning →</strong> {brief.careerEvidence.learning}
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, lineHeight: 1.7, margin: '0 0 8px' }}>
-          <strong style={{ color: C.white }}>Artifact →</strong> {brief.careerEvidence.artifact}
+        <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, margin: '0 0 8px' }}>
+          <strong style={{ color: C.ink }}>Artifact →</strong> {brief.careerEvidence.artifact}
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, lineHeight: 1.7, margin: '0 0 8px' }}>
-          <strong style={{ color: C.white }}>Skill →</strong> {brief.careerEvidence.skill}
+        <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, margin: '0 0 8px' }}>
+          <strong style={{ color: C.ink }}>Skill →</strong> {brief.careerEvidence.skill}
         </p>
-        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: 13, lineHeight: 1.7, margin: 0 }}>
-          <strong style={{ color: C.white }}>Evidence →</strong> {brief.careerEvidence.evidence} Add it yourself under Career OS Projects — this product does not create the entry automatically.
+        <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, margin: 0 }}>
+          <strong style={{ color: C.ink }}>Evidence →</strong> {brief.careerEvidence.evidence} Add it yourself under Career OS Projects — this product does not create the entry automatically.
         </p>
       </section>
     </div>
@@ -127,9 +127,9 @@ export function LessonContentView({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
           <div>
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
-            <h2 style={{ color: C.white, fontSize: 18, fontWeight: 600, margin: 0, lineHeight: 1.3 }}>{lesson.title}</h2>
+            <h2 style={{ color: C.ink, fontSize: 18, fontWeight: 600, margin: 0, lineHeight: 1.3 }}>{lesson.title}</h2>
           </div>
-          {lesson.duration && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>{lesson.duration}</span>}
+          {lesson.duration && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate }}>{lesson.duration}</span>}
         </div>
         <LessonVideoPlayer
           media={lessonMedia}
@@ -155,22 +155,22 @@ export function LessonContentView({
       <div className="lms-lesson-notes lms-activity-surface lms-activity-reading">
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 16 }}>
-          <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)', maxWidth: 760 }}>
+          <div style={{ background: C.white, border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)', maxWidth: 760 }}>
             <LessonDocument markdown={notes} accent={accent} />
           </div>
           <div style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 16 }}>
             <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Resources</div>
             {material?.datasets.length ? material.datasets.map((dataset) => (
-              <a key={dataset.filename} href={dataset.href} download style={{ display: 'block', color: '#93c5fd', fontSize: 13, padding: '8px 0', borderBottom: `1px solid ${T.lineDark}`, textDecoration: 'none' }}>
+              <a key={dataset.filename} href={dataset.href} download style={{ display: 'block', color: C.blue, fontSize: 13, padding: '8px 0', borderBottom: `1px solid ${T.lineDark}`, textDecoration: 'none' }}>
                 {dataset.filename}
               </a>
             )) : (
-              <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 13, lineHeight: 1.6 }}>No downloadable dataset is attached to this lesson.</div>
+              <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.6 }}>No downloadable dataset is attached to this lesson.</div>
             )}
           </div>
         </div>
         {!lessonState.complete && (
-          <button type="button" onClick={onComplete} style={{ marginTop: 20, background: accent.primary, border: 'none', color: C.black, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+          <button type="button" onClick={onComplete} style={{ marginTop: 20, background: accent.primary, border: 'none', color: C.white, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
             Mark reading complete →
           </button>
         )}
@@ -181,7 +181,7 @@ export function LessonContentView({
   if (lesson.type === 'quiz') {
     const questions = quizQuestions ?? []
     return (
-      <div className="lms-lesson-quiz lms-activity-surface lms-activity-quiz" style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)' }}>
+      <div className="lms-lesson-quiz lms-activity-surface lms-activity-quiz" style={{ background: C.cream, border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)' }}>
         <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
         {material?.body && (
           <div style={{ marginBottom: 20, maxWidth: 720 }}>
@@ -189,9 +189,9 @@ export function LessonContentView({
           </div>
         )}
         {quizStatus === 'loading' ? (
-          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14 }}>Quiz questions are loading…</div>
+          <div style={{ color: C.slate, fontSize: 14 }}>Quiz questions are loading…</div>
         ) : questions.length === 0 ? (
-          <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: 14, lineHeight: 1.6 }}>No quiz is configured for this lesson. Questions are course-specific and are not copied from Data Analytics.</div>
+          <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.6 }}>No quiz is configured for this lesson. Questions are course-specific and are not copied from Data Analytics.</div>
         ) : (
           <AssessmentSurface
             mode="timed"
@@ -218,7 +218,7 @@ export function LessonContentView({
       )}
       {material?.assignment && <AssignmentBriefView brief={material.assignment} accent={accent} />}
       {!material?.assignment && (
-        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14, lineHeight: 1.7 }}>
+        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
           A structured brief has not been authored for this assignment. Paste the work you can defend. There is no faculty grading in this pilot.
         </p>
       )}
@@ -255,7 +255,7 @@ export function LessonNavigation({
   return (
     <div className="lms-lesson-nav" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 28, paddingTop: 20, borderTop: `1px solid ${T.lineDark}`, flexWrap: 'wrap' }}>
       {prev ? (
-        <button type="button" onClick={() => onNavigate(prev.id)} style={{ background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: T.rControl, padding: '10px 16px', color: 'rgba(255,255,255,0.6)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left', maxWidth: '48%' }}>
+        <button type="button" onClick={() => onNavigate(prev.id)} style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: T.rControl, padding: '10px 16px', color: C.ink, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left', maxWidth: '48%' }}>
           ← {prev.title}
         </button>
       ) : <div />}
