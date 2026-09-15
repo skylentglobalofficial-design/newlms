@@ -1,175 +1,124 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
-import { C, FadeIn, PageShell } from '../components/shared'
-import { Button, Section, SectionHeader, T } from '../components/ui'
-import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
-import { getDomainAccent } from '../aurora-themes'
-import { courses } from '../data'
-import { catalogCourseBySlug } from '../lib/catalog-api'
-import { displayLessonCount } from '../lib/curriculum-counts'
-import { useCatalogCourses } from '../hooks/useCatalog'
-import { coursePhoto } from '../media'
-
-const accent = getDomainAccent('professional')
+import { useEffect, useMemo, useState } from "react"
+import { Link, useSearchParams } from "react-router-dom"
+import { PageShell } from "../components/shared"
+import { courses } from "../data"
+import { coursePublicView } from "../lib/catalog-maturity"
+import "./Catalog.css"
 
 export default function CoursesPage() {
-  const catalog = useCatalogCourses()
   const [searchParams] = useSearchParams()
-  const [search, setSearch] = useState(searchParams.get('q') ?? '')
+  const [search, setSearch] = useState(searchParams.get("q") ?? "")
+  const [category, setCategory] = useState("All")
 
   useEffect(() => {
-    const q = searchParams.get('q')
+    const q = searchParams.get("q")
     if (q) setSearch(q)
   }, [searchParams])
 
-  const [category, setCategory] = useState('All')
-  const [level, setLevel] = useState('All')
-  const [mode, setMode] = useState('All')
+  const views = useMemo(() => courses.map(coursePublicView), [])
+  const categories = ["All", ...Array.from(new Set(courses.map((course) => course.category)))]
 
-  const categories = ['All', ...Array.from(new Set(courses.map(c => c.category)))]
-  const levels = ['All', 'Beginner', 'Intermediate', 'Advanced']
-  const modes = ['All', 'Self-paced', 'Live', 'Blended']
+  const filtered = views.filter((view) => {
+    const haystack = `${view.title} ${view.summary}`.toLowerCase()
+    const matchSearch = haystack.includes(search.trim().toLowerCase())
+    const matchCat = category === "All" || view.course.category === category
+    return matchSearch && matchCat
+  })
 
-  const filtered = useMemo(() => courses.filter(c => {
-    const matchSearch = c.title.toLowerCase().includes(search.toLowerCase()) || c.desc.toLowerCase().includes(search.toLowerCase())
-    const matchCat = category === 'All' || c.category === category
-    const matchLevel = level === 'All' || c.level === level
-    const matchMode = mode === 'All' || c.mode.includes(mode)
-    return matchSearch && matchCat && matchLevel && matchMode
-  }), [search, category, level, mode])
+  const ready = filtered.filter((view) => view.maturity === "ready")
+  const listings = filtered.filter((view) => view.maturity !== "ready")
 
   return (
-    <PageShell auroraTheme="professional">
-      <section
-        style={{
-          position: 'relative',
-          overflow: 'hidden',
-          padding: `${T.navH + 32}px ${T.gutter} clamp(48px, 6vw, 72px)`,
-        }}
-      >
-        <Aurora themeId="professional" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <FadeIn>
-            <div className="skylent-label" style={{ color: C.indigo, marginBottom: 14 }}>Courses · live</div>
-            <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 12px', maxWidth: 560 }}>
-              Focused units you can finish.
-            </h1>
-            <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 480, margin: '0 0 8px' }}>
-              A course is a skills unit with lessons and projects. A programme is a longer pathway. Search the live catalogue — counts come from actual curriculum.
+    <PageShell aurora={false}>
+      <div className="cat-page">
+        <section className="cat-hero">
+          <div className="cat-rail">
+            <p className="cat-label">Courses</p>
+            <h1>Focused units you can finish.</h1>
+            <p className="cat-lead">
+              A course is a unit of lessons and practice. Data Analytics is ready to start. Other rows are thinner catalogue listings.
             </p>
-            <p style={{ color: C.slate, fontSize: 13, margin: '0 0 22px' }}>
-              Looking for a pathway instead? <Link to="/programs" style={{ color: C.indigo, fontWeight: 600, textDecoration: 'none' }}>Browse programmes →</Link>
-            </p>
-            <GlassSurface level={2} padding="12px 16px" style={{ maxWidth: 420 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-                  <circle cx="7" cy="7" r="5" stroke="#5C6168" strokeWidth="1.5" />
-                  <path d="M11 11l3 3" stroke="#5C6168" strokeWidth="1.5" strokeLinecap="round" />
-                </svg>
-                <input
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  placeholder="Search courses…"
-                  aria-label="Search courses"
-                  style={{ background: 'none', border: 'none', outline: 'none', color: C.ink, fontSize: 14, width: '100%', fontFamily: 'var(--font-body)' }}
-                />
-              </div>
-            </GlassSurface>
-          </FadeIn>
-        </div>
-      </section>
-
-      <Section tone="canvas" divider>
-        <FadeIn>
-          <SectionHeader
-            tone="light"
-            eyebrow="Browse"
-            title={`${filtered.length} course${filtered.length !== 1 ? 's' : ''}`}
-            lead="Filter by category, level, or delivery mode. For full programs with Career OS access, see Programs."
-          />
-        </FadeIn>
-
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginTop: 32, marginBottom: 36 }}>
-          {[['Category', categories, category, setCategory], ['Level', levels, level, setLevel], ['Mode', modes, mode, setMode]].map(([label, opts, val, setter]) => (
-            <div key={label as string} style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-              <span className="skylent-label" style={{ color: C.slate }}>{label as string}</span>
-              {(opts as string[]).map(o => (
+            <Link className="cat-text-link" to="/programs">Looking for a longer pathway? See programmes</Link>
+            <input
+              className="cat-search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search courses"
+              aria-label="Search courses"
+            />
+            <div className="cat-filters" role="group" aria-label="Course category">
+              {categories.map((item) => (
                 <button
-                  key={o}
+                  key={item}
                   type="button"
-                  onClick={() => (setter as (v: string) => void)(o)}
-                  style={{
-                    padding: '6px 14px',
-                    borderRadius: 100,
-                    border: `1px solid ${(val as string) === o ? accent.border : T.lineDark}`,
-                    background: (val as string) === o ? accent.subtle : 'transparent',
-                    color: (val as string) === o ? accent.text : C.slate,
-                    fontSize: 12,
-                    cursor: 'pointer',
-                    fontFamily: 'var(--font-body)',
-                    transition: 'all 0.2s',
-                  }}
+                  className={category === item ? "cat-chip is-on" : "cat-chip"}
+                  aria-pressed={category === item}
+                  onClick={() => setCategory(item)}
                 >
-                  {o}
+                  {item}
                 </button>
               ))}
             </div>
-          ))}
-        </div>
-
-        {filtered.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '60px 0', color: C.slate }}>
-            No courses match your filters.
           </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }} className="three-col programs-grid">
-            {filtered.map((course, i) => {
-              const facts = catalogCourseBySlug(catalog.data, course.slug)
-              const price = facts?.price ?? course.price
-              const originalPrice = facts?.originalPrice ?? course.originalPrice
-              const lessonCount = displayLessonCount(facts?.lessonCount, course)
-              const projectCount = facts?.projectCount ?? course.projects
-              return (
-              <FadeIn key={course.slug} delay={i * 40}>
-                <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                  <div style={{ position: 'relative', minHeight: 140, borderBottom: `1px solid ${T.lineDark}` }}>
-                    <MediaImage
-                      src={coursePhoto(course.slug)}
-                      alt={course.title}
-                      style={{ minHeight: 140, height: 140 }}
-                    />
-                    <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', gap: 6 }}>
-                      <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 5, padding: '3px 10px', color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{course.category}</span>
-                      <span style={{ background: C.cream, border: `1px solid ${T.lineStrong}`, borderRadius: 5, padding: '3px 10px', color: C.ink, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{course.level}</span>
-                    </div>
-                  </div>
-                  <div style={{ padding: '20px 22px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 19, fontWeight: 600, color: C.ink, letterSpacing: '-0.02em', lineHeight: 1.25, margin: '0 0 10px' }}>{course.title}</h3>
-                    <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.65, margin: '0 0 16px', flex: 1 }}>{course.desc}</p>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 18 }}>
-                      {[['Duration', course.duration], ['Mode', course.mode], ['Lessons', String(lessonCount)], ['Projects', String(projectCount)]].map(([l, v]) => (
-                        <div key={l} style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '8px 10px' }}>
-                          <div className="skylent-label" style={{ color: C.slate, marginBottom: 3 }}>{l}</div>
-                          <div style={{ color: C.ink, fontSize: 12, fontWeight: 600 }}>{v}</div>
-                        </div>
+        </section>
+
+        <section className="cat-section">
+          <div className="cat-rail">
+            {filtered.length === 0 ? (
+              <p className="cat-empty">No courses match these filters.</p>
+            ) : (
+              <>
+                {ready.length > 0 ? (
+                  <div className="cat-group">
+                    <p className="cat-label">Ready to start</p>
+                    <div className="cat-list">
+                      {ready.map((view) => (
+                        <CourseRow key={view.slug} view={view} />
                       ))}
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-                      <div>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: C.ink }}>₹{price.toLocaleString('en-IN')}</span>
-                        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate, textDecoration: 'line-through', marginLeft: 8 }}>₹{originalPrice.toLocaleString('en-IN')}</span>
-                      </div>
-                      <Link to={`/courses/${course.slug}`} style={{ textDecoration: 'none' }}>
-                        <Button variant="primary" size="sm">View course</Button>
-                      </Link>
+                  </div>
+                ) : null}
+                {listings.length > 0 ? (
+                  <div className="cat-group">
+                    <p className="cat-label">Catalogue listings</p>
+                    <p className="cat-fine">These exist in the catalogue and LMS, but they are not as complete as Data Analytics.</p>
+                    <div className="cat-list">
+                      {listings.map((view) => (
+                        <CourseRow key={view.slug} view={view} />
+                      ))}
                     </div>
                   </div>
-                </GlassSurface>
-              </FadeIn>
-            )})}
+                ) : null}
+              </>
+            )}
           </div>
-        )}
-      </Section>
+        </section>
+      </div>
     </PageShell>
+  )
+}
+
+function CourseRow({ view }: { view: ReturnType<typeof coursePublicView> }) {
+  const stats = view.showLiveCurriculum
+    ? `${view.stats.lessonCount} lessons · ${view.delivery}`
+    : view.maturityLabel
+
+  return (
+    <Link className="cat-row" to={`/courses/${view.slug}`}>
+      <div>
+        <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
+          {view.maturityLabel}
+        </span>
+        <h3>{view.title}</h3>
+        <p>{view.summary}</p>
+        <div className="cat-meta">
+          <span>{view.course.level}</span>
+          <span>{stats}</span>
+        </div>
+      </div>
+      <span className={view.maturity === "ready" ? "cat-btn cat-btn-primary" : "cat-btn cat-btn-ghost"}>
+        {view.ctaLabel}
+      </span>
+    </Link>
   )
 }
