@@ -78,7 +78,7 @@ export default function CareerOSOverviewPage() {
           Career OS
         </h1>
         <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
-          Profile, applications, interview prep — and evidence from courses you actually enrolled in.
+          Profile, evidence from courses you enrolled in, and career tools when you need them.
         </p>
       </div>
 
@@ -166,7 +166,7 @@ export default function CareerOSOverviewPage() {
                   Open learner dashboard
                 </Link>
                 <Link to="/career-os/jobs" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  Browse jobs
+                  Opportunities
                 </Link>
                 <Link to="/career-os/applications" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
                   View applications

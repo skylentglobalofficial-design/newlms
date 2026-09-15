@@ -731,14 +731,18 @@ html, body {
 .skylent-public-canvas .skylent-site-nav .nav-links button[title="Search"] {
   color: #667078 !important;
 }
-.skylent-public-canvas .skylent-site-nav .nav-links a[style*="Sign In"],
-.skylent-public-canvas .skylent-site-nav .mobile-nav-overlay a {
+.skylent-public-canvas .skylent-site-nav .nav-links a[style*="Sign in"] {
   color: #080909 !important;
   border-color: rgba(8,9,9,.16) !important;
 }
-.skylent-public-canvas .skylent-site-nav .mobile-nav-overlay a[style*="padding: 9px 0"] {
-  color: #4f5854 !important;
+.skylent-public-canvas .skylent-site-nav .mobile-nav-overlay a.mobile-nav-link {
+  color: #15171A !important;
   border-bottom-color: rgba(8,9,9,.08) !important;
+}
+.skylent-public-canvas .skylent-site-nav .mobile-nav-overlay a.mobile-nav-cta {
+  color: #FFFDF8 !important;
+  background: #15171A !important;
+  border: none !important;
 }
 .skylent-public-canvas .skylent-site-nav .show-mobile span {
   background: #080909 !important;
