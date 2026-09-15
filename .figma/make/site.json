@@ -1,8 +1,8 @@
 {
-  "title": "demo",
-  "description": "Streamline your workflow with a user-friendly platform that allows teams to collaborate, manage tasks, and track project progress efficiently.",
+  "title": "Skylent",
+  "description": "Learn with written lessons, practice, and Career OS evidence. Enrollment in this environment does not collect payment. Certificates and live classes are not issued here.",
   "robots": {
-    "index": false
+    "index": true
   },
   "accessibility": {
     "addBypassLinks": false,
