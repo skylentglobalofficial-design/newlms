@@ -44,12 +44,12 @@ function AssignmentBriefView({ brief, accent }: { brief: AssignmentBrief; accent
         <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, margin: 0 }}>{brief.submissionFormat}</p>
       </section>
       <section>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Evaluation criteria</div>
+        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>What a complete submission includes</div>
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
             <thead>
               <tr>
-                {['Criterion', 'Weight', 'What a reviewer looks for'].map((h) => (
+                {['Criterion', 'Weight', 'What complete work shows'].map((h) => (
                   <th key={h} style={{ textAlign: 'left', color: C.ink, padding: '8px 10px', borderBottom: `1px solid ${accent.border}` }}>{h}</th>
                 ))}
               </tr>
@@ -77,7 +77,7 @@ function AssignmentBriefView({ brief, accent }: { brief: AssignmentBrief; accent
         <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, margin: 0 }}>{brief.extension}</p>
       </section>
       <section style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 16 }}>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Career OS evidence</div>
+        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Keep this work</div>
         <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, margin: '0 0 8px' }}>
           <strong style={{ color: C.ink }}>Learning →</strong> {brief.careerEvidence.learning}
         </p>
@@ -126,7 +126,7 @@ export function LessonContentView({
       <div className="lms-lesson-video lms-activity-surface lms-activity-video">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
           <div>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
+            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type, lesson.title)}</div>
             <h2 style={{ color: C.ink, fontSize: 18, fontWeight: 600, margin: 0, lineHeight: 1.3 }}>{lesson.title}</h2>
           </div>
           {lesson.duration && <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate }}>{lesson.duration}</span>}
@@ -152,26 +152,19 @@ export function LessonContentView({
     const fallback = `Written teaching material has not been authored for this lesson yet.\n\nThis is not the Data Analytics flagship, and a title is not a lesson. Mark complete only to record progress — not competence.`
     const notes = material?.body ?? fallback
     return (
-      <div className="lms-lesson-notes lms-activity-surface lms-activity-reading">
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: 16 }}>
-          <div style={{ background: C.white, border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)', maxWidth: 760 }}>
-            <LessonDocument markdown={notes} accent={accent} />
+      <div className="lms-lesson-notes">
+        <LessonDocument markdown={notes} accent={accent} />
+        {material?.datasets.length ? (
+          <div className="os-resources">
+            <p className="os-rail-kicker">Practice files</p>
+            {material.datasets.map((dataset) => (
+              <a key={dataset.filename} href={dataset.href} download>{dataset.filename}</a>
+            ))}
           </div>
-          <div style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 16 }}>
-            <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Resources</div>
-            {material?.datasets.length ? material.datasets.map((dataset) => (
-              <a key={dataset.filename} href={dataset.href} download style={{ display: 'block', color: C.blue, fontSize: 13, padding: '8px 0', borderBottom: `1px solid ${T.lineDark}`, textDecoration: 'none' }}>
-                {dataset.filename}
-              </a>
-            )) : (
-              <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.6 }}>No downloadable dataset is attached to this lesson.</div>
-            )}
-          </div>
-        </div>
+        ) : null}
         {!lessonState.complete && (
-          <button type="button" onClick={onComplete} style={{ marginTop: 20, background: accent.primary, border: 'none', color: C.white, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
-            Mark reading complete →
+          <button type="button" className="os-btn os-btn-primary" onClick={onComplete} style={{ marginTop: 24 }}>
+            Mark reading complete
           </button>
         )}
       </div>
@@ -181,8 +174,7 @@ export function LessonContentView({
   if (lesson.type === 'quiz') {
     const questions = quizQuestions ?? []
     return (
-      <div className="lms-lesson-quiz lms-activity-surface lms-activity-quiz" style={{ background: C.cream, border: `1px solid ${accent.border}`, borderRadius: T.rCard, padding: 'clamp(20px, 3vw, 28px)' }}>
-        <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
+      <div className="lms-lesson-quiz">
         {material?.body && (
           <div style={{ marginBottom: 20, maxWidth: 720 }}>
             <LessonDocument markdown={material.body} accent={accent} />
@@ -191,12 +183,12 @@ export function LessonContentView({
         {quizStatus === 'loading' ? (
           <div style={{ color: C.slate, fontSize: 14 }}>Quiz questions are loading…</div>
         ) : questions.length === 0 ? (
-          <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.6 }}>No quiz is configured for this lesson. Questions are course-specific and are not copied from Data Analytics.</div>
+          <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.6 }}>No quiz is configured for this lesson.</div>
         ) : (
           <AssessmentSurface
-            mode="timed"
+            mode="mcq"
             title={lesson.title}
-            subtitle="Answer all questions correctly to complete this lesson."
+            subtitle={`${questions.length} questions. Results appear after you submit.`}
             questions={questions}
             accent={accent}
             passed={lessonState.complete || lessonState.quizPassed}
@@ -209,8 +201,7 @@ export function LessonContentView({
   }
 
   return (
-    <div className="lms-lesson-assignment lms-activity-surface lms-activity-assignment" style={{ borderLeft: `3px solid ${accent.primary}`, paddingLeft: 20 }}>
-      <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>{lessonTypeLabel(lesson.type)}</div>
+    <div className="lms-lesson-assignment">
       {material?.body && (
         <div style={{ marginBottom: 16, maxWidth: 720 }}>
           <LessonDocument markdown={material.body} accent={accent} />
@@ -219,20 +210,20 @@ export function LessonContentView({
       {material?.assignment && <AssignmentBriefView brief={material.assignment} accent={accent} />}
       {!material?.assignment && (
         <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
-          A structured brief has not been authored for this assignment. Paste the work you can defend. There is no faculty grading in this pilot.
+          A structured brief has not been authored for this assignment. Paste the work you can defend. There is no grading in this pilot.
         </p>
       )}
       <AssessmentSurface
         mode="assignment"
         title={lesson.title}
-        subtitle={material?.assignment ? 'Paste your work below. Submission records progress; it is not a grade.' : 'Apply concepts from this module. Submission records progress; it is not a faculty grade.'}
+        subtitle={material?.assignment ? 'Paste your work below. Submission records progress; it is not a grade.' : 'Apply concepts from this module. Submission records progress; it is not a grade.'}
         accent={accent}
         passed={lessonState.complete || lessonState.assignmentSubmitted}
         onSubmitAssignment={(text) => { void onAssignmentSubmit?.(text) }}
         completionNote={
           evidence
-            ? `Submission recorded. There is no faculty grading in this pilot. Add “${evidence.artifact}” to Career OS → Projects yourself if you want it as portfolio evidence.`
-            : 'Submission recorded. There is no faculty grading in this pilot. Add a project to Career OS yourself if you want portfolio evidence.'
+            ? `Submission recorded. There is no grading in this pilot. Add “${evidence.artifact}” to Career OS → Projects yourself if you want it as portfolio evidence.`
+            : 'Submission recorded. There is no grading in this pilot. Add a project to Career OS yourself if you want portfolio evidence.'
         }
       />
     </div>
@@ -253,15 +244,15 @@ export function LessonNavigation({
   onNavigate: (id: string) => void
 }) {
   return (
-    <div className="lms-lesson-nav" style={{ display: 'flex', justifyContent: 'space-between', gap: 12, marginTop: 28, paddingTop: 20, borderTop: `1px solid ${T.lineDark}`, flexWrap: 'wrap' }}>
+    <div className="os-actions">
       {prev ? (
-        <button type="button" onClick={() => onNavigate(prev.id)} style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: T.rControl, padding: '10px 16px', color: C.ink, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', textAlign: 'left', maxWidth: '48%' }}>
-          ← {prev.title}
+        <button type="button" className="os-btn os-btn-ghost" onClick={() => onNavigate(prev.id)}>
+          Previous: {prev.title}
         </button>
       ) : <div />}
       {next ? (
-        <Link to={`/learn/${courseSlug}/${next.id}`} onClick={() => onNavigate(next.id)} style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rControl, padding: '10px 16px', color: accent.text, fontSize: 13, textDecoration: 'none', textAlign: 'right', maxWidth: '48%' }}>
-          {next.title} →
+        <Link className="os-btn os-btn-primary" to={`/learn/${courseSlug}/${next.id}`} onClick={() => onNavigate(next.id)}>
+          Next: {next.title}
         </Link>
       ) : null}
     </div>

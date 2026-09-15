@@ -7,7 +7,6 @@ export { default as MuxVideoPlaceholder } from './MuxVideoPlaceholder'
 export {
   LearningWorkspacePanel,
   CurriculumProgressRail,
-  StudentProgressSurface,
   StudentActionRail,
 } from './StudentDashboard'
 export * from './lms-utils'

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { C, T } from '../../tokens'
 
 export type QuizQuestion = { q: string; options: string[]; correct?: number; explanation?: string }
@@ -30,7 +30,6 @@ export function AssessmentSurface({
 }) {
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [submitted, setSubmitted] = useState(false)
-  const [elapsed, setElapsed] = useState(0)
   const [text, setText] = useState('')
   const [assignmentDone, setAssignmentDone] = useState(false)
   const [serverPassed, setServerPassed] = useState<boolean | null>(null)
@@ -43,15 +42,6 @@ export function AssessmentSurface({
     ? (serverPassed ? qs.length : 0)
     : qs.filter((q, i) => q.correct !== undefined && answers[i] === q.correct).length
   const allCorrect = usesServerGrading ? serverPassed === true : correct === qs.length
-  const timed = mode === 'timed'
-
-  useEffect(() => {
-    if (mode === 'assignment' || passed) return
-    const id = window.setInterval(() => setElapsed(s => s + 1), 1000)
-    return () => window.clearInterval(id)
-  }, [mode, passed])
-
-  const timerLabel = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`
 
   if (mode === 'assignment') {
     if (assignmentDone || passed) {
@@ -59,7 +49,7 @@ export function AssessmentSurface({
         <div style={{ textAlign: 'center', padding: '32px 0' }}>
           <div style={{ color: C.ink, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Submission recorded</div>
           <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.7, maxWidth: 520, margin: '0 auto' }}>
-            {completionNote ?? 'There is no faculty grading in this pilot. Record the artifact on Career OS → Projects if you want portfolio evidence.'}
+            {completionNote ?? 'There is no grading in this pilot. Record the artifact on Career OS → Projects if you want portfolio evidence.'}
           </div>
           <a href="/career-os/profile" style={{ display: 'inline-block', marginTop: 14, color: accent.text, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
             Open Career OS Projects →
@@ -147,11 +137,6 @@ export function AssessmentSurface({
           <div style={{ color: C.ink, fontSize: 16, fontWeight: 600 }}>{title}</div>
           {subtitle && <div style={{ color: C.slate, fontSize: 13, marginTop: 4 }}>{subtitle}</div>}
         </div>
-        {timed && (
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text, background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rPill, padding: '5px 12px' }}>
-            {timerLabel}
-          </div>
-        )}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
         <div style={{ flex: 1, height: 4, background: C.sand, borderRadius: 2, maxWidth: 280 }}>

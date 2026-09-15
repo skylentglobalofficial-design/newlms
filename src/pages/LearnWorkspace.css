@@ -1,0 +1,498 @@
+/* Phase 6 — Skylent OS student learning workspace (light only) */
+
+.os-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: #f7f4ec;
+  color: #15171a;
+  font-family: var(--font-body);
+}
+
+.os-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(21, 23, 26, 0.28);
+}
+
+.os-rail {
+  display: flex;
+  flex-direction: column;
+  width: 300px;
+  flex-shrink: 0;
+  min-width: 0;
+  background: #fffdf8;
+  border-right: 1px solid #e8e2d6;
+}
+
+.os-rail-head {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid #e8e2d6;
+}
+
+.os-rail-brand {
+  display: inline-block;
+  margin: 0 0 14px;
+  color: #15171a;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.os-rail-brand span {
+  color: #f97316;
+}
+
+.os-rail-kicker {
+  margin: 0;
+  color: #5c6168;
+  font: 11px/1.2 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.os-rail-title {
+  margin: 6px 0 0;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.os-progress {
+  margin-top: 14px;
+}
+
+.os-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  color: #5c6168;
+  font-size: 12px;
+}
+
+.os-progress-bar {
+  height: 4px;
+  margin-top: 8px;
+  overflow: hidden;
+  background: #e8e2d6;
+}
+
+.os-progress-bar > span {
+  display: block;
+  height: 100%;
+  background: #4f46e5;
+}
+
+.os-rail-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0 24px;
+}
+
+.os-module {
+  padding: 14px 0 6px;
+}
+
+.os-module-label {
+  padding: 0 18px 8px;
+  color: #5c6168;
+  font: 11px/1.3 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.os-lesson {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 10px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 18px;
+  border: 0;
+  border-left: 3px solid transparent;
+  background: none;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.os-lesson:focus-visible,
+.os-top button:focus-visible,
+.os-btn:focus-visible,
+.os-link:focus-visible,
+.os-rail-close:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.os-lesson.is-current {
+  border-left-color: #4f46e5;
+  background: #eef2ff;
+}
+
+.os-lesson:disabled {
+  cursor: not-allowed;
+}
+
+.os-lesson:not(:disabled):hover {
+  background: #f7f4ec;
+}
+
+.os-lesson.is-current:not(:disabled):hover {
+  background: #eef2ff;
+}
+
+.os-lesson-title {
+  display: block;
+  color: #15171a;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.os-lesson:disabled .os-lesson-title {
+  color: #6e737a;
+}
+
+.os-lesson-meta {
+  display: block;
+  margin-top: 3px;
+  color: #5c6168;
+  font-size: 11px;
+}
+
+.os-rail-close {
+  display: none;
+  margin: 0 0 12px;
+  padding: 8px 0;
+  border: 0;
+  background: none;
+  color: #5c6168;
+  font-size: 13px;
+  font-family: var(--font-body);
+  cursor: pointer;
+}
+
+.os-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  background: #f7f4ec;
+}
+
+.os-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 56px;
+  padding: 0 20px;
+  border-bottom: 1px solid #e8e2d6;
+  background: #f7f4ec;
+}
+
+.os-menu {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #15171a;
+  cursor: pointer;
+}
+
+.os-top-link,
+.os-top button.os-top-link {
+  color: #5c6168;
+  font-size: 13px;
+  text-decoration: none;
+  background: none;
+  border: 0;
+  padding: 8px 0;
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+
+.os-top-course {
+  min-width: 0;
+  overflow: hidden;
+  color: #15171a;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.os-top-progress {
+  margin-left: auto;
+  color: #5c6168;
+  font: 12px/1 var(--font-mono);
+  flex-shrink: 0;
+}
+
+.os-stage {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 28px 24px 48px;
+}
+
+.os-article {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.os-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 0;
+  color: #5c6168;
+  font: 11px/1.2 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.os-kicker strong {
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.os-article h1 {
+  margin: 10px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 4vw, 36px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.os-lead {
+  margin: 12px 0 0;
+  max-width: 40em;
+  color: #5c6168;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.os-status {
+  margin: 16px 0 0;
+  color: #5c6168;
+  font-size: 13px;
+}
+
+.os-status.is-done {
+  color: #15803d;
+}
+
+.os-paper {
+  margin-top: 24px;
+  padding-top: 8px;
+}
+
+.os-note {
+  margin: 18px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid #e8e2d6;
+  color: #5c6168;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.os-banner {
+  margin: 0 0 24px;
+  padding: 18px 0;
+  border-top: 1px solid #e8e2d6;
+  border-bottom: 1px solid #e8e2d6;
+}
+
+.os-banner h2 {
+  margin: 6px 0 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.os-resources {
+  margin-top: 20px;
+}
+
+.os-resources a {
+  display: block;
+  padding: 8px 0;
+  color: #2563eb;
+  font-size: 14px;
+}
+
+.os-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #e8e2d6;
+}
+
+.os-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  color: #15171a;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.os-btn-primary {
+  background: #4f46e5;
+  color: #ffffff;
+}
+
+.os-btn-primary:hover {
+  background: #2563eb;
+}
+
+.os-btn-ghost {
+  border-color: rgba(21, 23, 26, 0.16);
+}
+
+.os-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.os-link {
+  color: #4f46e5;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.os-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 100vh;
+  padding: 24px;
+  background: #f7f4ec;
+  text-align: center;
+}
+
+.os-state h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.os-state p {
+  margin: 0;
+  max-width: 26em;
+  color: #5c6168;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.os-error {
+  margin: 12px 0 0;
+  color: #b91c1c;
+  font-size: 13px;
+}
+
+.dash-continue {
+  padding: 8px 0 20px;
+  border-bottom: 1px solid #e8e2d6;
+}
+
+.dash-continue h1 {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.dash-continue p {
+  margin: 10px 0 0;
+  color: #5c6168;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.dash-empty h1,
+.dash-error h1 {
+  margin: 0 0 10px;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .os-rail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 210;
+    width: min(88vw, 320px);
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+
+  .os-rail.is-open {
+    transform: translateX(0);
+  }
+
+  .os-rail-close,
+  .os-menu {
+    display: inline-flex;
+  }
+
+  .os-top-course {
+    max-width: 46vw;
+  }
+}
+
+@media (max-width: 430px) {
+  .os-stage {
+    padding: 20px 16px 40px;
+  }
+
+  .os-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .os-btn {
+    width: 100%;
+  }
+
+  .os-article h1 {
+    font-size: 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-rail,
+  .os-progress-bar > span {
+    transition: none;
+  }
+}
