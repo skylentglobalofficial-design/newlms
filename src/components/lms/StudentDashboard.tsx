@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import { C, T } from '../../tokens'
 import type { CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
 import { computeModuleProgress, isLessonUnlocked, lessonTypeLabel, type LmsCourseView } from './lms-utils'
@@ -18,10 +17,10 @@ export function LearningWorkspacePanel({
   moduleTotal,
   lessonTitle,
   lessonType,
+  lessonDuration,
   nextLessonTitle,
   learnSlug,
   lessonId,
-  accent,
   started,
 }: {
   courseTitle: string
@@ -34,6 +33,7 @@ export function LearningWorkspacePanel({
   moduleTotal: number
   lessonTitle: string
   lessonType: string
+  lessonDuration?: string
   nextLessonTitle: string | null
   learnSlug: string
   lessonId: string
@@ -42,30 +42,34 @@ export function LearningWorkspacePanel({
 }) {
   return (
     <section className="dash-continue" id="student-learning">
-      <p className="os-rail-kicker">Continue learning</p>
-      <h1>{lessonTitle}</h1>
-      <p>
-        {courseTitle}
-        {programName ? ` · Opened through ${programName}` : ''}
-      </p>
-      <p>
-        Module {moduleIndex} of {moduleTotal} · {moduleTitle}
-        {lessonType ? ` · ${lessonType}` : ''}
-      </p>
-      <div className="os-progress" style={{ maxWidth: 420, marginTop: 18 }}>
+      <p className="os-eyebrow">Continue learning</p>
+      <h2>{courseTitle}</h2>
+      {programName ? (
+        <p className="dash-continue-meta">Opened through {programName}</p>
+      ) : null}
+      <div className="os-progress">
         <div className="os-progress-meta">
-          <span>{completedCount} of {totalLessons} lessons complete</span>
+          <span>{completedCount} of {totalLessons} lessons</span>
+          <span>{progressPct}%</span>
         </div>
         <div className="os-progress-bar" aria-hidden="true">
-          <span style={{ width: `${progressPct}%`, background: accent.primary }} />
+          <span style={{ width: `${progressPct}%` }} />
         </div>
       </div>
-      {programName ? (
-        <p>This workspace is the linked course, not a separate taught programme.</p>
-      ) : null}
-      <p style={{ marginTop: 12 }}>
-        {nextLessonTitle ? `After this: ${nextLessonTitle}` : 'Finish the current lesson, then continue.'}
-      </p>
+      <div className="dash-continue-lesson">
+        <p className="os-eyebrow">Current lesson</p>
+        <h3>{lessonTitle}</h3>
+        <p className="dash-continue-meta">
+          Module {moduleIndex} of {moduleTotal} · {moduleTitle}
+          {lessonType ? ` · ${lessonType}` : ''}
+          {lessonDuration ? ` · ${lessonDuration}` : ''}
+        </p>
+      </div>
+      {nextLessonTitle ? (
+        <p className="dash-continue-meta" style={{ marginTop: 12 }}>Next: {nextLessonTitle}</p>
+      ) : (
+        <p className="dash-continue-meta" style={{ marginTop: 12 }}>Finish this lesson, then continue.</p>
+      )}
       <div className="os-actions">
         <Link className="os-btn os-btn-primary" to={lessonId ? `/learn/${learnSlug}/${lessonId}` : `/learn/${learnSlug}`}>
           {started ? 'Continue' : 'Start'}
@@ -78,7 +82,6 @@ export function LearningWorkspacePanel({
 export function CurriculumProgressRail({
   course,
   lessonStates,
-  accent,
   learnSlug,
 }: {
   course: LmsCourseView
@@ -88,32 +91,33 @@ export function CurriculumProgressRail({
 }) {
   const allLessons = course.modules.flatMap((module) => module.lessons)
   return (
-    <div id="student-curriculum" style={{ marginTop: 28 }}>
-      <p className="os-rail-kicker">Where you are</p>
+    <div className="dash-modules" id="student-curriculum">
+      <p className="os-eyebrow" style={{ marginBottom: 10 }}>Course map</p>
       {course.modules.map((mod: CourseModule, mi: number) => {
         const mp = computeModuleProgress(mod, lessonStates)
         const currentUnlocked = Boolean(mp.current && isLessonUnlocked(mp.current.id, allLessons, lessonStates))
         return (
-          <div key={mod.id} style={{ padding: '16px 0', borderTop: mi === 0 ? 'none' : `1px solid ${T.lineLight}` }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+          <div key={mod.id} className="dash-module">
+            <div className="dash-module-row">
               <div style={{ minWidth: 0 }}>
-                <div style={{ color: C.ink, fontSize: 15, fontWeight: currentUnlocked ? 600 : 500 }}>
-                  Module {mi + 1} · {mod.title}
+                <div className="dash-module-title">
+                  {String(mi + 1).padStart(2, '0')} · {mod.title}
                 </div>
                 {currentUnlocked && mp.current ? (
-                  <div style={{ color: C.slate, fontSize: 13, marginTop: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <LessonIcon type={mp.current.type} size={12} color={accent.text} />
+                  <div className="dash-continue-meta" style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 6 }}>
+                    <LessonIcon type={mp.current.type} size={12} color="#4f46e5" />
                     {mp.current.title} · {lessonTypeLabel(mp.current.type, mp.current.title)}
                   </div>
                 ) : mp.complete ? (
-                  <div style={{ color: C.success, fontSize: 13, marginTop: 6 }}>Completed</div>
+                  <div className="dash-continue-meta" style={{ marginTop: 6, color: '#15803d' }}>Completed</div>
                 ) : (
-                  <div style={{ color: C.slate, fontSize: 13, marginTop: 6 }}>Locked until earlier lessons are complete</div>
+                  <div className="dash-continue-meta" style={{ marginTop: 6 }}>Locked until earlier lessons are complete</div>
                 )}
               </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate }}>
-                {mp.completed}/{mp.total}
-              </span>
+              <span className="dash-continue-meta">{mp.completed}/{mp.total}</span>
+            </div>
+            <div className="os-progress-bar" aria-hidden="true">
+              <span style={{ width: `${mp.pct}%` }} />
             </div>
             {currentUnlocked && mp.current ? (
               <Link className="os-link" to={`/learn/${learnSlug}/${mp.current.id}`} style={{ display: 'inline-block', marginTop: 10 }}>
@@ -129,52 +133,77 @@ export function CurriculumProgressRail({
 
 export function StudentActionRail({
   pendingTasks,
+  practiceTasks,
   recentActivity,
   evidenceTitle,
   evidenceDetail,
-  accent,
 }: {
-  pendingTasks: Array<{ title: string; detail: string; href: string; label: string }>
+  pendingTasks: Array<{ title: string; detail: string; href: string; label: string; locked?: boolean }>
+  practiceTasks?: Array<{ title: string; detail: string; href: string; label: string; locked?: boolean }>
   recentActivity: Array<{ label: string; detail: string; href: string }>
   evidenceTitle: string
   evidenceDetail: string
   accent: Accent
 }) {
+  const practice = practiceTasks ?? pendingTasks.filter((item) => item.label === 'Quiz' || item.label === 'Assignment' || item.label === 'Capstone')
+  const upcoming = pendingTasks.filter((item) => !practice.some((row) => row.href === item.href && row.title === item.title))
+
   return (
     <div id="student-rail">
-      <div style={{ marginBottom: 24 }}>
-        <p className="os-rail-kicker">Up next</p>
-        {pendingTasks.length === 0 ? (
-          <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.6 }}>No practice waiting. Continue from your current lesson.</p>
+      <section className="dash-card">
+        <h2>Upcoming</h2>
+        {upcoming.length === 0 ? (
+          <p className="dash-empty-copy">No further unlocked lessons yet. Continue from your current lesson.</p>
         ) : (
-          pendingTasks.map((item, i) => (
-            <Link key={item.label + item.title} to={item.href} style={{ display: 'block', padding: '14px 0', borderBottom: i < pendingTasks.length - 1 ? `1px solid ${T.lineLight}` : 'none', textDecoration: 'none', color: 'inherit' }}>
-              <div style={{ color: accent.text, fontSize: 11, letterSpacing: '0.08em', marginBottom: 4, fontFamily: 'var(--font-mono)' }}>{item.label}</div>
-              <div style={{ color: C.ink, fontSize: 14, fontWeight: 500, marginBottom: 3 }}>{item.title}</div>
-              <div style={{ color: C.slate, fontSize: 12 }}>{item.detail}</div>
+          upcoming.map((item) => {
+            const body = (
+              <>
+                <div className="dash-item-label">{item.locked ? `${item.label} · Locked` : item.label}</div>
+                <div className="dash-item-title">{item.title}</div>
+                <div className="dash-item-detail">{item.detail}</div>
+              </>
+            )
+            return item.locked ? (
+              <div key={item.label + item.title} className="dash-item">{body}</div>
+            ) : (
+              <Link key={item.label + item.title} to={item.href} className="dash-item">{body}</Link>
+            )
+          })
+        )}
+      </section>
+      <section className="dash-card">
+        <h2>Practice and work</h2>
+        {practice.length === 0 ? (
+          <p className="dash-empty-copy">Quizzes and assignments appear here when they unlock.</p>
+        ) : (
+          practice.map((item) => (
+            <Link key={`practice-${item.title}`} to={item.href} className="dash-item">
+              <div className="dash-item-label">{item.label}</div>
+              <div className="dash-item-title">{item.title}</div>
+              <div className="dash-item-detail">{item.detail}</div>
             </Link>
           ))
         )}
-      </div>
-      <div style={{ marginBottom: 24, paddingTop: 20, borderTop: `1px solid ${T.lineLight}` }}>
-        <p className="os-rail-kicker">Recent learning</p>
+      </section>
+      <section className="dash-card">
+        <h2>Recent learning</h2>
         {recentActivity.length === 0 ? (
-          <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.6 }}>No completed work yet. It will appear here as you finish lessons.</p>
+          <p className="dash-empty-copy">Completed lessons will appear here.</p>
         ) : (
-          recentActivity.map((item, i) => (
-            <Link key={item.label} to={item.href} style={{ display: 'block', padding: '10px 0', borderBottom: i < recentActivity.length - 1 ? `1px solid ${T.lineLight}` : 'none', textDecoration: 'none', color: 'inherit' }}>
-              <div style={{ color: C.slate, fontSize: 13 }}>{item.label}</div>
-              <div style={{ color: C.slate, fontSize: 12, marginTop: 2 }}>{item.detail}</div>
+          recentActivity.map((item) => (
+            <Link key={item.label} to={item.href} className="dash-item">
+              <div className="dash-item-title">{item.label}</div>
+              <div className="dash-item-detail">{item.detail}</div>
             </Link>
           ))
         )}
-      </div>
-      <div style={{ paddingTop: 20, borderTop: `1px solid ${T.lineLight}` }}>
-        <p className="os-rail-kicker">Learning evidence</p>
-        <div style={{ color: C.ink, fontSize: 14, fontWeight: 500, margin: '8px 0 6px' }}>{evidenceTitle}</div>
-        <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.55, marginBottom: 12 }}>{evidenceDetail}</div>
+      </section>
+      <section className="dash-card">
+        <h2>Learning evidence</h2>
+        <div className="dash-item-title">{evidenceTitle}</div>
+        <p className="dash-empty-copy" style={{ margin: '6px 0 12px' }}>{evidenceDetail}</p>
         <Link className="os-link" to="/career-os">View in Career OS</Link>
-      </div>
+      </section>
     </div>
   )
 }

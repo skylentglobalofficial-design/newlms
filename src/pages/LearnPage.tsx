@@ -319,18 +319,42 @@ export default function LearnPage() {
           <button ref={menuBtnRef} type="button" className="os-menu" onClick={() => setSidebarOpen(true)} aria-label="Open curriculum" aria-expanded={sidebarOpen} aria-controls="os-curriculum">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
-          <button type="button" className="os-top-link" onClick={() => navigate(dashRoute(user?.role))}>
-            Dashboard
-          </button>
-          <span className="os-top-course">{readyCourse.title}</span>
-          <div className="os-top-progress">{completedCount}/{totalLessons} · {progressPct}%</div>
+          <nav className="os-crumb" aria-label="Course location">
+            <button type="button" className="os-top-link" onClick={() => navigate(dashRoute(user?.role))} aria-label="Dashboard">
+              <svg className="os-top-dash-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+              <span className="os-top-dash-label">Dashboard</span>
+            </button>
+            <span className="os-crumb-sep" aria-hidden="true">→</span>
+            <span className="os-top-course">{readyCourse.title}</span>
+            {selectedLesson ? (
+              <>
+                <span className="os-crumb-sep os-crumb-sep-lesson" aria-hidden="true">→</span>
+                <span className="os-top-lesson">{selectedLesson.title}</span>
+              </>
+            ) : null}
+          </nav>
+          <div
+            className="os-top-progress"
+            aria-label={`${completedCount} of ${totalLessons} lessons complete, ${progressPct} percent`}
+          >
+            <span>{completedCount} / {totalLessons}</span>
+            <div className="os-progress-bar" aria-hidden="true">
+              <span style={{ width: `${progressPct}%` }} />
+            </div>
+            <span>{progressPct}%</span>
+          </div>
         </header>
 
         <div className="os-stage">
           <div className="os-article">
             {allComplete ? (
               <div className="os-banner">
-                <p className="os-rail-kicker">Course complete</p>
+                <p className="os-eyebrow">Course complete</p>
                 <h2>{readyCourse.title}</h2>
                 <p className="os-lead">You have finished every lesson in this workspace. Certificates are not issued in this pilot. You can carry learning evidence into Career OS.</p>
                 <div className="os-actions">
@@ -342,7 +366,9 @@ export default function LearnPage() {
             {selectedLesson ? (
               <>
                 <p className="os-kicker">
-                  <strong>{lessonTypeLabel(selectedLesson.type, selectedLesson.title)}</strong>
+                  <span className="lx-type-pill">
+                    <strong>{lessonTypeLabel(selectedLesson.type, selectedLesson.title)}</strong>
+                  </span>
                   <span>{selectedLesson.duration ?? 'Self-paced'}</span>
                   <span>{currentModule?.title ?? 'Current module'}</span>
                 </p>
@@ -388,13 +414,21 @@ export default function LearnPage() {
                   )}
                 </div>
                 {actionError ? <p className="os-error">{actionError}</p> : null}
-                <LessonNavigation
-                  prev={prevUnlocked}
-                  next={nextUnlocked}
-                  courseSlug={readyCourse.slug}
-                  accent={roleAccent}
-                  onNavigate={handleLessonSelect}
-                />
+                {!selectedState.locked ? (
+                  <LessonNavigation
+                    prev={prevUnlocked}
+                    next={nextUnlocked}
+                    nextPreview={next}
+                    courseSlug={readyCourse.slug}
+                    accent={roleAccent}
+                    onNavigate={handleLessonSelect}
+                    completeAction={
+                      selectedLesson.type === 'notes' && !selectedState.complete
+                        ? { label: 'Mark lesson complete', onClick: () => { void handleLessonComplete() } }
+                        : undefined
+                    }
+                  />
+                ) : null}
               </>
             ) : (
               <p className="os-lead">This lesson is unavailable. Choose another from the curriculum.</p>
