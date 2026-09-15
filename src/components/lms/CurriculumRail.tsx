@@ -30,9 +30,10 @@ function StateGlyph({
   }
   if (locked) {
     return (
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6e737a" strokeWidth="2" aria-hidden="true">
-        <rect x="3" y="11" width="18" height="11" rx="2" />
-        <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6e737a" strokeWidth="2" aria-hidden="true">
+        <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+        <rect x="5" y="11" width="14" height="10" rx="2" />
+        <circle cx="12" cy="16" r="1.2" fill="#6e737a" stroke="none" />
       </svg>
     )
   }
@@ -102,9 +103,11 @@ export default function CurriculumRail({
                 <div className="os-module-meta">
                   {mod.lessons.length} {mod.lessons.length === 1 ? 'activity' : 'activities'} · {mp.completed}/{mp.total}
                 </div>
-                <div className="os-module-track" aria-hidden="true">
-                  <span style={{ width: `${mp.pct}%` }} />
-                </div>
+                {mp.pct > 0 ? (
+                  <div className="os-module-track" aria-hidden="true">
+                    <span style={{ width: `${mp.pct}%` }} />
+                  </div>
+                ) : null}
               </div>
               {mod.lessons.map((lesson: CourseLesson) => {
                 const unlocked = isLessonUnlocked(lesson.id, allLessons, lessonStates)
@@ -136,6 +139,7 @@ export default function CurriculumRail({
                       <span className="os-lesson-meta">
                         {lessonTypeLabel(lesson.type, lesson.title)}
                         {lesson.duration ? ` · ${lesson.duration}` : ''}
+                        {!unlocked ? ' · Locked' : ''}
                       </span>
                     </span>
                   </button>

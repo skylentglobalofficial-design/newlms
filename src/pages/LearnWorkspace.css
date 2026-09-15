@@ -230,6 +230,10 @@
   font-weight: 500;
 }
 
+.os-lesson.is-locked .os-lesson-meta {
+  color: #8a8f96;
+}
+
 .os-lesson-meta {
   display: block;
   margin-top: 2px;
@@ -674,9 +678,17 @@
 .lx-doc ul,
 .lx-doc ol {
   margin: 0 0 16px;
-  padding-left: 1.25em;
+  padding-left: 1.4em;
   font-size: 16px;
   line-height: 1.65;
+}
+
+.lx-doc ul {
+  list-style: disc;
+}
+
+.lx-doc ol {
+  list-style: decimal;
 }
 
 .lx-doc li {
@@ -1009,8 +1021,7 @@
   font-family: var(--font-body);
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }
 
 .as-block p,
@@ -1025,6 +1036,14 @@
 .as-block ul {
   margin: 0;
   padding-left: 1.2em;
+}
+
+.as-block ul {
+  list-style: disc;
+}
+
+.as-block ol {
+  list-style: decimal;
 }
 
 .as-block li {
@@ -1296,14 +1315,8 @@
 }
 
 @media (max-width: 430px) {
-  .lx-footer {
-    position: sticky;
-    bottom: 8px;
-    z-index: 6;
-  }
-
   .os-stage {
-    padding: 16px 14px 36px;
+    padding: 16px 14px 48px;
   }
 
   .os-top {

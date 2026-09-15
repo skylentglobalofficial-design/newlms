@@ -116,9 +116,11 @@ export function CurriculumProgressRail({
               </div>
               <span className="dash-continue-meta">{mp.completed}/{mp.total}</span>
             </div>
-            <div className="os-progress-bar" aria-hidden="true">
-              <span style={{ width: `${mp.pct}%` }} />
-            </div>
+            {mp.pct > 0 ? (
+              <div className="os-progress-bar" aria-hidden="true">
+                <span style={{ width: `${mp.pct}%` }} />
+              </div>
+            ) : null}
             {currentUnlocked && mp.current ? (
               <Link className="os-link" to={`/learn/${learnSlug}/${mp.current.id}`} style={{ display: 'inline-block', marginTop: 10 }}>
                 Continue this module
