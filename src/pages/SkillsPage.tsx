@@ -108,7 +108,11 @@ function IntentResults({ intentId }: { intentId: LearnIntentId }) {
   const matches = liveMatchesForIntent(intentId)
   const capabilities = capabilitiesForIntent(intentId)
   const ready = matches.filter((match) => match.depth === "authored")
-  const listings = matches.filter((match) => match.depth !== "authored")
+  const listings = matches.filter((match) => {
+    if (match.depth === "authored") return false
+    if (ready.length > 0 && match.kind === "programme") return false
+    return true
+  })
   const fromAuthored = ready.length > 0
 
   return (
