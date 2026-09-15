@@ -2,6 +2,8 @@ import cors from "cors"
 import express from "express"
 import rateLimit from "express-rate-limit"
 
+import { configuredFrontendOrigin, railwayHttpsOrigin } from "./public-origin.js"
+
 export const JSON_BODY_LIMIT = process.env.JSON_BODY_LIMIT ?? "512kb"
 
 export function getAllowedOrigins(): string[] {
@@ -13,8 +15,10 @@ export function getAllowedOrigins(): string[] {
   if (explicit.length > 0) return explicit
 
   const origins = new Set<string>()
-  const frontend = process.env.FRONTEND_URL?.trim()
+  const frontend = configuredFrontendOrigin()
   if (frontend) origins.add(frontend)
+  const railway = railwayHttpsOrigin()
+  if (railway) origins.add(railway)
 
   if (process.env.NODE_ENV !== "production") {
     for (const port of [5173, 8443, 3000, 4173]) {

@@ -24,11 +24,9 @@ export function parseEnrollTarget(
   return { kind, slug: normalized }
 }
 
-export function frontendOrigin(): string {
-  const configured = process.env.FRONTEND_URL?.trim()
-  if (configured) return configured.replace(/\/$/, "")
-  return "http://localhost:5173"
-}
+import { frontendOrigin } from "./public-origin.js"
+
+export { frontendOrigin }
 
 export function oauthErrorRedirect(message = "oauth"): string {
   const origin = frontendOrigin()

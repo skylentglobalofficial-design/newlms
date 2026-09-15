@@ -18,8 +18,23 @@ import { facultyRouter } from './routes/faculty.js'
 import { organisationRouter } from './routes/organisation.js'
 import { careerRouter } from './routes/career/index.js'
 
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.DATABASE_URL?.trim()) {
+    console.error('DATABASE_URL is required in production')
+    process.exit(1)
+  }
+  if (!process.env.SESSION_SECRET?.trim()) {
+    console.error('SESSION_SECRET is required in production')
+    process.exit(1)
+  }
+  if (!process.env.DIRECT_URL?.trim()) {
+    process.env.DIRECT_URL = process.env.DATABASE_URL
+  }
+}
+
 const app = express()
 const port = Number(process.env.PORT ?? 3000)
+const host = process.env.HOST ?? '0.0.0.0'
 
 app.use(createCorsMiddleware())
 app.use(jsonBodyParser())
@@ -69,8 +84,8 @@ app.use((error: unknown, _request: express.Request, response: express.Response, 
   response.status(500).json({ error: 'Internal server error' })
 })
 
-app.listen(port, () => {
-  console.log(`API listening on port ${port}`)
+app.listen(port, host, () => {
+  console.log(`API listening on ${host}:${port}`)
 })
 
 export default app
