@@ -278,8 +278,11 @@ async function main() {
       assert(resolveAiProvider() === null, "invalid base URL must not build a provider")
     },
   )
+  withEnv({ SKYLENT_AI_TIMEOUT_MS: "15000" }, () => {
+    assert(readProviderTimeoutMs() === 15_000, "timeout env should parse")
+  })
   withEnv({ SKYLENT_AI_TIMEOUT_MS: "80" }, () => {
-    assert(readProviderTimeoutMs() === 80, "timeout env should parse")
+    assert(readProviderTimeoutMs() === 30_000, "sub-second timeout should fall back")
   })
   withEnv({ SKYLENT_AI_TIMEOUT_MS: "0" }, () => {
     assert(readProviderTimeoutMs() === 30_000, "too-small timeout should fall back")

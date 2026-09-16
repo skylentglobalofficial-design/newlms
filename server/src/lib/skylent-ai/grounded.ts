@@ -83,7 +83,10 @@ function keywordHits(excerpt: string, question: string): string {
       for (const term of terms) {
         if (lower.includes(term)) score += 1
       }
+      if (score === 0) return { block: trimmed, score: 0 }
       if (phrase && lower.includes(phrase)) score += 3
+      if (/166 valid rows|valid-row rule|units > 0/.test(lower)) score += 4
+      if (/net_revenue =/.test(lower)) score += 4
       return { block: trimmed, score }
     })
     .filter((row) => row.score >= Math.min(2, terms.length) && row.block.length > 40)
@@ -137,35 +140,43 @@ export function groundedAnswer(input: AiAskInput): string {
     return offTopicAnswer(question, context.lessonTitle)
   }
 
-  if (/how many valid rows|valid rows (are there|in the extract|in this)/i.test(question)) {
-    return context.northwind
-      ? `The extract has ${context.northwind.rows} order lines. After the valid-row rule (units > 0, unit_price > 0, returned = no) you should count ${context.northwind.validRows} valid rows (${context.northwind.excludedRows} excluded).`
-      : `Use the valid-row rule in “${context.lessonTitle}”.`
-  }
+  if (!waitingForQuiz && !waitingForPractice) {
+    if (/why (are|do we|should we) (invalid rows )?(removed|remove)|why (can't|cannot) i include (negative|invalid)/i.test(question) || /why.*invalid rows/i.test(question)) {
+      return `Invalid rows would poison a total. Negative units, zero price, and returned = yes are not valid sales in this course. The valid-row rule keeps units > 0, unit_price > 0, and returned = no so net revenue is defensible. In this extract that leaves ${context.northwind?.validRows ?? 166} of ${context.northwind?.rows ?? 180} rows and ${context.northwind?.netRevenueLabel ?? "₹812,020"}.`
+    }
 
-  if (/total valid net revenue|valid net revenue|headline (total|net revenue)/i.test(question)) {
-    return context.northwind
-      ? `Valid net revenue in this extract is ${context.northwind.netRevenueLabel}, using only the ${context.northwind.validRows} valid rows in ${context.northwind.window}.`
-      : `State the metric, the period, and the valid-row rule from this lesson.`
-  }
+    if (/how many valid rows|(?:^|[^a-z])valid[- ]rows?|valid-row rule/i.test(question) && !/invalid|net revenue|descriptive|diagnostic/i.test(question)) {
+      return context.northwind
+        ? `The extract has ${context.northwind.rows} order lines. After the valid-row rule (units > 0, unit_price > 0, returned = no) you should count ${context.northwind.validRows} valid rows (${context.northwind.excludedRows} excluded).`
+        : `Use the valid-row rule in “${context.lessonTitle}”.`
+    }
 
-  if (/why (are|do we|should we) (invalid rows )?(removed|remove)|why (can't|cannot) i include (negative|invalid)/i.test(question) || /why.*invalid rows/i.test(question)) {
-    return `Invalid rows would poison a total. Negative units, zero price, and returned = yes are not valid sales in this course. The valid-row rule keeps units > 0, unit_price > 0, and returned = no so net revenue is defensible. In this extract that leaves ${context.northwind?.validRows ?? 166} of ${context.northwind?.rows ?? 180} rows and ${context.northwind?.netRevenueLabel ?? "₹812,020"}.`
-  }
+    if (/total valid net revenue|valid net revenue|headline (total|net revenue)/i.test(question)) {
+      return context.northwind
+        ? `Valid net revenue in this extract is ${context.northwind.netRevenueLabel}, using only the ${context.northwind.validRows} valid rows in ${context.northwind.window}.`
+        : `State the metric, the period, and the valid-row rule from this lesson.`
+    }
 
-  if (/descriptive|diagnostic|predictive/i.test(question)) {
-    const explain = section(excerpt, "Explain")
-    const hit = explain.match(/Three levels of claim[\s\S]*?does not teach\./i)
-    if (hit) return simplify(hit[0])
-    return "In this lesson: descriptive says what the extract shows (allowed); diagnostic explains a movement with care (allowed, with a limitation); predictive/ML forecasts are out of scope — this course does not teach a model."
-  }
+    if (/dataset|northwind_sales|what does this (file|extract|csv)/i.test(question)) {
+      return context.northwind
+        ? `This lesson uses ${context.northwind.filename}: ${context.northwind.rows} order lines for Northwind Retail, ${context.northwind.window}. After the valid-row rule you should count ${context.northwind.validRows} valid rows and ${context.northwind.netRevenueLabel} valid net revenue.`
+        : `Use the dataset named in “${context.lessonTitle}”. I will not invent another extract.`
+    }
 
-  if (/0\.9|discount|multiply by/i.test(followOn) && /0\.9|discount|multiply/i.test(question)) {
-    return "0.90 is (1 − discount_pct / 100) when discount_pct is 10. In the lesson, NW-10013 is 7 × 449 × 0.90 = 2828.7. A 0% discount (NW-10001) multiplies by 1.00."
-  }
+    if (/descriptive|diagnostic|predictive/i.test(question)) {
+      const explain = section(excerpt, "Explain")
+      const hit = explain.match(/Three levels of claim[\s\S]*?does not teach\./i)
+      if (hit) return simplify(hit[0])
+      return "In this lesson: descriptive says what the extract shows (allowed); diagnostic explains a movement with care (allowed, with a limitation); predictive/ML forecasts are out of scope — this course does not teach a model."
+    }
 
-  if (/another (northwind )?example|give me another|show another/i.test(question)) {
-    return "Another line from this lesson: NW-10013 (Grocery, Filter Coffee) is units 7, unit_price 449, discount_pct 10 → 7 × 449 × 0.90 = 2828.7. Same formula as NW-10001; only the discount factor changes. Do not invent extra rows."
+    if (/0\.9|discount|multiply by/i.test(followOn) && /0\.9|discount|multiply/i.test(question)) {
+      return "0.90 is (1 − discount_pct / 100) when discount_pct is 10. In the lesson, NW-10013 is 7 × 449 × 0.90 = 2828.7. A 0% discount (NW-10001) multiplies by 1.00."
+    }
+
+    if (/another (northwind )?example|give me another|show another/i.test(question)) {
+      return "Another line from this lesson: NW-10013 (Grocery, Filter Coffee) is units 7, unit_price 449, discount_pct 10 → 7 × 449 × 0.90 = 2828.7. Same formula as NW-10001; only the discount factor changes. Do not invent extra rows."
+    }
   }
 
   if (resolvedAction === "explain") {
