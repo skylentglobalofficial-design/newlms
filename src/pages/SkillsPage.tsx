@@ -208,7 +208,9 @@ function IntentResults({ intentId }: { intentId: LearnIntentId }) {
                 These statements come from catalogue listings. This path is not as complete as Data Analytics.
               </p>
             ) : (
-              <p className="sk-fine">Taken from the Data Analytics course outcomes.</p>
+              <p className="sk-fine">
+                Taken from the {ready.map((match) => match.title).join(" and ")} course outcomes.
+              </p>
             )}
           </>
         ) : (

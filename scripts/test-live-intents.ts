@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs"
 import { courses } from "../src/data.ts"
 import {
   AUTHORED_COURSE_SLUG,
@@ -143,6 +144,13 @@ assert(
 )
 assert(isLearnIntentId("data") && isLearnIntentId("software") && isLearnIntentId("ai") && isLearnIntentId("product"), "supported intents must parse")
 assert(!isLearnIntentId("design") && !isLearnIntentId("create"), "Skills must not invent unsupported intents")
+
+const skillsSource = readFileSync(new URL("../src/pages/SkillsPage.tsx", import.meta.url), "utf8")
+assert(
+  !/Taken from the Data Analytics course outcomes/.test(skillsSource),
+  "Skills must attribute authored outcomes to the matched course, not only Data Analytics",
+)
+assert(/ready\.map\(\(match\) => match\.title\)/.test(skillsSource), "Skills authored attribution must use match titles")
 
 console.log("live-intents ok")
 console.log({
