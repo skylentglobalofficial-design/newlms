@@ -13,6 +13,7 @@ import { formatInterviewDateTime, formatRoundStatus, formatRoundType, isUpcoming
 import { countOpenTasks, formatRequestStatus, formatRequestType, getNextOpenTask, isActiveRequest } from "../../components/career/support-utils"
 import { LoadingBlock, FeedbackBanner } from "../../components/career/section-ui"
 import CareerEvidenceCard from "../../components/career/CareerEvidenceCard"
+import { CareerKeepEmpty } from "../../components/product/ProductLanguage"
 import { workspaceErrorMessage } from "../../lib/http"
 
 const accent = getDomainAccent("career")
@@ -104,9 +105,7 @@ export default function CareerOSOverviewPage() {
                 Learner work added to Career OS. Nothing is published automatically.
               </p>
               {evidenceProjects.length === 0 ? (
-                <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
-                  Your projects will appear here as you turn learning into evidence.
-                </p>
+                <CareerKeepEmpty />
               ) : (
                 <div style={{ display: "grid", gap: 12 }}>
                   {evidenceProjects.map((project) => (
@@ -140,7 +139,7 @@ export default function CareerOSOverviewPage() {
                   </div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 36, fontWeight: 700, color: C.ink, fontFamily: "var(--font-display)", lineHeight: 1 }}>{profile.completeness.percent}%</div>
+                <div className="cos-complete-pct">{profile.completeness.percent}%</div>
                   <div style={{ fontSize: 12, color: C.slate, marginTop: 4 }}>Profile completeness</div>
                 </div>
               </div>
@@ -161,7 +160,7 @@ export default function CareerOSOverviewPage() {
               )}
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: 12, marginBottom: 24 }}>
+            <div className="cos-stat-row">
               {[
                 { label: "Education", value: profile.education.length },
                 { label: "Experience", value: profile.experience.length },
@@ -169,9 +168,9 @@ export default function CareerOSOverviewPage() {
                 { label: "Projects", value: profile.projects.length },
                 { label: "Links", value: profile.links.length },
               ].map(item => (
-                <div key={item.label} style={{ padding: "14px 16px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: C.ink }}>{item.value}</div>
-                  <div style={{ fontSize: 12, color: C.slate, marginTop: 2 }}>{item.label}</div>
+                <div key={item.label}>
+                  <b>{item.value}</b>
+                  <span>{item.label}</span>
                 </div>
               ))}
             </div>
@@ -200,28 +199,14 @@ export default function CareerOSOverviewPage() {
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <GlassSurface level={2} padding="18px">
                   <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, fontWeight: 600 }}>Quick actions</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <Link to="/career-os/projects" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  View projects
-                </Link>
-                <Link to="/career-os/profile" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  Edit profile
-                </Link>
-                <Link to="/dashboard/student" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  Open learner dashboard
-                </Link>
-                <Link to="/career-os/jobs" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  Opportunities
-                </Link>
-                <Link to="/career-os/applications" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  View applications
-                </Link>
-                <Link to="/career-os/interviews" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  Interview prep
-                </Link>
-                <Link to="/career-os/support" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  Career support
-                </Link>
+              <div className="cos-quick">
+                <Link to="/career-os/projects">View projects</Link>
+                <Link to="/career-os/profile">Edit profile</Link>
+                <Link to="/dashboard/student">Open learner dashboard</Link>
+                <Link to="/career-os/jobs">Opportunities</Link>
+                <Link to="/career-os/applications">View applications</Link>
+                <Link to="/career-os/interviews">Interview prep</Link>
+                <Link to="/career-os/support">Career support</Link>
               </div>
             </GlassSurface>
 

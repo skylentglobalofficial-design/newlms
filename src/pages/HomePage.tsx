@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import {
   CareerEvidencePreview,
-  CourseProductVisual,
+  CourseThumb,
   CourseWorkspacePreview,
   LearnFlow,
 } from "../components/product/ProductLanguage"
@@ -57,6 +57,26 @@ export default function HomePage() {
                 <Link className="hp-btn hp-btn-primary" to="/courses/data-analytics">Start Data Analytics</Link>
                 <Link className="hp-btn hp-btn-ghost" to="/courses">Explore courses</Link>
               </div>
+              <div className="hp-start-pair">
+                {analytics ? (
+                  <Link className="hp-start-card" to="/courses/data-analytics">
+                    <CourseThumb authored visual="northwind" />
+                    <span>
+                      <strong>Data Analytics</strong>
+                      <em>Northwind · SQL · dashboard</em>
+                    </span>
+                  </Link>
+                ) : null}
+                {product ? (
+                  <Link className="hp-start-card" to="/courses/product-management">
+                    <CourseThumb authored visual="harbor-desk" />
+                    <span>
+                      <strong>Product Management</strong>
+                      <em>Harbor Desk · evidence → spec</em>
+                    </span>
+                  </Link>
+                ) : null}
+              </div>
             </div>
             {featured && work ? (
               <div className="hp-hero-stage">
@@ -106,7 +126,7 @@ export default function HomePage() {
             <div className="hp-product-pair">
               {analytics ? (
                 <Link className="hp-product" to="/courses/data-analytics">
-                  <CourseProductVisual visual="northwind" compact />
+                  <CourseThumb authored visual="northwind" />
                   <div className="hp-product-copy">
                     <h3>{analytics.title}</h3>
                     <p>Northwind revenue, categories, SQL, and a dashboard you keep.</p>
@@ -122,7 +142,7 @@ export default function HomePage() {
               ) : null}
               {product ? (
                 <Link className="hp-product" to="/courses/product-management">
-                  <CourseProductVisual visual="harbor-desk" compact />
+                  <CourseThumb authored visual="harbor-desk" />
                   <div className="hp-product-copy">
                     <h3>{product.title}</h3>
                     <p>Harbor Desk: 12 stores, 4 interviews, 9 weekend exceptions. Evidence → Spec.</p>

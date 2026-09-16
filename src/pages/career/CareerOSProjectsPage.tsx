@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 import { listCareerEvidenceProjects, type CareerEvidenceSummary } from "../../lib/career-api"
 import { workspaceErrorMessage } from "../../lib/http"
 import CareerEvidenceCard from "../../components/career/CareerEvidenceCard"
+import { CareerKeepEmpty } from "../../components/product/ProductLanguage"
 import { FeedbackBanner, LoadingBlock } from "../../components/career/section-ui"
 
 export default function CareerOSProjectsPage() {
@@ -35,7 +37,10 @@ export default function CareerOSProjectsPage() {
       <h1>Projects</h1>
       <p className="cos-lead">Learner work you chose to keep as Career OS evidence.</p>
       {projects && projects.length === 0 ? (
-        <p className="cos-lead">Your projects will appear here as you turn learning into evidence.</p>
+        <div>
+          <CareerKeepEmpty />
+          <Link className="cos-empty-cta" to="/dashboard/student">Open learner dashboard</Link>
+        </div>
       ) : (
         <div className="cos-grid">
           {projects?.map((project) => (

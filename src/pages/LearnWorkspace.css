@@ -445,6 +445,36 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
   border-bottom: 1px solid rgba(21, 23, 26, 0.06);
 }
 
+.os-lesson-head h1 {
+  margin-top: 8px;
+  font-size: clamp(20px, 2.2vw, 26px);
+}
+
+.os-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.os-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.os-chip.is-mute {
+  background: #f7f4ec;
+  color: #5c6168;
+}
+
 .os-lab-entry {
   display: flex;
   flex-wrap: wrap;
@@ -472,6 +502,10 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
 .os-lesson-stage .os-workspace h1,
 .os-lesson-stage h1 {
   margin-top: 8px;
+}
+
+.os-lesson-stage .os-lesson-head h1 {
+  font-size: clamp(20px, 2.2vw, 26px);
 }
 
 .os-lesson-stage .os-status {
@@ -1575,9 +1609,8 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
     align-items: stretch;
   }
 
-  .os-btn,
-  .lx-footer .os-btn-primary {
-    width: 100%;
+  .os-chip {
+    width: fit-content;
   }
 
   .os-workspace h1,

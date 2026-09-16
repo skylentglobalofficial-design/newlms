@@ -417,6 +417,25 @@ export function CareerEvidencePreview() {
   )
 }
 
+export function CareerKeepEmpty({
+  heading = "Nothing kept yet",
+  copy = "Work samples from Data Analytics and Product Management appear here when you add them from a completed project. Nothing is invented.",
+}: {
+  heading?: string
+  copy?: string
+}) {
+  return (
+    <div className="cos-empty">
+      <div className="cos-empty-previews" aria-hidden="true">
+        <CourseThumb authored visual="northwind" />
+        <CourseThumb authored visual="harbor-desk" />
+      </div>
+      <h2>{heading}</h2>
+      <p>{copy}</p>
+    </div>
+  )
+}
+
 export function evidenceVisualFor(title: string, context = ""): "northwind" | "harbor-desk" | null {
   const hay = `${title} ${context}`.toLowerCase()
   if (/harbor|product management|product case/.test(hay)) return "harbor-desk"

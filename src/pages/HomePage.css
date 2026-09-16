@@ -43,13 +43,60 @@
 
 .hp-hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.72fr) minmax(360px, 1.28fr);
-  gap: clamp(24px, 4vw, 48px);
-  align-items: center;
+  grid-template-columns: minmax(0, 0.82fr) minmax(340px, 1.18fr);
+  gap: clamp(20px, 3.5vw, 40px);
+  align-items: start;
 }
 
 .hp-hero .pl-frame {
-  min-height: 420px;
+  min-height: 0;
+}
+
+.hp-hero .pl-ws {
+  min-height: 248px;
+}
+
+.hp-start-pair {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.hp-start-card {
+  display: grid;
+  grid-template-columns: 88px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+  padding: 8px;
+  background: #ffffff;
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 8px 20px rgba(21, 23, 26, 0.05);
+}
+
+.hp-start-card .pl-thumb {
+  height: 72px;
+  min-height: 72px;
+  border: 0;
+  border-radius: 8px;
+}
+
+.hp-start-card strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.hp-start-card em {
+  display: block;
+  margin-top: 3px;
+  color: #5c6168;
+  font-size: 12px;
+  font-style: normal;
+  line-height: 1.35;
 }
 
 .hp-hero-stage {
@@ -98,6 +145,7 @@
 
 .hp-product {
   display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
   min-width: 0;
   overflow: hidden;
   text-decoration: none;
@@ -107,14 +155,15 @@
   box-shadow: 0 16px 40px rgba(21, 23, 26, 0.07);
 }
 
-.hp-product .pl-frame {
-  box-shadow: none;
+.hp-product .pl-thumb {
+  height: 100%;
+  min-height: 148px;
   border: 0;
   border-radius: 0;
 }
 
 .hp-product-copy {
-  padding: 18px 20px 20px;
+  padding: 16px 18px 18px;
 }
 
 .hp-product-copy h3 {
@@ -358,9 +407,19 @@
   .hp-hero-grid,
   .hp-flagship-stage,
   .hp-career-grid,
-  .hp-product-pair {
+  .hp-product-pair,
+  .hp-product {
     grid-template-columns: 1fr;
-    gap: 28px;
+    gap: 20px;
+  }
+
+  .hp-hero-stage {
+    display: none;
+  }
+
+  .hp-product .pl-thumb {
+    min-height: 120px;
+    height: 120px;
   }
 }
 
@@ -392,13 +451,17 @@
     font-size: 24px;
   }
 
-  .hp-btn {
+  .hp-hero .hp-btn {
     width: 100%;
   }
 
-  .hp-actions {
+  .hp-hero .hp-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .hp-product-copy .hp-btn {
+    width: fit-content;
   }
 }
 

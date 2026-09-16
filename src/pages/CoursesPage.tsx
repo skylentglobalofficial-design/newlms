@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { CourseProductVisual, CourseThumb, CourseWorkspacePreview } from "../components/product/ProductLanguage"
+import { CourseThumb, CourseWorkspacePreview } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { coursePublicView } from "../lib/catalog-maturity"
 import { courseProductProfile, FLAGSHIP_COURSE_SLUG } from "../lib/course-product"
@@ -66,7 +66,7 @@ export default function CoursesPage() {
             </div>
             </div>
             {flagship && flagshipView ? (
-              <div className="cat-hero-visual">
+              <div className="cat-hero-visual is-listing">
                 <CourseWorkspacePreview
                   courseTitle={flagship.title}
                   lessonTitle={flagship.modules[0]?.lessons[0]?.title ?? "Open the first lesson"}
@@ -125,13 +125,7 @@ function CourseCard({ view, featured = false }: { view: ReturnType<typeof course
 
   return (
     <Link className={featured ? "cat-feature" : "cat-tile"} to={`/courses/${view.slug}`}>
-      {featured ? (
-        <div className="cat-feature-stage">
-          {profile ? <CourseProductVisual visual={profile.visual} compact /> : <CourseThumb authored={false} />}
-        </div>
-      ) : (
-        <CourseThumb authored={view.showLiveCurriculum} visual={profile?.visual ?? "northwind"} />
-      )}
+      <CourseThumb authored={view.showLiveCurriculum} visual={profile?.visual ?? "northwind"} />
       <div className="cat-tile-copy">
         <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
           {view.maturityLabel}

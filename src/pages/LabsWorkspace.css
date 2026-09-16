@@ -275,6 +275,47 @@
   border-radius: 12px;
 }
 
+.lab-toolbar {
+  display: grid;
+  grid-template-columns: minmax(160px, 0.42fr) minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  padding: 12px;
+  background: #f7f4ec;
+  border-radius: 12px;
+}
+
+.lab-toolbar label {
+  display: block;
+  color: #5c6168;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.lab-toolbar select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid rgba(21, 23, 26, 0.12);
+  border-radius: 8px;
+  background: #ffffff;
+  font: inherit;
+  color: inherit;
+}
+
+.lab-toolbar .lab-formula {
+  margin: 0;
+}
+
+.lab-preview-table {
+  max-height: 280px;
+}
+
+.lab-metrics.is-idle .lab-metric strong {
+  color: #c9c2b4;
+}
+
 .lab-run-box label {
   display: block;
   color: #5c6168;
@@ -639,17 +680,24 @@
   .lab-grid {
     grid-template-columns: 1fr;
   }
+
+  .lab-toolbar {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
   .lab-flow {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    display: flex;
+    overflow-x: auto;
+    grid-template-columns: none;
     padding: 0 8px;
   }
 
   .lab-flow li {
+    flex: 0 0 auto;
     font-size: 11px;
-    padding: 10px 6px;
+    padding: 10px 8px;
   }
 
   .lab-bar-axis {
