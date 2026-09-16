@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
-import { LearnFlow, ModuleLane, NorthwindWorkspace, ProductFrame } from "../components/product/ProductLanguage"
+import { CourseWorkspacePreview, ModuleLane, NorthwindWorkspace, ProductFrame } from "../components/product/ProductLanguage"
 import {
   AUTHORED_DATASETS,
   AUTHORED_FAQ,
@@ -15,13 +15,6 @@ import {
 import { courses } from "../data"
 import { useCatalogCourse } from "../hooks/useCatalog"
 import "./Catalog.css"
-
-const FLOW = [
-  { title: "Learning", copy: "Written lessons in Skylent OS.", kind: "learn" as const },
-  { title: "Practice", copy: "Short checks after a block of lessons.", kind: "practice" as const },
-  { title: "Assignment", copy: "Applied work on the Northwind extract.", kind: "build" as const },
-  { title: "Capstone", copy: "A commercial review you keep.", kind: "keep" as const },
-]
 
 export default function CourseDetailPage() {
   const { slug } = useParams()
@@ -101,7 +94,14 @@ export default function CourseDetailPage() {
             </div>
             {view.showLiveCurriculum ? (
               <div className="cat-hero-visual">
-                <NorthwindWorkspace />
+                <CourseWorkspacePreview
+                  courseTitle={view.title}
+                  lessonTitle={course.modules[0]?.lessons[0]?.title ?? "Open the first lesson"}
+                  practiceTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")?.title ?? "A short check"}
+                  workTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => /capstone/i.test(lesson.title))?.title ?? "Capstone"}
+                  modules={course.modules.map((module) => module.title)}
+                  lessonCount={view.stats.lessonCount}
+                />
               </div>
             ) : (
               <div className="cat-hero-visual">
@@ -201,20 +201,6 @@ export default function CourseDetailPage() {
             </div>
           </section>
         ) : null}
-
-        {view.showLiveCurriculum ? (
-          <section className="cat-section">
-            <div className="cat-rail">
-              <LearnFlow steps={FLOW} />
-            </div>
-          </section>
-        ) : (
-          <section className="cat-section">
-            <div className="cat-rail">
-              <p className="cat-fine">Enrolment opens an LMS outline. It is not the same as the Data Analytics teaching path.</p>
-            </div>
-          </section>
-        )}
 
         {view.showLiveCurriculum ? (
           <section className="cat-section">

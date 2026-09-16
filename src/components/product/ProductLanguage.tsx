@@ -63,6 +63,28 @@ function Spark({ mini = false }: { mini?: boolean }) {
   )
 }
 
+function NorthwindTable() {
+  return (
+    <table className="pl-table">
+      <caption className="pl-kicker">Valid net revenue by category</caption>
+      <thead>
+        <tr>
+          <th scope="col">Category</th>
+          <th scope="col">Net revenue</th>
+        </tr>
+      </thead>
+      <tbody>
+        {NW.categories.map((item) => (
+          <tr key={item.name}>
+            <td>{item.name}</td>
+            <td>{formatInr(item.value)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
 function NorthwindExtract({ compact = false }: { compact?: boolean }) {
   const catMax = NW.categories[0].value
   return (
@@ -148,7 +170,10 @@ export function CourseWorkspacePreview({
               <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
               <VisualStat label="Top category" value={NW.topCategory} />
             </div>
-            <Spark mini />
+            <div className="pl-ws-viz">
+              <Spark mini />
+              <NorthwindTable />
+            </div>
           </div>
         </div>
       </div>
@@ -189,18 +214,21 @@ export function LearnFlow({
         <li key={step.title}>
           <div className={`pl-flow-visual is-${step.kind}`} aria-hidden="true">
             {step.kind === "learn" ? (
-              <>
+              <div className="pl-flow-lesson">
+                <em>Lesson</em>
+                <b>Written work</b>
                 <span />
                 <span />
                 <span />
-              </>
+              </div>
             ) : null}
             {step.kind === "practice" ? (
-              <>
-                <span className="pl-check" />
-                <span className="pl-check is-on" />
-                <span className="pl-check" />
-              </>
+              <div className="pl-flow-quiz">
+                <em>Knowledge check</em>
+                <span className="pl-opt is-on" />
+                <span className="pl-opt" />
+                <span className="pl-opt" />
+              </div>
             ) : null}
             {step.kind === "build" ? (
               <>
@@ -208,7 +236,12 @@ export function LearnFlow({
                 <Spark mini />
               </>
             ) : null}
-            {step.kind === "keep" ? <strong>Northwind commercial review</strong> : null}
+            {step.kind === "keep" ? (
+              <div className="pl-flow-keep">
+                <em>Work sample</em>
+                <strong>Northwind commercial review</strong>
+              </div>
+            ) : null}
           </div>
           <strong>{step.title}</strong>
           <p>{step.copy}</p>
@@ -227,8 +260,9 @@ export function PathwayTrack({
 }) {
   return (
     <ol className={layout === "board" ? "pl-path is-board" : "pl-path"}>
-      {steps.map((step) => (
+      {steps.map((step, index) => (
         <li key={step.label} className={step.live ? "is-live" : "is-later"}>
+          <span className="pl-path-index">{String(index + 1).padStart(2, "0")}</span>
           <span className="pl-path-mark" aria-hidden="true" />
           <div>
             <strong>{step.label}</strong>
@@ -358,10 +392,13 @@ export function LessonContextPanel({ lessonId }: { lessonId: string }) {
         </pre>
       ) : null}
       {visual === "chart" || visual === "dataset" ? (
-        <div className="pl-stat-row" aria-label="Northwind extract">
-          <VisualStat label="Valid rows" value={String(NW.validRows)} />
-          <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
-          <VisualStat label="Top category" value={NW.topCategory} />
+        <div className="pl-lesson-extract" aria-label="Northwind extract">
+          <div className="pl-stat-row">
+            <VisualStat label="Valid rows" value={String(NW.validRows)} />
+            <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
+            <VisualStat label="Top category" value={NW.topCategory} />
+          </div>
+          {visual === "chart" ? <Spark mini /> : <NorthwindTable />}
         </div>
       ) : null}
     </aside>

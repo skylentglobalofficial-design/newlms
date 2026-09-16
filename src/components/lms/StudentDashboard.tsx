@@ -159,8 +159,8 @@ export function StudentActionRail({
   const upcoming = pendingTasks.filter((item) => !practice.some((row) => row.href === item.href && row.title === item.title))
 
   return (
-    <div id="student-rail">
-      <section className="dash-card">
+    <div id="student-rail" className="dash-rail">
+      <section>
         <h2>Upcoming</h2>
         {upcoming.length === 0 ? (
           <p className="dash-empty-copy">No further unlocked lessons yet. Continue from your current lesson.</p>
@@ -181,7 +181,7 @@ export function StudentActionRail({
           })
         )}
       </section>
-      <section className="dash-card">
+      <section>
         <h2>Practice and work</h2>
         {practice.length === 0 ? (
           <p className="dash-empty-copy">Quizzes and assignments appear here when they unlock.</p>
@@ -195,7 +195,7 @@ export function StudentActionRail({
           ))
         )}
       </section>
-      <section className="dash-card">
+      <section>
         <h2>Recent learning</h2>
         {recentActivity.length === 0 ? (
           <p className="dash-empty-copy">Completed lessons will appear here.</p>
@@ -208,7 +208,7 @@ export function StudentActionRail({
           ))
         )}
       </section>
-      <section className="dash-card">
+      <section>
         <h2>Learning evidence</h2>
         <div className="dash-item-title">{evidenceTitle}</div>
         <p className="dash-empty-copy" style={{ margin: '6px 0 12px' }}>{evidenceDetail}</p>

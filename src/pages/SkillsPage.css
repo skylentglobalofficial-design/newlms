@@ -288,8 +288,15 @@
 }
 
 .sk-product-body {
+  display: flex;
   min-width: 0;
+  flex-direction: column;
   padding: 14px 16px 16px;
+}
+
+.sk-product.is-featured .sk-product-body {
+  padding: 22px 24px 24px;
+  justify-content: center;
 }
 
 .sk-product-meta {

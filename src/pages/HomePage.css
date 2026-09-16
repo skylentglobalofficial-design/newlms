@@ -49,7 +49,7 @@
 }
 
 .hp-hero .pl-frame {
-  min-height: 340px;
+  min-height: 420px;
 }
 
 .hp-flagship {
@@ -169,7 +169,7 @@
 }
 
 .hp-section {
-  padding: 56px 0;
+  padding: 40px 0;
   scroll-margin-top: 80px;
 }
 
@@ -251,31 +251,20 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 22px 24px;
-  background: #4f46e5;
-  color: #ffffff;
-  border-radius: 16px;
+  padding: 8px 0 0;
+  background: none;
+  color: inherit;
+  border-radius: 0;
 }
 
 .hp-final-card .hp-h2 {
   margin: 0;
   max-width: none;
-  color: #ffffff;
+  color: #15171a;
 }
 
 .hp-final-card .hp-actions {
   margin-top: 0;
-}
-
-.hp-final-card .hp-btn-primary {
-  background: #ffffff;
-  color: #4f46e5;
-}
-
-.hp-final-card .hp-btn-ghost {
-  border-color: rgba(255, 255, 255, 0.35);
-  background: transparent;
-  color: #ffffff;
 }
 
 @media (max-width: 900px) {
