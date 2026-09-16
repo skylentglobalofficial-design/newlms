@@ -11,6 +11,7 @@ function simplify(text: string): string {
   return text
     .replace(/\*\*/g, "")
     .replace(/`/g, "")
+    .replace(/^\|.*\|.*$/gm, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim()
 }
@@ -211,9 +212,6 @@ export function groundedAnswer(input: AiAskInput): string {
     }
 
     if (/descriptive|diagnostic|predictive/i.test(question)) {
-      const explain = section(excerpt, "Explain")
-      const hit = explain.match(/Three levels of claim[\s\S]*?does not teach\./i)
-      if (hit) return simplify(hit[0])
       return "In this lesson: descriptive says what the extract shows (allowed); diagnostic explains a movement with care (allowed, with a limitation); predictive/ML forecasts are out of scope — this course does not teach a model."
     }
 
@@ -254,7 +252,7 @@ export function groundedAnswer(input: AiAskInput): string {
     const explain = section(excerpt, "Explain") || context.objective
     const facts = context.northwind ? daFacts(context) : context.harbor ? pmFacts(context) : ""
     return [
-      simplify(explain).slice(0, 1200),
+      simplify(explain).slice(0, 700),
       context.objective ? `In this lesson you are aiming to: ${context.objective}` : "",
       facts,
     ]

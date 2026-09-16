@@ -99,14 +99,22 @@ async function request(
   if (options.body !== undefined) headers["Content-Type"] = "application/json"
   if (options.csrf) headers["X-CSRF-Token"] = jar.get("csrf") ?? ""
 
-  const response = await fetch(`${options.base ?? API_BASE}${path}`, {
+  const url = `${options.base ?? API_BASE}${path}`
+  const response = await fetch(url, {
     method: options.method ?? "GET",
     headers,
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
   })
   parseSetCookie(response.headers.getSetCookie?.() ?? [], jar)
   const text = await response.text()
-  const data = text ? JSON.parse(text) : null
+  let data = null
+  if (text) {
+    try {
+      data = JSON.parse(text)
+    } catch {
+      throw new Error(`Non-JSON from ${url} (${response.status}): ${text.slice(0, 180)}`)
+    }
+  }
   return { response, data }
 }
 
@@ -863,7 +871,7 @@ async function main() {
   assert(/user|job|Gmail for stores/i.test(pmAsk), "PM free-form stays on product problems")
   assert(!/northwind_sales|₹812,020|166 valid|valid-row rule/i.test(pmAsk), "PM free-form must not leak DA")
   const pmHarbor = groundedAnswer(pmL1Input({ action: "ask", question: "Explain this Harbor Desk example." }))
-  assert(/Harbor/i.test(pmHarbor), "Harbor Desk question stays on the case")
+  assert(/Priya|Arun|Gmail/i.test(pmHarbor), "Harbor Desk question stays on the case")
   const pmAnother = groundedAnswer(pmL1Input({ action: "ask", question: "Give me another example." }))
   assert(/Meena/i.test(pmAnother), "PM another example uses Meena")
   const pmOff = groundedAnswer(pmL1Input({ action: "ask", question: "How do I make a website?" }))

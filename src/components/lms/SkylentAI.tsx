@@ -129,7 +129,10 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
   useEffect(() => {
     const root = listRef.current
     if (!root) return
-    root.scrollTop = root.scrollHeight
+    const last = root.querySelector(".os-ai-turn:last-child")
+    if (!(last instanceof HTMLElement)) return
+    const top = last.getBoundingClientRect().top - root.getBoundingClientRect().top + root.scrollTop
+    root.scrollTop = Math.max(0, top - 4)
   }, [turns, ui])
 
   useEffect(() => {

@@ -113,8 +113,9 @@
 }
 
 .os-ai.is-compact .os-ai-thread {
-  flex: 0 1 auto;
-  max-height: 22dvh;
+  flex: 1 1 auto;
+  min-height: 96px;
+  max-height: min(30dvh, 260px);
 }
 
 .os-ai-form,
@@ -171,6 +172,8 @@
 .os-ai.is-compact:not(.is-open) {
   max-height: none;
   overflow: hidden;
+  padding: 4px 12px;
+  gap: 0;
 }
 
 .os-ai.is-compact.is-open {
@@ -197,6 +200,18 @@
 .os-ai-input:focus-visible {
   outline: 2px solid #4f46e5;
   outline-offset: 2px;
+}
+
+.os-ai-toggle:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.os-ai .os-btn:disabled,
+.os-ai-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .os-ai-quick-row {
