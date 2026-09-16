@@ -24,7 +24,7 @@ function friendlyError(err: unknown): { message: string; unavailable: boolean } 
   if (raw.includes("isn't available")) {
     return { message: "Skylent AI isn't available yet.", unavailable: true }
   }
-  return { message: "Skylent AI couldn't answer right now. Try again.", unavailable: false }
+  return { message: "Skylent AI couldn't answer right now.", unavailable: false }
 }
 
 export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }: Props) {
@@ -209,7 +209,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
         </p>
       ) : null}
 
-      {turns.some((turn) => turn.role === "assistant") && (ui === "ready" || ui === "error") ? (
+      {turns.some((turn) => turn.role === "assistant") && (ui === "ready" || ui === "error") && !compact ? (
         <button type="button" className="os-link" onClick={askAnother}>
           Ask a follow-up
         </button>
