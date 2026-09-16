@@ -125,7 +125,7 @@ export default function NorthwindProjectPage() {
     try {
       const linked = await addLearnerProjectToCareer(project.id)
       setCareerLink({ id: linked.id, href: `/career-os/projects/${linked.id}` })
-      setCareerNotice("Added to Career OS")
+      setCareerNotice(null)
     } catch (err) {
       setCareerNotice(workspaceErrorMessage(err) || "Finish the project before adding it to Career OS.")
     } finally {
@@ -232,7 +232,7 @@ export default function NorthwindProjectPage() {
         ) : (
           <p>Finish the project before adding it to Career OS.</p>
         )}
-        {careerNotice ? <p>{careerNotice}</p> : null}
+        {careerNotice && !careerLink ? <p>{careerNotice}</p> : null}
       </div>
 
       <div className="lab-body">
