@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { CourseThumb } from "../components/product/ProductLanguage"
+import { CourseThumb, NorthwindWorkspace } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { coursePublicView } from "../lib/catalog-maturity"
 import "./Catalog.css"
@@ -71,7 +71,7 @@ export default function CoursesPage() {
                 {ready.length > 0 ? (
                   <div className="cat-group">
                     <h2>Ready to start</h2>
-                    <div className="cat-grid">
+                    <div className="cat-ready">
                       {ready.map((view) => (
                         <CourseCard key={view.slug} view={view} featured />
                       ))}
@@ -104,8 +104,14 @@ function CourseCard({ view, featured = false }: { view: ReturnType<typeof course
     : `${view.stats.lessonCount} outline items`
 
   return (
-    <Link className={featured ? "cat-tile is-featured" : "cat-tile"} to={`/courses/${view.slug}`}>
-      <CourseThumb authored={view.showLiveCurriculum} />
+    <Link className={featured ? "cat-feature" : "cat-tile"} to={`/courses/${view.slug}`}>
+      {featured ? (
+        <div className="cat-feature-stage">
+          <NorthwindWorkspace compact />
+        </div>
+      ) : (
+        <CourseThumb authored={view.showLiveCurriculum} />
+      )}
       <div className="cat-tile-copy">
         <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
           {view.maturityLabel}

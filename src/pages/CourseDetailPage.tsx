@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
-import { LearnFlow, NorthwindWorkspace, ProductFrame } from "../components/product/ProductLanguage"
+import { CourseWorkspacePreview, ModuleLane, NorthwindWorkspace, ProductFrame } from "../components/product/ProductLanguage"
 import {
   AUTHORED_DATASETS,
   AUTHORED_FAQ,
@@ -15,13 +15,6 @@ import {
 import { courses } from "../data"
 import { useCatalogCourse } from "../hooks/useCatalog"
 import "./Catalog.css"
-
-const FLOW = [
-  { title: "Learning", copy: "Written lessons in Skylent OS.", kind: "learn" as const },
-  { title: "Practice", copy: "Short checks after a block of lessons.", kind: "practice" as const },
-  { title: "Assignment", copy: "Applied work on the Northwind extract.", kind: "build" as const },
-  { title: "Capstone", copy: "A commercial review you keep.", kind: "keep" as const },
-]
 
 export default function CourseDetailPage() {
   const { slug } = useParams()
@@ -101,7 +94,14 @@ export default function CourseDetailPage() {
             </div>
             {view.showLiveCurriculum ? (
               <div className="cat-hero-visual">
-                <NorthwindWorkspace />
+                <CourseWorkspacePreview
+                  courseTitle={view.title}
+                  lessonTitle={course.modules[0]?.lessons[0]?.title ?? "Open the first lesson"}
+                  practiceTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")?.title ?? "A short check"}
+                  workTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => /capstone/i.test(lesson.title))?.title ?? "Capstone"}
+                  modules={course.modules.map((module) => module.title)}
+                  lessonCount={view.stats.lessonCount}
+                />
               </div>
             ) : (
               <div className="cat-hero-visual">
@@ -162,41 +162,7 @@ export default function CourseDetailPage() {
                 ? "Each module is a block of written work and practice. Lesson bodies stay in Skylent OS."
                 : "Titles below are an outline, not a finished teaching path."}
             </p>
-            <div className="cat-modules">
-              {modules.map((module) => {
-                const kind = /capstone/i.test(module.countsLabel)
-                  ? "Capstone"
-                  : /assignment/i.test(module.countsLabel)
-                    ? "Build"
-                    : /quiz/i.test(module.countsLabel)
-                      ? "Practice"
-                      : "Learn"
-                return (
-                <article className={module.index === 1 ? "cat-module is-start" : "cat-module"} key={module.id}>
-                  <span className="cat-module-num">{String(module.index).padStart(2, "0")}</span>
-                  <div>
-                    <h3>{module.title}</h3>
-                    <p>{module.workLine}</p>
-                    <p>{module.countsLabel}</p>
-                  </div>
-                  <span className="cat-mark cat-module-kind">{kind}</span>
-                </article>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-
-        <section className="cat-band">
-          <div className="cat-rail">
-            <h2>{view.showLiveCurriculum ? "Learn, practise, then keep the work" : "What enrolment opens"}</h2>
-            {view.showLiveCurriculum ? (
-              <div className="cat-flow-wrap">
-                <LearnFlow steps={FLOW} />
-              </div>
-            ) : (
-              <p className="cat-fine">Enrolment opens an LMS outline. It is not the same as the Data Analytics teaching path.</p>
-            )}
+            <ModuleLane modules={modules} />
           </div>
         </section>
 
@@ -237,24 +203,24 @@ export default function CourseDetailPage() {
         ) : null}
 
         {view.showLiveCurriculum ? (
-          <section className="cat-band">
-            <div className="cat-rail cat-hero-split">
-              <div>
-                <h2>What you work on</h2>
-                <p className="cat-fine">Prerequisite: {AUTHORED_PREREQUISITE}</p>
-                <ul className="cat-tools">
-                  {AUTHORED_TOOLS.map((item) => <li key={item}>{item}</li>)}
-                </ul>
-                <ul className="cat-tools">
-                  {AUTHORED_DATASETS.map((item) => (
-                    <li key={item.filename}>{item.filename}</li>
-                  ))}
-                </ul>
+          <section className="cat-section">
+            <div className="cat-rail">
+              <h2>What you work on</h2>
+              <p className="cat-fine">Prerequisite: {AUTHORED_PREREQUISITE}</p>
+              <ul className="cat-tools">
+                {AUTHORED_TOOLS.map((item) => <li key={item}>{item}</li>)}
+              </ul>
+              <ul className="cat-tools">
                 {AUTHORED_DATASETS.map((item) => (
-                  <p className="cat-fine" key={item.detail}>{item.detail}</p>
+                  <li key={item.filename}>{item.filename}</li>
                 ))}
+              </ul>
+              {AUTHORED_DATASETS.map((item) => (
+                <p className="cat-fine" key={item.detail}>{item.detail}</p>
+              ))}
+              <div className="cat-stage-visual">
+                <NorthwindWorkspace />
               </div>
-              <NorthwindWorkspace compact />
             </div>
           </section>
         ) : null}

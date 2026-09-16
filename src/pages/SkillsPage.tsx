@@ -1,7 +1,7 @@
 import { useMemo } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { CourseThumb, LearnFlow, PathwayThumb } from "../components/product/ProductLanguage"
+import { CourseThumb, LearnFlow, NorthwindWorkspace, PathwayThumb } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { courseLessonStats } from "../lib/catalog-maturity"
 import {
@@ -125,7 +125,11 @@ function MatchCard({ match, featured }: { match: LiveMatch; featured: boolean })
 
   return (
     <article className={featured ? "sk-product is-featured" : "sk-product"}>
-      {match.kind === "course" ? (
+      {featured && match.kind === "course" && match.depth === "authored" ? (
+        <div className="sk-feature-stage">
+          <NorthwindWorkspace compact />
+        </div>
+      ) : match.kind === "course" ? (
         <CourseThumb authored={match.depth === "authored"} />
       ) : (
         <PathwayThumb />

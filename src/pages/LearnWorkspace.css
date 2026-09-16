@@ -62,9 +62,9 @@
 
 .os-rail-title {
   margin: 4px 0 0;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 650;
   letter-spacing: -0.02em;
   line-height: 1.25;
   overflow-wrap: anywhere;
@@ -121,9 +121,9 @@
 
 .os-module-num {
   color: #4f46e5;
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 800;
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
 }
@@ -131,9 +131,9 @@
 .os-module-label {
   padding: 0;
   color: #15171a;
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 650;
   letter-spacing: -0.02em;
   line-height: 1.3;
   text-transform: none;
@@ -374,15 +374,35 @@
 }
 
 .os-workspace {
-  width: min(1080px, 100%);
+  width: min(1180px, 100%);
   margin: 0 auto;
+}
+
+.os-lesson-stage {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(21, 23, 26, 0.06);
+  overflow: hidden;
+}
+
+.os-lesson-head {
+  padding: 20px 22px 16px;
+}
+
+.os-lesson-stage .os-workspace h1,
+.os-lesson-stage h1 {
+  margin-top: 8px;
+}
+
+.os-lesson-stage .os-status {
+  margin-top: 10px;
 }
 
 .os-workspace h1 {
   margin: 10px 0 0;
-  font-family: var(--font-display);
-  font-size: clamp(26px, 3.4vw, 34px);
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: clamp(24px, 3.2vw, 32px);
+  font-weight: 650;
   letter-spacing: -0.03em;
   line-height: 1.18;
   overflow-wrap: anywhere;
@@ -444,11 +464,11 @@
 }
 
 .os-paper {
-  margin-top: 16px;
-  padding: 22px 24px 24px;
+  margin-top: 0;
+  padding: 20px 22px 24px;
   background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 28px rgba(21, 23, 26, 0.05);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .os-note {
@@ -472,9 +492,9 @@
 
 .os-banner h2 {
   margin: 4px 0 0;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 650;
 }
 
 .os-resources {
@@ -508,11 +528,12 @@
 }
 
 .lx-footer {
-  margin-top: 24px;
-  padding: 18px 20px 20px;
-  border-radius: 12px;
+  margin: 0;
+  padding: 16px 22px 22px;
+  border-radius: 0;
   background: #fffdf8;
-  border: 1px solid rgba(21, 23, 26, 0.1);
+  border: 0;
+  border-top: 1px solid rgba(21, 23, 26, 0.06);
 }
 
 .lx-footer .os-btn-primary {
@@ -635,9 +656,9 @@
 
 .os-locked h2 {
   margin: 6px 0 0;
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 650;
 }
 
 /* Lesson document */
@@ -662,16 +683,16 @@
 
 .lx-doc h2 {
   margin: 8px 0 14px;
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 650;
 }
 
 .lx-doc h3 {
   margin: 22px 0 10px;
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 650;
 }
 
 .lx-doc h4 {
@@ -827,29 +848,36 @@
 
 .lx-section {
   margin: 0 0 18px;
-  padding: 14px 16px 4px;
-  border-radius: 12px;
+  padding: 4px 0 4px;
+  border-radius: 0;
 }
 
 .lx-section-example,
 .lx-section-procedure {
-  background: #fffdf8;
-  border: 1px solid rgba(21, 23, 26, 0.1);
+  background: none;
+  border: 0;
+  border-left: 2px solid #e8e2d6;
+  padding-left: 14px;
 }
 
 .lx-section-practice {
-  background: #eef2ff;
-  border: 1px solid rgba(79, 70, 229, 0.16);
+  background: none;
+  border: 0;
+  border-left: 2px solid #4f46e5;
+  padding-left: 14px;
 }
 
 .lx-section-check {
-  background: #fffdf8;
-  border: 1px solid rgba(79, 70, 229, 0.18);
+  background: #f7f4ec;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 14px 4px;
 }
 
 .lx-section-note {
-  background: #f7f4ec;
-  border: 1px solid rgba(21, 23, 26, 0.08);
+  background: none;
+  border: 0;
+  padding: 0;
 }
 
 .lx-section-label {
@@ -1136,21 +1164,28 @@
 }
 
 .dash-continue {
-  padding: 8px;
-  background: #ffffff;
-  border: 0;
-  box-shadow: 0 12px 32px rgba(21, 23, 26, 0.06);
+  padding: 0;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(21, 23, 26, 0.07);
 }
 
 .dash-continue-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(240px, 0.95fr);
-  gap: 16px;
-  align-items: start;
+  grid-template-columns: minmax(0, 0.92fr) minmax(260px, 1.08fr);
+  gap: 0;
+  align-items: stretch;
 }
 
 .dash-continue-grid > div:first-child {
-  padding: 16px 14px 18px;
+  padding: 20px 20px 22px;
+}
+
+.dash-continue-grid .pl-frame {
+  height: 100%;
+  box-shadow: none;
+  border-radius: 0;
+  border: 0;
+  border-left: 1px solid rgba(21, 23, 26, 0.06);
 }
 
 .dash-continue h2 {
@@ -1171,9 +1206,9 @@
 
 .dash-continue-lesson h3 {
   margin: 4px 0 0;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 650;
   letter-spacing: -0.02em;
   line-height: 1.3;
 }
@@ -1187,6 +1222,30 @@
 .dash-card {
   margin-bottom: 14px;
   background: #ffffff;
+}
+
+.dash-rail {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(21, 23, 26, 0.04);
+  padding: 4px 16px 8px;
+}
+
+.dash-rail > section {
+  padding: 14px 0 12px;
+  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
+}
+
+.dash-rail > section:last-child {
+  border-bottom: 0;
+}
+
+.dash-rail h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: #15171a;
 }
 
 .dash-card h2 {
@@ -1233,8 +1292,26 @@
   line-height: 1.6;
 }
 
+.dash-modules {
+  margin-top: 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(21, 23, 26, 0.04);
+  padding: 12px 4px 8px;
+}
+
 .dash-module {
-  margin-top: 10px;
+  margin-top: 0;
+  padding: 12px 16px;
+  background: none;
+  box-shadow: none;
+  border-radius: 0;
+  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
+}
+
+.dash-module:last-child {
+  border-bottom: 0;
 }
 
 .dash-module-row {
@@ -1245,9 +1322,9 @@
 }
 
 .dash-module-title {
-  font-family: var(--font-display);
-  font-size: 16px;
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 650;
 }
 
 .dash-modules {
@@ -1285,9 +1362,9 @@
 
 .dash-empty-card h2 {
   margin: 4px 0 0;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: 22px;
-  font-weight: 600;
+  font-weight: 650;
 }
 
 .dash-empty-card p {
@@ -1313,6 +1390,11 @@
   .dash-continue-grid,
   .dash-empty-grid {
     grid-template-columns: 1fr;
+  }
+
+  .dash-continue-grid .pl-frame {
+    border-left: 0;
+    border-top: 1px solid rgba(21, 23, 26, 0.06);
   }
 
   .os-main {

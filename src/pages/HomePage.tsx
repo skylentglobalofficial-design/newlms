@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { CareerEvidencePreview, CourseWorkspacePreview, LearnFlow, NorthwindWorkspace } from "../components/product/ProductLanguage"
+import { CareerEvidencePreview, CourseWorkspacePreview, LearnFlow, ModuleLane, NorthwindWorkspace } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { countStaticCourseLessons } from "../lib/curriculum-counts"
+import { courseModuleCards } from "../lib/catalog-maturity"
 import "./HomePage.css"
 
 const FLAGSHIP_SLUG = "data-analytics"
@@ -20,6 +21,7 @@ export default function HomePage() {
   const firstLesson = flagship?.modules[0]?.lessons[0]
   const firstQuiz = flagship?.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")
   const capstone = flagship?.modules.flatMap((module) => module.lessons).find((lesson) => /capstone/i.test(lesson.title))
+  const modules = flagship ? courseModuleCards(flagship, true) : []
 
   return (
     <PageShell aurora={false}>
@@ -29,15 +31,12 @@ export default function HomePage() {
             <div className="hp-hero-copy">
               <h1>Learn something useful.</h1>
               <p>
-                Skylent is a place to learn, practise, and keep the work. Open a focused course and do the exercises in a real workspace.
+                Open a focused course. Do the exercises in a real workspace. Keep the work.
               </p>
               <div className="hp-actions">
                 <Link className="hp-btn hp-btn-primary" to="/courses/data-analytics">Start learning</Link>
                 <Link className="hp-btn hp-btn-ghost" to="/courses">Explore courses</Link>
               </div>
-              <p className="hp-hero-note">
-                Data Analytics is open now: spreadsheets, SQL, dashboards, and a capstone on a practice dataset.
-              </p>
             </div>
             {flagship ? (
               <CourseWorkspacePreview
@@ -46,29 +45,34 @@ export default function HomePage() {
                 practiceTitle={firstQuiz?.title ?? "A short check"}
                 workTitle={capstone?.title ?? "Capstone"}
                 modules={flagship.modules.map((module) => module.title)}
+                lessonCount={lessonCount}
               />
             ) : null}
           </div>
         </section>
 
-        <section className="hp-section hp-section-alt" id="start-learning" aria-labelledby="start-learning-heading">
-          <div className="hp-rail hp-feature">
-            <div>
-              <h2 id="start-learning-heading" className="hp-h2">{flagship?.title ?? "Data Analytics"}</h2>
-              <p className="hp-lead">{flagship?.desc}</p>
-              <p className="hp-flagship-meta">
-                {flagship?.duration}
-                {lessonCount > 0 ? ` · ${lessonCount} lessons` : ""}
-                {flagship && flagship.projects > 0 ? ` · ${flagship.projects} assignments` : ""}
-                {" · Self-paced"}
-              </p>
+        <section className="hp-flagship" id="start-learning" aria-labelledby="start-learning-heading">
+          <div className="hp-rail">
+            <div className="hp-flagship-head">
+              <div>
+                <h2 id="start-learning-heading" className="hp-h2">{flagship?.title ?? "Data Analytics"}</h2>
+                <p className="hp-flagship-meta">
+                  {flagship?.duration}
+                  {lessonCount > 0 ? ` · ${lessonCount} lessons` : ""}
+                  {flagship && flagship.projects > 0 ? ` · ${flagship.projects} assignments` : ""}
+                  {" · Self-paced"}
+                </p>
+              </div>
               <div className="hp-actions">
                 <Link className="hp-btn hp-btn-primary" to="/courses/data-analytics">Open Data Analytics</Link>
-                <Link className="hp-btn hp-btn-ghost" to="/courses">Explore courses</Link>
               </div>
-              <p className="hp-fine">Other catalogue listings are thinner than Data Analytics.</p>
             </div>
-            <NorthwindWorkspace compact />
+            <p className="hp-lead">{flagship?.desc}</p>
+            <div className="hp-flagship-stage">
+              <ModuleLane modules={modules} />
+              <NorthwindWorkspace />
+            </div>
+            <p className="hp-fine">Other catalogue listings are thinner than Data Analytics.</p>
           </div>
         </section>
 
@@ -81,8 +85,8 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="hp-section hp-section-alt" aria-labelledby="work-heading">
-          <div className="hp-rail hp-feature">
+        <section className="hp-section hp-career" aria-labelledby="work-heading">
+          <div className="hp-rail hp-career-grid">
             <div>
               <h2 id="work-heading" className="hp-h2">Keep the work in Career OS</h2>
               <p className="hp-lead">

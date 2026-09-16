@@ -50,42 +50,76 @@ function BarRow({ name, value, max }: { name: string; value: number; max: number
   )
 }
 
-export function NorthwindWorkspace({ compact = false }: { compact?: boolean }) {
-  const catMax = NW.categories[0].value
+function Spark({ mini = false }: { mini?: boolean }) {
   const monthMax = Math.max(...NW.months.map((item) => item.value))
   return (
-    <ProductFrame title="Data Analytics" meta={NW.window} compact={compact}>
-      <div className="pl-nw">
-        <div className="pl-stat-row" aria-label="Northwind extract">
-          <VisualStat label="Orders" value={String(NW.rows)} />
-          <VisualStat label="Valid rows" value={String(NW.validRows)} />
-          <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
-        </div>
-        <div className="pl-nw-split">
-          <div>
-            <p className="pl-kicker">Valid net revenue by category</p>
-            {NW.categories.map((item) => (
-              <BarRow key={item.name} name={item.name} value={item.value} max={catMax} />
-            ))}
-          </div>
-          <div>
-            <p className="pl-kicker">Month trend</p>
-            <div className="pl-spark" aria-hidden="true">
-              {NW.months.map((item) => (
-                <span key={item.name} style={{ height: `${Math.max(12, Math.round((item.value / monthMax) * 100))}%` }}>
-                  <em>{item.name}</em>
-                </span>
-              ))}
-            </div>
-            <p className="pl-fine">{NW.weakestMonth} is the weakest month in this extract.</p>
-          </div>
-        </div>
-        {!compact ? (
-          <pre className="pl-sql" tabIndex={0}>
-            <code>{NW.sql}</code>
-          </pre>
-        ) : null}
+    <div className={mini ? "pl-spark pl-spark-mini" : "pl-spark"} aria-hidden="true">
+      {NW.months.map((item) => (
+        <span key={item.name} style={{ height: `${Math.max(mini ? 18 : 12, Math.round((item.value / monthMax) * 100))}%` }}>
+          {mini ? null : <em>{item.name}</em>}
+        </span>
+      ))}
+    </div>
+  )
+}
+
+function NorthwindTable() {
+  return (
+    <table className="pl-table">
+      <caption className="pl-kicker">Valid net revenue by category</caption>
+      <thead>
+        <tr>
+          <th scope="col">Category</th>
+          <th scope="col">Net revenue</th>
+        </tr>
+      </thead>
+      <tbody>
+        {NW.categories.map((item) => (
+          <tr key={item.name}>
+            <td>{item.name}</td>
+            <td>{formatInr(item.value)}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
+
+function NorthwindExtract({ compact = false }: { compact?: boolean }) {
+  const catMax = NW.categories[0].value
+  return (
+    <div className={compact ? "pl-nw is-compact" : "pl-nw"}>
+      <div className="pl-stat-row" aria-label="Northwind extract">
+        <VisualStat label="Orders" value={String(NW.rows)} />
+        <VisualStat label="Valid rows" value={String(NW.validRows)} />
+        <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
       </div>
+      <div className="pl-nw-split">
+        <div>
+          <p className="pl-kicker">Valid net revenue by category</p>
+          {NW.categories.map((item) => (
+            <BarRow key={item.name} name={item.name} value={item.value} max={catMax} />
+          ))}
+        </div>
+        <div>
+          <p className="pl-kicker">Month trend</p>
+          <Spark />
+          <p className="pl-fine">{NW.weakestMonth} is the weakest month in this extract.</p>
+        </div>
+      </div>
+      {!compact ? (
+        <pre className="pl-sql" tabIndex={0}>
+          <code>{NW.sql}</code>
+        </pre>
+      ) : null}
+    </div>
+  )
+}
+
+export function NorthwindWorkspace({ compact = false }: { compact?: boolean }) {
+  return (
+    <ProductFrame title="Data Analytics" meta={`${NW.filename} · ${NW.window}`} compact={compact}>
+      <NorthwindExtract compact={compact} />
     </ProductFrame>
   )
 }
@@ -96,15 +130,20 @@ export function CourseWorkspacePreview({
   practiceTitle,
   workTitle,
   modules,
+  lessonCount,
 }: {
   courseTitle: string
   lessonTitle: string
   practiceTitle: string
   workTitle: string
   modules: string[]
+  lessonCount?: number
 }) {
   return (
-    <ProductFrame title={courseTitle} meta="Course workspace">
+    <ProductFrame
+      title={courseTitle}
+      meta={lessonCount ? `${lessonCount} lessons · not started` : "Course workspace"}
+    >
       <div className="pl-ws">
         <ol className="pl-ws-rail" aria-label="Modules">
           {modules.map((title, index) => (
@@ -115,18 +154,26 @@ export function CourseWorkspacePreview({
           ))}
         </ol>
         <div className="pl-ws-main">
-          <p className="pl-kicker">Current lesson</p>
-          <p className="pl-ws-lesson">{lessonTitle}</p>
-          <div className="pl-chip-row">
-            <span className="pl-chip">Lesson</span>
-            <span className="pl-chip">{practiceTitle}</span>
-            <span className="pl-chip">{workTitle}</span>
+          <div className="pl-ws-current">
+            <p className="pl-kicker">Current lesson</p>
+            <p className="pl-ws-lesson">{lessonTitle}</p>
+            <p className="pl-fine">
+              {practiceTitle}
+              {" · "}
+              {workTitle}
+            </p>
           </div>
-          <div className="pl-ws-lines" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-            <span />
+          <div className="pl-ws-extract" aria-label="Northwind extract">
+            <p className="pl-kicker">{NW.filename}</p>
+            <div className="pl-stat-row">
+              <VisualStat label="Valid rows" value={String(NW.validRows)} />
+              <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
+              <VisualStat label="Top category" value={NW.topCategory} />
+            </div>
+            <div className="pl-ws-viz">
+              <Spark mini />
+              <NorthwindTable />
+            </div>
           </div>
         </div>
       </div>
@@ -135,7 +182,6 @@ export function CourseWorkspacePreview({
 }
 
 export function CourseThumb({ authored }: { authored: boolean }) {
-  const monthMax = Math.max(...NW.months.map((item) => item.value))
   return (
     <div className={authored ? "pl-thumb is-live" : "pl-thumb"} aria-hidden="true">
       {authored ? (
@@ -144,11 +190,7 @@ export function CourseThumb({ authored }: { authored: boolean }) {
             <b>{NW.netRevenueLabel}</b>
             <span>{NW.validRows} valid rows</span>
           </div>
-          <div className="pl-spark pl-spark-mini">
-            {NW.months.map((item) => (
-              <span key={item.name} style={{ height: `${Math.max(18, Math.round((item.value / monthMax) * 100))}%` }} />
-            ))}
-          </div>
+          <Spark mini />
         </>
       ) : (
         <div className="pl-thumb-outline">
@@ -172,21 +214,34 @@ export function LearnFlow({
         <li key={step.title}>
           <div className={`pl-flow-visual is-${step.kind}`} aria-hidden="true">
             {step.kind === "learn" ? (
-              <>
+              <div className="pl-flow-lesson">
+                <em>Lesson</em>
+                <b>Written work</b>
                 <span />
                 <span />
                 <span />
-              </>
+              </div>
             ) : null}
             {step.kind === "practice" ? (
+              <div className="pl-flow-quiz">
+                <em>Knowledge check</em>
+                <span className="pl-opt is-on" />
+                <span className="pl-opt" />
+                <span className="pl-opt" />
+              </div>
+            ) : null}
+            {step.kind === "build" ? (
               <>
-                <span className="pl-check" />
-                <span className="pl-check is-on" />
-                <span className="pl-check" />
+                <em>{NW.filename}</em>
+                <Spark mini />
               </>
             ) : null}
-            {step.kind === "build" ? <em>Northwind</em> : null}
-            {step.kind === "keep" ? <strong>Work sample</strong> : null}
+            {step.kind === "keep" ? (
+              <div className="pl-flow-keep">
+                <em>Work sample</em>
+                <strong>Northwind commercial review</strong>
+              </div>
+            ) : null}
           </div>
           <strong>{step.title}</strong>
           <p>{step.copy}</p>
@@ -198,13 +253,16 @@ export function LearnFlow({
 
 export function PathwayTrack({
   steps,
+  layout = "track",
 }: {
   steps: Array<{ label: string; live: boolean; note: string }>
+  layout?: "track" | "board"
 }) {
   return (
-    <ol className="pl-path">
-      {steps.map((step) => (
+    <ol className={layout === "board" ? "pl-path is-board" : "pl-path"}>
+      {steps.map((step, index) => (
         <li key={step.label} className={step.live ? "is-live" : "is-later"}>
+          <span className="pl-path-index">{String(index + 1).padStart(2, "0")}</span>
           <span className="pl-path-mark" aria-hidden="true" />
           <div>
             <strong>{step.label}</strong>
@@ -241,6 +299,74 @@ export function PathwayThumb() {
   )
 }
 
+export type ModuleLaneItem = {
+  id: string
+  index: number
+  title: string
+  workLine: string
+  countsLabel: string
+}
+
+export function moduleVisualKind(title: string, countsLabel = "") {
+  const hay = `${title} ${countsLabel}`
+  if (/sql/i.test(hay)) return "sql" as const
+  if (/dashboard/i.test(hay)) return "chart" as const
+  if (/capstone|applied project/i.test(hay)) return "build" as const
+  if (/spread|sheet/i.test(hay)) return "sheet" as const
+  return "learn" as const
+}
+
+function ModuleVisual({ kind }: { kind: ReturnType<typeof moduleVisualKind> }) {
+  if (kind === "sql") {
+    return (
+      <pre className="pl-lane-sql" aria-hidden="true">
+        <code>SELECT net_revenue FROM sales</code>
+      </pre>
+    )
+  }
+  if (kind === "chart") return <Spark mini />
+  if (kind === "sheet") {
+    return (
+      <div className="pl-lane-sheet" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+    )
+  }
+  if (kind === "build") {
+    return <span className="pl-lane-doc">Northwind review</span>
+  }
+  return (
+    <div className="pl-lane-lines" aria-hidden="true">
+      <span />
+      <span />
+      <span />
+    </div>
+  )
+}
+
+export function ModuleLane({ modules }: { modules: ModuleLaneItem[] }) {
+  return (
+    <ol className="pl-lane">
+      {modules.map((module) => {
+        const kind = moduleVisualKind(module.title, module.countsLabel)
+        return (
+          <li key={module.id} className={`pl-lane-item is-${kind}${module.index === 1 ? " is-start" : ""}`}>
+            <ModuleVisual kind={kind} />
+            <span className="pl-lane-num">{String(module.index).padStart(2, "0")}</span>
+            <div className="pl-lane-copy">
+              <strong>{module.title}</strong>
+              <p>{module.workLine}</p>
+              <p>{module.countsLabel}</p>
+            </div>
+          </li>
+        )
+      })}
+    </ol>
+  )
+}
+
 export function LessonContextPanel({ lessonId }: { lessonId: string }) {
   const meta = getDaLessonMeta(lessonId)
   if (!meta) return null
@@ -266,10 +392,13 @@ export function LessonContextPanel({ lessonId }: { lessonId: string }) {
         </pre>
       ) : null}
       {visual === "chart" || visual === "dataset" ? (
-        <div className="pl-stat-row" aria-label="Northwind extract">
-          <VisualStat label="Valid rows" value={String(NW.validRows)} />
-          <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
-          <VisualStat label="Top category" value={NW.topCategory} />
+        <div className="pl-lesson-extract" aria-label="Northwind extract">
+          <div className="pl-stat-row">
+            <VisualStat label="Valid rows" value={String(NW.validRows)} />
+            <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
+            <VisualStat label="Top category" value={NW.topCategory} />
+          </div>
+          {visual === "chart" ? <Spark mini /> : <NorthwindTable />}
         </div>
       ) : null}
     </aside>

@@ -120,7 +120,7 @@ export function AuthDashboardShell({
         }}>
           <div style={{
             width: 34, height: 34, borderRadius: '50%',
-            background: `linear-gradient(135deg, ${accent.primary}, ${accent.secondary})`,
+            background: accent.primary,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 11, fontWeight: 700, color: C.white, flexShrink: 0,
           }}>
@@ -196,7 +196,7 @@ export function AuthDashboardShell({
           <div style={{ width: 36 }} />
         </header>
 
-        <div className="auth-shell-content" style={{ padding: 'clamp(20px, 3vw, 36px) clamp(16px, 3vw, 36px) 96px', minWidth: 0 }}>
+        <div className="auth-shell-content" style={{ padding: 'clamp(16px, 2.4vw, 28px) clamp(16px, 2.6vw, 28px) 96px', minWidth: 0 }}>
           {header}
           {children}
         </div>

@@ -367,7 +367,8 @@ export default function LearnPage() {
             ) : null}
 
             {selectedLesson ? (
-              <>
+              <div className="os-lesson-stage">
+                <div className="os-lesson-head">
                 <p className="os-kicker">
                   <span className="lx-type-pill">
                     <strong>{lessonTypeLabel(selectedLesson.type, selectedLesson.title)}</strong>
@@ -376,17 +377,18 @@ export default function LearnPage() {
                   <span>{currentModule?.title ?? 'Current module'}</span>
                 </p>
                 <h1>{selectedLesson.title}</h1>
+                <p className={selectedState.complete ? 'os-status is-done' : 'os-status'}>
+                  {selectedState.locked ? 'Locked until the previous lesson is complete.' : selectedState.complete ? 'Completed' : 'In progress'}
+                </p>
+                </div>
                 {isAuthoredCourse(readyCourse.slug) && !selectedState.locked ? (
                   <LessonContextPanel lessonId={selectedLesson.id} />
                 ) : (
-                  <p className="os-lead">
+                  <p className="os-lead" style={{ padding: '0 18px' }}>
                     {(isAuthoredCourse(readyCourse.slug) ? getDaLessonMeta(selectedLesson.id)?.objective : null)
                       ?? lessonObjective(selectedLesson)}
                   </p>
                 )}
-                <p className={selectedState.complete ? 'os-status is-done' : 'os-status'}>
-                  {selectedState.locked ? 'Locked until the previous lesson is complete.' : selectedState.complete ? 'Completed' : 'In progress'}
-                </p>
 
                 <div className="os-paper">
                   {selectedState.locked ? (
@@ -439,7 +441,7 @@ export default function LearnPage() {
                     }
                   />
                 ) : null}
-              </>
+              </div>
             ) : (
               <p className="os-lead">This lesson is unavailable. Choose another from the curriculum.</p>
             )}

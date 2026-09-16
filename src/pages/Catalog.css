@@ -24,13 +24,17 @@
 
 .cat-hero-split {
   display: grid;
-  grid-template-columns: minmax(0, 0.78fr) minmax(320px, 1.22fr);
+  grid-template-columns: minmax(0, 0.7fr) minmax(340px, 1.3fr);
   gap: clamp(20px, 4vw, 40px);
   align-items: center;
 }
 
 .cat-hero-visual .pl-frame {
-  min-height: 440px;
+  min-height: 420px;
+}
+
+.cat-stage-visual {
+  margin-top: 18px;
 }
 
 .cat-statline {
@@ -239,10 +243,7 @@
 
 .cat-note {
   margin: 14px 0 0;
-  padding: 12px 14px;
   max-width: 42em;
-  background: #ffffff;
-  border-radius: 12px;
   color: #5c6168;
   font-size: 14px;
   line-height: 1.5;
@@ -272,16 +273,17 @@
 .cat-caps {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 0 28px;
   margin-top: 18px;
 }
 
 .cat-cap {
   min-width: 0;
-  padding: 16px;
-  background: #ffffff;
-  border-radius: 14px;
-  box-shadow: 0 8px 24px rgba(21, 23, 26, 0.04);
+  padding: 14px 0 14px 14px;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  border-left: 2px solid #4f46e5;
 }
 
 .cat-cap strong {
@@ -347,16 +349,19 @@
 
 .cat-practice {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 0;
   margin-top: 18px;
 }
 
 .cat-practice article {
   min-width: 0;
-  padding: 16px;
-  background: #ffffff;
-  border-radius: 14px;
+  display: grid;
+  grid-template-columns: minmax(120px, 0.28fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  padding: 14px 0;
+  background: none;
+  border-top: 1px solid rgba(21, 23, 26, 0.08);
 }
 
 .cat-practice h3 {
@@ -489,26 +494,37 @@
   padding: 8px 6px;
 }
 
-.cat-tile.is-featured {
+.cat-ready {
+  margin-top: 16px;
+}
+
+.cat-feature {
   display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: minmax(240px, 0.9fr) minmax(0, 1.1fr);
-  align-items: stretch;
+  grid-template-columns: minmax(280px, 1.05fr) minmax(0, 0.95fr);
+  gap: 0;
+  min-width: 0;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 16px 40px rgba(21, 23, 26, 0.07);
 }
 
-.cat-tile.is-featured .pl-thumb {
-  height: auto;
-  min-height: 248px;
-  align-content: space-between;
-  padding: 22px 22px 18px;
+.cat-feature-stage {
+  min-width: 0;
+  padding: 12px;
+  background: #f7f4ec;
 }
 
-.cat-tile.is-featured .pl-spark-mini {
-  height: 112px;
+.cat-feature-stage .pl-frame {
+  box-shadow: none;
+  min-height: 0;
 }
 
-.cat-tile.is-featured .pl-thumb-kpis b {
-  font-size: 28px;
+.cat-feature .cat-tile-copy {
+  justify-content: center;
+  padding: 24px 28px;
 }
 
 .cat-tile-copy {
@@ -519,12 +535,8 @@
   padding: 14px 16px 16px;
 }
 
-.cat-tile.is-featured .cat-tile-copy {
-  justify-content: center;
-  padding: 22px 24px 24px;
-}
-
-.cat-tile h3 {
+.cat-tile h3,
+.cat-feature h3 {
   margin: 8px 0 0;
   font-size: 18px;
   font-weight: 650;
@@ -535,12 +547,13 @@
   overflow: hidden;
 }
 
-.cat-tile.is-featured h3 {
-  font-size: 24px;
+.cat-feature h3 {
+  font-size: 26px;
   -webkit-line-clamp: 3;
 }
 
-.cat-tile p {
+.cat-tile p,
+.cat-feature p {
   margin: 8px 0 0;
   color: #5c6168;
   font-size: 13px;
@@ -635,10 +648,10 @@
 }
 
 .cat-path-panel {
-  padding: 18px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 10px 28px rgba(21, 23, 26, 0.05);
+  padding: 4px 0 0;
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .cat-path-panel h2 {
@@ -760,9 +773,10 @@
 
 .cat-who li {
   list-style: none;
-  padding: 14px;
-  background: #ffffff;
-  border-radius: 14px;
+  padding: 12px 0;
+  background: none;
+  border-radius: 0;
+  border-top: 1px solid rgba(21, 23, 26, 0.08);
   font-size: 14px;
   line-height: 1.45;
 }
@@ -805,29 +819,23 @@
   .cat-who,
   .cat-card-link,
   .cat-card-link.is-featured,
-  .cat-tile.is-featured,
+  .cat-feature,
   .cat-module,
   .cat-link,
   .cat-split {
     grid-template-columns: 1fr;
   }
 
-  .cat-tile.is-featured .pl-thumb {
-    min-height: 196px;
-    height: 196px;
-    padding: 16px 16px 12px;
-  }
-
-  .cat-tile.is-featured .pl-spark-mini {
-    height: 88px;
-  }
-
-  .cat-tile.is-featured .pl-thumb-kpis b {
-    font-size: 22px;
-  }
-
   .cat-hero-visual .pl-frame {
     min-height: 0;
+  }
+
+  .cat-practice article {
+    grid-template-columns: 1fr;
+  }
+
+  .pl-lane {
+    margin-top: 12px;
   }
 }
 
@@ -850,7 +858,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .cat-card-link,
-  .cat-tile {
+  .cat-tile,
+  .cat-feature {
     transition: none;
   }
 }
