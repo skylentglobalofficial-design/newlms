@@ -1,6 +1,6 @@
 import { NORTHWIND_SALES_FILE, VALID_NET_REVENUE, operationMeta } from "./catalog.js"
 import { inferColumnType, loadSalesRows, type SalesRow } from "./dataset.js"
-import type { LabCategoryTotal, LabDatasetPreview, LabRunResult } from "./types.js"
+import type { LabCategoryTotal, LabDatasetPreview, LabGuidedRunResult } from "./types.js"
 
 export const VALID_ROW_RULE = ["units > 0", "unit_price > 0", "returned = no"] as const
 
@@ -67,7 +67,7 @@ export function buildDatasetPreview(): LabDatasetPreview {
   }
 }
 
-export function calculateValidNetRevenue(): LabRunResult {
+export function calculateValidNetRevenue(): LabGuidedRunResult {
   const { rows } = loadSalesRows()
   const valid = rows.filter(isValidSalesRow)
   const netRevenue = Math.round(valid.reduce((sum, row) => sum + rowNetRevenue(row), 0))
@@ -120,7 +120,7 @@ export function calculateValidNetRevenue(): LabRunResult {
   }
 }
 
-export function runLabOperation(operation: string): LabRunResult {
+export function runLabOperation(operation: string): LabGuidedRunResult {
   if (operation === VALID_NET_REVENUE) return calculateValidNetRevenue()
   throw new Error("invalid_operation")
 }

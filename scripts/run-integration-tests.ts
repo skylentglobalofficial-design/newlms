@@ -18,6 +18,7 @@ const SUITES: Suite[] = [
   { name: "roles", command: "npm", args: ["run", "test:roles"], port: DEFAULT_PORT, rateLimitMax: "500" },
   { name: "lms", command: "npm", args: ["run", "test:lms"], port: DEFAULT_PORT, rateLimitMax: "500" },
   { name: "labs", command: "npm", args: ["run", "test:labs"], port: DEFAULT_PORT, rateLimitMax: "500" },
+  { name: "labs-sql", command: "npm", args: ["run", "test:labs-sql"], port: DEFAULT_PORT, rateLimitMax: "500" },
   {
     name: "security-middleware",
     command: "npm",
@@ -56,6 +57,7 @@ function startApi(port: number, rateLimitMax: string): ChildProcess {
     ...process.env,
     PORT: String(port),
     AUTH_RATE_LIMIT_MAX: rateLimitMax,
+    SKYLENT_LABS_RATE_LIMIT_MAX: rateLimitMax,
   }
 
   const child = spawn("npx", ["tsx", "server/src/index.ts"], {
