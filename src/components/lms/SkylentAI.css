@@ -3,9 +3,9 @@
 .os-ai {
   min-width: 0;
   background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 16px 40px rgba(21, 23, 26, 0.06);
-  padding: 16px 16px 18px;
+  border-radius: 12px;
+  box-shadow: 0 10px 28px rgba(21, 23, 26, 0.06);
+  padding: 14px 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -14,6 +14,7 @@
   overflow-x: hidden;
   position: sticky;
   top: 0;
+  border: 1px solid rgba(21, 23, 26, 0.08);
 }
 
 .os-ai.is-compact {
@@ -64,6 +65,44 @@
   margin-top: 6px;
 }
 
+.os-ai-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.os-ai-meta .os-ai-based {
+  margin-top: 0;
+}
+
+.os-ai-chip {
+  margin: 0;
+  padding: 2px 8px;
+  border: 1px solid rgba(21, 23, 26, 0.12);
+  border-radius: 6px;
+  background: #f7f4ec;
+  color: #15171a;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.os-ai-related,
+.os-ai-try {
+  margin: 8px 0 0;
+  color: #5c6168;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.os-ai-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .os-ai-thread {
   display: grid;
   gap: 10px;
@@ -75,8 +114,9 @@
 }
 
 .os-ai.is-compact .os-ai-thread {
-  flex: 0 1 auto;
-  max-height: 22dvh;
+  flex: 1 1 auto;
+  min-height: 96px;
+  max-height: min(30dvh, 260px);
 }
 
 .os-ai-form,
@@ -130,8 +170,26 @@
   font: 14px/1.45 var(--font-body);
 }
 
+.os-ai.is-compact:not(.is-open) {
+  max-height: none;
+  overflow: hidden;
+  padding: 4px 12px;
+  gap: 0;
+}
+
+.os-ai.is-compact.is-open {
+  max-height: min(52dvh, 440px, calc(100dvh - var(--os-ai-dock-bottom, 12px) - 16px));
+}
+
 .os-ai.is-compact:has(.os-ai-thread) {
-  height: min(48dvh, 420px, calc(100dvh - var(--os-ai-dock-bottom, 12px) - 16px));
+  height: min(52dvh, 440px, calc(100dvh - var(--os-ai-dock-bottom, 12px) - 16px));
+}
+
+.os-ai-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
 }
 
 .os-ai.is-compact .os-ai-input {
@@ -143,6 +201,18 @@
 .os-ai-input:focus-visible {
   outline: 2px solid #4f46e5;
   outline-offset: 2px;
+}
+
+.os-ai-toggle:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.os-ai .os-btn:disabled,
+.os-ai-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .os-ai-quick-row {

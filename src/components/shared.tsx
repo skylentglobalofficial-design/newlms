@@ -413,7 +413,7 @@ export function Nav() {
       style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, borderBottom: navBorder, boxShadow: navShadow }}
     >
       <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH, gap: 12, minWidth: 0 }}>
-        <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 22, color: C.ink, textDecoration: 'none', letterSpacing: '-0.02em', padding: 0, flexShrink: 0 }}>
+        <Link to="/" className="skylent-mark" style={{ fontSize: 22, color: C.ink, textDecoration: 'none', padding: 0, flexShrink: 0 }}>
           Skylent<span style={{ color: C.orange }}>.</span>
         </Link>
 
@@ -694,7 +694,7 @@ export function Footer() {
       <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(180px, 1.3fr) repeat(5, minmax(0, 1fr))', gap: 28, marginBottom: 56 }} className="footer-grid">
           <div>
-            <Link to="/" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.ink, letterSpacing: '-0.02em', textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
+            <Link to="/" className="skylent-mark" style={{ fontSize: 24, color: C.ink, textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
             <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Learn, study, and keep evidence of your work — a focused student learning product.</p>
             <div style={{ display: 'flex', gap: 10 }}>
               {['in', 'tw', 'yt', 'ig'].map(s => (

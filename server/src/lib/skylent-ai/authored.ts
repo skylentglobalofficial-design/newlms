@@ -17,6 +17,20 @@ export const NORTHWIND_FACTS = {
   sql: "SELECT ROUND(SUM(units * unit_price * (1.0 - discount_pct / 100.0)), 0) AS net_revenue\nFROM sales\nWHERE units > 0 AND unit_price > 0 AND returned = 'no';",
 } as const
 
+/** Compact Harbor Desk facts — not the full case file. Do not invent beyond these. */
+export const HARBOR_FACTS = {
+  filename: "harbor-desk-case.md",
+  company: "Harbor Retail",
+  stores: 12,
+  interviews: 4,
+  weekendExceptions: 9,
+  unlogged: 3,
+  constraint: "2 engineers, 6 weeks, no warehouse system, no ERP replacement",
+  note: "Fictional Harbor Retail operations case. Not a sales extract. Do not invent interviews, users, or statistics.",
+} as const
+
+export const AI_EXCERPT_LIMIT = 4500
+
 type AuthoredMeta = {
   id: string
   moduleId: string
@@ -218,7 +232,6 @@ export const DA_DATASETS: Array<{
   },
 ]
 
-const EXCERPT_LIMIT = 4500
 const SQL_LESSONS = new Set(["l7", "l8", "l9", "l13"])
 
 function repoRoot(): string {
@@ -243,8 +256,8 @@ export function compactLessonExcerpt(body: string): string {
   let text = body.replace(/^# .*\n+/, "")
   text = text.replace(/\*\*(Objective|Why this matters|Prerequisite|Estimated time):\*\*[^\n]*\n+/g, "")
   text = text.trim()
-  if (text.length > EXCERPT_LIMIT) {
-    return `${text.slice(0, EXCERPT_LIMIT)}\n\n[Lesson text truncated for context.]`
+  if (text.length > AI_EXCERPT_LIMIT) {
+    return `${text.slice(0, AI_EXCERPT_LIMIT)}\n\n[Lesson text truncated for context.]`
   }
   return text
 }
@@ -325,6 +338,19 @@ export function buildLessonAiContext(input: {
           sql: SQL_LESSONS.has(input.lessonId) ? NORTHWIND_FACTS.sql : "",
         }
       : null,
+    harbor: isPm
+      ? {
+          filename: HARBOR_FACTS.filename,
+          company: HARBOR_FACTS.company,
+          stores: HARBOR_FACTS.stores,
+          interviews: HARBOR_FACTS.interviews,
+          weekendExceptions: HARBOR_FACTS.weekendExceptions,
+          unlogged: HARBOR_FACTS.unlogged,
+          constraint: HARBOR_FACTS.constraint,
+          note: HARBOR_FACTS.note,
+        }
+      : null,
+    caseLabel: isDa ? "Northwind dataset" : isPm ? "Harbor Desk case" : null,
     excerpt,
   }
 }

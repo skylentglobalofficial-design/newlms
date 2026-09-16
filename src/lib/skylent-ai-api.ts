@@ -8,6 +8,7 @@ export type SkylentAiAction = "ask" | "explain" | "example" | "quiz" | "practice
 export type SkylentAiTurn = {
   role: "user" | "assistant"
   content: string
+  related?: string | null
 }
 
 export async function fetchSkylentAiStatus(signal?: AbortSignal): Promise<{ available: boolean }> {
@@ -23,25 +24,31 @@ export async function askSkylentAi(input: {
   question?: string
   messages?: SkylentAiTurn[]
   signal?: AbortSignal
-}): Promise<{ answer: string; basedOn: string }> {
+}): Promise<{ answer: string; basedOn: string; related: string | null; caseLabel: string | null }> {
   const token = await ensureCsrfToken()
-  const response = await fetch(
-    `${API_BASE}/lms/courses/${encodeURIComponent(input.courseSlug)}/lessons/${encodeURIComponent(input.lessonId)}/ai`,
-    {
-      method: "POST",
-      credentials: "include",
-      signal: input.signal,
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": token,
-      },
-      body: JSON.stringify({
-        action: input.action,
-        question: input.question,
-        messages: input.messages,
-      }),
+  const response = await fetch(`${API_BASE}/lms/ai/ask`, {
+    method: "POST",
+    credentials: "include",
+    signal: input.signal,
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": token,
     },
-  )
-  const parsed = await parseApiJson<{ data: { answer: string; basedOn: string } }>(response)
-  return parsed.data
+    body: JSON.stringify({
+      courseSlug: input.courseSlug,
+      lessonSlug: input.lessonId,
+      mode: input.action,
+      question: input.question,
+      messages: input.messages?.map((turn) => ({ role: turn.role, content: turn.content })),
+    }),
+  })
+  const parsed = await parseApiJson<{
+    data: { answer: string; basedOn: string; related?: string | null; caseLabel?: string | null }
+  }>(response)
+  return {
+    answer: parsed.data.answer,
+    basedOn: parsed.data.basedOn,
+    related: parsed.data.related ?? null,
+    caseLabel: parsed.data.caseLabel ?? null,
+  }
 }

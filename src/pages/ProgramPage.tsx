@@ -76,6 +76,19 @@ export default function ProgramPage() {
                 {view.linked[0] ? <span>Linked course: {view.linked[0].title}</span> : <span>No linked LMS course yet</span>}
               </p>
               <p className="cat-note">{view.honesty}</p>
+              {view.linked[0] ? (
+                <Link className="cat-link" to={view.linked[0].to}>
+                  <CourseThumb authored={view.linked[0].authored} visual={courseProductProfile(view.linked[0].slug)?.visual ?? "northwind"} />
+                  <div>
+                    <span className={view.linked[0].authored ? "cat-mark cat-mark-ready" : "cat-mark"}>
+                      {view.linked[0].maturityLabel}
+                    </span>
+                    <h3>{view.linked[0].title}</h3>
+                    <p>Open the live course from this programme.</p>
+                  </div>
+                  <span className="cat-btn cat-btn-ghost">View course</span>
+                </Link>
+              ) : null}
               <div className="cat-actions">
                 {comingLater ? (
                   <span className="cat-btn cat-btn-ghost" aria-disabled="true">Coming later</span>
@@ -109,10 +122,14 @@ export default function ProgramPage() {
             </div>
             <div className="cat-path-panel">
               <p className="cat-label">Intended pathway</p>
-              <h2>What a programme is meant to be</h2>
+              <h2>Programme → work → outcome</h2>
               <p className="cat-fine cat-path-copy">
-                That structure is not fully implemented here. Enrolment does not create a separate taught syllabus beyond the linked course.
+                Filled steps are available as linked learning. Open steps are intended structure, not yet taught.
               </p>
+              <div className="cat-path-legend">
+                <span className="is-live">Available / taught</span>
+                <span className="is-later">Planned / not yet taught</span>
+              </div>
               <PathwayTrack steps={pathSteps} layout="board" />
             </div>
           </div>

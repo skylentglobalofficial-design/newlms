@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom"
 import { useAuth } from "../../context/AuthContext"
 import CareerOSShell from "../../components/career/CareerOSShell"
 import CareerOSPublicPage from "./CareerOSPublicPage"
+import "./CareerOS.css"
 
 export default function CareerOSLayout() {
   const { user, ready } = useAuth()

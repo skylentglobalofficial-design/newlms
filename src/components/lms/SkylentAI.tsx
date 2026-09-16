@@ -19,24 +19,49 @@ const QUICK: Array<{ action: SkylentAiAction; label: string }> = [
   { action: "practice", label: "Practice question" },
 ]
 
+function caseChipFor(courseSlug: string, caseLabel?: string | null): string | null {
+  if (caseLabel) return caseLabel
+  if (courseSlug === "data-analytics") return "Northwind dataset"
+  if (courseSlug === "product-management") return "Harbor Desk case"
+  return null
+}
+
+function tryThisFor(action: SkylentAiAction): string | null {
+  if (action === "quiz") return "Reply in the box. I will check it against this lesson."
+  if (action === "practice") return "Try the first item, then ask me to check your reasoning."
+  return null
+}
+
 function friendlyError(err: unknown): { message: string; unavailable: boolean } {
   const raw = workspaceErrorMessage(err)
-  if (raw.includes("isn't available")) {
-    return { message: "Skylent AI isn't available yet.", unavailable: true }
+  if (/isn't available/i.test(raw)) {
+    return {
+      message: "Skylent AI isn't available right now. You can still study this lesson normally.",
+      unavailable: true,
+    }
   }
-  return { message: "Skylent AI couldn't answer right now.", unavailable: false }
+  if (/couldn't answer|try again|429/i.test(raw)) {
+    return { message: "Skylent AI couldn't answer right now. Try again.", unavailable: false }
+  }
+  if (/Enrolment required|Lesson locked|do not have access/i.test(raw)) {
+    return { message: "This lesson is not available for Skylent AI yet.", unavailable: false }
+  }
+  return { message: "Skylent AI couldn't answer right now. Try again.", unavailable: false }
 }
 
 export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }: Props) {
   const inputId = useId()
+  const titleId = useId()
   const listRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const toggleRef = useRef<HTMLButtonElement>(null)
   const abortRef = useRef<AbortController | null>(null)
   const seqRef = useRef(0)
   const [open, setOpen] = useState(!compact)
   const [draft, setDraft] = useState("")
   const [turns, setTurns] = useState<SkylentAiTurn[]>([])
   const [basedOn, setBasedOn] = useState(lessonTitle)
+  const [caseLabel, setCaseLabel] = useState<string | null>(caseChipFor(courseSlug))
   const [ui, setUi] = useState<UiState>("checking")
   const [error, setError] = useState<string | null>(null)
   const [dockBottom, setDockBottom] = useState(12)
@@ -48,7 +73,8 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
     setDraft("")
     setError(null)
     setBasedOn(lessonTitle)
-  }, [lessonId, lessonTitle])
+    setCaseLabel(caseChipFor(courseSlug))
+  }, [courseSlug, lessonId, lessonTitle])
 
   useEffect(() => {
     setOpen(!compact)
@@ -103,11 +129,37 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
   useEffect(() => {
     const root = listRef.current
     if (!root) return
-    root.scrollTop = root.scrollHeight
+    const last = root.querySelector(".os-ai-turn:last-child")
+    if (!(last instanceof HTMLElement)) return
+    const top = last.getBoundingClientRect().top - root.getBoundingClientRect().top + root.scrollTop
+    root.scrollTop = Math.max(0, top - 4)
   }, [turns, ui])
+
+  useEffect(() => {
+    if (!compact || !open) return
+    const onKey = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Escape") return
+      event.preventDefault()
+      setOpen(false)
+      queueMicrotask(() => toggleRef.current?.focus())
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [compact, open])
 
   const busy = ui === "loading"
   const inputDisabled = ui === "unavailable" || ui === "checking" || busy
+  const chip = caseChipFor(courseSlug, caseLabel)
+
+  function clearConversation() {
+    abortRef.current?.abort()
+    seqRef.current += 1
+    setTurns([])
+    setDraft("")
+    setError(null)
+    if (ui === "error" || ui === "loading") setUi("ready")
+    inputRef.current?.focus()
+  }
 
   async function submit(action: SkylentAiAction, extra?: string) {
     if (busy || ui === "unavailable" || ui === "checking") return
@@ -119,7 +171,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
       role: "user",
       content: action === "ask" ? text : label ?? text,
     }
-    const history = turns.slice(-8)
+    const history = turns.slice(-8).map((turn) => ({ role: turn.role, content: turn.content }))
     const pending = [...turns, userTurn]
     const requestId = ++seqRef.current
     abortRef.current?.abort()
@@ -140,8 +192,16 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
         signal: controller.signal,
       })
       if (requestId !== seqRef.current) return
-      setTurns([...pending, { role: "assistant", content: result.answer }])
+      setTurns([
+        ...pending,
+        {
+          role: "assistant",
+          content: result.answer,
+          related: result.related,
+        },
+      ])
       setBasedOn(result.basedOn || lessonTitle)
+      setCaseLabel(result.caseLabel ?? caseChipFor(courseSlug))
       setUi("ready")
     } catch (err) {
       if (requestId !== seqRef.current) return
@@ -159,21 +219,28 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
     }
   }
 
-  function askAnother() {
-    setOpen(true)
-    if (ui === "error") setUi("ready")
-    inputRef.current?.focus()
-  }
+  const lastAssistant = [...turns].reverse().find((turn) => turn.role === "assistant")
+  const lastUser = [...turns].reverse().find((turn) => turn.role === "user")
+  const lastAction = QUICK.find((item) => item.label === lastUser?.content)?.action
+  const tryThis = lastAction ? tryThisFor(lastAction) : null
+
+  const contextLine = (
+    <div className="os-ai-meta">
+      <p className="os-ai-based">Learning from: {basedOn}</p>
+      {chip ? <p className="os-ai-chip">{chip}</p> : null}
+    </div>
+  )
 
   const body = (
     <>
       {compact ? (
-        <p className="os-ai-based">This lesson: {basedOn}</p>
+        contextLine
       ) : (
         <header className="os-ai-head">
-          <p className="os-eyebrow">Skylent AI</p>
-          <h2>Learn with help from this lesson.</h2>
-          <p className="os-ai-based">This lesson: {basedOn}</p>
+          <p className="os-eyebrow" id={titleId}>
+            Skylent AI
+          </p>
+          {contextLine}
         </header>
       )}
 
@@ -182,37 +249,49 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
       ) : null}
 
       {ui === "unavailable" ? (
-        <p className="os-ai-note">Skylent AI isn’t available yet. You can still study the lesson as written.</p>
+        <p className="os-ai-note">Skylent AI isn't available right now. You can still study this lesson normally.</p>
       ) : null}
 
       {turns.length > 0 ? (
         <div className="os-ai-thread" ref={listRef}>
           {turns.map((turn, index) => (
             <article key={`${turn.role}-${index}`} className={`os-ai-turn is-${turn.role}`}>
-              <p className="os-ai-turn-label">{turn.role === "user" ? "You asked" : "From this lesson"}</p>
+              <p className="os-ai-turn-label">{turn.role === "user" ? "You" : "Skylent AI"}</p>
               <p>{turn.content}</p>
+              {turn.role === "assistant" && turn.related ? (
+                <p className="os-ai-related">Related to this lesson: {turn.related}</p>
+              ) : null}
             </article>
           ))}
         </div>
       ) : ui === "ready" && !compact ? (
-        <p className="os-ai-idle">Ask about the current lesson. Follow-ups stay on this page.</p>
+        <p className="os-ai-idle">Ask about this lesson. Follow-ups stay here.</p>
       ) : null}
 
-      {ui === "loading" ? <p className="os-ai-note" aria-live="polite">Working from this lesson…</p> : null}
+      {ui === "ready" && tryThis && lastAssistant ? (
+        <p className="os-ai-try">Try this: {tryThis}</p>
+      ) : null}
+
+      {ui === "loading" ? (
+        <p className="os-ai-note" aria-live="polite">
+          Working from this lesson…
+        </p>
+      ) : null}
       {ui === "error" && error ? (
         <p className="os-error" role="alert">
-          {error}
-          {" "}
+          {error}{" "}
           <button type="button" className="os-link" onClick={() => setUi("ready")}>
             Try again
           </button>
         </p>
       ) : null}
 
-      {turns.some((turn) => turn.role === "assistant") && (ui === "ready" || ui === "error") && !compact ? (
-        <button type="button" className="os-link" onClick={askAnother}>
-          Ask a follow-up
-        </button>
+      {turns.length > 0 && (ui === "ready" || ui === "error") ? (
+        <div className="os-ai-tools">
+          <button type="button" className="os-link" onClick={clearConversation}>
+            Clear conversation
+          </button>
+        </div>
       ) : null}
 
       <form
@@ -233,7 +312,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="Ask about this lesson…"
+          placeholder="Ask about this lesson..."
           disabled={inputDisabled}
           maxLength={2000}
           autoComplete="off"
@@ -266,15 +345,17 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
   if (compact) {
     return (
       <section
-        className="os-ai is-compact"
+        className={open ? "os-ai is-compact is-open" : "os-ai is-compact"}
         aria-label="Skylent AI"
         aria-busy={busy}
         style={{ bottom: dockBottom }}
       >
         <button
+          ref={toggleRef}
           type="button"
           className="os-ai-toggle"
           aria-expanded={open}
+          aria-controls={open ? titleId : undefined}
           onClick={() => {
             setOpen((value) => {
               const next = !value
@@ -284,9 +365,13 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
           }}
         >
           <span>Skylent AI</span>
-          <span>{open ? "Hide" : "Ask about this lesson"}</span>
+          <span>{open ? "Close" : "Ask about this lesson"}</span>
         </button>
-        {open ? body : null}
+        {open ? (
+          <div className="os-ai-sheet" role="dialog" aria-modal="false" aria-label="Skylent AI">
+            {body}
+          </div>
+        ) : null}
       </section>
     )
   }

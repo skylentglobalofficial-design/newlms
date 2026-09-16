@@ -351,15 +351,10 @@ export default function LoginPage() {
         {/* Editorial */}
         <div className="login-page-editorial">
           <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 28 }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.ink, letterSpacing: '-0.02em' }}>
+            <span className="skylent-mark" style={{ fontSize: 24, color: C.ink }}>
               Skylent<span style={{ color: accent.primary }}>.</span>
             </span>
           </Link>
-
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
-            <span style={{ width: 20, height: 1, background: 'currentColor', opacity: 0.5 }} />
-            Sign in
-          </div>
 
           <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 16px', maxWidth: 520 }}>
             Sign in to Skylent

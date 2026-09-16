@@ -39,6 +39,7 @@ function SkylentAiFallback({ compact }: { compact: boolean }) {
     return (
       <section className="os-ai is-compact os-ai-fallback" aria-hidden="true">
         <p className="os-eyebrow">Skylent AI</p>
+        <p className="os-ai-idle">Ask about this lesson</p>
       </section>
     )
   }
@@ -412,28 +413,20 @@ export default function LearnPage() {
                   const profile = courseProductProfile(readyCourse.slug)
                   if (!profile || selectedState.locked) return null
                   return (
-                    <>
+                    <div className="os-tools">
                       {profile.lab ? (
-                        <p className="os-lab-entry">
-                          <Link className="os-btn os-btn-ghost" to={profile.lab.href(selectedLesson.id)}>
-                            {profile.lab.label}
-                          </Link>
-                          <span>{profile.lab.note}</span>
-                        </p>
+                        <Link className="os-chip" to={profile.lab.href(selectedLesson.id)} title={profile.lab.note}>
+                          {profile.lab.label}
+                        </Link>
                       ) : profile.labOmission ? (
-                        <p className="os-lab-entry os-lab-omission">
-                          <span>{profile.labOmission}</span>
-                        </p>
+                        <span className="os-chip is-mute" title={profile.labOmission}>Lab not in this course</span>
                       ) : null}
                       {profile.project ? (
-                        <p className="os-lab-entry os-project-entry">
-                          <Link className="os-btn os-btn-ghost" to={profile.project.href}>
-                            {profile.project.label}
-                          </Link>
-                          <span>{profile.project.note}</span>
-                        </p>
+                        <Link className="os-chip" to={profile.project.href} title={profile.project.note}>
+                          {profile.project.label}
+                        </Link>
                       ) : null}
-                    </>
+                    </div>
                   )
                 })()}
                 </div>

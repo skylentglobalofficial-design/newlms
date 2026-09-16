@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
-import { CourseProductVisual, CourseWorkspacePreview, ModuleLane, ProductFrame } from "../components/product/ProductLanguage"
+import { CourseProductVisual, CourseWorkspacePreview, ModuleLane, ProductFrame, VisualStat } from "../components/product/ProductLanguage"
 import {
   courseAfterEnrolSteps,
   courseModuleCards,
@@ -55,23 +55,23 @@ export default function CourseDetailPage() {
               <Link className="cat-back" to="/courses">← Courses</Link>
               <h1>{view.title}</h1>
               <p className="cat-lead">{view.summary}</p>
+              <div className="cat-metrics">
+                <VisualStat label="Status" value={view.maturity === "ready" ? "Ready" : view.maturityLabel} />
+                <VisualStat label="Level" value={view.course.level} />
+                <VisualStat
+                  label={view.showLiveCurriculum ? "Lessons" : "Outline"}
+                  value={String(view.stats.lessonCount)}
+                />
+                <VisualStat
+                  label="Practice"
+                  value={view.showLiveCurriculum ? `${view.stats.quizCount} quizzes` : "Outline only"}
+                />
+              </div>
               <p className="cat-statline">
-                <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
-                  {view.maturityLabel}
-                </span>
-                <span>{view.course.level}</span>
                 <span>{view.delivery}</span>
                 <span>{view.showLiveCurriculum ? view.duration : "Duration not finished"}</span>
-                <span>
-                  {view.showLiveCurriculum
-                    ? `${view.stats.lessonCount} lessons · ${view.stats.moduleCount} modules`
-                    : `${view.stats.lessonCount} outline items · ${view.stats.moduleCount} modules`}
-                </span>
-                <span>
-                  {view.showLiveCurriculum
-                    ? `${view.stats.quizCount} quizzes · ${view.stats.assignmentCount} assignments`
-                    : "Practice outline only"}
-                </span>
+                <span>{view.stats.moduleCount} modules</span>
+                {view.showLiveCurriculum ? <span>{view.stats.assignmentCount} assignments</span> : null}
               </p>
               {view.honesty ? <p className="cat-note">{view.honesty}</p> : null}
               <div className="cat-actions">
@@ -210,20 +210,26 @@ export default function CourseDetailPage() {
             <div className="cat-rail">
               <h2>What you work on</h2>
               <p className="cat-fine">Prerequisite: {profile?.prerequisite}</p>
-              <ul className="cat-tools">
-                {profile?.tools.map((item) => <li key={item}>{item}</li>)}
-              </ul>
-              <ul className="cat-tools">
-                {profile?.datasets.map((item) => (
-                  <li key={item.filename}>{item.filename}</li>
-                ))}
-              </ul>
-              {profile?.datasets.map((item) => (
-                <p className="cat-fine" key={item.detail}>{item.detail}</p>
-              ))}
-              {profile?.labOmission ? <p className="cat-fine">{profile.labOmission}</p> : null}
-              <div className="cat-stage-visual">
-                {profile ? <CourseProductVisual visual={profile.visual} /> : null}
+              <div className="cat-work">
+                <div>
+                  <p className="cat-label">Tools</p>
+                  <ul className="cat-tools">
+                    {profile?.tools.map((item) => <li key={item}>{item}</li>)}
+                  </ul>
+                  <p className="cat-label" style={{ marginTop: 18 }}>Source material</p>
+                  <div className="cat-datasets">
+                    {profile?.datasets.map((item) => (
+                      <article key={item.filename}>
+                        <strong>{item.filename}</strong>
+                        <p>{item.detail}</p>
+                      </article>
+                    ))}
+                  </div>
+                  {profile?.labOmission ? <p className="cat-fine">{profile.labOmission}</p> : null}
+                </div>
+                <div className="cat-stage-visual">
+                  {profile ? <CourseProductVisual visual={profile.visual} /> : null}
+                </div>
               </div>
             </div>
           </section>
