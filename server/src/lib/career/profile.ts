@@ -169,6 +169,7 @@ export function serializeProject(entry: CareerProject) {
     repositoryUrl: entry.repositoryUrl,
     outcome: entry.outcome,
     sortOrder: entry.sortOrder,
+    sourceLearnerProjectId: entry.sourceLearnerProjectId,
   }
 }
 

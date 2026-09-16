@@ -152,6 +152,29 @@
   }
 }
 
+.proj-career {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin: 0 16px 12px;
+  padding: 12px 14px;
+  border: 1px solid rgba(21, 23, 26, 0.1);
+  background: #fffdf8;
+  min-width: 0;
+}
+
+.proj-career p {
+  margin: 0;
+  color: #5c6168;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.proj-career .os-eyebrow {
+  margin: 0;
+}
+
 @media (max-width: 768px) {
   .proj-tasks button {
     min-height: 44px;
@@ -159,6 +182,11 @@
 
   .lab-results textarea {
     min-height: 104px;
+  }
+
+  .proj-career {
+    margin-left: 12px;
+    margin-right: 12px;
   }
 }
 

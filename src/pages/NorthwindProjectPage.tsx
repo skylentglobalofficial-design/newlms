@@ -11,6 +11,11 @@ import {
   type ProjectTaskView,
   type ProjectWorkspace,
 } from "../lib/projects-api"
+import {
+  addLearnerProjectToCareer,
+  fetchCareerLinkForLearnerProject,
+  type CareerProjectLink,
+} from "../lib/career-api"
 import LabSqlChart from "../components/labs/LabSqlChart"
 import "./LearnWorkspace.css"
 import "./LabsWorkspace.css"
@@ -31,6 +36,9 @@ export default function NorthwindProjectPage() {
   const [busy, setBusy] = useState<"save" | "task" | "attach" | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
+  const [careerLink, setCareerLink] = useState<CareerProjectLink | null>(null)
+  const [careerBusy, setCareerBusy] = useState(false)
+  const [careerNotice, setCareerNotice] = useState<string | null>(null)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -44,6 +52,11 @@ export default function NorthwindProjectPage() {
         setRecommendation(next.reflection.recommendation)
         setSelectedKey(firstOpenTask(next)?.key ?? next.tasks[0]?.key ?? null)
         setStatus("ready")
+        void fetchCareerLinkForLearnerProject(next.id, controller.signal)
+          .then(setCareerLink)
+          .catch(() => {
+            if (!controller.signal.aborted) setCareerLink(null)
+          })
       })
       .catch((err) => {
         if (controller.signal.aborted) return
@@ -104,6 +117,22 @@ export default function NorthwindProjectPage() {
     }
   }
 
+  async function onAddToCareer() {
+    if (!project) return
+    setCareerBusy(true)
+    setCareerNotice(null)
+    setError(null)
+    try {
+      const linked = await addLearnerProjectToCareer(project.id)
+      setCareerLink({ id: linked.id, href: `/career-os/projects/${linked.id}` })
+      setCareerNotice("Added to Career OS")
+    } catch (err) {
+      setCareerNotice(workspaceErrorMessage(err) || "Finish the project before adding it to Career OS.")
+    } finally {
+      setCareerBusy(false)
+    }
+  }
+
   async function onSave() {
     if (!project) return
     setBusy("save")
@@ -159,6 +188,11 @@ export default function NorthwindProjectPage() {
           <Link className="os-btn os-btn-ghost" to="/learn/data-analytics">
             Return to course
           </Link>
+          {careerLink ? (
+            <Link className="os-btn os-btn-primary" to={careerLink.href}>
+              View in Career OS
+            </Link>
+          ) : null}
         </div>
       </header>
 
@@ -175,6 +209,30 @@ export default function NorthwindProjectPage() {
             {project.progress.complete} / {project.progress.total} tasks
           </strong>
         </p>
+      </div>
+
+      <div className="proj-career">
+        <p className="os-eyebrow">Career OS</p>
+        {careerLink ? (
+          <>
+            <p>Added to Career OS</p>
+            <Link className="os-btn os-btn-primary" to={careerLink.href}>
+              View in Career OS
+            </Link>
+          </>
+        ) : project.progress.complete === project.progress.total ? (
+          <button
+            type="button"
+            className="os-btn os-btn-primary"
+            disabled={careerBusy}
+            onClick={() => void onAddToCareer()}
+          >
+            {careerBusy ? "Adding…" : "Add to Career OS"}
+          </button>
+        ) : (
+          <p>Finish the project before adding it to Career OS.</p>
+        )}
+        {careerNotice ? <p>{careerNotice}</p> : null}
       </div>
 
       <div className="lab-body">

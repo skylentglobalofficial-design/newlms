@@ -53,6 +53,22 @@ export const NORTHWIND_PROJECT_DEF = {
   ],
   context:
     "Use the Northwind Lab to inspect the dataset and run queries. Attach the work you saved, then write the commercial summary in your own words. This brief does not contain the answer.",
+  careerContext: "Data Analytics",
+  careerSummary: "A practical analysis of a fictional Northwind sales extract.",
+  workspaceHref: "/os/projects/data-analytics/northwind-commercial-review",
+  demonstratedWork: [
+    "data validation",
+    "SQL analysis",
+    "category revenue analysis",
+    "monthly trend analysis",
+    "chart interpretation",
+    "evidence-based recommendation",
+  ],
+  demonstratedSkills: ["SQL", "Data analysis", "Data interpretation", "Business communication"],
+  careerEvidence: [
+    { taskKey: "category_revenue", title: "Revenue by category" },
+    { taskKey: "monthly_trend", title: "Monthly revenue" },
+  ] as const,
   tasks: [
     {
       key: "validate_data",
