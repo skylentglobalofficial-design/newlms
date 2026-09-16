@@ -426,10 +426,20 @@ export function CareerKeepEmpty({
 }) {
   return (
     <div className="cos-empty">
-      <div className="cos-empty-previews" aria-hidden="true">
+      <article className="cos-empty-row">
         <CourseThumb authored visual="northwind" />
+        <div>
+          <strong>Data Analytics</strong>
+          <p>Northwind commercial review — kept from the capstone when you add it.</p>
+        </div>
+      </article>
+      <article className="cos-empty-row">
         <CourseThumb authored visual="harbor-desk" />
-      </div>
+        <div>
+          <strong>Product Management</strong>
+          <p>Harbor Desk product case — kept from the product case when you add it.</p>
+        </div>
+      </article>
       <h2>{heading}</h2>
       <p>{copy}</p>
     </div>

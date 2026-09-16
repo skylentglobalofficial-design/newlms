@@ -222,10 +222,9 @@
 }
 
 .sk-caps li {
-  padding: 10px 0;
-  background: none;
-  border-radius: 0;
-  border-top: 1px solid rgba(21, 23, 26, 0.08);
+  padding: 10px 12px;
+  background: #fffdf8;
+  border-radius: 10px;
   font-size: 14px;
   line-height: 1.45;
 }

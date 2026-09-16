@@ -455,12 +455,14 @@
 
 .cat-filters {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   margin: 18px 0 8px;
+  overflow-x: auto;
 }
 
 .cat-chip {
+  flex: 0 0 auto;
   min-height: 36px;
   padding: 0 12px;
   border: 1px solid #e8e2d6;
@@ -543,6 +545,7 @@
   display: grid;
   grid-template-columns: 148px minmax(0, 1fr);
   grid-template-rows: auto;
+  align-items: start;
   gap: 0;
   min-width: 0;
   overflow: hidden;
@@ -554,15 +557,22 @@
 }
 
 .cat-feature .pl-thumb {
-  height: 100%;
+  height: auto;
   min-height: 148px;
   border: 0;
   border-radius: 0;
+  align-content: start;
 }
 
 .cat-feature .cat-tile-copy {
   justify-content: flex-start;
   padding: 14px 16px 16px;
+}
+
+.cat-tile-copy .cat-mark,
+.cat-feature .cat-mark {
+  align-self: flex-start;
+  width: fit-content;
 }
 
 .cat-metrics .pl-stat strong {
@@ -904,18 +914,20 @@
   .cat-module,
   .cat-link,
   .cat-split,
-  .cat-work,
-  .cat-feature {
+  .cat-work {
     grid-template-columns: 1fr;
+  }
+
+  .cat-feature {
+    grid-template-columns: 108px minmax(0, 1fr);
+  }
+
+  .cat-feature .pl-thumb {
+    min-height: 108px;
   }
 
   .cat-hero-visual.is-listing {
     display: none;
-  }
-
-  .cat-feature .pl-thumb {
-    height: 120px;
-    min-height: 120px;
   }
 
   .cat-hero-visual .pl-frame {

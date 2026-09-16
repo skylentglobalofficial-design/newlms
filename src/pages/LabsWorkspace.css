@@ -681,6 +681,18 @@
     grid-template-columns: 1fr;
   }
 
+  .lab-workspace {
+    order: 1;
+  }
+
+  .lab-results {
+    order: 2;
+  }
+
+  .lab-rail {
+    order: 3;
+  }
+
   .lab-toolbar {
     grid-template-columns: 1fr;
   }

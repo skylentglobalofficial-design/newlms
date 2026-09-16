@@ -81,6 +81,12 @@
   min-height: 72px;
   border: 0;
   border-radius: 8px;
+  align-content: center;
+}
+
+.hp-start-card .pl-spark-mini,
+.hp-start-card .pl-hd-mini {
+  display: none;
 }
 
 .hp-start-card strong {
@@ -156,10 +162,11 @@
 }
 
 .hp-product .pl-thumb {
-  height: 100%;
+  height: auto;
   min-height: 148px;
   border: 0;
   border-radius: 0;
+  align-content: start;
 }
 
 .hp-product-copy {
@@ -407,8 +414,7 @@
   .hp-hero-grid,
   .hp-flagship-stage,
   .hp-career-grid,
-  .hp-product-pair,
-  .hp-product {
+  .hp-product-pair {
     grid-template-columns: 1fr;
     gap: 20px;
   }
@@ -417,9 +423,14 @@
     display: none;
   }
 
+  .hp-product {
+    grid-template-columns: 108px minmax(0, 1fr);
+  }
+
   .hp-product .pl-thumb {
-    min-height: 120px;
-    height: 120px;
+    min-height: 108px;
+    height: auto;
+    align-content: start;
   }
 }
 
