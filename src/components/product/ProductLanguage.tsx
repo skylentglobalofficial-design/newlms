@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { getLessonMeta } from "../../content/course-material"
+import { getLessonMeta } from "../../content/course-lookups"
 import { PRODUCT_MANAGEMENT_SLUG } from "../../lib/authored-courses"
 import { formatInr, NORTHWIND_PREVIEW as NW } from "../../lib/northwind-preview"
 import "./ProductLanguage.css"
