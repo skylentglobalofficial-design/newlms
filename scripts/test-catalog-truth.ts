@@ -4,6 +4,9 @@ import {
   AUTHORED_COURSE_SLUG,
   PROGRAM_COURSE_LINKS,
   courseLessonStats,
+  courseModuleCards,
+  coursePracticeGroups,
+  coursePrimaryCta,
   coursePublicView,
   linkedCourseSlugsForProgram,
   programmePublicView,
@@ -76,6 +79,18 @@ for (const file of pageFiles) {
   assert(!/faculty:|Next Batch|seats remaining|Get hired|Industry certificate/i.test(source), `${file} must not sell faculty, batches, or certificates`)
 }
 
+const courseDetail = readFileSync(new URL("../src/pages/CourseDetailPage.tsx", import.meta.url), "utf8")
+assert(/courseModuleCards/.test(courseDetail), "Course page must render the real module map")
+assert(/coursePracticeGroups/.test(courseDetail), "Course page must distinguish learning, practice, assignment, and capstone")
+assert(!/aria-expanded/.test(courseDetail), "Course page must not dump every lesson into an accordion")
+assert(/Payment is not collected/.test(courseDetail), "Course page must state that payment is not collected")
+assert(/primaryCta/.test(courseDetail), "Course page CTA must come from the honest access helper")
+
+const programDetail = readFileSync(new URL("../src/pages/ProgramPage.tsx", import.meta.url), "utf8")
+assert(/PROGRAMME_INTENDED_STEPS/.test(programDetail), "Programme page must show the intended path")
+assert(!/curriculumDetail|projectsDetail|whatYouWillLearn/.test(programDetail), "Programme page must not render brochure curriculum as live teaching")
+assert(/Payment is not collected/.test(programDetail), "Programme page must state that payment is not collected")
+
 const expectedLinks: Record<string, string[]> = {}
 for (const link of PROGRAM_COURSE_LINKS) {
   expectedLinks[link.programSlug] ??= []
@@ -104,6 +119,23 @@ for (const program of programs) {
 const analyticsPro = programmePublicView(programs.find((row) => row.slug === "data-analytics-pro")!)
 assert(analyticsPro.linked.some((item) => item.slug === "data-analytics" && item.authored), "Data Analytics pathway must link the authored course")
 assert(/data analytics course/i.test(analyticsPro.honesty), "Data Analytics programme must say the live LMS is the course")
+assert(
+  /Enrol to open linked learning/.test(analyticsPro.ctaLabel),
+  "Data Analytics programme CTA must say enrolment opens linked learning",
+)
+
+const daCards = courseModuleCards(da!, true)
+assert(daCards.length === 5, "Data Analytics public structure is 5 modules")
+assert(daCards.every((card) => card.workLine.length > 0), "Each Data Analytics module must say what the student works on")
+assert(!daCards.some((card) => /outline titles only/i.test(card.workLine)), "Authored modules must not use the listing disclaimer")
+
+const daPractice = coursePracticeGroups(da!)
+assert(daPractice.learning.length === 8, "Data Analytics has 8 written lessons")
+assert(daPractice.practice.length === 3, "Data Analytics has 3 practice checks")
+assert(daPractice.assignments.length === 3, "Data Analytics has 3 assignments besides the capstone")
+assert(daPractice.capstone.length === 1, "Data Analytics has one capstone")
+assert(coursePrimaryCta(daView) === "Enrol to start learning", "Data Analytics CTA must enrol into learning")
+assert(daView.primaryCta === "Enrol to start learning", "Public view CTA matches authored access")
 
 const dsai = programmePublicView(programs.find((row) => row.slug === "data-science-ai")!)
 assert(dsai.linked.some((item) => item.slug === "data-analytics"), "Data Science & AI still enrols into Data Analytics")
