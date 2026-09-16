@@ -17,6 +17,7 @@ import {
   type LabWorkspace,
   type SavedLabWorkSummary,
 } from "../lib/labs-api"
+import { northwindProjectPath } from "../lib/projects-api"
 import LabSqlChart from "../components/labs/LabSqlChart"
 import "./LearnWorkspace.css"
 import "./LabsWorkspace.css"
@@ -62,6 +63,8 @@ export default function NorthwindLabPage() {
   const [params, setParams] = useSearchParams()
   const lessonKey = params.get("lesson")
   const workId = params.get("work")
+  const projectSlug = params.get("project")
+  const exampleId = params.get("example")
   const mode = params.get("mode") === "sql" ? "sql" : "analysis"
   const [workspace, setWorkspace] = useState<LabWorkspace | null>(null)
   const [saved, setSaved] = useState<SavedLabWorkSummary[]>([])
@@ -113,6 +116,13 @@ export default function NorthwindLabPage() {
       })
     return () => controller.abort()
   }, [lessonKey])
+
+  useEffect(() => {
+    if (!workspace || workId) return
+    const example = workspace.sql.examples.find((item) => item.id === exampleId)
+    if (!example) return
+    setQuery((current) => current || example.sql)
+  }, [workspace, workId, exampleId])
 
   useEffect(() => {
     if (!workId || status !== "ready") return
@@ -284,6 +294,11 @@ export default function NorthwindLabPage() {
         </Link>
         <p className="lab-top-course">{workspace.courseTitle}</p>
         <div className="lab-top-actions">
+          {projectSlug === "northwind-commercial-review" ? (
+            <Link className="os-btn os-btn-ghost" to={northwindProjectPath()}>
+              Return to project
+            </Link>
+          ) : null}
           <Link className="os-btn os-btn-ghost" to={lessonReturnTo(workspace.lesson?.lessonKey ?? lessonKey)}>
             Return to lesson
           </Link>
