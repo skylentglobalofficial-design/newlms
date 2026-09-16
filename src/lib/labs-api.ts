@@ -143,11 +143,18 @@ export function isGuidedRunResult(result: LabRunResult | null | undefined): resu
   return result?.operation === "valid_net_revenue"
 }
 
-export function northwindLabPath(lessonKey?: string | null, workId?: string | null, mode?: "sql" | "analysis" | null) {
+export function northwindLabPath(
+  lessonKey?: string | null,
+  workId?: string | null,
+  mode?: "sql" | "analysis" | null,
+  extras?: { example?: string | null; project?: string | null },
+) {
   const params = new URLSearchParams()
   if (lessonKey) params.set("lesson", lessonKey)
   if (workId) params.set("work", workId)
   if (mode === "sql") params.set("mode", "sql")
+  if (extras?.example) params.set("example", extras.example)
+  if (extras?.project) params.set("project", extras.project)
   const query = params.toString()
   return `/os/labs/data-analytics/northwind${query ? `?${query}` : ""}`
 }

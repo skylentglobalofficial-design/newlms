@@ -28,6 +28,7 @@
     "test:labs": "tsx scripts/test-skylent-labs.ts",
     "test:labs-sql": "tsx scripts/test-skylent-labs-sql.ts",
     "test:labs-visual": "tsx scripts/test-skylent-labs-visual.ts",
+    "test:projects": "tsx scripts/test-skylent-projects.ts",
     "test:da-content": "tsx scripts/test-da-content.ts",
     "test:career": "tsx scripts/test-career.ts",
     "test:catalog-parity": "tsx scripts/test-catalog-truth.ts && tsx scripts/check-catalog-parity.ts",

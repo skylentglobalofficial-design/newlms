@@ -31,6 +31,7 @@ import {
 } from '../lib/lms-api'
 import { workspaceErrorMessage } from '../lib/http'
 import { northwindLabPath } from '../lib/labs-api'
+import { northwindProjectPath } from '../lib/projects-api'
 import './LearnWorkspace.css'
 
 const SkylentAI = lazy(() => import('../components/lms/SkylentAI'))
@@ -410,12 +411,20 @@ export default function LearnPage() {
                   {selectedState.locked ? 'Locked until the previous lesson is complete.' : selectedState.complete ? 'Completed' : 'In progress'}
                 </p>
                 {readyCourse.slug === 'data-analytics' && !selectedState.locked ? (
-                  <p className="os-lab-entry">
-                    <Link className="os-btn os-btn-ghost" to={northwindLabPath(selectedLesson.id)}>
-                      Open Lab
-                    </Link>
-                    <span>Practice this here with northwind_sales.csv.</span>
-                  </p>
+                  <>
+                    <p className="os-lab-entry">
+                      <Link className="os-btn os-btn-ghost" to={northwindLabPath(selectedLesson.id)}>
+                        Open Lab
+                      </Link>
+                      <span>Practice this here with northwind_sales.csv.</span>
+                    </p>
+                    <p className="os-lab-entry os-project-entry">
+                      <Link className="os-btn os-btn-ghost" to={northwindProjectPath()}>
+                        Open project
+                      </Link>
+                      <span>Northwind Commercial Review — use lab work to write a commercial summary.</span>
+                    </p>
+                  </>
                 ) : null}
                 </div>
                 {isAuthoredCourse(readyCourse.slug) && !selectedState.locked ? (

@@ -457,6 +457,10 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
   line-height: 1.4;
 }
 
+.os-project-entry {
+  margin-top: 8px;
+}
+
 .os-lesson-stage .os-workspace h1,
 .os-lesson-stage h1 {
   margin-top: 8px;

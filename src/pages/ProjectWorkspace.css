@@ -1,0 +1,158 @@
+.proj-shell h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+}
+
+.proj-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 280px) minmax(0, 1fr) minmax(260px, 340px);
+  gap: 14px;
+  align-items: start;
+  min-width: 0;
+}
+
+.proj-goal {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
+
+.proj-goal strong {
+  color: #5c6168;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.proj-brief {
+  margin: 0;
+  padding-left: 18px;
+  color: #5c6168;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.proj-tasks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.proj-tasks button {
+  appearance: none;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: baseline;
+  padding: 8px 10px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+
+.proj-tasks button.is-active {
+  background: #fffdf8;
+}
+
+.proj-tasks span {
+  color: #8a8f96;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.proj-tasks strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.proj-tasks em {
+  color: #5c6168;
+  font-size: 11px;
+  font-style: normal;
+}
+
+.proj-attach,
+.proj-evidence {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.proj-attach select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid rgba(21, 23, 26, 0.12);
+  background: #fffdf8;
+  color: inherit;
+  font: 13px var(--font-body);
+}
+
+.proj-evidence-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #fffdf8;
+}
+
+.proj-evidence-card h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.lab-results label {
+  margin: 4px 0 0;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.lab-results textarea {
+  width: 100%;
+  min-height: 88px;
+  padding: 10px 12px;
+  border: 1px solid rgba(21, 23, 26, 0.12);
+  background: #fffdf8;
+  color: inherit;
+  font: 14px/1.45 var(--font-body);
+  resize: vertical;
+}
+
+.os-project-entry {
+  margin-top: 8px;
+}
+
+@media (max-width: 1024px) {
+  .proj-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .proj-tasks button {
+    min-height: 44px;
+  }
+
+  .lab-results textarea {
+    min-height: 104px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .proj-tasks button {
+    transition: none;
+  }
+}
