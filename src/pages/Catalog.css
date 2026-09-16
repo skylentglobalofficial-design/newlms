@@ -29,6 +29,10 @@
   align-items: start;
 }
 
+.cat-hero-split > * {
+  min-width: 0;
+}
+
 .cat-hero-visual .pl-frame {
   min-height: 0;
 }
@@ -139,9 +143,11 @@
 .cat-lead {
   margin: 14px 0 0;
   max-width: 34em;
+  width: 100%;
   color: #5c6168;
   font-size: 17px;
   line-height: 1.55;
+  overflow-wrap: break-word;
 }
 
 .cat-fine {
@@ -458,6 +464,8 @@
   flex-wrap: nowrap;
   gap: 8px;
   margin: 18px 0 8px;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
 }
 
