@@ -4,6 +4,7 @@ import { DA_AI_META } from "../skylent-ai/authored.js"
 import { findLab, NORTHWIND_SALES_FILE, operationMeta, sqlWorkspaceMeta, workspaceShell } from "./catalog.js"
 import { buildDatasetPreview, runLabOperation } from "./engine.js"
 import { runNorthwindSql, sqlPreview } from "./sql/engine.js"
+import { compactChart } from "./sql/chart.js"
 import { learnerSqlMessage, NorthwindSqlError } from "./sql/errors.js"
 import { SQL_OPERATION } from "./sql/limits.js"
 import type {
@@ -71,7 +72,14 @@ function asSqlResult(value: unknown): LabSqlRunResult | null {
   if (row.operation !== "sql") return null
   if (typeof row.query !== "string") return null
   if (!Array.isArray(row.columns) || !Array.isArray(row.rows)) return null
-  return row as LabSqlRunResult
+  const chart =
+    row.chart &&
+    typeof row.chart === "object" &&
+    row.chart.chartable === true &&
+    Array.isArray(row.chart.series)
+      ? row.chart
+      : { chartable: false as const }
+  return { ...(row as LabSqlRunResult), chart }
 }
 
 function asRunResult(value: unknown): LabRunResult | null {
@@ -119,10 +127,20 @@ function throwSqlServiceError(error: unknown): never {
   throw new LabServiceError("query_error", mapped.message)
 }
 
-function compactSqlResult(result: LabSqlRunResult): LabSqlRunResult {
+function compactSqlResult(result: LabSqlRunResult) {
   return {
-    ...result,
+    operation: result.operation,
+    operationLabel: result.operationLabel,
+    dataset: result.dataset,
+    dialect: result.dialect,
+    table: result.table,
+    query: result.query,
+    columns: result.columns,
     rows: sqlPreview(result).rows,
+    rowCount: result.rowCount,
+    truncated: result.truncated,
+    chart: compactChart(result.chart),
+    preview: sqlPreview(result),
   }
 }
 
@@ -193,7 +211,6 @@ export async function saveLabWork(options: {
     } catch (error) {
       throwSqlServiceError(error)
     }
-    const stored = compactSqlResult(result)
     const created = await prisma.labWork.create({
       data: {
         userId: options.userId,
@@ -209,15 +226,13 @@ export async function saveLabWork(options: {
           dataset: NORTHWIND_SALES_FILE,
           query: result.query,
           table: result.table,
+          chart: compactChart(result.chart),
         },
-        result: {
-          ...stored,
-          preview: sqlPreview(result),
-        },
+        result: compactSqlResult(result),
       },
     })
     return {
-      ...toSummary({ ...created, result: stored }),
+      ...toSummary({ ...created, result }),
       courseSlug: created.courseSlug,
       labSlug: created.labSlug,
       lessonKey: created.lessonKey,

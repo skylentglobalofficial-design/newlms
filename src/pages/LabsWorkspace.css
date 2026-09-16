@@ -197,6 +197,9 @@
   color: #5c6168;
   font-weight: 600;
   background: #fffdf8;
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .lab-metrics {
@@ -414,6 +417,161 @@
   font-variant-numeric: tabular-nums;
 }
 
+.lab-table .is-num {
+  text-align: right;
+}
+
+.lab-sql-table {
+  max-height: 360px;
+  overflow: auto;
+}
+
+.lab-result-views {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+}
+
+.lab-result-views button {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 8px 12px;
+  min-height: 40px;
+  font: 600 13px var(--font-body);
+  color: #5c6168;
+  cursor: pointer;
+}
+
+.lab-result-views button.is-active {
+  color: #15171a;
+  border-bottom-color: #4f46e5;
+}
+
+.lab-chart-hint {
+  margin: 0;
+  color: #8a8f96;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.lab-chart {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lab-chart-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.lab-chart-summary {
+  margin: 0;
+  color: #5c6168;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.lab-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lab-bar-row {
+  display: grid;
+  grid-template-columns: minmax(72px, 88px) minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.lab-bar-label,
+.lab-bar-value {
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.lab-bar-label {
+  color: #15171a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lab-bar-value {
+  color: #5c6168;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.lab-bar-track {
+  height: 10px;
+  background: #e8e2d6;
+  min-width: 0;
+}
+
+.lab-bar-fill {
+  height: 10px;
+  background: #4f46e5;
+  max-width: 100%;
+}
+
+.lab-bar-axis {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 96px;
+  color: #8a8f96;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lab-plot {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.lab-plot-grid {
+  stroke: rgba(21, 23, 26, 0.08);
+  stroke-width: 1;
+}
+
+.lab-plot-spine {
+  stroke: rgba(21, 23, 26, 0.28);
+  stroke-width: 1;
+}
+
+.lab-plot-line {
+  stroke: #4f46e5;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.lab-plot-dot {
+  fill: #4f46e5;
+}
+
+.lab-plot-axis {
+  fill: #5c6168;
+  font-size: 9px;
+  font-family: var(--font-body);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-bar-fill,
+  .lab-plot-line {
+    transition: none;
+  }
+}
+
 .lab-sr {
   position: absolute;
   width: 1px;
@@ -448,6 +606,13 @@
 }
 
 @media (max-width: 768px) {
+  .lab-bar-axis {
+    padding-left: 80px;
+  }
+
+  .lab-bar-row {
+    grid-template-columns: minmax(64px, 76px) minmax(0, 1fr) auto;
+  }
   .lab-top,
   .lab-context {
     padding-left: 12px;
