@@ -230,7 +230,7 @@ export default function DashboardStudentPage() {
           <h1>{greetingName(firstName)}</h1>
           <p>
             {resume?.lessonTitle
-              ? `Continue ${course.title} from ${resume.lessonTitle}.`
+              ? `Continue ${course.title} from ${resume.lessonTitle.replace(/[.!?]+$/, "")}.`
               : `Start ${course.title} when you are ready.`}
           </p>
         </div>

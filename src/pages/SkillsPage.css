@@ -252,6 +252,7 @@
   min-height: 140px;
   border-radius: 0;
   border: 0;
+  align-content: center;
 }
 
 .sk-product .pl-mini-path {
@@ -262,6 +263,16 @@
 .sk-product.is-featured .pl-thumb {
   height: auto;
   min-height: 220px;
+  align-content: space-between;
+  padding: 22px 22px 18px;
+}
+
+.sk-product.is-featured .pl-spark-mini {
+  height: 100px;
+}
+
+.sk-product.is-featured .pl-thumb-kpis b {
+  font-size: 26px;
 }
 
 .sk-product-body {
@@ -424,8 +435,13 @@
   }
 
   .sk-product.is-featured .pl-thumb {
-    height: 160px;
-    min-height: 160px;
+    height: 196px;
+    min-height: 196px;
+    padding: 16px 16px 12px;
+  }
+
+  .sk-product.is-featured .pl-spark-mini {
+    height: 88px;
   }
 }
 

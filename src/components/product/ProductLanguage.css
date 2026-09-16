@@ -457,22 +457,37 @@
 
 .pl-mini-path {
   display: grid;
-  gap: 10px;
-  padding: 6px 4px;
+  gap: 18px;
+  padding: 10px 8px;
+  position: relative;
+  justify-items: center;
+}
+
+.pl-mini-path::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 16px;
+  bottom: 16px;
+  width: 2px;
+  background: #e8e2d6;
+  transform: translateX(-1px);
 }
 
 .pl-mini-path i {
   display: block;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background: #e8e2d6;
-  box-shadow: 12px 4px 0 #e8e2d6;
+  box-shadow: none;
+  position: relative;
+  z-index: 1;
 }
 
 .pl-mini-path i.is-live {
   background: #4f46e5;
-  box-shadow: 12px 4px 0 #c7d2fe;
+  box-shadow: none;
 }
 
 .pl-lesson-ctx {

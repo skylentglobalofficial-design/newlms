@@ -66,8 +66,8 @@
 }
 
 .cat-price-line span {
-  display: inline;
-  margin-left: 6px;
+  display: block;
+  margin: 6px 0 0;
   color: #5c6168;
   font-size: 13px;
   font-weight: 500;
@@ -480,11 +480,13 @@
   min-height: 148px;
   border-radius: 0;
   border: 0;
+  align-content: center;
 }
 
 .cat-tile .pl-mini-path {
   height: 100%;
   align-content: center;
+  padding: 8px 6px;
 }
 
 .cat-tile.is-featured {
@@ -497,6 +499,16 @@
 .cat-tile.is-featured .pl-thumb {
   height: auto;
   min-height: 248px;
+  align-content: space-between;
+  padding: 22px 22px 18px;
+}
+
+.cat-tile.is-featured .pl-spark-mini {
+  height: 112px;
+}
+
+.cat-tile.is-featured .pl-thumb-kpis b {
+  font-size: 28px;
 }
 
 .cat-tile-copy {
@@ -801,8 +813,17 @@
   }
 
   .cat-tile.is-featured .pl-thumb {
-    min-height: 168px;
-    height: 168px;
+    min-height: 196px;
+    height: 196px;
+    padding: 16px 16px 12px;
+  }
+
+  .cat-tile.is-featured .pl-spark-mini {
+    height: 88px;
+  }
+
+  .cat-tile.is-featured .pl-thumb-kpis b {
+    font-size: 22px;
   }
 
   .cat-hero-visual .pl-frame {
