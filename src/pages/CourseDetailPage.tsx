@@ -64,52 +64,40 @@ export default function CourseDetailPage() {
               <Link className="cat-back" to="/courses">← Courses</Link>
               <h1>{view.title}</h1>
               <p className="cat-lead">{view.summary}</p>
-              <div className="cat-meta">
+              <p className="cat-statline">
                 <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
                   {view.maturityLabel}
                 </span>
                 <span>{view.course.level}</span>
                 <span>{view.delivery}</span>
-              </div>
+                <span>{view.showLiveCurriculum ? view.duration : "Duration not finished"}</span>
+                <span>
+                  {view.showLiveCurriculum
+                    ? `${view.stats.lessonCount} lessons · ${view.stats.moduleCount} modules`
+                    : `${view.stats.lessonCount} outline items · ${view.stats.moduleCount} modules`}
+                </span>
+                <span>
+                  {view.showLiveCurriculum
+                    ? `${view.stats.quizCount} quizzes · ${view.stats.assignmentCount} assignments`
+                    : "Practice outline only"}
+                </span>
+              </p>
               {view.honesty ? <p className="cat-note">{view.honesty}</p> : null}
-              <div className="cat-facts" aria-label="Course facts">
-                <div className="cat-fact">
-                  <span>Duration</span>
-                  <strong>{view.showLiveCurriculum ? view.duration : "Not finished yet"}</strong>
-                </div>
-                <div className="cat-fact">
-                  <span>{view.showLiveCurriculum ? "Lessons" : "Outline items"}</span>
-                  <strong>{view.stats.lessonCount}</strong>
-                </div>
-                <div className="cat-fact">
-                  <span>Modules</span>
-                  <strong>{view.stats.moduleCount}</strong>
-                </div>
-                <div className="cat-fact">
-                  <span>Practice</span>
-                  <strong>
-                    {view.showLiveCurriculum
-                      ? `${view.stats.quizCount} quizzes · ${view.stats.assignmentCount} assignments`
-                      : "Outline only"}
-                  </strong>
-                </div>
-              </div>
               <div className="cat-actions">
-                <button type="button" className="cat-btn cat-btn-primary" disabled={catalog.loading && !enrollable} onClick={openEnrol}>
+                <button type="button" className="cat-btn cat-btn-primary cat-btn-lg" disabled={catalog.loading && !enrollable} onClick={openEnrol}>
                   {cta}
                 </button>
                 <Link className="cat-btn cat-btn-ghost" to="/skills">Back to Skills</Link>
               </div>
+              <p className="cat-price-line">
+                ₹{view.listedPrice.toLocaleString("en-IN")}
+                <span> listed · Payment is not collected · Certificate not issued in this pilot</span>
+              </p>
               <p className="cat-fine">
                 {view.showLiveCurriculum
-                  ? "Enrol opens Skylent OS at the first lesson. If you are not signed in, you will be asked to sign in first. Payment is not collected."
-                  : "Enrol opens the LMS outline. If you are not signed in, you will be asked to sign in first. Payment is not collected."}
+                  ? "Enrol opens Skylent OS at the first lesson. If you are not signed in, you will be asked to sign in first."
+                  : "Enrol opens the LMS outline. If you are not signed in, you will be asked to sign in first."}
               </p>
-              <aside className="cat-access">
-                <p className="cat-label">Access</p>
-                <p className="cat-price">₹{view.listedPrice.toLocaleString("en-IN")}</p>
-                <p className="cat-fine">Listed price. Payment is not collected here yet. Certificate: not issued in this pilot.</p>
-              </aside>
             </div>
             {view.showLiveCurriculum ? (
               <div className="cat-hero-visual">
@@ -184,7 +172,7 @@ export default function CourseDetailPage() {
                       ? "Practice"
                       : "Learn"
                 return (
-                <article className="cat-module" key={module.id}>
+                <article className={module.index === 1 ? "cat-module is-start" : "cat-module"} key={module.id}>
                   <span className="cat-module-num">{String(module.index).padStart(2, "0")}</span>
                   <div>
                     <h3>{module.title}</h3>

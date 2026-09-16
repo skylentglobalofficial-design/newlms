@@ -43,9 +43,13 @@
 
 .hp-hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.95fr) minmax(300px, 1.05fr);
+  grid-template-columns: minmax(0, 0.88fr) minmax(320px, 1.12fr);
   gap: clamp(28px, 5vw, 56px);
   align-items: center;
+}
+
+.hp-hero .pl-frame {
+  min-height: 280px;
 }
 
 .hp-hero-copy h1 {
@@ -94,6 +98,12 @@
 .hp-btn-primary {
   background: #4f46e5;
   color: #fff;
+}
+
+.hp-hero .hp-btn-primary {
+  min-height: 48px;
+  min-width: 188px;
+  font-size: 15px;
 }
 
 .hp-btn-primary:hover {

@@ -22,8 +22,8 @@
   width: 272px;
   flex-shrink: 0;
   min-width: 0;
-  background: #fffdf8;
-  border-right: 1px solid rgba(21, 23, 26, 0.1);
+  background: #efebe1;
+  border-right: 1px solid rgba(21, 23, 26, 0.06);
 }
 
 .os-rail-head {
@@ -106,8 +106,8 @@
 .os-module {
   margin: 0 0 10px;
   padding: 10px 8px 8px;
-  background: #f7f4ec;
-  border: 1px solid rgba(21, 23, 26, 0.08);
+  background: rgba(255, 253, 248, 0.62);
+  border: 0;
   border-radius: 12px;
 }
 
@@ -192,7 +192,8 @@
 }
 
 .os-lesson.is-current {
-  background: #eef2ff;
+  background: #ffffff;
+  box-shadow: 0 0 0 1px #4f46e5;
 }
 
 .os-lesson.is-complete .os-lesson-title {
@@ -214,7 +215,7 @@
 }
 
 .os-lesson.is-current:not(:disabled):hover {
-  background: #eef2ff;
+  background: #ffffff;
 }
 
 .os-lesson-title {
@@ -278,10 +279,10 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 56px;
+  min-height: 52px;
   padding: 0 20px;
   background: #fffdf8;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.1);
+  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
 }
 
 .os-menu {
@@ -803,10 +804,10 @@
 .lx-callout-label {
   margin: 0 0 4px;
   color: #4f46e5;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .lx-callout p {
@@ -854,10 +855,10 @@
 .lx-section-label {
   margin: 0 0 8px;
   color: #4f46e5;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .lx-section-note .lx-section-label {
@@ -1127,14 +1128,18 @@
 .dash-card,
 .dash-empty-card,
 .dash-module {
-  padding: 18px 20px;
+  padding: 14px 16px;
   border-radius: 12px;
-  background: #fffdf8;
-  border: 1px solid rgba(21, 23, 26, 0.1);
+  background: #ffffff;
+  border: 0;
+  box-shadow: 0 8px 24px rgba(21, 23, 26, 0.04);
 }
 
 .dash-continue {
   padding: 8px;
+  background: #ffffff;
+  border: 0;
+  box-shadow: 0 12px 32px rgba(21, 23, 26, 0.06);
 }
 
 .dash-continue-grid {

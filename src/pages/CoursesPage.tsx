@@ -102,24 +102,25 @@ function CourseCard({ view, featured = false }: { view: ReturnType<typeof course
   const stats = view.showLiveCurriculum
     ? `${view.stats.lessonCount} lessons · ${view.stats.quizCount} quizzes · ${view.stats.assignmentCount} assignments`
     : `${view.stats.lessonCount} outline items`
-  const output = view.showLiveCurriculum ? "Northwind commercial review" : "Outline only"
 
   return (
-    <Link className={featured ? "cat-card-link is-featured" : "cat-card-link"} to={`/courses/${view.slug}`}>
+    <Link className={featured ? "cat-tile is-featured" : "cat-tile"} to={`/courses/${view.slug}`}>
       <CourseThumb authored={view.showLiveCurriculum} />
-      <div className="cat-card-copy">
+      <div className="cat-tile-copy">
         <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
           {view.maturityLabel}
         </span>
         <h3>{view.title}</h3>
         <p>{view.summary}</p>
-        <div className="cat-meta">
-          <span>{view.course.category}</span>
-          <span>{view.course.level}</span>
-          <span>{view.showLiveCurriculum ? view.duration : "Duration not finished"}</span>
-          <span>{stats}</span>
-          <span>{output}</span>
-        </div>
+        <p className="cat-tile-meta">
+          {view.course.category}
+          {" · "}
+          {view.course.level}
+          {" · "}
+          {view.showLiveCurriculum ? view.duration : "Duration not finished"}
+          {" · "}
+          {stats}
+        </p>
         <span className={view.maturity === "ready" ? "cat-btn cat-btn-primary cat-card-cta" : "cat-btn cat-btn-ghost cat-card-cta"}>
           {view.ctaLabel}
         </span>

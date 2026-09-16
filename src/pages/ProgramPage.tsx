@@ -70,9 +70,10 @@ export default function ProgramPage() {
               <Link className="cat-back" to="/programs">← Programmes</Link>
               <h1>{view.title}</h1>
               <p className="cat-lead">{view.summary}</p>
-              <div className="cat-meta">
+              <p className="cat-statline">
                 <span className="cat-mark">{view.maturityLabel}</span>
-              </div>
+                {view.linked[0] ? <span>Linked course: {view.linked[0].title}</span> : <span>No linked LMS course yet</span>}
+              </p>
               <p className="cat-note">{view.honesty}</p>
               <div className="cat-actions">
                 {comingLater ? (
@@ -80,7 +81,7 @@ export default function ProgramPage() {
                 ) : (
                   <button
                     type="button"
-                    className="cat-btn cat-btn-primary"
+                    className="cat-btn cat-btn-primary cat-btn-lg"
                     disabled={catalog.loading && !enrollable}
                     onClick={openEnrol}
                   >
@@ -95,15 +96,15 @@ export default function ProgramPage() {
                   <Link className="cat-btn cat-btn-ghost" to="/courses">Explore courses</Link>
                 )}
               </div>
+              {view.listedPrice > 0 && !comingLater ? (
+                <p className="cat-price-line">
+                  ₹{view.listedPrice.toLocaleString("en-IN")}
+                  <span> listed · Payment is not collected · Certificate not issued in this pilot</span>
+                </p>
+              ) : (
+                <p className="cat-fine">Payment is not collected. Certificate: not issued in this pilot.</p>
+              )}
               <p className="cat-fine">{afterEnrol}</p>
-              <aside className="cat-access">
-                <p className="cat-label">Access</p>
-                {view.listedPrice > 0 && !comingLater ? (
-                  <p className="cat-price">₹{view.listedPrice.toLocaleString("en-IN")}</p>
-                ) : null}
-                <p className="cat-fine">Listed price. Payment is not collected here yet.</p>
-                <p className="cat-fine">Certificate: not issued in this pilot.</p>
-              </aside>
             </div>
             <div className="cat-path-panel">
               <p className="cat-label">Intended pathway</p>

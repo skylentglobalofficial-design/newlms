@@ -67,7 +67,7 @@ export function AuthDashboardShell({
 
   const sidebarContent = (
     <>
-      <div style={{ padding: '22px 20px 18px', borderBottom: `1px solid ${T.lineLight}` }}>
+      <div style={{ padding: '22px 20px 18px' }}>
         <Link to="/" style={{ textDecoration: 'none' }}>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: C.ink, letterSpacing: '-0.02em' }}>
             Skylent<span style={{ color: C.orange }}>.</span>
@@ -90,12 +90,12 @@ export function AuthDashboardShell({
                 gap: 12,
                 width: '100%',
                 textAlign: 'left',
-                padding: '11px 12px',
+                padding: '10px 12px',
                 marginBottom: 2,
                 borderRadius: T.rControl,
                 border: 'none',
-                background: isActive ? accent.subtle : 'transparent',
-                borderLeft: isActive ? `2px solid ${accent.primary}` : '2px solid transparent',
+                background: isActive ? C.white : 'transparent',
+                boxShadow: isActive ? `0 0 0 1px ${accent.primary}` : 'none',
                 color: isActive ? C.ink : C.slate,
                 fontSize: 13.5,
                 fontFamily: 'var(--font-body)',
@@ -112,11 +112,11 @@ export function AuthDashboardShell({
         })}
       </nav>
 
-      <div style={{ padding: '16px', borderTop: `1px solid ${T.lineLight}` }}>
+      <div style={{ padding: '16px 16px 14px' }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12,
           padding: '10px 12px', background: C.white,
-          borderRadius: T.rControl, border: `1px solid ${T.lineLight}`,
+          borderRadius: T.rControl,
         }}>
           <div style={{
             width: 34, height: 34, borderRadius: '50%',
@@ -154,7 +154,7 @@ export function AuthDashboardShell({
       {/* Level 1 — desktop sidebar chrome */}
       <aside className="auth-shell-sidebar-desktop" style={{
         position: 'fixed', top: 0, left: 0, bottom: 0, width: 236,
-        background: C.warmWhite, borderRight: `1px solid ${T.lineLight}`,
+        background: '#EFEBE1', borderRight: '1px solid rgba(21,23,26,0.06)',
         display: 'flex', flexDirection: 'column', zIndex: 120,
       }}>
         {sidebarContent}
@@ -171,7 +171,7 @@ export function AuthDashboardShell({
         className={`auth-shell-sidebar-mobile${mobileOpen ? ' open' : ''}`}
         style={{
           position: 'fixed', top: 0, left: 0, bottom: 0, width: 280,
-          background: C.warmWhite, borderRight: `1px solid ${T.lineLight}`,
+          background: '#EFEBE1', borderRight: '1px solid rgba(21,23,26,0.06)',
           display: 'flex', flexDirection: 'column', zIndex: 210,
           transform: mobileOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 0.25s ease',

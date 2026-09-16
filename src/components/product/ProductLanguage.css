@@ -194,7 +194,7 @@
   margin: 0;
   padding: 8px;
   list-style: none;
-  background: #f7f4ec;
+  background: #efebe1;
   border-radius: 12px;
 }
 
@@ -349,12 +349,20 @@
 }
 
 .pl-flow-visual.is-practice {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
-  color: #4f46e5;
-  font-size: 12px;
+  display: grid;
+  gap: 8px;
+  align-content: center;
+}
+
+.pl-check {
+  display: block;
+  height: 10px;
+  border-radius: 6px;
+  background: #e8e2d6;
+}
+
+.pl-check.is-on {
+  background: #4f46e5;
 }
 
 .pl-flow-visual.is-build,

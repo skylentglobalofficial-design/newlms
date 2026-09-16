@@ -79,15 +79,15 @@ export default function ProgramsPage() {
 function ProgrammeCard({ view }: { view: ReturnType<typeof programmePublicView> }) {
   const taught = view.linked[0]?.title
   return (
-    <Link className="cat-card-link" to={`/programs/${view.slug}`}>
+    <Link className="cat-tile" to={`/programs/${view.slug}`}>
       <PathwayThumb />
-      <div className="cat-card-copy">
+      <div className="cat-tile-copy">
         <span className="cat-mark">{view.maturityLabel}</span>
         <h3>{view.title}</h3>
         <p>{view.summary}</p>
-        <div className="cat-meta">
-          {taught ? <span>Linked course: {taught}</span> : <span>No linked LMS course yet</span>}
-        </div>
+        <p className="cat-tile-meta">
+          {taught ? `Linked course: ${taught}` : "No linked LMS course yet"}
+        </p>
         <span className="cat-btn cat-btn-ghost cat-card-cta">View programme</span>
       </div>
     </Link>

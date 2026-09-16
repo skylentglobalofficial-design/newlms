@@ -180,9 +180,9 @@ export function LearnFlow({
             ) : null}
             {step.kind === "practice" ? (
               <>
-                <b>○</b>
-                <b>●</b>
-                <b>○</b>
+                <span className="pl-check" />
+                <span className="pl-check is-on" />
+                <span className="pl-check" />
               </>
             ) : null}
             {step.kind === "build" ? <em>Northwind</em> : null}

@@ -376,16 +376,17 @@ export default function LearnPage() {
                   <span>{currentModule?.title ?? 'Current module'}</span>
                 </p>
                 <h1>{selectedLesson.title}</h1>
-                <p className="os-lead">
-                  {(isAuthoredCourse(readyCourse.slug) ? getDaLessonMeta(selectedLesson.id)?.objective : null)
-                    ?? lessonObjective(selectedLesson)}
-                </p>
+                {isAuthoredCourse(readyCourse.slug) && !selectedState.locked ? (
+                  <LessonContextPanel lessonId={selectedLesson.id} />
+                ) : (
+                  <p className="os-lead">
+                    {(isAuthoredCourse(readyCourse.slug) ? getDaLessonMeta(selectedLesson.id)?.objective : null)
+                      ?? lessonObjective(selectedLesson)}
+                  </p>
+                )}
                 <p className={selectedState.complete ? 'os-status is-done' : 'os-status'}>
                   {selectedState.locked ? 'Locked until the previous lesson is complete.' : selectedState.complete ? 'Completed' : 'In progress'}
                 </p>
-                {isAuthoredCourse(readyCourse.slug) && !selectedState.locked ? (
-                  <LessonContextPanel lessonId={selectedLesson.id} />
-                ) : null}
 
                 <div className="os-paper">
                   {selectedState.locked ? (

@@ -24,13 +24,61 @@
 
 .cat-hero-split {
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(280px, 1.08fr);
+  grid-template-columns: minmax(0, 0.78fr) minmax(320px, 1.22fr);
   gap: clamp(20px, 4vw, 40px);
-  align-items: start;
+  align-items: center;
 }
 
 .cat-hero-visual .pl-frame {
-  min-height: 380px;
+  min-height: 440px;
+}
+
+.cat-statline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 0;
+  margin: 16px 0 0;
+  color: #5c6168;
+  font-size: 13px;
+}
+
+.cat-statline > span + span::before {
+  content: "·";
+  margin: 0 10px;
+  color: #c9c2b4;
+}
+
+.cat-statline > .cat-mark + span::before {
+  content: none;
+  margin: 0;
+}
+
+.cat-statline > .cat-mark {
+  margin-right: 10px;
+}
+
+.cat-price-line {
+  margin: 16px 0 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.cat-price-line span {
+  display: inline;
+  margin-left: 6px;
+  color: #5c6168;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.cat-btn-lg {
+  min-height: 48px;
+  min-width: 200px;
+  padding: 0 22px;
+  font-size: 15px;
 }
 
 .cat-hero h1 {
@@ -259,6 +307,18 @@
   box-shadow: 0 8px 24px rgba(21, 23, 26, 0.04);
 }
 
+.cat-module.is-start {
+  box-shadow: 0 0 0 1px #4f46e5, 0 8px 24px rgba(21, 23, 26, 0.04);
+}
+
+.cat-module:hover {
+  box-shadow: 0 12px 28px rgba(21, 23, 26, 0.07);
+}
+
+.cat-module.is-start:hover {
+  box-shadow: 0 0 0 1px #4f46e5, 0 12px 28px rgba(21, 23, 26, 0.07);
+}
+
 .cat-module-num {
   display: grid;
   place-items: center;
@@ -393,9 +453,103 @@
 
 .cat-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
   margin-top: 16px;
+}
+
+.cat-tile {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 10px 28px rgba(21, 23, 26, 0.05);
+  transition: box-shadow 0.15s ease;
+}
+
+.cat-tile:hover {
+  box-shadow: 0 16px 36px rgba(21, 23, 26, 0.08);
+}
+
+.cat-tile .pl-thumb {
+  height: 148px;
+  min-height: 148px;
+  border-radius: 0;
+  border: 0;
+}
+
+.cat-tile .pl-mini-path {
+  height: 100%;
+  align-content: center;
+}
+
+.cat-tile.is-featured {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(240px, 0.9fr) minmax(0, 1.1fr);
+  align-items: stretch;
+}
+
+.cat-tile.is-featured .pl-thumb {
+  height: auto;
+  min-height: 248px;
+}
+
+.cat-tile-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  padding: 14px 16px 16px;
+}
+
+.cat-tile.is-featured .cat-tile-copy {
+  justify-content: center;
+  padding: 22px 24px 24px;
+}
+
+.cat-tile h3 {
+  margin: 8px 0 0;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cat-tile.is-featured h3 {
+  font-size: 24px;
+  -webkit-line-clamp: 3;
+}
+
+.cat-tile p {
+  margin: 8px 0 0;
+  color: #5c6168;
+  font-size: 13px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cat-tile-meta {
+  margin-top: auto !important;
+  padding-top: 10px;
+  color: #5c6168;
+  font-size: 12px;
+  display: block !important;
+  -webkit-line-clamp: unset !important;
+}
+
+.cat-tile .cat-card-cta {
+  margin-top: 12px;
 }
 
 .cat-card-link {
@@ -625,6 +779,12 @@
   font-size: 14px;
 }
 
+@media (max-width: 1100px) {
+  .cat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 900px) {
   .cat-hero-split,
   .cat-caps,
@@ -633,10 +793,16 @@
   .cat-who,
   .cat-card-link,
   .cat-card-link.is-featured,
+  .cat-tile.is-featured,
   .cat-module,
   .cat-link,
   .cat-split {
     grid-template-columns: 1fr;
+  }
+
+  .cat-tile.is-featured .pl-thumb {
+    min-height: 168px;
+    height: 168px;
   }
 
   .cat-hero-visual .pl-frame {
@@ -662,7 +828,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cat-card-link {
+  .cat-card-link,
+  .cat-tile {
     transition: none;
   }
 }
