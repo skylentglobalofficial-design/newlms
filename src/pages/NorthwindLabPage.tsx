@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type KeyboardEvent } from "react"
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { workspaceErrorMessage } from "../lib/http"
 import {
@@ -73,8 +73,19 @@ export default function NorthwindLabPage() {
   const [busy, setBusy] = useState<"run" | "save" | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [savedNotice, setSavedNotice] = useState<string | null>(null)
+  const resultsRef = useRef<HTMLElement | null>(null)
 
   const operation = workspace?.operations[0]?.id ?? "valid_net_revenue"
+
+  function revealResults() {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    requestAnimationFrame(() => {
+      resultsRef.current?.scrollIntoView({
+        block: "nearest",
+        behavior: reduceMotion ? "auto" : "smooth",
+      })
+    })
+  }
 
   useEffect(() => {
     const controller = new AbortController()
@@ -114,6 +125,7 @@ export default function NorthwindLabPage() {
           setSqlResult(work.result)
           setQuery(work.query || work.result.query)
           if (!work.result.chart.chartable) setResultView("table")
+          revealResults()
           setParams((current) => {
             const next = new URLSearchParams(current)
             next.set("mode", "sql")
@@ -174,6 +186,7 @@ export default function NorthwindLabPage() {
       const next = await runNorthwindSql({ query, lessonKey })
       setSqlResult(next)
       if (!next.chart.chartable) setResultView("table")
+      revealResults()
     } catch (err) {
       setSqlResult(null)
       setError(workspaceErrorMessage(err) || "That query could not be run.")
@@ -439,7 +452,7 @@ export default function NorthwindLabPage() {
             {savedNotice ? <p className="lab-note">{savedNotice}</p> : null}
           </section>
 
-          <section className="lab-results">
+          <section className="lab-results" ref={resultsRef}>
             <p className="os-eyebrow">Results</p>
             <h2>Output</h2>
             {mode === "analysis" && guidedResult ? (
@@ -496,11 +509,10 @@ export default function NorthwindLabPage() {
                   {sqlResult.truncated ? " · showing the first 500 rows" : ""}
                 </p>
                 {sqlResult.chart.chartable ? (
-                  <div className="lab-result-views" role="tablist" aria-label="Result view">
+                  <div className="lab-result-views" role="group" aria-label="Result view">
                     <button
                       type="button"
-                      role="tab"
-                      aria-selected={resultView === "table"}
+                      aria-pressed={resultView === "table"}
                       className={resultView === "table" ? "is-active" : undefined}
                       onClick={() => setResultView("table")}
                     >
@@ -508,8 +520,7 @@ export default function NorthwindLabPage() {
                     </button>
                     <button
                       type="button"
-                      role="tab"
-                      aria-selected={resultView === "chart"}
+                      aria-pressed={resultView === "chart"}
                       className={resultView === "chart" ? "is-active" : undefined}
                       onClick={() => setResultView("chart")}
                     >

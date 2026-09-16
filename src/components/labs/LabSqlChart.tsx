@@ -103,9 +103,10 @@ function PlotChart({ chart }: { chart: LabChartSpec }) {
 
 export default function LabSqlChart({ chart }: { chart: LabChartSpec }) {
   const count = chart.series.length
-  const summary = `${count} ${chart.groupNoun}. Highest: ${chart.highestLabel}, ${chart.highestFormatted}.`
+  const seriesText = chart.series.map((point) => `${point.label} ${point.formatted}`).join("; ")
+  const summary = `${chart.title}. ${count} ${chart.groupNoun}. Highest: ${chart.highestLabel}, ${chart.highestFormatted}. ${seriesText}.`
   return (
-    <figure className="lab-chart">
+    <figure className="lab-chart" aria-label={summary}>
       <figcaption className="lab-chart-title">{chart.title}</figcaption>
       <p className="lab-chart-summary">
         {count} {chart.groupNoun}
@@ -114,9 +115,7 @@ export default function LabSqlChart({ chart }: { chart: LabChartSpec }) {
         <br />
         {chart.highestFormatted}
       </p>
-      <div aria-label={summary}>
-        {chart.type === "bar" ? <BarChart chart={chart} /> : <PlotChart chart={chart} />}
-      </div>
+      {chart.type === "bar" ? <BarChart chart={chart} /> : <PlotChart chart={chart} />}
     </figure>
   )
 }
