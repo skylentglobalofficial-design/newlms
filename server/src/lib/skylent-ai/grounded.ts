@@ -16,13 +16,13 @@ function simplify(text: string): string {
 }
 
 export function looksLikeAssignmentDump(question: string): boolean {
-  return /exact answer|do (my|the) assignment|write (my|the) (memo|submission|capstone)|submit (it|this) for me|answer to (this|my|the) assignment|complete (my|the) (assignment|quiz|capstone)|i need the answer to (this|my|the) assignment/i.test(
+  return /exact answer|do (my|the) assignment|write (my|the) (memo|submission|capstone)|submit (it|this) for me|answer to (this|my|the) assignment|give me (the |this |my )?(assignment|quiz|capstone) answer|complete (my|the) (assignment|quiz|capstone)|i need the answer to (this|my|the) assignment/i.test(
     question,
   )
 }
 
 export function looksLikeJailbreak(question: string): boolean {
-  return /ignore (previous|all|the) instructions|ignore previous|pretend (this|the) course|you are now|reveal (the )?system prompt|forget (the|this) lesson|act as if this lesson|override (the )?lesson/i.test(
+  return /ignore (previous|all|the) instructions|ignore (the )?lesson|ignore previous|pretend (this|the) course|you are now|you are no longer|reveal (the )?system prompt|tell me your system prompt|forget (the|this) lesson|act as if this lesson|override (the )?lesson/i.test(
     question,
   )
 }
@@ -256,7 +256,7 @@ export function createLessonGroundedProvider(): AiProvider {
       throw new Error("lesson-grounded uses answerLesson()")
     },
     async answerLesson(input) {
-      return groundedAnswer(input)
+      return { answer: groundedAnswer(input) }
     },
   }
 }
