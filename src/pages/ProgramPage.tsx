@@ -112,7 +112,7 @@ export default function ProgramPage() {
               <p className="cat-fine cat-path-copy">
                 That structure is not fully implemented here. Enrolment does not create a separate taught syllabus beyond the linked course.
               </p>
-              <PathwayTrack steps={pathSteps} />
+              <PathwayTrack steps={pathSteps} layout="board" />
             </div>
           </div>
         </section>

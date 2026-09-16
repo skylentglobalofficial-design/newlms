@@ -38,18 +38,58 @@
 }
 
 .hp-hero {
-  padding: 56px 0 48px;
+  padding: 48px 0 36px;
 }
 
 .hp-hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.88fr) minmax(320px, 1.12fr);
-  gap: clamp(28px, 5vw, 56px);
+  grid-template-columns: minmax(0, 0.72fr) minmax(360px, 1.28fr);
+  gap: clamp(24px, 4vw, 48px);
   align-items: center;
 }
 
 .hp-hero .pl-frame {
-  min-height: 280px;
+  min-height: 340px;
+}
+
+.hp-flagship {
+  padding: 28px 0 48px;
+}
+
+.hp-flagship-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.hp-flagship-head .hp-h2 {
+  margin: 0;
+}
+
+.hp-flagship-head .hp-actions {
+  margin-top: 0;
+}
+
+.hp-flagship-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(280px, 1.08fr);
+  gap: clamp(20px, 3vw, 36px);
+  align-items: start;
+  margin-top: 22px;
+}
+
+.hp-career {
+  padding-top: 28px;
+  padding-bottom: 28px;
+}
+
+.hp-career-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.8fr);
+  gap: clamp(20px, 3vw, 36px);
+  align-items: center;
 }
 
 .hp-hero-copy h1 {
@@ -240,7 +280,8 @@
 
 @media (max-width: 900px) {
   .hp-hero-grid,
-  .hp-feature {
+  .hp-flagship-stage,
+  .hp-career-grid {
     grid-template-columns: 1fr;
     gap: 28px;
   }
