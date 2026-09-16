@@ -110,7 +110,7 @@ export default function ApplicationPipeline({ applications, statusFilter, onStat
 
       <style>{`
         .application-status-strip::-webkit-scrollbar { height: 4px; }
-        .application-status-strip::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 4px; }
+        .application-status-strip::-webkit-scrollbar-thumb { background: rgba(21,23,26,0.16); border-radius: 4px; }
         @media (max-width: 600px) {
           .application-status-strip button { flex-shrink: 0; white-space: nowrap; }
         }

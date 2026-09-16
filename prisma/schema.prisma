@@ -194,6 +194,8 @@ model User {
   interviewRounds    InterviewRound[]
   interviewPractice  InterviewPractice[]
   supportRequests    CareerSupportRequest[]
+  labWorks           LabWork[]
+  learnerProjects    LearnerProject[]
 }
 
 model Role {
@@ -582,19 +584,21 @@ model CareerSkill {
 }
 
 model CareerProject {
-  id            String   @id @default(uuid()) @db.Uuid
-  profileId     String   @db.Uuid
-  title         String
-  description   String?  @db.Text
-  technologies  String[]
-  projectUrl    String?
-  repositoryUrl String?
-  outcome       String?  @db.Text
-  sortOrder     Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                     String   @id @default(uuid()) @db.Uuid
+  profileId              String   @db.Uuid
+  title                  String
+  description            String?  @db.Text
+  technologies           String[]
+  projectUrl             String?
+  repositoryUrl          String?
+  outcome                String?  @db.Text
+  sortOrder              Int      @default(0)
+  sourceLearnerProjectId String?  @unique @db.Uuid
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 
-  profile CareerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profile              CareerProfile   @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  sourceLearnerProject LearnerProject? @relation(fields: [sourceLearnerProjectId], references: [id], onDelete: SetNull)
 
   @@index([profileId, sortOrder])
 }
@@ -818,6 +822,46 @@ model CareerSupportRequest {
 
   @@index([userId, status])
   @@index([priority])
+}
+
+model LabWork {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
+  courseSlug String
+  labSlug    String
+  dataset    String
+  operation  String
+  title      String
+  lessonKey  String?
+  input      Json
+  result     Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, labSlug, createdAt])
+  @@index([userId, createdAt])
+}
+
+model LearnerProject {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  projectType String
+  courseSlug  String
+  title       String
+  status      String
+  tasks       Json
+  reflection  Json
+  savedAt     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  careerProject CareerProject?
+
+  @@unique([userId, projectType])
+  @@index([userId, updatedAt])
 }
 
 model CareerSupportTask {

@@ -68,6 +68,8 @@ async function main() {
   const health = await request("/health")
   assert(health.response.ok, `health failed: ${health.response.status}`)
   assert((health.data as { status?: string }).status === "ok", "health payload mismatch")
+  assert(health.response.headers.get("x-content-type-options") === "nosniff", "nosniff header missing")
+  assert(health.response.headers.get("x-frame-options") === "DENY", "frame options header missing")
 
   console.log("2. Allowed origin receives CORS headers")
   const allowed = await request("/health", {

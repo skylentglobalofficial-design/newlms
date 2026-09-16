@@ -5,13 +5,15 @@ import { getDomainAccent } from "../../aurora-themes"
 import { GlassSurface } from "../../components/foundation"
 import { AuthDashboardLayout } from "../../components/AuthDashboardShell"
 import { useCareerProfile } from "../../hooks/useCareerProfile"
-import { listApplications, listInterviewRounds, listSupportRequests, type CareerSupportRequest, type InterviewRound, type JobApplication } from "../../lib/career-api"
+import { listApplications, listCareerEvidenceProjects, listInterviewRounds, listSupportRequests, type CareerEvidenceSummary, type CareerSupportRequest, type InterviewRound, type JobApplication } from "../../lib/career-api"
 import { fetchLmsEnrollments, type ApiEnrollmentSummary } from "../../lib/lms-api"
 import EnrollmentEvidence from "../../components/learner/EnrollmentEvidence"
 import { applicationEmployerName, applicationRoleTitle, formatStatusLabel } from "../../components/career/application-utils"
 import { formatInterviewDateTime, formatRoundStatus, formatRoundType, isUpcomingRound, sortRoundsBySchedule } from "../../components/career/interview-utils"
 import { countOpenTasks, formatRequestStatus, formatRequestType, getNextOpenTask, isActiveRequest } from "../../components/career/support-utils"
 import { LoadingBlock, FeedbackBanner } from "../../components/career/section-ui"
+import CareerEvidenceCard from "../../components/career/CareerEvidenceCard"
+import { CareerKeepEmpty } from "../../components/product/ProductLanguage"
 import { workspaceErrorMessage } from "../../lib/http"
 
 const accent = getDomainAccent("career")
@@ -25,6 +27,7 @@ export default function CareerOSOverviewPage() {
   const [supportRequests, setSupportRequests] = useState<CareerSupportRequest[]>([])
   const [enrollments, setEnrollments] = useState<ApiEnrollmentSummary[]>([])
   const [enrollmentsError, setEnrollmentsError] = useState<string | null>(null)
+  const [evidenceProjects, setEvidenceProjects] = useState<CareerEvidenceSummary[]>([])
 
   useEffect(() => {
     let cancelled = false
@@ -46,6 +49,13 @@ export default function CareerOSOverviewPage() {
       })
       .catch(() => {
         if (!cancelled) setEnrollmentsError("Learning enrollments could not be loaded.")
+      })
+    void listCareerEvidenceProjects()
+      .then((projects) => {
+        if (!cancelled) setEvidenceProjects(projects)
+      })
+      .catch(() => {
+        if (!cancelled) setEvidenceProjects([])
       })
     return () => { cancelled = true }
   }, [])
@@ -70,21 +80,52 @@ export default function CareerOSOverviewPage() {
   const activeSupport = supportRequests.filter(isActiveRequest)
   const nextSupportTask = getNextOpenTask(supportRequests)
   const openSupportTasks = countOpenTasks(activeSupport)
+  const demonstratedSkills = Array.from(new Set(evidenceProjects.flatMap((project) => project.skills)))
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0 }}>
+    <div className="cos-page">
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
-          Career OS
-        </h1>
-        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
-          Profile, applications, interview prep — and evidence from courses you actually enrolled in.
+        <h1>Career OS</h1>
+        <p className="cos-lead">
+          Projects, demonstrated skills, and evidence from work you chose to keep.
         </p>
       </div>
 
       <AuthDashboardLayout
         primary={(
           <>
+            <div style={{ marginBottom: 24 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline", flexWrap: "wrap" }}>
+                <h2>Projects</h2>
+                <Link to="/career-os/projects" style={{ color: accent.text, fontSize: 13, textDecoration: "none", fontWeight: 600 }}>
+                  View all
+                </Link>
+              </div>
+              <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: "8px 0 12px" }}>
+                Learner work added to Career OS. Nothing is published automatically.
+              </p>
+              {evidenceProjects.length === 0 ? (
+                <CareerKeepEmpty />
+              ) : (
+                <div style={{ display: "grid", gap: 12 }}>
+                  {evidenceProjects.map((project) => (
+                    <CareerEvidenceCard key={project.id} project={project} />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div style={{ marginBottom: 24 }}>
+              <h2>Skills demonstrated</h2>
+              {demonstratedSkills.length === 0 ? (
+                <p style={{ margin: 0, color: C.slate, fontSize: 13, lineHeight: 1.6 }}>
+                  Skills appear when a completed project is added to Career OS.
+                </p>
+              ) : (
+                <p style={{ margin: 0, color: C.ink, fontSize: 14, lineHeight: 1.6 }}>{demonstratedSkills.join(" · ")}</p>
+              )}
+            </div>
+
             <GlassSurface level={2} padding="22px" style={{ marginBottom: 20 }}>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 20, justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div style={{ minWidth: 0 }}>
@@ -98,7 +139,7 @@ export default function CareerOSOverviewPage() {
                   </div>
                 </div>
                 <div style={{ textAlign: "right" }}>
-                  <div style={{ fontSize: 36, fontWeight: 700, color: C.ink, fontFamily: "var(--font-display)", lineHeight: 1 }}>{profile.completeness.percent}%</div>
+                <div className="cos-complete-pct">{profile.completeness.percent}%</div>
                   <div style={{ fontSize: 12, color: C.slate, marginTop: 4 }}>Profile completeness</div>
                 </div>
               </div>
@@ -108,7 +149,7 @@ export default function CareerOSOverviewPage() {
             </GlassSurface>
 
             <div style={{ marginBottom: 24 }}>
-              <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink, margin: "0 0 8px" }}>Learning evidence</h2>
+              <h2>Learning evidence</h2>
               <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: "0 0 12px" }}>
                 Pulled from your LMS enrollments. Submitted work is yours to add to Projects — nothing is auto-invented.
               </p>
@@ -119,7 +160,7 @@ export default function CareerOSOverviewPage() {
               )}
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: 12, marginBottom: 24 }}>
+            <div className="cos-stat-row">
               {[
                 { label: "Education", value: profile.education.length },
                 { label: "Experience", value: profile.experience.length },
@@ -127,9 +168,9 @@ export default function CareerOSOverviewPage() {
                 { label: "Projects", value: profile.projects.length },
                 { label: "Links", value: profile.links.length },
               ].map(item => (
-                <div key={item.label} style={{ padding: "14px 16px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  <div style={{ fontSize: 22, fontWeight: 700, color: C.ink }}>{item.value}</div>
-                  <div style={{ fontSize: 12, color: C.slate, marginTop: 2 }}>{item.label}</div>
+                <div key={item.label}>
+                  <b>{item.value}</b>
+                  <span>{item.label}</span>
                 </div>
               ))}
             </div>
@@ -146,7 +187,7 @@ export default function CareerOSOverviewPage() {
 
             {profile.completeness.percent < 100 && profile.completeness.missing.length > 0 && (
               <div style={{ marginBottom: 20 }}>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink, margin: "0 0 12px" }}>Still to complete</h2>
+                <h2>Still to complete</h2>
                 <ul style={{ margin: 0, paddingLeft: 18, color: C.slate, fontSize: 14, lineHeight: 1.8 }}>
                   {profile.completeness.missing.map(item => <li key={item}>{item}</li>)}
                 </ul>
@@ -157,26 +198,15 @@ export default function CareerOSOverviewPage() {
         rail={(
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <GlassSurface level={2} padding="18px">
-              <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Quick actions</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                <Link to="/career-os/profile" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  Edit profile
-                </Link>
-                <Link to="/dashboard/student" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  Open learner dashboard
-                </Link>
-                <Link to="/career-os/jobs" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  Browse jobs
-                </Link>
-                <Link to="/career-os/applications" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  View applications
-                </Link>
-                <Link to="/career-os/interviews" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  Interview prep
-                </Link>
-                <Link to="/career-os/support" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
-                  Career support
-                </Link>
+                  <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, fontWeight: 600 }}>Quick actions</div>
+              <div className="cos-quick">
+                <Link to="/career-os/projects">View projects</Link>
+                <Link to="/career-os/profile">Edit profile</Link>
+                <Link to="/dashboard/student">Open learner dashboard</Link>
+                <Link to="/career-os/jobs">Opportunities</Link>
+                <Link to="/career-os/applications">View applications</Link>
+                <Link to="/career-os/interviews">Interview prep</Link>
+                <Link to="/career-os/support">Career support</Link>
               </div>
             </GlassSurface>
 

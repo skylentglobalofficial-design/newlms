@@ -17,6 +17,12 @@ const SUITES: Suite[] = [
   { name: "auth", command: "npm", args: ["run", "test:auth"], port: DEFAULT_PORT, rateLimitMax: "500" },
   { name: "roles", command: "npm", args: ["run", "test:roles"], port: DEFAULT_PORT, rateLimitMax: "500" },
   { name: "lms", command: "npm", args: ["run", "test:lms"], port: DEFAULT_PORT, rateLimitMax: "500" },
+  { name: "labs", command: "npm", args: ["run", "test:labs"], port: DEFAULT_PORT, rateLimitMax: "500" },
+  { name: "labs-sql", command: "npm", args: ["run", "test:labs-sql"], port: DEFAULT_PORT, rateLimitMax: "500" },
+  { name: "labs-visual", command: "npm", args: ["run", "test:labs-visual"], port: DEFAULT_PORT, rateLimitMax: "500" },
+  { name: "projects", command: "npm", args: ["run", "test:projects"], port: DEFAULT_PORT, rateLimitMax: "500" },
+  { name: "career-evidence", command: "npm", args: ["run", "test:career-evidence"], port: DEFAULT_PORT, rateLimitMax: "500" },
+  { name: "second-flagship", command: "npm", args: ["run", "test:second-flagship"], port: DEFAULT_PORT, rateLimitMax: "500" },
   {
     name: "security-middleware",
     command: "npm",
@@ -55,6 +61,7 @@ function startApi(port: number, rateLimitMax: string): ChildProcess {
     ...process.env,
     PORT: String(port),
     AUTH_RATE_LIMIT_MAX: rateLimitMax,
+    SKYLENT_LABS_RATE_LIMIT_MAX: rateLimitMax,
   }
 
   const child = spawn("npx", ["tsx", "server/src/index.ts"], {

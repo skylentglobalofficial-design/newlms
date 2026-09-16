@@ -7,10 +7,12 @@ import { interviewsRouter } from "./interviews.js"
 import { questionsRouter } from "./questions.js"
 import { practiceRouter } from "./practice.js"
 import { supportRouter } from "./support.js"
+import { careerProjectsRouter } from "./projects.js"
 
 export const careerRouter = Router()
 
 careerRouter.use("/profile", profileRouter)
+careerRouter.use("/projects", careerProjectsRouter)
 careerRouter.use("/jobs", jobsRouter)
 careerRouter.use("/saved-jobs", savedJobsRouter)
 careerRouter.use("/applications", applicationsRouter)

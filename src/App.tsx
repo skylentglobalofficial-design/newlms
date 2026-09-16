@@ -31,6 +31,8 @@ const WorkshopDetailPage = lazy(() => import('./pages/WorkshopDetailPage'))
 const CareerOSLayout = lazy(() => import('./pages/career/CareerOSLayout'))
 const CareerOSOverviewPage = lazy(() => import('./pages/career/CareerOSOverviewPage'))
 const CareerOSProfilePage = lazy(() => import('./pages/career/CareerOSProfilePage'))
+const CareerOSProjectsPage = lazy(() => import('./pages/career/CareerOSProjectsPage'))
+const CareerOSProjectDetailPage = lazy(() => import('./pages/career/CareerOSProjectDetailPage'))
 const CareerOSJobsPage = lazy(() => import('./pages/career/CareerOSJobsPage'))
 const CareerOSApplicationsPage = lazy(() => import('./pages/career/CareerOSApplicationsPage'))
 const CareerOSApplicationDetailPage = lazy(() => import('./pages/career/CareerOSApplicationDetailPage'))
@@ -48,12 +50,14 @@ const DashboardOrgPage = lazy(() => import('./pages/DashboardOrgPage'))
 const DashboardRecruiterPage = lazy(() => import('./pages/DashboardRecruiterPage'))
 const DashboardAdminPage = lazy(() => import('./pages/DashboardAdminPage'))
 const LearnPage = lazy(() => import('./pages/LearnPage'))
+const NorthwindLabPage = lazy(() => import('./pages/NorthwindLabPage'))
+const NorthwindProjectPage = lazy(() => import('./pages/NorthwindProjectPage'))
 
 function AppRoutes() {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        <Route path="/" element={<PublicCanvas themeId="general"><Nav /><HomePage /></PublicCanvas>} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/education" element={<EducationPage />} />
         <Route path="/education/schooling" element={<SchoolingPage />} />
         <Route path="/education/undergraduate" element={<UndergraduatePage />} />
@@ -63,6 +67,8 @@ function AppRoutes() {
         <Route path="/career-os" element={<CareerOSLayout />}>
           <Route index element={<CareerOSOverviewPage />} />
           <Route path="profile" element={<CareerOSProfilePage />} />
+          <Route path="projects" element={<CareerOSProjectsPage />} />
+          <Route path="projects/:id" element={<CareerOSProjectDetailPage />} />
           <Route path="jobs" element={<CareerOSJobsPage />} />
           <Route path="applications" element={<CareerOSApplicationsPage />} />
           <Route path="applications/:id" element={<CareerOSApplicationDetailPage />} />
@@ -93,13 +99,15 @@ function AppRoutes() {
         <Route path="/dashboard/admin" element={<RoleRouteGuard allowedRoles={['superadmin']}><DashboardAdminPage /></RoleRouteGuard>} />
         <Route path="/learn/:slug" element={<RoleRouteGuard allowedRoles={['student']}><LearnPage /></RoleRouteGuard>} />
         <Route path="/learn/:slug/:lessonId" element={<RoleRouteGuard allowedRoles={['student']}><LearnPage /></RoleRouteGuard>} />
+        <Route path="/os/labs/data-analytics/northwind" element={<RoleRouteGuard allowedRoles={['student']}><NorthwindLabPage /></RoleRouteGuard>} />
+        <Route path="/os/projects/:courseSlug/:projectType" element={<RoleRouteGuard allowedRoles={['student']}><NorthwindProjectPage /></RoleRouteGuard>} />
         <Route path="/career" element={<Navigate to="/career-os" replace />} />
         <Route path="/universities" element={<UniversitiesPage />} />
         <Route path="/labs" element={<LabsPage />} />
         <Route path="/labs/:labId" element={<LabDetailPage />} />
         <Route path="/labs/:labId/:experimentId" element={<ExperimentPage />} />
-        <Route path="/jobs" element={<Navigate to="/career-os" replace />} />
-        <Route path="/jobs/:id" element={<Navigate to="/career-os" replace />} />
+        <Route path="/jobs" element={<Navigate to="/career-os/jobs" replace />} />
+        <Route path="/jobs/:id" element={<Navigate to="/career-os/jobs" replace />} />
         <Route path="*" element={<PublicCanvas themeId="general"><Nav /><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md" style={{ color: C.ink }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></PublicCanvas>} />
       </Routes>
     </Suspense>

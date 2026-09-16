@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { C, T } from '../../tokens'
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 export type QuizQuestion = { q: string; options: string[]; correct?: number; explanation?: string }
 
@@ -24,13 +24,12 @@ export function AssessmentSurface({
   accent: Accent
   passed?: boolean
   onPass?: () => void
-  onSubmitAssignment?: (text: string) => void
+  onSubmitAssignment?: (text: string) => void | Promise<void>
   onSubmitAnswers?: (answers: Record<number, number>) => Promise<boolean>
   completionNote?: string
 }) {
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [submitted, setSubmitted] = useState(false)
-  const [elapsed, setElapsed] = useState(0)
   const [text, setText] = useState('')
   const [assignmentDone, setAssignmentDone] = useState(false)
   const [serverPassed, setServerPassed] = useState<boolean | null>(null)
@@ -43,58 +42,48 @@ export function AssessmentSurface({
     ? (serverPassed ? qs.length : 0)
     : qs.filter((q, i) => q.correct !== undefined && answers[i] === q.correct).length
   const allCorrect = usesServerGrading ? serverPassed === true : correct === qs.length
-  const timed = mode === 'timed'
-
-  useEffect(() => {
-    if (mode === 'assignment' || passed) return
-    const id = window.setInterval(() => setElapsed(s => s + 1), 1000)
-    return () => window.clearInterval(id)
-  }, [mode, passed])
-
-  const timerLabel = `${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`
 
   if (mode === 'assignment') {
     if (assignmentDone || passed) {
       return (
-        <div style={{ textAlign: 'center', padding: '32px 0' }}>
-          <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Submission recorded</div>
-          <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.7, maxWidth: 520, margin: '0 auto' }}>
-            {completionNote ?? 'There is no faculty grading in this pilot. Record the artifact on Career OS → Projects if you want portfolio evidence.'}
-          </div>
-          <a href="/career-os/profile" style={{ display: 'inline-block', marginTop: 14, color: accent.text, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
-            Open Career OS Projects →
-          </a>
+        <div className="lx-submitted">
+          <h2>Submission recorded</h2>
+          <p className="dash-empty-copy">
+            {completionNote ?? 'There is no grading in this pilot. Record the artifact on Career OS → Projects if you want portfolio evidence.'}
+          </p>
+          <Link className="os-link" to="/career-os/profile" style={{ display: 'inline-block', marginTop: 14 }}>
+            Open Career OS Projects
+          </Link>
         </div>
       )
     }
     return (
-      <div className="lms-assignment-workspace">
-        <div style={{ color: C.white, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>{title}</div>
-        {subtitle && <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginBottom: 20, lineHeight: 1.6 }}>{subtitle}</div>}
-        <div style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${T.lineDark}`, borderRadius: T.rCard, padding: 16, marginBottom: 16 }}>
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 8 }}>Submission workspace</div>
-          <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.7 }}>
-            Document your approach, include queries or calculations, and explain assumptions.
-          </div>
-        </div>
+      <div className="lms-assignment-workspace as-block">
+        <h3>Your submission</h3>
+        <p className="dash-empty-copy">{subtitle}</p>
+        <p className="dash-empty-copy" style={{ marginTop: 8 }}>
+          Document your approach, include queries or calculations, and explain assumptions.
+        </p>
+        <label className="sr-only" htmlFor="assignment-response">Assignment response</label>
         <textarea
+          id="assignment-response"
           value={text}
           onChange={e => setText(e.target.value)}
-          placeholder="Type your response..."
-          style={{ width: '100%', background: 'rgba(255,255,255,0.03)', border: `1px solid ${T.lineDark}`, borderRadius: T.rControl, padding: 14, color: C.white, fontSize: 13, lineHeight: 1.7, resize: 'vertical', minHeight: 160, outline: 'none', boxSizing: 'border-box', marginBottom: 16 }}
+          placeholder="Paste your work here"
         />
         <button
           type="button"
-          disabled={!text.trim()}
-          onClick={() => { setAssignmentDone(true); onSubmitAssignment?.(text) }}
-          style={{
-            background: !text.trim() ? 'rgba(255,255,255,0.05)' : accent.primary,
-            border: 'none', color: !text.trim() ? 'rgba(255,255,255,0.25)' : C.black,
-            padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600,
-            cursor: !text.trim() ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
+          className="os-btn os-btn-primary"
+          disabled={!text.trim() || submitting}
+          onClick={() => {
+            if (!text.trim() || submitting) return
+            setSubmitting(true)
+            void Promise.resolve(onSubmitAssignment?.(text))
+              .then(() => setAssignmentDone(true))
+              .finally(() => setSubmitting(false))
           }}
         >
-          Submit assignment →
+          {submitting ? 'Submitting…' : 'Submit assignment'}
         </button>
       </div>
     )
@@ -102,22 +91,16 @@ export function AssessmentSurface({
 
   if (passed) {
     return (
-      <div style={{ padding: '12px 0 8px' }}>
-        <div style={{ textAlign: 'center', padding: '12px 0 20px' }}>
-          <div style={{ color: '#22c55e', fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Assessment passed</div>
-          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>Read the explanations, then continue to the next lesson</div>
-        </div>
+      <div className="lx-quiz-passed">
+        <h2>Assessment passed</h2>
+        <p className="dash-empty-copy">Read the explanations, then continue to the next lesson.</p>
         {qs.some((q) => q.explanation) && (
-          <div className="lms-quiz-review">
+          <div className="lms-quiz-review" style={{ marginTop: 16 }}>
             {qs.map((q, qi) => (
-              <div key={qi} style={{ marginBottom: 16 }}>
-                <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 6 }}>Question {qi + 1}</div>
-                <div style={{ color: C.white, fontSize: 14, fontWeight: 500, marginBottom: 8, lineHeight: 1.5 }}>{q.q}</div>
-                {q.explanation && (
-                  <div style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.65, background: 'rgba(255,255,255,0.03)', borderRadius: T.rControl, padding: '10px 12px' }}>
-                    {q.explanation}
-                  </div>
-                )}
+              <div key={qi} className="lx-question">
+                <p className="lx-question-kicker">Question {qi + 1}</p>
+                <p className="lx-question-text">{q.q}</p>
+                {q.explanation && <div className="lx-explain">{q.explanation}</div>}
               </div>
             ))}
           </div>
@@ -128,39 +111,32 @@ export function AssessmentSurface({
 
   async function handleSubmitAsync() {
     setSubmitting(true)
-    setSubmitted(true)
-    if (onSubmitAnswers) {
-      const passedResult = await onSubmitAnswers(answers)
-      setServerPassed(passedResult)
+    try {
+      if (onSubmitAnswers) {
+        const passedResult = await onSubmitAnswers(answers)
+        setServerPassed(passedResult)
+        setSubmitted(true)
+        if (passedResult) onPass?.()
+        return
+      }
+      setSubmitted(true)
+      if (correct === qs.length) onPass?.()
+    } finally {
       setSubmitting(false)
-      if (passedResult) onPass?.()
-      return
     }
-    setSubmitting(false)
-    if (correct === qs.length) onPass?.()
   }
 
   return (
     <div className="lms-quiz-workspace">
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginBottom: 8, flexWrap: 'wrap' }}>
-        <div>
-          <div style={{ color: C.white, fontSize: 16, fontWeight: 600 }}>{title}</div>
-          {subtitle && <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13, marginTop: 4 }}>{subtitle}</div>}
-        </div>
-        {timed && (
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text, background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: T.rPill, padding: '5px 12px' }}>
-            {timerLabel}
-          </div>
-        )}
+      <div className="lx-quiz-head">
+        <p className="dash-empty-copy" style={{ margin: 0 }}>{subtitle ?? title}</p>
+        <div className="lx-quiz-count">{answeredCount} of {qs.length} answered</div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
-        <div style={{ flex: 1, height: 4, background: 'rgba(255,255,255,0.06)', borderRadius: 2, maxWidth: 280 }}>
-          <div style={{ width: `${qs.length ? (answeredCount / qs.length) * 100 : 0}%`, height: '100%', background: accent.primary, borderRadius: 2 }} />
-        </div>
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'rgba(255,255,255,0.4)' }}>{answeredCount}/{qs.length}</span>
+      <div className="os-progress-bar" style={{ maxWidth: 280, margin: '0 0 16px' }} aria-hidden="true">
+        <span style={{ width: `${qs.length ? (answeredCount / qs.length) * 100 : 0}%`, background: accent.primary }} />
       </div>
       {submitted && !submitting && (
-        <div style={{ background: allCorrect ? 'rgba(34,197,94,0.1)' : 'rgba(239,68,68,0.1)', border: `1px solid ${allCorrect ? 'rgba(34,197,94,0.3)' : 'rgba(239,68,68,0.3)'}`, borderRadius: T.rControl, padding: '12px 18px', marginBottom: 16, color: allCorrect ? '#22c55e' : '#ef4444', fontSize: 13 }}>
+        <div className={`lx-result ${allCorrect ? 'is-pass' : 'is-fail'}`}>
           {allCorrect
             ? `All ${qs.length} correct`
             : usesServerGrading
@@ -169,38 +145,36 @@ export function AssessmentSurface({
         </div>
       )}
       {qs.map((q, qi) => {
-        const reveal = submitted && q.correct !== undefined
+        const reveal = submitted && !submitting && q.correct !== undefined
         return (
-          <div key={qi} style={{ marginBottom: 24 }}>
-            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginBottom: 8 }}>Question {qi + 1} of {qs.length}</div>
-            <div style={{ color: C.white, fontSize: 16, fontWeight: 500, marginBottom: 16, lineHeight: 1.5 }}>{q.q}</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div key={qi} className="lx-question">
+            <p className="lx-question-kicker">Question {qi + 1} of {qs.length}</p>
+            <p className="lx-question-text">{q.q}</p>
+            <div className="lx-options" role="radiogroup" aria-label={`Answers for question ${qi + 1}`}>
               {q.options.map((opt, oi) => {
                 const selected = answers[qi] === oi
                 const isCorrect = reveal && oi === q.correct
                 const isWrong = reveal && selected && oi !== q.correct
+                const status = isCorrect ? 'Correct. ' : isWrong ? 'Not correct. ' : selected ? 'Selected. ' : ''
                 return (
                   <button
                     key={oi}
                     type="button"
-                    onClick={() => !submitted && setAnswers(prev => ({ ...prev, [qi]: oi }))}
-                    style={{
-                      textAlign: 'left', padding: '11px 16px',
-                      background: isCorrect ? 'rgba(34,197,94,0.1)' : isWrong ? 'rgba(239,68,68,0.1)' : selected ? accent.subtle : 'rgba(255,255,255,0.02)',
-                      border: `1px solid ${isCorrect ? 'rgba(34,197,94,0.4)' : isWrong ? 'rgba(239,68,68,0.4)' : selected ? accent.border : T.lineDark}`,
-                      borderRadius: T.rControl, color: isCorrect ? '#22c55e' : isWrong ? '#ef4444' : selected ? accent.text : 'rgba(255,255,255,0.6)',
-                      fontSize: 13, cursor: submitted ? 'default' : 'pointer', fontFamily: 'var(--font-body)',
-                    }}
+                    role="radio"
+                    aria-checked={selected}
+                    className={`lx-option${selected ? ' is-selected' : ''}${isCorrect ? ' is-correct' : ''}${isWrong ? ' is-wrong' : ''}`}
+                    onClick={() => !submitted && !submitting && setAnswers(prev => ({ ...prev, [qi]: oi }))}
                   >
+                    <span className="sr-only">{status}</span>
                     {opt}
+                    {isCorrect ? <span className="lx-option-flag">Correct</span> : null}
+                    {isWrong ? <span className="lx-option-flag">Your answer</span> : null}
                   </button>
                 )
               })}
             </div>
             {submitted && q.explanation && (
-              <div style={{ marginTop: 10, color: 'rgba(255,255,255,0.55)', fontSize: 13, lineHeight: 1.65, background: 'rgba(255,255,255,0.03)', borderRadius: T.rControl, padding: '10px 12px' }}>
-                {q.explanation}
-              </div>
+              <div className="lx-explain">{q.explanation}</div>
             )}
           </div>
         )
@@ -208,19 +182,14 @@ export function AssessmentSurface({
       {!submitted ? (
         <button
           type="button"
+          className="os-btn os-btn-primary"
           onClick={() => { void handleSubmitAsync() }}
           disabled={answeredCount < qs.length || submitting}
-          style={{
-            background: answeredCount < qs.length ? 'rgba(255,255,255,0.05)' : accent.primary,
-            border: 'none', color: answeredCount < qs.length ? 'rgba(255,255,255,0.25)' : C.black,
-            padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, fontWeight: 600,
-            cursor: answeredCount < qs.length ? 'not-allowed' : 'pointer', fontFamily: 'var(--font-body)',
-          }}
         >
-          Submit
+          {submitting ? 'Submitting…' : 'Submit quiz'}
         </button>
       ) : !allCorrect ? (
-        <button type="button" onClick={() => { setSubmitted(false); setAnswers({}); setServerPassed(null) }} style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${T.lineDark}`, color: C.white, padding: '12px 24px', borderRadius: T.rControl, fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Try again</button>
+        <button type="button" className="os-btn os-btn-ghost" onClick={() => { setSubmitted(false); setAnswers({}); setServerPassed(null) }}>Try again</button>
       ) : null}
     </div>
   )

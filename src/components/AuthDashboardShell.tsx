@@ -67,9 +67,9 @@ export function AuthDashboardShell({
 
   const sidebarContent = (
     <>
-      <div style={{ padding: '22px 20px 18px', borderBottom: `1px solid ${T.lineLight}` }}>
+      <div style={{ padding: '22px 20px 18px' }}>
         <Link to="/" style={{ textDecoration: 'none' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: C.ink, letterSpacing: '-0.02em' }}>
+          <div className="skylent-mark" style={{ fontSize: 20, color: C.ink }}>
             Skylent<span style={{ color: C.orange }}>.</span>
           </div>
         </Link>
@@ -90,12 +90,12 @@ export function AuthDashboardShell({
                 gap: 12,
                 width: '100%',
                 textAlign: 'left',
-                padding: '11px 12px',
+                padding: '10px 12px',
                 marginBottom: 2,
                 borderRadius: T.rControl,
                 border: 'none',
-                background: isActive ? accent.subtle : 'transparent',
-                borderLeft: isActive ? `2px solid ${accent.primary}` : '2px solid transparent',
+                background: isActive ? C.white : 'transparent',
+                boxShadow: isActive ? `0 0 0 1px ${accent.primary}` : 'none',
                 color: isActive ? C.ink : C.slate,
                 fontSize: 13.5,
                 fontFamily: 'var(--font-body)',
@@ -112,15 +112,15 @@ export function AuthDashboardShell({
         })}
       </nav>
 
-      <div style={{ padding: '16px', borderTop: `1px solid ${T.lineLight}` }}>
+      <div style={{ padding: '16px 16px 14px' }}>
         <div style={{
           display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12,
           padding: '10px 12px', background: C.white,
-          borderRadius: T.rControl, border: `1px solid ${T.lineLight}`,
+          borderRadius: T.rControl,
         }}>
           <div style={{
             width: 34, height: 34, borderRadius: '50%',
-            background: `linear-gradient(135deg, ${accent.primary}, ${accent.secondary})`,
+            background: accent.primary,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             fontSize: 11, fontWeight: 700, color: C.white, flexShrink: 0,
           }}>
@@ -154,8 +154,7 @@ export function AuthDashboardShell({
       {/* Level 1 — desktop sidebar chrome */}
       <aside className="auth-shell-sidebar-desktop" style={{
         position: 'fixed', top: 0, left: 0, bottom: 0, width: 236,
-        background: C.warmWhite, borderRight: `1px solid ${T.lineLight}`,
-        backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)',
+        background: '#EFEBE1', borderRight: '1px solid rgba(21,23,26,0.06)',
         display: 'flex', flexDirection: 'column', zIndex: 120,
       }}>
         {sidebarContent}
@@ -165,14 +164,14 @@ export function AuthDashboardShell({
         <div
           className="auth-shell-overlay"
           onClick={() => setMobileOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.65)', zIndex: 200, backdropFilter: 'blur(4px)' }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(21,23,26,0.35)', zIndex: 200 }}
         />
       )}
       <aside
         className={`auth-shell-sidebar-mobile${mobileOpen ? ' open' : ''}`}
         style={{
           position: 'fixed', top: 0, left: 0, bottom: 0, width: 280,
-          background: C.warmWhite, borderRight: `1px solid ${T.lineLight}`,
+          background: '#EFEBE1', borderRight: '1px solid rgba(21,23,26,0.06)',
           display: 'flex', flexDirection: 'column', zIndex: 210,
           transform: mobileOpen ? 'translateX(0)' : 'translateX(-100%)',
           transition: 'transform 0.25s ease',
@@ -185,19 +184,19 @@ export function AuthDashboardShell({
         {/* Level 1 — mobile header chrome */}
         <header className="auth-shell-mobile-header" style={{
           display: 'none', position: 'sticky', top: 0, zIndex: 90,
-          padding: '12px 16px', background: 'rgba(247,244,236,0.92)', borderBottom: `1px solid ${T.lineLight}`,
-          backdropFilter: 'blur(16px)', alignItems: 'center', justifyContent: 'space-between',
+          padding: '12px 16px', background: C.canvas, borderBottom: `1px solid ${T.lineLight}`,
+          alignItems: 'center', justifyContent: 'space-between',
         }}>
           <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu" style={{ background: 'none', border: 'none', color: C.ink, padding: 8, cursor: 'pointer' }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink }}>
+          <span className="skylent-mark" style={{ fontSize: 16, color: C.ink }}>
             Skylent<span style={{ color: C.orange }}>.</span>
           </span>
           <div style={{ width: 36 }} />
         </header>
 
-        <div className="auth-shell-content" style={{ padding: 'clamp(20px, 3vw, 36px) clamp(16px, 3vw, 36px) 96px', minWidth: 0 }}>
+        <div className="auth-shell-content" style={{ padding: 'clamp(16px, 2.4vw, 28px) clamp(16px, 2.6vw, 28px) 96px', minWidth: 0 }}>
           {header}
           {children}
         </div>
@@ -206,8 +205,7 @@ export function AuthDashboardShell({
       {/* Level 1 — mobile bottom nav */}
       <nav className="auth-shell-bottom-nav" style={{
         position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
-        background: 'rgba(247,244,236,0.94)', borderTop: `1px solid ${T.lineLight}`,
-        backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)',
+        background: C.canvas, borderTop: `1px solid ${T.lineLight}`,
         display: 'none', justifyContent: 'space-around',
         padding: '8px 4px max(8px, env(safe-area-inset-bottom))',
       }}>
@@ -262,8 +260,8 @@ export function AuthDashboardLayout({
   return (
     <div className={`auth-dashboard-layout${className ? ` ${className}` : ''}`} style={{
       display: 'grid',
-      gridTemplateColumns: 'minmax(0, 1fr) minmax(240px, 300px)',
-      gap: 'clamp(20px, 2.5vw, 32px)',
+      gridTemplateColumns: 'minmax(0, 1fr) minmax(260px, 340px)',
+      gap: 'clamp(16px, 2vw, 24px)',
       alignItems: 'start',
     }}>
       <div className="auth-dashboard-primary" style={{ minWidth: 0 }}>{primary}</div>

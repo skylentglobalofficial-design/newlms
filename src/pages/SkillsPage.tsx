@@ -1,267 +1,300 @@
-import { useNavigate, Link } from 'react-router-dom'
-import { useState } from 'react'
-import { C, FadeIn, PageShell } from '../components/shared'
-import {
-  Section, Button, Eyebrow, Heading, SectionHeader,
-} from '../components/ui'
-import { Aurora } from '../components/foundation'
-import { CAREER_OS_IA } from '../lib/product-architecture'
+import { useMemo } from "react"
+import { Link, useSearchParams } from "react-router-dom"
+import { PageShell } from "../components/shared"
+import { CourseThumb, LearnFlow, PathwayThumb } from "../components/product/ProductLanguage"
+import { courses } from "../data"
+import { courseLessonStats } from "../lib/catalog-maturity"
+import { courseProductProfile } from "../lib/course-product"
 import {
   LEARN_INTENTS,
   capabilitiesForIntent,
+  isLearnIntentId,
   liveMatchesForIntent,
   type LearnIntentId,
   type LiveMatch,
-} from '../lib/live-intents'
-import { T } from '../tokens'
+} from "../lib/live-intents"
+import "./SkillsPage.css"
 
-const NEXT_STEPS = [
-  { label: 'Course', detail: 'Open a live course or programme from the catalogue.' },
-  { label: 'LMS', detail: 'Enroll to continue lessons, quizzes, and assignments.' },
-  { label: 'Evidence', detail: 'Progress stays on your enrollments — not a generated transcript.' },
-  { label: 'Career OS', detail: 'Learning evidence can sit beside profile, applications, and interviews.' },
+const NEXT_FLOW = [
+  { title: "Choose", copy: "Pick the skill you want to build.", kind: "choose" as const },
+  { title: "Learn", copy: "Open the matching course.", kind: "learn" as const },
+  { title: "Practise", copy: "Try the ideas on real tasks.", kind: "practice" as const },
+  { title: "Build", copy: "Do the work the course asks for.", kind: "build" as const },
+  { title: "Keep", copy: "Save what you produce as you go.", kind: "keep" as const },
 ]
 
-function MatchRow({ match, last }: { match: LiveMatch; last: boolean }) {
+function IntentVisual({ id }: { id: LearnIntentId }) {
+  if (id === "data") {
+    return <CourseThumb authored visual="northwind" />
+  }
+  if (id === "product") {
+    return <CourseThumb authored visual="harbor-desk" />
+  }
+  if (id === "software") {
+    return (
+      <span className="sk-intent-visual is-software" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </span>
+    )
+  }
   return (
-    <Link
-      to={match.to}
-      className="live-intent-row skills-match-row"
-      style={{
-        borderBottom: last ? 'none' : `1px solid ${T.lineDark}`,
-      }}
-    >
-      <div className="skills-match-row__body">
-        <div className="skills-match-row__meta">
-          <span>{match.kind === 'programme' ? 'Programme' : 'Course'}</span>
+    <span className="sk-intent-visual is-ai" aria-hidden="true">
+      <b />
+      <b />
+    </span>
+  )
+}
+
+function IntentPicker({
+  value,
+  onChange,
+}: {
+  value: LearnIntentId | null
+  onChange: (id: LearnIntentId) => void
+}) {
+  function move(index: number, delta: number) {
+    const nextIndex = (index + delta + LEARN_INTENTS.length) % LEARN_INTENTS.length
+    const next = LEARN_INTENTS[nextIndex]
+    onChange(next.id)
+    document.getElementById(`intent-${next.id}`)?.focus()
+  }
+
+  return (
+    <div className="sk-intents" role="radiogroup" aria-label="What do you want to be able to do?">
+      {LEARN_INTENTS.map((item, index) => {
+        const selected = value === item.id
+        return (
+          <button
+            key={item.id}
+            id={`intent-${item.id}`}
+            type="button"
+            role="radio"
+            aria-checked={selected}
+            className={selected ? "sk-intent is-selected" : "sk-intent"}
+            onClick={() => onChange(item.id)}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+                event.preventDefault()
+                move(index, 1)
+              } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+                event.preventDefault()
+                move(index, -1)
+              } else if (event.key === "Home") {
+                event.preventDefault()
+                move(index, -index)
+              } else if (event.key === "End") {
+                event.preventDefault()
+                move(index, LEARN_INTENTS.length - 1 - index)
+              }
+            }}
+          >
+            <IntentVisual id={item.id} />
+            <span className="sk-intent-copy">
+              <span className="sk-intent-label">{item.label}</span>
+              <span className="sk-intent-question">{item.question}</span>
+            </span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function MatchCard({ match, featured }: { match: LiveMatch; featured: boolean }) {
+  const kindLabel = match.kind === "programme" ? "Programme" : "Course"
+  const course = match.kind === "course" ? courses.find((item) => item.slug === match.slug) : null
+  const stats = course ? courseLessonStats(course) : null
+  const profile = course ? courseProductProfile(course.slug) : null
+  const honesty =
+    match.depth === "authored"
+      ? null
+      : match.kind === "programme"
+        ? "Programme listing — live teaching is thinner than advertised."
+        : "Catalogue listing — thinner than Data Analytics."
+  const workTag =
+    match.depth === "authored"
+      ? profile?.visual === "harbor-desk"
+        ? "Harbor Desk case"
+        : "Northwind project"
+      : match.note
+
+  return (
+    <article className={featured ? "sk-product is-featured" : "sk-product"}>
+      {match.kind === "course" ? (
+        <CourseThumb authored={match.depth === "authored"} visual={profile?.visual ?? "northwind"} />
+      ) : (
+        <PathwayThumb />
+      )}
+      <div className="sk-product-body">
+        <p className="sk-product-meta">
+          <span>{kindLabel}</span>
           <span aria-hidden="true">·</span>
-          <span>{match.availability}</span>
+          <span>{match.note}</span>
           {match.duration ? (
             <>
               <span aria-hidden="true">·</span>
               <span>{match.duration}</span>
             </>
           ) : null}
-        </div>
-        <div className="skills-match-row__title">{match.title}</div>
-        <div className="skills-match-row__capability">{match.capability}</div>
+        </p>
+        <h3 className="sk-match-title">{match.title}</h3>
+        <p className="sk-match-summary">{match.summary}</p>
+        <ul className="sk-tags">
+          <li>{kindLabel}</li>
+          {course ? <li>{course.category}</li> : null}
+          {course ? <li>{course.level}</li> : null}
+          {match.depth === "authored" ? <li>{workTag}</li> : <li>{match.note}</li>}
+        </ul>
+        {stats && match.depth === "authored" ? (
+          <p className="sk-product-stats">
+            {stats.lessonCount} lessons · {stats.quizCount} quizzes · {stats.assignmentCount} assignments
+          </p>
+        ) : null}
+        {honesty ? <p className="sk-match-honesty">{honesty}</p> : null}
+        <Link className={featured ? "sk-btn sk-btn-primary" : "sk-btn sk-btn-ghost"} to={match.to}>
+          {match.actionLabel}
+        </Link>
       </div>
-      <span className="skills-match-row__action">
-        {match.actionLabel} →
-      </span>
-    </Link>
+    </article>
   )
 }
 
-function IntentResults({
-  intentId,
-  onSelectIntent,
-}: {
-  intentId: LearnIntentId
-  onSelectIntent: (id: LearnIntentId) => void
-}) {
-  const navigate = useNavigate()
+function IntentResults({ intentId }: { intentId: LearnIntentId }) {
   const intent = LEARN_INTENTS.find((item) => item.id === intentId)
   const matches = liveMatchesForIntent(intentId)
   const capabilities = capabilitiesForIntent(intentId)
-  const otherIntents = LEARN_INTENTS.filter((item) => item.id !== intentId)
+  const ready = matches.filter((match) => match.depth === "authored")
+  const listings = matches.filter((match) => {
+    if (match.depth === "authored") return false
+    if (ready.length > 0 && match.kind === "programme") return false
+    return true
+  })
+  const fromAuthored = ready.length > 0
 
   return (
-    <div id="your-direction" className="skills-direction">
-      <div className="skills-direction__capabilities">
-        <div className="skylent-label" style={{ color: C.slate, marginBottom: 10 }}>
-          What you will actually learn to do
-        </div>
-        <h2 className="skills-direction__heading">{intent?.label}</h2>
-        <p className="skills-direction__question">{intent?.question}</p>
+    <div className="sk-results" id="your-direction">
+      <section className="sk-explain" aria-labelledby="selected-intent-heading">
+        <h2 id="selected-intent-heading">{intent?.label}</h2>
+        <p className="sk-lead">{intent?.question}</p>
         {capabilities.length > 0 ? (
-          <ul className="skills-capability-list">
-            {capabilities.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        ) : (
-          <p className="skills-direction__empty-copy">
-            No live curriculum statements are attached to this intent yet.
-          </p>
-        )}
-      </div>
-
-      <div className="skills-direction__path">
-        <div className="skylent-label" style={{ color: C.slate, marginBottom: 10 }}>
-          Available learning now
-        </div>
-        {matches.length === 0 ? (
-          <div className="skills-empty">
-            <p className="skills-empty__title">Nothing live for this intent yet.</p>
-            <p className="skills-empty__copy">
-              There is no open course or programme in the catalogue for this direction. Browse what is live, or pick another intent.
+          <>
+            <p className="sk-cap-intro">
+              {fromAuthored ? "Build confidence with:" : "The catalogue lists these capabilities:"}
             </p>
-            <div className="skills-empty__actions">
-              <Button variant="primary" onClick={() => navigate('/courses')}>Browse available learning</Button>
-              <Button variant="secondary" onClick={() => navigate('/programs')}>Programmes</Button>
-            </div>
-            <div className="skills-empty__alts">
-              <span className="skills-empty__alts-label">Explore another intent</span>
-              {otherIntents.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  className="intent-chip"
-                  onClick={() => onSelectIntent(item.id)}
-                >
-                  {item.label}
-                </button>
+            <ul className="sk-caps">
+              {capabilities.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+            {!fromAuthored ? (
+              <p className="sk-fine">
+                These statements come from catalogue listings. This path is not as complete as Data Analytics.
+              </p>
+            ) : (
+              <p className="sk-fine">
+                Taken from the {ready.map((match) => match.title).join(" and ")} course outcomes.
+              </p>
+            )}
+          </>
+        ) : (
+          <p className="sk-fine">No live curriculum statements are attached to this intent yet.</p>
+        )}
+      </section>
+
+      <section className="sk-learning" aria-labelledby="matching-learning-heading">
+        <h2 id="matching-learning-heading">
+          {ready.length > 0 ? "Start with this course" : "What is live for this path"}
+        </h2>
+
+        {matches.length === 0 ? (
+          <div className="sk-empty">
+            <p className="sk-empty-title">Nothing live for this path yet.</p>
+            <p className="sk-empty-copy">
+              There is no open course or programme in the catalogue for this direction.
+            </p>
+            <Link className="sk-btn sk-btn-primary" to="/courses">
+              Explore all courses
+            </Link>
+          </div>
+        ) : (
+          <>
+            {ready.length === 0 ? (
+              <p className="sk-fine sk-learning-note">
+                Nothing as complete as Data Analytics is live for this path yet. These catalogue listings exist:
+              </p>
+            ) : null}
+            <div className="sk-match-list">
+              {ready.map((match) => (
+                <MatchCard key={`${match.kind}-${match.slug}`} match={match} featured />
+              ))}
+              {listings.map((match) => (
+                <MatchCard key={`${match.kind}-${match.slug}`} match={match} featured={false} />
               ))}
             </div>
-          </div>
-        ) : (
-          <div className="live-intent-list">
-            {matches.map((match, index) => (
-              <MatchRow key={`${match.kind}-${match.slug}`} match={match} last={index === matches.length - 1} />
-            ))}
-          </div>
+          </>
         )}
-      </div>
+      </section>
     </div>
   )
 }
 
-function WhatHappensNextSection() {
-  return (
-    <Section id="what-next" tone="canvas" divider style={{ paddingTop: T.sectionTight, paddingBottom: T.sectionTight }}>
-      <FadeIn>
-        <SectionHeader
-          tone="light"
-          eyebrow="What happens next"
-          title="Course → LMS → Evidence → Career OS"
-          lead="This is the live loop after you enrol. Certificate issuance, payments, and job placement are not part of it."
-        />
-        <ol className="skills-next-flow">
-          {NEXT_STEPS.map((step, index) => (
-            <li key={step.label} className="skills-next-step">
-              <div className="skills-next-step__label">
-                <span className="skills-next-step__index">{String(index + 1).padStart(2, '0')}</span>
-                {step.label}
-              </div>
-              <p className="skills-next-step__detail">{step.detail}</p>
-            </li>
-          ))}
-        </ol>
-      </FadeIn>
-    </Section>
-  )
-}
-
-function JobAssistanceSection() {
-  const navigate = useNavigate()
-
-  return (
-    <Section id="job-assistance" tone="canvas" divider>
-      <FadeIn>
-        <Eyebrow tone="light">Not a course</Eyebrow>
-        <Heading tone="light" size="md" style={{ margin: '20px 0 16px' }}>
-          Career OS is a workspace.
-        </Heading>
-        <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 28px', maxWidth: 560 }}>
-          Professional programmes include Career OS: profile, published opportunities, applications, interviews, and support. Jobs appear when partners publish them — the board is not filled with demo employers.
-        </p>
-        <div style={{ maxWidth: 720, marginBottom: 28 }}>
-          {CAREER_OS_IA.map((item, i, arr) => (
-            <div
-              key={item.label}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'minmax(140px, 0.4fr) minmax(0, 1fr)',
-                gap: 16,
-                padding: '14px 0',
-                borderBottom: i < arr.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                minWidth: 0,
-              }}
-              className="arch-career-ia-row"
-            >
-              <strong style={{ fontFamily: 'var(--font-display)', fontSize: 16, color: C.ink }}>{item.label}</strong>
-              <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{item.sub}</span>
-            </div>
-          ))}
-        </div>
-        <Button variant="primary" onClick={() => navigate('/career-os')}>Open Career OS →</Button>
-      </FadeIn>
-    </Section>
-  )
-}
-
 export default function SkillsPage() {
-  const navigate = useNavigate()
-  const [intentId, setIntentId] = useState<LearnIntentId | null>(null)
+  const [searchParams, setSearchParams] = useSearchParams()
+  const intentId = useMemo(() => {
+    const value = searchParams.get("intent")
+    return isLearnIntentId(value) ? value : null
+  }, [searchParams])
+
+  function selectIntent(id: LearnIntentId) {
+    setSearchParams({ intent: id })
+  }
 
   return (
-    <PageShell auroraTheme="professional">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
-        <Aurora themeId="professional" variant="hero" />
-        <div className="skills-rail" style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <FadeIn>
-            <div className="skills-intent">
-              <div className="skylent-label" style={{ color: C.indigo, marginBottom: 14 }}>Learn · live</div>
-              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 16px', maxWidth: 720 }}>
-                What are you trying to learn or become?
-              </h1>
-              <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 560, margin: '0 0 28px' }}>
-                Tell Skylent a direction. Matches are live courses and open programmes from the catalogue — not a generated list.
-              </p>
-              <div className="skills-intent-chips" role="group" aria-label="Learning intents">
-                {LEARN_INTENTS.map((item) => {
-                  const selected = intentId === item.id
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      className="intent-chip"
-                      onClick={() => setIntentId(item.id)}
-                      aria-pressed={selected}
-                    >
-                      {item.label}
-                    </button>
-                  )
-                })}
-              </div>
+    <PageShell aurora={false}>
+      <div className="skills-p4">
+        <section className="sk-hero">
+          <div className="sk-rail">
+            <h1>What do you want to be able to do?</h1>
+            <p className="sk-hero-lead">
+              Start with the skill you want to build. We'll show you the learning that actually matches it.
+            </p>
+            <IntentPicker value={intentId} onChange={selectIntent} />
+          </div>
+        </section>
+
+        {intentId ? (
+          <section className="sk-panel">
+            <div className="sk-rail">
+              <IntentResults intentId={intentId} />
             </div>
+          </section>
+        ) : (
+          <section className="sk-panel sk-idle" aria-labelledby="idle-heading">
+            <div className="sk-rail">
+              <h2 id="idle-heading" className="sk-idle-title">
+                Choose a direction to see what you would actually learn.
+              </h2>
+              <p className="sk-fine">
+                Skills is a starting point, not a second course catalogue. Pick an intent, then open the matching course.
+              </p>
+              <Link className="sk-text-link" to="/courses">
+                Explore all courses
+              </Link>
+            </div>
+          </section>
+        )}
 
-            {intentId ? (
-              <IntentResults intentId={intentId} onSelectIntent={setIntentId} />
-            ) : (
-              <div id="your-direction" className="skills-direction skills-direction--idle">
-                <div className="skills-direction__capabilities">
-                  <div className="skylent-label" style={{ color: C.slate, marginBottom: 10 }}>
-                    What you will actually learn to do
-                  </div>
-                  <p className="skills-direction__empty-copy">
-                    Choose an intent. Skylent will show capabilities from the live curriculum, then the real path available today.
-                  </p>
-                </div>
-                <div className="skills-direction__path">
-                  <div className="skylent-label" style={{ color: C.slate, marginBottom: 10 }}>
-                    Available learning now
-                  </div>
-                  <p className="skills-direction__empty-copy">
-                    Pick an intent to see the matching course or programme available today.
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {!intentId && (
-              <div className="skills-intent-browse">
-                <Button variant="secondary" onClick={() => navigate('/courses')}>Courses</Button>
-                <Button variant="secondary" onClick={() => navigate('/programs')}>Programmes</Button>
-              </div>
-            )}
-          </FadeIn>
-        </div>
-      </section>
-
-      <WhatHappensNextSection />
-      <JobAssistanceSection />
+        <section className="sk-next" aria-labelledby="next-heading">
+          <div className="sk-rail">
+            <h2 id="next-heading">Choose. Learn. Practise. Keep the work.</h2>
+            <div className="sk-flow-wrap">
+              <LearnFlow steps={NEXT_FLOW} />
+            </div>
+          </div>
+        </section>
+      </div>
     </PageShell>
   )
 }

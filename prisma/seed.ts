@@ -1,7 +1,9 @@
 import { PrismaClient, CurriculumNodeType, EnrollmentStatus, ProgramType } from '@prisma/client'
 
 import { DA_QUIZZES, daQuizSeedKey } from '../src/content/data-analytics/quizzes.ts'
+import { PM_QUIZZES, pmQuizSeedKey } from '../src/content/product-management/quizzes.ts'
 import { courses, programs } from '../src/data.js'
+import { PROGRAM_COURSE_LINKS } from '../src/lib/catalog-maturity.ts'
 
 const prisma = new PrismaClient()
 
@@ -166,10 +168,21 @@ function quizBankFromDa(lessonId: keyof typeof DA_QUIZZES) {
   }))
 }
 
+function quizBankFromPm(lessonId: keyof typeof PM_QUIZZES) {
+  return PM_QUIZZES[lessonId].questions.map((entry) => ({
+    question: entry.prompt,
+    options: entry.options,
+    correctIndex: entry.correctIndex,
+  }))
+}
+
 const QUIZ_BANK: Record<string, Array<{ question: string; options: string[]; correctIndex: number }>> = {
   [daQuizSeedKey('l3')]: quizBankFromDa('l3'),
   [daQuizSeedKey('l9')]: quizBankFromDa('l9'),
   [daQuizSeedKey('l15')]: quizBankFromDa('l15'),
+  [pmQuizSeedKey('l3')]: quizBankFromPm('l3'),
+  [pmQuizSeedKey('l9')]: quizBankFromPm('l9'),
+  [pmQuizSeedKey('l15')]: quizBankFromPm('l15'),
   'python-programming:l3': [
     { question: 'Which type is mutable in Python?', options: ['tuple', 'list', 'str', 'int'], correctIndex: 1 },
     { question: 'How do you start a comment?', options: ['//', '#', '--', '/*'], correctIndex: 1 },
@@ -213,16 +226,7 @@ async function seedQuizQuestions() {
 }
 
 async function seedProgramCourses() {
-  // Link only programs that already have a matching LMS course in COURSES.
-  // sql-certificate has no dedicated LMS course — it stays coming_soon in PROGRAMS.
-  const links: Array<{ programSlug: string; courseSlug: string; sortOrder: number }> = [
-    { programSlug: "data-analytics-pro", courseSlug: "data-analytics", sortOrder: 0 },
-    { programSlug: "data-science-ai", courseSlug: "data-analytics", sortOrder: 0 },
-    { programSlug: "data-science-ai", courseSlug: "python-programming", sortOrder: 1 },
-    { programSlug: "full-stack", courseSlug: "full-stack-web", sortOrder: 0 },
-    { programSlug: "generative-ai-program", courseSlug: "generative-ai", sortOrder: 0 },
-    { programSlug: "product-management", courseSlug: "product-management", sortOrder: 0 },
-  ]
+  const links = PROGRAM_COURSE_LINKS
 
   for (const link of links) {
     const program = await prisma.program.findUnique({ where: { slug: link.programSlug }, select: { id: true } })
@@ -240,6 +244,17 @@ async function seedProgramCourses() {
 }
 
 async function main() {
+  const isProduction = process.env.NODE_ENV === "production"
+  const allowDestructive = process.env.SKYLENT_ALLOW_DESTRUCTIVE_SEED === "1"
+  if (isProduction && !allowDestructive) {
+    const existingCourses = await prisma.course.count()
+    if (existingCourses > 0) {
+      throw new Error(
+        "Refusing production seed: catalog already exists. Re-seeding deletes curriculum nodes and learner progress (CASCADE). For a first-time empty database, this guard does not apply. To rebuild catalog on purpose, set SKYLENT_ALLOW_DESTRUCTIVE_SEED=1.",
+      )
+    }
+  }
+
   for (const program of programs) await seedProgram(program)
   for (const course of courses) await seedCourse(course)
   console.log(`Seeded ${programs.length} programs and ${courses.length} courses.`)

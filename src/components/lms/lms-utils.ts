@@ -69,13 +69,39 @@ export function defaultTabForLesson(lesson: CourseLesson): 'video' | 'notes' | '
   return 'video'
 }
 
-export function lessonTypeLabel(type: CourseLesson['type']) {
+export function isCapstoneLesson(lesson: Pick<CourseLesson, 'title' | 'type'>) {
+  return lesson.type === 'assignment' && /capstone/i.test(lesson.title)
+}
+
+export function learningLoopLabel(lesson: Pick<CourseLesson, 'title' | 'type'>): 'Learn' | 'Practise' | 'Build' | 'Keep' {
+  if (isCapstoneLesson(lesson) || lesson.type === 'assignment') return 'Build'
+  if (lesson.type === 'quiz') return 'Practise'
+  return 'Learn'
+}
+
+export function lessonTypeLabel(type: CourseLesson['type'], title?: string) {
+  if (title && /capstone/i.test(title) && type === 'assignment') return 'Capstone'
   switch (type) {
-    case 'video': return 'Video lesson'
+    case 'video': return 'Lesson'
     case 'notes': return 'Reading'
-    case 'quiz': return 'Practice quiz'
+    case 'quiz': return 'Quiz'
     case 'assignment': return 'Assignment'
   }
+}
+
+export function lessonObjective(lesson: Pick<CourseLesson, 'title' | 'type'>) {
+  if (isCapstoneLesson(lesson)) return 'Produce a work sample you can keep as evidence.'
+  if (lesson.type === 'assignment') return 'Follow the brief and submit the work. This records progress; it is not a grade.'
+  if (lesson.type === 'quiz') return 'Answer the questions. Results appear after you submit.'
+  if (lesson.type === 'notes') return 'Read the lesson, then mark it complete when you can do the work it asks for.'
+  return 'Work through this lesson, then continue to the next activity.'
+}
+
+export function lessonStatusLabel(state: { complete?: boolean; locked?: boolean } | undefined, isCurrent: boolean) {
+  if (state?.complete) return 'Completed'
+  if (state?.locked) return 'Locked'
+  if (isCurrent) return 'Current'
+  return 'Not started'
 }
 
 export type PendingTask = {

@@ -72,20 +72,11 @@ const ROLE_LABELS: Record<UserRole, string> = {
 function EntryVisual() {
   return (
     <div style={{ position: 'relative', maxWidth: 420 }}>
-      <div style={{
-        padding: '28px 0',
-        borderTop: `1px solid ${T.lineDark}`,
-        borderBottom: `1px solid ${T.lineDark}`,
-      }}>
-        <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, margin: 0, maxWidth: 380 }}>
-          One account for learning, teaching, and institution operations. Sign in to continue where you left off.
-        </p>
-      </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginTop: 28 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, paddingTop: 8, borderTop: `1px solid ${T.lineDark}` }}>
         {[
-          { label: 'Programs', detail: 'Structured learning paths' },
-          { label: 'Learning', detail: 'Courses, labs & assessments' },
-          { label: 'Career OS', detail: 'Interview prep & opportunities' },
+          { label: 'Learn', detail: 'Skills, courses, and programmes' },
+          { label: 'Study', detail: 'Your enrolled learning workspace' },
+          { label: 'Career OS', detail: 'Profile and learning evidence' },
         ].map(item => (
           <div key={item.label} style={{ minWidth: 0 }}>
             <div style={{ color: C.ink, fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{item.label}</div>
@@ -306,7 +297,7 @@ export default function LoginPage() {
     width: '100%',
     background: submitting ? `${accent.primary}99` : accent.primary,
     border: 'none',
-    color: C.black,
+    color: C.white,
     borderRadius: T.rControl,
     padding: '13px',
     fontSize: 14,
@@ -360,21 +351,16 @@ export default function LoginPage() {
         {/* Editorial */}
         <div className="login-page-editorial">
           <Link to="/" style={{ textDecoration: 'none', display: 'inline-block', marginBottom: 28 }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: 24, color: C.ink, letterSpacing: '-0.02em' }}>
+            <span className="skylent-mark" style={{ fontSize: 24, color: C.ink }}>
               Skylent<span style={{ color: accent.primary }}>.</span>
             </span>
           </Link>
-
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 20 }}>
-            <span style={{ width: 20, height: 1, background: 'currentColor', opacity: 0.5 }} />
-            Sign in
-          </div>
 
           <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '0 0 16px', maxWidth: 520 }}>
             Sign in to Skylent
           </h1>
           <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 480, margin: '0 0 32px' }}>
-            Access your learner, faculty, or institution workspace — programs, learning, and Career OS where your account includes them.
+            Sign in to continue your learning.
           </p>
 
           <EntryVisual />

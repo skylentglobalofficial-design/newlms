@@ -61,6 +61,7 @@ export type CareerProject = {
   repositoryUrl: string | null
   outcome: string | null
   sortOrder: number
+  sourceLearnerProjectId: string | null
 }
 
 export type CareerLink = {
@@ -665,4 +666,98 @@ export async function createResume(input: CreateResumeInput): Promise<CareerProf
 export async function deleteResume(id: string): Promise<CareerProfile> {
   const result = await careerMutate<{ data: CareerProfile }>(`/career/profile/resumes/${id}`, "DELETE")
   return result.data
+}
+
+export type CareerEvidenceItem = {
+  key: string
+  title: string
+  source: string
+  viewHref: string
+}
+
+export type CareerEvidenceReflection = {
+  finding: string
+  whyItMatters: string
+  recommendation: string
+}
+
+export type CareerEvidenceProject = {
+  id: string
+  title: string
+  projectType: string
+  context: string
+  summary: string
+  dataset: string
+  workDemonstrated: string[]
+  skills: string[]
+  evidence: CareerEvidenceItem[]
+  evidenceCount: number
+  reflection: CareerEvidenceReflection
+  reflectionLabels?: { finding: string; whyItMatters: string; recommendation: string }
+  completedTasks: Array<{ key: string; title: string; number: string }>
+  eligible: boolean
+  incompleteMessage: string | null
+  projectHref: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type CareerEvidenceSummary = {
+  id: string
+  title: string
+  projectType: string
+  context: string
+  skills: string[]
+  evidenceCount: number
+  eligible: boolean
+  incompleteMessage: string | null
+  projectHref: string
+  href: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type CareerProjectLink = {
+  id: string
+  href: string
+}
+
+export async function listCareerEvidenceProjects(signal?: AbortSignal): Promise<CareerEvidenceSummary[]> {
+  const response = await fetch(`${API_BASE}/career/projects`, { credentials: "include", signal })
+  const result = await parseApiJson<{ data: CareerEvidenceSummary[] }>(response)
+  return result.data
+}
+
+export async function fetchCareerEvidenceProject(id: string, signal?: AbortSignal): Promise<CareerEvidenceProject> {
+  const response = await fetch(`${API_BASE}/career/projects/${encodeURIComponent(id)}`, {
+    credentials: "include",
+    signal,
+  })
+  const result = await parseApiJson<{ data: CareerEvidenceProject }>(response)
+  return result.data
+}
+
+export async function fetchCareerLinkForLearnerProject(
+  learnerProjectId: string,
+  signal?: AbortSignal,
+): Promise<CareerProjectLink | null> {
+  const response = await fetch(
+    `${API_BASE}/career/projects/by-learner-project/${encodeURIComponent(learnerProjectId)}`,
+    { credentials: "include", signal },
+  )
+  const result = await parseApiJson<{ data: CareerProjectLink | null }>(response)
+  return result.data
+}
+
+export async function addLearnerProjectToCareer(learnerProjectId: string): Promise<CareerEvidenceProject> {
+  const result = await careerMutate<{ data: CareerEvidenceProject }>(
+    "/career/projects/from-learner-project",
+    "POST",
+    { learnerProjectId },
+  )
+  return result.data
+}
+
+export async function removeCareerEvidenceProject(id: string): Promise<void> {
+  await careerMutate<{ data: { id: string; unlinked: boolean } }>(`/career/projects/${id}`, "DELETE")
 }

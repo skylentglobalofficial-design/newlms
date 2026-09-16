@@ -27,6 +27,9 @@ export function parseEnrollTarget(
 export function frontendOrigin(): string {
   const configured = process.env.FRONTEND_URL?.trim()
   if (configured) return configured.replace(/\/$/, "")
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("FRONTEND_URL is required in production")
+  }
   return "http://localhost:5173"
 }
 

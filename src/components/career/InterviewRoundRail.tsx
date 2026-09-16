@@ -29,7 +29,7 @@ export default function InterviewRoundRail({ rounds, selectedId, onSelect }: Pro
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           <Link to="/career-os/applications" style={{ color: accent.text, fontSize: 13, textDecoration: "none" }}>View applications →</Link>
-          <Link to="/career-os/jobs" style={{ color: C.slate, fontSize: 13, textDecoration: "none" }}>Browse jobs →</Link>
+          <Link to="/career-os/jobs" style={{ color: C.slate, fontSize: 13, textDecoration: "none" }}>Opportunities →</Link>
         </div>
       </div>
     )

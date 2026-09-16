@@ -129,8 +129,16 @@ async function main() {
 
   try {
     console.log("1. Authenticated user can create/update own profile")
-    const initial = await request(jarA, "/career/profile")
-    assert(initial.response.ok, "Profile fetch failed")
+    const raced = await Promise.all([
+      request(jarA, "/career/profile"),
+      request(jarA, "/career/profile"),
+      request(jarA, "/career/profile"),
+      request(jarA, "/career/applications"),
+    ])
+    for (const row of raced) {
+      assert(row.response.ok, `Concurrent Career OS request failed: ${row.response.status} ${JSON.stringify(row.data)}`)
+    }
+    const initial = raced[0]
     assert(initial.data.data.userId, "Profile missing userId")
 
     const patched = await request(jarA, "/career/profile", {

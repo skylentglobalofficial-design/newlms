@@ -119,7 +119,7 @@ function DataWorkspace({ title }: { title: string }) {
           {cell.type === 'markdown' ? (
             <div style={{ padding: '20px 24px', background: C.cream }}>
               {cell.content.split('\n').map((line, li) => (
-                <div key={li} style={{ color: line.startsWith('## ') ? C.white : C.slate, fontSize: line.startsWith('## ') ? 16 : 13, fontWeight: line.startsWith('## ') ? 700 : 400, lineHeight: 1.7, marginBottom: line.startsWith('## ') ? 8 : 0 }}>{line.replace(/^## /, '')}</div>
+                <div key={li} style={{ color: line.startsWith('## ') ? C.ink : C.slate, fontSize: line.startsWith('## ') ? 16 : 13, fontWeight: line.startsWith('## ') ? 700 : 400, lineHeight: 1.7, marginBottom: line.startsWith('## ') ? 8 : 0 }}>{line.replace(/^## /, '')}</div>
               ))}
             </div>
           ) : (

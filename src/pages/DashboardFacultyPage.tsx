@@ -109,7 +109,7 @@ function CatalogOverview({
           onClick={onReview}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: accent.primary, color: C.black, border: 'none',
+            background: accent.primary, color: C.white, border: 'none',
             padding: '13px 24px', borderRadius: T.rControl,
             fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-body)',
             cursor: 'pointer', transition: 'opacity 0.2s',
@@ -434,7 +434,7 @@ export default function DashboardFacultyPage() {
                         })
                     }}
                     style={{
-                      background: accent.primary, color: C.black, border: 'none',
+                      background: accent.primary, color: C.white, border: 'none',
                       padding: '11px 18px', borderRadius: T.rControl, cursor: 'pointer',
                       fontFamily: 'var(--font-body)', fontWeight: 600,
                     }}

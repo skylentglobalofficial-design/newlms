@@ -1,11 +1,12 @@
 import "dotenv/config"
 import { PrismaClient } from "@prisma/client"
 import { courses, programs, workshops } from "../src/data.js"
+import { PROGRAM_COURSE_LINKS } from "../src/lib/catalog-maturity.ts"
 
 const prisma = new PrismaClient()
 
-/** Slugs hard-linked from HomePage.tsx — must exist in static data and DB. */
-const HOMEPAGE_PROGRAM_SLUGS = ["data-analytics-pro", "product-management", "full-stack"] as const
+/** Course slugs hard-linked from HomePage.tsx — must exist in static data and DB. */
+const HOMEPAGE_COURSE_SLUGS = ["data-analytics"] as const
 
 type Failure = string
 
@@ -47,12 +48,12 @@ async function main() {
     }
   }
 
-  for (const slug of HOMEPAGE_PROGRAM_SLUGS) {
-    if (!staticProgramSlugs.includes(slug)) {
-      failures.push(`Homepage program slug missing from static catalog: ${slug}`)
+  for (const slug of HOMEPAGE_COURSE_SLUGS) {
+    if (!staticCourseSlugs.includes(slug)) {
+      failures.push(`Homepage course slug missing from static catalog: ${slug}`)
     }
-    if (!dbProgramSlugs.has(slug)) {
-      failures.push(`Homepage program slug missing from DB: ${slug}`)
+    if (!dbCourseSlugs.has(slug)) {
+      failures.push(`Homepage course slug missing from DB: ${slug}`)
     }
   }
 
@@ -75,6 +76,18 @@ async function main() {
         failures.push(
           `Program "${program.slug}" has a live enrollment CTA but no ProgramCourse linkage in DB`,
         )
+      }
+    }
+
+    const expected = PROGRAM_COURSE_LINKS.filter((link) => link.programSlug === program.slug).map((link) => link.courseSlug)
+    if (expected.length) {
+      for (const slug of expected) {
+        if (!linked.includes(slug)) {
+          failures.push(`Program "${program.slug}" is missing ProgramCourse link to ${slug}`)
+        }
+        if (!dbCourseSlugs.has(slug)) {
+          failures.push(`Program "${program.slug}" linked course missing from DB: ${slug}`)
+        }
       }
     }
   }
@@ -117,7 +130,7 @@ async function main() {
   console.log("Catalog parity check passed.")
   console.log(`  Static courses: ${staticCourseSlugs.length} (all present in DB)`)
   console.log(`  Static programs: ${staticProgramSlugs.length} (all present in DB)`)
-  console.log(`  Homepage program slugs: ${HOMEPAGE_PROGRAM_SLUGS.join(", ")}`)
+  console.log(`  Homepage course slugs: ${HOMEPAGE_COURSE_SLUGS.join(", ")}`)
   console.log(`  Workshops: ${workshopSlugs.length} (no backend enrollment)`)
 }
 

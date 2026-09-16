@@ -85,9 +85,20 @@ export function computeProfileCompleteness(profile: CareerProfileFull): ProfileC
 }
 
 export async function getOrCreateProfile(userId: string): Promise<CareerProfileFull> {
-  const existing = await prisma.careerProfile.findUnique({ where: { userId }, include: PROFILE_INCLUDE })
-  if (existing) return existing
-  return prisma.careerProfile.create({ data: { userId }, include: PROFILE_INCLUDE })
+  try {
+    return await prisma.careerProfile.upsert({
+      where: { userId },
+      update: {},
+      create: { userId },
+      include: PROFILE_INCLUDE,
+    })
+  } catch (error) {
+    const unique = error && typeof error === "object" && "code" in error && error.code === "P2002"
+    if (!unique) throw error
+    const existing = await prisma.careerProfile.findUnique({ where: { userId }, include: PROFILE_INCLUDE })
+    if (existing) return existing
+    throw error
+  }
 }
 
 export async function loadProfileForUser(userId: string) {
@@ -169,6 +180,7 @@ export function serializeProject(entry: CareerProject) {
     repositoryUrl: entry.repositoryUrl,
     outcome: entry.outcome,
     sortOrder: entry.sortOrder,
+    sourceLearnerProjectId: entry.sourceLearnerProjectId,
   }
 }
 

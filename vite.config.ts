@@ -43,6 +43,9 @@ export default defineConfig(({ mode }) => {
       host: '0.0.0.0',
       port: parseInt(process.env.PORT || '5173', 10),
       strictPort: true,
+      // Cursor Cloud Agent preview proxies with a *.cursor.sh / *.cursor.com Host
+      // header. Vite 8 rejects unknown hosts unless they are listed here.
+      allowedHosts: ['.cursor.sh', '.cursor.com', '.cursorvm.com'],
       watch: { ignored: ['**/.figma/**'] },
       proxy: {
         '/api': {
@@ -102,12 +105,23 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
   function escapeHtmlText(value: string): string {
     return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   }
+  function escapeHtmlAttr(value: string): string {
+    return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')
+  }
   function replaceHtmlCommentSlot(html: string, slotName: string, content: string): string {
     return html.replace(`<!-- ${slotName} -->`, content)
   }
 
-  const title = config.title ?? "Figma Make App"
-  const description = config.description ?? ''
+  const FALLBACK_TITLE = 'Skylent — Learn. Practise. Build.'
+  const FALLBACK_DESCRIPTION = 'Learn useful skills, practise through real work, and keep evidence of what you learn.'
+  const rawTitle = config.title?.trim() ?? ''
+  const rawDescription = config.description?.trim() ?? ''
+  const title = !rawTitle || rawTitle.toLowerCase() === 'demo' || rawTitle.toLowerCase() === 'figma make app'
+    ? FALLBACK_TITLE
+    : rawTitle
+  const description = !rawDescription || /streamline your workflow|manage tasks|collaborate/i.test(rawDescription)
+    ? FALLBACK_DESCRIPTION
+    : rawDescription
   const favicon = config.icons?.icon ?? ''
   const socialImage = config.openGraph?.image ?? ''
   const language = sanitizeHtmlValue(config.language) || 'en'
@@ -149,7 +163,13 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
         result = replaceHtmlCommentSlot(result, 'figma:body-end', bodyEnd)
 
         const tags: HtmlTagDescriptor[] = []
-        if (description) {
+        result = result.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtmlText(title)}</title>`)
+        if (/<meta\s+name=["']description["']/i.test(result)) {
+          result = result.replace(
+            /<meta\s+name=["']description["'][^>]*>/i,
+            `<meta name="description" content="${escapeHtmlAttr(description)}" />`,
+          )
+        } else if (description) {
           tags.push({ tag: 'meta', attrs: { name: 'description', content: description }, injectTo: 'head' })
         }
         if (config.robots?.index === false) {
