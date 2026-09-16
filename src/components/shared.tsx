@@ -98,9 +98,8 @@ export type CatalogEnrollItem = {
   linkedCourseSlugs?: string[]
 }
 
-export function EnrollmentModal({ item, onClose, themeId }: { item: CatalogEnrollItem; onClose: () => void; themeId?: AuroraThemeId }) {
+export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; onClose: () => void; themeId?: AuroraThemeId }) {
   const { user } = useAuth()
-  const accent = getDomainAccent(themeId ?? (item.kind === 'program' ? 'professional' : 'data-science'))
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -150,30 +149,30 @@ export function EnrollmentModal({ item, onClose, themeId }: { item: CatalogEnrol
       ? 'Talk to us about the waitlist'
       : item.enrollmentStatus === 'coming_soon'
         ? 'Register interest'
-        : 'Enrollment not available yet'
+        : 'Enrolment not available yet'
     : user
-      ? submitting ? 'Opening workspace…' : 'Get learning access'
-      : 'Sign in to enroll'
+      ? submitting ? 'Opening Skylent OS…' : 'Open Skylent OS'
+      : 'Sign in to enrol'
 
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(21,23,26,0.35)', zIndex: 500 }} aria-hidden="true" />
-      <div role="dialog" aria-modal="true" aria-labelledby="enrollment-modal-title" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.cream, border: `1px solid ${T.lineStrong}`, borderRadius: 12, padding: '32px 32px', width: 540, maxWidth: '94vw', zIndex: 501, boxShadow: T.shadowLg, overflowY: 'auto', maxHeight: '92vh' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
+      <div role="dialog" aria-modal="true" aria-labelledby="enrollment-modal-title" aria-describedby="enrollment-modal-copy" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.cream, border: `1px solid ${T.lineStrong}`, borderRadius: 12, padding: '28px 24px', width: 540, maxWidth: '94vw', zIndex: 501, boxShadow: T.shadowLg, overflowY: 'auto', maxHeight: '92vh' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
-            <div style={{ color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 3 }}>
-              {item.enrollable ? 'Product access' : 'Enrollment status'}
+            <div style={{ color: C.slate, fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+              {item.enrollable ? 'Access' : 'Enrolment status'}
             </div>
-            <div id="enrollment-modal-title" style={{ color: C.ink, fontSize: 16, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{item.title}</div>
+            <div id="enrollment-modal-title" style={{ color: C.ink, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{item.title}</div>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close enrollment dialog" style={{ background: C.sand, border: 'none', borderRadius: 7, padding: '7px 13px', cursor: 'pointer', color: C.slate, fontSize: 14 }}>✕</button>
+          <button type="button" onClick={onClose} aria-label="Close enrolment dialog" style={{ background: C.sand, border: 'none', borderRadius: 7, padding: '7px 13px', cursor: 'pointer', color: C.slate, fontSize: 14 }}>✕</button>
         </div>
 
-        <div style={{ background: C.sand, borderRadius: 12, padding: '18px 20px', marginBottom: 20 }}>
-          <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 8, letterSpacing: '0.06em' }}>LISTED PRICE</div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: C.ink }}>₹{item.price.toLocaleString('en-IN')}</div>
-          <div style={{ color: C.slate, fontSize: 12, marginTop: 8, lineHeight: 1.6 }}>
-            Payment is not collected here yet. {item.enrollable ? 'Enrollment grants access to the live learning workspace.' : 'We will notify you when enrollment opens.'}
+        <div style={{ background: C.warmWhite, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: '16px 18px', marginBottom: 16 }}>
+          <div style={{ color: C.slate, fontSize: 13, marginBottom: 4 }}>Listed price</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 600, color: C.ink }}>₹{item.price.toLocaleString('en-IN')}</div>
+          <div id="enrollment-modal-copy" style={{ color: C.slate, fontSize: 13, marginTop: 8, lineHeight: 1.6 }}>
+            Payment is not collected here yet. {item.enrollable ? 'If you are signed in, this opens Skylent OS. If you are not, you will be asked to sign in first.' : 'We will notify you when enrolment opens.'}
           </div>
         </div>
 
@@ -186,12 +185,12 @@ export function EnrollmentModal({ item, onClose, themeId }: { item: CatalogEnrol
         )}
 
         <div style={{ display: 'flex', gap: 10 }}>
-          <button type="button" onClick={onClose} style={{ flex: 1, background: C.sand, border: 'none', color: C.ink, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Close</button>
+          <button type="button" onClick={onClose} style={{ flex: 1, background: C.cream, border: `1px solid ${T.lineStrong}`, color: C.ink, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Close</button>
           <button
             type="button"
             onClick={handlePrimaryAction}
             disabled={submitting}
-            style={{ flex: 2, background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: submitting ? 'wait' : 'pointer', fontFamily: 'var(--font-body)', opacity: submitting ? 0.7 : 1 }}
+            style={{ flex: 2, background: C.indigo, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: submitting ? 'wait' : 'pointer', fontFamily: 'var(--font-body)', opacity: submitting ? 0.7 : 1 }}
           >
             {primaryLabel}
           </button>

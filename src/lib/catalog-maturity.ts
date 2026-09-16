@@ -47,10 +47,131 @@ export function courseLessonStats(course: Course) {
 
 export function publicLessonKind(lesson: CourseLesson, authored: boolean): string {
   if (lesson.type === "quiz") return "Quiz"
-  if (lesson.type === "assignment") return "Assignment"
+  if (lesson.type === "assignment") {
+    if (/capstone/i.test(lesson.title)) return "Capstone"
+    return "Assignment"
+  }
   if (lesson.type === "notes") return "Written"
   if (authored) return "Lesson"
   return "Outline"
+}
+
+export type PracticeGroups = {
+  learning: CourseLesson[]
+  practice: CourseLesson[]
+  assignments: CourseLesson[]
+  capstone: CourseLesson[]
+}
+
+export function coursePracticeGroups(course: Course): PracticeGroups {
+  const lessons = course.modules.flatMap((module) => module.lessons)
+  return {
+    learning: lessons.filter((lesson) => lesson.type === "notes" || lesson.type === "video"),
+    practice: lessons.filter((lesson) => lesson.type === "quiz"),
+    assignments: lessons.filter((lesson) => lesson.type === "assignment" && !/capstone/i.test(lesson.title)),
+    capstone: lessons.filter((lesson) => /capstone/i.test(lesson.title)),
+  }
+}
+
+export type ModulePublicCard = {
+  id: string
+  index: number
+  title: string
+  activityCount: number
+  workLine: string
+  countsLabel: string
+}
+
+export function courseModuleCards(course: Course, authored: boolean): ModulePublicCard[] {
+  return course.modules.map((module, index) => {
+    const written = module.lessons.filter((lesson) => lesson.type === "notes").length
+    const quizzes = module.lessons.filter((lesson) => lesson.type === "quiz").length
+    const assignments = module.lessons.filter((lesson) => lesson.type === "assignment" && !/capstone/i.test(lesson.title)).length
+    const capstone = module.lessons.filter((lesson) => /capstone/i.test(lesson.title)).length
+    const parts: string[] = []
+    if (written) parts.push(`${written} written`)
+    if (quizzes) parts.push(`${quizzes} ${quizzes === 1 ? "quiz" : "quizzes"}`)
+    if (assignments) parts.push(`${assignments} ${assignments === 1 ? "assignment" : "assignments"}`)
+    if (capstone) parts.push(`${capstone} capstone`)
+    const capstoneLesson = module.lessons.find((lesson) => /capstone/i.test(lesson.title))
+    const assignment = module.lessons.find((lesson) => lesson.type === "assignment" && !/capstone/i.test(lesson.title))
+    const quiz = module.lessons.find((lesson) => lesson.type === "quiz")
+    let workLine = "Outline titles only — not a finished teaching path."
+    if (authored) {
+      if (capstoneLesson && assignment) workLine = `${assignment.title}. Then ${capstoneLesson.title}.`
+      else if (capstoneLesson) workLine = capstoneLesson.title
+      else if (assignment) workLine = `Practical work: ${assignment.title}.`
+      else if (quiz) workLine = `Written lessons and ${quiz.title}.`
+      else workLine = `You work through ${parts.join(", ") || "written lessons"}.`
+    }
+    return {
+      id: module.id,
+      index: index + 1,
+      title: module.title,
+      activityCount: module.lessons.length,
+      workLine,
+      countsLabel: `${module.lessons.length} ${module.lessons.length === 1 ? "activity" : "activities"}${parts.length ? ` · ${parts.join(" · ")}` : ""}`,
+    }
+  })
+}
+
+export const AUTHORED_TOOLS = ["Google Sheets or Excel", "SQL as specified in the briefs", "A text editor"]
+export const AUTHORED_PREREQUISITE = "None. A spreadsheet or a text editor is enough."
+export const AUTHORED_DATASETS = [
+  { filename: "northwind_sales.csv", detail: "180 order lines for fictional Northwind Retail, January–June 2026." },
+  { filename: "northwind_hr.csv", detail: "56 staff rows used where the briefs ask for a companion HR extract." },
+]
+
+export const AUTHORED_LEARNING_STEPS = [
+  { label: "Learning", detail: "Written lessons in Skylent OS. Self-paced. No video stream and no live classroom." },
+  { label: "Practice", detail: "Short checks after a block of lessons." },
+  { label: "Assignment", detail: "Applied spreadsheet, SQL, and dashboard work on Northwind." },
+  { label: "Capstone", detail: "A commercial review you keep as a work sample." },
+] as const
+
+export const AUTHORED_FAQ = [
+  {
+    q: "Are there videos or live classes?",
+    a: "No. Data Analytics is written lessons, quizzes, and assignments in Skylent OS. You work at your own pace.",
+  },
+  {
+    q: "Do I pay when I click Enrol?",
+    a: "No. A listed price is shown, but payment is not collected in this environment. Enrolment opens the course workspace.",
+  },
+  {
+    q: "Is a certificate issued?",
+    a: "Not in this pilot.",
+  },
+  {
+    q: "What do I actually work on?",
+    a: "A synthetic Northwind Retail dataset: spreadsheet analysis, SQL, data cleaning, a one-question dashboard, and a commercial-review capstone.",
+  },
+] as const
+
+export const PROGRAMME_INTENDED_STEPS = [
+  "Programme",
+  "Term",
+  "Specialisation",
+  "Module",
+  "Case study",
+  "Project",
+  "Assessment",
+  "Career outcome",
+]
+
+export function coursePrimaryCta(view: { showLiveCurriculum: boolean; maturity: PublicMaturity }): string {
+  if (view.showLiveCurriculum) return "Enrol to start learning"
+  return "Enrol to open the outline"
+}
+
+export function courseAfterEnrolSteps(authored: boolean): string[] {
+  return [
+    "If you are not signed in, you will be asked to sign in or create an account.",
+    "Enrolment grants access to the learning workspace. Payment is not collected.",
+    authored
+      ? "Skylent OS opens Data Analytics at the first lesson."
+      : "Skylent OS opens the course outline. Full teaching content is still being built.",
+  ]
 }
 
 export type CoursePublicView = {
@@ -67,6 +188,7 @@ export type CoursePublicView = {
   forWhom: string[]
   listedPrice: number
   ctaLabel: string
+  primaryCta: string
   honesty: string | null
   showLiveCurriculum: boolean
 }
@@ -92,6 +214,7 @@ export function coursePublicView(course: Course): CoursePublicView {
     forWhom: authored ? course.forWhom : [],
     listedPrice: course.price,
     ctaLabel: authored ? "Start this course" : "View listing",
+    primaryCta: coursePrimaryCta({ showLiveCurriculum: authored, maturity: authored ? "ready" : "listing" }),
     honesty: authored
       ? null
       : "Catalogue listing — thinner than Data Analytics. You can open the workspace; full teaching content is being built.",
@@ -109,6 +232,21 @@ export type LinkedLearning = {
   to: string
   authored: boolean
   maturityLabel: string
+}
+
+export function programmeAfterEnrolCopy(view: {
+  maturity: PublicMaturity
+  linked: LinkedLearning[]
+}): string {
+  const authored = view.linked.find((item) => item.authored)
+  if (view.maturity === "coming_later") return "Enrolment is not open on this listing."
+  if (authored) {
+    return `Enrolment opens ${authored.title} in Skylent OS. It does not create a separate taught programme. Payment is not collected.`
+  }
+  if (view.linked[0]) {
+    return `Enrolment opens the ${view.linked[0].title} outline in Skylent OS. Payment is not collected.`
+  }
+  return "There is no linked course to open yet."
 }
 
 export type ProgrammePublicView = {
@@ -177,7 +315,7 @@ export function programmePublicView(program: Program): ProgrammePublicView {
     enrollOpen,
     listedPrice,
     honesty: programmeHonesty(program, linked),
-    ctaLabel: comingLater ? "Coming later" : enrollOpen ? "Enrol" : "View programme",
+    ctaLabel: comingLater ? "Coming later" : enrollOpen ? "Enrol to open linked learning" : "Enrolment unavailable",
   }
 }
 
