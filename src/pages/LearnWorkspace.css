@@ -424,6 +424,14 @@
   padding-bottom: 84px;
 }
 
+body:has(.os-ai.is-compact .os-ai-form) .os-stage.is-ai-compact {
+  padding-bottom: max(84px, min(280px, 42dvh));
+}
+
+body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
+  padding-bottom: max(84px, min(420px, 48dvh));
+}
+
 .os-lesson-stage {
   background: #ffffff;
   border-radius: 16px;

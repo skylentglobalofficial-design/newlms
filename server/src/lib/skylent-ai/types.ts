@@ -45,6 +45,8 @@ export type ProviderChatMessage = {
 export type AiProvider = {
   id: string
   complete: (messages: ProviderChatMessage[]) => Promise<string>
+  /** Preview/test providers may answer from the lesson object instead of chat messages. */
+  answerLesson?: (input: AiAskInput) => Promise<string>
 }
 
 export type AiAskInput = {

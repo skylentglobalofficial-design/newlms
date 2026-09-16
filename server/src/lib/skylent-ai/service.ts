@@ -1,8 +1,16 @@
 import { buildLessonAiContext } from "./authored.js"
-import { createLessonGroundedProvider, groundedAnswer } from "./grounded.js"
+import { createLessonGroundedProvider } from "./grounded.js"
 import { createOpenAiCompatibleProvider } from "./openai-compatible.js"
 import { buildProviderMessages } from "./prompts.js"
 import type { AiAskInput, AiAskResult, AiProvider, ChatTurn, LessonAiContext } from "./types.js"
+
+const DEFAULT_TIMEOUT_MS = 30_000
+
+export function readProviderTimeoutMs(): number {
+  const raw = Number(process.env.SKYLENT_AI_TIMEOUT_MS ?? DEFAULT_TIMEOUT_MS)
+  if (!Number.isFinite(raw) || raw < 1_000) return DEFAULT_TIMEOUT_MS
+  return Math.min(Math.trunc(raw), 120_000)
+}
 
 export function isAiConfigured(): boolean {
   const provider = (process.env.SKYLENT_AI_PROVIDER ?? "").trim().toLowerCase()
@@ -19,10 +27,14 @@ export function resolveAiProvider(): AiProvider | null {
   }
   const apiKey = process.env.SKYLENT_AI_API_KEY?.trim()
   if (!apiKey) return null
+  const baseUrl = process.env.SKYLENT_AI_BASE_URL?.trim() || "https://api.openai.com/v1"
+  const model = process.env.SKYLENT_AI_MODEL?.trim() || "gpt-4o-mini"
+  if (!/^https?:\/\//i.test(baseUrl) || !model) return null
   return createOpenAiCompatibleProvider({
     apiKey,
-    baseUrl: process.env.SKYLENT_AI_BASE_URL?.trim() || "https://api.openai.com/v1",
-    model: process.env.SKYLENT_AI_MODEL?.trim() || "gpt-4o-mini",
+    baseUrl,
+    model,
+    timeoutMs: readProviderTimeoutMs(),
   })
 }
 
@@ -54,15 +66,9 @@ export function buildAskInput(options: {
 }
 
 export async function completeLessonAsk(input: AiAskInput, provider: AiProvider): Promise<AiAskResult> {
-  if (provider.id === "lesson-grounded") {
-    return {
-      answer: groundedAnswer(input),
-      basedOn: input.context.lessonTitle,
-      provider: provider.id,
-    }
-  }
-  const messages = buildProviderMessages(input)
-  const answer = await provider.complete(messages)
+  const answer = provider.answerLesson
+    ? await provider.answerLesson(input)
+    : await provider.complete(buildProviderMessages(input))
   return {
     answer,
     basedOn: input.context.lessonTitle,

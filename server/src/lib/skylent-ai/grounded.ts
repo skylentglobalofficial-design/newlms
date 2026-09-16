@@ -10,12 +10,25 @@ function section(excerpt: string, heading: string): string {
 function simplify(text: string): string {
   return text
     .replace(/\*\*/g, "")
+    .replace(/`/g, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim()
 }
 
-function looksLikeAssignmentDump(question: string): boolean {
-  return /exact answer|do (my|the) assignment|write (my|the) (memo|submission|capstone)|submit (it|this) for me/i.test(
+export function looksLikeAssignmentDump(question: string): boolean {
+  return /exact answer|do (my|the) assignment|write (my|the) (memo|submission|capstone)|submit (it|this) for me|answer to (this|my|the) assignment|complete (my|the) (assignment|quiz|capstone)|i need the answer to (this|my|the) assignment/i.test(
+    question,
+  )
+}
+
+export function looksLikeJailbreak(question: string): boolean {
+  return /ignore (previous|all|the) instructions|ignore previous|pretend (this|the) course|you are now|reveal (the )?system prompt|forget (the|this) lesson|act as if this lesson|override (the )?lesson/i.test(
+    question,
+  )
+}
+
+export function looksLikeOffTopic(question: string): boolean {
+  return /capital of france|how do i (make|build) a website|write (html|css|javascript)|who won the|recipe for|weather in/i.test(
     question,
   )
 }
@@ -50,28 +63,12 @@ const STOPWORDS = new Set([
   "just",
   "only",
   "also",
+  "like",
 ])
 
 function keywordHits(excerpt: string, question: string): string {
-  const lowerQuestion = question.toLowerCase()
-  if (/net revenue|net_revenue/.test(lowerQuestion)) {
-    const formula = excerpt.match(/net_revenue\s*=[\s\S]{0,280}/i)
-    if (formula) return simplify(formula[0])
-  }
-  if (/valid row|valid-row|invalid row/.test(lowerQuestion)) {
-    const rule = excerpt.match(/valid-row rule[\s\S]{0,420}|166 valid rows[\s\S]{0,220}/i)
-    if (rule) return simplify(rule[0])
-  }
-  if (/negative|units > 0|invalid row/.test(lowerQuestion)) {
-    const neg = excerpt.match(/Negative units[\s\S]{0,240}|NW-10055[\s\S]{0,200}/i)
-    if (neg) return simplify(neg[0])
-  }
-  if (/dataset|northwind|this file|extract/.test(lowerQuestion)) {
-    const data = excerpt.match(/\*\*Dataset:\*\*[\s\S]{0,280}|166 valid rows[\s\S]{0,180}/i)
-    if (data) return simplify(data[0])
-  }
-
-  const terms = lowerQuestion
+  const terms = question
+    .toLowerCase()
     .split(/[^a-z0-9₹]+/i)
     .filter((term) => term.length > 2 && !STOPWORDS.has(term))
   if (!terms.length) return ""
@@ -87,8 +84,6 @@ function keywordHits(excerpt: string, question: string): string {
         if (lower.includes(term)) score += 1
       }
       if (phrase && lower.includes(phrase)) score += 3
-      if (terms.includes("revenue") && /net_revenue\s*=/.test(lower)) score += 2
-      if (terms.includes("valid") && /units\s*>\s*0/.test(lower)) score += 2
       return { block: trimmed, score }
     })
     .filter((row) => row.score >= Math.min(2, terms.length) && row.block.length > 40)
@@ -97,20 +92,38 @@ function keywordHits(excerpt: string, question: string): string {
   return ""
 }
 
+function offTopicAnswer(question: string, lessonTitle: string): string {
+  if (/capital of france/i.test(question)) {
+    return `That is general knowledge, not something “${lessonTitle}” teaches. Paris is the capital of France. This lesson is about defensible totals from northwind_sales.csv.`
+  }
+  if (/website|html|css|javascript/i.test(question)) {
+    return `That is outside this lesson. Building a website is not taught in “${lessonTitle}”. Here we are learning to compute defensible net revenue from a dirty sales extract.`
+  }
+  return `That is outside the current lesson context. “${lessonTitle}” does not teach it. I can help with the current lesson: net revenue, valid rows, and reading the Northwind extract.`
+}
+
 export function groundedAnswer(input: AiAskInput): string {
   const { context, action, question, history } = input
   const excerpt = context.excerpt
   const lastUser = history.filter((turn) => turn.role === "user").at(-1)?.content ?? ""
   const lastAssistant = history.filter((turn) => turn.role === "assistant").at(-1)?.content ?? ""
   const combinedQuestion = `${question} ${lastUser}`.trim()
+  const followOn = `${question} ${lastAssistant}`.toLowerCase()
   const waitingForQuiz = /Reply in your own words|what is the valid-row rule/i.test(lastAssistant)
   const waitingForPractice = /Do not look up the expected result|Try the first item/i.test(lastAssistant)
+  const beginnerAsk = action === "ask" && /beginner|simpler|in simple|like i am|eli5/i.test(question)
   const resolvedAction =
     action === "ask" && question && waitingForQuiz
       ? "quiz"
       : action === "ask" && question && waitingForPractice
         ? "practice"
-        : action
+        : beginnerAsk
+          ? "explain"
+          : action
+
+  if (looksLikeJailbreak(combinedQuestion)) {
+    return `I stay with the current lesson: “${context.lessonTitle}” in ${context.courseTitle}. I will not pretend this lesson teaches a different course or ignore the authored context.`
+  }
 
   if (looksLikeAssignmentDump(combinedQuestion) || (context.lessonKind === "assignment" && /give me the (full |exact )?answer/i.test(combinedQuestion))) {
     return ASSIGNMENT_REFUSAL
@@ -118,6 +131,41 @@ export function groundedAnswer(input: AiAskInput): string {
 
   if (!context.authored) {
     return `This lesson is “${context.lessonTitle}” in ${context.courseTitle}. It is a thinner catalogue listing, not the authored Data Analytics path. I can only speak to the lesson title here — I will not invent extra modules, certificates, or live classes.`
+  }
+
+  if (looksLikeOffTopic(question)) {
+    return offTopicAnswer(question, context.lessonTitle)
+  }
+
+  if (/how many valid rows|valid rows (are there|in the extract|in this)/i.test(question)) {
+    return context.northwind
+      ? `The extract has ${context.northwind.rows} order lines. After the valid-row rule (units > 0, unit_price > 0, returned = no) you should count ${context.northwind.validRows} valid rows (${context.northwind.excludedRows} excluded).`
+      : `Use the valid-row rule in “${context.lessonTitle}”.`
+  }
+
+  if (/total valid net revenue|valid net revenue|headline (total|net revenue)/i.test(question)) {
+    return context.northwind
+      ? `Valid net revenue in this extract is ${context.northwind.netRevenueLabel}, using only the ${context.northwind.validRows} valid rows in ${context.northwind.window}.`
+      : `State the metric, the period, and the valid-row rule from this lesson.`
+  }
+
+  if (/why (are|do we|should we) (invalid rows )?(removed|remove)|why (can't|cannot) i include (negative|invalid)/i.test(question) || /why.*invalid rows/i.test(question)) {
+    return `Invalid rows would poison a total. Negative units, zero price, and returned = yes are not valid sales in this course. The valid-row rule keeps units > 0, unit_price > 0, and returned = no so net revenue is defensible. In this extract that leaves ${context.northwind?.validRows ?? 166} of ${context.northwind?.rows ?? 180} rows and ${context.northwind?.netRevenueLabel ?? "₹812,020"}.`
+  }
+
+  if (/descriptive|diagnostic|predictive/i.test(question)) {
+    const explain = section(excerpt, "Explain")
+    const hit = explain.match(/Three levels of claim[\s\S]*?does not teach\./i)
+    if (hit) return simplify(hit[0])
+    return "In this lesson: descriptive says what the extract shows (allowed); diagnostic explains a movement with care (allowed, with a limitation); predictive/ML forecasts are out of scope — this course does not teach a model."
+  }
+
+  if (/0\.9|discount|multiply by/i.test(followOn) && /0\.9|discount|multiply/i.test(question)) {
+    return "0.90 is (1 − discount_pct / 100) when discount_pct is 10. In the lesson, NW-10013 is 7 × 449 × 0.90 = 2828.7. A 0% discount (NW-10001) multiplies by 1.00."
+  }
+
+  if (/another (northwind )?example|give me another|show another/i.test(question)) {
+    return "Another line from this lesson: NW-10013 (Grocery, Filter Coffee) is units 7, unit_price 449, discount_pct 10 → 7 × 449 × 0.90 = 2828.7. Same formula as NW-10001; only the discount factor changes. Do not invent extra rows."
   }
 
   if (resolvedAction === "explain") {
@@ -180,6 +228,10 @@ export function groundedAnswer(input: AiAskInput): string {
     return "That is not something this lesson (or this Skylent pilot) claims. This course does not issue a certificate, run live classes, or guarantee a job. Stay with the lesson: defensible totals from the extract you have."
   }
 
+  if (/what is net revenue|net_revenue|net revenue formula/i.test(question)) {
+    return "In this lesson, net revenue on a valid sales row is:\n\nnet_revenue = units × unit_price × (1 − discount_pct / 100)\n\nNW-10001 is 1 × 2199 × 1.00 = 2199. Do not sum unit_price down the column. The extract total after the valid-row rule is ₹812,020."
+  }
+
   const hit = keywordHits(excerpt, question)
   if (hit) return hit.slice(0, 1400)
 
@@ -190,7 +242,10 @@ export function createLessonGroundedProvider(): AiProvider {
   return {
     id: "lesson-grounded",
     async complete() {
-      throw new Error("lesson-grounded uses groundedAnswer(), not complete()")
+      throw new Error("lesson-grounded uses answerLesson()")
+    },
+    async answerLesson(input) {
+      return groundedAnswer(input)
     },
   }
 }
