@@ -20,19 +20,78 @@ function looksLikeAssignmentDump(question: string): boolean {
   )
 }
 
+const STOPWORDS = new Set([
+  "what",
+  "whats",
+  "does",
+  "this",
+  "that",
+  "have",
+  "with",
+  "from",
+  "your",
+  "about",
+  "give",
+  "another",
+  "example",
+  "explain",
+  "into",
+  "than",
+  "then",
+  "them",
+  "they",
+  "when",
+  "where",
+  "which",
+  "will",
+  "would",
+  "could",
+  "should",
+  "just",
+  "only",
+  "also",
+])
+
 function keywordHits(excerpt: string, question: string): string {
-  const terms = question
-    .toLowerCase()
+  const lowerQuestion = question.toLowerCase()
+  if (/net revenue|net_revenue/.test(lowerQuestion)) {
+    const formula = excerpt.match(/net_revenue\s*=[\s\S]{0,280}/i)
+    if (formula) return simplify(formula[0])
+  }
+  if (/valid row|valid-row|invalid row/.test(lowerQuestion)) {
+    const rule = excerpt.match(/valid-row rule[\s\S]{0,420}|166 valid rows[\s\S]{0,220}/i)
+    if (rule) return simplify(rule[0])
+  }
+  if (/negative|units > 0|invalid row/.test(lowerQuestion)) {
+    const neg = excerpt.match(/Negative units[\s\S]{0,240}|NW-10055[\s\S]{0,200}/i)
+    if (neg) return simplify(neg[0])
+  }
+  if (/dataset|northwind|this file|extract/.test(lowerQuestion)) {
+    const data = excerpt.match(/\*\*Dataset:\*\*[\s\S]{0,280}|166 valid rows[\s\S]{0,180}/i)
+    if (data) return simplify(data[0])
+  }
+
+  const terms = lowerQuestion
     .split(/[^a-z0-9₹]+/i)
-    .filter((term) => term.length > 3)
+    .filter((term) => term.length > 2 && !STOPWORDS.has(term))
+  if (!terms.length) return ""
+  const phrase = terms.join(" ")
   const blocks = excerpt.split(/\n{2,}/)
   const scored = blocks
     .map((block) => {
-      const lower = block.toLowerCase()
-      const score = terms.reduce((sum, term) => (lower.includes(term) ? sum + 1 : sum), 0)
-      return { block: block.trim(), score }
+      const trimmed = block.trim()
+      if (trimmed.startsWith("|")) return { block: trimmed, score: 0 }
+      const lower = trimmed.toLowerCase()
+      let score = 0
+      for (const term of terms) {
+        if (lower.includes(term)) score += 1
+      }
+      if (phrase && lower.includes(phrase)) score += 3
+      if (terms.includes("revenue") && /net_revenue\s*=/.test(lower)) score += 2
+      if (terms.includes("valid") && /units\s*>\s*0/.test(lower)) score += 2
+      return { block: trimmed, score }
     })
-    .filter((row) => row.score > 0 && row.block.length > 40)
+    .filter((row) => row.score >= Math.min(2, terms.length) && row.block.length > 40)
     .sort((a, b) => b.score - a.score)
   if (scored[0]) return simplify(scored[0].block)
   return ""
@@ -117,12 +176,12 @@ export function groundedAnswer(input: AiAskInput): string {
     return `I only have the title “${context.lessonTitle}” for this lesson. Ask about that, or open Data Analytics lesson 1 for the authored Northwind teaching.`
   }
 
-  const hit = keywordHits(excerpt, question)
-  if (hit) return hit.slice(0, 1400)
-
-  if (/outside|certificate|live class|instructor|placement|job guarantee/i.test(question)) {
+  if (/certificate|live class|instructor|placement|job guarantee/i.test(question)) {
     return "That is not something this lesson (or this Skylent pilot) claims. This course does not issue a certificate, run live classes, or guarantee a job. Stay with the lesson: defensible totals from the extract you have."
   }
+
+  const hit = keywordHits(excerpt, question)
+  if (hit) return hit.slice(0, 1400)
 
   return `That is not stated as a taught fact in “${context.lessonTitle}”. I can help with: ${context.concepts.join(", ") || context.objective || "the current lesson text"}. Ask about one of those, or use Explain simpler.`
 }
