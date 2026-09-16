@@ -4,13 +4,15 @@ import rateLimit, { ipKeyGenerator } from "express-rate-limit"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import {
   executeLabOperation,
+  executeNorthwindSql,
   getLabWorkspace,
   getSavedLabWork,
   LabServiceError,
   listLabWork,
   saveLabWork,
 } from "../lib/skylent-labs/service.js"
-import { VALID_NET_REVENUE } from "../lib/skylent-labs/catalog.js"
+import { SQL_OPERATION, VALID_NET_REVENUE } from "../lib/skylent-labs/catalog.js"
+import { MAX_SQL_QUERY_CHARS } from "../lib/skylent-labs/sql/limits.js"
 
 export const labsRouter = Router()
 
@@ -34,10 +36,22 @@ const runSchema = z.object({
   lessonKey: lessonKeyParam,
 })
 
-const saveSchema = z.object({
-  operation: z.literal(VALID_NET_REVENUE),
+const sqlRunSchema = z.object({
+  query: z.string().max(MAX_SQL_QUERY_CHARS),
   lessonKey: lessonKeyParam,
 })
+
+const saveSchema = z.discriminatedUnion("operation", [
+  z.object({
+    operation: z.literal(VALID_NET_REVENUE),
+    lessonKey: lessonKeyParam,
+  }),
+  z.object({
+    operation: z.literal(SQL_OPERATION),
+    query: z.string().max(MAX_SQL_QUERY_CHARS),
+    lessonKey: lessonKeyParam,
+  }),
+])
 
 const labRateLimit = rateLimit({
   windowMs: Number(process.env.SKYLENT_LABS_RATE_LIMIT_WINDOW_MS ?? 15 * 60 * 1000),
@@ -75,6 +89,14 @@ function sendLabError(res: import("express").Response, error: unknown) {
       res.status(400).json({ error: error.message })
       return
     }
+    if (error.code === "query_expensive") {
+      res.status(400).json({ error: error.message })
+      return
+    }
+    if (error.code === "query_error") {
+      res.status(400).json({ error: error.message })
+      return
+    }
   }
   console.error("Skylent Labs failed:", error instanceof Error ? `${error.name}: ${error.message}` : "unknown")
   res.status(500).json({ error: "Skylent Labs could not finish that request. Try again." })
@@ -105,6 +127,41 @@ labsRouter.get("/:courseSlug/:labSlug", requireAuth, async (req: AuthenticatedRe
     sendLabError(res, error)
   }
 })
+
+labsRouter.post(
+  "/:courseSlug/:labSlug/sql/run",
+  requireAuth,
+  requireCsrf,
+  labRateLimit,
+  async (req: AuthenticatedRequest, res) => {
+    const params = parseLabParams(req)
+    if (!params) {
+      res.status(400).json({ error: "Invalid lab" })
+      return
+    }
+    const body = sqlRunSchema.safeParse(req.body ?? {})
+    if (!body.success) {
+      const tooLarge = body.error.issues.some((issue) => issue.code === "too_big" && issue.path.includes("query"))
+      res.status(400).json({
+        error: tooLarge
+          ? "That query is too large or expensive to run. Try a smaller query."
+          : "Invalid request",
+      })
+      return
+    }
+    try {
+      const data = await executeNorthwindSql({
+        userId: req.auth!.user.id,
+        courseSlug: params.courseSlug,
+        labSlug: params.labSlug,
+        query: body.data.query,
+      })
+      res.json({ data })
+    } catch (error) {
+      sendLabError(res, error)
+    }
+  },
+)
 
 labsRouter.post(
   "/:courseSlug/:labSlug/run",
@@ -159,6 +216,7 @@ labsRouter.post(
         labSlug: params.labSlug,
         operation: body.data.operation,
         lessonKey: body.data.lessonKey,
+        query: body.data.operation === SQL_OPERATION ? body.data.query : undefined,
       })
       res.status(201).json({ data })
     } catch (error) {

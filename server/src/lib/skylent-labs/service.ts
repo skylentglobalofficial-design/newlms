@@ -1,13 +1,23 @@
 import { prisma } from "../prisma.js"
 import { findCourseBySlug, findNodeByLessonKey, resolveCourseEnrollment } from "../lms.js"
 import { DA_AI_META } from "../skylent-ai/authored.js"
-import { findLab, NORTHWIND_SALES_FILE, operationMeta, workspaceShell } from "./catalog.js"
+import { findLab, NORTHWIND_SALES_FILE, operationMeta, sqlWorkspaceMeta, workspaceShell } from "./catalog.js"
 import { buildDatasetPreview, runLabOperation } from "./engine.js"
-import type { LabLessonContext, LabRunResult, SavedLabWork, SavedLabWorkSummary } from "./types.js"
+import { runNorthwindSql, sqlPreview } from "./sql/engine.js"
+import { learnerSqlMessage, NorthwindSqlError } from "./sql/errors.js"
+import { SQL_OPERATION } from "./sql/limits.js"
+import type {
+  LabGuidedRunResult,
+  LabLessonContext,
+  LabRunResult,
+  LabSqlRunResult,
+  SavedLabWork,
+  SavedLabWorkSummary,
+} from "./types.js"
 
 export class LabServiceError extends Error {
   constructor(
-    readonly code: "not_found" | "forbidden" | "invalid_operation" | "invalid_request",
+    readonly code: "not_found" | "forbidden" | "invalid_operation" | "invalid_request" | "query_error" | "query_expensive",
     message: string,
   ) {
     super(message)
@@ -47,12 +57,33 @@ async function resolveLessonContext(
   }
 }
 
-function asRunResult(value: unknown): LabRunResult | null {
+function asGuidedResult(value: unknown): LabGuidedRunResult | null {
   if (!value || typeof value !== "object") return null
-  const row = value as Partial<LabRunResult>
+  const row = value as Partial<LabGuidedRunResult>
   if (row.operation !== "valid_net_revenue") return null
   if (typeof row.validRows !== "number" || typeof row.netRevenue !== "number") return null
-  return row as LabRunResult
+  return row as LabGuidedRunResult
+}
+
+function asSqlResult(value: unknown): LabSqlRunResult | null {
+  if (!value || typeof value !== "object") return null
+  const row = value as Partial<LabSqlRunResult>
+  if (row.operation !== "sql") return null
+  if (typeof row.query !== "string") return null
+  if (!Array.isArray(row.columns) || !Array.isArray(row.rows)) return null
+  return row as LabSqlRunResult
+}
+
+function asRunResult(value: unknown): LabRunResult | null {
+  return asGuidedResult(value) ?? asSqlResult(value)
+}
+
+function queryFromInput(input: unknown, result: LabRunResult | null): string | null {
+  if (input && typeof input === "object" && "query" in input && typeof input.query === "string") {
+    return input.query
+  }
+  if (result && result.operation === "sql") return result.query
+  return null
 }
 
 function toSummary(row: {
@@ -64,15 +95,34 @@ function toSummary(row: {
   result: unknown
 }): SavedLabWorkSummary {
   const result = asRunResult(row.result)
+  const sql = result && result.operation === "sql" ? result : null
+  const guided = result && result.operation === "valid_net_revenue" ? result : null
   return {
     id: row.id,
     title: row.title,
     dataset: row.dataset,
     operation: row.operation,
     operationLabel: result?.operationLabel ?? operationMeta(row.operation)?.label ?? row.operation,
-    validRows: result?.validRows ?? null,
-    netRevenueLabel: result?.netRevenueLabel ?? null,
+    validRows: guided?.validRows ?? null,
+    netRevenueLabel: guided?.netRevenueLabel ?? null,
+    rowCount: sql?.rowCount ?? null,
     createdAt: row.createdAt.toISOString(),
+  }
+}
+
+function throwSqlServiceError(error: unknown): never {
+  if (error instanceof LabServiceError) throw error
+  const mapped = learnerSqlMessage(error)
+  if (mapped.code === "expensive") {
+    throw new LabServiceError("query_expensive", mapped.message)
+  }
+  throw new LabServiceError("query_error", mapped.message)
+}
+
+function compactSqlResult(result: LabSqlRunResult): LabSqlRunResult {
+  return {
+    ...result,
+    rows: sqlPreview(result).rows,
   }
 }
 
@@ -84,9 +134,14 @@ export async function getLabWorkspace(options: {
 }) {
   const { course } = await requireLabAccess(options.userId, options.courseSlug, options.labSlug)
   const lesson = await resolveLessonContext(course, options.lessonKey)
+  const dataset = buildDatasetPreview()
   return {
     ...workspaceShell(lesson),
-    dataset: buildDatasetPreview(),
+    dataset,
+    sql: {
+      ...sqlWorkspaceMeta(),
+      columns: dataset.columns,
+    },
   }
 }
 
@@ -107,14 +162,70 @@ export async function executeLabOperation(options: {
   }
 }
 
+export async function executeNorthwindSql(options: {
+  userId: string
+  courseSlug: string
+  labSlug: string
+  query: string
+}) {
+  await requireLabAccess(options.userId, options.courseSlug, options.labSlug)
+  try {
+    return await runNorthwindSql(options.query)
+  } catch (error) {
+    throwSqlServiceError(error)
+  }
+}
+
 export async function saveLabWork(options: {
   userId: string
   courseSlug: string
   labSlug: string
   operation: string
   lessonKey?: string
+  query?: string
 }) {
   await requireLabAccess(options.userId, options.courseSlug, options.labSlug)
+
+  if (options.operation === SQL_OPERATION) {
+    let result: LabSqlRunResult
+    try {
+      result = await runNorthwindSql(options.query ?? "")
+    } catch (error) {
+      throwSqlServiceError(error)
+    }
+    const stored = compactSqlResult(result)
+    const created = await prisma.labWork.create({
+      data: {
+        userId: options.userId,
+        courseSlug: options.courseSlug,
+        labSlug: options.labSlug,
+        dataset: NORTHWIND_SALES_FILE,
+        operation: SQL_OPERATION,
+        title: "Northwind SQL",
+        lessonKey: options.lessonKey || null,
+        input: {
+          operation: SQL_OPERATION,
+          lessonKey: options.lessonKey || null,
+          dataset: NORTHWIND_SALES_FILE,
+          query: result.query,
+          table: result.table,
+        },
+        result: {
+          ...stored,
+          preview: sqlPreview(result),
+        },
+      },
+    })
+    return {
+      ...toSummary({ ...created, result: stored }),
+      courseSlug: created.courseSlug,
+      labSlug: created.labSlug,
+      lessonKey: created.lessonKey,
+      query: result.query,
+      result,
+    } satisfies SavedLabWork
+  }
+
   const result = await executeLabOperation(options)
   const meta = operationMeta(options.operation)
   const title = "Northwind revenue check"
@@ -143,10 +254,12 @@ export async function saveLabWork(options: {
     operationLabel: meta?.label ?? result.operationLabel,
     validRows: result.validRows,
     netRevenueLabel: result.netRevenueLabel,
+    rowCount: null,
     createdAt: created.createdAt.toISOString(),
     courseSlug: created.courseSlug,
     labSlug: created.labSlug,
     lessonKey: created.lessonKey,
+    query: null,
     result,
   } satisfies SavedLabWork
 }
@@ -181,13 +294,36 @@ export async function getSavedLabWork(options: {
     },
   })
   if (!row) throw new LabServiceError("not_found", "Saved work not found")
-  const result = asRunResult(row.result)
+
+  if (row.operation === SQL_OPERATION) {
+    const stored = asSqlResult(row.result)
+    const query = queryFromInput(row.input, stored)
+    if (!query) throw new LabServiceError("not_found", "Saved work not found")
+    let result: LabSqlRunResult
+    try {
+      result = await runNorthwindSql(query)
+    } catch {
+      if (!stored) throw new LabServiceError("not_found", "Saved work not found")
+      result = stored
+    }
+    return {
+      ...toSummary({ ...row, result }),
+      courseSlug: row.courseSlug,
+      labSlug: row.labSlug,
+      lessonKey: row.lessonKey,
+      query,
+      result,
+    } satisfies SavedLabWork
+  }
+
+  const result = asGuidedResult(row.result)
   if (!result) throw new LabServiceError("not_found", "Saved work not found")
   return {
     ...toSummary(row),
     courseSlug: row.courseSlug,
     labSlug: row.labSlug,
     lessonKey: row.lessonKey,
+    query: null,
     result,
   } satisfies SavedLabWork
 }
