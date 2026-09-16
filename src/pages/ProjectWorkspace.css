@@ -90,6 +90,17 @@
   gap: 10px;
 }
 
+.proj-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.proj-grid .os-btn {
+  width: auto;
+  align-self: start;
+}
+
 .proj-attach select {
   width: 100%;
   min-height: 40px;

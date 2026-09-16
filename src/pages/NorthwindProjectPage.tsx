@@ -64,11 +64,13 @@ export default function NorthwindProjectPage() {
     [project, selectedKey],
   )
 
-  function applyProject(next: ProjectWorkspace) {
+  function applyProject(next: ProjectWorkspace, syncReflection = false) {
     setProject(next)
-    setFinding(next.reflection.finding)
-    setWhyItMatters(next.reflection.whyItMatters)
-    setRecommendation(next.reflection.recommendation)
+    if (syncReflection) {
+      setFinding(next.reflection.finding)
+      setWhyItMatters(next.reflection.whyItMatters)
+      setRecommendation(next.reflection.recommendation)
+    }
   }
 
   async function onMarkComplete(task: ProjectTaskView) {
@@ -108,7 +110,7 @@ export default function NorthwindProjectPage() {
     setError(null)
     setNotice(null)
     try {
-      applyProject(await saveProject(project.id, { finding, whyItMatters, recommendation }))
+      applyProject(await saveProject(project.id, { finding, whyItMatters, recommendation }), true)
       setNotice("Project saved.")
     } catch (err) {
       setError(workspaceErrorMessage(err) || "Could not save this project.")
@@ -217,6 +219,7 @@ export default function NorthwindProjectPage() {
                 <h2>{selected.title}</h2>
                 <p>{selected.summary}</p>
                 <p className="lab-note">{selected.evidenceHint}</p>
+                <div className="proj-actions">
                 {selected.openLabHref ? (
                   <Link className="os-btn os-btn-primary" to={selected.openLabHref}>
                     Open in Lab
@@ -232,6 +235,7 @@ export default function NorthwindProjectPage() {
                     {selected.status === "complete" ? "Complete" : busy === "task" ? "Saving…" : "Mark complete"}
                   </button>
                 ) : null}
+                </div>
 
                 {selected.completion === "lab_work" || selected.key === "validate_data" ? (
                   <div className="proj-attach">
