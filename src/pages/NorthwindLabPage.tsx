@@ -368,6 +368,12 @@ export default function NorthwindLabPage() {
               </ul>
             </div>
             <p>Valid-row rule: {workspace.dataset.validRowRule.join("; ")}.</p>
+            {mode === "sql" ? (
+              <>
+                <p className="os-eyebrow">Dataset sample</p>
+                <DatasetSample workspace={workspace} />
+              </>
+            ) : null}
             <ul className="lab-meta-list">
               {workspace.dataset.qualityNotes.map((note) => (
                 <li key={note}>{note}</li>
