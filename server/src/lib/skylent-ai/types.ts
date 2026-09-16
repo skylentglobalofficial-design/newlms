@@ -34,6 +34,17 @@ export type LessonAiContext = {
     weakestMonth: string
     sql: string
   } | null
+  harbor: {
+    filename: string
+    company: string
+    stores: number
+    interviews: number
+    weekendExceptions: number
+    unlogged: number
+    constraint: string
+    note: string
+  } | null
+  caseLabel: string | null
   excerpt: string
 }
 
@@ -74,4 +85,6 @@ export type AiAskResult = {
   answer: string
   basedOn: string
   provider: string
+  related: string | null
+  caseLabel: string | null
 }

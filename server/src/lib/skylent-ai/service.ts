@@ -1,7 +1,7 @@
 import { buildLessonAiContext } from "./authored.js"
 import { createLessonGroundedProvider } from "./grounded.js"
 import { createOpenAiCompatibleProvider, readOpenAiCompatibleConfig } from "./openai-compatible.js"
-import { buildProviderMessages } from "./prompts.js"
+import { buildProviderMessages, pickRelated } from "./prompts.js"
 import type { AiAskInput, AiAskResult, AiProvider, ChatTurn, LessonAiContext } from "./types.js"
 
 const DEFAULT_TIMEOUT_MS = 30_000
@@ -66,6 +66,8 @@ export async function completeLessonAsk(input: AiAskInput, provider: AiProvider)
     answer: result.answer,
     basedOn: input.context.lessonTitle,
     provider: provider.id,
+    related: pickRelated(input.context, input.question, input.action),
+    caseLabel: input.context.caseLabel,
   }
 }
 

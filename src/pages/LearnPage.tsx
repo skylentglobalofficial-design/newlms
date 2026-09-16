@@ -39,6 +39,7 @@ function SkylentAiFallback({ compact }: { compact: boolean }) {
     return (
       <section className="os-ai is-compact os-ai-fallback" aria-hidden="true">
         <p className="os-eyebrow">Skylent AI</p>
+        <p className="os-ai-idle">Ask about this lesson</p>
       </section>
     )
   }

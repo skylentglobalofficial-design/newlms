@@ -64,6 +64,44 @@
   margin-top: 6px;
 }
 
+.os-ai-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.os-ai-meta .os-ai-based {
+  margin-top: 0;
+}
+
+.os-ai-chip {
+  margin: 0;
+  padding: 2px 8px;
+  border: 1px solid rgba(21, 23, 26, 0.12);
+  border-radius: 6px;
+  background: #f7f4ec;
+  color: #15171a;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.os-ai-related,
+.os-ai-try {
+  margin: 8px 0 0;
+  color: #5c6168;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.os-ai-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .os-ai-thread {
   display: grid;
   gap: 10px;
@@ -130,8 +168,24 @@
   font: 14px/1.45 var(--font-body);
 }
 
+.os-ai.is-compact:not(.is-open) {
+  max-height: none;
+  overflow: hidden;
+}
+
+.os-ai.is-compact.is-open {
+  max-height: min(52dvh, 440px, calc(100dvh - var(--os-ai-dock-bottom, 12px) - 16px));
+}
+
 .os-ai.is-compact:has(.os-ai-thread) {
-  height: min(48dvh, 420px, calc(100dvh - var(--os-ai-dock-bottom, 12px) - 16px));
+  height: min(52dvh, 440px, calc(100dvh - var(--os-ai-dock-bottom, 12px) - 16px));
+}
+
+.os-ai-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 0;
 }
 
 .os-ai.is-compact .os-ai-input {
