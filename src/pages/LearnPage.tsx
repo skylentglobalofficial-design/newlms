@@ -30,6 +30,7 @@ import {
   updateAssignment,
 } from '../lib/lms-api'
 import { workspaceErrorMessage } from '../lib/http'
+import { northwindLabPath } from '../lib/labs-api'
 import './LearnWorkspace.css'
 
 const SkylentAI = lazy(() => import('../components/lms/SkylentAI'))
@@ -408,6 +409,14 @@ export default function LearnPage() {
                 <p className={selectedState.complete ? 'os-status is-done' : 'os-status'}>
                   {selectedState.locked ? 'Locked until the previous lesson is complete.' : selectedState.complete ? 'Completed' : 'In progress'}
                 </p>
+                {readyCourse.slug === 'data-analytics' && !selectedState.locked ? (
+                  <p className="os-lab-entry">
+                    <Link className="os-btn os-btn-ghost" to={northwindLabPath(selectedLesson.id)}>
+                      Open Lab
+                    </Link>
+                    <span>Practice this here with northwind_sales.csv.</span>
+                  </p>
+                ) : null}
                 </div>
                 {isAuthoredCourse(readyCourse.slug) && !selectedState.locked ? (
                   <LessonContextPanel lessonId={selectedLesson.id} />
