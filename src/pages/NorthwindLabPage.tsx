@@ -476,8 +476,7 @@ export default function NorthwindLabPage() {
               <>
                 <p className="lab-sql-status">
                   {sqlResult.rowCount} row{sqlResult.rowCount === 1 ? "" : "s"} returned
-                  {sqlResult.truncated ? ` · showing first ${sqlResult.rowCount}` : ""}
-                  {sqlResult.durationMs != null ? ` · ${sqlResult.durationMs} ms` : ""}
+                  {sqlResult.truncated ? " · showing the first 500 rows" : ""}
                 </p>
                 <div className="lab-table-wrap lab-sql-table">
                   <table className="lab-table">
