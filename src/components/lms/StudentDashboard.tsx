@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
+import { CourseThumb, NorthwindWorkspace } from '../product/ProductLanguage'
 import { computeModuleProgress, isLessonUnlocked, lessonTypeLabel, type LmsCourseView } from './lms-utils'
 import LessonIcon from './LessonIcon'
 
@@ -8,6 +9,7 @@ type Accent = { primary: string; secondary: string; subtle: string; subtleStrong
 
 export function LearningWorkspacePanel({
   courseTitle,
+  courseSlug,
   programName,
   progressPct,
   completedCount,
@@ -24,6 +26,7 @@ export function LearningWorkspacePanel({
   started,
 }: {
   courseTitle: string
+  courseSlug?: string
   programName: string | null
   progressPct: number
   completedCount: number
@@ -42,38 +45,43 @@ export function LearningWorkspacePanel({
 }) {
   return (
     <section className="dash-continue" id="student-learning">
-      <p className="os-eyebrow">Continue learning</p>
-      <h2>{courseTitle}</h2>
-      {programName ? (
-        <p className="dash-continue-meta">Opened through {programName}</p>
-      ) : null}
-      <div className="os-progress">
-        <div className="os-progress-meta">
-          <span>{completedCount} of {totalLessons} lessons</span>
-          <span>{progressPct}%</span>
+      <div className="dash-continue-grid">
+        <div>
+          <p className="os-eyebrow">Continue learning</p>
+          <h2>{courseTitle}</h2>
+          {programName ? (
+            <p className="dash-continue-meta">Opened through {programName}</p>
+          ) : null}
+          <div className="os-progress">
+            <div className="os-progress-meta">
+              <span>{completedCount} of {totalLessons} lessons</span>
+              <span>{progressPct}%</span>
+            </div>
+            <div className="os-progress-bar" aria-hidden="true">
+              <span style={{ width: `${progressPct}%` }} />
+            </div>
+          </div>
+          <div className="dash-continue-lesson">
+            <p className="os-eyebrow">Current lesson</p>
+            <h3>{lessonTitle}</h3>
+            <p className="dash-continue-meta">
+              Module {moduleIndex} of {moduleTotal} · {moduleTitle}
+              {lessonType ? ` · ${lessonType}` : ''}
+              {lessonDuration ? ` · ${lessonDuration}` : ''}
+            </p>
+          </div>
+          {nextLessonTitle ? (
+            <p className="dash-continue-meta" style={{ marginTop: 12 }}>Next: {nextLessonTitle}</p>
+          ) : (
+            <p className="dash-continue-meta" style={{ marginTop: 12 }}>Finish this lesson, then continue.</p>
+          )}
+          <div className="os-actions">
+            <Link className="os-btn os-btn-primary" to={lessonId ? `/learn/${learnSlug}/${lessonId}` : `/learn/${learnSlug}`}>
+              {started ? 'Continue' : 'Start'}
+            </Link>
+          </div>
         </div>
-        <div className="os-progress-bar" aria-hidden="true">
-          <span style={{ width: `${progressPct}%` }} />
-        </div>
-      </div>
-      <div className="dash-continue-lesson">
-        <p className="os-eyebrow">Current lesson</p>
-        <h3>{lessonTitle}</h3>
-        <p className="dash-continue-meta">
-          Module {moduleIndex} of {moduleTotal} · {moduleTitle}
-          {lessonType ? ` · ${lessonType}` : ''}
-          {lessonDuration ? ` · ${lessonDuration}` : ''}
-        </p>
-      </div>
-      {nextLessonTitle ? (
-        <p className="dash-continue-meta" style={{ marginTop: 12 }}>Next: {nextLessonTitle}</p>
-      ) : (
-        <p className="dash-continue-meta" style={{ marginTop: 12 }}>Finish this lesson, then continue.</p>
-      )}
-      <div className="os-actions">
-        <Link className="os-btn os-btn-primary" to={lessonId ? `/learn/${learnSlug}/${lessonId}` : `/learn/${learnSlug}`}>
-          {started ? 'Continue' : 'Start'}
-        </Link>
+        {courseSlug === 'data-analytics' ? <NorthwindWorkspace compact /> : <CourseThumb authored={false} />}
       </div>
     </section>
   )

@@ -214,6 +214,10 @@ export default function LessonDocument({
       }
 
       const labeled = labeledLine(line)
+      if (labeled && (labeled.key === 'objective' || labeled.key === 'why this matters')) {
+        i += 1
+        continue
+      }
       if (labeled && CALLOUT_LABELS[labeled.key]) {
         out.push(
           <aside key={`${keyPrefix}-c-${i}`} className={`lx-callout ${labeled.key === 'why this matters' ? 'lx-callout-why' : ''}`}>
@@ -316,7 +320,9 @@ export default function LessonDocument({
       </div>,
     )
   }
-  leading.filter((item) => item.kind === 'callout').forEach((item, index) => {
+  leading
+    .filter((item) => item.kind === 'callout' && item.key !== 'objective' && item.key !== 'why this matters')
+    .forEach((item, index) => {
     blocks.push(
       <aside key={`lead-c-${index}`} className={`lx-callout ${item.key === 'why this matters' ? 'lx-callout-why' : ''}`}>
         <p className="lx-callout-label">{CALLOUT_LABELS[item.key]}</p>

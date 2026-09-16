@@ -5,6 +5,9 @@ import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
 import { getLmsRoleAccent, getLmsTabAccent } from '../role-themes'
 import CurriculumRail from '../components/lms/CurriculumRail'
 import { LessonContentView, LessonNavigation } from '../components/lms/LessonContent'
+import { LessonContextPanel } from '../components/product/ProductLanguage'
+import { getDaLessonMeta } from '../content/data-analytics/lessons'
+import { isAuthoredCourse } from '../lib/live-intents'
 import type { QuizQuestion } from '../components/lms/AssessmentSurface'
 import { getDaQuiz } from '../content/data-analytics/quizzes'
 import {
@@ -351,7 +354,7 @@ export default function LearnPage() {
         </header>
 
         <div className="os-stage">
-          <div className="os-article">
+          <div className="os-workspace">
             {allComplete ? (
               <div className="os-banner">
                 <p className="os-eyebrow">Course complete</p>
@@ -373,7 +376,14 @@ export default function LearnPage() {
                   <span>{currentModule?.title ?? 'Current module'}</span>
                 </p>
                 <h1>{selectedLesson.title}</h1>
-                <p className="os-lead">{lessonObjective(selectedLesson)}</p>
+                {isAuthoredCourse(readyCourse.slug) && !selectedState.locked ? (
+                  <LessonContextPanel lessonId={selectedLesson.id} />
+                ) : (
+                  <p className="os-lead">
+                    {(isAuthoredCourse(readyCourse.slug) ? getDaLessonMeta(selectedLesson.id)?.objective : null)
+                      ?? lessonObjective(selectedLesson)}
+                  </p>
+                )}
                 <p className={selectedState.complete ? 'os-status is-done' : 'os-status'}>
                   {selectedState.locked ? 'Locked until the previous lesson is complete.' : selectedState.complete ? 'Completed' : 'In progress'}
                 </p>

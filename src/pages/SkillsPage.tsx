@@ -1,6 +1,9 @@
 import { useMemo } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
+import { CourseThumb, LearnFlow, PathwayThumb } from "../components/product/ProductLanguage"
+import { courses } from "../data"
+import { courseLessonStats } from "../lib/catalog-maturity"
 import {
   LEARN_INTENTS,
   capabilitiesForIntent,
@@ -11,12 +14,48 @@ import {
 } from "../lib/live-intents"
 import "./SkillsPage.css"
 
-const NEXT_STEPS = [
-  { label: "Choose", detail: "Pick the skill you want to build." },
-  { label: "Learn", detail: "Open the matching course." },
-  { label: "Practise", detail: "Try the ideas on real tasks." },
-  { label: "Keep the work", detail: "Save what you produce as you go." },
-] as const
+const NEXT_FLOW = [
+  { title: "Choose", copy: "Pick the skill you want to build.", kind: "learn" as const },
+  { title: "Learn", copy: "Open the matching course.", kind: "practice" as const },
+  { title: "Practise", copy: "Try the ideas on real tasks.", kind: "build" as const },
+  { title: "Keep", copy: "Save what you produce as you go.", kind: "keep" as const },
+]
+
+function IntentVisual({ id }: { id: LearnIntentId }) {
+  if (id === "data") {
+    return (
+      <span className="sk-intent-visual is-data" aria-hidden="true">
+        <span style={{ height: "42%" }} />
+        <span style={{ height: "70%" }} />
+        <span style={{ height: "55%" }} />
+        <span style={{ height: "88%" }} />
+      </span>
+    )
+  }
+  if (id === "software") {
+    return (
+      <span className="sk-intent-visual is-software" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </span>
+    )
+  }
+  if (id === "ai") {
+    return (
+      <span className="sk-intent-visual is-ai" aria-hidden="true">
+        <b />
+        <b />
+      </span>
+    )
+  }
+  return (
+    <span className="sk-intent-visual is-product" aria-hidden="true">
+      <em />
+      <em />
+    </span>
+  )
+}
 
 function IntentPicker({
   value,
@@ -61,9 +100,7 @@ function IntentPicker({
               }
             }}
           >
-            <span className="sk-intent-mark" aria-hidden="true">
-              {selected ? "●" : "○"}
-            </span>
+            <IntentVisual id={item.id} />
             <span className="sk-intent-copy">
               <span className="sk-intent-label">{item.label}</span>
               <span className="sk-intent-question">{item.question}</span>
@@ -77,6 +114,8 @@ function IntentPicker({
 
 function MatchCard({ match, featured }: { match: LiveMatch; featured: boolean }) {
   const kindLabel = match.kind === "programme" ? "Programme" : "Course"
+  const course = match.kind === "course" ? courses.find((item) => item.slug === match.slug) : null
+  const stats = course ? courseLessonStats(course) : null
   const honesty =
     match.depth === "authored"
       ? null
@@ -85,20 +124,42 @@ function MatchCard({ match, featured }: { match: LiveMatch; featured: boolean })
         : "Catalogue listing — thinner than Data Analytics."
 
   return (
-    <article className={featured ? "sk-match sk-match-featured" : "sk-match"}>
-      <div className="sk-match-body">
-        <p className="sk-match-meta">
+    <article className={featured ? "sk-product is-featured" : "sk-product"}>
+      {match.kind === "course" ? (
+        <CourseThumb authored={match.depth === "authored"} />
+      ) : (
+        <PathwayThumb />
+      )}
+      <div className="sk-product-body">
+        <p className="sk-product-meta">
           <span>{kindLabel}</span>
           <span aria-hidden="true">·</span>
           <span>{match.note}</span>
+          {match.duration ? (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{match.duration}</span>
+            </>
+          ) : null}
         </p>
         <h3 className="sk-match-title">{match.title}</h3>
         <p className="sk-match-summary">{match.summary}</p>
+        <ul className="sk-tags">
+          <li>{kindLabel}</li>
+          {course ? <li>{course.category}</li> : null}
+          {course ? <li>{course.level}</li> : null}
+          {match.depth === "authored" ? <li>Northwind project</li> : <li>{match.note}</li>}
+        </ul>
+        {stats && match.depth === "authored" ? (
+          <p className="sk-product-stats">
+            {stats.lessonCount} lessons · {stats.quizCount} quizzes · {stats.assignmentCount} assignments
+          </p>
+        ) : null}
         {honesty ? <p className="sk-match-honesty">{honesty}</p> : null}
+        <Link className={featured ? "sk-btn sk-btn-primary" : "sk-btn sk-btn-ghost"} to={match.to}>
+          {match.actionLabel}
+        </Link>
       </div>
-      <Link className={featured ? "sk-btn sk-btn-primary" : "sk-btn sk-btn-ghost"} to={match.to}>
-        {match.actionLabel}
-      </Link>
     </article>
   )
 }
@@ -118,17 +179,12 @@ function IntentResults({ intentId }: { intentId: LearnIntentId }) {
   return (
     <div className="sk-results" id="your-direction">
       <section className="sk-explain" aria-labelledby="selected-intent-heading">
-        <p className="sk-label">What you want to do</p>
         <h2 id="selected-intent-heading">{intent?.label}</h2>
         <p className="sk-lead">{intent?.question}</p>
-
-        <p className="sk-label sk-label-follow">What that means you need to learn</p>
         {capabilities.length > 0 ? (
           <>
             <p className="sk-cap-intro">
-              {fromAuthored
-                ? "Build confidence with:"
-                : "The catalogue lists these capabilities:"}
+              {fromAuthored ? "Build confidence with:" : "The catalogue lists these capabilities:"}
             </p>
             <ul className="sk-caps">
               {capabilities.map((item) => (
@@ -149,7 +205,6 @@ function IntentResults({ intentId }: { intentId: LearnIntentId }) {
       </section>
 
       <section className="sk-learning" aria-labelledby="matching-learning-heading">
-        <p className="sk-label">Matching learning</p>
         <h2 id="matching-learning-heading">
           {ready.length > 0 ? "Start with this course" : "What is live for this path"}
         </h2>
@@ -202,7 +257,6 @@ export default function SkillsPage() {
       <div className="skills-p4">
         <section className="sk-hero">
           <div className="sk-rail">
-            <p className="sk-label">Learn</p>
             <h1>What do you want to be able to do?</h1>
             <p className="sk-hero-lead">
               Start with the skill you want to build. We'll show you the learning that actually matches it.
@@ -235,16 +289,10 @@ export default function SkillsPage() {
 
         <section className="sk-next" aria-labelledby="next-heading">
           <div className="sk-rail">
-            <p className="sk-label">What happens next</p>
-            <h2 id="next-heading">Choose → Learn → Practise → Keep the work</h2>
-            <ol className="sk-next-row">
-              {NEXT_STEPS.map((step) => (
-                <li key={step.label}>
-                  <strong>{step.label}</strong>
-                  <p>{step.detail}</p>
-                </li>
-              ))}
-            </ol>
+            <h2 id="next-heading">Choose. Learn. Practise. Keep the work.</h2>
+            <div className="sk-flow-wrap">
+              <LearnFlow steps={NEXT_FLOW} />
+            </div>
           </div>
         </section>
       </div>
