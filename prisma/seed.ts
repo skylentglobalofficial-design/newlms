@@ -244,6 +244,17 @@ async function seedProgramCourses() {
 }
 
 async function main() {
+  const isProduction = process.env.NODE_ENV === "production"
+  const allowDestructive = process.env.SKYLENT_ALLOW_DESTRUCTIVE_SEED === "1"
+  if (isProduction && !allowDestructive) {
+    const existingCourses = await prisma.course.count()
+    if (existingCourses > 0) {
+      throw new Error(
+        "Refusing production seed: catalog already exists. Re-seeding deletes curriculum nodes and learner progress (CASCADE). For a first-time empty database, this guard does not apply. To rebuild catalog on purpose, set SKYLENT_ALLOW_DESTRUCTIVE_SEED=1.",
+      )
+    }
+  }
+
   for (const program of programs) await seedProgram(program)
   for (const course of courses) await seedCourse(course)
   console.log(`Seeded ${programs.length} programs and ${courses.length} courses.`)

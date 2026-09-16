@@ -12,10 +12,15 @@ export function readProviderTimeoutMs(): number {
   return Math.min(Math.trunc(raw), 120_000)
 }
 
+function lessonGroundedAllowed(): boolean {
+  if (process.env.NODE_ENV !== "production") return true
+  return process.env.SKYLENT_AI_ALLOW_GROUNDED === "1"
+}
+
 export function isAiConfigured(): boolean {
   const provider = (process.env.SKYLENT_AI_PROVIDER ?? "").trim().toLowerCase()
   if (provider === "off" || provider === "none") return false
-  if (provider === "lesson-grounded") return true
+  if (provider === "lesson-grounded") return lessonGroundedAllowed()
   return Boolean(process.env.SKYLENT_AI_API_KEY?.trim())
 }
 
@@ -24,6 +29,7 @@ export function resolveAiProvider(): AiProvider | null {
   if (!isAiConfigured()) return null
   const provider = (process.env.SKYLENT_AI_PROVIDER ?? "").trim().toLowerCase()
   if (provider === "lesson-grounded") {
+    if (!lessonGroundedAllowed()) return null
     return createLessonGroundedProvider()
   }
   const config = readOpenAiCompatibleConfig()

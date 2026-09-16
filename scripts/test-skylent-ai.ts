@@ -338,8 +338,23 @@ async function main() {
   withEnv({ SKYLENT_AI_PROVIDER: "off", SKYLENT_AI_API_KEY: "sk-test" }, () => {
     assert(!isAiConfigured(), "off should win over a key")
   })
-  withEnv({ SKYLENT_AI_PROVIDER: "lesson-grounded", SKYLENT_AI_API_KEY: undefined }, () => {
+  withEnv({ NODE_ENV: "test", SKYLENT_AI_PROVIDER: "lesson-grounded", SKYLENT_AI_API_KEY: undefined }, () => {
     assert(isAiConfigured(), "lesson-grounded should be available without a vendor key")
+  })
+  withEnv({
+    NODE_ENV: "production",
+    SKYLENT_AI_PROVIDER: "lesson-grounded",
+    SKYLENT_AI_API_KEY: undefined,
+    SKYLENT_AI_ALLOW_GROUNDED: undefined,
+  }, () => {
+    assert(!isAiConfigured(), "lesson-grounded must not ship as the production provider")
+  })
+  withEnv({
+    NODE_ENV: "production",
+    SKYLENT_AI_PROVIDER: "lesson-grounded",
+    SKYLENT_AI_ALLOW_GROUNDED: "1",
+  }, () => {
+    assert(isAiConfigured(), "explicit grounded override is allowed")
   })
   withEnv({ SKYLENT_AI_PROVIDER: "openai-compatible", SKYLENT_AI_API_KEY: undefined }, () => {
     assert(!isAiConfigured(), "openai-compatible without a key must stay unavailable")

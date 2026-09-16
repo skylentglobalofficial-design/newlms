@@ -1,5 +1,5 @@
 import cors from "cors"
-import express from "express"
+import express, { type NextFunction, type Request, type Response } from "express"
 import rateLimit from "express-rate-limit"
 
 export const JSON_BODY_LIMIT = process.env.JSON_BODY_LIMIT ?? "512kb"
@@ -57,4 +57,15 @@ export const authCredentialsRateLimit = rateLimit({
 
 export function jsonBodyParser() {
   return express.json({ limit: JSON_BODY_LIMIT })
+}
+
+export function securityHeaders(_request: Request, response: Response, next: NextFunction) {
+  response.setHeader("X-Content-Type-Options", "nosniff")
+  response.setHeader("X-Frame-Options", "DENY")
+  response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin")
+  response.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+  if (process.env.NODE_ENV === "production") {
+    response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+  }
+  next()
 }
