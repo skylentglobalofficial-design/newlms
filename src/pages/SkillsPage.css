@@ -1,4 +1,4 @@
-/* Phase 4 — Learn / Skills decision experience */
+/* Skills — intent discovery as a product surface */
 
 .skills-p4 {
   background: #f7f4ec;
@@ -7,21 +7,9 @@
 }
 
 .sk-rail {
-  width: min(1120px, calc(100% - 2 * var(--gutter)));
+  width: min(1180px, calc(100% - 2 * var(--gutter)));
   margin-inline: auto;
   min-width: 0;
-}
-
-.sk-label {
-  margin: 0;
-  color: #5c6168;
-  font: 11px/1.2 var(--font-mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.sk-label-follow {
-  margin-top: 28px;
 }
 
 .sk-fine {
@@ -33,11 +21,11 @@
 }
 
 .sk-hero {
-  padding: 56px 0 36px;
+  padding: 48px 0 28px;
 }
 
 .sk-hero h1 {
-  margin: 14px 0 0;
+  margin: 0;
   max-width: 14em;
   font-family: var(--font-display);
   font-size: clamp(32px, 4.6vw, 48px);
@@ -57,64 +45,107 @@
 .sk-intents {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
   margin-top: 28px;
-  max-width: 720px;
 }
 
 .sk-intent {
   display: grid;
-  grid-template-columns: 18px minmax(0, 1fr);
-  gap: 10px;
-  align-items: start;
+  gap: 12px;
   min-height: 52px;
-  padding: 12px 14px;
+  padding: 14px;
   text-align: left;
   color: #15171a;
-  background: #fffdf8;
-  border: 1px solid #e8e2d6;
-  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  box-shadow: 0 10px 24px rgba(21, 23, 26, 0.04);
   cursor: pointer;
   font-family: var(--font-body);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
-.sk-intent-mark {
-  margin-top: 3px;
-  font-size: 11px;
-  line-height: 1;
-  color: #5c6168;
+.sk-intent-visual {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 44px;
+  padding: 8px 10px;
+  background: #f7f4ec;
+  border-radius: 10px;
+}
+
+.sk-intent-visual.is-data span {
+  flex: 1;
+  min-width: 0;
+  background: #4f46e5;
+  border-radius: 3px 3px 0 0;
+}
+
+.sk-intent-visual.is-software {
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.sk-intent-visual.is-software span {
+  display: block;
+  height: 6px;
+  background: #d8d1c4;
+  border-radius: 100px;
+}
+
+.sk-intent-visual.is-ai {
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.sk-intent-visual.is-ai b {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4f46e5;
+}
+
+.sk-intent-visual.is-ai b:last-child {
+  width: 16px;
+  height: 16px;
+  background: #c7d2fe;
+}
+
+.sk-intent-visual.is-product {
+  align-items: stretch;
+  justify-content: space-between;
+}
+
+.sk-intent-visual.is-product em {
+  flex: 1;
+  border-radius: 6px;
+  background: #e8e2d6;
 }
 
 .sk-intent-copy {
   display: grid;
-  gap: 2px;
+  gap: 4px;
   min-width: 0;
 }
 
 .sk-intent-label {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 650;
   line-height: 1.3;
 }
 
 .sk-intent-question {
   color: #5c6168;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.4;
 }
 
 .sk-intent.is-selected {
-  background: #ffffff;
   border-color: #4f46e5;
-  box-shadow: 0 0 0 1px #4f46e5;
-}
-
-.sk-intent.is-selected .sk-intent-mark {
-  color: #4f46e5;
-}
-
-.sk-intent.is-selected .sk-intent-label {
-  font-weight: 700;
+  box-shadow: 0 0 0 1px #4f46e5, 0 12px 28px rgba(79, 70, 229, 0.12);
 }
 
 .sk-intent:hover {
@@ -133,29 +164,27 @@
 .sk-idle-title {
   margin: 0;
   max-width: 18em;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: clamp(22px, 2.6vw, 28px);
-  font-weight: 600;
+  font-weight: 650;
   letter-spacing: -0.03em;
   line-height: 1.2;
 }
 
 .sk-results {
   display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: clamp(28px, 4vw, 56px);
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(28px, 4vw, 48px);
   align-items: start;
-  padding-top: 8px;
-  border-top: 1px solid #e8e2d6;
 }
 
 .sk-explain h2,
 .sk-learning h2,
 .sk-next h2 {
-  margin: 10px 0 0;
-  font-family: var(--font-display);
+  margin: 0;
+  font-family: var(--font-body);
   font-size: clamp(22px, 2.4vw, 28px);
-  font-weight: 600;
+  font-weight: 650;
   letter-spacing: -0.03em;
   line-height: 1.2;
 }
@@ -168,7 +197,7 @@
 }
 
 .sk-cap-intro {
-  margin: 10px 0 0;
+  margin: 16px 0 0;
   color: #15171a;
   font-size: 14px;
   font-weight: 600;
@@ -183,22 +212,11 @@
 }
 
 .sk-caps li {
-  position: relative;
-  padding-left: 14px;
-  color: #15171a;
+  padding: 12px 14px;
+  background: #ffffff;
+  border-radius: 12px;
   font-size: 14px;
-  line-height: 1.5;
-}
-
-.sk-caps li::before {
-  content: "";
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #4f46e5;
-  position: absolute;
-  left: 0;
-  top: 0.55em;
+  line-height: 1.45;
 }
 
 .sk-learning-note {
@@ -207,43 +225,51 @@
 
 .sk-match-list {
   display: grid;
-  gap: 12px;
+  gap: 14px;
   margin-top: 18px;
 }
 
-.sk-match {
+.sk-product {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 14px;
   min-width: 0;
-  padding: 16px 0;
-  border-top: 1px solid #e8e2d6;
+  padding: 14px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(21, 23, 26, 0.05);
 }
 
-.sk-match-featured {
-  padding: 18px 0 16px;
+.sk-product.is-featured {
+  grid-template-columns: 148px minmax(0, 1fr);
+  box-shadow: 0 14px 36px rgba(21, 23, 26, 0.08);
 }
 
-.sk-match-meta {
+.sk-product-body {
+  min-width: 0;
+}
+
+.sk-product-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin: 0 0 6px;
-  color: #4f46e5;
-  font: 11px/1.3 var(--font-mono);
+  color: #5c6168;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .sk-match-title {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 650;
   letter-spacing: -0.02em;
   line-height: 1.25;
 }
 
-.sk-match-featured .sk-match-title {
-  font-size: clamp(22px, 2.4vw, 28px);
+.sk-product.is-featured .sk-match-title {
+  font-size: 24px;
 }
 
 .sk-match-summary {
@@ -251,6 +277,32 @@
   color: #5c6168;
   font-size: 14px;
   line-height: 1.55;
+}
+
+.sk-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sk-tags li {
+  max-width: 100%;
+  padding: 5px 8px;
+  background: #f7f4ec;
+  border-radius: 100px;
+  color: #15171a;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.sk-product-stats {
+  margin: 10px 0 0;
+  color: #15171a;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .sk-match-honesty {
@@ -265,9 +317,10 @@
   align-items: center;
   justify-content: center;
   min-height: 44px;
+  margin-top: 14px;
   padding: 0 16px;
   width: fit-content;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
@@ -317,9 +370,8 @@
 
 .sk-empty-title {
   margin: 0;
-  font-family: var(--font-display);
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 650;
 }
 
 .sk-empty-copy {
@@ -331,65 +383,30 @@
 }
 
 .sk-next {
-  padding: 28px 0 72px;
-  border-top: 1px solid #e8e2d6;
+  padding: 12px 0 72px;
 }
 
-.sk-next-row {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0 24px;
-  list-style: none;
-  margin: 20px 0 0;
-  padding: 0;
-}
-
-.sk-next-row li {
-  min-width: 0;
-  padding-top: 16px;
-  border-top: 1px solid #e8e2d6;
-}
-
-.sk-next-row strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.sk-next-row p {
-  margin: 6px 0 0;
-  color: #5c6168;
-  font-size: 13px;
-  line-height: 1.5;
+.sk-flow-wrap {
+  margin-top: 20px;
 }
 
 @media (min-width: 1024px) {
   .sk-intents {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-
-  .sk-match {
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: end;
-  }
 }
 
 @media (max-width: 900px) {
-  .sk-results {
+  .sk-results,
+  .sk-product,
+  .sk-product.is-featured {
     grid-template-columns: 1fr;
-  }
-
-  .sk-next-row {
-    grid-template-columns: 1fr 1fr;
-    gap: 16px 20px;
   }
 }
 
 @media (max-width: 430px) {
   .sk-hero {
-    padding: 40px 0 28px;
+    padding: 36px 0 24px;
   }
 
   .sk-hero h1 {
@@ -410,17 +427,14 @@
     width: 100%;
   }
 
-  .sk-next-row {
-    grid-template-columns: 1fr;
-  }
-
   .sk-next {
     padding-bottom: 56px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sk-btn {
+  .sk-btn,
+  .sk-intent {
     transition: none;
   }
 }

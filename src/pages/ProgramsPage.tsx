@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
+import { PathwayThumb } from "../components/product/ProductLanguage"
 import { programs } from "../data"
 import { programmePublicView } from "../lib/catalog-maturity"
 import "./Catalog.css"
@@ -23,7 +24,6 @@ export default function ProgramsPage() {
       <div className="cat-page">
         <section className="cat-hero">
           <div className="cat-rail">
-            <p className="cat-label">Programmes</p>
             <h1>Longer pathways, shown honestly.</h1>
             <p className="cat-lead">
               A programme is meant to connect courses into a longer path. Today, enrolment opens the linked LMS course — it does not create a separate taught syllabus.
@@ -47,22 +47,22 @@ export default function ProgramsPage() {
               <>
                 {open.length > 0 ? (
                   <div className="cat-group">
-                    <p className="cat-label">Open listings</p>
+                    <h2>Open listings</h2>
                     <p className="cat-fine">These can enrol you into a linked course. They are not fully authored programmes.</p>
-                    <div className="cat-list">
+                    <div className="cat-grid">
                       {open.map((view) => (
-                        <ProgrammeRow key={view.slug} view={view} />
+                        <ProgrammeCard key={view.slug} view={view} />
                       ))}
                     </div>
                   </div>
                 ) : null}
                 {later.length > 0 ? (
                   <div className="cat-group">
-                    <p className="cat-label">Coming later</p>
+                    <h2>Coming later</h2>
                     <p className="cat-fine">These are not open for enrolment. There is no live batch behind them.</p>
-                    <div className="cat-list">
+                    <div className="cat-grid">
                       {later.map((view) => (
-                        <ProgrammeRow key={view.slug} view={view} />
+                        <ProgrammeCard key={view.slug} view={view} />
                       ))}
                     </div>
                   </div>
@@ -76,19 +76,20 @@ export default function ProgramsPage() {
   )
 }
 
-function ProgrammeRow({ view }: { view: ReturnType<typeof programmePublicView> }) {
+function ProgrammeCard({ view }: { view: ReturnType<typeof programmePublicView> }) {
   const taught = view.linked[0]?.title
   return (
-    <Link className="cat-row" to={`/programs/${view.slug}`}>
-      <div>
+    <Link className="cat-card-link" to={`/programs/${view.slug}`}>
+      <PathwayThumb />
+      <div className="cat-card-copy">
         <span className="cat-mark">{view.maturityLabel}</span>
         <h3>{view.title}</h3>
         <p>{view.summary}</p>
         <div className="cat-meta">
           {taught ? <span>Linked course: {taught}</span> : <span>No linked LMS course yet</span>}
         </div>
+        <span className="cat-btn cat-btn-ghost cat-card-cta">View programme</span>
       </div>
-      <span className="cat-btn cat-btn-ghost">View programme</span>
     </Link>
   )
 }

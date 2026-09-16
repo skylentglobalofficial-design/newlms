@@ -5,6 +5,8 @@ import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
 import { getLmsRoleAccent, getLmsTabAccent } from '../role-themes'
 import CurriculumRail from '../components/lms/CurriculumRail'
 import { LessonContentView, LessonNavigation } from '../components/lms/LessonContent'
+import { LessonContextPanel } from '../components/product/ProductLanguage'
+import { isAuthoredCourse } from '../lib/live-intents'
 import type { QuizQuestion } from '../components/lms/AssessmentSurface'
 import { getDaQuiz } from '../content/data-analytics/quizzes'
 import {
@@ -351,7 +353,7 @@ export default function LearnPage() {
         </header>
 
         <div className="os-stage">
-          <div className="os-article">
+          <div className="os-workspace">
             {allComplete ? (
               <div className="os-banner">
                 <p className="os-eyebrow">Course complete</p>
@@ -377,6 +379,9 @@ export default function LearnPage() {
                 <p className={selectedState.complete ? 'os-status is-done' : 'os-status'}>
                   {selectedState.locked ? 'Locked until the previous lesson is complete.' : selectedState.complete ? 'Completed' : 'In progress'}
                 </p>
+                {isAuthoredCourse(readyCourse.slug) && !selectedState.locked ? (
+                  <LessonContextPanel lessonId={selectedLesson.id} />
+                ) : null}
 
                 <div className="os-paper">
                   {selectedState.locked ? (

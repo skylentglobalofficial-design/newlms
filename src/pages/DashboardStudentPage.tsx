@@ -17,6 +17,7 @@ import {
 import { useLmsDashboard } from '../hooks/useLms'
 import { enrollInCourse, fetchLmsEnrollments, type ApiEnrollmentSummary } from '../lib/lms-api'
 import EnrollmentEvidence from '../components/learner/EnrollmentEvidence'
+import { NorthwindWorkspace } from '../components/product/ProductLanguage'
 import { workspaceErrorMessage } from '../lib/http'
 import { courses } from '../data'
 import { AUTHORED_COURSE_SLUG } from '../lib/live-intents'
@@ -30,6 +31,12 @@ const NAV_ITEMS: AuthNavItem[] = [
 
 const accent = getRoleAccent('student')
 const recommendedCourse = courses.find((course) => course.slug === AUTHORED_COURSE_SLUG) ?? courses[0]
+
+function greetingName(firstName: string) {
+  const hour = new Date().getHours()
+  const hello = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
+  return `${hello}, ${firstName}`
+}
 
 function NavIcon({ id }: { id: string }) {
   const stroke = 'currentColor'
@@ -137,39 +144,41 @@ export default function DashboardStudentPage() {
       <AuthDashboardShell {...shell}>
         <div className="dash-empty" id="student-overview">
           <div className="dash-welcome">
-            <p className="os-eyebrow">Your learning</p>
-            <h1>Welcome, {firstName}</h1>
+            <h1>{greetingName(firstName)}</h1>
             <p>
               You are signed in. Enrol in a live course to open a workspace with lessons, practice, and a place to keep the work.
             </p>
           </div>
           {recommendedCourse ? (
-            <div className="dash-empty-card">
-              <p className="os-eyebrow">Ready to start</p>
-              <h2>{recommendedCourse.title}</h2>
-              <p>{recommendedCourse.desc}</p>
-              <p className="dash-continue-meta">
-                {recommendedCourse.duration} · {recommendedCourse.lessons} lessons · {recommendedCourse.level}
-              </p>
-              <div className="os-actions">
-                <button
-                  type="button"
-                  className="os-btn os-btn-primary"
-                  disabled={enrolling}
-                  onClick={() => {
-                    setEnrolling(true)
-                    setEnrollError(null)
-                    void enrollInCourse(recommendedCourse.slug)
-                      .then(() => reload({ silent: true }))
-                      .catch((err) => setEnrollError(workspaceErrorMessage(err)))
-                      .finally(() => setEnrolling(false))
-                  }}
-                >
-                  {enrolling ? 'Enrolling…' : `Start ${recommendedCourse.title}`}
-                </button>
-                <Link className="os-btn os-btn-ghost" to="/courses">Browse courses</Link>
+            <div className="dash-empty-grid">
+              <div className="dash-empty-card">
+                <p className="os-eyebrow">Ready to start</p>
+                <h2>{recommendedCourse.title}</h2>
+                <p>{recommendedCourse.desc}</p>
+                <p className="dash-continue-meta">
+                  {recommendedCourse.duration} · {recommendedCourse.lessons} lessons · {recommendedCourse.level}
+                </p>
+                <div className="os-actions">
+                  <button
+                    type="button"
+                    className="os-btn os-btn-primary"
+                    disabled={enrolling}
+                    onClick={() => {
+                      setEnrolling(true)
+                      setEnrollError(null)
+                      void enrollInCourse(recommendedCourse.slug)
+                        .then(() => reload({ silent: true }))
+                        .catch((err) => setEnrollError(workspaceErrorMessage(err)))
+                        .finally(() => setEnrolling(false))
+                    }}
+                  >
+                    {enrolling ? 'Enrolling…' : `Start ${recommendedCourse.title}`}
+                  </button>
+                  <Link className="os-btn os-btn-ghost" to="/courses">Browse courses</Link>
+                </div>
+                {enrollError ? <p className="os-error">{enrollError}</p> : null}
               </div>
-              {enrollError ? <p className="os-error">{enrollError}</p> : null}
+              <NorthwindWorkspace compact />
             </div>
           ) : (
             <div className="os-actions">
@@ -206,8 +215,7 @@ export default function DashboardStudentPage() {
     <AuthDashboardShell {...shell}>
       <div id="student-overview">
         <div className="dash-welcome">
-          <p className="os-eyebrow">Your learning</p>
-          <h1>Welcome back, {firstName}</h1>
+          <h1>{greetingName(firstName)}</h1>
           <p>
             {resume?.lessonTitle
               ? `Continue ${course.title} from ${resume.lessonTitle}.`
@@ -220,6 +228,7 @@ export default function DashboardStudentPage() {
             <>
               <LearningWorkspacePanel
                 courseTitle={course.title}
+                courseSlug={course.slug}
                 programName={viaProgram}
                 progressPct={progressPct}
                 completedCount={workspace.progress.completedCount}

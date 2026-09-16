@@ -369,12 +369,22 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 24px 24px 48px;
+  padding: 20px 24px 48px;
 }
 
-.os-article {
-  width: min(720px, 100%);
+.os-workspace {
+  width: min(1080px, 100%);
   margin: 0 auto;
+}
+
+.os-workspace h1 {
+  margin: 10px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(26px, 3.4vw, 34px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.18;
+  overflow-wrap: anywhere;
 }
 
 .os-kicker {
@@ -405,16 +415,6 @@
   font-weight: 600;
 }
 
-.os-article h1 {
-  margin: 10px 0 0;
-  font-family: var(--font-display);
-  font-size: clamp(26px, 3.4vw, 34px);
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  line-height: 1.18;
-  overflow-wrap: anywhere;
-}
-
 .os-lead {
   margin: 10px 0 0;
   max-width: 42em;
@@ -443,7 +443,11 @@
 }
 
 .os-paper {
-  margin-top: 20px;
+  margin-top: 16px;
+  padding: 22px 24px 24px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 28px rgba(21, 23, 26, 0.05);
 }
 
 .os-note {
@@ -1130,14 +1134,25 @@
 }
 
 .dash-continue {
-  padding: 20px 22px 22px;
+  padding: 8px;
+}
+
+.dash-continue-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(240px, 0.95fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.dash-continue-grid > div:first-child {
+  padding: 16px 14px 18px;
 }
 
 .dash-continue h2 {
   margin: 6px 0 0;
-  font-family: var(--font-display);
+  font-family: var(--font-body);
   font-size: clamp(22px, 2.4vw, 28px);
-  font-weight: 600;
+  font-weight: 650;
   letter-spacing: -0.03em;
   line-height: 1.2;
 }
@@ -1166,6 +1181,7 @@
 
 .dash-card {
   margin-bottom: 14px;
+  background: #ffffff;
 }
 
 .dash-card h2 {
@@ -1235,7 +1251,19 @@
 
 .dash-empty,
 .dash-error {
-  max-width: 640px;
+  max-width: 1080px;
+}
+
+.dash-empty-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.9fr);
+  gap: 16px;
+  align-items: start;
+  margin-top: 18px;
+}
+
+.dash-empty-card {
+  margin-top: 0;
 }
 
 .dash-empty h1,
@@ -1244,10 +1272,6 @@
   font-family: var(--font-display);
   font-size: 28px;
   font-weight: 600;
-}
-
-.dash-empty-card {
-  margin-top: 18px;
 }
 
 .dash-empty-card h2 {
@@ -1275,6 +1299,11 @@
 @media (max-width: 900px) {
   .os-shell {
     overflow: visible;
+  }
+
+  .dash-continue-grid,
+  .dash-empty-grid {
+    grid-template-columns: 1fr;
   }
 
   .os-main {
@@ -1347,7 +1376,7 @@
     width: 100%;
   }
 
-  .os-article h1,
+  .os-workspace h1,
   .dash-welcome h1 {
     font-size: 26px;
   }
@@ -1358,7 +1387,8 @@
   .dash-module,
   .lx-footer,
   .lx-question,
-  .as-block {
+  .as-block,
+  .os-paper {
     padding-left: 14px;
     padding-right: 14px;
   }

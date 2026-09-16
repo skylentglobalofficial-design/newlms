@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
+import { PathwayTrack } from "../components/product/ProductLanguage"
 import { programs } from "../data"
 import { isProgramEnrollable } from "../lib/catalog-api"
 import {
@@ -54,114 +55,29 @@ export default function ProgramPage() {
     if (enrollable || !catalog.loading) setEnrollOpen(true)
   }
 
+  const pathSteps = PROGRAMME_INTENDED_STEPS.map((step) => ({
+    label: step,
+    live: LIVE_PROGRAMME_STEPS.has(step),
+    note: LIVE_PROGRAMME_STEPS.has(step) ? "Available now as linked learning" : "Not taught yet",
+  }))
+
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
         <section className="cat-hero">
-          <div className="cat-rail">
-            <Link className="cat-back" to="/programs">← Programmes</Link>
-            <p className="cat-label">Programme</p>
-            <h1>{view.title}</h1>
-            <p className="cat-lead">{view.summary}</p>
-            <div className="cat-meta">
-              <span className="cat-mark">{view.maturityLabel}</span>
-            </div>
-            <p className="cat-note">{view.honesty}</p>
-            <div className="cat-actions">
-              {comingLater ? (
-                <span className="cat-btn cat-btn-ghost" aria-disabled="true">Coming later</span>
-              ) : (
-                <button
-                  type="button"
-                  className="cat-btn cat-btn-primary"
-                  disabled={catalog.loading && !enrollable}
-                  onClick={openEnrol}
-                >
-                  {cta}
-                </button>
-              )}
-              {view.linked[0] ? (
-                <Link className="cat-btn cat-btn-ghost" to={view.linked[0].to}>
-                  View {view.linked[0].title}
-                </Link>
-              ) : (
-                <Link className="cat-btn cat-btn-ghost" to="/courses">Explore courses</Link>
-              )}
-            </div>
-            <p className="cat-fine">{afterEnrol}</p>
-          </div>
-        </section>
-
-        <section className="cat-section">
-          <div className="cat-rail cat-split">
-            <div className="cat-main">
-              <section className="cat-card" aria-labelledby="intended-heading">
-                <p className="cat-label">How a programme is meant to work</p>
-                <h2 id="intended-heading">A longer path than a single course</h2>
-                <p className="cat-fine">
-                  The intended model is programme → term → specialisation → module → case study → project → assessment → career outcome. That structure is not fully implemented here. Enrolment does not create a separate taught syllabus beyond the linked course.
-                </p>
-                <ul className="cat-path" aria-label="Intended programme path">
-                  {PROGRAMME_INTENDED_STEPS.map((step) => (
-                    <li key={step} className={LIVE_PROGRAMME_STEPS.has(step) ? "is-live" : undefined}>
-                      {step}
-                      {LIVE_PROGRAMME_STEPS.has(step) ? " · available as linked learning" : " · not taught yet"}
-                    </li>
-                  ))}
-                </ul>
-              </section>
-
-              <section className="cat-card" aria-labelledby="linked-heading">
-                <p className="cat-label">What is actually taught</p>
-                <h2 id="linked-heading">Linked learning</h2>
-                {view.linked.length === 0 ? (
-                  <p className="cat-fine">No LMS course is linked yet.</p>
+          <div className="cat-rail cat-hero-split">
+            <div>
+              <Link className="cat-back" to="/programs">← Programmes</Link>
+              <h1>{view.title}</h1>
+              <p className="cat-lead">{view.summary}</p>
+              <div className="cat-meta">
+                <span className="cat-mark">{view.maturityLabel}</span>
+              </div>
+              <p className="cat-note">{view.honesty}</p>
+              <div className="cat-actions">
+                {comingLater ? (
+                  <span className="cat-btn cat-btn-ghost" aria-disabled="true">Coming later</span>
                 ) : (
-                  view.linked.map((item) => (
-                    <Link className="cat-link" key={item.slug} to={item.to}>
-                      <div>
-                        <span className={item.authored ? "cat-mark cat-mark-ready" : "cat-mark"}>{item.maturityLabel}</span>
-                        <h3>{item.title}</h3>
-                        <p>{item.authored ? "Authored course in Skylent OS." : "Thinner catalogue listing in the LMS."}</p>
-                      </div>
-                      <span className="cat-btn cat-btn-ghost">View course</span>
-                    </Link>
-                  ))
-                )}
-              </section>
-
-              {view.taughtOutcomes.length > 0 ? (
-                <section className="cat-card" aria-labelledby="now-heading">
-                  <p className="cat-label">What you will learn now</p>
-                  <h2 id="now-heading">From the linked course</h2>
-                  <p className="cat-fine">These capabilities come from the live linked course, not from brochure modules that are not taught yet.</p>
-                  <ul className="cat-bullets">
-                    {view.taughtOutcomes.map((item) => (
-                      <li key={item}>{item}</li>
-                    ))}
-                  </ul>
-                </section>
-              ) : null}
-
-              <section className="cat-card" aria-labelledby="keep-heading">
-                <p className="cat-label">After enrolment</p>
-                <h2 id="keep-heading">What you keep</h2>
-                <p className="cat-fine">{afterEnrol}</p>
-                <p className="cat-fine">
-                  Learning evidence can be carried into Career OS. Career OS is a workspace for your profile and work — not a placement service.
-                </p>
-              </section>
-            </div>
-
-            <aside className="cat-access">
-              <p className="cat-label">Access</p>
-              {view.listedPrice > 0 && !comingLater ? (
-                <p className="cat-price">₹{view.listedPrice.toLocaleString("en-IN")}</p>
-              ) : null}
-              <p className="cat-fine">Listed price. Payment is not collected here yet.</p>
-              <p className="cat-fine">Certificate: not issued in this pilot.</p>
-              {!comingLater ? (
-                <div className="cat-actions">
                   <button
                     type="button"
                     className="cat-btn cat-btn-primary"
@@ -170,11 +86,80 @@ export default function ProgramPage() {
                   >
                     {cta}
                   </button>
-                </div>
-              ) : (
-                <p className="cat-fine">Enrolment is not open.</p>
-              )}
-            </aside>
+                )}
+                {view.linked[0] ? (
+                  <Link className="cat-btn cat-btn-ghost" to={view.linked[0].to}>
+                    View {view.linked[0].title}
+                  </Link>
+                ) : (
+                  <Link className="cat-btn cat-btn-ghost" to="/courses">Explore courses</Link>
+                )}
+              </div>
+              <p className="cat-fine">{afterEnrol}</p>
+              <aside className="cat-access">
+                <p className="cat-label">Access</p>
+                {view.listedPrice > 0 && !comingLater ? (
+                  <p className="cat-price">₹{view.listedPrice.toLocaleString("en-IN")}</p>
+                ) : null}
+                <p className="cat-fine">Listed price. Payment is not collected here yet.</p>
+                <p className="cat-fine">Certificate: not issued in this pilot.</p>
+              </aside>
+            </div>
+            <div className="cat-path-panel">
+              <p className="cat-label">Intended pathway</p>
+              <h2>What a programme is meant to be</h2>
+              <p className="cat-fine cat-path-copy">
+                That structure is not fully implemented here. Enrolment does not create a separate taught syllabus beyond the linked course.
+              </p>
+              <PathwayTrack steps={pathSteps} />
+            </div>
+          </div>
+        </section>
+
+        <section className="cat-band">
+          <div className="cat-rail">
+            <h2>What is actually taught</h2>
+            <p className="cat-fine">Linked LMS learning — not a brochure syllabus.</p>
+            {view.linked.length === 0 ? (
+              <p className="cat-fine">No LMS course is linked yet.</p>
+            ) : (
+              view.linked.map((item) => (
+                <Link className="cat-link" key={item.slug} to={item.to}>
+                  <div>
+                    <span className={item.authored ? "cat-mark cat-mark-ready" : "cat-mark"}>{item.maturityLabel}</span>
+                    <h3>{item.title}</h3>
+                    <p>{item.authored ? "Authored course in Skylent OS." : "Thinner catalogue listing in the LMS."}</p>
+                  </div>
+                  <span className="cat-btn cat-btn-ghost">View course</span>
+                </Link>
+              ))
+            )}
+          </div>
+        </section>
+
+        {view.taughtOutcomes.length > 0 ? (
+          <section className="cat-section">
+            <div className="cat-rail">
+              <h2>What you will learn now</h2>
+              <p className="cat-fine">These capabilities come from the live linked course, not from brochure modules that are not taught yet.</p>
+              <div className="cat-caps">
+                {view.taughtOutcomes.map((item) => (
+                  <article className="cat-cap" key={item}>
+                    <strong>{item}</strong>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        <section className="cat-band">
+          <div className="cat-rail">
+            <h2>After enrolment</h2>
+            <p className="cat-fine">{afterEnrol}</p>
+            <p className="cat-fine">
+              Learning evidence can be carried into Career OS. Career OS is a workspace for your profile and work — not a placement service.
+            </p>
           </div>
         </section>
 

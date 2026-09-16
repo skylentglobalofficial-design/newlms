@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
+import { CourseThumb } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { coursePublicView } from "../lib/catalog-maturity"
 import "./Catalog.css"
@@ -33,10 +34,9 @@ export default function CoursesPage() {
       <div className="cat-page">
         <section className="cat-hero">
           <div className="cat-rail">
-            <p className="cat-label">Courses</p>
             <h1>Focused units you can finish.</h1>
             <p className="cat-lead">
-              A course is a unit of lessons and practice. Data Analytics is ready to start. Other rows are thinner catalogue listings.
+              A course is a unit of lessons and practice. Data Analytics is ready to start. Other listings are thinner catalogue items.
             </p>
             <Link className="cat-text-link" to="/programs">Looking for a longer pathway? See programmes</Link>
             <input
@@ -70,21 +70,21 @@ export default function CoursesPage() {
               <>
                 {ready.length > 0 ? (
                   <div className="cat-group">
-                    <p className="cat-label">Ready to start</p>
-                    <div className="cat-list">
+                    <h2>Ready to start</h2>
+                    <div className="cat-grid">
                       {ready.map((view) => (
-                        <CourseRow key={view.slug} view={view} />
+                        <CourseCard key={view.slug} view={view} featured />
                       ))}
                     </div>
                   </div>
                 ) : null}
                 {listings.length > 0 ? (
                   <div className="cat-group">
-                    <p className="cat-label">Catalogue listings</p>
+                    <h2>Catalogue listings</h2>
                     <p className="cat-fine">These exist in the catalogue and LMS, but they are not as complete as Data Analytics.</p>
-                    <div className="cat-list">
+                    <div className="cat-grid">
                       {listings.map((view) => (
-                        <CourseRow key={view.slug} view={view} />
+                        <CourseCard key={view.slug} view={view} />
                       ))}
                     </div>
                   </div>
@@ -98,27 +98,32 @@ export default function CoursesPage() {
   )
 }
 
-function CourseRow({ view }: { view: ReturnType<typeof coursePublicView> }) {
+function CourseCard({ view, featured = false }: { view: ReturnType<typeof coursePublicView>; featured?: boolean }) {
   const stats = view.showLiveCurriculum
-    ? `${view.stats.lessonCount} lessons · ${view.delivery}`
-    : `${view.stats.lessonCount} outline lessons`
+    ? `${view.stats.lessonCount} lessons · ${view.stats.quizCount} quizzes · ${view.stats.assignmentCount} assignments`
+    : `${view.stats.lessonCount} outline items`
+  const output = view.showLiveCurriculum ? "Northwind commercial review" : "Outline only"
 
   return (
-    <Link className="cat-row" to={`/courses/${view.slug}`}>
-      <div>
+    <Link className={featured ? "cat-card-link is-featured" : "cat-card-link"} to={`/courses/${view.slug}`}>
+      <CourseThumb authored={view.showLiveCurriculum} />
+      <div className="cat-card-copy">
         <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
           {view.maturityLabel}
         </span>
         <h3>{view.title}</h3>
         <p>{view.summary}</p>
         <div className="cat-meta">
+          <span>{view.course.category}</span>
           <span>{view.course.level}</span>
+          <span>{view.showLiveCurriculum ? view.duration : "Duration not finished"}</span>
           <span>{stats}</span>
+          <span>{output}</span>
         </div>
+        <span className={view.maturity === "ready" ? "cat-btn cat-btn-primary cat-card-cta" : "cat-btn cat-btn-ghost cat-card-cta"}>
+          {view.ctaLabel}
+        </span>
       </div>
-      <span className={view.maturity === "ready" ? "cat-btn cat-btn-primary" : "cat-btn cat-btn-ghost"}>
-        {view.ctaLabel}
-      </span>
     </Link>
   )
 }
