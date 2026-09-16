@@ -10,15 +10,31 @@
   flex-direction: column;
   gap: 12px;
   max-height: calc(100vh - 120px);
-  overflow: auto;
+  overflow: hidden;
   position: sticky;
   top: 0;
 }
 
 .os-ai.is-compact {
-  position: static;
-  max-height: none;
+  position: fixed;
+  top: auto;
+  left: 296px;
+  right: 24px;
+  bottom: 12px;
+  z-index: 40;
+  height: auto;
+  max-height: min(48vh, 460px);
   margin-top: 0;
+  overflow: hidden;
+  padding: 10px 14px 12px;
+}
+
+@media (max-width: 900px) {
+  .os-ai.is-compact {
+    left: 12px;
+    right: 12px;
+    bottom: 10px;
+  }
 }
 
 .os-ai-head h2 {
@@ -48,9 +64,14 @@
 .os-ai-thread {
   display: grid;
   gap: 10px;
-  max-height: 280px;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow: auto;
-  padding-right: 4px;
+}
+
+.os-ai-form,
+.os-ai-quick {
+  flex-shrink: 0;
 }
 
 .os-ai-turn {
@@ -90,8 +111,13 @@
   font: 14px/1.45 var(--font-body);
 }
 
+.os-ai.is-compact:has(.os-ai-form) {
+  height: min(48vh, 460px);
+}
+
 .os-ai.is-compact .os-ai-input {
   font-size: 16px;
+  min-height: 48px;
 }
 
 .os-ai-input:focus-visible {
@@ -134,8 +160,17 @@
   font-size: 13px;
 }
 
+.os-ai.is-compact .os-ai-toggle {
+  position: sticky;
+  top: -10px;
+  z-index: 1;
+  margin: -10px -14px 0;
+  padding: 10px 14px 8px;
+  background: #ffffff;
+}
+
 @media (max-width: 1200px) {
-  .os-ai {
+  .os-ai:not(.is-compact) {
     position: static;
     max-height: none;
   }

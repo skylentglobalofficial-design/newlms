@@ -411,13 +411,17 @@
 
 .os-ai-fallback {
   position: static;
-  min-height: 88px;
+  min-height: 0;
 }
 
 @media (max-width: 1200px) {
   .os-stage-grid {
     grid-template-columns: 1fr;
   }
+}
+
+.os-stage.is-ai-compact {
+  padding-bottom: 84px;
 }
 
 .os-lesson-stage {

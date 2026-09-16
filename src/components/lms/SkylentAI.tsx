@@ -138,18 +138,18 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
 
   const body = (
     <>
-      <header className="os-ai-head">
-        <p className="os-eyebrow">Skylent AI</p>
-        <h2>Learn with help from this lesson.</h2>
+      {compact ? (
         <p className="os-ai-based">Based on: {basedOn}</p>
-      </header>
+      ) : (
+        <header className="os-ai-head">
+          <p className="os-eyebrow">Skylent AI</p>
+          <h2>Learn with help from this lesson.</h2>
+          <p className="os-ai-based">Based on: {basedOn}</p>
+        </header>
+      )}
 
       {ui === "unavailable" ? (
         <p className="os-ai-note">Skylent AI isn’t available yet. You can still study the lesson as written.</p>
-      ) : null}
-
-      {ui === "checking" ? (
-        <p className="os-ai-note">Ask about this lesson.</p>
       ) : null}
 
       {turns.length > 0 ? (
@@ -161,8 +161,6 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
             </article>
           ))}
         </div>
-      ) : ui === "ready" || ui === "loading" || ui === "error" ? (
-        <p className="os-ai-idle">Ask about this lesson.</p>
       ) : null}
 
       {ui === "loading" ? <p className="os-ai-note" aria-live="polite">Thinking about this lesson…</p> : null}
@@ -196,7 +194,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, compact }
           ref={inputRef}
           id={inputId}
           className="os-ai-input"
-          rows={3}
+          rows={compact ? 2 : 3}
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={onKeyDown}

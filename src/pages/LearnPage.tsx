@@ -34,7 +34,14 @@ import './LearnWorkspace.css'
 
 const SkylentAI = lazy(() => import('../components/lms/SkylentAI'))
 
-function SkylentAiFallback() {
+function SkylentAiFallback({ compact }: { compact: boolean }) {
+  if (compact) {
+    return (
+      <section className="os-ai is-compact os-ai-fallback" aria-hidden="true">
+        <p className="os-eyebrow">Skylent AI</p>
+      </section>
+    )
+  }
   return (
     <aside className="os-ai os-ai-fallback" aria-hidden="true">
       <p className="os-eyebrow">Skylent AI</p>
@@ -373,7 +380,7 @@ export default function LearnPage() {
           </div>
         </header>
 
-        <div className="os-stage">
+        <div className={selectedLesson && !selectedState.locked && aiCompact ? 'os-stage is-ai-compact' : 'os-stage'}>
           <div className={selectedLesson && !selectedState.locked ? 'os-stage-grid' : undefined}>
           <div className="os-workspace">
             {allComplete ? (
@@ -468,7 +475,7 @@ export default function LearnPage() {
             )}
           </div>
           {selectedLesson && !selectedState.locked ? (
-            <Suspense fallback={<SkylentAiFallback />}>
+            <Suspense fallback={<SkylentAiFallback compact={aiCompact} />}>
               <SkylentAI
                 key={selectedLesson.id}
                 courseSlug={readyCourse.slug}
