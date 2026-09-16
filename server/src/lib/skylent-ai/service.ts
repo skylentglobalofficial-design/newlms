@@ -1,6 +1,6 @@
 import { buildLessonAiContext } from "./authored.js"
 import { createLessonGroundedProvider } from "./grounded.js"
-import { createOpenAiCompatibleProvider } from "./openai-compatible.js"
+import { createOpenAiCompatibleProvider, readOpenAiCompatibleConfig } from "./openai-compatible.js"
 import { buildProviderMessages } from "./prompts.js"
 import type { AiAskInput, AiAskResult, AiProvider, ChatTurn, LessonAiContext } from "./types.js"
 
@@ -19,23 +19,16 @@ export function isAiConfigured(): boolean {
   return Boolean(process.env.SKYLENT_AI_API_KEY?.trim())
 }
 
+/** Factory only — routes must not branch on provider.id. */
 export function resolveAiProvider(): AiProvider | null {
   if (!isAiConfigured()) return null
   const provider = (process.env.SKYLENT_AI_PROVIDER ?? "").trim().toLowerCase()
   if (provider === "lesson-grounded") {
     return createLessonGroundedProvider()
   }
-  const apiKey = process.env.SKYLENT_AI_API_KEY?.trim()
-  if (!apiKey) return null
-  const baseUrl = process.env.SKYLENT_AI_BASE_URL?.trim() || "https://api.openai.com/v1"
-  const model = process.env.SKYLENT_AI_MODEL?.trim() || "gpt-4o-mini"
-  if (!/^https?:\/\//i.test(baseUrl) || !model) return null
-  return createOpenAiCompatibleProvider({
-    apiKey,
-    baseUrl,
-    model,
-    timeoutMs: readProviderTimeoutMs(),
-  })
+  const config = readOpenAiCompatibleConfig()
+  if (!config) return null
+  return createOpenAiCompatibleProvider(config)
 }
 
 export function buildAskInput(options: {
@@ -66,11 +59,11 @@ export function buildAskInput(options: {
 }
 
 export async function completeLessonAsk(input: AiAskInput, provider: AiProvider): Promise<AiAskResult> {
-  const answer = provider.answerLesson
+  const result = provider.answerLesson
     ? await provider.answerLesson(input)
     : await provider.complete(buildProviderMessages(input))
   return {
-    answer,
+    answer: result.answer,
     basedOn: input.context.lessonTitle,
     provider: provider.id,
   }

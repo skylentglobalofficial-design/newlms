@@ -42,11 +42,25 @@ export type ProviderChatMessage = {
   content: string
 }
 
+export type ProviderCompleteOptions = {
+  signal?: AbortSignal
+}
+
+export type ProviderCompleteResult = {
+  answer: string
+}
+
+/**
+ * Provider-agnostic contract. Selection happens in the factory, not the route.
+ * Preview providers may implement answerLesson; production providers use complete().
+ */
 export type AiProvider = {
   id: string
-  complete: (messages: ProviderChatMessage[]) => Promise<string>
-  /** Preview/test providers may answer from the lesson object instead of chat messages. */
-  answerLesson?: (input: AiAskInput) => Promise<string>
+  complete: (
+    messages: ProviderChatMessage[],
+    options?: ProviderCompleteOptions,
+  ) => Promise<ProviderCompleteResult>
+  answerLesson?: (input: AiAskInput) => Promise<ProviderCompleteResult>
 }
 
 export type AiAskInput = {

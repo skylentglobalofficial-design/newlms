@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { z } from "zod"
-import rateLimit from "express-rate-limit"
+import rateLimit, { ipKeyGenerator } from "express-rate-limit"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import {
   assertLessonUnlocked,
@@ -49,6 +49,11 @@ const aiRateLimit = rateLimit({
   max: Number(process.env.SKYLENT_AI_RATE_LIMIT_MAX ?? 40),
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator(request: AuthenticatedRequest) {
+    const userId = request.auth?.user.id
+    if (userId) return `user:${userId}`
+    return ipKeyGenerator(request.ip ?? "127.0.0.1")
+  },
   handler(_request, response) {
     response.status(429).json({ error: "Skylent AI couldn't answer right now. Try again." })
   },
