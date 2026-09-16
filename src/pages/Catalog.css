@@ -19,22 +19,66 @@
 }
 
 .cat-hero {
-  padding: 36px 0 28px;
+  padding: 28px 0 20px;
 }
 
 .cat-hero-split {
   display: grid;
-  grid-template-columns: minmax(0, 0.7fr) minmax(340px, 1.3fr);
+  grid-template-columns: minmax(0, 0.78fr) minmax(320px, 1.22fr);
   gap: clamp(20px, 4vw, 40px);
-  align-items: center;
+  align-items: start;
+}
+
+.cat-hero-split > * {
+  min-width: 0;
 }
 
 .cat-hero-visual .pl-frame {
-  min-height: 420px;
+  min-height: 0;
 }
 
-.cat-stage-visual {
+.cat-hero-visual .pl-ws {
+  min-height: 220px;
+}
+
+.cat-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 18px 0 0;
+}
+
+.cat-work {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(280px, 1.1fr);
+  gap: clamp(18px, 3vw, 32px);
+  align-items: start;
   margin-top: 18px;
+}
+
+.cat-datasets {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.cat-datasets article {
+  padding: 12px 14px;
+  background: #ffffff;
+  border-radius: 12px;
+}
+
+.cat-datasets strong {
+  display: block;
+  font-size: 14px;
+  font-family: var(--font-mono);
+}
+
+.cat-datasets p {
+  margin: 6px 0 0;
+  color: #5c6168;
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .cat-statline {
@@ -87,21 +131,23 @@
 
 .cat-hero h1 {
   margin: 8px 0 0;
-  max-width: 12em;
-  font-family: var(--font-display);
-  font-size: clamp(34px, 4.8vw, 52px);
-  font-weight: 600;
-  line-height: 1.08;
+  max-width: 16em;
+  font-family: var(--font-body);
+  font-size: clamp(28px, 3.6vw, 40px);
+  font-weight: 650;
+  line-height: 1.12;
   letter-spacing: -0.04em;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .cat-lead {
   margin: 14px 0 0;
   max-width: 34em;
+  width: 100%;
   color: #5c6168;
   font-size: 17px;
   line-height: 1.55;
+  overflow-wrap: break-word;
 }
 
 .cat-fine {
@@ -349,24 +395,22 @@
 
 .cat-practice {
   display: grid;
-  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
   margin-top: 18px;
 }
 
 .cat-practice article {
   min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(120px, 0.28fr) minmax(0, 1fr);
-  gap: 16px;
-  align-items: start;
-  padding: 14px 0;
-  background: none;
-  border-top: 1px solid rgba(21, 23, 26, 0.08);
+  padding: 14px 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(21, 23, 26, 0.04);
 }
 
 .cat-practice h3 {
   margin: 0;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .cat-practice p,
@@ -417,12 +461,16 @@
 
 .cat-filters {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   margin: 18px 0 8px;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
 }
 
 .cat-chip {
+  flex: 0 0 auto;
   min-height: 36px;
   padding: 0 12px;
   border: 1px solid #e8e2d6;
@@ -497,12 +545,15 @@
 .cat-ready {
   margin-top: 16px;
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
 
 .cat-feature {
   display: grid;
-  grid-template-columns: minmax(280px, 1.05fr) minmax(0, 0.95fr);
+  grid-template-columns: 148px minmax(0, 1fr);
+  grid-template-rows: auto;
+  align-items: start;
   gap: 0;
   min-width: 0;
   overflow: hidden;
@@ -513,20 +564,28 @@
   box-shadow: 0 16px 40px rgba(21, 23, 26, 0.07);
 }
 
-.cat-feature-stage {
-  min-width: 0;
-  padding: 12px;
-  background: #f7f4ec;
-}
-
-.cat-feature-stage .pl-frame {
-  box-shadow: none;
-  min-height: 0;
+.cat-feature .pl-thumb {
+  height: auto;
+  min-height: 148px;
+  border: 0;
+  border-radius: 0;
+  align-content: start;
 }
 
 .cat-feature .cat-tile-copy {
-  justify-content: center;
-  padding: 24px 28px;
+  justify-content: flex-start;
+  padding: 14px 16px 16px;
+}
+
+.cat-tile-copy .cat-mark,
+.cat-feature .cat-mark {
+  align-self: flex-start;
+  width: fit-content;
+}
+
+.cat-metrics .pl-stat strong {
+  font-size: 14px;
+  line-height: 1.25;
 }
 
 .cat-tile-copy {
@@ -550,8 +609,8 @@
 }
 
 .cat-feature h3 {
-  font-size: 26px;
-  -webkit-line-clamp: 3;
+  font-size: 20px;
+  -webkit-line-clamp: 2;
 }
 
 .cat-tile p,
@@ -665,6 +724,39 @@
   margin-bottom: 16px;
 }
 
+.cat-path-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0 0 14px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cat-path-legend .is-live,
+.cat-path-legend .is-later {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cat-path-legend .is-live::before,
+.cat-path-legend .is-later::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.cat-path-legend .is-live::before {
+  background: #4f46e5;
+}
+
+.cat-path-legend .is-later::before {
+  background: #e8e2d6;
+  box-shadow: inset 0 0 0 1px rgba(21, 23, 26, 0.12);
+}
+
 .cat-module-kind {
   margin-top: 2px;
 }
@@ -770,15 +862,15 @@
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
-  margin-top: 16px;
+  margin: 16px 0 0;
+  padding: 0;
 }
 
 .cat-who li {
   list-style: none;
-  padding: 12px 0;
-  background: none;
-  border-radius: 0;
-  border-top: 1px solid rgba(21, 23, 26, 0.08);
+  padding: 12px 14px;
+  background: #fffdf8;
+  border-radius: 12px;
   font-size: 14px;
   line-height: 1.45;
 }
@@ -808,7 +900,12 @@
 }
 
 @media (max-width: 1100px) {
-  .cat-grid {
+  .cat-grid,
+  .cat-ready {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cat-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -818,14 +915,27 @@
   .cat-caps,
   .cat-practice,
   .cat-grid,
+  .cat-ready,
   .cat-who,
   .cat-card-link,
   .cat-card-link.is-featured,
-  .cat-feature,
   .cat-module,
   .cat-link,
-  .cat-split {
+  .cat-split,
+  .cat-work {
     grid-template-columns: 1fr;
+  }
+
+  .cat-feature {
+    grid-template-columns: 108px minmax(0, 1fr);
+  }
+
+  .cat-feature .pl-thumb {
+    min-height: 108px;
+  }
+
+  .cat-hero-visual.is-listing {
+    display: none;
   }
 
   .cat-hero-visual .pl-frame {
@@ -843,13 +953,28 @@
 
 @media (max-width: 430px) {
   .cat-hero h1 {
-    font-size: 30px;
+    font-size: 26px;
   }
 
-  .cat-btn,
+  .cat-metrics {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .cat-search {
     width: 100%;
     min-height: 48px;
+  }
+
+  .cat-actions .cat-btn {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .cat-card-cta,
+  .cat-feature .cat-btn,
+  .cat-tile .cat-btn {
+    width: fit-content;
+    min-height: 36px;
   }
 
   .cat-actions {

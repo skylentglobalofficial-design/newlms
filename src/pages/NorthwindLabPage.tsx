@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
+import { useEffect, useRef, useState, type KeyboardEvent } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { workspaceErrorMessage } from "../lib/http"
 import {
@@ -57,6 +57,32 @@ function formatSqlCell(column: string, value: LabSqlCell) {
     return formatted
   }
   return value
+}
+
+function DatasetSample({ workspace }: { workspace: LabWorkspace }) {
+  const headers = workspace.dataset.columns.map((col) => col.name)
+  return (
+    <div className="lab-table-wrap lab-preview-table">
+      <table className="lab-table">
+        <thead>
+          <tr>
+            {headers.map((header) => (
+              <th key={header}>{header}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {workspace.dataset.sampleRows.map((row, index) => (
+            <tr key={`${row.order_id ?? index}-${index}`}>
+              {headers.map((header) => (
+                <td key={header}>{row[header] ?? ""}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
 }
 
 export default function NorthwindLabPage() {
@@ -159,7 +185,6 @@ export default function NorthwindLabPage() {
     return () => controller.abort()
   }, [workId, status, setParams])
 
-  const sampleHeaders = useMemo(() => workspace?.dataset.columns.map((col) => col.name) ?? [], [workspace])
   const sqlColumns = workspace?.sql.columns.length ? workspace.sql.columns : workspace?.dataset.columns ?? []
 
   function setMode(nextMode: "analysis" | "sql") {
@@ -314,6 +339,14 @@ export default function NorthwindLabPage() {
           Dataset: <strong>{workspace.dataset.filename}</strong>
         </p>
       </div>
+      <ol className="lab-flow" aria-label="Lab workflow">
+        <li className="is-on">Dataset</li>
+        <li className="is-on">Inspect</li>
+        <li className={mode === "sql" ? "is-on" : undefined}>Query</li>
+        <li className={mode === "analysis" ? "is-on" : undefined}>Analyse</li>
+        <li className={mode === "sql" ? "is-on" : undefined}>Visualise</li>
+        <li>Save work</li>
+      </ol>
 
       <div className="lab-body">
         <div className={`lab-grid${mode === "sql" ? " lab-grid-sql" : ""}`}>
@@ -335,26 +368,12 @@ export default function NorthwindLabPage() {
               </ul>
             </div>
             <p>Valid-row rule: {workspace.dataset.validRowRule.join("; ")}.</p>
-            <div className="lab-table-wrap">
-              <table className="lab-table">
-                <thead>
-                  <tr>
-                    {sampleHeaders.map((header) => (
-                      <th key={header}>{header}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {workspace.dataset.sampleRows.map((row, index) => (
-                    <tr key={`${row.order_id ?? index}-${index}`}>
-                      {sampleHeaders.map((header) => (
-                        <td key={header}>{row[header] ?? ""}</td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            {mode === "sql" ? (
+              <>
+                <p className="os-eyebrow">Dataset sample</p>
+                <DatasetSample workspace={workspace} />
+              </>
+            ) : null}
             <ul className="lab-meta-list">
               {workspace.dataset.qualityNotes.map((note) => (
                 <li key={note}>{note}</li>
@@ -388,7 +407,7 @@ export default function NorthwindLabPage() {
               <>
                 <p className="os-eyebrow">Workspace</p>
                 <h2>Analysis</h2>
-                <div className="lab-run-box">
+                <div className="lab-toolbar">
                   <div>
                     <label htmlFor="lab-operation">Operation</label>
                     <select id="lab-operation" value={operation} disabled>
@@ -399,12 +418,14 @@ export default function NorthwindLabPage() {
                       ))}
                     </select>
                   </div>
-                  <p>{workspace.operations[0]?.summary}</p>
                   <p className="lab-formula">net_revenue = units × unit_price × (1 − discount_pct / 100)</p>
                   <button type="button" className="os-btn os-btn-primary" onClick={() => void onRunAnalysis()} disabled={busy !== null}>
                     {busy === "run" ? "Running…" : "Run"}
                   </button>
                 </div>
+                <p>{workspace.operations[0]?.summary}</p>
+                <p className="os-eyebrow">Dataset sample</p>
+                <DatasetSample workspace={workspace} />
               </>
             ) : (
               <>
@@ -586,11 +607,24 @@ export default function NorthwindLabPage() {
             ) : null}
 
             {!activeResult ? (
-              <p>
-                {mode === "sql"
-                  ? "Run a SELECT to inspect rows calculated from northwind_sales."
-                  : "Run the analysis to see totals calculated from the dataset."}
-              </p>
+              mode === "analysis" ? (
+                <div className="lab-metrics is-idle">
+                  <div className="lab-metric">
+                    <span>Valid rows</span>
+                    <strong>—</strong>
+                  </div>
+                  <div className="lab-metric">
+                    <span>Net revenue</span>
+                    <strong>—</strong>
+                  </div>
+                  <div className="lab-metric">
+                    <span>Category</span>
+                    <strong>—</strong>
+                  </div>
+                </div>
+              ) : (
+                <p>Run a SELECT to inspect rows calculated from northwind_sales.</p>
+              )
             ) : null}
 
             {canSave ? (

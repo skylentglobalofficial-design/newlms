@@ -1,77 +1,39 @@
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { CAREER_OS_IA } from "../../lib/product-architecture"
-import { LiveCoreRail, MaturityMark } from "../../components/product/Architecture"
-import { C, T } from "../../tokens"
+import { MaturityMark } from "../../components/product/Architecture"
+import { CareerEvidencePreview } from "../../components/product/ProductLanguage"
+import "./CareerOS.css"
 
 export default function CareerOSPublicPage() {
   return (
     <PageShell aurora={false}>
-      <div className="arch-academic-shell" style={{ paddingTop: T.navH + 28 }}>
-        <div className="arch-academic-inner">
-          <header className="arch-line-header" style={{ marginBottom: 32 }}>
-            <div style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 14 }}>
-              <div className="skylent-label" style={{ color: C.indigo, margin: 0 }}>Career OS</div>
-              <MaturityMark maturity="live" />
-            </div>
-            <h1 className="skylent-display-md" style={{ color: C.ink, margin: "0 0 14px", maxWidth: 720 }}>
-              Keep your learning evidence in one place.
-            </h1>
-            <p className="skylent-body-lg" style={{ color: C.slate, margin: 0, maxWidth: 560 }}>
-              Career OS is where you keep a profile and the work you build while learning. Published roles appear on the job board when they exist — none are invented for this page.
-            </p>
-          </header>
-
-          <section className="arch-section">
-            <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Workspace</div>
-            <div>
-              {CAREER_OS_IA.map((item) => (
-                <div
-                  key={item.label}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "minmax(140px, 0.5fr) minmax(0, 1fr)",
-                    gap: 16,
-                    padding: "16px 0",
-                    borderBottom: `1px solid ${T.lineDark}`,
-                    minWidth: 0,
-                  }}
-                  className="arch-career-ia-row"
-                >
-                  <strong style={{ fontFamily: "var(--font-display)", fontSize: 18, color: C.ink }}>{item.label}</strong>
-                  <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{item.sub}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="arch-section">
-            <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7, maxWidth: 560, margin: "0 0 20px" }}>
-              Sign in to open the workspace. If the job board is empty, that is the real state — not a demo feed.
-            </p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              <Link
-                to="/login"
-                style={{
-                  background: C.indigo,
-                  color: C.white,
-                  padding: "10px 18px",
-                  borderRadius: 8,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  textDecoration: "none",
-                }}
-              >
-                Sign in to Career OS
-              </Link>
-              <Link to="/skills" style={{ color: C.slate, fontSize: 14, alignSelf: "center", textDecoration: "none" }}>
-                Keep your profile and learning evidence in one place
-              </Link>
-            </div>
-          </section>
-
-          <LiveCoreRail lead="Career OS sits alongside real coursework. It is the place for evidence — not a placement guarantee." />
+      <div className="cos-public">
+        <div>
+          <div className="cos-kicker" style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 14 }}>
+            <span>Career OS</span>
+            <MaturityMark maturity="live" />
+          </div>
+          <h1>Keep your learning evidence in one place.</h1>
+          <p className="cos-public-lead">
+            Career OS is a workspace for your profile and the work you build while learning. Published roles appear on the job board when they exist — none are invented for this page.
+          </p>
+          <div className="cos-public-actions">
+            <Link to="/login">Sign in to Career OS</Link>
+          </div>
+          <div className="cos-ia-grid">
+            {CAREER_OS_IA.map((item) => (
+              <article key={item.label}>
+                <strong>{item.label}</strong>
+                <span>{item.sub}</span>
+              </article>
+            ))}
+          </div>
+          <p className="cos-lead" style={{ marginTop: 18 }}>
+            Sign in to open the workspace. If the job board is empty, that is the real state — not a demo feed. Career OS is not a placement guarantee.
+          </p>
         </div>
+        <CareerEvidencePreview />
       </div>
     </PageShell>
   )

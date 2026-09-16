@@ -19,7 +19,7 @@ import { enrollInCourse, fetchLmsEnrollments, type ApiEnrollmentSummary } from '
 import EnrollmentEvidence from '../components/learner/EnrollmentEvidence'
 import { LearnFlow, CourseProductVisual } from '../components/product/ProductLanguage'
 import { workspaceErrorMessage } from '../lib/http'
-import { authoredCourseList } from '../lib/course-product'
+import { authoredCourseList, courseProductProfile } from '../lib/course-product'
 import { FLAGSHIP_COURSE_SLUG } from '../lib/authored-courses'
 import './LearnWorkspace.css'
 
@@ -156,8 +156,11 @@ export default function DashboardStudentPage() {
           {recommendedCourses.length > 0 ? (
             <>
             <div className="dash-empty-grid dash-empty-courses">
-              {recommendedCourses.map((item) => (
+              {recommendedCourses.map((item) => {
+                const profile = courseProductProfile(item.slug)
+                return (
                 <div className="dash-empty-card" key={item.slug}>
+                  {profile ? <CourseProductVisual visual={profile.visual} compact /> : null}
                   <p className="os-eyebrow">Ready to start</p>
                   <h2>{item.title}</h2>
                   <p>{item.desc}</p>
@@ -183,7 +186,8 @@ export default function DashboardStudentPage() {
                     <Link className="os-btn os-btn-ghost" to={`/courses/${item.slug}`}>View course</Link>
                   </div>
                 </div>
-              ))}
+                )
+              })}
               {enrollError ? <p className="os-error">{enrollError}</p> : null}
             </div>
             <div className="dash-empty-flow">

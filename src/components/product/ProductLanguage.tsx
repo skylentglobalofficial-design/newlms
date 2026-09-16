@@ -134,6 +134,16 @@ const HARBOR = {
   bet: "Weekend exception queue",
 } as const
 
+function HarborStores() {
+  return (
+    <div className="pl-hd-stores" aria-hidden="true">
+      {Array.from({ length: HARBOR.stores }, (_, index) => (
+        <span key={index} className={index < HARBOR.weekendExceptions ? "is-ex" : undefined} />
+      ))}
+    </div>
+  )
+}
+
 function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
   return (
     <div className={compact ? "pl-hd is-compact" : "pl-hd"}>
@@ -141,6 +151,21 @@ function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
         <VisualStat label="Stores" value={String(HARBOR.stores)} />
         <VisualStat label="Interviews" value={String(HARBOR.interviews)} />
         <VisualStat label="Weekend exceptions" value={String(HARBOR.weekendExceptions)} />
+      </div>
+      <div className="pl-hd-board">
+        <div>
+          <p className="pl-kicker">Harbor Retail stores</p>
+          <HarborStores />
+        </div>
+        {!compact ? (
+          <div>
+            <p className="pl-kicker">Exception log</p>
+            <p className="pl-hd-quote">
+              {HARBOR.unlogged} of {HARBOR.weekendExceptions} weekend exceptions never appeared in a channel.
+            </p>
+            <p className="pl-fine">{HARBOR.interviews} interviews · fictional Harbor Retail — not Northwind.</p>
+          </div>
+        ) : null}
       </div>
       <ol className="pl-hd-flow" aria-label="Product case path">
         <li>
@@ -164,11 +189,6 @@ function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
           <p>Trigger, happy path, one edge, out of scope.</p>
         </li>
       </ol>
-      {!compact ? (
-        <p className="pl-fine">
-          {HARBOR.unlogged} of {HARBOR.weekendExceptions} weekend exceptions never appeared in a channel. Fictional Harbor Retail — not Northwind.
-        </p>
-      ) : null}
     </div>
   )
 }
@@ -302,13 +322,23 @@ export function CourseThumb({
 export function LearnFlow({
   steps,
 }: {
-  steps: ReadonlyArray<{ title: string; copy: string; kind: "learn" | "practice" | "build" | "keep" }>
+  steps: ReadonlyArray<{ title: string; copy: string; kind: "choose" | "learn" | "practice" | "build" | "keep" }>
 }) {
   return (
-    <ol className="pl-flow">
+    <ol className={`pl-flow is-${steps.length}`}>
       {steps.map((step) => (
         <li key={step.title}>
           <div className={`pl-flow-visual is-${step.kind}`} aria-hidden="true">
+            {step.kind === "choose" ? (
+              <div className="pl-flow-choose">
+                <em>Start</em>
+                <b>Pick a course</b>
+                <span className="pl-flow-choose-pair">
+                  <i />
+                  <i />
+                </span>
+              </div>
+            ) : null}
             {step.kind === "learn" ? (
               <div className="pl-flow-lesson">
                 <em>Lesson</em>
@@ -374,12 +404,53 @@ export function CareerEvidencePreview() {
   return (
     <ProductFrame title="Career OS" meta="Evidence workspace" compact>
       <div className="pl-evidence">
-        <p className="pl-kicker">Work you can keep</p>
+        <p className="pl-kicker">Work sample</p>
         <p className="pl-ws-lesson">Northwind commercial review</p>
-        <p className="pl-fine">A capstone work sample from Data Analytics. Career OS is a workspace — not a job guarantee.</p>
+        <div className="pl-stat-row">
+          <VisualStat label="Source" value="Capstone" />
+          <VisualStat label="Dataset" value="Northwind" />
+          <VisualStat label="Kept by" value="You" />
+        </div>
+        <p className="pl-fine">A work sample from Data Analytics. Career OS is a workspace — not a job guarantee.</p>
       </div>
     </ProductFrame>
   )
+}
+
+export function CareerKeepEmpty({
+  heading = "Nothing kept yet",
+  copy = "Work samples from Data Analytics and Product Management appear here when you add them from a completed project. Nothing is invented.",
+}: {
+  heading?: string
+  copy?: string
+}) {
+  return (
+    <div className="cos-empty">
+      <article className="cos-empty-row">
+        <CourseThumb authored visual="northwind" />
+        <div>
+          <strong>Data Analytics</strong>
+          <p>Northwind commercial review — kept from the capstone when you add it.</p>
+        </div>
+      </article>
+      <article className="cos-empty-row">
+        <CourseThumb authored visual="harbor-desk" />
+        <div>
+          <strong>Product Management</strong>
+          <p>Harbor Desk product case — kept from the product case when you add it.</p>
+        </div>
+      </article>
+      <h2>{heading}</h2>
+      <p>{copy}</p>
+    </div>
+  )
+}
+
+export function evidenceVisualFor(title: string, context = ""): "northwind" | "harbor-desk" | null {
+  const hay = `${title} ${context}`.toLowerCase()
+  if (/harbor|product management|product case/.test(hay)) return "harbor-desk"
+  if (/northwind|data analytics|commercial review/.test(hay)) return "northwind"
+  return null
 }
 
 export function PathwayThumb() {

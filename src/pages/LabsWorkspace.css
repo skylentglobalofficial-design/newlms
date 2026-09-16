@@ -101,6 +101,42 @@
   flex-direction: column;
   gap: 12px;
   border: 1px solid rgba(21, 23, 26, 0.08);
+  border-radius: 14px;
+}
+
+.lab-flow {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  padding: 0 16px;
+  list-style: none;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
+  flex-shrink: 0;
+}
+
+.lab-flow li {
+  position: relative;
+  padding: 12px 10px;
+  color: #5c6168;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.lab-flow li + li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 8px;
+  height: 1px;
+  background: #e8e2d6;
+}
+
+.lab-flow li.is-on {
+  color: #4f46e5;
 }
 
 .lab-panel {
@@ -237,6 +273,47 @@
   padding: 14px;
   background: #fffdf8;
   border-radius: 12px;
+}
+
+.lab-toolbar {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.5fr) minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  padding: 12px;
+  background: #f7f4ec;
+  border-radius: 12px;
+}
+
+.lab-toolbar label {
+  display: block;
+  color: #5c6168;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.lab-toolbar select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid rgba(21, 23, 26, 0.12);
+  border-radius: 8px;
+  background: #ffffff;
+  font: inherit;
+  color: inherit;
+}
+
+.lab-toolbar .lab-formula {
+  margin: 0;
+}
+
+.lab-preview-table {
+  max-height: 280px;
+}
+
+.lab-metrics.is-idle .lab-metric strong {
+  color: #c9c2b4;
 }
 
 .lab-run-box label {
@@ -603,9 +680,38 @@
   .lab-grid {
     grid-template-columns: 1fr;
   }
+
+  .lab-workspace {
+    order: 1;
+  }
+
+  .lab-results {
+    order: 2;
+  }
+
+  .lab-rail {
+    order: 3;
+  }
+
+  .lab-toolbar {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 768px) {
+  .lab-flow {
+    display: flex;
+    overflow-x: auto;
+    grid-template-columns: none;
+    padding: 0 8px;
+  }
+
+  .lab-flow li {
+    flex: 0 0 auto;
+    font-size: 11px;
+    padding: 10px 8px;
+  }
+
   .lab-bar-axis {
     padding-left: 80px;
   }
