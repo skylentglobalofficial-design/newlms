@@ -17,10 +17,10 @@ import {
 import { useLmsDashboard } from '../hooks/useLms'
 import { enrollInCourse, fetchLmsEnrollments, type ApiEnrollmentSummary } from '../lib/lms-api'
 import EnrollmentEvidence from '../components/learner/EnrollmentEvidence'
-import { LearnFlow, NorthwindWorkspace } from '../components/product/ProductLanguage'
+import { LearnFlow, CourseProductVisual } from '../components/product/ProductLanguage'
 import { workspaceErrorMessage } from '../lib/http'
-import { courses } from '../data'
-import { AUTHORED_COURSE_SLUG } from '../lib/live-intents'
+import { authoredCourseList } from '../lib/course-product'
+import { FLAGSHIP_COURSE_SLUG } from '../lib/authored-courses'
 import './LearnWorkspace.css'
 
 const NAV_ITEMS: AuthNavItem[] = [
@@ -30,7 +30,11 @@ const NAV_ITEMS: AuthNavItem[] = [
 ]
 
 const accent = getRoleAccent('student')
-const recommendedCourse = courses.find((course) => course.slug === AUTHORED_COURSE_SLUG) ?? courses[0]
+const recommendedCourses = authoredCourseList().sort((a, b) => {
+  if (a.slug === FLAGSHIP_COURSE_SLUG) return -1
+  if (b.slug === FLAGSHIP_COURSE_SLUG) return 1
+  return a.title.localeCompare(b.title)
+})
 
 function greetingName(firstName: string) {
   const hour = new Date().getHours()
@@ -149,44 +153,45 @@ export default function DashboardStudentPage() {
               You are signed in. Enrol in a live course to open a workspace with lessons, practice, and a place to keep the work.
             </p>
           </div>
-          {recommendedCourse ? (
+          {recommendedCourses.length > 0 ? (
             <>
-            <div className="dash-empty-grid">
-              <div className="dash-empty-card">
-                <p className="os-eyebrow">Ready to start</p>
-                <h2>{recommendedCourse.title}</h2>
-                <p>{recommendedCourse.desc}</p>
-                <p className="dash-continue-meta">
-                  {recommendedCourse.duration} · {recommendedCourse.lessons} lessons · {recommendedCourse.level}
-                </p>
-                <div className="os-actions">
-                  <button
-                    type="button"
-                    className="os-btn os-btn-primary"
-                    disabled={enrolling}
-                    onClick={() => {
-                      setEnrolling(true)
-                      setEnrollError(null)
-                      void enrollInCourse(recommendedCourse.slug)
-                        .then(() => reload({ silent: true }))
-                        .catch((err) => setEnrollError(workspaceErrorMessage(err)))
-                        .finally(() => setEnrolling(false))
-                    }}
-                  >
-                    {enrolling ? 'Enrolling…' : `Start ${recommendedCourse.title}`}
-                  </button>
-                  <Link className="os-btn os-btn-ghost" to="/courses">Browse courses</Link>
+            <div className="dash-empty-grid dash-empty-courses">
+              {recommendedCourses.map((item) => (
+                <div className="dash-empty-card" key={item.slug}>
+                  <p className="os-eyebrow">Ready to start</p>
+                  <h2>{item.title}</h2>
+                  <p>{item.desc}</p>
+                  <p className="dash-continue-meta">
+                    {item.duration} · {item.lessons} lessons · {item.level}
+                  </p>
+                  <div className="os-actions">
+                    <button
+                      type="button"
+                      className="os-btn os-btn-primary"
+                      disabled={enrolling}
+                      onClick={() => {
+                        setEnrolling(true)
+                        setEnrollError(null)
+                        void enrollInCourse(item.slug)
+                          .then(() => reload({ silent: true }))
+                          .catch((err) => setEnrollError(workspaceErrorMessage(err)))
+                          .finally(() => setEnrolling(false))
+                      }}
+                    >
+                      {enrolling ? 'Enrolling…' : `Start ${item.title}`}
+                    </button>
+                    <Link className="os-btn os-btn-ghost" to={`/courses/${item.slug}`}>View course</Link>
+                  </div>
                 </div>
-                {enrollError ? <p className="os-error">{enrollError}</p> : null}
-              </div>
-              <NorthwindWorkspace compact />
+              ))}
+              {enrollError ? <p className="os-error">{enrollError}</p> : null}
             </div>
             <div className="dash-empty-flow">
               <LearnFlow
                 steps={[
-                  { title: "Learn", copy: "Enrolment opens Data Analytics in Skylent OS.", kind: "learn" },
+                  { title: "Learn", copy: "Enrolment opens that course in Skylent OS.", kind: "learn" },
                   { title: "Practise", copy: "Quizzes unlock after the written work.", kind: "practice" },
-                  { title: "Build", copy: "Assignments use the Northwind extract.", kind: "build" },
+                  { title: "Build", copy: "Assignments follow the subject — a dataset, or a product case.", kind: "build" },
                   { title: "Keep", copy: "Carry evidence into Career OS yourself.", kind: "keep" },
                 ]}
               />
@@ -259,7 +264,8 @@ export default function DashboardStudentPage() {
               />
               {extraEnrollments.length > 0 ? (
                 <div className="dash-card dash-enrollments">
-                  <h2>Other enrolled courses</h2>
+                  <h2>Also enrolled</h2>
+                  <p className="dash-continue-meta">Progress is stored per course. Open another workspace to continue it.</p>
                   <EnrollmentEvidence items={extraEnrollments} />
                 </div>
               ) : null}

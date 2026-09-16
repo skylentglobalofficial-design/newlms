@@ -1,5 +1,7 @@
 import { courses, programs } from "../data"
+import { AUTHORED_COURSE_SLUG, isAuthoredCourse } from "./authored-courses"
 
+export { AUTHORED_COURSE_SLUG, isAuthoredCourse }
 export type LearnIntentId = "data" | "software" | "ai" | "product"
 
 export type LearnIntent = {
@@ -14,13 +16,6 @@ export const LEARN_INTENTS: LearnIntent[] = [
   { id: "ai", label: "Work with AI", question: "Apply models to a real task." },
   { id: "product", label: "Shape products", question: "Decide what to build and why." },
 ]
-
-/** Only Data Analytics has authored lessons, quizzes, and assignments. */
-export const AUTHORED_COURSE_SLUG = "data-analytics"
-
-export function isAuthoredCourse(slug: string): boolean {
-  return slug === AUTHORED_COURSE_SLUG
-}
 
 export function isLearnIntentId(value: string | null | undefined): value is LearnIntentId {
   return LEARN_INTENTS.some((item) => item.id === value)

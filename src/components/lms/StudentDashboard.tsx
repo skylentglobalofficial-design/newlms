@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 import type { CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
-import { CourseThumb, NorthwindWorkspace } from '../product/ProductLanguage'
+import { CourseProductVisual, CourseThumb } from '../product/ProductLanguage'
+import { courseProductProfile } from '../../lib/course-product'
 import { computeModuleProgress, isLessonUnlocked, lessonTypeLabel, type LmsCourseView } from './lms-utils'
 import LessonIcon from './LessonIcon'
 
@@ -81,7 +82,11 @@ export function LearningWorkspacePanel({
             </Link>
           </div>
         </div>
-        {courseSlug === 'data-analytics' ? <NorthwindWorkspace compact /> : <CourseThumb authored={false} />}
+        {(() => {
+          const profile = courseProductProfile(courseSlug ?? '')
+          if (profile) return <CourseProductVisual visual={profile.visual} compact />
+          return <CourseThumb authored={false} />
+        })()}
       </div>
     </section>
   )

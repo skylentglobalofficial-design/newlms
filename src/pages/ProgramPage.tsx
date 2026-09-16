@@ -4,6 +4,7 @@ import { EnrollmentModal, PageShell } from "../components/shared"
 import { CourseThumb, PathwayTrack } from "../components/product/ProductLanguage"
 import { programs } from "../data"
 import { isProgramEnrollable } from "../lib/catalog-api"
+import { courseProductProfile } from "../lib/course-product"
 import {
   PROGRAMME_INTENDED_STEPS,
   programmeAfterEnrolCopy,
@@ -126,7 +127,7 @@ export default function ProgramPage() {
             ) : (
               view.linked.map((item) => (
                 <Link className="cat-link" key={item.slug} to={item.to}>
-                  <CourseThumb authored={item.authored} />
+                  <CourseThumb authored={item.authored} visual={courseProductProfile(item.slug)?.visual ?? "northwind"} />
                   <div>
                     <span className={item.authored ? "cat-mark cat-mark-ready" : "cat-mark"}>{item.maturityLabel}</span>
                     <h3>{item.title}</h3>

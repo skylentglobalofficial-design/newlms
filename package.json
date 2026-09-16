@@ -31,6 +31,8 @@
     "test:projects": "tsx scripts/test-skylent-projects.ts",
     "test:career-evidence": "tsx scripts/test-career-evidence.ts",
     "test:da-content": "tsx scripts/test-da-content.ts",
+    "test:pm-content": "tsx scripts/test-pm-content.ts",
+    "test:second-flagship": "tsx scripts/test-second-flagship.ts",
     "test:career": "tsx scripts/test-career.ts",
     "test:catalog-parity": "tsx scripts/test-catalog-truth.ts && tsx scripts/check-catalog-parity.ts",
     "test:live-intents": "tsx scripts/test-live-intents.ts",

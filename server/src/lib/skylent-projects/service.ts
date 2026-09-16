@@ -7,13 +7,10 @@ import {
   findProjectDefinition,
   findProjectTask,
   isProjectTaskKey,
-  NORTHWIND_PROJECT_TYPE,
   PROJECT_REFLECTION_MAX,
   PROJECT_REFLECTION_MIN,
   type ProjectStatus,
   type ProjectTaskDefinition,
-  type ProjectTaskKey,
-  type ReflectionField,
 } from "./catalog.js"
 import type {
   ProjectEvidence,
@@ -112,21 +109,29 @@ function deriveStatus(tasks: StoredProjectTask[], savedAt: Date | null): Project
   return "not_started"
 }
 
-function labHref(task: ProjectTaskDefinition) {
-  if (!task.labMode) return null
+function labHref(
+  definition: NonNullable<ReturnType<typeof findProjectDefinition>>,
+  task: ProjectTaskDefinition,
+) {
+  if (!task.labMode || !definition.labSlug) return null
   const params = new URLSearchParams()
-  params.set("project", NORTHWIND_PROJECT_TYPE)
+  params.set("project", definition.projectType)
   if (task.labMode === "sql") params.set("mode", "sql")
   if (task.exampleId) params.set("example", task.exampleId)
-  return `/os/labs/data-analytics/northwind?${params.toString()}`
+  return `/os/labs/${definition.courseSlug}/${definition.labSlug}?${params.toString()}`
 }
 
-function viewHref(labWorkId: string, operation: string) {
+function viewHref(
+  definition: NonNullable<ReturnType<typeof findProjectDefinition>>,
+  labWorkId: string,
+  operation: string,
+) {
+  if (!definition.labSlug) return ""
   const params = new URLSearchParams()
-  params.set("project", NORTHWIND_PROJECT_TYPE)
+  params.set("project", definition.projectType)
   params.set("work", labWorkId)
   if (operation === SQL_OPERATION) params.set("mode", "sql")
-  return `/os/labs/data-analytics/northwind?${params.toString()}`
+  return `/os/labs/${definition.courseSlug}/${definition.labSlug}?${params.toString()}`
 }
 
 function isCategorySql(result: LabSqlRunResult) {
@@ -143,7 +148,7 @@ async function requireProjectCourseAccess(userId: string, courseSlug: string) {
   const course = await findCourseBySlug(courseSlug)
   if (!course) throw new ProjectServiceError("not_found", "Course not found")
   const enrollment = await resolveCourseEnrollment(userId, course.id)
-  if (!enrollment) throw new ProjectServiceError("forbidden", "Enrol in Data Analytics to open this project.")
+  if (!enrollment) throw new ProjectServiceError("forbidden", `Enrol in ${course.title} to open this project.`)
   return { course, enrollment }
 }
 
@@ -178,10 +183,12 @@ function toOption(row: {
 export async function hydrateProjectLabEvidence(
   userId: string,
   courseSlug: string,
-  labSlug: string,
+  labSlug: string | null,
   labWorkId: string | null,
+  projectType: string,
 ): Promise<ProjectEvidence | null> {
-  if (!labWorkId) return null
+  if (!labWorkId || !labSlug) return null
+  const definition = findProjectDefinition(projectType)
   try {
     const work = await getSavedLabWork({ userId, courseSlug, labSlug, workId: labWorkId })
     const sql = work.result.operation === "sql" ? work.result : null
@@ -199,7 +206,7 @@ export async function hydrateProjectLabEvidence(
       validRows: guided?.validRows ?? null,
       netRevenueLabel: guided?.netRevenueLabel ?? null,
       createdAt: work.createdAt,
-      viewHref: viewHref(work.id, work.operation),
+      viewHref: definition ? viewHref(definition, work.id, work.operation) : "",
       chart: sql?.chart.chartable ? sql.chart : null,
     }
   } catch (error) {
@@ -227,10 +234,16 @@ async function toWorkspace(row: {
   if (!definition) throw new ProjectServiceError("not_found", "Project not found")
   const tasks = parseStoredProjectTasks(row.tasks, definition)
   const reflection = parseProjectReflection(row.reflection)
-  const [availableWork, evidenceList] = await Promise.all([
-    listLabWork({ userId: row.userId, courseSlug: definition.courseSlug, labSlug: definition.labSlug }),
-    Promise.all(tasks.map((task) => hydrateProjectLabEvidence(row.userId, definition.courseSlug, definition.labSlug, task.labWorkId))),
-  ])
+  const [availableWork, evidenceList] = definition.labSlug
+    ? await Promise.all([
+        listLabWork({ userId: row.userId, courseSlug: definition.courseSlug, labSlug: definition.labSlug }),
+        Promise.all(
+          tasks.map((task) =>
+            hydrateProjectLabEvidence(row.userId, definition.courseSlug, definition.labSlug, task.labWorkId, definition.projectType),
+          ),
+        ),
+      ])
+    : [[], tasks.map(() => null)]
 
   const views: ProjectTaskView[] = definition.tasks.map((task, index) => {
     const stored = tasks[index]!
@@ -245,7 +258,7 @@ async function toWorkspace(row: {
       reflectionField: task.reflectionField,
       status: stored.status,
       completedAt: stored.completedAt,
-      openLabHref: labHref(task),
+      openLabHref: labHref(definition, task),
       evidence: evidenceList[index] ?? null,
       evidenceHint: task.evidenceHint,
     }
@@ -261,6 +274,11 @@ async function toWorkspace(row: {
     context: definition.context,
     brief: [...definition.brief],
     disclaimer: definition.disclaimer,
+    courseTitle: definition.courseTitle,
+    labEnabled: Boolean(definition.labSlug),
+    caseHref: definition.caseHref,
+    reflectionLabels: definition.reflectionLabels,
+    reflectionHints: definition.reflectionHints,
     status: deriveStatus(tasks, row.savedAt),
     progress: { complete: completeCount(tasks), total: tasks.length },
     tasks: views,
@@ -324,17 +342,16 @@ export async function getLearnerProject(userId: string, projectId: string): Prom
   return toWorkspace(row)
 }
 
-function applyReflectionCompletion(tasks: StoredProjectTask[], reflection: ProjectReflection) {
+function applyReflectionCompletion(
+  tasks: StoredProjectTask[],
+  reflection: ProjectReflection,
+  definition: NonNullable<ReturnType<typeof findProjectDefinition>>,
+) {
   const now = new Date().toISOString()
-  const fieldByKey: Record<Extract<ProjectTaskKey, "finding" | "why_it_matters" | "recommendation">, ReflectionField> = {
-    finding: "finding",
-    why_it_matters: "whyItMatters",
-    recommendation: "recommendation",
-  }
-  return tasks.map((task) => {
-    const field = fieldByKey[task.key as keyof typeof fieldByKey]
-    if (!field) return task
-    const ok = reflectionLengthOk(reflection[field])
+  return tasks.map((task, index) => {
+    const def = definition.tasks[index]
+    if (!def || def.completion !== "reflection" || !def.reflectionField) return task
+    const ok = reflectionLengthOk(reflection[def.reflectionField])
     if (ok) {
       return { ...task, status: "complete" as const, completedAt: task.completedAt ?? now }
     }
@@ -403,6 +420,9 @@ export async function attachProjectEvidence(options: {
   await requireProjectCourseAccess(options.userId, definition.courseSlug)
   const taskDef = findProjectTask(row.projectType, options.taskKey)
   if (!taskDef) throw new ProjectServiceError("invalid_request", "Unknown task.")
+  if (!definition.labSlug) {
+    throw new ProjectServiceError("invalid_request", "This project does not use a lab.")
+  }
   if (taskDef.completion === "reflection") {
     throw new ProjectServiceError("invalid_request", "This task is completed by writing, not by attaching lab work.")
   }
@@ -475,7 +495,7 @@ export async function updateProjectReflection(options: {
     whyItMatters: validateReflectionField("Why it matters", options.whyItMatters) ?? current.whyItMatters,
     recommendation: validateReflectionField("Recommendation", options.recommendation) ?? current.recommendation,
   }
-  const tasks = applyReflectionCompletion(parseStoredProjectTasks(row.tasks, definition), reflection)
+  const tasks = applyReflectionCompletion(parseStoredProjectTasks(row.tasks, definition), reflection, definition)
   const savedAt = options.save ? new Date() : row.savedAt
   return persistProject(row, tasks, reflection, savedAt)
 }

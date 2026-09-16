@@ -61,6 +61,11 @@ export type ProjectWorkspace = {
   context: string
   brief: string[]
   disclaimer: string
+  courseTitle: string
+  labEnabled: boolean
+  caseHref: string | null
+  reflectionLabels: { finding: string; whyItMatters: string; recommendation: string }
+  reflectionHints: { finding: string; whyItMatters: string; recommendation: string }
   status: ProjectStatus
   progress: { complete: number; total: number }
   tasks: ProjectTaskView[]

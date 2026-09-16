@@ -228,7 +228,12 @@ function repoRoot(): string {
 }
 
 export function readDaLessonBody(lessonId: string): string {
-  const file = join(repoRoot(), "src/content/data-analytics/lesson-text", `${lessonId}.md`)
+  return readAuthoredLessonBody("data-analytics", lessonId)
+}
+
+export function readAuthoredLessonBody(courseSlug: string, lessonId: string): string {
+  if (courseSlug !== "data-analytics" && courseSlug !== "product-management") return ""
+  const file = join(repoRoot(), "src/content", courseSlug, "lesson-text", `${lessonId}.md`)
   if (!existsSync(file)) return ""
   return readFileSync(file, "utf8")
 }
@@ -244,6 +249,28 @@ export function compactLessonExcerpt(body: string): string {
   return text
 }
 
+export const PM_AI_META: AuthoredMeta[] = [
+  { id: "l1", moduleId: "m1", title: "What product management is for", kind: "notes", objective: "Separate product work from delivery theatre: name the decision a PM is paid to make.", whyItMatters: "If you cannot say whose problem you are choosing, you will ship activity instead of a product.", concepts: ["problem vs solution", "outcome vs output"], practicalOutput: "One sentence: the decision this course trains, and one thing it does not claim.", assessment: "Knowledge check; l3 quiz." },
+  { id: "l2", moduleId: "m1", title: "Problems, users, and outcomes", kind: "notes", objective: "Rewrite a vague request into user, job, outcome, and constraint using Harbor Desk.", whyItMatters: "Teams argue about features when they have not agreed who is struggling.", concepts: ["user", "job-to-be-done", "outcome", "constraint"], practicalOutput: "Four rewritten asks, including one refusal.", assessment: "Knowledge check; l3 quiz." },
+  { id: "l3", moduleId: "m1", title: "Product thinking check", kind: "quiz", objective: "Prove you can tell a problem from a solution and an outcome from an output.", whyItMatters: "Later briefs assume this vocabulary.", concepts: ["scenario questions"], practicalOutput: "Quiz attempt (all five correct).", assessment: "5 MCQs." },
+  { id: "l4", moduleId: "m2", title: "Talking to users without leading them", kind: "notes", objective: "Turn a leading question into a past-behaviour question and extract a usable quote.", whyItMatters: "Past behaviour is evidence. Hypothetical product love is not.", concepts: ["past behaviour", "leading questions"], practicalOutput: "Two rewritten questions and one labelled quote.", assessment: "Assignment l6." },
+  { id: "l5", moduleId: "m2", title: "Evidence, not opinions", kind: "notes", objective: "Sort Harbor Desk notes into observation, inference, and opinion.", whyItMatters: "A backlog of opinions is not discovery.", concepts: ["observation", "inference", "opinion", "gap"], practicalOutput: "A three-column sort and one explicit gap.", assessment: "Assignment l6." },
+  { id: "l6", moduleId: "m2", title: "Research note — Harbor Desk interviews", kind: "assignment", objective: "Write a research note: who you heard, jobs, quotes, unknowns.", whyItMatters: "Evidence before a recommendation.", concepts: ["interview synthesis"], practicalOutput: "Research note.", assessment: "Rubric. No faculty grading." },
+  { id: "l7", moduleId: "m3", title: "Problem statements that can be tested", kind: "notes", objective: "Write a problem statement with user, context, pain, and a next-month check.", whyItMatters: "Unfalsifiable slogans cannot guide a bet.", concepts: ["testable problem"], practicalOutput: "One Harbor Desk problem statement.", assessment: "l9 quiz." },
+  { id: "l8", moduleId: "m3", title: "Jobs, constraints, and non-goals", kind: "notes", objective: "Name the job, the hard constraint, and three non-goals.", whyItMatters: "Without non-goals every adjacent request becomes the product.", concepts: ["job story", "constraint", "non-goal"], practicalOutput: "Job + constraint + three non-goals.", assessment: "l9 quiz." },
+  { id: "l9", moduleId: "m3", title: "Framing check", kind: "quiz", objective: "Prove you can reject a solution-shaped brief.", whyItMatters: "The priority memo assumes you can hold the frame.", concepts: ["framing"], practicalOutput: "Quiz attempt.", assessment: "5 MCQs." },
+  { id: "l10", moduleId: "m4", title: "Opportunity versus solution", kind: "notes", objective: "Split Harbor Desk into opportunity and solution, plus two alternatives.", whyItMatters: "An inbox is one bet, not the job.", concepts: ["opportunity", "solution"], practicalOutput: "One opportunity, Harbor Desk, two alternatives.", assessment: "Assignment l12." },
+  { id: "l11", moduleId: "m4", title: "Choosing one bet", kind: "notes", objective: "Score three options against reach, evidence, and effort, then cut.", whyItMatters: "Two engineers and six weeks cannot build an ERP.", concepts: ["reach", "effort", "kill criteria"], practicalOutput: "Score table and one-sentence bet.", assessment: "Assignment l12." },
+  { id: "l12", moduleId: "m4", title: "Priority memo — Harbor Desk", kind: "assignment", objective: "Recommend one bet under the stated constraint.", whyItMatters: "A decision, not a feature list.", concepts: ["prioritisation"], practicalOutput: "One-page memo.", assessment: "Rubric." },
+  { id: "l13", moduleId: "m5", title: "Writing a specification someone can build", kind: "notes", objective: "Write a thin spec: trigger, happy path, one edge, out of scope.", whyItMatters: "Ambiguity becomes whatever engineering invents on Thursday.", concepts: ["spec", "acceptance"], practicalOutput: "One-screen spec.", assessment: "Capstone l14." },
+  { id: "l14", moduleId: "m5", title: "Capstone — Harbor Desk product case", kind: "assignment", objective: "Produce an end-to-end product case.", whyItMatters: "Progress percent is not competence.", concepts: ["product case"], practicalOutput: "Product-case memo.", assessment: "Capstone rubric." },
+  { id: "l15", moduleId: "m5", title: "Final check", kind: "quiz", objective: "Check judgement on evidence, framing, scope, and honesty.", whyItMatters: "The last quiz should not be trivia.", concepts: ["scenario questions"], practicalOutput: "Quiz attempt.", assessment: "5 MCQs." },
+]
+
+export function getPmAiMeta(lessonId: string): AuthoredMeta | undefined {
+  return PM_AI_META.find((row) => row.id === lessonId)
+}
+
 export function getDaAiMeta(lessonId: string): AuthoredMeta | undefined {
   return DA_AI_META.find((row) => row.id === lessonId)
 }
@@ -256,9 +283,11 @@ export function buildLessonAiContext(input: {
   lessonTitle: string
   lessonKind: string
 }): LessonAiContext {
-  const authored = input.courseSlug === "data-analytics"
-  const meta = authored ? getDaAiMeta(input.lessonId) : undefined
-  const body = authored ? readDaLessonBody(input.lessonId) : ""
+  const isDa = input.courseSlug === "data-analytics"
+  const isPm = input.courseSlug === "product-management"
+  const authored = isDa || isPm
+  const meta = isDa ? getDaAiMeta(input.lessonId) : isPm ? getPmAiMeta(input.lessonId) : undefined
+  const body = authored ? readAuthoredLessonBody(input.courseSlug, input.lessonId) : ""
   const excerpt = authored ? compactLessonExcerpt(body) : ""
 
   return {
@@ -274,14 +303,16 @@ export function buildLessonAiContext(input: {
     concepts: meta?.concepts ?? [],
     practicalOutput: meta?.practicalOutput ?? "",
     assessment: meta?.assessment ?? "",
-    datasets: authored
+    datasets: isDa
       ? DA_DATASETS.filter((item) => item.usedIn.includes(input.lessonId)).map((item) => ({
           filename: item.filename,
           rows: item.rows,
           notes: item.notes,
         }))
-      : [],
-    northwind: authored
+      : isPm
+        ? [{ filename: "harbor-desk-case.md", rows: 9, notes: "Fictional Harbor Retail operations case. Not a sales extract." }]
+        : [],
+    northwind: isDa
       ? {
           filename: NORTHWIND_FACTS.filename,
           rows: NORTHWIND_FACTS.rows,

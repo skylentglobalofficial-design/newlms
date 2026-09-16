@@ -14,7 +14,7 @@ export const PROJECT_TASK_KEYS = [
   "recommendation",
 ] as const
 
-export type ProjectTaskKey = (typeof PROJECT_TASK_KEYS)[number]
+export type ProjectTaskKey = string
 export type ProjectStatus = "not_started" | "in_progress" | "saved" | "ready_to_review"
 export type ProjectTaskStatus = "open" | "complete"
 export type ProjectTool = "analysis" | "sql" | "evidence" | "reflection"
@@ -56,6 +56,18 @@ export const NORTHWIND_PROJECT_DEF = {
   careerContext: "Data Analytics",
   careerSummary: "A practical analysis of a fictional Northwind sales extract.",
   workspaceHref: "/os/projects/data-analytics/northwind-commercial-review",
+  courseTitle: "Data Analytics",
+  caseHref: null as string | null,
+  reflectionLabels: {
+    finding: "Finding",
+    whyItMatters: "Why it matters",
+    recommendation: "Recommendation",
+  },
+  reflectionHints: {
+    finding: "What did the data show?",
+    whyItMatters: "Why should someone care?",
+    recommendation: "What action would you suggest based on the evidence?",
+  },
   demonstratedWork: [
     "data validation",
     "SQL analysis",
@@ -141,9 +153,130 @@ export const NORTHWIND_PROJECT_DEF = {
   ] satisfies ProjectTaskDefinition[],
 } as const
 
+export const HARBOR_DESK_PROJECT_TYPE = "harbor-desk-case" as const
+export const HARBOR_DESK_PROJECT_COURSE = "product-management"
+
+export const HARBOR_DESK_PROJECT_DEF = {
+  projectType: HARBOR_DESK_PROJECT_TYPE,
+  courseSlug: HARBOR_DESK_PROJECT_COURSE,
+  labSlug: null,
+  title: "Harbor Desk product case",
+  goal: "Frame the Harbor Retail operations problem and recommend one constrained product bet, with a spec someone could implement.",
+  dataset: "harbor-desk-case.md",
+  disclaimer:
+    "This is learner work on a fictional Harbor Retail operations case. It is not a certificate, not employer-validated, and not published.",
+  brief: [
+    "Read the Harbor Desk case notes.",
+    "Frame the problem from store jobs, not from Gmail.",
+    "Write the evidence-backed problem.",
+    "Name the user job and outcome.",
+    "Choose one bet under the six-week constraint.",
+    "Write the recommendation / spec-level bet.",
+  ],
+  context:
+    "Use the case notes in the course. There is no SQL lab on this project. Write the product case in your own words. This brief does not contain the answer.",
+  careerContext: "Product Management",
+  careerSummary: "A product case on a fictional Harbor Retail operations problem.",
+  workspaceHref: "/os/projects/product-management/harbor-desk-case",
+  courseTitle: "Product Management",
+  caseHref: "/content/product-management/harbor-desk-case.md",
+  reflectionLabels: {
+    finding: "Problem and evidence",
+    whyItMatters: "User job and outcome",
+    recommendation: "The bet",
+  },
+  reflectionHints: {
+    finding: "What problem did the case actually support?",
+    whyItMatters: "Whose job gets easier, and how would you know?",
+    recommendation: "Which one bet fits two engineers and six weeks — and what will you not build?",
+  },
+  demonstratedWork: [
+    "interview synthesis",
+    "problem framing",
+    "prioritisation under a constraint",
+    "thin specification",
+    "evidence-based recommendation",
+  ],
+  demonstratedSkills: ["Product discovery", "Problem framing", "Prioritisation", "Business communication"],
+  careerEvidence: [
+    { taskKey: "finding", title: "Problem and evidence" },
+    { taskKey: "recommendation", title: "Product bet" },
+  ] as const,
+  tasks: [
+    {
+      key: "read_case",
+      number: "01",
+      title: "Read the case",
+      summary: "Open the Harbor Desk notes. Do not invent interviews.",
+      tool: "evidence",
+      toolLabel: "Case notes",
+      completion: "explicit",
+      evidenceHint: "Read harbor-desk-case.md, then mark this task complete.",
+    },
+    {
+      key: "frame_problem",
+      number: "02",
+      title: "Frame the problem",
+      summary: "Separate store jobs from the requested Gmail solution.",
+      tool: "evidence",
+      toolLabel: "Framing",
+      completion: "explicit",
+      evidenceHint: "Name the user and the job without saying inbox, then mark complete.",
+    },
+    {
+      key: "finding",
+      number: "03",
+      title: "Write the problem and evidence",
+      summary: "What did the notes and exception log actually show?",
+      tool: "reflection",
+      toolLabel: "Product case",
+      completion: "reflection",
+      reflectionField: "finding",
+      evidenceHint: "Cite quotes or exception IDs. Do not invent revenue.",
+    },
+    {
+      key: "why_it_matters",
+      number: "04",
+      title: "Name the job and outcome",
+      summary: "Whose work gets easier, and how would you know?",
+      tool: "reflection",
+      toolLabel: "Product case",
+      completion: "reflection",
+      reflectionField: "whyItMatters",
+      evidenceHint: "Write a job and a countable outcome.",
+    },
+    {
+      key: "one_bet",
+      number: "05",
+      title: "Choose one bet",
+      summary: "Pick one option under two engineers and six weeks.",
+      tool: "evidence",
+      toolLabel: "Prioritisation",
+      completion: "explicit",
+      evidenceHint: "Name the bet and a non-goal, then mark complete.",
+    },
+    {
+      key: "recommendation",
+      number: "06",
+      title: "Write the recommendation",
+      summary: "What should Harbor Retail do next, and what is out of scope?",
+      tool: "reflection",
+      toolLabel: "Product case",
+      completion: "reflection",
+      reflectionField: "recommendation",
+      evidenceHint: "Recommend one action that fits the constraint.",
+    },
+  ] satisfies ProjectTaskDefinition[],
+} as const
+
+export const PROJECT_DEFS = [NORTHWIND_PROJECT_DEF, HARBOR_DESK_PROJECT_DEF] as const
+
 export function findProjectDefinition(projectType: string) {
-  if (projectType === NORTHWIND_PROJECT_DEF.projectType) return NORTHWIND_PROJECT_DEF
-  return null
+  return PROJECT_DEFS.find((row) => row.projectType === projectType) ?? null
+}
+
+export function findProjectByCourse(courseSlug: string) {
+  return PROJECT_DEFS.find((row) => row.courseSlug === courseSlug) ?? null
 }
 
 export function findProjectTask(projectType: string, taskKey: string) {
@@ -151,6 +284,10 @@ export function findProjectTask(projectType: string, taskKey: string) {
   return definition?.tasks.find((task) => task.key === taskKey) ?? null
 }
 
-export function isProjectTaskKey(value: string): value is ProjectTaskKey {
-  return (PROJECT_TASK_KEYS as readonly string[]).includes(value)
+export function isProjectTaskKey(value: string): boolean {
+  return PROJECT_DEFS.some((definition) => definition.tasks.some((task) => task.key === value))
+}
+
+export function projectWorkspacePath(courseSlug: string, projectType: string) {
+  return `/os/projects/${courseSlug}/${projectType}`
 }

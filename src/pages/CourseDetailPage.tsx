@@ -1,17 +1,14 @@
 import { useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
-import { CourseWorkspacePreview, ModuleLane, NorthwindWorkspace, ProductFrame } from "../components/product/ProductLanguage"
+import { CourseProductVisual, CourseWorkspacePreview, ModuleLane, ProductFrame } from "../components/product/ProductLanguage"
 import {
-  AUTHORED_DATASETS,
-  AUTHORED_FAQ,
-  AUTHORED_PREREQUISITE,
-  AUTHORED_TOOLS,
   courseAfterEnrolSteps,
   courseModuleCards,
   coursePracticeGroups,
   coursePublicView,
 } from "../lib/catalog-maturity"
+import { courseProductProfile } from "../lib/course-product"
 import { courses } from "../data"
 import { useCatalogCourse } from "../hooks/useCatalog"
 import "./Catalog.css"
@@ -38,10 +35,11 @@ export default function CourseDetailPage() {
   }
 
   const view = coursePublicView(course)
+  const profile = courseProductProfile(course.slug)
   const enrollable = Boolean(catalog.data)
   const modules = courseModuleCards(course, view.showLiveCurriculum)
   const practice = coursePracticeGroups(course)
-  const afterEnrol = courseAfterEnrolSteps(view.showLiveCurriculum)
+  const afterEnrol = courseAfterEnrolSteps(view.showLiveCurriculum, view.title)
   const cta = enrollCta(enrollable, catalog.loading, view.primaryCta)
 
   function openEnrol() {
@@ -98,9 +96,10 @@ export default function CourseDetailPage() {
                   courseTitle={view.title}
                   lessonTitle={course.modules[0]?.lessons[0]?.title ?? "Open the first lesson"}
                   practiceTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")?.title ?? "A short check"}
-                  workTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => /capstone/i.test(lesson.title))?.title ?? "Capstone"}
+                  workTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => /capstone|product case/i.test(lesson.title))?.title ?? "Capstone"}
                   modules={course.modules.map((module) => module.title)}
                   lessonCount={view.stats.lessonCount}
+                  visual={profile?.visual === "harbor-desk" ? "harbor-desk" : "northwind"}
                 />
               </div>
             ) : (
@@ -170,7 +169,11 @@ export default function CourseDetailPage() {
           <section className="cat-section">
             <div className="cat-rail">
               <h2>What you will practise and build</h2>
-              <p className="cat-fine">Practice uses a synthetic Northwind Retail dataset. There is no live classroom and no video stream.</p>
+              <p className="cat-fine">
+                {view.showLiveCurriculum
+                  ? profile?.practiceIntro ?? "Practice is written work in Skylent OS. There is no live classroom and no video stream."
+                  : "Titles below are an outline, not a finished teaching path."}
+              </p>
               <div className="cat-practice">
                 <article>
                   <h3>Learning</h3>
@@ -206,20 +209,21 @@ export default function CourseDetailPage() {
           <section className="cat-section">
             <div className="cat-rail">
               <h2>What you work on</h2>
-              <p className="cat-fine">Prerequisite: {AUTHORED_PREREQUISITE}</p>
+              <p className="cat-fine">Prerequisite: {profile?.prerequisite}</p>
               <ul className="cat-tools">
-                {AUTHORED_TOOLS.map((item) => <li key={item}>{item}</li>)}
+                {profile?.tools.map((item) => <li key={item}>{item}</li>)}
               </ul>
               <ul className="cat-tools">
-                {AUTHORED_DATASETS.map((item) => (
+                {profile?.datasets.map((item) => (
                   <li key={item.filename}>{item.filename}</li>
                 ))}
               </ul>
-              {AUTHORED_DATASETS.map((item) => (
+              {profile?.datasets.map((item) => (
                 <p className="cat-fine" key={item.detail}>{item.detail}</p>
               ))}
+              {profile?.labOmission ? <p className="cat-fine">{profile.labOmission}</p> : null}
               <div className="cat-stage-visual">
-                <NorthwindWorkspace />
+                {profile ? <CourseProductVisual visual={profile.visual} /> : null}
               </div>
             </div>
           </section>
@@ -238,7 +242,7 @@ export default function CourseDetailPage() {
               <>
                 <h2>Before you enrol</h2>
                 <div className="cat-faq">
-                  {AUTHORED_FAQ.map((item) => (
+                  {(profile?.faq ?? []).map((item) => (
                     <details key={item.q}>
                       <summary>{item.q}</summary>
                       <p>{item.a}</p>
@@ -254,7 +258,7 @@ export default function CourseDetailPage() {
           <div className="cat-rail">
             <div className="cat-final-card">
               <div>
-                <h2>{view.showLiveCurriculum ? "Start Data Analytics" : `Open ${view.title}`}</h2>
+                <h2>{view.showLiveCurriculum ? profile?.ctaTitle ?? `Start ${view.title}` : `Open ${view.title}`}</h2>
                 <p>
                   {view.showLiveCurriculum
                     ? "Enrolment does not collect payment. It opens the written course in Skylent OS."

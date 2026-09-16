@@ -44,6 +44,7 @@ export type CareerEvidenceProject = {
   evidence: CareerEvidenceItem[]
   evidenceCount: number
   reflection: ProjectReflection
+  reflectionLabels: { finding: string; whyItMatters: string; recommendation: string }
   completedTasks: Array<{ key: string; title: string; number: string }>
   eligible: boolean
   incompleteMessage: string | null
@@ -106,6 +107,7 @@ async function hydrateFromSource(options: {
       evidence: [],
       evidenceCount: 0,
       reflection: emptyReflection(),
+      reflectionLabels: { finding: "Finding", whyItMatters: "Why it matters", recommendation: "Recommendation" },
       completedTasks: [],
       eligible: false,
       incompleteMessage: INCOMPLETE_LINKED_MESSAGE,
@@ -131,14 +133,25 @@ async function hydrateFromSource(options: {
       definition.courseSlug,
       definition.labSlug,
       stored?.labWorkId ?? null,
+      definition.projectType,
     )
-    if (!lab) continue
-    evidence.push({
-      key: item.taskKey,
-      title: item.title,
-      source: lab.source,
-      viewHref: lab.viewHref,
-    })
+    if (lab) {
+      evidence.push({
+        key: item.taskKey,
+        title: item.title,
+        source: lab.source,
+        viewHref: lab.viewHref,
+      })
+      continue
+    }
+    if (!definition.labSlug && stored?.status === "complete") {
+      evidence.push({
+        key: item.taskKey,
+        title: item.title,
+        source: "Written project",
+        viewHref: definition.workspaceHref,
+      })
+    }
   }
 
   const hasReflection = Boolean(
@@ -161,6 +174,7 @@ async function hydrateFromSource(options: {
     evidence,
     evidenceCount,
     reflection,
+    reflectionLabels: definition.reflectionLabels,
     completedTasks,
     eligible,
     incompleteMessage: eligible ? null : INCOMPLETE_LINKED_MESSAGE,

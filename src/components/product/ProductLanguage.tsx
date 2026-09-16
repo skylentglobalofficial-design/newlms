@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
-import { getDaLessonMeta } from "../../content/data-analytics/lessons"
+import { getLessonMeta } from "../../content/course-lookups"
+import { PRODUCT_MANAGEMENT_SLUG } from "../../lib/authored-courses"
 import { formatInr, NORTHWIND_PREVIEW as NW } from "../../lib/northwind-preview"
 import "./ProductLanguage.css"
 
@@ -124,6 +125,73 @@ export function NorthwindWorkspace({ compact = false }: { compact?: boolean }) {
   )
 }
 
+const HARBOR = {
+  stores: 12,
+  interviews: 4,
+  weekendExceptions: 9,
+  unlogged: 3,
+  constraint: "2 engineers · 6 weeks",
+  bet: "Weekend exception queue",
+} as const
+
+function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={compact ? "pl-hd is-compact" : "pl-hd"}>
+      <div className="pl-stat-row" aria-label="Harbor Desk case">
+        <VisualStat label="Stores" value={String(HARBOR.stores)} />
+        <VisualStat label="Interviews" value={String(HARBOR.interviews)} />
+        <VisualStat label="Weekend exceptions" value={String(HARBOR.weekendExceptions)} />
+      </div>
+      <ol className="pl-hd-flow" aria-label="Product case path">
+        <li>
+          <span>01</span>
+          <strong>Evidence</strong>
+          <p>Quotes and the exception log — not a solution name.</p>
+        </li>
+        <li>
+          <span>02</span>
+          <strong>Frame</strong>
+          <p>A testable problem with a user and a pain.</p>
+        </li>
+        <li>
+          <span>03</span>
+          <strong>One bet</strong>
+          <p>{HARBOR.bet} under {HARBOR.constraint}.</p>
+        </li>
+        <li>
+          <span>04</span>
+          <strong>Spec</strong>
+          <p>Trigger, happy path, one edge, out of scope.</p>
+        </li>
+      </ol>
+      {!compact ? (
+        <p className="pl-fine">
+          {HARBOR.unlogged} of {HARBOR.weekendExceptions} weekend exceptions never appeared in a channel. Fictional Harbor Retail — not Northwind.
+        </p>
+      ) : null}
+    </div>
+  )
+}
+
+export function HarborDeskWorkspace({ compact = false }: { compact?: boolean }) {
+  return (
+    <ProductFrame title="Product Management" meta="harbor-desk-case.md · fictional ops" compact={compact}>
+      <HarborDeskBoard compact={compact} />
+    </ProductFrame>
+  )
+}
+
+export function CourseProductVisual({
+  visual,
+  compact = false,
+}: {
+  visual: "northwind" | "harbor-desk"
+  compact?: boolean
+}) {
+  if (visual === "harbor-desk") return <HarborDeskWorkspace compact={compact} />
+  return <NorthwindWorkspace compact={compact} />
+}
+
 export function CourseWorkspacePreview({
   courseTitle,
   lessonTitle,
@@ -131,6 +199,7 @@ export function CourseWorkspacePreview({
   workTitle,
   modules,
   lessonCount,
+  visual = "northwind",
 }: {
   courseTitle: string
   lessonTitle: string
@@ -138,6 +207,7 @@ export function CourseWorkspacePreview({
   workTitle: string
   modules: string[]
   lessonCount?: number
+  visual?: "northwind" | "harbor-desk"
 }) {
   return (
     <ProductFrame
@@ -163,28 +233,54 @@ export function CourseWorkspacePreview({
               {workTitle}
             </p>
           </div>
-          <div className="pl-ws-extract" aria-label="Northwind extract">
-            <p className="pl-kicker">{NW.filename}</p>
-            <div className="pl-stat-row">
-              <VisualStat label="Valid rows" value={String(NW.validRows)} />
-              <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
-              <VisualStat label="Top category" value={NW.topCategory} />
+          {visual === "harbor-desk" ? (
+            <div className="pl-ws-extract" aria-label="Harbor Desk case">
+              <p className="pl-kicker">harbor-desk-case.md</p>
+              <HarborDeskBoard compact />
             </div>
-            <div className="pl-ws-viz">
-              <Spark mini />
-              <NorthwindTable />
+          ) : (
+            <div className="pl-ws-extract" aria-label="Northwind extract">
+              <p className="pl-kicker">{NW.filename}</p>
+              <div className="pl-stat-row">
+                <VisualStat label="Valid rows" value={String(NW.validRows)} />
+                <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
+                <VisualStat label="Top category" value={NW.topCategory} />
+              </div>
+              <div className="pl-ws-viz">
+                <Spark mini />
+                <NorthwindTable />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </ProductFrame>
   )
 }
 
-export function CourseThumb({ authored }: { authored: boolean }) {
+export function CourseThumb({
+  authored,
+  visual = "northwind",
+}: {
+  authored: boolean
+  visual?: "northwind" | "harbor-desk"
+}) {
   return (
     <div className={authored ? "pl-thumb is-live" : "pl-thumb"} aria-hidden="true">
-      {authored ? (
+      {authored && visual === "harbor-desk" ? (
+        <>
+          <div className="pl-thumb-kpis">
+            <b>{HARBOR.weekendExceptions} exceptions</b>
+            <span>{HARBOR.constraint}</span>
+          </div>
+          <ol className="pl-hd-mini">
+            <li />
+            <li />
+            <li />
+            <li />
+          </ol>
+        </>
+      ) : authored ? (
         <>
           <div className="pl-thumb-kpis">
             <b>{NW.netRevenueLabel}</b>
@@ -232,14 +328,14 @@ export function LearnFlow({
             ) : null}
             {step.kind === "build" ? (
               <>
-                <em>{NW.filename}</em>
+                <em>Practical work</em>
                 <Spark mini />
               </>
             ) : null}
             {step.kind === "keep" ? (
               <div className="pl-flow-keep">
                 <em>Work sample</em>
-                <strong>Northwind commercial review</strong>
+                <strong>Keep what you produced</strong>
               </div>
             ) : null}
           </div>
@@ -311,8 +407,10 @@ export function moduleVisualKind(title: string, countsLabel = "") {
   const hay = `${title} ${countsLabel}`
   if (/sql/i.test(hay)) return "sql" as const
   if (/dashboard/i.test(hay)) return "chart" as const
-  if (/capstone|applied project/i.test(hay)) return "build" as const
+  if (/capstone|applied project|specification|product case/i.test(hay)) return "build" as const
   if (/spread|sheet/i.test(hay)) return "sheet" as const
+  if (/user|evidence|research/i.test(hay)) return "research" as const
+  if (/priorit|fram|thinking/i.test(hay)) return "frame" as const
   return "learn" as const
 }
 
@@ -335,7 +433,25 @@ function ModuleVisual({ kind }: { kind: ReturnType<typeof moduleVisualKind> }) {
     )
   }
   if (kind === "build") {
-    return <span className="pl-lane-doc">Northwind review</span>
+    return <span className="pl-lane-doc">Work sample</span>
+  }
+  if (kind === "frame") {
+    return (
+      <ol className="pl-hd-mini" aria-hidden="true">
+        <li />
+        <li />
+        <li />
+        <li />
+      </ol>
+    )
+  }
+  if (kind === "research") {
+    return (
+      <div className="pl-lane-quote" aria-hidden="true">
+        <span />
+        <span />
+      </div>
+    )
   }
   return (
     <div className="pl-lane-lines" aria-hidden="true">
@@ -367,17 +483,26 @@ export function ModuleLane({ modules }: { modules: ModuleLaneItem[] }) {
   )
 }
 
-export function LessonContextPanel({ lessonId }: { lessonId: string }) {
-  const meta = getDaLessonMeta(lessonId)
+export function LessonContextPanel({ courseSlug, lessonId }: { courseSlug: string; lessonId: string }) {
+  const meta = getLessonMeta(courseSlug, lessonId)
   if (!meta) return null
   const haystack = `${meta.title} ${meta.concepts.join(" ")} ${meta.objective}`
-  const visual = /sql|select|join/i.test(haystack)
-    ? "sql"
-    : /dashboard|chart|pivot|stand-up/i.test(haystack)
-      ? "chart"
-      : /northwind|spreadsheet|dataset|valid row|revenue/i.test(haystack)
-        ? "dataset"
-        : "none"
+  const isProduct = courseSlug === PRODUCT_MANAGEMENT_SLUG
+  const visual = isProduct
+    ? /spec|accept|happy path/i.test(haystack)
+      ? "spec"
+      : /priorit|bet|score/i.test(haystack)
+        ? "bet"
+        : /interview|quote|evidence|research|job/i.test(haystack)
+          ? "case"
+          : "case"
+    : /sql|select|join/i.test(haystack)
+      ? "sql"
+      : /dashboard|chart|pivot|stand-up/i.test(haystack)
+        ? "chart"
+        : /northwind|spreadsheet|dataset|valid row|revenue/i.test(haystack)
+          ? "dataset"
+          : "none"
 
   return (
     <aside className="pl-lesson-ctx">
@@ -399,6 +524,22 @@ export function LessonContextPanel({ lessonId }: { lessonId: string }) {
             <VisualStat label="Top category" value={NW.topCategory} />
           </div>
           {visual === "chart" ? <Spark mini /> : <NorthwindTable />}
+        </div>
+      ) : null}
+      {visual === "case" || visual === "bet" || visual === "spec" ? (
+        <div className="pl-lesson-extract" aria-label="Harbor Desk case">
+          <div className="pl-stat-row">
+            <VisualStat label="Stores" value={String(HARBOR.stores)} />
+            <VisualStat label="Exceptions" value={String(HARBOR.weekendExceptions)} />
+            <VisualStat label="Unlogged" value={String(HARBOR.unlogged)} />
+          </div>
+          {visual === "spec" ? (
+            <p className="pl-fine">Thin spec: trigger, happy path, one edge, out of scope. Not Gmail.</p>
+          ) : visual === "bet" ? (
+            <p className="pl-fine">{HARBOR.bet} — {HARBOR.constraint}. Not an ERP.</p>
+          ) : (
+            <p className="pl-fine">harbor-desk-case.md · {HARBOR.interviews} interviews · fictional Harbor Retail</p>
+          )}
         </div>
       ) : null}
     </aside>

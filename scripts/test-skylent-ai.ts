@@ -1,15 +1,18 @@
 import "dotenv/config"
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http"
 import { DA_LESSON_META } from "../src/content/data-analytics/lessons.ts"
+import { PM_LESSON_META } from "../src/content/product-management/lessons.ts"
 import { DATA_ANALYTICS_DATASETS } from "../src/content/data-analytics/datasets.ts"
 import { NORTHWIND_PREVIEW } from "../src/lib/northwind-preview.ts"
 import {
   DA_AI_META,
+  PM_AI_META,
   DA_DATASETS,
   NORTHWIND_FACTS,
   buildLessonAiContext,
   compactLessonExcerpt,
   readDaLessonBody,
+  readAuthoredLessonBody,
 } from "../server/src/lib/skylent-ai/authored.ts"
 import {
   createLessonGroundedProvider,
@@ -233,6 +236,21 @@ async function main() {
   assert(!formatted.includes("northwind_hr.csv"), "l1 formatted context must omit HR")
   assert(formatted.length < 8_000, "l1 context should stay compact")
   assert(readDaLessonBody("l1").includes("Northwind Retail"), "lesson body should be read from disk")
+  const pmContext = buildLessonAiContext({
+    courseSlug: "product-management",
+    courseTitle: "Product Management",
+    moduleTitle: "Product thinking",
+    lessonId: "l1",
+    lessonTitle: "What product management is for",
+    lessonKind: "notes",
+  })
+  assert(pmContext.authored, "Product Management l1 should be authored")
+  assert(pmContext.northwind === null, "Product Management must not attach Northwind facts")
+  assert(pmContext.datasets.some((row) => row.filename === "harbor-desk-case.md"), "Harbor Desk case attached")
+  assert(/Harbor/i.test(pmContext.excerpt), "PM excerpt should teach Harbor Desk")
+  assert(!/northwind_sales|₹812,020/i.test(pmContext.excerpt), "PM excerpt must not leak Northwind")
+  assert(readAuthoredLessonBody("product-management", "l1").includes("Harbor Retail"), "PM lesson body should be read from disk")
+  assert(PM_AI_META.length === PM_LESSON_META.length, "PM AI meta length")
   const sqlLesson = buildLessonAiContext({
     courseSlug: "data-analytics",
     courseTitle: "Data Analytics",

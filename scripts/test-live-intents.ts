@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs"
 import { courses } from "../src/data.ts"
 import {
   AUTHORED_COURSE_SLUG,
@@ -48,7 +49,7 @@ assert(
 )
 assert(
   data.filter((row) => row.depth === "authored").every((row) => row.slug === AUTHORED_COURSE_SLUG),
-  "Only Data Analytics may be marked authored",
+  "Only Data Analytics may be marked authored under Work with data",
 )
 
 const python = data.find((row) => /python for data/i.test(row.title))
@@ -61,9 +62,12 @@ assert(
   product.every((row) => /product/i.test(row.title)),
   "Shape products matches must be product catalogue rows",
 )
+assert(product[0]?.slug === "product-management", "Shape products must lead with Product Management")
+assert(product[0]?.depth === "authored", "Product Management is the authored course for Shape products")
+assert(product[0]?.actionLabel === "Start with this course", "Product Management CTA must be Start with this course")
 assert(
-  product.every((row) => row.depth === "listing"),
-  "Shape products matches are not fully authored learning",
+  product.filter((row) => row.depth === "authored").every((row) => row.slug === "product-management"),
+  "Only Product Management may be marked authored under Shape products",
 )
 
 const ai = liveMatchesForIntent("ai")
@@ -78,6 +82,8 @@ assert(
 
 const flagship = courses.find((course) => course.slug === AUTHORED_COURSE_SLUG)
 assert(flagship, "Data Analytics must exist in the static catalogue")
+const pm = courses.find((course) => course.slug === "product-management")
+assert(pm, "Product Management must exist in the static catalogue")
 
 for (const id of ["data", "software", "ai", "product"] as const) {
   const matches = liveMatchesForIntent(id)
@@ -127,8 +133,24 @@ assert(
   "Build software capabilities must not be taken from data-science catalogue rows",
 )
 
+const productCaps = capabilitiesForIntent("product")
+assert(
+  productCaps.every((statement) => pm!.outcomes.includes(statement)),
+  "Shape products capabilities must come from Product Management outcomes",
+)
+assert(
+  productCaps.every((statement) => !/sql|power bi|python|machine learning/i.test(statement)),
+  "Shape products must not advertise untaught analytics or ML capabilities",
+)
 assert(isLearnIntentId("data") && isLearnIntentId("software") && isLearnIntentId("ai") && isLearnIntentId("product"), "supported intents must parse")
 assert(!isLearnIntentId("design") && !isLearnIntentId("create"), "Skills must not invent unsupported intents")
+
+const skillsSource = readFileSync(new URL("../src/pages/SkillsPage.tsx", import.meta.url), "utf8")
+assert(
+  !/Taken from the Data Analytics course outcomes/.test(skillsSource),
+  "Skills must attribute authored outcomes to the matched course, not only Data Analytics",
+)
+assert(/ready\.map\(\(match\) => match\.title\)/.test(skillsSource), "Skills authored attribution must use match titles")
 
 console.log("live-intents ok")
 console.log({
@@ -136,6 +158,5 @@ console.log({
   data: titles("data"),
   ai: titles("ai"),
   product: titles("product"),
-  softwareCaps,
-  dataCaps,
+  productCaps,
 })

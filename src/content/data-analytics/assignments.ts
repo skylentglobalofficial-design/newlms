@@ -3,8 +3,10 @@ export type AssignmentBrief = {
   title: string;
   scenario: string;
   objective: string;
-  datasetHref: string;
-  datasetName: string;
+  datasetHref?: string;
+  datasetName?: string;
+  caseHref?: string;
+  caseName?: string;
   instructions: string[];
   requiredOutput: string[];
   submissionFormat: string;
