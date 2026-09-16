@@ -6,6 +6,7 @@ import { inferColumnType, loadSalesRows } from "../dataset.js"
 import { EXPENSIVE_QUERY_MESSAGE, MAX_SQL_RESULT_COLS, MAX_SQL_RESULT_ROWS, MAX_SQL_STORED_PREVIEW_ROWS, NORTHWIND_SQL_DIALECT, NORTHWIND_SQL_TABLE, SQL_HEAP_LIMIT_BYTES, SQL_OPERATION, SQL_TIMEOUT_MS } from "./limits.js"
 import { learnerSqlMessage, NorthwindSqlError } from "./errors.js"
 import { validateNorthwindSql } from "./validate.js"
+import { buildLabChart } from "./chart.js"
 import type { LabSqlRunResult, LabSqlStoredPreview } from "../types.js"
 
 type SqlJsStatic = Awaited<ReturnType<typeof initSqlJs>>
@@ -91,7 +92,7 @@ function expensive(): never {
   throw new NorthwindSqlError("expensive", EXPENSIVE_QUERY_MESSAGE)
 }
 
-function runOnDatabase(db: Database, sql: string): Omit<LabSqlRunResult, "query" | "operation" | "operationLabel" | "dataset" | "dialect" | "table"> {
+function runOnDatabase(db: Database, sql: string): Pick<LabSqlRunResult, "columns" | "rows" | "rowCount" | "truncated" | "durationMs"> {
   applyReadOnlyGuards(db)
   const started = Date.now()
   let stmt: ReturnType<Database["prepare"]> | null = null
@@ -148,6 +149,7 @@ export async function runNorthwindSql(input: string): Promise<LabSqlRunResult> {
       table: NORTHWIND_SQL_TABLE,
       query: sql,
       ...executed,
+      chart: buildLabChart(executed.columns, executed.rows),
     }
   } finally {
     db.close()

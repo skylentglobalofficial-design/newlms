@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type KeyboardEvent } from "react"
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { workspaceErrorMessage } from "../lib/http"
 import {
@@ -17,6 +17,7 @@ import {
   type LabWorkspace,
   type SavedLabWorkSummary,
 } from "../lib/labs-api"
+import LabSqlChart from "../components/labs/LabSqlChart"
 import "./LearnWorkspace.css"
 import "./LabsWorkspace.css"
 
@@ -30,6 +31,19 @@ function savedWhen(iso: string) {
 
 function lessonReturnTo(lessonKey?: string | null) {
   return lessonKey ? `/learn/data-analytics/${lessonKey}` : "/learn/data-analytics"
+}
+
+function formatColumnName(name: string) {
+  const cleaned = name.replace(/_/g, " ").trim()
+  if (!cleaned) return name
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1)
+}
+
+function columnIsNumeric(rows: LabSqlCell[][], index: number) {
+  return rows.some((row) => typeof row[index] === "number") && rows.every((row) => {
+    const value = row[index]
+    return value == null || value === "" || typeof value === "number"
+  })
 }
 
 function formatSqlCell(column: string, value: LabSqlCell) {
@@ -54,12 +68,24 @@ export default function NorthwindLabPage() {
   const [guidedResult, setGuidedResult] = useState<LabGuidedRunResult | null>(null)
   const [sqlResult, setSqlResult] = useState<LabSqlRunResult | null>(null)
   const [query, setQuery] = useState("")
+  const [resultView, setResultView] = useState<"table" | "chart">("table")
   const [status, setStatus] = useState<"loading" | "ready" | "error" | "forbidden">("loading")
   const [busy, setBusy] = useState<"run" | "save" | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [savedNotice, setSavedNotice] = useState<string | null>(null)
+  const resultsRef = useRef<HTMLElement | null>(null)
 
   const operation = workspace?.operations[0]?.id ?? "valid_net_revenue"
+
+  function revealResults() {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    requestAnimationFrame(() => {
+      resultsRef.current?.scrollIntoView({
+        block: "nearest",
+        behavior: reduceMotion ? "auto" : "smooth",
+      })
+    })
+  }
 
   useEffect(() => {
     const controller = new AbortController()
@@ -98,6 +124,8 @@ export default function NorthwindLabPage() {
         if (isSqlRunResult(work.result)) {
           setSqlResult(work.result)
           setQuery(work.query || work.result.query)
+          if (!work.result.chart.chartable) setResultView("table")
+          revealResults()
           setParams((current) => {
             const next = new URLSearchParams(current)
             next.set("mode", "sql")
@@ -157,6 +185,8 @@ export default function NorthwindLabPage() {
     try {
       const next = await runNorthwindSql({ query, lessonKey })
       setSqlResult(next)
+      if (!next.chart.chartable) setResultView("table")
+      revealResults()
     } catch (err) {
       setSqlResult(null)
       setError(workspaceErrorMessage(err) || "That query could not be run.")
@@ -422,7 +452,7 @@ export default function NorthwindLabPage() {
             {savedNotice ? <p className="lab-note">{savedNotice}</p> : null}
           </section>
 
-          <section className="lab-results">
+          <section className="lab-results" ref={resultsRef}>
             <p className="os-eyebrow">Results</p>
             <h2>Output</h2>
             {mode === "analysis" && guidedResult ? (
@@ -478,27 +508,65 @@ export default function NorthwindLabPage() {
                   {sqlResult.rowCount} row{sqlResult.rowCount === 1 ? "" : "s"} returned
                   {sqlResult.truncated ? " · showing the first 500 rows" : ""}
                 </p>
-                <div className="lab-table-wrap lab-sql-table">
-                  <table className="lab-table">
-                    <thead>
-                      <tr>
-                        {sqlResult.columns.map((column) => (
-                          <th key={column}>{column}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sqlResult.rows.map((row, index) => (
-                        <tr key={`sql-${index}`}>
-                          {sqlResult.columns.map((column, colIndex) => (
-                            <td key={`${column}-${colIndex}`}>{formatSqlCell(column, row[colIndex] ?? null)}</td>
+                {sqlResult.chart.chartable ? (
+                  <div className="lab-result-views" role="group" aria-label="Result view">
+                    <button
+                      type="button"
+                      aria-pressed={resultView === "table"}
+                      className={resultView === "table" ? "is-active" : undefined}
+                      onClick={() => setResultView("table")}
+                    >
+                      Table
+                    </button>
+                    <button
+                      type="button"
+                      aria-pressed={resultView === "chart"}
+                      className={resultView === "chart" ? "is-active" : undefined}
+                      onClick={() => setResultView("chart")}
+                    >
+                      Chart
+                    </button>
+                  </div>
+                ) : sqlResult.rowCount >= 2 ? (
+                  <p className="lab-chart-hint">Chart view is available for results with a clear label and numeric value.</p>
+                ) : null}
+                {resultView === "chart" && sqlResult.chart.chartable ? (
+                  <LabSqlChart chart={sqlResult.chart} />
+                ) : (
+                  <>
+                    <div className="lab-table-wrap lab-sql-table">
+                      <table className="lab-table">
+                        <thead>
+                          <tr>
+                            {sqlResult.columns.map((column) => (
+                              <th
+                                key={column}
+                                className={columnIsNumeric(sqlResult.rows, sqlResult.columns.indexOf(column)) ? "is-num" : undefined}
+                              >
+                                {formatColumnName(column)}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sqlResult.rows.map((row, index) => (
+                            <tr key={`sql-${index}`}>
+                              {sqlResult.columns.map((column, colIndex) => (
+                                <td
+                                  key={`${column}-${colIndex}`}
+                                  className={columnIsNumeric(sqlResult.rows, colIndex) ? "is-num" : undefined}
+                                >
+                                  {formatSqlCell(column, row[colIndex] ?? null)}
+                                </td>
+                              ))}
+                            </tr>
                           ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {sqlResult.rows.length === 0 ? <p>The query ran and returned no rows.</p> : null}
+                        </tbody>
+                      </table>
+                    </div>
+                    {sqlResult.rows.length === 0 ? <p>The query ran and returned no rows.</p> : null}
+                  </>
+                )}
               </>
             ) : null}
 

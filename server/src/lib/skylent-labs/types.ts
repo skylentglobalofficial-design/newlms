@@ -39,6 +39,34 @@ export type LabSqlStoredPreview = {
   previewRowCount: number
 }
 
+export type LabChartType = "bar" | "line" | "scatter"
+
+export type LabChartPoint = {
+  label: string
+  x: number
+  y: number
+  formatted: string
+}
+
+export type LabChartSpec = {
+  chartable: true
+  type: LabChartType
+  xKey: string
+  yKey: string
+  labelKey: string
+  title: string
+  groupNoun: string
+  highestLabel: string
+  highestFormatted: string
+  yIsCurrency: boolean
+  maxValue: number
+  axisMax: number
+  xAxisMax: number
+  series: LabChartPoint[]
+}
+
+export type LabChartDecision = LabChartSpec | { chartable: false }
+
 export type LabSqlRunResult = {
   operation: "sql"
   operationLabel: string
@@ -51,6 +79,7 @@ export type LabSqlRunResult = {
   rowCount: number
   truncated: boolean
   durationMs: number
+  chart: LabChartDecision
 }
 
 export type LabRunResult = LabGuidedRunResult | LabSqlRunResult
