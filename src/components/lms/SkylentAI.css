@@ -1,0 +1,191 @@
+/* Skylent AI — same OS language, not a chatbot landing page. */
+
+.os-ai {
+  min-width: 0;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(21, 23, 26, 0.06);
+  padding: 16px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: calc(100vh - 120px);
+  overflow: hidden;
+  position: sticky;
+  top: 0;
+}
+
+.os-ai.is-compact {
+  position: fixed;
+  top: auto;
+  left: 296px;
+  right: 24px;
+  bottom: 12px;
+  z-index: 40;
+  height: auto;
+  max-height: min(48vh, 460px);
+  margin-top: 0;
+  overflow: hidden;
+  padding: 10px 14px 12px;
+}
+
+@media (max-width: 900px) {
+  .os-ai.is-compact {
+    left: 12px;
+    right: 12px;
+    bottom: 10px;
+  }
+}
+
+.os-ai-head h2 {
+  margin: 4px 0 0;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.os-ai-based,
+.os-ai-idle,
+.os-ai-note,
+.os-ai-quick-label,
+.os-ai-turn-label {
+  margin: 0;
+  color: #5c6168;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.os-ai-based {
+  margin-top: 6px;
+}
+
+.os-ai-thread {
+  display: grid;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.os-ai-form,
+.os-ai-quick {
+  flex-shrink: 0;
+}
+
+.os-ai-turn {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f7f4ec;
+}
+
+.os-ai-turn.is-assistant {
+  background: #fffdf8;
+  box-shadow: inset 0 0 0 1px rgba(21, 23, 26, 0.06);
+}
+
+.os-ai-turn p:last-child {
+  margin: 4px 0 0;
+  color: #15171a;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.os-ai-form {
+  display: grid;
+  gap: 8px;
+}
+
+.os-ai-input {
+  width: 100%;
+  min-height: 72px;
+  resize: vertical;
+  padding: 10px 12px;
+  border: 1px solid rgba(21, 23, 26, 0.12);
+  border-radius: 10px;
+  background: #fffdf8;
+  color: #15171a;
+  font: 14px/1.45 var(--font-body);
+}
+
+.os-ai.is-compact:has(.os-ai-form) {
+  height: min(48vh, 460px);
+}
+
+.os-ai.is-compact .os-ai-input {
+  font-size: 16px;
+  min-height: 48px;
+}
+
+.os-ai-input:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 2px;
+}
+
+.os-ai-quick-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.os-ai-quick .os-btn {
+  min-height: 36px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.os-ai-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 4px 10px;
+  border: 0;
+  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
+  background: none;
+  color: #15171a;
+  font: 650 14px/1.3 var(--font-body);
+  cursor: pointer;
+}
+
+.os-ai-toggle span:last-child {
+  color: #4f46e5;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.os-ai.is-compact .os-ai-toggle {
+  position: sticky;
+  top: -10px;
+  z-index: 1;
+  margin: -10px -14px 0;
+  padding: 10px 14px 8px;
+  background: #ffffff;
+}
+
+@media (max-width: 1200px) {
+  .os-ai:not(.is-compact) {
+    position: static;
+    max-height: none;
+  }
+}
+
+@media (max-width: 430px) {
+  .os-ai-quick .os-btn {
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-ai,
+  .os-ai-input,
+  .os-ai-toggle {
+    transition: none;
+  }
+}
