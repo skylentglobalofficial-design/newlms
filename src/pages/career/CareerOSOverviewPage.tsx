@@ -82,12 +82,10 @@ export default function CareerOSOverviewPage() {
   const demonstratedSkills = Array.from(new Set(evidenceProjects.flatMap((project) => project.skills)))
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0 }}>
+    <div className="cos-page">
       <div style={{ marginBottom: 28 }}>
-        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
-          Career OS
-        </h1>
-        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
+        <h1>Career OS</h1>
+        <p className="cos-lead">
           Projects, demonstrated skills, and evidence from work you chose to keep.
         </p>
       </div>
@@ -97,7 +95,7 @@ export default function CareerOSOverviewPage() {
           <>
             <div style={{ marginBottom: 24 }}>
               <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "baseline", flexWrap: "wrap" }}>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink, margin: 0 }}>Projects</h2>
+                <h2>Projects</h2>
                 <Link to="/career-os/projects" style={{ color: accent.text, fontSize: 13, textDecoration: "none", fontWeight: 600 }}>
                   View all
                 </Link>
@@ -119,7 +117,7 @@ export default function CareerOSOverviewPage() {
             </div>
 
             <div style={{ marginBottom: 24 }}>
-              <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink, margin: "0 0 8px" }}>Skills demonstrated</h2>
+              <h2>Skills demonstrated</h2>
               {demonstratedSkills.length === 0 ? (
                 <p style={{ margin: 0, color: C.slate, fontSize: 13, lineHeight: 1.6 }}>
                   Skills appear when a completed project is added to Career OS.
@@ -152,7 +150,7 @@ export default function CareerOSOverviewPage() {
             </GlassSurface>
 
             <div style={{ marginBottom: 24 }}>
-              <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink, margin: "0 0 8px" }}>Learning evidence</h2>
+              <h2>Learning evidence</h2>
               <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: "0 0 12px" }}>
                 Pulled from your LMS enrollments. Submitted work is yours to add to Projects — nothing is auto-invented.
               </p>
@@ -190,7 +188,7 @@ export default function CareerOSOverviewPage() {
 
             {profile.completeness.percent < 100 && profile.completeness.missing.length > 0 && (
               <div style={{ marginBottom: 20 }}>
-                <h2 style={{ fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink, margin: "0 0 12px" }}>Still to complete</h2>
+                <h2>Still to complete</h2>
                 <ul style={{ margin: 0, paddingLeft: 18, color: C.slate, fontSize: 14, lineHeight: 1.8 }}>
                   {profile.completeness.missing.map(item => <li key={item}>{item}</li>)}
                 </ul>

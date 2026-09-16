@@ -3,7 +3,6 @@ import { listCareerEvidenceProjects, type CareerEvidenceSummary } from "../../li
 import { workspaceErrorMessage } from "../../lib/http"
 import CareerEvidenceCard from "../../components/career/CareerEvidenceCard"
 import { FeedbackBanner, LoadingBlock } from "../../components/career/section-ui"
-import { C } from "../../tokens"
 
 export default function CareerOSProjectsPage() {
   const [projects, setProjects] = useState<CareerEvidenceSummary[] | null>(null)
@@ -32,27 +31,13 @@ export default function CareerOSProjectsPage() {
   }
 
   return (
-    <div style={{ maxWidth: 720, margin: "0 auto", minWidth: 0 }}>
-      <h1
-        style={{
-          margin: "0 0 8px",
-          fontFamily: "var(--font-display)",
-          fontSize: "clamp(26px, 3vw, 34px)",
-          fontWeight: 700,
-          color: C.ink,
-        }}
-      >
-        Projects
-      </h1>
-      <p style={{ margin: "0 0 22px", color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
-        Learner work you chose to keep as Career OS evidence.
-      </p>
+    <div className="cos-page">
+      <h1>Projects</h1>
+      <p className="cos-lead">Learner work you chose to keep as Career OS evidence.</p>
       {projects && projects.length === 0 ? (
-        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6, maxWidth: 420 }}>
-          Your projects will appear here as you turn learning into evidence.
-        </p>
+        <p className="cos-lead">Your projects will appear here as you turn learning into evidence.</p>
       ) : (
-        <div style={{ display: "grid", gap: 12 }}>
+        <div className="cos-grid">
           {projects?.map((project) => (
             <CareerEvidenceCard key={project.id} project={project} />
           ))}

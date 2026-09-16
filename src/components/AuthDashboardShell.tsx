@@ -69,7 +69,7 @@ export function AuthDashboardShell({
     <>
       <div style={{ padding: '22px 20px 18px' }}>
         <Link to="/" style={{ textDecoration: 'none' }}>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 700, color: C.ink, letterSpacing: '-0.02em' }}>
+          <div className="skylent-mark" style={{ fontSize: 20, color: C.ink }}>
             Skylent<span style={{ color: C.orange }}>.</span>
           </div>
         </Link>
@@ -190,7 +190,7 @@ export function AuthDashboardShell({
           <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu" style={{ background: 'none', border: 'none', color: C.ink, padding: 8, cursor: 'pointer' }}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
-          <span style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink }}>
+          <span className="skylent-mark" style={{ fontSize: 16, color: C.ink }}>
             Skylent<span style={{ color: C.orange }}>.</span>
           </span>
           <div style={{ width: 36 }} />
@@ -260,8 +260,8 @@ export function AuthDashboardLayout({
   return (
     <div className={`auth-dashboard-layout${className ? ` ${className}` : ''}`} style={{
       display: 'grid',
-      gridTemplateColumns: 'minmax(0, 1fr) minmax(240px, 300px)',
-      gap: 'clamp(20px, 2.5vw, 32px)',
+      gridTemplateColumns: 'minmax(0, 1fr) minmax(260px, 340px)',
+      gap: 'clamp(16px, 2vw, 24px)',
       alignItems: 'start',
     }}>
       <div className="auth-dashboard-primary" style={{ minWidth: 0 }}>{primary}</div>

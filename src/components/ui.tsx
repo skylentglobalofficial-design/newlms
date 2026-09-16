@@ -86,10 +86,10 @@ export function Heading({
   style?: React.CSSProperties
 }) {
   const sizes = {
-    sm: 'clamp(24px, 3vw, 34px)',
-    md: 'clamp(28px, 3.6vw, 44px)',
-    lg: 'clamp(32px, 4.4vw, 58px)',
-    xl: 'clamp(40px, 6vw, 84px)',
+    sm: 'clamp(20px, 2.4vw, 26px)',
+    md: 'clamp(22px, 2.8vw, 30px)',
+    lg: 'clamp(26px, 3.4vw, 40px)',
+    xl: 'clamp(30px, 4vw, 44px)',
   }
   return (
     <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: sizes[size], lineHeight: 1.04, letterSpacing: '-0.03em', color: C.ink, margin: 0, ...style }}>

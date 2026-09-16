@@ -26,11 +26,11 @@
 
 .sk-hero h1 {
   margin: 0;
-  max-width: 14em;
-  font-family: var(--font-display);
-  font-size: clamp(32px, 4.6vw, 48px);
-  font-weight: 600;
-  line-height: 1.1;
+  max-width: 16em;
+  font-family: var(--font-body);
+  font-size: clamp(28px, 3.8vw, 40px);
+  font-weight: 650;
+  line-height: 1.12;
   letter-spacing: -0.035em;
 }
 
@@ -51,15 +51,17 @@
 
 .sk-intent {
   display: grid;
-  gap: 12px;
-  min-height: 52px;
-  padding: 14px;
+  grid-template-rows: 96px auto;
+  gap: 0;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
   text-align: left;
   color: #15171a;
-  background: transparent;
+  background: #ffffff;
   border: 1px solid transparent;
   border-radius: 14px;
-  box-shadow: none;
+  box-shadow: 0 10px 24px rgba(21, 23, 26, 0.05);
   cursor: pointer;
   font-family: var(--font-body);
   transition: box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
@@ -67,22 +69,28 @@
 
 .sk-intent:hover {
   background: #ffffff;
+  box-shadow: 0 14px 32px rgba(21, 23, 26, 0.08);
 }
 
 .sk-intent.is-selected {
   background: #ffffff;
   border-color: #4f46e5;
-  box-shadow: 0 0 0 1px #4f46e5;
+  box-shadow: 0 0 0 1px #4f46e5, 0 14px 32px rgba(21, 23, 26, 0.08);
 }
 
+.sk-intent .pl-thumb,
 .sk-intent-visual {
   display: flex;
-  align-items: flex-end;
-  gap: 4px;
-  height: 44px;
-  padding: 8px 10px;
+  height: 96px;
+  min-height: 96px;
+  border-radius: 0;
+  border: 0;
+  padding: 12px;
   background: #f7f4ec;
-  border-radius: 10px;
+}
+
+.sk-intent .pl-thumb {
+  display: grid;
 }
 
 .sk-intent-visual.is-data span {
@@ -139,6 +147,7 @@
   display: grid;
   gap: 4px;
   min-width: 0;
+  padding: 12px 14px 14px;
 }
 
 .sk-intent-label {
@@ -470,7 +479,7 @@
   }
 
   .sk-hero h1 {
-    font-size: 30px;
+    font-size: 26px;
   }
 
   .sk-hero-lead {

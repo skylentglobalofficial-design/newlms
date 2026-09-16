@@ -16,22 +16,19 @@ import {
 import "./SkillsPage.css"
 
 const NEXT_FLOW = [
-  { title: "Choose", copy: "Pick the skill you want to build.", kind: "learn" as const },
-  { title: "Learn", copy: "Open the matching course.", kind: "practice" as const },
-  { title: "Practise", copy: "Try the ideas on real tasks.", kind: "build" as const },
+  { title: "Choose", copy: "Pick the skill you want to build.", kind: "choose" as const },
+  { title: "Learn", copy: "Open the matching course.", kind: "learn" as const },
+  { title: "Practise", copy: "Try the ideas on real tasks.", kind: "practice" as const },
+  { title: "Build", copy: "Do the work the course asks for.", kind: "build" as const },
   { title: "Keep", copy: "Save what you produce as you go.", kind: "keep" as const },
 ]
 
 function IntentVisual({ id }: { id: LearnIntentId }) {
   if (id === "data") {
-    return (
-      <span className="sk-intent-visual is-data" aria-hidden="true">
-        <span style={{ height: "42%" }} />
-        <span style={{ height: "70%" }} />
-        <span style={{ height: "55%" }} />
-        <span style={{ height: "88%" }} />
-      </span>
-    )
+    return <CourseThumb authored visual="northwind" />
+  }
+  if (id === "product") {
+    return <CourseThumb authored visual="harbor-desk" />
   }
   if (id === "software") {
     return (
@@ -42,18 +39,10 @@ function IntentVisual({ id }: { id: LearnIntentId }) {
       </span>
     )
   }
-  if (id === "ai") {
-    return (
-      <span className="sk-intent-visual is-ai" aria-hidden="true">
-        <b />
-        <b />
-      </span>
-    )
-  }
   return (
-    <span className="sk-intent-visual is-product" aria-hidden="true">
-      <em />
-      <em />
+    <span className="sk-intent-visual is-ai" aria-hidden="true">
+      <b />
+      <b />
     </span>
   )
 }

@@ -314,6 +314,14 @@ export default function NorthwindLabPage() {
           Dataset: <strong>{workspace.dataset.filename}</strong>
         </p>
       </div>
+      <ol className="lab-flow" aria-label="Lab workflow">
+        <li className="is-on">Dataset</li>
+        <li>Inspect</li>
+        <li className={mode === "sql" ? "is-on" : undefined}>Query</li>
+        <li className={mode === "analysis" ? "is-on" : undefined}>Analyse</li>
+        <li>Visualise</li>
+        <li>Save work</li>
+      </ol>
 
       <div className="lab-body">
         <div className={`lab-grid${mode === "sql" ? " lab-grid-sql" : ""}`}>

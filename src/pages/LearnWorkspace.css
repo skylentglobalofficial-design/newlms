@@ -34,7 +34,7 @@
   display: block;
   margin: 0 0 12px;
   color: #15171a;
-  font-family: var(--font-display);
+  font-family: var(--font-brand);
   font-size: 17px;
   font-weight: 700;
   text-decoration: none;
@@ -374,7 +374,7 @@
 }
 
 .os-workspace {
-  width: min(1180px, 100%);
+  width: min(1320px, 100%);
   margin: 0 auto;
 }
 
@@ -435,12 +435,14 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
 .os-lesson-stage {
   background: #ffffff;
   border-radius: 16px;
-  box-shadow: 0 16px 40px rgba(21, 23, 26, 0.06);
+  box-shadow: 0 16px 40px rgba(21, 23, 26, 0.07);
   overflow: hidden;
 }
 
 .os-lesson-head {
-  padding: 20px 22px 16px;
+  padding: 18px 20px 14px;
+  background: #fffdf8;
+  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
 }
 
 .os-lab-entry {
@@ -694,9 +696,9 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
 
 .os-state h1 {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 26px;
+  font-weight: 650;
 }
 
 .os-state p {
@@ -1215,9 +1217,9 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
 
 .dash-welcome h1 {
   margin: 4px 0 0;
-  font-family: var(--font-display);
-  font-size: clamp(26px, 3vw, 32px);
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: clamp(24px, 2.6vw, 30px);
+  font-weight: 650;
   letter-spacing: -0.03em;
   line-height: 1.15;
 }
@@ -1432,14 +1434,38 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
 
 .dash-empty-card {
   margin-top: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.dash-empty-card .pl-frame {
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+}
+
+.dash-empty-card .os-eyebrow,
+.dash-empty-card h2,
+.dash-empty-card p,
+.dash-empty-card .os-actions {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.dash-empty-card .os-eyebrow {
+  margin-top: 14px;
+}
+
+.dash-empty-card .os-actions {
+  padding-bottom: 16px;
 }
 
 .dash-empty h1,
 .dash-error h1 {
   margin: 4px 0 0;
-  font-family: var(--font-display);
-  font-size: 28px;
-  font-weight: 600;
+  font-family: var(--font-body);
+  font-size: 26px;
+  font-weight: 650;
 }
 
 .dash-empty-card h2 {
@@ -1461,12 +1487,17 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
 }
 
 .auth-dashboard-layout.dash-layout {
-  gap: 18px;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
 }
 
 @media (max-width: 900px) {
   .os-shell {
     overflow: visible;
+  }
+
+  .auth-dashboard-layout.dash-layout {
+    grid-template-columns: 1fr;
   }
 
   .dash-continue-grid,
