@@ -207,18 +207,19 @@ export const DA_DATASETS: Array<{
   {
     filename: "northwind_sales.csv",
     rows: 180,
-    notes: "180 order lines for fictional Northwind Retail, January–June 2026. Default valid-row rule: units > 0, unit_price > 0, returned = no → 166 valid rows, ₹812,020 valid net revenue.",
+    notes: "Jan–Jun 2026 Northwind Retail sales extract.",
     usedIn: ["l1", "l2", "l4", "l5", "l6", "l7", "l8", "l9", "l10", "l11", "l12", "l13", "l14", "l15"],
   },
   {
     filename: "northwind_hr.csv",
     rows: 56,
-    notes: "56 staff rows used where briefs ask for a companion HR extract. Not a cause of sales movement.",
+    notes: "Companion HR extract. Not a cause of sales movement.",
     usedIn: ["l2", "l8", "l14"],
   },
 ]
 
-const EXCERPT_LIMIT = 7000
+const EXCERPT_LIMIT = 4500
+const SQL_LESSONS = new Set(["l7", "l8", "l9", "l13"])
 
 function repoRoot(): string {
   const fromHere = join(dirname(fileURLToPath(import.meta.url)), "../../../..")
@@ -230,6 +231,17 @@ export function readDaLessonBody(lessonId: string): string {
   const file = join(repoRoot(), "src/content/data-analytics/lesson-text", `${lessonId}.md`)
   if (!existsSync(file)) return ""
   return readFileSync(file, "utf8")
+}
+
+/** Drop title/meta already sent as structured fields so the model is not billed twice. */
+export function compactLessonExcerpt(body: string): string {
+  let text = body.replace(/^# .*\n+/, "")
+  text = text.replace(/\*\*(Objective|Why this matters|Prerequisite|Estimated time):\*\*[^\n]*\n+/g, "")
+  text = text.trim()
+  if (text.length > EXCERPT_LIMIT) {
+    return `${text.slice(0, EXCERPT_LIMIT)}\n\n[Lesson text truncated for context.]`
+  }
+  return text
 }
 
 export function getDaAiMeta(lessonId: string): AuthoredMeta | undefined {
@@ -247,7 +259,7 @@ export function buildLessonAiContext(input: {
   const authored = input.courseSlug === "data-analytics"
   const meta = authored ? getDaAiMeta(input.lessonId) : undefined
   const body = authored ? readDaLessonBody(input.lessonId) : ""
-  const excerpt = body.length > EXCERPT_LIMIT ? `${body.slice(0, EXCERPT_LIMIT)}\n\n[Lesson text truncated for context.]` : body
+  const excerpt = authored ? compactLessonExcerpt(body) : ""
 
   return {
     courseSlug: input.courseSlug,
@@ -279,7 +291,7 @@ export function buildLessonAiContext(input: {
           window: NORTHWIND_FACTS.window,
           topCategory: NORTHWIND_FACTS.topCategory,
           weakestMonth: NORTHWIND_FACTS.weakestMonth,
-          sql: NORTHWIND_FACTS.sql,
+          sql: SQL_LESSONS.has(input.lessonId) ? NORTHWIND_FACTS.sql : "",
         }
       : null,
     excerpt,

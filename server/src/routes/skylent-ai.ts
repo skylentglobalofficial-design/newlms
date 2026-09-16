@@ -19,7 +19,11 @@ const slugParam = z
   .max(120)
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
 
-const lessonKeyParam = z.string().min(1).max(40)
+const lessonKeyParam = z
+  .string()
+  .min(1)
+  .max(40)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
 
 export const askSchema = z
   .object({
@@ -109,7 +113,7 @@ skylentAiRouter.post(
       const result = await answerLessonQuestion({
         action: body.data.action,
         question: body.data.question?.trim() ?? "",
-        history: body.data.messages ?? [],
+        history: (body.data.messages ?? []).slice(-8),
         courseSlug: course.slug,
         courseTitle: course.title,
         moduleTitle: located.module.title,
@@ -130,7 +134,7 @@ skylentAiRouter.post(
         },
       })
     } catch (error) {
-      console.error("Skylent AI failed:", error)
+      console.error("Skylent AI failed:", error instanceof Error ? error.name : "unknown")
       res.status(502).json({ error: "Skylent AI couldn't answer right now. Try again." })
     }
   },
