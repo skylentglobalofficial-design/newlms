@@ -377,6 +377,9 @@ profileRouter.patch("/projects/:id", requireAuth, requireCsrf, async (req: Authe
   if (!parsed.success) return validationError(res, parsed.error)
   const entry = await assertOwnedProject(req.auth!.user.id, idParsed.data)
   if (!entry) return res.status(404).json({ error: "Project not found" })
+  if (entry.sourceLearnerProjectId) {
+    return res.status(409).json({ error: "This project is linked from learner work. Edit it in the project workspace." })
+  }
   try {
     await prisma.careerProject.update({
       where: { id: entry.id },
@@ -401,6 +404,9 @@ profileRouter.delete("/projects/:id", requireAuth, requireCsrf, async (req: Auth
   if (!idParsed.success) return res.status(400).json({ error: "Invalid project id" })
   const entry = await assertOwnedProject(req.auth!.user.id, idParsed.data)
   if (!entry) return res.status(404).json({ error: "Project not found" })
+  if (entry.sourceLearnerProjectId) {
+    return res.status(409).json({ error: "Remove this project from Career OS instead of deleting it here." })
+  }
   try {
     await prisma.careerProject.delete({ where: { id: entry.id } })
     res.json({ data: await reloadProfile(req.auth!.user.id) })

@@ -48,7 +48,7 @@ function seedTasks(definition: NonNullable<ReturnType<typeof findProjectDefiniti
   }))
 }
 
-function asReflection(value: unknown): ProjectReflection {
+export function parseProjectReflection(value: unknown): ProjectReflection {
   if (!value || typeof value !== "object") return emptyReflection()
   const row = value as Partial<ProjectReflection>
   return {
@@ -58,7 +58,7 @@ function asReflection(value: unknown): ProjectReflection {
   }
 }
 
-function asStoredTasks(
+export function parseStoredProjectTasks(
   value: unknown,
   definition: NonNullable<ReturnType<typeof findProjectDefinition>>,
 ): StoredProjectTask[] {
@@ -72,6 +72,14 @@ function asStoredTasks(
     const status = match?.status === "complete" ? "complete" : "open"
     return { key: task.key, status, labWorkId, completedAt }
   })
+}
+
+export function isLearnerProjectComplete(
+  tasks: unknown,
+  definition: NonNullable<ReturnType<typeof findProjectDefinition>>,
+): boolean {
+  const stored = parseStoredProjectTasks(tasks, definition)
+  return stored.length === definition.tasks.length && stored.every((task) => task.status === "complete")
 }
 
 function reflectionLengthOk(value: string) {
@@ -167,7 +175,7 @@ function toOption(row: {
   }
 }
 
-async function hydrateEvidence(
+export async function hydrateProjectLabEvidence(
   userId: string,
   courseSlug: string,
   labSlug: string,
@@ -217,11 +225,11 @@ async function toWorkspace(row: {
 }): Promise<ProjectWorkspace> {
   const definition = findProjectDefinition(row.projectType)
   if (!definition) throw new ProjectServiceError("not_found", "Project not found")
-  const tasks = asStoredTasks(row.tasks, definition)
-  const reflection = asReflection(row.reflection)
+  const tasks = parseStoredProjectTasks(row.tasks, definition)
+  const reflection = parseProjectReflection(row.reflection)
   const [availableWork, evidenceList] = await Promise.all([
     listLabWork({ userId: row.userId, courseSlug: definition.courseSlug, labSlug: definition.labSlug }),
-    Promise.all(tasks.map((task) => hydrateEvidence(row.userId, definition.courseSlug, definition.labSlug, task.labWorkId))),
+    Promise.all(tasks.map((task) => hydrateProjectLabEvidence(row.userId, definition.courseSlug, definition.labSlug, task.labWorkId))),
   ])
 
   const views: ProjectTaskView[] = definition.tasks.map((task, index) => {
@@ -272,7 +280,7 @@ export async function listLearnerProjects(userId: string): Promise<ProjectSummar
   return rows.flatMap((row) => {
     const definition = findProjectDefinition(row.projectType)
     if (!definition) return []
-    const tasks = asStoredTasks(row.tasks, definition)
+    const tasks = parseStoredProjectTasks(row.tasks, definition)
     return [
       {
         id: row.id,
@@ -374,12 +382,12 @@ export async function completeProjectTask(options: {
     )
   }
 
-  const tasks = asStoredTasks(row.tasks, definition).map((task) =>
+  const tasks = parseStoredProjectTasks(row.tasks, definition).map((task) =>
     task.key === options.taskKey
       ? { ...task, status: "complete" as const, completedAt: task.completedAt ?? new Date().toISOString() }
       : task,
   )
-  return persistProject(row, tasks, asReflection(row.reflection), row.savedAt)
+  return persistProject(row, tasks, parseProjectReflection(row.reflection), row.savedAt)
 }
 
 export async function attachProjectEvidence(options: {
@@ -438,14 +446,14 @@ export async function attachProjectEvidence(options: {
   }
 
   const now = new Date().toISOString()
-  const tasks = asStoredTasks(row.tasks, definition).map((task) => {
+  const tasks = parseStoredProjectTasks(row.tasks, definition).map((task) => {
     if (task.key !== options.taskKey) return task
     if (taskDef.completion === "lab_work") {
       return { ...task, labWorkId: work.id, status: "complete" as const, completedAt: now }
     }
     return { ...task, labWorkId: work.id }
   })
-  return persistProject(row, tasks, asReflection(row.reflection), row.savedAt)
+  return persistProject(row, tasks, parseProjectReflection(row.reflection), row.savedAt)
 }
 
 export async function updateProjectReflection(options: {
@@ -461,13 +469,13 @@ export async function updateProjectReflection(options: {
   if (!definition) throw new ProjectServiceError("not_found", "Project not found")
   await requireProjectCourseAccess(options.userId, definition.courseSlug)
 
-  const current = asReflection(row.reflection)
+  const current = parseProjectReflection(row.reflection)
   const reflection: ProjectReflection = {
     finding: validateReflectionField("Finding", options.finding) ?? current.finding,
     whyItMatters: validateReflectionField("Why it matters", options.whyItMatters) ?? current.whyItMatters,
     recommendation: validateReflectionField("Recommendation", options.recommendation) ?? current.recommendation,
   }
-  const tasks = applyReflectionCompletion(asStoredTasks(row.tasks, definition), reflection)
+  const tasks = applyReflectionCompletion(parseStoredProjectTasks(row.tasks, definition), reflection)
   const savedAt = options.save ? new Date() : row.savedAt
   return persistProject(row, tasks, reflection, savedAt)
 }

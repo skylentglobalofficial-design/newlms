@@ -31,6 +31,8 @@ const WorkshopDetailPage = lazy(() => import('./pages/WorkshopDetailPage'))
 const CareerOSLayout = lazy(() => import('./pages/career/CareerOSLayout'))
 const CareerOSOverviewPage = lazy(() => import('./pages/career/CareerOSOverviewPage'))
 const CareerOSProfilePage = lazy(() => import('./pages/career/CareerOSProfilePage'))
+const CareerOSProjectsPage = lazy(() => import('./pages/career/CareerOSProjectsPage'))
+const CareerOSProjectDetailPage = lazy(() => import('./pages/career/CareerOSProjectDetailPage'))
 const CareerOSJobsPage = lazy(() => import('./pages/career/CareerOSJobsPage'))
 const CareerOSApplicationsPage = lazy(() => import('./pages/career/CareerOSApplicationsPage'))
 const CareerOSApplicationDetailPage = lazy(() => import('./pages/career/CareerOSApplicationDetailPage'))
@@ -65,6 +67,8 @@ function AppRoutes() {
         <Route path="/career-os" element={<CareerOSLayout />}>
           <Route index element={<CareerOSOverviewPage />} />
           <Route path="profile" element={<CareerOSProfilePage />} />
+          <Route path="projects" element={<CareerOSProjectsPage />} />
+          <Route path="projects/:id" element={<CareerOSProjectDetailPage />} />
           <Route path="jobs" element={<CareerOSJobsPage />} />
           <Route path="applications" element={<CareerOSApplicationsPage />} />
           <Route path="applications/:id" element={<CareerOSApplicationDetailPage />} />

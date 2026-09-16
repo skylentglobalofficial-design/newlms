@@ -4,6 +4,7 @@ import { AuthDashboardShell, type AuthNavItem } from "../AuthDashboardShell"
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: "overview", label: "Overview", short: "Home", href: "/career-os" },
+  { id: "projects", label: "Projects", short: "Work", href: "/career-os/projects" },
   { id: "profile", label: "Profile", short: "Profile", href: "/career-os/profile" },
   { id: "jobs", label: "Jobs", short: "Jobs", href: "/career-os/jobs" },
   { id: "applications", label: "Applications", short: "Apps", href: "/career-os/applications" },
@@ -11,9 +12,10 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: "support", label: "Support", short: "Help", href: "/career-os/support" },
 ]
 
-const BOTTOM_NAV = NAV_ITEMS.filter(n => ["overview", "profile", "jobs", "applications", "support"].includes(n.id))
+const BOTTOM_NAV = NAV_ITEMS.filter(n => ["overview", "projects", "profile", "applications", "support"].includes(n.id))
 
 function navIdFromPath(pathname: string): string {
+  if (pathname.startsWith("/career-os/projects")) return "projects"
   if (pathname.startsWith("/career-os/profile")) return "profile"
   if (pathname.startsWith("/career-os/jobs")) return "jobs"
   if (pathname.startsWith("/career-os/applications")) return "applications"
@@ -26,6 +28,7 @@ function NavIcon({ id }: { id: string }) {
   const stroke = "currentColor"
   const s = { width: 18, height: 18, viewBox: "0 0 24 24", fill: "none", stroke, strokeWidth: 1.8 }
   if (id === "overview") return <svg {...s}><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  if (id === "projects") return <svg {...s}><path d="M4 7h16v12H4z"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/></svg>
   if (id === "profile") return <svg {...s}><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
   if (id === "jobs") return <svg {...s}><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
   if (id === "applications") return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>

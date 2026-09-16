@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import { C } from "../../tokens"
 import { getDomainAccent } from "../../aurora-themes"
 import {
@@ -63,6 +64,8 @@ export default function ProjectsSection({ profile, onProfileUpdate }: Props) {
   const [form, setForm] = useState<FormState>(emptyForm())
   const [pending, setPending] = useState(false)
   const [feedback, setFeedback] = useState<{ tone: "success" | "error"; message: string } | null>(null)
+  const manualProjects = profile.projects.filter(entry => !entry.sourceLearnerProjectId)
+  const linkedCount = profile.projects.length - manualProjects.length
 
   function startNew() {
     setEditingId("new")
@@ -127,10 +130,20 @@ export default function ProjectsSection({ profile, onProfileUpdate }: Props) {
     >
       {feedback && <FeedbackBanner tone={feedback.tone} message={feedback.message} />}
 
-      {profile.projects.length === 0 && editingId === null ? (
+      {linkedCount > 0 ? (
+        <p style={{ margin: "0 0 12px", color: C.slate, fontSize: 13.5, lineHeight: 1.55 }}>
+          Learner projects you added as evidence live in{" "}
+          <Link to="/career-os/projects" style={{ color: accent.text, textDecoration: "none", fontWeight: 600 }}>
+            Career OS Projects
+          </Link>
+          .
+        </p>
+      ) : null}
+
+      {manualProjects.length === 0 && editingId === null && linkedCount === 0 ? (
         <EmptyBlock message="Add your first project" onAction={startNew} actionLabel="Add project" />
       ) : (
-        profile.projects.map(entry => (
+        manualProjects.map(entry => (
           editingId === entry.id ? null : (
             <EntryCard
               key={entry.id}
