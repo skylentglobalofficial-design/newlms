@@ -196,7 +196,7 @@ export function AuthDashboardShell({
           <div style={{ width: 36 }} />
         </header>
 
-        <div className="auth-shell-content" style={{ padding: 'clamp(16px, 2.4vw, 28px) clamp(16px, 2.6vw, 28px) 72px', minWidth: 0 }}>
+        <div className="auth-shell-content" style={{ padding: 'clamp(16px, 2.4vw, 28px) clamp(16px, 2.6vw, 28px) 96px', minWidth: 0 }}>
           {header}
           {children}
         </div>
