@@ -457,6 +457,12 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
   line-height: 1.4;
 }
 
+.os-lab-omission {
+  padding: 10px 12px;
+  background: #f7f4ec;
+  border-radius: 10px;
+}
+
 .os-project-entry {
   margin-top: 8px;
 }
@@ -1414,6 +1420,10 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
   gap: 16px;
   align-items: start;
   margin-top: 18px;
+}
+
+.dash-empty-courses {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .dash-empty-flow {

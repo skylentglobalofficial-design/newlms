@@ -6,10 +6,10 @@ import { getLmsRoleAccent, getLmsTabAccent } from '../role-themes'
 import CurriculumRail from '../components/lms/CurriculumRail'
 import { LessonContentView, LessonNavigation } from '../components/lms/LessonContent'
 import { LessonContextPanel } from '../components/product/ProductLanguage'
-import { getDaLessonMeta } from '../content/data-analytics/lessons'
+import { getCourseQuiz, getLessonMeta } from '../content/course-material'
 import { isAuthoredCourse } from '../lib/live-intents'
 import type { QuizQuestion } from '../components/lms/AssessmentSurface'
-import { getDaQuiz } from '../content/data-analytics/quizzes'
+import { courseProductProfile } from '../lib/course-product'
 import {
   computeCourseProgress,
   defaultTabForLesson,
@@ -30,8 +30,6 @@ import {
   updateAssignment,
 } from '../lib/lms-api'
 import { workspaceErrorMessage } from '../lib/http'
-import { northwindLabPath } from '../lib/labs-api'
-import { northwindProjectPath } from '../lib/projects-api'
 import './LearnWorkspace.css'
 
 const SkylentAI = lazy(() => import('../components/lms/SkylentAI'))
@@ -171,7 +169,7 @@ export default function LearnPage() {
       setQuizStatus('loading')
       fetchQuizQuestions(slug, selectedLessonId)
         .then((questions) => {
-          const bank = slug === 'data-analytics' ? getDaQuiz(selectedLessonId) : undefined
+          const bank = getCourseQuiz(slug, selectedLessonId)
           setQuizQuestions(questions.map((q, index) => ({
             q: q.q,
             options: q.options,
@@ -410,29 +408,40 @@ export default function LearnPage() {
                 <p className={selectedState.complete ? 'os-status is-done' : 'os-status'}>
                   {selectedState.locked ? 'Locked until the previous lesson is complete.' : selectedState.complete ? 'Completed' : 'In progress'}
                 </p>
-                {readyCourse.slug === 'data-analytics' && !selectedState.locked ? (
-                  <>
-                    <p className="os-lab-entry">
-                      <Link className="os-btn os-btn-ghost" to={northwindLabPath(selectedLesson.id)}>
-                        Open Lab
-                      </Link>
-                      <span>Practice this here with northwind_sales.csv.</span>
-                    </p>
-                    <p className="os-lab-entry os-project-entry">
-                      <Link className="os-btn os-btn-ghost" to={northwindProjectPath()}>
-                        Open project
-                      </Link>
-                      <span>Northwind Commercial Review — use lab work to write a commercial summary.</span>
-                    </p>
-                  </>
-                ) : null}
+                {(() => {
+                  const profile = courseProductProfile(readyCourse.slug)
+                  if (!profile || selectedState.locked) return null
+                  return (
+                    <>
+                      {profile.lab ? (
+                        <p className="os-lab-entry">
+                          <Link className="os-btn os-btn-ghost" to={profile.lab.href(selectedLesson.id)}>
+                            {profile.lab.label}
+                          </Link>
+                          <span>{profile.lab.note}</span>
+                        </p>
+                      ) : profile.labOmission ? (
+                        <p className="os-lab-entry os-lab-omission">
+                          <span>{profile.labOmission}</span>
+                        </p>
+                      ) : null}
+                      {profile.project ? (
+                        <p className="os-lab-entry os-project-entry">
+                          <Link className="os-btn os-btn-ghost" to={profile.project.href}>
+                            {profile.project.label}
+                          </Link>
+                          <span>{profile.project.note}</span>
+                        </p>
+                      ) : null}
+                    </>
+                  )
+                })()}
                 </div>
                 {isAuthoredCourse(readyCourse.slug) && !selectedState.locked ? (
-                  <LessonContextPanel lessonId={selectedLesson.id} />
+                  <LessonContextPanel courseSlug={readyCourse.slug} lessonId={selectedLesson.id} />
                 ) : (
                   <p className="os-lead" style={{ padding: '0 18px' }}>
-                    {(isAuthoredCourse(readyCourse.slug) ? getDaLessonMeta(selectedLesson.id)?.objective : null)
-                      ?? lessonObjective(selectedLesson)}
+                    {getLessonMeta(readyCourse.slug, selectedLesson.id)?.objective ?? lessonObjective(selectedLesson)}
                   </p>
                 )}
 

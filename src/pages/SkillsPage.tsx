@@ -1,9 +1,10 @@
 import { useMemo } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { CourseThumb, LearnFlow, NorthwindWorkspace, PathwayThumb } from "../components/product/ProductLanguage"
+import { CourseProductVisual, CourseThumb, LearnFlow, PathwayThumb } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { courseLessonStats } from "../lib/catalog-maturity"
+import { courseProductProfile } from "../lib/course-product"
 import {
   LEARN_INTENTS,
   capabilitiesForIntent,
@@ -116,21 +117,28 @@ function MatchCard({ match, featured }: { match: LiveMatch; featured: boolean })
   const kindLabel = match.kind === "programme" ? "Programme" : "Course"
   const course = match.kind === "course" ? courses.find((item) => item.slug === match.slug) : null
   const stats = course ? courseLessonStats(course) : null
+  const profile = course ? courseProductProfile(course.slug) : null
   const honesty =
     match.depth === "authored"
       ? null
       : match.kind === "programme"
         ? "Programme listing — live teaching is thinner than advertised."
         : "Catalogue listing — thinner than Data Analytics."
+  const workTag =
+    match.depth === "authored"
+      ? profile?.visual === "harbor-desk"
+        ? "Harbor Desk case"
+        : "Northwind project"
+      : match.note
 
   return (
     <article className={featured ? "sk-product is-featured" : "sk-product"}>
-      {featured && match.kind === "course" && match.depth === "authored" ? (
+      {featured && match.kind === "course" && match.depth === "authored" && profile ? (
         <div className="sk-feature-stage">
-          <NorthwindWorkspace compact />
+          <CourseProductVisual visual={profile.visual} compact />
         </div>
       ) : match.kind === "course" ? (
-        <CourseThumb authored={match.depth === "authored"} />
+        <CourseThumb authored={match.depth === "authored"} visual={profile?.visual ?? "northwind"} />
       ) : (
         <PathwayThumb />
       )}
@@ -152,7 +160,7 @@ function MatchCard({ match, featured }: { match: LiveMatch; featured: boolean })
           <li>{kindLabel}</li>
           {course ? <li>{course.category}</li> : null}
           {course ? <li>{course.level}</li> : null}
-          {match.depth === "authored" ? <li>Northwind project</li> : <li>{match.note}</li>}
+          {match.depth === "authored" ? <li>{workTag}</li> : <li>{match.note}</li>}
         </ul>
         {stats && match.depth === "authored" ? (
           <p className="sk-product-stats">

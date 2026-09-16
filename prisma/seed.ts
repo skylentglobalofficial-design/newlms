@@ -1,6 +1,7 @@
 import { PrismaClient, CurriculumNodeType, EnrollmentStatus, ProgramType } from '@prisma/client'
 
 import { DA_QUIZZES, daQuizSeedKey } from '../src/content/data-analytics/quizzes.ts'
+import { PM_QUIZZES, pmQuizSeedKey } from '../src/content/product-management/quizzes.ts'
 import { courses, programs } from '../src/data.js'
 import { PROGRAM_COURSE_LINKS } from '../src/lib/catalog-maturity.ts'
 
@@ -167,10 +168,21 @@ function quizBankFromDa(lessonId: keyof typeof DA_QUIZZES) {
   }))
 }
 
+function quizBankFromPm(lessonId: keyof typeof PM_QUIZZES) {
+  return PM_QUIZZES[lessonId].questions.map((entry) => ({
+    question: entry.prompt,
+    options: entry.options,
+    correctIndex: entry.correctIndex,
+  }))
+}
+
 const QUIZ_BANK: Record<string, Array<{ question: string; options: string[]; correctIndex: number }>> = {
   [daQuizSeedKey('l3')]: quizBankFromDa('l3'),
   [daQuizSeedKey('l9')]: quizBankFromDa('l9'),
   [daQuizSeedKey('l15')]: quizBankFromDa('l15'),
+  [pmQuizSeedKey('l3')]: quizBankFromPm('l3'),
+  [pmQuizSeedKey('l9')]: quizBankFromPm('l9'),
+  [pmQuizSeedKey('l15')]: quizBankFromPm('l15'),
   'python-programming:l3': [
     { question: 'Which type is mutable in Python?', options: ['tuple', 'list', 'str', 'int'], correctIndex: 1 },
     { question: 'How do you start a comment?', options: ['//', '#', '--', '/*'], correctIndex: 1 },

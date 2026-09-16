@@ -70,6 +70,11 @@ export type ProjectWorkspace = {
   context: string
   brief: string[]
   disclaimer: string
+  courseTitle: string
+  labEnabled: boolean
+  caseHref: string | null
+  reflectionLabels: { finding: string; whyItMatters: string; recommendation: string }
+  reflectionHints: { finding: string; whyItMatters: string; recommendation: string }
   status: ProjectStatus
   progress: { complete: number; total: number }
   tasks: ProjectTaskView[]
@@ -94,6 +99,14 @@ export function northwindProjectPath() {
   return "/os/projects/data-analytics/northwind-commercial-review"
 }
 
+export function harborDeskProjectPath() {
+  return "/os/projects/product-management/harbor-desk-case"
+}
+
+export function learnerProjectPath(courseSlug: string, projectType: string) {
+  return `/os/projects/${courseSlug}/${projectType}`
+}
+
 export function projectStatusLabel(status: ProjectStatus) {
   if (status === "ready_to_review") return "Ready to review"
   if (status === "saved") return "Saved"
@@ -112,7 +125,7 @@ export async function listLearnerProjects(signal?: AbortSignal): Promise<Project
   return parsed.data
 }
 
-export async function ensureNorthwindProject(signal?: AbortSignal): Promise<ProjectWorkspace> {
+export async function ensureLearnerProject(projectType: string, signal?: AbortSignal): Promise<ProjectWorkspace> {
   const token = await ensureCsrfToken()
   const response = await fetch(`${API_BASE}/lms/projects`, {
     method: "POST",
@@ -122,9 +135,13 @@ export async function ensureNorthwindProject(signal?: AbortSignal): Promise<Proj
       "Content-Type": "application/json",
       "X-CSRF-Token": token,
     },
-    body: JSON.stringify({ projectType: NORTHWIND_PROJECT_TYPE }),
+    body: JSON.stringify({ projectType }),
   })
   return readProject(response)
+}
+
+export async function ensureNorthwindProject(signal?: AbortSignal): Promise<ProjectWorkspace> {
+  return ensureLearnerProject(NORTHWIND_PROJECT_TYPE, signal)
 }
 
 export async function fetchLearnerProject(projectId: string, signal?: AbortSignal): Promise<ProjectWorkspace> {

@@ -206,9 +206,9 @@ export default function CareerOSProjectDetailPage() {
           )}
         </section>
 
-        <ReflectionBlock label="What I found" value={project.reflection.finding} />
-        <ReflectionBlock label="Why it matters" value={project.reflection.whyItMatters} />
-        <ReflectionBlock label="Recommendation" value={project.reflection.recommendation} />
+        <ReflectionBlock label={project.reflectionLabels?.finding ?? "What I found"} value={project.reflection.finding} />
+        <ReflectionBlock label={project.reflectionLabels?.whyItMatters ?? "Why it matters"} value={project.reflection.whyItMatters} />
+        <ReflectionBlock label={project.reflectionLabels?.recommendation ?? "Recommendation"} value={project.reflection.recommendation} />
 
         <section>
           <h2 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 650, color: C.ink }}>

@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useParams } from "react-router-dom"
 import { workspaceErrorMessage } from "../lib/http"
 import {
   attachProjectEvidence,
   completeProjectTask,
-  ensureNorthwindProject,
-  northwindProjectPath,
+  ensureLearnerProject,
+  learnerProjectPath,
   projectStatusLabel,
   saveProject,
   type ProjectTaskView,
@@ -25,7 +25,8 @@ function firstOpenTask(project: ProjectWorkspace) {
   return project.tasks.find((task) => task.status === "open") ?? project.tasks[0] ?? null
 }
 
-export default function NorthwindProjectPage() {
+export default function LearnerProjectPage() {
+  const { courseSlug, projectType } = useParams<{ courseSlug: string; projectType: string }>()
   const [project, setProject] = useState<ProjectWorkspace | null>(null)
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
   const [finding, setFinding] = useState("")
@@ -44,8 +45,16 @@ export default function NorthwindProjectPage() {
     const controller = new AbortController()
     setStatus("loading")
     setError(null)
-    void ensureNorthwindProject(controller.signal)
+    if (!courseSlug || !projectType) {
+      setStatus("error")
+      setError("This project could not be opened.")
+      return () => controller.abort()
+    }
+    void ensureLearnerProject(projectType, controller.signal)
       .then((next) => {
+        if (next.courseSlug !== courseSlug) {
+          throw new Error("This project does not belong to that course.")
+        }
         setProject(next)
         setFinding(next.reflection.finding)
         setWhyItMatters(next.reflection.whyItMatters)
@@ -63,14 +72,14 @@ export default function NorthwindProjectPage() {
         const message = workspaceErrorMessage(err)
         if (/enrol/i.test(message) || /403/.test(message)) {
           setStatus("forbidden")
-          setError("Enrol in Data Analytics to work on this project.")
+          setError(message || "Enrol in this course to work on this project.")
           return
         }
         setStatus("error")
         setError(message || "Could not open this project.")
       })
     return () => controller.abort()
-  }, [])
+  }, [courseSlug, projectType])
 
   const selected = useMemo(
     () => project?.tasks.find((task) => task.key === selectedKey) ?? project?.tasks[0] ?? null,
@@ -153,22 +162,23 @@ export default function NorthwindProjectPage() {
       <div className="lab-shell">
         <div className="lab-empty">
           <p className="os-eyebrow">Project</p>
-          <p>Loading Northwind Commercial Review…</p>
+          <p>Loading the project workspace…</p>
         </div>
       </div>
     )
   }
 
   if (status === "forbidden" || status === "error" || !project) {
+    const courseHref = courseSlug ? `/learn/${courseSlug}` : "/dashboard/student"
     return (
       <div className="lab-shell">
         <div className="lab-empty">
           <p className="os-eyebrow">Project</p>
-          <h1>{status === "forbidden" ? "Practice this from Data Analytics." : "This project could not load."}</h1>
+          <h1>{status === "forbidden" ? "Enrol in this course to open the project." : "This project could not load."}</h1>
           <p>{error}</p>
           <div className="os-actions">
-            <Link className="os-btn os-btn-primary" to="/learn/data-analytics">
-              Open Data Analytics
+            <Link className="os-btn os-btn-primary" to={courseHref}>
+              {courseSlug ? "Open course" : "Open dashboard"}
             </Link>
           </div>
         </div>
@@ -179,13 +189,13 @@ export default function NorthwindProjectPage() {
   return (
     <div className="lab-shell proj-shell">
       <header className="lab-top">
-        <Link className="lab-brand" to={northwindProjectPath()}>
-          <strong>Skylent Labs</strong>
+        <Link className="lab-brand" to={learnerProjectPath(project.courseSlug, project.projectType)}>
+          <strong>Skylent</strong>
           <span>Project</span>
         </Link>
-        <p className="lab-top-course">Data Analytics</p>
+        <p className="lab-top-course">{project.courseTitle}</p>
         <div className="lab-top-actions">
-          <Link className="os-btn os-btn-ghost" to="/learn/data-analytics">
+          <Link className="os-btn os-btn-ghost" to={`/learn/${project.courseSlug}`}>
             Return to course
           </Link>
           {careerLink ? (
@@ -198,7 +208,15 @@ export default function NorthwindProjectPage() {
 
       <div className="lab-context">
         <p>
-          Dataset: <strong>{project.dataset}</strong>
+          {project.labEnabled ? "Dataset" : "Case"}: <strong>{project.dataset}</strong>
+          {project.caseHref ? (
+            <>
+              {" "}
+              <a className="os-link" href={project.caseHref} download>
+                Open
+              </a>
+            </>
+          ) : null}
         </p>
         <p>
           Status: <strong>{projectStatusLabel(project.status)}</strong>
@@ -295,7 +313,7 @@ export default function NorthwindProjectPage() {
                 ) : null}
                 </div>
 
-                {selected.completion === "lab_work" || selected.key === "validate_data" ? (
+                {selected.completion === "lab_work" || (project.labEnabled && selected.key === "validate_data") ? (
                   <div className="proj-attach">
                     <p className="os-eyebrow">Attach saved lab work</p>
                     {project.availableWork.length === 0 ? (
@@ -358,7 +376,7 @@ export default function NorthwindProjectPage() {
                       </Link>
                     </article>
                   ) : (
-                    <p>No lab work attached to this task yet.</p>
+                    <p>{project.labEnabled ? "No lab work attached to this task yet." : "This project is written work. There is no lab attachment."}</p>
                   )}
                 </div>
               </>
@@ -367,9 +385,9 @@ export default function NorthwindProjectPage() {
 
           <section className="lab-results">
             <p className="os-eyebrow">Your analysis</p>
-            <h2>Write from the evidence</h2>
-            <label htmlFor="proj-finding">Finding</label>
-            <p className="lab-note">What did the data show?</p>
+            <h2>{project.labEnabled ? "Write from the evidence" : "Write the product case"}</h2>
+            <label htmlFor="proj-finding">{project.reflectionLabels.finding}</label>
+            <p className="lab-note">{project.reflectionHints.finding}</p>
             <textarea
               id="proj-finding"
               value={finding}
@@ -378,8 +396,8 @@ export default function NorthwindProjectPage() {
               rows={4}
               disabled={busy !== null}
             />
-            <label htmlFor="proj-why">Why it matters</label>
-            <p className="lab-note">Why should someone care?</p>
+            <label htmlFor="proj-why">{project.reflectionLabels.whyItMatters}</label>
+            <p className="lab-note">{project.reflectionHints.whyItMatters}</p>
             <textarea
               id="proj-why"
               value={whyItMatters}
@@ -388,8 +406,8 @@ export default function NorthwindProjectPage() {
               rows={4}
               disabled={busy !== null}
             />
-            <label htmlFor="proj-rec">Recommendation</label>
-            <p className="lab-note">What action would you suggest based on the evidence?</p>
+            <label htmlFor="proj-rec">{project.reflectionLabels.recommendation}</label>
+            <p className="lab-note">{project.reflectionHints.recommendation}</p>
             <textarea
               id="proj-rec"
               value={recommendation}

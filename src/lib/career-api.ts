@@ -693,6 +693,7 @@ export type CareerEvidenceProject = {
   evidence: CareerEvidenceItem[]
   evidenceCount: number
   reflection: CareerEvidenceReflection
+  reflectionLabels?: { finding: string; whyItMatters: string; recommendation: string }
   completedTasks: Array<{ key: string; title: string; number: string }>
   eligible: boolean
   incompleteMessage: string | null

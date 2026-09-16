@@ -496,6 +496,8 @@
 
 .cat-ready {
   margin-top: 16px;
+  display: grid;
+  gap: 16px;
 }
 
 .cat-feature {

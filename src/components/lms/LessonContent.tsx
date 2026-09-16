@@ -23,6 +23,7 @@ function AssignmentBriefView({ brief }: { brief: AssignmentBrief; accent: Accent
         <h3>Objective</h3>
         <p>{brief.objective}</p>
       </section>
+      {brief.datasetHref && brief.datasetName ? (
       <section className="as-block">
         <h3>Dataset</h3>
         <p>
@@ -35,6 +36,21 @@ function AssignmentBriefView({ brief }: { brief: AssignmentBrief; accent: Accent
           </a>
         </p>
       </section>
+      ) : null}
+      {brief.caseHref && brief.caseName ? (
+      <section className="as-block">
+        <h3>Case notes</h3>
+        <p>
+          <a href={brief.caseHref} download className="lx-file">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+              <polyline points="14 2 14 8 20 8" />
+            </svg>
+            {brief.caseName}
+          </a>
+        </p>
+      </section>
+      ) : null}
       <section className="as-block">
         <h3>Deliverables</h3>
         <ul>
@@ -122,7 +138,7 @@ export function LessonContentView({
   courseSlug?: string
 }) {
   const material = getCourseLessonContent(courseSlug, lesson.id)
-  const evidence = getCareerEvidence(lesson.id)
+  const evidence = getCareerEvidence(courseSlug, lesson.id)
 
   if (lesson.type === 'video') {
     return (
@@ -143,7 +159,7 @@ export function LessonContentView({
   }
 
   if (lesson.type === 'notes') {
-    const fallback = `Written teaching material has not been authored for this lesson yet.\n\nThis is not the Data Analytics flagship, and a title is not a lesson. Mark complete only to record progress — not competence.`
+    const fallback = `Written teaching material has not been authored for this lesson yet.\n\nA title is not a lesson. Mark complete only to record progress — not competence.`
     const notes = material?.body ?? fallback
     return (
       <div className="lms-lesson-notes">

@@ -8,6 +8,7 @@ import {
   coursePracticeGroups,
   coursePrimaryCta,
   coursePublicView,
+  isAuthoredCourse,
   linkedCourseSlugsForProgram,
   programmePublicView,
 } from "../src/lib/catalog-maturity.ts"
@@ -40,8 +41,8 @@ for (const course of courses) {
   assert(!/live classes|live \+/i.test(course.mode), `${course.slug} public mode must not claim live classes`)
   const view = coursePublicView(course)
   assert(view.listedPrice > 0, `${course.slug} keeps a listed price`)
-  if (course.slug === AUTHORED_COURSE_SLUG) {
-    assert(view.maturity === "ready", "only the authored course is ready")
+  if (isAuthoredCourse(course.slug)) {
+    assert(view.maturity === "ready", `${course.slug} is an authored course and must be ready`)
   } else {
     assert(view.maturity === "listing", `${course.slug} must be a catalogue listing`)
     assert(view.honesty?.includes("thinner than Data Analytics"), `${course.slug} must be labelled thinner`)
@@ -50,12 +51,12 @@ for (const course of courses) {
 }
 
 assert(
-  courses.filter((course) => coursePublicView(course).maturity === "ready").length === 1,
-  "Exactly one course is ready to start",
+  courses.filter((course) => coursePublicView(course).maturity === "ready").length === 2,
+  "Data Analytics and Product Management are ready to start",
 )
 
 for (const course of courses) {
-  if (course.slug === AUTHORED_COURSE_SLUG) continue
+  if (isAuthoredCourse(course.slug)) continue
   const view = coursePublicView(course)
   assert(/catalogue listing/i.test(view.summary), `${course.slug} public summary must read as a listing`)
   assert(!/live case|live class|real client/i.test(view.summary), `${course.slug} public summary must not claim live delivery`)
@@ -144,6 +145,20 @@ assert(
   dsai.taughtOutcomes.every((item) => !/supervised learning|deep learning/i.test(item)),
   "Data Science & AI must not present brochure ML as what you learn now",
 )
+
+const pm = courses.find((course) => course.slug === "product-management")
+assert(pm, "Product Management must exist")
+const pmView = coursePublicView(pm!)
+assert(pmView.maturity === "ready", "Product Management must be ready to start")
+assert(pmView.showLiveCurriculum, "Product Management curriculum is live")
+assert(courseLessonStats(pm!).lessonCount === 15, "Product Management must have 15 lessons")
+assert(courseLessonStats(pm!).moduleCount === 5, "Product Management must have 5 modules")
+assert(pmView.outcomes.every((item) => !/sql|power bi|machine learning|\bAI\b/i.test(item)), "Product Management outcomes must not claim untaught data/AI tools")
+const pmPractice = coursePracticeGroups(pm!)
+assert(pmPractice.learning.length === 9, "Product Management has 9 written lessons")
+assert(pmPractice.practice.length === 3, "Product Management has 3 practice checks")
+assert(pmPractice.assignments.length === 2, "Product Management has 2 assignments besides the capstone")
+assert(pmPractice.capstone.length === 1, "Product Management has one capstone")
 
 console.log("catalog-truth ok")
 console.log({

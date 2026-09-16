@@ -1,6 +1,7 @@
 import { courses, programs, type Course, type CourseLesson, type Program } from "../data"
+import { AUTHORED_COURSE_SLUG, isAuthoredCourse } from "./authored-courses"
+import { courseProductProfile } from "./course-product"
 import { countStaticCourseLessons } from "./curriculum-counts"
-import { AUTHORED_COURSE_SLUG, isAuthoredCourse } from "./live-intents"
 
 export { AUTHORED_COURSE_SLUG, isAuthoredCourse }
 
@@ -115,38 +116,14 @@ export function courseModuleCards(course: Course, authored: boolean): ModulePubl
   })
 }
 
-export const AUTHORED_TOOLS = ["Google Sheets or Excel", "SQL as specified in the briefs", "A text editor"]
-export const AUTHORED_PREREQUISITE = "None. A spreadsheet or a text editor is enough."
-export const AUTHORED_DATASETS = [
-  { filename: "northwind_sales.csv", detail: "180 order lines for fictional Northwind Retail, January–June 2026." },
-  { filename: "northwind_hr.csv", detail: "56 staff rows used where the briefs ask for a companion HR extract." },
-]
+const flagshipProfile = courseProductProfile(AUTHORED_COURSE_SLUG)!
 
-export const AUTHORED_LEARNING_STEPS = [
-  { label: "Learning", detail: "Written lessons in Skylent OS. Self-paced. No video stream and no live classroom." },
-  { label: "Practice", detail: "Short checks after a block of lessons." },
-  { label: "Assignment", detail: "Applied spreadsheet, SQL, and dashboard work on Northwind." },
-  { label: "Capstone", detail: "A commercial review you keep as a work sample." },
-] as const
-
-export const AUTHORED_FAQ = [
-  {
-    q: "Are there videos or live classes?",
-    a: "No. Data Analytics is written lessons, quizzes, and assignments in Skylent OS. You work at your own pace.",
-  },
-  {
-    q: "Do I pay when I click Enrol?",
-    a: "No. A listed price is shown, but payment is not collected in this environment. Enrolment opens the course workspace.",
-  },
-  {
-    q: "Is a certificate issued?",
-    a: "Not in this pilot.",
-  },
-  {
-    q: "What do I actually work on?",
-    a: "A synthetic Northwind Retail dataset: spreadsheet analysis, SQL, data cleaning, a one-question dashboard, and a commercial-review capstone.",
-  },
-] as const
+/** Data Analytics product copy. Prefer courseProductProfile(slug) for authored courses. */
+export const AUTHORED_TOOLS = flagshipProfile.tools
+export const AUTHORED_PREREQUISITE = flagshipProfile.prerequisite
+export const AUTHORED_DATASETS = flagshipProfile.datasets
+export const AUTHORED_LEARNING_STEPS = flagshipProfile.learningSteps
+export const AUTHORED_FAQ = flagshipProfile.faq
 
 export const PROGRAMME_INTENDED_STEPS = [
   "Programme",
@@ -164,12 +141,14 @@ export function coursePrimaryCta(view: { showLiveCurriculum: boolean; maturity: 
   return "Enrol to open the outline"
 }
 
-export function courseAfterEnrolSteps(authored: boolean): string[] {
+export function courseAfterEnrolSteps(authored: boolean, courseTitle?: string): string[] {
+  const profile = courseTitle ? courses.find((row) => row.title === courseTitle) : undefined
+  const afterEnrol = profile ? courseProductProfile(profile.slug)?.afterEnrol : undefined
   return [
     "If you are not signed in, you will be asked to sign in or create an account.",
     "Enrolment grants access to the learning workspace. Payment is not collected.",
     authored
-      ? "Skylent OS opens Data Analytics at the first lesson."
+      ? afterEnrol ?? (courseTitle ? `Skylent OS opens ${courseTitle} at the first lesson.` : "Skylent OS opens the course at the first lesson.")
       : "Skylent OS opens the course outline. Full teaching content is still being built.",
   ]
 }
@@ -194,7 +173,7 @@ export type CoursePublicView = {
 }
 
 function listingSummary(course: Course): string {
-  return `${course.title} is a catalogue listing. The LMS has an outline, not a finished course like Data Analytics.`
+  return `${course.title} is a catalogue listing. The LMS has an outline, not a finished course like Data Analytics or Product Management.`
 }
 
 export function coursePublicView(course: Course): CoursePublicView {

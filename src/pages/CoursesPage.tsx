@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { CourseThumb, NorthwindWorkspace } from "../components/product/ProductLanguage"
+import { CourseProductVisual, CourseThumb } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { coursePublicView } from "../lib/catalog-maturity"
+import { courseProductProfile } from "../lib/course-product"
 import "./Catalog.css"
 
 export default function CoursesPage() {
@@ -36,7 +37,7 @@ export default function CoursesPage() {
           <div className="cat-rail">
             <h1>Focused units you can finish.</h1>
             <p className="cat-lead">
-              A course is a unit of lessons and practice. Data Analytics is ready to start. Other listings are thinner catalogue items.
+              A course is a unit of lessons and practice. Data Analytics and Product Management are ready to start. Other listings are thinner catalogue items.
             </p>
             <Link className="cat-text-link" to="/programs">Looking for a longer pathway? See programmes</Link>
             <input
@@ -81,7 +82,7 @@ export default function CoursesPage() {
                 {listings.length > 0 ? (
                   <div className="cat-group">
                     <h2>Catalogue listings</h2>
-                    <p className="cat-fine">These exist in the catalogue and LMS, but they are not as complete as Data Analytics.</p>
+                    <p className="cat-fine">These exist in the catalogue and LMS, but they are not as complete as the ready courses.</p>
                     <div className="cat-grid">
                       {listings.map((view) => (
                         <CourseCard key={view.slug} view={view} />
@@ -102,15 +103,16 @@ function CourseCard({ view, featured = false }: { view: ReturnType<typeof course
   const stats = view.showLiveCurriculum
     ? `${view.stats.lessonCount} lessons · ${view.stats.quizCount} quizzes · ${view.stats.assignmentCount} assignments`
     : `${view.stats.lessonCount} outline items`
+  const profile = courseProductProfile(view.slug)
 
   return (
     <Link className={featured ? "cat-feature" : "cat-tile"} to={`/courses/${view.slug}`}>
       {featured ? (
         <div className="cat-feature-stage">
-          <NorthwindWorkspace compact />
+          {profile ? <CourseProductVisual visual={profile.visual} compact /> : <CourseThumb authored={false} />}
         </div>
       ) : (
-        <CourseThumb authored={view.showLiveCurriculum} />
+        <CourseThumb authored={view.showLiveCurriculum} visual={profile?.visual ?? "northwind"} />
       )}
       <div className="cat-tile-copy">
         <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
