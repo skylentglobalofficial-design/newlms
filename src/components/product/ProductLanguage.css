@@ -819,6 +819,19 @@
     display: none;
   }
 
+  .pl-nw.is-compact .pl-stat-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 0;
+  }
+
+  .pl-nw.is-compact .pl-stat {
+    padding: 8px;
+  }
+
+  .pl-nw.is-compact .pl-stat strong {
+    font-size: 13px;
+  }
+
   .pl-ws-viz .pl-spark-mini {
     height: 40px;
   }
