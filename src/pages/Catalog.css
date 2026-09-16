@@ -29,6 +29,10 @@
   align-items: start;
 }
 
+.cat-hero-visual .pl-frame {
+  min-height: 380px;
+}
+
 .cat-hero h1 {
   margin: 8px 0 0;
   max-width: 12em;
@@ -599,7 +603,7 @@
 
 .cat-link {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: 108px minmax(0, 1fr) auto;
   gap: 12px;
   margin-top: 14px;
   padding: 14px;
@@ -607,6 +611,7 @@
   border-radius: 14px;
   text-decoration: none;
   color: inherit;
+  align-items: center;
 }
 
 .cat-link h3 {
@@ -632,6 +637,10 @@
   .cat-link,
   .cat-split {
     grid-template-columns: 1fr;
+  }
+
+  .cat-hero-visual .pl-frame {
+    min-height: 0;
   }
 }
 

@@ -17,7 +17,7 @@ import {
 import { useLmsDashboard } from '../hooks/useLms'
 import { enrollInCourse, fetchLmsEnrollments, type ApiEnrollmentSummary } from '../lib/lms-api'
 import EnrollmentEvidence from '../components/learner/EnrollmentEvidence'
-import { NorthwindWorkspace } from '../components/product/ProductLanguage'
+import { LearnFlow, NorthwindWorkspace } from '../components/product/ProductLanguage'
 import { workspaceErrorMessage } from '../lib/http'
 import { courses } from '../data'
 import { AUTHORED_COURSE_SLUG } from '../lib/live-intents'
@@ -150,6 +150,7 @@ export default function DashboardStudentPage() {
             </p>
           </div>
           {recommendedCourse ? (
+            <>
             <div className="dash-empty-grid">
               <div className="dash-empty-card">
                 <p className="os-eyebrow">Ready to start</p>
@@ -180,6 +181,17 @@ export default function DashboardStudentPage() {
               </div>
               <NorthwindWorkspace compact />
             </div>
+            <div className="dash-empty-flow">
+              <LearnFlow
+                steps={[
+                  { title: "Learn", copy: "Enrolment opens Data Analytics in Skylent OS.", kind: "learn" },
+                  { title: "Practise", copy: "Quizzes unlock after the written work.", kind: "practice" },
+                  { title: "Build", copy: "Assignments use the Northwind extract.", kind: "build" },
+                  { title: "Keep", copy: "Carry evidence into Career OS yourself.", kind: "keep" },
+                ]}
+              />
+            </div>
+            </>
           ) : (
             <div className="os-actions">
               <Link className="os-btn os-btn-primary" to="/courses">Browse courses</Link>

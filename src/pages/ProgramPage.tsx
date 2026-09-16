@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
-import { PathwayTrack } from "../components/product/ProductLanguage"
+import { CourseThumb, PathwayTrack } from "../components/product/ProductLanguage"
 import { programs } from "../data"
 import { isProgramEnrollable } from "../lib/catalog-api"
 import {
@@ -125,6 +125,7 @@ export default function ProgramPage() {
             ) : (
               view.linked.map((item) => (
                 <Link className="cat-link" key={item.slug} to={item.to}>
+                  <CourseThumb authored={item.authored} />
                   <div>
                     <span className={item.authored ? "cat-mark cat-mark-ready" : "cat-mark"}>{item.maturityLabel}</span>
                     <h3>{item.title}</h3>

@@ -54,7 +54,6 @@ export default function HomePage() {
         <section className="hp-section hp-section-alt" id="start-learning" aria-labelledby="start-learning-heading">
           <div className="hp-rail hp-feature">
             <div>
-              <p className="hp-kicker">Featured course</p>
               <h2 id="start-learning-heading" className="hp-h2">{flagship?.title ?? "Data Analytics"}</h2>
               <p className="hp-lead">{flagship?.desc}</p>
               <p className="hp-flagship-meta">
@@ -75,7 +74,6 @@ export default function HomePage() {
 
         <section className="hp-section" aria-labelledby="how-study-heading">
           <div className="hp-rail">
-            <p className="hp-kicker">How study works</p>
             <h2 id="how-study-heading" className="hp-h2">Learn. Practise. Build. Keep.</h2>
             <div className="hp-flow-wrap">
               <LearnFlow steps={studyLoop} />
@@ -86,7 +84,6 @@ export default function HomePage() {
         <section className="hp-section hp-section-alt" aria-labelledby="work-heading">
           <div className="hp-rail hp-feature">
             <div>
-              <p className="hp-kicker">After you build something</p>
               <h2 id="work-heading" className="hp-h2">Keep the work in Career OS</h2>
               <p className="hp-lead">
                 Your learning evidence can stay with you in Career OS. It is a workspace for your profile, projects, and career activity — not a job guarantee.

@@ -112,9 +112,12 @@ export default function CourseDetailPage() {
               </aside>
             </div>
             {view.showLiveCurriculum ? (
-              <NorthwindWorkspace />
+              <div className="cat-hero-visual">
+                <NorthwindWorkspace />
+              </div>
             ) : (
-              <ProductFrame title={view.title} meta="Outline">
+              <div className="cat-hero-visual">
+                <ProductFrame title={view.title} meta="Outline">
                 <ol className="pl-ws-rail pl-outline">
                   {modules.map((module) => (
                     <li key={module.id}>
@@ -125,6 +128,7 @@ export default function CourseDetailPage() {
                 </ol>
                 <p className="pl-fine">Outline titles only — not a finished teaching path.</p>
               </ProductFrame>
+              </div>
             )}
           </div>
         </section>

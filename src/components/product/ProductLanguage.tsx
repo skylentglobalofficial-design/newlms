@@ -256,9 +256,9 @@ export function LessonContextPanel({ lessonId }: { lessonId: string }) {
   return (
     <aside className="pl-lesson-ctx">
       <div>
-        <p className="pl-kicker">Objective</p>
-        <p className="pl-ws-lesson pl-lesson-obj">{meta.objective}</p>
-        <p className="pl-fine">You produce: {meta.practicalOutput}</p>
+        <p className="pl-kicker">You produce</p>
+        <p className="pl-ws-lesson pl-lesson-obj">{meta.practicalOutput}</p>
+        <p className="pl-fine">{meta.whyItMatters}</p>
       </div>
       {visual === "sql" ? (
         <pre className="pl-sql">
