@@ -30,7 +30,7 @@
 }
 
 .cat-hero-visual .pl-frame {
-  min-height: 420px;
+  min-height: 360px;
 }
 
 .cat-metrics {
@@ -539,7 +539,7 @@
 
 .cat-feature {
   display: grid;
-  grid-template-rows: minmax(220px, auto) auto;
+  grid-template-rows: 188px auto;
   grid-template-columns: minmax(0, 1fr);
   gap: 0;
   min-width: 0;
@@ -553,7 +553,9 @@
 
 .cat-feature-stage {
   min-width: 0;
-  padding: 12px;
+  height: 188px;
+  overflow: hidden;
+  padding: 10px 10px 0;
   background: #f7f4ec;
 }
 
@@ -563,8 +565,13 @@
 }
 
 .cat-feature .cat-tile-copy {
-  justify-content: center;
-  padding: 24px 28px;
+  justify-content: flex-start;
+  padding: 14px 18px 16px;
+}
+
+.cat-metrics .pl-stat strong {
+  font-size: 14px;
+  line-height: 1.25;
 }
 
 .cat-tile-copy {
@@ -588,8 +595,8 @@
 }
 
 .cat-feature h3 {
-  font-size: 22px;
-  -webkit-line-clamp: 3;
+  font-size: 20px;
+  -webkit-line-clamp: 2;
 }
 
 .cat-tile p,

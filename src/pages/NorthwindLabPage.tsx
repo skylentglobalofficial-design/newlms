@@ -316,10 +316,10 @@ export default function NorthwindLabPage() {
       </div>
       <ol className="lab-flow" aria-label="Lab workflow">
         <li className="is-on">Dataset</li>
-        <li>Inspect</li>
+        <li className="is-on">Inspect</li>
         <li className={mode === "sql" ? "is-on" : undefined}>Query</li>
         <li className={mode === "analysis" ? "is-on" : undefined}>Analyse</li>
-        <li>Visualise</li>
+        <li className={mode === "sql" ? "is-on" : undefined}>Visualise</li>
         <li>Save work</li>
       </ol>
 

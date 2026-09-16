@@ -199,7 +199,7 @@ export default function CareerOSOverviewPage() {
         rail={(
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <GlassSurface level={2} padding="18px">
-              <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Quick actions</div>
+                  <div style={{ fontSize: 12, color: accent.text, marginBottom: 8, fontWeight: 600 }}>Quick actions</div>
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <Link to="/career-os/projects" style={{ color: C.ink, fontSize: 13.5, textDecoration: "none", padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
                   View projects

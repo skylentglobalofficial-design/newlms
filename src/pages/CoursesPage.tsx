@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { CourseProductVisual, CourseThumb } from "../components/product/ProductLanguage"
+import { CourseProductVisual, CourseThumb, CourseWorkspacePreview } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { coursePublicView } from "../lib/catalog-maturity"
-import { courseProductProfile } from "../lib/course-product"
+import { courseProductProfile, FLAGSHIP_COURSE_SLUG } from "../lib/course-product"
 import "./Catalog.css"
 
 export default function CoursesPage() {
@@ -30,11 +30,15 @@ export default function CoursesPage() {
   const ready = filtered.filter((view) => view.maturity === "ready")
   const listings = filtered.filter((view) => view.maturity !== "ready")
 
+  const flagship = courses.find((course) => course.slug === FLAGSHIP_COURSE_SLUG)
+  const flagshipView = flagship ? coursePublicView(flagship) : null
+
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
         <section className="cat-hero">
-          <div className="cat-rail">
+          <div className="cat-rail cat-hero-split">
+            <div>
             <h1>Focused units you can finish.</h1>
             <p className="cat-lead">
               A course is a unit of lessons and practice. Data Analytics and Product Management are ready to start. Other listings are thinner catalogue items.
@@ -60,6 +64,20 @@ export default function CoursesPage() {
                 </button>
               ))}
             </div>
+            </div>
+            {flagship && flagshipView ? (
+              <div className="cat-hero-visual">
+                <CourseWorkspacePreview
+                  courseTitle={flagship.title}
+                  lessonTitle={flagship.modules[0]?.lessons[0]?.title ?? "Open the first lesson"}
+                  practiceTitle={flagship.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")?.title ?? "A short check"}
+                  workTitle={flagship.modules.flatMap((module) => module.lessons).find((lesson) => /capstone/i.test(lesson.title))?.title ?? "Capstone"}
+                  modules={flagship.modules.map((module) => module.title)}
+                  lessonCount={flagshipView.stats.lessonCount}
+                  visual="northwind"
+                />
+              </div>
+            ) : null}
           </div>
         </section>
 

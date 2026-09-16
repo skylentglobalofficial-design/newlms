@@ -56,7 +56,7 @@ export default function CourseDetailPage() {
               <h1>{view.title}</h1>
               <p className="cat-lead">{view.summary}</p>
               <div className="cat-metrics">
-                <VisualStat label="Status" value={view.maturityLabel} />
+                <VisualStat label="Status" value={view.maturity === "ready" ? "Ready" : view.maturityLabel} />
                 <VisualStat label="Level" value={view.course.level} />
                 <VisualStat
                   label={view.showLiveCurriculum ? "Lessons" : "Outline"}
