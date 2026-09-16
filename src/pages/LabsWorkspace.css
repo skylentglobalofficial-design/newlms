@@ -86,8 +86,8 @@
   display: grid;
   grid-template-columns: minmax(220px, 260px) minmax(0, 1fr) minmax(260px, 320px);
   gap: 14px;
-  align-items: stretch;
-  min-height: 100%;
+  align-items: start;
+  min-height: 0;
 }
 
 .lab-panel {
@@ -175,7 +175,7 @@
 
 .lab-metrics {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 8px;
 }
 
@@ -197,7 +197,8 @@
   margin-top: 4px;
   font-size: 16px;
   letter-spacing: -0.03em;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .lab-run-box {
@@ -272,19 +273,14 @@
 }
 
 .lab-disclaimer {
-  margin: 12px 16px 16px;
+  margin: 4px 2px 8px;
   color: #5c6168;
   font-size: 12px;
   line-height: 1.45;
-  flex-shrink: 0;
 }
 
 @media (max-width: 900px) {
   .lab-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .lab-metrics {
     grid-template-columns: 1fr;
   }
 }

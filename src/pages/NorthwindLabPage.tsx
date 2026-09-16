@@ -332,8 +332,8 @@ export default function NorthwindLabPage() {
             </div>
           </section>
         </div>
+        <p className="lab-disclaimer">{workspace.disclaimer}</p>
       </div>
-      <p className="lab-disclaimer">{workspace.disclaimer}</p>
     </div>
   )
 }
