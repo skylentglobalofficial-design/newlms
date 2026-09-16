@@ -17,6 +17,7 @@ const SUITES: Suite[] = [
   { name: "auth", command: "npm", args: ["run", "test:auth"], port: DEFAULT_PORT, rateLimitMax: "500" },
   { name: "roles", command: "npm", args: ["run", "test:roles"], port: DEFAULT_PORT, rateLimitMax: "500" },
   { name: "lms", command: "npm", args: ["run", "test:lms"], port: DEFAULT_PORT, rateLimitMax: "500" },
+  { name: "labs", command: "npm", args: ["run", "test:labs"], port: DEFAULT_PORT, rateLimitMax: "500" },
   {
     name: "security-middleware",
     command: "npm",

@@ -16,6 +16,7 @@ import { adminRouter } from './routes/admin.js'
 import { authRouter } from './routes/auth.js'
 import { lmsRouter } from './routes/lms.js'
 import { skylentAiRouter } from './routes/skylent-ai.js'
+import { labsRouter } from './routes/labs.js'
 import { facultyRouter } from './routes/faculty.js'
 import { organisationRouter } from './routes/organisation.js'
 import { careerRouter } from './routes/career/index.js'
@@ -32,6 +33,7 @@ app.use('/api/v1/catalog', catalogRouter)
 app.use('/api/v1/auth', authRouter)
 app.use('/api/v1/lms', skylentAiRouter)
 app.use('/api/v1/lms', lmsRouter)
+app.use('/api/v1/labs', labsRouter)
 app.use('/api/v1/faculty', facultyRouter)
 app.use('/api/v1/organisation', organisationRouter)
 app.use('/api/v1/career', careerRouter)

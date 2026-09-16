@@ -25,6 +25,7 @@
     "test:lms": "tsx scripts/test-lms.ts",
     "test:ai": "tsx scripts/test-skylent-ai.ts",
     "test:ai:live": "tsx scripts/test-skylent-ai-live.ts",
+    "test:labs": "tsx scripts/test-skylent-labs.ts",
     "test:da-content": "tsx scripts/test-da-content.ts",
     "test:career": "tsx scripts/test-career.ts",
     "test:catalog-parity": "tsx scripts/test-catalog-truth.ts && tsx scripts/check-catalog-parity.ts",
