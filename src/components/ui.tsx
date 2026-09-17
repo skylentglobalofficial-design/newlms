@@ -21,9 +21,13 @@ type Tone = 'light' | 'dark' | 'canvas'
 // ── Section wrapper ──────────────────────────────────────────────────────────
 function sectionBg(tone: Tone, bg?: string): string {
   if (bg) return bg
-  if (tone === 'canvas') return C.warmWhite
-  if (tone === 'dark') return C.warmWhite
+  if (tone === 'dark') return C.ink
+  if (tone === 'canvas') return C.sand
   return C.warmWhite
+}
+
+function sectionTextColor(tone: Tone): string {
+  return tone === 'dark' ? C.white : C.ink
 }
 
 export function Section({
@@ -42,7 +46,7 @@ export function Section({
   divider?: boolean
 }) {
   const background = sectionBg(tone, bg)
-  const textColor = C.ink
+  const textColor = sectionTextColor(tone)
   return (
     <>
       {divider && <div className="skylent-section-divider" />}
@@ -91,8 +95,9 @@ export function Heading({
     lg: 'clamp(26px, 3.4vw, 40px)',
     xl: 'clamp(30px, 4vw, 44px)',
   }
+  const color = tone === 'dark' ? C.white : C.ink
   return (
-    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: sizes[size], lineHeight: 1.04, letterSpacing: '-0.03em', color: C.ink, margin: 0, ...style }}>
+    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: sizes[size], lineHeight: 1.04, letterSpacing: '-0.03em', color, margin: 0, ...style }}>
       {children}
     </h2>
   )

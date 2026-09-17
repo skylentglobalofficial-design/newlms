@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
-import { Section, SectionHeader, Button, Eyebrow, T, Heading } from '../components/ui'
+import { Section, SectionHeader, Button, Eyebrow, T, Heading, CTABand } from '../components/ui'
 import { ContextualNavBar, useSectionSpy, type ContextualNavItem } from '../components/foundation'
 import { CapabilityRail, MaturityMark } from '../components/product/Architecture'
 import { INSTITUTION_OS_LAYERS } from '../lib/product-architecture'
@@ -415,6 +415,15 @@ export default function InstitutionsPage() {
       <EcosystemSection />
       <PartnershipSection />
       <EnquiriesSection />
+
+      <CTABand
+        eyebrow="Get in touch"
+        title={<>Bring Skylent OS<br />to your institution.</>}
+        lead="Let's map your needs and co-design a program that moves your learners from education to employability."
+        primary={{ label: 'Partner With Skylent', to: '/contact' }}
+        secondary={{ label: 'View Skylent OS', to: '/career-os' }}
+        auroraTheme="institution"
+      />
     </PageShell>
   )
 }
