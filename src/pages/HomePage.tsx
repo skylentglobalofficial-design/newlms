@@ -173,13 +173,9 @@ function HomeHero() {
                         ))}
                       </ol>
                     </div>
+                    <p className="hp-os-capstone">{analytics.workTitle}</p>
                     <div className="hp-os-work">
                       <CourseThumb authored visual={analytics.visual} />
-                      <div className="hp-os-project">
-                        <p>Your project</p>
-                        <strong>{analytics.workTitle}</strong>
-                        <Link to={analytics.href}>Open workspace →</Link>
-                      </div>
                     </div>
                   </div>
                 </ProductFrame>
