@@ -1,9 +1,9 @@
 import { useMemo } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { CourseThumb, LearnFlow, PathwayThumb } from "../components/product/ProductLanguage"
+import { HarborDeskWorkspace, NorthwindWorkspace } from "../components/product/ProductLanguage"
 import { courses } from "../data"
-import { courseLessonStats } from "../lib/catalog-maturity"
+import { courseLessonStats, coursePracticeGroups } from "../lib/catalog-maturity"
 import { courseProductProfile } from "../lib/course-product"
 import {
   LEARN_INTENTS,
@@ -15,36 +15,41 @@ import {
 } from "../lib/live-intents"
 import "./SkillsPage.css"
 
-const NEXT_FLOW = [
-  { title: "Choose", copy: "Pick the skill you want to build.", kind: "choose" as const },
-  { title: "Learn", copy: "Open the matching course.", kind: "learn" as const },
-  { title: "Practise", copy: "Try the ideas on real tasks.", kind: "practice" as const },
-  { title: "Build", copy: "Do the work the course asks for.", kind: "build" as const },
-  { title: "Keep", copy: "Save what you produce as you go.", kind: "keep" as const },
-]
+const STAGES = [
+  { step: "01", label: "Capability", ask: "What do you want to be able to do?" },
+  { step: "02", label: "Learning", ask: "What do you open to learn it?" },
+  { step: "03", label: "Practice", ask: "Where do you try it for real?" },
+  { step: "04", label: "Evidence", ask: "What do you have afterwards?" },
+] as const
 
-function IntentVisual({ id }: { id: LearnIntentId }) {
-  if (id === "data") {
-    return <CourseThumb authored visual="northwind" />
+/**
+ * The four stages resolved against real content for one intent. Every field comes
+ * from an authored course; when an intent has no authored course the stages stay
+ * empty on purpose rather than borrowing another direction's material.
+ */
+function intentJourney(id: LearnIntentId) {
+  const matches = liveMatchesForIntent(id)
+  const authored = matches.find((match) => match.depth === "authored") ?? null
+  const course = authored ? courses.find((row) => row.slug === authored.slug) : null
+  const profile = course ? courseProductProfile(course.slug) : null
+  const stats = course ? courseLessonStats(course) : null
+  const groups = course ? coursePracticeGroups(course) : null
+  const capstone = groups?.capstone[0] ?? null
+
+  return {
+    capabilities: capabilitiesForIntent(id),
+    authored,
+    course,
+    profile,
+    stats,
+    checks: groups?.practice.length ?? 0,
+    assignments: groups?.assignments.length ?? 0,
+    lab: profile?.lab ?? null,
+    labOmission: profile?.labOmission ?? null,
+    evidence: capstone ? capstone.title.replace(/^capstone\s*[—–-]\s*/i, "") : null,
+    material: profile?.datasets[0]?.filename ?? null,
+    listings: matches.filter((match) => match.depth !== "authored"),
   }
-  if (id === "product") {
-    return <CourseThumb authored visual="harbor-desk" />
-  }
-  if (id === "software") {
-    return (
-      <span className="sk-intent-visual is-software" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </span>
-    )
-  }
-  return (
-    <span className="sk-intent-visual is-ai" aria-hidden="true">
-      <b />
-      <b />
-    </span>
-  )
 }
 
 function IntentPicker({
@@ -65,6 +70,7 @@ function IntentPicker({
     <div className="sk-intents" role="radiogroup" aria-label="What do you want to be able to do?">
       {LEARN_INTENTS.map((item, index) => {
         const selected = value === item.id
+        const authored = liveMatchesForIntent(item.id).some((match) => match.depth === "authored")
         return (
           <button
             key={item.id}
@@ -90,10 +96,10 @@ function IntentPicker({
               }
             }}
           >
-            <IntentVisual id={item.id} />
-            <span className="sk-intent-copy">
-              <span className="sk-intent-label">{item.label}</span>
-              <span className="sk-intent-question">{item.question}</span>
+            <span className="sk-intent-label">{item.label}</span>
+            <span className="sk-intent-question">{item.question}</span>
+            <span className={authored ? "sk-intent-state is-ready" : "sk-intent-state"}>
+              {authored ? "Authored course" : "Catalogue listing only"}
             </span>
           </button>
         )
@@ -102,140 +108,166 @@ function IntentPicker({
   )
 }
 
-function MatchCard({ match, featured }: { match: LiveMatch; featured: boolean }) {
-  const kindLabel = match.kind === "programme" ? "Programme" : "Course"
-  const course = match.kind === "course" ? courses.find((item) => item.slug === match.slug) : null
-  const stats = course ? courseLessonStats(course) : null
-  const profile = course ? courseProductProfile(course.slug) : null
-  const honesty =
-    match.depth === "authored"
-      ? null
-      : match.kind === "programme"
-        ? "Programme listing — live teaching is thinner than advertised."
-        : "Catalogue listing — thinner than Data Analytics."
-  const workTag =
-    match.depth === "authored"
-      ? profile?.visual === "harbor-desk"
-        ? "Harbor Desk case"
-        : "Northwind project"
-      : match.note
-
+function StageHead({ index }: { index: number }) {
+  const stage = STAGES[index]
   return (
-    <article className={featured ? "sk-product is-featured" : "sk-product"}>
-      {match.kind === "course" ? (
-        <CourseThumb authored={match.depth === "authored"} visual={profile?.visual ?? "northwind"} />
-      ) : (
-        <PathwayThumb />
-      )}
-      <div className="sk-product-body">
-        <p className="sk-product-meta">
-          <span>{kindLabel}</span>
-          <span aria-hidden="true">·</span>
-          <span>{match.note}</span>
-          {match.duration ? (
-            <>
-              <span aria-hidden="true">·</span>
-              <span>{match.duration}</span>
-            </>
-          ) : null}
-        </p>
-        <h3 className="sk-match-title">{match.title}</h3>
-        <p className="sk-match-summary">{match.summary}</p>
-        <ul className="sk-tags">
-          <li>{kindLabel}</li>
-          {course ? <li>{course.category}</li> : null}
-          {course ? <li>{course.level}</li> : null}
-          {match.depth === "authored" ? <li>{workTag}</li> : <li>{match.note}</li>}
-        </ul>
-        {stats && match.depth === "authored" ? (
-          <p className="sk-product-stats">
-            {stats.lessonCount} lessons · {stats.quizCount} quizzes · {stats.assignmentCount} assignments
-          </p>
-        ) : null}
-        {honesty ? <p className="sk-match-honesty">{honesty}</p> : null}
-        <Link className={featured ? "sk-btn sk-btn-primary" : "sk-btn sk-btn-ghost"} to={match.to}>
-          {match.actionLabel}
-        </Link>
-      </div>
-    </article>
+    <header className="sk-stage-head">
+      <p className="sk-stage-step">{stage.step}</p>
+      <p className="sk-stage-label">{stage.label}</p>
+    </header>
   )
 }
 
-function IntentResults({ intentId }: { intentId: LearnIntentId }) {
+/** The progression with nothing chosen yet: explains the model without faking content. */
+function StageModel() {
+  return (
+    <ol className="sk-stages is-model" aria-label="How a skill becomes evidence">
+      {STAGES.map((stage, index) => (
+        <li className="sk-stage" key={stage.step}>
+          <StageHead index={index} />
+          <p className="sk-stage-ask">{stage.ask}</p>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
+function IntentJourney({ intentId }: { intentId: LearnIntentId }) {
   const intent = LEARN_INTENTS.find((item) => item.id === intentId)
-  const matches = liveMatchesForIntent(intentId)
-  const capabilities = capabilitiesForIntent(intentId)
-  const ready = matches.filter((match) => match.depth === "authored")
-  const listings = matches.filter((match) => {
-    if (match.depth === "authored") return false
-    if (ready.length > 0 && match.kind === "programme") return false
-    return true
-  })
-  const fromAuthored = ready.length > 0
+  const journey = intentJourney(intentId)
+  const { authored, course, stats } = journey
 
   return (
-    <div className="sk-results" id="your-direction">
-      <section className="sk-explain" aria-labelledby="selected-intent-heading">
+    <div className="sk-journey" id="your-direction">
+      <header className="sk-journey-head">
         <h2 id="selected-intent-heading">{intent?.label}</h2>
-        <p className="sk-lead">{intent?.question}</p>
-        {capabilities.length > 0 ? (
-          <>
-            <p className="sk-cap-intro">
-              {fromAuthored ? "Build confidence with:" : "The catalogue lists these capabilities:"}
-            </p>
-            <ul className="sk-caps">
-              {capabilities.map((item) => (
+        <p className="sk-journey-ask">{intent?.question}</p>
+      </header>
+
+      <ol className="sk-stages" aria-labelledby="selected-intent-heading">
+        <li className="sk-stage">
+          <StageHead index={0} />
+          {journey.capabilities.length > 0 ? (
+            <ul className="sk-stage-caps">
+              {journey.capabilities.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
-            {!fromAuthored ? (
-              <p className="sk-fine">
-                These statements come from catalogue listings. This path is not as complete as Data Analytics.
-              </p>
-            ) : (
-              <p className="sk-fine">
-                Taken from the {ready.map((match) => match.title).join(" and ")} course outcomes.
-              </p>
-            )}
-          </>
-        ) : (
-          <p className="sk-fine">No live curriculum statements are attached to this intent yet.</p>
-        )}
-      </section>
+          ) : (
+            <p className="sk-stage-empty">No curriculum statements are attached to this direction yet.</p>
+          )}
+          <p className="sk-stage-source">
+            {authored ? `From the ${authored.title} course outcomes.` : "From catalogue listings."}
+          </p>
+        </li>
 
-      <section className="sk-learning" aria-labelledby="matching-learning-heading">
-        <h2 id="matching-learning-heading">
-          {ready.length > 0 ? "Start with this course" : "What is live for this path"}
-        </h2>
-
-        {matches.length === 0 ? (
-          <div className="sk-empty">
-            <p className="sk-empty-title">Nothing live for this path yet.</p>
-            <p className="sk-empty-copy">
-              There is no open course or programme in the catalogue for this direction.
+        <li className="sk-stage">
+          <StageHead index={1} />
+          {authored && course && stats ? (
+            <>
+              <p className="sk-stage-title">{authored.title}</p>
+              <dl className="sk-stage-facts">
+                <div>
+                  <dt>Modules</dt>
+                  <dd>{stats.moduleCount}</dd>
+                </div>
+                <div>
+                  <dt>Lessons</dt>
+                  <dd>{stats.lessonCount}</dd>
+                </div>
+                <div>
+                  <dt>Level</dt>
+                  <dd>{course.level}</dd>
+                </div>
+              </dl>
+              <Link className="sk-btn sk-btn-primary" to={authored.to}>
+                Open this course
+              </Link>
+            </>
+          ) : (
+            <p className="sk-stage-empty">
+              Nothing authored end to end yet. The catalogue lists outlines for this direction, not finished
+              teaching.
             </p>
-            <Link className="sk-btn sk-btn-primary" to="/courses">
-              Explore all courses
-            </Link>
-          </div>
-        ) : (
-          <>
-            {ready.length === 0 ? (
-              <p className="sk-fine sk-learning-note">
-                Nothing as complete as Data Analytics is live for this path yet. These catalogue listings exist:
+          )}
+        </li>
+
+        <li className="sk-stage">
+          <StageHead index={2} />
+          {authored ? (
+            <>
+              <ul className="sk-stage-list">
+                <li>
+                  <strong>{journey.checks}</strong> knowledge checks
+                </li>
+                <li>
+                  <strong>{journey.assignments}</strong> applied assignments
+                </li>
+              </ul>
+              {journey.lab ? (
+                <p className="sk-stage-note">
+                  <span>{journey.lab.label}</span>
+                  {journey.lab.note}
+                </p>
+              ) : journey.labOmission ? (
+                <p className="sk-stage-note is-quiet">{journey.labOmission}</p>
+              ) : null}
+            </>
+          ) : (
+            <p className="sk-stage-empty">Practice is only built where a course is authored.</p>
+          )}
+        </li>
+
+        <li className="sk-stage">
+          <StageHead index={3} />
+          {journey.evidence ? (
+            <>
+              <p className="sk-stage-title">{journey.evidence}</p>
+              {journey.material ? (
+                <p className="sk-stage-note is-quiet">
+                  Produced against <code>{journey.material}</code>
+                </p>
+              ) : null}
+              <p className="sk-stage-source">
+                Kept in your workspace and can be carried into Career OS.
               </p>
-            ) : null}
-            <div className="sk-match-list">
-              {ready.map((match) => (
-                <MatchCard key={`${match.kind}-${match.slug}`} match={match} featured />
-              ))}
-              {listings.map((match) => (
-                <MatchCard key={`${match.kind}-${match.slug}`} match={match} featured={false} />
-              ))}
-            </div>
-          </>
-        )}
-      </section>
+            </>
+          ) : (
+            <p className="sk-stage-empty">No work sample exists for this direction yet.</p>
+          )}
+        </li>
+      </ol>
+
+      {authored && journey.profile ? (
+        <div className="sk-specimen">
+          <p className="sk-specimen-caption">The work sample you finish with</p>
+          {journey.profile.visual === "harbor-desk" ? (
+            <HarborDeskWorkspace compact meta="harbor-desk-case.md · 4 interviews" />
+          ) : (
+            <NorthwindWorkspace compact />
+          )}
+        </div>
+      ) : null}
+
+      {journey.listings.length > 0 ? (
+        <section className="sk-also" aria-labelledby="sk-also-title">
+          <h3 id="sk-also-title">Also listed for this direction</h3>
+          <p className="sk-fine">
+            Catalogue outlines. They open a syllabus, not the authored teaching shown above.
+          </p>
+          <ul className="sk-also-list">
+            {journey.listings.map((match: LiveMatch) => (
+              <li key={`${match.kind}-${match.slug}`}>
+                <Link to={match.to}>
+                  <span className="sk-also-kind">{match.kind === "programme" ? "Programme" : "Course"}</span>
+                  <strong>{match.title}</strong>
+                  <span className="sk-also-note">{match.duration}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
     </div>
   )
 }
@@ -256,42 +288,32 @@ export default function SkillsPage() {
       <div className="skills-p4">
         <section className="sk-hero">
           <div className="sk-rail">
+            <p className="sk-eyebrow">START FROM A GOAL</p>
             <h1>What do you want to be able to do?</h1>
             <p className="sk-hero-lead">
-              Start with the skill you want to build. We'll show you the learning that actually matches it.
+              Pick a direction. Skylent shows what you would learn, where you would practise it, and what you
+              would have to show afterwards &mdash; using only the teaching that exists today.
             </p>
             <IntentPicker value={intentId} onChange={selectIntent} />
           </div>
         </section>
 
-        {intentId ? (
-          <section className="sk-panel">
-            <div className="sk-rail">
-              <IntentResults intentId={intentId} />
-            </div>
-          </section>
-        ) : (
-          <section className="sk-panel sk-idle" aria-labelledby="idle-heading">
-            <div className="sk-rail">
-              <h2 id="idle-heading" className="sk-idle-title">
-                Choose a direction to see what you would actually learn.
-              </h2>
-              <p className="sk-fine">
-                Skills is a starting point, not a second course catalogue. Pick an intent, then open the matching course.
-              </p>
-              <Link className="sk-text-link" to="/courses">
-                Explore all courses
-              </Link>
-            </div>
-          </section>
-        )}
-
-        <section className="sk-next" aria-labelledby="next-heading">
+        <section className="sk-panel">
           <div className="sk-rail">
-            <h2 id="next-heading">Choose. Learn. Practise. Keep the work.</h2>
-            <div className="sk-flow-wrap">
-              <LearnFlow steps={NEXT_FLOW} />
-            </div>
+            {intentId ? (
+              <IntentJourney intentId={intentId} />
+            ) : (
+              <div className="sk-idle">
+                <h2 id="idle-heading" className="sk-idle-title">
+                  Every direction runs through the same four stages.
+                </h2>
+                <p className="sk-fine sk-idle-lead">
+                  Choose a direction above to see it filled in with the real course, the real practice, and the
+                  real work sample. Two of the four directions have authored teaching today.
+                </p>
+                <StageModel />
+              </div>
+            )}
           </div>
         </section>
       </div>
