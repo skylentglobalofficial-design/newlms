@@ -207,7 +207,7 @@ export function HarborDeskWorkspace({
   compact?: boolean
   meta?: string
 }) {
-  const resolvedMeta = meta ?? "harbor-desk-case.md · fictional ops"
+  const resolvedMeta = meta ?? "harbor-desk-case.md · 4 interviews"
   return (
     <ProductFrame title="Product Management" meta={resolvedMeta} compact={compact}>
       <HarborDeskBoard compact={compact} />

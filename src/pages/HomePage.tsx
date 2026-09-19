@@ -186,26 +186,26 @@ const WORKFLOW_STEPS = [
   {
     step: "01",
     title: "Learn",
-    copy: "Access structured content from experts.",
-    labels: "CONCEPTS · GUIDANCE · CLARITY",
+    copy: "Written lessons in the enrolled course. Self-paced. No video stream and no live classroom.",
+    labels: "LESSONS · MODULES · SKYLENT OS",
   },
   {
     step: "02",
     title: "Practise",
-    copy: "Reinforce your skills with hands-on exercises.",
-    labels: "EXERCISES · SIMULATIONS · FEEDBACK",
+    copy: "Short checks after a block of lessons, then applied assignments on the course material.",
+    labels: "CHECKS · ASSIGNMENTS · LAB",
   },
   {
     step: "03",
     title: "Build",
-    copy: "Work on real projects and create meaningful work.",
-    labels: "PROJECTS · PORTFOLIO · SOLUTIONS",
+    copy: "A named capstone produced against the course material, not a worked example.",
+    labels: "CAPSTONE · PROJECT WORKSPACE",
   },
   {
     step: "04",
     title: "Evidence",
-    copy: "Keep what you build and use it as proof of your skills.",
-    labels: "EVIDENCE · PROFILE · OPPORTUNITIES",
+    copy: "Keep the work sample and carry it into Career OS. Career OS is a workspace — not a placement service.",
+    labels: "WORK SAMPLE · PROFILE · CAREER OS",
   },
 ] as const
 
@@ -243,13 +243,13 @@ function HomeWorkflow() {
             <span>to real outcomes.</span>
           </h2>
           <p className="hp-workflow-lead">
-            A simple, structured journey. Learn from experts, practise with purpose, build real work, and keep evidence of what you can do.
+            Learn through written lessons, practise on the course material, produce a named piece of work, and keep it as evidence.
           </p>
         </header>
 
         {profile ? (
           <div className="hp-workflow-visual">
-            <CourseProductVisual visual={profile.visual} />
+            <CourseProductVisual visual={profile.visual} compact />
             {view ? (
               <p className="hp-workflow-caption">
                 {view.title} · {NW.filename}
@@ -271,8 +271,8 @@ function HomeWorkflow() {
 
         <div className="hp-workflow-close">
           <div className="hp-workflow-close-copy">
-            <p className="hp-eyebrow hp-workflow-eyebrow">MORE THAN COURSES.</p>
-            <p className="hp-workflow-close-title">A complete learning-to-career ecosystem.</p>
+            <p className="hp-eyebrow hp-workflow-eyebrow">THE SAME LOOP</p>
+            <p className="hp-workflow-close-title">From the first lesson to the work you keep.</p>
           </div>
           <Link className="hp-workflow-close-cta" to="/programs">Explore Skylent →</Link>
         </div>
@@ -313,10 +313,10 @@ function homeCertificatePrograms() {
 }
 
 const HERO_VALUE_ITEMS = [
-  "Industry-relevant curriculum",
-  "Hands-on practice and projects",
-  "Mentor support and guidance",
-  "Career-focused learning",
+  "Written lessons in Skylent OS",
+  "Checks, assignments, and a capstone",
+  "Work samples you keep",
+  "Career OS for evidence, not placement",
 ] as const
 
 const HERO_LMS_NAV = ["Learning", "Practice", "Projects", "Evidence", "Career"] as const
@@ -591,16 +591,13 @@ export default function HomePage() {
                   <span className="hp-hero-further-dot">.</span>
                 </h1>
                 <p className="hp-hero-lead">
-                  Structured programs, hands-on practice, real projects
+                  Professional programmes built around work you can show.
                   <br className="hp-hero-lead-br" />
-                  {" "}and career support — all in one place.
+                  {" "}Written lessons, practice, and a work sample you keep.
                 </p>
                 <div className="hp-actions">
                   <Link className="hp-btn hp-btn-primary" to="/programs">Explore Programs →</Link>
-                  <button type="button" className="hp-btn hp-btn-ghost hp-btn-video">
-                    <span className="hp-btn-play" aria-hidden="true" />
-                    Watch Video
-                  </button>
+                  <Link className="hp-btn hp-btn-ghost" to="/os">See Skylent OS →</Link>
                 </div>
               </div>
               <div className="hp-hero-stage">

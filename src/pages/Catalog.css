@@ -460,6 +460,304 @@
   line-height: 1.55;
 }
 
+/* Programme detail — authored journey */
+.pd-hero {
+  padding: 28px 0 36px;
+}
+
+.pd-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(320px, 1.08fr);
+  gap: clamp(24px, 3.2vw, 40px);
+  align-items: start;
+}
+
+.pd-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin: 22px 0 0;
+  padding: 0;
+  background: rgba(21, 23, 26, 0.08);
+  border: 1px solid rgba(21, 23, 26, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.pd-facts div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 11px 14px;
+  background: #fffdf8;
+}
+
+.pd-facts dt {
+  color: #6a717b;
+  font-size: 11px;
+}
+
+.pd-facts dd {
+  margin: 0;
+  color: #15171a;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.pd-hero-specimen {
+  min-width: 0;
+}
+
+.pd-specimen-caption {
+  margin: 0 0 10px;
+  color: #6a717b;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.pd-hero-specimen .pl-frame.is-compact .pl-frame-title {
+  display: block;
+}
+
+.pd-hero-specimen .pl-hd .pl-fine {
+  display: none;
+}
+
+.pd-specimen-attr {
+  display: grid;
+  gap: 3px;
+  margin: 12px 0 0;
+  color: #15171a;
+  font-size: 14.5px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.35;
+}
+
+.pd-specimen-attr span {
+  color: #4f46e5;
+  font: 600 9.5px/1.3 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pd-specimen-attr em {
+  color: #6a717b;
+  font-size: 12.5px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.pd-specimen-attr code {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.pd-path {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(280px, 1fr);
+  gap: clamp(24px, 3vw, 48px);
+  align-items: start;
+}
+
+.pd-modules {
+  margin-top: 8px;
+}
+
+.pd-path-end {
+  margin-top: 4px;
+}
+
+.pd-outcomes {
+  display: grid;
+  gap: 0;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: 52em;
+}
+
+.pd-outcomes li {
+  position: relative;
+  padding: 12px 0 12px 16px;
+  border-top: 1px solid rgba(21, 23, 26, 0.08);
+  color: #15171a;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.45;
+}
+
+.pd-outcomes li:last-child {
+  border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+}
+
+.pd-outcomes li::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 0;
+  width: 6px;
+  height: 1px;
+  background: #4f46e5;
+}
+
+.pd-surfaces {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px 28px;
+  margin-top: 22px;
+}
+
+.pd-surfaces article {
+  min-width: 0;
+  padding: 2px 0 2px 16px;
+  border-left: 2px solid rgba(79, 70, 229, 0.55);
+}
+
+.pd-surfaces strong {
+  display: block;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+}
+
+.pd-surfaces p {
+  margin: 6px 0 0;
+  color: #5c6168;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.pd-surfaces span {
+  display: inline-block;
+  margin-top: 8px;
+  color: #6a717b;
+  font: 600 10.5px/1.3 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.pd-enrol-list {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  max-width: 62em;
+}
+
+.pd-enrol-list li {
+  position: relative;
+  padding-left: 16px;
+  color: #3a4048;
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.pd-enrol-list li::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: 0;
+  width: 6px;
+  height: 1px;
+  background: #4f46e5;
+}
+
+.pd-listing .cat-link {
+  margin-top: 20px;
+}
+
+.ws-list {
+  display: grid;
+  gap: 1px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+  background: rgba(21, 23, 26, 0.09);
+  border: 1px solid rgba(21, 23, 26, 0.09);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.ws-row {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1.5fr) 88px 88px 148px 96px;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 18px;
+  background: #ffffff;
+  text-decoration: none;
+  transition: background-color 150ms ease;
+}
+
+.ws-row:hover {
+  background: #fffdf8;
+}
+
+.ws-row:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: -2px;
+}
+
+.ws-date {
+  color: #15171a;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.01em;
+}
+
+.ws-body {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.ws-body strong {
+  color: #15171a;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.ws-body em {
+  color: #6a717b;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-style: normal;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ws-meta,
+.ws-state,
+.ws-price {
+  color: #5c6168;
+  font-size: 13px;
+}
+
+.ws-state {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ws-price {
+  color: #15171a;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  font-weight: 650;
+  text-align: right;
+}
+
+.ws-detail .pd-facts {
+  max-width: 36em;
+}
+
 .cat-label {
   margin: 0;
   color: #5c6168;
@@ -1676,6 +1974,19 @@
 }
 
 @media (max-width: 1100px) {
+  .pd-hero-grid,
+  .pd-path {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ws-row {
+    grid-template-columns: 140px minmax(0, 1fr) 148px 96px;
+  }
+
+  .ws-meta {
+    display: none;
+  }
+
   .pg-programme {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1696,6 +2007,41 @@
 }
 
 @media (max-width: 768px) {
+  .pd-hero {
+    padding: 18px 0 24px;
+  }
+
+  .pd-facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-surfaces {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .pd-hero .cat-btn-lg {
+    width: 100%;
+    min-height: 48px;
+  }
+
+  .ws-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px 16px;
+  }
+
+  .ws-date {
+    grid-column: 1 / -1;
+  }
+
+  .ws-body {
+    grid-column: 1 / -1;
+  }
+
+  .ws-state {
+    grid-column: 1 / -1;
+  }
+
   .pg-open {
     padding: 10px 0 28px;
   }

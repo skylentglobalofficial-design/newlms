@@ -111,6 +111,11 @@ export function programmeDiscoveryCards(): ProgrammeDiscoveryCard[] {
   })
 }
 
+export function programmeDiscoveryFor(slug: string | undefined): ProgrammeDiscoveryCard | null {
+  if (!slug) return null
+  return programmeDiscoveryCards().find((row) => row.slug === slug) ?? null
+}
+
 /**
  * Where programme work is produced. Each entry points at a route that exists in
  * the router; `learnerOnly` marks the surfaces behind a student sign-in.

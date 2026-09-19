@@ -88,7 +88,9 @@ assert(/Payment is not collected/.test(courseDetail), "Course page must state th
 assert(/primaryCta/.test(courseDetail), "Course page CTA must come from the honest access helper")
 
 const programDetail = readFileSync(new URL("../src/pages/ProgramPage.tsx", import.meta.url), "utf8")
-assert(/PROGRAMME_INTENDED_STEPS/.test(programDetail), "Programme page must show the intended path")
+assert(/programmeDiscoveryFor/.test(programDetail), "Authored programmes must resolve from real discovery data")
+assert(/discovery.modules/.test(programDetail), "Programme page must show the taught module path")
+assert(!/PROGRAMME_INTENDED_STEPS/.test(programDetail), "Programme page must not present the generic intended-path board as live teaching")
 assert(!/curriculumDetail|projectsDetail|whatYouWillLearn/.test(programDetail), "Programme page must not render brochure curriculum as live teaching")
 assert(/Payment is not collected/.test(programDetail), "Programme page must state that payment is not collected")
 
