@@ -2,59 +2,54 @@ import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { CourseProductVisual, CourseThumb, ProductFrame } from "../components/product/ProductLanguage"
-import { courseBySlug, coursePublicView } from "../lib/catalog-maturity"
+import { coursePublicView } from "../lib/catalog-maturity"
 import { authoredCourseList, courseProductProfile } from "../lib/course-product"
-import { FLAGSHIP_COURSE_SLUG, isAuthoredCourse } from "../lib/authored-courses"
+import { FLAGSHIP_COURSE_SLUG } from "../lib/authored-courses"
 import { getCareerEvidence, getCourseQuiz, getLessonMeta } from "../content/course-lookups"
 import { CAREER_OS_IA, MATURITY_LABEL } from "../lib/product-architecture"
 import { programmeDiscoveryCards } from "../lib/programme-discovery"
-import { NORTHWIND_PREVIEW as NW } from "../lib/northwind-preview"
 import "./HomePage.css"
 
 const HOME_DIRECTIONS = [
   {
     step: "01",
     id: "programs",
-    title: "Professional Programs",
-    copy: "Structured professional journeys built around work you can show afterwards.",
+    title: "Professional Skills",
+    copy: "The live core. Authored programmes in Skylent OS, built around work you keep.",
     to: "/programs",
     tone: "programs" as const,
     status: "live" as const,
-    statusNote: "Two programmes authored end to end",
     context: ["LEARN", "PRACTISE", "BUILD", "EVIDENCE"],
   },
   {
     step: "02",
-    id: "workshops",
-    title: "Workshops",
-    copy: "Short focused sessions on a single skill. Planned subjects are listed; registration is not open.",
-    to: "/workshops",
-    tone: "workshops" as const,
-    status: "coming_soon" as const,
-    statusNote: "Subjects planned, nothing scheduled",
-    context: ["SESSION", "SKILL", "PRACTICE"],
-  },
-  {
-    step: "03",
     id: "education",
     title: "Education",
     copy: "Schooling, undergraduate and postgraduate learning as its own product universe.",
     to: "/education",
     tone: "education" as const,
     status: "coming_soon" as const,
-    statusNote: "Specified, not built",
     context: ["ACADEMIC", "FOUNDATIONS", "DEGREES"],
   },
   {
-    step: "04",
+    step: "03",
     id: "exams",
     title: "Competitive Exams",
     copy: "Goal-first preparation for JEE, NEET, GATE, CAT, UPSC and SSC.",
     to: "/education/exams",
     tone: "exams" as const,
     status: "coming_soon" as const,
-    statusNote: "Specified, not built",
     context: ["GOAL", "SYLLABUS", "PRACTICE", "TEST"],
+  },
+  {
+    step: "04",
+    id: "workshops",
+    title: "Workshops",
+    copy: "Short focused sessions on a single skill. Planned subjects are listed; registration is not open.",
+    to: "/workshops",
+    tone: "workshops" as const,
+    status: "coming_soon" as const,
+    context: ["SESSION", "SKILL", "PRACTICE"],
   },
 ] as const
 
@@ -108,10 +103,8 @@ function PathLivingMotif({ id }: { id: (typeof HOME_DIRECTIONS)[number]["id"] })
 }
 
 /**
- * The four public directions, shown together so they can be compared rather than
- * revealed one at a time. Each states whether it is open today: only Professional
- * Programs has authored teaching, so it carries the lead position and the others
- * stay deliberately quieter.
+ * Four product universes. Professional Skills is the only authored entry today;
+ * the others stay quieter so the visitor can see where they would enter later.
  */
 function HomeDirections() {
   const [lead, ...rest] = HOME_DIRECTIONS
@@ -120,11 +113,10 @@ function HomeDirections() {
   return (
     <div className="hp-rail hp-dir">
       <header className="hp-dir-intro">
-        <p className="hp-eyebrow">ONE PLATFORM. MULTIPLE PATHS.</p>
+        <p className="hp-eyebrow">WHERE YOU ENTER</p>
         <h2 id="home-paths-heading" className="hp-dir-title">Choose your direction.</h2>
         <p className="hp-dir-lead">
-          Four directions, at different stages of being built. Each one says which, so you always know what
-          you can start today.
+          Skylent is one learning environment. You pick a universe. Only Professional Skills is teachable today.
         </p>
       </header>
 
@@ -161,7 +153,7 @@ function HomeDirections() {
               </li>
             ))}
           </ul>
-          <span className="hp-dir-cta">Explore programmes &rarr;</span>
+          <span className="hp-dir-cta">Enter this universe &rarr;</span>
         </Link>
 
         <ul className="hp-dir-rest">
@@ -182,34 +174,97 @@ function HomeDirections() {
   )
 }
 
-const WORKFLOW_STEPS = [
+function HomeWork() {
+  const programmes = programmeDiscoveryCards()
+
+  return (
+    <section className="hp-section hp-work" aria-labelledby="home-work-heading">
+      <div className="hp-rail">
+        <header className="hp-work-intro">
+          <p className="hp-eyebrow">WHAT YOU WORK ON</p>
+          <h2 id="home-work-heading" className="hp-h2">Real work from two programmes.</h2>
+          <p className="hp-lead">
+            Same learning system. Different material. Data Analytics is not the brand — it is one window.
+          </p>
+        </header>
+
+        <ul className="hp-work-windows">
+          {programmes.map((programme, index) => (
+            <li key={programme.slug} className={index % 2 ? "is-flip" : undefined}>
+              <article className="hp-window">
+                <div className="hp-window-meta">
+                  <p className="hp-window-kicker">Programme</p>
+                  <h3>{programme.title}</h3>
+                  <p className="hp-window-decision">{programme.decisionLine}</p>
+                  <p className="hp-window-how">
+                    How you learn · written lessons, checks, then a named capstone in Skylent OS.
+                  </p>
+                  <p className="hp-window-path">
+                    {programme.taughtModules} modules · {programme.taughtLessons} lessons · self-paced
+                  </p>
+                  <Link className="hp-window-link" to={programme.href}>
+                    View this programme →
+                  </Link>
+                </div>
+                <div className="hp-window-stage">
+                  <p className="hp-window-caption">You work on</p>
+                  <CourseProductVisual visual={programme.visual} compact />
+                  {programme.capstone ? (
+                    <p className="hp-window-keep">
+                      <span>You produce</span>
+                      <strong>{programme.capstone}</strong>
+                      <em>
+                        against <code>{programme.material}</code>
+                      </em>
+                    </p>
+                  ) : null}
+                </div>
+              </article>
+            </li>
+          ))}
+        </ul>
+        <p className="hp-honesty">
+          Only these two programmes have authored teaching today. Enrolment opens the linked course in Skylent OS
+          — it does not create a separate classroom.
+        </p>
+      </div>
+    </section>
+  )
+}
+
+const LOOP_STEPS = [
   {
+    id: "learn",
     step: "01",
     title: "Learn",
-    copy: "Written lessons in the enrolled course. Self-paced. No video stream and no live classroom.",
-    labels: "LESSONS · MODULES · SKYLENT OS",
+    copy: "Written lessons in Skylent OS. Self-paced. No video stream and no live classroom.",
   },
   {
+    id: "practise",
     step: "02",
     title: "Practise",
     copy: "Short checks after a block of lessons, then applied assignments on the course material.",
-    labels: "CHECKS · ASSIGNMENTS · LAB",
   },
   {
+    id: "build",
     step: "03",
     title: "Build",
     copy: "A named capstone produced against the course material, not a worked example.",
-    labels: "CAPSTONE · PROJECT WORKSPACE",
   },
   {
+    id: "evidence",
     step: "04",
     title: "Evidence",
-    copy: "Keep the work sample and carry it into Career OS. Career OS is a workspace — not a placement service.",
-    labels: "WORK SAMPLE · PROFILE · CAREER OS",
+    copy: "Keep the work sample. Carry it into Career OS yourself. Nothing is invented here.",
   },
 ] as const
 
-function HomeWorkflow() {
+type LoopId = (typeof LOOP_STEPS)[number]["id"]
+
+function HomeLoop() {
+  const workspace = heroFeaturedWorkspace()
+  const programmes = programmeDiscoveryCards()
+  const [active, setActive] = useState<LoopId>("learn")
   const sectionRef = useRef<HTMLElement>(null)
 
   useEffect(() => {
@@ -230,80 +285,152 @@ function HomeWorkflow() {
     return () => io.disconnect()
   }, [])
 
+  const current = LOOP_STEPS.find((step) => step.id === active) ?? LOOP_STEPS[0]
+
   return (
-    <section className="hp-section hp-workflow" aria-labelledby="home-workflow-heading" ref={sectionRef}>
+    <section className="hp-section hp-loop" aria-labelledby="home-loop-heading" ref={sectionRef}>
       <div className="hp-rail">
-        <header className="hp-workflow-intro">
-          <p className="hp-eyebrow hp-workflow-eyebrow">HOW SKYLENT WORKS</p>
-          <h2 id="home-workflow-heading" className="hp-workflow-title">
-            From learning
-            <span>to real outcomes.</span>
-          </h2>
-          <p className="hp-workflow-lead">
-            Learn through written lessons, practise on the course material, produce a named piece of work, and keep it as evidence.
+        <header className="hp-loop-intro">
+          <p className="hp-eyebrow">HOW LEARNING HAPPENS HERE</p>
+          <h2 id="home-loop-heading" className="hp-h2">Learn. Practise. Build. Keep.</h2>
+          <p className="hp-lead">
+            The loop is the product. You move through one workspace — not a gallery of dashboards.
           </p>
         </header>
 
-        <ol className="hp-workflow-path" aria-label="Learn, practise, build, evidence">
-          {WORKFLOW_STEPS.map((stage) => (
-            <li key={stage.step}>
-              <p className="hp-workflow-num">{stage.step}</p>
-              <h3>{stage.title}</h3>
-              <p className="hp-workflow-copy-line">{stage.copy}</p>
-              <p className="hp-workflow-labels">{stage.labels}</p>
-            </li>
-          ))}
-        </ol>
+        <div className="hp-loop-stage">
+          <ol className="hp-loop-path" aria-label="Learn, practise, build, evidence">
+            {LOOP_STEPS.map((stage) => (
+              <li key={stage.id}>
+                <button
+                  type="button"
+                  className={active === stage.id ? "is-on" : undefined}
+                  aria-pressed={active === stage.id}
+                  onClick={() => setActive(stage.id)}
+                >
+                  <span>{stage.step}</span>
+                  {stage.title}
+                </button>
+              </li>
+            ))}
+          </ol>
 
-        <div className="hp-workflow-close">
-          <div className="hp-workflow-close-copy">
-            <p className="hp-eyebrow hp-workflow-eyebrow">THE SAME LOOP</p>
-            <p className="hp-workflow-close-title">From the first lesson to the work you keep.</p>
+          <div className="hp-loop-panel" role="region" aria-label={current.title}>
+            <p className="hp-loop-kicker">{current.step} · {current.title}</p>
+            <p className="hp-loop-copy">{current.copy}</p>
+
+            {active === "learn" && workspace ? (
+              <div className="hp-loop-fragment is-learn">
+                <p className="pl-kicker">{workspace.moduleTitle}</p>
+                <p className="hp-loop-fragment-title">{workspace.lessonTitle}</p>
+                {workspace.lessonObjective ? <p>{workspace.lessonObjective}</p> : null}
+              </div>
+            ) : null}
+
+            {active === "practise" && workspace?.practice.prompt ? (
+              <div className="hp-loop-fragment is-practise">
+                <p className="pl-kicker">{workspace.practice.title}</p>
+                <p className="hp-loop-fragment-title">{workspace.practice.prompt}</p>
+                {workspace.practice.options.length > 0 ? (
+                  <ol className="hp-loop-choices" aria-hidden="true">
+                    {workspace.practice.options.slice(0, 3).map((option, index) => (
+                      <li key={option}>
+                        <span>{String.fromCharCode(65 + index)}</span>
+                        {option}
+                      </li>
+                    ))}
+                  </ol>
+                ) : null}
+              </div>
+            ) : null}
+
+            {active === "build" ? (
+              <div className="hp-loop-fragment is-build">
+                <p className="pl-kicker">Named work</p>
+                <ul>
+                  {programmes.map((programme) =>
+                    programme.capstone ? (
+                      <li key={programme.slug}>
+                        <strong>{programme.capstone}</strong>
+                        <span>
+                          {programme.title} · <code>{programme.material}</code>
+                        </span>
+                      </li>
+                    ) : null,
+                  )}
+                </ul>
+              </div>
+            ) : null}
+
+            {active === "evidence" ? (
+              <div className="hp-loop-fragment is-evidence">
+                <p className="pl-kicker">What you keep</p>
+                <p className="hp-loop-fragment-title">The artefact stays in your workspace.</p>
+                <p>
+                  You add it to Career OS as a work sample attached to your profile. A certificate is not issued
+                  in this pilot.
+                </p>
+              </div>
+            ) : null}
           </div>
-          <Link className="hp-workflow-close-cta" to="/programs">Explore Skylent →</Link>
         </div>
       </div>
     </section>
   )
 }
 
-const HOME_CERTIFICATE_PROGRAMS = [
-  { programSlug: "data-analytics-pro", courseSlug: "data-analytics" },
-  { programSlug: "product-management", courseSlug: "product-management" },
-] as const
+function HomeCareer() {
+  const programmes = programmeDiscoveryCards()
 
-function homeCertificatePrograms() {
-  return HOME_CERTIFICATE_PROGRAMS.flatMap((row) => {
-    const course = courseBySlug(row.courseSlug)
-    const profile = courseProductProfile(row.courseSlug)
-    if (!course || !profile || !isAuthoredCourse(course.slug)) return []
-    const view = coursePublicView(course)
-    const capstone = course.modules
-      .flatMap((module) => module.lessons)
-      .some((lesson) => /capstone/i.test(lesson.title))
-    return [{
-      href: `/programs/${row.programSlug}`,
-      title: course.title,
-      work: course.desc,
-      duration: view.duration,
-      level: course.level,
-      moduleCount: view.stats.moduleCount,
-      lessonCount: view.stats.lessonCount,
-      visual: profile.visual,
-      practice: view.stats.quizCount > 0,
-      project: Boolean(profile.project),
-      evidence: capstone,
-      projectNote: profile.project?.note ?? null,
-    }]
-  })
+  return (
+    <section className="hp-section hp-career" aria-labelledby="home-career-heading">
+      <div className="hp-rail hp-career-split">
+        <div className="hp-career-copy">
+          <p className="hp-eyebrow">WHERE THE WORK GOES</p>
+          <h2 id="home-career-heading" className="hp-h2">The work does not disappear.</h2>
+          <p className="hp-lead">
+            Learning produces an artefact. You keep it. Career OS is the workspace for that evidence — not a
+            placement service, and not a job board until roles are published.
+          </p>
+          <ol className="hp-career-chain" aria-label="From learning to career activity">
+            <li>
+              <span>01</span>
+              Learning
+            </li>
+            <li>
+              <span>02</span>
+              Project
+            </li>
+            <li>
+              <span>03</span>
+              Evidence
+            </li>
+            <li>
+              <span>04</span>
+              Career activity
+            </li>
+          </ol>
+          <Link className="hp-btn hp-btn-primary" to="/career-os">Open Career OS →</Link>
+        </div>
+        <div className="hp-career-keep">
+          <p className="hp-career-keep-label">Work you can keep today</p>
+          <ul>
+            {programmes.map((programme) =>
+              programme.capstone ? (
+                <li key={programme.slug}>
+                  <strong>{programme.capstone}</strong>
+                  <span>
+                    from {programme.title} · <code>{programme.material}</code>
+                  </span>
+                </li>
+              ) : null,
+            )}
+          </ul>
+        </div>
+      </div>
+    </section>
+  )
 }
-
-const HERO_VALUE_ITEMS = [
-  "Written lessons in Skylent OS",
-  "Checks, assignments, and a capstone",
-  "Work samples you keep",
-  "Career OS for evidence, not placement",
-] as const
 
 const HERO_LMS_NAV = ["Learning", "Practice", "Projects", "Evidence", "Career"] as const
 type HeroOsPane = (typeof HERO_LMS_NAV)[number]
@@ -324,23 +451,29 @@ function heroFeaturedWorkspace() {
   const profile = courseProductProfile(course.slug)
   const view = coursePublicView(course)
   const lessons = course.modules.flatMap((module) => module.lessons)
-  const firstLesson = course.modules[0]?.lessons[0]
+  const firstModule = course.modules[0]
+  const firstLesson = firstModule?.lessons[0]
   const lessonMeta = firstLesson ? getLessonMeta(course.slug, firstLesson.id) : undefined
   const firstQuiz = lessons.find((lesson) => lesson.type === "quiz")
   const capstone = lessons.find((lesson) => /capstone|product case/i.test(lesson.title))
   const quiz = getCourseQuiz(course.slug, firstQuiz?.id)
   const evidence = capstone ? getCareerEvidence(course.slug, capstone.id) : undefined
-  const visual = profile?.visual === "harbor-desk" ? "harbor-desk" as const : "northwind" as const
   const courseHref = `/courses/${course.slug}`
   return {
     title: course.title,
+    moduleTitle: firstModule?.title ?? "Module 01",
+    curriculum: (firstModule?.lessons ?? []).slice(0, 4).map((lesson) => ({
+      id: lesson.id,
+      title: lesson.title,
+      kind: lesson.type,
+    })),
     lessonTitle: firstLesson?.title ?? "Open the first lesson",
     lessonObjective: lessonMeta?.objective ?? null,
     lessonWhy: lessonMeta?.whyItMatters ?? null,
     lessonCount: view.stats.lessonCount,
     quizCount: view.stats.quizCount,
-    visual,
     courseHref,
+    material: profile?.datasets[0]?.filename ?? null,
     practice: {
       title: firstQuiz?.title ?? profile?.learningSteps[1]?.label ?? "Practice",
       intro: profile?.practiceIntro ?? "Short checks after a block of lessons.",
@@ -375,41 +508,7 @@ function heroOsMeta(pane: HeroOsPane, workspace: NonNullable<ReturnType<typeof h
   if (pane === "Projects") return workspace.project.status
   if (pane === "Evidence") return "Nothing kept yet"
   if (pane === "Career") return "Profile · evidence · opportunities"
-  return `${workspace.lessonCount} lessons · not started`
-}
-
-function HeroReviewSheet() {
-  return (
-    <div className="hp-hero-report" aria-hidden="true">
-      <p>Commercial review</p>
-      <strong>{NW.filename}</strong>
-      <ul>
-        <li><span>Window</span>{NW.window}</li>
-        <li><span>Valid rows</span>{String(NW.validRows)}</li>
-        <li><span>Net revenue</span>{NW.netRevenueLabel}</li>
-        <li><span>Lead</span>{NW.topCategory}</li>
-      </ul>
-    </div>
-  )
-}
-
-function HeroLessonSheet({
-  title,
-  objective,
-  why,
-}: {
-  title: string
-  objective: string | null
-  why: string | null
-}) {
-  return (
-    <div className="hp-hero-lesson">
-      <p className="pl-kicker">Written lesson</p>
-      <p className="hp-hero-workspace-title">{title}</p>
-      {objective ? <p className="hp-hero-lesson-copy">{objective}</p> : null}
-      {why ? <p className="hp-hero-lesson-copy">{why}</p> : null}
-    </div>
-  )
+  return `${workspace.moduleTitle} · 1 of ${workspace.lessonCount}`
 }
 
 function HomeHeroProduct() {
@@ -468,17 +567,27 @@ function HomeHeroProduct() {
               >
                 {pane === "Learning" ? (
                   <article className="hp-hero-workspace is-learn">
-                    <HeroLessonSheet
-                      title={workspace.lessonTitle}
-                      objective={workspace.lessonObjective}
-                      why={workspace.lessonWhy}
-                    />
-                    <div className="hp-hero-caption">
-                      <div>
-                        <p className="hp-hero-meta">{workspace.lessonCount} lessons · not started</p>
+                    <div className="hp-hero-lesson">
+                      <p className="pl-kicker">{workspace.moduleTitle} · Lesson 01</p>
+                      <p className="hp-hero-workspace-title">{workspace.lessonTitle}</p>
+                      {workspace.lessonObjective ? <p className="hp-hero-lesson-copy">{workspace.lessonObjective}</p> : null}
+                      {workspace.lessonWhy ? <p className="hp-hero-lesson-copy">{workspace.lessonWhy}</p> : null}
+                      <div className="hp-hero-progress" aria-hidden="true">
+                        <i style={{ width: `${Math.max(6, Math.round(100 / Math.max(workspace.lessonCount, 1)))}%` }} />
                       </div>
-                      <Link className="hp-hero-os-cta" to={workspace.courseHref}>Start learning →</Link>
+                      <p className="hp-hero-meta">1 of {workspace.lessonCount} · not started</p>
+                      {workspace.curriculum.length > 0 ? (
+                        <ol className="hp-hero-curriculum" aria-label="This module">
+                          {workspace.curriculum.map((lesson, index) => (
+                            <li key={lesson.id} className={index === 0 ? "is-on" : undefined}>
+                              <span>{String(index + 1).padStart(2, "0")}</span>
+                              {lesson.title}
+                            </li>
+                          ))}
+                        </ol>
+                      ) : null}
                     </div>
+                    <Link className="hp-hero-os-cta" to={workspace.courseHref}>Start learning →</Link>
                   </article>
                 ) : null}
                 {pane === "Practice" ? (
@@ -508,28 +617,25 @@ function HomeHeroProduct() {
                   </article>
                 ) : null}
                 {pane === "Projects" ? (
-                  <article className="hp-hero-workspace">
-                    <div className="hp-hero-media is-report">
-                      {workspace.visual === "northwind" ? (
-                        <HeroReviewSheet />
-                      ) : (
-                        <CourseProductVisual visual={workspace.visual} compact />
-                      )}
+                  <article className="hp-hero-workspace is-project">
+                    <div className="hp-hero-project">
+                      <p className="pl-kicker">Project workspace</p>
+                      <p className="hp-hero-workspace-title">{workspace.project.title}</p>
+                      <p className="hp-hero-purpose">{workspace.project.note}</p>
+                      {workspace.material ? (
+                        <p className="hp-hero-file">
+                          <code>{workspace.material}</code>
+                        </p>
+                      ) : null}
+                      <p className="hp-hero-meta">{workspace.project.status}</p>
                     </div>
-                    <div className="hp-hero-caption">
-                      <div>
-                        <p className="hp-hero-workspace-title">{workspace.project.title}</p>
-                        <p className="hp-hero-purpose">{workspace.project.note}</p>
-                        <p className="hp-hero-meta">{workspace.project.status}</p>
-                      </div>
-                      <Link className="hp-hero-os-cta" to={workspace.project.href}>View project →</Link>
-                    </div>
+                    <Link className="hp-hero-os-cta" to={workspace.project.href}>View project →</Link>
                   </article>
                 ) : null}
                 {pane === "Evidence" ? (
                   <article className="hp-hero-workspace is-keep">
                     <div className="hp-hero-folio">
-                      <p>Work sample</p>
+                      <p>Work sample you keep</p>
                       <p className="hp-hero-workspace-title">{workspace.project.title}</p>
                       <ul>
                         {workspace.evidence.title.split(/\s+\+\s+/).map((part) => (
@@ -587,9 +693,9 @@ export default function HomePage() {
       <div className="home-p3">
         <section className="hp-hero" aria-labelledby="home-hero-heading">
           <div className="hp-rail">
-            <div className="hp-hero-grid">
+            <div className="hp-hero-intro">
               <div className="hp-hero-copy">
-                <p className="hp-eyebrow hp-hero-eyebrow">LEARN · PRACTISE · BUILD · EVIDENCE</p>
+                <p className="hp-eyebrow hp-hero-eyebrow">A LEARNING ENVIRONMENT</p>
                 <h1 id="home-hero-heading">
                   Learn.
                   <br />
@@ -597,28 +703,21 @@ export default function HomePage() {
                   <br />
                   Keep it.
                 </h1>
+              </div>
+              <div className="hp-hero-support">
                 <p className="hp-hero-lead">
-                  Professional programmes built around work you can show.
-                  <br className="hp-hero-lead-br" />
-                  {" "}Written lessons, practice, and a work sample you keep.
+                  Skylent combines structured learning, practice and named work in one workspace. You do not
+                  collect courses. You move through a loop: learn, practise, build, keep evidence.
                 </p>
                 <div className="hp-actions">
-                  <Link className="hp-btn hp-btn-primary" to="/programs">Explore Programs →</Link>
-                  <Link className="hp-btn hp-btn-ghost" to="/os">See Skylent OS →</Link>
+                  <Link className="hp-btn hp-btn-primary" to="/programs">Enter Skylent →</Link>
+                  <Link className="hp-btn hp-btn-ghost" to="/os">See the workspace →</Link>
                 </div>
               </div>
-              <div className="hp-hero-stage">
-                <HomeHeroProduct />
-              </div>
             </div>
-            <ul className="hp-hero-values" aria-label="Platform highlights">
-              {HERO_VALUE_ITEMS.map((label, index) => (
-                <li key={label}>
-                  <span className="hp-hero-values-num">{String(index + 1).padStart(2, "0")}</span>
-                  <span>{label}</span>
-                </li>
-              ))}
-            </ul>
+            <div className="hp-hero-stage">
+              <HomeHeroProduct />
+            </div>
           </div>
         </section>
 
@@ -626,64 +725,9 @@ export default function HomePage() {
           <HomeDirections />
         </section>
 
-        <section className="hp-section hp-programs" aria-labelledby="home-programs-heading">
-          <div className="hp-rail">
-            <p className="hp-eyebrow">PROFESSIONAL CERTIFICATE PROGRAMS</p>
-            <h2 id="home-programs-heading" className="hp-h2">
-              Build practical capability through structured learning, practice and real work.
-            </h2>
-            <p className="hp-lead">
-              A Skylent Professional Certificate Program is a pathway in Skylent OS: written lessons, practice, and a piece of work you keep. It is not a single course tile, and it is not a catalogue of unrelated classes.
-            </p>
-            <ul className="hp-pcp-list">
-              {homeCertificatePrograms().map((program) => (
-                <li key={program.href}>
-                  <article className="hp-pcp">
-                    <div className="hp-pcp-body">
-                      <p className="hp-pcp-label">Professional Certificate</p>
-                      <h3>{program.title}</h3>
-                      <dl className="hp-pcp-facts">
-                        <div>
-                          <dt>Duration</dt>
-                          <dd>{program.duration}</dd>
-                        </div>
-                        <div>
-                          <dt>Level</dt>
-                          <dd>{program.level}</dd>
-                        </div>
-                        <div>
-                          <dt>Modules</dt>
-                          <dd>{program.moduleCount}</dd>
-                        </div>
-                        <div>
-                          <dt>Lessons</dt>
-                          <dd>{program.lessonCount}</dd>
-                        </div>
-                      </dl>
-                      <p className="hp-pcp-work">{program.work}</p>
-                      {program.projectNote ? <p className="hp-pcp-project">{program.projectNote}</p> : null}
-                      <ul className="hp-pcp-marks">
-                        <li className={program.practice ? "is-on" : undefined}>Practice</li>
-                        <li className={program.project ? "is-on" : undefined}>Project</li>
-                        <li className={program.evidence ? "is-on" : undefined}>Evidence</li>
-                      </ul>
-                      <Link className="hp-btn hp-btn-primary" to={program.href}>View Program</Link>
-                    </div>
-                    <div className="hp-pcp-visual">
-                      <p className="hp-preview-caption">Work you produce in this program</p>
-                      <CourseProductVisual visual={program.visual} compact />
-                    </div>
-                  </article>
-                </li>
-              ))}
-            </ul>
-            <p className="hp-honesty">
-              Only these two Professional Certificate Programs have authored teaching today. Enrolment opens the linked course in Skylent OS — it does not create a separate classroom. Other programme listings are not shown here because they are not teachable yet.
-            </p>
-          </div>
-        </section>
-
-        <HomeWorkflow />
+        <HomeWork />
+        <HomeLoop />
+        <HomeCareer />
       </div>
     </PageShell>
   )

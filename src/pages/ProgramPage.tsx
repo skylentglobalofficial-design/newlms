@@ -150,7 +150,7 @@ function AuthoredProgramme({
             <Link className="cat-back" to="/programs">
               ← Programmes
             </Link>
-            <p className="cat-label">Professional Certificate</p>
+            <p className="cat-label">Programme · Professional Certificate</p>
             <h1 id="pd-title">{discovery.title}</h1>
             <p className="cat-lead">{discovery.decisionLine}</p>
 
@@ -228,7 +228,42 @@ function AuthoredProgramme({
         </div>
       </section>
 
-      <section className="cat-band" aria-labelledby="pd-path-title">
+      {discovery.capstone ? (
+        <section className="cat-section pd-build" aria-labelledby="pd-build-title">
+          <div className="cat-rail pd-build-grid">
+            <div>
+              <p className="cat-label">What you build</p>
+              <h2 id="pd-build-title">{discovery.capstone}</h2>
+              <p className="cat-lead">
+                Produced against <code>{discovery.material}</code> in Skylent OS — not a worked example.
+              </p>
+            </div>
+            <p className="pd-build-how">
+              How you learn · {discovery.taughtModules} modules, {discovery.taughtLessons} lessons,{" "}
+              {discovery.taughtQuizzes} checks, then this capstone.
+            </p>
+          </div>
+        </section>
+      ) : null}
+
+      {view.taughtOutcomes.length > 0 ? (
+        <section className="cat-band" aria-labelledby="pd-learn-title">
+          <div className="cat-rail">
+            <p className="cat-label">What you learn</p>
+            <h2 id="pd-learn-title">Capabilities from the live linked course.</h2>
+            <p className="cat-fine">
+              Taken from the {discovery.courseTitle} outcomes. Not from brochure modules that are not taught yet.
+            </p>
+            <ul className="pd-outcomes">
+              {view.taughtOutcomes.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="cat-section" aria-labelledby="pd-path-title">
         <div className="cat-rail pd-path">
           <div>
             <p className="cat-label">How the work develops</p>
@@ -259,23 +294,6 @@ function AuthoredProgramme({
           </div>
         </div>
       </section>
-
-      {view.taughtOutcomes.length > 0 ? (
-        <section className="cat-section" aria-labelledby="pd-learn-title">
-          <div className="cat-rail">
-            <p className="cat-label">What you will learn now</p>
-            <h2 id="pd-learn-title">Capabilities from the live linked course.</h2>
-            <p className="cat-fine">
-              Taken from the {discovery.courseTitle} outcomes. Not from brochure modules that are not taught yet.
-            </p>
-            <ul className="pd-outcomes">
-              {view.taughtOutcomes.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      ) : null}
 
       <section className="cat-band" aria-labelledby="pd-os-title">
         <div className="cat-rail">

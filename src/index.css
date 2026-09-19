@@ -26,7 +26,7 @@
   /* One public primary CTA language — indigo, not charcoal. */
   --btn-bg: #4f46e5;
   --btn-fg: #ffffff;
-  --btn-radius: 10px;
+  --btn-radius: 6px;
 
   /* Typography scale — UI product, not magazine display */
   --type-display-xl: clamp(32px, 4.2vw, 48px);

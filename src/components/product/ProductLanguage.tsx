@@ -496,8 +496,8 @@ export function CourseThumb({
       ) : authored ? (
         <>
           <div className="pl-thumb-kpis">
-            <b>Sample dashboard</b>
-            <span>SQL · Northwind</span>
+            <b>Northwind extract</b>
+            <span>SQL · {NW.filename}</span>
           </div>
           <Spark mini />
         </>

@@ -90,7 +90,7 @@ export default function CareerOSPublicPage() {
         <section className="cos-chain" aria-labelledby="cos-chain-title">
           <div className="sk-rail">
             <p className="cos-eyebrow">FROM COURSEWORK TO CAREER</p>
-            <h2 id="cos-chain-title">How work becomes evidence.</h2>
+              <h2 id="cos-chain-title">Here is what happens to the work you produced.</h2>
             <ol className="cos-chain-steps">
               {EVIDENCE_CHAIN.map((stage) => (
                 <li key={stage.step}>

@@ -60,7 +60,7 @@ export default function ProgramsPage() {
                     to="/programs/data-analytics-pro"
                     aria-label="View Data Analytics with Gen AI programme"
                   >
-                    View Program →
+                    View programme →
                   </Link>
                 </div>
               </div>
@@ -75,7 +75,7 @@ export default function ProgramsPage() {
                     to="/programs/product-management"
                     aria-label="View Product Management programme"
                   >
-                    View Program →
+                    View programme →
                   </Link>
                 </div>
               </div>
