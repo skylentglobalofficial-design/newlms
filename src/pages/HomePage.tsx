@@ -675,7 +675,7 @@ export default function HomePage() {
           <div className="hp-rail">
             <div className="hp-hero-intro">
               <div className="hp-hero-copy">
-                <p className="hp-eyebrow hp-hero-eyebrow">A LEARNING ENVIRONMENT</p>
+                <p className="hp-eyebrow hp-hero-eyebrow">Skylent · a learning environment</p>
                 <h1 id="home-hero-heading">
                   Learn.
                   <br />
@@ -686,8 +686,8 @@ export default function HomePage() {
               </div>
               <div className="hp-hero-support">
                 <p className="hp-hero-lead">
-                  Skylent combines structured learning, practice and named work in one workspace. You do not
-                  collect courses. You move through a loop: learn, practise, build, keep evidence.
+                  Structured lessons, practice and named work in one workspace. You do not collect courses. You
+                  move through a loop: learn, practise, build, keep evidence.
                 </p>
                 <div className="hp-actions">
                   <Link className="hp-btn hp-btn-primary" to="/programs">Enter Skylent →</Link>
@@ -697,6 +697,10 @@ export default function HomePage() {
             </div>
             <div className="hp-hero-stage">
               <HomeHeroProduct />
+              <p className="hp-hero-specimen">
+                A live lesson from Data Analytics — one authored programme, not the brand. Product Management is
+                the other.
+              </p>
             </div>
           </div>
         </section>
