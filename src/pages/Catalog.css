@@ -6,6 +6,82 @@
   overflow-x: hidden;
 }
 
+/* /programs Scroll 01 — opening viewport only */
+.pg-open {
+  display: flex;
+  align-items: center;
+  min-height: calc(100svh - var(--nav-h));
+  padding: clamp(28px, 5vh, 64px) 0 clamp(36px, 6vh, 72px);
+  box-sizing: border-box;
+}
+
+.pg-open-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.48fr) minmax(280px, 0.52fr);
+  gap: clamp(28px, 4vw, 56px);
+  align-items: center;
+}
+
+.pg-open-copy,
+.pg-open-visual {
+  min-width: 0;
+}
+
+.pg-open-eyebrow {
+  margin: 0;
+  color: #4f46e5;
+  font: 700 11px/1.3 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pg-open h1 {
+  margin: 16px 0 0;
+  max-width: 11em;
+  font-family: var(--font-brand);
+  font-size: clamp(36px, 4.6vw, 56px);
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: #15171a;
+}
+
+.pg-open-lead {
+  margin: 18px 0 0;
+  max-width: 32em;
+  color: #5c6168;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.pg-open-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 18px;
+  margin-top: 28px;
+}
+
+.pg-open-quiet {
+  color: #5c6168;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: var(--font-body);
+  text-decoration: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pg-open-quiet:hover {
+  color: #15171a;
+}
+
+.pg-open-quiet:focus-visible {
+  outline: 2px solid #4f46e5;
+  outline-offset: 3px;
+}
+
 
 .cat-label {
   margin: 0;
@@ -1051,6 +1127,10 @@
 }
 
 @media (max-width: 1100px) {
+  .pg-open h1 {
+    font-size: clamp(32px, 4.2vw, 44px);
+  }
+
   .cat-grid,
   .cat-ready {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1062,6 +1142,22 @@
 }
 
 @media (max-width: 900px) {
+  .pg-open {
+    min-height: 0;
+    align-items: stretch;
+    padding: 28px 0 40px;
+  }
+
+  .pg-open-grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+
+  .pg-open h1 {
+    max-width: 14em;
+  }
+
   .cat-hero-split,
   .cat-caps,
   .cat-caps.is-3,
@@ -1108,6 +1204,19 @@
 }
 
 @media (max-width: 430px) {
+  .pg-open h1 {
+    font-size: 30px;
+  }
+
+  .pg-open-lead {
+    font-size: 16px;
+  }
+
+  .pg-open-actions .cat-btn {
+    width: 100%;
+    min-height: 48px;
+  }
+
   .cat-hero h1 {
     font-size: 26px;
   }
