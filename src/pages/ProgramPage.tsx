@@ -83,7 +83,7 @@ export default function ProgramPage() {
                     <span className={view.linked[0].authored ? "cat-mark cat-mark-ready" : "cat-mark"}>
                       {view.linked[0].maturityLabel}
                     </span>
-                    <h3>{view.linked[0].title}</h3>
+                    <p className="cat-link-title">{view.linked[0].title}</p>
                     <p>Open the live course from this programme.</p>
                   </div>
                   <span className="cat-btn cat-btn-ghost">View course</span>
@@ -146,7 +146,7 @@ export default function ProgramPage() {
                   <CourseThumb authored={item.authored} visual={courseProductProfile(item.slug)?.visual ?? "northwind"} />
                   <div>
                     <span className={item.authored ? "cat-mark cat-mark-ready" : "cat-mark"}>{item.maturityLabel}</span>
-                    <h3>{item.title}</h3>
+                    <p className="cat-link-title">{item.title}</p>
                     <p>{item.authored ? "Authored course in Skylent OS." : "Thinner catalogue listing in the LMS."}</p>
                   </div>
                   <span className="cat-btn cat-btn-ghost">View course</span>

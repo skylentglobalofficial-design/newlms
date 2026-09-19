@@ -87,7 +87,6 @@ export default function WorkshopsPage() {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }} className="three-col">
           {filtered.map((w, i) => {
-            const pct = Math.round(((w.seats - w.seatsLeft) / w.seats) * 100)
             return (
               <FadeIn key={w.slug} delay={i * 50}>
                 <GlassSurface level={2} padding="0" style={{ overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -101,28 +100,17 @@ export default function WorkshopsPage() {
                   <div style={{ padding: '18px 22px 22px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.65, margin: '0 0 16px' }}>{w.desc}</p>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 16 }}>
-                      {[['Date', w.date], ['Mode', w.mode], ['Host', w.instructor.split(' ').slice(0, 2).join(' ')], ['Duration', w.duration]].map(([l, v]) => (
+                      {[['Planned date', w.date], ['Mode', w.mode], ['Duration', w.duration], ['Registration', 'Not open']].map(([l, v]) => (
                         <div key={l} style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 8, padding: '8px 10px' }}>
                           <div className="skylent-label" style={{ color: C.slate, marginBottom: 2 }}>{l}</div>
                           <div style={{ color: C.ink, fontSize: 11, fontWeight: 600 }}>{v}</div>
                         </div>
                       ))}
                     </div>
-                    <div style={{ marginBottom: 16 }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
-                        <span style={{ color: C.slate, fontSize: 11 }}>{w.seatsLeft} seats left (demo)</span>
-                        <span style={{ color: pct > 70 ? '#f87171' : C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
-                      </div>
-                      <div style={{ height: 4, background: C.cream, borderRadius: 2 }}>
-                        <div style={{ width: `${pct}%`, height: '100%', background: pct > 70 ? '#f87171' : accent.primary, borderRadius: 2 }} />
-                      </div>
-                    </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', gap: 12, flexWrap: 'wrap' }}>
                       <div>
+                        <div className="skylent-label" style={{ color: C.slate, marginBottom: 2 }}>Indicative price</div>
                         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 18, fontWeight: 700, color: C.ink }}>₹{w.price.toLocaleString('en-IN')}</span>
-                        {w.originalPrice > w.price && (
-                          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: C.slate, textDecoration: 'line-through', marginLeft: 7 }}>₹{w.originalPrice.toLocaleString('en-IN')}</span>
-                        )}
                       </div>
                       <Button variant="primary" size="sm" onClick={() => navigate(`/workshops/${w.slug}`)}>View details</Button>
                     </div>

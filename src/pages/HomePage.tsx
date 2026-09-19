@@ -762,7 +762,7 @@ function HomeHeroProduct() {
                     </div>
                     <div className="hp-hero-caption">
                       <div>
-                        <h3>{workspace.title}</h3>
+                        <p className="hp-hero-workspace-title">{workspace.title}</p>
                         <p>{workspace.lessonTitle}</p>
                         <p className="hp-hero-meta">{workspace.lessonCount} lessons · not started</p>
                       </div>
@@ -774,7 +774,7 @@ function HomeHeroProduct() {
                   <article className="hp-hero-workspace is-practice">
                     <div className="hp-hero-caption">
                       <div>
-                        <h3>{workspace.practice.title}</h3>
+                        <p className="hp-hero-workspace-title">{workspace.practice.title}</p>
                         <p className="hp-hero-meta">1 of {workspace.practice.questionCount} · not started</p>
                       </div>
                     </div>
@@ -807,7 +807,7 @@ function HomeHeroProduct() {
                     </div>
                     <div className="hp-hero-caption">
                       <div>
-                        <h3>{workspace.project.title}</h3>
+                        <p className="hp-hero-workspace-title">{workspace.project.title}</p>
                         <p className="hp-hero-purpose">{workspace.project.note}</p>
                         <p className="hp-hero-meta">{workspace.project.status}</p>
                       </div>
@@ -819,7 +819,7 @@ function HomeHeroProduct() {
                   <article className="hp-hero-workspace is-keep">
                     <div className="hp-hero-folio">
                       <p>Work sample</p>
-                      <h3>{workspace.project.title}</h3>
+                      <p className="hp-hero-workspace-title">{workspace.project.title}</p>
                       <ul>
                         {workspace.evidence.title.split(/\s+\+\s+/).map((part) => (
                           <li key={part}>{part.charAt(0).toUpperCase() + part.slice(1)}</li>
