@@ -165,7 +165,14 @@ function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
             </p>
             <p className="pl-fine">{HARBOR.interviews} interviews · fictional Harbor Retail — not Northwind.</p>
           </div>
-        ) : null}
+        ) : (
+          <div className="pl-hd-board-compact-quote">
+            <p className="pl-kicker">Exception log</p>
+            <p className="pl-hd-quote">
+              {HARBOR.unlogged} of {HARBOR.weekendExceptions} weekend exceptions never appeared in a channel.
+            </p>
+          </div>
+        )}
       </div>
       <ol className="pl-hd-flow" aria-label="Product case path">
         <li>
@@ -193,9 +200,16 @@ function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
   )
 }
 
-export function HarborDeskWorkspace({ compact = false }: { compact?: boolean }) {
+export function HarborDeskWorkspace({
+  compact = false,
+  meta,
+}: {
+  compact?: boolean
+  meta?: string
+}) {
+  const resolvedMeta = meta ?? "harbor-desk-case.md · fictional ops"
   return (
-    <ProductFrame title="Product Management" meta="harbor-desk-case.md · fictional ops" compact={compact}>
+    <ProductFrame title="Product Management" meta={resolvedMeta} compact={compact}>
       <HarborDeskBoard compact={compact} />
     </ProductFrame>
   )
