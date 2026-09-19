@@ -6,7 +6,7 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: "overview", label: "Overview", short: "Home", href: "/career-os" },
   { id: "projects", label: "Projects", short: "Work", href: "/career-os/projects" },
   { id: "profile", label: "Profile", short: "Profile", href: "/career-os/profile" },
-  { id: "jobs", label: "Jobs", short: "Jobs", href: "/career-os/jobs" },
+  { id: "jobs", label: "Opportunities", short: "Roles", href: "/career-os/jobs" },
   { id: "applications", label: "Applications", short: "Apps", href: "/career-os/applications" },
   { id: "interviews", label: "Interviews", short: "Prep", href: "/career-os/interviews" },
   { id: "support", label: "Support", short: "Help", href: "/career-os/support" },

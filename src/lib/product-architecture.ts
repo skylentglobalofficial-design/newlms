@@ -349,7 +349,7 @@ export const FOOTER_COLS = [
 export const CAREER_OS_IA = [
   { label: "Projects", to: "/career-os/projects", sub: "Learner work kept as evidence" },
   { label: "Profile", to: "/career-os/profile", sub: "Identity, skills, evidence" },
-  { label: "Opportunities", to: "/career-os/jobs", sub: "Job board when roles are published" },
+  { label: "Opportunities", to: "/career-os/jobs", sub: "Roles when partners publish them" },
   { label: "Applications", to: "/career-os/applications", sub: "Track what you submitted" },
   { label: "Interviews", to: "/career-os/interviews", sub: "Rounds and practice" },
   { label: "Support", to: "/career-os/support", sub: "Help on the career workflow" },

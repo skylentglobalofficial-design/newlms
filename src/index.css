@@ -782,12 +782,6 @@ html, body {
   }
 }
 
-@media (max-width: 900px) {
-  .login-page-grid {
-    padding-top: clamp(72px, 10vh, 96px) !important;
-  }
-}
-
 /* Nav mega menu — compact, readable on light public canvas */
 .nav-mega-dropdown {
   max-height: min(70vh, 380px);

@@ -7,8 +7,7 @@ export function getDefaultDemoState(): DemoState {
     version: 1,
     labs: {},
     enrollments: [],
-    applications: [],
-    shortlist: ['Rohan Mehta'],
+    shortlist: [],
   }
 }
 
@@ -23,8 +22,7 @@ export function loadDemoState(): DemoState {
       ...parsed,
       labs: parsed.labs ?? {},
       enrollments: parsed.enrollments ?? [],
-      applications: parsed.applications ?? [],
-      shortlist: parsed.shortlist ?? ['Rohan Mehta'],
+      shortlist: parsed.shortlist ?? [],
     }
   } catch {
     return getDefaultDemoState()

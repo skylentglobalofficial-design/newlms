@@ -24,9 +24,11 @@ import { FLAGSHIP_COURSE_SLUG } from '../lib/authored-courses'
 import './LearnWorkspace.css'
 
 const NAV_ITEMS: AuthNavItem[] = [
-  { id: 'overview', label: 'Home', short: 'Home', sectionId: 'student-overview' },
-  { id: 'learning', label: 'My learning', short: 'Learn', sectionId: 'student-learning' },
-  { id: 'career', label: 'Career OS', short: 'Career', href: '/career-os' },
+  { id: 'learning', label: 'Learning', short: 'Learn', sectionId: 'student-learning' },
+  { id: 'practice', label: 'Practice', short: 'Practice', sectionId: 'student-practice' },
+  { id: 'projects', label: 'Projects', short: 'Projects', sectionId: 'student-projects' },
+  { id: 'evidence', label: 'Evidence', short: 'Evidence', href: '/career-os/projects' },
+  { id: 'career', label: 'Career', short: 'Career', href: '/career-os' },
 ]
 
 const accent = getRoleAccent('student')
@@ -45,8 +47,10 @@ function greetingName(firstName: string) {
 function NavIcon({ id }: { id: string }) {
   const stroke = 'currentColor'
   const s = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke, strokeWidth: 1.8 }
-  if (id === 'overview') return <svg {...s}><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
   if (id === 'learning') return <svg {...s}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+  if (id === 'practice') return <svg {...s}><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+  if (id === 'projects') return <svg {...s}><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+  if (id === 'evidence') return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
   return <svg {...s}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
 }
 
@@ -54,7 +58,7 @@ export default function DashboardStudentPage() {
   const { user, ready } = useAuth()
   const { workspace, course, lessonStates, loading, error, reload } = useLmsDashboard()
   const navigate = useNavigate()
-  const [activeNav, setActiveNav] = useState('overview')
+  const [activeNav, setActiveNav] = useState('learning')
   const [enrolling, setEnrolling] = useState(false)
   const [enrollError, setEnrollError] = useState<string | null>(null)
   const [enrollments, setEnrollments] = useState<ApiEnrollmentSummary[]>([])
@@ -90,6 +94,7 @@ export default function DashboardStudentPage() {
   const lessonModuleTitle = (lessonId: string) =>
     course?.modules.find((mod) => mod.lessons.some((lesson) => lesson.id === lessonId))?.title ?? course?.title ?? ''
   const currentIndex = resume?.lessonId ? allLessons.findIndex((lesson) => lesson.id === resume.lessonId) : 0
+  const lessonIndex = currentIndex >= 0 ? currentIndex + 1 : 1
   const upcomingItems = allLessons
     .slice(Math.max(currentIndex, 0) + 1, Math.max(currentIndex, 0) + 4)
     .map((lesson) => ({ lesson, moduleTitle: lessonModuleTitle(lesson.id) }))
@@ -108,10 +113,11 @@ export default function DashboardStudentPage() {
     : 'Assignments you submit in the course can be recorded in Career OS. Nothing is invented here.'
 
   const extraEnrollments = enrollments.filter((item) => item.courseSlug && item.courseSlug !== learnSlug)
+  const productProfile = course ? courseProductProfile(course.slug) : null
 
   const shell = {
     themeId: 'data-science' as const,
-    workspaceLabel: 'Learning',
+    workspaceLabel: 'Skylent OS',
     roleLabel: 'Learner',
     navItems: NAV_ITEMS,
     bottomNavItems: NAV_ITEMS,
@@ -125,7 +131,7 @@ export default function DashboardStudentPage() {
   if (error && !workspace) {
     return (
       <AuthDashboardShell {...shell}>
-        <div className="dash-error" id="student-overview">
+        <div className="dash-error" id="student-learning">
           <p className="os-eyebrow">Learning</p>
           <h1>Learning workspace unavailable</h1>
           <p className="dash-empty-copy">{error}</p>
@@ -146,7 +152,7 @@ export default function DashboardStudentPage() {
   if (!course || !workspace) {
     return (
       <AuthDashboardShell {...shell}>
-        <div className="dash-empty" id="student-overview">
+        <div className="dash-empty" id="student-learning">
           <div className="dash-welcome">
             <h1>{greetingName(firstName)}</h1>
             <p>
@@ -254,6 +260,7 @@ export default function DashboardStudentPage() {
                 progressPct={progressPct}
                 completedCount={workspace.progress.completedCount}
                 totalLessons={workspace.progress.totalLessons}
+                lessonIndex={lessonIndex}
                 moduleTitle={resume?.moduleTitle ?? course.modules[0]?.title ?? ''}
                 moduleIndex={resume?.moduleIndex ?? 1}
                 moduleTotal={resume?.moduleTotal ?? course.modules.length}
@@ -266,6 +273,31 @@ export default function DashboardStudentPage() {
                 accent={accent}
                 started={workspace.progress.completedCount > 0 || Boolean(resume?.lessonId)}
               />
+              {productProfile?.project ? (
+                <section className="dash-card" id="student-projects">
+                  <p className="os-eyebrow">Projects</p>
+                  <h2>{productProfile.project.label.replace(/^Open\s+/i, '')}</h2>
+                  <p className="dash-continue-meta">{productProfile.project.note}</p>
+                  <div className="os-actions" style={{ marginTop: 14 }}>
+                    {productProfile.lab ? (
+                      <Link className="os-btn os-btn-ghost" to={productProfile.lab.href(resume?.lessonId ?? '')}>
+                        {productProfile.lab.label}
+                      </Link>
+                    ) : null}
+                    <Link className="os-btn os-btn-primary" to={productProfile.project.href}>
+                      {productProfile.project.label}
+                    </Link>
+                  </div>
+                </section>
+              ) : (
+                <section className="dash-card" id="student-projects">
+                  <p className="os-eyebrow">Projects</p>
+                  <h2>Named work lives in the lesson path</h2>
+                  <p className="dash-continue-meta">
+                    This course does not open a separate project workspace. Assignments and the capstone stay inside Skylent OS.
+                  </p>
+                </section>
+              )}
               {extraEnrollments.length > 0 ? (
                 <div className="dash-card dash-enrollments">
                   <h2>Also enrolled</h2>
