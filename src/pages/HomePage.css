@@ -152,7 +152,7 @@
 .hp-hero-lms > .pl-frame {
   width: 100%;
   min-width: 0;
-  height: 520px;
+  height: auto;
 }
 
 .hp-hero-lms > .pl-frame {
@@ -201,9 +201,9 @@
 .hp-hero-os {
   display: grid;
   grid-template-columns: 118px minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr);
-  height: 100%;
+  grid-template-rows: auto;
   min-height: 0;
+  height: auto;
   background: #ffffff;
 }
 
@@ -254,10 +254,10 @@
 
 .hp-hero-lms-stage {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 132px;
+  grid-template-columns: minmax(0, 1fr) 148px;
   min-width: 0;
   min-height: 0;
-  height: 100%;
+  height: auto;
   overflow: hidden;
   background: #ffffff;
 }
@@ -265,9 +265,9 @@
 .hp-hero-pane {
   min-width: 0;
   min-height: 0;
-  height: 100%;
+  height: auto;
   padding: 18px 22px 20px;
-  overflow: auto;
+  overflow: visible;
   overflow-wrap: break-word;
   animation: hp-hero-pane-in 180ms ease;
 }
@@ -277,7 +277,8 @@
   align-content: start;
   gap: 6px;
   min-width: 0;
-  height: 100%;
+  height: auto;
+  min-height: 100%;
   padding: 18px 16px;
   overflow: hidden;
   background: #fffdf8;
@@ -902,9 +903,19 @@
   display: block;
 }
 
-.hp-window-stage .pl-hd-flow,
-.hp-window-stage .pl-sql {
+.hp-window-stage .pl-sql,
+.hp-window-stage .pl-hd-stores,
+.hp-window-stage .pl-hd-board > div:first-child {
   display: none;
+}
+
+.hp-window-stage .pl-hd-board {
+  grid-template-columns: 1fr;
+  margin-bottom: 10px;
+}
+
+.hp-window-stage .pl-hd.is-compact .pl-hd-flow p {
+  display: block;
 }
 
 .hp-window-keep {
@@ -1122,33 +1133,6 @@
   font-size: 12px;
 }
 
-.hp-loop-path li,
-.hp-loop-panel {
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
-}
-
-.hp-loop.is-in .hp-loop-path li,
-.hp-loop.is-in .hp-loop-panel {
-  opacity: 1;
-  transform: none;
-}
-
-.hp-loop.is-in .hp-loop-path li:nth-child(2) { transition-delay: 0.05s; }
-.hp-loop.is-in .hp-loop-path li:nth-child(3) { transition-delay: 0.1s; }
-.hp-loop.is-in .hp-loop-path li:nth-child(4) { transition-delay: 0.15s; }
-
-@media (prefers-reduced-motion: reduce) {
-  .hp-loop-path li,
-  .hp-loop-panel,
-  .hp-loop.is-in .hp-loop-path li {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-
 /* ── Career continuation ── */
 
 .hp-career {
@@ -1296,7 +1280,8 @@
 
   .hp-hero-os {
     grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    min-height: 0;
   }
 
   .hp-hero-lms-rail {

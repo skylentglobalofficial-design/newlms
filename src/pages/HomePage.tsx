@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { CourseProductVisual, CourseThumb, ProductFrame } from "../components/product/ProductLanguage"
@@ -265,30 +265,10 @@ function HomeLoop() {
   const workspace = heroFeaturedWorkspace()
   const programmes = programmeDiscoveryCards()
   const [active, setActive] = useState<LoopId>("learn")
-  const sectionRef = useRef<HTMLElement>(null)
-
-  useEffect(() => {
-    const section = sectionRef.current
-    if (!section) return
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      section.classList.add("is-in")
-      return
-    }
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return
-        section.classList.add("is-in")
-        io.disconnect()
-      })
-    }, { threshold: 0.16, rootMargin: "0px 0px -8% 0px" })
-    io.observe(section)
-    return () => io.disconnect()
-  }, [])
-
   const current = LOOP_STEPS.find((step) => step.id === active) ?? LOOP_STEPS[0]
 
   return (
-    <section className="hp-section hp-loop" aria-labelledby="home-loop-heading" ref={sectionRef}>
+    <section className="hp-section hp-loop" aria-labelledby="home-loop-heading">
       <div className="hp-rail">
         <header className="hp-loop-intro">
           <p className="hp-eyebrow">HOW LEARNING HAPPENS HERE</p>
