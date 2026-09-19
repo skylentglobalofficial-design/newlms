@@ -294,7 +294,13 @@ export function programmePublicView(program: Program): ProgrammePublicView {
     enrollOpen,
     listedPrice,
     honesty: programmeHonesty(program, linked),
-    ctaLabel: comingLater ? "Coming later" : enrollOpen ? "Open linked course" : "Enrolment unavailable",
+    ctaLabel: comingLater
+      ? "Coming later"
+      : enrollOpen
+        ? authoredCourses.length > 0
+          ? "Start this programme"
+          : "Open linked course"
+        : "Enrolment unavailable",
   }
 }
 

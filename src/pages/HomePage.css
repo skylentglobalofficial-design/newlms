@@ -16,9 +16,9 @@
 .hp-h2 {
   margin: 10px 0 0;
   max-width: 16em;
-  font-family: var(--font-body);
+  font-family: var(--font-brand);
   font-size: clamp(26px, 3vw, 36px);
-  font-weight: 650;
+  font-weight: 600;
   line-height: 1.16;
   letter-spacing: -0.03em;
   color: #15171a;
@@ -51,21 +51,13 @@
 
 .hp-hero-copy h1 {
   margin: 12px 0 0;
-  max-width: 11em;
+  max-width: 10.5em;
   font-family: var(--font-brand);
   font-size: clamp(40px, 4.8vw, 62px);
   font-weight: 600;
   line-height: 1.02;
   letter-spacing: -0.03em;
   color: #15171a;
-}
-
-.hp-hero-further {
-  color: #4f46e5;
-}
-
-.hp-hero-further-dot {
-  color: #f97316;
 }
 
 .hp-hero-lead {
@@ -445,6 +437,31 @@
   font-size: 12px;
 }
 
+.hp-hero-lesson {
+  min-width: 0;
+  min-height: 216px;
+  padding: 18px 18px 16px;
+  overflow: hidden;
+  background: #fffdf8;
+  border: 1px solid rgba(21, 23, 26, 0.08);
+}
+
+.hp-hero-lesson .pl-kicker {
+  margin: 0;
+}
+
+.hp-hero-lesson .hp-hero-workspace-title {
+  margin-top: 8px;
+  -webkit-line-clamp: 3;
+}
+
+.hp-hero-workspace .hp-hero-lesson-copy {
+  margin: 10px 0 0;
+  color: #3a4048;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
 .hp-hero-folio {
   min-width: 0;
   height: 216px;
@@ -670,7 +687,7 @@
   gap: 8px;
   min-height: 44px;
   padding: 0 16px;
-  border-radius: var(--radius-md);
+  border-radius: var(--btn-radius);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
@@ -679,14 +696,14 @@
 }
 
 .hp-btn:focus-visible {
-  outline: 2px solid #4f46e5;
+  outline: 2px solid var(--btn-bg);
   outline-offset: 2px;
 }
 
 .hp-btn-primary {
-  background: #15171a;
-  color: #fffdf8;
-  border: 1px solid #15171a;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  border: 1px solid var(--btn-bg);
 }
 
 .hp-hero .hp-btn-primary {
@@ -696,8 +713,8 @@
 }
 
 .hp-btn-primary:hover {
-  background: #2a2e35;
-  border-color: #2a2e35;
+  background: #4338ca;
+  border-color: #4338ca;
 }
 
 .hp-btn-ghost {
@@ -926,8 +943,8 @@
 }
 
 .hp-dir-flag.is-live {
-  background: rgba(79, 70, 229, 0.1);
-  color: #3f38c4;
+  background: rgba(249, 115, 22, 0.12);
+  color: #c2410c;
 }
 
 .hp-dir-flag.is-soon {
@@ -1117,8 +1134,9 @@
 
 .hp-pcp h3 {
   margin: 8px 0 0;
+  font-family: var(--font-brand);
   font-size: 26px;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: -0.03em;
 }
 
@@ -1233,22 +1251,6 @@
   line-height: 1.6;
 }
 
-.hp-workflow-visual {
-  min-width: 0;
-  margin: 36px 0 0;
-}
-
-.hp-workflow-visual .pl-frame {
-  width: 100%;
-}
-
-.hp-workflow-caption {
-  margin: 10px 0 0;
-  color: rgba(21, 23, 26, 0.42);
-  font-size: 12px;
-  letter-spacing: 0.01em;
-}
-
 .hp-workflow-path {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -1353,14 +1355,12 @@
   outline-offset: 3px;
 }
 
-.hp-workflow-visual,
 .hp-workflow-path li {
   opacity: 0;
   transform: translateY(10px);
   transition: opacity 0.55s ease, transform 0.55s ease;
 }
 
-.hp-workflow.is-in .hp-workflow-visual,
 .hp-workflow.is-in .hp-workflow-path li {
   opacity: 1;
   transform: none;
@@ -1378,19 +1378,6 @@
 
   .hp-workflow-title {
     max-width: 10em;
-  }
-
-  .hp-workflow-visual {
-    margin-top: 28px;
-  }
-
-  .hp-workflow-visual .pl-frame-title {
-    display: none;
-  }
-
-  .hp-workflow-visual .pl-sql {
-    white-space: pre-wrap;
-    overflow-x: hidden;
   }
 
   .hp-workflow-path {
@@ -1427,7 +1414,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hp-workflow-visual,
   .hp-workflow-path li,
   .hp-workflow.is-in .hp-workflow-path li {
     opacity: 1;
@@ -1539,6 +1525,12 @@
     height: 160px;
     min-height: 160px;
     max-height: 160px;
+  }
+
+  .hp-hero-lesson {
+    height: auto;
+    min-height: 0;
+    max-height: none;
   }
 
   /* The compact workspace visual drops its table and sparkline at this width, so

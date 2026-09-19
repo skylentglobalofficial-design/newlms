@@ -321,7 +321,7 @@
   min-height: 44px;
   padding: 0 16px;
   width: fit-content;
-  border-radius: 10px;
+  border-radius: var(--btn-radius);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
@@ -329,12 +329,12 @@
 }
 
 .sk-btn-primary {
-  background: #4f46e5;
-  color: #ffffff;
+  background: var(--btn-bg);
+  color: var(--btn-fg);
 }
 
 .sk-btn-primary:hover {
-  background: #2563eb;
+  background: #4338ca;
 }
 
 .sk-btn:focus-visible {

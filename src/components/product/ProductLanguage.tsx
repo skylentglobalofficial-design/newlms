@@ -594,23 +594,6 @@ export function PathwayTrack({
   )
 }
 
-export function CareerEvidencePreview() {
-  return (
-    <ProductFrame title="Career OS" meta="Evidence workspace" compact>
-      <div className="pl-evidence">
-        <p className="pl-kicker">Work sample</p>
-        <p className="pl-ws-lesson">Northwind commercial review</p>
-        <div className="pl-stat-row">
-          <VisualStat label="Source" value="Capstone" />
-          <VisualStat label="Dataset" value="Northwind" />
-          <VisualStat label="Kept by" value="You" />
-        </div>
-        <p className="pl-fine">A work sample from Data Analytics. Career OS is a workspace — not a job guarantee.</p>
-      </div>
-    </ProductFrame>
-  )
-}
-
 export function CareerKeepEmpty({
   heading = "Nothing kept yet",
   copy = "Work samples from Data Analytics and Product Management appear here when you add them from a completed project. Nothing is invented.",

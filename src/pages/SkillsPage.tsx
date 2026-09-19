@@ -206,7 +206,7 @@ function IntentJourney({ intentId }: { intentId: LearnIntentId }) {
               </ul>
               {journey.lab ? (
                 <p className="sk-stage-note">
-                  <span>{journey.lab.label}</span>
+                  <span>Lab in Skylent OS · after enrol</span>
                   {journey.lab.note}
                 </p>
               ) : journey.labOmission ? (

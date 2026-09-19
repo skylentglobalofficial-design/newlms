@@ -10,6 +10,7 @@ import {
   coursePublicView,
   isAuthoredCourse,
   linkedCourseSlugsForProgram,
+  programmeAfterEnrolCopy,
   programmePublicView,
 } from "../src/lib/catalog-maturity.ts"
 
@@ -123,8 +124,14 @@ const analyticsPro = programmePublicView(programs.find((row) => row.slug === "da
 assert(analyticsPro.linked.some((item) => item.slug === "data-analytics" && item.authored), "Data Analytics pathway must link the authored course")
 assert(/data analytics course/i.test(analyticsPro.honesty), "Data Analytics programme must say the live LMS is the course")
 assert(
-  /Open linked course/.test(analyticsPro.ctaLabel),
-  "Data Analytics programme CTA must open the linked course",
+  analyticsPro.ctaLabel === "Start this programme",
+  "Data Analytics programme CTA must start the programme",
+)
+assert(
+  /enrolment opens the linked course in Skylent OS|opens .+ in Skylent OS/i.test(
+    `${analyticsPro.honesty} ${programmeAfterEnrolCopy(analyticsPro)}`,
+  ),
+  "Data Analytics programme must still explain linked-course enrolment",
 )
 
 const daCards = courseModuleCards(da!, true)

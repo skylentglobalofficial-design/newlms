@@ -2,7 +2,6 @@ import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { CAREER_OS_IA } from "../../lib/product-architecture"
 import { MaturityMark } from "../../components/product/Architecture"
-import { CareerEvidencePreview } from "../../components/product/ProductLanguage"
 import { programmeDiscoveryCards } from "../../lib/programme-discovery"
 import "./CareerOS.css"
 
@@ -71,8 +70,19 @@ export default function CareerOSPublicPage() {
               </p>
             </div>
             <div className="cos-public-visual">
-              <p className="cos-public-caption">A work sample in the evidence workspace</p>
-              <CareerEvidencePreview />
+              <p className="cos-public-caption">Named capstones this chain currently produces</p>
+              <ul className="cos-hero-sources">
+                {programmes.map((programme) =>
+                  programme.capstone ? (
+                    <li key={programme.slug}>
+                      <strong>{programme.capstone}</strong>
+                      <span>
+                        from {programme.title} &middot; <code>{programme.material}</code>
+                      </span>
+                    </li>
+                  ) : null,
+                )}
+              </ul>
             </div>
           </div>
         </section>
@@ -90,22 +100,6 @@ export default function CareerOSPublicPage() {
                 </li>
               ))}
             </ol>
-
-            <div className="cos-chain-sources">
-              <p className="cos-chain-sources-label">The work samples this chain currently produces</p>
-              <ul>
-                {programmes.map((programme) =>
-                  programme.capstone ? (
-                    <li key={programme.slug}>
-                      <strong>{programme.capstone}</strong>
-                      <span>
-                        from {programme.title} &middot; <code>{programme.material}</code>
-                      </span>
-                    </li>
-                  ) : null,
-                )}
-              </ul>
-            </div>
           </div>
         </section>
 

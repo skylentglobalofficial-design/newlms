@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { CourseThumb } from "../components/product/ProductLanguage"
+import { CourseProductVisual, CourseThumb } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { coursePublicView } from "../lib/catalog-maturity"
 import { courseProductProfile } from "../lib/course-product"
@@ -108,7 +108,11 @@ function CourseCard({ view, featured = false }: { view: ReturnType<typeof course
 
   return (
     <Link className={featured ? "cat-tile is-ready" : "cat-tile is-listing"} to={`/courses/${view.slug}`}>
-      <CourseThumb authored={view.showLiveCurriculum} visual={profile?.visual ?? "northwind"} />
+      {view.showLiveCurriculum && profile ? (
+        <CourseProductVisual visual={profile.visual} compact />
+      ) : (
+        <CourseThumb authored={false} />
+      )}
       <div className="cat-tile-copy">
         <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
           {view.maturity === "ready" ? "Ready" : view.maturityLabel}

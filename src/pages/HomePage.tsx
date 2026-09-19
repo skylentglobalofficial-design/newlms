@@ -5,7 +5,7 @@ import { CourseProductVisual, CourseThumb, ProductFrame } from "../components/pr
 import { courseBySlug, coursePublicView } from "../lib/catalog-maturity"
 import { authoredCourseList, courseProductProfile } from "../lib/course-product"
 import { FLAGSHIP_COURSE_SLUG, isAuthoredCourse } from "../lib/authored-courses"
-import { getCareerEvidence, getCourseQuiz } from "../content/course-lookups"
+import { getCareerEvidence, getCourseQuiz, getLessonMeta } from "../content/course-lookups"
 import { CAREER_OS_IA, MATURITY_LABEL } from "../lib/product-architecture"
 import { programmeDiscoveryCards } from "../lib/programme-discovery"
 import { NORTHWIND_PREVIEW as NW } from "../lib/northwind-preview"
@@ -211,9 +211,6 @@ const WORKFLOW_STEPS = [
 
 function HomeWorkflow() {
   const sectionRef = useRef<HTMLElement>(null)
-  const profile = courseProductProfile(FLAGSHIP_COURSE_SLUG)
-  const course = courseBySlug(FLAGSHIP_COURSE_SLUG)
-  const view = course ? coursePublicView(course) : null
 
   useEffect(() => {
     const section = sectionRef.current
@@ -246,17 +243,6 @@ function HomeWorkflow() {
             Learn through written lessons, practise on the course material, produce a named piece of work, and keep it as evidence.
           </p>
         </header>
-
-        {profile ? (
-          <div className="hp-workflow-visual">
-            <CourseProductVisual visual={profile.visual} compact />
-            {view ? (
-              <p className="hp-workflow-caption">
-                {view.title} · {NW.filename}
-              </p>
-            ) : null}
-          </div>
-        ) : null}
 
         <ol className="hp-workflow-path" aria-label="Learn, practise, build, evidence">
           {WORKFLOW_STEPS.map((stage) => (
@@ -339,6 +325,7 @@ function heroFeaturedWorkspace() {
   const view = coursePublicView(course)
   const lessons = course.modules.flatMap((module) => module.lessons)
   const firstLesson = course.modules[0]?.lessons[0]
+  const lessonMeta = firstLesson ? getLessonMeta(course.slug, firstLesson.id) : undefined
   const firstQuiz = lessons.find((lesson) => lesson.type === "quiz")
   const capstone = lessons.find((lesson) => /capstone|product case/i.test(lesson.title))
   const quiz = getCourseQuiz(course.slug, firstQuiz?.id)
@@ -348,6 +335,8 @@ function heroFeaturedWorkspace() {
   return {
     title: course.title,
     lessonTitle: firstLesson?.title ?? "Open the first lesson",
+    lessonObjective: lessonMeta?.objective ?? null,
+    lessonWhy: lessonMeta?.whyItMatters ?? null,
     lessonCount: view.stats.lessonCount,
     quizCount: view.stats.quizCount,
     visual,
@@ -404,6 +393,25 @@ function HeroReviewSheet() {
   )
 }
 
+function HeroLessonSheet({
+  title,
+  objective,
+  why,
+}: {
+  title: string
+  objective: string | null
+  why: string | null
+}) {
+  return (
+    <div className="hp-hero-lesson">
+      <p className="pl-kicker">Written lesson</p>
+      <p className="hp-hero-workspace-title">{title}</p>
+      {objective ? <p className="hp-hero-lesson-copy">{objective}</p> : null}
+      {why ? <p className="hp-hero-lesson-copy">{why}</p> : null}
+    </div>
+  )
+}
+
 function HomeHeroProduct() {
   const workspace = heroFeaturedWorkspace()
   const [pane, setPane] = useState<HeroOsPane>("Learning")
@@ -431,7 +439,7 @@ function HomeHeroProduct() {
   return (
     <div className="hp-hero-visual">
       <div className="hp-hero-lms">
-        <ProductFrame title={pane === "Career" ? "Career OS" : workspace.title} meta={heroOsMeta(pane, workspace)}>
+        <ProductFrame title={pane === "Career" ? "Career OS" : pane} meta={heroOsMeta(pane, workspace)}>
           <div className="hp-hero-os">
             <nav className="hp-hero-lms-rail" role="tablist" aria-label="Skylent OS preview">
               {HERO_LMS_NAV.map((item) => (
@@ -459,14 +467,14 @@ function HomeHeroProduct() {
                 aria-labelledby={`hero-os-tab-${pane}`}
               >
                 {pane === "Learning" ? (
-                  <article className="hp-hero-workspace">
-                    <div className="hp-hero-media">
-                      <CourseProductVisual visual={workspace.visual} compact />
-                    </div>
+                  <article className="hp-hero-workspace is-learn">
+                    <HeroLessonSheet
+                      title={workspace.lessonTitle}
+                      objective={workspace.lessonObjective}
+                      why={workspace.lessonWhy}
+                    />
                     <div className="hp-hero-caption">
                       <div>
-                        <p className="hp-hero-workspace-title">{workspace.title}</p>
-                        <p>{workspace.lessonTitle}</p>
                         <p className="hp-hero-meta">{workspace.lessonCount} lessons · not started</p>
                       </div>
                       <Link className="hp-hero-os-cta" to={workspace.courseHref}>Start learning →</Link>
@@ -583,12 +591,11 @@ export default function HomePage() {
               <div className="hp-hero-copy">
                 <p className="hp-eyebrow hp-hero-eyebrow">LEARN · PRACTISE · BUILD · EVIDENCE</p>
                 <h1 id="home-hero-heading">
-                  Build skills
+                  Learn.
                   <br />
-                  that take you
+                  Produce the work.
                   <br />
-                  <span className="hp-hero-further">further</span>
-                  <span className="hp-hero-further-dot">.</span>
+                  Keep it.
                 </h1>
                 <p className="hp-hero-lead">
                   Professional programmes built around work you can show.
