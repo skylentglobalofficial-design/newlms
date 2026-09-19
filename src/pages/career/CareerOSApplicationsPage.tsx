@@ -77,7 +77,7 @@ export default function CareerOSApplicationsPage() {
             />
           </Field>
           <p style={{ margin: "10px 0 0", color: C.slate, fontSize: 12.5 }}>
-            Use this to track applications outside the job board. Roles applied from Jobs are added automatically.
+            Use this to track applications you submit. Roles applied from Opportunities appear here automatically.
           </p>
           <button type="submit" disabled={addPending || !roleTitle.trim()} style={{ ...primaryButtonStyle, marginTop: 14 }}>
             {addPending ? "Adding…" : "Add application"}
@@ -98,7 +98,7 @@ export default function CareerOSApplicationsPage() {
 
       {!loading && applications.length === 0 && (
         <>
-          <EmptyBlock message="Nothing here yet. Apply to a role from Jobs and your application will appear here." />
+          <EmptyBlock message="Nothing here yet. When a partner publishes a role, you can apply from Opportunities." />
           <Link
             to="/career-os/jobs"
             style={{

@@ -65,7 +65,7 @@ export default function CareerOSPublicPage() {
                 <Link to="/login">Sign in to Career OS</Link>
               </div>
               <p className="cos-public-fine">
-                Career OS is a workspace, not a placement service. If the job board is empty, that is the real
+                Career OS is a workspace, not a placement service. If Opportunities is empty, that is the real
                 state.
               </p>
             </div>

@@ -274,6 +274,13 @@ export default function LearnPage() {
   const currentModule = selectedLesson
     ? readyCourse.modules.find((module) => module.lessons.some((lesson) => lesson.id === selectedLesson.id))
     : null
+  const moduleIndex = currentModule
+    ? readyCourse.modules.findIndex((module) => module.id === currentModule.id) + 1
+    : 0
+  const moduleTotal = readyCourse.modules.length
+  const lessonIndex = selectedLesson
+    ? allLessons.findIndex((lesson) => lesson.id === selectedLesson.id) + 1
+    : 0
   const nextUnlocked = next && isLessonUnlocked(next.id, allLessons, lessonStates) ? next : null
 
   function handleLessonSelect(id: string) {
@@ -371,13 +378,17 @@ export default function LearnPage() {
           </nav>
           <div
             className="os-top-progress"
-            aria-label={`${completedCount} of ${totalLessons} lessons complete, ${progressPct} percent`}
+            aria-label={
+              moduleIndex
+                ? `Module ${moduleIndex} of ${moduleTotal}, lesson ${lessonIndex} of ${totalLessons}, ${completedCount} complete`
+                : `${completedCount} of ${totalLessons} lessons complete`
+            }
           >
-            <span>{completedCount} / {totalLessons}</span>
+            <span>{moduleIndex ? `Module ${moduleIndex} / ${moduleTotal}` : `${completedCount} / ${totalLessons}`}</span>
             <div className="os-progress-bar" aria-hidden="true">
               <span style={{ width: `${progressPct}%` }} />
             </div>
-            <span>{progressPct}%</span>
+            <span>{lessonIndex ? `Lesson ${lessonIndex} / ${totalLessons}` : `${completedCount} complete`}</span>
           </div>
         </header>
 

@@ -84,8 +84,7 @@ export default function CurriculumRail({
         <h2 className="os-rail-title">{course.title}</h2>
         <div className="os-progress" aria-label={`${completedCount} of ${totalLessons} lessons complete`}>
           <div className="os-progress-meta">
-            <span>{completedCount} of {totalLessons} complete</span>
-            <span>{progressPct}%</span>
+            <span>{completedCount} of {totalLessons} lessons complete</span>
           </div>
           <div className="os-progress-bar" aria-hidden="true">
             <span style={{ width: `${progressPct}%`, background: accent.primary }} />

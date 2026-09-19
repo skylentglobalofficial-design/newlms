@@ -154,7 +154,7 @@ function EcosystemSection() {
     },
     {
       label: 'Career OS',
-      body: 'Interview preparation, job board, and applications as a working product, unlocked by Professional Programs.',
+      body: 'The workspace where learning evidence lives, alongside your profile, applications, and interview preparation. Not a job board.',
       to: '/career-os',
       accent: getDomainAccent('career'),
     },
@@ -234,7 +234,7 @@ function JourneySection() {
     { label: 'Build', sub: 'Projects and applied work' },
     { label: 'Prove', sub: 'Portfolio and credentials' },
     { label: 'Prepare', sub: 'Interview preparation' },
-    { label: 'Apply', sub: 'Job board and screening' },
+    { label: 'Apply', sub: 'When a role is published' },
     { label: 'Track', sub: 'Application status' },
   ]
 
@@ -243,7 +243,7 @@ function JourneySection() {
     { label: 'Learning', sub: 'Curriculum, lessons, cohort', accent: getDomainAccent('undergraduate') },
     { label: 'Projects / Assessments', sub: 'Work that becomes proof', accent: getDomainAccent('professional') },
     { label: 'Career Proof', sub: 'Profile, resume, portfolio', accent: getDomainAccent('career') },
-    { label: 'Career OS', sub: 'Interview prep, jobs, tracker', accent: getDomainAccent('career') },
+    { label: 'Career OS', sub: 'Evidence, profile, applications', accent: getDomainAccent('career') },
     { label: 'Opportunities', sub: 'Roles to discover and apply', accent: accent },
   ]
 
@@ -310,7 +310,7 @@ function JourneySection() {
               { label: 'Learning', sub: 'Curriculum' },
               { label: 'Projects', sub: 'Proof', highlight: true },
               { label: 'Career OS', sub: 'Workspace' },
-              { label: 'Opportunities', sub: 'Jobs' },
+              { label: 'Opportunities', sub: 'If published' },
             ]}
           />
         </div>
@@ -417,7 +417,7 @@ function InstitutionsEmployersSection() {
             Career readiness as a product.
           </Heading>
           <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>
-            Career OS gives learners a working profile, interview preparation, and a job board — with application tracking that stays empty until they apply. Employers interact through open roles, not unverified partnership claims.
+            Career OS is the workspace for the work you produced. Profile, evidence, applications, and interview preparation live here. Opportunities stay empty until a partner publishes a role.
           </p>
           <GlassSurface level={1} padding="18px 22px" style={{ marginBottom: 24 }}>
             <div className="skylent-label" style={{ color: careerAccent.text, marginBottom: 14 }}>Career OS</div>

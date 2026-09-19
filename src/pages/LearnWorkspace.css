@@ -1571,6 +1571,11 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
     display: inline-flex;
   }
 
+  .os-top-progress {
+    font-size: 11px;
+    gap: 6px;
+  }
+
   .os-top-course {
     max-width: 42vw;
   }
@@ -1597,6 +1602,10 @@ body:has(.os-ai.is-compact .os-ai-thread) .os-stage.is-ai-compact {
 
   .os-top-dash-icon {
     display: block;
+  }
+
+  .os-top-progress span:first-child {
+    display: none;
   }
 
   .os-top-progress .os-progress-bar {
