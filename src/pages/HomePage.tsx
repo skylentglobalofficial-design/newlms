@@ -268,7 +268,7 @@ function HomeLoop() {
   const current = LOOP_STEPS.find((step) => step.id === active) ?? LOOP_STEPS[0]
 
   return (
-    <section className="hp-section hp-loop" aria-labelledby="home-loop-heading">
+    <section id="home-loop" className="hp-section hp-loop" aria-labelledby="home-loop-heading">
       <div className="hp-rail">
         <header className="hp-loop-intro">
           <p className="hp-eyebrow">HOW LEARNING HAPPENS HERE</p>
@@ -412,18 +412,6 @@ function HomeCareer() {
   )
 }
 
-const HERO_LMS_NAV = ["Learning", "Practice", "Projects", "Evidence", "Career"] as const
-type HeroOsPane = (typeof HERO_LMS_NAV)[number]
-
-function HeroOsIcon({ name }: { name: HeroOsPane }) {
-  const s = { width: 14, height: 14, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 1.45 }
-  if (name === "Learning") return <svg {...s}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>
-  if (name === "Practice") return <svg {...s}><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
-  if (name === "Projects") return <svg {...s}><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></svg>
-  if (name === "Evidence") return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>
-  return <svg {...s}><circle cx="12" cy="8" r="3" /><path d="M5 20a7 7 0 0 1 14 0" /></svg>
-}
-
 function heroFeaturedWorkspace() {
   const authored = authoredCourseList()
   const course = authored.find((item) => item.slug === FLAGSHIP_COURSE_SLUG) ?? authored[0] ?? null
@@ -436,12 +424,24 @@ function heroFeaturedWorkspace() {
   const lessonMeta = firstLesson ? getLessonMeta(course.slug, firstLesson.id) : undefined
   const firstQuiz = lessons.find((lesson) => lesson.type === "quiz")
   const capstone = lessons.find((lesson) => /capstone|product case/i.test(lesson.title))
+  const sqlModuleIndex = course.modules.findIndex((module) => /sql/i.test(module.title))
+  const currentModuleIndex = sqlModuleIndex >= 0 ? sqlModuleIndex : Math.min(2, Math.max(0, course.modules.length - 1))
+  const lessonsBeforeCurrent = course.modules
+    .slice(0, currentModuleIndex)
+    .reduce((count, module) => count + module.lessons.length, 0)
+  const path = course.modules.slice(0, 3).map((module, index) => ({
+    id: module.id,
+    title: module.title,
+    state: index < currentModuleIndex ? "done" : index === currentModuleIndex ? "now" : "ahead",
+  }))
   const quiz = getCourseQuiz(course.slug, firstQuiz?.id)
   const evidence = capstone ? getCareerEvidence(course.slug, capstone.id) : undefined
   const courseHref = `/courses/${course.slug}`
   return {
     title: course.title,
     moduleTitle: firstModule?.title ?? "Module 01",
+    path,
+    progressLabel: `Lesson ${lessonsBeforeCurrent + 1} of ${view.stats.lessonCount}`,
     curriculum: (firstModule?.lessons ?? []).slice(0, 4).map((lesson) => ({
       id: lesson.id,
       title: lesson.title,
@@ -464,7 +464,7 @@ function heroFeaturedWorkspace() {
       href: courseHref,
     },
     project: {
-      title: capstone?.title ?? profile?.project?.note?.split(" — ")[0] ?? "Capstone",
+      title: profile?.project?.note?.split(" — ")[0] ?? capstone?.title ?? "Capstone",
       note: profile?.project?.note ?? profile?.learningSteps.find((step) => step.label === "Capstone")?.detail ?? "Work you produce in this course.",
       href: profile?.project?.href ?? courseHref,
       status: "Capstone · not started",
@@ -483,17 +483,8 @@ function heroFeaturedWorkspace() {
   }
 }
 
-function heroOsMeta(pane: HeroOsPane, workspace: NonNullable<ReturnType<typeof heroFeaturedWorkspace>>) {
-  if (pane === "Practice") return `${workspace.quizCount} checks · not started`
-  if (pane === "Projects") return workspace.project.status
-  if (pane === "Evidence") return "Nothing kept yet"
-  if (pane === "Career") return "Profile · evidence · opportunities"
-  return `${workspace.moduleTitle} · 1 of ${workspace.lessonCount}`
-}
-
 function HomeHeroProduct() {
   const workspace = heroFeaturedWorkspace()
-  const [pane, setPane] = useState<HeroOsPane>("Learning")
 
   if (!workspace) {
     return (
@@ -505,164 +496,36 @@ function HomeHeroProduct() {
     )
   }
 
-  const next = pane === "Learning"
-    ? { kicker: "Next", title: workspace.practice.title, pane: "Practice" as const }
-    : pane === "Practice"
-      ? { kicker: "Next", title: workspace.project.title, pane: "Projects" as const }
-      : pane === "Projects"
-        ? { kicker: "Next", title: "Keep this as evidence", pane: "Evidence" as const }
-        : pane === "Evidence"
-          ? { kicker: "Next", title: "Career OS", pane: "Career" as const }
-          : { kicker: "Path", title: "Back to learning", pane: "Learning" as const }
-
   return (
     <div className="hp-hero-visual">
       <div className="hp-hero-lms">
-        <ProductFrame title={pane === "Career" ? "Career OS" : pane} meta={heroOsMeta(pane, workspace)}>
-          <div className="hp-hero-os">
-            <nav className="hp-hero-lms-rail" role="tablist" aria-label="Skylent OS preview">
-              {HERO_LMS_NAV.map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  role="tab"
-                  id={`hero-os-tab-${item}`}
-                  aria-selected={pane === item}
-                  aria-controls="hero-os-panel"
-                  className={pane === item ? "is-on" : undefined}
-                  onClick={() => setPane(item)}
+        <ProductFrame title="" meta={workspace.progressLabel}>
+          <div className="hp-hero-os" aria-label="Skylent OS specimen">
+            <p className="hp-hero-os-course">{workspace.title}</p>
+            <ol className="hp-hero-path" aria-label="Programme modules">
+              {workspace.path.map((module) => (
+                <li
+                  key={module.id}
+                  className={`is-${module.state}`}
+                  aria-current={module.state === "now" ? "step" : undefined}
                 >
-                  <HeroOsIcon name={item} />
-                  {item}
-                </button>
+                  <span aria-hidden="true">{module.state === "done" ? "✓" : module.state === "now" ? "→" : "○"}</span>
+                  {module.title}
+                </li>
               ))}
-            </nav>
-            <div className="hp-hero-lms-stage">
-              <div
-                key={pane}
-                className="hp-hero-pane"
-                role="tabpanel"
-                id="hero-os-panel"
-                aria-labelledby={`hero-os-tab-${pane}`}
-              >
-                {pane === "Learning" ? (
-                  <article className="hp-hero-workspace is-learn">
-                    <div className="hp-hero-lesson">
-                      <p className="pl-kicker">{workspace.moduleTitle} · Lesson 01</p>
-                      <p className="hp-hero-workspace-title">{workspace.lessonTitle}</p>
-                      {workspace.lessonObjective ? <p className="hp-hero-lesson-copy">{workspace.lessonObjective}</p> : null}
-                      {workspace.lessonWhy ? <p className="hp-hero-lesson-copy">{workspace.lessonWhy}</p> : null}
-                      <div className="hp-hero-progress" aria-hidden="true">
-                        <i style={{ width: `${Math.max(6, Math.round(100 / Math.max(workspace.lessonCount, 1)))}%` }} />
-                      </div>
-                      <p className="hp-hero-meta">1 of {workspace.lessonCount} · not started</p>
-                      {workspace.curriculum.length > 0 ? (
-                        <ol className="hp-hero-curriculum" aria-label="This module">
-                          {workspace.curriculum.map((lesson, index) => (
-                            <li key={lesson.id} className={index === 0 ? "is-on" : undefined}>
-                              <span>{String(index + 1).padStart(2, "0")}</span>
-                              {lesson.title}
-                            </li>
-                          ))}
-                        </ol>
-                      ) : null}
-                    </div>
-                    <Link className="hp-hero-os-cta" to={workspace.courseHref}>Start learning →</Link>
-                  </article>
-                ) : null}
-                {pane === "Practice" ? (
-                  <article className="hp-hero-workspace is-practice">
-                    <div className="hp-hero-caption">
-                      <div>
-                        <p className="hp-hero-workspace-title">{workspace.practice.title}</p>
-                        <p className="hp-hero-meta">1 of {workspace.practice.questionCount} · not started</p>
-                      </div>
-                    </div>
-                    {workspace.practice.prompt ? (
-                      <div className="hp-hero-exercise">
-                        <p className="hp-hero-exercise-q">{workspace.practice.prompt}</p>
-                        {workspace.practice.options.length > 0 ? (
-                          <ol className="hp-hero-choices" aria-hidden="true">
-                            {workspace.practice.options.map((option, index) => (
-                              <li key={option}>
-                                <span>{String.fromCharCode(65 + index)}</span>
-                                {option}
-                              </li>
-                            ))}
-                          </ol>
-                        ) : null}
-                      </div>
-                    ) : null}
-                    <Link className="hp-hero-os-cta" to={workspace.practice.href}>Continue practice →</Link>
-                  </article>
-                ) : null}
-                {pane === "Projects" ? (
-                  <article className="hp-hero-workspace is-project">
-                    <div className="hp-hero-project">
-                      <p className="pl-kicker">Project workspace</p>
-                      <p className="hp-hero-workspace-title">{workspace.project.title}</p>
-                      <p className="hp-hero-purpose">{workspace.project.note}</p>
-                      {workspace.material ? (
-                        <p className="hp-hero-file">
-                          <code>{workspace.material}</code>
-                        </p>
-                      ) : null}
-                      <p className="hp-hero-meta">{workspace.project.status}</p>
-                    </div>
-                    <Link className="hp-hero-os-cta" to={workspace.project.href}>View project →</Link>
-                  </article>
-                ) : null}
-                {pane === "Evidence" ? (
-                  <article className="hp-hero-workspace is-keep">
-                    <div className="hp-hero-folio">
-                      <p>Work sample you keep</p>
-                      <p className="hp-hero-workspace-title">{workspace.project.title}</p>
-                      <ul>
-                        {workspace.evidence.title.split(/\s+\+\s+/).map((part) => (
-                          <li key={part}>{part.charAt(0).toUpperCase() + part.slice(1)}</li>
-                        ))}
-                      </ul>
-                      <p className="hp-hero-meta">Capstone · not kept yet</p>
-                    </div>
-                    <Link className="hp-hero-os-cta" to={workspace.evidence.href}>View evidence →</Link>
-                  </article>
-                ) : null}
-                {pane === "Career" ? (
-                  <article className="hp-hero-workspace is-career">
-                    <p className="pl-kicker">Career profile</p>
-                    <ul className="hp-hero-career-line">
-                      <li>
-                        <span>Skills</span>
-                        <b>{workspace.career.skill}</b>
-                      </li>
-                      <li>
-                        <span>Projects</span>
-                        <b>{workspace.project.title}</b>
-                      </li>
-                      <li>
-                        <span>Evidence</span>
-                        <b>Not kept yet</b>
-                      </li>
-                      <li>
-                        <span>Opportunities</span>
-                        <b>{workspace.career.opportunity}</b>
-                      </li>
-                    </ul>
-                    <Link className="hp-hero-os-cta" to={workspace.career.href}>Open Career OS →</Link>
-                  </article>
-                ) : null}
-              </div>
-              <aside className="hp-hero-next">
-                <p className="pl-kicker">{next.kicker}</p>
-                <p>{next.title}</p>
-                <button type="button" className="hp-hero-next-go" onClick={() => setPane(next.pane)}>
-                  Open {next.pane}
-                </button>
-              </aside>
+            </ol>
+            <div className="hp-hero-work">
+              <p className="hp-hero-work-label">Current work</p>
+              <p className="hp-hero-work-title">{workspace.project.title}</p>
+              <Link className="hp-hero-os-cta" to={workspace.courseHref}>Open workspace →</Link>
             </div>
           </div>
         </ProductFrame>
       </div>
+      <p className="hp-hero-specimen">
+        A specimen from Data Analytics — one authored programme in Skylent OS, not the brand. Product Management
+        is the other.
+      </p>
     </div>
   )
 }
@@ -672,36 +535,25 @@ export default function HomePage() {
     <PageShell aurora={false}>
       <div className="home-p3">
         <section className="hp-hero" aria-labelledby="home-hero-heading">
-          <div className="hp-rail">
-            <div className="hp-hero-intro">
-              <div className="hp-hero-copy">
-                <p className="hp-eyebrow hp-hero-eyebrow">Skylent · a learning environment</p>
-                <h1 id="home-hero-heading">
-                  Learn.
-                  <br />
-                  Produce the work.
-                  <br />
-                  Keep it.
-                </h1>
-              </div>
-              <div className="hp-hero-support">
-                <p className="hp-hero-lead">
-                  Structured lessons, practice and named work in one workspace. You do not collect courses. You
-                  move through a loop: learn, practise, build, keep evidence.
-                </p>
-                <div className="hp-actions">
-                  <Link className="hp-btn hp-btn-primary" to="/programs">Enter Skylent →</Link>
-                  <Link className="hp-btn hp-btn-ghost" to="/os">See the workspace →</Link>
-                </div>
-              </div>
-            </div>
-            <div className="hp-hero-stage">
-              <HomeHeroProduct />
-              <p className="hp-hero-specimen">
-                A live lesson from Data Analytics — one authored programme, not the brand. Product Management is
-                the other.
+          <div className="hp-rail hp-hero-board">
+            <div className="hp-hero-copy">
+              <p className="hp-eyebrow hp-hero-eyebrow">Learning that becomes work</p>
+              <h1 id="home-hero-heading">
+                Learn skills.
+                <br />
+                Build real work.
+                <br />
+                <em>Keep the evidence.</em>
+              </h1>
+              <p className="hp-hero-lead">
+                Skylent brings learning, practice, projects and career evidence into one connected workspace.
               </p>
+              <div className="hp-actions">
+                <Link className="hp-btn hp-btn-primary" to="/programs">Explore programs →</Link>
+                <Link className="hp-btn hp-btn-ghost" to="/#home-loop">See how Skylent works</Link>
+              </div>
             </div>
+            <HomeHeroProduct />
           </div>
         </section>
 
@@ -709,8 +561,8 @@ export default function HomePage() {
           <HomeDirections />
         </section>
 
-        <HomeWork />
         <HomeLoop />
+        <HomeWork />
         <HomeCareer />
       </div>
     </PageShell>
