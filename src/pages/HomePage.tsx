@@ -135,7 +135,7 @@ function HomeHero() {
                 <p className="hp-disc-kicker">Professional programme</p>
                 <p className="hp-disc-mark">{programme.enrollOpen ? "Enrolment open" : MATURITY_LABEL.coming_soon}</p>
               </div>
-              <h2>{programme.title}</h2>
+              <p className="hp-disc-title">{programme.title}</p>
               <p className="hp-disc-meta">
                 {course.duration}
                 {" · "}

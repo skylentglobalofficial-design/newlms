@@ -217,8 +217,8 @@
 .hp-disc-feature {
   position: relative;
   z-index: 1;
-  width: min(78%, 420px);
-  margin-top: 56px;
+  width: 86%;
+  margin-top: 40px;
   padding: 28px 26px 24px;
   background: #15171a;
   color: #fffdf8;
@@ -238,15 +238,19 @@
 
 .hp-disc-feature .hp-disc-mark {
   color: #c4c0d4;
+  white-space: nowrap;
 }
 
-.hp-disc-feature h2 {
+.hp-disc-feature .hp-disc-title {
   margin: 14px 0 0;
+  max-width: 58%;
+  color: #fffdf8;
   font-family: var(--font-brand);
-  font-size: clamp(32px, 3.2vw, 42px);
+  font-size: clamp(32px, 3.2vw, 44px);
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1.02;
+  overflow-wrap: normal;
 }
 
 .hp-disc-feature .hp-disc-meta {
@@ -258,6 +262,7 @@
   flex-wrap: wrap;
   gap: 6px;
   margin: 16px 0 0;
+  max-width: 72%;
   padding: 0;
   list-style: none;
 }
@@ -289,7 +294,7 @@
   top: 0;
   right: 0;
   z-index: 3;
-  width: min(56%, 280px);
+  width: min(58%, 300px);
   padding: 18px 18px 16px;
   background: #fffdf8;
   border: 1px solid rgba(21, 23, 26, 0.08);
@@ -306,6 +311,7 @@
   font-size: 26px;
   font-weight: 600;
   letter-spacing: -0.03em;
+  overflow-wrap: normal;
 }
 
 .hp-disc-skills h3 a {
@@ -397,6 +403,7 @@
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.15;
+  overflow-wrap: normal;
 }
 
 .hp-disc-session .hp-disc-meta,
@@ -1197,7 +1204,20 @@
   }
 
   .hp-hero-world {
-    min-height: 480px;
+    min-height: 500px;
+  }
+
+  .hp-disc-feature {
+    width: min(64%, 520px);
+    margin-top: 56px;
+  }
+
+  .hp-disc-session {
+    left: 0;
+  }
+
+  .hp-disc-exams {
+    right: 0;
   }
 
   .hp-goals-grid,
@@ -1263,6 +1283,11 @@
   .hp-disc-feature {
     width: auto;
     margin-top: 0;
+  }
+
+  .hp-disc-feature .hp-disc-title,
+  .hp-disc-feature .hp-disc-path {
+    max-width: none;
   }
 
   .hp-disc-orbit {
