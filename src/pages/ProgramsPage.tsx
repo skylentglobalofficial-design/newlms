@@ -145,27 +145,6 @@ export default function ProgramsPage() {
                       </div>
                     </dl>
 
-                    {programme.capstone ? (
-                      <p className="pg-programme-produce">
-                        <span>You produce</span>
-                        <strong>{programme.capstone}</strong>
-                      </p>
-                    ) : null}
-
-                    <ol className="pg-programme-modules">
-                      {programme.modules.map((module) => (
-                        <li key={module.id}>
-                          <span className="pg-programme-modules-num">
-                            {String(module.index).padStart(2, "0")}
-                          </span>
-                          <span className="pg-programme-modules-body">
-                            <strong>{module.title}</strong>
-                            <em>{module.countsLabel}</em>
-                          </span>
-                        </li>
-                      ))}
-                    </ol>
-
                     <div className="cat-actions pg-programme-actions">
                       <Link className="cat-btn cat-btn-primary" to={programme.href}>
                         View programme
@@ -179,6 +158,29 @@ export default function ProgramsPage() {
                       Advertised as {programme.brochureDuration} / {programme.brochureModules} modules.{" "}
                       {programme.honesty}
                     </p>
+                  </div>
+
+                  <div className="pg-programme-path">
+                    <p className="pg-programme-path-label">The taught path</p>
+                    <ol className="pg-programme-modules">
+                      {programme.modules.map((module) => (
+                        <li key={module.id}>
+                          <span className="pg-programme-modules-num">
+                            {String(module.index).padStart(2, "0")}
+                          </span>
+                          <span className="pg-programme-modules-body">
+                            <strong>{module.title}</strong>
+                            <em>{module.countsLabel}</em>
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                    {programme.capstone ? (
+                      <p className="pg-programme-path-end">
+                        <span>Ends in</span>
+                        {programme.capstone}
+                      </p>
+                    ) : null}
                   </div>
                 </article>
               ))}
