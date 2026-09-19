@@ -5,64 +5,62 @@ import { CourseProductVisual, CourseThumb, ProductFrame } from "../components/pr
 import { courseBySlug, coursePublicView } from "../lib/catalog-maturity"
 import { authoredCourseList, courseProductProfile } from "../lib/course-product"
 import { FLAGSHIP_COURSE_SLUG, isAuthoredCourse } from "../lib/authored-courses"
-import { getCareerEvidence, getCourseQuiz } from "../content/course-lookups"
-import { CAREER_OS_IA } from "../lib/product-architecture"
+import { getCareerEvidence, getCourseQuiz, getLessonMeta } from "../content/course-lookups"
+import { CAREER_OS_IA, MATURITY_LABEL } from "../lib/product-architecture"
+import { programmeDiscoveryCards } from "../lib/programme-discovery"
 import { NORTHWIND_PREVIEW as NW } from "../lib/northwind-preview"
 import "./HomePage.css"
 
-const HOME_PATHS = [
+const HOME_DIRECTIONS = [
   {
     step: "01",
     id: "programs",
     title: "Professional Programs",
-    copy: "Industry-relevant programs with hands-on learning and projects.",
+    copy: "Structured professional journeys built around work you can show afterwards.",
     to: "/programs",
-    image: "/images/paths/programs.jpg",
     tone: "programs" as const,
-    align: "left" as const,
-    context: [["BUILD", "PRACTISE", "APPLY", "CREATE"]],
+    status: "live" as const,
+    statusNote: "Two programmes authored end to end",
+    context: ["LEARN", "PRACTISE", "BUILD", "EVIDENCE"],
   },
   {
     step: "02",
-    id: "education",
-    title: "Education",
-    copy: "School, Undergraduate, Postgraduate and more.",
-    to: "/education",
-    image: "/images/paths/education.jpg",
-    tone: "education" as const,
-    align: "right" as const,
-    context: [
-      ["ACADEMIC", "FOUNDATIONS"],
-      ["DEGREES", "SPECIALISATION", "LIFELONG LEARNING"],
-    ],
+    id: "workshops",
+    title: "Workshops",
+    copy: "Short focused sessions on a single skill. Planned subjects are listed; registration is not open.",
+    to: "/workshops",
+    tone: "workshops" as const,
+    status: "coming_soon" as const,
+    statusNote: "Subjects planned, nothing scheduled",
+    context: ["SESSION", "SKILL", "PRACTICE"],
   },
   {
     step: "03",
-    id: "exams",
-    title: "Competitive Exams",
-    copy: "JEE, NEET, GATE, CAT, UPSC and more.",
-    to: "/education/exams",
-    image: "/images/paths/exams.jpg",
-    tone: "exams" as const,
-    align: "left" as const,
-    context: [["GOAL", "SYLLABUS", "PRACTICE", "TEST", "PROGRESS"]],
+    id: "education",
+    title: "Education",
+    copy: "Schooling, undergraduate and postgraduate learning as its own product universe.",
+    to: "/education",
+    tone: "education" as const,
+    status: "coming_soon" as const,
+    statusNote: "Specified, not built",
+    context: ["ACADEMIC", "FOUNDATIONS", "DEGREES"],
   },
   {
     step: "04",
-    id: "career",
-    title: "Career OS",
-    copy: "Build your profile, get discovered, and move towards opportunities.",
-    to: "/career-os",
-    image: "/images/paths/career.jpg",
-    tone: "career" as const,
-    align: "right" as const,
-    context: [["BUILD", "SHOWCASE", "DISCOVER", "OPPORTUNITY"]],
+    id: "exams",
+    title: "Competitive Exams",
+    copy: "Goal-first preparation for JEE, NEET, GATE, CAT, UPSC and SSC.",
+    to: "/education/exams",
+    tone: "exams" as const,
+    status: "coming_soon" as const,
+    statusNote: "Specified, not built",
+    context: ["GOAL", "SYLLABUS", "PRACTICE", "TEST"],
   },
 ] as const
 
-function PathLivingMotif({ id }: { id: (typeof HOME_PATHS)[number]["id"] }) {
+function PathLivingMotif({ id }: { id: (typeof HOME_DIRECTIONS)[number]["id"] }) {
   return (
-    <svg className={`hp-choose-motif is-${id}`} viewBox="0 0 168 168" fill="none" aria-hidden="true">
+    <svg className={`hp-dir-motif is-${id}`} viewBox="0 0 168 168" fill="none" aria-hidden="true">
       {id === "programs" ? (
         <g stroke="currentColor" strokeWidth="0.65">
           <path d="M40 118h68" />
@@ -74,6 +72,16 @@ function PathLivingMotif({ id }: { id: (typeof HOME_PATHS)[number]["id"] }) {
           <path d="M68 46h68" />
           <path d="M136 46v24" />
           <path d="M68 70h68" />
+        </g>
+      ) : null}
+      {id === "workshops" ? (
+        <g stroke="currentColor" strokeWidth="0.65">
+          <path d="M36 60h96" />
+          <path d="M36 60v72" />
+          <path d="M132 60v72" />
+          <path d="M36 132h96" />
+          <path d="M60 96h48" />
+          <path d="M84 42v18" />
         </g>
       ) : null}
       {id === "education" ? (
@@ -95,385 +103,80 @@ function PathLivingMotif({ id }: { id: (typeof HOME_PATHS)[number]["id"] }) {
           <path d="M134 84h10" />
         </g>
       ) : null}
-      {id === "career" ? (
-        <g stroke="currentColor" strokeWidth="0.65">
-          <path d="M30 128 66 102 94 110 138 42" />
-          <path d="M66 99v6" />
-          <path d="M138 39v6" />
-        </g>
-      ) : null}
     </svg>
   )
 }
 
-function navOffset() {
-  const value = getComputedStyle(document.documentElement).getPropertyValue("--nav-h")
-  const parsed = Number.parseFloat(value)
-  return Number.isFinite(parsed) ? parsed : 64
-}
-
-function storyMotionEnabled() {
-  return window.matchMedia("(min-width: 981px)").matches
-    && !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-}
-
-const PATH_COUNT = HOME_PATHS.length
-const PATH_SEGMENT = 1 / PATH_COUNT
-const PATH_FADE = 0.11
-const PATH_SHIFT = 12
-const CONTEXT_SHIFT = 10
-const PATH_HIDE = 0.28
-
-function pathShift() {
-  return window.matchMedia("(max-width: 1200px)").matches ? 8 : PATH_SHIFT
-}
-
-function storyBlend(progress: number) {
-  const p = Math.min(1, Math.max(0, progress))
-  if (p >= 0.999) return { from: PATH_COUNT - 1, to: PATH_COUNT - 1, t: 1 }
-  const index = Math.min(PATH_COUNT - 1, Math.floor(p / PATH_SEGMENT))
-  const local = (p - index * PATH_SEGMENT) / PATH_SEGMENT
-  const fadeStart = 1 - PATH_FADE
-  if (index < PATH_COUNT - 1 && local > fadeStart) {
-    return { from: index, to: index + 1, t: (local - fadeStart) / PATH_FADE }
-  }
-  return { from: index, to: index, t: 0 }
-}
-
-function storyCrossfade(t: number) {
-  if (t <= 0) return { out: 1, inn: 0 }
-  if (t >= 1) return { out: 0, inn: 1 }
-  if (t <= 0.5) {
-    const u = t / 0.5
-    return { out: 1 - 0.65 * u, inn: 0.65 * u }
-  }
-  const u = (t - 0.5) / 0.5
-  return { out: 0.35 * (1 - u), inn: 0.65 + 0.35 * u }
-}
-
-function HomePathStory() {
-  const trackRef = useRef<HTMLDivElement>(null)
-  const stickyRef = useRef<HTMLDivElement>(null)
-  const stageRef = useRef<HTMLDivElement>(null)
-  const panelRefs = useRef<Array<HTMLAnchorElement | null>>([])
-  const contextRefs = useRef<Array<HTMLDivElement | null>>([])
-  const stepRefs = useRef<Array<HTMLButtonElement | null>>([])
-  const markRef = useRef<HTMLSpanElement>(null)
-  const cueRef = useRef<HTMLParagraphElement>(null)
-  const activeRef = useRef(0)
-  const modeRef = useRef<"story" | "static" | null>(null)
-  const [active, setActive] = useState(0)
-
-  useEffect(() => {
-    let frame = 0
-    const desktopMq = window.matchMedia("(min-width: 981px)")
-    const motionMq = window.matchMedia("(prefers-reduced-motion: reduce)")
-    const panels = () => panelRefs.current
-    const contexts = () => contextRefs.current
-
-    const resetSticky = () => {
-      const sticky = stickyRef.current
-      if (!sticky) return
-      sticky.style.position = ""
-      sticky.style.top = ""
-      sticky.style.left = ""
-      sticky.style.right = ""
-      sticky.style.width = ""
-      sticky.style.bottom = ""
-    }
-
-    const resetCues = () => {
-      if (markRef.current) markRef.current.style.transform = ""
-      if (cueRef.current) {
-        cueRef.current.style.opacity = ""
-        cueRef.current.style.visibility = ""
-      }
-    }
-
-    const resetPanels = () => {
-      resetSticky()
-      resetCues()
-      panels().forEach((el) => {
-        if (!el) return
-        el.style.opacity = ""
-        el.style.visibility = ""
-        el.style.transform = ""
-        el.style.pointerEvents = ""
-        el.style.zIndex = ""
-        el.removeAttribute("aria-hidden")
-        el.removeAttribute("tabindex")
-      })
-      contexts().forEach((el) => {
-        if (!el) return
-        el.style.opacity = ""
-        el.style.visibility = ""
-        el.style.transform = ""
-        el.style.zIndex = ""
-      })
-    }
-
-    const pinStage = (progress: number, sticky: HTMLElement, top: number) => {
-      if (progress <= 0) {
-        if (sticky.style.position) resetSticky()
-        return
-      }
-      if (progress >= 1) {
-        if (sticky.style.position !== "absolute") {
-          sticky.style.position = "absolute"
-          sticky.style.top = "auto"
-          sticky.style.bottom = "0"
-          sticky.style.left = "0"
-          sticky.style.right = "0"
-          sticky.style.width = "100%"
-        }
-        return
-      }
-      if (sticky.style.position !== "fixed") {
-        sticky.style.position = "fixed"
-        sticky.style.left = "0"
-        sticky.style.right = "0"
-        sticky.style.width = "100%"
-        sticky.style.bottom = "auto"
-      }
-      const nextTop = `${top}px`
-      if (sticky.style.top !== nextTop) sticky.style.top = nextTop
-    }
-
-    const applyPanel = (
-      el: HTMLAnchorElement,
-      opacity: number,
-      translateX: number,
-      z: number,
-    ) => {
-      const hidden = opacity < PATH_HIDE
-      el.style.opacity = hidden ? "0" : opacity.toFixed(3)
-      el.style.visibility = hidden ? "hidden" : "visible"
-      el.style.transform = `translateX(${translateX.toFixed(2)}px)`
-      el.style.pointerEvents = !hidden && opacity > 0.55 ? "auto" : "none"
-      el.style.zIndex = String(z)
-      el.tabIndex = hidden || opacity < 0.4 ? -1 : 0
-      el.setAttribute("aria-hidden", hidden || opacity < 0.4 ? "true" : "false")
-    }
-
-    const applyContext = (el: HTMLDivElement, opacity: number, translateX: number, z: number) => {
-      const hidden = opacity < PATH_HIDE
-      el.style.opacity = hidden ? "0" : opacity.toFixed(3)
-      el.style.visibility = hidden ? "hidden" : "visible"
-      el.style.transform = `translateX(${translateX.toFixed(2)}px)`
-      el.style.zIndex = String(z)
-    }
-
-    const applyStory = () => {
-      const track = trackRef.current
-      const sticky = stickyRef.current
-      if (!storyMotionEnabled() || !track || !sticky) {
-        if (modeRef.current !== "static") {
-          modeRef.current = "static"
-          resetPanels()
-        }
-        return
-      }
-
-      modeRef.current = "story"
-      const top = navOffset()
-      const rect = track.getBoundingClientRect()
-      const travel = Math.max(1, rect.height - sticky.offsetHeight)
-      const progress = Math.min(1, Math.max(0, (top - rect.top) / travel))
-      pinStage(progress, sticky, top)
-
-      const blend = storyBlend(progress)
-      const fade = storyCrossfade(blend.t)
-      const nextActive = blend.from === blend.to || blend.t >= 0.5 ? blend.to : blend.from
-      if (nextActive !== activeRef.current) {
-        activeRef.current = nextActive
-        setActive(nextActive)
-      }
-
-      const shift = pathShift()
-      const panelDir = [-shift, shift, -shift, shift] as const
-      const contextDir = [CONTEXT_SHIFT, -CONTEXT_SHIFT, CONTEXT_SHIFT, -CONTEXT_SHIFT] as const
-      const outgoing = fade.inn >= 0.65 ? 0 : fade.out
-
-      panels().forEach((el, index) => {
-        if (!el) return
-        if (blend.from === blend.to) {
-          const on = index === blend.from
-          applyPanel(el, on ? 1 : 0, 0, on ? 3 : 0)
-          return
-        }
-        if (index === blend.from) {
-          applyPanel(el, outgoing, panelDir[blend.from] * blend.t, 1)
-          return
-        }
-        if (index === blend.to) {
-          applyPanel(el, fade.inn, panelDir[blend.to] * (1 - blend.t), 4)
-          return
-        }
-        applyPanel(el, 0, 0, 0)
-      })
-
-      contexts().forEach((el, index) => {
-        if (!el) return
-        if (blend.from === blend.to) {
-          applyContext(el, index === blend.from ? 1 : 0, 0, index === blend.from ? 2 : 0)
-          return
-        }
-        if (index === blend.from) {
-          applyContext(el, outgoing, contextDir[blend.from] * blend.t, 2)
-          return
-        }
-        if (index === blend.to) {
-          applyContext(el, fade.inn, contextDir[blend.to] * (1 - blend.t), 2)
-          return
-        }
-        applyContext(el, 0, 0, 0)
-      })
-
-      const firstStep = stepRefs.current[0]
-      const list = firstStep?.closest("ol")
-      const stepPitch = list ? list.offsetHeight / PATH_COUNT : 24
-      if (markRef.current) {
-        markRef.current.style.transform = `translateY(${(nextActive * stepPitch).toFixed(2)}px)`
-      }
-      stepRefs.current.forEach((btn, index) => {
-        if (!btn) return
-        btn.classList.toggle("is-on", index === nextActive)
-      })
-
-      const cue = cueRef.current
-      if (cue) {
-        const cueOpacity = nextActive === 0 ? Math.max(0, 1 - Math.max(0, progress - 0.08) / 0.07) : 0
-        cue.style.opacity = cueOpacity.toFixed(3)
-        cue.style.visibility = cueOpacity < 0.04 ? "hidden" : "visible"
-      }
-    }
-
-    const onScroll = () => {
-      if (frame) return
-      frame = window.requestAnimationFrame(() => {
-        frame = 0
-        applyStory()
-      })
-    }
-
-    const observeInView = () => {
-      if (storyMotionEnabled()) return null
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          entry.target.classList.toggle("is-in", entry.isIntersecting)
-        })
-      }, { threshold: 0.32, rootMargin: "0px 0px -8% 0px" })
-      panels().forEach((el) => { if (el) io.observe(el) })
-      return io
-    }
-
-    let io = observeInView()
-    applyStory()
-    window.addEventListener("scroll", onScroll, { passive: true })
-    window.addEventListener("resize", onScroll)
-
-    const onModeChange = () => {
-      io?.disconnect()
-      io = observeInView()
-      onScroll()
-    }
-    desktopMq.addEventListener("change", onModeChange)
-    motionMq.addEventListener("change", onModeChange)
-
-    return () => {
-      window.removeEventListener("scroll", onScroll)
-      window.removeEventListener("resize", onScroll)
-      desktopMq.removeEventListener("change", onModeChange)
-      motionMq.removeEventListener("change", onModeChange)
-      io?.disconnect()
-      if (frame) window.cancelAnimationFrame(frame)
-    }
-  }, [])
-
-  const scrollToStep = (index: number) => {
-    const track = trackRef.current
-    const sticky = stickyRef.current
-    if (!track || !sticky || !storyMotionEnabled()) return
-    const top = navOffset()
-    const travel = Math.max(1, track.offsetHeight - sticky.offsetHeight)
-    const origin = track.getBoundingClientRect().top + window.scrollY
-    const progress = Math.min(0.97, (index + 0.38) * PATH_SEGMENT)
-    window.scrollTo({ top: origin - top + travel * progress, behavior: "auto" })
-  }
+/**
+ * The four public directions, shown together so they can be compared rather than
+ * revealed one at a time. Each states whether it is open today: only Professional
+ * Programs has authored teaching, so it carries the lead position and the others
+ * stay deliberately quieter.
+ */
+function HomeDirections() {
+  const [lead, ...rest] = HOME_DIRECTIONS
+  const openProgrammes = programmeDiscoveryCards()
 
   return (
-    <div className="hp-choose-track" ref={trackRef}>
-      <div className="hp-choose-sticky" ref={stickyRef}>
-        <div className="hp-rail hp-choose-frame">
-          <header className="hp-choose-intro">
-            <p className="hp-eyebrow hp-choose-eyebrow">ONE PLATFORM. MULTIPLE PATHS.</p>
-            <h2 id="home-paths-heading" className="hp-choose-title">Choose your path.</h2>
-            <p className="hp-choose-lead">Different goals. Same destination — a better you.</p>
-          </header>
+    <div className="hp-rail hp-dir">
+      <header className="hp-dir-intro">
+        <p className="hp-eyebrow">ONE PLATFORM. MULTIPLE PATHS.</p>
+        <h2 id="home-paths-heading" className="hp-dir-title">Choose your direction.</h2>
+        <p className="hp-dir-lead">
+          Four directions, at different stages of being built. Each one says which, so you always know what
+          you can start today.
+        </p>
+      </header>
 
-          <div className="hp-choose-stage" ref={stageRef}>
-            <div className="hp-choose-steps-wrap">
-              <span className="hp-choose-steps-mark" ref={markRef} aria-hidden="true" />
-              <ol className="hp-choose-steps" aria-label="Path sequence">
-                {HOME_PATHS.map((path, index) => (
-                  <li key={path.id}>
-                    <button
-                      type="button"
-                      ref={(node) => { stepRefs.current[index] = node }}
-                      className={index === active ? "is-on" : undefined}
-                      aria-current={index === active ? "step" : undefined}
-                      aria-label={`${path.step} ${path.title}`}
-                      onClick={() => scrollToStep(index)}
-                    >
-                      {path.step}
-                    </button>
-                  </li>
-                ))}
-              </ol>
+      <div className="hp-dir-grid">
+        <Link className={`hp-dir-lead-card is-${lead.tone}`} to={lead.to}>
+          <div className="hp-dir-lead-head">
+            <div>
+              <p className="hp-dir-step">{lead.step}</p>
+              <h3>{lead.title}</h3>
             </div>
-
-            <div className="hp-choose-panels">
-              {HOME_PATHS.map((path, index) => (
-                <div key={path.id} className={`hp-choose-chapter is-${path.align}`}>
-                  <div
-                    ref={(node) => { contextRefs.current[index] = node }}
-                    className={`hp-choose-context is-${path.align === "left" ? "right" : "left"} is-${path.id}`}
-                    aria-hidden="true"
-                  >
-                    <PathLivingMotif id={path.id} />
-                    <span className="hp-choose-context-num">{path.step}</span>
-                    <div className="hp-choose-context-copy">
-                      {path.context.map((group) => (
-                        <p key={group.join("-")} className="hp-choose-context-group">
-                          {group.map((word) => (
-                            <span key={word}>{word}</span>
-                          ))}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                  <Link
-                    ref={(node) => { panelRefs.current[index] = node }}
-                    className={`hp-choose-panel is-${path.align} is-${path.tone}`}
-                    to={path.to}
-                  >
-                    <div className="hp-choose-panel-copy">
-                      <p className="hp-choose-panel-step">{path.step}</p>
-                      <h3>{path.title}</h3>
-                      <p>{path.copy}</p>
-                      <span className="hp-choose-panel-cta">Explore →</span>
-                    </div>
-                    <div className="hp-choose-panel-visual" aria-hidden="true">
-                      <img src={path.image} alt="" loading="lazy" decoding="async" />
-                    </div>
-                  </Link>
-                </div>
-              ))}
-            </div>
-
-            <p className="hp-choose-cue" ref={cueRef}>Scroll to explore</p>
+            <span className="hp-dir-flag is-live">{MATURITY_LABEL.live}</span>
           </div>
-        </div>
+          <p className="hp-dir-lead-text">{lead.copy}</p>
+          <p className="hp-dir-context">
+            {lead.context.map((word) => (
+              <span key={word}>{word}</span>
+            ))}
+          </p>
+          <ul className="hp-dir-open">
+            {openProgrammes.map((programme) => (
+              <li key={programme.slug}>
+                <span className="hp-dir-open-head">
+                  <strong>{programme.title}</strong>
+                  <span className="hp-dir-open-count">
+                    {programme.taughtModules} modules &middot; {programme.taughtLessons} lessons
+                  </span>
+                </span>
+                {programme.capstone ? (
+                  <span className="hp-dir-open-work">
+                    <em>You produce</em>
+                    {programme.capstone}
+                  </span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+          <span className="hp-dir-cta">Explore programmes &rarr;</span>
+        </Link>
+
+        <ul className="hp-dir-rest">
+          {rest.map((direction) => (
+            <li key={direction.id}>
+              <Link className={`hp-dir-card is-${direction.tone}`} to={direction.to}>
+                <p className="hp-dir-step">{direction.step}</p>
+                <h3>{direction.title}</h3>
+                <p>{direction.copy}</p>
+                <span className="hp-dir-flag is-soon">{MATURITY_LABEL[direction.status]}</span>
+                <PathLivingMotif id={direction.id} />
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   )
@@ -483,34 +186,31 @@ const WORKFLOW_STEPS = [
   {
     step: "01",
     title: "Learn",
-    copy: "Access structured content from experts.",
-    labels: "CONCEPTS · GUIDANCE · CLARITY",
+    copy: "Written lessons in the enrolled course. Self-paced. No video stream and no live classroom.",
+    labels: "LESSONS · MODULES · SKYLENT OS",
   },
   {
     step: "02",
     title: "Practise",
-    copy: "Reinforce your skills with hands-on exercises.",
-    labels: "EXERCISES · SIMULATIONS · FEEDBACK",
+    copy: "Short checks after a block of lessons, then applied assignments on the course material.",
+    labels: "CHECKS · ASSIGNMENTS · LAB",
   },
   {
     step: "03",
     title: "Build",
-    copy: "Work on real projects and create meaningful work.",
-    labels: "PROJECTS · PORTFOLIO · SOLUTIONS",
+    copy: "A named capstone produced against the course material, not a worked example.",
+    labels: "CAPSTONE · PROJECT WORKSPACE",
   },
   {
     step: "04",
     title: "Evidence",
-    copy: "Keep what you build and use it as proof of your skills.",
-    labels: "EVIDENCE · PROFILE · OPPORTUNITIES",
+    copy: "Keep the work sample and carry it into Career OS. Career OS is a workspace — not a placement service.",
+    labels: "WORK SAMPLE · PROFILE · CAREER OS",
   },
 ] as const
 
 function HomeWorkflow() {
   const sectionRef = useRef<HTMLElement>(null)
-  const profile = courseProductProfile(FLAGSHIP_COURSE_SLUG)
-  const course = courseBySlug(FLAGSHIP_COURSE_SLUG)
-  const view = course ? coursePublicView(course) : null
 
   useEffect(() => {
     const section = sectionRef.current
@@ -540,20 +240,9 @@ function HomeWorkflow() {
             <span>to real outcomes.</span>
           </h2>
           <p className="hp-workflow-lead">
-            A simple, structured journey. Learn from experts, practise with purpose, build real work, and keep evidence of what you can do.
+            Learn through written lessons, practise on the course material, produce a named piece of work, and keep it as evidence.
           </p>
         </header>
-
-        {profile ? (
-          <div className="hp-workflow-visual">
-            <CourseProductVisual visual={profile.visual} />
-            {view ? (
-              <p className="hp-workflow-caption">
-                {view.title} · {NW.filename}
-              </p>
-            ) : null}
-          </div>
-        ) : null}
 
         <ol className="hp-workflow-path" aria-label="Learn, practise, build, evidence">
           {WORKFLOW_STEPS.map((stage) => (
@@ -568,8 +257,8 @@ function HomeWorkflow() {
 
         <div className="hp-workflow-close">
           <div className="hp-workflow-close-copy">
-            <p className="hp-eyebrow hp-workflow-eyebrow">MORE THAN COURSES.</p>
-            <p className="hp-workflow-close-title">A complete learning-to-career ecosystem.</p>
+            <p className="hp-eyebrow hp-workflow-eyebrow">THE SAME LOOP</p>
+            <p className="hp-workflow-close-title">From the first lesson to the work you keep.</p>
           </div>
           <Link className="hp-workflow-close-cta" to="/programs">Explore Skylent →</Link>
         </div>
@@ -610,10 +299,10 @@ function homeCertificatePrograms() {
 }
 
 const HERO_VALUE_ITEMS = [
-  "Industry-relevant curriculum",
-  "Hands-on practice and projects",
-  "Mentor support and guidance",
-  "Career-focused learning",
+  "Written lessons in Skylent OS",
+  "Checks, assignments, and a capstone",
+  "Work samples you keep",
+  "Career OS for evidence, not placement",
 ] as const
 
 const HERO_LMS_NAV = ["Learning", "Practice", "Projects", "Evidence", "Career"] as const
@@ -636,6 +325,7 @@ function heroFeaturedWorkspace() {
   const view = coursePublicView(course)
   const lessons = course.modules.flatMap((module) => module.lessons)
   const firstLesson = course.modules[0]?.lessons[0]
+  const lessonMeta = firstLesson ? getLessonMeta(course.slug, firstLesson.id) : undefined
   const firstQuiz = lessons.find((lesson) => lesson.type === "quiz")
   const capstone = lessons.find((lesson) => /capstone|product case/i.test(lesson.title))
   const quiz = getCourseQuiz(course.slug, firstQuiz?.id)
@@ -645,6 +335,8 @@ function heroFeaturedWorkspace() {
   return {
     title: course.title,
     lessonTitle: firstLesson?.title ?? "Open the first lesson",
+    lessonObjective: lessonMeta?.objective ?? null,
+    lessonWhy: lessonMeta?.whyItMatters ?? null,
     lessonCount: view.stats.lessonCount,
     quizCount: view.stats.quizCount,
     visual,
@@ -701,6 +393,25 @@ function HeroReviewSheet() {
   )
 }
 
+function HeroLessonSheet({
+  title,
+  objective,
+  why,
+}: {
+  title: string
+  objective: string | null
+  why: string | null
+}) {
+  return (
+    <div className="hp-hero-lesson">
+      <p className="pl-kicker">Written lesson</p>
+      <p className="hp-hero-workspace-title">{title}</p>
+      {objective ? <p className="hp-hero-lesson-copy">{objective}</p> : null}
+      {why ? <p className="hp-hero-lesson-copy">{why}</p> : null}
+    </div>
+  )
+}
+
 function HomeHeroProduct() {
   const workspace = heroFeaturedWorkspace()
   const [pane, setPane] = useState<HeroOsPane>("Learning")
@@ -728,7 +439,7 @@ function HomeHeroProduct() {
   return (
     <div className="hp-hero-visual">
       <div className="hp-hero-lms">
-        <ProductFrame title={pane === "Career" ? "Career OS" : workspace.title} meta={heroOsMeta(pane, workspace)}>
+        <ProductFrame title={pane === "Career" ? "Career OS" : pane} meta={heroOsMeta(pane, workspace)}>
           <div className="hp-hero-os">
             <nav className="hp-hero-lms-rail" role="tablist" aria-label="Skylent OS preview">
               {HERO_LMS_NAV.map((item) => (
@@ -756,14 +467,14 @@ function HomeHeroProduct() {
                 aria-labelledby={`hero-os-tab-${pane}`}
               >
                 {pane === "Learning" ? (
-                  <article className="hp-hero-workspace">
-                    <div className="hp-hero-media">
-                      <CourseProductVisual visual={workspace.visual} compact />
-                    </div>
+                  <article className="hp-hero-workspace is-learn">
+                    <HeroLessonSheet
+                      title={workspace.lessonTitle}
+                      objective={workspace.lessonObjective}
+                      why={workspace.lessonWhy}
+                    />
                     <div className="hp-hero-caption">
                       <div>
-                        <h3>{workspace.title}</h3>
-                        <p>{workspace.lessonTitle}</p>
                         <p className="hp-hero-meta">{workspace.lessonCount} lessons · not started</p>
                       </div>
                       <Link className="hp-hero-os-cta" to={workspace.courseHref}>Start learning →</Link>
@@ -774,7 +485,7 @@ function HomeHeroProduct() {
                   <article className="hp-hero-workspace is-practice">
                     <div className="hp-hero-caption">
                       <div>
-                        <h3>{workspace.practice.title}</h3>
+                        <p className="hp-hero-workspace-title">{workspace.practice.title}</p>
                         <p className="hp-hero-meta">1 of {workspace.practice.questionCount} · not started</p>
                       </div>
                     </div>
@@ -807,7 +518,7 @@ function HomeHeroProduct() {
                     </div>
                     <div className="hp-hero-caption">
                       <div>
-                        <h3>{workspace.project.title}</h3>
+                        <p className="hp-hero-workspace-title">{workspace.project.title}</p>
                         <p className="hp-hero-purpose">{workspace.project.note}</p>
                         <p className="hp-hero-meta">{workspace.project.status}</p>
                       </div>
@@ -819,7 +530,7 @@ function HomeHeroProduct() {
                   <article className="hp-hero-workspace is-keep">
                     <div className="hp-hero-folio">
                       <p>Work sample</p>
-                      <h3>{workspace.project.title}</h3>
+                      <p className="hp-hero-workspace-title">{workspace.project.title}</p>
                       <ul>
                         {workspace.evidence.title.split(/\s+\+\s+/).map((part) => (
                           <li key={part}>{part.charAt(0).toUpperCase() + part.slice(1)}</li>
@@ -880,24 +591,20 @@ export default function HomePage() {
               <div className="hp-hero-copy">
                 <p className="hp-eyebrow hp-hero-eyebrow">LEARN · PRACTISE · BUILD · EVIDENCE</p>
                 <h1 id="home-hero-heading">
-                  Build skills
+                  Learn.
                   <br />
-                  that take you
+                  Produce the work.
                   <br />
-                  <span className="hp-hero-further">further</span>
-                  <span className="hp-hero-further-dot">.</span>
+                  Keep it.
                 </h1>
                 <p className="hp-hero-lead">
-                  Structured programs, hands-on practice, real projects
+                  Professional programmes built around work you can show.
                   <br className="hp-hero-lead-br" />
-                  {" "}and career support — all in one place.
+                  {" "}Written lessons, practice, and a work sample you keep.
                 </p>
                 <div className="hp-actions">
                   <Link className="hp-btn hp-btn-primary" to="/programs">Explore Programs →</Link>
-                  <button type="button" className="hp-btn hp-btn-ghost hp-btn-video">
-                    <span className="hp-btn-play" aria-hidden="true" />
-                    Watch Video
-                  </button>
+                  <Link className="hp-btn hp-btn-ghost" to="/os">See Skylent OS →</Link>
                 </div>
               </div>
               <div className="hp-hero-stage">
@@ -916,7 +623,7 @@ export default function HomePage() {
         </section>
 
         <section className="hp-section hp-choose" aria-labelledby="home-paths-heading">
-          <HomePathStory />
+          <HomeDirections />
         </section>
 
         <section className="hp-section hp-programs" aria-labelledby="home-programs-heading">

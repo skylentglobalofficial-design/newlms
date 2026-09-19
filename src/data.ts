@@ -889,7 +889,7 @@ export const workshops: Workshop[] = [
     seatsLeft: 67,
     price: 499,
     originalPrice: 1499,
-    desc: 'Build an ATS-optimised resume and a recruiter-ready LinkedIn profile with live feedback from Skylent career coaches.',
+    desc: 'Build an ATS-optimised resume and a recruiter-ready LinkedIn profile.',
     whatYouGet: ['Resume template pack', 'ATS check process', 'LinkedIn optimisation guide', 'Live coach feedback', 'Recording access'],
   },
   {

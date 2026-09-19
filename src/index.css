@@ -21,6 +21,12 @@
   --font-display: 'DM Sans', system-ui, sans-serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'DM Mono', monospace;
+  --display-font: var(--font-brand);
+
+  /* One public primary CTA language — indigo, not charcoal. */
+  --btn-bg: #4f46e5;
+  --btn-fg: #ffffff;
+  --btn-radius: 10px;
 
   /* Typography scale — UI product, not magazine display */
   --type-display-xl: clamp(32px, 4.2vw, 48px);

@@ -165,7 +165,14 @@ function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
             </p>
             <p className="pl-fine">{HARBOR.interviews} interviews · fictional Harbor Retail — not Northwind.</p>
           </div>
-        ) : null}
+        ) : (
+          <div className="pl-hd-board-compact-quote">
+            <p className="pl-kicker">Exception log</p>
+            <p className="pl-hd-quote">
+              {HARBOR.unlogged} of {HARBOR.weekendExceptions} weekend exceptions never appeared in a channel.
+            </p>
+          </div>
+        )}
       </div>
       <ol className="pl-hd-flow" aria-label="Product case path">
         <li>
@@ -193,9 +200,16 @@ function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
   )
 }
 
-export function HarborDeskWorkspace({ compact = false }: { compact?: boolean }) {
+export function HarborDeskWorkspace({
+  compact = false,
+  meta,
+}: {
+  compact?: boolean
+  meta?: string
+}) {
+  const resolvedMeta = meta ?? "harbor-desk-case.md · 4 interviews"
   return (
-    <ProductFrame title="Product Management" meta="harbor-desk-case.md · fictional ops" compact={compact}>
+    <ProductFrame title="Product Management" meta={resolvedMeta} compact={compact}>
       <HarborDeskBoard compact={compact} />
     </ProductFrame>
   )
@@ -327,6 +341,63 @@ export function SkylentOsPreview() {
             </div>
           </div>
         </article>
+      </div>
+    </ProductFrame>
+  )
+}
+
+const CERTIFICATE_JOURNEY = [
+  { id: "learn", label: "Learn", note: "Structured courses", state: "done" as const },
+  { id: "practise", label: "Practise", note: "Checks on the work", state: "done" as const },
+  { id: "build", label: "Build", note: "A project you produce", state: "now" as const },
+  { id: "evidence", label: "Evidence", note: "Work you keep", state: "next" as const },
+]
+
+function JourneyMark({ state }: { state: "done" | "now" | "next" }) {
+  if (state === "done") {
+    return (
+      <span className="pl-cert-mark is-done" aria-hidden="true">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+          <path d="M2.2 6.2 4.7 8.6 9.8 3.4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+    )
+  }
+  if (state === "now") {
+    return <span className="pl-cert-mark is-now" aria-hidden="true" />
+  }
+  return <span className="pl-cert-mark is-next" aria-hidden="true" />
+}
+
+/** Generic Professional Certificate workspace — not a named course. */
+export function CertificateOsPreview() {
+  return (
+    <ProductFrame title="Professional learning" meta="Programme workspace">
+      <div className="pl-cert">
+        <ol className="pl-cert-rail" aria-label="Learner journey in Skylent OS">
+          {CERTIFICATE_JOURNEY.map((step) => (
+            <li key={step.id} className={`is-${step.state}`}>
+              <JourneyMark state={step.state} />
+              <div>
+                <strong>{step.label}</strong>
+                <span>{step.note}</span>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div className="pl-cert-stage">
+          <p className="pl-kicker">Current work</p>
+          <p className="pl-cert-stage-title">Project workspace</p>
+          <p className="pl-fine">Produce work from what the courses taught. Nothing here is a grade or a job claim.</p>
+          <div className="pl-cert-paper" aria-hidden="true">
+            <em>Brief</em>
+            <span />
+            <span />
+            <span />
+            <b />
+          </div>
+          <p className="pl-cert-keep">This becomes evidence you keep.</p>
+        </div>
       </div>
     </ProductFrame>
   )
@@ -520,23 +591,6 @@ export function PathwayTrack({
         </li>
       ))}
     </ol>
-  )
-}
-
-export function CareerEvidencePreview() {
-  return (
-    <ProductFrame title="Career OS" meta="Evidence workspace" compact>
-      <div className="pl-evidence">
-        <p className="pl-kicker">Work sample</p>
-        <p className="pl-ws-lesson">Northwind commercial review</p>
-        <div className="pl-stat-row">
-          <VisualStat label="Source" value="Capstone" />
-          <VisualStat label="Dataset" value="Northwind" />
-          <VisualStat label="Kept by" value="You" />
-        </div>
-        <p className="pl-fine">A work sample from Data Analytics. Career OS is a workspace — not a job guarantee.</p>
-      </div>
-    </ProductFrame>
   )
 }
 
