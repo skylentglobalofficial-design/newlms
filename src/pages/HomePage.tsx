@@ -152,50 +152,46 @@ function HomeHero() {
           </div>
         </div>
 
-        <div className="hp-hero-stage" aria-hidden={false}>
-          <div className="hp-hero-stack">
-            <div className="hp-hero-layer is-career">
-              <ProductFrame title="Career OS" meta="Evidence workspace">
-                <ul className="hp-hero-career">
-                  {CAREER_OS_IA.slice(0, 4).map((item) => (
-                    <li key={item.label}>
-                      <span>{item.label}</span>
-                      <b>{item.label === "Opportunities" ? "Empty until roles are published" : item.sub}</b>
-                    </li>
-                  ))}
-                </ul>
+        <div className="hp-hero-stage">
+          {analytics ? (
+            <div className="hp-hero-main">
+              <ProductFrame brand="Skylent OS" title="" meta={`Lesson 7 of ${analytics.lessonCount}`}>
+                <div className="hp-os-mini">
+                  <p className="hp-os-mini-course">{analytics.title}</p>
+                  <ol className="hp-os-mini-path">
+                    {analytics.path.map((module) => (
+                      <li key={module.id} className={`is-${module.state}`}>
+                        <span aria-hidden="true">{module.state === "done" ? "✓" : "→"}</span>
+                        {module.title}
+                      </li>
+                    ))}
+                  </ol>
+                  <div className="hp-os-mini-work">
+                    <p>Current work</p>
+                    <strong>{analytics.workTitle}</strong>
+                    <Link to={analytics.href}>Open workspace →</Link>
+                  </div>
+                </div>
               </ProductFrame>
             </div>
+          ) : null}
+          <div className="hp-hero-satellites">
             {product ? (
-              <div className="hp-hero-layer is-case">
-                <ProductFrame title={product.title} meta={product.material ?? "Harbor Desk"} compact>
-                  <p className="hp-hero-case-kicker">Current work</p>
-                  <p className="hp-hero-case-title">{product.workTitle}</p>
-                </ProductFrame>
-              </div>
+              <ProductFrame brand="Skylent OS" title="" meta="Harbor Desk" compact>
+                <p className="hp-hero-case-kicker">Product Management</p>
+                <p className="hp-hero-case-title">{product.workTitle}</p>
+              </ProductFrame>
             ) : null}
-            {analytics ? (
-              <div className="hp-hero-layer is-os">
-                <ProductFrame title="Skylent OS" meta={`Lesson 7 of ${analytics.lessonCount}`}>
-                  <div className="hp-os-mini">
-                    <p className="hp-os-mini-course">{analytics.title}</p>
-                    <ol className="hp-os-mini-path">
-                      {analytics.path.map((module) => (
-                        <li key={module.id} className={`is-${module.state}`}>
-                          <span aria-hidden="true">{module.state === "done" ? "✓" : "→"}</span>
-                          {module.title}
-                        </li>
-                      ))}
-                    </ol>
-                    <div className="hp-os-mini-work">
-                      <p>Current work</p>
-                      <strong>{analytics.workTitle}</strong>
-                      <Link to={analytics.href}>Open workspace →</Link>
-                    </div>
-                  </div>
-                </ProductFrame>
-              </div>
-            ) : null}
+            <ProductFrame brand="Career OS" title="" meta="Evidence" compact>
+              <ul className="hp-hero-career">
+                {CAREER_OS_IA.slice(0, 3).map((item) => (
+                  <li key={item.label}>
+                    <span>{item.label}</span>
+                    <b>{item.label === "Opportunities" ? "Empty until published" : item.sub}</b>
+                  </li>
+                ))}
+              </ul>
+            </ProductFrame>
           </div>
           <p className="hp-hero-note">
             Live product UI from Skylent OS and Career OS. Data Analytics and Product Management are the two authored windows — not the brand.
