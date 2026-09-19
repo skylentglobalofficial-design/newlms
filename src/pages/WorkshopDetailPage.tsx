@@ -26,7 +26,14 @@ export default function WorkshopDetailPage() {
     )
   }
 
-  const pct = Math.round(((workshop.seats - workshop.seatsLeft) / workshop.seats) * 100)
+  /**
+   * Workshop delivery is not built, so outline entries that promise a delivery
+   * mechanism — a certificate, a recording, a live coach — are not shown. What
+   * remains is the intended subject matter.
+   */
+  const outline = workshop.whatYouGet.filter(
+    (item) => !/certificate|recording|live\b|coach|practitioner|q&a/i.test(item),
+  )
 
   return (
     <PageShell auroraTheme="webinar">
@@ -57,10 +64,10 @@ export default function WorkshopDetailPage() {
                 <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Event details</div>
                 <div style={{ display: 'grid', gap: 16, marginBottom: 22 }}>
                   {[
-                    { label: 'Date', value: workshop.date, emphasis: true },
+                    { label: 'Planned date', value: workshop.date, emphasis: true },
                     { label: 'Duration', value: workshop.duration },
                     { label: 'Format', value: workshop.mode },
-                    { label: 'Host', value: workshop.instructor },
+                    { label: 'Registration', value: 'Not open' },
                   ].map(row => (
                     <div key={row.label} style={{ paddingBottom: 14, borderBottom: `1px solid ${T.lineDark}` }}>
                       <div className="skylent-label" style={{ color: C.slate, marginBottom: 6 }}>{row.label}</div>
@@ -68,20 +75,9 @@ export default function WorkshopDetailPage() {
                     </div>
                   ))}
                 </div>
-                <div style={{ marginBottom: 18 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <span style={{ color: C.slate, fontSize: 12 }}>{workshop.seatsLeft} seats left (illustrative)</span>
-                    <span style={{ color: pct > 70 ? '#f87171' : C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{pct}% filled</span>
-                  </div>
-                  <div style={{ height: 4, background: C.cream, borderRadius: 2 }}>
-                    <div style={{ width: `${pct}%`, height: '100%', background: pct > 70 ? '#f87171' : accent.primary, borderRadius: 2 }} />
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
+                <div style={{ marginBottom: 16 }}>
+                  <div className="skylent-label" style={{ color: C.slate, marginBottom: 4 }}>Indicative price</div>
                   <span style={{ fontFamily: 'var(--font-mono)', fontSize: 28, fontWeight: 700, color: C.ink }}>₹{workshop.price.toLocaleString('en-IN')}</span>
-                  {workshop.originalPrice > workshop.price && (
-                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: C.slate, textDecoration: 'line-through' }}>₹{workshop.originalPrice.toLocaleString('en-IN')}</span>
-                  )}
                 </div>
                 <div style={{ background: C.cream, border: `1px solid ${T.lineDark}`, borderRadius: 10, padding: '14px 16px', marginBottom: 16 }}>
                   <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.65, margin: 0 }}>
@@ -102,10 +98,13 @@ export default function WorkshopDetailPage() {
           <div>
             <FadeIn>
               <GlassSurface level={2} padding="24px 28px" style={{ marginBottom: 20 }}>
-                <Eyebrow tone="light" accent>Session outline</Eyebrow>
-                <h2 className="skylent-display-sm" style={{ color: C.ink, margin: '12px 0 20px' }}>What the session covers</h2>
-                {workshop.whatYouGet.map((item, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 0', borderBottom: i < workshop.whatYouGet.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
+                <Eyebrow tone="light" accent>Intended outline</Eyebrow>
+                <h2 className="skylent-display-sm" style={{ color: C.ink, margin: '12px 0 8px' }}>What the session is intended to cover</h2>
+                <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.65, margin: '0 0 16px' }}>
+                  Planned subject matter. Nothing here is scheduled or delivered yet.
+                </p>
+                {outline.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', padding: '12px 0', borderBottom: i < outline.length - 1 ? `1px solid ${T.lineDark}` : 'none' }}>
                     <div style={{ width: 8, height: 8, borderRadius: '50%', background: accent.primary, marginTop: 7, flexShrink: 0 }} />
                     <span style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{item}</span>
                   </div>
@@ -119,7 +118,8 @@ export default function WorkshopDetailPage() {
               <GlassSurface level={2} padding="22px 24px">
                 <div className="skylent-label" style={{ color: accent.text, marginBottom: 14 }}>Registration status</div>
                 <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.65, margin: '0 0 18px' }}>
-                  Workshop registration is not live yet. Seat counts and pricing shown here are illustrative marketing data.
+                  Workshop registration is not live yet. The date and price are indicative planning information, not a
+                  scheduled session you can book.
                 </p>
                 <Button variant="secondary" onClick={() => navigate('/contact')} style={{ width: '100%' }}>
                   Get notified
