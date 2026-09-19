@@ -830,22 +830,6 @@
   margin-bottom: 0;
 }
 
-@media (max-width: 720px) {
-  .pl-cert {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .pl-cert-rail {
-    grid-template-columns: 1fr 1fr;
-    gap: 0 12px;
-  }
-
-  .pl-cert-rail li:not(:last-child)::before {
-    display: none;
-  }
-}
-
 @media (max-width: 900px) {
   .pl-nw-split,
   .pl-ws,
@@ -1346,6 +1330,13 @@
   color: #5c6168;
   font-size: 12px;
   line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .pl-cert {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 @media (max-width: 1100px) {

@@ -77,6 +77,10 @@
   color: #15171a;
 }
 
+.pg-open-quiet:focus:not(:focus-visible) {
+  outline: none;
+}
+
 .pg-open-quiet:focus-visible {
   outline: 2px solid #4f46e5;
   outline-offset: 3px;
@@ -1215,6 +1219,10 @@
   .pg-open-actions .cat-btn {
     width: 100%;
     min-height: 48px;
+  }
+
+  .pg-open-visual .pl-frame-meta {
+    display: none;
   }
 
   .cat-hero h1 {
