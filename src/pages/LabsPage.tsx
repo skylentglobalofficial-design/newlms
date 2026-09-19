@@ -1,11 +1,6 @@
 import { Link } from 'react-router-dom'
 import { PageShell } from '../components/shared'
-import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG } from '../lib/authored-courses'
-import { courseProductProfile } from '../lib/course-product'
 import './Catalog.css'
-
-const analytics = courseProductProfile(FLAGSHIP_COURSE_SLUG)
-const product = courseProductProfile(PRODUCT_MANAGEMENT_SLUG)
 
 export default function LabsPage() {
   return (
@@ -41,8 +36,11 @@ export default function LabsPage() {
               </div>
             </div>
             <p className="cat-fine" style={{ marginTop: 16 }}>
-              {analytics?.lab ? analytics.lab.note : 'Practice with northwind_sales.csv.'} You open it from a lesson
-              in Skylent OS, not from this page. {product?.labOmission ?? 'Product Management is a written case, not a sandbox.'}
+              Data Analytics has a SQL lab against <code>northwind_sales.csv</code>. You open it from a lesson in
+              Skylent OS, not from this page.
+            </p>
+            <p className="cat-fine">
+              Product Management has no coding lab. The work is research notes, framing, and a written specification.
             </p>
             <p className="cat-fine">
               Sign in, enrol, then the lab chip appears on the relevant lesson. Progress belongs to the course.
