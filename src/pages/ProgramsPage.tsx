@@ -35,11 +35,11 @@ export default function ProgramsPage() {
                 <p className="pg-open-lead">
                   Two authored Professional Certificate programmes — each built around work you can show.
                 </p>
-              </div>
-              <div className="pg-open-editorial-cta">
-                <a className="cat-btn cat-btn-primary cat-btn-lg" href="#programs">
-                  Explore programmes ↓
-                </a>
+                <div className="pg-open-actions">
+                  <a className="cat-btn cat-btn-primary cat-btn-lg" href="#programs">
+                    Explore programmes ↓
+                  </a>
+                </div>
               </div>
             </div>
 
