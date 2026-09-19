@@ -330,9 +330,8 @@ function WhoWeServeSection() {
     { label: 'Postgraduate learners', desc: 'Specialisation tracks with professional outcomes.', to: '/education#postgraduate', accent: getDomainAccent('postgraduate') },
     { label: 'Exam aspirants', desc: 'JEE, NEET, CAT — practice, mocks, and analytics.', to: '/education#competitive-exams', accent: getDomainAccent('jee') },
     { label: 'Skill learners', desc: 'Certificates and Professional Programs. Workshop listings are coming soon.', to: '/skills', accent: getDomainAccent('professional') },
-    { label: 'Career seekers', desc: 'Career OS — profile, interview prep, jobs, applications.', to: '/career-os', accent: getDomainAccent('career') },
+    { label: 'Career seekers', desc: 'Career OS — the workspace where your learning evidence becomes something you can present.', to: '/career-os', accent: getDomainAccent('career') },
     { label: 'Institutions', desc: 'Schools, colleges, universities, and training partners.', to: '/institutions', accent: getDomainAccent('institution') },
-    { label: 'Employers & recruiters', desc: 'Job board and recruiter workflows for open roles.', to: '/career-os#jobs', accent: getDomainAccent('career') },
   ]
 
   return (

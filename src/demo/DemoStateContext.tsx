@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { LabExperimentStatus } from '../data'
 import { getDefaultDemoState, loadDemoState, saveDemoState } from './storage'
-import type { DemoApplication, DemoEnrollment, DemoState } from './types'
+import type { DemoEnrollment, DemoState } from './types'
 
 type DemoStateContextValue = {
   ready: boolean
@@ -13,9 +13,6 @@ type DemoStateContextValue = {
   enroll: (item: Omit<DemoEnrollment, 'enrolledAt'>) => void
   enrollments: DemoEnrollment[]
   isEnrolled: (itemId: string) => boolean
-  applyToJob: (job: { id: string; role: string; company: string }) => boolean
-  applications: DemoApplication[]
-  hasApplied: (jobId: string) => boolean
   shortlist: string[]
   toggleShortlist: (name: string) => void
   isShortlisted: (name: string) => boolean
@@ -70,18 +67,6 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
     })
   }, [state, persist])
 
-  const applyToJob = useCallback((job: { id: string; role: string; company: string }) => {
-    if (state.applications.some(a => a.jobId === job.id)) return false
-    persist({
-      ...state,
-      applications: [
-        ...state.applications,
-        { jobId: job.id, role: job.role, company: job.company, status: 'Applied', appliedAt: new Date().toISOString() },
-      ],
-    })
-    return true
-  }, [state, persist])
-
   const toggleShortlist = useCallback((name: string) => {
     const next = state.shortlist.includes(name)
       ? state.shortlist.filter(n => n !== name)
@@ -99,15 +84,12 @@ export function DemoStateProvider({ children }: { children: React.ReactNode }) {
     enroll,
     enrollments: state.enrollments,
     isEnrolled: (itemId: string) => state.enrollments.some(e => e.itemId === itemId),
-    applyToJob,
-    applications: state.applications,
-    hasApplied: (jobId: string) => state.applications.some(a => a.jobId === jobId),
     shortlist: state.shortlist,
     toggleShortlist,
     isShortlisted: (name: string) => state.shortlist.includes(name),
   }), [
     ready, getLabProgress, setLabLaunched, setLabComplete, setExperimentStatus, enroll, state.enrollments,
-    applyToJob, state.applications, state.shortlist, toggleShortlist,
+    state.shortlist, toggleShortlist,
   ])
 
   return (
@@ -127,9 +109,6 @@ const SAFE_DEFAULT: DemoStateContextValue = {
   enroll: () => {},
   enrollments: [],
   isEnrolled: () => false,
-  applyToJob: () => false,
-  applications: [],
-  hasApplied: () => false,
   shortlist: [],
   toggleShortlist: () => {},
   isShortlisted: () => false,
