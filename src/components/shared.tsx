@@ -301,16 +301,21 @@ export function JobDrawer({ job, onClose, onApply }: { job: Job; onClose: () => 
   )
 }
 
-// ─── NAV (Learn · Study · Career) ─────────────────────────────────────────────
+// ─── NAV (Programs · Education · Competitive Exams) ───────────────────────────
+const EXAM_PROGRAM_PATHS = ['/programs/jee-advanced-prep', '/programs/cat-prep']
+
 function pathInGroup(label: string, to: string | undefined, pathname: string): boolean {
-  if (label === 'Learn') {
-    return ['/skills', '/courses', '/programs'].some(p => pathname === p || pathname.startsWith(`${p}/`))
+  const examProgram = EXAM_PROGRAM_PATHS.includes(pathname)
+  if (label === 'Programs') {
+    if (examProgram) return false
+    return pathname === '/programs' || pathname.startsWith('/programs/') || pathname === '/workshops' || pathname.startsWith('/workshops/')
   }
-  if (label === 'Study') {
-    return pathname.startsWith('/dashboard/student') || pathname.startsWith('/learn/')
+  if (label === 'Education') {
+    if (pathname === '/education/exams' || pathname.startsWith('/education/exams/')) return false
+    return pathname === '/education' || pathname.startsWith('/education/')
   }
-  if (label === 'Career') {
-    return pathname === '/career-os' || pathname.startsWith('/career-os/')
+  if (label === 'Competitive Exams') {
+    return pathname === '/education/exams' || pathname.startsWith('/exams/') || examProgram
   }
   if (!to) return false
   return pathname === to || pathname.startsWith(`${to}/`)
@@ -331,13 +336,31 @@ const navLinkHover = {
   leave: (e: React.MouseEvent<HTMLElement>) => { e.currentTarget.style.background = 'transparent' },
 }
 
+const SEARCH_SUGGESTIONS = [
+  { label: 'Data Analytics', to: '/courses/data-analytics' },
+  { label: 'Product Management', to: '/courses/product-management' },
+] as const
+
+function searchSuggestionsFor(query: string) {
+  const q = query.trim().toLowerCase()
+  if (!q) return SEARCH_SUGGESTIONS
+  return SEARCH_SUGGESTIONS.filter((item) => item.label.toLowerCase().includes(q))
+}
+
+function searchPathFor(query: string) {
+  const q = query.trim()
+  const exact = SEARCH_SUGGESTIONS.find((item) => item.label.toLowerCase() === q.toLowerCase())
+  return exact ? exact.to : `/courses?q=${encodeURIComponent(q)}`
+}
+
 export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
+  const [mobileExpandedGroup, setMobileExpandedGroup] = useState<string | null>(null)
   const [accountOpen, setAccountOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
   const navRef = useRef<HTMLElement>(null)
   const navigate = useNavigate()
@@ -350,10 +373,6 @@ export function Nav() {
   })
 
   useEffect(() => {
-    if (searchOpen) searchRef.current?.focus()
-  }, [searchOpen])
-
-  useEffect(() => {
     if (!menuOpen) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -363,8 +382,10 @@ export function Nav() {
   useEffect(() => {
     setMenuOpen(false)
     setActiveMenu(null)
+    setMobileExpandedGroup(null)
     setAccountOpen(false)
     setMoreOpen(false)
+    setSearchOpen(false)
   }, [location.pathname])
 
   useEffect(() => {
@@ -384,6 +405,7 @@ export function Nav() {
       if (!navRef.current?.contains(e.target as Node)) {
         setActiveMenu(null)
         setAccountOpen(false)
+        setSearchOpen(false)
       }
     }
     document.addEventListener('mousedown', onPointer)
@@ -394,10 +416,20 @@ export function Nav() {
     e.preventDefault()
     const q = searchQuery.trim()
     if (!q) return
-    setSearchOpen(false)
     setSearchQuery('')
-    navigate(`/courses?q=${encodeURIComponent(q)}`)
+    setSearchOpen(false)
+    setMenuOpen(false)
+    navigate(searchPathFor(q))
   }
+
+  function pickSearchSuggestion(to: string) {
+    setSearchQuery('')
+    setSearchOpen(false)
+    setMenuOpen(false)
+    navigate(to)
+  }
+
+  const searchHints = searchSuggestionsFor(searchQuery)
 
   const navBg = C.cream
   const navBorder = `1px solid ${T.lineLight}`
@@ -410,9 +442,9 @@ export function Nav() {
       ref={navRef}
       className="skylent-site-nav"
       aria-label="Primary"
-      style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, borderBottom: navBorder, boxShadow: navShadow }}
+      style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, borderBottom: navBorder, boxShadow: navShadow, overflow: 'visible' }}
     >
-      <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH, gap: 12, minWidth: 0 }}>
+      <div className="skylent-rail" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH, gap: 12, minWidth: 0 }}>
         <Link to="/" className="skylent-mark" style={{ fontSize: 22, color: C.ink, textDecoration: 'none', padding: 0, flexShrink: 0 }}>
           Skylent<span style={{ color: C.orange }}>.</span>
         </Link>
@@ -421,6 +453,17 @@ export function Nav() {
           {primaryNav.map(group => {
             const open = activeMenu === group.label
             const menuId = `nav-menu-${group.label.toLowerCase()}`
+            const inGroup = pathInGroup(group.label, group.to, location.pathname)
+            const isDiscoveryOnly = !group.to
+            const dropdownClass = group.sections?.length
+              ? 'nav-mega-dropdown is-sections'
+              : isDiscoveryOnly
+                ? 'nav-mega-dropdown is-discovery'
+                : 'nav-mega-dropdown'
+            const toggleMenu = () => {
+              setAccountOpen(false)
+              setActiveMenu(open ? null : group.label)
+            }
             return (
               <div
                 key={group.label}
@@ -431,71 +474,97 @@ export function Nav() {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'stretch' }}>
-                  {group.to ? (
-                    <Link
-                      to={group.to}
-                      aria-current={pathInGroup(group.label, group.to, location.pathname) ? 'page' : undefined}
-                      style={{ background: 'none', color: open ? C.ink : C.slate, fontSize: 14, padding: '8px 8px 8px 12px', display: 'inline-flex', alignItems: 'center', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em', textDecoration: 'none', fontWeight: 500 }}
-                    >
-                      {group.label}
-                    </Link>
-                  ) : (
+                  {isDiscoveryOnly ? (
                     <button
                       type="button"
+                      className={`nav-discovery-trigger${open || inGroup ? ' is-active' : ''}`}
                       aria-expanded={open}
                       aria-controls={menuId}
                       aria-haspopup="true"
-                      onClick={() => {
-                        setAccountOpen(false)
-                        setActiveMenu(open ? null : group.label)
-                      }}
-                      style={{ background: 'none', border: 'none', color: open ? C.ink : C.slate, fontSize: 14, cursor: 'pointer', padding: '8px 8px 8px 12px', display: 'inline-flex', alignItems: 'center', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em', fontWeight: 500 }}
+                      onClick={toggleMenu}
                     >
-                      {group.label}
+                      <span>{group.label}</span>
+                      <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" className="nav-discovery-chevron"><path d="M0 0l5 6 5-6z"/></svg>
                     </button>
+                  ) : (
+                    <>
+                      <Link
+                        to={group.to!}
+                        aria-current={inGroup ? 'page' : undefined}
+                        style={{ background: 'none', color: open || inGroup ? C.ink : C.slate, fontSize: 14, padding: '8px 8px 8px 12px', display: 'inline-flex', alignItems: 'center', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em', textDecoration: 'none', fontWeight: 500 }}
+                      >
+                        {group.label}
+                      </Link>
+                      <button
+                        type="button"
+                        aria-expanded={open}
+                        aria-controls={menuId}
+                        aria-haspopup="true"
+                        aria-label={`${group.label} menu`}
+                        onClick={toggleMenu}
+                        style={{ background: 'none', border: 'none', color: open || inGroup ? C.ink : C.slate, cursor: 'pointer', padding: '8px 10px 8px 2px', display: 'inline-flex', alignItems: 'center' }}
+                      >
+                        <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" style={{ opacity: 0.5, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><path d="M0 0l5 6 5-6z"/></svg>
+                      </button>
+                    </>
                   )}
-                  <button
-                    type="button"
-                    aria-expanded={open}
-                    aria-controls={menuId}
-                    aria-haspopup="true"
-                    aria-label={`${group.label} menu`}
-                    onClick={() => {
-                      setAccountOpen(false)
-                      setActiveMenu(open ? null : group.label)
-                    }}
-                    style={{ background: 'none', border: 'none', color: open ? C.ink : C.slate, cursor: 'pointer', padding: '8px 10px 8px 2px', display: 'inline-flex', alignItems: 'center' }}
-                  >
-                    <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" style={{ opacity: 0.5, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><path d="M0 0l5 6 5-6z"/></svg>
-                  </button>
                 </div>
                 {open && (
                   <div
                     id={menuId}
-                    className="nav-mega-dropdown"
+                    className={dropdownClass}
                     role="group"
                     aria-label={group.label}
-                    style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: 6, minWidth: 260, maxWidth: 300, boxShadow: T.shadow, zIndex: 300 }}
+                    style={{ position: 'absolute', top: 'calc(100% + 6px)', left: group.sections?.length ? 'auto' : 0, right: group.sections?.length ? 0 : 'auto', background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: isDiscoveryOnly ? 8 : 6, minWidth: group.sections?.length ? 560 : isDiscoveryOnly ? 340 : 260, maxWidth: group.sections?.length ? 680 : isDiscoveryOnly ? 400 : 320, boxShadow: T.shadow, zIndex: 300 }}
                   >
-                    <div style={{ padding: '10px 12px 12px', marginBottom: 2, borderBottom: '1px solid rgba(8,9,9,0.08)' }}>
-                      <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
-                      <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>{group.tagline}</div>
+                    <div className={isDiscoveryOnly ? 'nav-discovery-head' : undefined} style={isDiscoveryOnly ? undefined : { padding: '10px 12px 12px', marginBottom: 2, borderBottom: '1px solid rgba(8,9,9,0.08)' }}>
+                      <div style={{ color: C.ink, fontSize: isDiscoveryOnly ? 15 : 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
+                      <div style={{ color: C.slate, fontSize: isDiscoveryOnly ? 12 : 11, marginTop: isDiscoveryOnly ? 4 : 2, lineHeight: 1.45 }}>{group.tagline}</div>
                     </div>
-                    {group.items.map(item => (
-                      <Link
-                        key={item.to + item.label}
-                        to={item.to}
-                        style={{ display: 'block', padding: '10px 12px', borderRadius: 8, textDecoration: 'none', minHeight: 44, boxSizing: 'border-box' }}
-                        onMouseEnter={navLinkHover.enter}
-                        onMouseLeave={navLinkHover.leave}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                          <div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>{item.label}</div>
-                          {item.mark && <MaturityMark maturity={item.mark} compact />}
-                        </div>
-                        <div style={{ color: C.slate, fontSize: 11, marginTop: 1 }}>{item.sub}</div>
-                      </Link>
-                    ))}
+                    {group.sections?.length ? (
+                      <div className="nav-mega-sections">
+                        {group.sections.map(section => (
+                          <div key={section.heading}>
+                            <div className="nav-mega-heading">{section.heading}</div>
+                            {section.items.map(item => (
+                              <Link
+                                key={item.to + item.label}
+                                to={item.to}
+                                className="nav-mega-item"
+                                style={{ display: 'block', padding: '10px 12px', borderRadius: 8, textDecoration: 'none', minHeight: 44, boxSizing: 'border-box' }}
+                                onMouseEnter={navLinkHover.enter}
+                                onMouseLeave={navLinkHover.leave}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                                  <div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>{item.label}</div>
+                                  {item.mark && <MaturityMark maturity={item.mark} compact />}
+                                </div>
+                                <div style={{ color: C.slate, fontSize: 11, marginTop: 1 }}>{item.sub}</div>
+                              </Link>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className={isDiscoveryOnly ? 'nav-discovery-items' : undefined}>
+                        {group.items.map(item => (
+                          <Link
+                            key={item.to + item.label}
+                            to={item.to}
+                            className={isDiscoveryOnly ? 'nav-mega-item is-discovery' : 'nav-mega-item'}
+                            style={{ display: 'block', padding: isDiscoveryOnly ? '12px 14px' : '10px 12px', borderRadius: 8, textDecoration: 'none', minHeight: 44, boxSizing: 'border-box' }}
+                            onMouseEnter={navLinkHover.enter}
+                            onMouseLeave={navLinkHover.leave}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                              <div style={{ color: C.ink, fontSize: isDiscoveryOnly ? 14 : 13, fontWeight: 500 }}>{item.label}</div>
+                              {item.mark && <MaturityMark maturity={item.mark} compact />}
+                            </div>
+                            <div style={{ color: C.slate, fontSize: isDiscoveryOnly ? 12 : 11, marginTop: isDiscoveryOnly ? 3 : 1, lineHeight: 1.4 }}>{item.sub}</div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -503,28 +572,43 @@ export function Nav() {
           })}
         </div>
 
-        <div className="nav-links" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-          {searchOpen ? (
-            <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', background: C.cream, border: `1px solid ${T.lineStrong}`, borderRadius: 7, overflow: 'hidden' }}>
-              <input
-                ref={searchRef}
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search courses and programmes"
-                aria-label="Search courses and programmes"
-                onKeyDown={e => e.key === 'Escape' && setSearchOpen(false)}
-                style={{ background: 'transparent', border: 'none', outline: 'none', color: C.ink, fontSize: 13, padding: '7px 12px', width: 220, fontFamily: 'var(--font-body)' }}
-              />
-              <button type="submit" aria-label="Submit search" style={{ background: 'none', border: 'none', color: C.indigo, padding: '7px 10px', cursor: 'pointer' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              </button>
-              <button type="button" onClick={() => setSearchOpen(false)} aria-label="Close search" style={{ background: 'none', border: 'none', color: C.slate, padding: '7px 10px', cursor: 'pointer', fontSize: 13 }}>✕</button>
-            </form>
-          ) : (
-            <button type="button" onClick={() => setSearchOpen(true)} aria-label="Search" title="Search" style={{ background: 'none', border: 'none', color: C.slate, padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: 7 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <div className="nav-search-wrap">
+          <form className="nav-search-desktop" onSubmit={handleSearch}>
+            <input
+              ref={searchRef}
+              value={searchQuery}
+              onChange={e => {
+                setSearchQuery(e.target.value)
+                setSearchOpen(true)
+              }}
+              onFocus={() => setSearchOpen(true)}
+              onClick={() => setSearchOpen(true)}
+              placeholder="Search courses"
+              aria-label="Search courses"
+              aria-expanded={searchOpen}
+              aria-controls="nav-search-suggest"
+              autoComplete="off"
+              style={{ background: 'transparent', border: 'none', outline: 'none', color: C.ink, fontSize: 13, padding: '8px 12px', width: '100%', fontFamily: 'var(--font-body)' }}
+            />
+            <button type="submit" aria-label="Submit search" style={{ background: 'none', border: 'none', color: C.indigo, padding: '8px 10px', cursor: 'pointer', minHeight: 40, minWidth: 40 }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </button>
-          )}
+          </form>
+          {searchOpen && searchHints.length > 0 ? (
+            <ul id="nav-search-suggest" className="nav-search-suggest" role="listbox" aria-label="Ready courses">
+              {searchHints.map((item) => (
+                <li key={item.to} role="option">
+                  <button
+                    type="button"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => pickSearchSuggestion(item.to)}
+                  >
+                    {item.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
@@ -574,9 +658,6 @@ export function Nav() {
               <Link to="/login" className="nav-signin" style={{ background: 'transparent', border: '1px solid rgba(8,9,9,0.16)', color: C.ink, borderRadius: 7, padding: '7px 16px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', minHeight: 36 }}>
                 Sign in
               </Link>
-              <Link to="/skills" className="nav-links nav-cta-learn" style={{ background: C.ink, border: 'none', color: C.white, borderRadius: 7, padding: '7px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', minHeight: 36 }}>
-                Start learning
-              </Link>
             </>
           )}
           <button
@@ -613,24 +694,106 @@ export function Nav() {
             overflowX: 'hidden',
           }}
         >
-          {primaryNav.map(group => (
-            <section key={group.label} style={{ marginBottom: 8 }}>
-              <div style={{ color: C.ink, fontSize: 13, fontWeight: 700, letterSpacing: '0.04em', padding: '16px 0 4px' }}>{group.label}</div>
-              <p style={{ color: C.slate, fontSize: 12, margin: '0 0 4px', lineHeight: 1.45 }}>{group.tagline}</p>
-              {group.items.map(item => (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  onClick={() => setMenuOpen(false)}
-                  className="mobile-nav-link"
-                  style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: 44, padding: '8px 0', color: C.ink, fontSize: 16, textDecoration: 'none', borderBottom: '1px solid rgba(8,9,9,0.08)' }}
-                >
-                  <span>{item.label}</span>
-                  <span style={{ color: C.slate, fontSize: 12, fontWeight: 400 }}>{item.sub}</span>
-                </Link>
+          <form className="mobile-nav-search" onSubmit={handleSearch}>
+            <input
+              value={searchQuery}
+              onChange={e => {
+                setSearchQuery(e.target.value)
+                setSearchOpen(true)
+              }}
+              onFocus={() => setSearchOpen(true)}
+              onClick={() => setSearchOpen(true)}
+              placeholder="Search courses"
+              aria-label="Search courses"
+              aria-expanded={searchOpen}
+              aria-controls="mobile-search-suggest"
+              autoComplete="off"
+            />
+            <button type="submit">Search</button>
+          </form>
+          {searchOpen && searchHints.length > 0 ? (
+            <ul id="mobile-search-suggest" className="nav-search-suggest is-mobile" role="listbox" aria-label="Ready courses">
+              {searchHints.map((item) => (
+                <li key={item.to} role="option">
+                  <button
+                    type="button"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => pickSearchSuggestion(item.to)}
+                  >
+                    {item.label}
+                  </button>
+                </li>
               ))}
-            </section>
-          ))}
+            </ul>
+          ) : null}
+          {primaryNav.map(group => {
+            const isDiscoveryOnly = !group.to
+            const expanded = mobileExpandedGroup === group.label
+            if (isDiscoveryOnly) {
+              return (
+                <section key={group.label} className="mobile-nav-group" style={{ marginBottom: 8 }}>
+                  <button
+                    type="button"
+                    className="mobile-nav-group-trigger"
+                    aria-expanded={expanded}
+                    onClick={() => setMobileExpandedGroup(expanded ? null : group.label)}
+                  >
+                    <span>
+                      <span className="mobile-nav-group-label">{group.label}</span>
+                      <span className="mobile-nav-group-tagline">{group.tagline}</span>
+                    </span>
+                    <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" style={{ opacity: 0.5, transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s', flexShrink: 0 }}><path d="M0 0l5 6 5-6z"/></svg>
+                  </button>
+                  {expanded && group.items.map(item => (
+                    <Link
+                      key={item.label}
+                      to={item.to}
+                      onClick={() => setMenuOpen(false)}
+                      className="mobile-nav-link is-nested"
+                      style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: 44, padding: '10px 0 10px 12px', color: C.ink, fontSize: 16, textDecoration: 'none', borderBottom: '1px solid rgba(8,9,9,0.08)' }}
+                    >
+                      <span>{item.label}</span>
+                      <span style={{ color: C.slate, fontSize: 12, fontWeight: 400 }}>{item.sub}</span>
+                    </Link>
+                  ))}
+                </section>
+              )
+            }
+            return (
+              <section key={group.label} style={{ marginBottom: 8 }}>
+                <div style={{ color: C.ink, fontSize: 13, fontWeight: 700, letterSpacing: '0.04em', padding: '16px 0 4px' }}>{group.label}</div>
+                <p style={{ color: C.slate, fontSize: 12, margin: '0 0 4px', lineHeight: 1.45 }}>{group.tagline}</p>
+                {group.sections?.length ? group.sections.map(section => (
+                  <div key={section.heading}>
+                    <div style={{ color: C.slate, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', padding: '12px 0 4px' }}>{section.heading}</div>
+                    {section.items.map(item => (
+                      <Link
+                        key={item.label}
+                        to={item.to}
+                        onClick={() => setMenuOpen(false)}
+                        className="mobile-nav-link"
+                        style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: 44, padding: '8px 0', color: C.ink, fontSize: 16, textDecoration: 'none', borderBottom: '1px solid rgba(8,9,9,0.08)' }}
+                      >
+                        <span>{item.label}</span>
+                        <span style={{ color: C.slate, fontSize: 12, fontWeight: 400 }}>{item.sub}</span>
+                      </Link>
+                    ))}
+                  </div>
+                )) : group.items.map(item => (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    onClick={() => setMenuOpen(false)}
+                    className="mobile-nav-link"
+                    style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: 44, padding: '8px 0', color: C.ink, fontSize: 16, textDecoration: 'none', borderBottom: '1px solid rgba(8,9,9,0.08)' }}
+                  >
+                    <span>{item.label}</span>
+                    <span style={{ color: C.slate, fontSize: 12, fontWeight: 400 }}>{item.sub}</span>
+                  </Link>
+                ))}
+              </section>
+            )
+          })}
 
           <div style={{ marginTop: 12 }}>
             <button
@@ -674,9 +837,6 @@ export function Nav() {
                 <Link to="/login" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', border: `1px solid ${T.lineStrong}`, borderRadius: 7, color: C.ink, textDecoration: 'none', fontSize: 14 }}>
                   Sign in
                 </Link>
-                <Link to="/skills" onClick={() => setMenuOpen(false)} className="mobile-nav-cta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', background: C.ink, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
-                  Start learning
-                </Link>
               </>
             )}
           </div>
@@ -690,12 +850,12 @@ export function Nav() {
 export function Footer() {
   const cols = FOOTER_COLS
   return (
-    <footer className="skylent-site-footer" style={{ background: C.warmWhite, padding: `${T.sectionSm} ${T.gutter} 32px`, position: 'relative', borderTop: `1px solid ${T.lineLight}` }}>
-      <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
+    <footer className="skylent-site-footer" style={{ background: C.warmWhite, padding: `${T.sectionSm} 0 32px`, position: 'relative', borderTop: `1px solid ${T.lineLight}` }}>
+      <div className="skylent-rail">
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(180px, 1.3fr) repeat(5, minmax(0, 1fr))', gap: 28, marginBottom: 56 }} className="footer-grid">
           <div>
             <Link to="/" className="skylent-mark" style={{ fontSize: 24, color: C.ink, textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
-            <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Learn, study, and keep evidence of your work — a focused student learning product.</p>
+            <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Skill courses, a workspace, and evidence you keep — a focused student learning product.</p>
             <div style={{ display: 'flex', gap: 10 }}>
               {['in', 'tw', 'yt', 'ig'].map(s => (
                 <div key={s} aria-hidden style={{ width: 32, height: 32, borderRadius: 6, border: `1px solid ${T.lineLight}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{s}</div>
@@ -783,6 +943,110 @@ export const globalCSS = `
 
   .nav-links { display: flex !important; }
   .show-mobile { display: none !important; }
+  .nav-search-wrap {
+    position: relative;
+    flex: 1 1 200px;
+    max-width: 280px;
+    min-width: 0;
+  }
+  .nav-search-desktop {
+    display: flex !important;
+    align-items: center;
+    width: 100%;
+    min-height: 40px;
+    background: #fffdf8;
+    border: 1px solid rgba(21, 23, 26, 0.14);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .nav-search-suggest {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 320;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    background: #ffffff;
+    border: 1px solid rgba(21, 23, 26, 0.12);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-overlay);
+  }
+  .nav-search-suggest.is-mobile {
+    position: static;
+    margin: 0 0 12px;
+    box-shadow: none;
+  }
+  .nav-search-suggest button {
+    display: block;
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: none;
+    color: #15171a;
+    font: 500 13px/1.3 var(--font-body);
+    text-align: left;
+    cursor: pointer;
+  }
+  .nav-search-suggest button:hover,
+  .nav-search-suggest button:focus-visible {
+    background: rgba(8, 9, 9, 0.04);
+  }
+  .nav-mega-dropdown.is-sections {
+    min-width: min(560px, calc(100vw - 32px)) !important;
+    max-width: min(680px, calc(100vw - 24px)) !important;
+    width: min(560px, calc(100vw - 32px));
+  }
+  .nav-mega-sections {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px 8px;
+    padding: 6px;
+  }
+  .nav-mega-heading {
+    color: #5c6168;
+    font: 700 11px/1.3 var(--font-body);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 12px 4px;
+  }
+  @media (max-width: 720px) {
+    .nav-mega-dropdown.is-sections {
+      min-width: min(92vw, 560px) !important;
+      width: min(92vw, 560px);
+    }
+    .nav-mega-sections { grid-template-columns: 1fr; }
+  }
+  .nav-cta-learn { min-height: 40px; }
+  .mobile-nav-search {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0 8px;
+  }
+  .mobile-nav-search input {
+    flex: 1;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0 14px;
+    border: 1px solid rgba(21, 23, 26, 0.16);
+    border-radius: var(--radius-md);
+    background: #fffdf8;
+    color: #15171a;
+    font: 15px/1.3 var(--font-body);
+  }
+  .mobile-nav-search button {
+    min-height: 48px;
+    padding: 0 16px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: #15171a;
+    color: #fffdf8;
+    font: 600 14px/1 var(--font-body);
+    cursor: pointer;
+  }
 
   .skylent-site-nav a:focus-visible,
   .skylent-site-nav button:focus-visible,
@@ -791,6 +1055,7 @@ export const globalCSS = `
     outline-offset: 2px;
   }
   .mobile-nav-overlay .mobile-nav-link { min-height: 44px; }
+  .mobile-nav-overlay .mobile-nav-cta { width: 100%; }
 
   .skylent-section-divider {
     height: 1px;
@@ -806,6 +1071,8 @@ export const globalCSS = `
 
   @media (max-width: 1100px) {
     .nav-links { display: none !important; }
+    .nav-search-wrap { display: none !important; }
+    .nav-search-desktop { display: none !important; }
     .show-mobile { display: flex !important; }
     .nav-account-name { display: none !important; }
     .contextual-nav-panel { display: none !important; }

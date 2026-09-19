@@ -36,75 +36,130 @@ export default function CourseDetailPage() {
 
   const view = coursePublicView(course)
   const profile = courseProductProfile(course.slug)
-  const enrollable = Boolean(catalog.data)
+  const enrollable = Boolean(catalog.data) || view.showLiveCurriculum
   const modules = courseModuleCards(course, view.showLiveCurriculum)
   const practice = coursePracticeGroups(course)
   const afterEnrol = courseAfterEnrolSteps(view.showLiveCurriculum, view.title)
-  const cta = enrollCta(enrollable, catalog.loading, view.primaryCta)
+  const listingClosed = !view.showLiveCurriculum && !enrollable && !catalog.loading
+  const cta = listingClosed
+    ? "View outline"
+    : enrollCta(enrollable, catalog.loading, view.primaryCta)
+  const listedPrice = `₹${view.listedPrice.toLocaleString("en-IN")}`
 
   function openEnrol() {
-    if (enrollable || !catalog.loading) setEnrollOpen(true)
+    if (!enrollable) return
+    setEnrollOpen(true)
   }
 
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
-        <section className="cat-hero">
-          <div className="cat-rail cat-hero-split">
-            <div>
-              <Link className="cat-back" to="/courses">← Courses</Link>
-              <h1>{view.title}</h1>
-              <p className="cat-lead">{view.summary}</p>
-              <div className="cat-metrics">
-                <VisualStat label="Status" value={view.maturity === "ready" ? "Ready" : view.maturityLabel} />
-                <VisualStat label="Level" value={view.course.level} />
-                <VisualStat
-                  label={view.showLiveCurriculum ? "Lessons" : "Outline"}
-                  value={String(view.stats.lessonCount)}
-                />
-                <VisualStat
-                  label="Practice"
-                  value={view.showLiveCurriculum ? `${view.stats.quizCount} quizzes` : "Outline only"}
-                />
-              </div>
-              <p className="cat-statline">
-                <span>{view.delivery}</span>
-                <span>{view.showLiveCurriculum ? view.duration : "Duration not finished"}</span>
-                <span>{view.stats.moduleCount} modules</span>
-                {view.showLiveCurriculum ? <span>{view.stats.assignmentCount} assignments</span> : null}
-              </p>
-              {view.honesty ? <p className="cat-note">{view.honesty}</p> : null}
-              <div className="cat-actions">
-                <button type="button" className="cat-btn cat-btn-primary cat-btn-lg" disabled={catalog.loading && !enrollable} onClick={openEnrol}>
-                  {cta}
-                </button>
-                <Link className="cat-btn cat-btn-ghost" to="/skills">Back to Skills</Link>
-              </div>
-              <p className="cat-price-line">
-                ₹{view.listedPrice.toLocaleString("en-IN")}
-                <span> listed · Payment is not collected · Certificate not issued in this pilot</span>
-              </p>
-              <p className="cat-fine">
-                {view.showLiveCurriculum
-                  ? "Enrol opens Skylent OS at the first lesson. If you are not signed in, you will be asked to sign in first."
-                  : "Enrol opens the LMS outline. If you are not signed in, you will be asked to sign in first."}
-              </p>
+        <div className="cat-enrol-bar">
+          <div className="cat-rail cat-enrol-bar-inner">
+            <div className="cat-enrol-bar-copy">
+              <strong>{view.title}</strong>
+              <span>{listedPrice} listed</span>
             </div>
-            {view.showLiveCurriculum ? (
-              <div className="cat-hero-visual">
-                <CourseWorkspacePreview
-                  courseTitle={view.title}
-                  lessonTitle={course.modules[0]?.lessons[0]?.title ?? "Open the first lesson"}
-                  practiceTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")?.title ?? "A short check"}
-                  workTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => /capstone|product case/i.test(lesson.title))?.title ?? "Capstone"}
-                  modules={course.modules.map((module) => module.title)}
-                  lessonCount={view.stats.lessonCount}
-                  visual={profile?.visual === "harbor-desk" ? "harbor-desk" : "northwind"}
-                />
+            {listingClosed ? (
+              <div className="cat-enrol-actions">
+                <a className="cat-btn cat-btn-ghost" href="#course-outline">View outline</a>
+                <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">Start Data Analytics</Link>
               </div>
             ) : (
-              <div className="cat-hero-visual">
-                <ProductFrame title={view.title} meta="Outline">
+              <button
+                type="button"
+                className="cat-btn cat-btn-primary"
+                disabled={!enrollable}
+                onClick={openEnrol}
+              >
+                {cta}
+              </button>
+            )}
+          </div>
+        </div>
+
+        <section className="cat-hero">
+          <div className="cat-rail">
+            <Link className="cat-back" to="/courses">← Courses</Link>
+            <h1>{view.title}</h1>
+            <p className="cat-lead">{view.summary}</p>
+            <div className="cat-metrics">
+              <VisualStat label="Status" value={view.maturity === "ready" ? "Ready" : view.maturityLabel} />
+              <VisualStat label="Level" value={view.course.level} />
+              <VisualStat
+                label={view.showLiveCurriculum ? "Lessons" : "Outline"}
+                value={String(view.stats.lessonCount)}
+              />
+              <VisualStat
+                label="Practice"
+                value={view.showLiveCurriculum ? `${view.stats.quizCount} quizzes` : "Outline only"}
+              />
+            </div>
+            <p className="cat-statline">
+              <span>{view.delivery}</span>
+              <span>{view.showLiveCurriculum ? view.duration : "Duration not finished"}</span>
+              <span>{view.stats.moduleCount} modules</span>
+              {view.showLiveCurriculum ? <span>{view.stats.assignmentCount} assignments</span> : null}
+            </p>
+            <div className="cat-actions">
+              {listingClosed ? (
+                <>
+                  <a className="cat-btn cat-btn-ghost cat-btn-lg" href="#course-outline">View outline</a>
+                  <Link className="cat-btn cat-btn-primary cat-btn-lg" to="/courses/data-analytics">Start Data Analytics</Link>
+                  <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">Start Product Management</Link>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className="cat-btn cat-btn-primary cat-btn-lg"
+                    disabled={!enrollable}
+                    onClick={openEnrol}
+                  >
+                    {cta}
+                  </button>
+                  <Link className="cat-btn cat-btn-ghost" to="/courses">Browse courses</Link>
+                </>
+              )}
+            </div>
+            <p className="cat-honesty">
+              Listed price {listedPrice}. Payment is not collected in this pilot. A certificate is not issued yet.
+            </p>
+          </div>
+        </section>
+
+        <section className="cat-section" id="course-outline">
+          <div className="cat-rail">
+            <h2>
+              {view.showLiveCurriculum
+                ? `${view.stats.moduleCount} modules · ${view.stats.lessonCount} lessons`
+                : "What exists in the LMS today"}
+            </h2>
+            <p className="cat-fine">
+              {view.showLiveCurriculum
+                ? "Each module is a block of written work and practice. Lesson bodies stay in Skylent OS."
+                : "Titles below are an outline, not a finished teaching path."}
+            </p>
+            <ModuleLane modules={modules} />
+          </div>
+        </section>
+
+        <section className="cat-section">
+          <div className="cat-rail">
+            <p className="cat-preview-caption">What you open after enrol</p>
+            {view.showLiveCurriculum ? (
+              <CourseWorkspacePreview
+                courseTitle={view.title}
+                lessonTitle={course.modules[0]?.lessons[0]?.title ?? "Open the first lesson"}
+                practiceTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")?.title ?? "A short check"}
+                workTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => /capstone|product case/i.test(lesson.title))?.title ?? "Capstone"}
+                modules={course.modules.map((module) => module.title)}
+                lessonCount={view.stats.lessonCount}
+                visual={profile?.visual === "harbor-desk" ? "harbor-desk" : "northwind"}
+                marketing
+              />
+            ) : (
+              <ProductFrame title={view.title} meta="Outline">
                 <ol className="pl-ws-rail pl-outline">
                   {modules.map((module) => (
                     <li key={module.id}>
@@ -115,7 +170,6 @@ export default function CourseDetailPage() {
                 </ol>
                 <p className="pl-fine">Outline titles only — not a finished teaching path.</p>
               </ProductFrame>
-              </div>
             )}
           </div>
         </section>
@@ -135,7 +189,7 @@ export default function CourseDetailPage() {
 
         <section className="cat-band">
           <div className="cat-rail">
-            <h2>{view.showLiveCurriculum ? "Capabilities in this course" : "Listed capabilities"}</h2>
+            <h2>{view.showLiveCurriculum ? "What you will be able to do" : "Listed capabilities"}</h2>
             {!view.showLiveCurriculum ? (
               <p className="cat-fine">These statements come from the catalogue listing, not a full authored course.</p>
             ) : null}
@@ -149,30 +203,12 @@ export default function CourseDetailPage() {
           </div>
         </section>
 
-        <section className="cat-section">
-          <div className="cat-rail">
-            <h2>
-              {view.showLiveCurriculum
-                ? `${view.stats.moduleCount} modules · ${view.stats.lessonCount} lessons`
-                : "What exists in the LMS today"}
-            </h2>
-            <p className="cat-fine">
-              {view.showLiveCurriculum
-                ? "Each module is a block of written work and practice. Lesson bodies stay in Skylent OS."
-                : "Titles below are an outline, not a finished teaching path."}
-            </p>
-            <ModuleLane modules={modules} />
-          </div>
-        </section>
-
         {view.showLiveCurriculum ? (
           <section className="cat-section">
             <div className="cat-rail">
               <h2>What you will practise and build</h2>
               <p className="cat-fine">
-                {view.showLiveCurriculum
-                  ? profile?.practiceIntro ?? "Practice is written work in Skylent OS. There is no live classroom and no video stream."
-                  : "Titles below are an outline, not a finished teaching path."}
+                {profile?.practiceIntro ?? "Practice is written work in Skylent OS. There is no live classroom and no video stream."}
               </p>
               <div className="cat-practice">
                 <article>
@@ -257,6 +293,7 @@ export default function CourseDetailPage() {
                 </div>
               </>
             ) : null}
+            {view.honesty ? <p className="cat-honesty">{view.honesty}</p> : null}
           </div>
         </section>
 
@@ -268,12 +305,19 @@ export default function CourseDetailPage() {
                 <p>
                   {view.showLiveCurriculum
                     ? "Enrolment does not collect payment. It opens the written course in Skylent OS."
-                    : "This listing is thinner than Data Analytics. Enrolment opens the outline only."}
+                    : "This listing is thinner than Data Analytics. Start a ready course, or read the outline below."}
                 </p>
               </div>
-              <button type="button" className="cat-btn cat-btn-primary" disabled={catalog.loading && !enrollable} onClick={openEnrol}>
-                {cta}
-              </button>
+              {listingClosed ? (
+                <div className="cat-enrol-actions">
+                  <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">Start Data Analytics</Link>
+                  <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">Start Product Management</Link>
+                </div>
+              ) : (
+                <button type="button" className="cat-btn cat-btn-primary" disabled={!enrollable} onClick={openEnrol}>
+                  {cta}
+                </button>
+              )}
             </div>
           </div>
         </section>
@@ -293,5 +337,5 @@ export default function CourseDetailPage() {
 function enrollCta(enrollable: boolean, loading: boolean, primaryCta: string): string {
   if (enrollable) return primaryCta
   if (loading) return "Checking availability…"
-  return "Enrolment unavailable"
+  return "View outline"
 }

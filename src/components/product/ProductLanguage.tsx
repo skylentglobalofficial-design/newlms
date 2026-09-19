@@ -212,6 +212,126 @@ export function CourseProductVisual({
   return <NorthwindWorkspace compact={compact} />
 }
 
+const WORKFLOW_STAGES = [
+  { id: "learn", label: "Learn", lesson: "Spreadsheet tables, types, and filters" },
+  { id: "practise", label: "Practise", lesson: "Spreadsheet analysis check" },
+  { id: "project", label: "Project", lesson: "Northwind commercial review" },
+  { id: "evidence", label: "Evidence", lesson: "Work sample you keep" },
+] as const
+
+export function SkylentWorkflowStory() {
+  return (
+    <ProductFrame title="Data Analytics" meta={`${NW.filename} · one pathway through Skylent OS`}>
+      <div className="pl-workflow-rail" aria-hidden="true">
+        {WORKFLOW_STAGES.map((stage, index) => (
+          <span key={stage.id} className={index === 0 ? "is-on" : undefined}>
+            {stage.label}
+          </span>
+        ))}
+      </div>
+      <div className="pl-workflow-strip" aria-label="One pathway from lesson to evidence">
+        <article className="pl-workflow-pane is-learn">
+          <p className="pl-kicker">01 · Learn</p>
+          <div className="pl-flow-visual is-learn">
+            <div className="pl-flow-lesson">
+              <em>Written lesson</em>
+              <b>{WORKFLOW_STAGES[0].lesson}</b>
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        </article>
+        <span className="pl-workflow-join" aria-hidden="true" />
+        <article className="pl-workflow-pane is-practise">
+          <p className="pl-kicker">02 · Practise</p>
+          <div className="pl-flow-visual is-practice">
+            <div className="pl-flow-quiz">
+              <em>{WORKFLOW_STAGES[1].lesson}</em>
+              <span className="pl-opt is-on" />
+              <span className="pl-opt" />
+              <span className="pl-opt" />
+            </div>
+          </div>
+        </article>
+        <span className="pl-workflow-join" aria-hidden="true" />
+        <article className="pl-workflow-pane is-project">
+          <p className="pl-kicker">03 · Project</p>
+          <div className="pl-flow-visual is-build">
+            <em>{WORKFLOW_STAGES[2].lesson}</em>
+            <Spark mini />
+            <p className="pl-fine">{NW.topCategory} leads {NW.netRevenueLabel} in this extract.</p>
+          </div>
+        </article>
+        <span className="pl-workflow-join" aria-hidden="true" />
+        <article className="pl-workflow-pane is-evidence">
+          <p className="pl-kicker">04 · Evidence</p>
+          <div className="pl-flow-visual is-keep">
+            <div className="pl-flow-keep">
+              <em>Work sample</em>
+              <strong>{WORKFLOW_STAGES[3].lesson}</strong>
+            </div>
+            <div className="pl-workflow-evidence">
+              <VisualStat label="Dataset" value={NW.filename.replace(".csv", "")} />
+              <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
+            </div>
+          </div>
+        </article>
+      </div>
+    </ProductFrame>
+  )
+}
+
+export function SkylentOsPreview() {
+  return (
+    <ProductFrame title="Progress" meta="Learning · Practice · Projects · Evidence">
+      <div className="pl-os-layers" aria-label="Skylent OS layers">
+        <article className="pl-os-layer">
+          <div className="pl-flow-visual is-learn">
+            <div className="pl-flow-lesson">
+              <em>Learning</em>
+              <b>Written lesson</b>
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        </article>
+        <article className="pl-os-layer">
+          <div className="pl-flow-visual is-practice">
+            <div className="pl-flow-quiz">
+              <em>Practice</em>
+              <span className="pl-opt is-on" />
+              <span className="pl-opt" />
+              <span className="pl-opt" />
+            </div>
+          </div>
+        </article>
+        <article className="pl-os-layer">
+          <div className="pl-flow-visual is-build">
+            <em>Projects</em>
+            <b>Work you produce</b>
+            <span className="pl-os-bars" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+              <i />
+            </span>
+          </div>
+        </article>
+        <article className="pl-os-layer">
+          <div className="pl-flow-visual is-keep">
+            <div className="pl-flow-keep">
+              <em>Evidence</em>
+              <strong>Keep what you built</strong>
+            </div>
+          </div>
+        </article>
+      </div>
+    </ProductFrame>
+  )
+}
+
 export function CourseWorkspacePreview({
   courseTitle,
   lessonTitle,
@@ -220,6 +340,7 @@ export function CourseWorkspacePreview({
   modules,
   lessonCount,
   visual = "northwind",
+  marketing = false,
 }: {
   courseTitle: string
   lessonTitle: string
@@ -228,6 +349,7 @@ export function CourseWorkspacePreview({
   modules: string[]
   lessonCount?: number
   visual?: "northwind" | "harbor-desk"
+  marketing?: boolean
 }) {
   return (
     <ProductFrame
@@ -263,7 +385,7 @@ export function CourseWorkspacePreview({
               <p className="pl-kicker">{NW.filename}</p>
               <div className="pl-stat-row">
                 <VisualStat label="Valid rows" value={String(NW.validRows)} />
-                <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
+                <VisualStat label={marketing ? "Sample KPI" : "Net revenue"} value={marketing ? "Category mix" : NW.netRevenueLabel} />
                 <VisualStat label="Top category" value={NW.topCategory} />
               </div>
               <div className="pl-ws-viz">
@@ -290,8 +412,8 @@ export function CourseThumb({
       {authored && visual === "harbor-desk" ? (
         <>
           <div className="pl-thumb-kpis">
-            <b>{HARBOR.weekendExceptions} exceptions</b>
-            <span>{HARBOR.constraint}</span>
+            <b>Product case</b>
+            <span>Evidence → spec</span>
           </div>
           <ol className="pl-hd-mini">
             <li />
@@ -303,14 +425,15 @@ export function CourseThumb({
       ) : authored ? (
         <>
           <div className="pl-thumb-kpis">
-            <b>{NW.netRevenueLabel}</b>
-            <span>{NW.validRows} valid rows</span>
+            <b>Sample dashboard</b>
+            <span>SQL · Northwind</span>
           </div>
           <Spark mini />
         </>
       ) : (
         <div className="pl-thumb-outline">
-          <span />
+          <b>Outline</b>
+          <span>LMS titles only</span>
           <span />
           <span />
         </div>

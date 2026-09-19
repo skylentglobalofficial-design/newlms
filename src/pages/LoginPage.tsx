@@ -74,9 +74,9 @@ function EntryVisual() {
     <div style={{ position: 'relative', maxWidth: 420 }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, paddingTop: 8, borderTop: `1px solid ${T.lineDark}` }}>
         {[
-          { label: 'Learn', detail: 'Skills, courses, and programmes' },
-          { label: 'Study', detail: 'Your enrolled learning workspace' },
-          { label: 'Career OS', detail: 'Profile and learning evidence' },
+          { label: 'Courses', detail: 'Focused courses you can start' },
+          { label: 'Programs', detail: 'Longer pathways from live courses' },
+          { label: 'Career', detail: 'Profile and learning evidence' },
         ].map(item => (
           <div key={item.label} style={{ minWidth: 0 }}>
             <div style={{ color: C.ink, fontSize: 13, fontWeight: 600, marginBottom: 4 }}>{item.label}</div>

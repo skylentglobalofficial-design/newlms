@@ -33,7 +33,17 @@ export default function EducationPage() {
           <AcademicLineIndex />
 
           <section className="arch-section" style={{ paddingTop: 48 }}>
-            <LiveCoreRail lead="If you want to start now, the live product is Learn: skills, courses, and programmes, then Skylent OS and Career OS." />
+            <LiveCoreRail lead="If you want to start now, open a live course or programme. Skylent OS and Career OS follow after enrol." />
+            <div className="edu-start-row">
+              <Link to="/courses/data-analytics">
+                <strong>Start Data Analytics</strong>
+                <span>Ready written course</span>
+              </Link>
+              <Link to="/courses/product-management">
+                <strong>Start Product Management</strong>
+                <span>Ready written course</span>
+              </Link>
+            </div>
             <div style={{ display: "flex", gap: 18, flexWrap: "wrap", marginTop: 16 }}>
               <Link to="/programs" style={{ color: C.indigo, fontWeight: 600, fontSize: 14, textDecoration: "none" }}>Open programmes →</Link>
               <Link to="/courses" style={{ color: C.slate, fontSize: 14, textDecoration: "none" }}>Open courses</Link>

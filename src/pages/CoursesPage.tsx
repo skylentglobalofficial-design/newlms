@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { CourseThumb, CourseWorkspacePreview } from "../components/product/ProductLanguage"
+import { CourseThumb } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { coursePublicView } from "../lib/catalog-maturity"
-import { courseProductProfile, FLAGSHIP_COURSE_SLUG } from "../lib/course-product"
+import { courseProductProfile } from "../lib/course-product"
 import "./Catalog.css"
 
 export default function CoursesPage() {
@@ -30,18 +30,14 @@ export default function CoursesPage() {
   const ready = filtered.filter((view) => view.maturity === "ready")
   const listings = filtered.filter((view) => view.maturity !== "ready")
 
-  const flagship = courses.find((course) => course.slug === FLAGSHIP_COURSE_SLUG)
-  const flagshipView = flagship ? coursePublicView(flagship) : null
-
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
         <section className="cat-hero">
-          <div className="cat-rail cat-hero-split">
-            <div>
-            <h1>Focused units you can finish.</h1>
+          <div className="cat-rail">
+            <h1>Courses you can start this week.</h1>
             <p className="cat-lead">
-              A course is a unit of lessons and practice. Data Analytics and Product Management are ready to start. Other listings are thinner catalogue items.
+              Data Analytics and Product Management are ready. Pick a course, enrol, and open Skylent OS.
             </p>
             <Link className="cat-text-link" to="/programs">Looking for a longer pathway? See programmes</Link>
             <input
@@ -64,20 +60,6 @@ export default function CoursesPage() {
                 </button>
               ))}
             </div>
-            </div>
-            {flagship && flagshipView ? (
-              <div className="cat-hero-visual is-listing">
-                <CourseWorkspacePreview
-                  courseTitle={flagship.title}
-                  lessonTitle={flagship.modules[0]?.lessons[0]?.title ?? "Open the first lesson"}
-                  practiceTitle={flagship.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")?.title ?? "A short check"}
-                  workTitle={flagship.modules.flatMap((module) => module.lessons).find((lesson) => /capstone/i.test(lesson.title))?.title ?? "Capstone"}
-                  modules={flagship.modules.map((module) => module.title)}
-                  lessonCount={flagshipView.stats.lessonCount}
-                  visual="northwind"
-                />
-              </div>
-            ) : null}
           </div>
         </section>
 
@@ -99,7 +81,7 @@ export default function CoursesPage() {
                 ) : null}
                 {listings.length > 0 ? (
                   <div className="cat-group">
-                    <h2>Catalogue listings</h2>
+                    <h2>Thinner listings</h2>
                     <p className="cat-fine">These exist in the catalogue and LMS, but they are not as complete as the ready courses.</p>
                     <div className="cat-grid">
                       {listings.map((view) => (
@@ -118,29 +100,26 @@ export default function CoursesPage() {
 }
 
 function CourseCard({ view, featured = false }: { view: ReturnType<typeof coursePublicView>; featured?: boolean }) {
-  const stats = view.showLiveCurriculum
-    ? `${view.stats.lessonCount} lessons · ${view.stats.quizCount} quizzes · ${view.stats.assignmentCount} assignments`
-    : `${view.stats.lessonCount} outline items`
   const profile = courseProductProfile(view.slug)
+  const duration = view.showLiveCurriculum ? view.duration : "Duration TBA"
+  const lessons = view.showLiveCurriculum
+    ? `${view.stats.lessonCount} lessons`
+    : `${view.stats.lessonCount} outline items`
 
   return (
-    <Link className={featured ? "cat-feature" : "cat-tile"} to={`/courses/${view.slug}`}>
+    <Link className={featured ? "cat-tile is-ready" : "cat-tile is-listing"} to={`/courses/${view.slug}`}>
       <CourseThumb authored={view.showLiveCurriculum} visual={profile?.visual ?? "northwind"} />
       <div className="cat-tile-copy">
         <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
-          {view.maturityLabel}
+          {view.maturity === "ready" ? "Ready" : view.maturityLabel}
         </span>
         <h3>{view.title}</h3>
-        <p>{view.summary}</p>
-        <p className="cat-tile-meta">
-          {view.course.category}
-          {" · "}
-          {view.course.level}
-          {" · "}
-          {view.showLiveCurriculum ? view.duration : "Duration not finished"}
-          {" · "}
-          {stats}
-        </p>
+        <div className="cat-card-stats">
+          <span>{duration}</span>
+          <span>{lessons}</span>
+          <span>{view.course.level}</span>
+        </div>
+        <p className="cat-card-price">₹{view.listedPrice.toLocaleString("en-IN")}</p>
         <span className={view.maturity === "ready" ? "cat-btn cat-btn-primary cat-card-cta" : "cat-btn cat-btn-ghost cat-card-cta"}>
           {view.ctaLabel}
         </span>

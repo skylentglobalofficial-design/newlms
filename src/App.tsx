@@ -44,6 +44,7 @@ const BlogPage = lazy(() => import('./pages/BlogPage'))
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
+const PathComingPage = lazy(() => import('./pages/PathComingPage'))
 const DashboardStudentPage = lazy(() => import('./pages/DashboardStudentPage'))
 const DashboardFacultyPage = lazy(() => import('./pages/DashboardFacultyPage'))
 const DashboardOrgPage = lazy(() => import('./pages/DashboardOrgPage'))
@@ -63,6 +64,7 @@ function AppRoutes() {
         <Route path="/education/undergraduate" element={<UndergraduatePage />} />
         <Route path="/education/postgraduate" element={<PostgraduatePage />} />
         <Route path="/education/exams" element={<ExamsPage />} />
+        <Route path="/exams/:slug" element={<PathComingPage />} />
         <Route path="/skills" element={<SkillsPage />} />
         <Route path="/career-os" element={<CareerOSLayout />}>
           <Route index element={<CareerOSOverviewPage />} />

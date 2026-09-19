@@ -1,123 +1,99 @@
-import { Link } from 'react-router-dom'
-import { C, PageShell } from '../components/shared'
-import { T } from '../tokens'
+import { useState } from "react"
+import { Link } from "react-router-dom"
+import { PageShell } from "../components/shared"
+import { CourseWorkspacePreview } from "../components/product/ProductLanguage"
+import { courses } from "../data"
+import { countStaticCourseLessons } from "../lib/curriculum-counts"
+import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG } from "../lib/authored-courses"
+import "./Catalog.css"
 
-const SURFACES = [
-  {
-    title: 'Courses and lessons',
-    body: 'Open an enrolled course and move through video, reading, quizzes, and assignments in one workspace.',
-  },
-  {
-    title: 'Practice',
-    body: 'Check understanding with quizzes and turn briefs into work you can keep as evidence.',
-  },
-  {
-    title: 'Progress',
-    body: 'See what you have completed and what comes next from the student dashboard.',
-  },
-]
+const analytics = courses.find((course) => course.slug === FLAGSHIP_COURSE_SLUG)
+const product = courses.find((course) => course.slug === PRODUCT_MANAGEMENT_SLUG)
 
 export default function OSPage() {
+  const [hero, setHero] = useState<"analytics" | "product">("analytics")
+  const featured = hero === "product" && product ? product : analytics
+  const firstLesson = featured?.modules[0]?.lessons[0]
+  const firstQuiz = featured?.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")
+  const capstone = featured?.modules.flatMap((module) => module.lessons).find((lesson) => /capstone|product case/i.test(lesson.title))
+
   return (
     <PageShell aurora={false}>
-      <section
-        className="os-gateway"
-        style={{
-          background: C.canvas,
-          minHeight: 'calc(100vh - 64px)',
-          padding: 'clamp(48px, 8vw, 96px) 32px 80px',
-        }}
-      >
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          <p className="skylent-label" style={{ color: C.indigo, marginBottom: 16 }}>
-            Skylent OS
-          </p>
-          <h1
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(32px, 4.4vw, 48px)',
-              fontWeight: 600,
-              color: C.ink,
-              letterSpacing: '-0.03em',
-              lineHeight: 1.12,
-              margin: '0 0 16px',
-            }}
-          >
-            Your learning workspace
-          </h1>
-          <p style={{ color: C.slate, fontSize: 17, lineHeight: 1.7, margin: '0 0 36px', maxWidth: 540 }}>
-            Skylent OS is the student workspace for courses, lessons, practice, and progress. It is the same product as the student dashboard and course study view — not a separate operating system.
-          </p>
-
-          <ul style={{ listStyle: 'none', margin: 0, padding: 0, borderTop: `1px solid ${T.lineStrong}` }}>
-            {SURFACES.map((item) => (
-              <li
-                key={item.title}
-                style={{
-                  padding: '20px 0',
-                  borderBottom: `1px solid ${T.lineLight}`,
-                }}
-              >
-                <div style={{ color: C.ink, fontSize: 17, fontWeight: 600, marginBottom: 6 }}>{item.title}</div>
-                <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.65, margin: 0 }}>{item.body}</p>
-              </li>
-            ))}
-          </ul>
-
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 32 }}>
-            <Link
-              to="/login"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                minHeight: 44,
-                padding: '0 18px',
-                background: C.indigo,
-                color: C.white,
-                borderRadius: T.rControl,
-                textDecoration: 'none',
-                fontSize: 14,
-                fontWeight: 600,
-              }}
-            >
-              Sign in
-            </Link>
-            <Link
-              to="/courses"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                minHeight: 44,
-                padding: '0 18px',
-                background: C.cream,
-                color: C.ink,
-                border: `1px solid ${T.lineStrong}`,
-                borderRadius: T.rControl,
-                textDecoration: 'none',
-                fontSize: 14,
-                fontWeight: 600,
-              }}
-            >
-              Browse courses
-            </Link>
-            <Link
-              to="/dashboard/student"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                minHeight: 44,
-                padding: '0 18px',
-                color: C.indigo,
-                textDecoration: 'none',
-                fontSize: 14,
-                fontWeight: 600,
-              }}
-            >
-              Student dashboard →
-            </Link>
+      <div className="cat-page">
+        <section className="cat-hero">
+          <div className="cat-rail cat-hero-split">
+            <div>
+              <p className="cat-label">Skylent OS</p>
+              <h1>Your learning workspace</h1>
+              <p className="cat-lead">
+                Written lessons, quizzes, and assignments in one place. It is the same product as the student dashboard — not a separate operating system, and not a video classroom.
+              </p>
+              <div className="cat-actions">
+                <Link className="cat-btn cat-btn-primary cat-btn-lg" to="/courses/data-analytics">Start Data Analytics</Link>
+                <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">Start Product Management</Link>
+              </div>
+              <p className="cat-honesty">
+                Open a course, enrol, then Skylent OS starts at the first lesson. Payment is not collected in this pilot.
+              </p>
+            </div>
+            {featured ? (
+              <div className="cat-hero-visual">
+                <p className="cat-preview-caption">What you open after enrol</p>
+                <div className="cat-hero-switch" role="tablist" aria-label="Course workspace preview">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={hero === "analytics"}
+                    className={hero === "analytics" ? "is-on" : undefined}
+                    onClick={() => setHero("analytics")}
+                  >
+                    Data Analytics
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={hero === "product"}
+                    className={hero === "product" ? "is-on" : undefined}
+                    onClick={() => setHero("product")}
+                  >
+                    Product Management
+                  </button>
+                </div>
+                <CourseWorkspacePreview
+                  courseTitle={featured.title}
+                  lessonTitle={firstLesson?.title ?? "Open the first lesson"}
+                  practiceTitle={firstQuiz?.title ?? "A short check"}
+                  workTitle={capstone?.title ?? "Capstone"}
+                  modules={featured.modules.map((module) => module.title)}
+                  lessonCount={countStaticCourseLessons(featured)}
+                  visual={hero === "product" ? "harbor-desk" : "northwind"}
+                  marketing
+                />
+              </div>
+            ) : null}
           </div>
-        </div>
-      </section>
+        </section>
+
+        <section className="cat-section">
+          <div className="cat-rail">
+            <h2>What lives here</h2>
+            <div className="cat-caps is-3">
+              <article className="cat-cap">
+                <strong>Courses and lessons</strong>
+                <p>Move through written work in the enrolled course. Lesson bodies stay in this workspace.</p>
+              </article>
+              <article className="cat-cap">
+                <strong>Practice</strong>
+                <p>Short checks and assignments become work you can keep as evidence.</p>
+              </article>
+              <article className="cat-cap">
+                <strong>Progress</strong>
+                <p>See what you have completed and what comes next from the student dashboard.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+      </div>
     </PageShell>
   )
 }

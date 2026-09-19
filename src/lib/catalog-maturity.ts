@@ -137,8 +137,8 @@ export const PROGRAMME_INTENDED_STEPS = [
 ]
 
 export function coursePrimaryCta(view: { showLiveCurriculum: boolean; maturity: PublicMaturity }): string {
-  if (view.showLiveCurriculum) return "Enrol to start learning"
-  return "Enrol to open the outline"
+  if (view.showLiveCurriculum) return "Start this course"
+  return "Open the outline"
 }
 
 export function courseAfterEnrolSteps(authored: boolean, courseTitle?: string): string[] {
@@ -294,7 +294,7 @@ export function programmePublicView(program: Program): ProgrammePublicView {
     enrollOpen,
     listedPrice,
     honesty: programmeHonesty(program, linked),
-    ctaLabel: comingLater ? "Coming later" : enrollOpen ? "Enrol to open linked learning" : "Enrolment unavailable",
+    ctaLabel: comingLater ? "Coming later" : enrollOpen ? "Open linked course" : "Enrolment unavailable",
   }
 }
 

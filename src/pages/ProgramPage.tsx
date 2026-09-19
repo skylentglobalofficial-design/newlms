@@ -52,8 +52,8 @@ export default function ProgramPage() {
         : "Enrolment unavailable"
 
   function openEnrol() {
-    if (comingLater) return
-    if (enrollable || !catalog.loading) setEnrollOpen(true)
+    if (comingLater || !enrollable) return
+    setEnrollOpen(true)
   }
 
   const pathSteps = PROGRAMME_INTENDED_STEPS.map((step) => ({
@@ -96,7 +96,7 @@ export default function ProgramPage() {
                   <button
                     type="button"
                     className="cat-btn cat-btn-primary cat-btn-lg"
-                    disabled={catalog.loading && !enrollable}
+                    disabled={!enrollable}
                     onClick={openEnrol}
                   >
                     {cta}
@@ -111,12 +111,11 @@ export default function ProgramPage() {
                 )}
               </div>
               {view.listedPrice > 0 && !comingLater ? (
-                <p className="cat-price-line">
-                  ₹{view.listedPrice.toLocaleString("en-IN")}
-                  <span> listed · Payment is not collected · Certificate not issued in this pilot</span>
+                <p className="cat-honesty">
+                  Listed price ₹{view.listedPrice.toLocaleString("en-IN")}. Payment is not collected in this pilot. A certificate is not issued yet.
                 </p>
               ) : (
-                <p className="cat-fine">Payment is not collected. Certificate: not issued in this pilot.</p>
+                <p className="cat-honesty">Payment is not collected. A certificate is not issued in this pilot.</p>
               )}
               <p className="cat-fine">{afterEnrol}</p>
             </div>
@@ -196,7 +195,7 @@ export default function ProgramPage() {
                 <button
                   type="button"
                   className="cat-btn cat-btn-primary"
-                  disabled={catalog.loading && !enrollable}
+                  disabled={!enrollable}
                   onClick={openEnrol}
                 >
                   {cta}

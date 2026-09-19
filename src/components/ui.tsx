@@ -30,6 +30,22 @@ function sectionTextColor(tone: Tone): string {
   return tone === 'dark' ? C.white : C.ink
 }
 
+export function Rail({
+  children,
+  className,
+  style,
+}: {
+  children: React.ReactNode
+  className?: string
+  style?: React.CSSProperties
+}) {
+  return (
+    <div className={className ? `skylent-rail ${className}` : 'skylent-rail'} style={style}>
+      {children}
+    </div>
+  )
+}
+
 export function Section({
   children,
   bg,
@@ -55,12 +71,12 @@ export function Section({
         style={{
           background,
           color: textColor,
-          padding: `${T.section} ${T.gutter}`,
+          padding: `${T.section} 0`,
           position: 'relative',
           ...style,
         }}
       >
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative' }}>{children}</div>
+        <Rail style={{ position: 'relative' }}>{children}</Rail>
       </section>
     </>
   )
@@ -310,8 +326,8 @@ export function PageHero({
   photoAspect?: '4/3' | '16/9' | '4/5' | '3/2'
 }) {
   return (
-    <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `clamp(88px, 10vw, 120px) ${T.gutter} clamp(48px, 6vw, 72px)` }}>
-      <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+    <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: 'clamp(88px, 10vw, 120px) 0 clamp(48px, 6vw, 72px)' }}>
+      <Rail style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'grid', gridTemplateColumns: photo ? '1.05fr 0.95fr' : '1fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }} className="two-col skylent-page-hero">
           <div>
             <div style={{ marginBottom: 20 }}><Eyebrow tone="light" accent>{eyebrow}</Eyebrow></div>
@@ -334,7 +350,7 @@ export function PageHero({
             />
           )}
         </div>
-      </div>
+      </Rail>
     </section>
   )
 }
@@ -378,8 +394,9 @@ export function CTABand({
 }) {
   const navigate = useNavigate()
   return (
-    <section className="skylent-cta-band" style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `${T.section} ${T.gutter}`, borderTop: `1px solid ${T.lineLight}` }}>
-      <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+    <section className="skylent-cta-band" style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `${T.section} 0`, borderTop: `1px solid ${T.lineLight}` }}>
+      <Rail style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
         <FadeIn>
           {eyebrow && <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'center' }}><Eyebrow tone="light" accent>{eyebrow}</Eyebrow></div>}
           <Heading tone="light" size="lg" style={{ textAlign: 'center' }}>{title}</Heading>
@@ -389,7 +406,8 @@ export function CTABand({
             {secondary && <Button variant="ghost" size="lg" onClick={() => navigate(secondary.to)}>{secondary.label}</Button>}
           </div>
         </FadeIn>
-      </div>
+        </div>
+      </Rail>
     </section>
   )
 }

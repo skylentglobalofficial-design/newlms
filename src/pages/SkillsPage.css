@@ -6,11 +6,6 @@
   overflow-x: hidden;
 }
 
-.sk-rail {
-  width: min(1180px, calc(100% - 2 * var(--gutter)));
-  margin-inline: auto;
-  min-width: 0;
-}
 
 .sk-fine {
   margin: 12px 0 0;

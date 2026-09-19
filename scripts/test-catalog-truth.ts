@@ -121,8 +121,8 @@ const analyticsPro = programmePublicView(programs.find((row) => row.slug === "da
 assert(analyticsPro.linked.some((item) => item.slug === "data-analytics" && item.authored), "Data Analytics pathway must link the authored course")
 assert(/data analytics course/i.test(analyticsPro.honesty), "Data Analytics programme must say the live LMS is the course")
 assert(
-  /Enrol to open linked learning/.test(analyticsPro.ctaLabel),
-  "Data Analytics programme CTA must say enrolment opens linked learning",
+  /Open linked course/.test(analyticsPro.ctaLabel),
+  "Data Analytics programme CTA must open the linked course",
 )
 
 const daCards = courseModuleCards(da!, true)
@@ -135,8 +135,8 @@ assert(daPractice.learning.length === 8, "Data Analytics has 8 written lessons")
 assert(daPractice.practice.length === 3, "Data Analytics has 3 practice checks")
 assert(daPractice.assignments.length === 3, "Data Analytics has 3 assignments besides the capstone")
 assert(daPractice.capstone.length === 1, "Data Analytics has one capstone")
-assert(coursePrimaryCta(daView) === "Enrol to start learning", "Data Analytics CTA must enrol into learning")
-assert(daView.primaryCta === "Enrol to start learning", "Public view CTA matches authored access")
+assert(coursePrimaryCta(daView) === "Start this course", "Data Analytics CTA must start the course")
+assert(daView.primaryCta === "Start this course", "Public view CTA matches authored access")
 
 const dsai = programmePublicView(programs.find((row) => row.slug === "data-science-ai")!)
 assert(dsai.linked.some((item) => item.slug === "data-analytics"), "Data Science & AI still enrols into Data Analytics")
