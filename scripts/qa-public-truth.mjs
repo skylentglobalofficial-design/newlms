@@ -27,6 +27,8 @@ const ROUTES = [
   "/workshops/ai-for-business",
   "/workshops/prompt-engineering",
   "/os",
+  "/labs",
+  "/login",
   "/career-os",
   "/about",
   "/institutions",
