@@ -1590,11 +1590,18 @@
     border-top: 1px solid rgba(21, 23, 26, 0.08);
   }
 
-  .hp-hero-media,
   .hp-hero-folio,
   .hp-hero-media.is-report {
     height: 160px;
     min-height: 160px;
+    max-height: 160px;
+  }
+
+  /* The compact workspace visual drops its table and sparkline at this width, so
+     a fixed height left dead space inside the frame. Cap it instead. */
+  .hp-hero-media {
+    height: auto;
+    min-height: 0;
     max-height: 160px;
   }
 
