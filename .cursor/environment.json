@@ -1,0 +1,16 @@
+{
+  "name": "Skylent LMS",
+  "install": "bash .cursor/install.sh",
+  "start": "bash .cursor/start.sh",
+  "terminals": [
+    {
+      "name": "api",
+      "command": "PORT=3000 pnpm dev:api"
+    },
+    {
+      "name": "web",
+      "command": "PORT=\"${PORT:-8443}\" pnpm dev"
+    }
+  ],
+  "ports": [8443, 3000]
+}
