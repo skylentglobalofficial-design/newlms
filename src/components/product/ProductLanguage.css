@@ -439,6 +439,14 @@
   align-content: start;
 }
 
+/* Build is the only step whose visual is two grid children rather than one
+   wrapper, so the row gap pushed it past the shared min-height and dropped its
+   caption below the other steps' baseline. */
+.pl-flow-visual.is-build {
+  gap: 2px;
+  align-content: start;
+}
+
 .pl-flow-lesson em,
 .pl-flow-quiz em,
 .pl-flow-keep em,

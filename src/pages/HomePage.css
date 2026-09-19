@@ -300,7 +300,9 @@
   min-height: 0;
 }
 
-.hp-hero-workspace h3 {
+/* Titles inside the simulated workspace panes are UI labels, not document
+   sections, so they are not headings. Scoped above `.hp-hero-workspace p`. */
+.hp-hero-workspace .hp-hero-workspace-title {
   display: -webkit-box;
   margin: 0;
   overflow: hidden;
@@ -464,7 +466,7 @@
   text-transform: uppercase;
 }
 
-.hp-hero-folio h3 {
+.hp-hero-folio .hp-hero-workspace-title {
   margin-top: 8px;
 }
 

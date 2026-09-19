@@ -832,6 +832,105 @@
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.cat-caps.is-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* /os — workspace scope + named work */
+.os-scope-label {
+  margin-top: 22px;
+}
+
+.os-scope {
+  margin-top: 10px;
+}
+
+.os-produce {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(18px, 2.4vw, 28px);
+  margin-top: 20px;
+}
+
+.os-produce-item {
+  min-width: 0;
+  padding: clamp(16px, 1.8vw, 22px);
+  background: #ffffff;
+  border: 1px solid rgba(21, 23, 26, 0.08);
+  border-radius: 14px;
+}
+
+.os-produce-course {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.os-produce-item ul {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.os-produce-item li {
+  padding: 10px 12px;
+  background: #fffdf8;
+  border-left: 2px solid #e8e2d6;
+  border-radius: 0 10px 10px 0;
+}
+
+.os-produce-item li.is-capstone {
+  background: #eef2ff;
+  border-left-color: #4f46e5;
+}
+
+.os-produce-item li span {
+  display: block;
+  color: #5c6168;
+  font: 600 10.5px/1.3 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.os-produce-item li.is-capstone span {
+  color: #4f46e5;
+}
+
+.os-produce-item li strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+}
+
+.os-produce-item .cat-text-link {
+  display: inline-block;
+  margin-top: 14px;
+}
+
+@media (max-width: 1100px) {
+  .cat-caps.is-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 28px;
+  }
+}
+
+@media (max-width: 768px) {
+  .cat-caps.is-4 {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .os-produce {
+    grid-template-columns: 1fr;
+  }
+}
+
 .cat-modules {
   display: grid;
   gap: 10px;
@@ -1436,9 +1535,13 @@
   align-items: center;
 }
 
-.cat-link h3 {
+.cat-link .cat-link-title {
   margin: 8px 0 0;
+  color: #15171a;
   font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 .cat-link p {
