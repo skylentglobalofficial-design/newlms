@@ -154,45 +154,60 @@ function HomeHero() {
 
         <div className="hp-hero-stage">
           {analytics ? (
-            <div className="hp-hero-main">
-              <ProductFrame brand="Skylent OS" title="" meta={`Lesson 7 of ${analytics.lessonCount}`}>
-                <div className="hp-os-mini">
-                  <p className="hp-os-mini-course">{analytics.title}</p>
-                  <ol className="hp-os-mini-path">
-                    {analytics.path.map((module) => (
-                      <li key={module.id} className={`is-${module.state}`}>
-                        <span aria-hidden="true">{module.state === "done" ? "✓" : "→"}</span>
-                        {module.title}
-                      </li>
-                    ))}
-                  </ol>
-                  <div className="hp-os-mini-work">
-                    <p>Current work</p>
-                    <strong>{analytics.workTitle}</strong>
-                    <Link to={analytics.href}>Open workspace →</Link>
+            <div className="hp-hero-collage">
+              <div className="hp-hero-main">
+                <ProductFrame brand="Skylent OS" title="" meta={`Lesson 7 of ${analytics.lessonCount}`}>
+                  <div className="hp-os">
+                    <div className="hp-os-learn">
+                      <p className="hp-os-continue">Continue learning</p>
+                      <p className="hp-os-course">{analytics.title}</p>
+                      <p className="hp-os-lesson">
+                        {analytics.path.find((module) => module.state === "now")?.title ?? analytics.lessonTitle}
+                      </p>
+                      <ol className="hp-os-path">
+                        {analytics.path.map((module) => (
+                          <li key={module.id} className={`is-${module.state}`}>
+                            <span aria-hidden="true">{module.state === "done" ? "✓" : "→"}</span>
+                            {module.title}
+                          </li>
+                        ))}
+                      </ol>
+                    </div>
+                    <div className="hp-os-work">
+                      <CourseThumb authored visual={analytics.visual} />
+                      <div className="hp-os-project">
+                        <p>Your project</p>
+                        <strong>{analytics.workTitle}</strong>
+                        <Link to={analytics.href}>Open workspace →</Link>
+                      </div>
+                    </div>
                   </div>
+                </ProductFrame>
+              </div>
+              <div className="hp-hero-proof">
+                {product ? (
+                  <div className="hp-hero-float is-project">
+                    <ProductFrame brand="Skylent OS" title="" meta="Your project" compact>
+                      <p className="hp-hero-case-kicker">Harbor Desk</p>
+                      <p className="hp-hero-case-title">{product.workTitle}</p>
+                    </ProductFrame>
+                  </div>
+                ) : null}
+                <div className="hp-hero-float is-career">
+                  <ProductFrame brand="Career OS" title="" meta="Evidence" compact>
+                    <ul className="hp-hero-career">
+                      {CAREER_OS_IA.filter((item) => item.label === "Projects" || item.label === "Opportunities").map((item) => (
+                        <li key={item.label}>
+                          <span>{item.label}</span>
+                          <b>{item.label === "Opportunities" ? "Empty until published" : item.sub}</b>
+                        </li>
+                      ))}
+                    </ul>
+                  </ProductFrame>
                 </div>
-              </ProductFrame>
+              </div>
             </div>
           ) : null}
-          <div className="hp-hero-satellites">
-            {product ? (
-              <ProductFrame brand="Skylent OS" title="" meta="Harbor Desk" compact>
-                <p className="hp-hero-case-kicker">Product Management</p>
-                <p className="hp-hero-case-title">{product.workTitle}</p>
-              </ProductFrame>
-            ) : null}
-            <ProductFrame brand="Career OS" title="" meta="Evidence" compact>
-              <ul className="hp-hero-career">
-                {CAREER_OS_IA.slice(0, 3).map((item) => (
-                  <li key={item.label}>
-                    <span>{item.label}</span>
-                    <b>{item.label === "Opportunities" ? "Empty until published" : item.sub}</b>
-                  </li>
-                ))}
-              </ul>
-            </ProductFrame>
-          </div>
           <p className="hp-hero-note">
             Live product UI from Skylent OS and Career OS. Data Analytics and Product Management are the two authored windows — not the brand.
           </p>
