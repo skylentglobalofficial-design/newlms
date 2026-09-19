@@ -297,7 +297,7 @@ export function programmePublicView(program: Program): ProgrammePublicView {
     ctaLabel: comingLater
       ? "Coming later"
       : enrollOpen
-        ? authoredCourses.length > 0
+        ? authoredCourses.length > 0 && authoredCourses.length === linked.length
           ? "Start this programme"
           : "Open linked course"
         : "Enrolment unavailable",
