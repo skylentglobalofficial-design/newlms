@@ -59,10 +59,11 @@
 
 .hp-ev-lead {
   margin: 18px 0 0;
-  max-width: 26em;
+  max-width: 34em;
   color: var(--ev-secondary);
   font-size: 16px;
   line-height: 1.55;
+  text-wrap: pretty;
 }
 
 .hp-ev-work {
