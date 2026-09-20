@@ -1,44 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" fill="none">
-  <rect width="960" height="420" fill="#F4F4F5"/>
-  <rect x="24" y="20" width="912" height="380" rx="8" fill="#FFFFFF" stroke="#E6E7EA"/>
-  <line x1="24" y1="68" x2="936" y2="68" stroke="#E6E7EA"/>
-  <text x="44" y="49" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="600" letter-spacing="-0.3">Harbor Desk</text>
-  <text x="148" y="49" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500" letter-spacing="1.4">WEEKEND EXCEPTION QUEUE</text>
-  <circle cx="900" cy="44" r="3.5" fill="#4F46E5"/>
-  <text x="820" y="49" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11.5" font-weight="500">Before open</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 340" fill="none">
+  <rect width="960" height="340" fill="#F4F4F5"/>
+  <rect x="24" y="18" width="912" height="304" rx="8" fill="#FFFFFF" stroke="#E6E7EA"/>
 
-  <rect x="24" y="68" width="200" height="332" fill="#FAFAFB"/>
-  <line x1="224" y1="68" x2="224" y2="400" stroke="#E6E7EA"/>
-  <text x="44" y="96" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="500" letter-spacing="1.3">QUEUES</text>
-  <rect x="36" y="110" width="164" height="32" rx="6" fill="#15171A"/>
-  <text x="48" y="131" fill="#FFFFFF" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5" font-weight="500">Inbox</text>
-  <text x="48" y="168" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5" font-weight="500">Weekend queue</text>
-  <text x="48" y="204" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5" font-weight="500">Ready for review</text>
-  <text x="44" y="250" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="500" letter-spacing="1.3">OWNER</text>
-  <text x="48" y="278" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5">Unassigned</text>
-  <text x="48" y="306" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5">HQ operations</text>
+  <text x="48" y="48" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="500" letter-spacing="1.6">CASE ARTIFACT</text>
+  <text x="48" y="78" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="22" font-weight="600" letter-spacing="-0.4">Weekend exception queue</text>
+  <text x="48" y="102" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13">Harbor Retail - 4-5 July 2026 - before the store opens</text>
+  <rect x="792" y="36" width="120" height="24" rx="4" fill="#F4F4F5"/>
+  <text x="808" y="52" fill="#4F46E5" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600">Ready for review</text>
 
-  <text x="248" y="96" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="500" letter-spacing="1.3">OPEN BEFORE 7AM</text>
+  <line x1="48" y1="118" x2="912" y2="118" stroke="#E6E7EA"/>
 
-  <rect x="248" y="110" width="664" height="56" rx="6" fill="#F7F7F8" stroke="#E6E7EA"/>
-  <circle cx="270" cy="138" r="4" fill="#4F46E5"/>
-  <text x="286" y="134" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="600">T. Nagar - late inbound</text>
-  <text x="286" y="154" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">No owner before open. Milk truck missed the 06:30 window.</text>
-  <text x="820" y="140" fill="#4F46E5" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600">UNOWNED</text>
+  <text x="48" y="142" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="500" letter-spacing="1.3">STORE</text>
+  <text x="248" y="142" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="500" letter-spacing="1.3">EXCEPTION</text>
+  <text x="560" y="142" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="500" letter-spacing="1.3">WHERE IT LIVED</text>
+  <text x="820" y="142" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="500" letter-spacing="1.3">STATE</text>
 
-  <line x1="248" y1="180" x2="912" y2="180" stroke="#EEEEF0"/>
-  <text x="248" y="204" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="500">Anna Nagar - delivery failure</text>
-  <text x="248" y="224" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">Never appeared in a channel. Cashier took it on WhatsApp.</text>
-  <text x="820" y="214" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500">UNLOGGED</text>
+  <rect x="48" y="156" width="864" height="36" rx="4" fill="#F7F7F8"/>
+  <rect x="48" y="156" width="3" height="36" rx="1.5" fill="#4F46E5"/>
+  <text x="60" y="179" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="600">T. Nagar</text>
+  <text x="248" y="179" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5">Late inbound - milk truck missed 06:30</text>
+  <text x="560" y="179" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13">WhatsApp - no owner</text>
+  <text x="820" y="179" fill="#4F46E5" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600">UNOWNED</text>
 
-  <line x1="248" y1="244" x2="912" y2="244" stroke="#EEEEF0"/>
-  <text x="248" y="268" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="500">Peelamedu - weekend exception</text>
-  <text x="248" y="288" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">Buried in the on-call group. 43 unread.</text>
-  <text x="820" y="278" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500">BURIED</text>
+  <text x="60" y="219" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="500">Peelamedu</text>
+  <text x="248" y="219" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5">Weekend delivery failure</text>
+  <text x="560" y="219" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13">On-call group - 43 unread</text>
+  <text x="820" y="219" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500">BURIED</text>
 
-  <line x1="248" y1="308" x2="912" y2="308" stroke="#EEEEF0"/>
-  <text x="248" y="332" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="500">Madurai Main - cooler fault</text>
-  <text x="248" y="352" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">Walkie only. No written trail after the engineer was called.</text>
-  <text x="820" y="342" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500">WALKIE</text>
+  <line x1="48" y1="234" x2="912" y2="234" stroke="#EEEEF0"/>
+
+  <text x="60" y="259" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="500">Anna Nagar</text>
+  <text x="248" y="259" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5">Customer delivery - cashier WhatsApp</text>
+  <text x="560" y="259" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13">Never appeared in a channel</text>
+  <text x="820" y="259" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500">UNLOGGED</text>
+
+  <line x1="48" y1="274" x2="912" y2="274" stroke="#EEEEF0"/>
+
+  <text x="48" y="302" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500" letter-spacing="0.8">BET</text>
+  <text x="88" y="302" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="500">One named weekend queue. An owner before 07:00. A written trail.</text>
 </svg>

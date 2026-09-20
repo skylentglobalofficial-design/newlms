@@ -17,10 +17,6 @@ function HarborEvidenceWorkspace({ active }: { active: boolean }) {
       <header className="hp-ev-work-bar">
         <p className="hp-ev-brand">Skylent OS</p>
         <p className="hp-ev-work-kicker">Project case</p>
-        <p className="hp-ev-status">
-          <i aria-hidden="true" />
-          In progress
-        </p>
       </header>
 
       <div className="hp-ev-work-body">
@@ -29,7 +25,10 @@ function HarborEvidenceWorkspace({ active }: { active: boolean }) {
         </p>
 
         <figure className="hp-ev-artifact">
-          <img src={HARBOR_DESK_PROJECT_IMAGE} alt="Harbor Desk exception queue" />
+          <img
+            src={HARBOR_DESK_PROJECT_IMAGE}
+            alt="Harbor Desk weekend exception queue, a product-case artifact"
+          />
         </figure>
 
         <dl className="hp-ev-fields">
