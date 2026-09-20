@@ -85,7 +85,6 @@
 }
 
 .hp-ch-link:focus-visible,
-.hp-archive a:focus-visible,
 .hp-labx a:focus-visible,
 .hp-acad a:focus-visible,
 .hp-school a:focus-visible,
@@ -98,65 +97,6 @@
 .hp-end a:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-}
-
-/* 09 — project archive */
-.hp-archive-main {
-  min-width: 0;
-  margin-top: clamp(36px, 5vh, 56px);
-  padding-top: 28px;
-  border-top: 1px solid var(--ink);
-}
-
-.hp-archive-kicker {
-  margin: 0;
-  color: var(--muted);
-  font: 500 11px/1.4 var(--font-mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.hp-archive-main h3,
-.hp-archive-side h3 {
-  margin: 10px 0 0;
-  font-family: var(--font-brand);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  line-height: 1.08;
-}
-
-.hp-archive-main h3 {
-  font-size: clamp(44px, 6vw, 88px);
-}
-
-.hp-archive-side h3 {
-  font-size: clamp(26px, 3vw, 36px);
-}
-
-.hp-archive-main p,
-.hp-archive-side p {
-  margin: 12px 0 0;
-  max-width: 36em;
-  color: var(--secondary);
-  font-size: 15px;
-  line-height: 1.5;
-}
-
-.hp-archive-main .hp-ch-link,
-.hp-archive-side .hp-ch-link {
-  display: inline-block;
-  margin-top: 16px;
-}
-
-.hp-archive-side {
-  display: grid;
-  grid-template-columns: 8.5em minmax(0, 1fr);
-  gap: 16px 28px;
-  align-items: start;
-  min-width: 0;
-  margin-top: 36px;
-  padding-top: 22px;
-  border-top: 1px solid var(--line);
 }
 
 /* 10 — lab workbench */
@@ -762,8 +702,7 @@
   }
 
   .hp-labx-bench,
-  .hp-eco-map,
-  .hp-archive-side {
+  .hp-eco-map {
     grid-template-columns: 1fr;
   }
 
@@ -836,9 +775,5 @@
 @media (max-width: 430px) {
   .hp-ch-title {
     font-size: clamp(30px, 9vw, 40px);
-  }
-
-  .hp-archive-main h3 {
-    font-size: 36px;
   }
 }
