@@ -4,14 +4,15 @@ import { PageShell } from "../components/shared"
 import {
   CourseProductVisual,
   CourseThumb,
-  CourseWorkspacePreview,
   ProductFrame,
 } from "../components/product/ProductLanguage"
-import { courses } from "../data"
+import SkylentOsShowcase from "../components/home/SkylentOsShowcase"
+import SkylentHeroLearningModel from "../components/home/SkylentHeroLearningModel"
+import { courses, workshops } from "../data"
 import { coursePublicView } from "../lib/catalog-maturity"
-import { authoredCourseList, courseProductProfile } from "../lib/course-product"
+import { courseProductProfile } from "../lib/course-product"
 import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG } from "../lib/authored-courses"
-import { getCareerEvidence, getCourseQuiz, getLessonMeta } from "../content/course-lookups"
+import { authoredWorkspace } from "../lib/home-workspace"
 import { ACADEMIC_LINES, CAREER_OS_IA, EXAMS_NAV, MATURITY_LABEL } from "../lib/product-architecture"
 import { programmeDiscoveryCards } from "../lib/programme-discovery"
 import "./HomePage.css"
@@ -92,127 +93,15 @@ const GOALS: Array<{
   },
 ]
 
-function authoredWorkspace(slug: string) {
-  const course = authoredCourseList().find((item) => item.slug === slug)
-  if (!course) return null
-  const profile = courseProductProfile(course.slug)
-  const view = coursePublicView(course)
-  const lessons = course.modules.flatMap((module) => module.lessons)
-  const firstLesson = course.modules[0]?.lessons[0]
-  const firstQuiz = lessons.find((lesson) => lesson.type === "quiz")
-  const capstone = lessons.find((lesson) => /capstone|product case/i.test(lesson.title))
-  const quiz = getCourseQuiz(course.slug, firstQuiz?.id)
-  const lessonMeta = firstLesson ? getLessonMeta(course.slug, firstLesson.id) : undefined
-  const evidence = capstone ? getCareerEvidence(course.slug, capstone.id) : undefined
-  return {
-    slug: course.slug,
-    title: course.title,
-    href: `/courses/${course.slug}`,
-    modules: course.modules.map((module) => module.title),
-    path: course.modules.slice(0, 3).map((module, index) => ({
-      id: module.id,
-      title: module.title,
-      state: index < 2 ? "done" : "now",
-    })),
-    lessonTitle: firstLesson?.title ?? "Open the first lesson",
-    lessonObjective: lessonMeta?.objective ?? null,
-    practiceTitle: firstQuiz?.title ?? "Practice",
-    practicePrompt: quiz?.questions[0]?.prompt ?? null,
-    workTitle: profile?.project?.note?.split(" — ")[0] ?? capstone?.title ?? "Capstone",
-    workNote: profile?.project?.note ?? null,
-    material: profile?.datasets[0]?.filename ?? null,
-    visual: profile?.visual ?? "northwind",
-    lessonCount: view.stats.lessonCount,
-    quizCount: view.stats.quizCount,
-    assignmentCount: view.stats.assignmentCount,
-    evidenceTitle: evidence?.artifact ?? capstone?.title ?? "Work sample you keep",
-  }
-}
-
 function HomeHero() {
-  const analytics = authoredWorkspace(FLAGSHIP_COURSE_SLUG)
-  const product = authoredWorkspace(PRODUCT_MANAGEMENT_SLUG)
-
   return (
-    <section className="hp-hero" aria-labelledby="home-hero-heading">
-      <div className="hp-rail hp-hero-board">
-        <div className="hp-hero-copy">
-          <p className="hp-kicker">Skylent</p>
-          <h1 id="home-hero-heading">
-            Learn something
-            <br />
-            <em>worth building.</em>
-          </h1>
-          <p className="hp-hero-lead">
-            Courses, programmes, education and exam preparation — all in one place.
-          </p>
-          <div className="hp-actions">
-            <Link className="hp-btn hp-btn-primary" to="/programs">Explore learning →</Link>
-            <Link className="hp-btn hp-btn-ghost" to="/education/exams">Explore exams →</Link>
-          </div>
-        </div>
-
-        <div className="hp-hero-stage">
-          {analytics ? (
-            <div className="hp-hero-collage">
-              <div className="hp-hero-main">
-                <ProductFrame brand="Skylent OS" title="" meta={`Lesson 7 of ${analytics.lessonCount}`}>
-                  <div className="hp-os">
-                    <div className="hp-os-learn">
-                      <p className="hp-os-continue">Continue learning</p>
-                      <p className="hp-os-course">{analytics.title}</p>
-                      <p className="hp-os-lesson">
-                        {analytics.path.find((module) => module.state === "now")?.title ?? analytics.lessonTitle}
-                      </p>
-                      <ol className="hp-os-path">
-                        {analytics.path.map((module) => (
-                          <li key={module.id} className={`is-${module.state}`}>
-                            <span aria-hidden="true">{module.state === "done" ? "✓" : "→"}</span>
-                            {module.title}
-                          </li>
-                        ))}
-                      </ol>
-                    </div>
-                    <p className="hp-os-capstone">{analytics.workTitle}</p>
-                    <div className="hp-os-work">
-                      <CourseThumb authored visual={analytics.visual} />
-                    </div>
-                  </div>
-                </ProductFrame>
-              </div>
-              <div className="hp-hero-proof">
-                {product ? (
-                  <div className="hp-hero-float is-project">
-                    <ProductFrame brand="Skylent OS" title="" meta="Your project" compact>
-                      <p className="hp-hero-case-kicker">Harbor Desk</p>
-                      <p className="hp-hero-case-title">{product.workTitle}</p>
-                    </ProductFrame>
-                  </div>
-                ) : null}
-                <div className="hp-hero-float is-career">
-                  <ProductFrame brand="Career OS" title="" meta="Evidence" compact>
-                    <ul className="hp-hero-career">
-                      {CAREER_OS_IA.filter((item) => item.label === "Projects" || item.label === "Opportunities").map((item) => (
-                        <li key={item.label}>
-                          <span>{item.label}</span>
-                          <b>{item.label === "Opportunities" ? "Empty until published" : item.sub}</b>
-                        </li>
-                      ))}
-                    </ul>
-                  </ProductFrame>
-                </div>
-              </div>
-            </div>
-          ) : null}
-          <p className="hp-hero-note">
-            Live product UI from Skylent OS and Career OS. Data Analytics and Product Management are the two authored windows — not the brand.
-          </p>
-        </div>
+    <section className="hp-hero hp-hero-model" aria-labelledby="home-hero-heading">
+      <div className="hp-rail">
+        <SkylentHeroLearningModel />
       </div>
     </section>
   )
 }
-
 function HomeGoals() {
   const [goal, setGoal] = useState<GoalId>("career")
   const current = GOALS.find((item) => item.id === goal) ?? GOALS[0]
@@ -403,10 +292,6 @@ function HomeLoop() {
 }
 
 function HomeOS() {
-  const analytics = authoredWorkspace(FLAGSHIP_COURSE_SLUG)
-  const [pane, setPane] = useState<"Learning" | "Practice" | "Projects" | "Evidence" | "Career">("Learning")
-  if (!analytics) return null
-
   return (
     <section className="hp-section hp-os" aria-labelledby="home-os-heading">
       <div className="hp-rail">
@@ -416,72 +301,7 @@ function HomeOS() {
           <p className="hp-lead">The workspace where learning turns into work.</p>
         </header>
         <div className="hp-os-stage">
-          <nav className="hp-os-nav" aria-label="Skylent OS stages">
-            {(["Learning", "Practice", "Projects", "Evidence", "Career"] as const).map((item) => (
-              <button
-                key={item}
-                type="button"
-                className={pane === item ? "is-on" : undefined}
-                aria-pressed={pane === item}
-                onClick={() => setPane(item)}
-              >
-                {item}
-              </button>
-            ))}
-          </nav>
-          <div className="hp-os-frame">
-            {pane === "Learning" ? (
-              <CourseWorkspacePreview
-                courseTitle={analytics.title}
-                lessonTitle={analytics.lessonTitle}
-                practiceTitle={analytics.practiceTitle}
-                workTitle={analytics.workTitle}
-                modules={analytics.modules.slice(0, 5)}
-                lessonCount={analytics.lessonCount}
-                visual="northwind"
-              />
-            ) : null}
-            {pane === "Practice" ? (
-              <ProductFrame title="Practice" meta={`${analytics.quizCount} checks · ${analytics.assignmentCount} assignments`}>
-                <div className="hp-os-panel">
-                  <p className="hp-kicker">{analytics.practiceTitle}</p>
-                  <p className="hp-os-panel-title">{analytics.practicePrompt ?? "Short checks after a block of lessons."}</p>
-                  <p className="hp-fine">Quizzes and assignments live inside the course — not a separate practise app.</p>
-                </div>
-              </ProductFrame>
-            ) : null}
-            {pane === "Projects" ? (
-              <ProductFrame title="Projects" meta="Named work you produce">
-                <div className="hp-os-panel">
-                  <p className="hp-kicker">Capstone</p>
-                  <p className="hp-os-panel-title">{analytics.workTitle}</p>
-                  {analytics.material ? <p className="hp-fine"><code>{analytics.material}</code></p> : null}
-                  <p className="hp-fine">{analytics.workNote}</p>
-                </div>
-              </ProductFrame>
-            ) : null}
-            {pane === "Evidence" ? (
-              <ProductFrame title="Evidence" meta="Nothing kept until you add it">
-                <div className="hp-os-panel">
-                  <p className="hp-kicker">Work sample</p>
-                  <p className="hp-os-panel-title">{analytics.evidenceTitle}</p>
-                  <p className="hp-fine">You add finished work to Career OS. Nothing is created automatically.</p>
-                </div>
-              </ProductFrame>
-            ) : null}
-            {pane === "Career" ? (
-              <ProductFrame title="Career OS" meta="Workspace — not a job board">
-                <ul className="hp-hero-career hp-os-career">
-                  {CAREER_OS_IA.map((item) => (
-                    <li key={item.label}>
-                      <span>{item.label}</span>
-                      <b>{item.label === "Opportunities" ? "Empty until partners publish roles" : item.sub}</b>
-                    </li>
-                  ))}
-                </ul>
-              </ProductFrame>
-            ) : null}
-          </div>
+          <SkylentOsShowcase wide />
         </div>
         <p className="hp-fine hp-os-honesty">
           This is the Data Analytics workspace as it exists today. Product Management is the other authored course. Other catalogue listings open an outline.
