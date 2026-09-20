@@ -2,29 +2,17 @@ import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import {
   CourseProductVisual,
-  CourseThumb,
   ProductFrame,
 } from "../components/product/ProductLanguage"
 import SkylentOsShowcase from "../components/home/SkylentOsShowcase"
 import SkylentHeroLearningModel from "../components/home/SkylentHeroLearningModel"
 import SkylentHomeGoals from "../components/home/SkylentHomeGoals"
-import { courses, workshops } from "../data"
-import { coursePublicView } from "../lib/catalog-maturity"
-import { courseProductProfile } from "../lib/course-product"
+import SkylentHomeCatalogue from "../components/home/SkylentHomeCatalogue"
 import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG } from "../lib/authored-courses"
 import { authoredWorkspace } from "../lib/home-workspace"
 import { ACADEMIC_LINES, CAREER_OS_IA, EXAMS_NAV, MATURITY_LABEL } from "../lib/product-architecture"
 import { programmeDiscoveryCards } from "../lib/programme-discovery"
 import "./HomePage.css"
-
-const FEATURED_SLUGS = [
-  "data-analytics",
-  "product-management",
-  "python-programming",
-  "generative-ai",
-  "power-bi",
-  "full-stack-web",
-] as const
 
 const SKILL_LINKS = [
   { label: "Artificial Intelligence", to: "/skills?intent=ai" },
@@ -48,56 +36,7 @@ function HomeGoals() {
 }
 
 function HomeFeatured() {
-  const items = FEATURED_SLUGS.map((slug) => courses.find((course) => course.slug === slug))
-    .filter(Boolean)
-    .map((course) => coursePublicView(course!))
-
-  return (
-    <section className="hp-section hp-discover" aria-labelledby="home-discover-heading">
-      <div className="hp-rail">
-        <header className="hp-head hp-head-row">
-          <div>
-            <p className="hp-kicker">Catalogue</p>
-            <h2 id="home-discover-heading">Explore what's worth learning.</h2>
-          </div>
-          <Link className="hp-text-link" to="/courses">All courses →</Link>
-        </header>
-      </div>
-      <div className="hp-discover-scroller">
-        <ul className="hp-discover-rail">
-          {items.map((view) => {
-            const profile = courseProductProfile(view.slug)
-            return (
-              <li key={view.slug}>
-                <Link className="hp-discover-card" to={`/courses/${view.slug}`}>
-                  <div className="hp-discover-visual">
-                    {view.showLiveCurriculum && profile ? (
-                      <CourseThumb authored visual={profile.visual} />
-                    ) : (
-                      <CourseThumb authored={false} />
-                    )}
-                  </div>
-                  <div className="hp-discover-copy">
-                    <p className="hp-discover-type">
-                      {view.maturity === "ready" ? "Course · ready" : "Course · listing"}
-                    </p>
-                    <h3>{view.title}</h3>
-                    <p className="hp-discover-meta">
-                      {view.duration}
-                      {" · "}
-                      {view.course.level}
-                    </p>
-                    <p className="hp-discover-desc">{view.summary}</p>
-                    <span className="hp-discover-cta">{view.ctaLabel} →</span>
-                  </div>
-                </Link>
-              </li>
-            )
-          })}
-        </ul>
-      </div>
-    </section>
-  )
+  return <SkylentHomeCatalogue />
 }
 
 function HomeUniverse() {
