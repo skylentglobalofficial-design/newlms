@@ -585,11 +585,11 @@ span.hp-lpb-path-item {
 }
 
 .hp-lpb-qbar {
-  height: 3px;
+  height: 4px;
   margin: 10px 0 14px;
   overflow: hidden;
   border-radius: 99px;
-  background: #ececef;
+  background: #e4e5e8;
 }
 
 .hp-lpb-qbar span {
@@ -827,9 +827,15 @@ span.hp-lpb-path-item {
 
 .hp-lpb-build-board {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(150px, 0.85fr) minmax(150px, 0.62fr);
+  grid-template-columns: minmax(0, 1.4fr) minmax(210px, 0.72fr);
   gap: 12px;
   align-items: start;
+}
+
+.hp-lpb-build-rail {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
 }
 
 .hp-lpb-create,
@@ -858,6 +864,10 @@ span.hp-lpb-path-item {
 .hp-lpb-tiles button {
   font-size: 13px;
   font-weight: 650;
+}
+
+.hp-lpb-create button b {
+  white-space: nowrap;
 }
 
 .hp-lpb-create button span,
@@ -930,14 +940,6 @@ span.hp-lpb-path-item {
 
   .hp-lpb-head {
     grid-template-columns: 1fr;
-  }
-
-  .hp-lpb-build-board {
-    grid-template-columns: minmax(0, 1fr) minmax(180px, 0.7fr);
-  }
-
-  .hp-lpb-build-board .hp-lpb-preview {
-    grid-column: 1;
   }
 }
 

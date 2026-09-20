@@ -526,7 +526,13 @@ function PracticeBody({
             ))}
           </ol>
         </article>
-        {rail}
+        <aside className="hp-lpb-railcard">
+          <p className="hp-lpb-rail-title">
+            Practice path
+            <span>View all</span>
+          </p>
+          <Path items={PRACTICE_PATH} current={0} />
+        </aside>
       </div>
     )
   }
@@ -812,15 +818,17 @@ function BuildBody({
           </button>
         </div>
       </article>
-      <aside className="hp-lpb-preview" aria-hidden="true">
-        <p>Project preview</p>
-        <div>
-          <span />
-          <span />
-          <span />
-        </div>
-      </aside>
-      {path}
+      <div className="hp-lpb-build-rail">
+        <aside className="hp-lpb-preview" aria-hidden="true">
+          <p>Project preview</p>
+          <div>
+            <span />
+            <span />
+            <span />
+          </div>
+        </aside>
+        {path}
+      </div>
     </div>
   )
 }
