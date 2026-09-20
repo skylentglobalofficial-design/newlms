@@ -7,7 +7,7 @@ import {
   ProductFrame,
 } from "../components/product/ProductLanguage"
 import SkylentOsShowcase from "../components/home/SkylentOsShowcase"
-import HeroLearningObject from "../components/home/HeroLearningObject"
+import SkylentHeroLearningModel from "../components/home/SkylentHeroLearningModel"
 import { courses, workshops } from "../data"
 import { coursePublicView } from "../lib/catalog-maturity"
 import { courseProductProfile } from "../lib/course-product"
@@ -95,29 +95,13 @@ const GOALS: Array<{
 
 function HomeHero() {
   return (
-    <section className="hp-hero" aria-labelledby="home-hero-heading">
-      <div className="hp-rail hp-hero-stage">
-        <div className="hp-hero-copy">
-          <p className="hp-kicker">Skylent</p>
-          <h1 id="home-hero-heading">
-            Learn something
-            <br />
-            worth building.
-          </h1>
-          <p className="hp-hero-lead">
-            Courses, programmes, education and exam preparation — all in one place.
-          </p>
-          <div className="hp-actions">
-            <Link className="hp-btn hp-btn-primary hp-btn-lg" to="/programs">Explore learning →</Link>
-            <Link className="hp-btn hp-btn-ghost" to="/education/exams">Explore exams →</Link>
-          </div>
-        </div>
-        <HeroLearningObject />
+    <section className="hp-hero hp-hero-model" aria-labelledby="home-hero-heading">
+      <div className="hp-rail">
+        <SkylentHeroLearningModel />
       </div>
     </section>
   )
 }
-
 function HomeGoals() {
   const [goal, setGoal] = useState<GoalId>("career")
   const current = GOALS.find((item) => item.id === goal) ?? GOALS[0]
