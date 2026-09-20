@@ -1,9 +1,24 @@
 /* Homepage — discovery platform, product-led */
 
+html:has(.home-p3),
+html:has(.home-p3) body {
+  background: #ffffff !important;
+}
+
+.skylent-public-canvas:has(.home-p3) {
+  background: #ffffff !important;
+}
+
+.skylent-public-canvas:has(.home-p3) .skylent-site-nav,
+.skylent-public-canvas:has(.home-p3) .skylent-site-footer {
+  background: #ffffff !important;
+}
+
 .home-p3 {
-  background: #f7f4ec;
+  background: #ffffff;
   color: #15171a;
   overflow-x: clip;
+  overflow-y: visible;
 }
 
 .hp-kicker {
@@ -16,7 +31,6 @@
 
 .hp-section {
   padding: 56px 0 64px;
-  border-top: 1px solid rgba(21, 23, 26, 0.08);
 }
 
 .hp-head h2,
