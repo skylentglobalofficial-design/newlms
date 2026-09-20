@@ -1,24 +1,37 @@
 import { Link } from "react-router-dom"
+import "./SkylentHomeStart.css"
 
-const ROUTES = [
+const PATHS = [
   {
+    id: "career",
+    index: "01",
     title: "Build a career",
+    node: "Career",
     copy: "Practical skills, real work, and Career OS for the evidence you keep.",
-    to: "/programs",
+    to: "/career-os",
   },
   {
+    id: "exam",
+    index: "02",
     title: "Prepare for an exam",
+    node: "Exam",
     copy: "Named exam paths with a specified preparation structure. Not a live engine yet.",
     to: "/education/exams",
   },
   {
+    id: "subject",
+    index: "03",
     title: "Study a subject",
-    copy: "Authored courses in Skylent OS — Product Management and Data Analytics are teachable today.",
+    node: "Subject",
+    copy: "Go deeper into a subject with clear explanations, examples and practice.",
     to: "/courses",
   },
   {
+    id: "skill",
+    index: "04",
     title: "Learn something new",
-    copy: "Start from a skill and follow it into a course when one exists.",
+    node: "New skill",
+    copy: "Explore a new skill and follow it into a course when one exists.",
     to: "/skills",
   },
 ] as const
@@ -26,27 +39,28 @@ const ROUTES = [
 export default function SkylentHomeStart() {
   return (
     <section className="hp-ch hp-start" aria-labelledby="home-start-heading">
-      <div className="hp-rail">
-        <p className="hp-ch-kicker">
-          <i aria-hidden="true" />
-          Start
-        </p>
-        <h2 id="home-start-heading" className="hp-ch-title hp-start-title">
-          Start with a goal.
-        </h2>
-        <ol className="hp-start-routes">
-          {ROUTES.map((route) => (
-            <li key={route.to}>
-              <Link to={route.to}>
-                <span>
-                  <b>{route.title}</b>
-                  <span>{route.copy}</span>
-                </span>
-                <em aria-hidden="true">→</em>
-              </Link>
-            </li>
+      <div className="hp-rail hp-start-stage">
+        <header className="hp-start-copy">
+          <p className="hp-ch-kicker">
+            <i aria-hidden="true" />
+            19 Start
+          </p>
+          <h2 id="home-start-heading" className="hp-ch-title">
+            Where do you want to go?
+          </h2>
+        </header>
+
+        <div className="hp-start-field" aria-label="Starting destinations">
+          <p className="hp-start-core">Start</p>
+          {PATHS.map((path) => (
+            <Link key={path.id} className={`hp-start-way is-${path.id}`} to={path.to}>
+              <em>{path.index}</em>
+              <b>{path.node}</b>
+              <strong>{path.title}</strong>
+              <span>{path.copy}</span>
+            </Link>
           ))}
-        </ol>
+        </div>
       </div>
     </section>
   )

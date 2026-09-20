@@ -1,0 +1,168 @@
+/* Scroll 19 — choice field / entry architecture */
+
+.hp-ch.hp-start {
+  --st-ink: #15171a;
+  --st-secondary: #5c6168;
+  --st-muted: #8a8f96;
+  --st-line: rgba(21, 23, 26, 0.08);
+  --st-accent: #4f46e5;
+  --st-wash: #f7f8fd;
+  background: #ffffff;
+  border-top: 1px solid var(--st-line);
+}
+
+.hp-start-stage {
+  display: grid;
+  gap: clamp(28px, 4vh, 48px);
+}
+
+.hp-start-copy .hp-ch-title {
+  max-width: 10em;
+}
+
+.hp-start a:focus-visible {
+  outline: 2px solid var(--st-accent);
+  outline-offset: 3px;
+}
+
+.hp-start-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(140px, 0.56fr) minmax(0, 1fr);
+  grid-template-areas:
+    ". career ."
+    "skill core exam"
+    ". subject .";
+  gap: 18px 24px;
+  align-items: center;
+}
+
+.hp-start-core {
+  grid-area: core;
+  display: grid;
+  place-items: center;
+  width: min(160px, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto;
+  border: 1px solid rgba(79, 70, 229, 0.28);
+  border-radius: 50%;
+  background: var(--st-wash);
+  color: var(--st-ink);
+  font: 600 28px/1 var(--font-brand);
+  letter-spacing: -0.04em;
+}
+
+.hp-start-way {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  padding: 8px 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.hp-start-way.is-career {
+  grid-area: career;
+  text-align: center;
+}
+
+.hp-start-way.is-exam {
+  grid-area: exam;
+}
+
+.hp-start-way.is-subject {
+  grid-area: subject;
+  text-align: center;
+}
+
+.hp-start-way.is-skill {
+  grid-area: skill;
+  text-align: right;
+}
+
+.hp-start-way em {
+  color: var(--st-accent);
+  font: 600 11px/1 var(--font-mono);
+}
+
+.hp-start-way b {
+  color: var(--st-ink);
+  font: 600 clamp(26px, 3vw, 36px)/1.08 var(--font-brand);
+  letter-spacing: -0.04em;
+}
+
+.hp-start-way strong {
+  color: var(--st-ink);
+  font: 600 14px/1.3 var(--font-body);
+}
+
+.hp-start-way span {
+  max-width: 22em;
+  color: var(--st-secondary);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.hp-start-way.is-skill span,
+.hp-start-way.is-exam span {
+  justify-self: inherit;
+}
+
+.hp-start-way.is-career span,
+.hp-start-way.is-subject span {
+  margin-inline: auto;
+}
+
+.hp-start-way:hover b,
+.hp-start-way:focus-visible b,
+.hp-start-field:has(.is-career:hover) .hp-start-core,
+.hp-start-field:has(.is-exam:hover) .hp-start-core,
+.hp-start-field:has(.is-subject:hover) .hp-start-core,
+.hp-start-field:has(.is-skill:hover) .hp-start-core,
+.hp-start-field:has(.is-career:focus-visible) .hp-start-core,
+.hp-start-field:has(.is-exam:focus-visible) .hp-start-core,
+.hp-start-field:has(.is-subject:focus-visible) .hp-start-core,
+.hp-start-field:has(.is-skill:focus-visible) .hp-start-core {
+  color: var(--st-accent);
+}
+
+.hp-start-way:hover,
+.hp-start-way:focus-visible {
+  opacity: 1;
+}
+
+.hp-start-field:hover .hp-start-way:not(:hover) {
+  opacity: 0.42;
+}
+
+@media (max-width: 768px) {
+  .hp-start-field {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "core"
+      "career"
+      "exam"
+      "subject"
+      "skill";
+    justify-items: start;
+  }
+
+  .hp-start-core {
+    margin: 0;
+  }
+
+  .hp-start-way.is-career,
+  .hp-start-way.is-subject,
+  .hp-start-way.is-skill,
+  .hp-start-way.is-exam {
+    text-align: left;
+  }
+
+  .hp-start-way.is-career span,
+  .hp-start-way.is-subject span {
+    margin-inline: 0;
+  }
+
+  .hp-start-copy .hp-ch-title {
+    max-width: none;
+  }
+}
