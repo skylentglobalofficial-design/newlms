@@ -47,6 +47,7 @@
 
 .hp-ev-copy h2 {
   margin: 0;
+  max-width: 8.2em;
   color: var(--ev-ink);
   font-family: var(--font-brand);
   font-size: clamp(36px, 4.4vw, 52px);
@@ -138,14 +139,6 @@
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.1;
-}
-
-.hp-ev-sub {
-  margin: 8px 0 0;
-  max-width: 32em;
-  color: var(--ev-secondary);
-  font-size: 14.5px;
-  line-height: 1.5;
 }
 
 .hp-ev-fields {
@@ -349,7 +342,7 @@
   }
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .hp-section.hp-ev {
     padding: 36px 0 40px;
   }

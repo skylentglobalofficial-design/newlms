@@ -25,7 +25,6 @@ function HarborEvidenceWorkspace({ active }: { active: boolean }) {
         <p className="hp-ev-title" id="home-ev-case-title">
           Harbor Desk
         </p>
-        <p className="hp-ev-sub">A product case you keep as evidence of the work.</p>
 
         <dl className="hp-ev-fields">
           <div>
@@ -89,11 +88,7 @@ export default function SkylentHomeEvidence() {
             <i aria-hidden="true" />
             Real work
           </p>
-          <h2 id="home-evidence-heading">
-            Learning becomes
-            <br />
-            something you can show.
-          </h2>
+          <h2 id="home-evidence-heading">Learning becomes something you can show.</h2>
           <p className="hp-ev-lead">
             Turn what you learn into projects, cases, analyses, products and other evidence of what you can
             actually do.
