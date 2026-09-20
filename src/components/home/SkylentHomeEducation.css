@@ -10,6 +10,8 @@
   --edu-accent: #4f46e5;
   --edu-indigo-soft: #f7f8fd;
   --edu-indigo-wash: #eef0fb;
+  --edu-indigo-left: #e4e7f7;
+  background: #ffffff;
   border-top: 1px solid var(--edu-line);
 }
 
@@ -87,7 +89,13 @@
 }
 
 .hp-edu-chain .is-here {
+  flex-basis: 100%;
+  margin-top: 6px;
   color: var(--edu-ink);
+}
+
+.hp-edu-chain .is-here::before {
+  display: none;
 }
 
 .hp-edu-board {
@@ -185,7 +193,7 @@
 .hp-edu-glyph {
   display: block;
   width: 100%;
-  max-width: 168px;
+  max-width: 188px;
   height: auto;
 }
 
@@ -193,17 +201,26 @@
   fill: var(--edu-indigo-soft);
 }
 
-.hp-edu-glyph .is-fill {
+.hp-edu-glyph .is-top {
+  fill: #f4f5fc;
+}
+
+.hp-edu-glyph .is-left {
+  fill: var(--edu-indigo-left);
+}
+
+.hp-edu-glyph .is-right {
   fill: var(--edu-indigo-wash);
 }
 
 .hp-edu-glyph .is-stroke,
 .hp-edu-glyph .is-window,
 .hp-edu-glyph .is-door,
-.hp-edu-glyph .is-column {
+.hp-edu-glyph .is-column,
+.hp-edu-glyph .is-dome {
   fill: none;
   stroke: var(--edu-accent);
-  stroke-width: 1.35;
+  stroke-width: 1.25;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
@@ -213,8 +230,8 @@
   fill: #ffffff;
 }
 
-.hp-edu-glyph .is-column {
-  fill: #ffffff;
+.hp-edu-glyph .is-dome {
+  fill: var(--edu-indigo-wash);
 }
 
 .hp-edu-level-copy {
@@ -364,28 +381,39 @@
   }
 
   .hp-edu-level {
-    grid-template-columns: 36px minmax(0, 1fr);
-    grid-template-areas:
-      "idx copy"
-      "idx glyph";
-  }
-
-  .hp-edu-idx {
-    grid-area: idx;
-    align-self: start;
+    grid-template-columns: 36px minmax(108px, 0.4fr) minmax(0, 1fr);
   }
 
   .hp-edu-glyph {
-    grid-area: glyph;
-    max-width: 200px;
-  }
-
-  .hp-edu-level-copy {
-    grid-area: copy;
+    max-width: 168px;
   }
 
   .hp-edu-close {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .hp-edu-level {
+    grid-template-columns: 32px minmax(0, 1fr);
+    grid-template-areas:
+      "idx copy"
+      "idx glyph";
+    align-items: start;
+    padding: 14px 0;
+  }
+
+  .hp-edu-idx {
+    grid-area: idx;
+  }
+
+  .hp-edu-glyph {
+    grid-area: glyph;
+    max-width: 168px;
+  }
+
+  .hp-edu-level-copy {
+    grid-area: copy;
   }
 }
 
@@ -402,18 +430,6 @@
     left: 15px;
     top: 22px;
     bottom: 18px;
-  }
-
-  .hp-edu-level {
-    grid-template-columns: 32px minmax(0, 1fr);
-    grid-template-areas:
-      "idx copy"
-      "idx glyph";
-    padding: 14px 0;
-  }
-
-  .hp-edu-glyph {
-    max-width: 160px;
   }
 
   .hp-edu-level-top {

@@ -38,70 +38,77 @@ function routeFor(id: string) {
 
 function SchoolGlyph() {
   return (
-    <svg className="hp-edu-glyph" viewBox="0 0 140 108" aria-hidden="true">
-      <rect className="is-ground" x="18" y="86" width="104" height="8" rx="1" />
-      <path className="is-stroke" d="M28 86h84" />
-      <polygon className="is-fill" points="40,44 70,22 100,44" />
-      <polygon className="is-stroke" points="40,44 70,22 100,44" />
-      <rect className="is-fill" x="44" y="44" width="52" height="42" />
-      <rect className="is-stroke" x="44" y="44" width="52" height="42" />
-      <rect className="is-window" x="52" y="54" width="10" height="10" />
-      <rect className="is-window" x="78" y="54" width="10" height="10" />
-      <rect className="is-door" x="64" y="70" width="12" height="16" />
+    <svg className="hp-edu-glyph" viewBox="0 0 168 118" aria-hidden="true">
+      <polygon className="is-ground" points="18,94 84,108 150,94 84,80" />
+      <polygon className="is-top" points="84,36 118,52 84,68 50,52" />
+      <polygon className="is-left" points="50,52 84,68 84,96 50,80" />
+      <polygon className="is-right" points="84,68 118,52 118,80 84,96" />
+      <polygon className="is-stroke" points="84,36 118,52 84,68 50,52" />
+      <polygon className="is-stroke" points="50,52 84,68 84,96 50,80" />
+      <polygon className="is-stroke" points="84,68 118,52 118,80 84,96" />
+      <path className="is-window" d="M92 64l8-4v7l-8 4z" />
+      <path className="is-window" d="M104 58l8-4v7l-8 4z" />
+      <path className="is-door" d="M96 82l10-5v16l-10 5z" />
     </svg>
   )
 }
 
 function UndergradGlyph() {
   return (
-    <svg className="hp-edu-glyph" viewBox="0 0 140 108" aria-hidden="true">
-      <rect className="is-ground" x="10" y="88" width="120" height="8" rx="1" />
-      <path className="is-stroke" d="M16 88h108" />
-      <rect className="is-fill" x="28" y="34" width="84" height="54" />
-      <rect className="is-stroke" x="28" y="34" width="84" height="54" />
-      <path className="is-fill" d="M28 34h84l-8-12H36z" />
-      <path className="is-stroke" d="M28 34h84l-8-12H36z" />
-      <rect className="is-window" x="38" y="42" width="12" height="10" />
-      <rect className="is-window" x="64" y="42" width="12" height="10" />
-      <rect className="is-window" x="90" y="42" width="12" height="10" />
-      <rect className="is-window" x="38" y="58" width="12" height="10" />
-      <rect className="is-window" x="90" y="58" width="12" height="10" />
-      <rect className="is-column" x="58" y="56" width="5" height="32" />
-      <rect className="is-column" x="68" y="56" width="5" height="32" />
-      <rect className="is-column" x="78" y="56" width="5" height="32" />
-      <path className="is-stroke" d="M52 88l8-8h20l8 8" />
+    <svg className="hp-edu-glyph" viewBox="0 0 168 118" aria-hidden="true">
+      <polygon className="is-ground" points="10,94 84,110 158,94 84,78" />
+      <polygon className="is-top" points="84,22 132,44 84,66 36,44" />
+      <polygon className="is-left" points="36,44 84,66 84,100 36,78" />
+      <polygon className="is-right" points="84,66 132,44 132,78 84,100" />
+      <polygon className="is-stroke" points="84,22 132,44 84,66 36,44" />
+      <polygon className="is-stroke" points="36,44 84,66 84,100 36,78" />
+      <polygon className="is-stroke" points="84,66 132,44 132,78 84,100" />
+      <path className="is-stroke" d="M48 50l36 16" />
+      <path className="is-window" d="M48 52l8 4v7l-8-4z" />
+      <path className="is-window" d="M62 58l8 4v7l-8-4z" />
+      <path className="is-window" d="M94 58l8-4v7l-8 4z" />
+      <path className="is-window" d="M108 52l8-4v7l-8 4z" />
+      <path className="is-window" d="M122 46l8-4v7l-8 4z" />
+      <path className="is-column" d="M96 70v22" />
+      <path className="is-column" d="M106 65v22" />
+      <path className="is-column" d="M116 60v22" />
+      <path className="is-stroke" d="M84 100l18-8 18 0 12-6" />
     </svg>
   )
 }
 
 function PostgradGlyph() {
   return (
-    <svg className="hp-edu-glyph" viewBox="0 0 140 108" aria-hidden="true">
-      <rect className="is-ground" x="6" y="90" width="128" height="8" rx="1" />
-      <path className="is-stroke" d="M10 90h120" />
-      <rect className="is-fill" x="14" y="52" width="28" height="38" />
-      <rect className="is-stroke" x="14" y="52" width="28" height="38" />
-      <rect className="is-fill" x="98" y="52" width="28" height="38" />
-      <rect className="is-stroke" x="98" y="52" width="28" height="38" />
-      <rect className="is-window" x="20" y="60" width="7" height="8" />
-      <rect className="is-window" x="29" y="60" width="7" height="8" />
-      <rect className="is-window" x="20" y="72" width="7" height="8" />
-      <rect className="is-window" x="29" y="72" width="7" height="8" />
-      <rect className="is-window" x="104" y="60" width="7" height="8" />
-      <rect className="is-window" x="113" y="60" width="7" height="8" />
-      <rect className="is-window" x="104" y="72" width="7" height="8" />
-      <rect className="is-window" x="113" y="72" width="7" height="8" />
-      <rect className="is-fill" x="42" y="36" width="56" height="54" />
-      <rect className="is-stroke" x="42" y="36" width="56" height="54" />
-      <path className="is-fill" d="M42 36h56L70 16z" />
-      <path className="is-stroke" d="M42 36h56L70 16z" />
-      <ellipse className="is-fill" cx="70" cy="22" rx="14" ry="8" />
-      <ellipse className="is-stroke" cx="70" cy="22" rx="14" ry="8" />
-      <rect className="is-column" x="50" y="50" width="5" height="40" />
-      <rect className="is-column" x="62" y="50" width="5" height="40" />
-      <rect className="is-column" x="74" y="50" width="5" height="40" />
-      <rect className="is-column" x="86" y="50" width="5" height="40" />
-      <path className="is-stroke" d="M48 90l10-10h24l10 10" />
+    <svg className="hp-edu-glyph" viewBox="0 0 168 118" aria-hidden="true">
+      <polygon className="is-ground" points="6,96 84,112 162,96 84,80" />
+      <polygon className="is-left" points="22,58 46,70 46,94 22,82" />
+      <polygon className="is-right" points="46,70 70,58 70,82 46,94" />
+      <polygon className="is-top" points="46,46 70,58 46,70 22,58" />
+      <polygon className="is-left" points="98,58 122,70 122,94 98,82" />
+      <polygon className="is-right" points="122,70 146,58 146,82 122,94" />
+      <polygon className="is-top" points="122,46 146,58 122,70 98,58" />
+      <polygon className="is-stroke" points="22,58 46,70 46,94 22,82" />
+      <polygon className="is-stroke" points="46,70 70,58 70,82 46,94" />
+      <polygon className="is-stroke" points="46,46 70,58 46,70 22,58" />
+      <polygon className="is-stroke" points="98,58 122,70 122,94 98,82" />
+      <polygon className="is-stroke" points="122,70 146,58 146,82 122,94" />
+      <polygon className="is-stroke" points="122,46 146,58 122,70 98,58" />
+      <polygon className="is-left" points="58,40 84,54 84,98 58,84" />
+      <polygon className="is-right" points="84,54 110,40 110,84 84,98" />
+      <polygon className="is-top" points="84,16 110,40 84,54 58,40" />
+      <polygon className="is-stroke" points="58,40 84,54 84,98 58,84" />
+      <polygon className="is-stroke" points="84,54 110,40 110,84 84,98" />
+      <polygon className="is-stroke" points="84,16 110,40 84,54 58,40" />
+      <ellipse className="is-dome" cx="84" cy="18" rx="14" ry="7" />
+      <path className="is-stroke" d="M84 11v-6" />
+      <path className="is-window" d="M30 68l7 3v6l-7-3z" />
+      <path className="is-window" d="M40 73l7 3v6l-7-3z" />
+      <path className="is-window" d="M126 64l7-3v6l-7 3z" />
+      <path className="is-window" d="M136 59l7-3v6l-7 3z" />
+      <path className="is-column" d="M90 62v28" />
+      <path className="is-column" d="M98 58v28" />
+      <path className="is-column" d="M106 54v28" />
+      <path className="is-stroke" d="M84 98l14-7h16l14-7" />
     </svg>
   )
 }
@@ -115,8 +122,9 @@ function LevelGlyph({ kind }: { kind: (typeof LEVELS)[number]["kind"] }) {
 function IconBook() {
   return (
     <svg viewBox="0 0 16 16" aria-hidden="true">
-      <path d="M3 2.6h8.1A1.7 1.7 0 0 1 12.8 4.3v9.1H4.2A1.2 1.2 0 0 1 3 12.2V2.6z" />
-      <path d="M3 12.3h9.8" />
+      <path d="M8 3.4c-1.6-.9-3.4-.9-5 0v9.1c1.6-.8 3.4-.8 5 .1" />
+      <path d="M8 3.4c1.6-.9 3.4-.9 5 0v9.1c-1.6-.8-3.4-.8-5 .1" />
+      <path d="M8 3.6v9" />
     </svg>
   )
 }
