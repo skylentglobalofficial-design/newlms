@@ -290,9 +290,9 @@
 
 .hp-disc-work-top {
   display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  align-items: baseline;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
 }
 
 .hp-disc-work-file,
@@ -308,20 +308,21 @@
 .hp-disc-work-file {
   color: #f97316;
   min-width: 0;
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 
 .hp-disc-stores {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 4px;
-  max-width: 168px;
+  grid-template-columns: repeat(6, 18px);
+  gap: 6px;
+  width: 138px;
   margin-top: 10px;
 }
 
 .hp-disc-stores span {
   display: block;
-  aspect-ratio: 1;
+  width: 18px;
+  height: 18px;
   border-radius: 3px;
   background: #e8e2d6;
 }
@@ -1355,10 +1356,6 @@
     max-width: 72%;
   }
 
-  .hp-disc-flow {
-    grid-template-columns: 1fr 1fr;
-  }
-
   .hp-disc-session {
     left: 0;
   }
@@ -1440,10 +1437,6 @@
 
   .hp-disc-flow {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .hp-disc-work-top {
-    flex-wrap: wrap;
   }
 
   .hp-disc-orbit {
