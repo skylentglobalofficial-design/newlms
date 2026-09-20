@@ -7,6 +7,7 @@ import {
   ProductFrame,
 } from "../components/product/ProductLanguage"
 import SkylentOsShowcase from "../components/home/SkylentOsShowcase"
+import HeroLearningObject from "../components/home/HeroLearningObject"
 import { courses, workshops } from "../data"
 import { coursePublicView } from "../lib/catalog-maturity"
 import { courseProductProfile } from "../lib/course-product"
@@ -92,157 +93,26 @@ const GOALS: Array<{
   },
 ]
 
-const HERO_EXAM_GROUPS = [
-  { heading: "UG", labels: ["JEE", "NEET"] },
-  { heading: "PG", labels: ["CAT", "GATE"] },
-  { heading: "Gov", labels: ["UPSC"] },
-] as const
-
-const HERO_SKILL_CHIPS = [
-  { label: "Python", to: "/courses/python-programming" },
-  { label: "SQL", to: "/courses/data-analytics" },
-  { label: "Artificial Intelligence", to: "/skills?intent=ai" },
-  { label: "Web Development", to: "/courses/full-stack-web" },
-] as const
-
-const HARBOR_POSTER = {
-  stores: 12,
-  interviews: 4,
-  weekendExceptions: 9,
-  quote: "If the milk is late I need someone at HQ who is actually looking before 7am.",
-  voice: "Priya · store lead, T. Nagar",
-  steps: ["Evidence", "Frame", "One bet", "Spec"],
-} as const
-
-function HarborDiscoveryPoster({ material }: { material: string }) {
-  return (
-    <>
-      <p className="hp-disc-kicker">Product case</p>
-      <div className="hp-disc-work-top">
-        <p className="hp-disc-work-file">{material}</p>
-        <p className="hp-disc-work-stat">
-          {HARBOR_POSTER.stores} stores
-          {" · "}
-          {HARBOR_POSTER.interviews} interviews
-        </p>
-      </div>
-      <div className="hp-disc-stores" aria-hidden="true">
-        {Array.from({ length: HARBOR_POSTER.stores }, (_, index) => (
-          <span key={index} className={index < HARBOR_POSTER.weekendExceptions ? "is-ex" : undefined} />
-        ))}
-      </div>
-      <p className="hp-disc-quote">{HARBOR_POSTER.quote}</p>
-      <p className="hp-disc-voice">{HARBOR_POSTER.voice}</p>
-      <ol className="hp-disc-flow" aria-label="Product case path">
-        {HARBOR_POSTER.steps.map((step, index) => (
-          <li key={step}>
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            {step}
-          </li>
-        ))}
-      </ol>
-    </>
-  )
-}
-
 function HomeHero() {
-  const programme = programmeDiscoveryCards().find((item) => item.slug === "product-management")
-  const course = courses.find((item) => item.slug === PRODUCT_MANAGEMENT_SLUG)
-  const workshop = workshops[0]
-
   return (
     <section className="hp-hero" aria-labelledby="home-hero-heading">
-      <div className="hp-rail hp-hero-board">
+      <div className="hp-rail hp-hero-stage">
         <div className="hp-hero-copy">
           <p className="hp-kicker">Skylent</p>
           <h1 id="home-hero-heading">
             Learn something
             <br />
-            <em>worth building.</em>
+            worth building.
           </h1>
           <p className="hp-hero-lead">
             Courses, programmes, education and exam preparation — all in one place.
           </p>
           <div className="hp-actions">
-            <Link className="hp-btn hp-btn-primary" to="/programs">Explore learning →</Link>
+            <Link className="hp-btn hp-btn-primary hp-btn-lg" to="/programs">Explore learning →</Link>
             <Link className="hp-btn hp-btn-ghost" to="/education/exams">Explore exams →</Link>
           </div>
         </div>
-
-        <div className="hp-hero-world" aria-label="What you can explore on Skylent">
-          {programme && course ? (
-            <div className="hp-disc-stage">
-              <Link className="hp-disc hp-disc-feature" to={programme.href}>
-                <div className="hp-disc-top">
-                  <p className="hp-disc-kicker">Professional programme</p>
-                  <p className="hp-disc-mark">{programme.enrollOpen ? "Enrolment open" : MATURITY_LABEL.coming_soon}</p>
-                </div>
-                <p className="hp-disc-title">{programme.title}</p>
-                <p className="hp-disc-meta">
-                  {course.duration}
-                  {" · "}
-                  {course.level}
-                </p>
-                <ul className="hp-disc-path">
-                  {course.modules.slice(0, 4).map((module) => (
-                    <li key={module.id}>{module.title}</li>
-                  ))}
-                </ul>
-                <span className="hp-disc-cta">Explore →</span>
-              </Link>
-              <Link
-                className="hp-disc hp-disc-work"
-                to={programme.href}
-                aria-label="Harbor Desk product case"
-              >
-                <HarborDiscoveryPoster material={programme.material || "harbor-desk-case.md"} />
-              </Link>
-            </div>
-          ) : null}
-
-          <div className="hp-disc-orbit">
-            <article className="hp-disc hp-disc-skills">
-              <p className="hp-disc-kicker">Explore skills</p>
-              <p className="hp-disc-title">
-                <Link to="/skills">Build what you need next.</Link>
-              </p>
-              <ul>
-                {HERO_SKILL_CHIPS.map((item) => (
-                  <li key={item.label}>
-                    <Link to={item.to}>{item.label}</Link>
-                  </li>
-                ))}
-              </ul>
-            </article>
-
-            <Link className="hp-disc hp-disc-exams" to="/education/exams">
-              <p className="hp-disc-kicker">Competitive exams</p>
-              <ul className="hp-disc-exam-board">
-                {HERO_EXAM_GROUPS.map((group) => (
-                  <li key={group.heading}>
-                    <span>{group.heading}</span>
-                    <b>
-                      {group.labels.map((label) => (
-                        <em key={label}>{label}</em>
-                      ))}
-                    </b>
-                  </li>
-                ))}
-              </ul>
-              <span className="hp-disc-mark">{MATURITY_LABEL.coming_soon}</span>
-            </Link>
-
-            {workshop ? (
-              <Link className="hp-disc hp-disc-session" to="/workshops">
-                <p className="hp-disc-kicker">Workshop</p>
-                <p className="hp-disc-duration">{workshop.duration}</p>
-                <p className="hp-disc-title">{workshop.title}</p>
-                <p className="hp-disc-meta">{workshop.mode}</p>
-                <span className="hp-disc-mark">{MATURITY_LABEL.coming_soon}</span>
-              </Link>
-            ) : null}
-          </div>
-        </div>
+        <HeroLearningObject />
       </div>
     </section>
   )
