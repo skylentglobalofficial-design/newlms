@@ -27,7 +27,7 @@
 
 .hp-lpb-stage {
   display: grid;
-  grid-template-columns: minmax(228px, 0.3fr) minmax(0, 1fr);
+  grid-template-columns: minmax(236px, 0.32fr) minmax(0, 1fr);
   gap: clamp(28px, 4.6vw, 64px);
   align-items: start;
 }
@@ -70,13 +70,23 @@
 }
 
 .hp-lpb-step-index {
-  padding: 16px 0 0 12px;
-  min-height: 3.1rem;
-  border-left: 1.5px solid transparent;
+  position: relative;
+  padding: 14px 0 0 14px;
+  border-left: 0;
   color: var(--lpb-muted);
   font: 500 10px/1 var(--font-mono);
   letter-spacing: 0.08em;
   white-space: nowrap;
+}
+
+.hp-lpb-step.is-on .hp-lpb-step-index::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 1.5px;
+  height: 44px;
+  background: var(--lpb-ink);
 }
 
 .hp-lpb-step-copy {
@@ -126,7 +136,6 @@
 }
 
 .hp-lpb-step.is-on .hp-lpb-step-index {
-  border-left-color: var(--lpb-ink);
   color: var(--lpb-ink);
 }
 
@@ -1065,6 +1074,11 @@ span.hp-lpb-path-item {
   .hp-lpb-step {
     padding: 16px 0;
     grid-template-columns: 2rem minmax(0, 1fr) 2.5rem;
+  }
+
+  .hp-lpb-step.is-on .hp-lpb-step-index::before {
+    top: 8px;
+    height: 38px;
   }
 
   .hp-lpb-step-copy strong {
