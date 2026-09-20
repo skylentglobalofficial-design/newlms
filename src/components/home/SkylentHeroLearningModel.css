@@ -27,8 +27,8 @@
 
 .hp-lpb-stage {
   display: grid;
-  grid-template-columns: minmax(240px, 0.28fr) minmax(0, 1fr);
-  gap: clamp(32px, 5vw, 72px);
+  grid-template-columns: minmax(260px, 0.33fr) minmax(0, 1fr);
+  gap: clamp(28px, 4.4vw, 56px);
   align-items: start;
 }
 
@@ -105,7 +105,7 @@
 }
 
 .hp-lpb-step-copy span {
-  max-width: 22em;
+  max-width: 28em;
   color: var(--lpb-muted);
   font-size: 14.5px;
   font-weight: 400;
@@ -323,8 +323,8 @@
 
 .hp-lpb-head {
   display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(140px, 0.52fr);
-  gap: 12px 32px;
+  grid-template-columns: minmax(0, 1.25fr) minmax(170px, 0.72fr);
+  gap: 12px 28px;
   align-items: end;
   margin-bottom: 18px;
 }
@@ -372,8 +372,8 @@
   align-items: center;
   gap: 8px;
   min-width: 0;
-  min-height: 48px;
-  padding: 8px 10px;
+  min-height: 52px;
+  padding: 8px 11px;
   border: 1px solid var(--lpb-line);
   border-radius: 8px;
   background: #ffffff;
@@ -396,16 +396,20 @@
 }
 
 .hp-lpb-modes button b {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .hp-lpb-modes button em {
   color: var(--lpb-muted);
-  font-size: 10.5px;
+  font-size: 11px;
   font-style: normal;
   font-weight: 400;
   line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hp-lpb-modes button:hover:not(.is-on) {
@@ -431,8 +435,8 @@
 
 .hp-lpb-split {
   display: grid;
-  grid-template-columns: minmax(0, 1.58fr) minmax(168px, 0.58fr);
-  gap: 8px 32px;
+  grid-template-columns: minmax(0, 1.42fr) minmax(196px, 0.72fr);
+  gap: 8px 24px;
   align-items: start;
 }
 
@@ -446,7 +450,7 @@
 }
 
 .hp-lpb-railcard {
-  padding-left: 20px;
+  padding-left: 16px;
   border-left: 1px solid var(--lpb-line-soft);
 }
 
@@ -794,7 +798,7 @@ span.hp-lpb-path-item {
   display: grid;
   gap: 22px;
   align-content: start;
-  padding-left: 20px;
+  padding-left: 16px;
   border-left: 1px solid var(--lpb-line-soft);
 }
 
@@ -953,8 +957,8 @@ span.hp-lpb-path-item {
 
 .hp-lpb-build-board {
   display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(188px, 0.62fr);
-  gap: 8px 32px;
+  grid-template-columns: minmax(0, 1.42fr) minmax(196px, 0.72fr);
+  gap: 8px 24px;
   align-items: start;
 }
 
@@ -962,7 +966,7 @@ span.hp-lpb-path-item {
   display: grid;
   gap: 22px;
   min-width: 0;
-  padding-left: 20px;
+  padding-left: 16px;
   border-left: 1px solid var(--lpb-line-soft);
 }
 
@@ -1034,6 +1038,7 @@ span.hp-lpb-path-item {
 
 .hp-lpb-preview .hp-lpb-editor {
   margin-top: 0;
+  min-height: 92px;
 }
 
 @keyframes hpLpbIn {
@@ -1161,13 +1166,18 @@ span.hp-lpb-path-item {
   }
 
   .hp-lpb-split,
-  .hp-lpb-lesson-grid,
   .hp-lpb-create,
   .hp-lpb-tiles,
   .hp-lpb-build-board,
   .hp-lpb-answer-split {
     grid-template-columns: 1fr;
     gap: 18px;
+  }
+
+  .hp-lpb-lesson-grid {
+    grid-template-columns: minmax(0, 1fr) 108px;
+    gap: 12px;
+    align-items: center;
   }
 
   .hp-lpb-railcard,
@@ -1180,8 +1190,20 @@ span.hp-lpb-path-item {
   }
 
   .hp-lpb-orbit {
-    min-height: 112px;
-    margin: 4px 0 0;
+    min-height: 100px;
+    margin: 0;
+    transform: scale(0.86);
+    transform-origin: right center;
+  }
+
+  .hp-lpb-modes button em {
+    white-space: normal;
+  }
+
+  .hp-lpb-create button,
+  .hp-lpb-tiles button {
+    min-height: 72px;
+    padding: 12px;
   }
 
   .hp-lpb-quote {
@@ -1189,11 +1211,6 @@ span.hp-lpb-path-item {
     align-items: flex-start;
     gap: 12px;
     margin-top: 20px;
-  }
-
-  .hp-lpb-create button,
-  .hp-lpb-tiles button {
-    min-height: 76px;
   }
 }
 
@@ -1204,7 +1221,7 @@ span.hp-lpb-path-item {
   }
 
   .hp-lpb-modes button {
-    min-height: 48px;
+    min-height: 52px;
     padding: 8px 10px;
   }
 
