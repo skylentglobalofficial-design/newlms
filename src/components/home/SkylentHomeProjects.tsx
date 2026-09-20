@@ -89,7 +89,7 @@ function NorthwindArtifact() {
           <pre>
             <span>SELECT …</span>
             <span>FROM sales</span>
-            <span>WHERE returned = 'no'</span>
+            <span>WHERE …</span>
           </pre>
           <ul>
             {NORTHWIND_WORK.map((item) => (
@@ -145,7 +145,7 @@ export default function SkylentHomeProjects() {
               <p className="hp-proj-archive-kicker">Featured projects</p>
               <h3 id="home-projects-archive-title">A case and a review.</h3>
             </div>
-            <p className="hp-proj-archive-aside">Two kinds of work. No sample gallery.</p>
+            <p className="hp-proj-archive-aside">Two kinds of work.</p>
           </header>
 
           <div className="hp-proj-pair">
