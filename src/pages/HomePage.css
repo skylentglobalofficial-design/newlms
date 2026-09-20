@@ -297,10 +297,10 @@
 
 .hp-disc-work {
   position: absolute;
-  left: 18%;
-  bottom: 4px;
+  left: 30%;
+  bottom: 6px;
   z-index: 3;
-  width: min(72%, 380px);
+  width: min(68%, 400px);
   padding: 16px 16px 14px;
   background: #fffdf8;
   color: #15171a;
@@ -529,10 +529,10 @@
 
 .hp-disc-session {
   position: absolute;
-  left: 2%;
-  bottom: -6px;
+  left: 0;
+  bottom: 40px;
   z-index: 5;
-  width: min(38%, 188px);
+  width: min(36%, 176px);
   padding: 14px 14px 12px;
   background: #f7f4ec;
   border: 1px solid rgba(21, 23, 26, 0.1);
@@ -1373,12 +1373,13 @@
   }
 
   .hp-disc-work {
-    left: 12%;
-    width: min(78%, 360px);
+    left: 28%;
+    width: min(54%, 420px);
   }
 
   .hp-disc-session {
     left: 0;
+    bottom: 28px;
   }
 
   .hp-disc-exams {
