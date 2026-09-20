@@ -363,15 +363,6 @@ export default function HomePage() {
         <HomeGoals />
         <HomeFeatured />
         <HomeEvidence />
-        <HomeUniverse />
-        <HomeLoop />
-        <HomeOS />
-        <HomeWork />
-        <HomeProgrammes />
-        <HomeEducation />
-        <HomeCareer />
-        <HomeSkills />
-        <HomeClose />
       </div>
     </PageShell>
   )
