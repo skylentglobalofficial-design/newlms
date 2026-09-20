@@ -40,7 +40,7 @@ const AREAS = [
   {
     id: "business" as const,
     title: "Business & Management",
-    copy: "Product cases and professional programmes",
+    copy: "Work a product case",
     to: "/programs",
   },
   {
@@ -102,8 +102,10 @@ function LineIcon({ id }: { id: IconId }) {
   if (id === "exam") {
     return (
       <svg {...s}>
-        <path d="M3 10l9-5 9 5-9 5-9-5z" />
-        <path d="M7 12.5v3.5c2.2 1.2 7.8 1.2 10 0v-3.5" />
+        <rect x="6" y="4" width="12" height="16" rx="1.5" />
+        <path d="M9 9h6" />
+        <path d="M9 13h6" />
+        <path d="M9 17h3.5" />
       </svg>
     )
   }
@@ -118,8 +120,10 @@ function LineIcon({ id }: { id: IconId }) {
   if (id === "business") {
     return (
       <svg {...s}>
-        <path d="M8 8V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v3" />
-        <rect x="3" y="8" width="18" height="13" rx="2" />
+        <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9L12 3z" />
+        <path d="M12 12l8-4.5" />
+        <path d="M12 12v9" />
+        <path d="M12 12L4 7.5" />
       </svg>
     )
   }
