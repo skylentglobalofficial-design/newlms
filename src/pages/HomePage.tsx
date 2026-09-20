@@ -92,7 +92,11 @@ const GOALS: Array<{
   },
 ]
 
-const HERO_EXAM_LABELS = ["JEE", "NEET", "CAT", "GATE", "UPSC"] as const
+const HERO_EXAM_GROUPS = [
+  { heading: "UG", labels: ["JEE", "NEET"] },
+  { heading: "PG", labels: ["CAT", "GATE"] },
+  { heading: "Gov", labels: ["UPSC"] },
+] as const
 
 const HERO_SKILL_CHIPS = [
   { label: "Python", to: "/courses/python-programming" },
@@ -101,13 +105,49 @@ const HERO_SKILL_CHIPS = [
   { label: "Web Development", to: "/courses/full-stack-web" },
 ] as const
 
+const HARBOR_POSTER = {
+  stores: 12,
+  interviews: 4,
+  weekendExceptions: 9,
+  quote: "If the milk is late I need someone at HQ who is actually looking before 7am.",
+  voice: "Priya · store lead, T. Nagar",
+  steps: ["Evidence", "Frame", "One bet", "Spec"],
+} as const
+
+function HarborDiscoveryPoster({ material }: { material: string }) {
+  return (
+    <div className="hp-disc-work">
+      <div className="hp-disc-work-top">
+        <p className="hp-disc-work-file">{material}</p>
+        <p className="hp-disc-work-stat">
+          {HARBOR_POSTER.stores} stores
+          {" · "}
+          {HARBOR_POSTER.interviews} interviews
+        </p>
+      </div>
+      <div className="hp-disc-stores" aria-hidden="true">
+        {Array.from({ length: HARBOR_POSTER.stores }, (_, index) => (
+          <span key={index} className={index < HARBOR_POSTER.weekendExceptions ? "is-ex" : undefined} />
+        ))}
+      </div>
+      <p className="hp-disc-quote">{HARBOR_POSTER.quote}</p>
+      <p className="hp-disc-voice">{HARBOR_POSTER.voice}</p>
+      <ol className="hp-disc-flow" aria-label="Product case path">
+        {HARBOR_POSTER.steps.map((step, index) => (
+          <li key={step}>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            {step}
+          </li>
+        ))}
+      </ol>
+    </div>
+  )
+}
+
 function HomeHero() {
   const programme = programmeDiscoveryCards().find((item) => item.slug === "product-management")
   const course = courses.find((item) => item.slug === PRODUCT_MANAGEMENT_SLUG)
   const workshop = workshops[0]
-  const exams = EXAMS_NAV.items.filter((item) =>
-    HERO_EXAM_LABELS.includes(item.label as (typeof HERO_EXAM_LABELS)[number]),
-  )
 
   return (
     <section className="hp-hero" aria-labelledby="home-hero-heading">
@@ -141,6 +181,7 @@ function HomeHero() {
                 {" · "}
                 {course.level}
               </p>
+              <HarborDiscoveryPoster material={programme.material || "harbor-desk-case.md"} />
               <ul className="hp-disc-path">
                 {course.modules.slice(0, 4).map((module) => (
                   <li key={module.id}>{module.title}</li>
@@ -153,9 +194,9 @@ function HomeHero() {
           <div className="hp-disc-orbit">
             <article className="hp-disc hp-disc-skills">
               <p className="hp-disc-kicker">Skills</p>
-              <h3>
+              <p className="hp-disc-title">
                 <Link to="/skills?intent=ai">Work with AI</Link>
-              </h3>
+              </p>
               <ul>
                 {HERO_SKILL_CHIPS.map((item) => (
                   <li key={item.label}>
@@ -167,9 +208,16 @@ function HomeHero() {
 
             <Link className="hp-disc hp-disc-exams" to="/education/exams">
               <p className="hp-disc-kicker">Competitive exams</p>
-              <ul className="hp-disc-exam-grid">
-                {exams.map((item) => (
-                  <li key={item.label}>{item.label}</li>
+              <ul className="hp-disc-exam-board">
+                {HERO_EXAM_GROUPS.map((group) => (
+                  <li key={group.heading}>
+                    <span>{group.heading}</span>
+                    <b>
+                      {group.labels.map((label) => (
+                        <em key={label}>{label}</em>
+                      ))}
+                    </b>
+                  </li>
                 ))}
               </ul>
               <span className="hp-disc-mark">{MATURITY_LABEL.coming_soon}</span>
@@ -179,12 +227,9 @@ function HomeHero() {
             {workshop ? (
               <Link className="hp-disc hp-disc-session" to="/workshops">
                 <p className="hp-disc-kicker">Workshop</p>
-                <h3>{workshop.title}</h3>
-                <p className="hp-disc-meta">
-                  {workshop.duration}
-                  {" · "}
-                  {workshop.mode}
-                </p>
+                <p className="hp-disc-duration">{workshop.duration}</p>
+                <p className="hp-disc-title">{workshop.title}</p>
+                <p className="hp-disc-meta">{workshop.mode}</p>
                 <span className="hp-disc-mark">{MATURITY_LABEL.coming_soon}</span>
               </Link>
             ) : null}
