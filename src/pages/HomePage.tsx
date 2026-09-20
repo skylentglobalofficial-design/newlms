@@ -116,7 +116,8 @@ const HARBOR_POSTER = {
 
 function HarborDiscoveryPoster({ material }: { material: string }) {
   return (
-    <div className="hp-disc-work">
+    <>
+      <p className="hp-disc-kicker">Product case</p>
       <div className="hp-disc-work-top">
         <p className="hp-disc-work-file">{material}</p>
         <p className="hp-disc-work-stat">
@@ -140,7 +141,7 @@ function HarborDiscoveryPoster({ material }: { material: string }) {
           </li>
         ))}
       </ol>
-    </div>
+    </>
   )
 }
 
@@ -170,32 +171,40 @@ function HomeHero() {
 
         <div className="hp-hero-world" aria-label="What you can explore on Skylent">
           {programme && course ? (
-            <Link className="hp-disc hp-disc-feature" to={programme.href}>
-              <div className="hp-disc-top">
-                <p className="hp-disc-kicker">Professional programme</p>
-                <p className="hp-disc-mark">{programme.enrollOpen ? "Enrolment open" : MATURITY_LABEL.coming_soon}</p>
-              </div>
-              <p className="hp-disc-title">{programme.title}</p>
-              <p className="hp-disc-meta">
-                {course.duration}
-                {" · "}
-                {course.level}
-              </p>
-              <HarborDiscoveryPoster material={programme.material || "harbor-desk-case.md"} />
-              <ul className="hp-disc-path">
-                {course.modules.slice(0, 4).map((module) => (
-                  <li key={module.id}>{module.title}</li>
-                ))}
-              </ul>
-              <span className="hp-disc-cta">Explore →</span>
-            </Link>
+            <div className="hp-disc-stage">
+              <Link className="hp-disc hp-disc-feature" to={programme.href}>
+                <div className="hp-disc-top">
+                  <p className="hp-disc-kicker">Professional programme</p>
+                  <p className="hp-disc-mark">{programme.enrollOpen ? "Enrolment open" : MATURITY_LABEL.coming_soon}</p>
+                </div>
+                <p className="hp-disc-title">{programme.title}</p>
+                <p className="hp-disc-meta">
+                  {course.duration}
+                  {" · "}
+                  {course.level}
+                </p>
+                <ul className="hp-disc-path">
+                  {course.modules.slice(0, 4).map((module) => (
+                    <li key={module.id}>{module.title}</li>
+                  ))}
+                </ul>
+                <span className="hp-disc-cta">Explore →</span>
+              </Link>
+              <Link
+                className="hp-disc hp-disc-work"
+                to={programme.href}
+                aria-label="Harbor Desk product case"
+              >
+                <HarborDiscoveryPoster material={programme.material || "harbor-desk-case.md"} />
+              </Link>
+            </div>
           ) : null}
 
           <div className="hp-disc-orbit">
             <article className="hp-disc hp-disc-skills">
-              <p className="hp-disc-kicker">Skills</p>
+              <p className="hp-disc-kicker">Explore skills</p>
               <p className="hp-disc-title">
-                <Link to="/skills?intent=ai">Work with AI</Link>
+                <Link to="/skills">Build what you need next.</Link>
               </p>
               <ul>
                 {HERO_SKILL_CHIPS.map((item) => (
@@ -221,7 +230,6 @@ function HomeHero() {
                 ))}
               </ul>
               <span className="hp-disc-mark">{MATURITY_LABEL.coming_soon}</span>
-              <span className="hp-disc-cta">Competitive exams →</span>
             </Link>
 
             {workshop ? (

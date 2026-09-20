@@ -130,8 +130,8 @@
 
 .hp-hero-board {
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(360px, 1.18fr);
-  gap: clamp(28px, 3.6vw, 44px);
+  grid-template-columns: minmax(0, 0.9fr) minmax(380px, 1.22fr);
+  gap: clamp(24px, 3.2vw, 40px);
   align-items: center;
 }
 
@@ -158,25 +158,40 @@
   position: relative;
   isolation: isolate;
   min-width: 0;
-  min-height: 580px;
-  padding: 8px 4px 28px 0;
+  min-height: 620px;
+  padding: 12px 8px 40px 0;
+}
+
+.hp-disc-stage {
+  position: relative;
+  z-index: 1;
+  width: 92%;
+  min-width: 0;
+  padding-bottom: 28px;
 }
 
 .hp-disc {
   display: block;
   text-decoration: none;
   color: inherit;
-  border-radius: 6px;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  border-radius: 4px;
+  transition: transform 0.18s ease;
 }
 
-.hp-disc:hover {
-  transform: translateY(-3px);
+.hp-disc-orbit .hp-disc:hover,
+.hp-disc-work:hover {
+  transform: translateY(-2px);
+}
+
+.hp-disc-feature:hover {
+  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hp-disc,
-  .hp-disc:hover {
+  .hp-disc:hover,
+  .hp-disc-orbit .hp-disc:hover,
+  .hp-disc-work:hover {
     transition: none;
     transform: none;
   }
@@ -217,12 +232,13 @@
 .hp-disc-feature {
   position: relative;
   z-index: 1;
-  width: 86%;
-  margin-top: 40px;
-  padding: 28px 26px 24px;
+  width: 100%;
+  min-height: 448px;
+  margin-top: 28px;
+  padding: 28px 26px 160px;
   background: #15171a;
   color: #fffdf8;
-  box-shadow: 0 22px 48px rgba(21, 23, 26, 0.18);
+  box-shadow: 0 18px 36px rgba(21, 23, 26, 0.12);
 }
 
 .hp-disc-feature .hp-disc-kicker {
@@ -243,13 +259,13 @@
 
 .hp-disc-feature .hp-disc-title {
   margin: 14px 0 0;
-  max-width: 58%;
+  max-width: 56%;
   color: #fffdf8;
   font-family: var(--font-brand);
-  font-size: clamp(32px, 3.2vw, 44px);
+  font-size: clamp(36px, 3.6vw, 50px);
   font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 1.02;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
   overflow-wrap: normal;
 }
 
@@ -261,8 +277,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 16px 0 0;
-  max-width: 72%;
+  margin: 18px 0 0;
+  max-width: 62%;
   padding: 0;
   list-style: none;
 }
@@ -270,7 +286,7 @@
 .hp-disc-path li {
   padding: 5px 9px;
   border: 1px solid rgba(247, 244, 236, 0.18);
-  border-radius: 999px;
+  border-radius: 2px;
   color: #fffdf8;
   font-size: 12px;
 }
@@ -280,12 +296,21 @@
 }
 
 .hp-disc-work {
-  margin-top: 16px;
-  max-width: 58%;
-  padding: 12px 12px 10px;
+  position: absolute;
+  left: 18%;
+  bottom: 4px;
+  z-index: 3;
+  width: min(72%, 380px);
+  padding: 16px 16px 14px;
   background: #fffdf8;
   color: #15171a;
-  border-radius: 4px;
+  border: 1px solid rgba(21, 23, 26, 0.08);
+  border-radius: 2px;
+  box-shadow: 0 10px 22px rgba(21, 23, 26, 0.1);
+}
+
+.hp-disc-work .hp-disc-kicker {
+  color: #f97316;
 }
 
 .hp-disc-work-top {
@@ -293,6 +318,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 3px;
+  margin-top: 8px;
 }
 
 .hp-disc-work-file,
@@ -316,14 +342,14 @@
   grid-template-columns: repeat(6, 18px);
   gap: 6px;
   width: 138px;
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .hp-disc-stores span {
   display: block;
   width: 18px;
   height: 18px;
-  border-radius: 3px;
+  border-radius: 2px;
   background: #e8e2d6;
 }
 
@@ -332,13 +358,13 @@
 }
 
 .hp-disc-quote {
-  margin: 10px 0 0;
+  margin: 12px 0 0;
   color: #15171a;
   font-family: var(--font-brand);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   letter-spacing: -0.03em;
-  line-height: 1.25;
+  line-height: 1.22;
 }
 
 .hp-disc-voice {
@@ -349,7 +375,7 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 4px;
-  margin: 12px 0 0;
+  margin: 14px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -358,7 +384,7 @@
   min-width: 0;
   padding: 6px 6px 5px;
   background: #f7f4ec;
-  border-radius: 3px;
+  border-radius: 2px;
   color: #15171a;
   font-size: 11px;
   font-weight: 650;
@@ -389,12 +415,11 @@
   position: absolute;
   top: 0;
   right: 0;
-  z-index: 3;
-  width: min(58%, 300px);
-  padding: 18px 18px 16px;
+  z-index: 4;
+  width: min(46%, 236px);
+  padding: 14px 16px 14px;
   background: #fffdf8;
   border: 1px solid rgba(21, 23, 26, 0.08);
-  box-shadow: 0 16px 36px rgba(21, 23, 26, 0.1);
 }
 
 .hp-disc-skills .hp-disc-kicker {
@@ -404,10 +429,10 @@
 .hp-disc-skills .hp-disc-title {
   margin: 8px 0 0;
   font-family: var(--font-brand);
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 600;
   letter-spacing: -0.03em;
-  line-height: 1.05;
+  line-height: 1.08;
   overflow-wrap: normal;
 }
 
@@ -417,78 +442,71 @@
 }
 
 .hp-disc-skills ul {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
   margin: 14px 0 0;
   padding: 0;
   list-style: none;
 }
 
 .hp-disc-skills li a {
-  display: flex;
-  align-items: flex-end;
-  min-height: 64px;
-  padding: 8px 10px;
-  background: #f7f4ec;
-  border-radius: 4px;
   color: #15171a;
-  font-family: var(--font-brand);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  font: 600 13px/1.3 var(--font-body);
   text-decoration: none;
+  border-bottom: 1px solid rgba(21, 23, 26, 0.22);
 }
 
 .hp-disc-skills li a:hover {
-  background: #ece7db;
+  border-bottom-color: #4f46e5;
 }
 
 .hp-disc-exams {
   position: absolute;
-  right: 4%;
-  bottom: 18px;
+  right: 0;
+  bottom: 22px;
   z-index: 4;
-  width: min(50%, 250px);
-  padding: 18px 18px 16px;
+  width: min(42%, 214px);
+  padding: 16px 16px 14px;
   background: #4f46e5;
   color: #fffdf8;
-  box-shadow: 0 16px 34px rgba(79, 70, 229, 0.28);
 }
 
 .hp-disc-exams .hp-disc-kicker,
-.hp-disc-exams .hp-disc-mark,
-.hp-disc-exams .hp-disc-cta {
+.hp-disc-exams .hp-disc-mark {
   color: #fffdf8;
 }
 
 .hp-disc-exams .hp-disc-mark {
   display: block;
   margin-top: 12px;
-  opacity: 0.8;
+  opacity: 0.78;
 }
 
 .hp-disc-exam-board {
   display: grid;
-  gap: 6px;
-  margin: 12px 0 0;
+  gap: 0;
+  margin: 10px 0 0;
   padding: 0;
   list-style: none;
 }
 
 .hp-disc-exam-board li {
   display: grid;
-  grid-template-columns: 36px minmax(0, 1fr);
+  grid-template-columns: 28px minmax(0, 1fr);
   gap: 8px;
-  align-items: end;
-  padding: 8px 10px;
-  background: rgba(255, 253, 248, 0.1);
-  border-radius: 4px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 253, 248, 0.18);
+}
+
+.hp-disc-exam-board li:last-child {
+  border-bottom: 0;
+  padding-bottom: 2px;
 }
 
 .hp-disc-exam-board span {
-  color: rgba(255, 253, 248, 0.72);
+  color: rgba(255, 253, 248, 0.68);
   font: 700 9px/1 var(--font-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -497,9 +515,9 @@
 .hp-disc-exam-board b {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 12px;
+  gap: 6px 12px;
   font-family: var(--font-brand);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 0.95;
@@ -511,14 +529,13 @@
 
 .hp-disc-session {
   position: absolute;
-  left: 8%;
-  bottom: -8px;
-  z-index: 4;
-  width: min(44%, 230px);
-  padding: 16px 16px 14px;
+  left: 2%;
+  bottom: -6px;
+  z-index: 5;
+  width: min(38%, 188px);
+  padding: 14px 14px 12px;
   background: #f7f4ec;
   border: 1px solid rgba(21, 23, 26, 0.1);
-  box-shadow: 0 14px 28px rgba(21, 23, 26, 0.1);
 }
 
 .hp-disc-session .hp-disc-kicker {
@@ -526,20 +543,20 @@
 }
 
 .hp-disc-duration {
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   color: #15171a;
   font-family: var(--font-brand);
-  font-size: clamp(32px, 3.4vw, 44px);
+  font-size: clamp(34px, 3.6vw, 46px);
   font-weight: 600;
   letter-spacing: -0.05em;
-  line-height: 0.9;
+  line-height: 0.88;
 }
 
 .hp-disc-session .hp-disc-title {
   margin: 8px 0 0;
   color: #15171a;
   font-family: var(--font-brand);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.15;
@@ -553,7 +570,7 @@
 
 .hp-disc-session .hp-disc-mark {
   display: block;
-  margin-top: 10px;
+  margin-top: 8px;
 }
 
 .hp-hero-career,
@@ -1344,16 +1361,20 @@
   }
 
   .hp-hero-world {
-    min-height: 560px;
+    min-height: 600px;
+  }
+
+  .hp-disc-stage {
+    width: 88%;
   }
 
   .hp-disc-feature {
-    width: min(64%, 520px);
-    margin-top: 56px;
+    margin-top: 36px;
   }
 
   .hp-disc-work {
-    max-width: 72%;
+    left: 12%;
+    width: min(78%, 360px);
   }
 
   .hp-disc-session {
@@ -1424,15 +1445,30 @@
     padding: 0;
   }
 
+  .hp-disc-stage {
+    width: auto;
+    padding-bottom: 0;
+  }
+
   .hp-disc-feature {
     width: auto;
+    min-height: 0;
     margin-top: 0;
+    padding: 22px 20px 40px;
   }
 
   .hp-disc-feature .hp-disc-title,
-  .hp-disc-feature .hp-disc-path,
-  .hp-disc-work {
+  .hp-disc-feature .hp-disc-path {
     max-width: none;
+  }
+
+  .hp-disc-work {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: auto;
+    margin: -32px 16px 16px 20px;
+    z-index: 2;
   }
 
   .hp-disc-flow {
@@ -1441,27 +1477,31 @@
 
   .hp-disc-orbit {
     position: static;
-    display: flex;
+    display: grid;
     gap: 8px;
-    overflow-x: auto;
-    padding: 2px 2px 8px;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-
-  .hp-disc-orbit::-webkit-scrollbar {
-    display: none;
+    overflow: visible;
+    padding: 0;
   }
 
   .hp-disc-skills,
   .hp-disc-exams,
   .hp-disc-session {
     position: static;
-    flex: 0 0 min(78vw, 280px);
     width: auto;
-    min-height: 228px;
-    scroll-snap-align: start;
+    min-height: 0;
+  }
+
+  .hp-disc-skills {
+    padding: 16px 16px 14px;
+  }
+
+  .hp-disc-exams {
+    padding: 16px 16px 14px;
+  }
+
+  .hp-disc-session {
+    left: auto;
+    bottom: auto;
   }
 }
 
@@ -1500,6 +1540,15 @@
     width: 100%;
   }
 
+  .hp-disc-work {
+    margin: -24px 8px 12px 12px;
+    padding: 14px 14px 12px;
+  }
+
+  .hp-disc-flow {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .hp-discover-rail li {
     flex-basis: 86vw;
   }
@@ -1514,14 +1563,12 @@
 }
 
 @media (max-width: 320px) {
-  .hp-disc-skills,
-  .hp-disc-exams,
-  .hp-disc-session {
-    flex-basis: 84vw;
+  .hp-disc-feature {
+    padding: 20px 16px 36px;
   }
 
-  .hp-disc-flow {
-    grid-template-columns: 1fr 1fr;
+  .hp-disc-work {
+    margin: -20px 6px 12px 10px;
   }
 
   .hp-show-proof {
