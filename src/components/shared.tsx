@@ -791,6 +791,10 @@ export function Footer() {
 }
 
 // ─── PAGE SHELL ───────────────────────────────────────────────────────────────
+// Module-scoped so a PageShell remount (Strict Mode, HMR, lazy) does not
+// treat the same URL as a new navigation and yank the document back to top.
+let lastPageShellPathname: string | null = null
+
 export function PageShell({
   children,
   aurora,
@@ -808,6 +812,7 @@ export function PageShell({
   useEffect(() => {
     if (location.hash) {
       const id = location.hash.replace('#', '')
+      lastPageShellPathname = location.pathname
       requestAnimationFrame(() => {
         const el = document.getElementById(id)
         if (el) {
@@ -815,9 +820,14 @@ export function PageShell({
           window.scrollTo({ top: y, behavior: 'smooth' })
         }
       })
-    } else {
-      window.scrollTo(0, 0)
+      return
     }
+
+    const previousPath = lastPageShellPathname
+    lastPageShellPathname = location.pathname
+    if (previousPath === null || previousPath === location.pathname) return
+    document.documentElement.scrollTop = 0
+    document.body.scrollTop = 0
   }, [location.pathname, location.hash])
 
   return (
