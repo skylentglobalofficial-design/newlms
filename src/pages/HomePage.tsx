@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import {
@@ -8,6 +7,7 @@ import {
 } from "../components/product/ProductLanguage"
 import SkylentOsShowcase from "../components/home/SkylentOsShowcase"
 import SkylentHeroLearningModel from "../components/home/SkylentHeroLearningModel"
+import SkylentHomeGoals from "../components/home/SkylentHomeGoals"
 import { courses, workshops } from "../data"
 import { coursePublicView } from "../lib/catalog-maturity"
 import { courseProductProfile } from "../lib/course-product"
@@ -39,103 +39,12 @@ const SKILL_LINKS = [
   { label: "Business", to: "/workshops/ai-for-business" },
 ] as const
 
-type GoalId = "career" | "exam" | "study" | "new"
-
-const GOALS: Array<{
-  id: GoalId
-  title: string
-  copy: string
-  items: Array<{ label: string; to: string; mark?: string }>
-}> = [
-  {
-    id: "career",
-    title: "Build a career",
-    copy: "Professional skills you can practise in Skylent OS.",
-    items: [
-      { label: "AI", to: "/skills?intent=ai" },
-      { label: "Data", to: "/skills?intent=data" },
-      { label: "Product", to: "/skills?intent=product" },
-      { label: "Technology", to: "/skills?intent=software" },
-      { label: "Business", to: "/workshops/ai-for-business" },
-      { label: "Design", to: "/courses?q=Design" },
-      { label: "Marketing", to: "/courses?q=Marketing" },
-    ],
-  },
-  {
-    id: "exam",
-    title: "Prepare for an exam",
-    copy: "Named exam paths. Prep engines are not live yet.",
-    items: EXAMS_NAV.items.map((item) => ({
-      label: item.label,
-      to: item.to,
-      mark: MATURITY_LABEL.coming_soon,
-    })),
-  },
-  {
-    id: "study",
-    title: "Study",
-    copy: "Schooling and degrees as their own product universe.",
-    items: ACADEMIC_LINES.filter((line) => line.id !== "exams").map((line) => ({
-      label: line.label,
-      to: line.to,
-      mark: MATURITY_LABEL[line.maturity],
-    })),
-  },
-  {
-    id: "new",
-    title: "Learn something new",
-    copy: "Start from a skill, a course, or a short session.",
-    items: [
-      { label: "Skills", to: "/skills" },
-      { label: "Courses", to: "/courses" },
-      { label: "Workshops", to: "/workshops", mark: MATURITY_LABEL.coming_soon },
-    ],
-  },
-]
-
 function HomeHero() {
   return <SkylentHeroLearningModel />
 }
 
 function HomeGoals() {
-  const [goal, setGoal] = useState<GoalId>("career")
-  const current = GOALS.find((item) => item.id === goal) ?? GOALS[0]
-
-  return (
-    <section className="hp-section hp-goals" aria-labelledby="home-goals-heading">
-      <div className="hp-rail">
-        <header className="hp-head">
-          <p className="hp-kicker">Start here</p>
-          <h2 id="home-goals-heading">What are you here to learn?</h2>
-        </header>
-        <div className="hp-goals-grid" role="radiogroup" aria-label="Learning goal">
-          {GOALS.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              role="radio"
-              aria-checked={goal === item.id}
-              className={goal === item.id ? "hp-goal is-on" : "hp-goal"}
-              onClick={() => setGoal(item.id)}
-              onMouseEnter={() => setGoal(item.id)}
-              onFocus={() => setGoal(item.id)}
-            >
-              <span className="hp-goal-title">{item.title}</span>
-              <span className="hp-goal-copy">{item.copy}</span>
-            </button>
-          ))}
-        </div>
-        <div className="hp-goal-panel" role="region" aria-label={current.title}>
-          {current.items.map((item) => (
-            <Link key={item.label} className="hp-goal-chip" to={item.to}>
-              <span>{item.label}</span>
-              {item.mark ? <em>{item.mark}</em> : null}
-            </Link>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
+  return <SkylentHomeGoals />
 }
 
 function HomeFeatured() {
