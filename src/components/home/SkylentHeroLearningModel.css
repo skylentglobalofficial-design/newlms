@@ -492,7 +492,7 @@
 
 .hp-lpb-orbit {
   position: relative;
-  min-height: 140px;
+  min-height: 132px;
 }
 
 .hp-lpb-orbit-ring,
@@ -503,47 +503,48 @@
 }
 
 .hp-lpb-orbit-ring {
-  top: 12px;
-  right: 10px;
-  width: 104px;
-  height: 104px;
-  border: 1px solid rgba(21, 23, 26, 0.1);
+  top: 14px;
+  right: 8px;
+  width: 96px;
+  height: 96px;
+  border: 1px solid rgba(21, 23, 26, 0.14);
 }
 
 .hp-lpb-orbit-lg {
-  top: 30px;
-  right: 28px;
-  width: 68px;
-  height: 68px;
+  top: 38px;
+  right: 32px;
+  width: 48px;
+  height: 48px;
   background: var(--lpb-ink);
 }
 
 .hp-lpb-orbit-sm {
-  top: 8px;
-  right: 8px;
-  width: 7px;
-  height: 7px;
+  top: 12px;
+  right: 10px;
+  width: 4px;
+  height: 4px;
   background: var(--lpb-accent);
+  opacity: 0.7;
 }
 
 .hp-lpb-orbit-arm {
   position: absolute;
-  top: 24px;
-  right: 42px;
-  width: 70px;
+  top: 26px;
+  right: 38px;
+  width: 52px;
   height: 1px;
-  background: rgba(21, 23, 26, 0.16);
-  transform: rotate(-32deg);
+  background: rgba(21, 23, 26, 0.18);
+  transform: rotate(-26deg);
   transform-origin: right center;
 }
 
 .hp-lpb-orbit em {
   position: absolute;
   right: 0;
-  bottom: 2px;
-  color: var(--lpb-secondary);
+  bottom: 4px;
+  color: var(--lpb-muted);
   font-family: var(--font-brand);
-  font-size: 13px;
+  font-size: 12px;
   font-style: italic;
   letter-spacing: -0.02em;
 }
@@ -1059,6 +1060,52 @@ span.hp-lpb-path-item {
 
   .hp-lpb-step-go {
     transition: none;
+  }
+}
+
+@media (min-width: 821px) {
+  .hp-hero.hp-lpb {
+    min-height: calc(100svh - var(--nav-h));
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: clamp(16px, 2.4vh, 32px);
+    padding-bottom: clamp(20px, 3vh, 40px);
+  }
+
+  .hp-lpb-stage {
+    align-items: stretch;
+  }
+
+  .hp-lpb-journey {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding-top: 6px;
+  }
+
+  .hp-lpb-foot {
+    margin-top: auto;
+  }
+
+  .hp-lpb-frame {
+    min-height: min(40.75rem, calc(100svh - var(--nav-h) - 5.25rem));
+  }
+
+  .hp-lpb-main {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hp-lpb-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .hp-lpb-split,
+  .hp-lpb-build-board {
+    flex: 1;
   }
 }
 
