@@ -6,7 +6,7 @@ const PROFILE_FIELDS = [
   { label: "Display name", value: "Written by you" },
   { label: "Headline", value: "Professional direction you keep" },
   { label: "Preferred role", value: "The role you are aiming at" },
-  { label: "Links", value: "LinkedIn, GitHub, portfolio \u2014 only what you add" },
+  { label: "Links", value: "LinkedIn \u00b7 GitHub \u00b7 portfolio" },
 ] as const
 
 const SKILLS = ["Product thinking", "User research", "Prioritisation", "Specification"] as const
