@@ -359,6 +359,7 @@ function LearnBody({ mode, onPractice }: { mode: LearnMode; onPractice: () => vo
             </p>
           </div>
           <div className="hp-lpb-orbit" aria-hidden="true">
+            <span className="hp-lpb-orbit-ring" />
             <span className="hp-lpb-orbit-lg" />
             <span className="hp-lpb-orbit-arm" />
             <span className="hp-lpb-orbit-sm" />
