@@ -85,7 +85,6 @@
 }
 
 .hp-ch-link:focus-visible,
-.hp-acad a:focus-visible,
 .hp-school a:focus-visible,
 .hp-uni a:focus-visible,
 .hp-examx a:focus-visible,
@@ -96,54 +95,6 @@
 .hp-end a:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-}
-
-/* 11 — academic map */
-.hp-acad-map {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
-  margin-top: clamp(40px, 6vh, 64px);
-  position: relative;
-}
-
-.hp-acad-map::before {
-  content: "";
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  top: 18px;
-  height: 1px;
-  background: var(--ink);
-}
-
-.hp-acad-node {
-  min-width: 0;
-  padding-top: 40px;
-}
-
-.hp-acad-node i {
-  display: block;
-  width: 15px;
-  height: 15px;
-  margin-bottom: 16px;
-  border: 1px solid var(--ink);
-  background: #fff;
-  border-radius: 50%;
-}
-
-.hp-acad-node b {
-  display: block;
-  font: 600 28px/1.15 var(--font-brand);
-  letter-spacing: -0.035em;
-}
-
-.hp-acad-node span {
-  display: block;
-  margin-top: 10px;
-  color: var(--secondary);
-  font-size: 14px;
-  line-height: 1.5;
 }
 
 /* 12 — school editorial */
@@ -598,12 +549,10 @@
 }
 
 @media (max-width: 1024px) {
-  .hp-acad-map,
   .hp-school-scale {
     grid-template-columns: 1fr 1fr;
   }
 
-  .hp-acad-node:nth-child(n + 3),
   .hp-school-scale li:nth-child(n + 3) {
     border-top: 1px solid var(--line);
   }
@@ -626,14 +575,9 @@
     padding: clamp(64px, 10vh, 96px) 0 80px;
   }
 
-  .hp-acad-map,
   .hp-school-scale,
   .hp-line-track {
     grid-template-columns: 1fr;
-  }
-
-  .hp-acad-map::before {
-    display: none;
   }
 
   .hp-line-track {
