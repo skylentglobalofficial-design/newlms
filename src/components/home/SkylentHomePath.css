@@ -585,6 +585,13 @@
   .hp-path-chain li:last-child {
     padding-bottom: 0;
   }
+}
+
+@media (max-width: 430px) {
+  .hp-path-cta {
+    width: 100%;
+    justify-content: center;
+  }
 
   .hp-path-stages > li {
     grid-template-columns: 28px minmax(0, 1fr);
@@ -598,13 +605,6 @@
   .hp-path-stages .is-capstone .hp-path-glyph,
   .hp-path-stages .is-evidence .hp-path-glyph {
     min-height: 100px;
-  }
-}
-
-@media (max-width: 430px) {
-  .hp-path-cta {
-    width: 100%;
-    justify-content: center;
   }
 
   .hp-path-close {
