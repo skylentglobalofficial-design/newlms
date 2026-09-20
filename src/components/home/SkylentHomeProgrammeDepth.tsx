@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import { programmeDiscoveryFor } from "../../lib/programme-discovery"
+import "./SkylentHomeProgrammeDepth.css"
 
 export default function SkylentHomeProgrammeDepth() {
   const programme = programmeDiscoveryFor("product-management")
@@ -15,38 +16,42 @@ export default function SkylentHomeProgrammeDepth() {
         <h2 id="home-depth-heading" className="hp-ch-title">
           Go deeper with a professional programme.
         </h2>
+
         <p className="hp-depth-name">{programme.courseTitle}</p>
+        <p className="hp-depth-decision">{programme.decisionLine}</p>
+
         <p className="hp-depth-meta">
           <span>{programme.taughtModules} modules</span>
           <span>{programme.taughtLessons} lessons</span>
-          <span>
-            {programme.taughtWritten} written · {programme.taughtQuizzes} checks · {programme.taughtAssignments} assignments
-          </span>
+          {programme.capstone ? <span>{programme.capstone}</span> : null}
           <span>{programme.format}</span>
         </p>
-        <ol className="hp-depth-index">
+
+        <ol className="hp-depth-seq" aria-label={`${programme.courseTitle} learning sequence`}>
           {programme.modules.map((module) => (
             <li key={module.id}>
               <span>{String(module.index).padStart(2, "0")}</span>
               <b>{module.title}</b>
-              <em>{module.countsLabel}</em>
             </li>
           ))}
-        </ol>
-        <div className="hp-depth-cap">
           {programme.capstone ? (
-            <p>
-              Capstone: <strong>{programme.capstone}</strong>
-              {" — "}
-              {programme.decisionLine} Against <code>{programme.material}</code>.
-            </p>
-          ) : (
-            <p>{programme.decisionLine}</p>
-          )}
-          <Link className="hp-ch-link" to={programme.href}>
-            View programme →
+            <li className="is-cap">
+              <span>Capstone</span>
+              <b>{programme.capstone}</b>
+              <em>A product case you keep as a work sample.</em>
+            </li>
+          ) : null}
+        </ol>
+
+        <p className="hp-depth-foot">
+          <Link className="hp-depth-cta" to={programme.href}>
+            Explore programme
+            <span aria-hidden="true"> →</span>
           </Link>
-        </div>
+          <Link className="hp-ch-link" to={programme.courseHref}>
+            View full curriculum →
+          </Link>
+        </p>
       </div>
     </section>
   )

@@ -1,0 +1,284 @@
+/* Scroll 06 — identity as a professional evidence sheet */
+
+.hp-ch.hp-id {
+  --id-ink: #15171a;
+  --id-secondary: #5c6168;
+  --id-muted: #8a8f96;
+  --id-line: rgba(21, 23, 26, 0.08);
+  --id-accent: #4f46e5;
+  --id-orange: #f97316;
+}
+
+.hp-id-open {
+  max-width: 38em;
+}
+
+.hp-id-open .hp-ch-title {
+  max-width: 11em;
+}
+
+.hp-id-cta {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 28px;
+  min-height: 48px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: var(--id-ink);
+  color: #ffffff;
+  font: 600 14.5px/1 var(--font-body);
+  text-decoration: none;
+}
+
+.hp-id-cta:hover {
+  background: #0f1113;
+}
+
+.hp-id-cta:focus-visible,
+.hp-id a:focus-visible {
+  outline: 2px solid var(--id-accent);
+  outline-offset: 3px;
+}
+
+.hp-id-sheet {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.9fr) minmax(0, 1.05fr);
+  grid-template-areas:
+    "profile profile profile"
+    "projects skills learning";
+  gap: 0;
+  margin-top: clamp(44px, 7vh, 72px);
+  border-top: 1px solid var(--id-ink);
+  border-bottom: 1px solid var(--id-ink);
+}
+
+.hp-id-profile {
+  grid-area: profile;
+  padding: 28px 0 26px;
+  border-bottom: 1px solid var(--id-line);
+}
+
+.hp-id-projects {
+  grid-area: projects;
+  padding: 28px 36px 32px 0;
+}
+
+.hp-id-skills {
+  grid-area: skills;
+  padding: 28px 28px 32px;
+  border-left: 1px solid var(--id-line);
+}
+
+.hp-id-learn {
+  grid-area: learning;
+  padding: 28px 0 32px 32px;
+  border-left: 1px solid var(--id-line);
+}
+
+.hp-id-label {
+  margin: 0;
+  color: var(--id-muted);
+  font: 500 11px/1.4 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hp-id-profile-lead {
+  margin: 12px 0 0;
+  max-width: 42em;
+  color: var(--id-secondary);
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+
+.hp-id-fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px 28px;
+  margin: 22px 0 0;
+}
+
+.hp-id-fields dt {
+  margin: 0;
+  color: var(--id-muted);
+  font: 500 10.5px/1.4 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hp-id-fields dd {
+  margin: 6px 0 0;
+  color: var(--id-ink);
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.hp-id-project-name {
+  margin: 10px 0 0;
+  color: var(--id-ink);
+  font-family: var(--font-brand);
+  font-size: clamp(26px, 2.6vw, 34px);
+  font-weight: 600;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+.hp-id-project-meta {
+  margin: 8px 0 0;
+  color: var(--id-ink);
+  font-size: 14.5px;
+  font-weight: 500;
+}
+
+.hp-id-copy {
+  margin: 10px 0 0;
+  color: var(--id-secondary);
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+.hp-id-projects .hp-ch-link,
+.hp-id-learn .hp-ch-link {
+  display: inline-flex;
+  margin-top: 16px;
+}
+
+.hp-id-skills ul {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hp-id-skills li {
+  padding: 9px 0;
+  border-top: 1px solid var(--id-line);
+  color: var(--id-ink);
+  font-size: 15.5px;
+  line-height: 1.35;
+}
+
+.hp-id-skills li:last-child {
+  border-bottom: 1px solid var(--id-line);
+}
+
+.hp-id-facts {
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--id-secondary);
+  font: 500 12.5px/1.7 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.hp-id-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--id-muted);
+  font: 500 11px/1.4 var(--font-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hp-id-chain li {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hp-id-chain li + li::before {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--id-ink);
+  opacity: 0.35;
+}
+
+.hp-id-chain li:last-child {
+  color: var(--id-ink);
+}
+
+@media (max-width: 1180px) {
+  .hp-id-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 1024px) {
+  .hp-id-sheet {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "profile profile"
+      "projects skills"
+      "learning learning";
+  }
+
+  .hp-id-learn {
+    padding-left: 0;
+    padding-top: 24px;
+    border-left: 0;
+    border-top: 1px solid var(--id-line);
+  }
+}
+
+@media (max-width: 768px) {
+  .hp-id-sheet {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "profile"
+      "projects"
+      "skills"
+      "learning";
+  }
+
+  .hp-id-fields {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .hp-id-projects,
+  .hp-id-skills,
+  .hp-id-learn {
+    padding: 24px 0;
+    border-left: 0;
+  }
+
+  .hp-id-skills,
+  .hp-id-learn {
+    border-top: 1px solid var(--id-line);
+  }
+
+  .hp-id-chain {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+    margin-left: 2px;
+    padding-left: 16px;
+    border-left: 1px solid var(--id-ink);
+  }
+
+  .hp-id-chain li + li::before {
+    display: none;
+  }
+
+  .hp-id-chain li {
+    padding: 0 0 12px;
+  }
+
+  .hp-id-chain li:last-child {
+    padding-bottom: 0;
+  }
+}
+
+@media (max-width: 430px) {
+  .hp-id-cta {
+    width: 100%;
+    justify-content: center;
+  }
+}
