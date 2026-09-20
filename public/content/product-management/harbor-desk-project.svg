@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 420" fill="none" role="img" aria-labelledby="hdTitle hdDesc">
+  <title id="hdTitle">Harbor Desk exception queue</title>
+  <desc id="hdDesc">A product specimen of the Harbor Desk shared inbox: weekend exceptions from Harbor Retail stores, with T. Nagar late inbound still unowned.</desc>
+  <rect width="960" height="420" fill="#F4F4F5"/>
+  <rect x="24" y="20" width="912" height="380" rx="8" fill="#FFFFFF" stroke="#E6E7EA"/>
+  <rect x="24" y="20" width="912" height="48" rx="8" fill="#FFFFFF"/>
+  <rect x="24" y="60" width="912" height="8" fill="#FFFFFF"/>
+  <line x1="24" y1="68" x2="936" y2="68" stroke="#E6E7EA"/>
+  <text x="44" y="49" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="15" font-weight="600" letter-spacing="-0.3">Harbor Desk</text>
+  <text x="148" y="49" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500" letter-spacing="1.4">WEEKEND EXCEPTION QUEUE</text>
+  <circle cx="900" cy="44" r="3.5" fill="#4F46E5"/>
+  <text x="820" y="49" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11.5" font-weight="500">Before open</text>
+
+  <rect x="24" y="68" width="200" height="332" fill="#FAFAFB"/>
+  <line x1="224" y1="68" x2="224" y2="400" stroke="#E6E7EA"/>
+  <text x="44" y="96" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="500" letter-spacing="1.3">QUEUES</text>
+  <rect x="36" y="110" width="164" height="32" rx="6" fill="#15171A"/>
+  <text x="48" y="131" fill="#FFFFFF" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5" font-weight="500">Inbox</text>
+  <text x="48" y="168" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5" font-weight="500">Weekend queue</text>
+  <text x="48" y="204" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5" font-weight="500">Ready for review</text>
+  <text x="44" y="250" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="500" letter-spacing="1.3">OWNER</text>
+  <text x="48" y="278" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5">Unassigned</text>
+  <text x="48" y="306" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5">HQ operations</text>
+
+  <text x="248" y="96" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="500" letter-spacing="1.3">OPEN BEFORE 7AM</text>
+
+  <rect x="248" y="110" width="664" height="56" rx="6" fill="#F7F7F8" stroke="#E6E7EA"/>
+  <circle cx="270" cy="138" r="4" fill="#4F46E5"/>
+  <text x="286" y="134" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="600">T. Nagar · late inbound</text>
+  <text x="286" y="154" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">No owner before open. Milk truck missed the 06:30 window.</text>
+  <text x="820" y="140" fill="#4F46E5" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600">UNOWNED</text>
+
+  <line x1="248" y1="180" x2="912" y2="180" stroke="#EEEEF0"/>
+  <text x="248" y="204" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="500">Anna Nagar · delivery failure</text>
+  <text x="248" y="224" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">Never appeared in a channel. Cashier took it on WhatsApp.</text>
+  <text x="820" y="214" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500">UNLOGGED</text>
+
+  <line x1="248" y1="244" x2="912" y2="244" stroke="#EEEEF0"/>
+  <text x="248" y="268" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="500">Peelamedu · weekend exception</text>
+  <text x="248" y="288" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">Buried in the on-call group. 43 unread.</text>
+  <text x="820" y="278" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500">BURIED</text>
+
+  <line x1="248" y1="308" x2="912" y2="308" stroke="#EEEEF0"/>
+  <text x="248" y="332" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="500">Madurai Main · cooler fault</text>
+  <text x="248" y="352" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">Walkie only. No written trail after the engineer was called.</text>
+  <text x="820" y="342" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500">WALKIE</text>
+
+</svg>

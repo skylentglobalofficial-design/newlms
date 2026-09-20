@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
+import { harborDeskProjectPath } from "../../lib/projects-api"
 import "./SkylentHomeEvidence.css"
+
+const HARBOR_DESK_PROJECT_IMAGE = "/content/product-management/harbor-desk-project.svg"
 
 const STEPS = [
   { id: "draft", label: "Draft", state: "done" as const },
@@ -21,10 +24,13 @@ function HarborEvidenceWorkspace({ active }: { active: boolean }) {
       </header>
 
       <div className="hp-ev-work-body">
-        <p className="hp-ev-file">harbor-desk-case.md</p>
         <p className="hp-ev-title" id="home-ev-case-title">
           Harbor Desk
         </p>
+
+        <figure className="hp-ev-artifact">
+          <img src={HARBOR_DESK_PROJECT_IMAGE} alt="Harbor Desk exception queue" />
+        </figure>
 
         <dl className="hp-ev-fields">
           <div>
@@ -41,20 +47,24 @@ function HarborEvidenceWorkspace({ active }: { active: boolean }) {
           </div>
         </dl>
 
-        <div className="hp-ev-progress-block">
-          <p className="hp-ev-progress-label">Progress</p>
-          <ol className="hp-ev-progress" aria-label="Evidence progress">
-            {STEPS.map((step) => (
-              <li key={step.id} className={`is-${step.state}`}>
-                <span>{step.label}</span>
-              </li>
-            ))}
-          </ol>
+        <div className="hp-ev-evidence-block">
+          <p className="hp-ev-evidence-label">Evidence</p>
+          <p className="hp-ev-evidence">Case notes · Specification · Feedback</p>
         </div>
 
         <div className="hp-ev-work-foot">
-          <Link className="hp-ev-keep" to="/career-os">
-            Add to portfolio
+          <div className="hp-ev-progress-block">
+            <p className="hp-ev-progress-label">Progress</p>
+            <ol className="hp-ev-progress" aria-label="Evidence progress">
+              {STEPS.map((step) => (
+                <li key={step.id} className={`is-${step.state}`}>
+                  <span>{step.label}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <Link className="hp-ev-keep" to={harborDeskProjectPath()}>
+            View the work
             <span aria-hidden="true"> →</span>
           </Link>
         </div>

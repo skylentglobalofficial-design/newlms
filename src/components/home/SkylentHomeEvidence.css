@@ -123,40 +123,51 @@
 .hp-ev-work-body {
   display: grid;
   gap: 0;
-  padding: 22px 22px 20px;
-}
-
-.hp-ev-file {
-  margin: 0;
-  color: var(--ev-muted);
-  font: 500 11px/1.4 var(--font-mono);
-  letter-spacing: 0.06em;
+  padding: 18px 20px 18px;
 }
 
 .hp-ev-title {
-  margin: 8px 0 0;
+  margin: 0 0 14px;
   color: var(--ev-ink);
   font-family: var(--font-brand);
-  font-size: clamp(28px, 3vw, 36px);
+  font-size: clamp(24px, 2.4vw, 32px);
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.1;
 }
 
+.hp-ev-artifact {
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--ev-line);
+  border-radius: 8px;
+  background: var(--ev-wash);
+}
+
+.hp-ev-artifact img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 7;
+  object-fit: cover;
+  object-position: top left;
+  background: var(--ev-wash);
+}
+
 .hp-ev-fields {
   display: grid;
-  gap: 0;
-  margin: 22px 0 0;
-  padding: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 20px;
+  margin: 16px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid var(--ev-line);
 }
 
 .hp-ev-fields > div {
   display: grid;
-  grid-template-columns: minmax(7.5em, 0.28fr) minmax(0, 1fr);
-  gap: 16px;
-  align-items: baseline;
-  padding: 14px 0;
-  border-top: 1px solid var(--ev-line);
+  gap: 6px;
+  min-width: 0;
+  padding: 0;
 }
 
 .hp-ev-fields dt {
@@ -170,14 +181,35 @@
 .hp-ev-fields dd {
   margin: 0;
   color: var(--ev-ink);
-  font-size: 15.5px;
+  font-size: 14.5px;
+  line-height: 1.35;
+}
+
+.hp-ev-evidence-block {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ev-line);
+}
+
+.hp-ev-evidence-label {
+  margin: 0 0 6px;
+  color: var(--ev-muted);
+  font: 500 10.5px/1.4 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hp-ev-evidence {
+  margin: 0;
+  color: var(--ev-secondary);
+  font-size: 13.5px;
   line-height: 1.4;
 }
 
 .hp-ev-progress-block {
-  margin-top: 8px;
-  padding: 18px 0 6px;
-  border-top: 1px solid var(--ev-line);
+  min-width: 0;
+  flex: 1;
+  padding: 0;
 }
 
 .hp-ev-progress-label {
@@ -264,13 +296,18 @@
 
 .hp-ev-work-foot {
   display: flex;
-  justify-content: flex-end;
-  margin-top: 18px;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px 28px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--ev-line);
 }
 
 .hp-ev-keep {
   display: inline-flex;
   align-items: center;
+  flex: 0 0 auto;
   min-height: 44px;
   padding: 0 18px;
   border-radius: 999px;
@@ -338,9 +375,8 @@
     font-size: clamp(32px, 4.2vw, 44px);
   }
 
-  .hp-ev-fields > div {
-    grid-template-columns: minmax(6.5em, 0.32fr) minmax(0, 1fr);
-    gap: 12px;
+  .hp-ev-fields {
+    gap: 12px 16px;
   }
 }
 
@@ -360,21 +396,21 @@
   }
 
   .hp-ev-work-bar {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
   }
 
-  .hp-ev-work-kicker {
-    display: none;
+  .hp-ev-artifact img {
+    aspect-ratio: 16 / 8;
   }
 
-  .hp-ev-fields > div {
+  .hp-ev-fields {
     grid-template-columns: 1fr;
-    gap: 6px;
-    padding: 12px 0;
+    gap: 12px;
   }
 
   .hp-ev-work-foot {
-    justify-content: stretch;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .hp-ev-keep {
@@ -391,11 +427,15 @@
 
 @media (max-width: 430px) {
   .hp-ev-work-body {
-    padding: 18px 16px 16px;
+    padding: 16px 14px 14px;
   }
 
   .hp-ev-title {
-    font-size: 26px;
+    font-size: 24px;
+  }
+
+  .hp-ev-artifact img {
+    aspect-ratio: 16 / 9;
   }
 
   .hp-ev-progress li {
