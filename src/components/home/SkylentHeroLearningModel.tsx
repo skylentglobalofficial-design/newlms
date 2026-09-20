@@ -195,6 +195,7 @@ function Frame({
       </aside>
       <div className="hp-lpb-main">
         <div className="hp-lpb-toolbar">
+          <p className="hp-lpb-mobile-brand">Skylent.</p>
           <label className="hp-lpb-search">
             <Icon name="search" />
             <input type="search" placeholder={search} aria-label="Search inside this specimen" />
@@ -433,7 +434,6 @@ function PracticeRail({
           ))}
         </div>
         <div className={submitted ? "hp-lpb-feedback is-live" : "hp-lpb-feedback"} aria-live="polite">
-          {submitted ? null : <Icon name="chart" />}
           <p>
             <b>{copy.title}</b>
             <span>{copy.body}</span>
@@ -822,7 +822,8 @@ function BuildBody({
       <div className="hp-lpb-build-rail">
         <aside className="hp-lpb-preview" aria-hidden="true">
           <p>Project preview</p>
-          <div>
+          <div className="hp-lpb-editor">
+            <em>Draft</em>
             <span />
             <span />
             <span />
