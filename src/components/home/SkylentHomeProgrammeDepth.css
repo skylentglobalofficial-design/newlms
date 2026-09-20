@@ -202,7 +202,7 @@
   flex-direction: column;
 }
 
-.hp-depth-mods span {
+.hp-depth-idx {
   display: grid;
   place-items: center;
   width: 26px;
@@ -219,6 +219,7 @@
 
 .hp-depth-mods b {
   display: block;
+  min-height: 2.5em;
   color: var(--depth-ink);
   font-family: var(--font-brand);
   font-size: clamp(16px, 1.35vw, 19px);
@@ -229,6 +230,7 @@
 
 .hp-depth-mods p {
   margin: 8px 0 0;
+  min-height: 3.4em;
   color: var(--depth-secondary);
   font-size: 12.5px;
   line-height: 1.4;
@@ -239,8 +241,8 @@
   flex-direction: column;
   justify-content: space-between;
   gap: 10px;
-  min-height: 92px;
-  margin-top: 14px;
+  min-height: 100px;
+  margin-top: auto;
   padding: 10px 10px 8px;
   border: 1px solid var(--depth-line);
   border-radius: 10px;
@@ -305,20 +307,33 @@
 .hp-depth-matrix {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 4px;
-  width: 54px;
-  height: 54px;
+  grid-template-rows: 1fr 1fr;
+  width: 56px;
+  height: 56px;
+  flex: none;
   margin-top: 2px;
+  overflow: hidden;
+  border: 1px solid #4f46e5;
+  border-radius: 4px;
+  background: #ffffff;
 }
 
 .hp-depth-matrix i {
-  border: 1px solid rgba(79, 70, 229, 0.28);
-  border-radius: 3px;
-  background: rgba(79, 70, 229, 0.06);
+  display: block;
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: #ffffff;
+  box-shadow: inset -1px -1px 0 #4f46e5;
 }
 
 .hp-depth-matrix i:nth-child(1) {
-  background: rgba(79, 70, 229, 0.22);
+  background: #4f46e5;
+}
+
+.hp-depth-matrix i:nth-child(4) {
+  background: rgba(79, 70, 229, 0.16);
 }
 
 .hp-depth-cap {
@@ -365,14 +380,14 @@
 
 .hp-depth-desk-tabs {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 2px;
   padding: 6px 8px;
   border-bottom: 1px solid var(--depth-line);
   background: var(--depth-wash);
+  overflow: hidden;
 }
 
-.hp-depth-desk-mark,
 .hp-depth-desk-tabs span {
   display: inline-flex;
   align-items: center;
@@ -381,13 +396,7 @@
   border-radius: 6px;
   color: var(--depth-secondary);
   font: 500 10.5px/1 var(--font-body);
-}
-
-.hp-depth-desk-mark {
-  background: #ffffff;
-  color: var(--depth-ink);
-  font-weight: 600;
-  box-shadow: 0 0 0 1px var(--depth-line);
+  white-space: nowrap;
 }
 
 .hp-depth-desk-tabs .is-on {
@@ -475,22 +484,6 @@
   }
 }
 
-@media (max-width: 1024px) {
-  .hp-depth-mods {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px 16px;
-  }
-
-  .hp-depth-mods::before {
-    display: none;
-  }
-
-  .hp-depth-mods li:nth-child(4),
-  .hp-depth-mods li:nth-child(5) {
-    grid-column: auto;
-  }
-}
-
 @media (max-width: 768px) {
   .hp-depth-specimen {
     padding: 18px 16px 16px;
@@ -502,7 +495,7 @@
   }
 
   .hp-depth-decision {
-    text-align: left;
+    display: none;
   }
 
   .hp-depth-desk {
@@ -514,6 +507,10 @@
   .hp-depth-mods {
     grid-template-columns: 1fr;
     gap: 0;
+  }
+
+  .hp-depth-mods::before {
+    display: none;
   }
 
   .hp-depth-mods li {
@@ -533,17 +530,19 @@
     padding-top: 0;
   }
 
-  .hp-depth-mods span {
+  .hp-depth-idx {
     grid-area: index;
     margin-bottom: 6px;
   }
 
   .hp-depth-mods b {
     grid-area: title;
+    min-height: 0;
   }
 
   .hp-depth-mods p {
     grid-area: note;
+    min-height: 0;
   }
 
   .hp-depth-glyph {

@@ -70,7 +70,6 @@ function HarborCapstonePreview() {
   return (
     <div className="hp-depth-desk" aria-hidden="true">
       <div className="hp-depth-desk-tabs">
-        <span className="hp-depth-desk-mark">Harbor Desk</span>
         {HARBOR_TABS.map((tab) => (
           <span key={tab} className={tab === "Issues" ? "is-on" : undefined}>
             {tab}
@@ -192,7 +191,7 @@ export default function SkylentHomeProgrammeDepth() {
                 const kind = moduleVisual(module.title)
                 return (
                   <li key={module.id}>
-                    <span>{String(module.index).padStart(2, "0")}</span>
+                    <span className="hp-depth-idx">{String(module.index).padStart(2, "0")}</span>
                     <b>{module.title}</b>
                     {moduleNote(module.title) ? <p>{moduleNote(module.title)}</p> : null}
                     <ModuleGlyph kind={kind} />

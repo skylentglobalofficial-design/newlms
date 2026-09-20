@@ -18,7 +18,7 @@ const SURFACE_NAV = ["Learning", "Projects", "Evidence", "Identity"] as const
 
 const HARBOR_NAV = ["Inbox", "Exceptions", "Customers", "Reports"] as const
 
-const HARBOR_TABS = ["Overview", "Issues", "Customers", "Settings"] as const
+const HARBOR_TABS = ["Overview", "Issues", "Customers"] as const
 
 const HARBOR_ISSUES = ["Late inbound", "Delivery failed", "Weekend exception"] as const
 
@@ -71,7 +71,6 @@ function HarborDeskPreview() {
   return (
     <div className="hp-id-desk" aria-hidden="true">
       <div className="hp-id-desk-tabs">
-        <span className="hp-id-desk-mark">Harbor Desk</span>
         {HARBOR_TABS.map((tab) => (
           <span key={tab} className={tab === "Overview" ? "is-on" : undefined}>
             {tab}
