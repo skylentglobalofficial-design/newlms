@@ -10,7 +10,7 @@
   --dir-wash: #f6f6f7;
   background: #ffffff;
   color: var(--dir-ink);
-  padding: clamp(48px, 7vh, 80px) 0 clamp(40px, 6vh, 64px);
+  padding: clamp(64px, 9vh, 112px) 0 clamp(56px, 8vh, 96px);
 }
 
 .hp-dir-stage {

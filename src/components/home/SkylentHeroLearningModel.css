@@ -22,7 +22,7 @@
   --lpb-wash: #f6f6f7;
   background: #ffffff;
   color: var(--lpb-ink);
-  padding: clamp(28px, 4.8vh, 48px) 0 clamp(48px, 7vh, 80px);
+  padding: clamp(32px, 5vh, 56px) 0 clamp(64px, 9vh, 112px);
 }
 
 .hp-lpb-stage {
