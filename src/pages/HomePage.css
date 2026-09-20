@@ -1447,3 +1447,583 @@
     font-size: 16px;
   }
 }
+
+/* ── Locked hero: Learn / Practice / Build ── */
+
+.hp-hero-model {
+  padding: clamp(34px, 5vh, 58px) 0 clamp(48px, 7vh, 78px);
+  background: #f7f4ec;
+}
+
+.hp-hero-model > .hp-rail {
+  max-width: 1360px;
+}
+
+.slm-hero {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr);
+  gap: clamp(42px, 6vw, 96px);
+  align-items: center;
+  min-height: min(700px, calc(100vh - 128px));
+}
+
+.slm-copy {
+  min-width: 0;
+  padding: 12px 0;
+}
+
+.slm-kicker {
+  margin: 0 0 26px;
+  color: #68707b;
+  font: 600 11px/1.4 var(--font-mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.slm-copy h1 {
+  margin: 0;
+  color: #15171a;
+  font-family: var(--font-brand);
+  font-size: clamp(66px, 7vw, 108px);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 0.9;
+}
+
+.slm-intro {
+  max-width: 28em;
+  margin: 28px 0 0;
+  color: #5c6168;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.slm-stage-list {
+  display: grid;
+  gap: 0;
+  margin-top: 38px;
+  border-top: 1px solid rgba(21, 23, 26, 0.12);
+}
+
+.slm-stage-list button {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 34px;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+  padding: 17px 0;
+  border: 0;
+  border-bottom: 1px solid rgba(21, 23, 26, 0.12);
+  background: transparent;
+  color: #8a8f96;
+  text-align: left;
+  cursor: pointer;
+  transition: color 160ms ease, padding 180ms ease;
+}
+
+.slm-stage-list button:hover,
+.slm-stage-list button.is-active {
+  color: #15171a;
+}
+
+.slm-stage-number {
+  font: 600 11px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+.slm-stage-content {
+  display: grid;
+  gap: 4px;
+}
+
+.slm-stage-content strong {
+  font-family: var(--font-brand);
+  font-size: clamp(27px, 2.7vw, 39px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.slm-stage-content small {
+  max-width: 30em;
+  color: #69707a;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.slm-stage-list button.is-active {
+  padding-left: 12px;
+  box-shadow: inset 2px 0 0 #4f46e5;
+}
+
+.slm-stage-list button.is-active .slm-stage-number,
+.slm-stage-list button.is-active .slm-arrow {
+  color: #4f46e5;
+}
+
+.slm-arrow {
+  justify-self: end;
+  color: #a2a7af;
+  font-size: 21px;
+}
+
+.slm-note {
+  margin: 24px 0 0;
+  color: #7a8089;
+  font: 500 11px/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.slm-visual {
+  min-width: 0;
+  position: relative;
+}
+
+.slm-panel {
+  overflow: hidden;
+  min-height: 548px;
+  background: #fffdf8;
+  border: 1px solid rgba(21, 23, 26, 0.1);
+  border-radius: 5px;
+  box-shadow: 0 24px 70px rgba(21, 23, 26, 0.08);
+  animation: slm-panel-in 260ms ease both;
+}
+
+@keyframes slm-panel-in {
+  from { opacity: 0.65; transform: translateX(14px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.slm-panel-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(21, 23, 26, 0.09);
+  color: #68707b;
+  font: 600 10px/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.slm-panel-top span:first-child {
+  color: #15171a;
+  font-family: var(--font-brand);
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  text-transform: none;
+}
+
+.slm-panel-body {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  min-height: 496px;
+}
+
+.slm-sidebar {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: 20px 12px;
+  border-right: 1px solid rgba(21, 23, 26, 0.09);
+  background: #f7f4ec;
+}
+
+.slm-sidebar span {
+  padding: 10px 11px;
+  border-radius: 3px;
+  color: #69707a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.slm-sidebar span.is-active {
+  background: #15171a;
+  color: #fffdf8;
+}
+
+.slm-main {
+  min-width: 0;
+  padding: clamp(24px, 3.2vw, 42px);
+}
+
+.slm-eyebrow,
+.slm-label {
+  margin: 0;
+  color: #4f46e5;
+  font: 700 10px/1.3 var(--font-mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.slm-main h3 {
+  margin: 10px 0 0;
+  max-width: 12em;
+  color: #15171a;
+  font-family: var(--font-brand);
+  font-size: clamp(34px, 4vw, 54px);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+}
+
+.slm-muted {
+  max-width: 39em;
+  margin: 15px 0 0;
+  color: #626a75;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.slm-lesson {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 170px;
+  gap: 20px;
+  align-items: stretch;
+  margin-top: 28px;
+  padding: 20px;
+  border: 1px solid rgba(21, 23, 26, 0.09);
+  background: #ffffff;
+}
+
+.slm-lesson-copy {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.slm-lesson-copy strong {
+  max-width: 18em;
+  font-family: var(--font-brand);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.slm-lesson-copy p {
+  margin: 0;
+  max-width: 30em;
+  color: #68707b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.slm-diagram {
+  position: relative;
+  min-height: 132px;
+  overflow: hidden;
+  background: #f7f4ec;
+}
+
+.slm-diagram span,
+.slm-diagram i,
+.slm-diagram b,
+.slm-diagram em {
+  position: absolute;
+  display: block;
+  border-radius: 999px;
+}
+
+.slm-diagram span {
+  width: 82px;
+  height: 82px;
+  left: 18px;
+  top: 30px;
+  background: #15171a;
+}
+
+.slm-diagram i {
+  width: 70px;
+  height: 70px;
+  right: 20px;
+  top: 15px;
+  border: 1px solid rgba(79, 70, 229, 0.5);
+}
+
+.slm-diagram b {
+  width: 1px;
+  height: 90px;
+  left: 73px;
+  top: 5px;
+  background: #f97316;
+  transform: rotate(42deg);
+}
+
+.slm-diagram em {
+  width: 7px;
+  height: 7px;
+  right: 40px;
+  bottom: 22px;
+  background: #4f46e5;
+}
+
+.slm-path {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.slm-path span {
+  padding: 11px 9px;
+  border-top: 2px solid rgba(21, 23, 26, 0.1);
+  color: #7a8089;
+  font: 600 10px/1.35 var(--font-mono);
+}
+
+.slm-path span.is-done {
+  border-top-color: #f97316;
+  color: #15171a;
+}
+
+.slm-path span.is-now {
+  border-top-color: #4f46e5;
+  color: #15171a;
+}
+
+.slm-practice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.slm-practice-grid article {
+  display: grid;
+  gap: 7px;
+  min-height: 132px;
+  padding: 16px;
+  border: 1px solid rgba(21, 23, 26, 0.09);
+  background: #ffffff;
+}
+
+.slm-practice-grid article.is-featured {
+  background: #f7f4ec;
+  border-color: rgba(79, 70, 229, 0.25);
+}
+
+.slm-practice-grid span {
+  color: #7d838c;
+  font: 600 10px/1 var(--font-mono);
+}
+
+.slm-practice-grid strong {
+  font-family: var(--font-brand);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.slm-practice-grid p {
+  margin: 0;
+  color: #68707b;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.slm-practice-grid b {
+  align-self: end;
+  color: #4f46e5;
+  font-size: 11px;
+}
+
+.slm-build-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 155px;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.slm-build-canvas {
+  padding: 14px;
+  background: #15171a;
+  color: #fffdf8;
+}
+
+.slm-build-screen {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  align-content: start;
+  min-height: 205px;
+  margin-top: 12px;
+  padding: 14px;
+  background: #fffdf8;
+  color: #15171a;
+}
+
+.slm-build-screen div {
+  height: 10px;
+  background: #dfe2e7;
+}
+
+.slm-build-screen div:first-child {
+  grid-column: 1 / -1;
+  width: 58%;
+  background: #4f46e5;
+}
+
+.slm-build-screen strong {
+  grid-column: 1 / -1;
+  align-self: end;
+  margin-top: 50px;
+  font-family: var(--font-brand);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.slm-build-steps {
+  display: grid;
+  align-content: start;
+  gap: 0;
+}
+
+.slm-build-steps span {
+  padding: 12px 8px;
+  border-top: 1px solid rgba(21, 23, 26, 0.1);
+  color: #7a8089;
+  font: 600 10px/1.35 var(--font-mono);
+}
+
+.slm-build-steps span.is-done {
+  color: #15171a;
+}
+
+.slm-build-steps span.is-now {
+  color: #4f46e5;
+  border-top-color: #4f46e5;
+}
+
+@media (max-width: 1050px) {
+  .slm-hero {
+    grid-template-columns: minmax(260px, 0.7fr) minmax(0, 1.3fr);
+    gap: 34px;
+  }
+
+  .slm-copy h1 {
+    font-size: clamp(58px, 7vw, 82px);
+  }
+
+  .slm-panel-body {
+    grid-template-columns: 120px minmax(0, 1fr);
+  }
+
+  .slm-sidebar {
+    padding-inline: 8px;
+  }
+
+  .slm-lesson {
+    grid-template-columns: 1fr;
+  }
+
+  .slm-diagram {
+    min-height: 90px;
+  }
+}
+
+@media (max-width: 820px) {
+  .hp-hero-model {
+    padding-top: 28px;
+  }
+
+  .slm-hero {
+    grid-template-columns: 1fr;
+    gap: 34px;
+    min-height: auto;
+  }
+
+  .slm-copy h1 {
+    font-size: clamp(64px, 16vw, 100px);
+  }
+
+  .slm-stage-list button.is-active {
+    padding-left: 10px;
+  }
+
+  .slm-panel {
+    min-height: 0;
+  }
+
+  .slm-panel-body {
+    min-height: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .slm-copy h1 {
+    font-size: clamp(52px, 17vw, 76px);
+  }
+
+  .slm-intro {
+    font-size: 16px;
+  }
+
+  .slm-stage-list button {
+    grid-template-columns: 28px minmax(0, 1fr) 24px;
+    gap: 9px;
+    padding: 14px 0;
+  }
+
+  .slm-stage-content strong {
+    font-size: 29px;
+  }
+
+  .slm-stage-content small {
+    font-size: 12px;
+  }
+
+  .slm-panel-top {
+    padding-inline: 14px;
+  }
+
+  .slm-panel-body {
+    grid-template-columns: 1fr;
+  }
+
+  .slm-sidebar {
+    display: flex;
+    overflow-x: auto;
+    border-right: 0;
+    border-bottom: 1px solid rgba(21, 23, 26, 0.09);
+    padding: 8px;
+  }
+
+  .slm-sidebar span {
+    flex: 0 0 auto;
+  }
+
+  .slm-main {
+    padding: 22px 16px;
+  }
+
+  .slm-main h3 {
+    font-size: 36px;
+  }
+
+  .slm-practice-grid,
+  .slm-build-stage {
+    grid-template-columns: 1fr;
+  }
+
+  .slm-path {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .slm-build-screen {
+    min-height: 170px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slm-panel {
+    animation: none;
+  }
+
+  .slm-stage-list button {
+    transition: none;
+  }
+}
