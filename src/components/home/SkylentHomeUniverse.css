@@ -1,0 +1,121 @@
+/* Scroll 18 — ecosystem constellation */
+
+.hp-ch.hp-eco {
+  --eco-ink: #15171a;
+  --eco-secondary: #5c6168;
+  --eco-muted: #8a8f96;
+  --eco-line: rgba(21, 23, 26, 0.08);
+  --eco-accent: #4f46e5;
+  --eco-wash: #f7f8fd;
+  background: #ffffff;
+  border-top: 1px solid var(--eco-line);
+}
+
+.hp-eco-stage {
+  display: grid;
+  gap: clamp(32px, 4vh, 52px);
+}
+
+.hp-eco-copy {
+  max-width: 40em;
+}
+
+.hp-eco-copy .hp-ch-title {
+  max-width: 14em;
+}
+
+.hp-eco a:focus-visible {
+  outline: 2px solid var(--eco-accent);
+  outline-offset: 3px;
+}
+
+.hp-eco-orbit {
+  display: grid;
+  justify-items: center;
+  gap: 28px;
+  padding: clamp(28px, 5vh, 48px) 16px;
+  border: 1px solid rgba(79, 70, 229, 0.16);
+  background: #ffffff;
+}
+
+.hp-eco-core {
+  display: grid;
+  place-items: center;
+  width: min(180px, 46vw);
+  height: min(180px, 46vw);
+  margin: 0;
+  border: 1px solid rgba(79, 70, 229, 0.28);
+  border-radius: 50%;
+  background: var(--eco-wash);
+  color: var(--eco-ink);
+  font: 600 clamp(28px, 4vw, 40px)/1 var(--font-brand);
+  letter-spacing: -0.045em;
+}
+
+.hp-eco-arms {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px 28px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-align: center;
+}
+
+.hp-eco-arms li {
+  display: grid;
+  gap: 4px;
+}
+
+.hp-eco-arms a {
+  color: var(--eco-ink);
+  font: 600 clamp(18px, 2vw, 24px)/1.2 var(--font-brand);
+  letter-spacing: -0.03em;
+  text-decoration: none;
+}
+
+.hp-eco-arms a:hover {
+  color: var(--eco-accent);
+}
+
+.hp-eco-arms em {
+  color: var(--eco-muted);
+  font: 500 10.5px/1.3 var(--font-mono);
+  font-style: normal;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.hp-eco-support {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 18px;
+  margin: 0;
+  padding-top: 8px;
+  list-style: none;
+}
+
+.hp-eco-support a {
+  color: var(--eco-secondary);
+  font: 500 13px/1.4 var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.hp-eco-support a:hover {
+  color: var(--eco-accent);
+}
+
+@media (max-width: 768px) {
+  .hp-eco-copy .hp-ch-title {
+    max-width: none;
+  }
+
+  .hp-eco-arms {
+    display: grid;
+    justify-items: center;
+  }
+}
