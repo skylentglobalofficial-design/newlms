@@ -74,7 +74,9 @@ function DestIcon({ id }: { id: DestId }) {
   if (id === "exam") {
     return (
       <svg {...s}>
-        <path d="M12 3l8 4v5c0 4.5-3.2 7.8-8 9-4.8-1.2-8-4.5-8-9V7l8-4z" />
+        <path d="M3 10l9-5 9 5-9 5-9-5z" />
+        <path d="M7 12.5v3.5c2.2 1.2 7.8 1.2 10 0v-3.5" />
+        <path d="M20 12v4" />
       </svg>
     )
   }
