@@ -280,6 +280,20 @@
   background: #fbfbfd;
 }
 
+.hp-lab-sql {
+  margin: 10px 0 0;
+  padding: 10px 10px 10px 0;
+  flex: 1;
+  min-height: 132px;
+  overflow: auto;
+  border: 1px solid var(--lab-line);
+  border-radius: 10px;
+  background: #ffffff;
+  color: var(--lab-ink);
+  font: 500 13px/1.65 var(--font-mono);
+  white-space: pre;
+}
+
 .hp-lab-editor-bar {
   display: flex;
   align-items: center;
@@ -305,17 +319,6 @@
 
 .hp-lab-run:hover {
   background: #4338ca;
-}
-
-.hp-lab-sql {
-  margin: 10px 0 0;
-  padding: 10px 10px 10px 0;
-  overflow: auto;
-  border: 1px solid var(--lab-line);
-  border-radius: 10px;
-  background: #ffffff;
-  color: var(--lab-ink);
-  font: 500 13px/1.65 var(--font-mono);
 }
 
 .hp-lab-sql span {
@@ -582,13 +585,15 @@
     grid-area: cols;
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 10px;
+    gap: 6px;
   }
 
   .hp-lab-schema li {
-    padding: 0;
-    border-top: 0;
-    gap: 4px;
+    padding: 4px 8px;
+    border: 1px solid var(--lab-line);
+    border-radius: 6px;
+    background: var(--lab-wash);
+    gap: 6px;
   }
 
   .hp-lab-out {
