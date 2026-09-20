@@ -8,9 +8,23 @@ const STEPS = [
   { id: "ready", label: "Ready", state: "next" as const },
 ]
 
+const STORY = [
+  { label: "Problem", value: "Late inbound has no owner before open." },
+  { label: "Decision", value: "Weekend exception queue." },
+  { label: "Specification", value: "Ready for review." },
+] as const
+
+const PROOF = ["Case notes", "Specification", "Feedback"] as const
+
+const THREAD = [
+  { label: "Project", copy: "Make something real." },
+  { label: "Evidence", copy: "Show how you got there." },
+  { label: "Opportunity", copy: "Take the work forward." },
+] as const
+
 function HarborEvidenceWorkspace({ active }: { active: boolean }) {
   return (
-    <div className={active ? "hp-ev-work is-in" : "hp-ev-work"} aria-label="Harbor Desk project case">
+    <article className={active ? "hp-ev-work is-in" : "hp-ev-work"} aria-labelledby="home-ev-case-title">
       <header className="hp-ev-work-bar">
         <p className="hp-ev-brand">Skylent OS</p>
         <p className="hp-ev-work-kicker">Project case</p>
@@ -22,44 +36,45 @@ function HarborEvidenceWorkspace({ active }: { active: boolean }) {
 
       <div className="hp-ev-work-body">
         <p className="hp-ev-file">harbor-desk-case.md</p>
-        <p className="hp-ev-title" id="home-ev-case-title">
+        <h3 className="hp-ev-title" id="home-ev-case-title">
           Harbor Desk
-        </p>
+        </h3>
 
-        <dl className="hp-ev-fields">
-          <div>
-            <dt>Problem</dt>
-            <dd>Late inbound has no owner before open.</dd>
-          </div>
-          <div>
-            <dt>Decision</dt>
-            <dd>Weekend exception queue.</dd>
-          </div>
-          <div>
-            <dt>Specification</dt>
-            <dd>Ready for review.</dd>
-          </div>
+        <dl className="hp-ev-story">
+          {STORY.map((row) => (
+            <div key={row.label}>
+              <dt>{row.label}</dt>
+              <dd>{row.value}</dd>
+            </div>
+          ))}
         </dl>
 
-        <div className="hp-ev-progress-block">
-          <p className="hp-ev-progress-label">Progress</p>
-          <ol className="hp-ev-progress" aria-label="Evidence progress">
-            {STEPS.map((step) => (
-              <li key={step.id} className={`is-${step.state}`}>
-                <span>{step.label}</span>
-              </li>
+        <div className="hp-ev-proof">
+          <p className="hp-ev-proof-label">Evidence</p>
+          <ul>
+            {PROOF.map((item) => (
+              <li key={item}>{item}</li>
             ))}
-          </ol>
+          </ul>
         </div>
 
+        <ol className="hp-ev-progress" aria-label="Project maturity">
+          {STEPS.map((step) => (
+            <li key={step.id} className={`is-${step.state}`}>
+              <i aria-hidden="true" />
+              <span>{step.label}</span>
+            </li>
+          ))}
+        </ol>
+
         <div className="hp-ev-work-foot">
-          <Link className="hp-ev-keep" to="/career-os">
-            Add to portfolio
+          <Link className="hp-ev-keep" to="/os/projects/product-management/harbor-desk-case">
+            View the work
             <span aria-hidden="true"> →</span>
           </Link>
         </div>
       </div>
-    </div>
+    </article>
   )
 }
 
@@ -97,13 +112,21 @@ export default function SkylentHomeEvidence() {
             Turn what you learn into projects, cases, analyses, products and other evidence of what you can
             actually do.
           </p>
+          <dl className="hp-ev-thread">
+            {THREAD.map((item) => (
+              <div key={item.label}>
+                <dt>{item.label}</dt>
+                <dd>{item.copy}</dd>
+              </div>
+            ))}
+          </dl>
         </header>
 
         <HarborEvidenceWorkspace active={inView} />
       </div>
 
       <div className="hp-rail hp-ev-foot">
-        <p>Build something worth showing.</p>
+        <p>Good work should have somewhere to go.</p>
         <Link to="/career-os/projects">Explore projects →</Link>
       </div>
     </section>
