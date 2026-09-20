@@ -213,7 +213,7 @@
 }
 
 .hp-ev-progress-label {
-  margin: 0 0 16px;
+  margin: 0 0 12px;
   color: var(--ev-muted);
   font: 500 10.5px/1.4 var(--font-mono);
   letter-spacing: 0.12em;
