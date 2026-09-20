@@ -6,7 +6,7 @@ import SkylentHomeEvidence from "../components/home/SkylentHomeEvidence"
 import SkylentHomeCareerOS from "../components/home/SkylentHomeCareerOS"
 import SkylentHomeIdentity from "../components/home/SkylentHomeIdentity"
 import SkylentHomeProgrammeDepth from "../components/home/SkylentHomeProgrammeDepth"
-import SkylentHomeProgrammePath from "../components/home/SkylentHomeProgrammePath"
+import SkylentHomePath from "../components/home/SkylentHomePath"
 import SkylentHomeProjects from "../components/home/SkylentHomeProjects"
 import SkylentHomeLabs from "../components/home/SkylentHomeLabs"
 import SkylentHomeEducation from "../components/home/SkylentHomeEducation"
@@ -33,7 +33,7 @@ export default function HomePage() {
         <SkylentHomeCareerOS />
         <SkylentHomeIdentity />
         <SkylentHomeProgrammeDepth />
-        <SkylentHomeProgrammePath />
+        <SkylentHomePath />
         <SkylentHomeProjects />
         <SkylentHomeLabs />
         <SkylentHomeEducation />

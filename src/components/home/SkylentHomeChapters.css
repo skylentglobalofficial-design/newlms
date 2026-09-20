@@ -100,57 +100,6 @@
   outline-offset: 3px;
 }
 
-/* 08 — journey path */
-.hp-progpath-line {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 0;
-  margin-top: clamp(48px, 7vh, 72px);
-  list-style: none;
-  padding: 0;
-  position: relative;
-}
-
-.hp-progpath-line::before {
-  content: "";
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  top: 7px;
-  height: 1px;
-  background: var(--ink);
-}
-
-.hp-progpath-line li {
-  position: relative;
-  z-index: 1;
-  padding: 0 12px 0 0;
-}
-
-.hp-progpath-line i {
-  display: block;
-  width: 15px;
-  height: 15px;
-  border: 1px solid var(--ink);
-  background: #ffffff;
-  border-radius: 50%;
-}
-
-.hp-progpath-line b {
-  display: block;
-  margin-top: 16px;
-  font: 600 18px/1.25 var(--font-brand);
-  letter-spacing: -0.03em;
-}
-
-.hp-progpath-line span {
-  display: block;
-  margin-top: 8px;
-  color: var(--secondary);
-  font-size: 13.5px;
-  line-height: 1.45;
-}
-
 /* 09 — project archive */
 .hp-archive-main {
   min-width: 0;
@@ -812,15 +761,6 @@
     border-top: 1px solid var(--line);
   }
 
-  .hp-progpath-line {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    row-gap: 28px;
-  }
-
-  .hp-progpath-line::before {
-    display: none;
-  }
-
   .hp-labx-bench,
   .hp-eco-map,
   .hp-archive-side {
@@ -849,44 +789,12 @@
 
   .hp-acad-map,
   .hp-school-scale,
-  .hp-progpath-line,
   .hp-line-track {
     grid-template-columns: 1fr;
   }
 
   .hp-acad-map::before {
     display: none;
-  }
-
-  .hp-progpath-line li {
-    display: grid;
-    grid-template-columns: 15px minmax(0, 1fr);
-    gap: 14px;
-    align-items: start;
-    padding: 0 0 22px;
-    position: relative;
-  }
-
-  .hp-progpath-line li > div {
-    min-width: 0;
-  }
-
-  .hp-progpath-line i {
-    margin-top: 4px;
-  }
-
-  .hp-progpath-line li:not(:last-child)::after {
-    content: "";
-    position: absolute;
-    left: 7px;
-    top: 20px;
-    bottom: 0;
-    width: 1px;
-    background: var(--ink);
-  }
-
-  .hp-progpath-line b {
-    margin-top: 0;
   }
 
   .hp-line-track {
