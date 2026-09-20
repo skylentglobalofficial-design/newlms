@@ -1,5 +1,10 @@
 /* Homepage — discovery platform, product-led */
 
+html:has(.home-p3),
+html:has(.home-p3) body {
+  background: #ffffff !important;
+}
+
 .skylent-public-canvas:has(.home-p3) {
   background: #ffffff !important;
 }
@@ -13,6 +18,7 @@
   background: #ffffff;
   color: #15171a;
   overflow-x: clip;
+  overflow-y: visible;
 }
 
 .hp-kicker {

@@ -40,8 +40,10 @@ export default function SkylentHomeOSArchitecture() {
           {layers.map((layer, index) => (
             <li key={layer.label}>
               <span>{String(index + 1).padStart(2, "0")}</span>
-              <b>{layer.label}</b>
-              <em>{layer.copy}</em>
+              <div>
+                <b>{layer.label}</b>
+                <em>{layer.copy}</em>
+              </div>
             </li>
           ))}
         </ol>

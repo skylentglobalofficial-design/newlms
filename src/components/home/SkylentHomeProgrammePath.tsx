@@ -26,8 +26,10 @@ export default function SkylentHomeProgrammePath() {
           {steps.map((step) => (
             <li key={step.label}>
               <i aria-hidden="true" />
-              <b>{step.label}</b>
-              <span>{step.copy}</span>
+              <div>
+                <b>{step.label}</b>
+                <span>{step.copy}</span>
+              </div>
             </li>
           ))}
         </ol>
