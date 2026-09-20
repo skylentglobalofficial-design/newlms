@@ -8,6 +8,7 @@ import SkylentOsShowcase from "../components/home/SkylentOsShowcase"
 import SkylentHeroLearningModel from "../components/home/SkylentHeroLearningModel"
 import SkylentHomeGoals from "../components/home/SkylentHomeGoals"
 import SkylentHomeCatalogue from "../components/home/SkylentHomeCatalogue"
+import SkylentHomeEvidence from "../components/home/SkylentHomeEvidence"
 import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG } from "../lib/authored-courses"
 import { authoredWorkspace } from "../lib/home-workspace"
 import { ACADEMIC_LINES, CAREER_OS_IA, EXAMS_NAV, MATURITY_LABEL } from "../lib/product-architecture"
@@ -37,6 +38,10 @@ function HomeGoals() {
 
 function HomeFeatured() {
   return <SkylentHomeCatalogue />
+}
+
+function HomeEvidence() {
+  return <SkylentHomeEvidence />
 }
 
 function HomeUniverse() {
@@ -357,6 +362,7 @@ export default function HomePage() {
         <HomeHero />
         <HomeGoals />
         <HomeFeatured />
+        <HomeEvidence />
         <HomeUniverse />
         <HomeLoop />
         <HomeOS />
