@@ -1175,9 +1175,13 @@ span.hp-lpb-path-item {
   }
 
   .hp-lpb-lesson-grid {
-    grid-template-columns: minmax(0, 1fr) 108px;
-    gap: 12px;
+    grid-template-columns: minmax(0, 1fr) 96px;
+    gap: 8px 12px;
     align-items: center;
+  }
+
+  .hp-lpb-orbit em {
+    display: none;
   }
 
   .hp-lpb-railcard,
@@ -1190,14 +1194,42 @@ span.hp-lpb-path-item {
   }
 
   .hp-lpb-orbit {
-    min-height: 100px;
+    min-height: 96px;
     margin: 0;
-    transform: scale(0.86);
-    transform-origin: right center;
+  }
+
+  .hp-lpb-orbit-ring {
+    top: 8px;
+    right: 4px;
+    width: 80px;
+    height: 80px;
+  }
+
+  .hp-lpb-orbit-lg {
+    top: 22px;
+    right: 18px;
+    width: 52px;
+    height: 52px;
+  }
+
+  .hp-lpb-orbit-sm {
+    top: 4px;
+    right: 2px;
+  }
+
+  .hp-lpb-orbit-arm {
+    top: 16px;
+    right: 28px;
+    width: 52px;
+  }
+
+  .hp-lpb-modes button {
+    min-height: 42px;
+    padding: 8px 10px;
   }
 
   .hp-lpb-modes button em {
-    white-space: normal;
+    display: none;
   }
 
   .hp-lpb-create button,
@@ -1221,7 +1253,7 @@ span.hp-lpb-path-item {
   }
 
   .hp-lpb-modes button {
-    min-height: 52px;
+    min-height: 40px;
     padding: 8px 10px;
   }
 
