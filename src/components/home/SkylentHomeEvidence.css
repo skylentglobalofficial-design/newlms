@@ -130,7 +130,8 @@
 .hp-ev-artifact img {
   display: block;
   width: 100%;
-  height: 232px;
+  height: auto;
+  aspect-ratio: 960 / 340;
   object-fit: cover;
   object-position: left top;
   background: var(--ev-wash);
@@ -378,7 +379,8 @@
   }
 
   .hp-ev-artifact img {
-    height: 204px;
+    height: auto;
+    aspect-ratio: 960 / 340;
   }
 
   .hp-ev-fields {
@@ -413,7 +415,9 @@
   }
 
   .hp-ev-artifact img {
-    height: 176px;
+    height: 168px;
+    aspect-ratio: auto;
+    object-fit: cover;
     object-position: left top;
   }
 
