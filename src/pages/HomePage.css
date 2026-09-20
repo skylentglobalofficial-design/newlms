@@ -357,86 +357,6 @@
   line-height: 1.45;
 }
 
-/* ── Goals ── */
-
-.hp-goals {
-  background: #fffdf8;
-}
-
-.hp-goals-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
-  margin-top: 28px;
-}
-
-.hp-goal {
-  display: grid;
-  gap: 8px;
-  min-height: 148px;
-  padding: 22px 20px;
-  border: 1px solid rgba(21, 23, 26, 0.1);
-  border-radius: 4px;
-  background: #f7f4ec;
-  text-align: left;
-  cursor: pointer;
-}
-
-.hp-goal.is-on {
-  background: #ffffff;
-  border-color: #4f46e5;
-  box-shadow: inset 0 0 0 1px #4f46e5;
-}
-
-.hp-goal-title {
-  font-family: var(--font-brand);
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-}
-
-.hp-goal-copy {
-  color: #5c6168;
-  font-size: 13.5px;
-  line-height: 1.45;
-}
-
-.hp-goal-panel {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 18px;
-  min-height: 44px;
-}
-
-.hp-goal-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 40px;
-  padding: 0 14px;
-  border: 1px solid rgba(21, 23, 26, 0.12);
-  border-radius: 999px;
-  background: #ffffff;
-  color: #15171a;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.hp-goal-chip em {
-  color: #6a717b;
-  font: 500 10px/1 var(--font-mono);
-  font-style: normal;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.hp-goal-chip:hover {
-  border-color: #4f46e5;
-  color: #4f46e5;
-}
-
 /* ── Discovery rail ── */
 
 .hp-discover {
@@ -914,7 +834,6 @@
     grid-template-columns: 1fr;
   }
 
-  .hp-goals-grid,
   .hp-loop-line,
   .hp-work-pair {
     grid-template-columns: 1fr 1fr;
@@ -969,7 +888,6 @@
 }
 
 @media (max-width: 760px) {
-  .hp-goals-grid,
   .hp-loop-line,
   .hp-work-pair,
   .hp-edu-exams {
@@ -979,10 +897,6 @@
   .hp-head-row {
     flex-direction: column;
     align-items: flex-start;
-  }
-
-  .hp-goal {
-    min-height: 0;
   }
 
   .hp-loop-line li {
