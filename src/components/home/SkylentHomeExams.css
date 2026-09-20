@@ -56,7 +56,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(180px, 0.72fr) minmax(0, 1fr);
   gap: clamp(20px, 3vw, 40px);
-  align-items: center;
+  align-items: start;
 }
 
 .hp-exam-system {
@@ -64,7 +64,8 @@
   display: grid;
   gap: 0;
   margin: 0;
-  padding: 18px 16px;
+  min-height: 420px;
+  padding: 22px 18px;
   list-style: none;
   border: 1px solid rgba(79, 70, 229, 0.16);
   background: var(--ex-wash);
@@ -162,6 +163,10 @@
 }
 
 @media (max-width: 768px) {
+  .hp-exam-system {
+    min-height: 0;
+  }
+
   .hp-exam-constellation {
     grid-template-columns: 1fr;
     grid-template-areas:

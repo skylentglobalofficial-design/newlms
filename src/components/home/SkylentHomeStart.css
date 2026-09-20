@@ -76,6 +76,7 @@
 
 .hp-start-way.is-skill {
   grid-area: skill;
+  justify-items: end;
   text-align: right;
 }
 
@@ -154,6 +155,7 @@
   .hp-start-way.is-subject,
   .hp-start-way.is-skill,
   .hp-start-way.is-exam {
+    justify-items: start;
     text-align: left;
   }
 
