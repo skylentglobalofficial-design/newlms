@@ -49,7 +49,8 @@ export default function HeroLearningObject() {
   }
 
   function onGroupKeyDown(event: KeyboardEvent<HTMLDivElement>) {
-    const current = choice ? CHOICES.findIndex((item) => item.id === choice) : 0
+    const focused = buttonsRef.current.findIndex((node) => node === document.activeElement)
+    const current = focused >= 0 ? focused : (choice ? CHOICES.findIndex((item) => item.id === choice) : 0)
     if (event.key === "ArrowDown" || event.key === "ArrowRight") {
       event.preventDefault()
       move(current + 1)
