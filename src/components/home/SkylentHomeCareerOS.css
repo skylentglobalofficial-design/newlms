@@ -79,7 +79,7 @@
   grid-template-columns: 2em minmax(0, 1fr);
   gap: 12px;
   align-items: start;
-  padding: 13px 0;
+  padding: 11px 0;
   border-top: 1px solid var(--cos-line);
 }
 
@@ -217,7 +217,7 @@
   display: grid;
   gap: 0;
   min-width: 0;
-  padding: 18px 20px 18px;
+  padding: 20px 22px 20px;
 }
 
 .hp-cos-project-head {
@@ -335,9 +335,9 @@
 }
 
 .hp-cos-next ol {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 8px 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 4px;
   align-items: start;
   margin: 0;
   padding: 0;
@@ -347,8 +347,9 @@
 .hp-cos-next li {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 6px;
+  gap: 8px;
   align-items: start;
+  flex: 1 1 132px;
   min-width: 0;
 }
 
@@ -426,9 +427,17 @@
     grid-template-columns: 148px minmax(0, 1fr);
   }
 
+  .hp-cos-fields {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
   .hp-cos-next ol {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px 16px;
+    gap: 16px 8px;
+  }
+
+  .hp-cos-next li {
+    flex: 1 1 calc(50% - 12px);
   }
 
   .hp-cos-next li:nth-child(2) i {
@@ -469,11 +478,13 @@
   }
 
   .hp-cos-next ol {
+    display: grid;
     grid-template-columns: 1fr;
     gap: 0;
   }
 
   .hp-cos-next li {
+    flex: none;
     grid-template-columns: minmax(0, 1fr);
     padding: 12px 0;
     border-top: 1px solid var(--cos-line);
