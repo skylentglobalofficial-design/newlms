@@ -1,4 +1,4 @@
-import { PROGRAMS_STUDY_CLASSROOM } from "../../media"
+import { PROGRAMS_STUDY_UNIVERSITY } from "../../media"
 import { liveProgrammeCatalogue } from "../../lib/programme-catalogue"
 import "./ProgramsHero.css"
 
@@ -42,8 +42,8 @@ export default function ProgramsHero() {
         <figure className="pg-hero-figure">
           <div className="pg-hero-photo">
             <img
-              src={PROGRAMS_STUDY_CLASSROOM}
-              alt="Students working on laptops in a classroom"
+              src={PROGRAMS_STUDY_UNIVERSITY}
+              alt="Adult learners working together in a university library"
               width={1800}
               height={1200}
               fetchPriority="high"

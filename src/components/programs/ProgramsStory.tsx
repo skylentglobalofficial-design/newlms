@@ -6,7 +6,7 @@ import {
   NorthwindWorkspace,
   SkylentOsPreview,
 } from "../product/ProductLanguage"
-import { PROGRAMS_STUDY_CLASSROOM, PROGRAMS_STUDY_DESK, PROGRAMS_STUDY_LIBRARY } from "../../media"
+import { PROGRAMS_STUDY_CAMPUS, PROGRAMS_STUDY_DESK, PROGRAMS_STUDY_LIBRARY } from "../../media"
 import { PROGRAMME_WORK_SURFACES, type ProgrammeDiscoveryCard } from "../../lib/programme-discovery"
 import { programmeBuildLine } from "../../lib/programme-catalogue"
 import "./ProgramsStory.css"
@@ -49,7 +49,7 @@ function ShowcaseBand({
   const build = programmeBuildLine(row)
 
   return (
-    <article className={flip ? "pg-show is-flip" : "pg-show"}>
+    <article className={flip ? "pg-show is-flip is-da" : "pg-show is-pm"}>
       <div className="pg-show-copy">
         <p className="pg-kicker">Ready to start</p>
         <h3>
@@ -106,8 +106,8 @@ export default function ProgramsStory({ live }: { live: ProgrammeDiscoveryCard[]
             {pm ? (
               <ShowcaseBand
                 row={pm}
-                photo={PROGRAMS_STUDY_CLASSROOM}
-                photoAlt="Students working together on laptops in a classroom"
+                photo={PROGRAMS_STUDY_CAMPUS}
+                photoAlt="A university student working on a laptop on campus"
               />
             ) : null}
             {da ? (

@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import ProgramsHero from "../components/programs/ProgramsHero"
@@ -85,11 +86,14 @@ function LiveRow({ row }: { row: ProgrammeDiscoveryCard }) {
   )
 }
 
-function LaterRow({ row }: { row: LaterProgrammeRow }) {
+function LaterRow({ row, index }: { row: LaterProgrammeRow; index: number }) {
   return (
     <article className="pg-row is-later">
       <header className="pg-row-head">
-        <p className="pg-row-kicker">{row.statusLabel}</p>
+        <p className="pg-row-kicker">
+          <span className="pg-row-index">{String(index + 1).padStart(2, "0")}</span>
+          {row.statusLabel}
+        </p>
         <h3>
           <Link to={row.href}>{row.title}</Link>
         </h3>
@@ -111,6 +115,15 @@ function LaterRow({ row }: { row: LaterProgrammeRow }) {
 export default function ProgramsPage() {
   const live = liveProgrammeCatalogue()
   const later = laterProgrammeCatalogue()
+
+  useEffect(() => {
+    const root = document.documentElement
+    const previous = root.style.scrollPaddingTop
+    root.style.scrollPaddingTop = "calc(var(--nav-h) + 20px)"
+    return () => {
+      root.style.scrollPaddingTop = previous
+    }
+  }, [])
 
   return (
     <PageShell aurora={false}>
@@ -143,8 +156,8 @@ export default function ProgramsPage() {
                 Listings without a finished authored programme. You can still open the page.
               </p>
               <div className="pg-cat-list">
-                {later.map((row) => (
-                  <LaterRow key={row.slug} row={row} />
+                {later.map((row, index) => (
+                  <LaterRow key={row.slug} row={row} index={index} />
                 ))}
               </div>
             </div>

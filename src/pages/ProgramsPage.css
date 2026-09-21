@@ -7,9 +7,19 @@
   --pg-line: rgba(21, 23, 26, 0.1);
   --pg-accent: #4f46e5;
   --pg-orange: #f97316;
+  --pg-sticky-clear: calc(var(--nav-h) + 20px);
   background: #ffffff;
   color: var(--pg-ink);
   overflow-x: clip;
+}
+
+.pg-hero,
+.pg-cat-live,
+.pg-cat-later,
+.pg-row,
+.pg-cat-live h2,
+.pg-cat-later h2 {
+  scroll-margin-top: var(--pg-sticky-clear);
 }
 
 .pg-cat {
@@ -19,11 +29,11 @@
 
 .pg-cat-live,
 .pg-cat-later {
-  padding: clamp(56px, 8vh, 96px) 0;
+  padding: calc(var(--pg-sticky-clear) + clamp(16px, 2.5vh, 32px)) 0 clamp(56px, 8vh, 96px);
 }
 
 #pg-catalogue {
-  scroll-margin-top: calc(var(--nav-h) + 8px);
+  scroll-margin-top: var(--pg-sticky-clear);
 }
 
 .pg-cat-live,
@@ -106,6 +116,48 @@
 
 .pg-row.is-later .pg-row-kicker {
   color: var(--pg-faint);
+}
+
+.pg-cat-later {
+  background: #fffdf8;
+}
+
+.pg-cat-later h2 {
+  font-size: clamp(30px, 3.6vw, 44px);
+}
+
+.pg-cat-later .pg-cat-list {
+  margin-top: clamp(40px, 5.5vh, 64px);
+}
+
+.pg-row-index {
+  display: inline-block;
+  margin-right: 10px;
+  color: var(--pg-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.pg-row.is-later {
+  padding: clamp(36px, 5.5vh, 56px) 0;
+}
+
+.pg-row.is-later + .pg-row.is-later {
+  border-top-color: rgba(21, 23, 26, 0.08);
+}
+
+.pg-row.is-later .pg-row-head h3 {
+  font-size: clamp(24px, 2.8vw, 34px);
+  letter-spacing: -0.04em;
+}
+
+.pg-row.is-later .pg-row-decision {
+  max-width: 36em;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.pg-row.is-later .pg-row-note {
+  margin-top: 16px;
 }
 
 .pg-row-decision {
@@ -260,6 +312,12 @@
     margin-top: 2px;
   }
 
+  .pg-row.is-later .pg-row-later-body {
+    margin-top: 0;
+    padding-left: 22px;
+    border-left: 1px solid var(--pg-line);
+  }
+
   .pg-row.is-later .pg-row-decision {
     margin-top: 0;
   }
@@ -276,6 +334,12 @@
 @media (max-width: 768px) {
   .pg-cat-live,
   .pg-cat-later {
-    padding: clamp(44px, 7vh, 64px) 0;
+    padding: calc(var(--nav-h) + 20px) 0 clamp(40px, 6vh, 56px);
+  }
+
+  .pg-row.is-later .pg-row-later-body {
+    margin-top: 18px;
+    padding-left: 16px;
+    border-left: 1px solid var(--pg-line);
   }
 }
