@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { workshops } from "../data"
 import "./Catalog.css"
+import "./WorkshopsPage.css"
 
 export default function WorkshopsPage() {
   const [category, setCategory] = useState("All")
@@ -19,11 +20,12 @@ export default function WorkshopsPage() {
 
   return (
     <PageShell aurora={false}>
-      <div className="cat-page">
-        <section className="cat-hero">
-          <div className="cat-rail">
-            <p className="cat-label">Workshops · coming soon</p>
-            <h1>Short sessions. Planned subjects. Registration not open.</h1>
+      <div className="cat-page workshops-editorial">
+        <section className="cat-hero workshops-hero">
+          <div className="cat-rail workshops-hero-grid">
+            <div>
+              <p className="workshops-eyebrow"><i aria-hidden="true" /> Workshops</p>
+              <h1>Short sessions.<br />One focused skill.</h1>
             <p className="cat-lead">
               Workshops are event-shaped: a date, a duration, and a single skill. None of these sessions are
               scheduled for delivery yet, and nothing on this page can be booked.
@@ -32,18 +34,24 @@ export default function WorkshopsPage() {
               Dates and prices are indicative planning information. Attendance, payment, and certificates are not
               built.
             </p>
+            </div>
+            <div className="workshops-hero-note">
+              <span>Coming soon</span>
+              <strong>Event-shaped learning, without pretending an event is live.</strong>
+              <p>Each listing has a subject, duration and delivery mode. Registration remains closed until delivery is actually scheduled.</p>
+            </div>
           </div>
         </section>
 
-        <section className="cat-section" aria-labelledby="ws-list-title">
+        <section className="cat-section workshops-list-section" aria-labelledby="ws-list-title">
           <div className="cat-rail">
-            <h2 id="ws-list-title">{filtered.length} planned workshop{filtered.length === 1 ? "" : "s"}</h2>
-            <div className="cat-filters" role="group" aria-label="Workshop filters">
+            <div className="workshops-section-head"><div><p className="workshops-label">Planned catalogue</p><h2 id="ws-list-title">{filtered.length} planned workshop{filtered.length === 1 ? "" : "s"}</h2></div><p>Filter the programme shape, not an imaginary booking inventory.</p></div>
+            <div className="workshops-filters" role="group" aria-label="Workshop filters">
               {categories.map((item) => (
                 <button
                   key={item}
                   type="button"
-                  className={category === item ? "cat-chip is-on" : "cat-chip"}
+                  className={category === item ? "is-on" : ""}
                   aria-pressed={category === item}
                   onClick={() => setCategory(item)}
                 >
@@ -56,7 +64,7 @@ export default function WorkshopsPage() {
                 <button
                   key={item}
                   type="button"
-                  className={mode === item ? "cat-chip is-on" : "cat-chip"}
+                  className={mode === item ? "is-on" : ""}
                   aria-pressed={mode === item}
                   onClick={() => setMode(item)}
                 >
@@ -86,7 +94,7 @@ export default function WorkshopsPage() {
                 ))}
               </ul>
             )}
-            <p className="cat-fine">Indicative prices. Payment is not collected.</p>
+            <p className="workshops-fine">Indicative prices. Payment is not collected.</p>
           </div>
         </section>
       </div>
