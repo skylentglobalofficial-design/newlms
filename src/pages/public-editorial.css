@@ -920,9 +920,30 @@ a.pe-row:hover strong {
   color: var(--pe-orange);
 }
 
-.pe-ink h2,
-.pe-ink .pe-display {
-  color: #fffdf8;
+.pe-ink h2 {
+  margin: 0;
+  max-width: 16em;
+  font-family: var(--font-brand);
+  font-size: clamp(28px, 3.4vw, 42px);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+}
+
+.pe-ink h2.pe-display {
+  max-width: 11em;
+  font-size: clamp(52px, 9vw, 112px);
+  letter-spacing: -0.055em;
+  line-height: 0.92;
+}
+
+/* Light-canvas lock forces public h1–h4 to ink. Restore cream on dark scenes only. */
+.skylent-public-canvas main .pe-page .pe-ink h1,
+.skylent-public-canvas main .pe-page .pe-ink h2,
+.skylent-public-canvas main .pe-page .pe-ink h3,
+.skylent-public-canvas main .pe-page .pe-ink h4,
+.skylent-public-canvas main .pe-page .pe-ink .pe-display {
+  color: #fffdf8 !important;
 }
 
 .pe-ink .pe-lead,
