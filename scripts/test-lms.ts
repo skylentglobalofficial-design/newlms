@@ -70,6 +70,42 @@ async function signupUser(jar: CookieJar, label: string) {
 }
 
 async function completeLesson(jar: CookieJar, courseSlug: string, lessonKey: string) {
+  const workspace = await request(jar, `/lms/courses/${courseSlug}`)
+  assert(workspace.response.ok, `Failed to load ${courseSlug} before completing ${lessonKey}`)
+  const lesson = (workspace.data.data.course.modules as Array<{ lessons: Array<{ id: string; type: string }> }>)
+    .flatMap((module) => module.lessons)
+    .find((entry) => entry.id === lessonKey)
+  assert(lesson, `Lesson ${lessonKey} must exist in ${courseSlug}`)
+
+  if (lesson.type === "quiz") {
+    const course = await prisma.course.findUnique({ where: { slug: courseSlug } })
+    assert(course, `Course ${courseSlug} must exist in database`)
+    const node = await prisma.curriculumNode.findFirst({
+      where: { sourceId: lessonKey, module: { courseId: course.id } },
+      include: { quizQuestions: { orderBy: { sortOrder: "asc" } } },
+    })
+    assert(node && node.quizQuestions.length > 0, `Quiz ${lessonKey} must have questions`)
+    const result = await request(jar, `/lms/courses/${courseSlug}/lessons/${lessonKey}/quiz/attempts`, {
+      method: "POST",
+      csrf: true,
+      body: { answers: node.quizQuestions.map((question) => question.correctIndex) },
+    })
+    assert(result.response.status === 201, `Failed to pass quiz ${lessonKey}: ${JSON.stringify(result.data)}`)
+    assert(result.data.data.passed === true, `Quiz ${lessonKey} should pass with stored correct answers`)
+    return result.data
+  }
+
+  if (lesson.type === "assignment") {
+    const result = await request(jar, `/lms/courses/${courseSlug}/lessons/${lessonKey}/assignment`, {
+      method: "POST",
+      csrf: true,
+      body: { action: "submit", responseText: `Test submission for ${lessonKey}` },
+    })
+    assert(result.response.ok, `Failed to submit assignment ${lessonKey}: ${JSON.stringify(result.data)}`)
+    assert(result.data.data.status === "submitted", `Assignment ${lessonKey} should be submitted`)
+    return result.data
+  }
+
   const result = await request(jar, `/lms/courses/${courseSlug}/lessons/${lessonKey}/progress`, {
     method: "POST",
     csrf: true,
@@ -191,6 +227,25 @@ async function main() {
     body: { action: "submit", responseText: "Should fail" },
   })
   assert(lockedAssignment.response.status === 403, "Locked assignment submit should be rejected")
+
+  console.log("7b. Unlocked quiz and assignment cannot be completed through generic progress")
+  await completeLesson(userAJar, courseSlug, "l1")
+  await completeLesson(userAJar, courseSlug, "l2")
+
+  const quizBypass = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l3/progress`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "complete" },
+  })
+  assert(quizBypass.response.status === 400, "Quiz must not be completed through generic progress")
+  assert(quizBypass.data.error === "Quiz must be passed before it can be completed", "Quiz completion guard should explain the required passed attempt")
+
+  const assignmentLockedByOrder = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/progress`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "complete" },
+  })
+  assert(assignmentLockedByOrder.response.status === 403, "Assignment completion must still respect curriculum locking")
 
   console.log("8. Completing previous lesson unlocks next lesson")
   await completeLesson(userAJar, courseSlug, "l1")
