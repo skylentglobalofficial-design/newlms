@@ -1,4 +1,4 @@
-/* Scroll 16 — system architecture inside a Skylent OS frame */
+/* Scroll 16 — branching system architecture, not an empty box */
 
 .hp-ch.hp-osx {
   --osx-ink: #15171a;
@@ -11,114 +11,112 @@
 
 .hp-osx-frame {
   display: grid;
-  gap: 18px;
+  gap: 8px;
   min-width: 0;
-  padding: 22px 24px 20px;
+  padding: 16px 12px 12px;
   border: 1px solid var(--osx-line);
 }
 
 .hp-osx-label {
-  margin: 0;
+  margin: 0 12px;
   color: var(--osx-accent);
   font: 500 11px/1.4 var(--font-mono);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
-.hp-osx-body {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 28px 40px;
-  align-items: stretch;
-}
-
-.hp-osx-spine {
-  display: grid;
-  gap: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.hp-osx-spine li {
+.hp-osx-arch {
   position: relative;
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  padding-left: 22px;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 320 / 340;
+  margin-inline: auto;
 }
 
-.hp-osx-spine li::before {
-  content: "";
+.hp-osx-wires {
   position: absolute;
-  left: 0;
-  top: 50%;
-  width: 8px;
-  height: 8px;
-  border: 1px solid var(--osx-accent);
-  background: #ffffff;
-  transform: translateY(-50%);
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.hp-osx-spine li + li::after {
-  content: "";
+.hp-osx-wires line {
+  stroke: var(--osx-accent);
+  stroke-width: 1.1;
+  opacity: 0.55;
+}
+
+.hp-osx-n {
   position: absolute;
-  left: 3.5px;
-  bottom: 50%;
-  width: 1px;
-  height: calc(100% - 8px);
-  background: rgba(79, 70, 229, 0.35);
-}
-
-.hp-osx-spine b {
-  font: 600 22px/1.1 var(--font-brand);
+  transform: translate(-50%, -50%);
+  color: var(--osx-ink);
+  font: 600 16px/1 var(--font-brand);
   letter-spacing: -0.03em;
-}
-
-.hp-osx-sats {
-  display: grid;
-  align-content: center;
-  gap: 14px;
-  margin: 0;
-  padding: 8px 0 8px 22px;
-  list-style: none;
-  border-left: 1px solid var(--osx-line);
-}
-
-.hp-osx-sats a {
-  color: var(--osx-muted);
-  font: 500 12px/1.4 var(--font-mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   text-decoration: none;
+  background: #ffffff;
+  padding: 0 6px;
+  white-space: nowrap;
 }
 
-.hp-osx-sats a:hover {
+.hp-osx-n.is-learn {
+  left: 50%;
+  top: 8%;
+}
+
+.hp-osx-n.is-practice {
+  left: 50%;
+  top: 30%;
+}
+
+.hp-osx-n.is-labs {
+  left: 18%;
+  top: 53%;
+}
+
+.hp-osx-n.is-projects {
+  left: 82%;
+  top: 53%;
+}
+
+.hp-osx-n.is-evidence {
+  left: 50%;
+  top: 76%;
+}
+
+.hp-osx-n.is-career {
+  left: 50%;
+  top: 94%;
   color: var(--osx-accent);
 }
 
-@media (max-width: 768px) {
-  .hp-osx-body {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-
-  .hp-osx-sats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px 16px;
-    padding: 14px 0 0;
-    border-left: 0;
-    border-top: 1px solid var(--osx-line);
-  }
+a.hp-osx-n:hover {
+  color: var(--osx-accent);
 }
 
 @media (max-width: 430px) {
-  .hp-osx-frame {
-    padding: 18px 16px 14px;
+  .hp-osx-arch {
+    display: grid;
+    aspect-ratio: auto;
+    gap: 14px;
+    justify-items: start;
+    padding: 8px 0 8px 18px;
+    border-left: 1px solid rgba(79, 70, 229, 0.28);
   }
 
-  .hp-osx-spine b {
+  .hp-osx-wires {
+    display: none;
+  }
+
+  .hp-osx-n,
+  .hp-osx-n.is-learn,
+  .hp-osx-n.is-practice,
+  .hp-osx-n.is-labs,
+  .hp-osx-n.is-projects,
+  .hp-osx-n.is-evidence,
+  .hp-osx-n.is-career {
+    position: static;
+    transform: none;
+    padding: 0;
     font-size: 18px;
   }
 }

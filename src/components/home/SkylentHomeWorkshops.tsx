@@ -24,11 +24,24 @@ function WorkshopCube() {
   )
 }
 
+function ProcessRing() {
+  return (
+    <svg className="hp-ws-ring" viewBox="0 0 360 360" aria-hidden="true">
+      <circle className="is-track" cx="180" cy="180" r="128" />
+      <circle className="is-spin" cx="180" cy="180" r="128" />
+      <polygon className="is-arrow" points="180,44 174,56 186,56" />
+      <polygon className="is-arrow" points="316,180 304,174 304,186" />
+      <polygon className="is-arrow" points="180,316 186,304 174,304" />
+      <polygon className="is-arrow" points="44,180 56,186 56,174" />
+    </svg>
+  )
+}
+
 export default function SkylentHomeWorkshops() {
   return (
     <section className="hp-ch hp-ws" aria-labelledby="home-workshops-heading">
-      <div className="hp-rail hp-ch-split hp-ws-stage">
-        <header className="hp-ch-copy">
+      <div className="hp-rail hp-ws-stage">
+        <header className="hp-ch-copy hp-ws-copy">
           <p className="hp-ch-kicker">
             <i aria-hidden="true" />
             15 Workshops
@@ -45,6 +58,10 @@ export default function SkylentHomeWorkshops() {
         </header>
 
         <div className="hp-ws-visual" aria-label="Workshop as a short practical loop">
+          <ProcessRing />
+          <div className="hp-ws-core">
+            <WorkshopCube />
+          </div>
           <ol className="hp-ws-orbit">
             {BEATS.map((beat) => (
               <li key={beat.id} className={`is-${beat.id}`}>
@@ -53,9 +70,6 @@ export default function SkylentHomeWorkshops() {
               </li>
             ))}
           </ol>
-          <div className="hp-ws-core">
-            <WorkshopCube />
-          </div>
         </div>
       </div>
     </section>

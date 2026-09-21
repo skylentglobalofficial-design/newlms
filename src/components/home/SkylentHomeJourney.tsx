@@ -22,7 +22,6 @@ export default function SkylentHomeJourney() {
         <ol className="hp-line-path" aria-label="Learner journey">
           {BEATS.map((beat) => (
             <li key={beat}>
-              <i aria-hidden="true" />
               <b>{beat}</b>
             </li>
           ))}

@@ -1,4 +1,4 @@
-/* Scroll 15 — one workshop specimen, not a session table */
+/* Scroll 15 — kinetic circular process around one artefact */
 
 .hp-ch.hp-ws {
   --ws-ink: #15171a;
@@ -12,17 +12,58 @@
   border-top: 1px solid var(--ws-line);
 }
 
+.hp-ws-stage {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(20px, 3vh, 32px);
+}
+
+.hp-ws-copy {
+  max-width: 34em;
+}
+
+.hp-ws-copy .hp-ch-title {
+  max-width: 10em;
+}
+
 .hp-ws-visual {
   position: relative;
-  min-height: 340px;
+  width: min(100%, 520px);
+  aspect-ratio: 1;
+  margin-inline: auto;
   min-width: 0;
 }
 
+.hp-ws-ring {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hp-ws-ring .is-track {
+  fill: none;
+  stroke: rgba(21, 23, 26, 0.1);
+  stroke-width: 1.1;
+}
+
+.hp-ws-ring .is-spin {
+  fill: none;
+  stroke: rgba(79, 70, 229, 0.45);
+  stroke-width: 1.2;
+  stroke-dasharray: 18 92;
+  stroke-linecap: square;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.hp-ws-ring .is-arrow {
+  fill: var(--ws-accent);
+}
+
 .hp-ws-orbit {
-  position: relative;
-  width: min(100%, 460px);
-  height: 340px;
-  margin: 0 auto;
+  position: absolute;
+  inset: 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -30,33 +71,35 @@
 .hp-ws-orbit li {
   position: absolute;
   display: grid;
-  gap: 4px;
+  gap: 3px;
   max-width: 11em;
 }
 
 .hp-ws-orbit .is-question {
-  top: 8px;
+  top: 2%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
 }
 
 .hp-ws-orbit .is-try {
-  top: 46%;
+  top: 50%;
   right: 0;
+  transform: translateY(-50%);
   text-align: right;
 }
 
 .hp-ws-orbit .is-make {
-  bottom: 8px;
+  bottom: 2%;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
 }
 
 .hp-ws-orbit .is-reflect {
-  top: 46%;
+  top: 50%;
   left: 0;
+  transform: translateY(-50%);
 }
 
 .hp-ws-orbit b {
@@ -67,7 +110,7 @@
 .hp-ws-orbit span {
   color: var(--ws-muted);
   font-size: 13px;
-  line-height: 1.4;
+  line-height: 1.35;
 }
 
 .hp-ws-core {
@@ -79,7 +122,7 @@
 }
 
 .hp-ws-cube {
-  width: min(42%, 168px);
+  width: min(28%, 128px);
   height: auto;
 }
 
@@ -103,15 +146,39 @@
   opacity: 0.55;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .hp-ws-ring .is-spin {
+    animation: hp-ws-orbit 28s linear infinite;
+  }
+}
+
+@keyframes hp-ws-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .hp-ws-visual {
+    width: min(100%, 420px);
+    margin-inline: 0;
+  }
+}
+
 @media (max-width: 430px) {
   .hp-ws-visual {
-    min-height: 0;
+    aspect-ratio: auto;
+    height: auto;
+  }
+
+  .hp-ws-ring {
+    display: none;
   }
 
   .hp-ws-orbit {
+    position: static;
     display: grid;
-    height: auto;
-    gap: 18px;
+    gap: 16px;
     padding-left: 18px;
     border-left: 1px solid rgba(79, 70, 229, 0.28);
   }
@@ -129,10 +196,10 @@
   .hp-ws-core {
     position: static;
     justify-content: start;
-    padding: 8px 0 4px 18px;
+    padding: 10px 0 0 18px;
   }
 
   .hp-ws-cube {
-    width: 120px;
+    width: 108px;
   }
 }

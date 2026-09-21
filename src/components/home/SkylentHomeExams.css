@@ -1,4 +1,4 @@
-/* Scroll 14 — one goal-to-readiness orbit, not an exam catalogue */
+/* Scroll 14 — precise preparation orbit */
 
 .hp-ch.hp-examx {
   --ex-ink: #15171a;
@@ -10,16 +10,21 @@
   border-top: 1px solid var(--ex-line);
 }
 
+.hp-exam-stage.hp-ch-split {
+  align-items: start;
+}
+
 .hp-exam-visual {
   display: grid;
   justify-items: center;
-  gap: 18px;
+  gap: 14px;
   min-width: 0;
+  padding-top: 8px;
 }
 
 .hp-exam-orbit {
   position: relative;
-  width: min(100%, 380px);
+  width: min(100%, 400px);
   aspect-ratio: 1;
 }
 
@@ -29,23 +34,39 @@
   height: auto;
 }
 
-.hp-exam-ring circle {
+.hp-exam-ring .is-outer {
   fill: none;
-  stroke: rgba(79, 70, 229, 0.28);
+  stroke: rgba(79, 70, 229, 0.38);
   stroke-width: 1.15;
-  stroke-dasharray: 5 7;
+}
+
+.hp-exam-ring .is-inner {
+  fill: none;
+  stroke: rgba(21, 23, 26, 0.1);
+  stroke-width: 1;
+}
+
+.hp-exam-ring .is-tick {
+  stroke: var(--ex-accent);
+  stroke-width: 1.15;
+}
+
+.hp-exam-ring .is-node {
+  fill: #ffffff;
+  stroke: var(--ex-accent);
+  stroke-width: 1.2;
 }
 
 .hp-exam-core {
   position: absolute;
-  inset: 32%;
+  inset: 34%;
   display: grid;
   place-items: center;
   margin: 0;
   border-radius: 50%;
   background: var(--ex-wash);
   color: var(--ex-ink);
-  font: 600 15px/1.25 var(--font-brand);
+  font: 600 15px/1 var(--font-brand);
   letter-spacing: -0.03em;
   text-align: center;
 }
@@ -58,11 +79,31 @@
   white-space: nowrap;
 }
 
+.hp-exam-node.is-goal {
+  left: 50%;
+  top: 4%;
+}
+
+.hp-exam-node.is-prep {
+  left: 96%;
+  top: 50%;
+}
+
+.hp-exam-node.is-practice {
+  left: 50%;
+  top: 96%;
+}
+
+.hp-exam-node.is-ready {
+  left: 4%;
+  top: 50%;
+}
+
 .hp-exam-quiet {
-  margin: 0;
+  margin: 4px 0 0;
   color: var(--ex-muted);
-  font: 500 12px/1.4 var(--font-mono);
-  letter-spacing: 0.06em;
+  font: 500 11px/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
@@ -70,7 +111,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px 16px;
+  gap: 6px 14px;
   margin: 0;
   color: var(--ex-muted);
   font: 500 11px/1.4 var(--font-mono);
@@ -80,7 +121,7 @@
 
 @media (max-width: 768px) {
   .hp-exam-orbit {
-    width: min(100%, 300px);
+    width: min(100%, 320px);
   }
 }
 

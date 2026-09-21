@@ -16,9 +16,10 @@
 .hp-start-choices {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 28px 32px;
-  margin: 48px 0 0;
-  padding: 28px 0 0;
+  column-gap: 40px;
+  row-gap: 36px;
+  margin: 52px 0 0;
+  padding: 32px 0 0;
   list-style: none;
   border-top: 1px solid var(--st-line);
 }
@@ -26,7 +27,7 @@
 .hp-start-choice {
   display: grid;
   align-content: start;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
   color: inherit;
   text-decoration: none;
@@ -40,19 +41,23 @@
 }
 
 .hp-start-choice strong {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 1.1em;
+  align-items: start;
+  column-gap: 6px;
+  min-height: 2.3em;
   color: var(--st-ink);
-  font: 600 clamp(22px, 2.2vw, 30px)/1.12 var(--font-brand);
+  font: 600 clamp(22px, 2.1vw, 30px)/1.15 var(--font-brand);
   letter-spacing: -0.035em;
+  transition: transform 0.16s ease;
 }
 
 .hp-start-choice strong span {
   color: var(--st-accent);
-  font-size: 0.72em;
-  opacity: 0;
-  transform: translateX(-4px);
+  font-size: 0.7em;
+  line-height: 1.3;
+  opacity: 0.22;
+  transform: translateX(-2px);
   transition: opacity 0.16s ease, transform 0.16s ease;
 }
 
@@ -64,13 +69,9 @@
   font-weight: 500;
 }
 
-.hp-start-choice strong {
-  transition: transform 0.16s ease;
-}
-
 .hp-start-choice:hover strong,
 .hp-start-choice:focus-visible strong {
-  transform: translateX(4px);
+  transform: translateX(5px);
 }
 
 .hp-start-choice:hover strong span,
@@ -82,18 +83,35 @@
 @media (max-width: 1024px) {
   .hp-start-choices {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 36px;
+    row-gap: 40px;
+  }
+
+  .hp-start-choice strong {
+    min-height: 0;
   }
 }
 
 @media (max-width: 768px) {
   .hp-start-choices {
     grid-template-columns: 1fr;
-    gap: 28px;
-    margin-top: 32px;
+    gap: 32px;
+    margin-top: 36px;
+    padding-top: 28px;
+  }
+
+  .hp-start-choice {
+    gap: 10px;
   }
 
   .hp-start-choice strong {
     font-size: clamp(26px, 7vw, 34px);
+    transform: none;
+  }
+
+  .hp-start-choice:hover strong,
+  .hp-start-choice:focus-visible strong {
+    transform: none;
   }
 
   .hp-start-choice strong span {

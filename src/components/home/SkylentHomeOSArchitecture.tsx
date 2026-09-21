@@ -3,15 +3,6 @@ import "./SkylentHomeOSArchitecture.css"
 
 const OS_HREF = "/os"
 
-const LAYERS = ["Learn", "Practice", "Build", "Evidence", "Career"] as const
-
-const SATELLITES = [
-  { label: "Learning", to: "/programs" },
-  { label: "Labs", to: "/labs" },
-  { label: "Projects", to: "/career-os/projects" },
-  { label: "Career OS", to: "/career-os" },
-] as const
-
 export default function SkylentHomeOSArchitecture() {
   return (
     <section className="hp-ch hp-osx" aria-labelledby="home-os-arch-heading">
@@ -36,21 +27,27 @@ export default function SkylentHomeOSArchitecture() {
 
         <div className="hp-osx-frame" aria-label="Skylent OS architecture">
           <p className="hp-osx-label">Skylent OS</p>
-          <div className="hp-osx-body">
-            <ol className="hp-osx-spine">
-              {LAYERS.map((layer) => (
-                <li key={layer}>
-                  <b>{layer}</b>
-                </li>
-              ))}
-            </ol>
-            <ul className="hp-osx-sats">
-              {SATELLITES.map((item) => (
-                <li key={item.label}>
-                  <Link to={item.to}>{item.label}</Link>
-                </li>
-              ))}
-            </ul>
+          <div className="hp-osx-arch">
+            <svg className="hp-osx-wires" viewBox="0 0 320 340" aria-hidden="true">
+              <line x1="160" y1="42" x2="160" y2="86" />
+              <line x1="160" y1="118" x2="64" y2="164" />
+              <line x1="160" y1="118" x2="256" y2="164" />
+              <line x1="64" y1="196" x2="160" y2="242" />
+              <line x1="256" y1="196" x2="160" y2="242" />
+              <line x1="160" y1="274" x2="160" y2="308" />
+            </svg>
+            <span className="hp-osx-n is-learn">Learn</span>
+            <span className="hp-osx-n is-practice">Practice</span>
+            <Link className="hp-osx-n is-labs" to="/labs">
+              Labs
+            </Link>
+            <Link className="hp-osx-n is-projects" to="/career-os/projects">
+              Projects
+            </Link>
+            <span className="hp-osx-n is-evidence">Evidence</span>
+            <Link className="hp-osx-n is-career" to="/career-os">
+              Career OS
+            </Link>
           </div>
         </div>
       </div>
