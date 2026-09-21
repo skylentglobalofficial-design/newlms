@@ -17,12 +17,12 @@ export default function ProgramsHero() {
             Professional programmes
           </p>
           <h1 id="pg-hero-title">
-            <span>Learn deeply.</span>
-            <span>Build something real.</span>
+            <span>Written programmes.</span>
+            <span>A project you keep.</span>
           </h1>
           <p className="pg-hero-lead">
-            Skylent programmes connect structured learning, practice, and real work. You study written lessons,
-            check your understanding, and finish a project you keep — in Skylent OS, not a live classroom.
+            Skylent programmes are structured courses with written lessons, checks, and a finishing project.
+            You study in Skylent OS — self-paced, with no live classroom.
           </p>
           <p className="pg-hero-actions">
             <a className="pg-hero-cta" href="#pg-catalogue">

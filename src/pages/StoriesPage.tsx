@@ -17,7 +17,7 @@ const DOCUMENTING = [
   },
   {
     label: "Learning and projects",
-    desc: "Work produced during programmes — artefacts, not invented before/after claims.",
+    desc: "Work produced during programmes — projects and artefacts from the course.",
   },
   {
     label: "Career preparation",
@@ -73,12 +73,11 @@ export default function StoriesPage() {
               <span>behind learning.</span>
             </h1>
             <p className="pe-lead">
-              This page will publish verified learner, programme, and institution stories — not marketing
-              testimonials. Until those experiences are reviewed and approved, the page states that fact and shows the
-              product work stories will eventually document.
+              This page will publish verified learner, programme, and institution stories when they exist. None are
+              published yet.
             </p>
             <p className="pe-note">
-              We do not publish names, salaries, placement rates, or sample narratives from the codebase.
+              Names, salaries, and placement rates are not shown here.
             </p>
           </div>
           <figure className="pe-figure">
@@ -92,7 +91,7 @@ export default function StoriesPage() {
                 decoding="async"
               />
             </div>
-            <figcaption>The work, not a testimonial portrait</figcaption>
+            <figcaption>Study at a desk</figcaption>
           </figure>
         </div>
       </section>
@@ -111,7 +110,7 @@ export default function StoriesPage() {
           <h2 id="stories-work-title" className="is-quiet">The work comes first.</h2>
           <p className="pe-lead">
             Skylent is documenting how learning becomes work you can show: written lessons, practice, projects, and
-            evidence in Career OS. A story here will be a reviewed account of that work — never a fabricated outcome.
+            evidence in Career OS. A story here will be a reviewed account of that work.
           </p>
           <p className="pe-note">
             Editorial writing that is not a learner story lives on the <Link to="/blog">blog</Link>.
@@ -128,7 +127,7 @@ export default function StoriesPage() {
           </h2>
           <p className="pe-lead">
             {empty
-              ? "There are no verified learner, programme, or institution stories on this page. We will publish journeys only when the person agrees and we can verify the facts. Empty is the honest state — not a broken one."
+              ? "No learner, programme, or institution stories are published yet. Accounts will appear when the person agrees and the facts can be checked."
               : "The catalogue has records that are not published here. Names, salaries, and outcomes stay off this page until they can be verified."}
           </p>
           <ol className="pe-map is-follow">
@@ -152,9 +151,8 @@ export default function StoriesPage() {
           <p className="pe-kicker">Product evidence</p>
           <h2 id="stories-evidence-title" className="is-quiet">The work first. The story later.</h2>
           <p className="pe-lead">
-            This is not a story. It is live programme work already in the product: a project workspace, a Career OS
-            workflow, an application when a role is published. When a verified story exists, it will point at work like
-            this — not at a testimonial.
+            This is product work already in Skylent: a project workspace and Career OS. When a verified story exists,
+            it will point at work like this.
           </p>
 
           {live.length > 0 ? (
@@ -186,7 +184,7 @@ export default function StoriesPage() {
             </div>
           ) : (
             <p className="pe-note">
-              Live programme workspaces will appear here when the catalogue has authored programmes.
+              Authored programme workspaces will appear here when the catalogue has authored programmes.
             </p>
           )}
 
@@ -214,7 +212,7 @@ export default function StoriesPage() {
           <p className="pe-kicker">Explore Skylent</p>
           <h2 id="stories-close-title">See the product stories will document.</h2>
           <p className="pe-lead">
-            Programmes and courses are the live learning surfaces. Open them while verified stories are prepared.
+            Programmes and courses you can start are listed on those pages. Open them while verified stories are prepared.
           </p>
           <p className="pe-actions">
             <Link className="pe-cta" to="/programs">

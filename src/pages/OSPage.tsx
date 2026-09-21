@@ -53,7 +53,7 @@ export default function OSPage() {
                 <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">Start Product Management</Link>
               </div>
               <p className="cat-honesty">
-                Open a course, enrol, then Skylent OS starts at the first lesson. Payment is not collected in this pilot.
+                Open a course, enrol, then Skylent OS starts at the first lesson. Payment is not collected.
               </p>
 
               <p className="cat-label os-scope-label">In the workspace today</p>
@@ -147,7 +147,7 @@ export default function OSPage() {
             <p className="cat-label">What you actually produce</p>
             <h2 id="os-work-title">Named work, not a worked example.</h2>
             <p className="cat-lead">
-              Each authored course ends in a capstone you keep. These are the real assignment titles inside the
+              Each authored course ends in a capstone you keep. These are the assignment titles inside the
               workspace.
             </p>
             <div className="os-produce">

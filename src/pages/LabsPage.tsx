@@ -9,10 +9,9 @@ export default function LabsPage() {
         <section className="cat-hero">
           <div className="cat-rail">
             <p className="cat-label">Skylent Labs</p>
-            <h1>Labs live inside the learning path.</h1>
+            <h1>Interactive labs sit inside the course.</h1>
             <p className="cat-lead">
-              A lab is not a separate destination. It appears where the work needs it: after a lesson, before a
-              named project. There is no catalogue of disconnected experiments here.
+              A lab opens from a lesson when the work needs a workspace — not as a separate catalogue of experiments.
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">Open Data Analytics</Link>
@@ -21,10 +20,10 @@ export default function LabsPage() {
           </div>
         </section>
 
-        <section className="cat-section" aria-labelledby="labs-live-title">
+        <section className="cat-section" aria-labelledby="labs-interactive-title">
           <div className="cat-rail">
             <p className="cat-label">Where a lab exists today</p>
-            <h2 id="labs-live-title">One live lab, attached to one course.</h2>
+            <h2 id="labs-interactive-title">One interactive lab, attached to Data Analytics.</h2>
             <div className="cat-facts" style={{ marginTop: 20 }}>
               <div className="cat-fact">
                 <span>Data Analytics</span>

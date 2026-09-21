@@ -113,7 +113,7 @@ export default function DashboardStudentPage() {
   const evidenceTitle = evidenceLesson ? evidenceLesson.title : 'No submitted assignments yet'
   const evidenceDetail = evidenceLesson
     ? 'This is work recorded in the course. Add it to Career OS when you want it on your profile. Nothing is created automatically.'
-    : 'Assignments you submit in the course can be recorded in Career OS. Nothing is invented here.'
+    : 'Assignments you submit in the course can be added to Career OS as evidence on your profile.'
 
   const extraEnrollments = enrollments.filter((item) => {
     if (!item.courseSlug || item.courseSlug === learnSlug) return false
@@ -163,7 +163,7 @@ export default function DashboardStudentPage() {
           <div className="dash-welcome">
             <h1>{greetingName(firstName)}</h1>
             <p>
-              You are signed in. Enrol in a live course to open a workspace with lessons, practice, and a place to keep the work.
+              You are signed in. Enrol in a ready course to open a workspace with lessons, practice, and a place to keep the work.
             </p>
           </div>
           {recommendedCourses.length > 0 ? (

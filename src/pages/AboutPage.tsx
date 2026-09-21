@@ -19,7 +19,7 @@ const SYSTEM = [
   },
   {
     label: "Skills",
-    body: "Certificate programmes and professional programmes are the live skills products. Workshop registration is not live.",
+    body: "Certificate programmes and professional programmes you can start. Workshop registration is not open.",
     to: "/skills",
   },
   {
@@ -55,7 +55,7 @@ const PRODUCT_MAP = [
 
 const AUDIENCES = [
   { label: "School learners & parents", desc: "Schooling workflows with parent-visible progress — in design.", to: "/education#schooling" },
-  { label: "Undergraduate learners", desc: "Degree-aligned programmes in design, plus live professional programmes.", to: "/education#undergraduate" },
+  { label: "Undergraduate learners", desc: "Degree-aligned programmes in design, plus professional programmes you can start.", to: "/education#undergraduate" },
   { label: "Postgraduate learners", desc: "Specialisation tracks in design — not an enrollable catalogue yet.", to: "/education#postgraduate" },
   { label: "Exam aspirants", desc: "JEE, NEET, CAT as exam-prep products in design.", to: "/education#competitive-exams" },
   { label: "Skill learners", desc: "Certificates and professional programmes. Workshop listings are coming soon.", to: "/skills" },
@@ -103,8 +103,8 @@ export default function AboutPage() {
             </p>
             <h1 id="about-hero-title">Education → skills → career → institutions.</h1>
             <p className="pe-lead">
-              We are building the infrastructure where students, parents, institutions, and employers can meet — with
-              product depth, not marketing claims.
+              Skylent is an education product: courses and programmes you can start, a learning workspace, Career OS
+              for the work you keep, and an institution layer for organisations that run learning.
             </p>
             <p className="pe-actions">
               <Link className="pe-cta" to="/programs">
@@ -155,7 +155,7 @@ export default function AboutPage() {
             <h2 id="about-gap-title">Close the distance between what people learn and what they can do next.</h2>
             <p className="pe-lead">
               Students need more than lectures. Parents need visibility. Institutions need infrastructure. Employers
-              need people who can contribute. Skylent is built so those needs meet in one system.
+              need people who can contribute. Skylent connects those needs as separate products, not one slogan.
             </p>
             <p className="pe-note">
               The gap is not a single missing feature — it is the disconnect between learning, practice, proof, career
@@ -180,11 +180,11 @@ export default function AboutPage() {
         <div className="cat-rail">
           <p className="pe-kicker">02 · The idea</p>
           <h2 id="about-idea-title" className="pe-display">
-            One system from learning to career.
+            One product line from learning to career.
           </h2>
           <p className="pe-lead">
-            Skylent is not a single app and not a founder anecdote. It is a connected layer: academic lines where they
-            belong, skills products you can start, Career OS for the work you keep, and an institution layer for the
+            Skylent is not a single app and not a founder anecdote. Academic lines sit on Education. Skills products
+            you can start sit on Courses and Programmes. Career OS holds the work you keep. Institutions is for
             organisations that run education.
           </p>
         </div>
@@ -354,10 +354,10 @@ export default function AboutPage() {
             ))}
           </div>
           <aside className="pe-scope">
-            <p className="pe-kicker">Honest company</p>
+            <p className="pe-kicker">What we publish</p>
             <p className="pe-lead">
-              We do not publish student counts, placement rates, or partner logos we cannot verify. Credibility is
-              product depth, honest enrolment, and institutions that can actually run on this platform.
+              Skylent does not publish enrolment counts, placement rates, or partner logos. Open the programmes that
+              are available today to see what you can study.
             </p>
           </aside>
         </div>

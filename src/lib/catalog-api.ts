@@ -68,7 +68,7 @@ export function programEnrollmentMessage(
     return "Enrollment is not open yet. Register your interest and we will notify you when this program launches."
   }
   if (program.enrollmentStatus === "waitlist") {
-    return "This program is on waitlist. Join the waitlist and we will contact you when a seat opens."
+    return "This programme is on a waitlist. Register interest and we will notify you when enrolment opens."
   }
   if (program.linkedCourseSlugs.length === 0) {
     return "Enrollment is not available yet. Learning content for this program is still being prepared."

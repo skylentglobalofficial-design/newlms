@@ -11,9 +11,9 @@ export default function SkylentHomeFinal() {
             20
           </p>
           <h2 id="home-final-heading" className="hp-ch-title hp-end-title">
-            Build the future you want to work in.
+            Start a course. Keep the work you produce.
           </h2>
-          <p className="hp-ch-lead">Learn something useful. Build something real. Keep the evidence.</p>
+          <p className="hp-ch-lead">Enrol in a ready course. Complete the project. Add evidence to Career OS.</p>
         </div>
         <div className="hp-end-links">
           <Link className="hp-end-primary" to="/programs">

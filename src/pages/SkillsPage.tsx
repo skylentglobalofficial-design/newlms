@@ -308,8 +308,8 @@ export default function SkillsPage() {
                   Every direction runs through the same four stages.
                 </h2>
                 <p className="sk-fine sk-idle-lead">
-                  Choose a direction above to see it filled in with the real course, the real practice, and the
-                  real work sample. Two of the four directions have authored teaching today.
+                  Choose a direction above to see the course, the practice, and the work sample that exist today.
+                  Two of the four directions have authored teaching.
                 </p>
                 <StageModel />
               </div>

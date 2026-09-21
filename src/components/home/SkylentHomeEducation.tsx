@@ -162,7 +162,7 @@ export default function SkylentHomeEducation() {
               <p className="hp-edu-board-kicker">The Skylent education ecosystem</p>
               <h3 id="home-education-board-title">A connected path for lifelong learners.</h3>
             </div>
-            <p className="hp-edu-board-aside">Specified academic lines. Not a live catalogue.</p>
+            <p className="hp-edu-board-aside">Specified academic lines. Not a course catalogue.</p>
           </header>
 
           <ol className="hp-edu-levels">

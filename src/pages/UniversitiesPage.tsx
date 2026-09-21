@@ -35,7 +35,7 @@ const IMPLEMENTATION = [
 
 const EXAMPLE_PROGRAMS = [
   { n: "01", name: "B.Sc. Data Science", dur: "3 years", focus: "Analytics pathway with project portfolio" },
-  { n: "02", name: "PG Diploma in AI", dur: "1 year", focus: "Applied ML with faculty-reviewed projects" },
+  { n: "02", name: "PG Diploma in AI", dur: "1 year", focus: "Example specialisation structure" },
   { n: "03", name: "MBA Tech", dur: "2 years", focus: "Product and technology management cases" },
 ] as const
 
@@ -58,8 +58,8 @@ export default function UniversitiesPage() {
               multi-department universities. This is a partnership and product page, not a student course catalogue.
             </p>
             <p className="pe-note">
-              Illustrative programme examples below. No partner university names or placement statistics are published
-              here.
+              The names below are examples of how a university might organise programmes. They are not Skylent
+              offerings you can enrol in, and no partner universities are listed.
             </p>
             <p className="pe-actions">
               <Link className="pe-cta" to="/contact">
@@ -104,8 +104,8 @@ export default function UniversitiesPage() {
             <p className="pe-kicker">Programme workspace</p>
             <h2 id="uni-work-title">Build the degree around the work.</h2>
             <p className="pe-lead">
-              Academic lines remain in design. Learners can already enrol on live professional programmes. The
-              specimen is the learner product that already exists — not a faculty dashboard.
+              Academic lines remain in design. Learners can already enrol on the professional programmes that are
+              open. The specimen is the learner product that already exists — not a faculty dashboard.
             </p>
             <p className="pe-note">
               Batches, faculty assignment, and institutional reporting are not shipping.
@@ -172,7 +172,7 @@ export default function UniversitiesPage() {
                 <li key={line}>{line}</li>
               ))}
             </ol>
-            <p className="pe-note">Faculty dashboards listed here are intended, not live.</p>
+            <p className="pe-note">Faculty dashboards listed here are not built yet.</p>
           </div>
         </div>
       </section>
@@ -182,7 +182,7 @@ export default function UniversitiesPage() {
           <p className="pe-kicker">Illustrative programmes</p>
           <h2 id="uni-examples-title">Example university pathways.</h2>
           <p className="pe-lead">
-            Sample listings for product exploration — not verified partnerships or live enrolments.
+            Sample structures for partnership conversations — not open for enrolment.
           </p>
           <div className="pe-examples is-anatomy">
             {EXAMPLE_PROGRAMS.map((program) => (
@@ -204,7 +204,8 @@ export default function UniversitiesPage() {
           <p className="pe-kicker">Institutional partnerships</p>
           <h2 id="uni-close-title">Discuss a university deployment with Skylent.</h2>
           <p className="pe-lead">
-            We map academic structure, delivery workflows, and career handoff before any programme goes live.
+            We map academic structure, delivery workflows, and career handoff before any university programme is
+            delivered here.
           </p>
           <p className="pe-actions">
             <Link className="pe-cta" to="/contact">

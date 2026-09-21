@@ -17,7 +17,7 @@ export default function SchoolingPage() {
         kicker="Education · Schooling"
         maturity="coming_soon"
         title="Academic progression, not a kids' course shop."
-        lead="Schooling on Skylent is a grade-and-subject pathway for schools and families. There is no live schooling catalogue to browse or buy."
+        lead="Schooling on Skylent is a grade-and-subject pathway for schools and families. There is no schooling catalogue to enrol in yet."
       />
       <UpcomingBanner
         title="No schooling courses are published"

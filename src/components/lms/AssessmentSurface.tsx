@@ -49,7 +49,7 @@ export function AssessmentSurface({
         <div className="lx-submitted">
           <h2>Submission recorded</h2>
           <p className="dash-empty-copy">
-            {completionNote ?? 'There is no grading in this pilot. Record the artifact on Career OS → Projects if you want portfolio evidence.'}
+            {completionNote ?? 'There is no faculty grading on this assignment. Record the artifact on Career OS → Projects if you want portfolio evidence.'}
           </p>
           <Link className="os-link" to="/career-os/profile" style={{ display: 'inline-block', marginTop: 14 }}>
             Open Career OS Projects

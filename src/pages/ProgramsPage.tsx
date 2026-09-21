@@ -115,6 +115,8 @@ function LaterRow({ row, index }: { row: LaterProgrammeRow; index: number }) {
 export default function ProgramsPage() {
   const live = liveProgrammeCatalogue()
   const later = laterProgrammeCatalogue()
+  const catalogue = later.filter((row) => row.statusLabel !== "Coming later")
+  const planned = later.filter((row) => row.statusLabel === "Coming later")
 
   useEffect(() => {
     const root = document.documentElement
@@ -134,11 +136,10 @@ export default function ProgramsPage() {
         <div className="pg-cat">
           <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
             <div className="cat-rail">
-              <p className="pg-cat-label">Authored / Ready to start</p>
-              <h2 id="pg-cat-live-title">Authored programmes</h2>
+              <p className="pg-cat-label">Available now</p>
+              <h2 id="pg-cat-live-title">Ready to start</h2>
               <p className="pg-cat-intro">
-                Each row is built from the linked course, not from brochure length. Open a programme for the full
-                taught path and enrolment.
+                Enrolment opens the linked authored course in Skylent OS. Open a programme for the taught path.
               </p>
               <div className="pg-cat-list">
                 {live.map((row) => (
@@ -148,20 +149,40 @@ export default function ProgramsPage() {
             </div>
           </section>
 
-          <section className="pg-cat-later" aria-labelledby="pg-cat-later-title">
+          {catalogue.length > 0 ? (
+          <section className="pg-cat-later" aria-labelledby="pg-cat-catalogue-title">
             <div className="cat-rail">
-              <p className="pg-cat-label">Coming later</p>
-              <h2 id="pg-cat-later-title">Listed, not yet taught</h2>
+              <p className="pg-cat-label">Catalogue</p>
+              <h2 id="pg-cat-catalogue-title">Listed, thinner teaching</h2>
               <p className="pg-cat-intro">
-                Listings without a finished authored programme. You can still open the page.
+                These programmes exist in the catalogue. Teaching is not as complete as Data Analytics or Product
+                Management. Open the page to see what enrolment actually opens.
               </p>
               <div className="pg-cat-list">
-                {later.map((row, index) => (
+                {catalogue.map((row, index) => (
                   <LaterRow key={row.slug} row={row} index={index} />
                 ))}
               </div>
             </div>
           </section>
+          ) : null}
+
+          {planned.length > 0 ? (
+          <section className="pg-cat-later" aria-labelledby="pg-cat-later-title">
+            <div className="cat-rail">
+              <p className="pg-cat-label">Planned</p>
+              <h2 id="pg-cat-later-title">Coming later</h2>
+              <p className="pg-cat-intro">
+                These programmes are not open. You can read the listing; enrolment is not available.
+              </p>
+              <div className="pg-cat-list">
+                {planned.map((row, index) => (
+                  <LaterRow key={row.slug} row={row} index={index} />
+                ))}
+              </div>
+            </div>
+          </section>
+          ) : null}
         </div>
       </div>
     </PageShell>

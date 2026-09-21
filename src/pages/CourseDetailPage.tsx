@@ -44,8 +44,6 @@ export default function CourseDetailPage() {
   const cta = listingClosed
     ? "View outline"
     : enrollCta(enrollable, catalog.loading, view.primaryCta)
-  const listedPrice = `₹${view.listedPrice.toLocaleString("en-IN")}`
-
   function openEnrol() {
     if (!enrollable) return
     setEnrollOpen(true)
@@ -58,7 +56,7 @@ export default function CourseDetailPage() {
           <div className="cat-rail cat-enrol-bar-inner">
             <div className="cat-enrol-bar-copy">
               <strong>{view.title}</strong>
-              <span>{listedPrice} listed</span>
+              <span>{view.showLiveCurriculum ? "Written · self-paced" : "Catalogue listing"}</span>
             </div>
             {listingClosed ? (
               <div className="cat-enrol-actions">
@@ -123,7 +121,7 @@ export default function CourseDetailPage() {
               )}
             </div>
             <p className="cat-honesty">
-              Listed price {listedPrice}. Payment is not collected in this pilot. A certificate is not issued yet.
+              Payment is not collected. A certificate is not issued yet.
             </p>
           </div>
         </section>
@@ -278,7 +276,7 @@ export default function CourseDetailPage() {
               {afterEnrol.map((item) => <li key={item}>{item}</li>)}
             </ol>
             <p className="cat-fine">
-              Progress and submitted work stay on your enrolment. You can carry learning evidence into Career OS. Career OS is a workspace — not a job guarantee.
+              Progress and submitted work stay on your enrolment. You can add finished work to Career OS as evidence on your profile.
             </p>
             {view.showLiveCurriculum ? (
               <>

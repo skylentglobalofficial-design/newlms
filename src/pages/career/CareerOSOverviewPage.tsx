@@ -151,7 +151,7 @@ export default function CareerOSOverviewPage() {
             <div style={{ marginBottom: 24 }}>
               <h2>Learning evidence</h2>
               <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, margin: "0 0 12px" }}>
-                Pulled from your LMS enrollments. Submitted work is yours to add to Projects — nothing is auto-invented.
+                Pulled from your LMS enrollments. Add submitted work to Projects yourself when you want it on your profile.
               </p>
               {enrollmentsError ? (
                 <p style={{ color: C.slate, fontSize: 13 }}>{enrollmentsError}</p>

@@ -65,8 +65,7 @@ export default function WorkshopDetailPage() {
             </dl>
 
             <p className="cat-honesty">
-              Indicative price ₹{workshop.price.toLocaleString("en-IN")}. Payment is not collected. This is not a
-              scheduled session you can book.
+              Registration is not open. Payment is not collected. This is not a session you can book.
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-ghost" to="/contact">

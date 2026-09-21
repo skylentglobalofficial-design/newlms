@@ -77,7 +77,7 @@ function RecruiterWorkspace({ recruiterName }: { recruiterName: string }) {
           What needs your attention?
         </div>
         <p style={{ color: C.slate, fontSize: 14, margin: 0, lineHeight: 1.6 }}>
-          No live hiring pipeline is connected yet. Open roles, candidate profiles, and application stages will appear here once recruiter APIs are available.
+          No hiring pipeline is connected yet. Open roles, candidate profiles, and application stages will appear here when recruiter APIs are available.
         </p>
       </div>
     </div>
@@ -92,7 +92,7 @@ function OpenRolesSection() {
         <span style={{ color: C.slate, fontSize: 12 }}>0 active</span>
       </div>
       <NeutralNote>
-        No live job postings available yet. Posted roles, application counts, and pipeline stages will show here when recruiter job data is connected.
+        No job postings are listed yet. Posted roles, application counts, and pipeline stages will show here when recruiter job data is connected.
       </NeutralNote>
     </section>
   )

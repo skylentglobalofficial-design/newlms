@@ -9,7 +9,7 @@ const examPrograms = programs.filter((p) => p.programType === "EXAM_PREP")
 
 const directionExams = [
   { name: "NEET", note: "No Skylent NEET programme is in the catalogue yet." },
-  { name: "CUET / CLAT / others", note: "Named as future coverage, not as live prep engines." },
+  { name: "CUET / CLAT / others", note: "Named as future coverage, not as exam engines you can use today." },
 ]
 
 export default function ExamsPage() {
@@ -19,11 +19,11 @@ export default function ExamsPage() {
         kicker="Education · Exams"
         maturity="coming_soon"
         title="A preparation system — when it ships."
-        lead="Exam prep on Skylent is meant to be diagnostic, practice, mocks, and readiness analytics. It is not a live question bank or a fake mock-test engine today."
+        lead="Exam prep on Skylent is planned as diagnostics, practice, mocks, and readiness analytics. None of those tools are running on this page yet."
       />
       <UpcomingBanner
         title="No exam engine is running"
-        body="JEE Advanced and CAT exist as coming-soon programmes you can register interest in. There are no live diagnostics, mocks, or score predictors."
+        body="JEE Advanced and CAT exist as coming-soon programmes you can register interest in. Diagnostics, mocks, and score predictors are not built."
       />
       <section className="arch-section">
         <PathwayModel title="Intended exam product" steps={EXAM_PATHWAY} />
