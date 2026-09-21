@@ -201,7 +201,7 @@ function JeeExamInterface({ accent }: { accent: Accent }) {
         ))}
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, color: accent.text }}>--:--</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>Timer</div>
         <div style={{ fontSize: 9, color: '#8A8F96' }}>Timed attempt</div>
       </div>
     </div>
@@ -259,7 +259,7 @@ function CatExamInterface({ accent }: { accent: Accent }) {
           <div>Logic path</div>
         </div>
       </div>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 16, color: accent.text }}>Section timer · --:--</div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>Section timer</div>
     </div>
   )
 }

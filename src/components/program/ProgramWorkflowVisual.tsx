@@ -253,7 +253,7 @@ function JeeExamWorkspace({ accent }: { accent: Accent }) {
       </Panel>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <Panel label="TIMER" accent={accent}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, color: accent.text, letterSpacing: '0.06em' }}>--:--</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text, letterSpacing: '0.04em' }}>Timer</div>
           <div style={{ fontSize: 9, color: C.slate, marginTop: 4 }}>Timed attempt</div>
         </Panel>
         <Panel label="SOLUTION" accent={accent} highlight>
@@ -315,7 +315,7 @@ function CatExamWorkspace({ accent }: { accent: Accent }) {
           <div style={{ fontSize: 10, color: C.slate, lineHeight: 1.5 }}>Logic path</div>
         </Panel>
         <Panel label="SECTION TIMER" accent={accent}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: accent.text }}>--:--</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>Timer</div>
           <div style={{ fontSize: 9, color: C.slate, marginTop: 4 }}>Sectional clock</div>
         </Panel>
       </div>

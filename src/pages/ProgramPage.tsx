@@ -273,9 +273,9 @@ function AuthoredProgramme({
           <div className="pd-hero-specimen">
             <p className="pd-specimen-caption">The work this programme produces</p>
             {discovery.visual === "harbor-desk" ? (
-              <HarborDeskWorkspace compact={narrow} meta={discovery.material || "Example structure"} />
+              <HarborDeskWorkspace compact={narrow} meta="Example structure" />
             ) : (
-              <NorthwindWorkspace compact meta={discovery.material || "Example structure"} />
+              <NorthwindWorkspace compact meta="Example structure" />
             )}
             {discovery.capstone ? (
               <p className="pd-specimen-attr">

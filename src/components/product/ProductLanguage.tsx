@@ -147,7 +147,7 @@ const HARBOR = {
 function HarborStores() {
   return (
     <div className="pl-hd-stores" aria-hidden="true">
-      {Array.from({ length: 8 }, (_, index) => (
+      {Array.from({ length: 6 }, (_, index) => (
         <span key={index} />
       ))}
     </div>
@@ -173,7 +173,6 @@ function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
             <span />
             <span />
           </p>
-          <p className="pl-fine">Example structure — not a live case result.</p>
         </div>
       </div>
       <ol className="pl-hd-flow" aria-label="Product case path">
