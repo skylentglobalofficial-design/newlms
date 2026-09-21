@@ -73,7 +73,7 @@ function ShowcaseBand({
       </div>
       <div className="pg-show-visual">
         <figure className="pg-show-stage">
-          <img src={photo} alt={photoAlt} width={1800} height={1200} loading="lazy" decoding="async" />
+          <img src={photo} alt={photoAlt} width={1800} height={1200} decoding="async" />
           <div className="pg-show-product">
             {row.visual === "harbor-desk" ? (
               <HarborDeskWorkspace compact meta="harbor-desk-case.md · 4 interviews" />
@@ -143,20 +143,19 @@ export default function ProgramsStory({ live }: { live: ProgrammeDiscoveryCard[]
               People study. The work happens in Skylent OS — lessons, practice, projects, and evidence in one
               workspace. Not a marketing dashboard and not a live class.
             </p>
-            <div className="pg-pair-product">
-              <CertificateOsPreview />
-            </div>
           </div>
           <figure className="pg-photo pg-pair-photo">
             <img
               src={PROGRAMS_STUDY_DESK}
-              alt="A student working at a laptop during independent study"
+              alt="Overhead view of a student working at a laptop with open books"
               width={1800}
               height={1200}
-              loading="lazy"
               decoding="async"
             />
           </figure>
+          <div className="pg-pair-product">
+            <CertificateOsPreview />
+          </div>
         </div>
       </section>
 
