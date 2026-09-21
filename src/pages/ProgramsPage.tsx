@@ -1,109 +1,80 @@
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import ProgramsHero from "../components/programs/ProgramsHero"
+import {
+  HarborDeskWorkspace,
+  LearnFlow,
+  NorthwindWorkspace,
+  SkylentOsPreview,
+  SkylentWorkflowStory,
+} from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { isAuthoredCourse } from "../lib/authored-courses"
 import { linkedCourseSlugsForProgram } from "../lib/catalog-maturity"
-import { laterProgrammeCatalogue, liveProgrammeCatalogue, programmeBuildLine } from "../lib/programme-catalogue"
+import {
+  laterProgrammeCatalogue,
+  liveProgrammeCatalogue,
+  programmeBuildLine,
+} from "../lib/programme-catalogue"
 import type { LaterProgrammeRow } from "../lib/programme-catalogue"
 import type { ProgrammeDiscoveryCard } from "../lib/programme-discovery"
 import "./ProgramsPage.css"
+
+const LIBRARY_IMAGE =
+  "https://images.pexels.com/photos/7777713/pexels-photo-7777713.jpeg?auto=compress&dpr=1&w=1600"
 
 function courseFor(programSlug: string) {
   const slug = linkedCourseSlugsForProgram(programSlug).find((row) => isAuthoredCourse(row))
   return slug ? courses.find((course) => course.slug === slug) : undefined
 }
 
-function LiveRow({ row }: { row: ProgrammeDiscoveryCard }) {
+function ProgrammeCard({ row, index }: { row: ProgrammeDiscoveryCard; index: number }) {
   const course = courseFor(row.slug)
-  const leadsTo = course?.outcomes ?? []
-  const build = programmeBuildLine(row)
-  const title = row.courseTitle || row.title
-  const format = course?.mode ?? row.format
-  const level = course?.level ?? row.level
+  const visual = row.visual === "northwind" ? "northwind" : "harbor-desk"
 
   return (
-    <article className="pg-row is-live">
-      <div className="pg-row-main">
-        <header className="pg-row-head">
-          <p className="pg-row-kicker">Ready to start</p>
-          <h3>
-            <Link to={row.href}>{title}</Link>
-          </h3>
-          <p className="pg-row-decision">{row.decisionLine}</p>
-          <p className="pg-row-shape">
-            {row.taughtModules} modules · {row.taughtLessons} lessons · {format} · {level}
-          </p>
-        </header>
+    <article className={"pg-programme-card " + (index % 2 ? "is-reverse" : "")}>
+      <div className="pg-programme-card-copy">
+        <p className="pg-section-label">0{index + 1} · Authored programme</p>
+        <h3>{row.courseTitle || row.title}</h3>
+        <p className="pg-programme-decision">{row.decisionLine}</p>
 
-        <p className="pg-row-note">{row.honesty}</p>
+        <div className="pg-programme-meta">
+          <span>{row.taughtModules} modules</span>
+          <span>{row.taughtLessons} lessons</span>
+          <span>{row.format}</span>
+        </div>
 
-        <p className="pg-row-cta">
-          <Link to={row.href}>
-            Explore programme
-            <span aria-hidden="true"> →</span>
-          </Link>
+        <p className="pg-programme-build">
+          <strong>Build</strong>
+          {programmeBuildLine(row)}
         </p>
+
+        <Link className="pg-arrow-link" to={row.href}>
+          Open programme <span aria-hidden="true">→</span>
+        </Link>
       </div>
 
-      <dl className="pg-row-facts">
-        <div>
-          <dt>What it is</dt>
-          <dd>{course?.desc ?? row.decisionLine}</dd>
-        </div>
-        <div>
-          <dt>What it leads to</dt>
-          <dd>
-            {leadsTo.length ? (
-              <ul>
-                {leadsTo.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            ) : (
-              row.level
-            )}
-          </dd>
-        </div>
-        <div>
-          <dt>What you will build</dt>
-          <dd>{build}</dd>
-        </div>
-        <div>
-          <dt>Learning shape</dt>
-          <dd>
-            <ol>
-              {row.modules.map((module) => (
-                <li key={module.id}>{module.title}</li>
-              ))}
-            </ol>
-          </dd>
-        </div>
-      </dl>
+      <div className="pg-programme-card-visual">
+        {visual === "harbor-desk" ? (
+          <HarborDeskWorkspace compact meta="harbor-desk-case.md · 4 interviews" />
+        ) : (
+          <NorthwindWorkspace compact />
+        )}
+      </div>
+
+      {course ? <span className="pg-programme-course-note">{course.mode} · {course.level}</span> : null}
     </article>
   )
 }
 
 function LaterRow({ row }: { row: LaterProgrammeRow }) {
   return (
-    <article className="pg-row is-later">
-      <header className="pg-row-head">
-        <p className="pg-row-kicker">{row.statusLabel}</p>
-        <h3>
-          <Link to={row.href}>{row.title}</Link>
-        </h3>
-      </header>
-      <div className="pg-row-later-body">
-        <p className="pg-row-decision">{row.summary}</p>
-        <p className="pg-row-note">{row.honesty}</p>
-        <p className="pg-row-cta">
-          <Link to={row.href}>
-            Explore programme
-            <span aria-hidden="true"> →</span>
-          </Link>
-        </p>
-      </div>
-    </article>
+    <Link className="pg-later-row" to={row.href}>
+      <span className="pg-later-status">{row.statusLabel}</span>
+      <strong>{row.title}</strong>
+      <span>{row.summary}</span>
+      <span aria-hidden="true">→</span>
+    </Link>
   )
 }
 
@@ -116,32 +87,145 @@ export default function ProgramsPage() {
       <div className="pg-cat">
         <ProgramsHero />
 
-        <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
+        <section className="pg-intro-section" id="pg-programmes" aria-labelledby="pg-programmes-title">
           <div className="cat-rail">
-            <p className="pg-cat-label">Catalogue</p>
-            <h2 id="pg-cat-live-title">Authored programmes</h2>
-            <p className="pg-cat-intro">
-              Each row is built from the linked course, not from brochure length. Open a programme for the full
-              taught path and enrolment.
-            </p>
-            <div className="pg-cat-list">
-              {live.map((row) => (
-                <LiveRow key={row.slug} row={row} />
+            <div className="pg-intro-head">
+              <div>
+                <p className="pg-section-label">Find your programme</p>
+                <h2 id="pg-programmes-title">Choose the work you want to do.</h2>
+              </div>
+              <p>
+                Each programme starts from the course that is actually authored in Skylent today. No brochure
+                curriculum is presented as taught.
+              </p>
+            </div>
+
+            <div className="pg-programme-list">
+              {live.map((row, index) => (
+                <ProgrammeCard key={row.slug} row={row} index={index} />
               ))}
             </div>
           </div>
         </section>
 
-        <section className="pg-cat-later" aria-labelledby="pg-cat-later-title">
+        <section className="pg-statement-section" aria-labelledby="pg-statement-title">
+          <div className="cat-rail pg-statement-grid">
+            <div>
+              <p className="pg-section-label">The learning model</p>
+              <h2 id="pg-statement-title">Learning should end in something you can show.</h2>
+            </div>
+            <p>
+              Skylent connects the lesson to the work. You learn the concept, check your understanding, use it on a
+              real-shaped problem, and keep the resulting work as evidence.
+            </p>
+          </div>
+
+          <div className="cat-rail pg-flow-wrap">
+            <LearnFlow
+              steps={[
+                { title: "Learn", copy: "Written lessons that establish the idea.", kind: "learn" },
+                { title: "Practise", copy: "Checks that make understanding visible.", kind: "practice" },
+                { title: "Build", copy: "A project against authored material.", kind: "build" },
+                { title: "Keep", copy: "Evidence that stays in your workspace.", kind: "keep" },
+              ]}
+            />
+          </div>
+        </section>
+
+        <section className="pg-editorial-section" aria-labelledby="pg-editorial-title">
+          <div className="cat-rail pg-editorial-grid">
+            <figure className="pg-editorial-photo">
+              <img src={LIBRARY_IMAGE} alt="Two students studying together at a library table" />
+              <figcaption>Learning is a practice, not a backdrop.</figcaption>
+            </figure>
+
+            <div className="pg-editorial-copy">
+              <p className="pg-section-label">Real people. Real product.</p>
+              <h2 id="pg-editorial-title">The human side of learning belongs next to the product.</h2>
+              <p>
+                The interface gives structure to the work. The study environment gives it context. Skylent brings
+                both together without turning the programme into a live classroom.
+              </p>
+              <div className="pg-editorial-rule" />
+              <p className="pg-editorial-small">
+                The photography is intentionally editorial: one strong frame, generous space, and no decorative
+                collage.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="pg-os-section" aria-labelledby="pg-os-title">
           <div className="cat-rail">
-            <p className="pg-cat-label">Not live yet</p>
-            <h2 id="pg-cat-later-title">Coming later</h2>
-            <p className="pg-cat-intro">Listings without a finished authored programme. You can still open the page.</p>
-            <div className="pg-cat-list">
-              {later.map((row) => (
-                <LaterRow key={row.slug} row={row} />
+            <div className="pg-os-head">
+              <div>
+                <p className="pg-section-label">Inside Skylent OS</p>
+                <h2 id="pg-os-title">One composed flow from learning to evidence.</h2>
+              </div>
+              <p>Written lessons, practice, projects and the work you keep live in the same learning system.</p>
+            </div>
+
+            <SkylentWorkflowStory />
+            <SkylentOsPreview />
+          </div>
+        </section>
+
+        <section className="pg-anatomy-section" aria-labelledby="pg-anatomy-title">
+          <div className="cat-rail">
+            <div className="pg-anatomy-head">
+              <div>
+                <p className="pg-section-label">Programme anatomy</p>
+                <h2 id="pg-anatomy-title">A clear path, without invented steps.</h2>
+              </div>
+              <p>
+                Module titles, lesson counts, practice and project work come from the authored course data. The page
+                only shows what exists.
+              </p>
+            </div>
+
+            <div className="pg-anatomy-table">
+              {live.map((row, index) => (
+                <Link key={row.slug} to={row.href} className="pg-anatomy-row">
+                  <span>0{index + 1}</span>
+                  <strong>{row.courseTitle || row.title}</strong>
+                  <span>{row.taughtModules} modules</span>
+                  <span>{row.taughtLessons} lessons</span>
+                  <span>{row.capstone ? "Project included" : "Course-led"}</span>
+                  <span aria-hidden="true">→</span>
+                </Link>
               ))}
             </div>
+          </div>
+        </section>
+
+        {later.length > 0 ? (
+          <section className="pg-later-section" aria-labelledby="pg-later-title">
+            <div className="cat-rail">
+              <div className="pg-later-head">
+                <div>
+                  <p className="pg-section-label">Catalogue</p>
+                  <h2 id="pg-later-title">Coming later.</h2>
+                </div>
+                <p>Listings remain visible, but they are not presented as finished authored programmes.</p>
+              </div>
+              <div className="pg-later-list">
+                {later.map((row) => (
+                  <LaterRow key={row.slug} row={row} />
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        <section className="pg-final-section" aria-labelledby="pg-final-title">
+          <div className="cat-rail pg-final-inner">
+            <div>
+              <p className="pg-section-label">Start with the work</p>
+              <h2 id="pg-final-title">Pick a programme. Then make something worth keeping.</h2>
+            </div>
+            <a className="pg-final-cta" href="#pg-programmes">
+              Explore programmes <span aria-hidden="true">↗</span>
+            </a>
           </div>
         </section>
       </div>
