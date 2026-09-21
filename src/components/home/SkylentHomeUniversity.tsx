@@ -12,14 +12,14 @@ const TIERS = [
 
 function Platform({ width }: { width: number }) {
   const cx = 160
-  const top = 18
-  const h = 22
-  const d = 22
+  const top = 24
+  const h = 32
+  const d = 20
   const half = width / 2
   const x0 = cx - half
   const x1 = cx + half
   return (
-    <svg className="hp-uni-slab" viewBox="0 0 320 78" aria-hidden="true">
+    <svg className="hp-uni-slab" viewBox="0 0 320 86" aria-hidden="true">
       <polygon className="is-side" points={`${x1},${top} ${x1 + d},${top + 10} ${x1 + d},${top + 10 + h} ${x1},${top + h}`} />
       <polygon className="is-face" points={`${x0},${top} ${x1},${top} ${x1},${top + h} ${x0},${top + h}`} />
       <polygon className="is-top" points={`${x0},${top} ${x0 + d},${top - 10} ${x1 + d},${top - 10} ${x1},${top}`} />

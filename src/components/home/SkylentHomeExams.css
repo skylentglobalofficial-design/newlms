@@ -24,8 +24,10 @@
 
 .hp-exam-orbit {
   position: relative;
-  width: min(100%, 400px);
+  width: min(100%, 420px);
   aspect-ratio: 1;
+  padding: 28px 64px;
+  box-sizing: border-box;
 }
 
 .hp-exam-ring {
@@ -81,22 +83,27 @@
 
 .hp-exam-node.is-goal {
   left: 50%;
-  top: 4%;
+  top: 10px;
 }
 
 .hp-exam-node.is-prep {
-  left: 96%;
+  left: auto;
+  right: 0;
   top: 50%;
+  transform: translate(0, -50%);
+  text-align: right;
 }
 
 .hp-exam-node.is-practice {
   left: 50%;
-  top: 96%;
+  top: auto;
+  bottom: 10px;
 }
 
 .hp-exam-node.is-ready {
-  left: 4%;
+  left: 0;
   top: 50%;
+  transform: translate(0, -50%);
 }
 
 .hp-exam-quiet {
@@ -132,7 +139,7 @@
     aspect-ratio: auto;
     gap: 10px;
     justify-items: start;
-    padding-left: 18px;
+    padding: 0 0 0 18px;
     border-left: 1px solid rgba(79, 70, 229, 0.28);
   }
 

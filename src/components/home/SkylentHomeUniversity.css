@@ -29,11 +29,14 @@
 
 .hp-uni-visual {
   min-width: 0;
+  display: flex;
+  justify-content: center;
 }
 
 .hp-uni-stack {
   display: grid;
-  gap: 10px;
+  gap: 2px;
+  width: min(100%, 540px);
   margin: 0;
   padding: 0;
   list-style: none;

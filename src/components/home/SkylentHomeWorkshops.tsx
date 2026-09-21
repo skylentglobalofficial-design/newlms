@@ -29,10 +29,6 @@ function ProcessRing() {
     <svg className="hp-ws-ring" viewBox="0 0 360 360" aria-hidden="true">
       <circle className="is-track" cx="180" cy="180" r="128" />
       <circle className="is-spin" cx="180" cy="180" r="128" />
-      <polygon className="is-arrow" points="180,44 174,56 186,56" />
-      <polygon className="is-arrow" points="316,180 304,174 304,186" />
-      <polygon className="is-arrow" points="180,316 186,304 174,304" />
-      <polygon className="is-arrow" points="44,180 56,186 56,174" />
     </svg>
   )
 }
