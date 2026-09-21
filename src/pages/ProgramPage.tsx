@@ -151,7 +151,7 @@ function AuthoredProgramme({
               ← Programmes
             </Link>
             <p className="cat-label">Programme · Professional Certificate</p>
-            <h1 id="pd-title">{discovery.title}</h1>
+            <h1 id="pd-title">{discovery.courseTitle}</h1>
             <p className="cat-lead">{discovery.decisionLine}</p>
 
             <dl className="pd-facts">
