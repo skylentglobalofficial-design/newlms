@@ -284,6 +284,10 @@ export default function DashboardStudentPage() {
                   </p>
                   <div
                     className="os-progress-bar"
+                    role="progressbar"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={workspace.program.progress.progressPct}
                     aria-label={`${workspace.program.progress.progressPct} percent of programme lessons complete`}
                     style={{ marginTop: 10 }}
                   >

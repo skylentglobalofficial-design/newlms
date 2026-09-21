@@ -20,7 +20,6 @@ import {
   findProgramBySlug,
   flattenNodes,
   formatVideoMedia,
-  lessonKey,
   loadLearnerDashboard,
   loadLessonStates,
   resolveCourseEnrollment,
