@@ -615,7 +615,7 @@
 
 @media (max-width: 720px) {
   .pg-programme-rail {
-    top: 0;
+    top: var(--nav-h);
   }
 
   .pg-hero-stage {
