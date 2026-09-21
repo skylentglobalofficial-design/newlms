@@ -23,16 +23,27 @@ function LiveRow({ row }: { row: ProgrammeDiscoveryCard }) {
 
   return (
     <article className="pg-row is-live">
-      <header className="pg-row-head">
-        <p className="pg-row-kicker">Ready to start</p>
-        <h3>
-          <Link to={row.href}>{title}</Link>
-        </h3>
-        <p className="pg-row-decision">{row.decisionLine}</p>
-        <p className="pg-row-shape">
-          {row.taughtModules} modules · {row.taughtLessons} lessons · {format} · {level}
+      <div className="pg-row-main">
+        <header className="pg-row-head">
+          <p className="pg-row-kicker">Ready to start</p>
+          <h3>
+            <Link to={row.href}>{title}</Link>
+          </h3>
+          <p className="pg-row-decision">{row.decisionLine}</p>
+          <p className="pg-row-shape">
+            {row.taughtModules} modules · {row.taughtLessons} lessons · {format} · {level}
+          </p>
+        </header>
+
+        <p className="pg-row-note">{row.honesty}</p>
+
+        <p className="pg-row-cta">
+          <Link to={row.href}>
+            Explore programme
+            <span aria-hidden="true"> →</span>
+          </Link>
         </p>
-      </header>
+      </div>
 
       <dl className="pg-row-facts">
         <div>
@@ -68,15 +79,6 @@ function LiveRow({ row }: { row: ProgrammeDiscoveryCard }) {
           </dd>
         </div>
       </dl>
-
-      <p className="pg-row-note">{row.honesty}</p>
-
-      <p className="pg-row-cta">
-        <Link to={row.href}>
-          Explore programme
-          <span aria-hidden="true"> →</span>
-        </Link>
-      </p>
     </article>
   )
 }
