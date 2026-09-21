@@ -98,7 +98,7 @@ export default function UniversitiesPage() {
         </div>
       </nav>
 
-      <section className="pe-ink" id="work" aria-labelledby="uni-work-title">
+      <section className="pe-section is-warm" id="work" aria-labelledby="uni-work-title">
         <div className="cat-rail pe-ink-stage">
           <div>
             <p className="pe-kicker">Programme workspace</p>

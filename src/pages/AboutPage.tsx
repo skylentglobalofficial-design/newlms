@@ -176,7 +176,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="pe-ink is-statement" id="idea" aria-labelledby="about-idea-title">
+      <section className="pe-section is-warm is-statement" id="idea" aria-labelledby="about-idea-title">
         <div className="cat-rail">
           <p className="pe-kicker">02 · The idea</p>
           <h2 id="about-idea-title" className="pe-display">
@@ -190,7 +190,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="pe-section is-warm" id="ecosystem" aria-labelledby="about-system-title">
+      <section className="pe-section is-paper" id="ecosystem" aria-labelledby="about-system-title">
         <div className="cat-rail">
           <p className="pe-kicker">03 · The system</p>
           <h2 id="about-system-title">Four products that connect.</h2>

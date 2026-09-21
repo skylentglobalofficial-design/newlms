@@ -869,10 +869,12 @@ a.pe-row:hover strong {
   line-height: 1.5;
 }
 
-/* Black institutional rail — reference video sub-navigation. */
+/* Light institutional rail — composition kept, no black bar. */
 .pe-inkbar {
-  background: #15171a;
-  color: #fffdf8;
+  background: var(--pe-paper);
+  color: var(--pe-ink);
+  border-top: 1px solid var(--pe-line);
+  border-bottom: 1px solid var(--pe-line);
 }
 
 .pe-inkbar-inner {
@@ -898,7 +900,7 @@ a.pe-row:hover strong {
   border: none;
   border-bottom: 2px solid transparent;
   background: transparent;
-  color: rgba(255, 253, 248, 0.58);
+  color: var(--pe-muted);
   font: 500 11px / 1 var(--font-mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -909,12 +911,12 @@ a.pe-row:hover strong {
 
 .pe-inkbar a:hover,
 .pe-inkbar button:hover {
-  color: #fffdf8;
+  color: var(--pe-ink);
 }
 
 .pe-inkbar a.is-on,
 .pe-inkbar button.is-on {
-  color: #fffdf8;
+  color: var(--pe-ink);
   border-bottom-color: var(--pe-orange);
 }
 
@@ -924,19 +926,17 @@ a.pe-row:hover strong {
   outline-offset: -6px;
 }
 
-/* Restrained dark editorial scene. */
-.pe-ink {
-  background: #15171a;
-  color: #fffdf8;
+/* Former dark scenes — same composition on cream. */
+.pe-ink,
+.pe-section.is-statement {
+  background: var(--pe-warm);
+  color: var(--pe-ink);
   padding: clamp(48px, 7vh, 88px) 0;
-  border-top: none;
+  border-top: 1px solid var(--pe-line);
 }
 
-.pe-ink .pe-kicker {
-  color: var(--pe-orange);
-}
-
-.pe-ink h2 {
+.pe-ink h2,
+.pe-section.is-statement h2 {
   margin: 0;
   max-width: 16em;
   font-family: var(--font-brand);
@@ -944,36 +944,15 @@ a.pe-row:hover strong {
   font-weight: 600;
   letter-spacing: -0.045em;
   line-height: 1.08;
+  color: var(--pe-ink);
 }
 
-.pe-ink h2.pe-display {
+.pe-ink h2.pe-display,
+.pe-section.is-statement h2.pe-display {
   max-width: 11em;
   font-size: clamp(52px, 9vw, 112px);
   letter-spacing: -0.055em;
   line-height: 0.92;
-}
-
-/* Light-canvas lock forces public h1–h4 to ink. Restore cream on dark scenes only. */
-.skylent-public-canvas main .pe-page .pe-ink h1,
-.skylent-public-canvas main .pe-page .pe-ink h2,
-.skylent-public-canvas main .pe-page .pe-ink h3,
-.skylent-public-canvas main .pe-page .pe-ink h4,
-.skylent-public-canvas main .pe-page .pe-ink .pe-display {
-  color: #fffdf8 !important;
-}
-
-.pe-ink .pe-lead,
-.pe-ink .pe-note {
-  color: rgba(255, 253, 248, 0.64);
-}
-
-.pe-ink .pe-cta-ghost {
-  color: #fffdf8;
-  border-color: rgba(255, 253, 248, 0.28);
-}
-
-.pe-ink .pe-cta-ghost:hover {
-  background: rgba(255, 253, 248, 0.06);
 }
 
 .pe-ink-stage {
@@ -988,7 +967,8 @@ a.pe-row:hover strong {
   margin-top: 0;
 }
 
-.pe-section .cat-rail.pe-ink-stage {
+.pe-section .cat-rail.pe-ink-stage,
+.pe-ink > .cat-rail.pe-ink-stage {
   align-items: center;
 }
 
@@ -1005,46 +985,21 @@ a.pe-row:hover strong {
   margin-top: 0;
 }
 
-.pe-ink.is-statement {
+.pe-ink.is-statement,
+.pe-section.is-statement {
   padding: clamp(72px, 12vh, 136px) 0;
 }
 
-.pe-ink.is-statement .pe-display {
+.pe-ink.is-statement .pe-display,
+.pe-section.is-statement .pe-display {
   max-width: 11em;
   margin-top: 8px;
+  color: var(--pe-ink);
 }
 
-.pe-ink.is-statement .pe-lead {
+.pe-ink.is-statement .pe-lead,
+.pe-section.is-statement .pe-lead {
   margin-top: 28px;
-}
-
-.pe-ink .pe-layer {
-  border-color: rgba(255, 253, 248, 0.12);
-}
-
-.pe-ink .pe-layer strong {
-  color: #fffdf8;
-}
-
-.pe-ink .pe-layer span:last-child {
-  color: rgba(255, 253, 248, 0.58);
-}
-
-.pe-ink .pe-connect-col {
-  border-right-color: rgba(255, 253, 248, 0.12);
-}
-
-.pe-ink .pe-connect-col h3 {
-  color: #fffdf8;
-}
-
-.pe-ink .pe-list li {
-  border-bottom-color: rgba(255, 253, 248, 0.12);
-  color: rgba(255, 253, 248, 0.82);
-}
-
-.pe-ink .pe-list li em {
-  color: var(--pe-orange);
 }
 
 .pe-caprail {
@@ -1054,7 +1009,7 @@ a.pe-row:hover strong {
   margin: 28px 0 0;
   padding: 0;
   list-style: none;
-  border-top: 1px solid rgba(255, 253, 248, 0.14);
+  border-top: 1px solid var(--pe-line);
 }
 
 .pe-caprail li {
@@ -1064,7 +1019,7 @@ a.pe-row:hover strong {
   min-width: 140px;
   flex: 1 1 140px;
   padding: 16px 18px 16px 0;
-  border-right: 1px solid rgba(255, 253, 248, 0.1);
+  border-right: 1px solid var(--pe-line);
 }
 
 .pe-caprail li:last-child {
@@ -1075,17 +1030,14 @@ a.pe-row:hover strong {
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.02em;
+  color: var(--pe-ink);
 }
 
 .pe-caprail span {
-  color: rgba(255, 253, 248, 0.5);
+  color: var(--pe-muted);
   font: 500 10px / 1.3 var(--font-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
-}
-
-.pe-caprail li.is-live span {
-  color: #86efac;
 }
 
 /* Programme-anatomy catalogue. */
@@ -1220,7 +1172,8 @@ a.pe-map-row:hover strong {
 /* Giant typographic statement. */
 .pe-display,
 .pe-section h2.pe-display,
-.pe-ink h2.pe-display {
+.pe-ink h2.pe-display,
+.pe-section.is-statement h2.pe-display {
   margin: 0;
   max-width: none;
   font-family: var(--font-brand);
@@ -1228,6 +1181,7 @@ a.pe-map-row:hover strong {
   font-weight: 600;
   letter-spacing: -0.055em;
   line-height: 0.92;
+  color: var(--pe-ink);
 }
 
 .pe-display-block {
@@ -1358,11 +1312,6 @@ a.pe-map-row:hover strong {
 
 .pe-examples.is-anatomy .pe-example h3 {
   font-size: clamp(24px, 2.6vw, 32px);
-}
-
-.pe-ink .pl-frame {
-  box-shadow: none;
-  border-color: rgba(255, 253, 248, 0.14);
 }
 
 .pe-page .pl-flow,
@@ -1528,7 +1477,8 @@ a.pe-map-row:hover strong {
 
   .pe-display,
   .pe-section h2.pe-display,
-  .pe-ink h2.pe-display {
+  .pe-ink h2.pe-display,
+  .pe-section.is-statement h2.pe-display {
     font-size: clamp(44px, 14vw, 72px);
   }
 }
@@ -1585,7 +1535,8 @@ a.pe-map-row:hover strong {
     border-top-color: transparent;
   }
 
-  .pe-ink {
+  .pe-ink,
+  .pe-section.is-statement {
     padding: 40px 0 48px;
   }
 

@@ -309,7 +309,7 @@ export default function InstitutionsPage() {
         </div>
       </section>
 
-      <section className="pe-ink" id="ecosystem" aria-labelledby="inst-connect-title">
+      <section className="pe-section is-warm" id="ecosystem" aria-labelledby="inst-connect-title">
         <div className="cat-rail">
           <p className="pe-kicker">What institutions can connect</p>
           <h2 id="inst-connect-title">From institutional intent to a working learning system.</h2>
