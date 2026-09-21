@@ -160,7 +160,7 @@ export default function CareerOSJobsPage() {
           ) : board.displayedJobs.length === 0 ? (
             <EmptyBlock
               message={board.view === "browse"
-                ? "No open roles are listed yet. Live jobs appear here when partners publish them — none are invented for this view."
+                ? "No opportunities published yet. Live roles appear here when partners publish them — none are invented for this view."
                 : "You have not saved any jobs yet. Browse open roles and save the ones you want to track."}
               onAction={board.view === "saved" ? () => board.setView("browse") : undefined}
               actionLabel={board.view === "saved" ? "Browse jobs" : undefined}

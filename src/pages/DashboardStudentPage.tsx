@@ -84,7 +84,10 @@ export default function DashboardStudentPage() {
   const resume = workspace?.resume
   const currentLesson = allLessons.find((lesson) => lesson.id === resume?.lessonId)
   const recent = course ? getRecentActivity([course], () => lessonStates) : []
-  const viaProgram = enrollments.find((item) => item.courseSlug === learnSlug && item.programName)?.programName ?? null
+  const viaProgram =
+    workspace?.program?.name ??
+    enrollments.find((item) => item.courseSlug === learnSlug && item.programName)?.programName ??
+    null
   const firstName = user?.name?.split(' ')[0] || 'there'
 
   const lessonModuleTitle = (lessonId: string) =>
@@ -107,7 +110,11 @@ export default function DashboardStudentPage() {
     ? 'This is work recorded in the course. Add it to Career OS when you want it on your profile. Nothing is created automatically.'
     : 'Assignments you submit in the course can be recorded in Career OS. Nothing is invented here.'
 
-  const extraEnrollments = enrollments.filter((item) => item.courseSlug && item.courseSlug !== learnSlug)
+  const extraEnrollments = enrollments.filter((item) => {
+    if (!item.courseSlug || item.courseSlug === learnSlug) return false
+    if (workspace?.program?.courses.some((course) => course.slug === item.courseSlug)) return false
+    return true
+  })
 
   const shell = {
     themeId: 'data-science' as const,
@@ -266,6 +273,44 @@ export default function DashboardStudentPage() {
                 accent={accent}
                 started={workspace.progress.completedCount > 0 || Boolean(resume?.lessonId)}
               />
+              {workspace.program && workspace.program.courses.length > 0 ? (
+                <section className="dash-card dash-enrollments" aria-labelledby="student-programme">
+                  <p className="os-eyebrow">Programme</p>
+                  <h2 id="student-programme">{workspace.program.name}</h2>
+                  <p className="dash-continue-meta">
+                    {workspace.program.progress.completedCourses} of {workspace.program.progress.totalCourses} courses
+                    {" · "}
+                    {workspace.program.progress.completedCount} of {workspace.program.progress.totalLessons} lessons
+                  </p>
+                  <div
+                    className="os-progress-bar"
+                    role="progressbar"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={workspace.program.progress.progressPct}
+                    aria-label={`${workspace.program.progress.progressPct} percent of programme lessons complete`}
+                    style={{ marginTop: 10 }}
+                  >
+                    <span style={{ width: `${workspace.program.progress.progressPct}%` }} />
+                  </div>
+                  <ul className="dash-program-courses">
+                    {workspace.program.courses.map((item) => (
+                      <li key={item.slug}>
+                        <Link to={item.resume.lessonId ? `/learn/${item.slug}/${item.resume.lessonId}` : `/learn/${item.slug}`}>
+                          <span>
+                            <strong>{item.title}</strong>
+                            <span className="dash-continue-meta">
+                              {item.progress.completedCount}/{item.progress.totalLessons} lessons
+                              {item.resume.lessonTitle ? ` · ${item.resume.lessonTitle}` : ""}
+                            </span>
+                          </span>
+                          <span>{item.progress.allComplete ? "Completed" : "Resume"}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
               {extraEnrollments.length > 0 ? (
                 <div className="dash-card dash-enrollments">
                   <h2>Also enrolled</h2>
