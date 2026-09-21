@@ -1,30 +1,13 @@
-import { useEffect, useState } from "react"
-import { HarborDeskWorkspace } from "../product/ProductLanguage"
+import { Link } from "react-router-dom"
 import { liveProgrammeCatalogue } from "../../lib/programme-catalogue"
 import "./ProgramsHero.css"
 
-function useCompactSpecimen() {
-  const [compact, setCompact] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches,
-  )
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)")
-    const onChange = () => setCompact(mq.matches)
-    onChange()
-    mq.addEventListener("change", onChange)
-    return () => mq.removeEventListener("change", onChange)
-  }, [])
-
-  return compact
-}
+const HERO_IMAGE =
+  "https://images.pexels.com/photos/7742816/pexels-photo-7742816.jpeg?auto=compress&dpr=1&w=1600"
 
 export default function ProgramsHero() {
   const live = liveProgrammeCatalogue()
   const readyCount = live.length
-  const selfPaced = live.length > 0 && live.every((row) => row.format === "Self-paced")
-  const projectBased = live.length > 0 && live.every((row) => Boolean(row.capstone))
-  const compact = useCompactSpecimen()
 
   return (
     <section className="pg-hero" aria-labelledby="pg-hero-title">
@@ -35,31 +18,38 @@ export default function ProgramsHero() {
             Professional programmes
           </p>
           <h1 id="pg-hero-title">
-            <span>Learn deeply.</span>
-            <span>Build something real.</span>
+            Learn deeply.
+            <br />
+            Build something real.
           </h1>
           <p className="pg-hero-lead">
-            Skylent programmes connect learning, practice, and real work. You study written lessons, check your
-            understanding, and finish a project you keep — in Skylent OS, not a live classroom.
+            Programmes built around the work, not the brochure. Learn through written lessons, practise what you
+            understand, and leave with evidence you can keep.
           </p>
-          <p className="pg-hero-actions">
-            <a className="pg-hero-cta" href="#pg-catalogue">
+          <div className="pg-hero-actions">
+            <a className="pg-hero-cta" href="#pg-programmes">
               Explore programmes
-              <span className="pg-hero-cta-arrow" aria-hidden="true">
-                →
-              </span>
+              <span aria-hidden="true">↗</span>
             </a>
-          </p>
-          <ul className="pg-hero-meta">
-            <li>{readyCount} ready to start</li>
-            {selfPaced ? <li>Self-paced</li> : null}
-            {projectBased ? <li>Project-based</li> : null}
-          </ul>
+            <Link className="pg-hero-text-link" to="/courses">
+              Browse individual courses
+            </Link>
+          </div>
+          <div className="pg-hero-meta" aria-label="Programme format">
+            <span>{readyCount} authored programmes</span>
+            <span>Self-paced</span>
+            <span>Project-led</span>
+          </div>
         </div>
 
-        <div className="pg-hero-specimen">
-          <HarborDeskWorkspace compact={compact} meta="harbor-desk-case.md · 4 interviews" />
-        </div>
+        <figure className="pg-hero-photo">
+          <img src={HERO_IMAGE} alt="Students working together on laptops in a classroom" />
+          <figcaption>
+            <span>01</span>
+            <strong>Study → practise → build</strong>
+            <em>Real learning, composed as a single path.</em>
+          </figcaption>
+        </figure>
       </div>
     </section>
   )
