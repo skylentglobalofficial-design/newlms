@@ -1,542 +1,391 @@
-import { useNavigate } from 'react-router-dom'
-import { C, FadeIn, PageShell } from '../components/shared'
-import {
-  Section, Eyebrow, Button, T, SectionHeader, CTABand, Heading, FlowStrip,
-} from '../components/ui'
-import {
-  Aurora, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem,
-} from '../components/foundation'
-import { ProductVisual } from '../components/product/ProductVisuals'
-import { getDomainAccent } from '../aurora-themes'
+import { Link } from "react-router-dom"
+import { PathwayTrack, SkylentOsPreview } from "../components/product/ProductLanguage"
+import { PROGRAMS_STUDY_CLASSROOM, PROGRAMS_STUDY_LIBRARY } from "../media"
+import { PublicEditorialShell } from "./public-editorial"
 
-const accent = getDomainAccent('general')
+const GAP_STAGES = [
+  { label: "Learning", sub: "Academic programmes and structured coursework" },
+  { label: "Practice", sub: "Activities, assessments, and applied work" },
+  { label: "Proof", sub: "Projects and portfolio artefacts" },
+  { label: "Career", sub: "Profile, interview prep, applications — jobs when published" },
+  { label: "Institutions", sub: "Infrastructure to deliver learning — reporting is not built" },
+] as const
 
-const ABOUT_NAV_ITEMS: ContextualNavItem[] = [
-  { id: 'story', label: 'Story', sub: 'What Skylent is' },
-  { id: 'gap', label: 'The gap', sub: 'What we address' },
-  { id: 'ecosystem', label: 'Products', sub: 'What connects' },
-  { id: 'journey', label: 'Journey', sub: 'How it works' },
-  { id: 'who-we-serve', label: 'Who we serve', sub: 'Learners & partners' },
-  { id: 'institutions', label: 'Institutions', sub: 'Beyond individuals' },
-  { id: 'platform', label: 'Platform', sub: 'What we build' },
+const SYSTEM = [
+  {
+    label: "Education",
+    body: "Schooling, undergraduate, postgraduate, and competitive exams as distinct products — not one generic academic page.",
+    to: "/education",
+  },
+  {
+    label: "Skills",
+    body: "Certificate programmes and professional programmes are the live skills products. Workshop registration is not live.",
+    to: "/skills",
+  },
+  {
+    label: "Career OS",
+    body: "The workspace where learning evidence lives, alongside your profile, applications, and interview preparation. Not a job board.",
+    to: "/career-os",
+  },
+  {
+    label: "Institutions",
+    body: "Infrastructure for schools, colleges, universities, training institutes, assessment partners, and industry.",
+    to: "/institutions",
+  },
+] as const
+
+const LEARNER_TRACK = [
+  { label: "Learn", live: true, note: "Programmes and coursework" },
+  { label: "Practice", live: true, note: "Activities and assessments" },
+  { label: "Build", live: true, note: "Projects and applied work" },
+  { label: "Prove", live: true, note: "Portfolio and work you keep" },
+  { label: "Prepare", live: true, note: "Interview preparation" },
+  { label: "Apply", live: false, note: "When a role is published" },
+  { label: "Track", live: false, note: "Application status" },
 ]
 
-// ─── HERO VISUAL ──────────────────────────────────────────────────────────────
+const PRODUCT_MAP = [
+  { label: "Programmes", sub: "Education and skills catalogue" },
+  { label: "Learning", sub: "Curriculum and lessons in an enrolled course" },
+  { label: "Projects / Assessments", sub: "Work that becomes proof" },
+  { label: "Career proof", sub: "Profile, resume, portfolio" },
+  { label: "Career OS", sub: "Evidence, profile, applications" },
+  { label: "Opportunities", sub: "Roles to discover and apply — if published" },
+] as const
 
-function AboutHeroVisual() {
+const AUDIENCES = [
+  { label: "School learners & parents", desc: "Schooling workflows with parent-visible progress — in design.", to: "/education#schooling" },
+  { label: "Undergraduate learners", desc: "Degree-aligned programmes in design, plus live professional programmes.", to: "/education#undergraduate" },
+  { label: "Postgraduate learners", desc: "Specialisation tracks in design — not an enrollable catalogue yet.", to: "/education#postgraduate" },
+  { label: "Exam aspirants", desc: "JEE, NEET, CAT as exam-prep products in design.", to: "/education#competitive-exams" },
+  { label: "Skill learners", desc: "Certificates and professional programmes. Workshop listings are coming soon.", to: "/skills" },
+  { label: "Career seekers", desc: "Career OS — the workspace where your learning evidence becomes something you can present.", to: "/career-os" },
+  { label: "Institutions", desc: "Schools, colleges, universities, and training partners.", to: "/institutions" },
+] as const
+
+const INSTITUTION_ITEMS = [
+  "Programs",
+  "Offerings",
+  "Batches",
+  "Learners",
+  "Faculty",
+  "Curriculum",
+  "Assessments",
+  "Progress",
+] as const
+
+const CAREER_ITEMS = [
+  "Career Profile",
+  "Resume readiness",
+  "Interview Preparation",
+  "Opportunities — when published",
+  "Applications",
+  "Career Support",
+] as const
+
+const SURFACES = [
+  { label: "Education", desc: "Schooling, undergraduate, postgraduate, and exam preparation products.", to: "/education" },
+  { label: "Skills", desc: "Certificates, professional programmes, and Career OS. Workshops are listings only.", to: "/skills" },
+  { label: "Career", desc: "Career OS workspace for profile, prep, and applications. Roles appear when published.", to: "/career-os" },
+  { label: "Institutions", desc: "Partnership workflows for schools, colleges, and training institutes.", to: "/institutions" },
+  { label: "Programmes", desc: "The catalogue connecting learners to every product surface.", to: "/programs" },
+] as const
+
+export default function AboutPage() {
   return (
-    <div className="about-hero-visual" style={{ position: 'relative', minHeight: 'clamp(380px, 48vh, 520px)' }}>
-      <ProductVisual id="about-ecosystem" themeId="general" style={{ height: '100%', minHeight: 'clamp(360px, 46vh, 500px)' }} />
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: '-5% -4%',
-          border: `1px dashed ${accent.border}`,
-          borderRadius: T.rCard,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-    </div>
-  )
-}
+    <PublicEditorialShell>
+      <section className="pe-hero is-essay" id="story" aria-labelledby="about-hero-title">
+        <div className="cat-rail pe-hero-stage">
+          <div className="pe-hero-copy">
+            <p className="pe-eyebrow">
+              <i aria-hidden="true" />
+              About Skylent
+            </p>
+            <h1 id="about-hero-title">Education → skills → career → institutions.</h1>
+            <p className="pe-lead">
+              We are building the infrastructure where students, parents, institutions, and employers can meet — with
+              product depth, not marketing claims.
+            </p>
+            <p className="pe-actions">
+              <Link className="pe-cta" to="/programs">
+                Explore programmes
+                <span className="pe-cta-arrow" aria-hidden="true">
+                  →
+                </span>
+              </Link>
+              <Link className="pe-cta-ghost" to="/contact">
+                Contact
+              </Link>
+            </p>
+          </div>
+          <figure className="pe-figure">
+            <div className="pe-photo is-library">
+              <img
+                src={PROGRAMS_STUDY_LIBRARY}
+                alt="College students studying together at a library table"
+                width={1800}
+                height={1200}
+                fetchPriority="high"
+                decoding="async"
+              />
+            </div>
+            <figcaption>Learning as a shared practice</figcaption>
+          </figure>
+        </div>
+      </section>
 
-// ─── 1. HERO ──────────────────────────────────────────────────────────────────
+      <nav className="pe-inkbar" aria-label="About chapters">
+        <div className="cat-rail pe-inkbar-inner">
+          <a href="#gap">01 Gap</a>
+          <a href="#idea">02 Idea</a>
+          <a href="#ecosystem">03 System</a>
+          <a href="#who-we-serve">04 Who</a>
+          <a href="#institutions">05 Institutions</a>
+          <a href="#platform">06 Building</a>
+        </div>
+      </nav>
 
-function HeroSection() {
-  const navigate = useNavigate()
-  const activeSection = useSectionSpy(ABOUT_NAV_ITEMS.map(i => i.id))
+      <section className="pe-section is-paper" id="gap" aria-labelledby="about-gap-title">
+        <div className="cat-rail pe-split is-flush">
+          <div>
+            <p className="pe-folio-n" aria-hidden="true">
+              01
+            </p>
+            <p className="pe-kicker">The gap</p>
+            <h2 id="about-gap-title">Close the distance between what people learn and what they can do next.</h2>
+            <p className="pe-lead">
+              Students need more than lectures. Parents need visibility. Institutions need infrastructure. Employers
+              need people who can contribute. Skylent is built so those needs meet in one system.
+            </p>
+            <p className="pe-note">
+              The gap is not a single missing feature — it is the disconnect between learning, practice, proof, career
+              readiness, and the institutions that deliver education at scale.
+            </p>
+          </div>
+          <ol className="pe-chain">
+            {GAP_STAGES.map((stage, index) => (
+              <li key={stage.label}>
+                <em>{String(index + 1).padStart(2, "0")}</em>
+                <div>
+                  <strong>{stage.label}</strong>
+                  <span>{stage.sub}</span>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
 
-  return (
-    <>
-      <section id="story" style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
-        <Aurora themeId="general" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'start' }} className="two-col skylent-page-hero about-page-hero">
-            <FadeIn>
-              <Eyebrow tone="light" accent>About Skylent</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '20px 0 16px', maxWidth: 640 }}>
-                Education → skills → career → institutions.
-              </h1>
-              <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, maxWidth: 520, margin: '0 0 28px' }}>
-                We are building the infrastructure where students, parents, institutions, and employers can meet — with product depth, not marketing claims.
-              </p>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-                <Button variant="primary" size="lg" onClick={() => navigate('/programs')}>Explore Programs</Button>
-                <Button variant="secondary" size="lg" onClick={() => navigate('/contact')}>Contact</Button>
-              </div>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <AboutHeroVisual />
-            </FadeIn>
+      <section className="pe-section is-warm is-statement" id="idea" aria-labelledby="about-idea-title">
+        <div className="cat-rail">
+          <p className="pe-kicker">02 · The idea</p>
+          <h2 id="about-idea-title" className="pe-display">
+            One system from learning to career.
+          </h2>
+          <p className="pe-lead">
+            Skylent is not a single app and not a founder anecdote. It is a connected layer: academic lines where they
+            belong, skills products you can start, Career OS for the work you keep, and an institution layer for the
+            organisations that run education.
+          </p>
+        </div>
+      </section>
+
+      <section className="pe-section is-paper" id="ecosystem" aria-labelledby="about-system-title">
+        <div className="cat-rail">
+          <p className="pe-kicker">03 · The system</p>
+          <h2 id="about-system-title">Four products that connect.</h2>
+          <p className="pe-lead">
+            Education, Skills, Career OS, and Institutions are separate products with separate pages — designed to work
+            together when a learner is ready to move on.
+          </p>
+          <div className="pe-ink-stage">
+            <div className="pe-map">
+              {SYSTEM.map((item, index) => (
+                <div className="pe-map-item" key={item.label}>
+                  <Link className="pe-map-row" to={item.to}>
+                    <em>{String(index + 1).padStart(2, "0")}</em>
+                    <div>
+                      <strong>{item.label}</strong>
+                      <span>{item.body}</span>
+                    </div>
+                    <b aria-hidden="true">→</b>
+                  </Link>
+                </div>
+              ))}
+            </div>
+            <div className="pe-product">
+              <SkylentOsPreview />
+              <p className="pe-caption">Learner progress in Skylent OS — not an institution control panel.</p>
+            </div>
+          </div>
+          <p className="pe-kicker is-spaced" id="journey">
+            From programmes to opportunities
+          </p>
+          <p className="pe-lead">
+            Each step maps to product surfaces already in Skylent — not a marketing funnel, but an implemented journey.
+          </p>
+          <div className="pe-split">
+            <div>
+              <p className="pe-kicker">Learner journey</p>
+              <PathwayTrack steps={LEARNER_TRACK} />
+            </div>
+            <div>
+              <p className="pe-kicker">Product surfaces</p>
+              <ul className="pe-plain">
+                {PRODUCT_MAP.map((item) => (
+                  <li key={item.label}>
+                    <strong>{item.label}.</strong> {item.sub}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </div>
       </section>
-      <ContextualNavBar items={ABOUT_NAV_ITEMS} themeId="general" activeId={activeSection} />
-    </>
-  )
-}
 
-// ─── 2. THE GAP ───────────────────────────────────────────────────────────────
-
-function GapSection() {
-  const stages = [
-    { label: 'Learning', sub: 'Academic programs and structured coursework', accent: getDomainAccent('schooling') },
-    { label: 'Practice', sub: 'Activities, assessments, and applied work', accent: getDomainAccent('undergraduate') },
-    { label: 'Proof', sub: 'Projects, credentials, and portfolio artifacts', accent: getDomainAccent('professional') },
-    { label: 'Career', sub: 'Profile, interview prep, jobs, applications', accent: getDomainAccent('career') },
-    { label: 'Institutions', sub: 'Infrastructure to deliver and measure outcomes', accent: getDomainAccent('institution') },
-  ]
-
-  return (
-    <Section id="gap" tone="canvas" divider>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 72px)', alignItems: 'start' }} className="two-col">
-        <FadeIn>
-          <Eyebrow tone="light">The gap</Eyebrow>
-          <Heading tone="light" size="md" style={{ margin: '20px 0 16px' }}>
-            Close the distance between what people learn and what they can do next.
-          </Heading>
-          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '0 0 20px' }}>
-            Students need more than lectures. Parents need visibility. Institutions need infrastructure. Employers need people who can contribute. Skylent is built so those needs meet in one system.
+      <section className="pe-section is-warm" id="who-we-serve" aria-labelledby="about-serve-title">
+        <div className="cat-rail">
+          <p className="pe-kicker">04 · Who it serves</p>
+          <h2 id="about-serve-title">Built for learners and the institutions that support them.</h2>
+          <p className="pe-lead">
+            Each audience has a distinct workflow in Skylent — not one generic user type forced into the same product.
           </p>
-          <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: 0 }}>
-            The gap is not a single missing feature — it is the disconnect between learning, practice, proof, career readiness, and the institutions that deliver education at scale.
-          </p>
-        </FadeIn>
-        <FadeIn delay={80}>
-          <GlassSurface level={1} padding="0" style={{ overflow: 'hidden' }}>
-            {stages.map((stage, i) => (
-              <div
-                key={stage.label}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 16,
-                  padding: '18px 22px',
-                  borderBottom: i < stages.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                }}
-              >
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: stage.accent.primary, flexShrink: 0 }} />
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{stage.label}</div>
-                  <div style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.5 }}>{stage.sub}</div>
-                </div>
-                {i < stages.length - 1 && (
-                  <span style={{ color: C.slate, fontSize: 14, flexShrink: 0 }}>↓</span>
-                )}
-              </div>
-            ))}
-          </GlassSurface>
-        </FadeIn>
-      </div>
-    </Section>
-  )
-}
-
-// ─── 3. WHAT SKYLENT CONNECTS ───────────────────────────────────────────────
-
-function EcosystemSection() {
-  const navigate = useNavigate()
-
-  const connected = [
-    {
-      label: 'Education',
-      body: 'Schooling, undergraduate, postgraduate, and competitive exams as distinct products — not one generic academic page.',
-      to: '/education',
-      accent: getDomainAccent('schooling'),
-    },
-    {
-      label: 'Skills',
-      body: 'Certificate programs and Professional Programs are the live skills products. Workshop registration is not live.',
-      to: '/skills',
-      accent: getDomainAccent('professional'),
-    },
-    {
-      label: 'Career OS',
-      body: 'Interview preparation, job board, and applications as a working product, unlocked by Professional Programs.',
-      to: '/career-os',
-      accent: getDomainAccent('career'),
-    },
-    {
-      label: 'Institutions',
-      body: 'Infrastructure for schools, colleges, universities, training institutes, assessment partners, and industry.',
-      to: '/institutions',
-      accent: getDomainAccent('institution'),
-    },
-  ]
-
-  return (
-    <Section id="ecosystem" tone="canvas" divider>
-      <FadeIn>
-        <SectionHeader
-          tone="light"
-          eyebrow="What Skylent connects"
-          title="Four products that connect."
-          lead="Education, Skills, Career OS, and Institutions are separate products with separate pages — designed to work together when a learner is ready to move on."
-        />
-      </FadeIn>
-
-      <div style={{ marginTop: 48, position: 'relative' }}>
-        <div
-          aria-hidden
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '12%',
-            right: '12%',
-            height: 1,
-            background: `linear-gradient(90deg, transparent, ${accent.border}, transparent)`,
-            transform: 'translateY(-50%)',
-            display: 'none',
-          }}
-        />
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 0 }}>
-          {connected.map((item, i) => (
-            <FadeIn key={item.label} delay={i * 60}>
-              <button
-                type="button"
-                onClick={() => navigate(item.to)}
-                style={{
-                  flex: '1 1 min(240px, 100%)',
-                  minWidth: 'min(240px, 100%)',
-                  textAlign: 'left',
-                  background: 'transparent',
-                  border: 'none',
-                  borderTop: `1px solid ${T.lineDark}`,
-                  padding: '28px clamp(14px, 2vw, 24px)',
-                  cursor: 'pointer',
-                  fontFamily: 'var(--font-body)',
-                  borderLeft: `2px solid ${item.accent.primary}`,
-                }}
-              >
-                <div className="skylent-label" style={{ color: item.accent.text, marginBottom: 10 }}>
-                  {String(i + 1).padStart(2, '0')}
-                </div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink, marginBottom: 10 }}>{item.label}</div>
-                <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: '0 0 14px' }}>{item.body}</p>
-                <span style={{ color: item.accent.text, fontSize: 13, fontWeight: 600 }}>View</span>
-              </button>
-            </FadeIn>
-          ))}
-        </div>
-      </div>
-    </Section>
-  )
-}
-
-// ─── 4. HOW THE ECOSYSTEM WORKS ─────────────────────────────────────────────
-
-function JourneySection() {
-  const learnerSteps = [
-    { label: 'Learn', sub: 'Programs and coursework' },
-    { label: 'Practice', sub: 'Activities and assessments' },
-    { label: 'Build', sub: 'Projects and applied work' },
-    { label: 'Prove', sub: 'Portfolio and credentials' },
-    { label: 'Prepare', sub: 'Interview preparation' },
-    { label: 'Apply', sub: 'Job board and screening' },
-    { label: 'Track', sub: 'Application status' },
-  ]
-
-  const productMap = [
-    { label: 'Programs', sub: 'Education and skills catalog', accent: getDomainAccent('schooling') },
-    { label: 'Learning', sub: 'Curriculum, lessons, cohort', accent: getDomainAccent('undergraduate') },
-    { label: 'Projects / Assessments', sub: 'Work that becomes proof', accent: getDomainAccent('professional') },
-    { label: 'Career Proof', sub: 'Profile, resume, portfolio', accent: getDomainAccent('career') },
-    { label: 'Career OS', sub: 'Interview prep, jobs, tracker', accent: getDomainAccent('career') },
-    { label: 'Opportunities', sub: 'Roles to discover and apply', accent: accent },
-  ]
-
-  return (
-    <Section id="journey" tone="canvas" divider>
-      <FadeIn>
-        <SectionHeader
-          tone="light"
-          eyebrow="How it works"
-          title="From programs to opportunities."
-          lead="Each step maps to product surfaces already in Skylent — not a marketing funnel, but an implemented journey."
-        />
-      </FadeIn>
-
-      <div style={{ marginTop: 48, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 56px)', alignItems: 'start' }} className="two-col">
-        <FadeIn>
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 16 }}>Learner journey</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 0' }}>
-            {learnerSteps.map((step, i) => (
-              <div key={step.label} style={{ display: 'flex', alignItems: 'center', flex: '1 1 120px', minWidth: 0 }}>
-                <div style={{ padding: '10px 0' }}>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink }}>{step.label}</div>
-                  <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>{step.sub}</div>
-                </div>
-                {i < learnerSteps.length - 1 && (
-                  <span style={{ color: C.slate, padding: '0 6px', fontSize: 13 }}>→</span>
-                )}
-              </div>
-            ))}
-          </div>
-        </FadeIn>
-        <FadeIn delay={80}>
-          <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>Product surfaces</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {productMap.map((item, i) => (
-              <div
-                key={item.label}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '8px 1fr',
-                  gap: 16,
-                  padding: '14px 0',
-                  borderBottom: i < productMap.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                  alignItems: 'start',
-                }}
-              >
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: item.accent.primary, marginTop: 6 }} />
+          <div className="pe-examples is-anatomy">
+            {AUDIENCES.map((group, index) => (
+              <Link className="pe-example" key={group.label} to={group.to}>
+                <p className="pe-kicker">{String(index + 1).padStart(2, "0")}</p>
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.ink, marginBottom: 3 }}>{item.label}</div>
-                  <div style={{ color: C.slate, fontSize: 12.5 }}>{item.sub}</div>
+                  <h3>{group.label}</h3>
+                  <p>{group.desc}</p>
                 </div>
-              </div>
+                <p className="pe-kicker">
+                  Open
+                  <span aria-hidden="true"> →</span>
+                </p>
+              </Link>
             ))}
           </div>
-        </FadeIn>
-      </div>
-
-      <FadeIn delay={120}>
-        <div style={{ marginTop: 40 }}>
-          <FlowStrip
-            tone="light"
-            steps={[
-              { label: 'Programs', sub: 'Catalog' },
-              { label: 'Learning', sub: 'Curriculum' },
-              { label: 'Projects', sub: 'Proof', highlight: true },
-              { label: 'Career OS', sub: 'Workspace' },
-              { label: 'Opportunities', sub: 'Jobs' },
-            ]}
-          />
         </div>
-      </FadeIn>
-    </Section>
-  )
-}
+      </section>
 
-// ─── 5. WHO IT SERVES ───────────────────────────────────────────────────────
-
-function WhoWeServeSection() {
-  const navigate = useNavigate()
-
-  const groups = [
-    { label: 'School learners & parents', desc: 'Schooling workflows with parent-visible progress.', to: '/education#schooling', accent: getDomainAccent('schooling') },
-    { label: 'Undergraduate learners', desc: 'Degree-aligned programs, projects, and career direction.', to: '/education#undergraduate', accent: getDomainAccent('undergraduate') },
-    { label: 'Postgraduate learners', desc: 'Specialisation tracks with professional outcomes.', to: '/education#postgraduate', accent: getDomainAccent('postgraduate') },
-    { label: 'Exam aspirants', desc: 'JEE, NEET, CAT — practice, mocks, and analytics.', to: '/education#competitive-exams', accent: getDomainAccent('jee') },
-    { label: 'Skill learners', desc: 'Certificates and Professional Programs. Workshop listings are coming soon.', to: '/skills', accent: getDomainAccent('professional') },
-    { label: 'Career seekers', desc: 'Career OS — profile, interview prep, jobs, applications.', to: '/career-os', accent: getDomainAccent('career') },
-    { label: 'Institutions', desc: 'Schools, colleges, universities, and training partners.', to: '/institutions', accent: getDomainAccent('institution') },
-    { label: 'Employers & recruiters', desc: 'Job board and recruiter workflows for open roles.', to: '/career-os#jobs', accent: getDomainAccent('career') },
-  ]
-
-  return (
-    <Section id="who-we-serve" tone="canvas" divider>
-      <FadeIn>
-        <SectionHeader
-          tone="light"
-          eyebrow="Who we serve"
-          title="Built for learners and the institutions that support them."
-          lead="Each audience has a distinct workflow in Skylent — not one generic user type forced into the same product."
-        />
-      </FadeIn>
-
-      <div style={{ marginTop: 40, display: 'flex', flexDirection: 'column', gap: 0 }}>
-        {groups.map((group, i) => (
-          <FadeIn key={group.label} delay={i * 40}>
-            <button
-              type="button"
-              onClick={() => navigate(group.to)}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'minmax(0, 1fr) auto',
-                gap: 20,
-                alignItems: 'center',
-                padding: '20px 16px',
-                border: 'none',
-                borderBottom: `1px solid ${T.lineDark}`,
-                borderLeft: `2px solid ${group.accent.primary}`,
-                cursor: 'pointer',
-                width: '100%',
-                textAlign: 'left',
-                fontFamily: 'var(--font-body)',
-                background: 'transparent',
-              }}
-            >
-              <div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{group.label}</div>
-                <div style={{ color: C.slate, fontSize: 13.5, lineHeight: 1.55 }}>{group.desc}</div>
+      <section className="pe-section is-paper" id="institutions" aria-labelledby="about-inst-title">
+        <div className="cat-rail">
+          <p className="pe-kicker">05 · Where institutions fit</p>
+          <h2 id="about-inst-title">Infrastructure institutions run on. Career readiness as a product.</h2>
+          <div className="pe-split is-photo">
+            <figure className="pe-figure">
+              <div className="pe-photo is-classroom">
+                <img
+                  src={PROGRAMS_STUDY_CLASSROOM}
+                  alt="Students working at desks in a classroom"
+                  width={1800}
+                  height={1200}
+                  decoding="async"
+                />
               </div>
-              <span style={{ color: group.accent.text, fontSize: 16, flexShrink: 0 }}>→</span>
-            </button>
-          </FadeIn>
-        ))}
-      </div>
-    </Section>
-  )
-}
-
-// ─── 6. INSTITUTION + EMPLOYER ──────────────────────────────────────────────
-
-function InstitutionsEmployersSection() {
-  const navigate = useNavigate()
-  const instAccent = getDomainAccent('institution')
-  const careerAccent = getDomainAccent('career')
-
-  const institutionItems = ['Programs', 'Offerings', 'Batches', 'Learners', 'Faculty', 'Curriculum', 'Assessments', 'Progress']
-  const careerItems = ['Career Profile', 'Resume readiness', 'Interview Preparation', 'Job Board', 'Applications', 'Career Support']
-
-  return (
-    <Section id="institutions" tone="canvas" divider>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 56px)', alignItems: 'start' }} className="two-col">
-        <FadeIn>
-          <Eyebrow tone="light">Institution side</Eyebrow>
-          <Heading tone="light" size="sm" style={{ margin: '18px 0 14px' }}>
-            Infrastructure institutions run on.
-          </Heading>
-          <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>
-            Long-term, Skylent OS is curriculum, assessment, skills, and career readiness as shared infrastructure — for schools through universities, training partners, and industry.
-          </p>
-          <GlassSurface level={1} padding="18px 22px" style={{ marginBottom: 24 }}>
-            <div className="skylent-label" style={{ color: instAccent.text, marginBottom: 14 }}>Institution OS</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px' }}>
-              {institutionItems.map(item => (
-                <span key={item} style={{ color: C.slate, fontSize: 13 }}>{item}</span>
-              ))}
+              <figcaption>Classroom infrastructure — not a partner campus</figcaption>
+            </figure>
+            <div>
+              <p className="pe-kicker">Institution side</p>
+              <p className="pe-lead">
+                Long-term, Skylent OS is curriculum, assessment, skills, and career readiness as shared infrastructure
+                — for schools through universities, training partners, and industry.
+              </p>
+              <ul className="pe-plain">
+                {INSTITUTION_ITEMS.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <p className="pe-note">Batches, faculty assignment, and reporting are not built yet.</p>
+              <p className="pe-actions">
+                <Link className="pe-cta-ghost" to="/institutions">
+                  For institutions
+                </Link>
+              </p>
             </div>
-          </GlassSurface>
-          <Button variant="secondary" onClick={() => navigate('/institutions')}>For Institutions</Button>
-        </FadeIn>
-        <FadeIn delay={80}>
-          <Eyebrow tone="light">Career side</Eyebrow>
-          <Heading tone="light" size="sm" style={{ margin: '18px 0 14px' }}>
-            Career readiness as a product.
-          </Heading>
-          <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 24px' }}>
-            Career OS gives learners a working profile, interview preparation, and a job board — with application tracking that stays empty until they apply. Employers interact through open roles, not unverified partnership claims.
-          </p>
-          <GlassSurface level={1} padding="18px 22px" style={{ marginBottom: 24 }}>
-            <div className="skylent-label" style={{ color: careerAccent.text, marginBottom: 14 }}>Career OS</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px' }}>
-              {careerItems.map(item => (
-                <span key={item} style={{ color: C.slate, fontSize: 13 }}>{item}</span>
-              ))}
-            </div>
-          </GlassSurface>
-          <Button variant="secondary" onClick={() => navigate('/career-os')}>Explore Career OS</Button>
-        </FadeIn>
-      </div>
-    </Section>
-  )
-}
-
-// ─── 7. BUILDING THE PLATFORM ───────────────────────────────────────────────
-
-function PlatformSection() {
-  const navigate = useNavigate()
-
-  const surfaces = [
-    { label: 'Education', desc: 'Schooling, undergraduate, postgraduate, and exam preparation products.', to: '/education', accent: getDomainAccent('schooling') },
-    { label: 'Skills', desc: 'Certificates, Professional Programs, and Career OS. Workshops are listings only.', to: '/skills', accent: getDomainAccent('professional') },
-    { label: 'Career', desc: 'Career OS workspace for profile, prep, jobs, and applications.', to: '/career-os', accent: getDomainAccent('career') },
-    { label: 'Institutions', desc: 'Partnership workflows for schools, colleges, and training institutes.', to: '/institutions', accent: getDomainAccent('institution') },
-    { label: 'Programs', desc: 'The catalog connecting learners to every product surface.', to: '/programs', accent: accent },
-  ]
-
-  return (
-    <Section id="platform" tone="canvas" divider>
-      <FadeIn>
-        <SectionHeader
-          tone="light"
-          eyebrow="Building the platform"
-          title="Become the education and career platform institutions run on."
-          lead="Skylent OS is not a single app — it is the connected layer where curriculum, skills, career readiness, and institutional delivery meet."
-        />
-      </FadeIn>
-
-      <div style={{ marginTop: 40 }}>
-        {surfaces.map((surface, i) => (
-          <FadeIn key={surface.label} delay={i * 50}>
-            <button
-              type="button"
-              onClick={() => navigate(surface.to)}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '48px minmax(0, 1fr) auto',
-                gap: 18,
-                alignItems: 'center',
-                width: '100%',
-                padding: '22px 0',
-                borderTop: i === 0 ? `1px solid ${T.lineDark}` : 'none',
-                borderBottom: `1px solid ${T.lineDark}`,
-                background: 'none',
-                borderLeft: 'none',
-                borderRight: 'none',
-                cursor: 'pointer',
-                textAlign: 'left',
-                fontFamily: 'var(--font-body)',
-              }}
-            >
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: surface.accent.text }}>{String(i + 1).padStart(2, '0')}</div>
-              <div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 20, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{surface.label}</div>
-                <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.55 }}>{surface.desc}</div>
-              </div>
-              <span style={{ color: surface.accent.text, fontSize: 16 }}>→</span>
-            </button>
-          </FadeIn>
-        ))}
-      </div>
-
-      <FadeIn delay={280}>
-        <GlassSurface level={1} padding="28px 32px" style={{ marginTop: 40 }}>
-          <Eyebrow tone="light">Honest company</Eyebrow>
-          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.8, margin: '16px 0 0', maxWidth: 720 }}>
-            We do not publish student counts, placement rates, or partner logos we cannot verify. Credibility is product depth, honest enrollment, and institutions that can actually run on this platform.
-          </p>
-        </GlassSurface>
-      </FadeIn>
-    </Section>
-  )
-}
-
-// ─── PAGE ───────────────────────────────────────────────────────────────────
-
-export default function AboutPage() {
-  const navigate = useNavigate()
-
-  return (
-    <PageShell auroraTheme="general">
-      <HeroSection />
-      <GapSection />
-      <EcosystemSection />
-      <JourneySection />
-      <WhoWeServeSection />
-      <InstitutionsEmployersSection />
-      <PlatformSection />
-
-      <CTABand
-        eyebrow="Get in touch"
-        title={<>Education, Skills, Career.<br />Built as connected products.</>}
-        lead="Explore programs, partner as an institution, or contact us to learn what Skylent can support today."
-        primary={{ label: 'Explore Programs', to: '/programs' }}
-        secondary={{ label: 'For Institutions', to: '/institutions' }}
-        auroraTheme="general"
-      />
-
-      <Section tone="canvas" style={{ paddingTop: 0, paddingBottom: T.sectionTight }}>
-        <FadeIn>
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <Button variant="secondary" onClick={() => navigate('/education')}>Explore Education</Button>
-            <Button variant="ghost" onClick={() => navigate('/contact')}>Contact</Button>
           </div>
-        </FadeIn>
-      </Section>
-    </PageShell>
+          <article className="pe-folio is-flip">
+            <p className="pe-folio-n" aria-hidden="true">
+              05
+            </p>
+            <div className="pe-folio-copy">
+              <p className="pe-kicker">Career side</p>
+              <h3>Career OS is the workspace for the work you produced.</h3>
+              <p>
+                Profile, evidence, applications, and interview preparation live here. Opportunities stay empty until a
+                partner publishes a role.
+              </p>
+              <ul className="pe-plain">
+                {CAREER_ITEMS.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+              <p className="pe-actions">
+                <Link className="pe-cta-ghost" to="/career-os">
+                  Explore Career OS
+                </Link>
+              </p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section className="pe-section is-paper" id="platform" aria-labelledby="about-build-title">
+        <div className="cat-rail">
+          <p className="pe-kicker">06 · What Skylent is building</p>
+          <h2 id="about-build-title">Become the education and career platform institutions run on.</h2>
+          <p className="pe-lead">
+            Skylent OS is not a single app — it is the connected layer where curriculum, skills, career readiness, and
+            institutional delivery meet.
+          </p>
+          <div className="pe-examples is-anatomy">
+            {SURFACES.map((surface, index) => (
+              <Link className="pe-example" key={surface.label} to={surface.to}>
+                <p className="pe-kicker">{String(index + 1).padStart(2, "0")}</p>
+                <div>
+                  <h3>{surface.label}</h3>
+                  <p>{surface.desc}</p>
+                </div>
+                <p className="pe-kicker">
+                  Open
+                  <span aria-hidden="true"> →</span>
+                </p>
+              </Link>
+            ))}
+          </div>
+          <aside className="pe-scope">
+            <p className="pe-kicker">Honest company</p>
+            <p className="pe-lead">
+              We do not publish student counts, placement rates, or partner logos we cannot verify. Credibility is
+              product depth, honest enrolment, and institutions that can actually run on this platform.
+            </p>
+          </aside>
+        </div>
+      </section>
+
+      <section className="pe-close" aria-labelledby="about-close-title">
+        <div className="cat-rail">
+          <p className="pe-kicker">Get in touch</p>
+          <h2 id="about-close-title">Education, skills, career. Built as connected products.</h2>
+          <p className="pe-lead">
+            Explore programmes, partner as an institution, or contact us to learn what Skylent can support today.
+          </p>
+          <p className="pe-actions">
+            <Link className="pe-cta" to="/programs">
+              Explore programmes
+              <span className="pe-cta-arrow" aria-hidden="true">
+                →
+              </span>
+            </Link>
+            <Link className="pe-cta-ghost" to="/institutions">
+              For institutions
+            </Link>
+            <Link className="pe-cta-ghost" to="/education">
+              Explore education
+            </Link>
+          </p>
+        </div>
+      </section>
+    </PublicEditorialShell>
   )
 }

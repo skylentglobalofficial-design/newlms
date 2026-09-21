@@ -1,0 +1,160 @@
+/* Scroll 14 — precise preparation orbit */
+
+.hp-ch.hp-examx {
+  --ex-ink: #15171a;
+  --ex-muted: #8a8f96;
+  --ex-line: rgba(21, 23, 26, 0.08);
+  --ex-accent: #4f46e5;
+  --ex-wash: #f7f8fd;
+  background: #ffffff;
+  border-top: 1px solid var(--ex-line);
+}
+
+.hp-exam-stage.hp-ch-split {
+  align-items: start;
+}
+
+.hp-exam-visual {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding-top: 8px;
+}
+
+.hp-exam-orbit {
+  position: relative;
+  width: min(100%, 420px);
+  aspect-ratio: 1;
+  padding: 28px 64px;
+  box-sizing: border-box;
+}
+
+.hp-exam-ring {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hp-exam-ring .is-outer {
+  fill: none;
+  stroke: rgba(79, 70, 229, 0.38);
+  stroke-width: 1.15;
+}
+
+.hp-exam-ring .is-inner {
+  fill: none;
+  stroke: rgba(21, 23, 26, 0.1);
+  stroke-width: 1;
+}
+
+.hp-exam-ring .is-tick {
+  stroke: var(--ex-accent);
+  stroke-width: 1.15;
+}
+
+.hp-exam-ring .is-node {
+  fill: #ffffff;
+  stroke: var(--ex-accent);
+  stroke-width: 1.2;
+}
+
+.hp-exam-core {
+  position: absolute;
+  inset: 34%;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  border-radius: 50%;
+  background: var(--ex-wash);
+  color: var(--ex-ink);
+  font: 600 15px/1 var(--font-brand);
+  letter-spacing: -0.03em;
+  text-align: center;
+}
+
+.hp-exam-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  color: var(--ex-ink);
+  font: 600 13px/1 var(--font-body);
+  white-space: nowrap;
+}
+
+.hp-exam-node.is-goal {
+  left: 50%;
+  top: 10px;
+}
+
+.hp-exam-node.is-prep {
+  left: auto;
+  right: 0;
+  top: 50%;
+  transform: translate(0, -50%);
+  text-align: right;
+}
+
+.hp-exam-node.is-practice {
+  left: 50%;
+  top: auto;
+  bottom: 10px;
+}
+
+.hp-exam-node.is-ready {
+  left: 0;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+.hp-exam-quiet {
+  margin: 4px 0 0;
+  color: var(--ex-muted);
+  font: 500 11px/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hp-exam-tiny {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 14px;
+  margin: 0;
+  color: var(--ex-muted);
+  font: 500 11px/1.4 var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .hp-exam-orbit {
+    width: min(100%, 320px);
+  }
+}
+
+@media (max-width: 430px) {
+  .hp-exam-orbit {
+    display: grid;
+    width: 100%;
+    aspect-ratio: auto;
+    gap: 10px;
+    justify-items: start;
+    padding: 0 0 0 18px;
+    border-left: 1px solid rgba(79, 70, 229, 0.28);
+  }
+
+  .hp-exam-ring,
+  .hp-exam-core {
+    display: none;
+  }
+
+  .hp-exam-node {
+    position: static;
+    transform: none;
+    font-size: 18px;
+  }
+
+  .hp-exam-tiny {
+    justify-content: flex-start;
+  }
+}

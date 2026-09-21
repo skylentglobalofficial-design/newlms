@@ -118,6 +118,13 @@ export async function logoutRequest(): Promise<void> {
   csrfToken = null
 }
 
+export async function updateProfileRequest(input: { displayName: string }): Promise<AuthResponse> {
+  return authRequest<AuthResponse>("/auth/me", {
+    method: "PATCH",
+    body: { displayName: input.displayName },
+  })
+}
+
 export function clearAuthClientState() {
   csrfToken = null
 }

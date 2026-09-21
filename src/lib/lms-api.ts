@@ -44,6 +44,35 @@ export type ApiResume = {
   nextLessonTitle: string | null
 }
 
+export type ApiCourseProgress = {
+  completedCount: number
+  totalLessons: number
+  progressPct: number
+  allComplete: boolean
+}
+
+export type ApiProgramCourseProgress = {
+  slug: string
+  title: string
+  progress: ApiCourseProgress
+  resume: ApiResume
+}
+
+export type ApiProgramWorkspace = {
+  slug: string
+  name: string
+  enrollmentId: string
+  status: string
+  certificateEligible: boolean
+  certificateStatus: string
+  progress: ApiCourseProgress & {
+    completedCourses: number
+    totalCourses: number
+  }
+  resume: ApiResume & { courseSlug: string; courseTitle: string }
+  courses: ApiProgramCourseProgress[]
+}
+
 export type ApiCourseWorkspace = {
   enrollment: {
     id: string
@@ -59,13 +88,9 @@ export type ApiCourseWorkspace = {
     modules: ApiCourseModule[]
   }
   lessonStates: Record<string, ApiLessonState>
-  progress: {
-    completedCount: number
-    totalLessons: number
-    progressPct: number
-    allComplete: boolean
-  }
+  progress: ApiCourseProgress
   resume: ApiResume
+  program?: ApiProgramWorkspace | null
 }
 
 export type ApiCourseAccess = {
@@ -117,6 +142,7 @@ export type ApiEnrollmentSummary = {
   status: string
   courseSlug: string | null
   courseTitle: string | null
+  linkedCourses?: Array<{ slug: string; title: string }>
   programSlug: string | null
   programName: string | null
   certificateEligible: boolean
@@ -147,6 +173,11 @@ export async function enrollInCourse(courseSlug: string): Promise<ApiCourseWorks
 
 export async function enrollInProgram(programSlug: string): Promise<ApiCourseWorkspace> {
   const result = await lmsMutate<{ data: ApiCourseWorkspace }>("/lms/enrollments", { programSlug })
+  return result.data
+}
+
+export async function fetchProgramWorkspace(slug: string): Promise<ApiProgramWorkspace> {
+  const result = await lmsGet<{ data: ApiProgramWorkspace }>(`/lms/programs/${slug}`)
   return result.data
 }
 

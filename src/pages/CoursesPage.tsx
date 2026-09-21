@@ -4,7 +4,6 @@ import { PageShell } from "../components/shared"
 import { CourseThumb } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { coursePublicView } from "../lib/catalog-maturity"
-import { courseProductProfile } from "../lib/course-product"
 import "./Catalog.css"
 
 export default function CoursesPage() {
@@ -37,7 +36,8 @@ export default function CoursesPage() {
           <div className="cat-rail">
             <h1>Courses you can start this week.</h1>
             <p className="cat-lead">
-              Data Analytics and Product Management are ready. Pick a course, enrol, and open Skylent OS.
+              Focused learning units in Skylent OS. Data Analytics and Product Management are ready to enrol;
+              the rest are thinner catalogue listings.
             </p>
             <Link className="cat-text-link" to="/programs">Looking for a longer pathway? See programmes</Link>
             <input
@@ -99,8 +99,25 @@ export default function CoursesPage() {
   )
 }
 
+function CourseUnitChrome({ view }: { view: ReturnType<typeof coursePublicView> }) {
+  const firstModule = view.course.modules[0]
+  const firstLesson =
+    firstModule?.lessons.find((lesson) => lesson.type !== "quiz" && lesson.type !== "assignment") ??
+    firstModule?.lessons[0]
+
+  return (
+    <div className="cat-unit" aria-hidden="true">
+      <p className="cat-unit-brand">Skylent OS</p>
+      <p className="cat-unit-kicker">{firstModule?.title ?? "Course"}</p>
+      <p className="cat-unit-title">{firstLesson?.title ?? "Open the first lesson"}</p>
+      <p className="cat-unit-meta">
+        {view.stats.lessonCount} lessons · {view.stats.quizCount} checks · self-paced
+      </p>
+    </div>
+  )
+}
+
 function CourseCard({ view, featured = false }: { view: ReturnType<typeof coursePublicView>; featured?: boolean }) {
-  const profile = courseProductProfile(view.slug)
   const duration = view.showLiveCurriculum ? view.duration : "Duration TBA"
   const lessons = view.showLiveCurriculum
     ? `${view.stats.lessonCount} lessons`
@@ -108,7 +125,7 @@ function CourseCard({ view, featured = false }: { view: ReturnType<typeof course
 
   return (
     <Link className={featured ? "cat-tile is-ready" : "cat-tile is-listing"} to={`/courses/${view.slug}`}>
-      <CourseThumb authored={view.showLiveCurriculum} visual={profile?.visual ?? "northwind"} />
+      {view.showLiveCurriculum ? <CourseUnitChrome view={view} /> : <CourseThumb authored={false} />}
       <div className="cat-tile-copy">
         <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
           {view.maturity === "ready" ? "Ready" : view.maturityLabel}

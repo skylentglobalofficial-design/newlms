@@ -71,10 +71,10 @@ export default function CareerOSJobsPage() {
     <div className="career-jobs-page" style={{ maxWidth: 1200, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
       <div style={{ marginBottom: 24 }}>
         <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
-          Job board
+          Opportunities
         </h1>
         <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
-          Search open roles, save opportunities, and apply when you are ready.
+          Roles appear here when a partner publishes them. Until then this surface stays empty — we do not invent openings.
         </p>
       </div>
 
@@ -154,16 +154,16 @@ export default function CareerOSJobsPage() {
       }}>
         <div className="career-jobs-results" style={{ minWidth: 0 }}>
           {board.loading ? (
-            <LoadingBlock label={board.view === "browse" ? "Loading jobs…" : "Loading saved jobs…"} />
+            <LoadingBlock label={board.view === "browse" ? "Loading roles…" : "Loading saved roles…"} />
           ) : board.error ? (
             <EmptyBlock message="Unable to load this workspace. Try again using Retry above." />
           ) : board.displayedJobs.length === 0 ? (
             <EmptyBlock
               message={board.view === "browse"
-                ? "No open roles are listed yet. Live jobs appear here when partners publish them — none are invented for this view."
-                : "You have not saved any jobs yet. Browse open roles and save the ones you want to track."}
+                ? "No open roles are listed yet. Live roles appear here when partners publish them — none are invented for this view."
+                : "You have not saved any roles yet. When a role is published, you can save it from this list."}
               onAction={board.view === "saved" ? () => board.setView("browse") : undefined}
-              actionLabel={board.view === "saved" ? "Browse jobs" : undefined}
+              actionLabel={board.view === "saved" ? "Browse roles" : undefined}
             />
           ) : (
             <>

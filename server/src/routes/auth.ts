@@ -242,3 +242,30 @@ authRouter.get("/me", requireAuth, async (req: AuthenticatedRequest, res) => {
     role: primaryRole(auth.roles),
   })
 })
+
+authRouter.patch("/me", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const parsed = z.object({ displayName: displayNameSchema }).safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({
+      error: "Validation failed",
+      details: parsed.error.flatten().fieldErrors,
+    })
+  }
+
+  try {
+    const user = await prisma.user.update({
+      where: { id: req.auth!.user.id },
+      data: { displayName: parsed.data.displayName },
+      include: { roles: { include: { role: true } } },
+    })
+    const roles = user.roles.map((entry) => entry.role)
+    res.json({
+      user: toSafeUser(user),
+      roles: roles.map(toApiRole),
+      role: primaryRole(roles),
+    })
+  } catch (error) {
+    console.error("Failed to update profile:", error)
+    res.status(500).json({ error: "Failed to update profile" })
+  }
+})

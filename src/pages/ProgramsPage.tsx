@@ -1,35 +1,168 @@
+import { useEffect } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import "./Catalog.css"
+import ProgramsHero from "../components/programs/ProgramsHero"
+import ProgramsStory from "../components/programs/ProgramsStory"
+import { courses } from "../data"
+import { isAuthoredCourse } from "../lib/authored-courses"
+import { linkedCourseSlugsForProgram } from "../lib/catalog-maturity"
+import { laterProgrammeCatalogue, liveProgrammeCatalogue, programmeBuildLine } from "../lib/programme-catalogue"
+import type { LaterProgrammeRow } from "../lib/programme-catalogue"
+import type { ProgrammeDiscoveryCard } from "../lib/programme-discovery"
+import "./ProgramsPage.css"
 
-/** Thin public stub — replaces the old linked-course catalogue landing at /programs. */
+function courseFor(programSlug: string) {
+  const slug = linkedCourseSlugsForProgram(programSlug).find((row) => isAuthoredCourse(row))
+  return slug ? courses.find((course) => course.slug === slug) : undefined
+}
+
+function LiveRow({ row }: { row: ProgrammeDiscoveryCard }) {
+  const course = courseFor(row.slug)
+  const leadsTo = course?.outcomes ?? []
+  const build = programmeBuildLine(row)
+  const title = row.courseTitle || row.title
+  const format = course?.mode ?? row.format
+  const level = course?.level ?? row.level
+
+  return (
+    <article className="pg-row is-live">
+      <div className="pg-row-main">
+        <header className="pg-row-head">
+          <p className="pg-row-kicker">Ready to start</p>
+          <h3>
+            <Link to={row.href}>{title}</Link>
+          </h3>
+          <p className="pg-row-decision">{row.decisionLine}</p>
+          <p className="pg-row-shape">
+            {row.taughtModules} modules · {row.taughtLessons} lessons · {format} · {level}
+          </p>
+        </header>
+
+        <p className="pg-row-note">{row.honesty}</p>
+
+        <p className="pg-row-cta">
+          <Link to={row.href}>
+            Explore programme
+            <span aria-hidden="true"> →</span>
+          </Link>
+        </p>
+      </div>
+
+      <dl className="pg-row-facts">
+        <div>
+          <dt>What it is</dt>
+          <dd>{course?.desc ?? row.decisionLine}</dd>
+        </div>
+        <div>
+          <dt>What it leads to</dt>
+          <dd>
+            {leadsTo.length ? (
+              <ul>
+                {leadsTo.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            ) : (
+              row.level
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>What you will build</dt>
+          <dd>{build}</dd>
+        </div>
+        <div>
+          <dt>Learning shape</dt>
+          <dd>
+            <ol>
+              {row.modules.map((module) => (
+                <li key={module.id}>{module.title}</li>
+              ))}
+            </ol>
+          </dd>
+        </div>
+      </dl>
+    </article>
+  )
+}
+
+function LaterRow({ row, index }: { row: LaterProgrammeRow; index: number }) {
+  return (
+    <article className="pg-row is-later">
+      <header className="pg-row-head">
+        <p className="pg-row-kicker">
+          <span className="pg-row-index">{String(index + 1).padStart(2, "0")}</span>
+          {row.statusLabel}
+        </p>
+        <h3>
+          <Link to={row.href}>{row.title}</Link>
+        </h3>
+      </header>
+      <div className="pg-row-later-body">
+        <p className="pg-row-decision">{row.summary}</p>
+        <p className="pg-row-note">{row.honesty}</p>
+        <p className="pg-row-cta">
+          <Link to={row.href}>
+            Explore programme
+            <span aria-hidden="true"> →</span>
+          </Link>
+        </p>
+      </div>
+    </article>
+  )
+}
+
 export default function ProgramsPage() {
+  const live = liveProgrammeCatalogue()
+  const later = laterProgrammeCatalogue()
+
+  useEffect(() => {
+    const root = document.documentElement
+    const previous = root.style.scrollPaddingTop
+    root.style.scrollPaddingTop = "calc(var(--nav-h) + 20px)"
+    return () => {
+      root.style.scrollPaddingTop = previous
+    }
+  }, [])
+
   return (
     <PageShell aurora={false}>
-      <div className="cat-page">
-        <section className="cat-hero">
-          <div className="cat-rail">
-            <p className="cat-label">Programs · Professional Certificate Programs</p>
-            <h1>The Professional Certificate Programs landing is being rebuilt.</h1>
-            <p className="cat-lead">
-              Skylent Programs are structured pathways in Skylent OS — written lessons, practice, projects, and evidence you keep. They are not a grid of courses linked together.
-            </p>
-            <p className="cat-fine">
-              The previous catalogue page (“programmes built from courses you can open”) no longer represents this product. A new landing will explain the model first, then the programs that exist.
-            </p>
-            <div className="cat-actions">
-              <Link className="cat-btn cat-btn-primary" to="/programs/data-analytics-pro">Data Analytics program</Link>
-              <Link className="cat-btn cat-btn-ghost" to="/programs/product-management">Product Management program</Link>
+      <div className="pg-page">
+        <ProgramsHero />
+        <ProgramsStory live={live} />
+
+        <div className="pg-cat">
+          <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
+            <div className="cat-rail">
+              <p className="pg-cat-label">Authored / Ready to start</p>
+              <h2 id="pg-cat-live-title">Authored programmes</h2>
+              <p className="pg-cat-intro">
+                Each row is built from the linked course, not from brochure length. Open a programme for the full
+                taught path and enrolment.
+              </p>
+              <div className="pg-cat-list">
+                {live.map((row) => (
+                  <LiveRow key={row.slug} row={row} />
+                ))}
+              </div>
             </div>
-            <div className="cat-actions" style={{ marginTop: 12 }}>
-              <Link className="cat-btn cat-btn-ghost" to="/workshops">Workshops</Link>
-              <Link className="cat-btn cat-btn-ghost" to="/">Back to Skylent</Link>
+          </section>
+
+          <section className="pg-cat-later" aria-labelledby="pg-cat-later-title">
+            <div className="cat-rail">
+              <p className="pg-cat-label">Coming later</p>
+              <h2 id="pg-cat-later-title">Listed, not yet taught</h2>
+              <p className="pg-cat-intro">
+                Listings without a finished authored programme. You can still open the page.
+              </p>
+              <div className="pg-cat-list">
+                {later.map((row, index) => (
+                  <LaterRow key={row.slug} row={row} index={index} />
+                ))}
+              </div>
             </div>
-            <p className="cat-honesty">
-              Only Data Analytics and Product Management have authored teaching today. No open-listings grid, ratings, or placement claims appear here.
-            </p>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
     </PageShell>
   )

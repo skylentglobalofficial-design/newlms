@@ -150,7 +150,10 @@ assert(
   !/Taken from the Data Analytics course outcomes/.test(skillsSource),
   "Skills must attribute authored outcomes to the matched course, not only Data Analytics",
 )
-assert(/ready\.map\(\(match\) => match\.title\)/.test(skillsSource), "Skills authored attribution must use match titles")
+assert(
+  /From the \$\{authored\.title\} course outcomes/.test(skillsSource),
+  "Skills authored attribution must use the matched authored course title",
+)
 
 console.log("live-intents ok")
 console.log({

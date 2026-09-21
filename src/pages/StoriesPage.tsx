@@ -1,384 +1,234 @@
-import { useNavigate, Link } from 'react-router-dom'
-import { C, FadeIn, PageShell } from '../components/shared'
-import {
-  Section, Eyebrow, Button, T, SectionHeader, CTABand, Heading,
-} from '../components/ui'
-import {
-  Aurora, GlassSurface, ContextualNavPanel, ContextualNavBar, useSectionSpy, type ContextualNavItem,
-} from '../components/foundation'
-import { getDomainAccent } from '../aurora-themes'
-import { programs } from '../data'
+import { Link } from "react-router-dom"
+import { HarborDeskWorkspace, LearnFlow, NorthwindWorkspace } from "../components/product/ProductLanguage"
+import { stories } from "../data"
+import { CAREER_OS_IA } from "../lib/product-architecture"
+import { liveProgrammeCatalogue } from "../lib/programme-catalogue"
+import { PROGRAMS_STUDY_DESK } from "../media"
+import { PublicEditorialShell } from "./public-editorial"
 
-const accent = getDomainAccent('general')
-const careerAccent = getDomainAccent('career')
-const skillsAccent = getDomainAccent('professional')
-const instAccent = getDomainAccent('institution')
+const DOCUMENTING = [
+  {
+    label: "Learner journeys",
+    desc: "How someone moved through education, skills, and career — with their consent and verification.",
+  },
+  {
+    label: "Programme experiences",
+    desc: "What a professional programme actually involved — curriculum, projects, and the work produced.",
+  },
+  {
+    label: "Learning and projects",
+    desc: "Work produced during programmes — artefacts, not invented before/after claims.",
+  },
+  {
+    label: "Career preparation",
+    desc: "How Career OS was used — only when the learner agrees to share.",
+  },
+  {
+    label: "Institution stories",
+    desc: "How a partner institution runs programmes on Skylent — verified, not promotional.",
+  },
+] as const
 
-const STORIES_NAV_ITEMS: ContextualNavItem[] = [
-  { id: 'publishing', label: 'Publishing', sub: 'Story status' },
-  { id: 'learning', label: 'Learning', sub: 'Project work' },
-  { id: 'career', label: 'Career', sub: 'Product workflow' },
-  { id: 'institutions', label: 'Institutions', sub: 'Product workflow' },
+const WORK_STEPS = [
+  {
+    title: "Learn",
+    kind: "learn" as const,
+    copy: "Written lessons in the enrolled course. Self-paced. No video stream and no live classroom.",
+  },
+  {
+    title: "Practise",
+    kind: "practice" as const,
+    copy: "Short checks after a block of teaching, then assignments on the same material.",
+  },
+  {
+    title: "Build",
+    kind: "build" as const,
+    copy: "A project against material that already exists: Harbor Desk or the Northwind extract.",
+  },
+  {
+    title: "Keep",
+    kind: "keep" as const,
+    copy: "The work sample stays with you. It is not a grade, a certificate, or a job claim.",
+  },
 ]
 
-const FEATURED_PROGRAM = programs.find(p => p.slug === 'data-science-ai')
-const PROJECT_ARTIFACTS = FEATURED_PROGRAM?.projectsDetail ?? []
-
-// ─── HERO VISUAL ──────────────────────────────────────────────────────────────
-
-function StoriesHeroVisual() {
-  const queue = [
-    { label: 'Learner journeys', status: 'Awaiting verification', theme: accent },
-    { label: 'Program experiences', status: 'In editorial review', theme: skillsAccent },
-    { label: 'Institution stories', status: 'Not yet published', theme: instAccent },
-  ]
+export default function StoriesPage() {
+  const published = stories.length
+  const live = liveProgrammeCatalogue()
+  const harbor = live.find((row) => row.visual === "harbor-desk")
+  const northwind = live.find((row) => row.visual === "northwind")
+  const empty = published === 0
 
   return (
-    <div style={{ position: 'relative', minHeight: 380 }}>
-      <GlassSurface level={2} padding="0" style={{ overflow: 'hidden' }}>
-        <div style={{ padding: '16px 20px', borderBottom: `1px solid ${T.lineDark}` }}>
-          <div className="skylent-label" style={{ color: accent.text }}>Editorial queue</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 17, fontWeight: 600, color: C.ink, marginTop: 8 }}>
-            Stories in preparation
+    <PublicEditorialShell>
+      <section className="pe-hero" aria-labelledby="stories-hero-title">
+        <div className="cat-rail pe-hero-stage">
+          <div className="pe-hero-copy">
+            <p className="pe-eyebrow">
+              <i aria-hidden="true" />
+              Stories
+            </p>
+            <h1 id="stories-hero-title">
+              <span>Stories from the work</span>
+              <span>behind learning.</span>
+            </h1>
+            <p className="pe-lead">
+              This page will publish verified learner, programme, and institution stories — not marketing
+              testimonials. Until those experiences are reviewed and approved, the page states that fact and shows the
+              product work stories will eventually document.
+            </p>
+            <p className="pe-note">
+              We do not publish names, salaries, placement rates, or sample narratives from the codebase.
+            </p>
           </div>
-        </div>
-        <div>
-          {queue.map((item, i) => (
-            <div
-              key={item.label}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr auto',
-                gap: 16,
-                alignItems: 'center',
-                padding: '16px 20px',
-                borderBottom: i < queue.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                borderLeft: `2px solid ${item.theme.primary}`,
-              }}
-            >
-              <div>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 14, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{item.label}</div>
-                <div style={{ color: C.slate, fontSize: 11.5, fontFamily: 'var(--font-mono)' }}>{item.status}</div>
-              </div>
-              <div style={{ width: 8, height: 8, borderRadius: '50%', background: C.sand }} />
+          <figure className="pe-figure">
+            <div className="pe-photo is-desk">
+              <img
+                src={PROGRAMS_STUDY_DESK}
+                alt="Overhead view of a student working at a laptop with open books"
+                width={1800}
+                height={1200}
+                fetchPriority="high"
+                decoding="async"
+              />
             </div>
-          ))}
-        </div>
-        <div style={{ padding: '14px 20px', borderTop: `1px solid ${T.lineDark}`, background: 'rgba(243,107,33,0.06)' }}>
-          <div style={{ color: C.slate, fontSize: 11.5, lineHeight: 1.55 }}>
-            No verified learner stories are published yet. Sample narratives are not shown here.
-          </div>
-        </div>
-      </GlassSurface>
-      <div
-        aria-hidden
-        style={{
-          position: 'absolute',
-          inset: '-5% -4%',
-          border: `1px dashed ${accent.border}`,
-          borderRadius: T.rCard,
-          pointerEvents: 'none',
-          zIndex: 0,
-        }}
-      />
-    </div>
-  )
-}
-
-// ─── HERO ─────────────────────────────────────────────────────────────────────
-
-function HeroSection() {
-  const activeSection = useSectionSpy(STORIES_NAV_ITEMS.map(i => i.id))
-
-  return (
-    <>
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 24}px ${T.gutter} ${T.sectionTight}` }}>
-        <Aurora themeId="general" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.05fr 0.95fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'start' }} className="two-col skylent-page-hero">
-            <FadeIn>
-              <Eyebrow tone="light" accent>Stories</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '20px 0 16px', maxWidth: 640 }}>
-                Journeys, told<br />editorially.
-              </h1>
-              <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 520, margin: '0 0 16px' }}>
-                What does learning and career progression through Skylent look like? This page will publish verified learner, program, and institution stories — not marketing testimonials.
-              </p>
-              <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.7, maxWidth: 520, margin: 0 }}>
-                Until verified experiences are available, we show the product workflows stories will eventually document — clearly labelled, never as fabricated outcomes.
-              </p>
-            </FadeIn>
-            <FadeIn delay={80}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <ContextualNavPanel items={STORIES_NAV_ITEMS} themeId="general" title="Stories" activeId={activeSection} />
-                <StoriesHeroVisual />
-              </div>
-            </FadeIn>
-          </div>
+            <figcaption>The work, not a testimonial portrait</figcaption>
+          </figure>
         </div>
       </section>
-      <ContextualNavBar items={STORIES_NAV_ITEMS} themeId="general" activeId={activeSection} />
-    </>
-  )
-}
 
-// ─── PUBLISHING STATE ─────────────────────────────────────────────────────────
+      <nav className="pe-inkbar" aria-label="Stories sections">
+        <div className="cat-rail pe-inkbar-inner">
+          <a href="#work">Work</a>
+          <a href="#status">Currently</a>
+          <a href="#learning">Evidence</a>
+        </div>
+      </nav>
 
-function PublishingSection() {
-  const categories = [
-    { label: 'Learner journeys', desc: 'How someone moved through education, skills, and career — with their consent and verification.', accent: accent },
-    { label: 'Program experiences', desc: 'What a Professional Program or exam prep track actually involved — curriculum, projects, cohort.', accent: skillsAccent },
-    { label: 'Learning & projects', desc: 'Work produced during programs — artifacts, not invented before/after claims.', accent: getDomainAccent('schooling') },
-    { label: 'Career preparation', desc: 'How Career OS was used — only when the learner agrees to share.', accent: careerAccent },
-    { label: 'Institution stories', desc: 'How a partner institution runs programs on Skylent — verified, not promotional.', accent: instAccent },
-  ]
-
-  return (
-    <Section id="publishing" tone="canvas" divider>
-      <FadeIn>
-        <GlassSurface level={2} padding="clamp(28px, 4vw, 40px)" style={{ borderLeft: `2px solid ${accent.primary}` }}>
-          <div className="skylent-label" style={{ color: accent.text, marginBottom: 12 }}>Publishing status</div>
-          <Heading tone="light" size="md" style={{ marginBottom: 16 }}>
-            Stories are being prepared.
-          </Heading>
-          <p style={{ color: C.slate, fontSize: 16, lineHeight: 1.75, margin: '0 0 28px', maxWidth: 640 }}>
-            Verified learner, program, and institution stories will appear here as they are reviewed and approved. We do not publish names, outcomes, salaries, or placement claims we cannot verify.
+      <section className="pe-section is-warm" id="work" aria-labelledby="stories-work-title">
+        <div className="cat-rail">
+          <p className="pe-kicker">Editorial</p>
+          <h2 id="stories-work-title" className="is-quiet">The work comes first.</h2>
+          <p className="pe-lead">
+            Skylent is documenting how learning becomes work you can show: written lessons, practice, projects, and
+            evidence in Career OS. A story here will be a reviewed account of that work — never a fabricated outcome.
           </p>
-          <div style={{ display: 'inline-flex', background: 'rgba(243,107,33,0.08)', border: '1px solid rgba(243,107,33,0.22)', borderRadius: 8, padding: '10px 14px' }}>
-            <span style={{ color: C.slate, fontSize: 12.5, lineHeight: 1.5 }}>
-              Sample narratives in the codebase are not displayed on this page. Editorial writing lives on the <Link to="/blog" style={{ color: accent.text, textDecoration: 'none' }}>blog</Link>.
-            </span>
-          </div>
-        </GlassSurface>
-      </FadeIn>
-
-      <FadeIn delay={80}>
-        <div style={{ marginTop: 48 }}>
-          <div className="skylent-label" style={{ color: C.slate, marginBottom: 20 }}>What will publish here</div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {categories.map((cat, i) => (
-              <div
-                key={cat.label}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '32px 1fr',
-                  gap: 16,
-                  padding: '18px 0',
-                  borderBottom: i < categories.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                  alignItems: 'start',
-                }}
-              >
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: cat.accent.text, paddingTop: 2 }}>
-                  {String(i + 1).padStart(2, '0')}
-                </div>
-                <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{cat.label}</div>
-                  <div style={{ color: C.slate, fontSize: 13.5, lineHeight: 1.6 }}>{cat.desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <p className="pe-note">
+            Editorial writing that is not a learner story lives on the <Link to="/blog">blog</Link>.
+          </p>
+          <LearnFlow steps={WORK_STEPS} />
         </div>
-      </FadeIn>
-    </Section>
-  )
-}
+      </section>
 
-// ─── LEARNING / PROJECT WORKFLOW ──────────────────────────────────────────────
-
-function LearningSection() {
-  const navigate = useNavigate()
-
-  return (
-    <Section id="learning" tone="canvas" divider>
-      <FadeIn>
-        <SectionHeader
-          tone="light"
-          eyebrow="Product workflow"
-          title="How learning work becomes proof."
-          lead="Not a learner story — the curriculum structure stories will eventually document. Project artifacts from the Data Science & AI program catalog."
-        />
-      </FadeIn>
-
-      {PROJECT_ARTIFACTS.length > 0 ? (
-        <div style={{ marginTop: 40 }}>
-          <div style={{ marginBottom: 24, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-            <span style={{ background: skillsAccent.subtleStrong, border: `1px solid ${skillsAccent.border}`, borderRadius: 6, padding: '4px 10px', fontSize: 10, fontFamily: 'var(--font-mono)', color: skillsAccent.text, letterSpacing: '0.06em' }}>
-              PROGRAM CURRICULUM
-            </span>
-            {FEATURED_PROGRAM && (
-              <span style={{ color: C.slate, fontSize: 13 }}>{FEATURED_PROGRAM.name}</span>
-            )}
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-            {PROJECT_ARTIFACTS.map((project, i) => (
-              <FadeIn key={project.title} delay={i * 50}>
-                <GlassSurface level={1} padding="22px 24px" style={{ marginBottom: 12, borderLeft: `2px solid ${skillsAccent.primary}` }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', gap: 20, alignItems: 'start' }} className="two-col-sm">
-                    <div>
-                      <div className="skylent-label" style={{ color: skillsAccent.text, marginBottom: 8 }}>Project {i + 1}</div>
-                      <div style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, marginBottom: 8 }}>{project.title}</div>
-                      <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: '0 0 12px' }}>{project.what}</p>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-                        {project.skills.map(skill => (
-                          <span key={skill} style={{ color: C.slate, fontSize: 11.5, fontFamily: 'var(--font-mono)' }}>{skill}</span>
-                        ))}
-                      </div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>DIFFICULTY</div>
-                      <div style={{ color: C.ink, fontSize: 13 }}>{project.difficulty}</div>
-                    </div>
+      <section className="pe-section is-paper is-void" id="status" aria-labelledby="stories-status-title">
+        <div className="cat-rail">
+          <p className="pe-kicker">Story</p>
+          <h2 id="stories-status-title" className="pe-display">
+            {empty ? "None published." : "Not shown until verified."}
+          </h2>
+          <p className="pe-lead">
+            {empty
+              ? "There are no verified learner, programme, or institution stories on this page. We will publish journeys only when the person agrees and we can verify the facts. Empty is the honest state — not a broken one."
+              : "The catalogue has records that are not published here. Names, salaries, and outcomes stay off this page until they can be verified."}
+          </p>
+          <ol className="pe-map is-follow">
+            {DOCUMENTING.map((item, index) => (
+              <li className="pe-map-item" key={item.label}>
+                <div className="pe-map-row is-static">
+                  <em>{String(index + 1).padStart(2, "0")}</em>
+                  <div>
+                    <strong>{item.label}</strong>
+                    <span>{item.desc}</span>
                   </div>
-                </GlassSurface>
-              </FadeIn>
+                </div>
+              </li>
             ))}
-          </div>
-          {FEATURED_PROGRAM && (
-            <div style={{ marginTop: 24 }}>
-              <Button variant="secondary" onClick={() => navigate(`/programs/${FEATURED_PROGRAM.slug}`)}>View program curriculum →</Button>
-            </div>
-          )}
+          </ol>
         </div>
-      ) : (
-        <FadeIn>
-          <GlassSurface level={1} padding="32px" style={{ marginTop: 32, textAlign: 'center' }}>
-            <p style={{ color: C.slate, fontSize: 15, margin: 0 }}>Program project details will appear here when available in the catalog.</p>
-          </GlassSurface>
-        </FadeIn>
-      )}
-    </Section>
-  )
-}
+      </section>
 
-// ─── CAREER WORKFLOW ──────────────────────────────────────────────────────────
+      <section className="pe-section is-soft" id="learning" aria-labelledby="stories-evidence-title">
+        <div className="cat-rail">
+          <p className="pe-kicker">Product evidence</p>
+          <h2 id="stories-evidence-title" className="is-quiet">The work first. The story later.</h2>
+          <p className="pe-lead">
+            This is not a story. It is live programme work already in the product: a project workspace, a Career OS
+            workflow, an application when a role is published. When a verified story exists, it will point at work like
+            this — not at a testimonial.
+          </p>
 
-function CareerWorkflowSection() {
-  const navigate = useNavigate()
-
-  const steps = [
-    { label: 'Profile', sub: 'Identity, skills, resume slots' },
-    { label: 'Proof', sub: 'Portfolio links from program work' },
-    { label: 'Discover', sub: 'Job board roles' },
-    { label: 'Apply', sub: 'Screening workflow' },
-    { label: 'Prepare', sub: 'Interview rounds and mocks' },
-    { label: 'Track', sub: 'Application status' },
-  ]
-
-  return (
-    <Section id="career" tone="canvas" divider>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 56px)', alignItems: 'start' }} className="two-col">
-        <FadeIn>
-          <SectionHeader
-            tone="light"
-            eyebrow="Product workflow"
-            title="Career OS — what stories will cover."
-            lead="Not a placement story. The career workspace learners enter after a Professional Program — where verified career journeys may be documented later."
-          />
-          <div style={{ marginTop: 8 }}>
-            <span style={{ background: careerAccent.subtleStrong, border: `1px solid ${careerAccent.border}`, borderRadius: 6, padding: '4px 10px', fontSize: 10, fontFamily: 'var(--font-mono)', color: careerAccent.text }}>
-              CAREER OS PRODUCT
-            </span>
-          </div>
-        </FadeIn>
-        <FadeIn delay={80}>
-          <GlassSurface level={2} padding="20px 22px">
-            <div className="skylent-label" style={{ color: careerAccent.text, marginBottom: 16 }}>Career workspace</div>
-            {steps.map((step, i) => (
-              <div
-                key={step.label}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '28px 1fr',
-                  gap: 14,
-                  padding: '12px 0',
-                  borderBottom: i < steps.length - 1 ? `1px solid ${T.lineDark}` : 'none',
-                  alignItems: 'start',
-                }}
-              >
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: careerAccent.text, paddingTop: 2 }}>
-                  {String(i + 1).padStart(2, '0')}
-                </div>
+          {live.length > 0 ? (
+            <div className="pe-specimens">
+              {harbor ? (
                 <div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 15, fontWeight: 600, color: C.ink, marginBottom: 2 }}>{step.label}</div>
-                  <div style={{ color: C.slate, fontSize: 12 }}>{step.sub}</div>
+                  <HarborDeskWorkspace compact meta="harbor-desk-case.md · 4 interviews" />
+                  <div className="pe-attr">
+                    <p>
+                      {harbor.courseTitle || harbor.title}
+                      <br />
+                      <Link to={harbor.href}>Explore programme →</Link>
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </GlassSurface>
-          <div style={{ marginTop: 20 }}>
-            <Button variant="secondary" onClick={() => navigate('/career-os')}>Explore Career OS</Button>
-          </div>
-        </FadeIn>
-      </div>
-    </Section>
-  )
-}
-
-// ─── INSTITUTION WORKFLOW ─────────────────────────────────────────────────────
-
-function InstitutionWorkflowSection() {
-  const navigate = useNavigate()
-
-  const workflow = [
-    'Programs', 'Offerings', 'Batches', 'Learners', 'Faculty', 'Curriculum', 'Assessments', 'Progress',
-  ]
-
-  return (
-    <Section id="institutions" tone="canvas" divider>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'clamp(32px, 5vw, 56px)', alignItems: 'center' }} className="two-col">
-        <FadeIn>
-          <GlassSurface level={2} padding="22px 24px">
-            <div className="skylent-label" style={{ color: instAccent.text, marginBottom: 16 }}>Institution OS</div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px 14px' }}>
-              {workflow.map((item, i) => (
-                <div key={item} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: instAccent.textMuted }}>{String(i + 1).padStart(2, '0')}</span>
-                  <span style={{ color: C.slate, fontSize: 13.5 }}>{item}</span>
-                  {i < workflow.length - 1 && <span style={{ color: C.slate, marginLeft: 4 }}>→</span>}
+              ) : null}
+              {northwind ? (
+                <div>
+                  <NorthwindWorkspace compact />
+                  <div className="pe-attr">
+                    <p>
+                      {northwind.courseTitle || northwind.title}
+                      <br />
+                      <Link to={northwind.href}>Explore programme →</Link>
+                    </p>
+                  </div>
                 </div>
-              ))}
+              ) : null}
             </div>
-          </GlassSurface>
-        </FadeIn>
-        <FadeIn delay={80}>
-          <SectionHeader
-            tone="light"
-            eyebrow="Product workflow"
-            title="Institution stories — when partners are ready."
-            lead="Not a case study. The delivery workflow institution stories will document once verified partner experiences are published."
-          />
-          <div style={{ marginTop: 8, marginBottom: 24 }}>
-            <span style={{ background: instAccent.subtleStrong, border: `1px solid ${instAccent.border}`, borderRadius: 6, padding: '4px 10px', fontSize: 10, fontFamily: 'var(--font-mono)', color: instAccent.text }}>
-              INSTITUTION OS PRODUCT
-            </span>
-          </div>
-          <Button variant="secondary" onClick={() => navigate('/institutions')}>For Institutions</Button>
-        </FadeIn>
-      </div>
-    </Section>
-  )
-}
+          ) : (
+            <p className="pe-note">
+              Live programme workspaces will appear here when the catalogue has authored programmes.
+            </p>
+          )}
 
-// ─── PAGE ─────────────────────────────────────────────────────────────────────
+          <p className="pe-kicker is-spaced">Career OS — product workflow, not a published story</p>
+          <ul className="pe-plain">
+            {CAREER_OS_IA.map((item) => (
+              <li key={item.to}>
+                <strong>{item.label}.</strong> {item.sub}
+              </li>
+            ))}
+          </ul>
+          <p className="pe-actions">
+            <Link className="pe-cta-ghost" to="/career-os">
+              Explore Career OS
+            </Link>
+            <Link className="pe-cta-ghost" to="/institutions">
+              For institutions
+            </Link>
+          </p>
+        </div>
+      </section>
 
-export default function StoriesPage() {
-  return (
-    <PageShell auroraTheme="general">
-      <HeroSection />
-      <PublishingSection />
-      <LearningSection />
-      <CareerWorkflowSection />
-      <InstitutionWorkflowSection />
-
-      <CTABand
-        eyebrow="Explore Skylent"
-        title={<>See the product<br />stories will document.</>}
-        lead="Programs, education pathways, Career OS, and institution partnerships — explore what exists today while verified stories are prepared."
-        primary={{ label: 'Explore Programs', to: '/programs' }}
-        secondary={{ label: 'Contact', to: '/contact' }}
-        auroraTheme="general"
-      />
-    </PageShell>
+      <section className="pe-close" aria-labelledby="stories-close-title">
+        <div className="cat-rail">
+          <p className="pe-kicker">Explore Skylent</p>
+          <h2 id="stories-close-title">See the product stories will document.</h2>
+          <p className="pe-lead">
+            Programmes and courses are the live learning surfaces. Open them while verified stories are prepared.
+          </p>
+          <p className="pe-actions">
+            <Link className="pe-cta" to="/programs">
+              Explore programmes
+              <span className="pe-cta-arrow" aria-hidden="true">
+                →
+              </span>
+            </Link>
+            <Link className="pe-cta-ghost" to="/courses">
+              Explore courses
+            </Link>
+          </p>
+        </div>
+      </section>
+    </PublicEditorialShell>
   )
 }

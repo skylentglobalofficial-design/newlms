@@ -10,6 +10,7 @@ import {
   coursePublicView,
   isAuthoredCourse,
   linkedCourseSlugsForProgram,
+  programmeAfterEnrolCopy,
   programmePublicView,
 } from "../src/lib/catalog-maturity.ts"
 
@@ -88,7 +89,9 @@ assert(/Payment is not collected/.test(courseDetail), "Course page must state th
 assert(/primaryCta/.test(courseDetail), "Course page CTA must come from the honest access helper")
 
 const programDetail = readFileSync(new URL("../src/pages/ProgramPage.tsx", import.meta.url), "utf8")
-assert(/PROGRAMME_INTENDED_STEPS/.test(programDetail), "Programme page must show the intended path")
+assert(/programmeDiscoveryFor/.test(programDetail), "Authored programmes must resolve from real discovery data")
+assert(/discovery.modules/.test(programDetail), "Programme page must show the taught module path")
+assert(!/PROGRAMME_INTENDED_STEPS/.test(programDetail), "Programme page must not present the generic intended-path board as live teaching")
 assert(!/curriculumDetail|projectsDetail|whatYouWillLearn/.test(programDetail), "Programme page must not render brochure curriculum as live teaching")
 assert(/Payment is not collected/.test(programDetail), "Programme page must state that payment is not collected")
 
@@ -121,8 +124,14 @@ const analyticsPro = programmePublicView(programs.find((row) => row.slug === "da
 assert(analyticsPro.linked.some((item) => item.slug === "data-analytics" && item.authored), "Data Analytics pathway must link the authored course")
 assert(/data analytics course/i.test(analyticsPro.honesty), "Data Analytics programme must say the live LMS is the course")
 assert(
-  /Open linked course/.test(analyticsPro.ctaLabel),
-  "Data Analytics programme CTA must open the linked course",
+  analyticsPro.ctaLabel === "Start this programme",
+  "Data Analytics programme CTA must start the programme",
+)
+assert(
+  /enrolment opens the linked course in Skylent OS|opens .+ in Skylent OS/i.test(
+    `${analyticsPro.honesty} ${programmeAfterEnrolCopy(analyticsPro)}`,
+  ),
+  "Data Analytics programme must still explain linked-course enrolment",
 )
 
 const daCards = courseModuleCards(da!, true)

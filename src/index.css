@@ -21,6 +21,12 @@
   --font-display: 'DM Sans', system-ui, sans-serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'DM Mono', monospace;
+  --display-font: var(--font-brand);
+
+  /* One public primary CTA language — indigo, not charcoal. */
+  --btn-bg: #4f46e5;
+  --btn-fg: #ffffff;
+  --btn-radius: 6px;
 
   /* Typography scale — UI product, not magazine display */
   --type-display-xl: clamp(32px, 4.2vw, 48px);
@@ -773,12 +779,6 @@ html, body {
     margin-top: 16px !important;
     bottom: auto !important;
     right: auto !important;
-  }
-}
-
-@media (max-width: 900px) {
-  .login-page-grid {
-    padding-top: clamp(72px, 10vh, 96px) !important;
   }
 }
 

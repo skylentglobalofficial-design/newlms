@@ -36,7 +36,7 @@ export default function CourseDetailPage() {
 
   const view = coursePublicView(course)
   const profile = courseProductProfile(course.slug)
-  const enrollable = Boolean(catalog.data) || view.showLiveCurriculum
+  const enrollable = view.showLiveCurriculum
   const modules = courseModuleCards(course, view.showLiveCurriculum)
   const practice = coursePracticeGroups(course)
   const afterEnrol = courseAfterEnrolSteps(view.showLiveCurriculum, view.title)

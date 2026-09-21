@@ -15,11 +15,12 @@ import {
   computeResume,
   findCourseBySlug,
   findNodeByLessonKey,
+  attachProgramWorkspace,
+  buildProgramWorkspace,
   findProgramBySlug,
   flattenNodes,
   formatVideoMedia,
-  getPrimaryEnrollment,
-  lessonKey,
+  loadLearnerDashboard,
   loadLessonStates,
   resolveCourseEnrollment,
   syncCertificateState,
@@ -94,14 +95,7 @@ async function loadCourseContext(userId: string, courseSlug: string) {
 
 lmsRouter.get("/dashboard", requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
-    const userId = req.auth!.user.id
-    const enrollment = await getPrimaryEnrollment(userId)
-
-    if (!enrollment?.course) {
-      return res.json({ data: null })
-    }
-
-    const workspace = await buildCourseWorkspace(enrollment)
+    const workspace = await loadLearnerDashboard(req.auth!.user.id)
     res.json({ data: workspace })
   } catch (error) {
     console.error("Failed to load LMS dashboard:", error)
@@ -122,7 +116,6 @@ lmsRouter.get("/enrollments", requireAuth, async (req: AuthenticatedRequest, res
             name: true,
             programCourses: {
               orderBy: { sortOrder: "asc" },
-              take: 1,
               select: { course: { select: { slug: true, title: true } } },
             },
           },
@@ -132,12 +125,19 @@ lmsRouter.get("/enrollments", requireAuth, async (req: AuthenticatedRequest, res
 
     res.json({
       data: enrollments.map((entry) => {
+        const linkedCourses =
+          entry.program?.programCourses.map((link) => ({
+            slug: link.course.slug,
+            title: link.course.title,
+          })) ??
+          (entry.course ? [{ slug: entry.course.slug, title: entry.course.title }] : [])
         const linkedCourse = entry.course ?? entry.program?.programCourses[0]?.course ?? null
         return {
           id: entry.id,
           status: entry.status,
           courseSlug: linkedCourse?.slug ?? null,
           courseTitle: linkedCourse?.title ?? null,
+          linkedCourses,
           programSlug: entry.program?.slug ?? null,
           programName: entry.program?.name ?? null,
           certificateEligible: entry.certificateEligible,
@@ -182,17 +182,25 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
       const existing = await prisma.userEnrollment.findUnique({
         where: { userId_programId: { userId, programId: program.id } },
       })
-      const primaryCourse = program.programCourses[0].course
       if (existing) {
+        const programWorkspace = await buildProgramWorkspace(userId, program)
+        const resumeSlug = programWorkspace?.resume.courseSlug
+        const primaryCourse =
+          program.programCourses.find((link) => link.course.slug === resumeSlug)?.course ??
+          program.programCourses[0].course
         const workspace = await buildCourseWorkspace({ ...existing, course: primaryCourse })
-        return res.json({ data: workspace })
+        return res.json({ data: workspace ? { ...workspace, program: programWorkspace } : workspace })
       }
 
       const enrollment = await prisma.userEnrollment.create({
         data: { userId, programId: program.id, status: "active" },
       })
-      const workspace = await buildCourseWorkspace({ ...enrollment, course: primaryCourse })
-      return res.status(201).json({ data: workspace })
+      const workspace = await buildCourseWorkspace({
+        ...enrollment,
+        course: program.programCourses[0].course,
+      })
+      const programWorkspace = await buildProgramWorkspace(userId, program)
+      return res.status(201).json({ data: workspace ? { ...workspace, program: programWorkspace } : workspace })
     }
 
     const course = await findCourseBySlug(parsed.data.courseSlug!)
@@ -203,14 +211,14 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
     })
     if (existing) {
       const workspace = await buildCourseWorkspace({ ...existing, course })
-      return res.json({ data: workspace })
+      return res.json({ data: await attachProgramWorkspace(userId, workspace, null, course.id) })
     }
 
     const enrollment = await prisma.userEnrollment.create({
       data: { userId, courseId: course.id, status: "active" },
     })
     const workspace = await buildCourseWorkspace({ ...enrollment, course })
-    return res.status(201).json({ data: workspace })
+    return res.status(201).json({ data: await attachProgramWorkspace(userId, workspace, null, course.id) })
   } catch (error) {
     console.error("Failed to enroll:", error)
     res.status(500).json({ error: "Failed to enroll" })
@@ -289,10 +297,88 @@ lmsRouter.get("/courses/:slug", requireAuth, async (req: AuthenticatedRequest, r
     }
 
     const workspace = await buildCourseWorkspace({ ...enrollment, course })
-    res.json({ data: workspace })
+    res.json({ data: await attachProgramWorkspace(req.auth!.user.id, workspace, null, course.id) })
   } catch (error) {
     console.error("Failed to load course workspace:", error)
     res.status(500).json({ error: "Failed to load course" })
+  }
+})
+
+lmsRouter.get("/programs/:slug/access", async (req, res) => {
+  const parsed = slugParamSchema.safeParse(req.params)
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Invalid slug" })
+  }
+
+  try {
+    const program = await findProgramBySlug(parsed.data.slug)
+    if (!program) {
+      return res.status(404).json({ error: "Program not found" })
+    }
+
+    const auth = await attachAuth(req as AuthenticatedRequest)
+    if (!auth) {
+      return res.json({
+        data: {
+          authenticated: false,
+          enrolled: false,
+          canAccess: false,
+          reason: "login_required",
+        },
+      })
+    }
+
+    const workspace = await buildProgramWorkspace(auth.user.id, program)
+    if (!workspace) {
+      return res.json({
+        data: {
+          authenticated: true,
+          enrolled: false,
+          canAccess: false,
+          reason: "not_enrolled",
+          programSlug: program.slug,
+          programName: program.name,
+        },
+      })
+    }
+
+    res.json({
+      data: {
+        authenticated: true,
+        enrolled: true,
+        canAccess: true,
+        enrollmentId: workspace.enrollmentId,
+        programSlug: program.slug,
+        programName: program.name,
+      },
+    })
+  } catch (error) {
+    console.error("Failed to check program access:", error)
+    res.status(500).json({ error: "Failed to check access" })
+  }
+})
+
+lmsRouter.get("/programs/:slug", requireAuth, async (req: AuthenticatedRequest, res) => {
+  const parsed = slugParamSchema.safeParse(req.params)
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Invalid slug" })
+  }
+
+  try {
+    const program = await findProgramBySlug(parsed.data.slug)
+    if (!program) {
+      return res.status(404).json({ error: "Program not found" })
+    }
+
+    const workspace = await buildProgramWorkspace(req.auth!.user.id, program)
+    if (!workspace) {
+      return res.status(403).json({ error: "Not enrolled in this programme" })
+    }
+
+    res.json({ data: workspace })
+  } catch (error) {
+    console.error("Failed to load programme workspace:", error)
+    res.status(500).json({ error: "Failed to load programme" })
   }
 })
 

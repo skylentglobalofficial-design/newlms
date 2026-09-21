@@ -223,7 +223,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
               {[application.job.location, formatWorkMode(application.job.workMode)].filter(Boolean).join(" · ")}
             </div>
             <Link to="/career-os/jobs" style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
-              View job board →
+              View opportunity →
             </Link>
           </div>
         )}

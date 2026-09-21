@@ -1,14 +1,34 @@
 import { Router } from 'express'
+import { z } from 'zod'
 
 import { prisma } from '../lib/prisma.js'
 
 const router = Router()
 
+const slugParamSchema = z.object({
+  slug: z
+    .string()
+    .min(1)
+    .max(120)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+})
+
+const publicNodeSelect = {
+  sourceId: true,
+  order: true,
+  title: true,
+  nodeType: true,
+  duration: true,
+} as const
+
 const curriculumInclude = {
   curriculum: {
     orderBy: { order: 'asc' as const },
     include: {
-      nodes: { orderBy: { order: 'asc' as const } },
+      nodes: {
+        orderBy: { order: 'asc' as const },
+        select: publicNodeSelect,
+      },
     },
   },
 }
@@ -104,9 +124,15 @@ router.get('/programs', async (_request, response, next) => {
 })
 
 router.get('/programs/:slug', async (request, response, next) => {
+  const parsed = slugParamSchema.safeParse(request.params)
+  if (!parsed.success) {
+    response.status(400).json({ error: 'Invalid slug' })
+    return
+  }
+
   try {
     const program = await prisma.program.findUnique({
-      where: { slug: request.params.slug },
+      where: { slug: parsed.data.slug },
       include: { ...curriculumInclude, pricing: true, ...programCourseInclude },
     })
     if (!program) {
@@ -120,9 +146,15 @@ router.get('/programs/:slug', async (request, response, next) => {
 })
 
 router.get('/courses/:slug', async (request, response, next) => {
+  const parsed = slugParamSchema.safeParse(request.params)
+  if (!parsed.success) {
+    response.status(400).json({ error: 'Invalid slug' })
+    return
+  }
+
   try {
     const course = await prisma.course.findUnique({
-      where: { slug: request.params.slug },
+      where: { slug: parsed.data.slug },
       include: curriculumInclude,
     })
     if (!course) {
@@ -131,9 +163,33 @@ router.get('/courses/:slug', async (request, response, next) => {
     }
     response.json({
       data: {
-        ...course,
+        slug: course.slug,
+        title: course.title,
+        category: course.category,
+        level: course.level,
+        duration: course.duration,
+        mode: course.mode,
+        price: course.price,
+        originalPrice: course.originalPrice,
+        desc: course.desc,
+        longDesc: course.longDesc,
+        outcomes: course.outcomes,
+        forWhom: course.forWhom,
+        projectCount: course.projectCount,
         moduleCount: course.curriculum.length,
         lessonCount: countLearnableNodes(course.curriculum),
+        curriculum: course.curriculum.map((module) => ({
+          sourceId: module.sourceId,
+          order: module.order,
+          title: module.title,
+          nodes: module.nodes.map((node) => ({
+            sourceId: node.sourceId,
+            order: node.order,
+            title: node.title,
+            nodeType: node.nodeType,
+            duration: node.duration,
+          })),
+        })),
       },
     })
   } catch (error) {

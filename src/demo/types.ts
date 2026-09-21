@@ -23,20 +23,11 @@ export type DemoEnrollment = {
   enrolledAt: string
 }
 
-export type DemoApplication = {
-  jobId: string
-  role: string
-  company: string
-  status: 'Applied'
-  appliedAt: string
-}
-
 /** Single persisted demo-state document — labs/career demo only; LMS uses backend. */
 export type DemoState = {
   version: 1
   labs: Record<string, LabProgress>
   enrollments: DemoEnrollment[]
-  applications: DemoApplication[]
   shortlist: string[]
 }
 

@@ -4,11 +4,31 @@ import { PageShell } from "../components/shared"
 import { CourseWorkspacePreview } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { countStaticCourseLessons } from "../lib/curriculum-counts"
+import { coursePracticeGroups, courseLessonStats } from "../lib/catalog-maturity"
 import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG } from "../lib/authored-courses"
 import "./Catalog.css"
 
 const analytics = courses.find((course) => course.slug === FLAGSHIP_COURSE_SLUG)
 const product = courses.find((course) => course.slug === PRODUCT_MANAGEMENT_SLUG)
+
+const authored = [analytics, product].filter(Boolean) as NonNullable<typeof analytics>[]
+
+/** Everything the workspace holds today, counted from the authored courses. */
+const workspaceScope = authored.reduce(
+  (total, course) => {
+    const stats = courseLessonStats(course)
+    const groups = coursePracticeGroups(course)
+    return {
+      courses: total.courses + 1,
+      modules: total.modules + stats.moduleCount,
+      lessons: total.lessons + stats.lessonCount,
+      checks: total.checks + groups.practice.length,
+      assignments: total.assignments + groups.assignments.length,
+      capstones: total.capstones + groups.capstone.length,
+    }
+  },
+  { courses: 0, modules: 0, lessons: 0, checks: 0, assignments: 0, capstones: 0 },
+)
 
 export default function OSPage() {
   const [hero, setHero] = useState<"analytics" | "product">("analytics")
@@ -34,6 +54,27 @@ export default function OSPage() {
               </div>
               <p className="cat-honesty">
                 Open a course, enrol, then Skylent OS starts at the first lesson. Payment is not collected in this pilot.
+              </p>
+
+              <p className="cat-label os-scope-label">In the workspace today</p>
+              <div className="cat-facts os-scope">
+                {[
+                  ["Authored courses", workspaceScope.courses],
+                  ["Modules", workspaceScope.modules],
+                  ["Lessons", workspaceScope.lessons],
+                  ["Checks", workspaceScope.checks],
+                  ["Assignments", workspaceScope.assignments],
+                  ["Capstones", workspaceScope.capstones],
+                ].map(([label, value]) => (
+                  <div className="cat-fact" key={label}>
+                    <span>{label}</span>
+                    <strong>{value}</strong>
+                  </div>
+                ))}
+              </div>
+              <p className="cat-fine">
+                Counted from the two authored courses. Other catalogue courses open an outline, not a finished
+                teaching path.
               </p>
             </div>
             {featured ? (
@@ -74,23 +115,66 @@ export default function OSPage() {
           </div>
         </section>
 
-        <section className="cat-section">
+        <section className="cat-band" aria-labelledby="os-lives-title">
           <div className="cat-rail">
-            <h2>What lives here</h2>
-            <div className="cat-caps is-3">
+            <h2 id="os-lives-title">What lives here</h2>
+            <div className="cat-caps is-4">
               <article className="cat-cap">
                 <strong>Courses and lessons</strong>
                 <p>Move through written work in the enrolled course. Lesson bodies stay in this workspace.</p>
               </article>
               <article className="cat-cap">
                 <strong>Practice</strong>
-                <p>Short checks and assignments become work you can keep as evidence.</p>
+                <p>Short checks after a block of lessons. Five out of five to pass a check.</p>
               </article>
               <article className="cat-cap">
-                <strong>Progress</strong>
-                <p>See what you have completed and what comes next from the student dashboard.</p>
+                <strong>Practical work</strong>
+                <p>Assignments and a capstone produced against the course material, not a worked example.</p>
+              </article>
+              <article className="cat-cap">
+                <strong>Progress and evidence</strong>
+                <p>
+                  The student dashboard tracks what is done. Finished work can be carried into Career OS as
+                  evidence.
+                </p>
               </article>
             </div>
+          </div>
+        </section>
+
+        <section className="cat-section" aria-labelledby="os-work-title">
+          <div className="cat-rail">
+            <p className="cat-label">What you actually produce</p>
+            <h2 id="os-work-title">Named work, not a worked example.</h2>
+            <p className="cat-lead">
+              Each authored course ends in a capstone you keep. These are the real assignment titles inside the
+              workspace.
+            </p>
+            <div className="os-produce">
+              {authored.map((course) => {
+                const groups = coursePracticeGroups(course)
+                return (
+                  <article className="os-produce-item" key={course.slug}>
+                    <p className="os-produce-course">{course.title}</p>
+                    <ul>
+                      {[...groups.assignments, ...groups.capstone].map((lesson) => (
+                        <li key={lesson.id} className={/capstone/i.test(lesson.title) ? "is-capstone" : undefined}>
+                          <span>{/capstone/i.test(lesson.title) ? "Capstone" : "Assignment"}</span>
+                          <strong>{lesson.title.replace(/^capstone\s*[—–-]\s*/i, "")}</strong>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link className="cat-text-link" to={`/courses/${course.slug}`}>
+                      Open {course.title} →
+                    </Link>
+                  </article>
+                )
+              })}
+            </div>
+            <p className="cat-fine">
+              Written lessons, checks, assignments, and the capstone all open after you enrol. There is no video
+              stream and no live classroom.
+            </p>
           </div>
         </section>
       </div>

@@ -1,0 +1,425 @@
+/* Sign in — the seam between the public site and Skylent OS.
+   Same brand and the same workspace frame as the product, at lower density.
+   Nothing is sold here: the rail is inert context, not a feature pitch. */
+
+.entry {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 100vh;
+  background: #f7f4ec;
+  color: #15171a;
+}
+
+.entry-top {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  padding: 0 clamp(18px, 4vw, 40px);
+}
+
+.entry-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #5c6168;
+  font: 400 13px/1 var(--font-body);
+  text-decoration: none;
+}
+
+.entry-back:hover {
+  color: #15171a;
+}
+
+.entry-main {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  padding: 0 clamp(18px, 5vw, 40px) clamp(40px, 7vh, 72px);
+}
+
+.entry-col {
+  width: 100%;
+  max-width: 720px;
+}
+
+.entry-mark {
+  display: inline-block;
+  margin: 0 0 16px;
+  color: #15171a;
+  font: 600 21px/1 var(--font-display);
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.entry-mark span {
+  color: #4f46e5;
+}
+
+/* ── Workspace frame ─────────────────────────────────────────────────────
+   Same chrome the visitor meets on the other side of this form. */
+
+.entry-frame {
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e8e2d6;
+  border-radius: 6px;
+}
+
+.entry-frame-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  background: #fffdf8;
+  border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+}
+
+.entry-frame-bar b {
+  color: #15171a;
+  font: 600 11px/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.entry-frame-bar span {
+  color: #5c6168;
+  font: 400 11px/1 var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
+.entry-frame-body {
+  display: grid;
+  grid-template-columns: 136px minmax(0, 1fr);
+}
+
+/* Inert rail: the five stages waiting on the other side. Nothing is marked
+   current, because the visitor has not entered yet. */
+.entry-rail {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: 16px 10px;
+  background: #f7f4ec;
+  border-right: 1px solid rgba(21, 23, 26, 0.08);
+}
+
+.entry-rail p {
+  margin: 0 0 6px;
+  padding: 0 6px;
+  color: #8a8580;
+  font: 400 9.5px/1.3 var(--font-mono);
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.entry-rail li {
+  padding: 7px 6px;
+  color: #6e737a;
+  font: 400 12.5px/1.3 var(--font-body);
+  list-style: none;
+}
+
+.entry-rail ul {
+  margin: 0;
+  padding: 0;
+}
+
+.entry-pane {
+  padding: clamp(24px, 4vw, 38px) clamp(22px, 4vw, 40px) clamp(26px, 4vw, 38px);
+  min-width: 0;
+}
+
+/* ── Copy ─────────────────────────────────────────────────────────────── */
+
+.entry-title {
+  margin: 0;
+  color: #15171a;
+  font-family: var(--font-display);
+  font-size: clamp(27px, 3.6vw, 33px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.entry-lead {
+  margin: 9px 0 0;
+  color: #3a4048;
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+/* Shown only when the visitor arrived from a real enrol action. */
+.entry-context {
+  display: grid;
+  gap: 3px;
+  margin: 18px 0 0;
+  padding: 11px 13px;
+  background: #fffdf8;
+  border: 1px solid #e8e2d6;
+  border-left: 2px solid #4f46e5;
+  border-radius: 4px;
+}
+
+.entry-context-label {
+  color: #4f46e5;
+  font: 700 9.5px/1.3 var(--font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.entry-context-title {
+  color: #15171a;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* ── Form ─────────────────────────────────────────────────────────────── */
+
+.entry-form {
+  margin: clamp(22px, 3vw, 28px) 0 0;
+  max-width: 360px;
+}
+
+.entry-field {
+  margin: 0 0 14px;
+}
+
+.entry-field label {
+  display: block;
+  margin: 0 0 6px;
+  color: #5c6168;
+  font: 400 10.5px/1 var(--font-mono);
+  letter-spacing: 0.08em;
+}
+
+.entry-field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 13px;
+  background: #ffffff;
+  border: 1px solid #e0d9cb;
+  border-radius: var(--btn-radius);
+  color: #15171a;
+  font: 400 14px/1.4 var(--font-body);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.entry-field input:focus-visible {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+}
+
+.entry-field input::placeholder {
+  color: #9a9690;
+}
+
+.entry-submit {
+  width: 100%;
+  margin: 6px 0 0;
+  padding: 12px;
+  background: #4f46e5;
+  border: 1px solid #4f46e5;
+  border-radius: var(--btn-radius);
+  color: #ffffff;
+  font: 600 14px/1 var(--font-body);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.entry-submit:hover:not(:disabled) {
+  background: #4338ca;
+}
+
+.entry-submit:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.entry-or {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 18px 0;
+}
+
+.entry-or::before,
+.entry-or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e8e2d6;
+}
+
+.entry-or span {
+  color: #5c6168;
+  font: 400 10.5px/1 var(--font-mono);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.entry-google {
+  width: 100%;
+  padding: 11px;
+  background: #ffffff;
+  border: 1px solid #e0d9cb;
+  border-radius: var(--btn-radius);
+  color: #15171a;
+  font: 500 13.5px/1 var(--font-body);
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.entry-google:hover:not(:disabled) {
+  border-color: #c9c0ad;
+}
+
+.entry-google:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.entry-alt {
+  margin: 18px 0 0;
+  color: #5c6168;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.entry-alt button {
+  padding: 0;
+  background: none;
+  border: none;
+  color: #4f46e5;
+  font: 500 13px/1.5 var(--font-body);
+  cursor: pointer;
+}
+
+.entry-alt button:hover {
+  text-decoration: underline;
+}
+
+.entry-error {
+  margin: 18px 0 0;
+  padding: 11px 13px;
+  background: rgba(185, 28, 28, 0.06);
+  border: 1px solid rgba(185, 28, 28, 0.26);
+  border-radius: 4px;
+  color: #15171a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Honest footnote: what happens next, and where to get help, since there is
+   no self-service password reset yet. */
+.entry-note {
+  margin: 16px 0 0;
+  max-width: 62ch;
+  color: #5c6168;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.entry-note a {
+  color: #4f46e5;
+  text-decoration: none;
+}
+
+.entry-note a:hover {
+  text-decoration: underline;
+}
+
+/* ── Demo role picker (development builds only) ───────────────────────── */
+
+.entry-demo {
+  margin: 16px 0 0;
+  padding: 14px;
+  background: #fffdf8;
+  border: 1px solid #e8e2d6;
+  border-radius: 6px;
+}
+
+.entry-demo-label {
+  margin: 0 0 10px;
+  color: #5c6168;
+  font: 400 9.5px/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.entry-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.entry-demo-grid button {
+  padding: 9px 6px;
+  background: #ffffff;
+  border: 1px solid #e0d9cb;
+  border-radius: var(--btn-radius);
+  color: #3a4048;
+  font: 500 11px/1.3 var(--font-body);
+  cursor: pointer;
+}
+
+.entry-demo-grid button:hover:not(:disabled) {
+  border-color: #4f46e5;
+  color: #15171a;
+}
+
+.entry-demo-grid button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+/* ── Recomposed, not shrunk ───────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  .entry-main {
+    align-content: start;
+  }
+
+  /* The rail becomes a single context line above the form. */
+  .entry-frame-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .entry-rail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    padding: 11px 16px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+  }
+
+  .entry-rail p {
+    margin: 0;
+    padding: 0;
+  }
+
+  .entry-rail ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 10px;
+  }
+
+  .entry-rail li {
+    padding: 0;
+    font-size: 12px;
+  }
+
+  .entry-form {
+    max-width: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .entry-demo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

@@ -541,7 +541,7 @@ function SkillsLadder({ accent }: { accent: Accent }) {
           padding: '8px 10px', borderRadius: 6, fontSize: 11,
           background: i === 2 ? accent.subtle : 'rgba(21,23,26,0.035)',
           border: `1px solid ${i === 2 ? accent.border : T.lineDark}`,
-          color: i === 2 ? C.white : '#5C6168',
+          color: i === 2 ? accent.text : '#5C6168',
         }}>{item}</div>
       ))}
     </div>
@@ -617,7 +617,7 @@ const VISUAL_LABELS: Record<ProductVisualId, string> = {
   'college-lab': 'Undergraduate · lab session',
   'research-desk': 'Postgraduate · research',
   'study-session': 'Study · practice set',
-  'workshop-session': 'Workshop · live session',
+  'workshop-session': 'Workshop · planned session',
   'institution-dashboard': 'Institution · batch review',
   'institution-ops': 'Institution · operations',
   'skills-ladder': 'Skills · progression',
