@@ -10,7 +10,10 @@ export type LoginRedirectState = {
 }
 
 export function learnPathForWorkspace(workspace: ApiCourseWorkspace): string {
-  return `/learn/${workspace.enrollment.courseSlug}`
+  const courseSlug = workspace.program?.resume.courseSlug ?? workspace.enrollment.courseSlug
+  const lessonId = workspace.program?.resume.lessonId ?? workspace.resume.lessonId
+  if (courseSlug && lessonId) return `/learn/${courseSlug}/${lessonId}`
+  return `/learn/${courseSlug}`
 }
 
 export async function fulfillCatalogEnrollment(target: CatalogEnrollTarget): Promise<ApiCourseWorkspace> {

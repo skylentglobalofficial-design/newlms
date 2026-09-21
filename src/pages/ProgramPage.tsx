@@ -5,7 +5,7 @@ import { CourseThumb, HarborDeskWorkspace, NorthwindWorkspace } from "../compone
 import { programs } from "../data"
 import { isProgramEnrollable } from "../lib/catalog-api"
 import { courseProductProfile } from "../lib/course-product"
-import { programmeAfterEnrolCopy, programmePublicView } from "../lib/catalog-maturity"
+import { isAuthoredCourse, programmeAfterEnrolCopy, programmePublicView } from "../lib/catalog-maturity"
 import {
   PROGRAMME_ENROLMENT_FACTS,
   PROGRAMME_WORK_SURFACES,
@@ -58,7 +58,8 @@ export default function ProgramPage() {
 
   const view = programmePublicView(program)
   const linkedFromApi = catalog.data?.linkedCourseSlugs ?? view.linked.map((item) => item.slug)
-  const enrollable = catalog.data ? isProgramEnrollable(catalog.data) : view.enrollOpen
+  const hasTaughtPath = linkedFromApi.some((slug) => isAuthoredCourse(slug))
+  const enrollable = (catalog.data ? isProgramEnrollable(catalog.data) : view.enrollOpen) && hasTaughtPath
   const comingLater = view.maturity === "coming_later"
   const afterEnrol = programmeAfterEnrolCopy(view)
   const cta = comingLater

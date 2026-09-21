@@ -17,8 +17,6 @@ const OSPage = lazy(() => import('./pages/OSPage'))
 const InstitutionsPage = lazy(() => import('./pages/InstitutionsPage'))
 const UniversitiesPage = lazy(() => import('./pages/UniversitiesPage'))
 const LabsPage = lazy(() => import('./pages/LabsPage'))
-const LabDetailPage = lazy(() => import('./pages/LabDetailPage'))
-const ExperimentPage = lazy(() => import('./pages/ExperimentPage'))
 const StoriesPage = lazy(() => import('./pages/StoriesPage'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
 const ProgramPage = lazy(() => import('./pages/ProgramPage'))
@@ -107,8 +105,8 @@ function AppRoutes() {
         <Route path="/career" element={<Navigate to="/career-os" replace />} />
         <Route path="/universities" element={<UniversitiesPage />} />
         <Route path="/labs" element={<LabsPage />} />
-        <Route path="/labs/:labId" element={<LabDetailPage />} />
-        <Route path="/labs/:labId/:experimentId" element={<ExperimentPage />} />
+        <Route path="/labs/:labId" element={<Navigate to="/labs" replace />} />
+        <Route path="/labs/:labId/:experimentId" element={<Navigate to="/labs" replace />} />
         <Route path="/jobs" element={<Navigate to="/career-os/jobs" replace />} />
         <Route path="/jobs/:id" element={<Navigate to="/career-os/jobs" replace />} />
         <Route path="*" element={<PublicCanvas themeId="general"><Nav /><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md" style={{ color: C.ink }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></PublicCanvas>} />

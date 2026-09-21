@@ -45,13 +45,9 @@ async function finishAuthNavigation(
   redirectState: LoginRedirectState | null,
 ) {
   if (redirectState?.enrollTarget) {
-    try {
-      const workspace = await fulfillCatalogEnrollment(redirectState.enrollTarget)
-      navigate(learnPathForWorkspace(workspace))
-      return
-    } catch {
-      // Fall through to returnTo or role dashboard.
-    }
+    const workspace = await fulfillCatalogEnrollment(redirectState.enrollTarget)
+    navigate(learnPathForWorkspace(workspace))
+    return
   }
   if (redirectState?.returnTo) {
     navigate(redirectState.returnTo)
@@ -143,7 +139,9 @@ export default function LoginPage() {
       navigate,
       user.role,
       mergeRedirectState((location.state ?? null) as LoginRedirectState | null, params),
-    )
+    ).catch((err) => {
+      setError(err instanceof Error ? err.message : "Unable to enrol right now.")
+    })
   }, [location.pathname, location.search, location.state, navigate, oauthHandled, ready, user])
 
   function startGoogleAuth() {
