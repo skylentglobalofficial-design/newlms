@@ -4,6 +4,7 @@ import { PageShell } from "../components/shared"
 import { AcademicSubnav, AcademicLineIndex, LiveCoreRail, MaturityMark } from "../components/product/Architecture"
 import { EDUCATION_HASH_REDIRECTS } from "../lib/product-architecture"
 import { C, T } from "../tokens"
+import "./EducationPage.css"
 
 export default function EducationPage() {
   const location = useLocation()
