@@ -38,12 +38,12 @@ export default function SkylentHomeUniverse() {
             preserveAspectRatio="xMidYMid meet"
             aria-hidden="true"
           >
-            <path className="is-field" d="M 36 236 C 52 72, 248 18, 528 96" />
-            <path className="is-quiet" d="M 396 176 C 328 88, 196 40, 108 36" />
-            <path className="is-live" d="M 348 198 C 236 188, 112 176, 18 170" />
-            <path className="is-quiet" d="M 486 176 C 512 118, 534 72, 546 48" />
-            <path className="is-quiet" d="M 368 226 C 248 292, 126 338, 48 350" />
-            <path className="is-quiet" d="M 452 226 C 480 304, 506 366, 522 400" />
+            <path className="is-field" d="M 24 258 C 70 64, 268 6, 538 92" />
+            <path className="is-quiet" d="M 398 172 C 322 70, 216 30, 150 26" />
+            <path className="is-live" d="M 360 197 C 292 190, 224 176, 158 172" />
+            <path className="is-quiet" d="M 468 170 C 516 150, 540 82, 528 42" />
+            <path className="is-quiet" d="M 372 222 C 290 288, 198 336, 116 348" />
+            <path className="is-quiet" d="M 438 220 C 498 292, 508 352, 480 386" />
           </svg>
           <p className="hp-eco-core">Skylent.</p>
           {ARMS.map((arm) => (
