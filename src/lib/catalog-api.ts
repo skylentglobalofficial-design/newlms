@@ -57,6 +57,14 @@ export type CatalogProgramSummary = {
   pricing: CatalogPricingTier[]
 }
 
+export type CatalogProgramDetail = CatalogProgramSummary & {
+  duration: string
+  format: string
+  level: string
+  desc: string
+  programType: string
+}
+
 const API_BASE = "/api/v1/catalog"
 
 async function catalogFetch<T>(path: string): Promise<T> {
@@ -145,12 +153,25 @@ export async function fetchCatalogPrograms(): Promise<CatalogProgramSummary[]> {
   return result.data.map(mapProgramSummary)
 }
 
-export async function fetchCatalogProgram(slug: string): Promise<CatalogProgramSummary | null> {
-  try {
-    const result = await catalogFetch<{ data: Record<string, unknown> }>(`/programs/${slug}`)
-    return mapProgramSummary(result.data)
-  } catch {
-    return null
+export async function fetchCatalogProgram(slug: string): Promise<CatalogProgramDetail | null> {
+  const response = await fetch(`${API_BASE}/programs/${slug}`)
+  if (response.status === 404) return null
+  const result = await parseApiJson<{ data: Record<string, unknown> }>(response)
+  const payload = asRecord(result.data)
+  if (!payload) {
+    throw new Error("Unable to load this programme.")
+  }
+  return mapCatalogProgramDetail(payload)
+}
+
+export function mapCatalogProgramDetail(program: Record<string, unknown>): CatalogProgramDetail {
+  return {
+    ...mapProgramSummary(program),
+    duration: asString(program.duration),
+    format: asString(program.format),
+    level: asString(program.level),
+    desc: asString(program.desc),
+    programType: asString(program.programType),
   }
 }
 

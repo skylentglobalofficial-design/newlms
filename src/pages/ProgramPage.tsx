@@ -7,9 +7,20 @@ import ProgramWorkflowVisual from "../components/program/ProgramWorkflowVisual"
 import { scrollToSection, useSectionSpy } from "../components/foundation"
 import { programs, type Program } from "../data"
 import { getDomainAccent, resolveAuroraTheme } from "../aurora-themes"
-import { isProgramEnrollable } from "../lib/catalog-api"
+import {
+  isProgramEnrollable,
+  lowestProgramPrice,
+  type CatalogEnrollmentStatus,
+  type CatalogProgramDetail,
+} from "../lib/catalog-api"
 import { courseProductProfile } from "../lib/course-product"
-import { isAuthoredCourse, programmeAfterEnrolCopy, programmePublicView } from "../lib/catalog-maturity"
+import {
+  courseBySlug,
+  isAuthoredCourse,
+  programmeAfterEnrolCopy,
+  programmePublicView,
+  type LinkedLearning,
+} from "../lib/catalog-maturity"
 import {
   PROGRAMME_ENROLMENT_FACTS,
   PROGRAMME_WORK_SURFACES,
@@ -50,12 +61,55 @@ function useDetailNarrow() {
 
 export default function ProgramPage() {
   const { slug } = useParams()
-  const program = programs.find((item) => item.slug === slug)
   const catalog = useCatalogProgram(slug)
   const [enrollOpen, setEnrollOpen] = useState(false)
   const narrow = useDetailNarrow()
-  const discovery = programmeDiscoveryFor(slug)
 
+  if (catalog.loading) {
+    return (
+      <PageShell aurora={false}>
+        <div className="cat-page">
+          <section className="cat-hero">
+            <div className="cat-rail">
+              <Link className="cat-back" to="/programs">
+                ← Programmes
+              </Link>
+              <h1>Loading this programme</h1>
+              <p className="cat-lead">Fetching the current catalogue record.</p>
+            </div>
+          </section>
+        </div>
+      </PageShell>
+    )
+  }
+
+  if (catalog.error) {
+    return (
+      <PageShell aurora={false}>
+        <div className="cat-page">
+          <section className="cat-hero">
+            <div className="cat-rail">
+              <Link className="cat-back" to="/programs">
+                ← Programmes
+              </Link>
+              <h1>This programme could not be loaded</h1>
+              <p className="cat-lead">The catalogue request failed. This is not a missing programme.</p>
+              <div className="cat-actions">
+                <button type="button" className="cat-btn cat-btn-primary" onClick={() => { void catalog.reload() }}>
+                  Try again
+                </button>
+                <Link className="cat-btn cat-btn-ghost" to="/programs">
+                  Back to programmes
+                </Link>
+              </div>
+            </div>
+          </section>
+        </div>
+      </PageShell>
+    )
+  }
+
+  const program = catalog.data
   if (!program) {
     return (
       <PageShell aurora={false}>
@@ -73,19 +127,23 @@ export default function ProgramPage() {
     )
   }
 
-  const view = programmePublicView(program)
-  const linkedFromApi = catalog.data?.linkedCourseSlugs ?? view.linked.map((item) => item.slug)
-  const hasTaughtPath = linkedFromApi.some((slug) => isAuthoredCourse(slug))
-  const enrollable = (catalog.data ? isProgramEnrollable(catalog.data) : view.enrollOpen) && hasTaughtPath
-  const comingLater = view.maturity === "coming_later"
-  const afterEnrol = programmeAfterEnrolCopy(view)
+  const authoredRecord = programs.find((item) => item.slug === program.slug)
+  const discovery = programmeDiscoveryFor(program.slug)
+  const overlayView = authoredRecord ? programmePublicView(authoredRecord) : null
+  const linked = linkedLearningFromApi(program.linkedCourseSlugs)
+  const hasTaughtPath = program.linkedCourseSlugs.some((courseSlug) => isAuthoredCourse(courseSlug))
+  const enrollable = isProgramEnrollable(program) && hasTaughtPath
+  const comingLater = program.enrollmentStatus === "coming_soon" || program.enrollmentStatus === "waitlist"
+  const maturity = comingLater ? "coming_later" as const : "listing" as const
+  const afterEnrol = programmeAfterEnrolCopy({ maturity, linked })
+  const authoredLinked = linked.filter((item) => item.authored)
   const cta = comingLater
     ? "Coming later"
     : enrollable
-      ? view.ctaLabel
-      : catalog.loading
-        ? "Checking availability…"
-        : "Enrolment unavailable"
+      ? authoredLinked.length > 0 && authoredLinked.length === linked.length
+        ? overlayView?.ctaLabel ?? "Start this programme"
+        : overlayView?.ctaLabel ?? "Open linked course"
+      : "Enrolment unavailable"
 
   function openEnrol() {
     if (comingLater || !enrollable) return
@@ -95,11 +153,12 @@ export default function ProgramPage() {
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
-        {discovery ? (
+        {discovery && authoredRecord ? (
           <AuthoredProgramme
             program={program}
+            authoredRecord={authoredRecord}
             discovery={discovery}
-            view={view}
+            taughtOutcomes={overlayView?.taughtOutcomes ?? []}
             afterEnrol={afterEnrol}
             cta={cta}
             comingLater={comingLater}
@@ -109,7 +168,14 @@ export default function ProgramPage() {
           />
         ) : (
           <ListingProgramme
-            view={view}
+            title={program.name}
+            summary={program.desc || overlayView?.summary || ""}
+            duration={program.duration}
+            format={program.format}
+            level={program.level}
+            maturityLabel={comingLater ? "Coming later" : "Catalogue listing"}
+            honesty={overlayView?.honesty ?? programmeListingHonesty(program.enrollmentStatus, linked)}
+            linked={linked}
             afterEnrol={afterEnrol}
             cta={cta}
             comingLater={comingLater}
@@ -125,10 +191,10 @@ export default function ProgramPage() {
             kind: "program",
             slug: program.slug,
             title: program.name,
-            price: view.listedPrice,
-            enrollmentStatus: program.enrollmentStatus ?? "open",
+            price: lowestProgramPrice(program) ?? 0,
+            enrollmentStatus: program.enrollmentStatus ?? undefined,
             enrollable,
-            linkedCourseSlugs: linkedFromApi,
+            linkedCourseSlugs: program.linkedCourseSlugs,
           }}
           onClose={() => setEnrollOpen(false)}
           themeId="professional"
@@ -186,8 +252,9 @@ function StickyProgramNav({
 
 function AuthoredProgramme({
   program,
+  authoredRecord,
   discovery,
-  view,
+  taughtOutcomes,
   afterEnrol,
   cta,
   comingLater,
@@ -195,9 +262,10 @@ function AuthoredProgramme({
   narrow,
   onEnrol,
 }: {
-  program: Program
+  program: CatalogProgramDetail
+  authoredRecord: Program
   discovery: ProgrammeDiscoveryCard
-  view: ReturnType<typeof programmePublicView>
+  taughtOutcomes: string[]
   afterEnrol: string
   cta: string
   comingLater: boolean
@@ -208,7 +276,7 @@ function AuthoredProgramme({
   const surfaces = PROGRAMME_WORK_SURFACES.filter(
     (surface) => discovery.visual === "northwind" || surface.id !== "lab",
   )
-  const themeId = resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType)
+  const themeId = resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType || authoredRecord.programType)
   const accent = getDomainAccent(themeId)
 
   return (
@@ -238,11 +306,13 @@ function AuthoredProgramme({
               </div>
               <div>
                 <dt>Level</dt>
-                <dd>{discovery.level}</dd>
+                <dd>{program.level || discovery.level}</dd>
               </div>
               <div>
                 <dt>Format</dt>
-                <dd>{discovery.format}</dd>
+                <dd>
+                  {[program.format || discovery.format, program.duration].filter(Boolean).join(" · ")}
+                </dd>
               </div>
             </dl>
 
@@ -309,7 +379,7 @@ function AuthoredProgramme({
           <div className="pd-workflow-frame">
             <ProgramWorkflowVisual
               slug={program.slug}
-              programType={program.programType}
+              programType={authoredRecord.programType}
               programName={program.name}
             />
           </div>
@@ -334,7 +404,7 @@ function AuthoredProgramme({
         </section>
       ) : null}
 
-      {view.taughtOutcomes.length > 0 ? (
+      {taughtOutcomes.length > 0 ? (
         <section className="cat-band" aria-labelledby="pd-learn-title">
           <div className="cat-rail">
             <p className="cat-label">What you learn</p>
@@ -343,7 +413,7 @@ function AuthoredProgramme({
               Taken from the {discovery.courseTitle} outcomes. Not from brochure modules that are not taught yet.
             </p>
             <ul className="pd-outcomes">
-              {view.taughtOutcomes.map((item) => (
+              {taughtOutcomes.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
@@ -351,7 +421,7 @@ function AuthoredProgramme({
         </section>
       ) : null}
 
-      <ProgramOutcomesSection program={program} themeId={themeId} accent={accent} />
+      <ProgramOutcomesSection program={authoredRecord} themeId={themeId} accent={accent} />
 
       <section className="cat-section" id="pd-path" aria-labelledby="pd-path-title">
         <div className="cat-rail pd-path">
@@ -461,20 +531,35 @@ function AuthoredProgramme({
 }
 
 function ListingProgramme({
-  view,
+  title,
+  summary,
+  duration,
+  format,
+  level,
+  maturityLabel,
+  honesty,
+  linked,
   afterEnrol,
   cta,
   comingLater,
   enrollable,
   onEnrol,
 }: {
-  view: ReturnType<typeof programmePublicView>
+  title: string
+  summary: string
+  duration: string
+  format: string
+  level: string
+  maturityLabel: string
+  honesty: string
+  linked: LinkedLearning[]
   afterEnrol: string
   cta: string
   comingLater: boolean
   enrollable: boolean
   onEnrol: () => void
 }) {
+  const linkedCourse = linked[0]
   return (
     <>
       <section className="cat-hero pd-listing" aria-labelledby="pd-title">
@@ -483,30 +568,33 @@ function ListingProgramme({
             ← Programmes
           </Link>
           <p className="cat-label">Programme listing</p>
-          <h1 id="pd-title">{view.title}</h1>
-          <p className="cat-lead">{view.summary}</p>
+          <h1 id="pd-title">{title}</h1>
+          <p className="cat-lead">{summary}</p>
           <p className="cat-statline">
-            <span className="cat-mark">{view.maturityLabel}</span>
-            {view.linked[0] ? (
-              <span>Linked course: {view.linked[0].title}</span>
+            <span className="cat-mark">{maturityLabel}</span>
+            {level ? <span>{level}</span> : null}
+            {format ? <span>{format}</span> : null}
+            {duration ? <span>{duration}</span> : null}
+            {linkedCourse ? (
+              <span>Linked course: {linkedCourse.title}</span>
             ) : (
               <span>No linked LMS course yet</span>
             )}
           </p>
-          <p className="cat-note">{view.honesty}</p>
-          {view.linked[0] ? (
-            <Link className="cat-link" to={view.linked[0].to}>
+          <p className="cat-note">{honesty}</p>
+          {linkedCourse ? (
+            <Link className="cat-link" to={linkedCourse.to}>
               <CourseThumb
-                authored={view.linked[0].authored}
-                visual={courseProductProfile(view.linked[0].slug)?.visual ?? "northwind"}
+                authored={linkedCourse.authored}
+                visual={courseProductProfile(linkedCourse.slug)?.visual ?? "northwind"}
               />
               <div>
-                <span className={view.linked[0].authored ? "cat-mark cat-mark-ready" : "cat-mark"}>
-                  {view.linked[0].maturityLabel}
+                <span className={linkedCourse.authored ? "cat-mark cat-mark-ready" : "cat-mark"}>
+                  {linkedCourse.maturityLabel}
                 </span>
-                <p className="cat-link-title">{view.linked[0].title}</p>
+                <p className="cat-link-title">{linkedCourse.title}</p>
                 <p>
-                  {view.linked[0].authored
+                  {linkedCourse.authored
                     ? "Authored course in Skylent OS."
                     : "Catalogue listing — thinner than Data Analytics."}
                 </p>
@@ -529,9 +617,9 @@ function ListingProgramme({
                 {cta}
               </button>
             )}
-            {view.linked[0] ? (
-              <Link className="cat-btn cat-btn-ghost" to={view.linked[0].to}>
-                View {view.linked[0].title}
+            {linkedCourse ? (
+              <Link className="cat-btn cat-btn-ghost" to={linkedCourse.to}>
+                View {linkedCourse.title}
               </Link>
             ) : (
               <Link className="cat-btn cat-btn-ghost" to="/courses">
@@ -565,4 +653,38 @@ function ListingProgramme({
       </section>
     </>
   )
+}
+
+function linkedLearningFromApi(slugs: string[]): LinkedLearning[] {
+  return slugs.map((courseSlug) => {
+    const course = courseBySlug(courseSlug)
+    const authored = isAuthoredCourse(courseSlug)
+    return {
+      slug: courseSlug,
+      title: course?.title ?? courseSlug,
+      to: `/courses/${courseSlug}`,
+      authored,
+      maturityLabel: authored ? "Ready to start" : "Catalogue listing",
+    }
+  })
+}
+
+function programmeListingHonesty(
+  status: CatalogEnrollmentStatus | null,
+  linked: LinkedLearning[],
+): string {
+  const authored = linked.filter((item) => item.authored)
+  if (status === "coming_soon" || status === "waitlist") {
+    return "This programme is not open yet. There is no classroom session or batch behind the listing."
+  }
+  if (authored.length && linked.length === authored.length) {
+    return `Enrolment opens the ${authored[0].title} course — the authored learning path. Brochure modules beyond that course are not teachable here yet.`
+  }
+  if (authored.length) {
+    return `What you can study today is ${authored.map((item) => item.title).join(" and ")}. Other linked listings are thinner than Data Analytics. Brochure topics such as machine learning are not taught yet.`
+  }
+  if (linked.length) {
+    return "This programme enrols you into a thinner catalogue course. It is not as complete as Data Analytics."
+  }
+  return "There is no linked LMS course for this programme yet."
 }

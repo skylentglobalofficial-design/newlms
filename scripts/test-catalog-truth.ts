@@ -16,7 +16,10 @@ import {
 import {
   fetchCatalogCourse,
   fetchCatalogCourses,
+  fetchCatalogProgram,
+  fetchCatalogPrograms,
   mapCatalogCourseDetail,
+  mapCatalogProgramDetail,
 } from "../src/lib/catalog-api.ts"
 
 function assert(condition: unknown, message: string) {
@@ -116,8 +119,31 @@ assert(/primaryCta/.test(courseDetail), "Course page CTA must come from the hone
 assert(/thinner than Data Analytics/.test(courseDetail), "Non-authored listings keep the thinner-listing honesty copy")
 
 const programDetail = readFileSync(new URL("../src/pages/ProgramPage.tsx", import.meta.url), "utf8")
+assert(/useCatalogProgram/.test(programDetail), "Programme page loads public identity from the catalog API")
+assert(/catalog\.loading/.test(programDetail), "Programme page distinguishes a loading state")
+assert(/catalog\.error/.test(programDetail), "Programme page distinguishes a network\/API error")
+assert(/This programme could not be loaded/.test(programDetail), "API failure renders an error state")
+assert(/This is not a missing programme/.test(programDetail), "API failure must not look like a 404")
+assert(/Programme not found/.test(programDetail), "Unknown API slug still has a not-found state")
 assert(/programmeDiscoveryFor/.test(programDetail), "Authored programmes must resolve from real discovery data")
 assert(/discovery.modules/.test(programDetail), "Programme page must show the taught module path")
+assert(/ProgramWorkflowVisual/.test(programDetail), "Authored programmes keep ProgramWorkflowVisual")
+assert(/PROGRAMME_WORK_SURFACES/.test(programDetail), "Authored programmes keep work-surface copy")
+assert(/PROGRAMME_ENROLMENT_FACTS/.test(programDetail), "Authored programmes keep enrolment facts")
+assert(/ProductLanguage/.test(programDetail), "Authored ProductLanguage remains mounted")
+assert(/hasTaughtPath/.test(programDetail), "Taught-path enrolment stays on authored linked courses")
+assert(/isAuthoredCourse/.test(programDetail), "Authored linked-course logic remains")
+assert(
+  /isProgramEnrollable\(program\) && hasTaughtPath/.test(programDetail),
+  "A programme is not enrolable from API presence or moduleCount alone",
+)
+assert(!/moduleCount\s*>\s*0/.test(programDetail), "moduleCount > 0 must not make a programme ready")
+assert(!/program\.curriculum|\.curriculum\b/.test(programDetail), "Program.curriculum is not treated as authored taught curriculum")
+assert(/linkedCourseSlugs/.test(programDetail), "API linkedCourseSlugs control the programme-to-course relationship")
+assert(/kind: "program"/.test(programDetail), "Enrolment on /programs/:slug remains a PROGRAM")
+assert(/slug: program.slug/.test(programDetail), "Enrolment still uses the programme slug")
+assert(!/kind: "course"/.test(programDetail), "product-management on /programs must not enrol as a course")
+assert(!/fetchCatalogCourse|useCatalogCourse/.test(programDetail), "Programme detail must not load the course catalog by slug")
 assert(!/PROGRAMME_INTENDED_STEPS/.test(programDetail), "Programme page must not present the generic intended-path board as live teaching")
 assert(!/curriculumDetail|projectsDetail|whatYouWillLearn/.test(programDetail), "Programme page must not render brochure curriculum as live teaching")
 assert(/Payment is not collected/.test(programDetail), "Programme page must state that payment is not collected")
@@ -245,6 +271,54 @@ assert(mappedDetail.curriculum[0]?.nodes[0]?.title === "Read a table", "Course-d
 assert(mappedDetail.curriculum[0]?.nodes[0]?.nodeType === "NOTES", "Course-detail mapper keeps nodeType")
 assert(mappedDetail.curriculum[0]?.nodes[0]?.duration === "12 min", "Course-detail mapper keeps node duration")
 
+const mappedProgram = mapCatalogProgramDetail({
+  slug: "product-management",
+  name: "Product Management",
+  enrollmentStatus: "OPEN",
+  duration: "6 months",
+  format: "Self-paced",
+  level: "Beginner",
+  desc: "A professional programme listing.",
+  programType: "PROFESSIONAL",
+  moduleCount: 40,
+  projectCount: 8,
+  linkedCourseSlugs: ["product-management"],
+  pricing: [{ name: "Standard", price: 4999, originalPrice: 9999, features: [], highlight: false }],
+  curriculum: [{ title: "Brochure module that must not become the taught path" }],
+})
+assert(mappedProgram.slug === "product-management", "Programme-detail mapper keeps slug")
+assert(mappedProgram.name === "Product Management", "Programme-detail mapper keeps name")
+assert(mappedProgram.enrollmentStatus === "open", "Programme-detail mapper keeps enrollmentStatus")
+assert(mappedProgram.linkedCourseSlugs[0] === "product-management", "Programme-detail mapper keeps linkedCourseSlugs")
+assert(mappedProgram.duration === "6 months", "Programme-detail mapper keeps duration")
+assert(mappedProgram.format === "Self-paced", "Programme-detail mapper keeps format")
+assert(mappedProgram.moduleCount === 40, "Programme-detail mapper preserves moduleCount without treating it as readiness")
+assert(!("curriculum" in mappedProgram), "Programme-detail mapper must not keep brochure curriculum")
+assert(
+  !mappedProgram.linkedCourseSlugs.every((slug) => slug === "product-management") || isAuthoredCourse("product-management"),
+  "product-management course authorship stays on the authored registry, not programme moduleCount",
+)
+
+const listingProgram = mapCatalogProgramDetail({
+  slug: "full-stack",
+  name: "Full Stack Software Development",
+  enrollmentStatus: "OPEN",
+  duration: "6 months",
+  format: "Self-paced",
+  level: "Beginner",
+  desc: "A catalogue listing.",
+  programType: "PROFESSIONAL",
+  moduleCount: 99,
+  projectCount: 4,
+  linkedCourseSlugs: ["full-stack-web"],
+  pricing: [],
+})
+assert(listingProgram.moduleCount === 99, "API moduleCount can be high on a listing")
+assert(
+  !listingProgram.linkedCourseSlugs.some((slug) => isAuthoredCourse(slug)),
+  "A non-authored programme stays non-authored even with moduleCount and linkedCourseSlugs",
+)
+
 const originalFetch = globalThis.fetch
 globalThis.fetch = (async (input: RequestInfo | URL) => {
   const url = String(input)
@@ -313,6 +387,68 @@ globalThis.fetch = (async (input: RequestInfo | URL) => {
   if (url === "/api/v1/catalog/courses/network-down") {
     throw new TypeError("Failed to fetch")
   }
+  if (url === "/api/v1/catalog/programs") {
+    return new Response(
+      JSON.stringify({
+        data: [
+          {
+            slug: "data-analytics-pro",
+            name: "Data Analytics",
+            enrollmentStatus: "OPEN",
+            moduleCount: 5,
+            projectCount: 4,
+            linkedCourseSlugs: ["data-analytics"],
+            pricing: [],
+          },
+        ],
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    )
+  }
+  if (
+    url === "/api/v1/catalog/programs/product-management" ||
+    url === "/api/v1/catalog/programs/data-analytics-pro" ||
+    url === "/api/v1/catalog/programs/full-stack"
+  ) {
+    const slug = url.split("/").at(-1) ?? ""
+    const name =
+      slug === "product-management"
+        ? "Product Management"
+        : slug === "data-analytics-pro"
+          ? "Data Analytics"
+          : "Full Stack Software Development"
+    const linkedCourseSlugs =
+      slug === "full-stack" ? ["full-stack-web"] : slug === "data-analytics-pro" ? ["data-analytics"] : ["product-management"]
+    return new Response(
+      JSON.stringify({
+        data: {
+          slug,
+          name,
+          enrollmentStatus: "OPEN",
+          duration: "6 months",
+          format: "Self-paced",
+          level: "Beginner",
+          desc: name,
+          programType: "PROFESSIONAL",
+          moduleCount: slug === "full-stack" ? 99 : 5,
+          projectCount: 1,
+          linkedCourseSlugs,
+          pricing: [{ name: "Standard", price: 4999, originalPrice: 9999, features: [], highlight: false }],
+          curriculum: [{ title: "Brochure module" }],
+        },
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    )
+  }
+  if (url === "/api/v1/catalog/programs/missing-program") {
+    return new Response(JSON.stringify({ error: "Program not found" }), { status: 404 })
+  }
+  if (url === "/api/v1/catalog/programs/broken-program") {
+    return new Response(JSON.stringify({ error: "Catalog unavailable" }), { status: 500 })
+  }
+  if (url === "/api/v1/catalog/programs/network-down") {
+    throw new TypeError("Failed to fetch")
+  }
   return new Response(JSON.stringify({ error: "unexpected mock url" }), { status: 500 })
 }) as typeof fetch
 
@@ -346,6 +482,43 @@ try {
     networkFailed = true
   }
   assert(networkFailed, "Network failure must throw instead of returning a false 404")
+
+  const programIndex = await fetchCatalogPrograms()
+  assert(programIndex.length === 1 && programIndex[0]?.slug === "data-analytics-pro", "fetchCatalogPrograms summary behaviour stays intact")
+  assert(!("duration" in programIndex[0]!), "Programme index mapper must not require the detail payload")
+
+  const existingProgram = await fetchCatalogProgram("data-analytics-pro")
+  assert(existingProgram?.slug === "data-analytics-pro", "Existing API programme slug loads")
+  assert(existingProgram?.linkedCourseSlugs.includes("data-analytics"), "Data Analytics programme keeps the authored course link")
+  assert(!("curriculum" in existingProgram!), "Fetched programme detail must not expose brochure curriculum")
+
+  const productProgram = await fetchCatalogProgram("product-management")
+  assert(productProgram?.slug === "product-management", "product-management remains a PROGRAMME in the programs catalog")
+  assert(productProgram?.name === "Product Management", "product-management programme keeps its programme name")
+  assert(productProgram?.linkedCourseSlugs.includes("product-management"), "product-management programme still links the course slug")
+
+  const listing = await fetchCatalogProgram("full-stack")
+  assert(listing?.moduleCount === 99, "Non-authored programme can have API moduleCount")
+  assert(!listing?.linkedCourseSlugs.some((slug) => isAuthoredCourse(slug)), "Non-authored programme links are not authored courses")
+
+  const missingProgram = await fetchCatalogProgram("missing-program")
+  assert(missingProgram === null, "Unknown API programme slug is a successful not-found")
+
+  let programFailed = false
+  try {
+    await fetchCatalogProgram("broken-program")
+  } catch {
+    programFailed = true
+  }
+  assert(programFailed, "Programme API failure must throw instead of returning a false 404")
+
+  let programNetworkFailed = false
+  try {
+    await fetchCatalogProgram("network-down")
+  } catch {
+    programNetworkFailed = true
+  }
+  assert(programNetworkFailed, "Programme network failure must throw instead of returning a false 404")
 } finally {
   globalThis.fetch = originalFetch
 }
