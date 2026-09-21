@@ -10,9 +10,6 @@ export type MediaRef = string;
 
 export const DEFAULT_PROGRAM_PHOTO: MediaRef = "skylent:catalog-browser";
 
-/** Editorial still for the /programs opening. Local file — not a remote URL. */
-export const PROGRAMS_HERO_PHOTO: MediaRef = "/content/programs/hero-study.jpg";
-
 export const PHOTO = {
   hero: "skylent:ecosystem-flow",
   classroomWarm: "skylent:schooling-classroom",

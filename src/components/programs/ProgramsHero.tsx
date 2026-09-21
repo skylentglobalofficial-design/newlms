@@ -1,12 +1,30 @@
-import { PROGRAMS_HERO_PHOTO } from "../../media"
+import { useEffect, useState } from "react"
+import { HarborDeskWorkspace } from "../product/ProductLanguage"
 import { liveProgrammeCatalogue } from "../../lib/programme-catalogue"
 import "./ProgramsHero.css"
+
+function useCompactSpecimen() {
+  const [compact, setCompact] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches,
+  )
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)")
+    const onChange = () => setCompact(mq.matches)
+    onChange()
+    mq.addEventListener("change", onChange)
+    return () => mq.removeEventListener("change", onChange)
+  }, [])
+
+  return compact
+}
 
 export default function ProgramsHero() {
   const live = liveProgrammeCatalogue()
   const readyCount = live.length
   const selfPaced = live.length > 0 && live.every((row) => row.format === "Self-paced")
   const projectBased = live.length > 0 && live.every((row) => Boolean(row.capstone))
+  const compact = useCompactSpecimen()
 
   return (
     <section className="pg-hero" aria-labelledby="pg-hero-title">
@@ -39,20 +57,9 @@ export default function ProgramsHero() {
           </ul>
         </div>
 
-        <figure className="pg-hero-figure">
-          <div className="pg-hero-frame">
-            <img
-              src={PROGRAMS_HERO_PHOTO}
-              alt="People studying together at a shared table"
-              width={1600}
-              height={1200}
-            />
-          </div>
-          <figcaption>
-            <span>Skylent</span>
-            Professional programmes
-          </figcaption>
-        </figure>
+        <div className="pg-hero-specimen">
+          <HarborDeskWorkspace compact={compact} meta="harbor-desk-case.md · 4 interviews" />
+        </div>
       </div>
     </section>
   )
