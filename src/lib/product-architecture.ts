@@ -3,10 +3,10 @@
 export type ProductMaturity = "live" | "coming_soon" | "direction" | "demo"
 
 export const MATURITY_LABEL: Record<ProductMaturity, string> = {
-  live: "Live",
+  live: "Available",
   coming_soon: "Coming soon",
   direction: "Product direction",
-  demo: "Local demo",
+  demo: "Preview",
 }
 
 export const LIVE_CORE = [
@@ -67,7 +67,7 @@ export const PG_PATHWAY = [
   { label: "Case study", sub: "Decision under constraint" },
   { label: "Project", sub: "Evidence of independent work" },
   { label: "Assessment", sub: "Judged against the specialisation" },
-  { label: "Career outcome", sub: "Readiness — not a placement promise" },
+  { label: "Career outcome", sub: "Readiness for the specialisation — when an institution runs it" },
 ] as const
 
 export const UG_PATHWAY = [
@@ -150,7 +150,7 @@ export const COURSES_NAV: MegaNavGroup = {
   items: [
     { label: "All courses", sub: "Ready courses and catalogue listings.", to: "/courses" },
     { label: "Data Analytics", sub: "SQL, spreadsheets, and a dashboard you keep.", to: "/courses/data-analytics" },
-    { label: "Product Management", sub: "Evidence → spec on a live case.", to: "/courses/product-management" },
+    { label: "Product Management", sub: "Evidence → spec on the Harbor Desk case.", to: "/courses/product-management" },
     { label: "Skills", sub: "Not sure where to start? Pick a skill.", to: "/skills" },
   ],
 }
@@ -160,7 +160,7 @@ export const PROGRAMS_NAV: MegaNavGroup = {
   tagline: "Professional learning and short sessions",
   items: [
     { label: "Professional Certificate Programs", sub: "Structured professional learning", to: "/programs" },
-    { label: "Workshops", sub: "Short, focused live sessions", to: "/workshops" },
+    { label: "Workshops", sub: "Short planned sessions — not scheduled yet", to: "/workshops" },
   ],
 }
 
@@ -183,7 +183,7 @@ export const EXAMS_NAV: MegaNavGroup = {
     {
       heading: "UG",
       items: [
-        { label: "JEE", sub: "Catalogue outline — not a live engine.", to: "/programs/jee-advanced-prep", mark: "coming_soon" },
+        { label: "JEE", sub: "Catalogue outline — exam engine not built.", to: "/programs/jee-advanced-prep", mark: "coming_soon" },
         { label: "NEET", sub: "Specified path — not built yet.", to: "/exams/neet", mark: "coming_soon" },
       ],
     },
@@ -192,7 +192,7 @@ export const EXAMS_NAV: MegaNavGroup = {
       items: [
         { label: "IIT JAM", sub: "Specified path — not built yet.", to: "/exams/iit-jam", mark: "coming_soon" },
         { label: "GATE", sub: "Specified path — not built yet.", to: "/exams/gate", mark: "coming_soon" },
-        { label: "CAT", sub: "Catalogue outline — not a live engine.", to: "/programs/cat-prep", mark: "coming_soon" },
+        { label: "CAT", sub: "Catalogue outline — exam engine not built.", to: "/programs/cat-prep", mark: "coming_soon" },
       ],
     },
     {
@@ -204,11 +204,11 @@ export const EXAMS_NAV: MegaNavGroup = {
     },
   ],
   items: [
-    { label: "JEE", sub: "Catalogue outline — not a live engine.", to: "/programs/jee-advanced-prep", mark: "coming_soon" },
+    { label: "JEE", sub: "Catalogue outline — exam engine not built.", to: "/programs/jee-advanced-prep", mark: "coming_soon" },
     { label: "NEET", sub: "Specified path — not built yet.", to: "/exams/neet", mark: "coming_soon" },
     { label: "IIT JAM", sub: "Specified path — not built yet.", to: "/exams/iit-jam", mark: "coming_soon" },
     { label: "GATE", sub: "Specified path — not built yet.", to: "/exams/gate", mark: "coming_soon" },
-    { label: "CAT", sub: "Catalogue outline — not a live engine.", to: "/programs/cat-prep", mark: "coming_soon" },
+    { label: "CAT", sub: "Catalogue outline — exam engine not built.", to: "/programs/cat-prep", mark: "coming_soon" },
     { label: "SSC", sub: "Specified path — not built yet.", to: "/exams/ssc", mark: "coming_soon" },
     { label: "UPSC", sub: "Specified path — not built yet.", to: "/exams/upsc", mark: "coming_soon" },
   ],
@@ -218,7 +218,7 @@ export const EXAM_STUBS: Record<string, { title: string; group: string; summary:
   neet: {
     title: "NEET",
     group: "UG",
-    summary: "NEET is a named undergraduate medical entrance path on Skylent. There is no live question bank, mock engine, or classroom behind this page yet.",
+    summary: "NEET is a named undergraduate medical entrance path on Skylent. Question bank, mocks, and classroom tools are not built yet.",
   },
   "iit-jam": {
     title: "IIT JAM",
@@ -228,17 +228,17 @@ export const EXAM_STUBS: Record<string, { title: string; group: string; summary:
   gate: {
     title: "GATE",
     group: "PG",
-    summary: "GATE is a named postgraduate engineering entrance path on Skylent. There is no live GATE engine on this product today.",
+    summary: "GATE is a named postgraduate engineering entrance path on Skylent. The exam-prep product is not built yet.",
   },
   ssc: {
     title: "SSC",
     group: "Government",
-    summary: "SSC is a named government exam path on Skylent. It is specified in the information architecture, not as a live prep product.",
+    summary: "SSC is a named government exam path on Skylent. It is listed in the product map; exam-prep tools are not built yet.",
   },
   upsc: {
     title: "UPSC",
     group: "Government",
-    summary: "UPSC is a named government exam path on Skylent. It is specified in the information architecture, not as a live prep product.",
+    summary: "UPSC is a named government exam path on Skylent. It is listed in the product map; exam-prep tools are not built yet.",
   },
 }
 

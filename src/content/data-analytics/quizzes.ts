@@ -267,7 +267,7 @@ export const DA_QUIZZES: Record<string, DaQuizBank> = {
         ],
         correctIndex: 1,
         explanation:
-          'This product records progress separately from competence. Career OS does not auto-create projects. Certificates are not issued in this pilot.',
+          'This product records progress separately from competence. Career OS does not auto-create projects. Certificates are not issued yet.',
         lessonId: 'l14',
         moduleId: 'm5',
       },

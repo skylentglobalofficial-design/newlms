@@ -223,7 +223,7 @@ export function LessonContentView({
       {material?.assignment && <AssignmentBriefView brief={material.assignment} accent={accent} />}
       {!material?.assignment && (
         <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
-          A structured brief has not been authored for this assignment. Paste the work you can defend. There is no grading in this pilot.
+          A structured brief has not been authored for this assignment. Paste the work you can defend. There is no faculty grading on this assignment.
         </p>
       )}
       <AssessmentSurface
@@ -235,8 +235,8 @@ export function LessonContentView({
         onSubmitAssignment={(text) => { void onAssignmentSubmit?.(text) }}
         completionNote={
           evidence
-            ? `Submission recorded. There is no grading in this pilot. Add “${evidence.artifact}” to Career OS → Projects yourself if you want it as portfolio evidence.`
-            : 'Submission recorded. There is no grading in this pilot. Add a project to Career OS yourself if you want portfolio evidence.'
+            ? `Submission recorded. There is no faculty grading on this assignment. Add “${evidence.artifact}” to Career OS → Projects yourself if you want it as portfolio evidence.`
+            : 'Submission recorded. There is no faculty grading on this assignment. Add a project to Career OS yourself if you want portfolio evidence.'
         }
       />
     </div>

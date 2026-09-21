@@ -150,7 +150,7 @@ export const PROGRAMME_WORK_SURFACES = [
 /** Enrolment behaviour, stated exactly as the product implements it today. */
 export const PROGRAMME_ENROLMENT_FACTS = [
   "Enrolment opens the linked authored course in Skylent OS. It does not create a separate taught programme, cohort, or batch.",
-  "A listed price is shown on the programme page, but payment is not collected in this environment.",
-  "Certificates are not issued in this pilot.",
-  "Work you produce can be carried into Career OS as evidence. Career OS is a workspace for your profile and work — not a placement service.",
+  "Payment is not collected.",
+  "Certificates are not issued yet.",
+  "Work you produce can be added to Career OS as evidence on your profile.",
 ] as const

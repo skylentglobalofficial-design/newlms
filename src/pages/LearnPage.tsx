@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
@@ -32,25 +32,6 @@ import {
 import { workspaceErrorMessage } from '../lib/http'
 import './LearnWorkspace.css'
 
-const SkylentAI = lazy(() => import('../components/lms/SkylentAI'))
-
-function SkylentAiFallback({ compact }: { compact: boolean }) {
-  if (compact) {
-    return (
-      <section className="os-ai is-compact os-ai-fallback" aria-hidden="true">
-        <p className="os-eyebrow">Skylent AI</p>
-        <p className="os-ai-idle">Ask about this lesson</p>
-      </section>
-    )
-  }
-  return (
-    <aside className="os-ai os-ai-fallback" aria-hidden="true">
-      <p className="os-eyebrow">Skylent AI</p>
-      <p className="os-ai-idle">Ask about this lesson.</p>
-    </aside>
-  )
-}
-
 function dashRoute(role?: string) {
   switch (role) {
     case 'faculty': return '/dashboard/faculty'
@@ -77,7 +58,6 @@ export default function LearnPage() {
   const [selectedLessonId, setSelectedLessonId] = useState(lessonId ?? firstLessonId)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [compact, setCompact] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches)
-  const [aiCompact, setAiCompact] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 1200px)').matches)
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
   const [quizStatus, setQuizStatus] = useState<'loading' | 'ready'>('ready')
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
@@ -109,14 +89,6 @@ export default function LearnPage() {
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 900px)')
     const apply = () => setCompact(mq.matches)
-    apply()
-    mq.addEventListener('change', apply)
-    return () => mq.removeEventListener('change', apply)
-  }, [])
-
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 1200px)')
-    const apply = () => setAiCompact(mq.matches)
     apply()
     mq.addEventListener('change', apply)
     return () => mq.removeEventListener('change', apply)
@@ -392,14 +364,13 @@ export default function LearnPage() {
           </div>
         </header>
 
-        <div className={selectedLesson && !selectedState.locked && aiCompact ? 'os-stage is-ai-compact' : 'os-stage'}>
-          <div className={selectedLesson && !selectedState.locked ? 'os-stage-grid' : undefined}>
+        <div className="os-stage">
           <div className="os-workspace">
             {allComplete ? (
               <div className="os-banner">
                 <p className="os-eyebrow">Course complete</p>
                 <h2>{readyCourse.title}</h2>
-                <p className="os-lead">You have finished every lesson in this workspace. Certificates are not issued in this pilot. You can carry learning evidence into Career OS.</p>
+                <p className="os-lead">You have finished every lesson in this workspace. Certificates are not issued yet. You can add learning evidence to Career OS.</p>
                 <div className="os-actions">
                   <Link className="os-btn os-btn-primary" to="/career-os">Open Career OS</Link>
                 </div>
@@ -504,18 +475,6 @@ export default function LearnPage() {
             ) : (
               <p className="os-lead">This lesson is unavailable. Choose another from the curriculum.</p>
             )}
-          </div>
-          {selectedLesson && !selectedState.locked ? (
-            <Suspense fallback={<SkylentAiFallback compact={aiCompact} />}>
-              <SkylentAI
-                key={selectedLesson.id}
-                courseSlug={readyCourse.slug}
-                lessonId={selectedLesson.id}
-                lessonTitle={selectedLesson.title}
-                compact={aiCompact}
-              />
-            </Suspense>
-          ) : null}
           </div>
         </div>
       </div>

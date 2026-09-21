@@ -198,14 +198,7 @@ function AuthoredProgramme({
               </Link>
             </div>
 
-            {view.listedPrice > 0 ? (
-              <p className="cat-honesty">
-                Listed price ₹{view.listedPrice.toLocaleString("en-IN")}. Payment is not collected in this
-                pilot. A certificate is not issued yet.
-              </p>
-            ) : (
-              <p className="cat-honesty">Payment is not collected. A certificate is not issued in this pilot.</p>
-            )}
+            <p className="cat-honesty">Payment is not collected. A certificate is not issued yet.</p>
             <p className="cat-fine">{discovery.honesty}</p>
           </div>
 
@@ -251,7 +244,7 @@ function AuthoredProgramme({
         <section className="cat-band" aria-labelledby="pd-learn-title">
           <div className="cat-rail">
             <p className="cat-label">What you learn</p>
-            <h2 id="pd-learn-title">Capabilities from the live linked course.</h2>
+            <h2 id="pd-learn-title">Capabilities from the linked course.</h2>
             <p className="cat-fine">
               Taken from the {discovery.courseTitle} outcomes. Not from brochure modules that are not taught yet.
             </p>
@@ -323,8 +316,7 @@ function AuthoredProgramme({
             <h2 id="pd-evidence-title">Keep the work. Carry it into Career OS.</h2>
             <p className="cat-lead">
               The finished {discovery.capstone ?? "capstone"} lives in your workspace. You can add it to Career OS
-              as a work sample attached to your profile. Career OS is a workspace for that evidence — not a
-              placement service.
+              as a work sample on your profile.
             </p>
             <Link className="cat-text-link" to="/career-os">
               How Career OS holds evidence →
@@ -448,14 +440,7 @@ function ListingProgramme({
               </Link>
             )}
           </div>
-          {view.listedPrice > 0 && !comingLater ? (
-            <p className="cat-honesty">
-              Listed price ₹{view.listedPrice.toLocaleString("en-IN")}. Payment is not collected in this
-              pilot. A certificate is not issued yet.
-            </p>
-          ) : (
-            <p className="cat-honesty">Payment is not collected. A certificate is not issued in this pilot.</p>
-          )}
+          <p className="cat-honesty">Payment is not collected. A certificate is not issued yet.</p>
           <p className="cat-fine">{afterEnrol}</p>
         </div>
       </section>

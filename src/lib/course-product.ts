@@ -41,12 +41,12 @@ export type CourseProductProfile = {
 
 const SHARED_FAQ_PAYMENT: CourseFaq = {
   q: "Do I pay when I click Enrol?",
-  a: "No. A listed price is shown, but payment is not collected in this environment. Enrolment opens the course workspace.",
+  a: "No. Payment is not collected. Enrolment opens the course workspace.",
 }
 
 const SHARED_FAQ_CERT: CourseFaq = {
   q: "Is a certificate issued?",
-  a: "Not in this pilot.",
+  a: "No. Certificates are not issued yet.",
 }
 
 const DATA_ANALYTICS_PROFILE: CourseProductProfile = {
@@ -78,7 +78,7 @@ const DATA_ANALYTICS_PROFILE: CourseProductProfile = {
   practiceIntro: "Practice uses a synthetic Northwind Retail dataset. There is no live classroom and no video stream.",
   visual: "northwind",
   lab: {
-    label: "Open Lab",
+    label: "Interactive lab",
     href: (lessonId) => `/os/labs/data-analytics/northwind${lessonId ? `?lesson=${encodeURIComponent(lessonId)}` : ""}`,
     note: "Practice this here with northwind_sales.csv.",
   },

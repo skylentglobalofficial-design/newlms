@@ -58,15 +58,13 @@ export default function CareerOSPublicPage() {
               </div>
               <h1 id="cos-public-title">Keep your learning evidence in one place.</h1>
               <p className="cos-public-lead">
-                Career OS is the workspace for your profile and the work you build while learning. It holds what
-                you actually produced &mdash; nothing on this page is a sample feed.
+                Career OS holds your profile and the work you add from your courses. Sign in to use your own record.
               </p>
               <div className="cos-public-actions">
                 <Link to="/login">Sign in to Career OS</Link>
               </div>
               <p className="cos-public-fine">
-                Career OS is a workspace, not a placement service. If Opportunities is empty, that is the real
-                state.
+                Opportunities stays empty until a role is published. Profile, projects, and applications use your own data.
               </p>
             </div>
             <div className="cos-public-visual">
@@ -117,7 +115,7 @@ export default function CareerOSPublicPage() {
               ))}
             </ul>
             <p className="cos-public-fine">
-              Every area above opens after you sign in. None of them are populated with example data.
+              Sign in to open these areas with your own profile and work.
             </p>
           </div>
         </section>

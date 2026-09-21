@@ -16,7 +16,7 @@ const DESTINATIONS: Array<{
     id: "career",
     index: "01",
     title: "Build a career",
-    copy: "Build practical skills, create real work, and move toward your next opportunity.",
+    copy: "Keep a profile, work samples, and applications in Career OS.",
     node: "Career",
     to: "/career-os",
   },
@@ -148,9 +148,7 @@ export default function SkylentHomeGoals() {
           <p className="hp-dir-kicker">Start with a goal</p>
           <h2 id="home-goals-heading">Where do you want to go?</h2>
           <p className="hp-dir-lead">
-            Choose a direction.
-            <br />
-            {"We'll help you build the skills to get there."}
+            Choose a direction. Open the matching product — courses, exams, Career OS, or skills.
           </p>
         </header>
 
@@ -211,7 +209,7 @@ export default function SkylentHomeGoals() {
       </ol>
 
       <div className="hp-rail hp-dir-foot">
-        <p>New goals. Real skills. A brighter tomorrow.</p>
+        <p>Courses, programmes, exams, and Career OS — open what you need next.</p>
         <Link to="/programs">Explore programs →</Link>
       </div>
     </section>

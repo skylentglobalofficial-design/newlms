@@ -29,8 +29,7 @@ export default function WorkshopsPage() {
               scheduled for delivery yet, and nothing on this page can be booked.
             </p>
             <p className="cat-honesty">
-              Dates and prices are indicative planning information. Attendance, payment, and certificates are not
-              built.
+              Workshops are not scheduled. Attendance, payment, and certificates are not built.
             </p>
           </div>
         </section>
@@ -80,13 +79,12 @@ export default function WorkshopsPage() {
                       <span className="ws-meta">{workshop.mode}</span>
                       <span className="ws-meta">{workshop.duration}</span>
                       <span className="ws-state">Not open</span>
-                      <span className="ws-price">₹{workshop.price.toLocaleString("en-IN")}</span>
                     </Link>
                   </li>
                 ))}
               </ul>
             )}
-            <p className="cat-fine">Indicative prices. Payment is not collected.</p>
+            <p className="cat-fine">Registration is not open. Payment is not collected.</p>
           </div>
         </section>
       </div>

@@ -100,8 +100,8 @@ export function PathwayModel({
 
 export function LiveCoreRail({ lead }: { lead?: string }) {
   return (
-    <aside className="arch-live-core" aria-label="Live Skylent product">
-      <div className="skylent-label" style={{ color: C.indigo, marginBottom: 10 }}>Operating core · live</div>
+    <aside className="arch-live-core" aria-label="Skylent products you can use now">
+      <div className="skylent-label" style={{ color: C.indigo, marginBottom: 10 }}>Available now</div>
       {lead && <p style={{ margin: "0 0 16px", color: C.slate, fontSize: 13.5, lineHeight: 1.6, maxWidth: 520 }}>{lead}</p>}
       <div className="arch-live-core-row">
         {LIVE_CORE.map((item, i) => (

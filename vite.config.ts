@@ -113,7 +113,7 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
   }
 
   const FALLBACK_TITLE = 'Skylent — Learn. Practise. Build.'
-  const FALLBACK_DESCRIPTION = 'Learn useful skills, practise through real work, and keep evidence of what you learn.'
+  const FALLBACK_DESCRIPTION = 'Written courses in Skylent OS: Data Analytics and Product Management, with practice, a finishing project, and Career OS for the work you keep.'
   const rawTitle = config.title?.trim() ?? ''
   const rawDescription = config.description?.trim() ?? ''
   const title = !rawTitle || rawTitle.toLowerCase() === 'demo' || rawTitle.toLowerCase() === 'figma make app'

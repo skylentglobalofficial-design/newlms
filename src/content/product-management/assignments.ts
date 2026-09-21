@@ -1,7 +1,7 @@
 import type { AssignmentBrief } from '../data-analytics/assignments'
 
 const pasteNote =
-  'This LMS records a text submission only. Paste your note or memo. There is no file upload, no design tool, no coding runtime, and no faculty grading in this pilot.'
+  'This LMS records a text submission only. Paste your note or memo. There is no file upload, no design tool, no coding runtime, and no faculty grading yet.'
 
 const caseHref = '/content/product-management/harbor-desk-case.md'
 const caseName = 'harbor-desk-case.md'

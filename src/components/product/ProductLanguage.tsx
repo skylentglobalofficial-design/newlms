@@ -388,7 +388,7 @@ export function CertificateOsPreview() {
         <div className="pl-cert-stage">
           <p className="pl-kicker">Current work</p>
           <p className="pl-cert-stage-title">Project workspace</p>
-          <p className="pl-fine">Produce work from what the courses taught. Nothing here is a grade or a job claim.</p>
+          <p className="pl-fine">The capstone is assembled here from the course brief.</p>
           <div className="pl-cert-paper" aria-hidden="true">
             <em>Brief</em>
             <span />
@@ -596,7 +596,7 @@ export function PathwayTrack({
 
 export function CareerKeepEmpty({
   heading = "Nothing kept yet",
-  copy = "Work samples from Data Analytics and Product Management appear here when you add them from a completed project. Nothing is invented.",
+  copy = "Work samples from Data Analytics and Product Management appear here when you add them from a completed project.",
 }: {
   heading?: string
   copy?: string

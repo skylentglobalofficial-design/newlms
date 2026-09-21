@@ -74,7 +74,7 @@ export default function CareerOSJobsPage() {
           Opportunities
         </h1>
         <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
-          Roles appear here when a partner publishes them. Until then this surface stays empty — we do not invent openings.
+          Roles appear here when they are published. None are listed yet.
         </p>
       </div>
 
@@ -160,7 +160,7 @@ export default function CareerOSJobsPage() {
           ) : board.displayedJobs.length === 0 ? (
             <EmptyBlock
               message={board.view === "browse"
-                ? "No open roles are listed yet. Live roles appear here when partners publish them — none are invented for this view."
+                ? "No roles are listed yet. When a role is published, it will show here."
                 : "You have not saved any roles yet. When a role is published, you can save it from this list."}
               onAction={board.view === "saved" ? () => board.setView("browse") : undefined}
               actionLabel={board.view === "saved" ? "Browse roles" : undefined}

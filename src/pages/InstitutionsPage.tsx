@@ -152,7 +152,7 @@ const COLLABORATION = [
   {
     n: "02",
     label: "Configure",
-    desc: "Faculty, curriculum leads, and Skylent design the programme together. Then we configure what already ships: organisation accounts, live programmes, and LMS progress.",
+    desc: "Faculty, curriculum leads, and Skylent design the programme together. Then we configure what already ships: organisation accounts, open programmes, and LMS progress.",
   },
   {
     n: "03",
@@ -167,7 +167,7 @@ const COLLABORATION = [
 ] as const
 
 const SCOPE = [
-  { k: "Live for learners", v: "Programmes, LMS, Career OS" },
+  { k: "Available for learners", v: "Programmes, LMS, Career OS" },
   { k: "Organisation account", v: "Sign-in shell exists" },
   { k: "Not built", v: "Batches, faculty assignment, reporting" },
   { k: "Next conversation", v: "Co-design around what already ships" },
@@ -192,11 +192,11 @@ export default function InstitutionsPage() {
             <p className="pe-lead">
               Skylent works with schools, colleges, universities, training partners, assessment bodies, and industry
               on the learning, skills, and career layer around their existing academic work. Institution OS is product
-              direction. The organisation dashboard today is an honest shell.
+              direction. The organisation dashboard today is an account shell — batches and reporting are not built.
             </p>
             <p className="pe-note">
               Batches, faculty assignment, and institutional reporting are not built. Partnership starts from what
-              already ships: live programmes, LMS progress, and Career OS.
+              already ships: professional programmes that are open, LMS progress, and Career OS.
             </p>
             <p className="pe-actions">
               <Link className="pe-cta" to="/contact">
@@ -251,8 +251,8 @@ export default function InstitutionsPage() {
           <p className="pe-kicker">Who Skylent works with</p>
           <h2 id="inst-types-title">Partnership by institution type.</h2>
           <p className="pe-lead">
-            An operating map — not a live control panel. Select a type to open the intended spine we would build with
-            that partner.
+            This is a map of institution types, not an operations dashboard. Select a type to see the intended
+            workflow we would build with that partner.
           </p>
 
           <div className="pe-map">
@@ -281,7 +281,7 @@ export default function InstitutionsPage() {
                       </p>
                       <p>{item.value}</p>
                       <p>{item.description}</p>
-                      <p className="pe-note">Product direction · not a live control panel</p>
+                      <p className="pe-note">Product direction · operations dashboard not built</p>
                       <ol className="pe-map-rail" aria-label="Intended workflow">
                         {item.workflow.map((step) => (
                           <li key={step}>{step}</li>

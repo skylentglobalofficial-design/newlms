@@ -18,19 +18,19 @@ const STAGES: Array<{
     id: "learn",
     index: "01",
     title: "Learn",
-    copy: "Understand concepts clearly. Explore ideas, examples and real applications.",
+    copy: "Written lessons, examples, and recaps in Skylent OS.",
   },
   {
     id: "practice",
     index: "02",
     title: "Practice",
-    copy: "Apply what you learn through problems, labs, cases and more.",
+    copy: "Quizzes, assignments, cases, and an interactive SQL lab.",
   },
   {
     id: "build",
     index: "03",
     title: "Build",
-    copy: "Create real work. Turn your skills into something meaningful.",
+    copy: "Finish a course project and keep the work sample.",
   },
 ]
 
@@ -56,9 +56,9 @@ const LEARN_MODES: Array<{ id: LearnMode; title: string; note: string }> = [
 
 const PRACTICE_MODES: Array<{ id: PracticeMode; title: string; note: string }> = [
   { id: "problems", title: "Problems", note: "Test your understanding" },
-  { id: "labs", title: "Virtual Lab", note: "Hands-on practice" },
-  { id: "cases", title: "Case Study", note: "Real-world scenarios" },
-  { id: "exercises", title: "Exercises", note: "Build confidence" },
+  { id: "labs", title: "Interactive lab", note: "SQL practice in the browser" },
+  { id: "cases", title: "Case study", note: "Course case notes" },
+  { id: "exercises", title: "Exercises", note: "Short checks" },
 ]
 
 const BUILD_MODES: Array<{ id: BuildMode; title: string; note: string }> = [
@@ -72,7 +72,7 @@ const LEARN_PATH = [
   "Learn the concept",
   "Explore examples",
   "Try practice questions",
-  "Apply in real scenarios",
+  "Apply in a course assignment",
   "Track your progress",
 ]
 
@@ -759,8 +759,7 @@ function BuildBody({
           <p className="hp-lpb-kicker">Showcase</p>
           <h3>Keep the work. Carry it yourself.</h3>
           <p>
-            Work you keep can move into Career OS. Nothing is published automatically, and
-            nothing is invented here.
+            Work you keep can move into Career OS. You add it from a finished project.
           </p>
           <div className="hp-lpb-tiles">
             <button type="button" onClick={() => onMode("workspace")}>
@@ -868,19 +867,19 @@ export default function SkylentHeroLearningModel() {
     stage === "learn"
       ? {
           kicker: "Learn",
-          title: "Your learning journey, structured for real progress.",
-          lead: "Concepts, examples, explanations and more — all in one place.",
+          title: "Written lessons in Skylent OS.",
+          lead: "Open a ready course. Read the lesson, check examples, and keep notes as you go.",
         }
       : stage === "practice"
         ? {
             kicker: "Practice",
-            title: "Put your knowledge to work.",
-            lead: "Solve problems, work on cases, run labs and get instant feedback.",
+            title: "Check what you learned.",
+            lead: "Quizzes, assignments, course cases, and the Northwind SQL lab for Data Analytics.",
           }
         : {
             kicker: "Build",
-            title: "Turn your skills into something real.",
-            lead: "Work on projects, create original work and build a portfolio that shows what you can do.",
+            title: "Finish a project you keep.",
+            lead: "Each ready course ends in a capstone. Add that work to Career OS when you want it on your profile.",
           }
 
   return (
@@ -890,7 +889,7 @@ export default function SkylentHeroLearningModel() {
       </h1>
       <div className="hp-rail hp-lpb-stage">
         <div className="hp-lpb-journey" role="radiogroup" aria-label="Learning journey" onKeyDown={onJourneyKey}>
-          <p className="hp-lpb-eyebrow">A brighter you through learning</p>
+          <p className="hp-lpb-eyebrow">Learn · Practise · Build</p>
           {STAGES.map((item) => {
             const on = stage === item.id
             return (
@@ -914,9 +913,9 @@ export default function SkylentHeroLearningModel() {
             )
           })}
           <p className="hp-lpb-foot">
-            Any goal. Any subject.
+            Start with a ready course.
             <br />
-            A complete learning journey, in one place.
+            Lessons, practice, and a project in Skylent OS.
           </p>
         </div>
 

@@ -37,7 +37,7 @@ export default function PathComingPage() {
               <Link className="cat-btn cat-btn-ghost" to="/">Back to Skylent</Link>
             </div>
             <p className="cat-honesty">
-              No faculty, mock tests, score predictors, or placement claims are shown here because they are not built.
+              Mock tests, score predictors, and faculty tools are not built for this exam path.
             </p>
           </div>
         </section>

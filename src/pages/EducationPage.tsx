@@ -23,7 +23,7 @@ export default function EducationPage() {
           <header className="arch-line-header" style={{ marginBottom: 36 }}>
             <div className="skylent-label" style={{ color: C.indigo, marginBottom: 14 }}>Education</div>
             <h1 className="skylent-display-md" style={{ color: C.ink, margin: "0 0 14px", maxWidth: 740 }}>
-              Academic product lines.<br />Not a live course catalogue.
+              Academic product lines.<br />Not the course catalogue.
             </h1>
             <p className="skylent-body-lg" style={{ color: C.slate, margin: 0, maxWidth: 560 }}>
               Schooling, undergraduate, postgraduate, and exams are how Skylent will serve institutions and academic learners. They are in design. They are not enrollable catalogues today.
@@ -33,7 +33,7 @@ export default function EducationPage() {
           <AcademicLineIndex />
 
           <section className="arch-section" style={{ paddingTop: 48 }}>
-            <LiveCoreRail lead="If you want to start now, open a live course or programme. Skylent OS and Career OS follow after enrol." />
+            <LiveCoreRail lead="If you want to start now, open a ready course or programme. Skylent OS and Career OS follow after enrol." />
             <div className="edu-start-row">
               <Link to="/courses/data-analytics">
                 <strong>Start Data Analytics</strong>

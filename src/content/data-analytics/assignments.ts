@@ -22,7 +22,7 @@ export type AssignmentBrief = {
 };
 
 const pasteNote =
-  'This LMS records a text submission only. Paste tables, SQL, dashboard notes, and a public file link if you have one. There is no file upload, no live Excel/SQL runtime, and no faculty grading in this pilot.';
+  'This LMS records a text submission only. Paste tables, SQL, dashboard notes, and a public file link if you have one. There is no file upload, no live Excel/SQL runtime, and no faculty grading yet.';
 
 export const DA_ASSIGNMENTS: Record<string, AssignmentBrief> = {
   l6: {

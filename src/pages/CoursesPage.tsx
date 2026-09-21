@@ -34,10 +34,10 @@ export default function CoursesPage() {
       <div className="cat-page">
         <section className="cat-hero">
           <div className="cat-rail">
-            <h1>Courses you can start this week.</h1>
+            <h1>Courses</h1>
             <p className="cat-lead">
               Focused learning units in Skylent OS. Data Analytics and Product Management are ready to enrol;
-              the rest are thinner catalogue listings.
+              the rest are catalogue listings.
             </p>
             <Link className="cat-text-link" to="/programs">Looking for a longer pathway? See programmes</Link>
             <input
@@ -81,8 +81,8 @@ export default function CoursesPage() {
                 ) : null}
                 {listings.length > 0 ? (
                   <div className="cat-group">
-                    <h2>Thinner listings</h2>
-                    <p className="cat-fine">These exist in the catalogue and LMS, but they are not as complete as the ready courses.</p>
+                    <h2>Catalogue</h2>
+                    <p className="cat-fine">Outlines in the catalogue. They are not finished teaching paths like Data Analytics or Product Management.</p>
                     <div className="cat-grid">
                       {listings.map((view) => (
                         <CourseCard key={view.slug} view={view} />
@@ -136,7 +136,6 @@ function CourseCard({ view, featured = false }: { view: ReturnType<typeof course
           <span>{lessons}</span>
           <span>{view.course.level}</span>
         </div>
-        <p className="cat-card-price">₹{view.listedPrice.toLocaleString("en-IN")}</p>
         <span className={view.maturity === "ready" ? "cat-btn cat-btn-primary cat-card-cta" : "cat-btn cat-btn-ghost cat-card-cta"}>
           {view.ctaLabel}
         </span>

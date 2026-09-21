@@ -154,7 +154,7 @@ export default function SkylentHomePath() {
             See the journey before you start.
           </h2>
           <p className="hp-ch-lead">
-            A clear progression from foundations to real work, with each stage building on the one before it.
+            From first lesson to a finished project, each stage uses the previous one.
           </p>
           <Link className="hp-path-cta" to="/programs">
             Explore programmes

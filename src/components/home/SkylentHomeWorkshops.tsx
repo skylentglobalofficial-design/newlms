@@ -5,9 +5,9 @@ import "./SkylentHomeWorkshops.css"
 const WORKSHOPS_HREF = "/workshops"
 
 const BEATS = [
-  { id: "question", label: "Question", note: "A real problem" },
+  { id: "question", label: "Question", note: "A defined brief" },
   { id: "try", label: "Try", note: "Hands-on work" },
-  { id: "make", label: "Make", note: "Create something" },
+  { id: "make", label: "Make", note: "A piece of work" },
   { id: "reflect", label: "Reflect", note: "Keep the takeaway" },
 ] as const
 
@@ -43,9 +43,9 @@ export default function SkylentHomeWorkshops() {
             15 Workshops
           </p>
           <h2 id="home-workshops-heading" className="hp-ch-title">
-            Learn by doing.
+            Short planned sessions.
           </h2>
-          <p className="hp-ch-lead">Focused sessions built around a problem, a tool, or a piece of work.</p>
+          <p className="hp-ch-lead">Workshops are listed as coming soon. None can be booked yet.</p>
           <p className="hp-ch-soon-pill">{MATURITY_LABEL.coming_soon}</p>
           <Link className="hp-ch-cta" to={WORKSHOPS_HREF}>
             Explore workshops

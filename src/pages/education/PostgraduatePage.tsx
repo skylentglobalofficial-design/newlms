@@ -21,7 +21,7 @@ export default function PostgraduatePage() {
       />
       <UpcomingBanner
         title="No postgraduate programmes are published"
-        body="Tracks below are conceptual domains for the product, not live specialisations, faculty lists, or guaranteed career outcomes."
+        body="Tracks below are conceptual domains for the product, not enrolable specialisations or faculty lists."
       />
       <section className="arch-section">
         <PathwayModel title="Intended postgraduate model" steps={PG_PATHWAY} />
@@ -35,7 +35,7 @@ export default function PostgraduatePage() {
             { aspect: "Question", left: "What is the degree made of?", right: "What will you specialise in, and prove?" },
             { aspect: "Spine", left: "Degree → semester → subject", right: "Programme → term → specialisation" },
             { aspect: "Work", left: "Taught modules and projects", right: "Cases, a substantial project, assessed judgement" },
-            { aspect: "Outcome language", left: "Progression and portfolio", right: "Readiness in the specialisation — not a placement rate" },
+            { aspect: "Outcome language", left: "Progression and portfolio", right: "Evidence in the specialisation" },
           ]}
         />
       </section>

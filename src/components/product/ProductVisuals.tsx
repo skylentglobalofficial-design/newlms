@@ -325,7 +325,7 @@ function SkillsWorkspace({ accent }: { accent: Accent }) {
         </div>
         <div style={{ padding: 12, background: careerAccent.subtle, border: `1px solid ${careerAccent.border}`, borderRadius: 8 }}>
           <div className="skylent-label" style={{ color: careerAccent.text, marginBottom: 8 }}>Career OS</div>
-          <div style={{ fontSize: 10, color: C.ink, lineHeight: 1.5 }}>Unlocks on program completion</div>
+          <div style={{ fontSize: 10, color: C.ink, lineHeight: 1.5 }}>Profile and evidence workspace</div>
           <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: '#6E737A', marginTop: 8 }}>Profile → apply → track</div>
         </div>
       </div>
@@ -347,7 +347,7 @@ function SchoolingClassroom({ accent }: { accent: Accent }) {
 }
 
 function CatalogBrowser({ accent }: { accent: Accent }) {
-  const items = ['Data Science & AI', 'Data Analytics', 'Full Stack', 'CAT Prep']
+  const items = ['Product Management', 'Data Analytics', 'Catalogue listings']
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '0.85fr 1.15fr', gap: 0, minHeight: 140 }}>
       <div style={{ borderRight: `1px solid ${T.lineDark}`, paddingRight: 10 }}>
@@ -362,7 +362,7 @@ function CatalogBrowser({ accent }: { accent: Accent }) {
       </div>
       <div style={{ paddingLeft: 10 }}>
         <div style={{ fontSize: 10, color: accent.text, marginBottom: 6 }}>Program structure</div>
-        <div style={{ fontSize: 11, color: '#6E737A', lineHeight: 1.55 }}>18 modules · 6 projects · live + self-paced</div>
+        <div style={{ fontSize: 11, color: '#6E737A', lineHeight: 1.55 }}>5 modules · 15 lessons · written · self-paced</div>
       </div>
     </div>
   )

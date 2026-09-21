@@ -18,7 +18,7 @@ export default function AcademicPageShell({
           <AcademicSubnav current={current} />
           {children}
           <div className="arch-section" style={{ paddingTop: 8 }}>
-            <LiveCoreRail lead="Academic lines above are product direction. Start with a live course or programme, then Skylent OS and Career OS." />
+            <LiveCoreRail lead="Academic lines above are product direction. Start with a ready course or programme, then Skylent OS and Career OS." />
             <div className="edu-start-row">
               <Link to="/courses/data-analytics">
                 <strong>Start Data Analytics</strong>
@@ -30,7 +30,7 @@ export default function AcademicPageShell({
               </Link>
             </div>
             <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 18 }}>
-              <Link to="/programs" style={{ color: C.indigo, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>Browse live programmes →</Link>
+              <Link to="/programs" style={{ color: C.indigo, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>Browse programmes →</Link>
               <Link to="/courses" style={{ color: C.slate, fontSize: 14, textDecoration: "none" }}>Browse courses</Link>
             </div>
           </div>

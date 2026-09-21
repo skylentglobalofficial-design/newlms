@@ -128,7 +128,7 @@ export default function ProgramsStory({ live }: { live: ProgrammeDiscoveryCard[]
           <h2 id="pg-learn-title">Learning should end in something you can show.</h2>
           <p className="pg-lead">
             The path is the same product you enter after enrolment: written teaching, checks, a project, then a work
-            sample you keep. Nothing here is a placement, a salary, or a certificate claim.
+            sample you keep.
           </p>
           <LearnFlow steps={LEARN_STEPS} />
         </div>
@@ -138,10 +138,10 @@ export default function ProgramsStory({ live }: { live: ProgrammeDiscoveryCard[]
         <div className="cat-rail pg-pair-grid">
           <div className="pg-pair-copy">
             <p className="pg-kicker">Study and software</p>
-            <h2 id="pg-pair-title">An education experience that is also a product.</h2>
+            <h2 id="pg-pair-title">Study happens in Skylent OS.</h2>
             <p className="pg-lead">
               People study. The work happens in Skylent OS — lessons, practice, projects, and evidence in one
-              workspace. Not a marketing dashboard and not a live class.
+              workspace. This is not a live class.
             </p>
           </div>
           <figure className="pg-photo pg-pair-photo">
@@ -242,7 +242,7 @@ export default function ProgramsStory({ live }: { live: ProgrammeDiscoveryCard[]
           <h2 id="pg-close-title">Start with the work.</h2>
           <p className="pg-lead">
             Open a programme to see the taught path. Enrolment opens the linked authored course. Payment is not
-            collected here, and a certificate is not issued in this pilot.
+            collected, and a certificate is not issued yet.
           </p>
           <p className="pg-hero-actions">
             <a className="pg-hero-cta" href="#pg-catalogue">
