@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
+import ProgramsHero from "../components/programs/ProgramsHero"
 import { courses } from "../data"
 import { isAuthoredCourse } from "../lib/authored-courses"
 import { linkedCourseSlugsForProgram } from "../lib/catalog-maturity"
@@ -113,24 +114,9 @@ export default function ProgramsPage() {
   return (
     <PageShell aurora={false}>
       <div className="pg-cat">
-        <section className="pg-cat-identity" aria-labelledby="pg-cat-title">
-          <div className="cat-rail">
-            <p className="pg-cat-eyebrow">
-              <i aria-hidden="true" />
-              Programmes
-            </p>
-            <h1 id="pg-cat-title">Professional programmes.</h1>
-            <p className="pg-cat-lead">
-              Two programmes have authored teaching in Skylent OS today. The rest are catalogue listings — not live
-              classrooms, and not as complete as Product Management or Data Analytics.
-            </p>
-            <p className="pg-cat-index">
-              {live.length} ready to start · {later.length} coming later
-            </p>
-          </div>
-        </section>
+        <ProgramsHero />
 
-        <section className="pg-cat-live" aria-labelledby="pg-cat-live-title">
+        <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
           <div className="cat-rail">
             <p className="pg-cat-label">Catalogue</p>
             <h2 id="pg-cat-live-title">Authored programmes</h2>
