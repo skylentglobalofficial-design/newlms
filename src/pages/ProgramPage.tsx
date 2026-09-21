@@ -14,6 +14,7 @@ import {
 } from "../lib/programme-discovery"
 import { useCatalogProgram } from "../hooks/useCatalog"
 import "./Catalog.css"
+import "./ProgramPage.css"
 
 function useDetailNarrow() {
   const [narrow, setNarrow] = useState(
@@ -42,7 +43,7 @@ export default function ProgramPage() {
   if (!program) {
     return (
       <PageShell aurora={false}>
-        <div className="cat-page">
+        <div className="cat-page program-detail-page">
           <section className="cat-hero">
             <div className="cat-rail">
               <h1>Programme not found</h1>
@@ -76,7 +77,7 @@ export default function ProgramPage() {
 
   return (
     <PageShell aurora={false}>
-      <div className="cat-page">
+      <div className="cat-page program-detail-page">
         {discovery ? (
           <AuthoredProgramme
             discovery={discovery}
@@ -151,7 +152,7 @@ function AuthoredProgramme({
               ← Programmes
             </Link>
             <p className="cat-label">Programme · Professional Certificate</p>
-            <h1 id="pd-title">{discovery.title}</h1>
+            <h1 id="pd-title">{discovery.courseTitle}</h1>
             <p className="cat-lead">{discovery.decisionLine}</p>
 
             <dl className="pd-facts">

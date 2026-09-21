@@ -14,6 +14,7 @@ import {
   type LiveMatch,
 } from "../lib/live-intents"
 import "./SkillsPage.css"
+import "./SkillsPage.editorial.css"
 
 const STAGES = [
   { step: "01", label: "Capability", ask: "What do you want to be able to do?" },
