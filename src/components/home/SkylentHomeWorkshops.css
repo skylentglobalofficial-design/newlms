@@ -194,6 +194,7 @@
 
   .hp-ws-core {
     position: static;
+    order: 1;
     justify-content: start;
     padding: 10px 0 0 18px;
   }
