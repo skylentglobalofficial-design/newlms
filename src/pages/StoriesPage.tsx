@@ -105,11 +105,11 @@ export default function StoriesPage() {
         </div>
       </nav>
 
-      <section className="pe-ink" id="work" aria-labelledby="stories-work-title">
+      <section className="pe-section is-warm" id="work" aria-labelledby="stories-work-title">
         <div className="cat-rail pe-ink-stage">
           <div>
             <p className="pe-kicker">Editorial</p>
-            <h2 id="stories-work-title">The work comes first.</h2>
+            <h2 id="stories-work-title" className="is-quiet">The work comes first.</h2>
             <p className="pe-lead">
               Skylent is documenting how learning becomes work you can show: written lessons, practice, projects, and
               evidence in Career OS. A story here will be a reviewed account of that work — never a fabricated outcome.
@@ -155,10 +155,10 @@ export default function StoriesPage() {
         </div>
       </section>
 
-      <section className="pe-section" id="learning" aria-labelledby="stories-evidence-title">
+      <section className="pe-section is-soft" id="learning" aria-labelledby="stories-evidence-title">
         <div className="cat-rail">
           <p className="pe-kicker">How evidence will appear</p>
-          <h2 id="stories-evidence-title">The work first. The story later.</h2>
+          <h2 id="stories-evidence-title" className="is-quiet">The work first. The story later.</h2>
           <p className="pe-lead">
             When a story is ready, it will point at work that already exists in the product: a programme project, a
             Career OS profile, an application when a role is published. The specimens below are live programme

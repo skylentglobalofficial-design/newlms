@@ -246,7 +246,7 @@ export default function InstitutionsPage() {
         </div>
       </nav>
 
-      <section className="pe-section is-paper" id="institution-types" aria-labelledby="inst-types-title">
+      <section className="pe-section is-warm" id="institution-types" aria-labelledby="inst-types-title">
         <div className="cat-rail">
           <p className="pe-kicker">Who Skylent works with</p>
           <h2 id="inst-types-title">Partnership by institution type.</h2>
@@ -353,10 +353,10 @@ export default function InstitutionsPage() {
         </div>
       </section>
 
-      <section className="pe-section is-warm" id="partnership" aria-labelledby="inst-collab-title">
+      <section className="pe-section is-paper" id="partnership" aria-labelledby="inst-collab-title">
         <div className="cat-rail">
           <p className="pe-kicker">How collaboration takes shape</p>
-          <h2 id="inst-collab-title">Understand, configure, launch, improve.</h2>
+          <h2 id="inst-collab-title" className="is-quiet">Understand, configure, launch, improve.</h2>
           <p className="pe-lead">
             Partnership starts with a conversation. Full Institution OS — batches, faculty, reporting — is the intended
             product, not what an organisation account can run today.

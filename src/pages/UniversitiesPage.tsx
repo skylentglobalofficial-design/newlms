@@ -117,10 +117,10 @@ export default function UniversitiesPage() {
         </div>
       </section>
 
-      <section className="pe-section" id="collaboration" aria-labelledby="uni-model-title">
+      <section className="pe-section is-paper" id="collaboration" aria-labelledby="uni-model-title">
         <div className="cat-rail">
           <p className="pe-kicker">Collaboration model</p>
-          <h2 id="uni-model-title">From academic design to career handoff.</h2>
+          <h2 id="uni-model-title" className="is-quiet">From academic design to career handoff.</h2>
           <p className="pe-lead">A delivery model for universities — not a student course catalogue.</p>
           {CHAPTERS.map((chapter, index) => (
             <article
