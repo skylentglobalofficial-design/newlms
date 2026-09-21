@@ -3,26 +3,27 @@ import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import ProgramsHero from "../components/programs/ProgramsHero"
 import ProgramsStory from "../components/programs/ProgramsStory"
-import { courses } from "../data"
+import { useCatalogPrograms } from "../hooks/useCatalog"
 import { isAuthoredCourse } from "../lib/authored-courses"
-import { linkedCourseSlugsForProgram } from "../lib/catalog-maturity"
-import { laterProgrammeCatalogue, liveProgrammeCatalogue, programmeBuildLine } from "../lib/programme-catalogue"
+import { courseBySlug } from "../lib/catalog-maturity"
+import type { CatalogProgramSummary } from "../lib/catalog-api"
+import { partitionCatalogPrograms, programmeBuildLine } from "../lib/programme-catalogue"
 import type { LaterProgrammeRow } from "../lib/programme-catalogue"
-import type { ProgrammeDiscoveryCard } from "../lib/programme-discovery"
+import { hasAuthoredProgrammePath, type ProgrammeDiscoveryCard } from "../lib/programme-discovery"
 import "./ProgramsPage.css"
 
-function courseFor(programSlug: string) {
-  const slug = linkedCourseSlugsForProgram(programSlug).find((row) => isAuthoredCourse(row))
-  return slug ? courses.find((course) => course.slug === slug) : undefined
+function courseFor(program: CatalogProgramSummary) {
+  const slug = program.linkedCourseSlugs.find((row) => isAuthoredCourse(row))
+  return slug ? courseBySlug(slug) : undefined
 }
 
-function LiveRow({ row }: { row: ProgrammeDiscoveryCard }) {
-  const course = courseFor(row.slug)
+function LiveRow({ row, program }: { row: ProgrammeDiscoveryCard; program: CatalogProgramSummary }) {
+  const course = courseFor(program)
   const leadsTo = course?.outcomes ?? []
   const build = programmeBuildLine(row)
   const title = row.courseTitle || row.title
-  const format = course?.mode ?? row.format
-  const level = course?.level ?? row.level
+  const format = program.format || course?.mode || row.format
+  const level = program.level || course?.level || row.level
 
   return (
     <article className="pg-row is-live">
@@ -51,7 +52,7 @@ function LiveRow({ row }: { row: ProgrammeDiscoveryCard }) {
       <dl className="pg-row-facts">
         <div>
           <dt>What it is</dt>
-          <dd>{course?.desc ?? row.decisionLine}</dd>
+          <dd>{course?.desc ?? program.desc ?? row.decisionLine}</dd>
         </div>
         <div>
           <dt>What it leads to</dt>
@@ -63,7 +64,7 @@ function LiveRow({ row }: { row: ProgrammeDiscoveryCard }) {
                 ))}
               </ul>
             ) : (
-              row.level
+              level
             )}
           </dd>
         </div>
@@ -113,8 +114,10 @@ function LaterRow({ row, index }: { row: LaterProgrammeRow; index: number }) {
 }
 
 export default function ProgramsPage() {
-  const live = liveProgrammeCatalogue()
-  const later = laterProgrammeCatalogue()
+  const catalog = useCatalogPrograms()
+  const rows = !catalog.loading && !catalog.error ? (catalog.data ?? []) : []
+  const { live, later } = partitionCatalogPrograms(rows)
+  const liveBySlug = new Map(rows.filter((row) => hasAuthoredProgrammePath(row.slug)).map((row) => [row.slug, row]))
 
   useEffect(() => {
     const root = document.documentElement
@@ -128,40 +131,84 @@ export default function ProgramsPage() {
   return (
     <PageShell aurora={false}>
       <div className="pg-page">
-        <ProgramsHero />
+        <ProgramsHero live={live} catalogReady={!catalog.loading && !catalog.error} />
         <ProgramsStory live={live} />
 
         <div className="pg-cat">
-          <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
-            <div className="cat-rail">
-              <p className="pg-cat-label">Authored / Ready to start</p>
-              <h2 id="pg-cat-live-title">Authored programmes</h2>
-              <p className="pg-cat-intro">
-                Each row is built from the linked course, not from brochure length. Open a programme for the full
-                taught path and enrolment.
-              </p>
-              <div className="pg-cat-list">
-                {live.map((row) => (
-                  <LiveRow key={row.slug} row={row} />
-                ))}
+          {catalog.loading ? (
+            <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
+              <div className="cat-rail">
+                <p className="pg-cat-label">Catalogue</p>
+                <h2 id="pg-cat-live-title">Loading programmes</h2>
+                <p className="pg-cat-status">Loading the current catalogue…</p>
               </div>
-            </div>
-          </section>
+            </section>
+          ) : catalog.error ? (
+            <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
+              <div className="cat-rail">
+                <p className="pg-cat-label">Catalogue</p>
+                <h2 id="pg-cat-live-title">The programme catalogue could not be loaded</h2>
+                <p className="pg-cat-status">
+                  The catalogue request failed. This is not an empty catalogue.
+                </p>
+                <p className="pg-row-cta">
+                  <button type="button" onClick={() => { void catalog.reload() }}>
+                    Try again
+                  </button>
+                </p>
+              </div>
+            </section>
+          ) : rows.length === 0 ? (
+            <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
+              <div className="cat-rail">
+                <p className="pg-cat-label">Catalogue</p>
+                <h2 id="pg-cat-live-title">The programme catalogue is empty</h2>
+                <p className="pg-cat-status">No programmes are listed in the catalogue right now.</p>
+              </div>
+            </section>
+          ) : (
+            <>
+              {live.length > 0 ? (
+                <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
+                  <div className="cat-rail">
+                    <p className="pg-cat-label">Authored / Ready to start</p>
+                    <h2 id="pg-cat-live-title">Authored programmes</h2>
+                    <p className="pg-cat-intro">
+                      Each row is built from the linked course, not from brochure length. Open a programme for the full
+                      taught path and enrolment.
+                    </p>
+                    <div className="pg-cat-list">
+                      {live.map((row) => {
+                        const program = liveBySlug.get(row.slug)
+                        return program ? <LiveRow key={row.slug} row={row} program={program} /> : null
+                      })}
+                    </div>
+                  </div>
+                </section>
+              ) : null}
 
-          <section className="pg-cat-later" aria-labelledby="pg-cat-later-title">
-            <div className="cat-rail">
-              <p className="pg-cat-label">Coming later</p>
-              <h2 id="pg-cat-later-title">Listed, not yet taught</h2>
-              <p className="pg-cat-intro">
-                Listings without a finished authored programme. You can still open the page.
-              </p>
-              <div className="pg-cat-list">
-                {later.map((row, index) => (
-                  <LaterRow key={row.slug} row={row} index={index} />
-                ))}
-              </div>
-            </div>
-          </section>
+              {later.length > 0 ? (
+                <section
+                  className="pg-cat-later"
+                  id={live.length > 0 ? undefined : "pg-catalogue"}
+                  aria-labelledby="pg-cat-later-title"
+                >
+                  <div className="cat-rail">
+                    <p className="pg-cat-label">Coming later</p>
+                    <h2 id="pg-cat-later-title">Listed, not yet taught</h2>
+                    <p className="pg-cat-intro">
+                      Listings without a finished authored programme. You can still open the page.
+                    </p>
+                    <div className="pg-cat-list">
+                      {later.map((row, index) => (
+                        <LaterRow key={row.slug} row={row} index={index} />
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              ) : null}
+            </>
+          )}
         </div>
       </div>
     </PageShell>

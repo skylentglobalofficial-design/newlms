@@ -116,6 +116,11 @@ export function programmeDiscoveryFor(slug: string | undefined): ProgrammeDiscov
   return programmeDiscoveryCards().find((row) => row.slug === slug) ?? null
 }
 
+/** Authored taught-path rule. API presence, OPEN status, links, and counts are not enough. */
+export function hasAuthoredProgrammePath(slug: string | undefined): boolean {
+  return programmeDiscoveryFor(slug) != null
+}
+
 /**
  * Where programme work is produced. Each entry points at a route that exists in
  * the router; `learnerOnly` marks the surfaces behind a student sign-in.

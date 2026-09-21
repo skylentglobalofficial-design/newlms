@@ -24,6 +24,7 @@ import {
 import {
   PROGRAMME_ENROLMENT_FACTS,
   PROGRAMME_WORK_SURFACES,
+  hasAuthoredProgrammePath,
   programmeDiscoveryFor,
   type ProgrammeDiscoveryCard,
 } from "../lib/programme-discovery"
@@ -131,7 +132,7 @@ export default function ProgramPage() {
   const discovery = programmeDiscoveryFor(program.slug)
   const overlayView = authoredRecord ? programmePublicView(authoredRecord) : null
   const linked = linkedLearningFromApi(program.linkedCourseSlugs)
-  const hasTaughtPath = program.linkedCourseSlugs.some((courseSlug) => isAuthoredCourse(courseSlug))
+  const hasTaughtPath = hasAuthoredProgrammePath(program.slug)
   const enrollable = isProgramEnrollable(program) && hasTaughtPath
   const comingLater = program.enrollmentStatus === "coming_soon" || program.enrollmentStatus === "waitlist"
   const maturity = comingLater ? "coming_later" as const : "listing" as const

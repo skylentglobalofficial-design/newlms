@@ -1,12 +1,18 @@
 import { PROGRAMS_STUDY_UNIVERSITY } from "../../media"
-import { liveProgrammeCatalogue } from "../../lib/programme-catalogue"
+import type { ProgrammeDiscoveryCard } from "../../lib/programme-discovery"
 import "./ProgramsHero.css"
 
-export default function ProgramsHero() {
-  const live = liveProgrammeCatalogue()
+export default function ProgramsHero({
+  live,
+  catalogReady = true,
+}: {
+  live: ProgrammeDiscoveryCard[]
+  catalogReady?: boolean
+}) {
   const readyCount = live.length
   const selfPaced = live.length > 0 && live.every((row) => row.format === "Self-paced")
   const projectBased = live.length > 0 && live.every((row) => Boolean(row.capstone))
+  const showMeta = catalogReady || live.length > 0
 
   return (
     <section className="pg-hero" aria-labelledby="pg-hero-title">
@@ -32,11 +38,13 @@ export default function ProgramsHero() {
               </span>
             </a>
           </p>
-          <ul className="pg-hero-meta">
-            <li>{readyCount} ready to start</li>
-            {selfPaced ? <li>Self-paced</li> : null}
-            {projectBased ? <li>Project-based</li> : null}
-          </ul>
+          {showMeta ? (
+            <ul className="pg-hero-meta">
+              {catalogReady ? <li>{readyCount} ready to start</li> : null}
+              {selfPaced ? <li>Self-paced</li> : null}
+              {projectBased ? <li>Project-based</li> : null}
+            </ul>
+          ) : null}
         </div>
 
         <figure className="pg-hero-figure">

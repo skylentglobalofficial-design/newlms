@@ -51,19 +51,18 @@ export type CatalogProgramSummary = {
   slug: string
   name: string
   enrollmentStatus: CatalogEnrollmentStatus | null
+  duration: string
+  format: string
+  level: string
+  desc: string
+  programType: string
   moduleCount: number
   projectCount: number
   linkedCourseSlugs: string[]
   pricing: CatalogPricingTier[]
 }
 
-export type CatalogProgramDetail = CatalogProgramSummary & {
-  duration: string
-  format: string
-  level: string
-  desc: string
-  programType: string
-}
+export type CatalogProgramDetail = CatalogProgramSummary
 
 const API_BASE = "/api/v1/catalog"
 
@@ -165,14 +164,7 @@ export async function fetchCatalogProgram(slug: string): Promise<CatalogProgramD
 }
 
 export function mapCatalogProgramDetail(program: Record<string, unknown>): CatalogProgramDetail {
-  return {
-    ...mapProgramSummary(program),
-    duration: asString(program.duration),
-    format: asString(program.format),
-    level: asString(program.level),
-    desc: asString(program.desc),
-    programType: asString(program.programType),
-  }
+  return mapProgramSummary(program)
 }
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -232,6 +224,11 @@ function mapProgramSummary(program: Record<string, unknown>): CatalogProgramSumm
     enrollmentStatus: normalizeEnrollmentStatus(
       typeof program.enrollmentStatus === "string" ? program.enrollmentStatus : null,
     ),
+    duration: asString(program.duration),
+    format: asString(program.format),
+    level: asString(program.level),
+    desc: asString(program.desc),
+    programType: asString(program.programType),
     moduleCount: typeof program.moduleCount === "number" ? program.moduleCount : 0,
     projectCount: typeof program.projectCount === "number" ? program.projectCount : 0,
     linkedCourseSlugs,

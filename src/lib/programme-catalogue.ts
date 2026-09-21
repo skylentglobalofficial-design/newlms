@@ -1,15 +1,23 @@
 /**
  * /programs catalogue rows.
  *
- * Live rows reuse authored discovery facts. Later rows use the static programme
- * listings as they exist in the catalogue — no brochure curriculum, prices, or
- * placement claims are invented here.
+ * Public presence comes from the live catalogue API. Authored discovery is an
+ * overlay: it never decides whether a programme exists, and API OPEN / links /
+ * counts never make a row "ready to start" on their own.
+ *
+ * liveProgrammeCatalogue() remains for other product surfaces that still read
+ * the static authored set. /programs must use partitionCatalogPrograms().
  */
+import type { CatalogProgramSummary } from "./catalog-api"
 import { programs } from "../data"
 import { programmePublicView } from "./catalog-maturity"
-import { programmeDiscoveryFor, type ProgrammeDiscoveryCard } from "./programme-discovery"
+import {
+  hasAuthoredProgrammePath,
+  programmeDiscoveryFor,
+  type ProgrammeDiscoveryCard,
+} from "./programme-discovery"
 
-/** Authored programmes, in the order the catalogue should present them. */
+/** Display order for authored rows. Not a public existence list. */
 export const LIVE_PROGRAMME_SLUGS = ["product-management", "data-analytics-pro"] as const
 
 export type LaterProgrammeRow = {
@@ -45,6 +53,67 @@ export function laterProgrammeCatalogue(): LaterProgrammeRow[] {
       },
     ]
   })
+}
+
+export function isPublicProgrammeIndexRow(program: Pick<CatalogProgramSummary, "programType">): boolean {
+  const type = program.programType.toUpperCase()
+  if (!type) return true
+  return type === "PROFESSIONAL" || type === "CERTIFICATE"
+}
+
+function laterHonesty(program: CatalogProgramSummary): string {
+  if (program.enrollmentStatus === "coming_soon" || program.enrollmentStatus === "waitlist") {
+    return "This programme is not open yet. There is no classroom session or batch behind the listing."
+  }
+  return "Catalogue listing — not a finished authored programme. Opening the page does not start a taught pathway."
+}
+
+function laterStatusLabel(program: CatalogProgramSummary): string {
+  if (program.enrollmentStatus === "coming_soon" || program.enrollmentStatus === "waitlist") {
+    return "Coming later"
+  }
+  return "Catalogue listing"
+}
+
+function liveSortIndex(slug: string): number {
+  const index = (LIVE_PROGRAMME_SLUGS as readonly string[]).indexOf(slug)
+  return index === -1 ? LIVE_PROGRAMME_SLUGS.length : index
+}
+
+export function partitionCatalogPrograms(catalogue: CatalogProgramSummary[]): {
+  live: ProgrammeDiscoveryCard[]
+  later: LaterProgrammeRow[]
+} {
+  const live: ProgrammeDiscoveryCard[] = []
+  const later: LaterProgrammeRow[] = []
+
+  for (const program of catalogue) {
+    if (!isPublicProgrammeIndexRow(program)) continue
+
+    const discovery = programmeDiscoveryFor(program.slug)
+    if (discovery && hasAuthoredProgrammePath(program.slug)) {
+      live.push({
+        ...discovery,
+        href: `/programs/${program.slug}`,
+        title: program.name || discovery.title,
+        level: program.level || discovery.level,
+        format: program.format || discovery.format,
+      })
+      continue
+    }
+
+    later.push({
+      slug: program.slug,
+      href: `/programs/${program.slug}`,
+      title: program.name,
+      summary: program.desc,
+      statusLabel: laterStatusLabel(program),
+      honesty: laterHonesty(program),
+    })
+  }
+
+  live.sort((a, b) => liveSortIndex(a.slug) - liveSortIndex(b.slug))
+  return { live, later }
 }
 
 export function programmeBuildLine(row: ProgrammeDiscoveryCard): string {

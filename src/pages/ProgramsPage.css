@@ -57,6 +57,14 @@
   line-height: 1.55;
 }
 
+.pg-cat-status {
+  margin: 18px 0 0;
+  max-width: 36em;
+  color: var(--pg-muted);
+  font-size: 16.5px;
+  line-height: 1.55;
+}
+
 .pg-cat-live h2,
 .pg-cat-later h2 {
   margin: 0;
@@ -265,19 +273,29 @@
   margin: 22px 0 0;
 }
 
-.pg-row-cta a {
+.pg-row-cta a,
+.pg-row-cta button {
   color: var(--pg-accent);
   font: 600 15px / 1.3 var(--font-body);
   text-decoration: none;
 }
 
-.pg-row-cta a:hover {
+.pg-row-cta button {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.pg-row-cta a:hover,
+.pg-row-cta button:hover {
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .pg-row-head h3 a:focus-visible,
-.pg-row-cta a:focus-visible {
+.pg-row-cta a:focus-visible,
+.pg-row-cta button:focus-visible {
   outline: 2px solid var(--pg-accent);
   outline-offset: 3px;
 }

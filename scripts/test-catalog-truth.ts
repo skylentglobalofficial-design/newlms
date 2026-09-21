@@ -18,9 +18,13 @@ import {
   fetchCatalogCourses,
   fetchCatalogProgram,
   fetchCatalogPrograms,
+  isProgramEnrollable,
   mapCatalogCourseDetail,
   mapCatalogProgramDetail,
+  type CatalogProgramSummary,
 } from "../src/lib/catalog-api.ts"
+import { partitionCatalogPrograms } from "../src/lib/programme-catalogue.ts"
+import { hasAuthoredProgrammePath } from "../src/lib/programme-discovery.ts"
 
 function assert(condition: unknown, message: string) {
   if (!condition) throw new Error(message)
@@ -131,7 +135,9 @@ assert(/ProgramWorkflowVisual/.test(programDetail), "Authored programmes keep Pr
 assert(/PROGRAMME_WORK_SURFACES/.test(programDetail), "Authored programmes keep work-surface copy")
 assert(/PROGRAMME_ENROLMENT_FACTS/.test(programDetail), "Authored programmes keep enrolment facts")
 assert(/ProductLanguage/.test(programDetail), "Authored ProductLanguage remains mounted")
-assert(/hasTaughtPath/.test(programDetail), "Taught-path enrolment stays on authored linked courses")
+assert(/hasTaughtPath/.test(programDetail), "Taught-path enrolment stays on the authored programme path")
+assert(/hasAuthoredProgrammePath\(program\.slug\)/.test(programDetail), "Programme enrolment uses the authored taught-path rule")
+assert(!/linkedCourseSlugs\.some/.test(programDetail), "A linked authored course must not make a listing enrolable")
 assert(/isAuthoredCourse/.test(programDetail), "Authored linked-course logic remains")
 assert(
   /isProgramEnrollable\(program\) && hasTaughtPath/.test(programDetail),
@@ -147,6 +153,24 @@ assert(!/fetchCatalogCourse|useCatalogCourse/.test(programDetail), "Programme de
 assert(!/PROGRAMME_INTENDED_STEPS/.test(programDetail), "Programme page must not present the generic intended-path board as live teaching")
 assert(!/curriculumDetail|projectsDetail|whatYouWillLearn/.test(programDetail), "Programme page must not render brochure curriculum as live teaching")
 assert(/Payment is not collected/.test(programDetail), "Programme page must state that payment is not collected")
+
+const programsIndex = readFileSync(new URL("../src/pages/ProgramsPage.tsx", import.meta.url), "utf8")
+assert(/useCatalogPrograms/.test(programsIndex), "Programmes index loads public identity from the catalog API")
+assert(/fetchCatalogPrograms|useCatalogPrograms/.test(programsIndex), "Programmes index calls the live programmes catalogue")
+assert(!/liveProgrammeCatalogue\(/.test(programsIndex), "Programmes index must not use liveProgrammeCatalogue as public identity")
+assert(!/laterProgrammeCatalogue\(/.test(programsIndex), "Programmes index must not use laterProgrammeCatalogue as public identity")
+assert(!/LIVE_PROGRAMME_SLUGS/.test(programsIndex), "Programmes index must not use the hardcoded live slug list as existence")
+assert(!/from ["']\.\.\/data["']/.test(programsIndex), "Programmes index must not import static data.ts as its existence gate")
+assert(/partitionCatalogPrograms/.test(programsIndex), "Programmes index classifies API rows through the authored overlay")
+assert(/hasAuthoredProgrammePath/.test(programsIndex), "Index and detail share the authored taught-path helper")
+assert(/catalog\.loading/.test(programsIndex), "Programmes index distinguishes a loading state")
+assert(/catalog\.error/.test(programsIndex), "Programmes index distinguishes a network\/API error")
+assert(/This is not an empty catalogue/.test(programsIndex), "API failure must not look like an empty catalogue")
+assert(/The programme catalogue could not be loaded/.test(programsIndex), "API failure renders an error state")
+assert(/The programme catalogue is empty/.test(programsIndex), "Successful empty [] has its own empty-catalogue state")
+assert(!/No programmes found|No programmes match/.test(programsIndex), "Error and empty copy must not use a filter-miss phrase")
+assert(!/moduleCount\s*>\s*0/.test(programsIndex), "moduleCount > 0 must not make a programme ready on the index")
+assert(/hasAuthoredProgrammePath/.test(programDetail) && /hasAuthoredProgrammePath/.test(programsIndex), "ProgramPage and ProgramsPage use the same readiness helper")
 
 const expectedLinks: Record<string, string[]> = {}
 for (const link of PROGRAM_COURSE_LINKS) {
@@ -319,6 +343,112 @@ assert(
   "A non-authored programme stays non-authored even with moduleCount and linkedCourseSlugs",
 )
 
+assert(hasAuthoredProgrammePath("product-management"), "product-management remains an authored programme")
+assert(hasAuthoredProgrammePath("data-analytics-pro"), "data-analytics-pro remains an authored programme")
+assert(!hasAuthoredProgrammePath("full-stack"), "full-stack remains a catalogue listing")
+assert(
+  !hasAuthoredProgrammePath("data-science-ai"),
+  "data-science-ai has no authored taught programme path",
+)
+
+function catalogRow(partial: Partial<CatalogProgramSummary> & Pick<CatalogProgramSummary, "slug" | "name">): CatalogProgramSummary {
+  return {
+    enrollmentStatus: "open",
+    duration: "6 months",
+    format: "Self-paced",
+    level: "Beginner",
+    desc: partial.desc ?? `${partial.name} catalogue row`,
+    programType: "PROFESSIONAL",
+    moduleCount: 40,
+    projectCount: 8,
+    linkedCourseSlugs: [],
+    pricing: [{ name: "Standard", price: 4999, originalPrice: 9999, features: [], highlight: false }],
+    ...partial,
+  }
+}
+
+const partitioned = partitionCatalogPrograms([
+  catalogRow({
+    slug: "product-management",
+    name: "Product Management",
+    linkedCourseSlugs: ["product-management"],
+  }),
+  catalogRow({
+    slug: "data-analytics-pro",
+    name: "Data Analytics with Gen AI",
+    linkedCourseSlugs: ["data-analytics"],
+  }),
+  catalogRow({
+    slug: "full-stack",
+    name: "Full Stack Development",
+    moduleCount: 99,
+    projectCount: 5,
+    linkedCourseSlugs: ["full-stack-web"],
+  }),
+  catalogRow({
+    slug: "data-science-ai",
+    name: "Data Science & AI",
+    moduleCount: 18,
+    projectCount: 6,
+    linkedCourseSlugs: ["data-analytics", "python-programming"],
+  }),
+  catalogRow({
+    slug: "jee-advanced-prep",
+    name: "JEE Advanced Preparation",
+    programType: "EXAM_PREP",
+    enrollmentStatus: "coming_soon",
+  }),
+])
+
+assert(
+  partitioned.live.some((row) => row.slug === "product-management"),
+  "product-management stays in the authored index",
+)
+assert(
+  partitioned.live.some((row) => row.slug === "data-analytics-pro"),
+  "data-analytics-pro stays in the authored index",
+)
+assert(
+  partitioned.later.some((row) => row.slug === "full-stack"),
+  "full-stack stays a later catalogue listing",
+)
+assert(
+  partitioned.later.some((row) => row.slug === "data-science-ai"),
+  "data-science-ai stays later even when OPEN and linked to an authored course",
+)
+assert(
+  !partitioned.live.some((row) => row.slug === "data-science-ai"),
+  "OPEN + linkedCourseSlugs must not promote data-science-ai to ready",
+)
+assert(
+  !partitioned.live.some((row) => row.slug === "full-stack"),
+  "moduleCount must not promote full-stack to ready",
+)
+assert(
+  !partitioned.later.some((row) => row.slug === "jee-advanced-prep") &&
+    !partitioned.live.some((row) => row.slug === "jee-advanced-prep"),
+  "Exam-prep API rows stay off the professional programmes index",
+)
+
+const dsaiApi = catalogRow({
+  slug: "data-science-ai",
+  name: "Data Science & AI",
+  linkedCourseSlugs: ["data-analytics"],
+})
+assert(isProgramEnrollable(dsaiApi), "data-science-ai can be OPEN with a linked course in the API")
+assert(
+  !(isProgramEnrollable(dsaiApi) && hasAuthoredProgrammePath(dsaiApi.slug)),
+  "data-science-ai is not enrolable without an authored taught programme path",
+)
+assert(
+  isProgramEnrollable(catalogRow({
+    slug: "product-management",
+    name: "Product Management",
+    linkedCourseSlugs: ["product-management"],
+  })) && hasAuthoredProgrammePath("product-management"),
+  "product-management stays enrolable because it has an authored taught path",
+)
+
 const originalFetch = globalThis.fetch
 globalThis.fetch = (async (input: RequestInfo | URL) => {
   const url = String(input)
@@ -485,7 +615,9 @@ try {
 
   const programIndex = await fetchCatalogPrograms()
   assert(programIndex.length === 1 && programIndex[0]?.slug === "data-analytics-pro", "fetchCatalogPrograms summary behaviour stays intact")
-  assert(!("duration" in programIndex[0]!), "Programme index mapper must not require the detail payload")
+  assert(programIndex[0]?.duration === "", "Programme index mapper does not require a detail-only duration field")
+  assert(programIndex[0]?.programType === "", "Programme index mapper does not require programType on a thin payload")
+  assert(!("curriculum" in programIndex[0]!), "Programme index mapper must not keep brochure curriculum")
 
   const existingProgram = await fetchCatalogProgram("data-analytics-pro")
   assert(existingProgram?.slug === "data-analytics-pro", "Existing API programme slug loads")
