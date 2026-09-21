@@ -87,6 +87,15 @@ export default function ProgramsPage() {
       <div className="pg-cat">
         <ProgramsHero />
 
+        <nav className="pg-programme-rail" aria-label="Programme sections">
+          <div className="cat-rail">
+            <a href="#pg-programmes" className="is-active">Programmes</a>
+            <a href="#pg-learning-model">Learning model</a>
+            <a href="#pg-skylent-os">Skylent OS</a>
+            <a href="#pg-anatomy">Programme anatomy</a>
+          </div>
+        </nav>
+
         <section className="pg-intro-section" id="pg-programmes" aria-labelledby="pg-programmes-title">
           <div className="cat-rail">
             <div className="pg-intro-head">
@@ -108,7 +117,7 @@ export default function ProgramsPage() {
           </div>
         </section>
 
-        <section className="pg-statement-section" aria-labelledby="pg-statement-title">
+        <section className="pg-statement-section" id="pg-learning-model" aria-labelledby="pg-statement-title">
           <div className="cat-rail pg-statement-grid">
             <div>
               <p className="pg-section-label">The learning model</p>
@@ -155,7 +164,7 @@ export default function ProgramsPage() {
           </div>
         </section>
 
-        <section className="pg-os-section" aria-labelledby="pg-os-title">
+        <section className="pg-os-section" id="pg-skylent-os" aria-labelledby="pg-os-title">
           <div className="cat-rail">
             <div className="pg-os-head">
               <div>
@@ -170,7 +179,7 @@ export default function ProgramsPage() {
           </div>
         </section>
 
-        <section className="pg-anatomy-section" aria-labelledby="pg-anatomy-title">
+        <section className="pg-anatomy-section" id="pg-anatomy" aria-labelledby="pg-anatomy-title">
           <div className="cat-rail">
             <div className="pg-anatomy-head">
               <div>
