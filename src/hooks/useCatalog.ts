@@ -4,6 +4,7 @@ import {
   fetchCatalogCourses,
   fetchCatalogProgram,
   fetchCatalogPrograms,
+  type CatalogCourseDetail,
   type CatalogCourseSummary,
   type CatalogProgramSummary,
 } from "../lib/catalog-api"
@@ -49,7 +50,7 @@ export function useCatalogPrograms() {
 }
 
 export function useCatalogCourse(slug: string | undefined) {
-  const [data, setData] = useState<CatalogCourseSummary | null>(null)
+  const [data, setData] = useState<CatalogCourseDetail | null>(null)
   const [loading, setLoading] = useState(Boolean(slug))
   const [error, setError] = useState<string | null>(null)
 

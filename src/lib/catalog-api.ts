@@ -16,6 +16,29 @@ export type CatalogCourseSummary = {
   projectCount: number
 }
 
+export type CatalogCurriculumNode = {
+  sourceId: string | null
+  order: number
+  title: string
+  nodeType: string
+  duration: string | null
+}
+
+export type CatalogCurriculumModule = {
+  sourceId: string | null
+  order: number
+  title: string
+  nodes: CatalogCurriculumNode[]
+}
+
+export type CatalogCourseDetail = CatalogCourseSummary & {
+  desc: string
+  longDesc: string
+  outcomes: string[]
+  forWhom: string[]
+  curriculum: CatalogCurriculumModule[]
+}
+
 export type CatalogPricingTier = {
   name: string
   price: number
@@ -85,24 +108,35 @@ export async function fetchCatalogCourses(): Promise<CatalogCourseSummary[]> {
   return result.data
 }
 
-export async function fetchCatalogCourse(slug: string): Promise<CatalogCourseSummary | null> {
-  try {
-    const result = await catalogFetch<{ data: CatalogCourseSummary }>(`/courses/${slug}`)
-    return {
-      slug: result.data.slug,
-      title: result.data.title,
-      category: result.data.category,
-      level: result.data.level,
-      duration: result.data.duration,
-      mode: result.data.mode,
-      price: result.data.price,
-      originalPrice: result.data.originalPrice,
-      moduleCount: result.data.moduleCount,
-      lessonCount: result.data.lessonCount,
-      projectCount: result.data.projectCount,
-    }
-  } catch {
-    return null
+export async function fetchCatalogCourse(slug: string): Promise<CatalogCourseDetail | null> {
+  const response = await fetch(`${API_BASE}/courses/${slug}`)
+  if (response.status === 404) return null
+  const result = await parseApiJson<{ data: Record<string, unknown> }>(response)
+  const payload = asRecord(result.data)
+  if (!payload) {
+    throw new Error("Unable to load this course.")
+  }
+  return mapCatalogCourseDetail(payload)
+}
+
+export function mapCatalogCourseDetail(course: Record<string, unknown>): CatalogCourseDetail {
+  return {
+    slug: asString(course.slug),
+    title: asString(course.title),
+    category: asString(course.category),
+    level: asString(course.level),
+    duration: asString(course.duration),
+    mode: asString(course.mode),
+    price: asNumber(course.price),
+    originalPrice: asNumber(course.originalPrice),
+    moduleCount: asNumber(course.moduleCount),
+    lessonCount: asNumber(course.lessonCount),
+    projectCount: asNumber(course.projectCount),
+    desc: asString(course.desc),
+    longDesc: asString(course.longDesc),
+    outcomes: asStringArray(course.outcomes),
+    forWhom: asStringArray(course.forWhom),
+    curriculum: mapCurriculum(course.curriculum),
   }
 }
 
@@ -117,6 +151,51 @@ export async function fetchCatalogProgram(slug: string): Promise<CatalogProgramS
     return mapProgramSummary(result.data)
   } catch {
     return null
+  }
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : null
+}
+
+function asString(value: unknown): string {
+  return typeof value === "string" ? value : ""
+}
+
+function asNumber(value: unknown): number {
+  return typeof value === "number" && Number.isFinite(value) ? value : 0
+}
+
+function asStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : []
+}
+
+function mapCurriculum(value: unknown): CatalogCurriculumModule[] {
+  if (!Array.isArray(value)) return []
+  return value.map((row, index) => {
+    const module = asRecord(row) ?? {}
+    const nodes = Array.isArray(module.nodes)
+      ? module.nodes.map((node, nodeIndex) => mapCurriculumNode(node, nodeIndex))
+      : []
+    return {
+      sourceId: typeof module.sourceId === "string" ? module.sourceId : null,
+      order: typeof module.order === "number" ? module.order : index,
+      title: asString(module.title),
+      nodes,
+    }
+  })
+}
+
+function mapCurriculumNode(value: unknown, index: number): CatalogCurriculumNode {
+  const node = asRecord(value) ?? {}
+  return {
+    sourceId: typeof node.sourceId === "string" ? node.sourceId : null,
+    order: typeof node.order === "number" ? node.order : index,
+    title: asString(node.title),
+    nodeType: asString(node.nodeType),
+    duration: typeof node.duration === "string" ? node.duration : null,
   }
 }
 

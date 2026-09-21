@@ -13,6 +13,11 @@ import {
   programmeAfterEnrolCopy,
   programmePublicView,
 } from "../src/lib/catalog-maturity.ts"
+import {
+  fetchCatalogCourse,
+  fetchCatalogCourses,
+  mapCatalogCourseDetail,
+} from "../src/lib/catalog-api.ts"
 
 function assert(condition: unknown, message: string) {
   if (!condition) throw new Error(message)
@@ -82,11 +87,33 @@ for (const file of pageFiles) {
 }
 
 const courseDetail = readFileSync(new URL("../src/pages/CourseDetailPage.tsx", import.meta.url), "utf8")
+assert(/useCatalogCourse/.test(courseDetail), "Course page loads public identity from the catalog API")
+assert(!/from ["']\.\.\/data["']/.test(courseDetail), "Course page must not import the static catalogue as its existence gate")
+assert(!/courses\.find/.test(courseDetail), "Course page must not 404 from static data.ts")
+assert(/catalog\.loading/.test(courseDetail), "Course page distinguishes a loading state")
+assert(/catalog\.error/.test(courseDetail), "Course page distinguishes a network\/API error")
+assert(/This course could not be loaded/.test(courseDetail), "API failure renders an error state")
+assert(/This is not a missing course/.test(courseDetail), "API failure must not look like a 404")
+assert(/Course not found/.test(courseDetail), "Unknown API slug still has a not-found state")
+assert(/isAuthoredCourse/.test(courseDetail), "Readiness stays on the authored-course registry")
+assert(/ProductLanguage/.test(courseDetail), "Authored ProductLanguage remains mounted")
+assert(/CourseProductVisual/.test(courseDetail), "Authored course visual remains on the detail page")
 assert(/courseModuleCards/.test(courseDetail), "Course page must render the real module map")
 assert(/coursePracticeGroups/.test(courseDetail), "Course page must distinguish learning, practice, assignment, and capstone")
+assert(/showLiveCurriculum && practice/.test(courseDetail), "Practice editorial stays behind authored readiness, not lessonCount")
+assert(/const showLiveCurriculum = authored/.test(courseDetail), "Live curriculum is gated on the authored registry")
+assert(/const enrollable = authored/.test(courseDetail), "Enrolment is gated on the authored registry, not outline counts")
+assert(!/lessonCount\s*>\s*0/.test(courseDetail), "lessonCount > 0 must not imply authored readiness")
+assert(!/moduleCount\s*>\s*0/.test(courseDetail), "moduleCount > 0 must not imply authored readiness")
+assert(/kind: "course"/.test(courseDetail), "Enrolment on /courses/:slug remains a COURSE")
+assert(/slug: course.slug/.test(courseDetail), "Enrolment still uses the course slug")
+assert(!/useCatalogProgram|fetchCatalogProgram/.test(courseDetail), "product-management on /courses stays a course record")
+assert(!/listedPrice/.test(courseDetail), "Public course detail no longer displays a listed rupee price")
+assert(!/toLocaleString\("en-IN"\)/.test(courseDetail), "Public course detail must not format a listed rupee price")
 assert(!/aria-expanded/.test(courseDetail), "Course page must not dump every lesson into an accordion")
 assert(/Payment is not collected/.test(courseDetail), "Course page must state that payment is not collected")
 assert(/primaryCta/.test(courseDetail), "Course page CTA must come from the honest access helper")
+assert(/thinner than Data Analytics/.test(courseDetail), "Non-authored listings keep the thinner-listing honesty copy")
 
 const programDetail = readFileSync(new URL("../src/pages/ProgramPage.tsx", import.meta.url), "utf8")
 assert(/programmeDiscoveryFor/.test(programDetail), "Authored programmes must resolve from real discovery data")
@@ -146,6 +173,14 @@ assert(daPractice.assignments.length === 3, "Data Analytics has 3 assignments be
 assert(daPractice.capstone.length === 1, "Data Analytics has one capstone")
 assert(coursePrimaryCta(daView) === "Start this course", "Data Analytics CTA must start the course")
 assert(daView.primaryCta === "Start this course", "Public view CTA matches authored access")
+assert(
+  isAuthoredCourse("data-analytics") && isAuthoredCourse("product-management"),
+  "Authored overlay still recognises the ready courses",
+)
+assert(
+  !isAuthoredCourse("python-programming"),
+  "lessonCount/moduleCount on a listing must not mark it authored",
+)
 
 const dsai = programmePublicView(programs.find((row) => row.slug === "data-science-ai")!)
 assert(dsai.linked.some((item) => item.slug === "data-analytics"), "Data Science & AI still enrols into Data Analytics")
@@ -168,6 +203,152 @@ assert(pmPractice.learning.length === 9, "Product Management has 9 written lesso
 assert(pmPractice.practice.length === 3, "Product Management has 3 practice checks")
 assert(pmPractice.assignments.length === 2, "Product Management has 2 assignments besides the capstone")
 assert(pmPractice.capstone.length === 1, "Product Management has one capstone")
+
+const mappedDetail = mapCatalogCourseDetail({
+  slug: "data-analytics",
+  title: "Data Analytics",
+  category: "Data",
+  level: "Beginner",
+  duration: "10 weeks",
+  mode: "Self-paced",
+  price: 4999,
+  originalPrice: 9999,
+  desc: "Learn spreadsheet analysis, SQL, data cleaning, dashboards, and business interpretation on a synthetic Northwind dataset.",
+  longDesc: "A written, practice-first Data Analytics course.",
+  outcomes: ["Build and analyse structured datasets in spreadsheets"],
+  forWhom: ["People who need to analyse tables at work"],
+  moduleCount: 1,
+  lessonCount: 1,
+  projectCount: 0,
+  curriculum: [
+    {
+      sourceId: "mod-1",
+      order: 0,
+      title: "Spreadsheets",
+      nodes: [
+        {
+          sourceId: "node-1",
+          order: 0,
+          title: "Read a table",
+          nodeType: "NOTES",
+          duration: "12 min",
+        },
+      ],
+    },
+  ],
+})
+assert(mappedDetail.slug === "data-analytics", "Course-detail mapper keeps slug")
+assert(mappedDetail.desc.length > 0, "Course-detail mapper keeps desc")
+assert(mappedDetail.outcomes.length === 1, "Course-detail mapper keeps outcomes")
+assert(mappedDetail.curriculum[0]?.title === "Spreadsheets", "Course-detail mapper keeps module titles")
+assert(mappedDetail.curriculum[0]?.nodes[0]?.title === "Read a table", "Course-detail mapper keeps node titles")
+assert(mappedDetail.curriculum[0]?.nodes[0]?.nodeType === "NOTES", "Course-detail mapper keeps nodeType")
+assert(mappedDetail.curriculum[0]?.nodes[0]?.duration === "12 min", "Course-detail mapper keeps node duration")
+
+const originalFetch = globalThis.fetch
+globalThis.fetch = (async (input: RequestInfo | URL) => {
+  const url = String(input)
+  if (url === "/api/v1/catalog/courses") {
+    return new Response(
+      JSON.stringify({
+        data: [
+          {
+            slug: "data-analytics",
+            title: "Data Analytics",
+            category: "Data",
+            level: "Beginner",
+            duration: "10 weeks",
+            mode: "Self-paced",
+            price: 4999,
+            originalPrice: 9999,
+            moduleCount: 5,
+            lessonCount: 15,
+            projectCount: 4,
+          },
+        ],
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    )
+  }
+  if (url === "/api/v1/catalog/courses/data-analytics" || url === "/api/v1/catalog/courses/product-management") {
+    const slug = url.endsWith("product-management") ? "product-management" : "data-analytics"
+    const title = slug === "product-management" ? "Product Management" : "Data Analytics"
+    return new Response(
+      JSON.stringify({
+        data: {
+          slug,
+          title,
+          category: slug === "product-management" ? "Product" : "Data",
+          level: "Beginner",
+          duration: "10 weeks",
+          mode: "Self-paced",
+          price: 4999,
+          originalPrice: 9999,
+          desc: title,
+          longDesc: title,
+          outcomes: [],
+          forWhom: [],
+          moduleCount: 5,
+          lessonCount: 15,
+          projectCount: 4,
+          curriculum: [
+            {
+              sourceId: "mod-1",
+              order: 0,
+              title: "Module one",
+              nodes: [{ sourceId: "node-1", order: 0, title: "First node", nodeType: "NOTES", duration: null }],
+            },
+          ],
+        },
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    )
+  }
+  if (url === "/api/v1/catalog/courses/missing-course") {
+    return new Response(JSON.stringify({ error: "Course not found" }), { status: 404 })
+  }
+  if (url === "/api/v1/catalog/courses/broken-course") {
+    return new Response(JSON.stringify({ error: "Catalog unavailable" }), { status: 500 })
+  }
+  if (url === "/api/v1/catalog/courses/network-down") {
+    throw new TypeError("Failed to fetch")
+  }
+  return new Response(JSON.stringify({ error: "unexpected mock url" }), { status: 500 })
+}) as typeof fetch
+
+try {
+  const summary = await fetchCatalogCourses()
+  assert(summary.length === 1 && summary[0]?.slug === "data-analytics", "fetchCatalogCourses summary behaviour stays intact")
+  assert(!("curriculum" in summary[0]!), "Course index mapper must not require the detail payload")
+
+  const existing = await fetchCatalogCourse("data-analytics")
+  assert(existing?.slug === "data-analytics", "Existing API course slug loads")
+  assert(existing?.curriculum.length === 1, "Existing API course keeps curriculum outline")
+
+  const productCourse = await fetchCatalogCourse("product-management")
+  assert(productCourse?.slug === "product-management", "product-management remains a COURSE in the courses catalog")
+
+  const missing = await fetchCatalogCourse("missing-course")
+  assert(missing === null, "Unknown API slug is a successful not-found")
+
+  let failed = false
+  try {
+    await fetchCatalogCourse("broken-course")
+  } catch {
+    failed = true
+  }
+  assert(failed, "API failure must throw instead of returning a false 404")
+
+  let networkFailed = false
+  try {
+    await fetchCatalogCourse("network-down")
+  } catch {
+    networkFailed = true
+  }
+  assert(networkFailed, "Network failure must throw instead of returning a false 404")
+} finally {
+  globalThis.fetch = originalFetch
+}
 
 console.log("catalog-truth ok")
 console.log({

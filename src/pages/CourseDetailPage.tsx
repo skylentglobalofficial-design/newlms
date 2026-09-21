@@ -1,24 +1,77 @@
 import { useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
-import { CourseProductVisual, CourseWorkspacePreview, ModuleLane, ProductFrame, VisualStat } from "../components/product/ProductLanguage"
+import {
+  CourseProductVisual,
+  CourseWorkspacePreview,
+  ModuleLane,
+  ProductFrame,
+  VisualStat,
+  type ModuleLaneItem,
+} from "../components/product/ProductLanguage"
 import {
   courseAfterEnrolSteps,
+  courseBySlug,
+  courseLessonStats,
   courseModuleCards,
   coursePracticeGroups,
-  coursePublicView,
+  coursePrimaryCta,
+  isAuthoredCourse,
 } from "../lib/catalog-maturity"
 import { courseProductProfile } from "../lib/course-product"
-import { courses } from "../data"
+import type { CatalogCurriculumModule } from "../lib/catalog-api"
 import { useCatalogCourse } from "../hooks/useCatalog"
 import "./Catalog.css"
 
+const LISTING_HONESTY =
+  "Catalogue listing — thinner than Data Analytics. You can open the workspace; full teaching content is being built."
+
 export default function CourseDetailPage() {
   const { slug } = useParams()
-  const course = courses.find((item) => item.slug === slug)
   const catalog = useCatalogCourse(slug)
   const [enrollOpen, setEnrollOpen] = useState(false)
 
+  if (catalog.loading) {
+    return (
+      <PageShell aurora={false}>
+        <div className="cat-page">
+          <section className="cat-hero">
+            <div className="cat-rail">
+              <Link className="cat-back" to="/courses">← Courses</Link>
+              <h1>Loading this course</h1>
+              <p className="cat-lead">Fetching the current catalogue record.</p>
+            </div>
+          </section>
+        </div>
+      </PageShell>
+    )
+  }
+
+  if (catalog.error) {
+    return (
+      <PageShell aurora={false}>
+        <div className="cat-page">
+          <section className="cat-hero">
+            <div className="cat-rail">
+              <Link className="cat-back" to="/courses">← Courses</Link>
+              <h1>This course could not be loaded</h1>
+              <p className="cat-lead">
+                The catalogue request failed. This is not a missing course.
+              </p>
+              <div className="cat-actions">
+                <button type="button" className="cat-btn cat-btn-primary" onClick={() => { void catalog.reload() }}>
+                  Try again
+                </button>
+                <Link className="cat-btn cat-btn-ghost" to="/courses">Back to courses</Link>
+              </div>
+            </div>
+          </section>
+        </div>
+      </PageShell>
+    )
+  }
+
+  const course = catalog.data
   if (!course) {
     return (
       <PageShell aurora={false}>
@@ -34,17 +87,32 @@ export default function CourseDetailPage() {
     )
   }
 
-  const view = coursePublicView(course)
+  const authored = isAuthoredCourse(course.slug)
+  const authoredRecord = authored ? courseBySlug(course.slug) : undefined
   const profile = courseProductProfile(course.slug)
-  const enrollable = view.showLiveCurriculum
-  const modules = courseModuleCards(course, view.showLiveCurriculum)
-  const practice = coursePracticeGroups(course)
-  const afterEnrol = courseAfterEnrolSteps(view.showLiveCurriculum, view.title)
-  const listingClosed = !view.showLiveCurriculum && !enrollable && !catalog.loading
-  const cta = listingClosed
-    ? "View outline"
-    : enrollCta(enrollable, catalog.loading, view.primaryCta)
-  const listedPrice = `₹${view.listedPrice.toLocaleString("en-IN")}`
+  const showLiveCurriculum = authored
+  const enrollable = authored
+  const authoredStats = authoredRecord ? courseLessonStats(authoredRecord) : null
+  const modules = authoredRecord
+    ? courseModuleCards(authoredRecord, showLiveCurriculum)
+    : catalogOutlineCards(course.curriculum)
+  const practice = authoredRecord ? coursePracticeGroups(authoredRecord) : null
+  const afterEnrol = courseAfterEnrolSteps(showLiveCurriculum, course.title)
+  const listingClosed = !showLiveCurriculum
+  const primaryCta = coursePrimaryCta({
+    showLiveCurriculum,
+    maturity: authored ? "ready" : "listing",
+  })
+  const cta = listingClosed ? "View outline" : enrollCta(enrollable, primaryCta)
+  const summary = authored
+    ? course.desc || authoredRecord?.desc || course.longDesc
+    : `${course.title} is a catalogue listing. The LMS has an outline, not a finished course like Data Analytics or Product Management.`
+  const outcomes = course.outcomes.length > 0 ? course.outcomes : authoredRecord?.outcomes ?? []
+  const forWhom = course.forWhom.length > 0 ? course.forWhom : authored ? authoredRecord?.forWhom ?? [] : []
+  const duration = course.duration || authoredRecord?.duration || ""
+  const lessonCount = authoredStats?.lessonCount ?? course.lessonCount
+  const moduleCount = authoredStats?.moduleCount ?? course.moduleCount
+  const honesty = authored ? null : LISTING_HONESTY
 
   function openEnrol() {
     if (!enrollable) return
@@ -57,8 +125,8 @@ export default function CourseDetailPage() {
         <div className="cat-enrol-bar">
           <div className="cat-rail cat-enrol-bar-inner">
             <div className="cat-enrol-bar-copy">
-              <strong>{view.title}</strong>
-              <span>{listedPrice} listed</span>
+              <strong>{course.title}</strong>
+              <span>{authored ? "Ready to start" : "Catalogue listing"}</span>
             </div>
             {listingClosed ? (
               <div className="cat-enrol-actions">
@@ -81,25 +149,27 @@ export default function CourseDetailPage() {
         <section className="cat-hero">
           <div className="cat-rail">
             <Link className="cat-back" to="/courses">← Courses</Link>
-            <h1>{view.title}</h1>
-            <p className="cat-lead">{view.summary}</p>
+            <h1>{course.title}</h1>
+            <p className="cat-lead">{summary}</p>
             <div className="cat-metrics">
-              <VisualStat label="Status" value={view.maturity === "ready" ? "Ready" : view.maturityLabel} />
-              <VisualStat label="Level" value={view.course.level} />
+              <VisualStat label="Status" value={authored ? "Ready" : "Catalogue listing"} />
+              <VisualStat label="Level" value={course.level} />
               <VisualStat
-                label={view.showLiveCurriculum ? "Lessons" : "Outline"}
-                value={String(view.stats.lessonCount)}
+                label={showLiveCurriculum ? "Lessons" : "Outline"}
+                value={String(lessonCount)}
               />
               <VisualStat
                 label="Practice"
-                value={view.showLiveCurriculum ? `${view.stats.quizCount} quizzes` : "Outline only"}
+                value={showLiveCurriculum && authoredStats ? `${authoredStats.quizCount} quizzes` : "Outline only"}
               />
             </div>
             <p className="cat-statline">
-              <span>{view.delivery}</span>
-              <span>{view.showLiveCurriculum ? view.duration : "Duration not finished"}</span>
-              <span>{view.stats.moduleCount} modules</span>
-              {view.showLiveCurriculum ? <span>{view.stats.assignmentCount} assignments</span> : null}
+              <span>{authored ? "Written lessons + practice" : "LMS outline"}</span>
+              <span>{course.mode}</span>
+              <span>{showLiveCurriculum ? duration : duration || "Duration not finished"}</span>
+              <span>{course.category}</span>
+              <span>{moduleCount} modules</span>
+              {showLiveCurriculum && authoredStats ? <span>{authoredStats.assignmentCount} assignments</span> : null}
             </p>
             <div className="cat-actions">
               {listingClosed ? (
@@ -123,7 +193,7 @@ export default function CourseDetailPage() {
               )}
             </div>
             <p className="cat-honesty">
-              Listed price {listedPrice}. Payment is not collected in this pilot. A certificate is not issued yet.
+              Payment is not collected in this pilot. A certificate is not issued yet.
             </p>
           </div>
         </section>
@@ -131,12 +201,12 @@ export default function CourseDetailPage() {
         <section className="cat-section" id="course-outline">
           <div className="cat-rail">
             <h2>
-              {view.showLiveCurriculum
-                ? `${view.stats.moduleCount} modules · ${view.stats.lessonCount} lessons`
+              {showLiveCurriculum
+                ? `${moduleCount} modules · ${lessonCount} lessons`
                 : "What exists in the LMS today"}
             </h2>
             <p className="cat-fine">
-              {view.showLiveCurriculum
+              {showLiveCurriculum
                 ? "Each module is a block of written work and practice. Lesson bodies stay in Skylent OS."
                 : "Titles below are an outline, not a finished teaching path."}
             </p>
@@ -147,19 +217,19 @@ export default function CourseDetailPage() {
         <section className="cat-section">
           <div className="cat-rail">
             <p className="cat-preview-caption">What you open after enrol</p>
-            {view.showLiveCurriculum ? (
+            {showLiveCurriculum && authoredRecord ? (
               <CourseWorkspacePreview
-                courseTitle={view.title}
-                lessonTitle={course.modules[0]?.lessons[0]?.title ?? "Open the first lesson"}
-                practiceTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")?.title ?? "A short check"}
-                workTitle={course.modules.flatMap((module) => module.lessons).find((lesson) => /capstone|product case/i.test(lesson.title))?.title ?? "Capstone"}
-                modules={course.modules.map((module) => module.title)}
-                lessonCount={view.stats.lessonCount}
+                courseTitle={course.title}
+                lessonTitle={authoredRecord.modules[0]?.lessons[0]?.title ?? "Open the first lesson"}
+                practiceTitle={authoredRecord.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")?.title ?? "A short check"}
+                workTitle={authoredRecord.modules.flatMap((module) => module.lessons).find((lesson) => /capstone|product case/i.test(lesson.title))?.title ?? "Capstone"}
+                modules={authoredRecord.modules.map((module) => module.title)}
+                lessonCount={lessonCount}
                 visual={profile?.visual === "harbor-desk" ? "harbor-desk" : "northwind"}
                 marketing
               />
             ) : (
-              <ProductFrame title={view.title} meta="Outline">
+              <ProductFrame title={course.title} meta="Outline">
                 <ol className="pl-ws-rail pl-outline">
                   {modules.map((module) => (
                     <li key={module.id}>
@@ -174,12 +244,12 @@ export default function CourseDetailPage() {
           </div>
         </section>
 
-        {view.forWhom.length > 0 ? (
+        {forWhom.length > 0 ? (
           <section className="cat-section">
             <div className="cat-rail">
               <h2>Who it is for</h2>
               <ul className="cat-who">
-                {view.forWhom.map((item) => (
+                {forWhom.map((item) => (
                   <li key={item}>{item}</li>
                 ))}
               </ul>
@@ -187,23 +257,25 @@ export default function CourseDetailPage() {
           </section>
         ) : null}
 
-        <section className="cat-band">
-          <div className="cat-rail">
-            <h2>{view.showLiveCurriculum ? "What you will be able to do" : "Listed capabilities"}</h2>
-            {!view.showLiveCurriculum ? (
-              <p className="cat-fine">These statements come from the catalogue listing, not a full authored course.</p>
-            ) : null}
-            <div className="cat-caps">
-              {view.outcomes.map((item) => (
-                <article className="cat-cap" key={item}>
-                  <strong>{item}</strong>
-                </article>
-              ))}
+        {outcomes.length > 0 ? (
+          <section className="cat-band">
+            <div className="cat-rail">
+              <h2>{showLiveCurriculum ? "What you will be able to do" : "Listed capabilities"}</h2>
+              {!showLiveCurriculum ? (
+                <p className="cat-fine">These statements come from the catalogue listing, not a full authored course.</p>
+              ) : null}
+              <div className="cat-caps">
+                {outcomes.map((item) => (
+                  <article className="cat-cap" key={item}>
+                    <strong>{item}</strong>
+                  </article>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        ) : null}
 
-        {view.showLiveCurriculum ? (
+        {showLiveCurriculum && practice ? (
           <section className="cat-section">
             <div className="cat-rail">
               <h2>What you will practise and build</h2>
@@ -241,7 +313,7 @@ export default function CourseDetailPage() {
           </section>
         ) : null}
 
-        {view.showLiveCurriculum ? (
+        {showLiveCurriculum ? (
           <section className="cat-section">
             <div className="cat-rail">
               <h2>What you work on</h2>
@@ -280,7 +352,7 @@ export default function CourseDetailPage() {
             <p className="cat-fine">
               Progress and submitted work stay on your enrolment. You can carry learning evidence into Career OS. Career OS is a workspace — not a job guarantee.
             </p>
-            {view.showLiveCurriculum ? (
+            {showLiveCurriculum ? (
               <>
                 <h2>Before you enrol</h2>
                 <div className="cat-faq">
@@ -293,7 +365,7 @@ export default function CourseDetailPage() {
                 </div>
               </>
             ) : null}
-            {view.honesty ? <p className="cat-honesty">{view.honesty}</p> : null}
+            {honesty ? <p className="cat-honesty">{honesty}</p> : null}
           </div>
         </section>
 
@@ -301,9 +373,9 @@ export default function CourseDetailPage() {
           <div className="cat-rail">
             <div className="cat-final-card">
               <div>
-                <h2>{view.showLiveCurriculum ? profile?.ctaTitle ?? `Start ${view.title}` : `Open ${view.title}`}</h2>
+                <h2>{showLiveCurriculum ? profile?.ctaTitle ?? `Start ${course.title}` : `Open ${course.title}`}</h2>
                 <p>
-                  {view.showLiveCurriculum
+                  {showLiveCurriculum
                     ? "Enrolment does not collect payment. It opens the written course in Skylent OS."
                     : "This listing is thinner than Data Analytics. Start a ready course, or read the outline below."}
                 </p>
@@ -325,7 +397,7 @@ export default function CourseDetailPage() {
 
       {enrollOpen ? (
         <EnrollmentModal
-          item={{ kind: "course", slug: course.slug, title: course.title, price: view.listedPrice, enrollable }}
+          item={{ kind: "course", slug: course.slug, title: course.title, price: course.price, enrollable }}
           onClose={() => setEnrollOpen(false)}
           themeId="professional"
         />
@@ -334,8 +406,24 @@ export default function CourseDetailPage() {
   )
 }
 
-function enrollCta(enrollable: boolean, loading: boolean, primaryCta: string): string {
+function enrollCta(enrollable: boolean, primaryCta: string): string {
   if (enrollable) return primaryCta
-  if (loading) return "Checking availability…"
   return "View outline"
+}
+
+function catalogOutlineCards(curriculum: CatalogCurriculumModule[]): ModuleLaneItem[] {
+  return curriculum.map((module, index) => {
+    const nodeCount = module.nodes.length
+    const nodeLine = module.nodes
+      .map((node) => (node.duration ? `${node.title} (${node.duration})` : node.title))
+      .filter(Boolean)
+      .join(" · ")
+    return {
+      id: module.sourceId ?? `module-${module.order}-${index}`,
+      index: index + 1,
+      title: module.title,
+      workLine: nodeLine || "Outline titles only — not a finished teaching path.",
+      countsLabel: nodeCount === 1 ? "1 outline item" : `${nodeCount} outline items`,
+    }
+  })
 }
