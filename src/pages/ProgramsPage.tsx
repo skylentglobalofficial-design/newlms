@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
+import ProgramsHero from "../components/programs/ProgramsHero"
 import {
   HarborDeskWorkspace,
   LearnFlow,
