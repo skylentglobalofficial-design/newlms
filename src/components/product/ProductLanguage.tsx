@@ -108,7 +108,7 @@ function NorthwindExtract({ compact = false }: { compact?: boolean }) {
       <div className="pl-nw-split">
         <div>
           <p className="pl-kicker">Breakdown</p>
-          {[0, 1, 2, 3].map((index) => (
+          {[0, 1, 2].map((index) => (
             <BarRow key={index} name="Dimension" />
           ))}
         </div>
