@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import ProgramsHero from "../components/programs/ProgramsHero"
@@ -6,6 +6,7 @@ import ProgramsStory from "../components/programs/ProgramsStory"
 import { courses } from "../data"
 import { isAuthoredCourse } from "../lib/authored-courses"
 import { linkedCourseSlugsForProgram } from "../lib/catalog-maturity"
+import { fetchCatalogPrograms, type CatalogProgramSummary } from "../lib/catalog-api"
 import { laterProgrammeCatalogue, liveProgrammeCatalogue, programmeBuildLine } from "../lib/programme-catalogue"
 import type { LaterProgrammeRow } from "../lib/programme-catalogue"
 import type { ProgrammeDiscoveryCard } from "../lib/programme-discovery"
@@ -113,8 +114,35 @@ function LaterRow({ row, index }: { row: LaterProgrammeRow; index: number }) {
 }
 
 export default function ProgramsPage() {
-  const live = liveProgrammeCatalogue()
-  const later = laterProgrammeCatalogue()
+  const [catalogue, setCatalogue] = useState<CatalogProgramSummary[]>([])
+  const [catalogueStatus, setCatalogueStatus] = useState<"loading" | "ready" | "error">("loading")
+
+  useEffect(() => {
+    let cancelled = false
+    void fetchCatalogPrograms()
+      .then((rows) => {
+        if (cancelled) return
+        setCatalogue(rows)
+        setCatalogueStatus("ready")
+      })
+      .catch(() => {
+        if (cancelled) return
+        setCatalogueStatus("error")
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const live = useMemo(
+    () => (catalogueStatus === "ready" ? liveProgrammeCatalogue(catalogue) : []),
+    [catalogue, catalogueStatus],
+  )
+  const later = useMemo(
+    () => (catalogueStatus === "ready" ? laterProgrammeCatalogue(catalogue) : []),
+    [catalogue, catalogueStatus],
+  )
 
   useEffect(() => {
     const root = document.documentElement
@@ -140,11 +168,20 @@ export default function ProgramsPage() {
                 Each row is built from the linked course, not from brochure length. Open a programme for the full
                 taught path and enrolment.
               </p>
-              <div className="pg-cat-list">
-                {live.map((row) => (
-                  <LiveRow key={row.slug} row={row} />
-                ))}
-              </div>
+
+              {catalogueStatus === "loading" ? (
+                <p className="pg-row-note">Loading the current programme catalogue…</p>
+              ) : catalogueStatus === "error" ? (
+                <p className="pg-row-note">The programme catalogue could not be loaded. Try again in a moment.</p>
+              ) : live.length === 0 ? (
+                <p className="pg-row-note">No authored programme is currently open for enrolment.</p>
+              ) : (
+                <div className="pg-cat-list">
+                  {live.map((row) => (
+                    <LiveRow key={row.slug} row={row} />
+                  ))}
+                </div>
+              )}
             </div>
           </section>
 
@@ -155,11 +192,18 @@ export default function ProgramsPage() {
               <p className="pg-cat-intro">
                 Listings without a finished authored programme. You can still open the page.
               </p>
-              <div className="pg-cat-list">
-                {later.map((row, index) => (
-                  <LaterRow key={row.slug} row={row} index={index} />
-                ))}
-              </div>
+
+              {catalogueStatus === "ready" ? (
+                later.length > 0 ? (
+                  <div className="pg-cat-list">
+                    {later.map((row, index) => (
+                      <LaterRow key={row.slug} row={row} index={index} />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="pg-row-note">No additional programme listings are currently published.</p>
+                )
+              ) : null}
             </div>
           </section>
         </div>
