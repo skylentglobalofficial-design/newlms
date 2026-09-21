@@ -234,8 +234,7 @@ export default function AboutPage() {
               <ul className="pe-plain">
                 {PRODUCT_MAP.map((item) => (
                   <li key={item.label}>
-                    <strong>{item.label}. </strong>
-                    {item.sub}
+                    <strong>{item.label}.</strong> {item.sub}
                   </li>
                 ))}
               </ul>

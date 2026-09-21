@@ -194,8 +194,7 @@ export default function StoriesPage() {
           <ul className="pe-plain">
             {CAREER_OS_IA.map((item) => (
               <li key={item.to}>
-                <strong>{item.label}. </strong>
-                {item.sub}
+                <strong>{item.label}.</strong> {item.sub}
               </li>
             ))}
           </ul>

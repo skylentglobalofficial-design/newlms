@@ -592,9 +592,6 @@ a.pe-example:hover h3 {
 
 /* Light institutional rail — paper, ink labels, orange active underline. */
 .pe-inkbar {
-  position: sticky;
-  top: var(--nav-h);
-  z-index: 8;
   background: var(--pe-paper);
   color: var(--pe-ink);
   border-top: 1px solid var(--pe-line);
