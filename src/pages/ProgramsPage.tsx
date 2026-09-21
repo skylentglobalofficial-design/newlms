@@ -4,6 +4,7 @@ import { courses } from "../data"
 import { isAuthoredCourse } from "../lib/authored-courses"
 import { linkedCourseSlugsForProgram } from "../lib/catalog-maturity"
 import { laterProgrammeCatalogue, liveProgrammeCatalogue, programmeBuildLine } from "../lib/programme-catalogue"
+import type { LaterProgrammeRow } from "../lib/programme-catalogue"
 import type { ProgrammeDiscoveryCard } from "../lib/programme-discovery"
 import "./ProgramsPage.css"
 
@@ -16,15 +17,21 @@ function LiveRow({ row }: { row: ProgrammeDiscoveryCard }) {
   const course = courseFor(row.slug)
   const leadsTo = course?.outcomes ?? []
   const build = programmeBuildLine(row)
+  const title = row.courseTitle || row.title
+  const format = course?.mode ?? row.format
+  const level = course?.level ?? row.level
 
   return (
     <article className="pg-row is-live">
       <header className="pg-row-head">
         <p className="pg-row-kicker">Ready to start</p>
         <h3>
-          <Link to={row.href}>{row.title}</Link>
+          <Link to={row.href}>{title}</Link>
         </h3>
         <p className="pg-row-decision">{row.decisionLine}</p>
+        <p className="pg-row-shape">
+          {row.taughtModules} modules · {row.taughtLessons} lessons · {format} · {level}
+        </p>
       </header>
 
       <dl className="pg-row-facts">
@@ -53,9 +60,6 @@ function LiveRow({ row }: { row: ProgrammeDiscoveryCard }) {
         <div>
           <dt>Learning shape</dt>
           <dd>
-            <p>
-              {row.taughtModules} modules · {row.taughtLessons} lessons · {row.format} · {row.level}
-            </p>
             <ol>
               {row.modules.map((module) => (
                 <li key={module.id}>{module.title}</li>
@@ -77,6 +81,29 @@ function LiveRow({ row }: { row: ProgrammeDiscoveryCard }) {
   )
 }
 
+function LaterRow({ row }: { row: LaterProgrammeRow }) {
+  return (
+    <article className="pg-row is-later">
+      <header className="pg-row-head">
+        <p className="pg-row-kicker">{row.statusLabel}</p>
+        <h3>
+          <Link to={row.href}>{row.title}</Link>
+        </h3>
+      </header>
+      <div className="pg-row-later-body">
+        <p className="pg-row-decision">{row.summary}</p>
+        <p className="pg-row-note">{row.honesty}</p>
+        <p className="pg-row-cta">
+          <Link to={row.href}>
+            Explore programme
+            <span aria-hidden="true"> →</span>
+          </Link>
+        </p>
+      </div>
+    </article>
+  )
+}
+
 export default function ProgramsPage() {
   const live = liveProgrammeCatalogue()
   const later = laterProgrammeCatalogue()
@@ -94,6 +121,9 @@ export default function ProgramsPage() {
             <p className="pg-cat-lead">
               Two programmes have authored teaching in Skylent OS today. The rest are catalogue listings — not live
               classrooms, and not as complete as Product Management or Data Analytics.
+            </p>
+            <p className="pg-cat-index">
+              {live.length} ready to start · {later.length} coming later
             </p>
           </div>
         </section>
@@ -121,22 +151,7 @@ export default function ProgramsPage() {
             <p className="pg-cat-intro">Listings without a finished authored programme. You can still open the page.</p>
             <div className="pg-cat-list">
               {later.map((row) => (
-                <article className="pg-row is-later" key={row.slug}>
-                  <header className="pg-row-head">
-                    <p className="pg-row-kicker">{row.statusLabel}</p>
-                    <h3>
-                      <Link to={row.href}>{row.title}</Link>
-                    </h3>
-                    <p className="pg-row-decision">{row.summary}</p>
-                  </header>
-                  <p className="pg-row-note">{row.honesty}</p>
-                  <p className="pg-row-cta">
-                    <Link to={row.href}>
-                      Explore programme
-                      <span aria-hidden="true"> →</span>
-                    </Link>
-                  </p>
-                </article>
+                <LaterRow key={row.slug} row={row} />
               ))}
             </div>
           </div>

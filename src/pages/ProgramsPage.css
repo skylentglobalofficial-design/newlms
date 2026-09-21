@@ -9,12 +9,13 @@
   --pg-orange: #f97316;
   background: #ffffff;
   color: var(--pg-ink);
+  overflow-x: clip;
 }
 
 .pg-cat-identity,
 .pg-cat-live,
 .pg-cat-later {
-  padding: clamp(64px, 10vh, 112px) 0;
+  padding: clamp(56px, 8vh, 96px) 0;
 }
 
 .pg-cat-live,
@@ -60,6 +61,13 @@
   line-height: 1.55;
 }
 
+.pg-cat-index {
+  margin: 22px 0 0;
+  color: var(--pg-faint);
+  font: 500 12px / 1.4 var(--font-mono);
+  letter-spacing: 0.06em;
+}
+
 .pg-cat-label {
   margin: 0 0 10px;
   color: var(--pg-faint);
@@ -85,8 +93,17 @@
 }
 
 .pg-row {
+  min-width: 0;
   padding: clamp(32px, 5vh, 48px) 0;
   border-top: 1px solid var(--pg-line);
+}
+
+.pg-row-head,
+.pg-row-later-body,
+.pg-row-facts,
+.pg-row-note,
+.pg-row-cta {
+  min-width: 0;
 }
 
 .pg-row-head h3 {
@@ -127,6 +144,13 @@
   line-height: 1.5;
 }
 
+.pg-row-shape {
+  margin: 16px 0 0;
+  color: var(--pg-ink);
+  font: 500 13px / 1.45 var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
 .pg-row-facts {
   display: grid;
   grid-template-columns: 1fr;
@@ -164,7 +188,6 @@
 .pg-row-facts ol {
   display: grid;
   gap: 2px;
-  margin-top: 10px;
 }
 
 .pg-row-facts ol li {
@@ -206,10 +229,47 @@
   outline-offset: 3px;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
+  .pg-row.is-live,
+  .pg-row.is-later {
+    display: grid;
+    grid-template-columns: minmax(240px, 0.86fr) minmax(0, 1.14fr);
+    column-gap: clamp(40px, 5.5vw, 88px);
+    row-gap: 18px;
+    align-items: start;
+  }
+
+  .pg-row.is-live .pg-row-head,
+  .pg-row.is-later .pg-row-head {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .pg-row.is-live .pg-row-facts {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+    margin-top: 2px;
+  }
+
+  .pg-row.is-live .pg-row-note,
+  .pg-row.is-live .pg-row-cta {
+    grid-column: 1;
+  }
+
+  .pg-row.is-later .pg-row-later-body {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .pg-row.is-later .pg-row-decision {
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 1280px) {
   .pg-row.is-live .pg-row-facts {
     grid-template-columns: 1fr 1fr;
-    column-gap: clamp(32px, 4vw, 64px);
+    column-gap: clamp(28px, 3vw, 48px);
     row-gap: 28px;
   }
 }
@@ -218,7 +278,7 @@
   .pg-cat-identity,
   .pg-cat-live,
   .pg-cat-later {
-    padding: clamp(48px, 8vh, 72px) 0;
+    padding: clamp(44px, 7vh, 64px) 0;
   }
 }
 
