@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import ProgramsHero from "../components/programs/ProgramsHero"
+import ProgramsStory from "../components/programs/ProgramsStory"
 import { courses } from "../data"
 import { isAuthoredCourse } from "../lib/authored-courses"
 import { linkedCourseSlugsForProgram } from "../lib/catalog-maturity"
@@ -113,37 +114,42 @@ export default function ProgramsPage() {
 
   return (
     <PageShell aurora={false}>
-      <div className="pg-cat">
+      <div className="pg-page">
         <ProgramsHero />
+        <ProgramsStory live={live} />
 
-        <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
-          <div className="cat-rail">
-            <p className="pg-cat-label">Catalogue</p>
-            <h2 id="pg-cat-live-title">Authored programmes</h2>
-            <p className="pg-cat-intro">
-              Each row is built from the linked course, not from brochure length. Open a programme for the full
-              taught path and enrolment.
-            </p>
-            <div className="pg-cat-list">
-              {live.map((row) => (
-                <LiveRow key={row.slug} row={row} />
-              ))}
+        <div className="pg-cat">
+          <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
+            <div className="cat-rail">
+              <p className="pg-cat-label">Authored / Ready to start</p>
+              <h2 id="pg-cat-live-title">Authored programmes</h2>
+              <p className="pg-cat-intro">
+                Each row is built from the linked course, not from brochure length. Open a programme for the full
+                taught path and enrolment.
+              </p>
+              <div className="pg-cat-list">
+                {live.map((row) => (
+                  <LiveRow key={row.slug} row={row} />
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section className="pg-cat-later" aria-labelledby="pg-cat-later-title">
-          <div className="cat-rail">
-            <p className="pg-cat-label">Not live yet</p>
-            <h2 id="pg-cat-later-title">Coming later</h2>
-            <p className="pg-cat-intro">Listings without a finished authored programme. You can still open the page.</p>
-            <div className="pg-cat-list">
-              {later.map((row) => (
-                <LaterRow key={row.slug} row={row} />
-              ))}
+          <section className="pg-cat-later" aria-labelledby="pg-cat-later-title">
+            <div className="cat-rail">
+              <p className="pg-cat-label">Coming later</p>
+              <h2 id="pg-cat-later-title">Listed, not yet taught</h2>
+              <p className="pg-cat-intro">
+                Listings without a finished authored programme. You can still open the page.
+              </p>
+              <div className="pg-cat-list">
+                {later.map((row) => (
+                  <LaterRow key={row.slug} row={row} />
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
     </PageShell>
   )

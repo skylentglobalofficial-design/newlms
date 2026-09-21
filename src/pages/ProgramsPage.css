@@ -1,6 +1,6 @@
 /* /programs — editorial catalogue. Independent of homepage chapter CSS. */
 
-.pg-cat {
+.pg-page {
   --pg-ink: #15171a;
   --pg-muted: #5c6168;
   --pg-faint: #8a8f96;
@@ -10,6 +10,11 @@
   background: #ffffff;
   color: var(--pg-ink);
   overflow-x: clip;
+}
+
+.pg-cat {
+  background: #ffffff;
+  color: var(--pg-ink);
 }
 
 .pg-cat-live,

@@ -1,30 +1,12 @@
-import { useEffect, useState } from "react"
-import { HarborDeskWorkspace } from "../product/ProductLanguage"
+import { PROGRAMS_STUDY_CLASSROOM } from "../../media"
 import { liveProgrammeCatalogue } from "../../lib/programme-catalogue"
 import "./ProgramsHero.css"
-
-function useCompactSpecimen() {
-  const [compact, setCompact] = useState(
-    () => typeof window !== "undefined" && window.matchMedia("(max-width: 768px)").matches,
-  )
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 768px)")
-    const onChange = () => setCompact(mq.matches)
-    onChange()
-    mq.addEventListener("change", onChange)
-    return () => mq.removeEventListener("change", onChange)
-  }, [])
-
-  return compact
-}
 
 export default function ProgramsHero() {
   const live = liveProgrammeCatalogue()
   const readyCount = live.length
   const selfPaced = live.length > 0 && live.every((row) => row.format === "Self-paced")
   const projectBased = live.length > 0 && live.every((row) => Boolean(row.capstone))
-  const compact = useCompactSpecimen()
 
   return (
     <section className="pg-hero" aria-labelledby="pg-hero-title">
@@ -39,8 +21,8 @@ export default function ProgramsHero() {
             <span>Build something real.</span>
           </h1>
           <p className="pg-hero-lead">
-            Skylent programmes connect learning, practice, and real work. You study written lessons, check your
-            understanding, and finish a project you keep — in Skylent OS, not a live classroom.
+            Skylent programmes connect structured learning, practice, and real work. You study written lessons,
+            check your understanding, and finish a project you keep — in Skylent OS, not a live classroom.
           </p>
           <p className="pg-hero-actions">
             <a className="pg-hero-cta" href="#pg-catalogue">
@@ -57,9 +39,19 @@ export default function ProgramsHero() {
           </ul>
         </div>
 
-        <div className="pg-hero-specimen">
-          <HarborDeskWorkspace compact={compact} meta="harbor-desk-case.md · 4 interviews" />
-        </div>
+        <figure className="pg-hero-figure">
+          <div className="pg-hero-photo">
+            <img
+              src={PROGRAMS_STUDY_CLASSROOM}
+              alt="Students working on laptops in a classroom"
+              width={1800}
+              height={1200}
+              fetchPriority="high"
+              decoding="async"
+            />
+          </div>
+          <figcaption>Study, not a live stream</figcaption>
+        </figure>
       </div>
     </section>
   )
