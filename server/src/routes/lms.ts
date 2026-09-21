@@ -438,6 +438,38 @@ lmsRouter.post(
       const now = new Date()
       const isComplete = bodyParsed.data.action === "complete"
 
+      if (isComplete) {
+        if (located.node.nodeType === CurriculumNodeType.QUIZ) {
+          const passedAttempt = await prisma.quizAttempt.findFirst({
+            where: {
+              enrollmentId: enrollment.id,
+              nodeId: located.node.id,
+              passed: true,
+            },
+            select: { id: true },
+          })
+          if (!passedAttempt) {
+            return res.status(400).json({
+              error: "Quiz must be passed before it can be completed",
+            })
+          }
+        }
+
+        if (located.node.nodeType === CurriculumNodeType.ASSIGNMENT) {
+          const submission = await prisma.assignmentProgress.findUnique({
+            where: {
+              enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
+            },
+            select: { status: true },
+          })
+          if (submission?.status !== "submitted") {
+            return res.status(400).json({
+              error: "Assignment must be submitted before it can be completed",
+            })
+          }
+        }
+      }
+
       const progress = await prisma.lessonProgress.upsert({
         where: {
           enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
