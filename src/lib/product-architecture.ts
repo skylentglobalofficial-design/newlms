@@ -342,6 +342,7 @@ export const FOOTER_COLS = [
     links: [
       ["Education", "/education"],
       ["Institutions", "/institutions"],
+      ["Universities", "/universities"],
     ],
   },
 ] as const
