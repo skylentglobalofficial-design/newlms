@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import {
-  CourseThumb,
   HarborDeskWorkspace,
   NorthwindWorkspace,
 } from "../components/product/ProductLanguage"
