@@ -219,7 +219,7 @@ function AuthoredProgramme({
             <Link className="cat-back" to="/programs">
               ← Programmes
             </Link>
-            <p className="cat-label">Programme · Professional Certificate</p>
+            <p className="cat-label">Programme · Professional</p>
             <h1 id="pd-title">{discovery.courseTitle}</h1>
             <p className="cat-lead">{discovery.decisionLine}</p>
 
@@ -266,23 +266,16 @@ function AuthoredProgramme({
               </Link>
             </div>
 
-            {view.listedPrice > 0 ? (
-              <p className="cat-honesty">
-                Listed price ₹{view.listedPrice.toLocaleString("en-IN")}. Payment is not collected in this
-                pilot. A certificate is not issued yet.
-              </p>
-            ) : (
-              <p className="cat-honesty">Payment is not collected. A certificate is not issued in this pilot.</p>
-            )}
+            <p className="cat-honesty">Payment is not collected. A certificate is not issued in this pilot.</p>
             <p className="cat-fine">{discovery.honesty}</p>
           </div>
 
           <div className="pd-hero-specimen">
             <p className="pd-specimen-caption">The work this programme produces</p>
             {discovery.visual === "harbor-desk" ? (
-              <HarborDeskWorkspace compact={narrow} meta="harbor-desk-case.md · 4 interviews" />
+              <HarborDeskWorkspace compact={narrow} meta="Example structure" />
             ) : (
-              <NorthwindWorkspace compact />
+              <NorthwindWorkspace compact meta="Example structure" />
             )}
             {discovery.capstone ? (
               <p className="pd-specimen-attr">
@@ -546,14 +539,7 @@ function ListingProgramme({
               </Link>
             )}
           </div>
-          {view.listedPrice > 0 && !comingLater ? (
-            <p className="cat-honesty">
-              Listed price ₹{view.listedPrice.toLocaleString("en-IN")}. Payment is not collected in this
-              pilot. A certificate is not issued yet.
-            </p>
-          ) : (
-            <p className="cat-honesty">Payment is not collected. A certificate is not issued in this pilot.</p>
-          )}
+          <p className="cat-honesty">Payment is not collected. A certificate is not issued in this pilot.</p>
           <p className="cat-fine">{afterEnrol}</p>
         </div>
       </section>

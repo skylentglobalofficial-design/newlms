@@ -152,9 +152,9 @@ function AnalyticsWorkspace({ accent }: { accent: Accent }) {
   return (
     <div style={{ display: 'grid', gridTemplateRows: 'auto 1fr', gap: 8 }}>
       <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, color: accent.text, lineHeight: 1.6 }}>
-        Practice SQL with real business scenarios
+        SQL · Query & transform
       </div>
-      <MiniBar accent={accent} heights={[40, 65, 52, 78, 58]} />
+      <MiniBar accent={accent} heights={[48, 48, 48, 48, 48]} />
     </div>
   )
 }
@@ -186,25 +186,23 @@ function JeeExamInterface({ accent }: { accent: Accent }) {
           }}>{s}</span>
         ))}
       </div>
-      <div style={{ fontSize: 11, color: C.ink, lineHeight: 1.5, marginBottom: 8, fontFamily: 'var(--font-serif, Georgia, serif)' }}>
-        If ∫₀² 3t² dt = k, find k.
-      </div>
-      <div style={{ padding: 8, background: 'rgba(21,23,26,0.05)', borderRadius: 6, marginBottom: 10, fontFamily: 'var(--font-mono)', fontSize: 9, color: '#6E737A' }}>
-        v(t) = 3t² · displacement · t ∈ [0, 2]
+      <div style={{ height: 10, maxWidth: '92%', background: 'rgba(21,23,26,0.08)', borderRadius: 4, marginBottom: 8 }} />
+      <div style={{ padding: 8, background: 'rgba(21,23,26,0.05)', borderRadius: 6, marginBottom: 10 }}>
+        <div style={{ height: 8, maxWidth: '70%', background: 'rgba(21,23,26,0.08)', borderRadius: 4 }} />
       </div>
       <div style={{ display: 'flex', gap: 6, marginBottom: 10 }}>
         {['A', 'B', 'C', 'D'].map(o => (
           <span key={o} style={{
             fontSize: 10, fontFamily: 'var(--font-mono)', padding: '4px 10px', borderRadius: 4,
-            background: o === 'B' ? accent.subtle : 'rgba(21,23,26,0.04)',
-            border: `1px solid ${o === 'B' ? accent.border : T.lineDark}`,
-            color: o === 'B' ? accent.text : '#6E737A',
+            background: 'rgba(21,23,26,0.04)',
+            border: `1px solid ${T.lineDark}`,
+            color: '#6E737A',
           }}>{o}</span>
         ))}
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 18, color: accent.text }}>04:32</div>
-        <div style={{ fontSize: 9, color: '#8A8F96' }}>Q 14 · timed practice</div>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>Timer</div>
+        <div style={{ fontSize: 9, color: '#8A8F96' }}>Timed attempt</div>
       </div>
     </div>
   )
@@ -217,16 +215,17 @@ function NeetExamInterface({ accent }: { accent: Accent }) {
       <div style={{ padding: 10, background: bioAccent.subtle, border: `1px solid ${bioAccent.border}`, borderRadius: 8 }}>
         <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: bioAccent.text, marginBottom: 6 }}>Biology · Diagram</div>
         <div style={{ height: 44, borderRadius: 6, border: `1px dashed ${bioAccent.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: '#8A8F96', marginBottom: 8 }}>
-          Cell · NCERT Fig 8.2
+          Diagram
         </div>
-        <div style={{ fontSize: 10, color: '#6E737A' }}>Label organelles · guided</div>
+        <div style={{ fontSize: 10, color: '#6E737A' }}>Label · guided</div>
       </div>
       <div style={{ padding: 10, background: 'rgba(21,23,26,0.035)', border: `1px solid ${T.lineDark}`, borderRadius: 8 }}>
-        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 6 }}>MCQ · Botany</div>
-        <div style={{ fontSize: 10, color: C.ink, lineHeight: 1.45, marginBottom: 8 }}>Which enzyme fixes CO₂ in C₄ plants?</div>
+        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 6 }}>MCQ</div>
+        <div style={{ height: 10, maxWidth: '90%', background: 'rgba(21,23,26,0.08)', borderRadius: 4, marginBottom: 8 }} />
+        <div style={{ height: 8, maxWidth: '55%', background: 'rgba(21,23,26,0.06)', borderRadius: 4, marginBottom: 8 }} />
         <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-          {['PEP', 'RuBisCO'].map((o, i) => (
-            <span key={o} style={{ fontSize: 9, padding: '3px 8px', borderRadius: 4, background: i === 0 ? accent.subtle : 'rgba(21,23,26,0.04)', border: `1px solid ${i === 0 ? accent.border : T.lineDark}`, color: i === 0 ? accent.text : '#6E737A' }}>{o}</span>
+          {['A', 'B'].map((o) => (
+            <span key={o} style={{ fontSize: 9, padding: '3px 8px', borderRadius: 4, background: 'rgba(21,23,26,0.04)', border: `1px solid ${T.lineDark}`, color: '#6E737A' }}>{o}</span>
           ))}
         </div>
       </div>
@@ -248,19 +247,19 @@ function CatExamInterface({ accent }: { accent: Accent }) {
           }}>{s}</span>
         ))}
       </div>
-      <div style={{ fontSize: 10, color: accent.text, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>Case · Retail expansion</div>
-      <div style={{ fontSize: 11, color: C.ink, lineHeight: 1.55, marginBottom: 10 }}>Should the brand enter Tier-2 cities this quarter?</div>
+      <div style={{ fontSize: 10, color: accent.text, marginBottom: 8, fontFamily: 'var(--font-mono)' }}>Case · section</div>
+      <div style={{ height: 10, maxWidth: '88%', background: 'rgba(21,23,26,0.08)', borderRadius: 4, marginBottom: 10 }} />
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6, marginBottom: 10 }}>
         <div style={{ padding: 8, background: 'rgba(21,23,26,0.035)', borderRadius: 6, fontSize: 9 }}>
           <div style={{ color: '#8A8F96', marginBottom: 4 }}>DI table</div>
-          <div style={{ fontFamily: 'var(--font-mono)', color: '#5C6168' }}>Region · revenue</div>
+          <div style={{ fontFamily: 'var(--font-mono)', color: '#5C6168' }}>Column · column</div>
         </div>
         <div style={{ padding: 8, background: accent.subtle, borderRadius: 6, fontSize: 9, color: accent.text }}>
           <div style={{ marginBottom: 4 }}>Reasoning</div>
-          <div>Option B · margin</div>
+          <div>Logic path</div>
         </div>
       </div>
-      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 16, color: accent.text }}>Section timer · 18:45</div>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>Section timer</div>
     </div>
   )
 }
@@ -672,8 +671,9 @@ export function resolveProgramVisualId(slug: string, programType?: ProgramType):
   if (slug === 'data-science-ai' || slug === 'generative-ai-program') return 'data-workspace'
   if (slug === 'data-analytics-pro' || slug === 'sql-certificate') return 'analytics-workspace'
   if (slug === 'full-stack' || slug === 'full-stack-web') return 'fullstack-workspace'
+  if (slug === 'product-management') return 'learning-loop'
   if (slug.includes('neet')) return 'neet-exam'
-  if (slug.includes('cat') || slug === 'product-management') return 'cat-exam'
+  if (slug.includes('cat')) return 'cat-exam'
   if (slug.includes('jee')) return 'jee-exam'
   if (programType === 'EXAM_PREP') return 'jee-exam'
   if (slug.includes('marketing') || slug.includes('digital')) return 'campaign-funnel'

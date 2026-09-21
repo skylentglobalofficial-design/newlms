@@ -23,7 +23,7 @@ const EXAM_SCENES: {
   note: string
   wide?: boolean
   subjects?: { name: string; topics: string }[]
-  sections?: { abbr: string; label: string; weight: string; color: string }[]
+  sections?: { abbr: string; label: string; color: string }[]
 }[] = [
   {
     visualId: "jee-exam",
@@ -57,9 +57,9 @@ const EXAM_SCENES: {
     wide: true,
     note: "Intended paper structure for MBA entrance. No live mocks, sectional timers, or score predictor.",
     sections: [
-      { abbr: "VARC", label: "Verbal Ability & Reading Comprehension", weight: "34%", color: "#4F46E5" },
-      { abbr: "DILR", label: "Data Interpretation & Logical Reasoning", weight: "33%", color: "#2563EB" },
-      { abbr: "QA", label: "Quantitative Aptitude", weight: "33%", color: "#4F46E5" },
+      { abbr: "VARC", label: "Verbal Ability & Reading Comprehension", color: "#4F46E5" },
+      { abbr: "DILR", label: "Data Interpretation & Logical Reasoning", color: "#2563EB" },
+      { abbr: "QA", label: "Quantitative Aptitude", color: "#4F46E5" },
     ],
   },
 ]
@@ -107,17 +107,13 @@ export default function ExamsPage() {
                   <div>
                     <div className="exam-cat-weights" aria-hidden="true">
                       {scene.sections.map((section) => (
-                        <div
-                          key={section.abbr}
-                          style={{ flex: parseFloat(section.weight), background: section.color, opacity: 0.75 }}
-                        />
+                        <div key={section.abbr} style={{ flex: 1, background: section.color, opacity: 0.75 }} />
                       ))}
                     </div>
                     {scene.sections.map((section) => (
                       <div key={section.abbr} className="exam-cat-row">
                         <div>
                           <b>{section.abbr}</b>
-                          <em>{section.weight}</em>
                         </div>
                         <span>{section.label}</span>
                       </div>

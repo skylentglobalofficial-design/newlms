@@ -163,6 +163,21 @@
   border-radius: 100px;
 }
 
+.pl-bar-row.is-struct b {
+  min-width: 0;
+  width: 0;
+  overflow: hidden;
+}
+
+.pl-bar-track > span.is-struct {
+  width: 100%;
+  opacity: 0.28;
+}
+
+.pl-spark.is-struct > span {
+  opacity: 0.32;
+}
+
 .pl-spark {
   display: flex;
   align-items: flex-end;
@@ -979,6 +994,25 @@
   font-weight: 650;
   line-height: 1.4;
   letter-spacing: -0.02em;
+}
+
+.pl-hd-quote.is-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 56px;
+}
+
+.pl-hd-quote.is-empty span {
+  display: block;
+  height: 8px;
+  max-width: 88%;
+  background: rgba(21, 23, 26, 0.08);
+  border-radius: 4px;
+}
+
+.pl-hd-quote.is-empty span:last-child {
+  max-width: 62%;
 }
 
 .pl-hd.is-compact .pl-hd-board {

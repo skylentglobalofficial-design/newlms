@@ -168,9 +168,13 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
         </div>
 
         <div style={{ background: C.warmWhite, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: '16px 18px', marginBottom: 16 }}>
-          <div style={{ color: C.slate, fontSize: 13, marginBottom: 4 }}>Listed price</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 600, color: C.ink }}>₹{item.price.toLocaleString('en-IN')}</div>
-          <div id="enrollment-modal-copy" style={{ color: C.slate, fontSize: 13, marginTop: 8, lineHeight: 1.6 }}>
+          {item.kind === 'program' ? null : (
+            <>
+              <div style={{ color: C.slate, fontSize: 13, marginBottom: 4 }}>Listed price</div>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 600, color: C.ink }}>₹{item.price.toLocaleString('en-IN')}</div>
+            </>
+          )}
+          <div id="enrollment-modal-copy" style={{ color: C.slate, fontSize: 13, marginTop: item.kind === 'program' ? 0 : 8, lineHeight: 1.6 }}>
             Payment is not collected here yet. {item.enrollable ? 'If you are signed in, this opens Skylent OS. If you are not, you will be asked to sign in first.' : 'We will notify you when enrolment opens.'}
           </div>
         </div>
