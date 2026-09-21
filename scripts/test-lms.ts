@@ -79,6 +79,18 @@ async function completeLesson(jar: CookieJar, courseSlug: string, lessonKey: str
   return result.data
 }
 
+async function completeAllCourseLessons(jar: CookieJar, courseSlug: string) {
+  const workspace = await request(jar, `/lms/courses/${courseSlug}`)
+  assert(workspace.response.ok, `Failed to load ${courseSlug} before completing lessons: ${JSON.stringify(workspace.data)}`)
+  const lessonKeys = (workspace.data.data.course.modules as Array<{ lessons: Array<{ id: string }> }>)
+    .flatMap((module) => module.lessons.map((lesson) => lesson.id))
+  assert(lessonKeys.length > 0, `${courseSlug} must have lessons to complete`)
+  for (const lessonKey of lessonKeys) {
+    await completeLesson(jar, courseSlug, lessonKey)
+  }
+  return lessonKeys
+}
+
 async function grantRole(email: string, role: "faculty" | "organisation", organisationSlug = "apex-college") {
   const user = await prisma.user.findUnique({ where: { email } })
   assert(user, `User ${email} not found`)
@@ -399,13 +411,7 @@ async function main() {
 
   const daWorkspace = await request(programJar, `/lms/courses/${courseSlug}`)
   assert(daWorkspace.response.ok, "Programme learner should still access Data Analytics")
-  const daLessonKeys = (daWorkspace.data.data.course.modules as Array<{ lessons: Array<{ id: string }> }>)
-    .flatMap((module) => module.lessons.map((lesson) => lesson.id))
-  assert(daLessonKeys.length > 0, "Data Analytics must have lessons to complete")
-
-  for (const lessonKey of daLessonKeys) {
-    await completeLesson(programJar, courseSlug, lessonKey)
-  }
+  await completeAllCourseLessons(programJar, courseSlug)
 
   const afterFirstCourse = await request(programJar, `/lms/programs/${programSlug}`)
   assert(afterFirstCourse.response.ok, "Programme workspace should reload after course progress")
@@ -435,6 +441,79 @@ async function main() {
   assert(catalogCourse.response.ok, "Public catalog course should load")
   const catalogJson = JSON.stringify(catalogCourse.data)
   assert(!/muxPlaybackId/.test(catalogJson), "Public catalog must not expose Mux playback ids")
+
+  console.log("14e. Direct course enrollment must not override programme resume")
+  const mixedJar: CookieJar = new Map()
+  await signupUser(mixedJar, "mixed-resume")
+  const mixedProgramEnroll = await request(mixedJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { programSlug },
+  })
+  assert(mixedProgramEnroll.response.ok, "Mixed-resume learner should enroll in the programme")
+
+  const mixedDirectEnroll = await request(mixedJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { courseSlug },
+  })
+  assert(mixedDirectEnroll.response.ok, "Mixed-resume learner should also enroll directly in Data Analytics")
+  assert(mixedDirectEnroll.data.data.course.slug === courseSlug, "Direct enrollment workspace should be Data Analytics")
+
+  await completeAllCourseLessons(mixedJar, courseSlug)
+
+  const mixedProgram = await request(mixedJar, `/lms/programs/${programSlug}`)
+  assert(mixedProgram.response.ok, "Programme workspace should load with mixed enrollments")
+  assert(
+    mixedProgram.data.data.resume.courseSlug === secondCourseSlug,
+    `Programme resume must be ${secondCourseSlug} after Data Analytics is complete, got ${mixedProgram.data.data.resume.courseSlug}`,
+  )
+
+  const mixedDashboard = await request(mixedJar, "/lms/dashboard")
+  assert(mixedDashboard.response.ok, "Dashboard should load with mixed enrollments")
+  assert(
+    mixedDashboard.data.data.course.slug === secondCourseSlug,
+    `Dashboard must follow programme resume (${secondCourseSlug}), not the direct Data Analytics enrollment, got ${mixedDashboard.data.data.course.slug}`,
+  )
+  assert(
+    mixedDashboard.data.data.program?.resume?.courseSlug === secondCourseSlug,
+    "Dashboard programme payload must keep the calculated programme resume course",
+  )
+
+  console.log("14f. Completing every linked course marks the programme complete")
+  await completeAllCourseLessons(programJar, secondCourseSlug)
+
+  const completedProgram = await request(programJar, `/lms/programs/${programSlug}`)
+  assert(completedProgram.response.ok, "Programme workspace should load after every linked course is complete")
+  const completedProgress = completedProgram.data.data.progress
+  const completedCourses = completedProgram.data.data.courses as Array<{
+    slug: string
+    progress: { allComplete: boolean; completedCount: number; totalLessons: number }
+  }>
+  assert(completedProgress.totalLessons > 0, "Programme must have lessons before asserting 100% aggregate")
+  assert(
+    completedCourses.every((row) => row.progress.allComplete && row.progress.completedCount === row.progress.totalLessons),
+    "Every linked course must be complete from stored lesson progress",
+  )
+  assert(
+    completedProgress.completedCourses === completedProgress.totalCourses,
+    "completedCourses must equal totalCourses when every linked course is complete",
+  )
+  assert(
+    completedProgress.completedCount === completedProgress.totalLessons,
+    "Aggregate completedCount must equal totalLessons when the programme is complete",
+  )
+  assert(completedProgress.allComplete === true, "Programme allComplete must be true after every linked course is complete")
+  assert(completedProgress.progressPct === 100, "Programme aggregate must be 100% after every linked course is complete")
+  assert(completedProgram.data.data.certificateEligible === true, "Programme workspace must be certificate eligible")
+  assert(completedProgram.data.data.certificateStatus === "eligible", "Programme workspace certificateStatus must be eligible")
+
+  const completedListed = await request(programJar, "/lms/enrollments")
+  const completedRow = completedListed.data.data.find((row: { programSlug?: string }) => row.programSlug === programSlug)
+  assert(completedRow, "Completed programme enrollment must still appear in the enrollments list")
+  assert(completedRow.status === "completed", `Programme enrollment status must be completed, got ${completedRow.status}`)
+  assert(completedRow.certificateEligible === true, "Stored programme enrollment must be certificateEligible")
+  assert(completedRow.certificateStatus === "eligible", "Stored programme certificateStatus must be eligible")
 
   console.log("15. Faculty and organisation routes enforce authorization")
   const studentFaculty = await request(userAJar, "/faculty/dashboard")

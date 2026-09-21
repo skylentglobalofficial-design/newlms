@@ -243,22 +243,8 @@ export async function getActiveEnrollment(userId: string, courseId: string) {
   return resolveCourseEnrollment(userId, courseId)
 }
 
-export async function getPrimaryEnrollment(userId: string) {
-  const courseEnrollment = await prisma.userEnrollment.findFirst({
-    where: {
-      userId,
-      status: { in: ["active", "completed"] },
-      courseId: { not: null },
-    },
-    orderBy: { updatedAt: "desc" },
-    include: {
-      course: { include: courseInclude },
-      lastAccessedNode: true,
-    },
-  })
-  if (courseEnrollment) return courseEnrollment
-
-  const programEnrollment = await prisma.userEnrollment.findFirst({
+async function loadProgramEnrollment(userId: string) {
+  return prisma.userEnrollment.findFirst({
     where: {
       userId,
       status: { in: ["active", "completed"] },
@@ -277,18 +263,51 @@ export async function getPrimaryEnrollment(userId: string) {
       lastAccessedNode: true,
     },
   })
+}
 
-  if (!programEnrollment?.program?.programCourses[0]?.course) return null
+async function loadDirectCourseEnrollment(userId: string) {
+  return prisma.userEnrollment.findFirst({
+    where: {
+      userId,
+      status: { in: ["active", "completed"] },
+      courseId: { not: null },
+    },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      course: { include: courseInclude },
+      lastAccessedNode: true,
+    },
+  })
+}
 
-  const programWorkspace = await buildProgramWorkspace(userId, programEnrollment.program)
-  const resumeSlug = programWorkspace?.resume.courseSlug
-  const primaryCourse =
+async function resolveProgramResumeEnrollment(
+  userId: string,
+  programEnrollment: NonNullable<Awaited<ReturnType<typeof loadProgramEnrollment>>>,
+) {
+  if (!programEnrollment.program?.programCourses[0]?.course) return null
+
+  const program = await buildProgramWorkspace(userId, programEnrollment.program)
+  const resumeSlug = program?.resume.courseSlug
+  const resumeCourse =
     programEnrollment.program.programCourses.find((link) => link.course.slug === resumeSlug)?.course ??
     programEnrollment.program.programCourses[0].course
-  return {
-    ...programEnrollment,
-    course: primaryCourse,
+  const enrollment = (await resolveCourseEnrollment(userId, resumeCourse.id)) ?? programEnrollment
+  return { program, resumeCourse, enrollment }
+}
+
+export async function getPrimaryEnrollment(userId: string) {
+  const programEnrollment = await loadProgramEnrollment(userId)
+  if (programEnrollment) {
+    const resolved = await resolveProgramResumeEnrollment(userId, programEnrollment)
+    if (resolved) {
+      return {
+        ...resolved.enrollment,
+        course: resolved.resumeCourse,
+      }
+    }
   }
+
+  return loadDirectCourseEnrollment(userId)
 }
 
 function buildLessonState(
@@ -690,58 +709,22 @@ export async function findProgramWorkspaceForCourse(userId: string, courseId: st
 }
 
 export async function loadLearnerDashboard(userId: string): Promise<CourseWorkspace | null> {
-  const courseEnrollment = await prisma.userEnrollment.findFirst({
-    where: {
-      userId,
-      status: { in: ["active", "completed"] },
-      courseId: { not: null },
-    },
-    orderBy: { updatedAt: "desc" },
-    include: {
-      course: { include: courseInclude },
-      lastAccessedNode: true,
-    },
-  })
-
-  const programEnrollment = await prisma.userEnrollment.findFirst({
-    where: {
-      userId,
-      status: { in: ["active", "completed"] },
-      programId: { not: null },
-    },
-    orderBy: { updatedAt: "desc" },
-    include: {
-      program: {
-        include: {
-          programCourses: {
-            orderBy: { sortOrder: "asc" },
-            include: { course: { include: courseInclude } },
-          },
-        },
-      },
-      lastAccessedNode: true,
-    },
-  })
-
-  const program = programEnrollment?.program
-    ? await buildProgramWorkspace(userId, programEnrollment.program)
-    : courseEnrollment?.course
-      ? await findProgramWorkspaceForCourse(userId, courseEnrollment.course.id)
-      : null
-
-  if (courseEnrollment?.course) {
-    const workspace = await buildCourseWorkspace(courseEnrollment)
-    return workspace ? { ...workspace, program } : null
+  const programEnrollment = await loadProgramEnrollment(userId)
+  if (programEnrollment) {
+    const resolved = await resolveProgramResumeEnrollment(userId, programEnrollment)
+    if (resolved) {
+      const workspace = await buildCourseWorkspace({
+        ...resolved.enrollment,
+        course: resolved.resumeCourse,
+      })
+      if (workspace) return { ...workspace, program: resolved.program }
+    }
   }
 
-  if (!programEnrollment?.program?.programCourses[0]?.course) return null
-
-  const resumeSlug = program?.resume.courseSlug
-  const primaryCourse =
-    programEnrollment.program.programCourses.find((link) => link.course.slug === resumeSlug)?.course ??
-    programEnrollment.program.programCourses[0].course
-  const workspace = await buildCourseWorkspace({ ...programEnrollment, course: primaryCourse })
-  return workspace ? { ...workspace, program } : null
+  const courseEnrollment = await loadDirectCourseEnrollment(userId)
+  if (!courseEnrollment?.course) return null
+  const workspace = await buildCourseWorkspace(courseEnrollment)
+  return workspace
 }
 
 export async function attachProgramWorkspace(
