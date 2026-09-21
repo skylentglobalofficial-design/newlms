@@ -1,6 +1,8 @@
+import { useEffect } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import ProgramsHero from "../components/programs/ProgramsHero"
+import ProgramsStory from "../components/programs/ProgramsStory"
 import { courses } from "../data"
 import { isAuthoredCourse } from "../lib/authored-courses"
 import { linkedCourseSlugsForProgram } from "../lib/catalog-maturity"
@@ -84,11 +86,14 @@ function LiveRow({ row }: { row: ProgrammeDiscoveryCard }) {
   )
 }
 
-function LaterRow({ row }: { row: LaterProgrammeRow }) {
+function LaterRow({ row, index }: { row: LaterProgrammeRow; index: number }) {
   return (
     <article className="pg-row is-later">
       <header className="pg-row-head">
-        <p className="pg-row-kicker">{row.statusLabel}</p>
+        <p className="pg-row-kicker">
+          <span className="pg-row-index">{String(index + 1).padStart(2, "0")}</span>
+          {row.statusLabel}
+        </p>
         <h3>
           <Link to={row.href}>{row.title}</Link>
         </h3>
@@ -111,39 +116,53 @@ export default function ProgramsPage() {
   const live = liveProgrammeCatalogue()
   const later = laterProgrammeCatalogue()
 
+  useEffect(() => {
+    const root = document.documentElement
+    const previous = root.style.scrollPaddingTop
+    root.style.scrollPaddingTop = "calc(var(--nav-h) + 20px)"
+    return () => {
+      root.style.scrollPaddingTop = previous
+    }
+  }, [])
+
   return (
     <PageShell aurora={false}>
-      <div className="pg-cat">
+      <div className="pg-page">
         <ProgramsHero />
+        <ProgramsStory live={live} />
 
-        <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
-          <div className="cat-rail">
-            <p className="pg-cat-label">Catalogue</p>
-            <h2 id="pg-cat-live-title">Authored programmes</h2>
-            <p className="pg-cat-intro">
-              Each row is built from the linked course, not from brochure length. Open a programme for the full
-              taught path and enrolment.
-            </p>
-            <div className="pg-cat-list">
-              {live.map((row) => (
-                <LiveRow key={row.slug} row={row} />
-              ))}
+        <div className="pg-cat">
+          <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
+            <div className="cat-rail">
+              <p className="pg-cat-label">Authored / Ready to start</p>
+              <h2 id="pg-cat-live-title">Authored programmes</h2>
+              <p className="pg-cat-intro">
+                Each row is built from the linked course, not from brochure length. Open a programme for the full
+                taught path and enrolment.
+              </p>
+              <div className="pg-cat-list">
+                {live.map((row) => (
+                  <LiveRow key={row.slug} row={row} />
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <section className="pg-cat-later" aria-labelledby="pg-cat-later-title">
-          <div className="cat-rail">
-            <p className="pg-cat-label">Not live yet</p>
-            <h2 id="pg-cat-later-title">Coming later</h2>
-            <p className="pg-cat-intro">Listings without a finished authored programme. You can still open the page.</p>
-            <div className="pg-cat-list">
-              {later.map((row) => (
-                <LaterRow key={row.slug} row={row} />
-              ))}
+          <section className="pg-cat-later" aria-labelledby="pg-cat-later-title">
+            <div className="cat-rail">
+              <p className="pg-cat-label">Coming later</p>
+              <h2 id="pg-cat-later-title">Listed, not yet taught</h2>
+              <p className="pg-cat-intro">
+                Listings without a finished authored programme. You can still open the page.
+              </p>
+              <div className="pg-cat-list">
+                {later.map((row, index) => (
+                  <LaterRow key={row.slug} row={row} index={index} />
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       </div>
     </PageShell>
   )

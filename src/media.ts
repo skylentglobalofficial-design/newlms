@@ -10,6 +10,13 @@ export type MediaRef = string;
 
 export const DEFAULT_PROGRAM_PHOTO: MediaRef = "skylent:catalog-browser";
 
+/** Local Pexels stills for the /programs editorial page. Not remote URLs. */
+export const PROGRAMS_STUDY_CLASSROOM: MediaRef = "/content/programs/study-classroom.jpg";
+export const PROGRAMS_STUDY_LIBRARY: MediaRef = "/content/programs/study-library.jpg";
+export const PROGRAMS_STUDY_DESK: MediaRef = "/content/programs/study-desk.jpg";
+export const PROGRAMS_STUDY_UNIVERSITY: MediaRef = "/content/programs/study-university.jpg";
+export const PROGRAMS_STUDY_CAMPUS: MediaRef = "/content/programs/study-campus.jpg";
+
 export const PHOTO = {
   hero: "skylent:ecosystem-flow",
   classroomWarm: "skylent:schooling-classroom",
