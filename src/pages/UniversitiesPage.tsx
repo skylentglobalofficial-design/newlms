@@ -113,6 +113,10 @@ export default function UniversitiesPage() {
           </div>
           <div className="pe-product">
             <CertificateOsPreview />
+            <p className="pe-caption">
+              Learner programme workspace already in Skylent OS. Not a faculty dashboard and not a certificate being
+              issued.
+            </p>
           </div>
         </div>
       </section>
@@ -159,15 +163,13 @@ export default function UniversitiesPage() {
             <p className="pe-kicker">Implementation</p>
             <h2 id="uni-impl-title">Shared infrastructure across departments.</h2>
             <p className="pe-lead">
-              Universities would use Skylent for multi-program curriculum, faculty workflows, learner lifecycle
-              visibility, and outcomes reporting — with skills and career products where programmes require them.
+              Universities would use Skylent for multi-program curriculum, faculty workflows, and learner lifecycle
+              visibility — with skills and career products where programmes require them. Institutional reporting is
+              not shipping.
             </p>
-            <ol className="pe-list">
-              {IMPLEMENTATION.map((line, index) => (
-                <li key={line}>
-                  <em>{String(index + 1).padStart(2, "0")}</em>
-                  {line}
-                </li>
+            <ol className="pe-plain">
+              {IMPLEMENTATION.map((line) => (
+                <li key={line}>{line}</li>
               ))}
             </ol>
             <p className="pe-note">Faculty dashboards listed here are intended, not live.</p>

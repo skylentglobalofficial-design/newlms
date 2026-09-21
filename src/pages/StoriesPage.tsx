@@ -106,31 +106,23 @@ export default function StoriesPage() {
       </nav>
 
       <section className="pe-section is-warm" id="work" aria-labelledby="stories-work-title">
-        <div className="cat-rail pe-ink-stage">
-          <div>
-            <p className="pe-kicker">Editorial</p>
-            <h2 id="stories-work-title" className="is-quiet">The work comes first.</h2>
-            <p className="pe-lead">
-              Skylent is documenting how learning becomes work you can show: written lessons, practice, projects, and
-              evidence in Career OS. A story here will be a reviewed account of that work — never a fabricated outcome.
-            </p>
-            <p className="pe-note">
-              Editorial writing that is not a learner story lives on the <Link to="/blog">blog</Link>.
-            </p>
-          </div>
-          <div className="pe-product">
-            {harbor ? (
-              <HarborDeskWorkspace compact meta="harbor-desk-case.md · 4 interviews" />
-            ) : (
-              <NorthwindWorkspace compact />
-            )}
-          </div>
+        <div className="cat-rail">
+          <p className="pe-kicker">Editorial</p>
+          <h2 id="stories-work-title" className="is-quiet">The work comes first.</h2>
+          <p className="pe-lead">
+            Skylent is documenting how learning becomes work you can show: written lessons, practice, projects, and
+            evidence in Career OS. A story here will be a reviewed account of that work — never a fabricated outcome.
+          </p>
+          <p className="pe-note">
+            Editorial writing that is not a learner story lives on the <Link to="/blog">blog</Link>.
+          </p>
+          <LearnFlow steps={WORK_STEPS} />
         </div>
       </section>
 
-      <section className="pe-section is-paper" id="status" aria-labelledby="stories-status-title">
+      <section className="pe-section is-paper is-void" id="status" aria-labelledby="stories-status-title">
         <div className="cat-rail">
-          <p className="pe-kicker">Currently</p>
+          <p className="pe-kicker">Story</p>
           <h2 id="stories-status-title" className="pe-display">
             {empty ? "None published." : "Not shown until verified."}
           </h2>
@@ -157,14 +149,13 @@ export default function StoriesPage() {
 
       <section className="pe-section is-soft" id="learning" aria-labelledby="stories-evidence-title">
         <div className="cat-rail">
-          <p className="pe-kicker">How evidence will appear</p>
+          <p className="pe-kicker">Product evidence</p>
           <h2 id="stories-evidence-title" className="is-quiet">The work first. The story later.</h2>
           <p className="pe-lead">
-            When a story is ready, it will point at work that already exists in the product: a programme project, a
-            Career OS profile, an application when a role is published. The specimens below are live programme
-            workspaces — not learner testimonials.
+            This is not a story. It is live programme work already in the product: a project workspace, a Career OS
+            workflow, an application when a role is published. When a verified story exists, it will point at work like
+            this — not at a testimonial.
           </p>
-          <LearnFlow steps={WORK_STEPS} />
 
           {live.length > 0 ? (
             <div className="pe-specimens">
@@ -199,18 +190,15 @@ export default function StoriesPage() {
             </p>
           )}
 
-          <p className="pe-kicker is-spaced">Career OS — product workflow</p>
-          <ol className="pe-list">
-            {CAREER_OS_IA.map((item, index) => (
+          <p className="pe-kicker is-spaced">Career OS — product workflow, not a published story</p>
+          <ul className="pe-plain">
+            {CAREER_OS_IA.map((item) => (
               <li key={item.to}>
-                <em>{String(index + 1).padStart(2, "0")}</em>
-                <span>
-                  <strong>{item.label}. </strong>
-                  {item.sub}
-                </span>
+                <strong>{item.label}. </strong>
+                {item.sub}
               </li>
             ))}
-          </ol>
+          </ul>
           <p className="pe-actions">
             <Link className="pe-cta-ghost" to="/career-os">
               Explore Career OS

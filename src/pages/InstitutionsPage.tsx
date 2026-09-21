@@ -64,7 +64,7 @@ const INSTITUTION_TYPES: InstitutionType[] = [
     value: "Multi-program curriculum, assessments, student lifecycle, and outcomes as shared infrastructure.",
     workflow: ["Multi-program", "Departments", "Curriculum", "Assessments", "Lifecycle", "Outcomes"],
     description:
-      "Run Skylent OS as institutional infrastructure — curriculum enrichment, LMS, career readiness, postgraduate tracks.",
+      "Use Skylent as institutional infrastructure in design — curriculum enrichment, LMS, career readiness, postgraduate tracks.",
     offers: [
       "Curriculum co-design across departments",
       "LMS and assessment infrastructure",
@@ -84,8 +84,8 @@ const INSTITUTION_TYPES: InstitutionType[] = [
     workflow: ["Programs", "Batches", "Trainers", "Learners", "Certification", "Career support"],
     description: "Power delivery with Skylent infrastructure — credentials and Career OS for qualifying graduates.",
     offers: [
-      "Batch and trainer operations",
-      "Certification framework",
+      "Batch and trainer operations — not built yet",
+      "Certification as product direction — not issued here",
       "Career OS for qualifying learners",
       "Job board connection — when roles are published",
     ],
@@ -101,10 +101,10 @@ const INSTITUTION_TYPES: InstitutionType[] = [
     description:
       "Connect examination infrastructure to continuous learning and, where relevant, exam-prep products (JEE, NEET, CAT).",
     offers: [
-      "Assessment technology integration",
-      "Analytics on attempts and scoring",
-      "Link scores to learning pathways",
-      "Exam-prep product collaboration",
+      "Assessment technology integration — intended",
+      "Analytics on attempts and scoring — intended",
+      "Link scores to learning pathways — intended",
+      "Exam-prep collaboration when those products ship",
     ],
   },
   {
@@ -287,6 +287,11 @@ export default function InstitutionsPage() {
                           <li key={step}>{step}</li>
                         ))}
                       </ol>
+                      <ul className="pe-offers" aria-label="Intended with a partner">
+                        {item.offers.map((offer) => (
+                          <li key={offer}>{offer}</li>
+                        ))}
+                      </ul>
                       <p className="pe-actions">
                         <Link className="pe-cta" to="/contact">
                           Enquire now
@@ -309,45 +314,41 @@ export default function InstitutionsPage() {
         </div>
       </section>
 
-      <section className="pe-section is-warm" id="ecosystem" aria-labelledby="inst-connect-title">
+      <section className="pe-section is-paper" id="ecosystem" aria-labelledby="inst-connect-title">
         <div className="cat-rail">
-          <p className="pe-kicker">What institutions can connect</p>
+          <p className="pe-kicker">Operating model</p>
           <h2 id="inst-connect-title">From institutional intent to a working learning system.</h2>
           <p className="pe-lead">
             Live professional programmes, LMS progress, and Career OS are real. Academic lines and institutional
             reporting are not.
           </p>
-          <div className="pe-ink-stage">
-            <div>
-              <div className="pe-connect">
-                {CONNECT.map((col) => (
-                  <div className="pe-connect-col" key={col.name}>
-                    <h3>{col.name}</h3>
-                    <p className="pe-kicker">{col.note}</p>
-                    <ol className="pe-list">
-                      {col.items.map((item, index) => (
-                        <li key={item}>
-                          <em>{String(index + 1).padStart(2, "0")}</em>
-                          {item}
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                ))}
+          <div className="pe-connect">
+            {CONNECT.map((col) => (
+              <div className="pe-connect-col" key={col.name}>
+                <h3>{col.name}</h3>
+                <p className="pe-kicker">{col.note}</p>
+                <ul className="pe-plain">
+                  {col.items.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
               </div>
-              <ol className="pe-caprail" aria-label="Capability versus what ships">
-                {INSTITUTION_OS_LAYERS.map((item) => (
-                  <li key={item.label} className={item.status === "live" ? "is-live" : undefined}>
-                    <strong>{item.label}</strong>
-                    <span>
-                      <MaturityMark maturity={item.status} compact />
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </div>
+            ))}
+          </div>
+          <div className="pe-ink-stage is-follow">
+            <ol className="pe-caprail" aria-label="Capability versus what ships">
+              {INSTITUTION_OS_LAYERS.map((item) => (
+                <li key={item.label} className={item.status === "live" ? "is-live" : undefined}>
+                  <strong>{item.label}</strong>
+                  <span>
+                    <MaturityMark maturity={item.status} compact />
+                  </span>
+                </li>
+              ))}
+            </ol>
             <div className="pe-product">
               <SkylentOsPreview />
+              <p className="pe-caption">Skylent OS — learner progress already in the product. Not an institution dashboard.</p>
             </div>
           </div>
         </div>

@@ -6,9 +6,9 @@ import { PublicEditorialShell } from "./public-editorial"
 const GAP_STAGES = [
   { label: "Learning", sub: "Academic programmes and structured coursework" },
   { label: "Practice", sub: "Activities, assessments, and applied work" },
-  { label: "Proof", sub: "Projects, credentials, and portfolio artefacts" },
-  { label: "Career", sub: "Profile, interview prep, jobs, applications" },
-  { label: "Institutions", sub: "Infrastructure to deliver and measure outcomes" },
+  { label: "Proof", sub: "Projects and portfolio artefacts" },
+  { label: "Career", sub: "Profile, interview prep, applications — jobs when published" },
+  { label: "Institutions", sub: "Infrastructure to deliver learning — reporting is not built" },
 ] as const
 
 const SYSTEM = [
@@ -38,7 +38,7 @@ const LEARNER_TRACK = [
   { label: "Learn", live: true, note: "Programmes and coursework" },
   { label: "Practice", live: true, note: "Activities and assessments" },
   { label: "Build", live: true, note: "Projects and applied work" },
-  { label: "Prove", live: true, note: "Portfolio and credentials" },
+  { label: "Prove", live: true, note: "Portfolio and work you keep" },
   { label: "Prepare", live: true, note: "Interview preparation" },
   { label: "Apply", live: false, note: "When a role is published" },
   { label: "Track", live: false, note: "Application status" },
@@ -46,7 +46,7 @@ const LEARNER_TRACK = [
 
 const PRODUCT_MAP = [
   { label: "Programmes", sub: "Education and skills catalogue" },
-  { label: "Learning", sub: "Curriculum, lessons, cohort" },
+  { label: "Learning", sub: "Curriculum and lessons in an enrolled course" },
   { label: "Projects / Assessments", sub: "Work that becomes proof" },
   { label: "Career proof", sub: "Profile, resume, portfolio" },
   { label: "Career OS", sub: "Evidence, profile, applications" },
@@ -54,10 +54,10 @@ const PRODUCT_MAP = [
 ] as const
 
 const AUDIENCES = [
-  { label: "School learners & parents", desc: "Schooling workflows with parent-visible progress.", to: "/education#schooling" },
-  { label: "Undergraduate learners", desc: "Degree-aligned programmes, projects, and career direction.", to: "/education#undergraduate" },
-  { label: "Postgraduate learners", desc: "Specialisation tracks with professional outcomes.", to: "/education#postgraduate" },
-  { label: "Exam aspirants", desc: "JEE, NEET, CAT — practice, mocks, and analytics.", to: "/education#competitive-exams" },
+  { label: "School learners & parents", desc: "Schooling workflows with parent-visible progress — in design.", to: "/education#schooling" },
+  { label: "Undergraduate learners", desc: "Degree-aligned programmes in design, plus live professional programmes.", to: "/education#undergraduate" },
+  { label: "Postgraduate learners", desc: "Specialisation tracks in design — not an enrollable catalogue yet.", to: "/education#postgraduate" },
+  { label: "Exam aspirants", desc: "JEE, NEET, CAT as exam-prep products in design.", to: "/education#competitive-exams" },
   { label: "Skill learners", desc: "Certificates and professional programmes. Workshop listings are coming soon.", to: "/skills" },
   { label: "Career seekers", desc: "Career OS — the workspace where your learning evidence becomes something you can present.", to: "/career-os" },
   { label: "Institutions", desc: "Schools, colleges, universities, and training partners.", to: "/institutions" },
@@ -78,7 +78,7 @@ const CAREER_ITEMS = [
   "Career Profile",
   "Resume readiness",
   "Interview Preparation",
-  "Job Board",
+  "Opportunities — when published",
   "Applications",
   "Career Support",
 ] as const
@@ -86,7 +86,7 @@ const CAREER_ITEMS = [
 const SURFACES = [
   { label: "Education", desc: "Schooling, undergraduate, postgraduate, and exam preparation products.", to: "/education" },
   { label: "Skills", desc: "Certificates, professional programmes, and Career OS. Workshops are listings only.", to: "/skills" },
-  { label: "Career", desc: "Career OS workspace for profile, prep, jobs, and applications.", to: "/career-os" },
+  { label: "Career", desc: "Career OS workspace for profile, prep, and applications. Roles appear when published.", to: "/career-os" },
   { label: "Institutions", desc: "Partnership workflows for schools, colleges, and training institutes.", to: "/institutions" },
   { label: "Programmes", desc: "The catalogue connecting learners to every product surface.", to: "/programs" },
 ] as const
@@ -215,6 +215,7 @@ export default function AboutPage() {
             </div>
             <div className="pe-product">
               <SkylentOsPreview />
+              <p className="pe-caption">Learner progress in Skylent OS — not an institution control panel.</p>
             </div>
           </div>
           <p className="pe-kicker is-spaced" id="journey">
@@ -230,47 +231,45 @@ export default function AboutPage() {
             </div>
             <div>
               <p className="pe-kicker">Product surfaces</p>
-              <ol className="pe-list">
-                {PRODUCT_MAP.map((item, index) => (
+              <ul className="pe-plain">
+                {PRODUCT_MAP.map((item) => (
                   <li key={item.label}>
-                    <em>{String(index + 1).padStart(2, "0")}</em>
-                    <span>
-                      <strong>{item.label}. </strong>
-                      {item.sub}
-                    </span>
+                    <strong>{item.label}. </strong>
+                    {item.sub}
                   </li>
                 ))}
-              </ol>
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="pe-section is-paper" id="who-we-serve" aria-labelledby="about-serve-title">
+      <section className="pe-section is-warm" id="who-we-serve" aria-labelledby="about-serve-title">
         <div className="cat-rail">
           <p className="pe-kicker">04 · Who it serves</p>
           <h2 id="about-serve-title">Built for learners and the institutions that support them.</h2>
           <p className="pe-lead">
             Each audience has a distinct workflow in Skylent — not one generic user type forced into the same product.
           </p>
-          <div className="pe-map">
+          <div className="pe-examples is-anatomy">
             {AUDIENCES.map((group, index) => (
-              <div className="pe-map-item" key={group.label}>
-                <Link className="pe-map-row" to={group.to}>
-                  <em>{String(index + 1).padStart(2, "0")}</em>
-                  <div>
-                    <strong>{group.label}</strong>
-                    <span>{group.desc}</span>
-                  </div>
-                  <b aria-hidden="true">→</b>
-                </Link>
-              </div>
+              <Link className="pe-example" key={group.label} to={group.to}>
+                <p className="pe-kicker">{String(index + 1).padStart(2, "0")}</p>
+                <div>
+                  <h3>{group.label}</h3>
+                  <p>{group.desc}</p>
+                </div>
+                <p className="pe-kicker">
+                  Open
+                  <span aria-hidden="true"> →</span>
+                </p>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="pe-section is-warm" id="institutions" aria-labelledby="about-inst-title">
+      <section className="pe-section is-paper" id="institutions" aria-labelledby="about-inst-title">
         <div className="cat-rail">
           <p className="pe-kicker">05 · Where institutions fit</p>
           <h2 id="about-inst-title">Infrastructure institutions run on. Career readiness as a product.</h2>
@@ -293,14 +292,11 @@ export default function AboutPage() {
                 Long-term, Skylent OS is curriculum, assessment, skills, and career readiness as shared infrastructure
                 — for schools through universities, training partners, and industry.
               </p>
-              <ol className="pe-list">
-                {INSTITUTION_ITEMS.map((item, index) => (
-                  <li key={item}>
-                    <em>{String(index + 1).padStart(2, "0")}</em>
-                    {item}
-                  </li>
+              <ul className="pe-plain">
+                {INSTITUTION_ITEMS.map((item) => (
+                  <li key={item}>{item}</li>
                 ))}
-              </ol>
+              </ul>
               <p className="pe-note">Batches, faculty assignment, and reporting are not built yet.</p>
               <p className="pe-actions">
                 <Link className="pe-cta-ghost" to="/institutions">
@@ -320,14 +316,11 @@ export default function AboutPage() {
                 Profile, evidence, applications, and interview preparation live here. Opportunities stay empty until a
                 partner publishes a role.
               </p>
-              <ol className="pe-list">
-                {CAREER_ITEMS.map((item, index) => (
-                  <li key={item}>
-                    <em>{String(index + 1).padStart(2, "0")}</em>
-                    {item}
-                  </li>
+              <ul className="pe-plain">
+                {CAREER_ITEMS.map((item) => (
+                  <li key={item}>{item}</li>
                 ))}
-              </ol>
+              </ul>
               <p className="pe-actions">
                 <Link className="pe-cta-ghost" to="/career-os">
                   Explore Career OS

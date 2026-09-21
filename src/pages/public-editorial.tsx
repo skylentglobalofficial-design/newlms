@@ -7,7 +7,7 @@ export function PublicEditorialShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     const root = document.documentElement
     const previous = root.style.scrollPaddingTop
-    root.style.scrollPaddingTop = "calc(var(--nav-h) + 20px)"
+    root.style.scrollPaddingTop = "calc(var(--nav-h) + 72px)"
     return () => {
       root.style.scrollPaddingTop = previous
     }
