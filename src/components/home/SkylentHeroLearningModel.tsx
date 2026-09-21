@@ -49,7 +49,7 @@ const OS_ITEMS: Array<{
 
 const LEARN_MODES: Array<{ id: LearnMode; title: string; note: string }> = [
   { id: "lesson", title: "Learn", note: "Structured lessons" },
-  { id: "examples", title: "Examples", note: "See it in action" },
+  { id: "examples", title: "Examples", note: "Worked examples" },
   { id: "notes", title: "Notes", note: "Key takeaways" },
   { id: "recap", title: "Recap", note: "Quick revision" },
 ]
@@ -352,8 +352,8 @@ function LearnBody({ mode, onPractice }: { mode: LearnMode; onPractice: () => vo
         <p className="hp-lpb-kicker">Lesson 1.1</p>
         <div className="hp-lpb-lesson-grid">
           <div>
-            <h3>Understanding the concept</h3>
-            <p>Clear explanations, real examples and visual insight to help you build a strong foundation.</p>
+            <h3>Written lesson</h3>
+            <p>Read the lesson in Skylent OS. Examples and notes sit next to it.</p>
             <p className="hp-lpb-lesson-cta">
               <Icon name="play" />
               Open lesson
@@ -364,7 +364,7 @@ function LearnBody({ mode, onPractice }: { mode: LearnMode; onPractice: () => vo
             <span className="hp-lpb-orbit-lg" />
             <span className="hp-lpb-orbit-arm" />
             <span className="hp-lpb-orbit-sm" />
-            <em>Idea to application</em>
+            <em>Lesson → practice</em>
           </div>
         </div>
       </article>
@@ -991,9 +991,9 @@ export default function SkylentHeroLearningModel() {
 
             {stage === "learn" ? (
               <p className="hp-lpb-quote">
-                <q>Learning is not about consuming more, but understanding better.</q>
+                <q>Next: a short check in the same workspace.</q>
                 <button type="button" onClick={() => pickStage("practice")}>
-                  Keep going →
+                  Continue to practice →
                 </button>
               </p>
             ) : null}

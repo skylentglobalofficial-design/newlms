@@ -46,10 +46,10 @@ export default function SkylentHomeSchool() {
             12 School
           </p>
           <h2 id="home-school-heading" className="hp-ch-title">
-            A foundation for what comes next.
+            Schooling is in design.
           </h2>
           <p className="hp-ch-lead">
-            A grade-and-subject pathway designed to build strong foundations for future learning.
+            A planned grade-and-subject pathway. There is no schooling catalogue to enrol in yet.
           </p>
           <p className="hp-ch-soon-pill">{MATURITY_LABEL.coming_soon}</p>
           <Link className="hp-ch-cta" to={SCHOOLING_HREF}>
