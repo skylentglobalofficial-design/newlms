@@ -2,7 +2,11 @@ import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
 import { CourseThumb, HarborDeskWorkspace, NorthwindWorkspace } from "../components/product/ProductLanguage"
-import { programs } from "../data"
+import { ProgramCareerSection, ProgramOutcomesSection } from "../components/program/ProgramSections"
+import ProgramWorkflowVisual from "../components/program/ProgramWorkflowVisual"
+import { scrollToSection, useSectionSpy } from "../components/foundation"
+import { programs, type Program } from "../data"
+import { getDomainAccent, resolveAuroraTheme } from "../aurora-themes"
 import { isProgramEnrollable } from "../lib/catalog-api"
 import { courseProductProfile } from "../lib/course-product"
 import { isAuthoredCourse, programmeAfterEnrolCopy, programmePublicView } from "../lib/catalog-maturity"
@@ -13,7 +17,20 @@ import {
   type ProgrammeDiscoveryCard,
 } from "../lib/programme-discovery"
 import { useCatalogProgram } from "../hooks/useCatalog"
+import { T } from "../tokens"
 import "./Catalog.css"
+import "./ProgramPage.css"
+
+const AUTHORED_NAV = [
+  { id: "pd-overview", label: "Overview" },
+  { id: "pd-workspace", label: "Workspace" },
+  { id: "outcomes", label: "Work" },
+  { id: "pd-path", label: "Path" },
+  { id: "pd-os", label: "OS" },
+  { id: "pd-evidence", label: "Evidence" },
+  { id: "career", label: "Career OS" },
+  { id: "pd-enrol", label: "Enrol" },
+] as const
 
 function useDetailNarrow() {
   const [narrow, setNarrow] = useState(
@@ -80,6 +97,7 @@ export default function ProgramPage() {
       <div className="cat-page">
         {discovery ? (
           <AuthoredProgramme
+            program={program}
             discovery={discovery}
             view={view}
             afterEnrol={afterEnrol}
@@ -120,7 +138,54 @@ export default function ProgramPage() {
   )
 }
 
+function StickyProgramNav({
+  title,
+  cta,
+  comingLater,
+  enrollable,
+  onEnrol,
+}: {
+  title: string
+  cta: string
+  comingLater: boolean
+  enrollable: boolean
+  onEnrol: () => void
+}) {
+  const activeId = useSectionSpy(AUTHORED_NAV.map((item) => item.id))
+
+  return (
+    <nav className="pd-sticky" aria-label={`${title} sections`}>
+      <div className="cat-rail pd-sticky-inner">
+        <div className="pd-sticky-links">
+          {AUTHORED_NAV.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              className={activeId === item.id ? "is-active" : undefined}
+              onClick={() => scrollToSection(item.id, T.navH + 52)}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+        <div className="pd-sticky-cta">
+          {comingLater ? (
+            <span className="cat-btn cat-btn-ghost" aria-disabled="true">
+              Coming later
+            </span>
+          ) : (
+            <button type="button" className="cat-btn cat-btn-primary" disabled={!enrollable} onClick={onEnrol}>
+              {cta}
+            </button>
+          )}
+        </div>
+      </div>
+    </nav>
+  )
+}
+
 function AuthoredProgramme({
+  program,
   discovery,
   view,
   afterEnrol,
@@ -130,6 +195,7 @@ function AuthoredProgramme({
   narrow,
   onEnrol,
 }: {
+  program: Program
   discovery: ProgrammeDiscoveryCard
   view: ReturnType<typeof programmePublicView>
   afterEnrol: string
@@ -142,10 +208,12 @@ function AuthoredProgramme({
   const surfaces = PROGRAMME_WORK_SURFACES.filter(
     (surface) => discovery.visual === "northwind" || surface.id !== "lab",
   )
+  const themeId = resolveAuroraTheme(`/programs/${program.slug}`, program.slug, program.programType)
+  const accent = getDomainAccent(themeId)
 
   return (
     <>
-      <section className="cat-hero pd-hero" aria-labelledby="pd-title">
+      <section className="cat-hero pd-hero" id="pd-overview" aria-labelledby="pd-title">
         <div className="cat-rail pd-hero-grid">
           <div className="pd-hero-copy">
             <Link className="cat-back" to="/programs">
@@ -229,6 +297,32 @@ function AuthoredProgramme({
         </div>
       </section>
 
+      <StickyProgramNav
+        title={discovery.courseTitle}
+        cta={cta}
+        comingLater={comingLater}
+        enrollable={enrollable}
+        onEnrol={onEnrol}
+      />
+
+      <section className="cat-band" id="pd-workspace" aria-labelledby="pd-workspace-title">
+        <div className="cat-rail">
+          <p className="cat-label">Workspace model</p>
+          <h2 id="pd-workspace-title">How this programme is organised.</h2>
+          <p className="cat-fine">
+            A product visual of the taught path. Enrolment opens {discovery.courseTitle} in Skylent OS — not a
+            separate classroom, cohort, or live batch.
+          </p>
+          <div className="pd-workflow-frame">
+            <ProgramWorkflowVisual
+              slug={program.slug}
+              programType={program.programType}
+              programName={program.name}
+            />
+          </div>
+        </div>
+      </section>
+
       {discovery.capstone ? (
         <section className="cat-section pd-build" aria-labelledby="pd-build-title">
           <div className="cat-rail pd-build-grid">
@@ -264,7 +358,9 @@ function AuthoredProgramme({
         </section>
       ) : null}
 
-      <section className="cat-section" aria-labelledby="pd-path-title">
+      <ProgramOutcomesSection program={program} themeId={themeId} accent={accent} />
+
+      <section className="cat-section" id="pd-path" aria-labelledby="pd-path-title">
         <div className="cat-rail pd-path">
           <div>
             <p className="cat-label">How the work develops</p>
@@ -296,7 +392,7 @@ function AuthoredProgramme({
         </div>
       </section>
 
-      <section className="cat-band" aria-labelledby="pd-os-title">
+      <section className="cat-band" id="pd-os" aria-labelledby="pd-os-title">
         <div className="cat-rail">
           <p className="cat-label">Inside Skylent OS</p>
           <h2 id="pd-os-title">Where the work happens.</h2>
@@ -316,7 +412,7 @@ function AuthoredProgramme({
         </div>
       </section>
 
-      <section className="cat-section" aria-labelledby="pd-evidence-title">
+      <section className="cat-section" id="pd-evidence" aria-labelledby="pd-evidence-title">
         <div className="cat-rail pd-evidence">
           <div>
             <p className="cat-label">Your evidence</p>
@@ -333,7 +429,9 @@ function AuthoredProgramme({
         </div>
       </section>
 
-      <section className="cat-band" aria-labelledby="pd-enrol-title">
+      <ProgramCareerSection themeId={themeId} accent={accent} />
+
+      <section className="cat-band" id="pd-enrol" aria-labelledby="pd-enrol-title">
         <div className="cat-rail">
           <p className="cat-label">Before you enrol</p>
           <h2 id="pd-enrol-title">What enrolment actually does.</h2>

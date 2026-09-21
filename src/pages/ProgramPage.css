@@ -1,0 +1,109 @@
+/* Authored programme ProductVisual restore — scoped to ProgramPage. */
+
+.pd-sticky {
+  position: sticky;
+  top: var(--nav-h, 64px);
+  z-index: 70;
+  background: #fffdf8;
+  border-bottom: 1px solid rgba(21, 23, 26, 0.1);
+}
+
+.pd-sticky-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  min-width: 0;
+}
+
+.pd-sticky-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pd-sticky-links::-webkit-scrollbar {
+  display: none;
+}
+
+.pd-sticky-links button {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 8px 10px;
+  border: 0;
+  background: transparent;
+  color: #5c6168;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pd-sticky-links button.is-active {
+  color: #15171a;
+  font-weight: 650;
+  box-shadow: inset 0 -2px 0 #4f46e5;
+}
+
+.pd-sticky-cta {
+  flex: 0 0 auto;
+}
+
+.pd-sticky-cta .cat-btn {
+  min-height: 36px;
+  padding: 7px 14px;
+  font-size: 13px;
+}
+
+.pd-workflow-frame {
+  min-width: 0;
+  margin-top: 22px;
+}
+
+.pd-workflow-frame .program-workflow-visual {
+  min-width: 0;
+}
+
+.cat-page .program-outcomes-split,
+.cat-page .program-career-split {
+  min-width: 0;
+}
+
+@media (max-width: 1024px) {
+  .pd-sticky-cta .cat-btn {
+    padding: 7px 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .pd-sticky-inner {
+    min-height: 44px;
+  }
+
+  .pd-sticky-cta {
+    display: none;
+  }
+
+  .pd-sticky-links button {
+    padding: 10px 12px;
+    font-size: 13px;
+  }
+
+  .pd-workflow-frame .program-workflow-steps {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+
+@media (max-width: 390px) {
+  .pd-sticky-links button {
+    padding: 10px 10px;
+  }
+}
