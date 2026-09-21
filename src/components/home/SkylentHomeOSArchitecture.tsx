@@ -36,20 +36,22 @@ export default function SkylentHomeOSArchitecture() {
 
         <div className="hp-osx-frame" aria-label="Skylent OS architecture">
           <p className="hp-osx-label">Skylent OS</p>
-          <ol className="hp-osx-spine">
-            {LAYERS.map((layer) => (
-              <li key={layer}>
-                <b>{layer}</b>
-              </li>
-            ))}
-          </ol>
-          <ul className="hp-osx-sats">
-            {SATELLITES.map((item) => (
-              <li key={item.label}>
-                <Link to={item.to}>{item.label}</Link>
-              </li>
-            ))}
-          </ul>
+          <div className="hp-osx-body">
+            <ol className="hp-osx-spine">
+              {LAYERS.map((layer) => (
+                <li key={layer}>
+                  <b>{layer}</b>
+                </li>
+              ))}
+            </ol>
+            <ul className="hp-osx-sats">
+              {SATELLITES.map((item) => (
+                <li key={item.label}>
+                  <Link to={item.to}>{item.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>

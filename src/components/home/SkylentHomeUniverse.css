@@ -91,7 +91,7 @@
 }
 
 .hp-eco-arm.is-workshops {
-  bottom: 52px;
+  bottom: 46px;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -99,9 +99,8 @@
 
 .hp-eco-arm.is-career {
   bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
+  left: 8%;
+  text-align: left;
 }
 
 .hp-eco-arm.is-live b {

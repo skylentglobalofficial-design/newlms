@@ -37,7 +37,7 @@ export default function SkylentHomeUniverse() {
             <line className="is-live" x1="180" y1="150" x2="48" y2="150" />
             <line className="is-quiet" x1="180" y1="150" x2="312" y2="150" />
             <line className="is-quiet" x1="180" y1="150" x2="180" y2="228" />
-            <line className="is-quiet" x1="180" y1="228" x2="180" y2="270" />
+            <line className="is-quiet" x1="180" y1="150" x2="86" y2="270" />
           </svg>
           <p className="hp-eco-core">Skylent</p>
           {ARMS.map((arm) => (

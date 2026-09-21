@@ -23,8 +23,8 @@
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 0;
   width: 100%;
-  margin: 48px 0 0;
-  padding: 0;
+  margin: 56px 0 0;
+  padding: 8px 0 4px;
   list-style: none;
 }
 
@@ -37,8 +37,8 @@
 }
 
 .hp-line-path li i {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border: 1px solid var(--line-accent);
   background: #ffffff;
   z-index: 1;
@@ -47,7 +47,7 @@
 .hp-line-path li + li::before {
   content: "";
   position: absolute;
-  top: 5px;
+  top: 6px;
   right: 50%;
   width: 100%;
   height: 1px;
@@ -56,7 +56,7 @@
 
 .hp-line-path b {
   color: var(--line-ink);
-  font: 600 15px/1.2 var(--font-body);
+  font: 600 17px/1.2 var(--font-body);
   text-align: center;
 }
 
