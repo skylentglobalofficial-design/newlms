@@ -1,60 +1,51 @@
 import { Link } from "react-router-dom"
-import { CAREER_OS_IA, MATURITY_LABEL } from "../../lib/product-architecture"
 import "./SkylentHomeUniverse.css"
 
 const ARMS = [
-  { label: "Professional learning", to: "/programs", mark: "Live" },
-  { label: "Career OS", to: "/career-os", mark: "Live" },
-  { label: "Education", to: "/education", mark: MATURITY_LABEL.coming_soon },
-  { label: "Competitive exams", to: "/education/exams", mark: MATURITY_LABEL.coming_soon },
-  { label: "Workshops", to: "/workshops", mark: MATURITY_LABEL.coming_soon },
-] as const
-
-const SUPPORT = [
-  { label: "Programs", to: "/programs" },
-  { label: "Labs", to: "/labs" },
-  { label: "Projects", to: "/career-os/projects" },
-  { label: "Evidence", to: "/career-os/projects" },
-  { label: "Profile", to: CAREER_OS_IA[1].to },
-  { label: "Opportunities", to: CAREER_OS_IA[2].to },
-  { label: "Applications", to: CAREER_OS_IA[3].to },
+  { id: "education", label: "Education", note: "School to university", to: "/education", active: false },
+  { id: "learning", label: "Professional learning", note: "Programmes and courses", to: "/programs", active: true },
+  { id: "exams", label: "Competitive exams", note: "A future preparation path", to: "/exams", active: false },
+  { id: "workshops", label: "Workshops", note: "Short, focused learning", to: "/workshops", active: false },
+  { id: "career", label: "Career OS", note: "Evidence and next steps", to: "/career-os", active: false },
 ] as const
 
 export default function SkylentHomeUniverse() {
   return (
     <section className="hp-ch hp-eco" aria-labelledby="home-universe-heading">
-      <div className="hp-rail hp-eco-stage">
-        <header className="hp-eco-copy">
+      <div className="hp-rail hp-ch-split hp-eco-stage">
+        <header className="hp-ch-copy">
           <p className="hp-ch-kicker">
             <i aria-hidden="true" />
-            18 Skylent
+            18 Universe
           </p>
           <h2 id="home-universe-heading" className="hp-ch-title">
-            A learning ecosystem that grows with you.
+            Everything connects.
           </h2>
           <p className="hp-ch-lead">
-            Professional learning, career tools, education, competitive exams and hands-on workshops — connected
-            around the learner.
+            Professional learning, career tools, education, competitive exams and workshops — connected around the
+            learner.
           </p>
+          <Link className="hp-ch-cta" to="/">
+            Explore the ecosystem
+            <span aria-hidden="true"> →</span>
+          </Link>
         </header>
 
-        <div className="hp-eco-orbit" aria-label="Skylent ecosystem map">
+        <div className="hp-eco-map" aria-label="Skylent ecosystem">
+          <svg className="hp-eco-lines" viewBox="0 0 360 300" aria-hidden="true">
+            <line className="is-quiet" x1="180" y1="150" x2="180" y2="36" />
+            <line className="is-live" x1="180" y1="150" x2="48" y2="150" />
+            <line className="is-quiet" x1="180" y1="150" x2="312" y2="150" />
+            <line className="is-quiet" x1="180" y1="150" x2="180" y2="228" />
+            <line className="is-quiet" x1="180" y1="228" x2="180" y2="270" />
+          </svg>
           <p className="hp-eco-core">Skylent</p>
-          <ul className="hp-eco-arms">
-            {ARMS.map((arm) => (
-              <li key={arm.to}>
-                <Link to={arm.to}>{arm.label}</Link>
-                <em>{arm.mark}</em>
-              </li>
-            ))}
-          </ul>
-          <ul className="hp-eco-support">
-            {SUPPORT.map((item) => (
-              <li key={`${item.label}-${item.to}`}>
-                <Link to={item.to}>{item.label}</Link>
-              </li>
-            ))}
-          </ul>
+          {ARMS.map((arm) => (
+            <Link key={arm.id} className={`hp-eco-arm is-${arm.id}${arm.active ? " is-live" : ""}`} to={arm.to}>
+              <b>{arm.label}</b>
+              <span>{arm.note}</span>
+            </Link>
+          ))}
         </div>
       </div>
     </section>

@@ -4,28 +4,22 @@ import "./SkylentHomeWorkshops.css"
 
 const WORKSHOPS_HREF = "/workshops"
 
-const FORMATS = [
-  { id: "build", label: "Build" },
-  { id: "analyse", label: "Analyse" },
-  { id: "design", label: "Design" },
-  { id: "practise", label: "Practise" },
-  { id: "review", label: "Review" },
+const BEATS = [
+  { id: "question", label: "Question", note: "A real problem" },
+  { id: "try", label: "Try", note: "Hands-on work" },
+  { id: "make", label: "Make", note: "Create something" },
+  { id: "reflect", label: "Reflect", note: "Keep the takeaway" },
 ] as const
 
-const FLOW = [
-  { id: "problem", label: "Problem" },
-  { id: "session", label: "Session" },
-  { id: "work", label: "Work" },
-  { id: "takeaway", label: "Takeaway" },
-] as const
-
-function CellMark({ format, flow }: { format: string; flow: string }) {
-  const seed = format.length + flow.length
-  const inset = 6 + (seed % 4)
+function WorkshopCube() {
   return (
-    <svg className="hp-ws-cell" viewBox="0 0 36 28" aria-hidden="true">
-      <rect x={inset} y="6" width={24 - inset / 2} height="16" />
-      <path d="M10 14h16" />
+    <svg className="hp-ws-cube" viewBox="0 0 160 148" aria-hidden="true">
+      <polygon className="is-left" points="28,52 80,78 80,128 28,102" />
+      <polygon className="is-right" points="80,78 132,52 132,102 80,128" />
+      <polygon className="is-top" points="80,28 132,52 80,78 28,52" />
+      <polygon className="is-stroke" points="80,28 132,52 80,78 28,52" />
+      <polygon className="is-stroke" points="28,52 80,78 80,128 28,102" />
+      <polygon className="is-stroke" points="80,78 132,52 132,102 80,128" />
     </svg>
   )
 }
@@ -33,45 +27,35 @@ function CellMark({ format, flow }: { format: string; flow: string }) {
 export default function SkylentHomeWorkshops() {
   return (
     <section className="hp-ch hp-ws" aria-labelledby="home-workshops-heading">
-      <div className="hp-rail hp-ws-stage">
-        <header className="hp-ws-copy">
+      <div className="hp-rail hp-ch-split hp-ws-stage">
+        <header className="hp-ch-copy">
           <p className="hp-ch-kicker">
             <i aria-hidden="true" />
             15 Workshops
           </p>
           <h2 id="home-workshops-heading" className="hp-ch-title">
-            Learn by doing, together.
+            Learn by doing.
           </h2>
           <p className="hp-ch-lead">Focused sessions built around a problem, a tool, or a piece of work.</p>
-          <p className="hp-ws-soon">{MATURITY_LABEL.coming_soon}</p>
-          <p className="hp-ws-note">
-            Formats only. No dates, instructors, seats, or registration on this page.
-          </p>
-          <Link className="hp-ws-cta" to={WORKSHOPS_HREF}>
+          <p className="hp-ch-soon-pill">{MATURITY_LABEL.coming_soon}</p>
+          <Link className="hp-ch-cta" to={WORKSHOPS_HREF}>
             Explore workshops
             <span aria-hidden="true"> →</span>
           </Link>
         </header>
 
-        <div className="hp-ws-table" role="table" aria-label="Workshop formats">
-          <div className="hp-ws-head" role="row">
-            <span role="columnheader">Flow</span>
-            {FORMATS.map((format) => (
-              <span key={format.id} role="columnheader">
-                {format.label}
-              </span>
+        <div className="hp-ws-visual" aria-label="Workshop as a short practical loop">
+          <ol className="hp-ws-orbit">
+            {BEATS.map((beat) => (
+              <li key={beat.id} className={`is-${beat.id}`}>
+                <b>{beat.label}</b>
+                <span>{beat.note}</span>
+              </li>
             ))}
+          </ol>
+          <div className="hp-ws-core">
+            <WorkshopCube />
           </div>
-          {FLOW.map((row) => (
-            <div className="hp-ws-row" role="row" key={row.id}>
-              <b role="rowheader">{row.label}</b>
-              {FORMATS.map((format) => (
-                <span role="cell" key={`${row.id}-${format.id}`}>
-                  <CellMark format={format.id} flow={row.id} />
-                </span>
-              ))}
-            </div>
-          ))}
         </div>
       </div>
     </section>

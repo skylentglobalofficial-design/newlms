@@ -1,226 +1,127 @@
-/* Scroll 13 — university as a rising academic progression */
+/* Scroll 13 — one academic rise, not a degree catalogue */
 
 .hp-ch.hp-uni {
   --uni-ink: #15171a;
-  --uni-secondary: #5c6168;
   --uni-muted: #8a8f96;
   --uni-line: rgba(21, 23, 26, 0.08);
-  --uni-line-strong: rgba(21, 23, 26, 0.12);
   --uni-accent: #4f46e5;
-  --uni-wash: #f7f8fd;
   --uni-fill: #eef0fb;
-  --uni-left: #e4e7f7;
+  --uni-top: #f7f8fd;
+  --uni-cap: #e4e7f7;
   background: #ffffff;
   border-top: 1px solid var(--uni-line);
 }
 
-.hp-uni-stage {
+.hp-uni-visual {
   display: grid;
-  gap: clamp(32px, 4vh, 48px);
-}
-
-.hp-uni-copy {
-  max-width: 40em;
-}
-
-.hp-uni-copy .hp-ch-title {
-  max-width: 12em;
-}
-
-.hp-uni-soon,
-.hp-uni-soon-inline {
-  display: inline-flex;
+  grid-template-columns: minmax(0, 0.9fr) minmax(160px, 0.7fr);
   align-items: center;
-  min-height: 26px;
-  padding: 0 10px;
-  border: 1px solid rgba(79, 70, 229, 0.22);
-  border-radius: 999px;
-  background: var(--uni-wash);
-  color: var(--uni-accent);
-  font: 600 10.5px/1 var(--font-mono);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  gap: 8px 16px;
+  min-width: 0;
 }
 
-.hp-uni-soon {
-  margin-top: 18px;
+.hp-uni-rise-art {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  justify-self: end;
 }
 
-.hp-uni a:focus-visible {
-  outline: 2px solid var(--uni-accent);
-  outline-offset: 3px;
+.hp-uni-rise-art .is-base {
+  fill: #eef0f4;
 }
 
-.hp-uni-rise {
-  position: relative;
-  margin: 0;
+.hp-uni-rise-art .is-fill {
+  fill: var(--uni-fill);
+}
+
+.hp-uni-rise-art .is-top {
+  fill: var(--uni-top);
+}
+
+.hp-uni-rise-art .is-cap {
+  fill: var(--uni-cap);
+}
+
+.hp-uni-rise-art .is-stroke {
+  fill: none;
+  stroke: var(--uni-accent);
+  stroke-width: 1.15;
+  opacity: 0.5;
+}
+
+.hp-uni-rise-art .is-mark {
+  fill: none;
+  stroke: var(--uni-accent);
+  stroke-width: 1.4;
+  opacity: 0.85;
+}
+
+.hp-uni-legend {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 28px;
+  margin: 8px 0 0;
   padding: 0;
   list-style: none;
 }
 
-.hp-uni-rise::before {
-  content: "";
-  position: absolute;
-  top: 36px;
-  bottom: 36px;
-  left: 83px;
-  width: 1px;
-  background: rgba(79, 70, 229, 0.28);
-}
-
-.hp-uni-rise > li + li {
-  border-top: 1px solid var(--uni-line);
-}
-
-.hp-uni-tier {
+.hp-uni-legend a {
   display: grid;
-  grid-template-columns: minmax(140px, 188px) minmax(0, 1fr);
-  gap: 28px 36px;
-  align-items: center;
-  min-width: 0;
-  padding: 22px 0;
+  gap: 4px;
   color: inherit;
   text-decoration: none;
 }
 
-.hp-uni-glyph {
-  position: relative;
-  z-index: 1;
-  display: block;
-  width: 100%;
-  max-width: 188px;
-  height: auto;
-}
-
-.hp-uni-glyph .is-ground {
-  fill: var(--uni-wash);
-}
-
-.hp-uni-glyph .is-top {
-  fill: #f4f5fc;
-}
-
-.hp-uni-glyph .is-left {
-  fill: var(--uni-left);
-}
-
-.hp-uni-glyph .is-right {
-  fill: var(--uni-fill);
-}
-
-.hp-uni-glyph .is-stroke,
-.hp-uni-glyph .is-window,
-.hp-uni-glyph .is-column,
-.hp-uni-glyph .is-dome {
-  fill: none;
-  stroke: var(--uni-accent);
-  stroke-width: 1.25;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-.hp-uni-glyph .is-window {
-  fill: #ffffff;
-}
-
-.hp-uni-glyph .is-dome {
-  fill: var(--uni-fill);
-}
-
-.hp-uni-tier-copy {
-  min-width: 0;
-}
-
-.hp-uni-tier-top {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 14px;
-}
-
-.hp-uni-idx {
-  color: var(--uni-accent);
-  font: 600 12px/1 var(--font-mono);
-}
-
-.hp-uni-tier-copy h3 {
-  margin: 0;
+.hp-uni-legend b {
   color: var(--uni-ink);
-  font-family: var(--font-brand);
-  font-size: clamp(26px, 2.6vw, 36px);
-  font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
+  font: 600 16px/1.2 var(--font-body);
 }
 
-.hp-uni-tier-copy > p {
-  margin: 10px 0 0;
-  max-width: 38em;
-  color: var(--uni-secondary);
-  font-size: 15px;
-  line-height: 1.5;
+.hp-uni-legend span {
+  color: var(--uni-muted);
+  font-size: 13px;
+  line-height: 1.4;
 }
 
-.hp-uni-tier-copy ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 14px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.hp-uni-tier-copy li {
-  display: inline-flex;
-  align-items: center;
-  min-height: 26px;
-  padding: 0 10px;
-  border: 1px solid var(--uni-line-strong);
-  border-radius: 999px;
-  background: #f6f6f7;
-  color: var(--uni-ink);
-  font-size: 12.5px;
-  font-weight: 500;
-}
-
-.hp-uni-tier:hover h3 {
+.hp-uni-legend a:hover b {
   color: var(--uni-accent);
+}
+
+@media (max-width: 1024px) {
+  .hp-uni-stage.hp-ch-split {
+    gap: 28px 36px;
+  }
 }
 
 @media (max-width: 768px) {
-  .hp-uni-rise::before {
-    left: 22px;
+  .hp-uni-stage.hp-ch-split {
+    grid-template-columns: 1fr;
   }
 
-  .hp-uni-tier {
-    grid-template-columns: 44px minmax(0, 1fr);
-    grid-template-areas:
-      "spine copy"
-      "spine glyph";
-    gap: 12px 16px;
+  .hp-uni-visual {
+    max-width: 460px;
   }
 
-  .hp-uni-glyph {
-    grid-area: glyph;
-    max-width: 168px;
-  }
-
-  .hp-uni-tier-copy {
-    grid-area: copy;
-  }
-
-  .hp-uni-copy .hp-ch-title {
-    max-width: none;
+  .hp-uni-rise-art {
+    justify-self: start;
   }
 }
 
 @media (max-width: 430px) {
-  .hp-uni-tier-top {
-    flex-direction: column;
-    align-items: flex-start;
+  .hp-uni-visual {
+    grid-template-columns: 1fr;
   }
 
-  .hp-uni-tier-copy h3 {
-    font-size: 26px;
+  .hp-uni-rise-art {
+    max-width: 220px;
+  }
+
+  .hp-uni-legend {
+    flex-direction: column;
+    gap: 16px;
+    padding-left: 12px;
+    border-left: 1px solid rgba(79, 70, 229, 0.28);
   }
 }
