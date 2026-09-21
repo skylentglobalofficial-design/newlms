@@ -9,7 +9,8 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(21,23,26,.03), transparent 45%, rgba(21,23,26,.16));
+  background: rgba(21, 23, 26, 0.035);
+  mix-blend-mode: multiply;
 }
 
 .pg-hero-copy,
