@@ -4,6 +4,7 @@ import {
   loginRequest,
   logoutRequest,
   signupRequest,
+  updateProfileRequest,
   clearAuthClientState,
   type ApiRole,
 } from "../lib/auth-api"
@@ -31,6 +32,7 @@ type AuthContextValue = {
   ready: boolean
   login: (email: string, password: string) => Promise<UserRole>
   signup: (name: string, email: string, password: string) => Promise<UserRole>
+  updateDisplayName: (displayName: string) => Promise<void>
   loginDemo: (user: AuthUser) => void
   logout: () => Promise<void>
 }
@@ -103,6 +105,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return nextUser.role
   }, [])
 
+  const updateDisplayName = useCallback(async (displayName: string) => {
+    const session = await updateProfileRequest({ displayName })
+    setUser(toAuthUser(session))
+    setRoles(session.roles)
+  }, [])
+
   const loginDemo = useCallback((demoUser: AuthUser) => {
     if (!isDemoMode) {
       throw new Error("Demo login is disabled outside VITE_DEMO_MODE")
@@ -124,7 +132,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, roles, ready, login, signup, loginDemo, logout }}>
+    <AuthContext.Provider value={{ user, roles, ready, login, signup, updateDisplayName, loginDemo, logout }}>
       {children}
     </AuthContext.Provider>
   )
@@ -137,6 +145,7 @@ const SAFE_DEFAULT: AuthContextValue = {
   ready: true,
   login: async () => "student",
   signup: async () => "student",
+  updateDisplayName: async () => {},
   loginDemo: () => {},
   logout: async () => {},
 }
