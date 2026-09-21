@@ -374,6 +374,68 @@ async function main() {
     await prisma.program.delete({ where: { slug: unlinkedSlug } })
   }
 
+  console.log("14d. Programme workspace aggregates linked-course progress and resume")
+  const programSlug = "data-science-ai"
+  const secondCourseSlug = "python-programming"
+  const programAccessAnon = await request(anonJar, `/lms/programs/${programSlug}/access`)
+  assert(programAccessAnon.data.data.authenticated === false, "Anonymous programme access should be unauthenticated")
+  assert(programAccessAnon.data.data.canAccess === false, "Anonymous visitor cannot access programme workspace")
+
+  const programBlocked = await request(userBJar, `/lms/programs/${programSlug}`)
+  assert(programBlocked.response.status === 403, "Non-enrolled learner cannot read programme aggregation")
+
+  const programWorkspace = await request(programJar, `/lms/programs/${programSlug}`)
+  assert(programWorkspace.response.ok, "Programme-enrolled learner should load programme workspace")
+  assert(programWorkspace.data.data.slug === programSlug, "Programme workspace slug mismatch")
+  const linkedSlugs = (programWorkspace.data.data.courses as Array<{ slug: string }>).map((row) => row.slug)
+  assert(linkedSlugs.includes(courseSlug), "Programme must include Data Analytics")
+  assert(linkedSlugs.includes(secondCourseSlug), "Programme must include Python")
+  assert(programWorkspace.data.data.progress.totalCourses === linkedSlugs.length, "totalCourses must match linked courses")
+  assert(programWorkspace.data.data.progress.progressPct === 0, "New programme enrollment must start at 0%")
+  assert(programWorkspace.data.data.resume.courseSlug === courseSlug, "Resume should start on the first incomplete course")
+
+  const pythonViaProgram = await request(programJar, `/lms/courses/${secondCourseSlug}`)
+  assert(pythonViaProgram.response.ok, "Programme enrollment must unlock the second linked course")
+
+  const daWorkspace = await request(programJar, `/lms/courses/${courseSlug}`)
+  assert(daWorkspace.response.ok, "Programme learner should still access Data Analytics")
+  const daLessonKeys = (daWorkspace.data.data.course.modules as Array<{ lessons: Array<{ id: string }> }>)
+    .flatMap((module) => module.lessons.map((lesson) => lesson.id))
+  assert(daLessonKeys.length > 0, "Data Analytics must have lessons to complete")
+
+  for (const lessonKey of daLessonKeys) {
+    await completeLesson(programJar, courseSlug, lessonKey)
+  }
+
+  const afterFirstCourse = await request(programJar, `/lms/programs/${programSlug}`)
+  assert(afterFirstCourse.response.ok, "Programme workspace should reload after course progress")
+  const daRow = afterFirstCourse.data.data.courses.find((row: { slug: string }) => row.slug === courseSlug)
+  const pyRow = afterFirstCourse.data.data.courses.find((row: { slug: string }) => row.slug === secondCourseSlug)
+  assert(daRow?.progress.allComplete === true, "Completed first course must report allComplete from stored lesson progress")
+  assert(pyRow?.progress.allComplete === false, "Second course must remain incomplete")
+  assert(afterFirstCourse.data.data.progress.completedCourses === 1, "Aggregate completedCourses must be 1")
+  assert(afterFirstCourse.data.data.resume.courseSlug === secondCourseSlug, "Resume must move to the next incomplete course")
+  assert(afterFirstCourse.data.data.progress.progressPct > 0, "Aggregate progressPct must come from completed lessons")
+  assert(afterFirstCourse.data.data.progress.progressPct < 100, "Programme must not be 100% until every linked course is complete")
+
+  const dashboardAfter = await request(programJar, "/lms/dashboard")
+  assert(dashboardAfter.response.ok, "Dashboard should load after programme progress")
+  assert(dashboardAfter.data.data.course.slug === secondCourseSlug, "Dashboard primary course should be the resume course")
+  assert(dashboardAfter.data.data.program?.slug === programSlug, "Dashboard must include programme aggregation")
+  assert(
+    dashboardAfter.data.data.program.courses.some((row: { slug: string }) => row.slug === secondCourseSlug),
+    "Dashboard programme payload must list every linked course",
+  )
+
+  const listedLinks = await request(programJar, "/lms/enrollments")
+  const programRow = listedLinks.data.data.find((row: { programSlug?: string }) => row.programSlug === programSlug)
+  assert(Array.isArray(programRow?.linkedCourses) && programRow.linkedCourses.length >= 2, "Enrolments list should expose every linked course")
+
+  const catalogCourse = await request(anonJar, `/catalog/courses/${courseSlug}`)
+  assert(catalogCourse.response.ok, "Public catalog course should load")
+  const catalogJson = JSON.stringify(catalogCourse.data)
+  assert(!/muxPlaybackId/.test(catalogJson), "Public catalog must not expose Mux playback ids")
+
   console.log("15. Faculty and organisation routes enforce authorization")
   const studentFaculty = await request(userAJar, "/faculty/dashboard")
   assert(studentFaculty.response.status === 403, "Student should not access faculty dashboard")

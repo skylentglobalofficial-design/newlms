@@ -44,6 +44,40 @@ export type LessonStatePayload = {
   lastAccessedAt?: string
 }
 
+export type CourseProgressSummary = {
+  completedCount: number
+  totalLessons: number
+  progressPct: number
+  allComplete: boolean
+}
+
+export type ProgramCourseProgress = {
+  slug: string
+  title: string
+  progress: CourseProgressSummary
+  resume: ResumePayload
+}
+
+export type ProgramResumePayload = ResumePayload & {
+  courseSlug: string
+  courseTitle: string
+}
+
+export type ProgramWorkspace = {
+  slug: string
+  name: string
+  enrollmentId: string
+  status: string
+  certificateEligible: boolean
+  certificateStatus: string
+  progress: CourseProgressSummary & {
+    completedCourses: number
+    totalCourses: number
+  }
+  resume: ProgramResumePayload
+  courses: ProgramCourseProgress[]
+}
+
 export type CourseWorkspace = {
   enrollment: {
     id: string
@@ -59,13 +93,9 @@ export type CourseWorkspace = {
     modules: FormattedModule[]
   }
   lessonStates: Record<LessonKey, LessonStatePayload>
-  progress: {
-    completedCount: number
-    totalLessons: number
-    progressPct: number
-    allComplete: boolean
-  }
+  progress: CourseProgressSummary
   resume: ResumePayload
+  program?: ProgramWorkspace | null
 }
 
 export type ResumePayload = {
@@ -250,7 +280,11 @@ export async function getPrimaryEnrollment(userId: string) {
 
   if (!programEnrollment?.program?.programCourses[0]?.course) return null
 
-  const primaryCourse = programEnrollment.program.programCourses[0].course
+  const programWorkspace = await buildProgramWorkspace(userId, programEnrollment.program)
+  const resumeSlug = programWorkspace?.resume.courseSlug
+  const primaryCourse =
+    programEnrollment.program.programCourses.find((link) => link.course.slug === resumeSlug)?.course ??
+    programEnrollment.program.programCourses[0].course
   return {
     ...programEnrollment,
     course: primaryCourse,
@@ -480,12 +514,28 @@ export async function syncCertificateState(enrollmentId: string, courseId?: stri
     },
   })
 
+  if (!enrollment) return
+
+  if (enrollment.program?.programCourses.length) {
+    const programWorkspace = await buildProgramWorkspace(enrollment.userId, enrollment.program)
+    const allComplete = programWorkspace?.progress.allComplete ?? false
+    await prisma.userEnrollment.update({
+      where: { id: enrollmentId },
+      data: {
+        certificateEligible: allComplete,
+        certificateStatus: allComplete ? "eligible" : "locked",
+        status: allComplete ? "completed" : "active",
+      },
+    })
+    return
+  }
+
   const course =
-    enrollment?.course ??
+    enrollment.course ??
     (courseId
       ? await prisma.course.findUnique({ where: { id: courseId }, include: courseInclude })
-      : enrollment?.program?.programCourses[0]?.course)
-  if (!enrollment || !course) return
+      : null)
+  if (!course) return
 
   const lessonStates = await loadLessonStates(enrollment, course)
   const { allComplete } = computeProgress(course, lessonStates)
@@ -498,6 +548,20 @@ export async function syncCertificateState(enrollmentId: string, courseId?: stri
       status: allComplete ? "completed" : "active",
     },
   })
+
+  const relatedPrograms = await prisma.userEnrollment.findMany({
+    where: {
+      userId: enrollment.userId,
+      programId: { not: null },
+      status: { in: ["active", "completed"] },
+      program: { programCourses: { some: { courseId: course.id } } },
+    },
+    select: { id: true },
+  })
+  for (const related of relatedPrograms) {
+    if (related.id === enrollmentId) continue
+    await syncCertificateState(related.id)
+  }
 }
 
 export async function findProgramBySlug(slug: string) {
@@ -510,6 +574,189 @@ export async function findProgramBySlug(slug: string) {
       },
     },
   })
+}
+
+type ProgramWithLinkedCourses = NonNullable<Awaited<ReturnType<typeof findProgramBySlug>>>
+
+export async function buildProgramWorkspace(
+  userId: string,
+  program: ProgramWithLinkedCourses,
+): Promise<ProgramWorkspace | null> {
+  const programEnrollment = await prisma.userEnrollment.findFirst({
+    where: {
+      userId,
+      programId: program.id,
+      status: { in: ["active", "completed"] },
+    },
+  })
+  if (!programEnrollment) return null
+
+  const courses: ProgramCourseProgress[] = []
+  for (const link of program.programCourses) {
+    const course = link.course
+    const enrollment = await resolveCourseEnrollment(userId, course.id)
+    if (!enrollment) continue
+    const lessonStates = await loadLessonStates(enrollment, course)
+    const progress = computeProgress(course, lessonStates)
+    const lastAccessedInThisCourse = flattenNodes(course).some(
+      (item) => item.node.id === enrollment.lastAccessedNodeId,
+    )
+    const resume = computeResume(
+      course,
+      lessonStates,
+      lastAccessedInThisCourse ? enrollment.lastAccessedNodeId : null,
+    )
+    courses.push({
+      slug: course.slug,
+      title: course.title,
+      progress,
+      resume,
+    })
+  }
+
+  if (courses.length === 0) return null
+
+  const completedCount = courses.reduce((sum, course) => sum + course.progress.completedCount, 0)
+  const totalLessons = courses.reduce((sum, course) => sum + course.progress.totalLessons, 0)
+  const completedCourses = courses.filter((course) => course.progress.allComplete).length
+  const totalCourses = courses.length
+  const progressPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
+  const allComplete = totalCourses > 0 && completedCourses === totalCourses
+
+  let lastAccessedCourseSlug: string | null = null
+  if (programEnrollment.lastAccessedNodeId) {
+    for (const link of program.programCourses) {
+      if (flattenNodes(link.course).some((item) => item.node.id === programEnrollment.lastAccessedNodeId)) {
+        lastAccessedCourseSlug = link.course.slug
+        break
+      }
+    }
+  }
+
+  const incomplete = courses.filter((course) => !course.progress.allComplete)
+  const preferred =
+    (lastAccessedCourseSlug
+      ? incomplete.find((course) => course.slug === lastAccessedCourseSlug)
+      : undefined) ??
+    incomplete[0] ??
+    courses[0]
+
+  return {
+    slug: program.slug,
+    name: program.name,
+    enrollmentId: programEnrollment.id,
+    status: programEnrollment.status,
+    certificateEligible: allComplete,
+    certificateStatus: allComplete ? "eligible" : programEnrollment.certificateStatus,
+    progress: {
+      completedCount,
+      totalLessons,
+      progressPct,
+      allComplete,
+      completedCourses,
+      totalCourses,
+    },
+    resume: {
+      ...preferred.resume,
+      courseSlug: preferred.slug,
+      courseTitle: preferred.title,
+    },
+    courses,
+  }
+}
+
+export async function findProgramWorkspaceForCourse(userId: string, courseId: string) {
+  const programEnrollment = await prisma.userEnrollment.findFirst({
+    where: {
+      userId,
+      programId: { not: null },
+      status: { in: ["active", "completed"] },
+      program: { programCourses: { some: { courseId } } },
+    },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      program: {
+        include: {
+          programCourses: {
+            orderBy: { sortOrder: "asc" },
+            include: { course: { include: courseInclude } },
+          },
+        },
+      },
+    },
+  })
+  if (!programEnrollment?.program) return null
+  return buildProgramWorkspace(userId, programEnrollment.program)
+}
+
+export async function loadLearnerDashboard(userId: string): Promise<CourseWorkspace | null> {
+  const courseEnrollment = await prisma.userEnrollment.findFirst({
+    where: {
+      userId,
+      status: { in: ["active", "completed"] },
+      courseId: { not: null },
+    },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      course: { include: courseInclude },
+      lastAccessedNode: true,
+    },
+  })
+
+  const programEnrollment = await prisma.userEnrollment.findFirst({
+    where: {
+      userId,
+      status: { in: ["active", "completed"] },
+      programId: { not: null },
+    },
+    orderBy: { updatedAt: "desc" },
+    include: {
+      program: {
+        include: {
+          programCourses: {
+            orderBy: { sortOrder: "asc" },
+            include: { course: { include: courseInclude } },
+          },
+        },
+      },
+      lastAccessedNode: true,
+    },
+  })
+
+  const program = programEnrollment?.program
+    ? await buildProgramWorkspace(userId, programEnrollment.program)
+    : courseEnrollment?.course
+      ? await findProgramWorkspaceForCourse(userId, courseEnrollment.course.id)
+      : null
+
+  if (courseEnrollment?.course) {
+    const workspace = await buildCourseWorkspace(courseEnrollment)
+    return workspace ? { ...workspace, program } : null
+  }
+
+  if (!programEnrollment?.program?.programCourses[0]?.course) return null
+
+  const resumeSlug = program?.resume.courseSlug
+  const primaryCourse =
+    programEnrollment.program.programCourses.find((link) => link.course.slug === resumeSlug)?.course ??
+    programEnrollment.program.programCourses[0].course
+  const workspace = await buildCourseWorkspace({ ...programEnrollment, course: primaryCourse })
+  return workspace ? { ...workspace, program } : null
+}
+
+export async function attachProgramWorkspace(
+  userId: string,
+  workspace: CourseWorkspace | null,
+  program?: ProgramWithLinkedCourses | null,
+  courseId?: string | null,
+): Promise<CourseWorkspace | null> {
+  if (!workspace) return null
+  const programWorkspace = program
+    ? await buildProgramWorkspace(userId, program)
+    : courseId
+      ? await findProgramWorkspaceForCourse(userId, courseId)
+      : null
+  return { ...workspace, program: programWorkspace }
 }
 
 export async function getCourseIdsForProgram(programId: string) {
