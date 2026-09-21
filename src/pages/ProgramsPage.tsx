@@ -34,7 +34,7 @@ function ProgrammeCard({ row, index }: { row: ProgrammeDiscoveryCard; index: num
   return (
     <article className={"pg-programme-card " + (index % 2 ? "is-reverse" : "")}>
       <div className="pg-programme-card-copy">
-        <p className="pg-section-label">0{index + 1} · Authored programme</p>
+        <p className="pg-section-label">0{index + 1} · Programme</p>
         <h3>{row.courseTitle || row.title}</h3>
         <p className="pg-programme-decision">{row.decisionLine}</p>
 
@@ -52,6 +52,12 @@ function ProgrammeCard({ row, index }: { row: ProgrammeDiscoveryCard; index: num
         <Link className="pg-arrow-link" to={row.href}>
           Open programme <span aria-hidden="true">→</span>
         </Link>
+
+        {course ? (
+          <p className="pg-programme-course-note">
+            Built from <strong>{course.title}</strong> · {course.mode} · {course.level}
+          </p>
+        ) : null}
       </div>
 
       <div className="pg-programme-card-visual">
@@ -62,7 +68,6 @@ function ProgrammeCard({ row, index }: { row: ProgrammeDiscoveryCard; index: num
         )}
       </div>
 
-      {course ? <span className="pg-programme-course-note">{course.mode} · {course.level}</span> : null}
     </article>
   )
 }
@@ -101,11 +106,11 @@ export default function ProgramsPage() {
             <div className="pg-intro-head">
               <div>
                 <p className="pg-section-label">Find your programme</p>
-                <h2 id="pg-programmes-title">Choose the work you want to do.</h2>
+                <h2 id="pg-programmes-title">Two programmes. Built around real work.</h2>
               </div>
               <p>
-                Each programme starts from the course that is actually authored in Skylent today. No brochure
-                curriculum is presented as taught.
+                Start with an authored programme below. Each one is anchored to a real Skylent course, with the work,
+                lesson counts, and project surface shown as they exist today.
               </p>
             </div>
 
@@ -169,9 +174,9 @@ export default function ProgramsPage() {
             <div className="pg-os-head">
               <div>
                 <p className="pg-section-label">Inside Skylent OS</p>
-                <h2 id="pg-os-title">One composed flow from learning to evidence.</h2>
+                <h2 id="pg-os-title">The system behind the programme.</h2>
               </div>
-              <p>Written lessons, practice, projects and the work you keep live in the same learning system.</p>
+              <p>Lessons, practice, projects and the work you keep are designed as one learning system.</p>
             </div>
 
             <SkylentWorkflowStory />
@@ -184,11 +189,11 @@ export default function ProgramsPage() {
             <div className="pg-anatomy-head">
               <div>
                 <p className="pg-section-label">Programme anatomy</p>
-                <h2 id="pg-anatomy-title">A clear path, without invented steps.</h2>
+                <h2 id="pg-anatomy-title">See what you actually move through.</h2>
               </div>
               <p>
-                Module titles, lesson counts, practice and project work come from the authored course data. The page
-                only shows what exists.
+                Module titles, lesson counts, practice and project work come from the authored course data. Nothing is
+                padded to make the programme look bigger.
               </p>
             </div>
 
@@ -230,7 +235,7 @@ export default function ProgramsPage() {
           <div className="cat-rail pg-final-inner">
             <div>
               <p className="pg-section-label">Start with the work</p>
-              <h2 id="pg-final-title">Pick a programme. Then make something worth keeping.</h2>
+              <h2 id="pg-final-title">Start with the work. Keep what you build.</h2>
             </div>
             <a className="pg-final-cta" href="#pg-programmes">
               Explore programmes <span aria-hidden="true">↗</span>
