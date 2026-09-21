@@ -242,7 +242,7 @@
 .pg-programme-rail a:first-child.is-active::after { left: 0; }
 
 .pg-intro-section {
-  padding: clamp(90px, 12vw, 160px) 0;
+  padding: clamp(82px, 10vw, 140px) 0;
 }
 
 .pg-intro-head,
@@ -290,6 +290,7 @@
 
 .pg-programme-card {
   position: relative;
+  isolation: isolate;
   display: grid;
   grid-template-columns: minmax(270px, .72fr) minmax(0, 1.28fr);
   gap: clamp(40px, 7vw, 110px);
@@ -309,6 +310,7 @@
 
 .pg-programme-card-copy h3 {
   margin: 0;
+  text-wrap: balance;
   max-width: 560px;
   font-family: var(--font-brand);
   font-size: clamp(36px, 4vw, 60px);
@@ -372,6 +374,7 @@
   padding: clamp(16px, 2vw, 28px);
   background: var(--pg-paper);
   border: 1px solid var(--pg-line);
+  box-shadow: 0 20px 55px rgba(21,23,26,.055);
 }
 
 .pg-programme-card-visual figure {
@@ -379,13 +382,17 @@
 }
 
 .pg-programme-course-note {
-  position: absolute;
-  left: 0;
-  bottom: 22px;
+  margin: 20px 0 0;
   color: var(--pg-faint);
-  font: 500 9px/1.2 var(--font-mono);
+  font: 500 9px/1.5 var(--font-mono);
+  letter-spacing: .055em;
   text-transform: uppercase;
-  letter-spacing: .1em;
+}
+
+.pg-programme-course-note strong {
+  color: #4b5056;
+  font-weight: 600;
+  text-transform: none;
 }
 
 .pg-statement-section {
@@ -469,6 +476,10 @@
 .pg-os-section .pl-frame {
   border-color: rgba(21,23,26,.13);
   box-shadow: 0 24px 70px rgba(21,23,26,.07);
+}
+
+.pg-os-section .pl-frame figcaption {
+  letter-spacing: .025em;
 }
 
 .pg-os-section .pl-frame + .pl-frame {
@@ -664,7 +675,7 @@
 
   .pg-programme-card-copy h3 { font-size: clamp(38px, 11vw, 55px); }
 
-  .pg-programme-course-note { position: static; display: block; margin-top: 20px; }
+  .pg-programme-course-note { display: block; margin-top: 18px; }
 
   .pg-anatomy-table {
     margin-top: 36px;
