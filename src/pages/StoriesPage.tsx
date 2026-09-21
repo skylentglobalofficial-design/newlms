@@ -34,6 +34,7 @@ export default function StoriesPage() {
   const live = liveProgrammeCatalogue()
   const harbor = live.find((row) => row.visual === "harbor-desk")
   const northwind = live.find((row) => row.visual === "northwind")
+  const statusLabel = published === 0 ? "None published" : "Held for verification"
 
   return (
     <PublicEditorialShell>
@@ -57,7 +58,7 @@ export default function StoriesPage() {
               We do not publish names, salaries, placement rates, or sample narratives from the codebase.
             </p>
             <ul className="pe-meta">
-              <li>{published} verified {published === 1 ? "story" : "stories"} published</li>
+              <li>{statusLabel}</li>
               <li>Editorial review required</li>
             </ul>
           </div>
@@ -119,10 +120,11 @@ export default function StoriesPage() {
           <h2 id="stories-status-title">Stories are being prepared.</h2>
           <div className="pe-empty">
             <p>Publishing status</p>
-            <h3>None published.</h3>
+            <h3>{published === 0 ? "None published." : "Not shown until verified."}</h3>
             <p>
-              There are no verified learner, programme, or institution stories on this page. We will publish journeys
-              only when the person agrees and we can verify the facts. Empty is the honest state — not a broken one.
+              {published === 0
+                ? "There are no verified learner, programme, or institution stories on this page. We will publish journeys only when the person agrees and we can verify the facts. Empty is the honest state — not a broken one."
+                : "The catalogue has records that are not published here. Names, salaries, and outcomes stay off this page until they can be verified."}
             </p>
           </div>
         </div>

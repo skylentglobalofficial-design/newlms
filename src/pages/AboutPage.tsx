@@ -100,10 +100,7 @@ export default function AboutPage() {
               <i aria-hidden="true" />
               About Skylent
             </p>
-            <h1 id="about-hero-title">
-              <span>Education → skills</span>
-              <span>→ career → institutions.</span>
-            </h1>
+            <h1 id="about-hero-title">Education → skills → career → institutions.</h1>
             <p className="pe-lead">
               We are building the infrastructure where students, parents, institutions, and employers can meet — with
               product depth, not marketing claims.
