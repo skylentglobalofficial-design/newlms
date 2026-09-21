@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { HarborDeskWorkspace, NorthwindWorkspace } from "../components/product/ProductLanguage"
+import { HarborDeskWorkspace, LearnFlow, NorthwindWorkspace } from "../components/product/ProductLanguage"
 import { stories } from "../data"
 import { CAREER_OS_IA } from "../lib/product-architecture"
 import { liveProgrammeCatalogue } from "../lib/programme-catalogue"
@@ -29,12 +29,35 @@ const DOCUMENTING = [
   },
 ] as const
 
+const WORK_STEPS = [
+  {
+    title: "Learn",
+    kind: "learn" as const,
+    copy: "Written lessons in the enrolled course. Self-paced. No video stream and no live classroom.",
+  },
+  {
+    title: "Practise",
+    kind: "practice" as const,
+    copy: "Short checks after a block of teaching, then assignments on the same material.",
+  },
+  {
+    title: "Build",
+    kind: "build" as const,
+    copy: "A project against material that already exists: Harbor Desk or the Northwind extract.",
+  },
+  {
+    title: "Keep",
+    kind: "keep" as const,
+    copy: "The work sample stays with you. It is not a grade, a certificate, or a job claim.",
+  },
+]
+
 export default function StoriesPage() {
   const published = stories.length
   const live = liveProgrammeCatalogue()
   const harbor = live.find((row) => row.visual === "harbor-desk")
   const northwind = live.find((row) => row.visual === "northwind")
-  const statusLabel = published === 0 ? "None published" : "Held for verification"
+  const empty = published === 0
 
   return (
     <PublicEditorialShell>
@@ -57,10 +80,6 @@ export default function StoriesPage() {
             <p className="pe-note">
               We do not publish names, salaries, placement rates, or sample narratives from the codebase.
             </p>
-            <ul className="pe-meta">
-              <li>{statusLabel}</li>
-              <li>Editorial review required</li>
-            </ul>
           </div>
           <figure className="pe-figure">
             <div className="pe-photo is-desk">
@@ -78,55 +97,61 @@ export default function StoriesPage() {
         </div>
       </section>
 
-      <section className="pe-section" id="publishing" aria-labelledby="stories-intro-title">
-        <div className="cat-rail">
-          <p className="pe-kicker">Editorial introduction</p>
-          <h2 id="stories-intro-title">Journeys, told only when they can be verified.</h2>
-          <p className="pe-lead">
-            Skylent is documenting how learning becomes work you can show: written lessons, practice, projects, and
-            evidence in Career OS. A story here will be a reviewed account of that work — never a fabricated outcome.
-          </p>
-          <p className="pe-note">
-            Editorial writing that is not a learner story lives on the{" "}
-            <Link to="/blog">blog</Link>. Sample narratives in the repository are not displayed on this page.
-          </p>
+      <nav className="pe-inkbar" aria-label="Stories sections">
+        <div className="cat-rail pe-inkbar-inner">
+          <a href="#work">Work</a>
+          <a href="#status">Currently</a>
+          <a href="#learning">Evidence</a>
+        </div>
+      </nav>
+
+      <section className="pe-ink" id="work" aria-labelledby="stories-work-title">
+        <div className="cat-rail pe-ink-stage">
+          <div>
+            <p className="pe-kicker">Editorial</p>
+            <h2 id="stories-work-title">The work comes first.</h2>
+            <p className="pe-lead">
+              Skylent is documenting how learning becomes work you can show: written lessons, practice, projects, and
+              evidence in Career OS. A story here will be a reviewed account of that work — never a fabricated outcome.
+            </p>
+            <p className="pe-note">
+              Editorial writing that is not a learner story lives on the <Link to="/blog">blog</Link>.
+            </p>
+          </div>
+          <div className="pe-product">
+            {harbor ? (
+              <HarborDeskWorkspace compact meta="harbor-desk-case.md · 4 interviews" />
+            ) : (
+              <NorthwindWorkspace compact />
+            )}
+          </div>
         </div>
       </section>
 
-      <section className="pe-section is-warm" aria-labelledby="stories-document-title">
+      <section className="pe-section is-paper" id="status" aria-labelledby="stories-status-title">
         <div className="cat-rail">
-          <p className="pe-kicker">What Skylent is documenting</p>
-          <h2 id="stories-document-title">The kinds of story this page is for.</h2>
+          <p className="pe-kicker">Currently</p>
+          <h2 id="stories-status-title" className="pe-display">
+            {empty ? "None published." : "Not shown until verified."}
+          </h2>
           <p className="pe-lead">
-            Each category waits on consent and verification. Nothing below is a published case study.
+            {empty
+              ? "There are no verified learner, programme, or institution stories on this page. We will publish journeys only when the person agrees and we can verify the facts. Empty is the honest state — not a broken one."
+              : "The catalogue has records that are not published here. Names, salaries, and outcomes stay off this page until they can be verified."}
           </p>
-          <ol className="pe-rows">
+          <ol className="pe-map is-follow">
             {DOCUMENTING.map((item, index) => (
-              <li className="pe-row" key={item.label}>
-                <em>{String(index + 1).padStart(2, "0")}</em>
-                <div>
-                  <strong>{item.label}</strong>
-                  <span>{item.desc}</span>
+              <li className="pe-map-item" key={item.label}>
+                <div className="pe-map-row is-static">
+                  <em>{String(index + 1).padStart(2, "0")}</em>
+                  <div>
+                    <strong>{item.label}</strong>
+                    <span>{item.desc}</span>
+                  </div>
                 </div>
               </li>
             ))}
           </ol>
-        </div>
-      </section>
-
-      <section className="pe-section is-paper" aria-labelledby="stories-status-title">
-        <div className="cat-rail">
-          <p className="pe-kicker">Current verified stories</p>
-          <h2 id="stories-status-title">Stories are being prepared.</h2>
-          <div className="pe-empty">
-            <p>Publishing status</p>
-            <h3>{published === 0 ? "None published." : "Not shown until verified."}</h3>
-            <p>
-              {published === 0
-                ? "There are no verified learner, programme, or institution stories on this page. We will publish journeys only when the person agrees and we can verify the facts. Empty is the honest state — not a broken one."
-                : "The catalogue has records that are not published here. Names, salaries, and outcomes stay off this page until they can be verified."}
-            </p>
-          </div>
         </div>
       </section>
 
@@ -139,6 +164,7 @@ export default function StoriesPage() {
             Career OS profile, an application when a role is published. The specimens below are live programme
             workspaces — not learner testimonials.
           </p>
+          <LearnFlow steps={WORK_STEPS} />
 
           {live.length > 0 ? (
             <div className="pe-specimens">
@@ -168,7 +194,9 @@ export default function StoriesPage() {
               ) : null}
             </div>
           ) : (
-            <p className="pe-note">Live programme workspaces will appear here when the catalogue has authored programmes.</p>
+            <p className="pe-note">
+              Live programme workspaces will appear here when the catalogue has authored programmes.
+            </p>
           )}
 
           <p className="pe-kicker is-spaced">Career OS — product workflow</p>

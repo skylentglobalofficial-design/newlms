@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { MaturityMark } from "../components/product/Architecture"
+import { SkylentOsPreview } from "../components/product/ProductLanguage"
 import { INSTITUTION_OS_LAYERS } from "../lib/product-architecture"
 import { PROGRAMS_STUDY_CAMPUS } from "../media"
 import { PublicEditorialShell } from "./public-editorial"
@@ -8,6 +9,7 @@ import { PublicEditorialShell } from "./public-editorial"
 type InstitutionType = {
   id: string
   label: string
+  rail: string
   sub: string
   problem: string
   value: string
@@ -22,6 +24,7 @@ const INSTITUTION_TYPES: InstitutionType[] = [
   {
     id: "schools",
     label: "Schools",
+    rail: "Schools",
     sub: "K–12 · Secondary · Senior Secondary",
     problem: "Academic progress is hard for parents and teachers to see in one place.",
     value: "Students, teachers, classes, assessments, parent visibility, and progress in a schooling workflow.",
@@ -38,6 +41,7 @@ const INSTITUTION_TYPES: InstitutionType[] = [
   {
     id: "colleges",
     label: "Colleges",
+    rail: "Colleges",
     sub: "Degree Colleges · Autonomous Institutions",
     problem: "Degrees finish. Employability does not arrive automatically.",
     value: "Programs, departments, LMS, skills, projects, and career readiness alongside the academic calendar.",
@@ -54,6 +58,7 @@ const INSTITUTION_TYPES: InstitutionType[] = [
   {
     id: "universities",
     label: "Universities",
+    rail: "Universities",
     sub: "Multi-program · Research Institutions",
     problem: "Scale across departments without fragmenting student lifecycle and outcomes.",
     value: "Multi-program curriculum, assessments, student lifecycle, and outcomes as shared infrastructure.",
@@ -72,6 +77,7 @@ const INSTITUTION_TYPES: InstitutionType[] = [
   {
     id: "skill-institutions",
     label: "Skill & Training Institutions",
+    rail: "Training",
     sub: "Training Centers · Vocational · EdTech",
     problem: "Batches, trainers, and certificates live in spreadsheets, not a career path.",
     value: "Programs, batches, trainers, learners, certification, and career support as one delivery system.",
@@ -87,6 +93,7 @@ const INSTITUTION_TYPES: InstitutionType[] = [
   {
     id: "assessment",
     label: "Assessment & Exam Partners",
+    rail: "Assessment",
     sub: "Boards · Assessment Bodies · Coaching",
     problem: "Tests end at a score. Learners need a path after the result.",
     value: "Question banks, tests, attempts, scoring, and analytics — linked to learning, not stranded.",
@@ -103,6 +110,7 @@ const INSTITUTION_TYPES: InstitutionType[] = [
   {
     id: "industry",
     label: "Academic & Industry Partners",
+    rail: "Industry",
     sub: "Employers · Industry Bodies · Curriculum partners",
     problem: "Hiring and curriculum rarely share the same pipeline.",
     value: "Projects, experts, curriculum collaboration, and employability — co-designed, not bolted on.",
@@ -167,7 +175,6 @@ const SCOPE = [
 
 export default function InstitutionsPage() {
   const [activeId, setActiveId] = useState<string>("colleges")
-  const active = INSTITUTION_TYPES.find((item) => item.id === activeId) ?? INSTITUTION_TYPES[1]
 
   return (
     <PublicEditorialShell>
@@ -202,11 +209,6 @@ export default function InstitutionsPage() {
                 Organisation sign in
               </Link>
             </p>
-            <ul className="pe-meta">
-              <li>Six institution types</li>
-              <li>Product direction</li>
-              <li>No invented partner logos</li>
-            </ul>
           </div>
           <figure className="pe-figure">
             <div className="pe-photo is-campus">
@@ -224,138 +226,144 @@ export default function InstitutionsPage() {
         </div>
       </section>
 
+      <nav className="pe-inkbar" aria-label="Institution types">
+        <div className="cat-rail pe-inkbar-inner" role="radiogroup">
+          {INSTITUTION_TYPES.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              role="radio"
+              aria-checked={item.id === activeId}
+              className={item.id === activeId ? "is-on" : undefined}
+              onClick={() => {
+                setActiveId(item.id)
+                document.getElementById("institution-types")?.scrollIntoView({ behavior: "smooth", block: "start" })
+              }}
+            >
+              {item.rail}
+            </button>
+          ))}
+        </div>
+      </nav>
+
       <section className="pe-section is-paper" id="institution-types" aria-labelledby="inst-types-title">
         <div className="cat-rail">
           <p className="pe-kicker">Who Skylent works with</p>
           <h2 id="inst-types-title">Partnership by institution type.</h2>
           <p className="pe-lead">
-            Select a type to see the intended operating spine. This is the workflow we would build with that partner —
-            not a live control panel.
+            An operating map — not a live control panel. Select a type to open the intended spine we would build with
+            that partner.
           </p>
 
-          <div className="pe-types">
-            <div>
-              <p className="pe-kicker">Catalogue</p>
-              <div className="pe-type-nav" role="radiogroup" aria-label="Institution types">
-                {INSTITUTION_TYPES.map((item) => {
-                  const selected = item.id === activeId
-                  return (
-                    <button
-                      key={item.id}
-                      id={`type-${item.id}`}
-                      type="button"
-                      role="radio"
-                      aria-checked={selected}
-                      className={selected ? "pe-type-btn is-on" : "pe-type-btn"}
-                      onClick={() => setActiveId(item.id)}
-                    >
+          <div className="pe-map">
+            {INSTITUTION_TYPES.map((item, index) => {
+              const selected = item.id === activeId
+              return (
+                <div key={item.id} className={selected ? "pe-map-item is-on" : "pe-map-item"}>
+                  <button
+                    type="button"
+                    className="pe-map-row"
+                    aria-expanded={selected}
+                    onClick={() => setActiveId(item.id)}
+                  >
+                    <em>{String(index + 1).padStart(2, "0")}</em>
+                    <div>
                       <strong>{item.label}</strong>
                       <span>{item.sub}</span>
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            <div className="pe-type-panel" aria-live="polite">
-              <p className="pe-kicker">{active.sub}</p>
-              <h3>{active.label}</h3>
-              <p>
-                <strong>Problem. </strong>
-                {active.problem}
-              </p>
-              <p>{active.value}</p>
-              <p>{active.description}</p>
-              <p className="pe-note">Product direction · not a live control panel</p>
-              <p className="pe-actions">
-                <Link className="pe-cta" to="/contact">
-                  Enquire now
-                  <span className="pe-cta-arrow" aria-hidden="true">
-                    →
-                  </span>
-                </Link>
-                {active.href ? (
-                  <Link className="pe-cta-ghost" to={active.href}>
-                    {active.hrefLabel}
-                  </Link>
-                ) : null}
-              </p>
-              <div className="pe-pair">
-                <div>
-                  <p className="pe-kicker">Intended workflow</p>
-                  <ol className="pe-list">
-                    {active.workflow.map((step, index) => (
-                      <li key={step}>
-                        <em>{String(index + 1).padStart(2, "0")}</em>
-                        {step}
-                      </li>
-                    ))}
-                  </ol>
+                    </div>
+                    <b aria-hidden="true">→</b>
+                  </button>
+                  {selected ? (
+                    <div className="pe-map-detail">
+                      <p>
+                        <strong>Problem. </strong>
+                        {item.problem}
+                      </p>
+                      <p>{item.value}</p>
+                      <p>{item.description}</p>
+                      <p className="pe-note">Product direction · not a live control panel</p>
+                      <ol className="pe-map-rail" aria-label="Intended workflow">
+                        {item.workflow.map((step) => (
+                          <li key={step}>{step}</li>
+                        ))}
+                      </ol>
+                      <p className="pe-actions">
+                        <Link className="pe-cta" to="/contact">
+                          Enquire now
+                          <span className="pe-cta-arrow" aria-hidden="true">
+                            →
+                          </span>
+                        </Link>
+                        {item.href ? (
+                          <Link className="pe-cta-ghost" to={item.href}>
+                            {item.hrefLabel}
+                          </Link>
+                        ) : null}
+                      </p>
+                    </div>
+                  ) : null}
                 </div>
-                <div>
-                  <p className="pe-kicker">Intended capability</p>
-                  <ol className="pe-list">
-                    {active.offers.map((offer, index) => (
-                      <li key={offer}>
-                        <em>{String(index + 1).padStart(2, "0")}</em>
-                        {offer}
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              </div>
-            </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
-      <section className="pe-section" id="ecosystem" aria-labelledby="inst-connect-title">
+      <section className="pe-ink" id="ecosystem" aria-labelledby="inst-connect-title">
         <div className="cat-rail">
           <p className="pe-kicker">What institutions can connect</p>
-          <h2 id="inst-connect-title">What a partner can actually run today.</h2>
+          <h2 id="inst-connect-title">From institutional intent to a working learning system.</h2>
           <p className="pe-lead">
             Live professional programmes, LMS progress, and Career OS are real. Academic lines and institutional
             reporting are not.
           </p>
-          <div className="pe-connect">
-            {CONNECT.map((col) => (
-              <div className="pe-connect-col" key={col.name}>
-                <h3>{col.name}</h3>
-                <p className="pe-kicker">{col.note}</p>
-                <ol className="pe-list">
-                  {col.items.map((item, index) => (
-                    <li key={item}>
-                      <em>{String(index + 1).padStart(2, "0")}</em>
-                      {item}
-                    </li>
-                  ))}
-                </ol>
+          <div className="pe-ink-stage">
+            <div>
+              <div className="pe-connect">
+                {CONNECT.map((col) => (
+                  <div className="pe-connect-col" key={col.name}>
+                    <h3>{col.name}</h3>
+                    <p className="pe-kicker">{col.note}</p>
+                    <ol className="pe-list">
+                      {col.items.map((item, index) => (
+                        <li key={item}>
+                          <em>{String(index + 1).padStart(2, "0")}</em>
+                          {item}
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <div className="pe-layers" aria-label="Capability versus what ships">
-            {INSTITUTION_OS_LAYERS.map((item) => (
-              <div className="pe-layer" key={item.label}>
-                <strong>{item.label}</strong>
-                <MaturityMark maturity={item.status} compact />
-                <span>{item.note}</span>
-              </div>
-            ))}
+              <ol className="pe-caprail" aria-label="Capability versus what ships">
+                {INSTITUTION_OS_LAYERS.map((item) => (
+                  <li key={item.label} className={item.status === "live" ? "is-live" : undefined}>
+                    <strong>{item.label}</strong>
+                    <span>
+                      <MaturityMark maturity={item.status} compact />
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+            <div className="pe-product">
+              <SkylentOsPreview />
+            </div>
           </div>
         </div>
       </section>
 
       <section className="pe-section is-warm" id="partnership" aria-labelledby="inst-collab-title">
         <div className="cat-rail">
-          <p className="pe-kicker">How collaboration works</p>
+          <p className="pe-kicker">How collaboration takes shape</p>
           <h2 id="inst-collab-title">Understand, configure, launch, improve.</h2>
           <p className="pe-lead">
             Partnership starts with a conversation. Full Institution OS — batches, faculty, reporting — is the intended
             product, not what an organisation account can run today.
           </p>
-          <ol className="pe-steps">
+          <ol className="pe-track">
             {COLLABORATION.map((step) => (
-              <li className="pe-step" key={step.n}>
+              <li key={step.n}>
                 <p className="pe-kicker">{step.n}</p>
                 <h3>{step.label}</h3>
                 <p>{step.desc}</p>

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
-import { PROGRAMS_STUDY_LIBRARY } from "../media"
+import { PathwayTrack, SkylentOsPreview } from "../components/product/ProductLanguage"
+import { PROGRAMS_STUDY_CLASSROOM, PROGRAMS_STUDY_LIBRARY } from "../media"
 import { PublicEditorialShell } from "./public-editorial"
 
 const GAP_STAGES = [
@@ -33,15 +34,15 @@ const SYSTEM = [
   },
 ] as const
 
-const LEARNER_STEPS = [
-  { label: "Learn", sub: "Programmes and coursework" },
-  { label: "Practice", sub: "Activities and assessments" },
-  { label: "Build", sub: "Projects and applied work" },
-  { label: "Prove", sub: "Portfolio and credentials" },
-  { label: "Prepare", sub: "Interview preparation" },
-  { label: "Apply", sub: "When a role is published" },
-  { label: "Track", sub: "Application status" },
-] as const
+const LEARNER_TRACK = [
+  { label: "Learn", live: true, note: "Programmes and coursework" },
+  { label: "Practice", live: true, note: "Activities and assessments" },
+  { label: "Build", live: true, note: "Projects and applied work" },
+  { label: "Prove", live: true, note: "Portfolio and credentials" },
+  { label: "Prepare", live: true, note: "Interview preparation" },
+  { label: "Apply", live: false, note: "When a role is published" },
+  { label: "Track", live: false, note: "Application status" },
+]
 
 const PRODUCT_MAP = [
   { label: "Programmes", sub: "Education and skills catalogue" },
@@ -133,10 +134,24 @@ export default function AboutPage() {
         </div>
       </section>
 
+      <nav className="pe-inkbar" aria-label="About chapters">
+        <div className="cat-rail pe-inkbar-inner">
+          <a href="#gap">01 Gap</a>
+          <a href="#idea">02 Idea</a>
+          <a href="#ecosystem">03 System</a>
+          <a href="#who-we-serve">04 Who</a>
+          <a href="#institutions">05 Institutions</a>
+          <a href="#platform">06 Building</a>
+        </div>
+      </nav>
+
       <section className="pe-section" id="gap" aria-labelledby="about-gap-title">
-        <div className="cat-rail pe-split">
+        <div className="cat-rail pe-split is-flush">
           <div>
-            <p className="pe-kicker">01 · The gap</p>
+            <p className="pe-folio-n" aria-hidden="true">
+              01
+            </p>
+            <p className="pe-kicker">The gap</p>
             <h2 id="about-gap-title">Close the distance between what people learn and what they can do next.</h2>
             <p className="pe-lead">
               Students need more than lectures. Parents need visibility. Institutions need infrastructure. Employers
@@ -161,10 +176,12 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="pe-section is-paper" id="idea" aria-labelledby="about-idea-title">
+      <section className="pe-ink is-statement" id="idea" aria-labelledby="about-idea-title">
         <div className="cat-rail">
           <p className="pe-kicker">02 · The idea</p>
-          <h2 id="about-idea-title">One system for learning, proof, and what comes next.</h2>
+          <h2 id="about-idea-title" className="pe-display">
+            One system from learning to career.
+          </h2>
           <p className="pe-lead">
             Skylent is not a single app and not a founder anecdote. It is a connected layer: academic lines where they
             belong, skills products you can start, Career OS for the work you keep, and an institution layer for the
@@ -173,7 +190,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="pe-section" id="ecosystem" aria-labelledby="about-system-title">
+      <section className="pe-section is-paper" id="ecosystem" aria-labelledby="about-system-title">
         <div className="cat-rail">
           <p className="pe-kicker">03 · The system</p>
           <h2 id="about-system-title">Four products that connect.</h2>
@@ -181,36 +198,35 @@ export default function AboutPage() {
             Education, Skills, Career OS, and Institutions are separate products with separate pages — designed to work
             together when a learner is ready to move on.
           </p>
-          <div className="pe-rows">
-            {SYSTEM.map((item, index) => (
-              <Link className="pe-row" key={item.label} to={item.to}>
-                <em>{String(index + 1).padStart(2, "0")}</em>
-                <div>
-                  <strong>{item.label}</strong>
-                  <span>{item.body}</span>
+          <div className="pe-ink-stage">
+            <div className="pe-map">
+              {SYSTEM.map((item, index) => (
+                <div className="pe-map-item" key={item.label}>
+                  <Link className="pe-map-row" to={item.to}>
+                    <em>{String(index + 1).padStart(2, "0")}</em>
+                    <div>
+                      <strong>{item.label}</strong>
+                      <span>{item.body}</span>
+                    </div>
+                    <b aria-hidden="true">→</b>
+                  </Link>
                 </div>
-                <b aria-hidden="true">→</b>
-              </Link>
-            ))}
+              ))}
+            </div>
+            <div className="pe-product">
+              <SkylentOsPreview />
+            </div>
           </div>
-          <p className="pe-kicker is-spaced" id="journey">From programmes to opportunities</p>
+          <p className="pe-kicker is-spaced" id="journey">
+            From programmes to opportunities
+          </p>
           <p className="pe-lead">
             Each step maps to product surfaces already in Skylent — not a marketing funnel, but an implemented journey.
           </p>
           <div className="pe-split">
             <div>
               <p className="pe-kicker">Learner journey</p>
-              <ol className="pe-list">
-                {LEARNER_STEPS.map((step, index) => (
-                  <li key={step.label}>
-                    <em>{String(index + 1).padStart(2, "0")}</em>
-                    <span>
-                      <strong>{step.label}. </strong>
-                      {step.sub}
-                    </span>
-                  </li>
-                ))}
-              </ol>
+              <PathwayTrack steps={LEARNER_TRACK} />
             </div>
             <div>
               <p className="pe-kicker">Product surfaces</p>
@@ -230,33 +246,47 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="pe-section is-warm" id="who-we-serve" aria-labelledby="about-serve-title">
+      <section className="pe-section" id="who-we-serve" aria-labelledby="about-serve-title">
         <div className="cat-rail">
           <p className="pe-kicker">04 · Who it serves</p>
           <h2 id="about-serve-title">Built for learners and the institutions that support them.</h2>
           <p className="pe-lead">
             Each audience has a distinct workflow in Skylent — not one generic user type forced into the same product.
           </p>
-          <div className="pe-rows">
+          <div className="pe-map">
             {AUDIENCES.map((group, index) => (
-              <Link className="pe-row" key={group.label} to={group.to}>
-                <em>{String(index + 1).padStart(2, "0")}</em>
-                <div>
-                  <strong>{group.label}</strong>
-                  <span>{group.desc}</span>
-                </div>
-                <b aria-hidden="true">→</b>
-              </Link>
+              <div className="pe-map-item" key={group.label}>
+                <Link className="pe-map-row" to={group.to}>
+                  <em>{String(index + 1).padStart(2, "0")}</em>
+                  <div>
+                    <strong>{group.label}</strong>
+                    <span>{group.desc}</span>
+                  </div>
+                  <b aria-hidden="true">→</b>
+                </Link>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="pe-section" id="institutions" aria-labelledby="about-inst-title">
+      <section className="pe-section is-warm" id="institutions" aria-labelledby="about-inst-title">
         <div className="cat-rail">
           <p className="pe-kicker">05 · Where institutions fit</p>
           <h2 id="about-inst-title">Infrastructure institutions run on. Career readiness as a product.</h2>
-          <div className="pe-split">
+          <div className="pe-split is-photo">
+            <figure className="pe-figure">
+              <div className="pe-photo is-classroom">
+                <img
+                  src={PROGRAMS_STUDY_CLASSROOM}
+                  alt="Students working at desks in a classroom"
+                  width={1800}
+                  height={1200}
+                  decoding="async"
+                />
+              </div>
+              <figcaption>Classroom infrastructure — not a partner campus</figcaption>
+            </figure>
             <div>
               <p className="pe-kicker">Institution side</p>
               <p className="pe-lead">
@@ -278,11 +308,17 @@ export default function AboutPage() {
                 </Link>
               </p>
             </div>
-            <div>
+          </div>
+          <article className="pe-folio is-flip">
+            <p className="pe-folio-n" aria-hidden="true">
+              05
+            </p>
+            <div className="pe-folio-copy">
               <p className="pe-kicker">Career side</p>
-              <p className="pe-lead">
-                Career OS is the workspace for the work you produced. Profile, evidence, applications, and interview
-                preparation live here. Opportunities stay empty until a partner publishes a role.
+              <h3>Career OS is the workspace for the work you produced.</h3>
+              <p>
+                Profile, evidence, applications, and interview preparation live here. Opportunities stay empty until a
+                partner publishes a role.
               </p>
               <ol className="pe-list">
                 {CAREER_ITEMS.map((item, index) => (
@@ -298,7 +334,7 @@ export default function AboutPage() {
                 </Link>
               </p>
             </div>
-          </div>
+          </article>
         </div>
       </section>
 
@@ -310,15 +346,18 @@ export default function AboutPage() {
             Skylent OS is not a single app — it is the connected layer where curriculum, skills, career readiness, and
             institutional delivery meet.
           </p>
-          <div className="pe-rows">
+          <div className="pe-examples is-anatomy">
             {SURFACES.map((surface, index) => (
-              <Link className="pe-row" key={surface.label} to={surface.to}>
-                <em>{String(index + 1).padStart(2, "0")}</em>
+              <Link className="pe-example" key={surface.label} to={surface.to}>
+                <p className="pe-kicker">{String(index + 1).padStart(2, "0")}</p>
                 <div>
-                  <strong>{surface.label}</strong>
-                  <span>{surface.desc}</span>
+                  <h3>{surface.label}</h3>
+                  <p>{surface.desc}</p>
                 </div>
-                <b aria-hidden="true">→</b>
+                <p className="pe-kicker">
+                  Open
+                  <span aria-hidden="true"> →</span>
+                </p>
               </Link>
             ))}
           </div>

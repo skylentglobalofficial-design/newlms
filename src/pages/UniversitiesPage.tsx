@@ -34,9 +34,9 @@ const IMPLEMENTATION = [
 ] as const
 
 const EXAMPLE_PROGRAMS = [
-  { name: "B.Sc. Data Science", dur: "3 years", focus: "Analytics pathway with project portfolio" },
-  { name: "PG Diploma in AI", dur: "1 year", focus: "Applied ML with faculty-reviewed projects" },
-  { name: "MBA Tech", dur: "2 years", focus: "Product and technology management cases" },
+  { n: "01", name: "B.Sc. Data Science", dur: "3 years", focus: "Analytics pathway with project portfolio" },
+  { n: "02", name: "PG Diploma in AI", dur: "1 year", focus: "Applied ML with faculty-reviewed projects" },
+  { n: "03", name: "MBA Tech", dur: "2 years", focus: "Product and technology management cases" },
 ] as const
 
 export default function UniversitiesPage() {
@@ -89,23 +89,55 @@ export default function UniversitiesPage() {
         </div>
       </section>
 
+      <nav className="pe-inkbar" aria-label="University model">
+        <div className="cat-rail pe-inkbar-inner">
+          <a href="#structure">01 Structure</a>
+          <a href="#delivery">02 Delivery</a>
+          <a href="#experience">03 Experience</a>
+          <a href="#career">04 Career</a>
+        </div>
+      </nav>
+
+      <section className="pe-ink" id="work" aria-labelledby="uni-work-title">
+        <div className="cat-rail pe-ink-stage">
+          <div>
+            <p className="pe-kicker">Programme workspace</p>
+            <h2 id="uni-work-title">Build the degree around the work.</h2>
+            <p className="pe-lead">
+              Academic lines remain in design. Learners can already enrol on live professional programmes. The
+              specimen is the learner product that already exists — not a faculty dashboard.
+            </p>
+            <p className="pe-note">
+              Batches, faculty assignment, and institutional reporting are not shipping.
+            </p>
+          </div>
+          <div className="pe-product">
+            <CertificateOsPreview />
+          </div>
+        </div>
+      </section>
+
       <section className="pe-section" id="collaboration" aria-labelledby="uni-model-title">
         <div className="cat-rail">
           <p className="pe-kicker">Collaboration model</p>
           <h2 id="uni-model-title">From academic design to career handoff.</h2>
-          <p className="pe-lead">
-            A delivery model for universities. Academic lines remain in design. Learners can already enrol on live
-            professional programmes; batches, faculty assignment, and institutional reporting are not shipping.
-          </p>
-          <div className="pe-chapters">
-            {CHAPTERS.map((chapter) => (
-              <article className="pe-chapter" key={chapter.n}>
-                <p className="pe-chapter-index">{chapter.n}</p>
+          <p className="pe-lead">A delivery model for universities — not a student course catalogue.</p>
+          {CHAPTERS.map((chapter, index) => (
+            <article
+              className={index % 2 === 1 ? "pe-folio is-flip" : "pe-folio"}
+              key={chapter.n}
+              id={["structure", "delivery", "experience", "career"][index]}
+            >
+              <p className="pe-folio-n" aria-hidden="true">
+                {chapter.n}
+              </p>
+              <div className="pe-folio-copy">
+                <p className="pe-kicker">{chapter.n}</p>
                 <h3>{chapter.title}</h3>
                 <p>{chapter.desc}</p>
-              </article>
-            ))}
-          </div>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
@@ -138,13 +170,7 @@ export default function UniversitiesPage() {
                 </li>
               ))}
             </ol>
-            <div className="pe-product">
-              <CertificateOsPreview />
-            </div>
-            <p className="pe-note">
-              The workspace above is the learner product that already exists. Faculty dashboards listed in the
-              implementation notes are intended, not live.
-            </p>
+            <p className="pe-note">Faculty dashboards listed here are intended, not live.</p>
           </div>
         </div>
       </section>
@@ -156,9 +182,10 @@ export default function UniversitiesPage() {
           <p className="pe-lead">
             Sample listings for product exploration — not verified partnerships or live enrolments.
           </p>
-          <div className="pe-examples">
+          <div className="pe-examples is-anatomy">
             {EXAMPLE_PROGRAMS.map((program) => (
               <article className="pe-example" key={program.name}>
+                <p className="pe-kicker">{program.n}</p>
                 <div>
                   <h3>{program.name}</h3>
                   <p>{program.focus}</p>
