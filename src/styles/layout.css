@@ -3,6 +3,14 @@
  * Page shell, containers, grids, section rhythm. Tokens live in design-system.css.
  */
 
+/* ── Public site shell (PageShell → PublicCanvas → Nav + main + Footer) ── */
+.skylent-public-main {
+  min-width: 0;
+  display: block;
+  /* Single fixed-nav clearance; must match tokens T.navH / design-system --nav-h */
+  padding-top: var(--nav-h);
+}
+
 /* ── Page shell (full-width canvas; gutters via rail/containers) ── */
 .skylent-page {
   min-width: 0;

@@ -30,7 +30,7 @@ export default function BlogPostPage() {
 
   return (
     <PageShell auroraTheme="general">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 28}px ${T.gutter} clamp(32px, 5vw, 48px)` }}>
+      <section style={{ position: 'relative', overflow: 'hidden', padding: `28px ${T.gutter} clamp(32px, 5vw, 48px)` }}>
         <Aurora themeId="general" variant="hero" />
         <div style={{ maxWidth: ARTICLE_MAX, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <button

@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { AcademicSubnav, LiveCoreRail } from "../../components/product/Architecture"
-import { C, T } from "../../tokens"
+import { C } from "../../tokens"
 
 export default function AcademicPageShell({
   current,
@@ -13,7 +13,7 @@ export default function AcademicPageShell({
 }) {
   return (
     <PageShell aurora={false}>
-      <div className="arch-academic-shell" style={{ paddingTop: T.navH + 28 }}>
+      <div className="arch-academic-shell">
         <div className="arch-academic-inner">
           <AcademicSubnav current={current} />
           {children}

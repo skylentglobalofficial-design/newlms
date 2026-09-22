@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
-import { C, Nav, Footer, globalCSS } from './components/shared'
-import { PublicCanvas } from './components/foundation'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { globalCSS } from './components/shared'
+
 import { AuthProvider } from './context/AuthContext'
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard'
 import { DemoStateProvider } from './demo/DemoStateContext'
@@ -51,6 +51,7 @@ const DashboardAdminPage = lazy(() => import('./pages/DashboardAdminPage'))
 const LearnPage = lazy(() => import('./pages/LearnPage'))
 const NorthwindLabPage = lazy(() => import('./pages/NorthwindLabPage'))
 const NorthwindProjectPage = lazy(() => import('./pages/NorthwindProjectPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function AppRoutes() {
   return (
@@ -109,7 +110,7 @@ function AppRoutes() {
         <Route path="/labs/:labId/:experimentId" element={<Navigate to="/labs" replace />} />
         <Route path="/jobs" element={<Navigate to="/career-os/jobs" replace />} />
         <Route path="/jobs/:id" element={<Navigate to="/career-os/jobs" replace />} />
-        <Route path="*" element={<PublicCanvas themeId="general"><Nav /><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md" style={{ color: C.ink }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></PublicCanvas>} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
   )

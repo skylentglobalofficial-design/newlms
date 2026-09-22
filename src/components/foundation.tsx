@@ -49,7 +49,8 @@ export function useAuroraTheme(): AuroraThemeId {
 }
 
 // ─── Public canvas ────────────────────────────────────────────────────────────
-// Shared light canvas. Atmospheric colour is intentionally opt-in and local.
+// Surface layer for the public marketing site: warm background, optional atmosphere.
+// Does not compose Nav, main, or Footer — use PageShell (shared.tsx) for that.
 
 export function PublicCanvas({
   children,

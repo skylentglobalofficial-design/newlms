@@ -17,7 +17,7 @@ export default function EducationPage() {
 
   return (
     <PageShell aurora={false}>
-      <div className="arch-academic-shell" style={{ paddingTop: T.navH + 28 }}>
+      <div className="arch-academic-shell">
         <div className="arch-academic-inner">
           <AcademicSubnav />
           <header className="arch-line-header" style={{ marginBottom: 36 }}>

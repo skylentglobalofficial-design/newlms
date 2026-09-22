@@ -806,38 +806,6 @@ html, body {
   background: rgba(79, 70, 229, 0.06) !important;
   box-shadow: inset 3px 0 0 #4f46e5;
 }
-.skylent-public-canvas .skylent-site-nav .mobile-nav-group-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  min-height: 52px;
-  padding: 14px 0;
-  margin-top: 8px;
-  background: none;
-  border: none;
-  border-top: 1px solid rgba(8, 9, 9, 0.08);
-  border-bottom: 1px solid rgba(8, 9, 9, 0.08);
-  text-align: left;
-  cursor: pointer;
-  font-family: var(--font-body);
-}
-.skylent-public-canvas .skylent-site-nav .mobile-nav-group-label {
-  display: block;
-  color: #15171a;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-}
-.skylent-public-canvas .skylent-site-nav .mobile-nav-group-tagline {
-  display: block;
-  margin-top: 4px;
-  color: #5c6168;
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.45;
-}
 .skylent-public-canvas .skylent-site-nav .nav-mega-dropdown > a {
   border-bottom-color: rgba(8,9,9,.08) !important;
 }
@@ -861,10 +829,6 @@ html, body {
 .skylent-public-canvas .skylent-site-nav .nav-links a[style*="Sign in"] {
   color: #080909 !important;
   border-color: rgba(8,9,9,.16) !important;
-}
-.skylent-public-canvas .skylent-site-nav .mobile-nav-overlay a.mobile-nav-link {
-  color: #15171A !important;
-  border-bottom-color: rgba(8,9,9,.08) !important;
 }
 .skylent-public-canvas .skylent-site-nav .mobile-nav-overlay a.mobile-nav-cta {
   color: #FFFDF8 !important;
@@ -1839,7 +1803,8 @@ html, body {
 }
 .arch-capability-row span:last-child { color: #5C6168; font-size: 13px; line-height: 1.5; }
 .arch-academic-shell {
-  padding: 88px 0 64px;
+  /* Top rhythm only — PageShell .skylent-public-main clears fixed nav via --nav-h */
+  padding: 28px 0 64px;
   background: #F7F4EC;
 }
 .arch-academic-inner {
