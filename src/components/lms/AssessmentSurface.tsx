@@ -93,7 +93,9 @@ export function AssessmentSurface({
     return (
       <div className="lx-quiz-passed">
         <h2>Assessment passed</h2>
-        <p className="dash-empty-copy">Read the explanations, then continue to the next lesson.</p>
+        <p className="dash-empty-copy">{qs.some((q) => q.explanation)
+          ? 'Read the explanations, then continue to the next lesson.'
+          : 'Your answers were graded by the learning service. Continue to the next lesson.'}</p>
         {qs.some((q) => q.explanation) && (
           <div className="lms-quiz-review" style={{ marginTop: 16 }}>
             {qs.map((q, qi) => (

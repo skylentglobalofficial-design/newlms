@@ -6,7 +6,7 @@ import { getLmsRoleAccent, getLmsTabAccent } from '../role-themes'
 import CurriculumRail from '../components/lms/CurriculumRail'
 import { LessonContentView, LessonNavigation } from '../components/lms/LessonContent'
 import { LessonContextPanel } from '../components/product/ProductLanguage'
-import { getCourseQuiz, getLessonMeta } from '../content/course-lookups'
+import { getLessonMeta } from '../content/course-lookups'
 import { isAuthoredCourse } from '../lib/live-intents'
 import type { QuizQuestion } from '../components/lms/AssessmentSurface'
 import { courseProductProfile } from '../lib/course-product'
@@ -170,12 +170,10 @@ export default function LearnPage() {
       setQuizStatus('loading')
       fetchQuizQuestions(slug, selectedLessonId)
         .then((questions) => {
-          const bank = getCourseQuiz(slug, selectedLessonId)
-          setQuizQuestions(questions.map((q, index) => ({
+          // Correct answers stay server-side. The browser receives question text/options only.
+          setQuizQuestions(questions.map((q) => ({
             q: q.q,
             options: q.options,
-            explanation: bank?.questions[index]?.explanation,
-            correct: bank?.questions[index]?.correctIndex,
           })))
           setQuizStatus('ready')
         })
