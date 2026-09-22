@@ -1,0 +1,60 @@
+diff --git a/src/components/career/section-ui.tsx b/src/components/career/section-ui.tsx
+index d65dcd0..53b74ec 100644
+--- a/src/components/career/section-ui.tsx
++++ b/src/components/career/section-ui.tsx
+@@ -1,5 +1,6 @@
+ import { type ReactNode } from "react"
+-import { C, T } from "../../tokens"
++import { C, T, dsClass } from "../../tokens"
++import { Button, LoadingState, EmptyState } from "../ui"
+ import { getDomainAccent } from "../../aurora-themes"
+ 
+ const accent = getDomainAccent("career")
+@@ -35,33 +36,28 @@ export function SectionShell({
+ 
+ export function EmptyBlock({ message, onAction, actionLabel }: { message: string; onAction?: () => void; actionLabel?: string }) {
+   return (
+-    <div style={{
+-      padding: "20px 18px",
+-      borderRadius: T.rControl,
+-      border: `1px dashed ${T.lineDark}`,
+-      background: C.cream,
+-    }}>
+-      <p style={{ margin: 0, color: C.slate, fontSize: 14 }}>{message}</p>
+-      {onAction && actionLabel && (
+-        <button type="button" onClick={onAction} style={secondaryButtonStyle}>
+-          {actionLabel}
+-        </button>
+-      )}
+-    </div>
++    <EmptyState
++      message={message}
++      action={
++        onAction && actionLabel ? (
++          <Button variant="secondary" size="sm" onClick={onAction}>
++            {actionLabel}
++          </Button>
++        ) : undefined
++      }
++    />
+   )
+ }
+ 
+ export function LoadingBlock({ label = "Loading…" }: { label?: string }) {
+-  return <div style={{ color: C.slate, fontSize: 14, padding: "12px 0" }}>{label}</div>
++  return <LoadingState label={label} />
+ }
+ 
+ export function FeedbackBanner({ tone, message }: { tone: "success" | "error"; message: string }) {
+-  const bg = tone === "success" ? "rgba(16,185,129,0.12)" : "rgba(239,68,68,0.12)"
+-  const border = tone === "success" ? "rgba(16,185,129,0.35)" : "rgba(239,68,68,0.35)"
+-  const color = tone === "success" ? "#6EE7B7" : "#FCA5A5"
++  const panelClass = tone === "success" ? dsClass.stateSuccessPanel : dsClass.stateErrorPanel
+   return (
+-    <div style={{ marginBottom: 12, padding: "10px 12px", borderRadius: T.rControl, background: bg, border: `1px solid ${border}`, color, fontSize: 13 }}>
+-      {message}
++    <div className={panelClass} role={tone === "error" ? "alert" : "status"} style={{ marginBottom: 12, textAlign: "left" }}>
++      <p style={{ margin: 0, fontSize: 13 }}>{message}</p>
+     </div>
+   )
+ }

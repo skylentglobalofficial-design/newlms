@@ -1,0 +1,108 @@
+diff --git a/src/skylent-public.css b/src/skylent-public.css
+index 9820561..705f564 100644
+--- a/src/skylent-public.css
++++ b/src/skylent-public.css
+@@ -1,58 +1,18 @@
+ /* Skylent public brand — light-first, editorial, academic.
+-   LIGHT ONLY across public site, login, dashboard, LMS / Skylent OS, and Career OS.
+-   There is no separate dark LMS theme. */
+-
+-:root {
+-  --color-ink: #15171A;
+-  --color-ink-2: #1C1F24;
+-  --color-ink-3: #2A2E35;
+-  --color-orange: #F97316;
+-  --color-indigo: #4F46E5;
+-  --color-blue: #2563EB;
+-  --color-warm-white: #F7F4EC;
+-  --color-cream: #FFFDF8;
+-  --color-sand: #E8E2D6;
+-  --color-slate: #5C6168;
+-  --color-canvas: #F7F4EC;
+-  --color-line: rgba(21, 23, 26, 0.10);
+-  --color-line-strong: rgba(21, 23, 26, 0.16);
+-  --skylent-focus-ring: #4F46E5;
+-  --font-brand: 'Source Serif 4', 'Iowan Old Style', Georgia, serif;
+-  --font-display: 'DM Sans', system-ui, sans-serif;
+-  --font-body: 'DM Sans', system-ui, sans-serif;
+-  --glass-01-bg: #FFFDF8;
+-  --glass-01-border: rgba(21, 23, 26, 0.10);
+-  --glass-01-shadow: 0 4px 16px rgba(21, 23, 26, 0.05);
+-  --glass-02-bg: #FFFFFF;
+-  --glass-02-border: rgba(21, 23, 26, 0.10);
+-  --glass-02-shadow: 0 8px 24px rgba(21, 23, 26, 0.06);
+-  --glass-03-bg: #FFFFFF;
+-  --glass-03-border: rgba(21, 23, 26, 0.10);
+-  --glass-03-shadow: 0 12px 32px rgba(21, 23, 26, 0.07);
+-}
++   Tokens: src/styles/design-system.css (loaded via index.css).
++   LIGHT ONLY across public site, login, dashboard, LMS / Skylent OS, and Career OS. */
+ 
+ html, body {
+-  background-color: #F7F4EC;
+-  color: #15171A;
++  background-color: var(--skylent-color-paper);
++  color: var(--skylent-color-ink);
+ }
+ 
+ .skylent-public-canvas {
+-  background: #F7F4EC;
+-  color: #15171A;
+-}
+-
+-.skylent-display-xl,
+-.skylent-display-lg,
+-.skylent-display-md,
+-.skylent-display-sm {
+-  font-family: var(--font-display);
+-  font-weight: 600;
+-  color: #15171A;
++  background: var(--skylent-color-paper);
++  color: var(--skylent-color-ink);
+ }
+ 
+-.skylent-label {
+-  color: #5C6168;
+-}
++/* Display/label typography: src/styles/typography.css */
+ 
+ /* Public content written for a former dark canvas */
+ .skylent-public-canvas main h1,
+@@ -91,10 +51,10 @@ html, body {
+ }
+ 
+ .skylent-public-canvas .scroll-control-strip::before {
+-  background: linear-gradient(to right, #F7F4EC 0%, transparent 100%);
++  background: linear-gradient(to right, var(--skylent-surface-paper) 0%, transparent 100%);
+ }
+ .skylent-public-canvas .scroll-control-strip::after {
+-  background: linear-gradient(to left, #F7F4EC 0%, transparent 100%);
++  background: linear-gradient(to left, var(--skylent-surface-paper) 0%, transparent 100%);
+ }
+ 
+ @media (max-width: 768px) {
+@@ -105,8 +65,8 @@ html, body {
+ 
+ /* Labs / OS / lab workspace shells */
+ .skylent-lab-shell {
+-  background: #F7F4EC !important;
+-  color: #15171A;
++  background: var(--skylent-surface-paper) !important;
++  color: var(--skylent-color-ink);
+   font-family: var(--font-body);
+ }
+ 
+@@ -125,10 +85,10 @@ html, body {
+ .skylent-lab-shell [style*="background: #0d0f11"],
+ .skylent-lab-shell [style*="background: #161b22"],
+ .skylent-lab-shell [style*="background: #111318"] {
+-  background: #FFFDF8 !important;
++  background: var(--skylent-surface-cream) !important;
+ }
+ 
+ .os-gateway {
+-  background: #F7F4EC !important;
+-  color: #15171A;
++  background: var(--skylent-surface-paper) !important;
++  color: var(--skylent-color-ink);
+ }

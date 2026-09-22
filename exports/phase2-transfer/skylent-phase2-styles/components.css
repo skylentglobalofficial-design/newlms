@@ -1,0 +1,277 @@
+/**
+ * Skylent components — interaction states & responsive primitives (Phase 2 Block 6)
+ * Structural styles live in design-system.css; this file completes states and responsive rules.
+ */
+
+/* ── Semantic radius / elevation aliases (use in new work) ── */
+:root {
+  --radius-control: var(--radius-md);
+  --radius-card: var(--radius-md);
+  --radius-modal: var(--radius-xl);
+  --shadow-elevation-none: var(--shadow-none);
+  --shadow-elevation-subtle: var(--shadow-subtle);
+  --shadow-elevation-raised: var(--shadow-raised);
+  --shadow-elevation-overlay: var(--shadow-overlay);
+  --skylent-disabled-opacity: 0.55;
+}
+
+/* ── Buttons ── */
+.skylent-btn:active:not(:disabled):not(.is-loading) {
+  transform: translateY(0);
+}
+
+.skylent-btn--primary:active:not(:disabled) {
+  background: var(--skylent-color-accent-strong);
+}
+
+.skylent-btn--secondary:active:not(:disabled),
+.skylent-btn--ghost:active:not(:disabled) {
+  background: var(--skylent-surface-soft);
+}
+
+.skylent-btn--destructive {
+  background: var(--skylent-color-error);
+  color: var(--skylent-color-text-on-accent);
+  border-color: transparent;
+}
+
+.skylent-btn--destructive:hover:not(:disabled) {
+  background: #991b1b;
+}
+
+.skylent-btn--destructive:active:not(:disabled) {
+  background: #7f1d1d;
+}
+
+.skylent-btn--full {
+  width: 100%;
+}
+
+.skylent-btn.is-loading {
+  position: relative;
+  gap: var(--space-2);
+}
+
+.skylent-btn.is-loading .skylent-spinner {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.skylent-btn:focus-visible,
+.skylent-btn--destructive:focus-visible {
+  outline: 2px solid var(--skylent-focus-ring);
+  outline-offset: var(--skylent-focus-offset);
+}
+
+/* ── Links ── */
+.skylent-link-muted:focus-visible {
+  outline: 2px solid var(--skylent-focus-ring);
+  outline-offset: var(--skylent-focus-offset);
+  border-radius: var(--radius-xs);
+}
+
+.skylent-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0;
+  border: none;
+  border-bottom: 1px solid currentColor;
+  background: none;
+  color: var(--skylent-color-ink);
+  font-family: var(--font-body);
+  font-size: var(--skylent-t-label-lg-size);
+  font-weight: 600;
+  line-height: 1.35;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color var(--skylent-duration-fast) var(--skylent-ease-ui),
+    border-color var(--skylent-duration-fast) var(--skylent-ease-ui);
+}
+
+.skylent-text-link:hover {
+  color: var(--skylent-color-accent);
+  border-bottom-color: var(--skylent-color-accent-border);
+}
+
+.skylent-text-link:focus-visible {
+  outline: 2px solid var(--skylent-focus-ring);
+  outline-offset: var(--skylent-focus-offset);
+  border-bottom-color: transparent;
+}
+
+/* ── Cards ── */
+.skylent-card--pad {
+  padding: var(--space-8);
+}
+
+.skylent-card--product-dark {
+  background: var(--skylent-product-dark-surface);
+  border: 1px solid var(--skylent-product-dark-border);
+  color: var(--skylent-color-text-on-dark);
+}
+
+.skylent-card--interactive:focus-visible {
+  outline: 2px solid var(--skylent-focus-ring);
+  outline-offset: var(--skylent-focus-offset);
+}
+
+a.skylent-card.skylent-card--interactive,
+button.skylent-card.skylent-card--interactive {
+  display: block;
+  width: 100%;
+  text-align: inherit;
+  font: inherit;
+  cursor: pointer;
+  appearance: none;
+}
+
+/* ── Badges ── */
+.skylent-badge--info {
+  border-color: var(--skylent-color-info-border);
+  background: var(--skylent-color-info-soft);
+  color: var(--skylent-color-info);
+}
+
+/* ── Form controls ── */
+.skylent-input::placeholder,
+.skylent-textarea::placeholder {
+  color: var(--skylent-color-text-subtle);
+  opacity: 1;
+}
+
+.skylent-input:read-only:not(:disabled),
+.skylent-textarea:read-only:not(:disabled) {
+  background: var(--skylent-surface-paper);
+  border-color: var(--skylent-color-border);
+  cursor: default;
+}
+
+.skylent-field-label {
+  display: block;
+  margin-bottom: var(--space-2);
+  color: var(--skylent-color-slate);
+  font-family: var(--font-body);
+  font-size: var(--skylent-t-label-md-size);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+/* ── Tabs ── */
+.skylent-tab:disabled,
+.skylent-tab[aria-disabled="true"] {
+  opacity: var(--skylent-disabled-opacity);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.skylent-tab:focus-visible {
+  outline: 2px solid var(--skylent-focus-ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+.skylent-tabs--scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  max-width: 100%;
+}
+
+.skylent-tabs--scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.skylent-tabs--scroll .skylent-tab {
+  flex-shrink: 0;
+}
+
+/* ── Navigation items ── */
+.skylent-nav-item:disabled,
+.skylent-nav-item[aria-disabled="true"] {
+  opacity: var(--skylent-disabled-opacity);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.skylent-nav-item:focus-visible {
+  outline: 2px solid var(--skylent-focus-ring);
+  outline-offset: var(--skylent-focus-offset);
+}
+
+/* ── Progress ── */
+.skylent-progress[role="progressbar"] {
+  display: block;
+}
+
+/* ── Feedback: loading / empty / inline ── */
+.skylent-state-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--skylent-color-slate);
+  font-size: var(--type-body);
+  line-height: 1.5;
+}
+
+.skylent-state-panel--info {
+  border-color: var(--skylent-color-info-border);
+  background: var(--skylent-color-info-soft);
+  color: var(--skylent-color-info);
+}
+
+.skylent-state-panel--loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--skylent-color-slate);
+}
+
+.skylent-state-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: center;
+  margin-top: var(--space-4);
+}
+
+/* ── Modals ── */
+.skylent-modal-panel:focus {
+  outline: none;
+}
+
+.skylent-modal-panel:focus-visible {
+  outline: 2px solid var(--skylent-focus-ring);
+  outline-offset: var(--skylent-focus-offset);
+}
+
+@media (max-width: 768px) {
+  .skylent-modal-panel {
+    width: min(540px, calc(100vw - (2 * var(--skylent-gutter-page))));
+    max-height: 88vh;
+    padding: var(--space-6) var(--space-5);
+  }
+
+  .skylent-btn--full-mobile {
+    width: 100%;
+  }
+}
+
+@media (max-width: 390px) {
+  .skylent-card--pad {
+    padding: var(--space-6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skylent-card--interactive,
+  .skylent-nav-item,
+  .skylent-tab,
+  .skylent-text-link {
+    transition: none;
+  }
+}

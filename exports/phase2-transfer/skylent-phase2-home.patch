@@ -1,0 +1,3479 @@
+diff --git a/src/pages/HomePage.css b/src/pages/HomePage.css
+index e2cc1a6..b1ef598 100644
+--- a/src/pages/HomePage.css
++++ b/src/pages/HomePage.css
+@@ -1,173 +1,250 @@
+-/* Homepage — education ecosystem prototype */
++/* Skylent homepage — editorial front door (Phase 2 Block 2) */
+ 
+ .home-p3 {
+-  background: #f7f4ec;
+-  color: #15171a;
++  background: var(--skylent-color-paper);
++  color: var(--skylent-color-ink);
+   overflow-x: clip;
+ }
+ 
+-
+ .hp-eyebrow {
+   margin: 0;
+-  color: #4f46e5;
+-  font: 700 12px/1.3 var(--font-mono);
+-  letter-spacing: 0.12em;
++  font-family: var(--skylent-t-eyebrow-family);
++  font-size: var(--skylent-t-eyebrow-size);
++  line-height: var(--skylent-t-eyebrow-line);
++  font-weight: var(--skylent-t-eyebrow-weight);
++  letter-spacing: var(--skylent-t-eyebrow-tracking);
++  text-transform: uppercase;
++  color: var(--skylent-color-accent);
+ }
+ 
+ .hp-h2 {
+   margin: 10px 0 0;
+-  max-width: 16em;
+-  font-family: var(--font-body);
+-  font-size: clamp(26px, 3vw, 36px);
+-  font-weight: 650;
+-  line-height: 1.16;
+-  letter-spacing: -0.03em;
+-  color: #15171a;
++  max-width: 18em;
++  font-family: var(--skylent-t-heading-xl-family);
++  font-size: var(--skylent-t-heading-xl-size);
++  line-height: var(--skylent-t-heading-xl-line);
++  font-weight: var(--skylent-t-heading-xl-weight);
++  letter-spacing: var(--skylent-t-heading-xl-tracking);
++  color: var(--skylent-color-ink);
++  text-wrap: balance;
+ }
+ 
+ .hp-lead {
+   margin: 14px 0 0;
+-  max-width: 40em;
+-  color: #5c6168;
+-  font-size: 16px;
+-  line-height: 1.6;
++  max-width: var(--skylent-measure-prose);
++  font-family: var(--skylent-t-body-lg-family);
++  font-size: var(--skylent-t-body-lg-size);
++  line-height: var(--skylent-t-body-lg-line);
++  font-weight: var(--skylent-t-body-lg-weight);
++  color: var(--skylent-color-slate);
++}
++
++.hp-muted {
++  margin: 0 0 16px;
++  color: var(--skylent-color-slate);
++  font-size: 14px;
++}
++
++.hp-section {
++  padding: var(--section-pad-sm) 0;
++  border-top: 1px solid var(--skylent-color-border);
++}
++
++.hp-section-head {
++  margin-bottom: var(--space-10);
++}
++
++.hp-section-head--center {
++  text-align: center;
++  max-width: var(--max-w-prose);
++  margin-inline: auto;
++  margin-bottom: var(--space-10);
+ }
+ 
++.hp-section-head--center .hp-lead {
++  margin-inline: auto;
++}
++
++/* ── Hero ── */
+ .hp-hero {
+-  padding: 28px 0 8px;
++  padding: var(--skylent-section-pad-sm) 0 var(--space-8);
++  border-top: none;
+ }
+ 
+ .hp-hero-grid {
+   display: grid;
+-  grid-template-columns: minmax(0, 0.44fr) minmax(0, 0.56fr);
+-  gap: clamp(28px, 4vw, 52px);
++  grid-template-columns: minmax(0, 0.46fr) minmax(0, 0.54fr);
++  gap: var(--skylent-gap-editorial);
+   align-items: center;
+ }
+ 
+ .hp-hero-eyebrow {
+-  color: #5c6168;
+-  font-size: 11px;
+-  letter-spacing: 0.14em;
++  color: var(--skylent-color-slate);
++  font-size: var(--skylent-t-eyebrow-size);
++  letter-spacing: var(--skylent-t-eyebrow-tracking);
+ }
+ 
+ .hp-hero-copy h1 {
+   margin: 12px 0 0;
+   max-width: 11em;
+-  font-family: var(--font-brand);
+-  font-size: clamp(40px, 4.8vw, 62px);
+-  font-weight: 600;
+-  line-height: 1.02;
+-  letter-spacing: -0.03em;
+-  color: #15171a;
+-}
+-
+-.hp-hero-further {
+-  color: #4f46e5;
++  font-family: var(--skylent-t-display-xl-family);
++  font-size: var(--skylent-t-display-xl-size);
++  line-height: var(--skylent-t-display-xl-line);
++  font-weight: var(--skylent-t-display-xl-weight);
++  letter-spacing: var(--skylent-t-display-xl-tracking);
++  color: var(--skylent-color-ink);
++  text-wrap: balance;
++}
++
++.hp-hero-em {
++  color: var(--skylent-color-accent);
++  font-style: italic;
++  font-weight: 500;
+ }
+ 
+-.hp-hero-further-dot {
+-  color: #f97316;
++.hp-hero-dot {
++  color: var(--skylent-color-mark);
+ }
+ 
+ .hp-hero-lead {
+-  max-width: 30em;
++  max-width: var(--skylent-measure-narrow);
+   margin: 18px 0 0;
+-  color: #5c6168;
+-  font-size: 17px;
+-  line-height: 1.6;
++  font-family: var(--skylent-t-body-lg-family);
++  font-size: var(--skylent-t-body-lg-size);
++  line-height: var(--skylent-t-body-lg-line);
++  color: var(--skylent-color-slate);
+ }
+ 
+-.hp-hero-copy {
+-  position: relative;
+-  z-index: 1;
+-  min-width: 0;
+-  height: max-content;
+-  padding-bottom: 8px;
++.hp-hero-model {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 8px 10px;
++  align-items: center;
++  margin: 20px 0 0;
++  font-family: var(--skylent-t-label-lg-family);
++  font-size: var(--skylent-t-label-lg-size);
++  line-height: var(--skylent-t-label-lg-line);
++  font-weight: var(--skylent-t-label-lg-weight);
++  color: var(--skylent-color-slate);
++}
++
++.hp-hero-model strong {
++  color: var(--skylent-color-ink);
++  font-weight: var(--skylent-t-label-lg-weight);
++}
++
++.hp-hero-model span {
++  color: var(--skylent-color-muted);
++}
++
++.hp-actions {
++  display: flex;
++  flex-wrap: wrap;
++  gap: var(--space-3);
++  margin-top: var(--space-7);
++}
++
++.hp-actions--center {
++  justify-content: center;
++}
++
++.hp-btn {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  min-height: var(--skylent-control-height-lg);
++  padding: 0 var(--skylent-control-pad-x);
++  border-radius: var(--radius-md);
++  font-family: var(--skylent-t-label-lg-family);
++  font-size: var(--skylent-t-label-lg-size);
++  font-weight: var(--skylent-t-label-lg-weight);
++  text-decoration: none;
++  cursor: pointer;
++  border: 1px solid transparent;
++  transition: background var(--skylent-duration-ui) ease,
++    border-color var(--skylent-duration-ui) ease;
++}
++
++.hp-btn-primary {
++  background: var(--skylent-color-accent);
++  color: var(--skylent-color-text-on-accent);
++}
++
++.hp-btn-primary:hover {
++  background: var(--skylent-color-accent-hover);
++}
++
++.hp-btn-secondary {
++  background: transparent;
++  color: var(--skylent-color-ink);
++  border-color: var(--skylent-color-border-strong);
++}
++
++.hp-btn-secondary:hover {
++  background: var(--skylent-color-cream);
++}
++
++.hp-btn:focus-visible {
++  outline: 2px solid var(--skylent-focus-ring);
++  outline-offset: var(--skylent-focus-offset);
+ }
+ 
+ .hp-hero-stage {
+-  position: relative;
+   min-width: 0;
+-  overflow: visible;
+-  padding: 8px 10px 18px 4px;
++  padding: 4px 0 12px;
+ }
+ 
+ .hp-hero-visual {
+-  position: relative;
+   width: 100%;
+   min-width: 0;
+-  height: 432px;
+-  perspective: 2200px;
++  height: clamp(360px, 42vw, 420px);
+ }
+ 
+ .hp-hero-lms {
+   width: 100%;
+-  height: 432px;
+-  transform: rotateY(-1.2deg) rotateX(0.7deg);
+-  transform-origin: 58% 72%;
++  height: 100%;
+ }
+ 
+ .hp-hero-lms > .pl-frame {
+   display: flex;
+   flex-direction: column;
+   width: 100%;
+-  height: 432px;
++  height: 100%;
+   overflow: hidden;
+-  background: #fffdf8;
+-  border: 1px solid rgba(21, 23, 26, 0.08);
+-  border-radius: 14px;
+-  box-shadow: 0 10px 28px rgba(21, 23, 26, 0.045);
++  background: var(--skylent-color-cream);
++  border: var(--border-subtle);
++  border-radius: var(--radius-xl);
++  box-shadow: var(--shadow-subtle);
+ }
+ 
+ .hp-hero-lms > .pl-frame > .pl-frame-bar {
+   flex: 0 0 36px;
+-  height: 36px;
+-  min-height: 36px;
+-  max-height: 36px;
+   padding: 0 16px;
+-  background: #fffdf8;
+-  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
+-}
+-
+-.hp-hero-lms > .pl-frame .pl-frame-brand {
+-  font-size: 11px;
+-  font-weight: 650;
+-}
+-
+-.hp-hero-lms > .pl-frame .pl-frame-title,
+-.hp-hero-lms > .pl-frame .pl-frame-meta {
+-  overflow: hidden;
+-  font-size: 11px;
+-  font-weight: 400;
+-  color: #5c6168;
+-  text-overflow: ellipsis;
+-  white-space: nowrap;
++  background: var(--skylent-color-cream);
++  border-bottom: 1px solid var(--skylent-color-border);
+ }
+ 
+ .hp-hero-lms > .pl-frame > .pl-frame-body {
+-  flex: 1 1 auto;
++  flex: 1;
+   min-height: 0;
+   padding: 0;
+   overflow: hidden;
+-  background: #ffffff;
++  background: var(--skylent-color-soft-surface);
+ }
+ 
+ .hp-hero-os {
+   display: grid;
+   grid-template-columns: 102px minmax(0, 1fr);
+-  grid-template-rows: minmax(0, 1fr);
+   height: 100%;
+   min-height: 0;
+-  background: #ffffff;
+ }
+ 
+ .hp-hero-lms-rail {
+   display: flex;
+   flex-direction: column;
+-  gap: 0;
+-  padding: 14px 8px 14px 10px;
+-  background: #ffffff;
+-  border-right: 1px solid rgba(21, 23, 26, 0.08);
++  padding: 14px 8px;
++  border-right: 1px solid var(--skylent-color-border);
++  background: var(--skylent-color-soft-surface);
+ }
+ 
+ .hp-hero-lms-rail button {
+@@ -175,112 +252,40 @@
+   align-items: center;
+   gap: 8px;
+   width: 100%;
+-  padding: 8px 8px;
++  padding: 8px;
+   border: 0;
+-  border-radius: 0;
+   background: transparent;
+-  color: #5c6168;
++  color: var(--skylent-color-slate);
+   font: 400 12px/1.3 var(--font-body);
+   text-align: left;
+   cursor: pointer;
+   box-shadow: inset 2px 0 0 transparent;
+ }
+ 
+-.hp-hero-lms-rail button:hover {
+-  color: #15171a;
++.hp-hero-lms-rail button.is-on {
++  color: var(--skylent-color-accent);
++  box-shadow: inset 2px 0 0 var(--skylent-color-accent);
+ }
+ 
+ .hp-hero-lms-rail button:focus-visible {
+-  outline: 2px solid #4f46e5;
++  outline: 2px solid var(--skylent-focus-ring);
+   outline-offset: 1px;
+ }
+ 
+-.hp-hero-lms-rail button svg {
+-  flex-shrink: 0;
+-  stroke-linecap: round;
+-  stroke-linejoin: round;
+-}
+-
+-.hp-hero-lms-rail button.is-on {
+-  background: transparent;
+-  color: #4f46e5;
+-  font-weight: 400;
+-  box-shadow: inset 2px 0 0 #4f46e5;
+-}
+-
+-.hp-hero-lms-rail button.is-on:hover {
+-  background: transparent;
+-  color: #4f46e5;
+-}
+-
+ .hp-hero-lms-stage {
+-  display: grid;
+-  grid-template-columns: minmax(0, 1fr) 112px;
+-  grid-template-rows: minmax(0, 1fr);
+-  gap: 0;
+   min-width: 0;
+   min-height: 0;
+   height: 100%;
+   overflow: hidden;
+-  background: #ffffff;
+ }
+ 
+ .hp-hero-pane {
+-  min-width: 0;
+-  min-height: 0;
+   height: 100%;
+-  padding: 16px 18px 18px;
+-  overflow: hidden;
+-  overflow-wrap: break-word;
++  padding: 16px 18px;
++  overflow: auto;
+   animation: hp-hero-pane-in 220ms ease;
+ }
+ 
+-.hp-hero-next {
+-  display: grid;
+-  align-content: start;
+-  gap: 6px;
+-  min-width: 0;
+-  min-height: 0;
+-  height: 100%;
+-  padding: 16px 14px 16px 14px;
+-  overflow: hidden;
+-  background: #ffffff;
+-  border-left: 1px solid rgba(21, 23, 26, 0.06);
+-}
+-
+-.hp-hero-next .pl-kicker,
+-.hp-hero-workspace .pl-kicker {
+-  margin: 0;
+-  color: #8a8f96;
+-  font: 500 10px/1.3 var(--font-body);
+-  letter-spacing: 0.08em;
+-  text-transform: uppercase;
+-}
+-
+-.hp-hero-next p {
+-  display: -webkit-box;
+-  margin: 0;
+-  overflow: hidden;
+-  color: #5c6168;
+-  font-size: 12px;
+-  font-weight: 400;
+-  letter-spacing: -0.01em;
+-  line-height: 1.4;
+-  -webkit-box-orient: vertical;
+-  -webkit-line-clamp: 3;
+-}
+-
+-.hp-hero-next-go {
+-  margin-top: 2px;
+-  padding: 0;
+-  border: 0;
+-  background: none;
+-  color: #4f46e5;
+-  font: 500 12px/1.3 var(--font-body);
+-  text-align: left;
+-  cursor: pointer;
+-}
+-
+ @keyframes hp-hero-pane-in {
+   from {
+     opacity: 0;
+@@ -296,134 +301,55 @@
+   display: grid;
+   gap: 12px;
+   align-content: start;
+-  height: 100%;
+-  min-height: 0;
+ }
+ 
+ .hp-hero-workspace h3 {
+-  display: -webkit-box;
+   margin: 0;
+-  overflow: hidden;
+-  color: #15171a;
+   font-family: var(--font-body);
+   font-size: 17px;
+   font-weight: 600;
+   letter-spacing: -0.03em;
+-  line-height: 1.2;
+-  -webkit-box-orient: vertical;
+-  -webkit-line-clamp: 2;
+-}
+-
+-.hp-hero-caption {
+-  display: grid;
+-  gap: 0;
+-  min-width: 0;
+-}
+-
+-.hp-hero-caption .hp-hero-os-cta {
+-  margin-top: 10px;
++  color: var(--skylent-color-ink);
+ }
+ 
+ .hp-hero-caption p,
+ .hp-hero-workspace p {
+   margin: 4px 0 0;
+-  color: #5c6168;
++  color: var(--skylent-color-slate);
+   font-size: 13px;
+-  font-weight: 400;
+   line-height: 1.45;
+ }
+ 
+ .hp-hero-meta {
+-  color: #8a8f96 !important;
++  color: var(--skylent-color-muted) !important;
+   font-size: 11px !important;
+-  font-weight: 400 !important;
+ }
+ 
+-.hp-hero-purpose {
+-  display: -webkit-box;
+-  overflow: hidden;
+-  -webkit-box-orient: vertical;
+-  -webkit-line-clamp: 2;
+-}
+-
+-.hp-hero-media {
+-  min-width: 0;
+-  height: 216px;
+-  min-height: 216px;
+-  max-height: 216px;
+-  overflow: hidden;
+-  background: #fffdf8;
+-  border: 1px solid rgba(21, 23, 26, 0.08);
+-}
+-
+-.hp-hero-media .pl-frame {
+-  height: 100%;
+-  border: 0;
+-  border-radius: 0;
+-  box-shadow: none;
+-  background: transparent;
+-}
+-
+-.hp-hero-media .pl-frame-bar,
+-.hp-hero-media .pl-fine,
+-.hp-hero-media .pl-table,
+-.hp-hero-media .pl-sql,
+-.hp-hero-media .pl-hd-flow {
+-  display: none;
+-}
+-
+-.hp-hero-media .pl-frame-body {
+-  padding: 12px 14px 14px;
+-}
+-
+-.hp-hero-media .pl-stat-row {
+-  margin-bottom: 10px;
+-}
+-
+-.hp-hero-media .pl-nw-split {
+-  display: grid;
+-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+-  gap: 12px;
++.hp-hero-os-cta {
++  display: inline-block;
++  margin-top: 10px;
++  color: var(--skylent-color-accent);
++  font-size: 13px;
++  font-weight: 600;
++  text-decoration: none;
+ }
+ 
+-.hp-hero-media .pl-spark {
+-  height: 52px;
+-  margin-bottom: 0;
++.hp-hero-os-cta:hover {
++  color: var(--skylent-color-accent-hover);
+ }
+ 
+-.hp-hero-media .pl-spark em {
+-  display: none;
++.hp-hero-media {
++  height: 200px;
++  overflow: hidden;
++  background: var(--skylent-color-cream);
++  border: 1px solid var(--skylent-color-border);
+ }
+ 
+ .hp-hero-media.is-report {
+-  background: #fffdf8;
+   padding: 14px 16px;
+-  height: 216px;
+-  min-height: 216px;
+-  max-height: 216px;
+-}
+-
+-.hp-hero-report p:first-child {
+-  margin: 0;
+-  color: #8a8f96;
+-  font-size: 10px;
+-  font-weight: 500;
+-  letter-spacing: 0.08em;
+-  text-transform: uppercase;
+-}
+-
+-.hp-hero-report strong {
+-  display: block;
+-  margin: 8px 0 14px;
+-  color: #15171a;
+-  font-size: 15px;
+-  font-weight: 600;
+-  letter-spacing: -0.02em;
+ }
+ 
+ .hp-hero-report ul {
+-  display: grid;
+-  gap: 4px;
+   margin: 0;
+   padding: 0;
+   list-style: none;
+@@ -432,1484 +358,473 @@
+ .hp-hero-report li {
+   display: flex;
+   justify-content: space-between;
+-  gap: 16px;
++  gap: 12px;
+   padding-top: 6px;
+-  border-top: 1px solid rgba(21, 23, 26, 0.08);
+-  color: #15171a;
++  border-top: 1px solid var(--skylent-color-border);
+   font-size: 13px;
+ }
+ 
+-.hp-hero-report li span {
+-  color: #8a8f96;
+-  font-size: 12px;
+-}
+-
+-.hp-hero-folio {
+-  min-width: 0;
+-  height: 216px;
+-  min-height: 216px;
+-  max-height: 216px;
+-  padding: 18px 18px 16px;
+-  overflow: hidden;
+-  background: #fffdf8;
+-  border: 1px solid rgba(21, 23, 26, 0.08);
+-}
+-
+-.hp-hero-folio p:first-child {
+-  margin: 0;
+-  color: #8a8f96;
+-  font-size: 10px;
++.hp-hero-exercise-q {
++  margin: 8px 0;
++  font-size: 14px;
+   font-weight: 500;
+-  letter-spacing: 0.08em;
+-  text-transform: uppercase;
+-}
+-
+-.hp-hero-folio h3 {
+-  margin-top: 8px;
++  color: var(--skylent-color-ink);
+ }
+ 
+-.hp-hero-folio ul {
+-  display: grid;
+-  gap: 8px;
+-  margin: 14px 0 0;
++.hp-hero-choices {
++  margin: 0;
+   padding: 0;
+   list-style: none;
+ }
+ 
+-.hp-hero-folio li {
+-  padding-top: 8px;
+-  border-top: 1px solid rgba(21, 23, 26, 0.08);
+-  color: #15171a;
+-  font-size: 13px;
+-  font-weight: 400;
+-  line-height: 1.4;
+-}
+-
+-.hp-hero-folio .hp-hero-meta {
+-  margin-top: 12px;
++.hp-hero-choices li {
++  display: flex;
++  gap: 8px;
++  padding: 6px 0;
++  font-size: 12px;
++  color: var(--skylent-color-slate);
++  border-top: 1px solid var(--skylent-color-border);
+ }
+ 
+-.hp-hero-os-cta {
+-  display: inline-flex;
+-  flex-shrink: 0;
+-  align-items: center;
+-  width: fit-content;
+-  margin-top: 8px;
+-  padding: 0;
+-  border: 0;
+-  background: none;
+-  color: #15171a;
+-  font-size: 13px;
+-  font-weight: 600;
+-  text-decoration: none;
+-  box-shadow: inset 0 -1px 0 #15171a;
++.hp-hero-choices span {
++  color: var(--skylent-color-accent);
++  font-family: var(--font-mono);
++  font-size: 11px;
+ }
+ 
+-.hp-hero-os-cta:hover {
+-  color: #4f46e5;
+-  box-shadow: inset 0 -1px 0 #4f46e5;
++.hp-hero-folio {
++  padding: 16px;
++  border: 1px solid var(--skylent-color-border);
++  background: var(--skylent-color-paper);
+ }
+ 
+-.hp-hero-os-cta:focus-visible,
+-.hp-hero-next-go:focus-visible {
+-  outline: 2px solid #4f46e5;
+-  outline-offset: 3px;
++.hp-hero-career-line {
++  margin: 12px 0 0;
++  padding: 0;
++  list-style: none;
+ }
+ 
+-.hp-hero-exercise {
++.hp-hero-career-line li {
+   display: grid;
+-  gap: 12px;
++  grid-template-columns: 100px 1fr;
++  gap: 8px;
++  padding: 8px 0;
++  border-top: 1px solid var(--skylent-color-border);
++  font-size: 12px;
+ }
+ 
+-.hp-hero-workspace .hp-hero-exercise-q {
+-  display: -webkit-box;
+-  margin: 8px 0 0;
+-  max-width: 38em;
+-  overflow: hidden;
+-  color: #15171a;
+-  font-size: 15px;
+-  font-weight: 500;
+-  letter-spacing: -0.02em;
+-  line-height: 1.45;
+-  -webkit-box-orient: vertical;
+-  -webkit-line-clamp: 4;
++.hp-hero-career-line span {
++  color: var(--skylent-color-muted);
+ }
+ 
+-.hp-hero-choices {
++/* ── Learning model ── */
++.hp-journey-grid {
+   display: grid;
++  grid-template-columns: repeat(4, minmax(0, 1fr));
+   gap: 0;
+   margin: 0;
+   padding: 0;
+   list-style: none;
++  border-top: 1px solid var(--skylent-color-border-strong);
+ }
+ 
+-.hp-hero-choices li {
+-  display: grid;
+-  grid-template-columns: 16px minmax(0, 1fr);
+-  gap: 10px;
+-  padding: 9px 0;
+-  border-top: 1px solid rgba(21, 23, 26, 0.08);
+-  color: #15171a;
+-  font-size: 13px;
+-  font-weight: 400;
+-  line-height: 1.4;
++.hp-journey-grid li {
++  padding: var(--space-6) var(--space-5) var(--space-6) 0;
++  border-right: 1px solid var(--skylent-color-border);
+ }
+ 
+-.hp-hero-choices li:first-child {
+-  border-top: 0;
++.hp-journey-grid li:last-child {
++  border-right: none;
+ }
+ 
+-.hp-hero-choices li span {
+-  color: #8a8f96;
++.hp-journey-step {
++  margin: 0 0 12px;
++  color: var(--skylent-color-accent);
++  font-family: var(--font-mono);
+   font-size: 11px;
+-  font-weight: 500;
++  letter-spacing: 0.08em;
+ }
+ 
+-.hp-hero-workspace.is-career {
+-  gap: 10px;
++.hp-journey-grid h3 {
++  margin: 0 0 8px;
++  font-family: var(--skylent-t-heading-sm-family);
++  font-size: var(--skylent-t-heading-md-size);
++  line-height: var(--skylent-t-heading-md-line);
++  font-weight: var(--skylent-t-heading-md-weight);
++  letter-spacing: var(--skylent-t-heading-md-tracking);
+ }
+ 
+-.hp-hero-career-line {
++.hp-journey-grid p {
++  margin: 0;
++  font-family: var(--skylent-t-body-sm-family);
++  font-size: var(--skylent-t-body-sm-size);
++  line-height: var(--skylent-t-body-sm-line);
++  color: var(--skylent-color-slate);
++}
++
++/* ── Featured programmes ── */
++.hp-pcp-list {
+   display: grid;
+-  gap: 0;
++  gap: var(--space-6);
+   margin: 0;
+   padding: 0;
+   list-style: none;
+ }
+ 
+-.hp-hero-career-line li {
++.hp-pcp {
+   display: grid;
+-  grid-template-columns: 7.5em minmax(0, 1fr);
+-  gap: 16px;
+-  align-items: baseline;
+-  padding: 11px 0;
+-  border-top: 1px solid rgba(21, 23, 26, 0.08);
++  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.85fr);
++  gap: var(--space-6);
++  padding: var(--space-6);
++  background: var(--skylent-color-cream);
++  border: var(--border-subtle);
+ }
+ 
+-.hp-hero-career-line li:first-child {
+-  border-top: 0;
+-  padding-top: 0;
++.hp-pcp-label {
++  margin: 0 0 6px;
++  color: var(--skylent-color-slate);
++  font-size: 12px;
++  font-weight: 600;
+ }
+ 
+-.hp-hero-career-line span {
+-  color: #8a8f96;
+-  font-size: 11px;
+-  font-weight: 500;
+-  letter-spacing: 0.06em;
+-  text-transform: uppercase;
++.hp-pcp h3 {
++  margin: 0;
++  font-family: var(--skylent-t-heading-md-family);
++  font-size: var(--skylent-t-heading-md-size);
++  line-height: var(--skylent-t-heading-md-line);
++  font-weight: var(--skylent-t-heading-md-weight);
++  letter-spacing: var(--skylent-t-heading-md-tracking);
+ }
+ 
+-.hp-hero-career-line b {
+-  display: -webkit-box;
+-  overflow: hidden;
+-  color: #15171a;
+-  font-size: 14px;
+-  font-weight: 500;
+-  letter-spacing: -0.02em;
+-  line-height: 1.35;
+-  -webkit-box-orient: vertical;
+-  -webkit-line-clamp: 2;
+-}
+-
+-@media (prefers-reduced-motion: reduce) {
+-  .hp-hero-lms {
+-    transform: none;
+-  }
+-
+-  .hp-hero-pane {
+-    animation: none;
+-  }
+-}
+-
+-.hp-hero-values {
+-  display: grid;
+-  grid-template-columns: repeat(4, minmax(0, 1fr));
+-  gap: 0;
+-  margin: 36px 0 0;
+-  padding: 28px 0 8px;
+-  border-top: 1px solid rgba(21, 23, 26, 0.08);
+-  list-style: none;
+-}
+-
+-.hp-hero-values li {
+-  display: grid;
+-  gap: 8px;
+-  min-width: 0;
+-  padding: 0 28px;
+-  color: #15171a;
+-  font-size: 15px;
+-  font-weight: 500;
+-  letter-spacing: -0.02em;
+-  line-height: 1.35;
+-  border-left: 1px solid rgba(21, 23, 26, 0.1);
+-}
+-
+-.hp-hero-values li:first-child {
+-  padding-left: 0;
+-  border-left: none;
+-}
+-
+-.hp-hero-values-num {
+-  color: #8a8f96;
+-  font: 500 12px/1.2 var(--font-mono);
+-  letter-spacing: 0.08em;
+-}
+-
+-.hp-actions {
+-  display: flex;
+-  flex-wrap: wrap;
+-  gap: 10px;
+-  margin-top: 28px;
+-}
+-
+-.hp-btn {
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  gap: 8px;
+-  min-height: 44px;
+-  padding: 0 16px;
+-  border-radius: var(--radius-md);
+-  font-size: 14px;
+-  font-weight: 600;
+-  text-decoration: none;
+-  cursor: pointer;
+-  font-family: var(--font-body);
+-}
+-
+-.hp-btn:focus-visible {
+-  outline: 2px solid #4f46e5;
+-  outline-offset: 2px;
+-}
+-
+-.hp-btn-primary {
+-  background: #15171a;
+-  color: #fffdf8;
+-  border: 1px solid #15171a;
+-}
+-
+-.hp-hero .hp-btn-primary {
+-  min-height: 48px;
+-  padding: 0 20px;
+-  font-size: 15px;
+-}
+-
+-.hp-btn-primary:hover {
+-  background: #2a2e35;
+-  border-color: #2a2e35;
+-}
+-
+-.hp-btn-ghost {
+-  color: #15171a;
+-  border: var(--border-subtle-strong);
+-  background: transparent;
+-}
+-
+-.hp-btn-ghost:hover {
+-  background: rgba(255, 253, 248, 0.6);
+-}
+-
+-.hp-btn-play {
+-  display: inline-flex;
+-  align-items: center;
+-  justify-content: center;
+-  width: 22px;
+-  height: 22px;
+-  border: var(--border-subtle-strong);
+-  border-radius: 50%;
+-  background: #fffdf8;
+-}
+-
+-.hp-btn-play::after {
+-  content: "";
+-  width: 0;
+-  height: 0;
+-  margin-left: 2px;
+-  border-top: 4px solid transparent;
+-  border-bottom: 4px solid transparent;
+-  border-left: 6px solid #15171a;
+-}
+-
+-.hp-hero .hp-actions {
+-  margin-top: 26px;
+-}
+-
+-.hp-section {
+-  padding: 28px 0 72px;
+-}
+-
+-.hp-choose {
+-  padding: 0;
+-  overflow-x: clip;
+-}
+-
+-.hp-choose-track {
+-  position: relative;
+-  height: 360vh;
+-  overflow-anchor: none;
+-}
+-
+-.hp-choose-sticky {
+-  position: sticky;
+-  top: var(--nav-h);
+-  padding: 36px 0 48px;
+-  background: #f7f4ec;
+-  overflow-anchor: none;
+-}
+-
+-.hp-choose-eyebrow {
+-  color: #5c6168;
+-  letter-spacing: 0.14em;
+-  text-transform: uppercase;
+-}
+-
+-.hp-choose-title {
+-  margin: 12px 0 0;
+-  max-width: 16em;
+-  font-family: var(--font-brand);
+-  font-size: clamp(30px, 3.4vw, 42px);
+-  font-weight: 600;
+-  line-height: 1.08;
+-  letter-spacing: -0.03em;
+-  color: #15171a;
+-}
+-
+-.hp-choose-lead {
+-  margin: 14px 0 0;
+-  max-width: 34em;
+-  color: #5c6168;
+-  font-size: 16px;
+-  line-height: 1.55;
+-}
+-
+-.hp-choose-stage {
+-  position: relative;
+-  margin-top: 32px;
+-  padding-left: 44px;
+-  padding-bottom: 36px;
+-}
+-
+-.hp-choose-steps-wrap {
+-  position: absolute;
+-  left: 0;
+-  top: 50%;
+-  z-index: 5;
+-  transform: translateY(-50%);
+-}
+-
+-.hp-choose-steps {
+-  display: flex;
+-  flex-direction: column;
+-  gap: 12px;
+-  margin: 0;
+-  padding: 0;
+-  list-style: none;
+-}
+-
+-.hp-choose-steps-mark {
+-  position: absolute;
+-  left: -9px;
+-  top: 2px;
+-  width: 2px;
+-  height: 12px;
+-  border-radius: 1px;
+-  background: #4f46e5;
+-  pointer-events: none;
+-}
+-
+-.hp-choose-steps button {
+-  padding: 0;
+-  border: 0;
+-  background: none;
+-  color: #8b9096;
+-  font: 500 12px/1 var(--font-mono);
+-  letter-spacing: 0.08em;
+-  cursor: pointer;
+-}
+-
+-.hp-choose-steps button.is-on {
+-  color: #4f46e5;
+-}
+-
+-.hp-choose-steps button:focus-visible {
+-  outline: 2px solid #4f46e5;
+-  outline-offset: 3px;
+-}
+-
+-.hp-choose-cue {
+-  position: absolute;
+-  left: 52px;
+-  bottom: 8px;
+-  z-index: 4;
+-  margin: 0;
+-  color: #8b9096;
+-  font-size: 12px;
+-  letter-spacing: 0.04em;
+-  opacity: 0.55;
+-  pointer-events: none;
+-}
+-
+-.hp-choose-cue::after {
+-  content: "";
+-  display: inline-block;
+-  width: 5px;
+-  height: 5px;
+-  margin-left: 6px;
+-  border-right: 1px solid currentColor;
+-  border-bottom: 1px solid currentColor;
+-  transform: translateY(-1px) rotate(45deg);
+-}
+-
+-.hp-choose-panels {
+-  position: relative;
+-  isolation: isolate;
+-  min-height: 368px;
+-}
+-
+-.hp-choose-context {
+-  position: absolute;
+-  top: 0;
+-  bottom: 22px;
+-  z-index: 1;
+-  display: flex;
+-  flex-direction: column;
+-  justify-content: center;
+-  width: 26%;
+-  pointer-events: none;
+-  opacity: 0;
+-  visibility: hidden;
+-  will-change: opacity, transform;
+-}
+-
+-.hp-choose-context.is-right {
+-  right: 12px;
+-  left: auto;
+-  align-items: flex-end;
+-  text-align: right;
+-}
+-
+-.hp-choose-context.is-left {
+-  left: 12px;
+-  right: auto;
+-  align-items: flex-start;
+-  text-align: left;
+-}
+-
+-.hp-choose-context-num {
+-  display: block;
+-  color: rgba(21, 23, 26, 0.07);
+-  font-family: var(--font-brand);
+-  font-size: clamp(96px, 13vw, 164px);
+-  font-weight: 600;
+-  line-height: 0.76;
+-  letter-spacing: -0.05em;
+-}
+-
+-.hp-choose-context-copy {
+-  display: flex;
+-  flex-direction: column;
+-  gap: 26px;
+-  margin-top: 22px;
+-}
+-
+-.hp-choose-context.is-right .hp-choose-context-copy {
+-  align-items: flex-end;
+-}
+-
+-.hp-choose-context-group {
+-  display: flex;
+-  flex-direction: column;
+-  gap: 11px;
+-  margin: 0;
+-}
+-
+-.hp-choose-context-group span {
+-  color: rgba(21, 23, 26, 0.24);
+-  font-size: 12px;
+-  font-weight: 500;
+-  letter-spacing: 0.2em;
+-  line-height: 1.15;
+-}
+-
+-.hp-choose-context.is-right {
+-  transform-origin: 86% 48%;
+-}
+-
+-.hp-choose-context.is-left {
+-  transform-origin: 14% 48%;
+-}
+-
+-.hp-choose-motif {
+-  position: absolute;
+-  top: 4%;
+-  z-index: 0;
+-  width: min(88%, 220px);
+-  height: auto;
+-  color: rgba(21, 23, 26, 0.1);
+-  overflow: visible;
+-}
+-
+-.hp-choose-context.is-right .hp-choose-motif {
+-  right: 2%;
+-  left: auto;
+-}
+-
+-.hp-choose-context.is-left .hp-choose-motif {
+-  left: 2%;
+-  right: auto;
+-}
+-
+-.hp-choose-context-num {
+-  position: relative;
+-  z-index: 1;
+-}
+-
+-.hp-choose-context-copy {
+-  position: relative;
+-  z-index: 1;
+-}
+-
+-.hp-choose-panel {
+-  position: absolute;
+-  top: 0;
+-  z-index: 2;
+-  width: 62%;
+-  display: grid;
+-  grid-template-columns: minmax(0, 0.92fr) minmax(168px, 1.08fr);
+-  min-height: 368px;
+-  overflow: hidden;
+-  background: #fffdf8;
+-  border: var(--border-subtle);
+-  border-radius: var(--radius-md);
+-  box-shadow: var(--shadow-subtle);
+-  text-decoration: none;
+-  color: inherit;
+-  will-change: opacity, transform;
+-}
+-
+-.hp-choose-panel:focus-visible {
+-  outline: 2px solid #4f46e5;
+-  outline-offset: 3px;
+-}
+-
+-.hp-choose-panel.is-left {
+-  left: 0;
+-  right: auto;
+-}
+-
+-.hp-choose-panel.is-right {
+-  left: auto;
+-  right: 0;
+-  grid-template-columns: minmax(168px, 1.08fr) minmax(0, 0.92fr);
+-}
+-
+-.hp-choose-panel.is-right .hp-choose-panel-copy {
+-  order: 2;
+-}
+-
+-.hp-choose-panel.is-right .hp-choose-panel-visual {
+-  order: 1;
+-}
+-
+-.hp-choose-chapter:nth-child(1) .hp-choose-panel,
+-.hp-choose-chapter:nth-child(1) .hp-choose-context {
+-  opacity: 1;
+-  visibility: visible;
+-}
+-
+-.hp-choose-chapter:nth-child(n+2) .hp-choose-panel,
+-.hp-choose-chapter:nth-child(n+2) .hp-choose-context {
+-  opacity: 0;
+-  visibility: hidden;
+-}
+-
+-.hp-choose-panel-copy {
+-  display: flex;
+-  flex-direction: column;
+-  align-items: flex-start;
+-  min-width: 0;
+-  padding: 32px 28px 28px;
+-  background: #fffdf8;
+-}
+-
+-.hp-choose-panel-step {
+-  margin: 0;
+-  color: #4f46e5;
+-  font: 500 12px/1 var(--font-mono);
+-  letter-spacing: 0.1em;
+-}
+-
+-.hp-choose-panel h3 {
+-  margin: 14px 0 0;
+-  max-width: 11em;
+-  font-family: var(--font-brand);
+-  font-size: clamp(26px, 2.4vw, 34px);
+-  font-weight: 600;
+-  line-height: 1.12;
+-  letter-spacing: -0.03em;
+-  color: #15171a;
+-}
+-
+-.hp-choose-panel-copy > p:last-of-type {
+-  margin: 12px 0 0;
+-  max-width: 22em;
+-  color: #5c6168;
+-  font-size: 15px;
+-  line-height: 1.55;
+-}
+-
+-.hp-choose-panel-cta {
+-  margin-top: auto;
+-  padding-top: 28px;
+-  font-size: 14px;
+-  font-weight: 500;
+-  letter-spacing: -0.01em;
+-  color: #3d4148;
+-}
+-
+-.hp-choose-panel:hover .hp-choose-panel-cta {
+-  color: #4f46e5;
+-}
+-
+-.hp-choose-panel-visual {
+-  min-width: 0;
+-  min-height: 100%;
+-  overflow: hidden;
+-}
+-
+-.hp-choose-panel-visual img {
+-  display: block;
+-  width: 100%;
+-  height: 100%;
+-  object-fit: cover;
+-}
+-
+-.hp-choose-panel.is-programs .hp-choose-panel-visual img {
+-  object-position: 78% 42%;
+-}
+-
+-.hp-choose-panel.is-education .hp-choose-panel-visual img {
+-  object-position: 62% 38%;
+-}
+-
+-.hp-choose-panel.is-exams .hp-choose-panel-visual img {
+-  object-position: 70% 55%;
+-}
+-
+-.hp-choose-panel.is-career .hp-choose-panel-visual img {
+-  object-position: 68% 48%;
+-}
+-
+-.hp-programs {
+-  padding: 56px 0 88px;
+-  background: #fffdf8;
+-  border-top: 1px solid rgba(21, 23, 26, 0.08);
+-}
+-
+-.hp-programs .hp-h2 {
+-  max-width: 18em;
+-}
+-
+-.hp-pcp-list {
+-  display: grid;
+-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+-  gap: 20px;
+-  margin: 36px 0 0;
+-  padding: 0;
+-  list-style: none;
+-  align-items: stretch;
+-}
+-
+-.hp-pcp-list > li {
+-  min-width: 0;
+-  display: flex;
+-}
+-
+-.hp-pcp {
+-  display: flex;
+-  flex-direction: column;
+-  flex: 1;
+-  min-width: 0;
+-  background: #ffffff;
+-  border: 1px solid rgba(21, 23, 26, 0.1);
+-  color: #15171a;
+-}
+-
+-.hp-pcp-visual {
+-  padding: 16px 16px 18px;
+-  background: #f7f4ec;
+-  border-top: 1px solid rgba(21, 23, 26, 0.08);
+-}
+-
+-.hp-pcp-visual .pl-frame {
+-  box-shadow: none;
+-}
+-
+-.hp-pcp-visual .pl-hd-flow {
+-  display: none;
+-}
+-
+-.hp-pcp-body {
+-  display: flex;
+-  flex-direction: column;
+-  padding: 22px 22px 20px;
+-  min-width: 0;
+-}
+-
+-.hp-pcp-body .hp-btn {
+-  align-self: flex-start;
+-  margin-top: 4px;
+-}
+-
+-.hp-pcp-label {
+-  margin: 0;
+-  color: #4f46e5;
+-  font: 700 11px/1.3 var(--font-mono);
+-  letter-spacing: 0.1em;
+-  text-transform: uppercase;
+-}
+-
+-.hp-pcp h3 {
+-  margin: 8px 0 0;
+-  font-size: 26px;
+-  font-weight: 650;
+-  letter-spacing: -0.03em;
++.hp-pcp-status {
++  margin: 6px 0 0;
++  color: var(--skylent-color-accent);
++  font-size: 12px;
++  font-weight: 600;
+ }
+ 
+ .hp-pcp-facts {
+   display: grid;
+-  grid-template-columns: repeat(2, minmax(0, 1fr));
+-  gap: 12px 16px;
+-  margin: 18px 0 0;
++  grid-template-columns: repeat(4, minmax(0, 1fr));
++  gap: var(--space-3);
++  margin: var(--space-4) 0 0;
+ }
+ 
+ .hp-pcp-facts dt {
+-  color: #5c6168;
+-  font: 700 11px/1.3 var(--font-body);
+-  letter-spacing: 0.06em;
++  color: var(--skylent-color-muted);
++  font-size: 10px;
++  font-family: var(--font-mono);
+   text-transform: uppercase;
++  letter-spacing: 0.06em;
+ }
+ 
+ .hp-pcp-facts dd {
+-  margin: 3px 0 0;
+-  font-size: 15px;
+-  font-weight: 650;
+-  letter-spacing: -0.02em;
+-}
+-
+-.hp-pcp-work {
+-  margin: 16px 0 0;
+-  color: #5c6168;
++  margin: 4px 0 0;
+   font-size: 14px;
+-  line-height: 1.55;
++  font-weight: 600;
+ }
+ 
++.hp-pcp-work,
+ .hp-pcp-project {
+-  margin: 10px 0 0;
+-  color: #15171a;
+-  font-size: 13px;
+-  line-height: 1.5;
++  margin: var(--space-4) 0 0;
++  color: var(--skylent-color-slate);
++  font-size: 14px;
++  line-height: 1.55;
+ }
+ 
+ .hp-pcp-marks {
+   display: flex;
+   flex-wrap: wrap;
+   gap: 8px;
+-  margin: 18px 0 12px;
++  margin: var(--space-4) 0 0;
+   padding: 0;
+   list-style: none;
+ }
+ 
+ .hp-pcp-marks li {
+-  padding: 6px 10px;
+-  border: 1px solid rgba(21, 23, 26, 0.12);
+-  color: #9aa0a6;
+-  font: 600 12px/1.3 var(--font-body);
++  padding: 4px 8px;
++  border: 1px solid var(--skylent-color-border);
++  border-radius: var(--radius-xs);
++  color: var(--skylent-color-muted);
++  font-family: var(--font-mono);
++  font-size: 10px;
++  text-transform: uppercase;
+ }
+ 
+ .hp-pcp-marks li.is-on {
+-  color: #15171a;
+-  background: #f7f4ec;
+-  border-color: transparent;
++  border-color: var(--skylent-color-accent-border);
++  background: var(--skylent-color-accent-soft);
++  color: var(--skylent-color-accent);
++}
++
++.hp-pcp-actions {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 10px;
++  margin-top: var(--space-5);
++}
++
++.hp-pcp-visual {
++  min-width: 0;
++  padding: var(--space-4);
++  background: var(--skylent-color-paper);
++  border: 1px solid var(--skylent-color-border);
+ }
+ 
+ .hp-preview-caption {
+   margin: 0 0 10px;
+-  color: rgba(21, 23, 26, 0.42);
+-  font-size: 12px;
+-  letter-spacing: 0.01em;
++  color: var(--skylent-color-muted);
++  font-size: 11px;
+ }
+ 
+-.hp-honesty {
+-  margin: 28px 0 0;
+-  max-width: 46em;
+-  color: #5c6168;
+-  font-size: 13px;
+-  line-height: 1.55;
++/* ── Experience chain ── */
++.hp-chain-list {
++  margin: 0;
++  padding: 0;
++  list-style: none;
++  border-top: 1px solid var(--skylent-color-border-strong);
+ }
+ 
+-.hp-workflow {
+-  padding: 64px 0 80px;
+-  background: #f7f4ec;
+-  border-top: 1px solid rgba(21, 23, 26, 0.08);
++.hp-chain-list li {
++  display: grid;
++  grid-template-columns: 56px minmax(0, 1fr);
++  gap: var(--space-4);
++  padding: var(--space-5) 0;
++  border-bottom: 1px solid var(--skylent-color-border);
+ }
+ 
+-.hp-workflow-intro {
+-  max-width: 36em;
++.hp-chain-index {
++  color: var(--skylent-color-accent);
++  font-family: var(--font-mono);
++  font-size: 12px;
+ }
+ 
+-.hp-workflow-eyebrow {
+-  color: #5c6168;
+-  font-weight: 500;
+-  letter-spacing: 0.14em;
++.hp-chain-list h3 {
++  margin: 0 0 4px;
++  font-size: 17px;
++  font-weight: 650;
+ }
+ 
+-.hp-workflow-title {
+-  margin: 14px 0 0;
+-  max-width: 8.4em;
+-  font-family: var(--font-brand);
+-  font-size: clamp(36px, 4.4vw, 54px);
+-  font-weight: 600;
+-  line-height: 1.06;
+-  letter-spacing: -0.03em;
+-  color: #15171a;
++.hp-chain-list p {
++  margin: 0;
++  color: var(--skylent-color-slate);
++  font-size: 14px;
++  line-height: 1.55;
+ }
+ 
+-.hp-workflow-title span {
+-  display: block;
++.hp-chain:not(.is-in) .hp-chain-list li {
++  opacity: 1;
+ }
+ 
+-.hp-workflow-lead {
+-  margin: 18px 0 0;
+-  max-width: 32em;
+-  color: #5c6168;
+-  font-size: 16px;
+-  line-height: 1.6;
++/* ── Practice + build ── */
++.hp-practice-grid {
++  display: grid;
++  grid-template-columns: repeat(3, minmax(0, 1fr));
++  gap: var(--space-4);
+ }
+ 
+-.hp-workflow-visual {
+-  min-width: 0;
+-  margin: 36px 0 0;
++.hp-practice-card {
++  padding: var(--space-5);
++  background: var(--skylent-color-cream);
++  border: var(--border-subtle);
+ }
+ 
+-.hp-workflow-visual .pl-frame {
+-  width: 100%;
++.hp-practice-kicker {
++  margin: 0 0 8px;
++  color: var(--skylent-color-accent);
++  font-family: var(--font-mono);
++  font-size: 10px;
++  letter-spacing: 0.08em;
++  text-transform: uppercase;
+ }
+ 
+-.hp-workflow-caption {
+-  margin: 10px 0 0;
+-  color: rgba(21, 23, 26, 0.42);
+-  font-size: 12px;
+-  letter-spacing: 0.01em;
++.hp-practice-card h3 {
++  margin: 0 0 10px;
++  font-size: 18px;
++  font-weight: 650;
+ }
+ 
+-.hp-workflow-path {
+-  display: grid;
+-  grid-template-columns: repeat(4, minmax(0, 1fr));
+-  gap: 0 28px;
+-  margin: 44px 0 0;
+-  padding: 0;
+-  list-style: none;
++.hp-practice-card p {
++  margin: 0;
++  color: var(--skylent-color-slate);
++  font-size: 14px;
++  line-height: 1.55;
+ }
+ 
+-.hp-workflow-path li {
+-  position: relative;
+-  min-width: 0;
++.hp-link-arrow {
++  display: inline-block;
++  margin-top: var(--space-4);
++  color: var(--skylent-color-accent);
++  font-size: 13px;
++  font-weight: 600;
++  text-decoration: none;
+ }
+ 
+-.hp-workflow-path li:not(:last-child)::after {
+-  content: "";
+-  position: absolute;
+-  top: 13px;
+-  left: 2.35em;
+-  right: -28px;
+-  height: 1px;
+-  background: rgba(21, 23, 26, 0.1);
+-  pointer-events: none;
++.hp-link-arrow:hover {
++  color: var(--skylent-color-accent-hover);
+ }
+ 
+-.hp-workflow-num {
+-  margin: 0;
+-  color: rgba(21, 23, 26, 0.22);
+-  font-family: var(--font-brand);
+-  font-size: 26px;
+-  font-weight: 600;
+-  line-height: 1;
+-  letter-spacing: -0.03em;
++/* ── Career ── */
++.hp-career-split {
++  display: grid;
++  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.75fr);
++  gap: var(--space-10);
++  align-items: start;
+ }
+ 
+-.hp-workflow-path li:first-child .hp-workflow-num {
+-  color: #4f46e5;
++.hp-career-points {
++  margin: var(--space-6) 0;
++  padding: 0;
++  list-style: none;
+ }
+ 
+-.hp-workflow-path h3 {
+-  margin: 14px 0 0;
+-  font-family: var(--font-brand);
+-  font-size: clamp(20px, 1.8vw, 24px);
+-  font-weight: 600;
+-  letter-spacing: -0.03em;
+-  color: #15171a;
++.hp-career-points li {
++  display: grid;
++  gap: 4px;
++  padding: var(--space-3) 0;
++  border-top: 1px solid var(--skylent-color-border);
+ }
+ 
+-.hp-workflow-copy-line {
+-  margin: 10px 0 0;
+-  max-width: 18em;
+-  color: #5c6168;
++.hp-career-points strong {
+   font-size: 14px;
+-  line-height: 1.55;
+ }
+ 
+-.hp-workflow-labels {
+-  margin: 16px 0 0;
+-  color: rgba(21, 23, 26, 0.34);
+-  font-size: 10px;
+-  font-weight: 500;
+-  letter-spacing: 0.16em;
+-  line-height: 1.5;
++.hp-career-points span {
++  color: var(--skylent-color-slate);
++  font-size: 13px;
+ }
+ 
+-.hp-workflow-close {
+-  display: grid;
+-  grid-template-columns: minmax(0, 1fr) auto;
+-  gap: 24px 40px;
+-  align-items: end;
+-  margin-top: 44px;
+-  padding-top: 32px;
+-  border-top: 1px solid rgba(21, 23, 26, 0.1);
++.hp-career-specimen-inner {
++  padding: var(--space-6);
++  background: var(--skylent-color-cream);
++  border: var(--border-subtle);
+ }
+ 
+-.hp-workflow-close-title {
++.hp-career-specimen-line {
+   margin: 12px 0 0;
+-  max-width: 14em;
+-  font-family: var(--font-brand);
+-  font-size: clamp(24px, 2.4vw, 32px);
+-  font-weight: 600;
+-  line-height: 1.12;
+-  letter-spacing: -0.03em;
+-  color: #15171a;
++  font-size: 14px;
++  line-height: 1.55;
++  color: var(--skylent-color-ink);
+ }
+ 
+-.hp-workflow-close-cta {
+-  padding-bottom: 4px;
+-  color: #15171a;
+-  font-size: 15px;
+-  font-weight: 500;
+-  letter-spacing: -0.01em;
+-  text-decoration: none;
++.hp-career-specimen-muted {
++  margin: 12px 0 0;
++  color: var(--skylent-color-muted);
++  font-size: 12px;
+ }
+ 
+-.hp-workflow-close-cta:hover {
+-  color: #4f46e5;
++/* ── Trust ── */
++.hp-trust {
++  background: var(--skylent-color-cream);
+ }
+ 
+-.hp-workflow-close-cta:focus-visible {
+-  outline: 2px solid #4f46e5;
+-  outline-offset: 3px;
++.hp-trust-body {
++  display: grid;
++  gap: var(--space-4);
++  max-width: var(--max-w-prose);
+ }
+ 
+-.hp-workflow-visual,
+-.hp-workflow-path li {
+-  opacity: 0;
+-  transform: translateY(10px);
+-  transition: opacity 0.55s ease, transform 0.55s ease;
++.hp-trust-body p {
++  margin: 0;
++  color: var(--skylent-color-slate);
++  font-size: 15px;
++  line-height: 1.65;
+ }
+ 
+-.hp-workflow.is-in .hp-workflow-visual,
+-.hp-workflow.is-in .hp-workflow-path li {
+-  opacity: 1;
+-  transform: none;
++.hp-trust-note {
++  color: var(--skylent-color-muted) !important;
++  font-size: 14px !important;
+ }
+ 
+-.hp-workflow.is-in .hp-workflow-path li:nth-child(2) { transition-delay: 0.06s; }
+-.hp-workflow.is-in .hp-workflow-path li:nth-child(3) { transition-delay: 0.12s; }
+-.hp-workflow.is-in .hp-workflow-path li:nth-child(4) { transition-delay: 0.18s; }
+-
+-@media (max-width: 980px) {
+-  .hp-workflow-path,
+-  .hp-workflow-close {
+-    grid-template-columns: 1fr;
+-  }
+-
+-  .hp-workflow-title {
+-    max-width: 10em;
+-  }
+-
+-  .hp-workflow-visual {
+-    margin-top: 28px;
+-  }
+-
+-  .hp-workflow-visual .pl-frame-title {
+-    display: none;
+-  }
+-
+-  .hp-workflow-visual .pl-sql {
+-    white-space: pre-wrap;
+-    overflow-x: hidden;
+-  }
+-
+-  .hp-workflow-path {
+-    gap: 0;
+-    margin-top: 36px;
+-  }
+-
+-  .hp-workflow-path li {
+-    padding: 20px 0;
+-    border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+-  }
+-
+-  .hp-workflow-path li:first-child {
+-    padding-top: 0;
+-  }
+-
+-  .hp-workflow-path li:not(:last-child)::after {
+-    display: none;
+-  }
+-
+-  .hp-workflow-path li:last-child {
+-    border-bottom: none;
+-  }
++/* ── Final CTA ── */
++.hp-final {
++  padding-bottom: var(--section-pad);
++}
+ 
+-  .hp-workflow-close {
+-    gap: 20px;
+-    margin-top: 36px;
+-    padding-top: 28px;
+-  }
++.hp-final-inner {
++  text-align: center;
++  max-width: var(--max-w-prose);
++}
+ 
+-  .hp-workflow-close-cta {
+-    justify-self: start;
+-  }
++.hp-final-title {
++  max-width: none;
++  margin-inline: auto;
+ }
+ 
+-@media (prefers-reduced-motion: reduce) {
+-  .hp-workflow-visual,
+-  .hp-workflow-path li,
+-  .hp-workflow.is-in .hp-workflow-path li {
+-    opacity: 1;
+-    transform: none;
+-    transition: none;
+-  }
++.hp-final-inner .hp-lead {
++  margin-inline: auto;
+ }
+ 
+-@media (max-width: 1180px) {
++/* ── Responsive ── */
++@media (max-width: 1100px) {
+   .hp-hero-grid {
+-    grid-template-columns: minmax(0, 0.44fr) minmax(0, 0.56fr);
+-    gap: 28px;
++    grid-template-columns: 1fr;
+   }
+ 
+-  .hp-hero-lms {
+-    transform: rotateY(-0.8deg) rotateX(0.5deg);
++  .hp-hero-stage {
++    order: 2;
+   }
+ 
+-  .hp-hero-os {
+-    grid-template-columns: 96px minmax(0, 1fr);
++  .hp-journey-grid {
++    grid-template-columns: repeat(2, minmax(0, 1fr));
+   }
+ 
+-  .hp-hero-lms-stage {
+-    grid-template-columns: minmax(0, 1fr) 108px;
++  .hp-journey-grid li:nth-child(2) {
++    border-right: none;
+   }
+-}
+ 
+-@media (max-width: 980px) {
+-  .hp-hero-grid,
+-  .hp-pcp-list {
++  .hp-pcp {
+     grid-template-columns: 1fr;
+   }
+ 
+-  .hp-hero-lead-br {
+-    display: none;
++  .hp-practice-grid {
++    grid-template-columns: 1fr;
+   }
+ 
+-  .hp-hero-stage {
+-    min-height: auto;
+-    margin-right: 0;
+-    overflow: visible;
+-    padding: 4px 0 0;
++  .hp-career-split {
++    grid-template-columns: 1fr;
+   }
++}
+ 
++@media (max-width: 768px) {
+   .hp-hero-visual {
+-    position: relative;
+-    inset: auto;
+-    left: auto;
+-    height: 560px;
+-    perspective: none;
+-  }
+-
+-  .hp-hero-lms,
+-  .hp-hero-lms > .pl-frame {
+-    width: 100%;
+-    height: 560px;
+-    min-height: 560px;
+-    transform: none;
++    height: clamp(320px, 72vw, 400px);
+   }
+ 
+   .hp-hero-os {
+-    grid-template-columns: 1fr;
+-    grid-template-rows: auto minmax(0, 1fr);
+-  }
+-
+-  .hp-hero-lms-rail {
+-    flex: 0 0 auto;
+-    flex-direction: row;
+-    flex-wrap: wrap;
+-    gap: 0;
+-    padding: 6px 8px 0;
+-    border-right: none;
+-    border-bottom: 1px solid rgba(21, 23, 26, 0.08);
++    grid-template-columns: 88px minmax(0, 1fr);
+   }
+ 
+   .hp-hero-lms-rail button {
+-    width: auto;
+-    flex: 1 1 auto;
+-    justify-content: center;
+-    gap: 5px;
+-    padding: 8px 6px 10px;
+     font-size: 11px;
+-    box-shadow: inset 0 -2px 0 transparent;
+-  }
+-
+-  .hp-hero-lms-rail button.is-on {
+-    box-shadow: inset 0 -2px 0 #4f46e5;
++    padding: 6px;
+   }
+ 
+-  .hp-hero-lms-stage {
++  .hp-journey-grid {
+     grid-template-columns: 1fr;
+-    grid-template-rows: minmax(0, 1fr) auto;
+-    min-height: 0;
+-  }
+-
+-  .hp-hero-pane {
+-    padding: 14px 14px 16px;
+   }
+ 
+-  .hp-hero-next {
+-    height: auto;
+-    padding: 12px 14px 14px;
+-    border-left: 0;
+-    border-top: 1px solid rgba(21, 23, 26, 0.08);
+-  }
+-
+-  .hp-hero-media,
+-  .hp-hero-folio,
+-  .hp-hero-media.is-report {
+-    height: 160px;
+-    min-height: 160px;
+-    max-height: 160px;
+-  }
+-
+-  .hp-hero-career-line li {
+-    grid-template-columns: 78px minmax(0, 1fr);
+-    gap: 12px;
++  .hp-journey-grid li {
++    border-right: none;
++    padding-right: 0;
+   }
+ 
+-  .hp-hero-values {
++  .hp-pcp-facts {
+     grid-template-columns: repeat(2, minmax(0, 1fr));
+-    gap: 18px 0;
+-    margin-top: 24px;
+-    padding-top: 18px;
+-  }
+-
+-  .hp-hero-values li {
+-    padding: 0 0 0 18px;
+-    border-left: 1px solid rgba(21, 23, 26, 0.08);
+-  }
+-
+-  .hp-hero-values li:nth-child(odd) {
+-    padding-left: 0;
+-    border-left: none;
+-  }
+-
+-}
+-
+-@media (max-width: 640px) {
+-  .hp-hero-values {
+-    grid-template-columns: 1fr;
+-    gap: 12px;
+-  }
+-
+-  .hp-hero-values li,
+-  .hp-hero-values li:nth-child(odd) {
+-    padding-left: 0;
+-    border-left: none;
+-    padding-bottom: 12px;
+-    border-bottom: 1px solid rgba(21, 23, 26, 0.06);
+   }
+ 
+-  .hp-hero-values li:last-child {
+-    padding-bottom: 0;
+-    border-bottom: none;
+-  }
+-}
+-
+-@media (max-width: 1200px) {
+-  .hp-choose-panel {
+-    width: 64%;
+-  }
+-
+-  .hp-choose-context {
+-    width: 24%;
+-  }
+-
+-  .hp-choose-context-num {
+-    font-size: clamp(72px, 10vw, 120px);
+-  }
+-}
+-
+-@media (max-width: 980px) {
+-  .hp-choose {
+-    padding: 48px 0 64px;
+-  }
+-
+-  .hp-choose-track {
+-    height: auto;
+-  }
+-
+-  .hp-choose-sticky {
+-    position: static;
+-    padding: 0;
+-  }
+-
+-  .hp-choose-stage {
+-    padding-left: 0;
+-  }
+-
+-  .hp-choose-steps-wrap,
+-  .hp-choose-cue {
+-    display: none;
+-  }
+-
+-  .hp-choose-panels {
+-    min-height: 0;
+-    display: flex;
++  .hp-actions {
+     flex-direction: column;
+-    gap: 28px;
+-  }
+-
+-  .hp-choose-chapter {
+-    display: flex;
+-    flex-direction: column;
+-    gap: 8px;
+-  }
+-
+-  .hp-choose-context,
+-  .hp-choose-chapter:nth-child(n) .hp-choose-context {
+-    position: relative;
+-    top: auto;
+-    right: auto;
+-    bottom: auto;
+-    left: auto;
+-    z-index: auto;
+-    display: flex;
+-    flex-direction: row;
+-    align-items: baseline;
+-    justify-content: flex-start;
+-    width: auto;
+-    min-height: 0;
+-    padding: 0 2px;
+-    text-align: left;
+-    opacity: 0.38;
+-    visibility: visible;
+-    transform: none;
+-    will-change: auto;
+-  }
+-
+-  .hp-choose-context.is-right,
+-  .hp-choose-context.is-left {
+-    align-items: baseline;
+-    text-align: left;
+-  }
+-
+-  .hp-choose-context-num {
+-    font-size: 22px;
+-    line-height: 1;
+-    letter-spacing: -0.03em;
+-    color: rgba(21, 23, 26, 0.18);
+-  }
+-
+-  .hp-choose-context-copy {
+-    flex-direction: row;
+-    flex-wrap: wrap;
+-    gap: 0 16px;
+-    margin: 0 0 0 12px;
++    align-items: stretch;
+   }
+ 
+-  .hp-choose-context.is-right .hp-choose-context-copy {
+-    align-items: flex-start;
+-  }
+-
+-  .hp-choose-context-group {
+-    flex-direction: row;
+-    flex-wrap: wrap;
+-    gap: 0 16px;
+-  }
+-
+-  .hp-choose-context-group:nth-child(n+2),
+-  .hp-choose-context-group span:nth-child(n+4) {
+-    display: none;
+-  }
+-
+-  .hp-choose-context-group span {
+-    font-size: 10px;
+-    letter-spacing: 0.16em;
+-    color: rgba(21, 23, 26, 0.38);
+-  }
+-
+-  .hp-choose-motif {
+-    display: none;
+-  }
+-
+-  .hp-choose-panel,
+-  .hp-choose-panel:nth-child(n),
+-  .hp-choose-chapter:nth-child(n) .hp-choose-panel {
+-    position: relative;
+-    top: auto;
+-    left: auto;
+-    right: auto;
++  .hp-btn {
+     width: 100%;
+-    opacity: 0.34;
+-    visibility: visible;
+-    transform: translateY(10px);
+-    transition: opacity 0.45s ease, transform 0.45s ease;
+-    will-change: auto;
+-  }
+-
+-  .hp-choose-panel.is-in,
+-  .hp-choose-chapter:nth-child(1) .hp-choose-panel {
+-    opacity: 1;
+-    transform: none;
+-  }
+-
+-  .hp-choose-chapter:has(.hp-choose-panel.is-in) .hp-choose-context,
+-  .hp-choose-chapter:nth-child(1) .hp-choose-context {
+-    opacity: 1;
+-  }
+-}
+-
+-@media (max-width: 640px) {
+-  .hp-choose-panel,
+-  .hp-choose-panel.is-right {
+-    grid-template-columns: 1fr;
+-    min-height: 0;
+-  }
+-
+-  .hp-choose-panel.is-right .hp-choose-panel-copy,
+-  .hp-choose-panel.is-right .hp-choose-panel-visual {
+-    order: 0;
+-  }
+-
+-  .hp-choose-panel-copy {
+-    padding: 24px 20px 22px;
+-  }
+-
+-  .hp-choose-panel-visual {
+-    min-height: 168px;
+-    order: -1;
+   }
+ }
+ 
+ @media (prefers-reduced-motion: reduce) {
+-  .hp-choose-track {
+-    height: auto;
+-  }
+-
+-  .hp-choose-sticky {
+-    position: static;
+-    padding: 40px 0 56px;
+-  }
+-
+-  .hp-choose-stage {
+-    padding-left: 0;
+-  }
+-
+-  .hp-choose-steps-wrap,
+-  .hp-choose-cue {
+-    display: none;
+-  }
+-
+-  .hp-choose-panels {
+-    min-height: 0;
+-    display: flex;
+-    flex-direction: column;
+-    gap: 28px;
+-  }
+-
+-  .hp-choose-chapter {
+-    display: flex;
+-    flex-direction: column;
+-    gap: 8px;
+-  }
+-
+-  .hp-choose-context,
+-  .hp-choose-chapter:nth-child(n) .hp-choose-context {
+-    position: relative;
+-    top: auto;
+-    right: auto;
+-    bottom: auto;
+-    left: auto;
+-    z-index: auto;
+-    display: flex;
+-    flex-direction: row;
+-    align-items: baseline;
+-    width: auto;
+-    min-height: 0;
+-    padding: 0 2px;
+-    text-align: left;
+-    opacity: 1;
+-    visibility: visible;
+-    transform: none;
+-  }
+-
+-  .hp-choose-context.is-right,
+-  .hp-choose-context.is-left {
+-    align-items: baseline;
+-    text-align: left;
+-  }
+-
+-  .hp-choose-context-num {
+-    font-size: 22px;
+-    line-height: 1;
+-    letter-spacing: -0.03em;
+-    color: rgba(21, 23, 26, 0.18);
+-  }
+-
+-  .hp-choose-context-copy {
+-    flex-direction: row;
+-    flex-wrap: wrap;
+-    gap: 0 16px;
+-    margin: 0 0 0 12px;
+-  }
+-
+-  .hp-choose-context-group {
+-    flex-direction: row;
+-    flex-wrap: wrap;
+-    gap: 0 16px;
+-  }
+-
+-  .hp-choose-context-group:nth-child(n+2),
+-  .hp-choose-context-group span:nth-child(n+4) {
+-    display: none;
+-  }
+-
+-  .hp-choose-context-group span {
+-    font-size: 10px;
+-    letter-spacing: 0.16em;
+-    color: rgba(21, 23, 26, 0.38);
+-  }
+-
+-  .hp-choose-motif {
+-    display: none;
+-  }
+-
+-  .hp-choose-panel,
+-  .hp-choose-panel:nth-child(n),
+-  .hp-choose-chapter:nth-child(n) .hp-choose-panel {
+-    position: relative;
+-    top: auto;
+-    left: auto;
+-    right: auto;
+-    width: 100%;
+-    opacity: 1;
+-    visibility: visible;
+-    transform: none;
+-    pointer-events: auto;
++  .hp-hero-pane {
++    animation: none;
+   }
+ }
+diff --git a/src/pages/HomePage.tsx b/src/pages/HomePage.tsx
+index f26189a..73699bc 100644
+--- a/src/pages/HomePage.tsx
++++ b/src/pages/HomePage.tsx
+@@ -8,575 +8,42 @@ import { FLAGSHIP_COURSE_SLUG, isAuthoredCourse } from "../lib/authored-courses"
+ import { getCareerEvidence, getCourseQuiz } from "../content/course-lookups"
+ import { CAREER_OS_IA } from "../lib/product-architecture"
+ import { NORTHWIND_PREVIEW as NW } from "../lib/northwind-preview"
++import { useCatalogPrograms } from "../hooks/useCatalog"
++import type { CatalogProgramSummary } from "../lib/catalog-api"
+ import "./HomePage.css"
+ 
+-const HOME_PATHS = [
+-  {
+-    step: "01",
+-    id: "programs",
+-    title: "Professional Programs",
+-    copy: "Industry-relevant programs with hands-on learning and projects.",
+-    to: "/programs",
+-    image: "/images/paths/programs.jpg",
+-    tone: "programs" as const,
+-    align: "left" as const,
+-    context: [["BUILD", "PRACTISE", "APPLY", "CREATE"]],
+-  },
+-  {
+-    step: "02",
+-    id: "education",
+-    title: "Education",
+-    copy: "School, Undergraduate, Postgraduate and more.",
+-    to: "/education",
+-    image: "/images/paths/education.jpg",
+-    tone: "education" as const,
+-    align: "right" as const,
+-    context: [
+-      ["ACADEMIC", "FOUNDATIONS"],
+-      ["DEGREES", "SPECIALISATION", "LIFELONG LEARNING"],
+-    ],
+-  },
+-  {
+-    step: "03",
+-    id: "exams",
+-    title: "Competitive Exams",
+-    copy: "JEE, NEET, GATE, CAT, UPSC and more.",
+-    to: "/education/exams",
+-    image: "/images/paths/exams.jpg",
+-    tone: "exams" as const,
+-    align: "left" as const,
+-    context: [["GOAL", "SYLLABUS", "PRACTICE", "TEST", "PROGRESS"]],
+-  },
+-  {
+-    step: "04",
+-    id: "career",
+-    title: "Career OS",
+-    copy: "Build your profile, get discovered, and move towards opportunities.",
+-    to: "/career-os",
+-    image: "/images/paths/career.jpg",
+-    tone: "career" as const,
+-    align: "right" as const,
+-    context: [["BUILD", "SHOWCASE", "DISCOVER", "OPPORTUNITY"]],
+-  },
+-] as const
+-
+-function PathLivingMotif({ id }: { id: (typeof HOME_PATHS)[number]["id"] }) {
+-  return (
+-    <svg className={`hp-choose-motif is-${id}`} viewBox="0 0 168 168" fill="none" aria-hidden="true">
+-      {id === "programs" ? (
+-        <g stroke="currentColor" strokeWidth="0.65">
+-          <path d="M40 118h68" />
+-          <path d="M108 118v24" />
+-          <path d="M40 142h68" />
+-          <path d="M54 82h68" />
+-          <path d="M122 82v24" />
+-          <path d="M54 106h68" />
+-          <path d="M68 46h68" />
+-          <path d="M136 46v24" />
+-          <path d="M68 70h68" />
+-        </g>
+-      ) : null}
+-      {id === "education" ? (
+-        <g stroke="currentColor" strokeWidth="0.65">
+-          <path d="M42 136V48" />
+-          <path d="M70 136V62" />
+-          <path d="M98 128V48" />
+-          <path d="M42 136h48" />
+-          <path d="M42 90h44" />
+-          <path d="M50 48h36" />
+-        </g>
+-      ) : null}
+-      {id === "exams" ? (
+-        <g stroke="currentColor" strokeWidth="0.65">
+-          <path d="M84 40a44 44 0 0 1 44 44" />
+-          <path d="M128 84a44 44 0 0 1-36 43" />
+-          <path d="M84 62a22 22 0 0 1 22 22" />
+-          <path d="M84 28v10" />
+-          <path d="M134 84h10" />
+-        </g>
+-      ) : null}
+-      {id === "career" ? (
+-        <g stroke="currentColor" strokeWidth="0.65">
+-          <path d="M30 128 66 102 94 110 138 42" />
+-          <path d="M66 99v6" />
+-          <path d="M138 39v6" />
+-        </g>
+-      ) : null}
+-    </svg>
+-  )
+-}
+-
+-function navOffset() {
+-  const value = getComputedStyle(document.documentElement).getPropertyValue("--nav-h")
+-  const parsed = Number.parseFloat(value)
+-  return Number.isFinite(parsed) ? parsed : 64
+-}
+-
+-function storyMotionEnabled() {
+-  return window.matchMedia("(min-width: 981px)").matches
+-    && !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+-}
+-
+-const PATH_COUNT = HOME_PATHS.length
+-const PATH_SEGMENT = 1 / PATH_COUNT
+-const PATH_FADE = 0.11
+-const PATH_SHIFT = 12
+-const CONTEXT_SHIFT = 10
+-const PATH_HIDE = 0.28
+-
+-function pathShift() {
+-  return window.matchMedia("(max-width: 1200px)").matches ? 8 : PATH_SHIFT
+-}
+-
+-function storyBlend(progress: number) {
+-  const p = Math.min(1, Math.max(0, progress))
+-  if (p >= 0.999) return { from: PATH_COUNT - 1, to: PATH_COUNT - 1, t: 1 }
+-  const index = Math.min(PATH_COUNT - 1, Math.floor(p / PATH_SEGMENT))
+-  const local = (p - index * PATH_SEGMENT) / PATH_SEGMENT
+-  const fadeStart = 1 - PATH_FADE
+-  if (index < PATH_COUNT - 1 && local > fadeStart) {
+-    return { from: index, to: index + 1, t: (local - fadeStart) / PATH_FADE }
+-  }
+-  return { from: index, to: index, t: 0 }
+-}
+-
+-function storyCrossfade(t: number) {
+-  if (t <= 0) return { out: 1, inn: 0 }
+-  if (t >= 1) return { out: 0, inn: 1 }
+-  if (t <= 0.5) {
+-    const u = t / 0.5
+-    return { out: 1 - 0.65 * u, inn: 0.65 * u }
+-  }
+-  const u = (t - 0.5) / 0.5
+-  return { out: 0.35 * (1 - u), inn: 0.65 + 0.35 * u }
+-}
+-
+-function HomePathStory() {
+-  const trackRef = useRef<HTMLDivElement>(null)
+-  const stickyRef = useRef<HTMLDivElement>(null)
+-  const stageRef = useRef<HTMLDivElement>(null)
+-  const panelRefs = useRef<Array<HTMLAnchorElement | null>>([])
+-  const contextRefs = useRef<Array<HTMLDivElement | null>>([])
+-  const stepRefs = useRef<Array<HTMLButtonElement | null>>([])
+-  const markRef = useRef<HTMLSpanElement>(null)
+-  const cueRef = useRef<HTMLParagraphElement>(null)
+-  const activeRef = useRef(0)
+-  const modeRef = useRef<"story" | "static" | null>(null)
+-  const [active, setActive] = useState(0)
+-
+-  useEffect(() => {
+-    let frame = 0
+-    const desktopMq = window.matchMedia("(min-width: 981px)")
+-    const motionMq = window.matchMedia("(prefers-reduced-motion: reduce)")
+-    const panels = () => panelRefs.current
+-    const contexts = () => contextRefs.current
+-
+-    const resetSticky = () => {
+-      const sticky = stickyRef.current
+-      if (!sticky) return
+-      sticky.style.position = ""
+-      sticky.style.top = ""
+-      sticky.style.left = ""
+-      sticky.style.right = ""
+-      sticky.style.width = ""
+-      sticky.style.bottom = ""
+-    }
+-
+-    const resetCues = () => {
+-      if (markRef.current) markRef.current.style.transform = ""
+-      if (cueRef.current) {
+-        cueRef.current.style.opacity = ""
+-        cueRef.current.style.visibility = ""
+-      }
+-    }
+-
+-    const resetPanels = () => {
+-      resetSticky()
+-      resetCues()
+-      panels().forEach((el) => {
+-        if (!el) return
+-        el.style.opacity = ""
+-        el.style.visibility = ""
+-        el.style.transform = ""
+-        el.style.pointerEvents = ""
+-        el.style.zIndex = ""
+-        el.removeAttribute("aria-hidden")
+-        el.removeAttribute("tabindex")
+-      })
+-      contexts().forEach((el) => {
+-        if (!el) return
+-        el.style.opacity = ""
+-        el.style.visibility = ""
+-        el.style.transform = ""
+-        el.style.zIndex = ""
+-      })
+-    }
+-
+-    const pinStage = (progress: number, sticky: HTMLElement, top: number) => {
+-      if (progress <= 0) {
+-        if (sticky.style.position) resetSticky()
+-        return
+-      }
+-      if (progress >= 1) {
+-        if (sticky.style.position !== "absolute") {
+-          sticky.style.position = "absolute"
+-          sticky.style.top = "auto"
+-          sticky.style.bottom = "0"
+-          sticky.style.left = "0"
+-          sticky.style.right = "0"
+-          sticky.style.width = "100%"
+-        }
+-        return
+-      }
+-      if (sticky.style.position !== "fixed") {
+-        sticky.style.position = "fixed"
+-        sticky.style.left = "0"
+-        sticky.style.right = "0"
+-        sticky.style.width = "100%"
+-        sticky.style.bottom = "auto"
+-      }
+-      const nextTop = `${top}px`
+-      if (sticky.style.top !== nextTop) sticky.style.top = nextTop
+-    }
+-
+-    const applyPanel = (
+-      el: HTMLAnchorElement,
+-      opacity: number,
+-      translateX: number,
+-      z: number,
+-    ) => {
+-      const hidden = opacity < PATH_HIDE
+-      el.style.opacity = hidden ? "0" : opacity.toFixed(3)
+-      el.style.visibility = hidden ? "hidden" : "visible"
+-      el.style.transform = `translateX(${translateX.toFixed(2)}px)`
+-      el.style.pointerEvents = !hidden && opacity > 0.55 ? "auto" : "none"
+-      el.style.zIndex = String(z)
+-      el.tabIndex = hidden || opacity < 0.4 ? -1 : 0
+-      el.setAttribute("aria-hidden", hidden || opacity < 0.4 ? "true" : "false")
+-    }
+-
+-    const applyContext = (el: HTMLDivElement, opacity: number, translateX: number, z: number) => {
+-      const hidden = opacity < PATH_HIDE
+-      el.style.opacity = hidden ? "0" : opacity.toFixed(3)
+-      el.style.visibility = hidden ? "hidden" : "visible"
+-      el.style.transform = `translateX(${translateX.toFixed(2)}px)`
+-      el.style.zIndex = String(z)
+-    }
+-
+-    const applyStory = () => {
+-      const track = trackRef.current
+-      const sticky = stickyRef.current
+-      if (!storyMotionEnabled() || !track || !sticky) {
+-        if (modeRef.current !== "static") {
+-          modeRef.current = "static"
+-          resetPanels()
+-        }
+-        return
+-      }
+-
+-      modeRef.current = "story"
+-      const top = navOffset()
+-      const rect = track.getBoundingClientRect()
+-      const travel = Math.max(1, rect.height - sticky.offsetHeight)
+-      const progress = Math.min(1, Math.max(0, (top - rect.top) / travel))
+-      pinStage(progress, sticky, top)
+-
+-      const blend = storyBlend(progress)
+-      const fade = storyCrossfade(blend.t)
+-      const nextActive = blend.from === blend.to || blend.t >= 0.5 ? blend.to : blend.from
+-      if (nextActive !== activeRef.current) {
+-        activeRef.current = nextActive
+-        setActive(nextActive)
+-      }
+-
+-      const shift = pathShift()
+-      const panelDir = [-shift, shift, -shift, shift] as const
+-      const contextDir = [CONTEXT_SHIFT, -CONTEXT_SHIFT, CONTEXT_SHIFT, -CONTEXT_SHIFT] as const
+-      const outgoing = fade.inn >= 0.65 ? 0 : fade.out
+-
+-      panels().forEach((el, index) => {
+-        if (!el) return
+-        if (blend.from === blend.to) {
+-          const on = index === blend.from
+-          applyPanel(el, on ? 1 : 0, 0, on ? 3 : 0)
+-          return
+-        }
+-        if (index === blend.from) {
+-          applyPanel(el, outgoing, panelDir[blend.from] * blend.t, 1)
+-          return
+-        }
+-        if (index === blend.to) {
+-          applyPanel(el, fade.inn, panelDir[blend.to] * (1 - blend.t), 4)
+-          return
+-        }
+-        applyPanel(el, 0, 0, 0)
+-      })
+-
+-      contexts().forEach((el, index) => {
+-        if (!el) return
+-        if (blend.from === blend.to) {
+-          applyContext(el, index === blend.from ? 1 : 0, 0, index === blend.from ? 2 : 0)
+-          return
+-        }
+-        if (index === blend.from) {
+-          applyContext(el, outgoing, contextDir[blend.from] * blend.t, 2)
+-          return
+-        }
+-        if (index === blend.to) {
+-          applyContext(el, fade.inn, contextDir[blend.to] * (1 - blend.t), 2)
+-          return
+-        }
+-        applyContext(el, 0, 0, 0)
+-      })
+-
+-      const firstStep = stepRefs.current[0]
+-      const list = firstStep?.closest("ol")
+-      const stepPitch = list ? list.offsetHeight / PATH_COUNT : 24
+-      if (markRef.current) {
+-        markRef.current.style.transform = `translateY(${(nextActive * stepPitch).toFixed(2)}px)`
+-      }
+-      stepRefs.current.forEach((btn, index) => {
+-        if (!btn) return
+-        btn.classList.toggle("is-on", index === nextActive)
+-      })
+-
+-      const cue = cueRef.current
+-      if (cue) {
+-        const cueOpacity = nextActive === 0 ? Math.max(0, 1 - Math.max(0, progress - 0.08) / 0.07) : 0
+-        cue.style.opacity = cueOpacity.toFixed(3)
+-        cue.style.visibility = cueOpacity < 0.04 ? "hidden" : "visible"
+-      }
+-    }
+-
+-    const onScroll = () => {
+-      if (frame) return
+-      frame = window.requestAnimationFrame(() => {
+-        frame = 0
+-        applyStory()
+-      })
+-    }
+-
+-    const observeInView = () => {
+-      if (storyMotionEnabled()) return null
+-      const io = new IntersectionObserver((entries) => {
+-        entries.forEach((entry) => {
+-          entry.target.classList.toggle("is-in", entry.isIntersecting)
+-        })
+-      }, { threshold: 0.32, rootMargin: "0px 0px -8% 0px" })
+-      panels().forEach((el) => { if (el) io.observe(el) })
+-      return io
+-    }
+-
+-    let io = observeInView()
+-    applyStory()
+-    window.addEventListener("scroll", onScroll, { passive: true })
+-    window.addEventListener("resize", onScroll)
+-
+-    const onModeChange = () => {
+-      io?.disconnect()
+-      io = observeInView()
+-      onScroll()
+-    }
+-    desktopMq.addEventListener("change", onModeChange)
+-    motionMq.addEventListener("change", onModeChange)
+-
+-    return () => {
+-      window.removeEventListener("scroll", onScroll)
+-      window.removeEventListener("resize", onScroll)
+-      desktopMq.removeEventListener("change", onModeChange)
+-      motionMq.removeEventListener("change", onModeChange)
+-      io?.disconnect()
+-      if (frame) window.cancelAnimationFrame(frame)
+-    }
+-  }, [])
+-
+-  const scrollToStep = (index: number) => {
+-    const track = trackRef.current
+-    const sticky = stickyRef.current
+-    if (!track || !sticky || !storyMotionEnabled()) return
+-    const top = navOffset()
+-    const travel = Math.max(1, track.offsetHeight - sticky.offsetHeight)
+-    const origin = track.getBoundingClientRect().top + window.scrollY
+-    const progress = Math.min(0.97, (index + 0.38) * PATH_SEGMENT)
+-    window.scrollTo({ top: origin - top + travel * progress, behavior: "auto" })
+-  }
+-
+-  return (
+-    <div className="hp-choose-track" ref={trackRef}>
+-      <div className="hp-choose-sticky" ref={stickyRef}>
+-        <div className="hp-rail hp-choose-frame">
+-          <header className="hp-choose-intro">
+-            <p className="hp-eyebrow hp-choose-eyebrow">ONE PLATFORM. MULTIPLE PATHS.</p>
+-            <h2 id="home-paths-heading" className="hp-choose-title">Choose your path.</h2>
+-            <p className="hp-choose-lead">Different goals. Same destination — a better you.</p>
+-          </header>
+-
+-          <div className="hp-choose-stage" ref={stageRef}>
+-            <div className="hp-choose-steps-wrap">
+-              <span className="hp-choose-steps-mark" ref={markRef} aria-hidden="true" />
+-              <ol className="hp-choose-steps" aria-label="Path sequence">
+-                {HOME_PATHS.map((path, index) => (
+-                  <li key={path.id}>
+-                    <button
+-                      type="button"
+-                      ref={(node) => { stepRefs.current[index] = node }}
+-                      className={index === active ? "is-on" : undefined}
+-                      aria-current={index === active ? "step" : undefined}
+-                      aria-label={`${path.step} ${path.title}`}
+-                      onClick={() => scrollToStep(index)}
+-                    >
+-                      {path.step}
+-                    </button>
+-                  </li>
+-                ))}
+-              </ol>
+-            </div>
+-
+-            <div className="hp-choose-panels">
+-              {HOME_PATHS.map((path, index) => (
+-                <div key={path.id} className={`hp-choose-chapter is-${path.align}`}>
+-                  <div
+-                    ref={(node) => { contextRefs.current[index] = node }}
+-                    className={`hp-choose-context is-${path.align === "left" ? "right" : "left"} is-${path.id}`}
+-                    aria-hidden="true"
+-                  >
+-                    <PathLivingMotif id={path.id} />
+-                    <span className="hp-choose-context-num">{path.step}</span>
+-                    <div className="hp-choose-context-copy">
+-                      {path.context.map((group) => (
+-                        <p key={group.join("-")} className="hp-choose-context-group">
+-                          {group.map((word) => (
+-                            <span key={word}>{word}</span>
+-                          ))}
+-                        </p>
+-                      ))}
+-                    </div>
+-                  </div>
+-                  <Link
+-                    ref={(node) => { panelRefs.current[index] = node }}
+-                    className={`hp-choose-panel is-${path.align} is-${path.tone}`}
+-                    to={path.to}
+-                  >
+-                    <div className="hp-choose-panel-copy">
+-                      <p className="hp-choose-panel-step">{path.step}</p>
+-                      <h3>{path.title}</h3>
+-                      <p>{path.copy}</p>
+-                      <span className="hp-choose-panel-cta">Explore →</span>
+-                    </div>
+-                    <div className="hp-choose-panel-visual" aria-hidden="true">
+-                      <img src={path.image} alt="" loading="lazy" decoding="async" />
+-                    </div>
+-                  </Link>
+-                </div>
+-              ))}
+-            </div>
+-
+-            <p className="hp-choose-cue" ref={cueRef}>Scroll to explore</p>
+-          </div>
+-        </div>
+-      </div>
+-    </div>
+-  )
+-}
+-
+-const WORKFLOW_STEPS = [
++const LEARNING_JOURNEY = [
+   {
+     step: "01",
+     title: "Learn",
+-    copy: "Access structured content from experts.",
+-    labels: "CONCEPTS · GUIDANCE · CLARITY",
++    copy: "Structured programmes and courses with written lessons you can resume in Skylent OS.",
+   },
+   {
+     step: "02",
+-    title: "Practise",
+-    copy: "Reinforce your skills with hands-on exercises.",
+-    labels: "EXERCISES · SIMULATIONS · FEEDBACK",
++    title: "Practice",
++    copy: "Quizzes and applied checks after lesson blocks — not passive video consumption.",
+   },
+   {
+     step: "03",
+     title: "Build",
+-    copy: "Work on real projects and create meaningful work.",
+-    labels: "PROJECTS · PORTFOLIO · SOLUTIONS",
++    copy: "Assignments, labs, and capstone projects on real briefs and datasets where authored.",
+   },
+   {
+     step: "04",
+-    title: "Evidence",
+-    copy: "Keep what you build and use it as proof of your skills.",
+-    labels: "EVIDENCE · PROFILE · OPPORTUNITIES",
++    title: "Prove",
++    copy: "Keep work samples as evidence and connect them to your Career OS profile.",
+   },
+ ] as const
+ 
+-function HomeWorkflow() {
+-  const sectionRef = useRef<HTMLElement>(null)
+-  const profile = courseProductProfile(FLAGSHIP_COURSE_SLUG)
+-  const course = courseBySlug(FLAGSHIP_COURSE_SLUG)
+-  const view = course ? coursePublicView(course) : null
+-
+-  useEffect(() => {
+-    const section = sectionRef.current
+-    if (!section) return
+-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+-      section.classList.add("is-in")
+-      return
+-    }
+-    const io = new IntersectionObserver((entries) => {
+-      entries.forEach((entry) => {
+-        if (!entry.isIntersecting) return
+-        section.classList.add("is-in")
+-        io.disconnect()
+-      })
+-    }, { threshold: 0.16, rootMargin: "0px 0px -8% 0px" })
+-    io.observe(section)
+-    return () => io.disconnect()
+-  }, [])
+-
+-  return (
+-    <section className="hp-section hp-workflow" aria-labelledby="home-workflow-heading" ref={sectionRef}>
+-      <div className="hp-rail">
+-        <header className="hp-workflow-intro">
+-          <p className="hp-eyebrow hp-workflow-eyebrow">HOW SKYLENT WORKS</p>
+-          <h2 id="home-workflow-heading" className="hp-workflow-title">
+-            From learning
+-            <span>to real outcomes.</span>
+-          </h2>
+-          <p className="hp-workflow-lead">
+-            A simple, structured journey. Learn from experts, practise with purpose, build real work, and keep evidence of what you can do.
+-          </p>
+-        </header>
+-
+-        {profile ? (
+-          <div className="hp-workflow-visual">
+-            <CourseProductVisual visual={profile.visual} />
+-            {view ? (
+-              <p className="hp-workflow-caption">
+-                {view.title} · {NW.filename}
+-              </p>
+-            ) : null}
+-          </div>
+-        ) : null}
+-
+-        <ol className="hp-workflow-path" aria-label="Learn, practise, build, evidence">
+-          {WORKFLOW_STEPS.map((stage) => (
+-            <li key={stage.step}>
+-              <p className="hp-workflow-num">{stage.step}</p>
+-              <h3>{stage.title}</h3>
+-              <p className="hp-workflow-copy-line">{stage.copy}</p>
+-              <p className="hp-workflow-labels">{stage.labels}</p>
+-            </li>
+-          ))}
+-        </ol>
+-
+-        <div className="hp-workflow-close">
+-          <div className="hp-workflow-close-copy">
+-            <p className="hp-eyebrow hp-workflow-eyebrow">MORE THAN COURSES.</p>
+-            <p className="hp-workflow-close-title">A complete learning-to-career ecosystem.</p>
+-          </div>
+-          <Link className="hp-workflow-close-cta" to="/programs">Explore Skylent →</Link>
+-        </div>
+-      </div>
+-    </section>
+-  )
+-}
++const EXPERIENCE_CHAIN = [
++  { label: "Programme", detail: "A pathway that links one or more courses in Skylent OS." },
++  { label: "Course", detail: "Modules, lessons, practice, and project work in one workspace." },
++  { label: "Lesson", detail: "Written teaching you progress through sequentially." },
++  { label: "Practice", detail: "Checks that confirm understanding before you move on." },
++  { label: "Project", detail: "Applied work — spreadsheets, SQL, case studies, or capstones." },
++  { label: "Evidence", detail: "Artifacts you choose to keep and showcase." },
++  { label: "Career OS", detail: "Profile, projects, and opportunities when published — no invented placements." },
++] as const
+ 
+ const HOME_CERTIFICATE_PROGRAMS = [
+   { programSlug: "data-analytics-pro", courseSlug: "data-analytics" },
+@@ -593,7 +60,9 @@ function homeCertificatePrograms() {
+       .flatMap((module) => module.lessons)
+       .some((lesson) => /capstone/i.test(lesson.title))
+     return [{
++      programSlug: row.programSlug,
+       href: `/programs/${row.programSlug}`,
++      courseHref: `/courses/${row.courseSlug}`,
+       title: course.title,
+       work: course.desc,
+       duration: view.duration,
+@@ -605,16 +74,18 @@ function homeCertificatePrograms() {
+       project: Boolean(profile.project),
+       evidence: capstone,
+       projectNote: profile.project?.note ?? null,
++      labHref: profile.lab?.href("") ?? null,
++      projectHref: profile.project?.href ?? null,
+     }]
+   })
+ }
+ 
+-const HERO_VALUE_ITEMS = [
+-  "Industry-relevant curriculum",
+-  "Hands-on practice and projects",
+-  "Mentor support and guidance",
+-  "Career-focused learning",
+-] as const
++function catalogProgramForSlug(
++  programs: CatalogProgramSummary[] | null,
++  slug: string,
++): CatalogProgramSummary | undefined {
++  return programs?.find((row) => row.slug === slug)
++}
+ 
+ const HERO_LMS_NAV = ["Learning", "Practice", "Projects", "Evidence", "Career"] as const
+ type HeroOsPane = (typeof HERO_LMS_NAV)[number]
+@@ -652,7 +123,6 @@ function heroFeaturedWorkspace() {
+     practice: {
+       title: firstQuiz?.title ?? profile?.learningSteps[1]?.label ?? "Practice",
+       intro: profile?.practiceIntro ?? "Short checks after a block of lessons.",
+-      duration: firstQuiz?.duration ?? null,
+       questionCount: quiz?.questions.length ?? view.stats.quizCount,
+       prompt: quiz?.questions[0]?.prompt ?? null,
+       options: (quiz?.questions[0]?.options ?? []).slice(0, 4),
+@@ -660,14 +130,12 @@ function heroFeaturedWorkspace() {
+     },
+     project: {
+       title: capstone?.title ?? profile?.project?.note?.split(" — ")[0] ?? "Capstone",
+-      note: profile?.project?.note ?? profile?.learningSteps.find((step) => step.label === "Capstone")?.detail ?? "Work you produce in this course.",
++      note: profile?.project?.note ?? "Work you produce in this course.",
+       href: profile?.project?.href ?? courseHref,
+       status: "Capstone · not started",
+     },
+     evidence: {
+       title: evidence?.artifact ?? capstone?.title ?? "Work sample you keep",
+-      skill: evidence?.skill ?? null,
+-      copy: evidence?.evidence ?? "Carry evidence into Career OS yourself. Nothing is invented here.",
+       href: "/career-os/projects",
+     },
+     career: {
+@@ -715,22 +183,12 @@ function HomeHeroProduct() {
+     )
+   }
+ 
+-  const next = pane === "Learning"
+-    ? { kicker: "Next", title: workspace.practice.title, pane: "Practice" as const }
+-    : pane === "Practice"
+-      ? { kicker: "Next", title: workspace.project.title, pane: "Projects" as const }
+-      : pane === "Projects"
+-        ? { kicker: "Next", title: "Keep this as evidence", pane: "Evidence" as const }
+-        : pane === "Evidence"
+-          ? { kicker: "Next", title: "Career OS", pane: "Career" as const }
+-          : { kicker: "Path", title: "Back to learning", pane: "Learning" as const }
+-
+   return (
+     <div className="hp-hero-visual">
+       <div className="hp-hero-lms">
+         <ProductFrame title={pane === "Career" ? "Career OS" : workspace.title} meta={heroOsMeta(pane, workspace)}>
+           <div className="hp-hero-os">
+-            <nav className="hp-hero-lms-rail" role="tablist" aria-label="Skylent OS preview">
++            <nav className="hp-hero-lms-rail" role="tablist" aria-label="Skylent learning preview">
+               {HERO_LMS_NAV.map((item) => (
+                 <button
+                   key={item}
+@@ -820,11 +278,6 @@ function HomeHeroProduct() {
+                     <div className="hp-hero-folio">
+                       <p>Work sample</p>
+                       <h3>{workspace.project.title}</h3>
+-                      <ul>
+-                        {workspace.evidence.title.split(/\s+\+\s+/).map((part) => (
+-                          <li key={part}>{part.charAt(0).toUpperCase() + part.slice(1)}</li>
+-                        ))}
+-                      </ul>
+                       <p className="hp-hero-meta">Capstone · not kept yet</p>
+                     </div>
+                     <Link className="hp-hero-os-cta" to={workspace.evidence.href}>View evidence →</Link>
+@@ -855,13 +308,6 @@ function HomeHeroProduct() {
+                   </article>
+                 ) : null}
+               </div>
+-              <aside className="hp-hero-next">
+-                <p className="pl-kicker">{next.kicker}</p>
+-                <p>{next.title}</p>
+-                <button type="button" className="hp-hero-next-go" onClick={() => setPane(next.pane)}>
+-                  Open {next.pane}
+-                </button>
+-              </aside>
+             </div>
+           </div>
+         </ProductFrame>
+@@ -870,7 +316,168 @@ function HomeHeroProduct() {
+   )
+ }
+ 
++function HomeFeaturedPrograms() {
++  const { data: catalogPrograms, loading, error } = useCatalogPrograms()
++  const programs = homeCertificatePrograms()
++
++  return (
++    <section className="hp-section hp-featured" aria-labelledby="home-featured-heading">
++      <div className="hp-rail">
++        <header className="hp-section-head">
++          <p className="hp-eyebrow">FEATURED LEARNING</p>
++          <h2 id="home-featured-heading" className="hp-h2">
++            Programmes with authored teaching today
++          </h2>
++          <p className="hp-lead">
++            These Professional Certificate pathways open real courses in Skylent OS. Other catalogue listings exist for discovery; only authored courses are shown here.
++          </p>
++        </header>
++
++        {loading && programs.length === 0 ? (
++          <p className="hp-muted" role="status">Loading catalogue…</p>
++        ) : null}
++        {error ? (
++          <p className="hp-muted">Catalogue API unavailable — showing authored programme details from product content.</p>
++        ) : null}
++
++        <ul className="hp-pcp-list">
++          {programs.map((program) => {
++            const catalog = catalogProgramForSlug(catalogPrograms, program.programSlug)
++            const enrollLabel = catalog?.enrollmentStatus === "open"
++              ? "Enrolment open"
++              : catalog?.enrollmentStatus === "waitlist"
++                ? "Waitlist"
++                : catalog?.enrollmentStatus === "coming_soon"
++                  ? "Coming soon"
++                  : null
++            return (
++              <li key={program.href}>
++                <article className="hp-pcp">
++                  <div className="hp-pcp-body">
++                    <p className="hp-pcp-label">Professional Certificate</p>
++                    <h3>{program.title}</h3>
++                    {enrollLabel ? <p className="hp-pcp-status">{enrollLabel}</p> : null}
++                    <dl className="hp-pcp-facts">
++                      <div>
++                        <dt>Duration</dt>
++                        <dd>{program.duration}</dd>
++                      </div>
++                      <div>
++                        <dt>Level</dt>
++                        <dd>{program.level}</dd>
++                      </div>
++                      <div>
++                        <dt>Modules</dt>
++                        <dd>{program.moduleCount}</dd>
++                      </div>
++                      <div>
++                        <dt>Lessons</dt>
++                        <dd>{program.lessonCount}</dd>
++                      </div>
++                    </dl>
++                    <p className="hp-pcp-work">{program.work}</p>
++                    {program.projectNote ? <p className="hp-pcp-project">{program.projectNote}</p> : null}
++                    <ul className="hp-pcp-marks">
++                      <li className={program.practice ? "is-on" : undefined}>Practice</li>
++                      <li className={program.project ? "is-on" : undefined}>Project</li>
++                      <li className={program.evidence ? "is-on" : undefined}>Evidence</li>
++                    </ul>
++                    <div className="hp-pcp-actions">
++                      <Link className="hp-btn hp-btn-primary" to={program.href}>View programme</Link>
++                      <Link className="hp-btn hp-btn-secondary" to={program.courseHref}>Course detail</Link>
++                    </div>
++                  </div>
++                  <div className="hp-pcp-visual">
++                    <p className="hp-preview-caption">Work you produce in this programme</p>
++                    <CourseProductVisual visual={program.visual} compact />
++                  </div>
++                </article>
++              </li>
++            )
++          })}
++        </ul>
++      </div>
++    </section>
++  )
++}
++
++function HomePracticeBuild() {
++  const daProfile = courseProductProfile(FLAGSHIP_COURSE_SLUG)
++  const pmProfile = courseProductProfile("product-management")
++
++  return (
++    <section className="hp-section hp-practice" aria-labelledby="home-practice-heading">
++      <div className="hp-rail">
++        <header className="hp-section-head">
++          <p className="hp-eyebrow">PRACTICE · BUILD</p>
++          <h2 id="home-practice-heading" className="hp-h2">
++            Learning is not the same as doing
++          </h2>
++          <p className="hp-lead">
++            Lessons teach concepts. Practice checks understanding. Labs and projects apply skills to authored briefs — with honest scope per course.
++          </p>
++        </header>
++
++        <div className="hp-practice-grid">
++          {daProfile?.lab ? (
++            <article className="hp-practice-card">
++              <p className="hp-practice-kicker">Data Analytics · Lab</p>
++              <h3>Northwind SQL lab</h3>
++              <p>
++                Query {NW.filename} in the browser lab — the same synthetic extract used in course assignments ({NW.validRows} valid rows in the public preview).
++              </p>
++              <Link className="hp-link-arrow" to={daProfile.lab.href("")}>{daProfile.lab.label} →</Link>
++            </article>
++          ) : null}
++
++          {daProfile?.project ? (
++            <article className="hp-practice-card">
++              <p className="hp-practice-kicker">Data Analytics · Project</p>
++              <h3>Northwind Commercial Review</h3>
++              <p>{daProfile.project.note}</p>
++              <Link className="hp-link-arrow" to={daProfile.project.href}>{daProfile.project.label} →</Link>
++            </article>
++          ) : null}
++
++          {pmProfile ? (
++            <article className="hp-practice-card">
++              <p className="hp-practice-kicker">Product Management</p>
++              <h3>Case-led assignments</h3>
++              <p>{pmProfile.labOmission ?? pmProfile.practiceIntro}</p>
++              <Link className="hp-link-arrow" to={`/courses/${pmProfile.slug}`}>Open course →</Link>
++            </article>
++          ) : null}
++        </div>
++      </div>
++    </section>
++  )
++}
++
++function useSectionReveal() {
++  const ref = useRef<HTMLElement>(null)
++  useEffect(() => {
++    const el = ref.current
++    if (!el) return
++    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
++      el.classList.add("is-in")
++      return
++    }
++    const io = new IntersectionObserver((entries) => {
++      entries.forEach((entry) => {
++        if (!entry.isIntersecting) return
++        el.classList.add("is-in")
++        io.disconnect()
++      })
++    }, { threshold: 0.12 })
++    io.observe(el)
++    return () => io.disconnect()
++  }, [])
++  return ref
++}
++
+ export default function HomePage() {
++  const chainRef = useSectionReveal()
++
+   return (
+     <PageShell aurora={false}>
+       <div className="home-p3">
+@@ -878,105 +485,146 @@ export default function HomePage() {
+           <div className="hp-rail">
+             <div className="hp-hero-grid">
+               <div className="hp-hero-copy">
+-                <p className="hp-eyebrow hp-hero-eyebrow">LEARN · PRACTISE · BUILD · EVIDENCE</p>
++                <p className="hp-eyebrow hp-hero-eyebrow">DISCOVER · LEARN · PRACTICE · BUILD · PROVE</p>
+                 <h1 id="home-hero-heading">
+-                  Build skills
++                  The front door to
+                   <br />
+-                  that take you
+-                  <br />
+-                  <span className="hp-hero-further">further</span>
+-                  <span className="hp-hero-further-dot">.</span>
++                  <span className="hp-hero-em">structured learning</span>
++                  <span className="hp-hero-dot">.</span>
+                 </h1>
+                 <p className="hp-hero-lead">
+-                  Structured programs, hands-on practice, real projects
+-                  <br className="hp-hero-lead-br" />
+-                  {" "}and career support — all in one place.
++                  Skylent connects programmes, lessons, practice, projects, and evidence — so you can build capability and show what you can do.
++                </p>
++                <p className="hp-hero-model" aria-label="Learn, Practice, Build">
++                  <strong>Learn</strong>
++                  <span aria-hidden="true">·</span>
++                  <strong>Practice</strong>
++                  <span aria-hidden="true">·</span>
++                  <strong>Build</strong>
+                 </p>
+                 <div className="hp-actions">
+-                  <Link className="hp-btn hp-btn-primary" to="/programs">Explore Programs →</Link>
+-                  <button type="button" className="hp-btn hp-btn-ghost hp-btn-video">
+-                    <span className="hp-btn-play" aria-hidden="true" />
+-                    Watch Video
+-                  </button>
++                  <Link className="hp-btn hp-btn-primary" to="/programs">Explore programmes →</Link>
++                  <Link className="hp-btn hp-btn-secondary" to="/courses">Browse catalogue</Link>
+                 </div>
+               </div>
+               <div className="hp-hero-stage">
+                 <HomeHeroProduct />
+               </div>
+             </div>
+-            <ul className="hp-hero-values" aria-label="Platform highlights">
+-              {HERO_VALUE_ITEMS.map((label, index) => (
+-                <li key={label}>
+-                  <span className="hp-hero-values-num">{String(index + 1).padStart(2, "0")}</span>
+-                  <span>{label}</span>
++          </div>
++        </section>
++
++        <section className="hp-section hp-model" aria-labelledby="home-model-heading">
++          <div className="hp-rail">
++            <header className="hp-section-head hp-section-head--center">
++              <p className="hp-eyebrow">WHY SKYLENT</p>
++              <h2 id="home-model-heading" className="hp-h2">
++                A learning model built for doing, not scrolling
++              </h2>
++              <p className="hp-lead">
++                Move from discovery into Skylent OS, then through practice and projects you can keep as proof — without invented outcomes or placement claims.
++              </p>
++            </header>
++            <ol className="hp-journey-grid">
++              {LEARNING_JOURNEY.map((item) => (
++                <li key={item.step}>
++                  <p className="hp-journey-step">{item.step}</p>
++                  <h3>{item.title}</h3>
++                  <p>{item.copy}</p>
+                 </li>
+               ))}
+-            </ul>
++            </ol>
+           </div>
+         </section>
+ 
+-        <section className="hp-section hp-choose" aria-labelledby="home-paths-heading">
+-          <HomePathStory />
+-        </section>
++        <HomeFeaturedPrograms />
+ 
+-        <section className="hp-section hp-programs" aria-labelledby="home-programs-heading">
++        <section className="hp-section hp-chain" aria-labelledby="home-chain-heading" ref={chainRef}>
+           <div className="hp-rail">
+-            <p className="hp-eyebrow">PROFESSIONAL CERTIFICATE PROGRAMS</p>
+-            <h2 id="home-programs-heading" className="hp-h2">
+-              Build practical capability through structured learning, practice and real work.
+-            </h2>
+-            <p className="hp-lead">
+-              A Skylent Professional Certificate Program is a pathway in Skylent OS: written lessons, practice, and a piece of work you keep. It is not a single course tile, and it is not a catalogue of unrelated classes.
+-            </p>
+-            <ul className="hp-pcp-list">
+-              {homeCertificatePrograms().map((program) => (
+-                <li key={program.href}>
+-                  <article className="hp-pcp">
+-                    <div className="hp-pcp-body">
+-                      <p className="hp-pcp-label">Professional Certificate</p>
+-                      <h3>{program.title}</h3>
+-                      <dl className="hp-pcp-facts">
+-                        <div>
+-                          <dt>Duration</dt>
+-                          <dd>{program.duration}</dd>
+-                        </div>
+-                        <div>
+-                          <dt>Level</dt>
+-                          <dd>{program.level}</dd>
+-                        </div>
+-                        <div>
+-                          <dt>Modules</dt>
+-                          <dd>{program.moduleCount}</dd>
+-                        </div>
+-                        <div>
+-                          <dt>Lessons</dt>
+-                          <dd>{program.lessonCount}</dd>
+-                        </div>
+-                      </dl>
+-                      <p className="hp-pcp-work">{program.work}</p>
+-                      {program.projectNote ? <p className="hp-pcp-project">{program.projectNote}</p> : null}
+-                      <ul className="hp-pcp-marks">
+-                        <li className={program.practice ? "is-on" : undefined}>Practice</li>
+-                        <li className={program.project ? "is-on" : undefined}>Project</li>
+-                        <li className={program.evidence ? "is-on" : undefined}>Evidence</li>
+-                      </ul>
+-                      <Link className="hp-btn hp-btn-primary" to={program.href}>View Program</Link>
+-                    </div>
+-                    <div className="hp-pcp-visual">
+-                      <p className="hp-preview-caption">Work you produce in this program</p>
+-                      <CourseProductVisual visual={program.visual} compact />
+-                    </div>
+-                  </article>
++            <header className="hp-section-head">
++              <p className="hp-eyebrow">HOW IT WORKS</p>
++              <h2 id="home-chain-heading" className="hp-h2">
++                From programme enrolment to Career OS
++              </h2>
++              <p className="hp-lead">
++                One continuous chain in the product — not a pile of disconnected tabs.
++              </p>
++            </header>
++            <ol className="hp-chain-list">
++              {EXPERIENCE_CHAIN.map((item, index) => (
++                <li key={item.label}>
++                  <span className="hp-chain-index">{String(index + 1).padStart(2, "0")}</span>
++                  <div>
++                    <h3>{item.label}</h3>
++                    <p>{item.detail}</p>
++                  </div>
+                 </li>
+               ))}
+-            </ul>
+-            <p className="hp-honesty">
+-              Only these two Professional Certificate Programs have authored teaching today. Enrolment opens the linked course in Skylent OS — it does not create a separate classroom. Other programme listings are not shown here because they are not teachable yet.
+-            </p>
++            </ol>
++          </div>
++        </section>
++
++        <HomePracticeBuild />
++
++        <section className="hp-section hp-career" aria-labelledby="home-career-heading">
++          <div className="hp-rail hp-career-split">
++            <div>
++              <p className="hp-eyebrow">CAREER OS</p>
++              <h2 id="home-career-heading" className="hp-h2">
++                Evidence and projects feed your profile
++              </h2>
++              <p className="hp-lead">
++                Career OS is where kept work samples, project history, and your profile come together. Job listings appear when published in the product — we do not show invented employers or placement rates on this page.
++              </p>
++              <ul className="hp-career-points">
++                {CAREER_OS_IA.slice(0, 4).map((item) => (
++                  <li key={item.label}>
++                    <strong>{item.label}</strong>
++                    <span>{item.sub}</span>
++                  </li>
++                ))}
++              </ul>
++              <Link className="hp-btn hp-btn-primary" to="/career-os">Open Career OS →</Link>
++            </div>
++            <div className="hp-career-specimen" aria-hidden="true">
++              <div className="hp-career-specimen-inner">
++                <p className="pl-kicker">Profile · evidence · opportunities</p>
++                <p className="hp-career-specimen-line">Projects you complete in Skylent OS can be referenced from Career OS.</p>
++                <p className="hp-career-specimen-muted">Opportunities: when roles are published</p>
++              </div>
++            </div>
+           </div>
+         </section>
+ 
+-        <HomeWorkflow />
++        <section className="hp-section hp-trust" aria-labelledby="home-trust-heading">
++          <div className="hp-rail">
++            <h2 id="home-trust-heading" className="hp-h2">What is live in Skylent today</h2>
++            <div className="hp-trust-body">
++              <p>
++                Two Professional Certificate programmes — Data Analytics and Product Management — have full authored teaching, quizzes, and project flows in Skylent OS. Data Analytics includes the Northwind lab and commercial-review project; Product Management is case-led without a SQL lab.
++              </p>
++              <p>
++                The public catalogue lists additional programmes and courses for discovery. Enrolment opens authored workspaces; listings without teaching remain honest catalogue entries, not fake classrooms.
++              </p>
++              <p className="hp-trust-note">
++                No learner counts, completion rates, or testimonials appear here because they are not part of the product data we surface on the homepage.
++              </p>
++            </div>
++          </div>
++        </section>
++
++        <section className="hp-section hp-final" aria-labelledby="home-final-heading">
++          <div className="hp-rail hp-final-inner">
++            <h2 id="home-final-heading" className="hp-h2 hp-final-title">
++              Start with a programme or explore the catalogue
++            </h2>
++            <p className="hp-lead">Choose a pathway with authored teaching, or discover what is listed for later.</p>
++            <div className="hp-actions hp-actions--center">
++              <Link className="hp-btn hp-btn-primary" to="/programs">View programmes</Link>
++              <Link className="hp-btn hp-btn-secondary" to="/courses">View courses</Link>
++            </div>
++          </div>
++        </section>
+       </div>
+     </PageShell>
+   )
