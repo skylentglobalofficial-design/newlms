@@ -6,6 +6,7 @@
  * taught counts are kept separate on purpose so the page can show both honestly.
  */
 import { courses, programs, type Course } from "../data"
+import { AUTHORED_PROGRAMME_PATH_SLUGS } from "../../server/src/lib/authored-programme-path"
 import { isAuthoredCourse } from "./authored-courses"
 import { courseProductProfile } from "./course-product"
 import {
@@ -17,7 +18,7 @@ import {
 } from "./catalog-maturity"
 
 /** Programme slugs opened by the /programs discovery page, in display order. */
-const DISCOVERY_PROGRAMME_SLUGS = ["data-analytics-pro", "product-management"] as const
+const DISCOVERY_PROGRAMME_SLUGS = AUTHORED_PROGRAMME_PATH_SLUGS
 
 export type ProgrammeDiscoveryCard = {
   slug: string

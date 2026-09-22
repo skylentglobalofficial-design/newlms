@@ -1,5 +1,6 @@
 import "dotenv/config"
 import { PrismaClient, RoleName } from "@prisma/client"
+import { hasAuthoredProgrammePath } from "../src/lib/programme-discovery.ts"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
@@ -125,6 +126,16 @@ async function completeAllCourseLessons(jar: CookieJar, courseSlug: string) {
     await completeLesson(jar, courseSlug, lessonKey)
   }
   return lessonKeys
+}
+
+async function seedProgramEnrollment(email: string, programSlug: string) {
+  const user = await prisma.user.findUnique({ where: { email } })
+  const program = await prisma.program.findUnique({ where: { slug: programSlug } })
+  assert(user, `User ${email} should exist`)
+  assert(program, `Program ${programSlug} should exist`)
+  return prisma.userEnrollment.create({
+    data: { userId: user.id, programId: program.id, status: "active" },
+  })
 }
 
 async function grantRole(email: string, role: "faculty" | "organisation", organisationSlug = "apex-college") {
@@ -367,15 +378,21 @@ async function main() {
   assert(assignmentRow.attachments[0].storageKey.startsWith("pending/"), "Storage key should be server-generated")
   assert(!assignmentRow.attachments[0].storageKey.includes("data-analytics/l6"), "Client must not choose storage key")
 
-  console.log("14. Program enrollment resolves course access correctly")
+  console.log("14. Authored OPEN programme enrollment succeeds")
+  const authoredProgramSlug = "data-analytics-pro"
+  assert(hasAuthoredProgrammePath(authoredProgramSlug), "data-analytics-pro must remain an authored programme path")
+  assert(hasAuthoredProgrammePath("product-management"), "product-management must remain an authored programme path")
+  assert(!hasAuthoredProgrammePath("data-science-ai"), "data-science-ai must not have an authored programme path")
+  assert(!hasAuthoredProgrammePath("full-stack"), "full-stack must not have an authored programme path")
+
   const programJar: CookieJar = new Map()
   await signupUser(programJar, "program")
   const programEnroll = await request(programJar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { programSlug: "data-science-ai" },
+    body: { programSlug: authoredProgramSlug },
   })
-  assert(programEnroll.response.ok, "Program enrollment should succeed")
+  assert(programEnroll.response.ok, "Authored OPEN programme enrollment should succeed")
   assert(programEnroll.data.data.course.slug === courseSlug, "Program enrollment should resolve primary course workspace")
 
   const programCourseAccess = await request(programJar, `/lms/courses/${courseSlug}`)
@@ -388,10 +405,18 @@ async function main() {
     Array.isArray(programListed.data.data) &&
       programListed.data.data.some(
         (row: { programSlug?: string; courseSlug?: string | null }) =>
-          row.programSlug === "data-science-ai" && row.courseSlug === courseSlug,
+          row.programSlug === authoredProgramSlug && row.courseSlug === courseSlug,
       ),
     "Programme enrollment must expose the linked LMS course so Resume/evidence can open it",
   )
+
+  const programReenroll = await request(programJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { programSlug: authoredProgramSlug },
+  })
+  assert(programReenroll.response.ok, "Re-enrolling an authored programme should return the existing workspace")
+  assert(programReenroll.response.status === 200, "Existing authored programme enrollment should be 200, not a new create")
 
   console.log("14b. Coming-soon program enrollment is rejected")
   const comingSoon = await request(programJar, "/lms/enrollments", {
@@ -437,13 +462,53 @@ async function main() {
       body: { programSlug: unlinkedSlug },
     })
     assert(unlinked.response.status === 400, `OPEN + unlinked enrollment should be 400, got ${unlinked.response.status}`)
+    assert(
+      /no linked courses/i.test(String(unlinked.data?.error ?? "")),
+      "OPEN + unlinked rejection should mention missing linked courses",
+    )
   } finally {
     await prisma.program.delete({ where: { slug: unlinkedSlug } })
   }
 
-  console.log("14d. Programme workspace aggregates linked-course progress and resume")
+  console.log("14d. OPEN programme with linked courses but no authored path cannot enroll")
+  const listingProgramSlug = "data-science-ai"
+  const noAuthoredPath = await request(programJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { programSlug: listingProgramSlug },
+  })
+  assert(
+    noAuthoredPath.response.status === 400,
+    `OPEN + linked + no authored path should be 400, got ${noAuthoredPath.response.status}`,
+  )
+  assert(
+    /authored teaching path/i.test(String(noAuthoredPath.data?.error ?? "")),
+    `OPEN listing programme must return a clear authored-path error, got ${JSON.stringify(noAuthoredPath.data)}`,
+  )
+
+  const fullStackListing = await request(programJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { programSlug: "full-stack" },
+  })
+  assert(
+    fullStackListing.response.status === 400,
+    `OPEN full-stack listing should be 400, got ${fullStackListing.response.status}`,
+  )
+
+  const missingProgram = await request(programJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { programSlug: "not-a-real-programme" },
+  })
+  assert(missingProgram.response.status === 404, `Unknown programme should be 404, got ${missingProgram.response.status}`)
+
+  console.log("14e. Programme workspace aggregates linked-course progress and resume")
   const programSlug = "data-science-ai"
   const secondCourseSlug = "python-programming"
+  const aggregateJar: CookieJar = new Map()
+  const aggregateUser = await signupUser(aggregateJar, "program-aggregate")
+  await seedProgramEnrollment(aggregateUser.email, programSlug)
   const programAccessAnon = await request(anonJar, `/lms/programs/${programSlug}/access`)
   assert(programAccessAnon.data.data.authenticated === false, "Anonymous programme access should be unauthenticated")
   assert(programAccessAnon.data.data.canAccess === false, "Anonymous visitor cannot access programme workspace")
@@ -451,7 +516,7 @@ async function main() {
   const programBlocked = await request(userBJar, `/lms/programs/${programSlug}`)
   assert(programBlocked.response.status === 403, "Non-enrolled learner cannot read programme aggregation")
 
-  const programWorkspace = await request(programJar, `/lms/programs/${programSlug}`)
+  const programWorkspace = await request(aggregateJar, `/lms/programs/${programSlug}`)
   assert(programWorkspace.response.ok, "Programme-enrolled learner should load programme workspace")
   assert(programWorkspace.data.data.slug === programSlug, "Programme workspace slug mismatch")
   const linkedSlugs = (programWorkspace.data.data.courses as Array<{ slug: string }>).map((row) => row.slug)
@@ -461,14 +526,14 @@ async function main() {
   assert(programWorkspace.data.data.progress.progressPct === 0, "New programme enrollment must start at 0%")
   assert(programWorkspace.data.data.resume.courseSlug === courseSlug, "Resume should start on the first incomplete course")
 
-  const pythonViaProgram = await request(programJar, `/lms/courses/${secondCourseSlug}`)
+  const pythonViaProgram = await request(aggregateJar, `/lms/courses/${secondCourseSlug}`)
   assert(pythonViaProgram.response.ok, "Programme enrollment must unlock the second linked course")
 
-  const daWorkspace = await request(programJar, `/lms/courses/${courseSlug}`)
+  const daWorkspace = await request(aggregateJar, `/lms/courses/${courseSlug}`)
   assert(daWorkspace.response.ok, "Programme learner should still access Data Analytics")
-  await completeAllCourseLessons(programJar, courseSlug)
+  await completeAllCourseLessons(aggregateJar, courseSlug)
 
-  const afterFirstCourse = await request(programJar, `/lms/programs/${programSlug}`)
+  const afterFirstCourse = await request(aggregateJar, `/lms/programs/${programSlug}`)
   assert(afterFirstCourse.response.ok, "Programme workspace should reload after course progress")
   const daRow = afterFirstCourse.data.data.courses.find((row: { slug: string }) => row.slug === courseSlug)
   const pyRow = afterFirstCourse.data.data.courses.find((row: { slug: string }) => row.slug === secondCourseSlug)
@@ -479,7 +544,7 @@ async function main() {
   assert(afterFirstCourse.data.data.progress.progressPct > 0, "Aggregate progressPct must come from completed lessons")
   assert(afterFirstCourse.data.data.progress.progressPct < 100, "Programme must not be 100% until every linked course is complete")
 
-  const dashboardAfter = await request(programJar, "/lms/dashboard")
+  const dashboardAfter = await request(aggregateJar, "/lms/dashboard")
   assert(dashboardAfter.response.ok, "Dashboard should load after programme progress")
   assert(dashboardAfter.data.data.course.slug === secondCourseSlug, "Dashboard primary course should be the resume course")
   assert(dashboardAfter.data.data.program?.slug === programSlug, "Dashboard must include programme aggregation")
@@ -488,7 +553,7 @@ async function main() {
     "Dashboard programme payload must list every linked course",
   )
 
-  const listedLinks = await request(programJar, "/lms/enrollments")
+  const listedLinks = await request(aggregateJar, "/lms/enrollments")
   const programRow = listedLinks.data.data.find((row: { programSlug?: string }) => row.programSlug === programSlug)
   assert(Array.isArray(programRow?.linkedCourses) && programRow.linkedCourses.length >= 2, "Enrolments list should expose every linked course")
 
@@ -497,15 +562,10 @@ async function main() {
   const catalogJson = JSON.stringify(catalogCourse.data)
   assert(!/muxPlaybackId/.test(catalogJson), "Public catalog must not expose Mux playback ids")
 
-  console.log("14e. Direct course enrollment must not override programme resume")
+  console.log("14f. Direct course enrollment must not override programme resume")
   const mixedJar: CookieJar = new Map()
-  await signupUser(mixedJar, "mixed-resume")
-  const mixedProgramEnroll = await request(mixedJar, "/lms/enrollments", {
-    method: "POST",
-    csrf: true,
-    body: { programSlug },
-  })
-  assert(mixedProgramEnroll.response.ok, "Mixed-resume learner should enroll in the programme")
+  const mixedUser = await signupUser(mixedJar, "mixed-resume")
+  await seedProgramEnrollment(mixedUser.email, programSlug)
 
   const mixedDirectEnroll = await request(mixedJar, "/lms/enrollments", {
     method: "POST",
@@ -535,10 +595,10 @@ async function main() {
     "Dashboard programme payload must keep the calculated programme resume course",
   )
 
-  console.log("14f. Completing every linked course marks the programme complete")
-  await completeAllCourseLessons(programJar, secondCourseSlug)
+  console.log("14g. Completing every linked course marks the programme complete")
+  await completeAllCourseLessons(aggregateJar, secondCourseSlug)
 
-  const completedProgram = await request(programJar, `/lms/programs/${programSlug}`)
+  const completedProgram = await request(aggregateJar, `/lms/programs/${programSlug}`)
   assert(completedProgram.response.ok, "Programme workspace should load after every linked course is complete")
   const completedProgress = completedProgram.data.data.progress
   const completedCourses = completedProgram.data.data.courses as Array<{
@@ -563,7 +623,7 @@ async function main() {
   assert(completedProgram.data.data.certificateEligible === true, "Programme workspace must be certificate eligible")
   assert(completedProgram.data.data.certificateStatus === "eligible", "Programme workspace certificateStatus must be eligible")
 
-  const completedListed = await request(programJar, "/lms/enrollments")
+  const completedListed = await request(aggregateJar, "/lms/enrollments")
   const completedRow = completedListed.data.data.find((row: { programSlug?: string }) => row.programSlug === programSlug)
   assert(completedRow, "Completed programme enrollment must still appear in the enrollments list")
   assert(completedRow.status === "completed", `Programme enrollment status must be completed, got ${completedRow.status}`)

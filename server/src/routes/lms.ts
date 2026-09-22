@@ -9,6 +9,7 @@ import {
   type AuthenticatedRequest,
 } from "../lib/auth.js"
 import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
+import { hasAuthoredProgrammePath } from "../lib/authored-programme-path.js"
 import {
   assertLessonUnlocked,
   buildCourseWorkspace,
@@ -177,6 +178,11 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
       }
       if (program.programCourses.length === 0) {
         return res.status(400).json({ error: "Program has no linked courses" })
+      }
+      if (!hasAuthoredProgrammePath(program.slug)) {
+        return res.status(400).json({
+          error: "This programme has no authored teaching path and cannot be enrolled",
+        })
       }
 
       const existing = await prisma.userEnrollment.findUnique({
