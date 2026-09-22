@@ -1,46 +1,102 @@
-/* Homepage — discovery platform, product-led */
+/* Homepage — Phase 4 visual shell + shared discovery utilities */
 
 html:has(.home-p3),
 html:has(.home-p3) body {
-  background: #ffffff !important;
+  background: var(--skylent-color-paper) !important;
+  overflow-x: clip;
 }
 
 .skylent-public-canvas:has(.home-p3) {
-  background: #ffffff !important;
+  background: var(--skylent-color-paper) !important;
 }
 
 .skylent-public-canvas:has(.home-p3) .skylent-site-nav,
 .skylent-public-canvas:has(.home-p3) .skylent-site-footer {
-  background: #ffffff !important;
+  background: color-mix(in srgb, var(--skylent-color-paper) 94%, var(--skylent-color-cream)) !important;
 }
 
 .home-p3 {
-  background: #ffffff;
-  color: #15171a;
+  position: relative;
+  background: var(--skylent-color-paper);
+  color: var(--skylent-color-ink);
   overflow-x: clip;
   overflow-y: visible;
 }
 
+.home-p3::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 78% 48% at 8% -6%, rgba(249, 115, 22, 0.08), transparent 58%),
+    radial-gradient(ellipse 62% 42% at 92% 2%, rgba(79, 70, 229, 0.06), transparent 52%);
+}
+
+.home-p3 > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Phase 4 — shared editorial typography (page-level; section detail stays in component CSS) */
+.hp-eyebrow {
+  margin: 0;
+  font-family: var(--skylent-t-eyebrow-family);
+  font-size: var(--skylent-t-eyebrow-size);
+  line-height: var(--skylent-t-eyebrow-line);
+  font-weight: var(--skylent-t-eyebrow-weight);
+  letter-spacing: var(--skylent-t-eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--skylent-color-mark);
+}
+
+.hp-h2 {
+  margin: 10px 0 0;
+  max-width: 18em;
+  font-family: var(--skylent-t-heading-xl-family);
+  font-size: var(--skylent-t-heading-xl-size);
+  line-height: var(--skylent-t-heading-xl-line);
+  font-weight: var(--skylent-t-heading-xl-weight);
+  letter-spacing: var(--skylent-t-heading-xl-tracking);
+  color: var(--skylent-color-ink);
+  text-wrap: balance;
+}
+
+.hp-muted {
+  margin: 0 0 16px;
+  color: var(--skylent-color-slate);
+  font-size: 14px;
+}
+
 .hp-kicker {
   margin: 0;
-  color: #f97316;
-  font: 700 11px/1.3 var(--font-mono);
-  letter-spacing: 0.16em;
+  color: var(--skylent-color-mark);
+  font-family: var(--skylent-t-eyebrow-family);
+  font-size: var(--skylent-t-eyebrow-size);
+  font-weight: var(--skylent-t-eyebrow-weight);
+  line-height: var(--skylent-t-eyebrow-line);
+  letter-spacing: var(--skylent-t-eyebrow-tracking);
   text-transform: uppercase;
 }
 
 .hp-section {
-  padding: 56px 0 64px;
+  padding: clamp(48px, 7vh, 80px) 0;
+  border-top: 1px solid var(--skylent-color-border-subtle);
+}
+
+.hp-hero.hp-lpb {
+  border-top: none;
 }
 
 .hp-head h2,
 .hp-hero h1,
 .hp-close h2,
 .hp-display {
-  font-family: var(--font-brand);
-  font-weight: 600;
-  letter-spacing: -0.035em;
-  color: #15171a;
+  font-family: var(--skylent-t-heading-xl-family, var(--font-brand));
+  font-weight: var(--skylent-t-heading-xl-weight, 600);
+  letter-spacing: var(--skylent-t-heading-xl-tracking, -0.035em);
+  color: var(--skylent-color-ink);
 }
 
 .hp-head h2 {
@@ -52,10 +108,11 @@ html:has(.home-p3) body {
 
 .hp-lead {
   margin: 12px 0 0;
-  max-width: 38em;
-  color: #5c6168;
-  font-size: 16.5px;
-  line-height: 1.55;
+  max-width: var(--skylent-measure-prose, 38em);
+  color: var(--skylent-color-slate);
+  font-family: var(--skylent-t-body-lg-family, var(--font-body));
+  font-size: var(--skylent-t-body-lg-size, 16.5px);
+  line-height: var(--skylent-t-body-lg-line, 1.55);
 }
 
 .hp-fine {
@@ -819,6 +876,22 @@ html:has(.home-p3) body {
 }
 
 @media (max-width: 760px) {
+  .home-p3 {
+    overflow-x: clip;
+  }
+
+  .home-p3 .hp-rail {
+    min-width: 0;
+    width: min(100%, var(--rail));
+    box-sizing: border-box;
+  }
+
+  .home-p3 img,
+  .home-p3 video {
+    max-width: 100%;
+    height: auto;
+  }
+
   .hp-loop-line,
   .hp-work-pair,
   .hp-edu-exams {
