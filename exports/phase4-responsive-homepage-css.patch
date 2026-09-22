@@ -1,0 +1,904 @@
+diff --git a/src/components/home/SkylentHeroLearningModel.css b/src/components/home/SkylentHeroLearningModel.css
+index 6bc6f85..a9edf18 100644
+--- a/src/components/home/SkylentHeroLearningModel.css
++++ b/src/components/home/SkylentHeroLearningModel.css
+@@ -20,9 +20,98 @@
+   --lpb-line-soft: rgba(21, 23, 26, 0.06);
+   --lpb-accent: #4f46e5;
+   --lpb-wash: #f6f6f7;
+-  background: #ffffff;
++  background: transparent;
++  color: var(--lpb-ink);
++  padding: clamp(28px, 4vh, 48px) 0 clamp(56px, 8vh, 96px);
++  border-top: none;
++}
++
++.hp-lpb-intro {
++  margin-bottom: clamp(28px, 4vh, 40px);
++  padding-bottom: clamp(24px, 3vh, 32px);
++  border-bottom: 1px solid var(--lpb-line-soft);
++}
++
++.hp-lpb-intro h1 {
++  margin: 0;
++  max-width: 11em;
++  color: var(--lpb-ink);
++  font-family: var(--font-brand);
++  font-size: clamp(32px, 3.6vw, 46px);
++  font-weight: 600;
++  letter-spacing: -0.038em;
++  line-height: 1.05;
++  text-wrap: balance;
++}
++
++.hp-lpb-intro-lead {
++  margin: 14px 0 0;
++  max-width: 32em;
++  color: var(--lpb-secondary);
++  font-size: 15.5px;
++  line-height: 1.58;
++  text-wrap: pretty;
++}
++
++.hp-lpb-intro-actions {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 10px;
++  margin-top: 22px;
++}
++
++.hp-lpb-cta {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  min-height: 46px;
++  padding: 0 18px;
++  border-radius: var(--btn-radius, 8px);
++  font: 600 14.5px/1 var(--font-body);
++  text-decoration: none;
++  border: 1px solid transparent;
++}
++
++.hp-lpb-cta-primary {
++  background: var(--lpb-accent);
++  color: #fffdf8;
++}
++
++.hp-lpb-cta-primary:hover {
++  background: #4338ca;
++}
++
++.hp-lpb-cta-secondary {
+   color: var(--lpb-ink);
+-  padding: clamp(32px, 5vh, 56px) 0 clamp(64px, 9vh, 112px);
++  border-color: var(--lpb-line);
++  background: color-mix(in srgb, #fffdf8 70%, transparent);
++}
++
++.hp-lpb-cta-secondary:hover {
++  border-color: rgba(21, 23, 26, 0.22);
++}
++
++.hp-lpb-cta:focus-visible {
++  outline: 2px solid var(--lpb-accent);
++  outline-offset: 3px;
++}
++
++.hp-lpb-journey-title {
++  margin: 0;
++  color: var(--lpb-ink);
++  font-family: var(--font-brand);
++  font-size: clamp(22px, 2.4vw, 28px);
++  font-weight: 600;
++  letter-spacing: -0.03em;
++  line-height: 1.1;
++}
++
++.hp-lpb-journey-note {
++  margin: 8px 0 20px;
++  max-width: 28em;
++  color: var(--lpb-muted);
++  font-size: 13.5px;
++  line-height: 1.5;
+ }
+ 
+ .hp-lpb-stage {
+@@ -1151,6 +1240,13 @@ span.hp-lpb-path-item {
+     grid-template-columns: 1fr;
+     gap: 32px;
+     align-items: stretch;
++    min-width: 0;
++  }
++
++  .hp-lpb-journey,
++  .hp-lpb-frame {
++    min-width: 0;
++    max-width: 100%;
+   }
+ 
+   .hp-lpb-journey {
+@@ -1293,7 +1389,116 @@ span.hp-lpb-path-item {
+   }
+ }
+ 
++@media (max-width: 760px) {
++  .hp-lpb-intro {
++    margin-bottom: 24px;
++    padding-bottom: 20px;
++  }
++
++  .hp-lpb-intro h1 {
++    max-width: none;
++    font-size: clamp(28px, 8.2vw, 36px);
++    line-height: 1.08;
++  }
++
++  .hp-lpb-intro-lead {
++    font-size: 15px;
++    max-width: none;
++  }
++
++  .hp-lpb-journey-title {
++    font-size: clamp(20px, 5.5vw, 24px);
++  }
++
++  .hp-lpb-step {
++    min-height: 44px;
++  }
++
++  .hp-lpb-step-copy strong {
++    font-size: clamp(28px, 7.5vw, 36px);
++  }
++
++  .hp-lpb-frame {
++    width: 100%;
++    border-radius: 14px;
++  }
++
++  .hp-lpb-main {
++    min-width: 0;
++    overflow-x: clip;
++  }
++
++  .hp-lpb-toolbar,
++  .hp-lpb-search,
++  .hp-lpb-search input {
++    min-width: 0;
++    max-width: 100%;
++  }
++
++  .hp-lpb-search input {
++    width: 100%;
++    box-sizing: border-box;
++  }
++
++  .hp-lpb-body,
++  .hp-lpb-head,
++  .hp-lpb-modes,
++  .hp-lpb-split {
++    min-width: 0;
++  }
++
++  .hp-lpb-journey {
++    order: 1;
++  }
++
++  .hp-lpb-frame {
++    order: 2;
++    margin-top: 8px;
++  }
++
++  .hp-lpb-lesson-grid,
++  .hp-lpb-tiles,
++  .hp-lpb-create {
++    grid-template-columns: minmax(0, 1fr);
++  }
++
++  .hp-lpb-path {
++    max-width: 100%;
++    overflow-x: auto;
++    -webkit-overflow-scrolling: touch;
++  }
++
++  .hp-lpb-path-item,
++  .hp-lpb-path-item button {
++    min-width: 0;
++  }
++}
++
++@media (max-width: 375px) {
++  .hp-lpb-intro h1 {
++    font-size: clamp(26px, 7vw, 30px);
++  }
++
++  .hp-lpb-step-copy strong {
++    font-size: clamp(26px, 7vw, 30px);
++  }
++
++  .hp-lpb-step {
++    grid-template-columns: 1.75rem minmax(0, 1fr) 2.25rem;
++    gap: 8px 10px;
++  }
++}
++
+ @media (max-width: 430px) {
++  .hp-lpb-intro-actions {
++    flex-direction: column;
++    align-items: stretch;
++  }
++
++  .hp-lpb-cta {
++    width: 100%;
++  }
++
+   .hp-lpb-modes {
+     grid-template-columns: 1fr 1fr;
+     gap: 6px;
+diff --git a/src/components/home/SkylentHomeCareerOS.css b/src/components/home/SkylentHomeCareerOS.css
+index 9170792..fe38e32 100644
+--- a/src/components/home/SkylentHomeCareerOS.css
++++ b/src/components/home/SkylentHomeCareerOS.css
+@@ -445,6 +445,30 @@
+   }
+ }
+ 
++@media (max-width: 760px) {
++  .hp-cos-stage,
++  .hp-cos-copy,
++  .hp-cos-work,
++  .hp-cos-work-grid,
++  .hp-cos-main {
++    min-width: 0;
++    max-width: 100%;
++  }
++
++  .hp-cos-copy h2 {
++    max-width: none;
++  }
++
++  .hp-cos-dest li {
++    min-height: 44px;
++    padding: 12px 0;
++  }
++
++  .hp-cos-work {
++    overflow-x: clip;
++  }
++}
++
+ @media (max-width: 900px) {
+   .hp-section.hp-cos {
+     padding: 36px 0 40px;
+diff --git a/src/components/home/SkylentHomeCatalogue.css b/src/components/home/SkylentHomeCatalogue.css
+index 1af6d65..0bfd7d4 100644
+--- a/src/components/home/SkylentHomeCatalogue.css
++++ b/src/components/home/SkylentHomeCatalogue.css
+@@ -11,9 +11,9 @@
+   --cat-orange: #f97316;
+   --cat-dark: #17181b;
+   --cat-dark-2: #222428;
+-  background: #ffffff;
++  background: color-mix(in srgb, var(--skylent-color-cream, #fffdf8) 55%, transparent);
+   color: var(--cat-ink);
+-  padding: clamp(64px, 9vh, 112px) 0 clamp(56px, 8vh, 104px);
++  padding: clamp(52px, 7vh, 88px) 0 clamp(48px, 7vh, 80px);
+   overflow-x: clip;
+ }
+ 
+@@ -494,7 +494,7 @@
+   }
+ }
+ 
+-@media (max-width: 720px) {
++@media (max-width: 760px) {
+   .hp-section.hp-cat {
+     padding: 36px 0 40px;
+   }
+@@ -517,55 +517,92 @@
+     min-height: 0;
+   }
+ 
+-  .hp-cat-facts {
+-    display: none;
+-  }
+-
+   .hp-cat-feature-foot {
+     flex-direction: column;
+     align-items: flex-start;
+   }
+ 
+-  .hp-cat-rail-item {
+-    padding: 14px 0;
++  .hp-cat-specimen,
++  .hp-cat-quote,
++  .hp-cat-quote p {
++    min-width: 0;
++    max-width: 100%;
++    overflow-wrap: anywhere;
+   }
+ 
+-  .hp-cat-rail li:first-child .hp-cat-rail-item {
+-    padding-top: 0;
++  .hp-cat-stage,
++  .hp-cat-feature,
++  .hp-cat-rail,
++  .hp-cat-specimen {
++    min-width: 0;
++    max-width: 100%;
+   }
+ 
+-  .hp-cat-areas-head {
+-    flex-direction: column;
+-    align-items: flex-start;
+-    gap: 12px;
++  .hp-cat-rail {
++    display: grid;
++    grid-template-columns: repeat(2, minmax(0, 1fr));
++    column-gap: 14px;
++    min-height: 0;
+   }
+ 
+-  .hp-cat-areas-head h3 {
+-    font-size: clamp(28px, 8vw, 36px);
++  .hp-cat-rail li + li {
++    border-top: none;
+   }
+ 
+-  .hp-cat-area-list {
+-    grid-template-columns: repeat(2, minmax(0, 1fr));
++  .hp-cat-rail li:nth-child(n + 3) {
++    border-top: 1px solid var(--cat-line);
+   }
+ 
+-  .hp-cat-area-list li:nth-child(odd) .hp-cat-area {
+-    border-left: 0;
+-    padding-left: 0;
++  .hp-cat-rail-item {
++    grid-template-columns: 44px minmax(0, 1fr) 32px;
++    gap: 10px;
++    min-width: 0;
+   }
+ 
+-  .hp-cat-area-list li:nth-child(4) .hp-cat-area {
+-    padding-left: 16px;
+-    border-left: 1px solid var(--cat-line);
++  .hp-cat-thumb {
++    width: 44px;
++    height: 44px;
+   }
+ 
+-  .hp-cat-area {
+-    justify-items: start;
+-    text-align: left;
+-    padding: 16px 0 16px 16px;
++  .hp-cat-go {
++    width: 32px;
++    height: 32px;
++    font-size: 13px;
++  }
++
++  .hp-cat-rail-copy em {
++    font-size: 12px;
++    line-height: 1.4;
++  }
++}
++
++@media (max-width: 720px) {
++  .hp-cat-facts {
++    display: none;
++  }
++
++  .hp-cat-rail-item {
++    padding: 14px 0;
++  }
++
++  .hp-cat-rail li:first-child .hp-cat-rail-item {
++    padding-top: 0;
+   }
+ }
+ 
+ @media (max-width: 430px) {
++  .hp-cat-rail {
++    grid-template-columns: 1fr;
++  }
++
++  .hp-cat-rail li:nth-child(n + 2) {
++    border-top: 1px solid var(--cat-line);
++  }
++
++  .hp-cat-rail li:nth-child(n + 3) {
++    border-top: 1px solid var(--cat-line);
++  }
++
+   .hp-cat-specimen-file {
+     flex-direction: column;
+     gap: 4px;
+diff --git a/src/components/home/SkylentHomeChapters.css b/src/components/home/SkylentHomeChapters.css
+index f20db11..a9a233f 100644
+--- a/src/components/home/SkylentHomeChapters.css
++++ b/src/components/home/SkylentHomeChapters.css
+@@ -163,6 +163,14 @@
+   }
+ }
+ 
++@media (max-width: 760px) {
++  .hp-ch-split {
++    grid-template-columns: 1fr;
++    gap: clamp(28px, 6vh, 48px);
++    min-width: 0;
++  }
++}
++
+ @media (max-width: 768px) {
+   .hp-ch-split {
+     grid-template-columns: 1fr;
+diff --git a/src/components/home/SkylentHomeEducation.css b/src/components/home/SkylentHomeEducation.css
+index e5cab96..2fdced0 100644
+--- a/src/components/home/SkylentHomeEducation.css
++++ b/src/components/home/SkylentHomeEducation.css
+@@ -371,6 +371,46 @@
+   }
+ }
+ 
++@media (max-width: 760px) {
++  .hp-edu-stage,
++  .hp-edu-board,
++  .hp-edu-levels,
++  .hp-edu-level {
++    min-width: 0;
++    max-width: 100%;
++  }
++
++  .hp-edu-copy .hp-ch-title {
++    max-width: none;
++  }
++
++  .hp-edu-board-head h3 {
++    font-size: clamp(22px, 5.5vw, 28px);
++  }
++
++  .hp-edu-level {
++    grid-template-columns: 32px minmax(0, 1fr);
++    grid-template-areas:
++      "idx copy"
++      "idx glyph";
++    align-items: start;
++    padding: 14px 0;
++  }
++
++  .hp-edu-idx {
++    grid-area: idx;
++  }
++
++  .hp-edu-glyph {
++    grid-area: glyph;
++    max-width: min(168px, 100%);
++  }
++
++  .hp-edu-level-copy {
++    grid-area: copy;
++  }
++}
++
+ @media (max-width: 768px) {
+   .hp-edu-board-head {
+     flex-direction: column;
+diff --git a/src/components/home/SkylentHomeEvidence.css b/src/components/home/SkylentHomeEvidence.css
+index 876f44a..0f39c82 100644
+--- a/src/components/home/SkylentHomeEvidence.css
++++ b/src/components/home/SkylentHomeEvidence.css
+@@ -9,9 +9,9 @@
+   --ev-wash: #f6f6f7;
+   --ev-accent: #4f46e5;
+   --ev-orange: #f97316;
+-  background: #ffffff;
++  background: transparent;
+   color: var(--ev-ink);
+-  padding: clamp(64px, 9vh, 112px) 0 clamp(56px, 8vh, 104px);
++  padding: clamp(52px, 7vh, 88px) 0 clamp(48px, 7vh, 80px);
+   overflow-x: clip;
+ }
+ 
+@@ -66,6 +66,73 @@
+   text-wrap: pretty;
+ }
+ 
++.hp-ev-chain {
++  list-style: none;
++  margin: 28px 0 0;
++  padding: 0;
++  display: grid;
++  gap: 0;
++  border-top: 1px solid var(--ev-line);
++}
++
++.hp-ev-chain li {
++  border-bottom: 1px solid var(--ev-line);
++}
++
++.hp-ev-chain a {
++  display: grid;
++  grid-template-columns: 2.5rem minmax(0, 1fr);
++  gap: 12px;
++  padding: 14px 4px 14px 0;
++  color: inherit;
++  text-decoration: none;
++}
++
++.hp-ev-chain a:hover strong {
++  color: var(--ev-accent);
++}
++
++.hp-ev-chain a:focus-visible {
++  outline: 2px solid var(--ev-accent);
++  outline-offset: 2px;
++  border-radius: 4px;
++}
++
++.hp-ev-chain-index {
++  color: var(--ev-muted);
++  font: 500 11px/1 var(--font-mono);
++  letter-spacing: 0.08em;
++  padding-top: 3px;
++}
++
++.hp-ev-chain-copy {
++  display: grid;
++  gap: 3px;
++  min-width: 0;
++}
++
++.hp-ev-chain-copy strong {
++  color: var(--ev-ink);
++  font-size: 15px;
++  font-weight: 600;
++  letter-spacing: -0.02em;
++}
++
++.hp-ev-chain-copy em {
++  color: var(--ev-secondary);
++  font-size: 13px;
++  font-style: normal;
++  line-height: 1.45;
++}
++
++.hp-ev-specimen-label {
++  margin: 22px 0 0;
++  color: var(--ev-muted);
++  font: 500 11px/1.4 var(--font-mono);
++  letter-spacing: 0.14em;
++  text-transform: uppercase;
++}
++
+ .hp-ev-work {
+   min-width: 0;
+   overflow: hidden;
+@@ -363,6 +430,42 @@
+   }
+ }
+ 
++@media (max-width: 760px) {
++  .hp-ev-stage,
++  .hp-ev-copy,
++  .hp-ev-work {
++    min-width: 0;
++    max-width: 100%;
++  }
++
++  .hp-ev-chain {
++    margin-top: 24px;
++    border-top: 0;
++    border-left: 2px solid rgba(79, 70, 229, 0.22);
++    margin-left: 3px;
++    padding-left: 14px;
++  }
++
++  .hp-ev-chain li {
++    border-bottom: 0;
++  }
++
++  .hp-ev-chain li + li {
++    margin-top: 2px;
++    padding-top: 2px;
++    border-top: 1px solid var(--ev-line);
++  }
++
++  .hp-ev-chain a {
++    padding: 12px 0;
++  }
++
++  .hp-ev-artifact,
++  .hp-ev-artifact img {
++    max-width: 100%;
++  }
++}
++
+ @media (max-width: 900px) {
+   .hp-section.hp-ev {
+     padding: 36px 0 40px;
+diff --git a/src/components/home/SkylentHomeFinal.css b/src/components/home/SkylentHomeFinal.css
+index 066b825..a3bc501 100644
+--- a/src/components/home/SkylentHomeFinal.css
++++ b/src/components/home/SkylentHomeFinal.css
+@@ -60,9 +60,29 @@
+   }
+ }
+ 
++@media (max-width: 760px) {
++  .hp-end-stage,
++  .hp-end-copy,
++  .hp-end-links {
++    min-width: 0;
++    max-width: 100%;
++  }
++
++  .hp-end-title {
++    max-width: none;
++  }
++}
++
+ @media (max-width: 430px) {
+   .hp-end-links {
+     flex-direction: column;
+-    align-items: flex-start;
++    align-items: stretch;
++    width: 100%;
++  }
++
++  .hp-end-primary {
++    justify-content: center;
++    width: 100%;
++    box-sizing: border-box;
+   }
+ }
+diff --git a/src/components/home/SkylentHomeGoals.css b/src/components/home/SkylentHomeGoals.css
+index 7c968a1..2acc9f4 100644
+--- a/src/components/home/SkylentHomeGoals.css
++++ b/src/components/home/SkylentHomeGoals.css
+@@ -248,13 +248,11 @@
+   border-top: 1px solid var(--dir-line);
+ }
+ 
+-.hp-dir-foot p {
++.hp-dir-foot-note {
+   margin: 0;
+-  color: var(--dir-ink);
+-  font-family: var(--font-brand);
+-  font-size: clamp(20px, 2.2vw, 28px);
+-  font-weight: 600;
+-  letter-spacing: -0.03em;
++  color: var(--dir-secondary);
++  font-size: 15px;
++  line-height: 1.45;
+ }
+ 
+ .hp-dir-foot a {
+@@ -436,3 +434,21 @@
+     margin-top: 32px;
+   }
+ }
++
++@media (max-width: 760px) {
++  .hp-dir-stage,
++  .hp-dir-spine,
++  .hp-dir-foot {
++    min-width: 0;
++    max-width: 100%;
++  }
++
++  .hp-dir-spine-item {
++    min-height: 44px;
++    padding: 14px 0 16px;
++  }
++
++  .hp-dir-spine-item b {
++    font-size: clamp(20px, 5.5vw, 24px);
++  }
++}
+diff --git a/src/components/home/SkylentHomeOSArchitecture.css b/src/components/home/SkylentHomeOSArchitecture.css
+index 6e90d32..6597827 100644
+--- a/src/components/home/SkylentHomeOSArchitecture.css
++++ b/src/components/home/SkylentHomeOSArchitecture.css
+@@ -93,12 +93,20 @@ a.hp-osx-n:hover {
+   color: var(--osx-accent);
+ }
+ 
+-@media (max-width: 430px) {
++@media (max-width: 760px) {
++  .hp-osx-stage,
++  .hp-ch-copy,
++  .hp-osx-frame {
++    min-width: 0;
++    max-width: 100%;
++  }
++
+   .hp-osx-arch {
+     display: grid;
+     aspect-ratio: auto;
+-    gap: 14px;
++    gap: 12px;
+     justify-items: start;
++    max-width: 100%;
+     padding: 8px 0 8px 18px;
+     border-left: 1px solid rgba(79, 70, 229, 0.28);
+   }
+@@ -117,6 +125,19 @@ a.hp-osx-n:hover {
+     position: static;
+     transform: none;
+     padding: 0;
++    font-size: clamp(17px, 4.5vw, 19px);
++    white-space: normal;
++  }
++}
++
++@media (max-width: 430px) {
++  .hp-osx-n,
++  .hp-osx-n.is-learn,
++  .hp-osx-n.is-practice,
++  .hp-osx-n.is-labs,
++  .hp-osx-n.is-projects,
++  .hp-osx-n.is-evidence,
++  .hp-osx-n.is-career {
+     font-size: 18px;
+   }
+ }
+diff --git a/src/pages/HomePage.css b/src/pages/HomePage.css
+index 6e8bd5b..3231a44 100644
+--- a/src/pages/HomePage.css
++++ b/src/pages/HomePage.css
+@@ -1,46 +1,102 @@
+-/* Homepage — discovery platform, product-led */
++/* Homepage — Phase 4 visual shell + shared discovery utilities */
+ 
+ html:has(.home-p3),
+ html:has(.home-p3) body {
+-  background: #ffffff !important;
++  background: var(--skylent-color-paper) !important;
++  overflow-x: clip;
+ }
+ 
+ .skylent-public-canvas:has(.home-p3) {
+-  background: #ffffff !important;
++  background: var(--skylent-color-paper) !important;
+ }
+ 
+ .skylent-public-canvas:has(.home-p3) .skylent-site-nav,
+ .skylent-public-canvas:has(.home-p3) .skylent-site-footer {
+-  background: #ffffff !important;
++  background: color-mix(in srgb, var(--skylent-color-paper) 94%, var(--skylent-color-cream)) !important;
+ }
+ 
+ .home-p3 {
+-  background: #ffffff;
+-  color: #15171a;
++  position: relative;
++  background: var(--skylent-color-paper);
++  color: var(--skylent-color-ink);
+   overflow-x: clip;
+   overflow-y: visible;
+ }
+ 
++.home-p3::before {
++  content: "";
++  position: absolute;
++  inset: 0;
++  pointer-events: none;
++  z-index: 0;
++  background:
++    radial-gradient(ellipse 78% 48% at 8% -6%, rgba(249, 115, 22, 0.08), transparent 58%),
++    radial-gradient(ellipse 62% 42% at 92% 2%, rgba(79, 70, 229, 0.06), transparent 52%);
++}
++
++.home-p3 > * {
++  position: relative;
++  z-index: 1;
++}
++
++/* Phase 4 — shared editorial typography (page-level; section detail stays in component CSS) */
++.hp-eyebrow {
++  margin: 0;
++  font-family: var(--skylent-t-eyebrow-family);
++  font-size: var(--skylent-t-eyebrow-size);
++  line-height: var(--skylent-t-eyebrow-line);
++  font-weight: var(--skylent-t-eyebrow-weight);
++  letter-spacing: var(--skylent-t-eyebrow-tracking);
++  text-transform: uppercase;
++  color: var(--skylent-color-mark);
++}
++
++.hp-h2 {
++  margin: 10px 0 0;
++  max-width: 18em;
++  font-family: var(--skylent-t-heading-xl-family);
++  font-size: var(--skylent-t-heading-xl-size);
++  line-height: var(--skylent-t-heading-xl-line);
++  font-weight: var(--skylent-t-heading-xl-weight);
++  letter-spacing: var(--skylent-t-heading-xl-tracking);
++  color: var(--skylent-color-ink);
++  text-wrap: balance;
++}
++
++.hp-muted {
++  margin: 0 0 16px;
++  color: var(--skylent-color-slate);
++  font-size: 14px;
++}
++
+ .hp-kicker {
+   margin: 0;
+-  color: #f97316;
+-  font: 700 11px/1.3 var(--font-mono);
+-  letter-spacing: 0.16em;
++  color: var(--skylent-color-mark);
++  font-family: var(--skylent-t-eyebrow-family);
++  font-size: var(--skylent-t-eyebrow-size);
++  font-weight: var(--skylent-t-eyebrow-weight);
++  line-height: var(--skylent-t-eyebrow-line);
++  letter-spacing: var(--skylent-t-eyebrow-tracking);
+   text-transform: uppercase;
+ }
+ 
+ .hp-section {
+-  padding: 56px 0 64px;
++  padding: clamp(48px, 7vh, 80px) 0;
++  border-top: 1px solid var(--skylent-color-border-subtle);
++}
++
++.hp-hero.hp-lpb {
++  border-top: none;
+ }
+ 
+ .hp-head h2,
+ .hp-hero h1,
+ .hp-close h2,
+ .hp-display {
+-  font-family: var(--font-brand);
+-  font-weight: 600;
+-  letter-spacing: -0.035em;
+-  color: #15171a;
++  font-family: var(--skylent-t-heading-xl-family, var(--font-brand));
++  font-weight: var(--skylent-t-heading-xl-weight, 600);
++  letter-spacing: var(--skylent-t-heading-xl-tracking, -0.035em);
++  color: var(--skylent-color-ink);
+ }
+ 
+ .hp-head h2 {
+@@ -52,10 +108,11 @@ html:has(.home-p3) body {
+ 
+ .hp-lead {
+   margin: 12px 0 0;
+-  max-width: 38em;
+-  color: #5c6168;
+-  font-size: 16.5px;
+-  line-height: 1.55;
++  max-width: var(--skylent-measure-prose, 38em);
++  color: var(--skylent-color-slate);
++  font-family: var(--skylent-t-body-lg-family, var(--font-body));
++  font-size: var(--skylent-t-body-lg-size, 16.5px);
++  line-height: var(--skylent-t-body-lg-line, 1.55);
+ }
+ 
+ .hp-fine {
+@@ -819,6 +876,22 @@ html:has(.home-p3) body {
+ }
+ 
+ @media (max-width: 760px) {
++  .home-p3 {
++    overflow-x: clip;
++  }
++
++  .home-p3 .hp-rail {
++    min-width: 0;
++    width: min(100%, var(--rail));
++    box-sizing: border-box;
++  }
++
++  .home-p3 img,
++  .home-p3 video {
++    max-width: 100%;
++    height: auto;
++  }
++
+   .hp-loop-line,
+   .hp-work-pair,
+   .hp-edu-exams {
