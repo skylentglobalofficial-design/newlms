@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { PathwayTrack, SkylentOsPreview } from "../components/product/ProductLanguage"
-import { PROGRAMS_STUDY_CLASSROOM, PROGRAMS_STUDY_LIBRARY } from "../media"
+import { ProductVisual } from "../components/product/ProductVisuals"
 import { PublicEditorialShell } from "./public-editorial"
 
 const GAP_STAGES = [
@@ -120,14 +120,7 @@ export default function AboutPage() {
           </div>
           <figure className="pe-figure">
             <div className="pe-photo is-library">
-              <img
-                src={PROGRAMS_STUDY_LIBRARY}
-                alt="College students studying together at a library table"
-                width={1800}
-                height={1200}
-                fetchPriority="high"
-                decoding="async"
-              />
+              <ProductVisual id="about-ecosystem" className="pe-product-visual" label="Skylent · ecosystem" />
             </div>
             <figcaption>Learning as a shared practice</figcaption>
           </figure>
