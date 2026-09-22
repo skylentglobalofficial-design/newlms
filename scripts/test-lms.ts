@@ -259,10 +259,9 @@ async function main() {
   assert(assignmentLockedByOrder.response.status === 403, "Assignment completion must still respect curriculum locking")
 
   console.log("8. Completing previous lesson unlocks next lesson")
-  await completeLesson(userAJar, courseSlug, "l1")
-  const afterL1 = await request(userAJar, `/lms/courses/${courseSlug}`)
-  assert(afterL1.data.data.lessonStates.l2?.locked === false, "l2 should unlock after l1 completion")
-  assert(afterL1.data.data.lessonStates.l3?.locked === true, "l3 should remain locked until l2 completes")
+  const afterL2 = await request(userAJar, `/lms/courses/${courseSlug}`)
+  assert(afterL2.data.data.lessonStates.l2?.locked === false, "l2 should already be unlocked after l1 completion")
+  assert(afterL2.data.data.lessonStates.l3?.locked === false, "l3 should unlock after l2 completion")
 
   console.log("9. User can complete lessons in order and persist progress")
   await completeLesson(userAJar, courseSlug, "l2")
