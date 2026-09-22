@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { MaturityMark } from "../components/product/Architecture"
+import { ProductVisual } from "../components/product/ProductVisuals"
 import { SkylentOsPreview } from "../components/product/ProductLanguage"
 import { INSTITUTION_OS_LAYERS } from "../lib/product-architecture"
-import { PROGRAMS_STUDY_CAMPUS } from "../media"
 import { PublicEditorialShell } from "./public-editorial"
 
 type InstitutionType = {
@@ -212,14 +212,7 @@ export default function InstitutionsPage() {
           </div>
           <figure className="pe-figure">
             <div className="pe-photo is-campus">
-              <img
-                src={PROGRAMS_STUDY_CAMPUS}
-                alt="A university student working on a laptop on campus"
-                width={1800}
-                height={1200}
-                fetchPriority="high"
-                decoding="async"
-              />
+              <ProductVisual id="institution-ops" className="pe-product-visual" label="Institution · operations" />
             </div>
             <figcaption>Study on campus — not a live class</figcaption>
           </figure>
