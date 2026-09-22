@@ -179,6 +179,13 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
         return res.status(400).json({ error: "Program has no linked courses" })
       }
 
+      const hasAuthoredCourse = program.programCourses.some(
+        (link) => link.course.curriculum.some((module) => module.nodes.length > 0),
+      )
+      if (!hasAuthoredCourse) {
+        return res.status(400).json({ error: "Program has no authored courses available for enrollment" })
+      }
+
       const existing = await prisma.userEnrollment.findUnique({
         where: { userId_programId: { userId, programId: program.id } },
       })
