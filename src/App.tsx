@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
-import { C, Nav, Footer, globalCSS } from './components/shared'
-import { PublicCanvas } from './components/foundation'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { globalCSS } from './components/shared'
+
 import { AuthProvider } from './context/AuthContext'
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard'
 import { DemoStateProvider } from './demo/DemoStateContext'
@@ -17,8 +17,6 @@ const OSPage = lazy(() => import('./pages/OSPage'))
 const InstitutionsPage = lazy(() => import('./pages/InstitutionsPage'))
 const UniversitiesPage = lazy(() => import('./pages/UniversitiesPage'))
 const LabsPage = lazy(() => import('./pages/LabsPage'))
-const LabDetailPage = lazy(() => import('./pages/LabDetailPage'))
-const ExperimentPage = lazy(() => import('./pages/ExperimentPage'))
 const StoriesPage = lazy(() => import('./pages/StoriesPage'))
 const AboutPage = lazy(() => import('./pages/AboutPage'))
 const ProgramPage = lazy(() => import('./pages/ProgramPage'))
@@ -44,6 +42,7 @@ const BlogPage = lazy(() => import('./pages/BlogPage'))
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
+const PathComingPage = lazy(() => import('./pages/PathComingPage'))
 const DashboardStudentPage = lazy(() => import('./pages/DashboardStudentPage'))
 const DashboardFacultyPage = lazy(() => import('./pages/DashboardFacultyPage'))
 const DashboardOrgPage = lazy(() => import('./pages/DashboardOrgPage'))
@@ -52,6 +51,7 @@ const DashboardAdminPage = lazy(() => import('./pages/DashboardAdminPage'))
 const LearnPage = lazy(() => import('./pages/LearnPage'))
 const NorthwindLabPage = lazy(() => import('./pages/NorthwindLabPage'))
 const NorthwindProjectPage = lazy(() => import('./pages/NorthwindProjectPage'))
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 
 function AppRoutes() {
   return (
@@ -63,6 +63,8 @@ function AppRoutes() {
         <Route path="/education/undergraduate" element={<UndergraduatePage />} />
         <Route path="/education/postgraduate" element={<PostgraduatePage />} />
         <Route path="/education/exams" element={<ExamsPage />} />
+        <Route path="/exams" element={<Navigate to="/education/exams" replace />} />
+        <Route path="/exams/:slug" element={<PathComingPage />} />
         <Route path="/skills" element={<SkillsPage />} />
         <Route path="/career-os" element={<CareerOSLayout />}>
           <Route index element={<CareerOSOverviewPage />} />
@@ -104,11 +106,11 @@ function AppRoutes() {
         <Route path="/career" element={<Navigate to="/career-os" replace />} />
         <Route path="/universities" element={<UniversitiesPage />} />
         <Route path="/labs" element={<LabsPage />} />
-        <Route path="/labs/:labId" element={<LabDetailPage />} />
-        <Route path="/labs/:labId/:experimentId" element={<ExperimentPage />} />
+        <Route path="/labs/:labId" element={<Navigate to="/labs" replace />} />
+        <Route path="/labs/:labId/:experimentId" element={<Navigate to="/labs" replace />} />
         <Route path="/jobs" element={<Navigate to="/career-os/jobs" replace />} />
         <Route path="/jobs/:id" element={<Navigate to="/career-os/jobs" replace />} />
-        <Route path="*" element={<PublicCanvas themeId="general"><Nav /><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md" style={{ color: C.ink }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></PublicCanvas>} />
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
   )

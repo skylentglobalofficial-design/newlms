@@ -52,7 +52,7 @@ export default function LabDetailPage() {
     return (
       <div style={{ minHeight: '100vh', background: C.canvas, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, fontFamily: 'var(--font-body)' }}>
         <div style={{ color: C.ink, fontSize: 24, fontFamily: 'var(--font-display)', fontWeight: 600 }}>Lab not found</div>
-        <Link to="/labs" style={{ color: accent.text, textDecoration: 'none', fontSize: 14 }}>&larr; Back to Labs</Link>
+        <Link to="/os" style={{ color: accent.text, textDecoration: 'none', fontSize: 14 }}>&larr; Back to Skylent OS</Link>
       </div>
     )
   }
@@ -64,9 +64,9 @@ export default function LabDetailPage() {
     <div className="skylent-lab-shell" style={{ minHeight: '100vh', background: C.canvas, fontFamily: 'var(--font-body)', display: 'flex', flexDirection: 'column' }}>
       {/* Top bar */}
       <div style={{ height: 52, background: C.cream, borderBottom: `1px solid ${'rgba(21,23,26,0.10)'}`, display: 'flex', alignItems: 'center', padding: '0 28px', gap: 16, flexShrink: 0, position: 'sticky', top: 0, zIndex: 50 }}>
-        <button onClick={() => navigate('/labs')} style={{ background: 'none', border: 'none', color: C.slate, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontFamily: 'var(--font-body)', padding: 0, flexShrink: 0 }}>
+        <button onClick={() => navigate('/os')} style={{ background: 'none', border: 'none', color: C.slate, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontFamily: 'var(--font-body)', padding: 0, flexShrink: 0 }}>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="15 18 9 12 15 6"/></svg>
-          Back to Labs
+          Back to Skylent OS
         </button>
         <div style={{ color: C.slate, fontSize: 14 }}>/</div>
         <div style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>

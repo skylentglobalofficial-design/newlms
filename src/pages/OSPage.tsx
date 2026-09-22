@@ -1,123 +1,191 @@
-import { Link } from 'react-router-dom'
-import { C, PageShell } from '../components/shared'
-import { T } from '../tokens'
+import { useState } from "react"
+import { Link } from "react-router-dom"
+import { PageShell } from "../components/shared"
+import { PracticePillarSubnav } from "../components/product/Architecture"
+import { CourseWorkspacePreview } from "../components/product/ProductLanguage"
+import { courses } from "../data"
+import { countStaticCourseLessons } from "../lib/curriculum-counts"
+import { coursePracticeGroups, courseLessonStats } from "../lib/catalog-maturity"
+import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG } from "../lib/authored-courses"
+import "./Catalog.css"
 
-const SURFACES = [
-  {
-    title: 'Courses and lessons',
-    body: 'Open an enrolled course and move through video, reading, quizzes, and assignments in one workspace.',
+const analytics = courses.find((course) => course.slug === FLAGSHIP_COURSE_SLUG)
+const product = courses.find((course) => course.slug === PRODUCT_MANAGEMENT_SLUG)
+
+const authored = [analytics, product].filter(Boolean) as NonNullable<typeof analytics>[]
+
+/** Everything the workspace holds today, counted from the authored courses. */
+const workspaceScope = authored.reduce(
+  (total, course) => {
+    const stats = courseLessonStats(course)
+    const groups = coursePracticeGroups(course)
+    return {
+      courses: total.courses + 1,
+      modules: total.modules + stats.moduleCount,
+      lessons: total.lessons + stats.lessonCount,
+      checks: total.checks + groups.practice.length,
+      assignments: total.assignments + groups.assignments.length,
+      capstones: total.capstones + groups.capstone.length,
+    }
   },
-  {
-    title: 'Practice',
-    body: 'Check understanding with quizzes and turn briefs into work you can keep as evidence.',
-  },
-  {
-    title: 'Progress',
-    body: 'See what you have completed and what comes next from the student dashboard.',
-  },
-]
+  { courses: 0, modules: 0, lessons: 0, checks: 0, assignments: 0, capstones: 0 },
+)
 
 export default function OSPage() {
+  const [hero, setHero] = useState<"analytics" | "product">("analytics")
+  const featured = hero === "product" && product ? product : analytics
+  const firstLesson = featured?.modules[0]?.lessons[0]
+  const firstQuiz = featured?.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")
+  const capstone = featured?.modules.flatMap((module) => module.lessons).find((lesson) => /capstone|product case/i.test(lesson.title))
+
   return (
     <PageShell aurora={false}>
-      <section
-        className="os-gateway"
-        style={{
-          background: C.canvas,
-          minHeight: 'calc(100vh - 64px)',
-          padding: 'clamp(48px, 8vw, 96px) 32px 80px',
-        }}
-      >
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          <p className="skylent-label" style={{ color: C.indigo, marginBottom: 16 }}>
-            Skylent OS
-          </p>
-          <h1
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(32px, 4.4vw, 48px)',
-              fontWeight: 600,
-              color: C.ink,
-              letterSpacing: '-0.03em',
-              lineHeight: 1.12,
-              margin: '0 0 16px',
-            }}
-          >
-            Your learning workspace
-          </h1>
-          <p style={{ color: C.slate, fontSize: 17, lineHeight: 1.7, margin: '0 0 36px', maxWidth: 540 }}>
-            Skylent OS is the student workspace for courses, lessons, practice, and progress. It is the same product as the student dashboard and course study view — not a separate operating system.
-          </p>
-
-          <ul style={{ listStyle: 'none', margin: 0, padding: 0, borderTop: `1px solid ${T.lineStrong}` }}>
-            {SURFACES.map((item) => (
-              <li
-                key={item.title}
-                style={{
-                  padding: '20px 0',
-                  borderBottom: `1px solid ${T.lineLight}`,
-                }}
-              >
-                <div style={{ color: C.ink, fontSize: 17, fontWeight: 600, marginBottom: 6 }}>{item.title}</div>
-                <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.65, margin: 0 }}>{item.body}</p>
-              </li>
-            ))}
-          </ul>
-
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 32 }}>
-            <Link
-              to="/login"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                minHeight: 44,
-                padding: '0 18px',
-                background: C.indigo,
-                color: C.white,
-                borderRadius: T.rControl,
-                textDecoration: 'none',
-                fontSize: 14,
-                fontWeight: 600,
-              }}
-            >
-              Sign in
-            </Link>
-            <Link
-              to="/courses"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                minHeight: 44,
-                padding: '0 18px',
-                background: C.cream,
-                color: C.ink,
-                border: `1px solid ${T.lineStrong}`,
-                borderRadius: T.rControl,
-                textDecoration: 'none',
-                fontSize: 14,
-                fontWeight: 600,
-              }}
-            >
-              Browse courses
-            </Link>
-            <Link
-              to="/dashboard/student"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                minHeight: 44,
-                padding: '0 18px',
-                color: C.indigo,
-                textDecoration: 'none',
-                fontSize: 14,
-                fontWeight: 600,
-              }}
-            >
-              Student dashboard →
-            </Link>
+      <div className="cat-page">
+        <div className="cat-pillar-bar">
+          <div className="cat-rail">
+            <PracticePillarSubnav current="os" />
           </div>
         </div>
-      </section>
+        <section className="cat-hero">
+          <div className="cat-rail cat-hero-split">
+            <div>
+              <p className="cat-label">Skylent OS · public entry</p>
+              <h1>Your learning workspace</h1>
+              <p className="cat-lead">
+                This page explains the workspace. After you enrol, lessons, checks, and assignments open in Skylent
+                OS — the same surface as the student dashboard. It is not a public project marketplace.
+              </p>
+              <div className="cat-actions">
+                <Link className="cat-btn cat-btn-primary cat-btn-lg" to="/courses/data-analytics">Start Data Analytics</Link>
+                <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">Start Product Management</Link>
+                <Link className="cat-btn cat-btn-ghost" to="/login">Sign in to your workspace</Link>
+              </div>
+              <p className="cat-honesty">
+                Open a course, enrol, then Skylent OS starts at the first lesson. Payment is not collected in this pilot.
+              </p>
+
+              <p className="cat-label os-scope-label">In the workspace today</p>
+              <div className="cat-facts os-scope">
+                {[
+                  ["Authored courses", workspaceScope.courses],
+                  ["Modules", workspaceScope.modules],
+                  ["Lessons", workspaceScope.lessons],
+                  ["Checks", workspaceScope.checks],
+                  ["Assignments", workspaceScope.assignments],
+                  ["Capstones", workspaceScope.capstones],
+                ].map(([label, value]) => (
+                  <div className="cat-fact" key={label}>
+                    <span>{label}</span>
+                    <strong>{value}</strong>
+                  </div>
+                ))}
+              </div>
+              <p className="cat-fine">
+                Counted from the two authored courses. Other catalogue courses open an outline, not a finished
+                teaching path.
+              </p>
+            </div>
+            {featured ? (
+              <div className="cat-hero-visual">
+                <p className="cat-preview-caption">What you open after enrol</p>
+                <div className="cat-hero-switch" role="tablist" aria-label="Course workspace preview">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={hero === "analytics"}
+                    className={hero === "analytics" ? "is-on" : undefined}
+                    onClick={() => setHero("analytics")}
+                  >
+                    Data Analytics
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={hero === "product"}
+                    className={hero === "product" ? "is-on" : undefined}
+                    onClick={() => setHero("product")}
+                  >
+                    Product Management
+                  </button>
+                </div>
+                <CourseWorkspacePreview
+                  courseTitle={featured.title}
+                  lessonTitle={firstLesson?.title ?? "Open the first lesson"}
+                  practiceTitle={firstQuiz?.title ?? "A short check"}
+                  workTitle={capstone?.title ?? "Capstone"}
+                  modules={featured.modules.map((module) => module.title)}
+                  lessonCount={countStaticCourseLessons(featured)}
+                  visual={hero === "product" ? "harbor-desk" : "northwind"}
+                  marketing
+                />
+              </div>
+            ) : null}
+          </div>
+        </section>
+
+        <section className="cat-band" aria-labelledby="os-lives-title">
+          <div className="cat-rail">
+            <h2 id="os-lives-title">What lives here</h2>
+            <div className="cat-caps is-4">
+              <article className="cat-cap">
+                <strong>Courses and lessons</strong>
+                <p>Move through written work in the enrolled course. Lesson bodies stay in this workspace.</p>
+              </article>
+              <article className="cat-cap">
+                <strong>Practice</strong>
+                <p>Short checks after a block of lessons. Five out of five to pass a check.</p>
+              </article>
+              <article className="cat-cap">
+                <strong>Practical work</strong>
+                <p>Assignments and a capstone produced against the course material, not a worked example.</p>
+              </article>
+              <article className="cat-cap">
+                <strong>Progress and evidence</strong>
+                <p>
+                  The student dashboard tracks what is done. Finished work can be carried into Career OS as
+                  evidence.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section className="cat-section" aria-labelledby="os-work-title">
+          <div className="cat-rail">
+            <p className="cat-label">What you actually produce</p>
+            <h2 id="os-work-title">Named work, not a worked example.</h2>
+            <p className="cat-lead">
+              Each authored course ends in a capstone you keep. These are the real assignment titles inside the
+              workspace.
+            </p>
+            <div className="os-produce">
+              {authored.map((course) => {
+                const groups = coursePracticeGroups(course)
+                return (
+                  <article className="os-produce-item" key={course.slug}>
+                    <p className="os-produce-course">{course.title}</p>
+                    <ul>
+                      {[...groups.assignments, ...groups.capstone].map((lesson) => (
+                        <li key={lesson.id} className={/capstone/i.test(lesson.title) ? "is-capstone" : undefined}>
+                          <span>{/capstone/i.test(lesson.title) ? "Capstone" : "Assignment"}</span>
+                          <strong>{lesson.title.replace(/^capstone\s*[—–-]\s*/i, "")}</strong>
+                        </li>
+                      ))}
+                    </ul>
+                    <Link className="cat-text-link" to={`/courses/${course.slug}`}>
+                      Open {course.title} →
+                    </Link>
+                  </article>
+                )
+              })}
+            </div>
+            <p className="cat-fine">
+              Written lessons, checks, assignments, and the capstone all open after you enrol. There is no video
+              stream and no live classroom.
+            </p>
+          </div>
+        </section>
+      </div>
     </PageShell>
   )
 }

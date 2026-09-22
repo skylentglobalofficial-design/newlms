@@ -15,6 +15,7 @@ export function LearningWorkspacePanel({
   progressPct,
   completedCount,
   totalLessons,
+  lessonIndex,
   moduleTitle,
   moduleIndex,
   moduleTotal,
@@ -32,6 +33,7 @@ export function LearningWorkspacePanel({
   progressPct: number
   completedCount: number
   totalLessons: number
+  lessonIndex: number
   moduleTitle: string
   moduleIndex: number
   moduleTotal: number
@@ -53,10 +55,13 @@ export function LearningWorkspacePanel({
           {programName ? (
             <p className="dash-continue-meta">Opened through {programName}</p>
           ) : null}
-          <div className="os-progress">
+          <div
+            className="os-progress"
+            aria-label={`Module ${moduleIndex} of ${moduleTotal}, lesson ${lessonIndex} of ${totalLessons}, ${completedCount} complete`}
+          >
             <div className="os-progress-meta">
-              <span>{completedCount} of {totalLessons} lessons</span>
-              <span>{progressPct}%</span>
+              <span>Module {moduleIndex} of {moduleTotal}</span>
+              <span>Lesson {lessonIndex} of {totalLessons}</span>
             </div>
             <div className="os-progress-bar" aria-hidden="true">
               <span style={{ width: `${progressPct}%` }} />
@@ -186,7 +191,7 @@ export function StudentActionRail({
           })
         )}
       </section>
-      <section>
+      <section id="student-practice">
         <h2>Practice and work</h2>
         {practice.length === 0 ? (
           <p className="dash-empty-copy">Quizzes and assignments appear here when they unlock.</p>
@@ -213,11 +218,11 @@ export function StudentActionRail({
           ))
         )}
       </section>
-      <section>
+      <section id="student-evidence">
         <h2>Learning evidence</h2>
         <div className="dash-item-title">{evidenceTitle}</div>
         <p className="dash-empty-copy" style={{ margin: '6px 0 12px' }}>{evidenceDetail}</p>
-        <Link className="os-link" to="/career-os">View in Career OS</Link>
+        <Link className="os-link" to="/career-os/projects">View in Career OS</Link>
       </section>
     </div>
   )

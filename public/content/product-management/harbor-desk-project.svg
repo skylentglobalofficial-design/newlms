@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="340" viewBox="0 0 960 340" fill="none">
+  <rect width="960" height="340" fill="#F4F4F5"/>
+  <rect x="24" y="18" width="912" height="304" rx="8" fill="#FFFFFF" stroke="#E6E7EA"/>
+
+  <text x="48" y="46" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="10" font-weight="500" letter-spacing="1.6">CASE ARTIFACT</text>
+  <text x="430" y="46" fill="#4F46E5" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600">Ready for review</text>
+
+  <text x="48" y="76" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="22" font-weight="600" letter-spacing="-0.4">Weekend exception queue</text>
+  <text x="48" y="100" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13">Harbor Retail - 4-5 July 2026 - before the store opens</text>
+
+  <line x1="48" y1="116" x2="912" y2="116" stroke="#E6E7EA"/>
+
+  <rect x="48" y="130" width="864" height="50" rx="4" fill="#F7F7F8"/>
+  <rect x="48" y="130" width="3" height="50" rx="1.5" fill="#4F46E5"/>
+  <text x="64" y="151" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="600">T. Nagar</text>
+  <text x="480" y="151" fill="#4F46E5" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="600">UNOWNED</text>
+  <text x="64" y="170" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5">Late inbound. Milk truck missed 06:30. No owner.</text>
+
+  <text x="64" y="202" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="500">Peelamedu</text>
+  <text x="480" y="202" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500">BURIED</text>
+  <text x="64" y="221" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5">Weekend delivery failure. On-call group, 43 unread.</text>
+
+  <line x1="48" y1="236" x2="912" y2="236" stroke="#EEEEF0"/>
+
+  <text x="64" y="258" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13.5" font-weight="500">Anna Nagar</text>
+  <text x="480" y="258" fill="#5C6168" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500">UNLOGGED</text>
+  <text x="64" y="277" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12.5">Customer WhatsApp to the cashier. Never in a channel.</text>
+
+  <line x1="48" y1="292" x2="912" y2="292" stroke="#E6E7EA"/>
+  <text x="48" y="314" fill="#8A8F96" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500" letter-spacing="0.8">BET</text>
+  <text x="84" y="314" fill="#15171A" font-family="ui-sans-serif, system-ui, sans-serif" font-size="13" font-weight="500">One named weekend queue. An owner before 07:00.</text>
+</svg>

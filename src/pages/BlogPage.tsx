@@ -17,7 +17,7 @@ export default function BlogPage() {
 
   return (
     <PageShell auroraTheme="general">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 32}px ${T.gutter} clamp(40px, 5vw, 56px)` }}>
+      <section style={{ position: 'relative', overflow: 'hidden', padding: `32px ${T.gutter} clamp(40px, 5vw, 56px)` }}>
         <Aurora themeId="general" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <div className="two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr', gap: 'clamp(28px, 5vw, 48px)', alignItems: 'center' }}>

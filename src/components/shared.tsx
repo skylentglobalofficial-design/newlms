@@ -1,8 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import type { Job } from '../data'
 import { useAuth } from '../context/AuthContext'
-import { useDemoState } from '../demo/DemoStateContext'
 import {
   courseEnrollmentMessage,
   programEnrollmentMessage,
@@ -10,7 +8,14 @@ import {
 } from '../lib/catalog-api'
 import { fulfillCatalogEnrollment, learnPathForWorkspace } from '../lib/catalog-enrollment'
 import type { UserRole } from '../context/AuthContext'
-import { buildPrimaryNav, FOOTER_COLS, MORE_NAV } from '../lib/product-architecture'
+import {
+  buildPrimaryNav,
+  FOOTER_COLS,
+  FOOTER_LEGAL_LABELS,
+  MORE_NAV,
+  type MegaNavGroup,
+  type MegaNavItem,
+} from '../lib/product-architecture'
 import { MaturityMark } from './product/Architecture'
 import { C, T } from '../tokens'
 import { PublicCanvas, useAuroraTheme } from './foundation'
@@ -19,13 +24,13 @@ import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 // Re-export color tokens for backward compatibility
 export { C } from '../tokens'
 
-// ─── PRODUCT VISUAL REFS (no remote URLs) ─────────────────────────────────────
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ PRODUCT VISUAL REFS (no remote URLs) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
 export const IMG = {
   studentsLecture: 'skylent:schooling-classroom',
   groupTech: 'skylent:fullstack-workspace',
 }
 
-// ─── HOOKS ────────────────────────────────────────────────────────────────────
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ HOOKS ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
 export function useFadeIn(threshold = 0.08) {
   const ref = useRef<HTMLDivElement>(null)
   const [visible, setVisible] = useState(false)
@@ -77,7 +82,7 @@ export function useCountUp(target: number, inView: boolean, duration = 1600) {
   return val
 }
 
-// ─── FADE IN COMPONENT ────────────────────────────────────────────────────────
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ FADE IN COMPONENT ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
 export function FadeIn({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
   const capped = Math.min(delay, 80)
   return (
@@ -87,7 +92,7 @@ export function FadeIn({ children, delay = 0, className }: { children: React.Rea
   )
 }
 
-// ─── ENROLLMENT MODAL (product access — no payment gateway yet) ───────────────
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ ENROLLMENT MODAL (product access ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â no payment gateway yet) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
 export type CatalogEnrollItem = {
   kind: 'course' | 'program'
   slug: string
@@ -151,7 +156,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
         ? 'Register interest'
         : 'Enrolment not available yet'
     : user
-      ? submitting ? 'Opening Skylent OS…' : 'Open Skylent OS'
+      ? submitting ? 'Opening Skylent OSÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦' : 'Open Skylent OS'
       : 'Sign in to enrol'
 
   return (
@@ -165,12 +170,12 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
             </div>
             <div id="enrollment-modal-title" style={{ color: C.ink, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{item.title}</div>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close enrolment dialog" style={{ background: C.sand, border: 'none', borderRadius: 7, padding: '7px 13px', cursor: 'pointer', color: C.slate, fontSize: 14 }}>✕</button>
+          <button type="button" onClick={onClose} aria-label="Close enrolment dialog" style={{ background: C.sand, border: 'none', borderRadius: 7, padding: '7px 13px', cursor: 'pointer', color: C.slate, fontSize: 14 }}>ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢</button>
         </div>
 
         <div style={{ background: C.warmWhite, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: '16px 18px', marginBottom: 16 }}>
           <div style={{ color: C.slate, fontSize: 13, marginBottom: 4 }}>Listed price</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 600, color: C.ink }}>₹{item.price.toLocaleString('en-IN')}</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 600, color: C.ink }}>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¹{item.price.toLocaleString('en-IN')}</div>
           <div id="enrollment-modal-copy" style={{ color: C.slate, fontSize: 13, marginTop: 8, lineHeight: 1.6 }}>
             Payment is not collected here yet. {item.enrollable ? 'If you are signed in, this opens Skylent OS. If you are not, you will be asked to sign in first.' : 'We will notify you when enrolment opens.'}
           </div>
@@ -200,121 +205,60 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
   )
 }
 
-// ─── APPLY MODAL (job application — separate from enrollment) ─────────────────
-export function ApplyModal({ job, onClose }: { job: Job; onClose: () => void }) {
-  const [step, setStep] = useState(0)
-  const steps = ['Profile', 'Resume', 'Screening', 'Review', 'Result']
-  const accent = getDomainAccent('career')
-  const demo = useDemoState()
-
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', onKey)
-    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKey) }
-  }, [onClose])
-
-  function handleContinue() {
-    if (step === 3) {
-      if (demo.hasApplied(job.id)) {
-        setStep(4)
-        return
-      }
-      demo.applyToJob({ id: job.id, role: job.role, company: job.company })
-      setStep(4)
-      return
-    }
-    setStep(s => s + 1)
-  }
-
-  return (
-    <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(21,23,26,0.35)', zIndex: 500 }} aria-hidden="true" />
-      <div role="dialog" aria-modal="true" aria-labelledby="apply-modal-title" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.cream, border: `1px solid ${T.lineStrong}`, borderRadius: 12, padding: 32, width: 520, maxWidth: '92vw', zIndex: 501, boxShadow: T.shadowLg, overflowY: 'auto', maxHeight: '90vh' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 28 }}>
-          <div>
-            <div style={{ color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>Job application</div>
-            <div id="apply-modal-title" style={{ color: C.ink, fontSize: 16, fontWeight: 600 }}>{job.role} · {job.company}</div>
-          </div>
-          <button type="button" onClick={onClose} aria-label="Close application dialog" style={{ background: C.sand, border: 'none', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', color: C.slate, fontSize: 15 }}>✕</button>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 28 }}>
-          {steps.map((s, i) => (
-            <div key={s} style={{ display: 'flex', alignItems: 'center', flex: i < steps.length - 1 ? 1 : 'none' }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minWidth: 44 }}>
-                <div style={{ width: 30, height: 30, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, background: i < step ? accent.primary : i === step ? C.ink : C.sand, color: i <= step ? (i < step ? C.white : C.white) : C.slate, marginBottom: 5, transition: 'all 0.3s' }}>{i < step ? '✓' : i + 1}</div>
-                <span style={{ fontSize: 9, color: i === step ? C.ink : C.slate, fontFamily: 'var(--font-mono)', whiteSpace: 'nowrap' }}>{s}</span>
-              </div>
-              {i < steps.length - 1 && <div style={{ flex: 1, height: 1, background: i < step ? accent.primary : 'rgba(11,13,15,0.12)', marginBottom: 18, transition: 'background 0.3s' }} />}
-            </div>
-          ))}
-        </div>
-        <div style={{ background: C.sand, borderRadius: 10, padding: 22, marginBottom: 20, minHeight: 130 }}>
-          {step === 0 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 14 }}>YOUR PROFILE</div><div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>{[['Full Name', 'Arjun Sharma'], ['Email', 'arjun@email.com'], ['Phone', '+91 98765 43210'], ['City', 'Bengaluru']].map(([l, v]) => <div key={l}><div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 4 }}>{l.toUpperCase()}</div><div style={{ background: C.white, borderRadius: 6, padding: '8px 12px', fontSize: 13, color: C.ink }}>{v}</div></div>)}</div></div>}
-          {step === 1 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 14 }}>Resume</div><div style={{ background: C.white, borderRadius: 8, padding: 14, display: 'flex', alignItems: 'center', gap: 12 }}><div style={{ width: 38, height: 38, borderRadius: 6, background: accent.subtle, display: 'flex', alignItems: 'center', justifyContent: 'center', color: accent.primary, fontSize: 18 }}>⬛</div><div><div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>Arjun_Sharma_Resume.pdf</div><div style={{ color: C.slate, fontSize: 11 }}>Sample resume · demo file</div></div><div style={{ marginLeft: 'auto', color: '#16a34a', fontSize: 10, fontFamily: 'var(--font-mono)' }}>Ready</div></div></div>}
-          {step === 2 && <div><div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', marginBottom: 12 }}>SCREENING QUESTION</div><div style={{ color: C.ink, fontSize: 14, lineHeight: 1.65, marginBottom: 10 }}>Why are you interested in this role?</div><div style={{ background: C.white, borderRadius: 6, padding: '10px 14px', color: C.slate, fontSize: 13, lineHeight: 1.6 }}>I am passionate about using data to drive decisions and have completed 4 industry projects during my Skylent program...</div></div>}
-          {step === 3 && <div style={{ textAlign: 'center', paddingTop: 8 }}><div style={{ color: C.ink, fontSize: 15, fontWeight: 600, marginBottom: 8 }}>Ready to submit</div><div style={{ color: C.slate, fontSize: 13, lineHeight: 1.6 }}>Your profile and screening answers will be saved locally as a demo application. No employer communication occurs.</div></div>}
-          {step === 4 && <div style={{ textAlign: 'center', paddingTop: 4 }}><div style={{ width: 48, height: 48, borderRadius: '50%', background: `linear-gradient(135deg, ${accent.primary}, ${accent.secondary})`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', fontSize: 20, color: C.white, fontWeight: 700 }}>✓</div><div style={{ color: C.ink, fontSize: 16, fontWeight: 600, marginBottom: 6 }}>Application submitted</div><div style={{ color: C.slate, fontSize: 13 }}>Status: Applied — view in Application Tracker below.</div></div>}
-        </div>
-        <div style={{ display: 'flex', gap: 10 }}>
-          {step > 0 && step < 4 && <button onClick={() => setStep(s => s - 1)} style={{ flex: 1, background: C.sand, border: 'none', color: C.ink, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>← Back</button>}
-          {step < 4 && <button type="button" onClick={handleContinue} style={{ flex: 2, background: accent.primary, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>{step === 3 ? 'Submit application' : 'Continue'}</button>}
-          {step === 4 && <button type="button" onClick={onClose} style={{ flex: 1, background: C.ink, border: 'none', color: C.white, borderRadius: 8, padding: 13, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Close</button>}
-        </div>
-      </div>
-    </>
-  )
-}
-
-// ─── JOB DRAWER ───────────────────────────────────────────────────────────────
-export function JobDrawer({ job, onClose, onApply }: { job: Job; onClose: () => void; onApply: () => void }) {
-  const careerAccent = getDomainAccent('career')
-  return (
-    <>
-      <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(21,23,26,0.35)', zIndex: 400 }} />
-      <div style={{ position: 'fixed', top: 0, right: 0, bottom: 0, width: 480, maxWidth: '95vw', background: C.cream, zIndex: 401, padding: 36, overflowY: 'auto', boxShadow: T.shadowLg, borderLeft: `1px solid ${T.lineLight}` }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 28 }}>
-          <div>
-            <h3 style={{ color: C.ink, fontSize: 21, fontFamily: 'var(--font-display)', fontWeight: 600, margin: '0 0 4px' }}>{job.role}</h3>
-            <div style={{ color: C.slate, fontSize: 13 }}>{job.company} · {job.location}</div>
-          </div>
-          <button onClick={onClose} style={{ background: C.sand, border: 'none', borderRadius: 6, padding: '7px 12px', cursor: 'pointer', color: C.slate, fontSize: 15 }}>✕</button>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 22 }}>
-          {[['Salary', job.salary], ['Experience', job.exp], ['Mode', job.mode], ['Location', job.location.split('/')[0].trim()]].map(([l, v]) => (
-            <div key={l} style={{ background: C.sand, borderRadius: 8, padding: 13 }}><div style={{ color: C.slate, fontSize: 9, fontFamily: 'var(--font-mono)', marginBottom: 3 }}>{l.toUpperCase()}</div><div style={{ color: C.ink, fontSize: 13, fontWeight: 600 }}>{v}</div></div>
-          ))}
-        </div>
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 8 }}>ABOUT THE ROLE</div>
-          <p style={{ color: C.ink, fontSize: 14, lineHeight: 1.75, margin: 0 }}>{job.desc}</p>
-        </div>
-        <div style={{ marginBottom: 28 }}>
-          <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em', marginBottom: 10 }}>REQUIRED SKILLS</div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {job.skills.map(s => <span key={s} style={{ background: 'rgba(243,107,33,0.08)', border: '1px solid rgba(243,107,33,0.2)', borderRadius: 6, padding: '5px 12px', color: C.ink, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{s}</span>)}
-          </div>
-        </div>
-        <button onClick={onApply} style={{ width: '100%', background: careerAccent.primary, border: 'none', color: C.white, borderRadius: 8, padding: '14px', fontSize: 15, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>Apply now</button>
-      </div>
-    </>
-  )
-}
-
-// ─── NAV (Learn · Study · Career) ─────────────────────────────────────────────
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ APPLY MODAL (job application ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â separate from enrollment) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
 function pathInGroup(label: string, to: string | undefined, pathname: string): boolean {
+  const examProgram =
+    pathname.startsWith('/programs/') &&
+    (pathname.includes('exam') || pathname.includes('cat') || pathname.includes('upsc'))
+
   if (label === 'Learn') {
-    return ['/skills', '/courses', '/programs'].some(p => pathname === p || pathname.startsWith(`${p}/`))
+    return (
+      pathname === '/courses' ||
+      pathname.startsWith('/courses/') ||
+      pathname === '/programs' ||
+      pathname.startsWith('/programs/')
+    )
   }
-  if (label === 'Study') {
-    return pathname.startsWith('/dashboard/student') || pathname.startsWith('/learn/')
+
+  if (label === 'Practice') {
+    return (
+      pathname === '/labs' ||
+      pathname.startsWith('/labs/') ||
+      pathname === '/os/projects' ||
+      pathname.startsWith('/os/projects/')
+    )
   }
+
+  if (label === 'Education') {
+    if (pathname === '/education/exams' || pathname.startsWith('/education/exams/')) return false
+    return pathname === '/education' || pathname.startsWith('/education/')
+  }
+
   if (label === 'Career') {
     return pathname === '/career-os' || pathname.startsWith('/career-os/')
   }
+
+  if (label === 'Competitive Exams') {
+    return pathname === '/education/exams' || pathname.startsWith('/exams/') || examProgram
+  }
+
   if (!to) return false
   return pathname === to || pathname.startsWith(`${to}/`)
 }
+
+function navLinkIsCurrent(to: string, pathname: string): boolean {
+  if (pathname === to) return true
+  if (to === '/') return false
+  return pathname.startsWith(`${to}/`)
+}
+
+/** Mobile menu uses flat pillar items (not desktop mega sections). */
+function mobileNavItemsForGroup(group: MegaNavGroup): MegaNavItem[] {
+  return [...group.items]
+}
+
+const MOBILE_MENU_FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
 function dashRoute(role: UserRole): string {
   switch (role) {
@@ -331,27 +275,48 @@ const navLinkHover = {
   leave: (e: React.MouseEvent<HTMLElement>) => { e.currentTarget.style.background = 'transparent' },
 }
 
+const SEARCH_SUGGESTIONS = [
+  { label: 'Data Analytics', to: '/courses/data-analytics' },
+  { label: 'Product Management', to: '/courses/product-management' },
+] as const
+
+function searchSuggestionsFor(query: string) {
+  const q = query.trim().toLowerCase()
+  if (!q) return SEARCH_SUGGESTIONS
+  return SEARCH_SUGGESTIONS.filter((item) => item.label.toLowerCase().includes(q))
+}
+
+function searchPathFor(query: string) {
+  const q = query.trim()
+  const exact = SEARCH_SUGGESTIONS.find((item) => item.label.toLowerCase() === q.toLowerCase())
+  return exact ? exact.to : `/courses?q=${encodeURIComponent(q)}`
+}
+
 export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeMenu, setActiveMenu] = useState<string | null>(null)
+  const [mobileExpandedGroup, setMobileExpandedGroup] = useState<string | null>(null)
   const [accountOpen, setAccountOpen] = useState(false)
   const [moreOpen, setMoreOpen] = useState(false)
-  const [searchOpen, setSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
   const navRef = useRef<HTMLElement>(null)
+  const menuTriggerRef = useRef<HTMLButtonElement>(null)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+  const mobileMenuWasOpenRef = useRef(false)
   const navigate = useNavigate()
   const location = useLocation()
   const { user, logout } = useAuth()
 
-  const primaryNav = buildPrimaryNav({
-    signedIn: Boolean(user),
-    isStudent: user?.role === 'student',
-  })
-
-  useEffect(() => {
-    if (searchOpen) searchRef.current?.focus()
-  }, [searchOpen])
+  const primaryNav = useMemo(
+    () =>
+      buildPrimaryNav({
+        signedIn: Boolean(user),
+        isStudent: user?.role === 'student',
+      }),
+    [user],
+  )
 
   useEffect(() => {
     if (!menuOpen) return
@@ -363,20 +328,83 @@ export function Nav() {
   useEffect(() => {
     setMenuOpen(false)
     setActiveMenu(null)
+    setMobileExpandedGroup(null)
     setAccountOpen(false)
     setMoreOpen(false)
+    setSearchOpen(false)
   }, [location.pathname])
 
   useEffect(() => {
-    function onKey(e: KeyboardEvent) {
+    if (!menuOpen) return
+    const activeGroup = primaryNav.find((group) => pathInGroup(group.label, group.to, location.pathname))
+    setMobileExpandedGroup(activeGroup?.label ?? null)
+  }, [menuOpen, location.pathname, primaryNav])
+
+  useEffect(() => {
+    if (menuOpen) {
+      mobileMenuWasOpenRef.current = true
+      return
+    }
+    if (!mobileMenuWasOpenRef.current) return
+    mobileMenuWasOpenRef.current = false
+    requestAnimationFrame(() => menuTriggerRef.current?.focus())
+  }, [menuOpen])
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const menuRoot = mobileMenuRef.current
+    if (!menuRoot) return
+    const rootEl: HTMLElement = menuRoot
+
+    function focusables(): HTMLElement[] {
+      return Array.from(rootEl.querySelectorAll<HTMLElement>(MOBILE_MENU_FOCUSABLE)).filter(
+        (el) => !el.hasAttribute('disabled') && el.getAttribute('aria-hidden') !== 'true',
+      )
+    }
+
+    requestAnimationFrame(() => {
+      const closeBtn = rootEl.querySelector<HTMLElement>('.mobile-nav-close')
+      const searchInput = rootEl.querySelector<HTMLElement>('.mobile-nav-search input')
+      ;(closeBtn ?? searchInput ?? focusables()[0])?.focus()
+    })
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key !== 'Tab') return
+      const items = focusables()
+      if (!items.length) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      const active = document.activeElement as HTMLElement | null
+      if (e.shiftKey) {
+        if (active === first || !rootEl.contains(active)) {
+          e.preventDefault()
+          last.focus()
+        }
+        return
+      }
+      if (active === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    return () => document.removeEventListener('keydown', onKeyDown)
+  }, [menuOpen])
+
+  useEffect(() => {
+    function onEscape(e: KeyboardEvent) {
       if (e.key !== 'Escape') return
       setActiveMenu(null)
       setAccountOpen(false)
       setSearchOpen(false)
-      if (menuOpen) setMenuOpen(false)
+      if (menuOpen) {
+        e.preventDefault()
+        setMenuOpen(false)
+      }
     }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    window.addEventListener('keydown', onEscape)
+    return () => window.removeEventListener('keydown', onEscape)
   }, [menuOpen])
 
   useEffect(() => {
@@ -384,6 +412,7 @@ export function Nav() {
       if (!navRef.current?.contains(e.target as Node)) {
         setActiveMenu(null)
         setAccountOpen(false)
+        setSearchOpen(false)
       }
     }
     document.addEventListener('mousedown', onPointer)
@@ -394,14 +423,20 @@ export function Nav() {
     e.preventDefault()
     const q = searchQuery.trim()
     if (!q) return
-    setSearchOpen(false)
     setSearchQuery('')
-    navigate(`/courses?q=${encodeURIComponent(q)}`)
+    setSearchOpen(false)
+    setMenuOpen(false)
+    navigate(searchPathFor(q))
   }
 
-  const navBg = C.cream
-  const navBorder = `1px solid ${T.lineLight}`
-  const navShadow = '0 1px 0 rgba(21,23,26,0.04)'
+  function pickSearchSuggestion(to: string) {
+    setSearchQuery('')
+    setSearchOpen(false)
+    setMenuOpen(false)
+    navigate(to)
+  }
+
+  const searchHints = searchSuggestionsFor(searchQuery)
 
   const accountPath = user ? dashRoute(user.role) : '/login'
 
@@ -410,9 +445,8 @@ export function Nav() {
       ref={navRef}
       className="skylent-site-nav"
       aria-label="Primary"
-      style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 200, background: navBg, borderBottom: navBorder, boxShadow: navShadow }}
     >
-      <div style={{ maxWidth: T.maxW, margin: '0 auto', padding: `0 ${T.gutter}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH, gap: 12, minWidth: 0 }}>
+      <div className="skylent-rail" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH, gap: 12, minWidth: 0 }}>
         <Link to="/" className="skylent-mark" style={{ fontSize: 22, color: C.ink, textDecoration: 'none', padding: 0, flexShrink: 0 }}>
           Skylent<span style={{ color: C.orange }}>.</span>
         </Link>
@@ -421,6 +455,17 @@ export function Nav() {
           {primaryNav.map(group => {
             const open = activeMenu === group.label
             const menuId = `nav-menu-${group.label.toLowerCase()}`
+            const inGroup = pathInGroup(group.label, group.to, location.pathname)
+            const isDiscoveryOnly = !group.to
+            const dropdownClass = group.sections?.length
+              ? 'nav-mega-dropdown is-sections'
+              : isDiscoveryOnly
+                ? 'nav-mega-dropdown is-discovery'
+                : 'nav-mega-dropdown'
+            const toggleMenu = () => {
+              setAccountOpen(false)
+              setActiveMenu(open ? null : group.label)
+            }
             return (
               <div
                 key={group.label}
@@ -431,71 +476,97 @@ export function Nav() {
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'stretch' }}>
-                  {group.to ? (
-                    <Link
-                      to={group.to}
-                      aria-current={pathInGroup(group.label, group.to, location.pathname) ? 'page' : undefined}
-                      style={{ background: 'none', color: open ? C.ink : C.slate, fontSize: 14, padding: '8px 8px 8px 12px', display: 'inline-flex', alignItems: 'center', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em', textDecoration: 'none', fontWeight: 500 }}
-                    >
-                      {group.label}
-                    </Link>
-                  ) : (
+                  {isDiscoveryOnly ? (
                     <button
                       type="button"
+                      className={`nav-discovery-trigger${open || inGroup ? ' is-active' : ''}`}
                       aria-expanded={open}
                       aria-controls={menuId}
                       aria-haspopup="true"
-                      onClick={() => {
-                        setAccountOpen(false)
-                        setActiveMenu(open ? null : group.label)
-                      }}
-                      style={{ background: 'none', border: 'none', color: open ? C.ink : C.slate, fontSize: 14, cursor: 'pointer', padding: '8px 8px 8px 12px', display: 'inline-flex', alignItems: 'center', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em', fontWeight: 500 }}
+                      onClick={toggleMenu}
                     >
-                      {group.label}
+                      <span>{group.label}</span>
+                      <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" className="nav-discovery-chevron"><path d="M0 0l5 6 5-6z"/></svg>
                     </button>
+                  ) : (
+                    <>
+                      <Link
+                        to={group.to!}
+                        aria-current={inGroup ? 'page' : undefined}
+                        style={{ background: 'none', color: open || inGroup ? C.ink : C.slate, fontSize: 14, padding: '8px 8px 8px 12px', display: 'inline-flex', alignItems: 'center', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em', textDecoration: 'none', fontWeight: 500 }}
+                      >
+                        {group.label}
+                      </Link>
+                      <button
+                        type="button"
+                        aria-expanded={open}
+                        aria-controls={menuId}
+                        aria-haspopup="true"
+                        aria-label={`${group.label} menu`}
+                        onClick={toggleMenu}
+                        style={{ background: 'none', border: 'none', color: open || inGroup ? C.ink : C.slate, cursor: 'pointer', padding: '8px 10px 8px 2px', display: 'inline-flex', alignItems: 'center' }}
+                      >
+                        <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" style={{ opacity: 0.5, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><path d="M0 0l5 6 5-6z"/></svg>
+                      </button>
+                    </>
                   )}
-                  <button
-                    type="button"
-                    aria-expanded={open}
-                    aria-controls={menuId}
-                    aria-haspopup="true"
-                    aria-label={`${group.label} menu`}
-                    onClick={() => {
-                      setAccountOpen(false)
-                      setActiveMenu(open ? null : group.label)
-                    }}
-                    style={{ background: 'none', border: 'none', color: open ? C.ink : C.slate, cursor: 'pointer', padding: '8px 10px 8px 2px', display: 'inline-flex', alignItems: 'center' }}
-                  >
-                    <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" style={{ opacity: 0.5, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><path d="M0 0l5 6 5-6z"/></svg>
-                  </button>
                 </div>
                 {open && (
                   <div
                     id={menuId}
-                    className="nav-mega-dropdown"
+                    className={dropdownClass}
                     role="group"
                     aria-label={group.label}
-                    style={{ position: 'absolute', top: 'calc(100% + 6px)', left: 0, background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: 6, minWidth: 260, maxWidth: 300, boxShadow: T.shadow, zIndex: 300 }}
+                    style={{ position: 'absolute', top: 'calc(100% + 6px)', left: group.sections?.length ? 'auto' : 0, right: group.sections?.length ? 0 : 'auto', background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: isDiscoveryOnly ? 8 : 6, minWidth: group.sections?.length ? 560 : isDiscoveryOnly ? 340 : 260, maxWidth: group.sections?.length ? 680 : isDiscoveryOnly ? 400 : 320, boxShadow: T.shadow, zIndex: 300 }}
                   >
-                    <div style={{ padding: '10px 12px 12px', marginBottom: 2, borderBottom: '1px solid rgba(8,9,9,0.08)' }}>
-                      <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
-                      <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>{group.tagline}</div>
+                    <div className={isDiscoveryOnly ? 'nav-discovery-head' : undefined} style={isDiscoveryOnly ? undefined : { padding: '10px 12px 12px', marginBottom: 2, borderBottom: '1px solid rgba(8,9,9,0.08)' }}>
+                      <div style={{ color: C.ink, fontSize: isDiscoveryOnly ? 15 : 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
+                      <div style={{ color: C.slate, fontSize: isDiscoveryOnly ? 12 : 11, marginTop: isDiscoveryOnly ? 4 : 2, lineHeight: 1.45 }}>{group.tagline}</div>
                     </div>
-                    {group.items.map(item => (
-                      <Link
-                        key={item.to + item.label}
-                        to={item.to}
-                        style={{ display: 'block', padding: '10px 12px', borderRadius: 8, textDecoration: 'none', minHeight: 44, boxSizing: 'border-box' }}
-                        onMouseEnter={navLinkHover.enter}
-                        onMouseLeave={navLinkHover.leave}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                          <div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>{item.label}</div>
-                          {item.mark && <MaturityMark maturity={item.mark} compact />}
-                        </div>
-                        <div style={{ color: C.slate, fontSize: 11, marginTop: 1 }}>{item.sub}</div>
-                      </Link>
-                    ))}
+                    {group.sections?.length ? (
+                      <div className="nav-mega-sections">
+                        {group.sections.map(section => (
+                          <div key={section.heading}>
+                            <div className="nav-mega-heading">{section.heading}</div>
+                            {section.items.map(item => (
+                              <Link
+                                key={item.to + item.label}
+                                to={item.to}
+                                className="nav-mega-item"
+                                style={{ display: 'block', padding: '10px 12px', borderRadius: 8, textDecoration: 'none', minHeight: 44, boxSizing: 'border-box' }}
+                                onMouseEnter={navLinkHover.enter}
+                                onMouseLeave={navLinkHover.leave}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                                  <div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>{item.label}</div>
+                                  {item.mark && <MaturityMark maturity={item.mark} compact />}
+                                </div>
+                                <div style={{ color: C.slate, fontSize: 11, marginTop: 1 }}>{item.sub}</div>
+                              </Link>
+                            ))}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className={isDiscoveryOnly ? 'nav-discovery-items' : undefined}>
+                        {group.items.map(item => (
+                          <Link
+                            key={item.to + item.label}
+                            to={item.to}
+                            className={isDiscoveryOnly ? 'nav-mega-item is-discovery' : 'nav-mega-item'}
+                            style={{ display: 'block', padding: isDiscoveryOnly ? '12px 14px' : '10px 12px', borderRadius: 8, textDecoration: 'none', minHeight: 44, boxSizing: 'border-box' }}
+                            onMouseEnter={navLinkHover.enter}
+                            onMouseLeave={navLinkHover.leave}
+                          >
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                              <div style={{ color: C.ink, fontSize: isDiscoveryOnly ? 14 : 13, fontWeight: 500 }}>{item.label}</div>
+                              {item.mark && <MaturityMark maturity={item.mark} compact />}
+                            </div>
+                            <div style={{ color: C.slate, fontSize: isDiscoveryOnly ? 12 : 11, marginTop: isDiscoveryOnly ? 3 : 1, lineHeight: 1.4 }}>{item.sub}</div>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
@@ -503,28 +574,43 @@ export function Nav() {
           })}
         </div>
 
-        <div className="nav-links" style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-          {searchOpen ? (
-            <form onSubmit={handleSearch} style={{ display: 'flex', alignItems: 'center', background: C.cream, border: `1px solid ${T.lineStrong}`, borderRadius: 7, overflow: 'hidden' }}>
-              <input
-                ref={searchRef}
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search courses and programmes"
-                aria-label="Search courses and programmes"
-                onKeyDown={e => e.key === 'Escape' && setSearchOpen(false)}
-                style={{ background: 'transparent', border: 'none', outline: 'none', color: C.ink, fontSize: 13, padding: '7px 12px', width: 220, fontFamily: 'var(--font-body)' }}
-              />
-              <button type="submit" aria-label="Submit search" style={{ background: 'none', border: 'none', color: C.indigo, padding: '7px 10px', cursor: 'pointer' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-              </button>
-              <button type="button" onClick={() => setSearchOpen(false)} aria-label="Close search" style={{ background: 'none', border: 'none', color: C.slate, padding: '7px 10px', cursor: 'pointer', fontSize: 13 }}>✕</button>
-            </form>
-          ) : (
-            <button type="button" onClick={() => setSearchOpen(true)} aria-label="Search" title="Search" style={{ background: 'none', border: 'none', color: C.slate, padding: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', borderRadius: 7 }}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <div className="nav-search-wrap">
+          <form className="nav-search-desktop" onSubmit={handleSearch}>
+            <input
+              ref={searchRef}
+              value={searchQuery}
+              onChange={e => {
+                setSearchQuery(e.target.value)
+                setSearchOpen(true)
+              }}
+              onFocus={() => setSearchOpen(true)}
+              onClick={() => setSearchOpen(true)}
+              placeholder="Search courses"
+              aria-label="Search courses"
+              aria-expanded={searchOpen}
+              aria-controls="nav-search-suggest"
+              autoComplete="off"
+              style={{ background: 'transparent', border: 'none', outline: 'none', color: C.ink, fontSize: 13, padding: '8px 12px', width: '100%', fontFamily: 'var(--font-body)' }}
+            />
+            <button type="submit" aria-label="Submit search" style={{ background: 'none', border: 'none', color: C.indigo, padding: '8px 10px', cursor: 'pointer', minHeight: 40, minWidth: 40 }}>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </button>
-          )}
+          </form>
+          {searchOpen && searchHints.length > 0 ? (
+            <ul id="nav-search-suggest" className="nav-search-suggest" role="listbox" aria-label="Ready courses">
+              {searchHints.map((item) => (
+                <li key={item.to} role="option">
+                  <button
+                    type="button"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => pickSearchSuggestion(item.to)}
+                  >
+                    {item.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
 
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexShrink: 0 }}>
@@ -535,6 +621,7 @@ export function Nav() {
                 aria-expanded={accountOpen}
                 aria-haspopup="true"
                 aria-controls="nav-account-menu"
+                aria-label={`Account menu${user.name ? `, ${user.name}` : ''}`}
                 onClick={() => { setActiveMenu(null); setAccountOpen(o => !o) }}
                 style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: C.cream, border: `1px solid ${T.lineLight}`, borderRadius: 7, padding: '5px 10px', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
               >
@@ -574,12 +661,10 @@ export function Nav() {
               <Link to="/login" className="nav-signin" style={{ background: 'transparent', border: '1px solid rgba(8,9,9,0.16)', color: C.ink, borderRadius: 7, padding: '7px 16px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', minHeight: 36 }}>
                 Sign in
               </Link>
-              <Link to="/skills" className="nav-links nav-cta-learn" style={{ background: C.ink, border: 'none', color: C.white, borderRadius: 7, padding: '7px 16px', fontSize: 13, fontWeight: 600, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', minHeight: 36 }}>
-                Start learning
-              </Link>
             </>
           )}
           <button
+            ref={menuTriggerRef}
             type="button"
             className="show-mobile"
             aria-expanded={menuOpen}
@@ -597,66 +682,152 @@ export function Nav() {
 
       {menuOpen && (
         <div
+          ref={mobileMenuRef}
           id="mobile-site-menu"
           className="mobile-nav-overlay"
           role="dialog"
           aria-modal="true"
           aria-label="Site menu"
-          style={{
-            position: 'fixed',
-            inset: `${T.navH}px 0 0 0`,
-            zIndex: 250,
-            background: C.cream,
-            borderTop: '1px solid rgba(21,23,26,0.10)',
-            padding: '8px 20px 32px',
-            overflowY: 'auto',
-            overflowX: 'hidden',
-          }}
         >
-          {primaryNav.map(group => (
-            <section key={group.label} style={{ marginBottom: 8 }}>
-              <div style={{ color: C.ink, fontSize: 13, fontWeight: 700, letterSpacing: '0.04em', padding: '16px 0 4px' }}>{group.label}</div>
-              <p style={{ color: C.slate, fontSize: 12, margin: '0 0 4px', lineHeight: 1.45 }}>{group.tagline}</p>
-              {group.items.map(item => (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  onClick={() => setMenuOpen(false)}
-                  className="mobile-nav-link"
-                  style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: 44, padding: '8px 0', color: C.ink, fontSize: 16, textDecoration: 'none', borderBottom: '1px solid rgba(8,9,9,0.08)' }}
-                >
-                  <span>{item.label}</span>
-                  <span style={{ color: C.slate, fontSize: 12, fontWeight: 400 }}>{item.sub}</span>
-                </Link>
-              ))}
-            </section>
-          ))}
-
-          <div style={{ marginTop: 12 }}>
+          <div className="mobile-nav-toolbar">
+            <p className="mobile-nav-toolbar-title">Menu</p>
             <button
               type="button"
-              aria-expanded={moreOpen}
-              onClick={() => setMoreOpen(o => !o)}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', minHeight: 44, padding: '8px 0', background: 'none', border: 'none', borderTop: `1px solid ${T.lineLight}`, color: C.slate, fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'var(--font-body)', letterSpacing: '0.04em' }}
+              className="mobile-nav-close"
+              onClick={() => setMenuOpen(false)}
+              aria-label="Close menu"
             >
-              More
-              <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" style={{ opacity: 0.5, transform: moreOpen ? 'rotate(180deg)' : 'none' }}><path d="M0 0l5 6 5-6z"/></svg>
+              Close
             </button>
-            {moreOpen && MORE_NAV.map(item => (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => setMenuOpen(false)}
-                className="mobile-nav-link"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, minHeight: 44, padding: '8px 0', color: C.ink, fontSize: 15, textDecoration: 'none', borderBottom: '1px solid rgba(8,9,9,0.08)' }}
-              >
-                <span>
-                  {item.label}
-                  <span style={{ display: 'block', color: C.slate, fontSize: 12, fontWeight: 400 }}>{item.sub}</span>
-                </span>
-                {item.mark && <MaturityMark maturity={item.mark} compact />}
-              </Link>
-            ))}
+          </div>
+          <form className="mobile-nav-search" onSubmit={handleSearch}>
+            <input
+              value={searchQuery}
+              onChange={e => {
+                setSearchQuery(e.target.value)
+                setSearchOpen(true)
+              }}
+              onFocus={() => setSearchOpen(true)}
+              onClick={() => setSearchOpen(true)}
+              placeholder="Search courses"
+              aria-label="Search courses"
+              aria-expanded={searchOpen}
+              aria-controls="mobile-search-suggest"
+              autoComplete="off"
+            />
+            <button type="submit">Search</button>
+          </form>
+          {searchOpen && searchHints.length > 0 ? (
+            <ul id="mobile-search-suggest" className="nav-search-suggest is-mobile" role="listbox" aria-label="Ready courses">
+              {searchHints.map((item) => (
+                <li key={item.to} role="option">
+                  <button
+                    type="button"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => pickSearchSuggestion(item.to)}
+                  >
+                    {item.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+          {primaryNav.map((group) => {
+            const expanded = mobileExpandedGroup === group.label
+            const inGroup = pathInGroup(group.label, group.to, location.pathname)
+            const items = mobileNavItemsForGroup(group)
+            const hubCurrent = group.to ? navLinkIsCurrent(group.to, location.pathname) : false
+            return (
+              <section key={group.label} className="mobile-nav-group" style={{ marginBottom: 8 }}>
+                <button
+                  type="button"
+                  className={`mobile-nav-group-trigger${inGroup ? ' is-active' : ''}`}
+                  aria-expanded={expanded}
+                  aria-controls={`mobile-nav-panel-${group.label.toLowerCase()}`}
+                  onClick={() => setMobileExpandedGroup(expanded ? null : group.label)}
+                >
+                  <span>
+                    <span className="mobile-nav-group-label">{group.label}</span>
+                    <span className="mobile-nav-group-tagline">{group.tagline}</span>
+                  </span>
+                  <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" style={{ opacity: 0.5, transform: expanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s', flexShrink: 0 }}><path d="M0 0l5 6 5-6z"/></svg>
+                </button>
+                {group.to ? (
+                  <Link
+                    to={group.to}
+                    onClick={() => setMenuOpen(false)}
+                    className={`mobile-nav-link mobile-nav-hub${hubCurrent ? ' is-active' : ''}`}
+                    aria-current={hubCurrent ? 'page' : undefined}
+                  >
+                    {group.label === 'Learn'
+                      ? 'Courses'
+                      : group.label === 'Practice'
+                        ? 'Labs'
+                        : group.label === 'Education'
+                          ? 'Education'
+                          : 'Career OS'}
+                  </Link>
+                ) : null}
+                {expanded ? (
+                  <div id={`mobile-nav-panel-${group.label.toLowerCase()}`} className="mobile-nav-panel">
+                    {items.map((item) => {
+                      const current = navLinkIsCurrent(item.to, location.pathname)
+                      return (
+                        <Link
+                          key={`${group.label}-${item.label}`}
+                          to={item.to}
+                          onClick={() => setMenuOpen(false)}
+                          className={`mobile-nav-link is-nested${current ? ' is-active' : ''}`}
+                          aria-current={current ? 'page' : undefined}
+                        >
+                          <span>{item.label}</span>
+                          <span className="mobile-nav-link-sub">{item.sub}</span>
+                          {item.mark ? <MaturityMark maturity={item.mark} compact /> : null}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                ) : null}
+              </section>
+            )
+          })}
+
+          <div className="mobile-nav-secondary" style={{ marginTop: 12 }}>
+            <button
+              type="button"
+              className="mobile-nav-group-trigger mobile-nav-secondary-trigger"
+              aria-expanded={moreOpen}
+              aria-controls="mobile-nav-about-panel"
+              onClick={() => setMoreOpen(o => !o)}
+            >
+              <span>
+                <span className="mobile-nav-group-label">About</span>
+                <span className="mobile-nav-group-tagline">Institutions, stories, and company</span>
+              </span>
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" style={{ opacity: 0.5, transform: moreOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s', flexShrink: 0 }}><path d="M0 0l5 6 5-6z"/></svg>
+            </button>
+            {moreOpen ? (
+              <div id="mobile-nav-about-panel" className="mobile-nav-panel">
+                {MORE_NAV.map((item) => {
+                  const current = navLinkIsCurrent(item.to, location.pathname)
+                  return (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={() => setMenuOpen(false)}
+                      className={`mobile-nav-link is-nested${current ? ' is-active' : ''}`}
+                      aria-current={current ? 'page' : undefined}
+                    >
+                      <span>
+                        {item.label}
+                        <span className="mobile-nav-link-sub">{item.sub}</span>
+                      </span>
+                      {item.mark ? <MaturityMark maturity={item.mark} compact /> : null}
+                    </Link>
+                  )
+                })}
+              </div>
+            ) : null}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
@@ -674,9 +845,6 @@ export function Nav() {
                 <Link to="/login" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', border: `1px solid ${T.lineStrong}`, borderRadius: 7, color: C.ink, textDecoration: 'none', fontSize: 14 }}>
                   Sign in
                 </Link>
-                <Link to="/skills" onClick={() => setMenuOpen(false)} className="mobile-nav-cta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', background: C.ink, borderRadius: 7, color: C.white, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
-                  Start learning
-                </Link>
               </>
             )}
           </div>
@@ -686,45 +854,53 @@ export function Nav() {
   )
 }
 
-// ─── FOOTER ───────────────────────────────────────────────────────────────────
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ FOOTER ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
 export function Footer() {
-  const cols = FOOTER_COLS
   return (
-    <footer className="skylent-site-footer" style={{ background: C.warmWhite, padding: `${T.sectionSm} ${T.gutter} 32px`, position: 'relative', borderTop: `1px solid ${T.lineLight}` }}>
-      <div style={{ maxWidth: T.maxW, margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(180px, 1.3fr) repeat(5, minmax(0, 1fr))', gap: 28, marginBottom: 56 }} className="footer-grid">
-          <div>
-            <Link to="/" className="skylent-mark" style={{ fontSize: 24, color: C.ink, textDecoration: 'none', display: 'block', marginBottom: 16 }}>Skylent<span style={{ color: C.orange }}>.</span></Link>
-            <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.75, maxWidth: 240, margin: '0 0 22px' }}>Learn, study, and keep evidence of your work — a focused student learning product.</p>
-            <div style={{ display: 'flex', gap: 10 }}>
-              {['in', 'tw', 'yt', 'ig'].map(s => (
-                <div key={s} aria-hidden style={{ width: 32, height: 32, borderRadius: 6, border: `1px solid ${T.lineLight}`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{s}</div>
-              ))}
-            </div>
+    <footer className="skylent-site-footer">
+      <div className="skylent-rail">
+        <div className="footer-grid skylent-footer-grid">
+          <div className="skylent-footer-brand">
+            <Link to="/" className="skylent-mark skylent-footer-mark">
+              Skylent<span className="skylent-footer-mark-accent">.</span>
+            </Link>
+            <p className="skylent-footer-brand-copy">
+              Programmes, practice, education paths, and Career OS ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â structured learning with evidence you keep.
+            </p>
+            <p className="skylent-footer-social-note">
+              Public social profiles are not linked here yet.{" "}
+              <Link to="/contact" className="skylent-link-muted skylent-footer-inline-link">
+                Contact
+              </Link>{" "}
+              for official channels.
+            </p>
           </div>
-          {cols.map(col => (
-            <div key={col.heading}>
-              <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 14 }}>{col.heading.toUpperCase()}</div>
-              {col.links.map(([label, to]) => (
-                <div key={label} style={{ marginBottom: 8 }}>
-                  <Link to={to} style={{ color: C.slate, fontSize: 13, textDecoration: 'none', transition: 'color 0.2s' }}
-                    onMouseEnter={e => (e.currentTarget.style.color = C.ink)}
-                    onMouseLeave={e => (e.currentTarget.style.color = C.slate)}
-                  >{label}</Link>
-                </div>
-              ))}
-            </div>
+          {FOOTER_COLS.map((col) => (
+            <nav key={col.heading} className="skylent-footer-col" aria-labelledby={`footer-col-${col.heading.toLowerCase()}`}>
+              <h2 id={`footer-col-${col.heading.toLowerCase()}`} className="skylent-footer-col-heading">{col.heading}</h2>
+              <ul className="skylent-footer-link-list">
+                {col.links.map(([label, to]) => (
+                  <li key={`${col.heading}-${label}`}>
+                    <Link to={to} className="skylent-link-muted skylent-footer-link">
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           ))}
         </div>
-        <div style={{ borderTop: `1px solid ${T.lineLight}`, paddingTop: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-          <div style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>© 2026 Skylent Global. All rights reserved.</div>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-            <div style={{ display: 'flex', gap: 20 }}>
-              {['Privacy', 'Terms', 'Cookies'].map(l => (
-                <span key={l} style={{ color: C.slate, fontSize: 12, fontFamily: 'var(--font-mono)' }}>{l}</span>
+        <div className="skylent-footer-meta">
+          <p className="skylent-footer-copy">ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© 2026 Skylent Global. All rights reserved.</p>
+          <div className="skylent-footer-legal">
+            <ul className="skylent-footer-legal-list">
+              {FOOTER_LEGAL_LABELS.map((label) => (
+                <li key={label}>
+                  <span className="skylent-footer-legal-label">{label}</span>
+                </li>
               ))}
-            </div>
-            <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>Legal pages will be published here.</span>
+            </ul>
+            <p className="skylent-footer-legal-note">Legal pages will be published here.</p>
           </div>
         </div>
       </div>
@@ -732,7 +908,10 @@ export function Footer() {
   )
 }
 
-// ─── PAGE SHELL ───────────────────────────────────────────────────────────────
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ PAGE SHELL ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
+// Canonical public shell: PublicCanvas (surface) ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ fixed Nav ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ main ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢ Footer.
+// Fixed-nav offset lives once on .skylent-public-main (layout.css / --nav-h).
+
 export function PageShell({
   children,
   aurora,
@@ -764,16 +943,14 @@ export function PageShell({
 
   return (
     <PublicCanvas themeId={theme} aurora={showAurora}>
-      <div style={{ paddingTop: T.navH }}>
-        <Nav />
-        <main>{children}</main>
-        <Footer />
-      </div>
+      <Nav />
+      <main className="skylent-public-main">{children}</main>
+      <Footer />
     </PublicCanvas>
   )
 }
 
-// ─── GLOBAL CSS ───────────────────────────────────────────────────────────────
+// ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ GLOBAL CSS ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
 export const globalCSS = `
   @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
   @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:0.35 } }
@@ -781,8 +958,124 @@ export const globalCSS = `
 
   * { box-sizing: border-box; }
 
+  .skylent-site-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background: var(--skylent-color-cream);
+    border-bottom: 1px solid var(--skylent-color-border-subtle);
+    box-shadow: 0 1px 0 var(--skylent-color-border-subtle);
+    overflow: visible;
+  }
+
   .nav-links { display: flex !important; }
   .show-mobile { display: none !important; }
+  .nav-search-wrap {
+    position: relative;
+    flex: 1 1 200px;
+    max-width: 280px;
+    min-width: 0;
+  }
+  .nav-search-desktop {
+    display: flex !important;
+    align-items: center;
+    width: 100%;
+    min-height: 40px;
+    background: var(--skylent-color-paper);
+    border: 1px solid var(--skylent-color-border-strong);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+  .nav-search-suggest {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    z-index: 320;
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    background: var(--skylent-color-elevated);
+    border: 1px solid var(--skylent-color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-overlay);
+  }
+  .nav-search-suggest.is-mobile {
+    position: static;
+    margin: 0 0 12px;
+    box-shadow: none;
+  }
+  .nav-search-suggest button {
+    display: block;
+    width: 100%;
+    min-height: 40px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: none;
+    color: var(--skylent-color-ink);
+    font: 500 13px/1.3 var(--font-body);
+    text-align: left;
+    cursor: pointer;
+  }
+  .nav-search-suggest button:hover,
+  .nav-search-suggest button:focus-visible {
+    background: color-mix(in srgb, var(--skylent-color-ink) 4%, transparent);
+  }
+  .nav-mega-dropdown.is-sections {
+    min-width: min(560px, calc(100vw - 32px)) !important;
+    max-width: min(680px, calc(100vw - 24px)) !important;
+    width: min(560px, calc(100vw - 32px));
+  }
+  .nav-mega-sections {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px 8px;
+    padding: 6px;
+  }
+  .nav-mega-heading {
+    color: var(--skylent-color-slate);
+    font: 700 11px/1.3 var(--font-body);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 8px 12px 4px;
+  }
+  @media (max-width: 720px) {
+    .nav-mega-dropdown.is-sections {
+      min-width: min(92vw, 560px) !important;
+      width: min(92vw, 560px);
+    }
+    .nav-mega-sections { grid-template-columns: 1fr; }
+  }
+  .nav-cta-learn { min-height: 40px; }
+  .mobile-nav-search {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0 8px;
+  }
+  .mobile-nav-search input {
+    flex: 1;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0 14px;
+    border: 1px solid var(--skylent-color-border-strong);
+    border-radius: var(--radius-md);
+    background: var(--skylent-color-paper);
+    color: var(--skylent-color-ink);
+    font: 15px/1.3 var(--font-body);
+  }
+  .mobile-nav-search button {
+    min-height: 48px;
+    padding: 0 16px;
+    border: none;
+    border-radius: var(--radius-md);
+    background: var(--skylent-color-ink);
+    color: var(--skylent-color-paper);
+    font: 600 14px/1 var(--font-body);
+    cursor: pointer;
+  }
 
   .skylent-site-nav a:focus-visible,
   .skylent-site-nav button:focus-visible,
@@ -790,7 +1083,127 @@ export const globalCSS = `
     outline: 2px solid var(--skylent-focus-ring);
     outline-offset: 2px;
   }
+  .mobile-nav-overlay {
+    position: fixed;
+    inset: var(--nav-h) 0 0 0;
+    z-index: 250;
+    background: var(--skylent-color-cream);
+    border-top: 1px solid var(--skylent-color-border);
+    padding: 8px var(--skylent-gutter-page) var(--space-8);
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mobile-nav-group-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    min-height: 52px;
+    padding: 14px 0;
+    margin-top: 8px;
+    background: none;
+    border: none;
+    border-top: 1px solid var(--skylent-color-border-subtle);
+    border-bottom: 1px solid var(--skylent-color-border-subtle);
+    text-align: left;
+    cursor: pointer;
+    font-family: var(--font-body);
+  }
+  .mobile-nav-group-label {
+    display: block;
+    color: var(--skylent-color-ink);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .mobile-nav-group-tagline {
+    display: block;
+    margin-top: 4px;
+    color: var(--skylent-color-slate);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.45;
+  }
+  .mobile-nav-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .mobile-nav-toolbar-title {
+    margin: 0;
+    color: var(--skylent-color-slate);
+    font-family: var(--font-mono);
+    font-size: var(--skylent-t-caption-size);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .mobile-nav-close {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 0 14px;
+    border: 1px solid var(--skylent-color-border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--skylent-color-paper);
+    color: var(--skylent-color-ink);
+    font: 600 13px/1 var(--font-body);
+    cursor: pointer;
+  }
+  .mobile-nav-group-trigger.is-active .mobile-nav-group-label {
+    color: var(--skylent-color-ink);
+    font-weight: 700;
+  }
+  .mobile-nav-hub {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 0 8px 12px;
+    color: var(--skylent-color-accent);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid var(--skylent-color-border-subtle);
+  }
+  .mobile-nav-hub.is-active { color: var(--skylent-color-ink); }
+  .mobile-nav-panel { padding-bottom: 4px; }
+  .mobile-nav-link {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    min-height: 44px;
+    padding: 8px 0 8px 12px;
+    color: var(--skylent-color-ink);
+    font-size: 16px;
+    text-decoration: none;
+    border-bottom: 1px solid var(--skylent-color-border-subtle);
+  }
+  .mobile-nav-link.is-nested {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .mobile-nav-link.is-active .mobile-nav-link-sub,
+  .mobile-nav-link.is-active { color: var(--skylent-color-ink); font-weight: 600; }
+  .mobile-nav-link-sub {
+    display: block;
+    color: var(--skylent-color-slate);
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.35;
+  }
+  .mobile-nav-secondary-trigger {
+    width: 100%;
+    border-top: 1px solid var(--skylent-color-border-subtle);
+  }
   .mobile-nav-overlay .mobile-nav-link { min-height: 44px; }
+  .mobile-nav-overlay .mobile-nav-cta { width: 100%; }
+  .nav-signin { min-height: 44px; }
 
   .skylent-section-divider {
     height: 1px;
@@ -806,6 +1219,8 @@ export const globalCSS = `
 
   @media (max-width: 1100px) {
     .nav-links { display: none !important; }
+    .nav-search-wrap { display: none !important; }
+    .nav-search-desktop { display: none !important; }
     .show-mobile { display: flex !important; }
     .nav-account-name { display: none !important; }
     .contextual-nav-panel { display: none !important; }
@@ -909,5 +1324,134 @@ export const globalCSS = `
 
   @media (prefers-reduced-motion: reduce) {
     * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+
+  .skylent-site-footer {
+    position: relative;
+    background: var(--skylent-color-paper);
+    border-top: 1px solid var(--skylent-color-border-subtle);
+    padding-block: var(--skylent-section-pad-sm) var(--space-8);
+  }
+  .skylent-footer-grid {
+    display: grid;
+    grid-template-columns: minmax(180px, 1.3fr) repeat(5, minmax(0, 1fr));
+    gap: var(--skylent-gap-grid);
+    margin-bottom: var(--space-14);
+  }
+  .skylent-footer-mark {
+    display: block;
+    margin-bottom: var(--space-4);
+    font-size: 24px;
+    color: var(--skylent-color-ink);
+    text-decoration: none;
+  }
+  .skylent-footer-mark-accent { color: var(--skylent-color-mark); }
+  .skylent-footer-brand-copy {
+    margin: 0 0 var(--space-5);
+    max-width: 240px;
+    color: var(--skylent-color-slate);
+    font-size: var(--skylent-t-body-sm-size);
+    line-height: 1.75;
+  }
+  .skylent-footer-social-note {
+    margin: 0;
+    max-width: 260px;
+    color: var(--skylent-color-slate);
+    font-size: var(--skylent-t-caption-size);
+    line-height: 1.55;
+  }
+  .skylent-footer-inline-link {
+    font-size: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .skylent-footer-col-heading {
+    margin: 0 0 var(--space-3);
+    font-size: inherit;
+    font-weight: inherit;
+    color: var(--skylent-color-slate);
+    font-family: var(--font-mono);
+    font-size: var(--skylent-t-caption-size);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .skylent-footer-link-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .skylent-footer-link-list li { margin-bottom: var(--space-2); }
+  .skylent-footer-link {
+    display: inline-block;
+    font-size: var(--skylent-t-body-sm-size);
+    color: var(--skylent-color-slate);
+    text-decoration: none;
+    transition: color var(--skylent-duration-fast) var(--skylent-ease-ui);
+  }
+  .skylent-footer-link:hover { color: var(--skylent-color-ink); }
+  .skylent-footer-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--skylent-color-border-subtle);
+  }
+  .skylent-footer-copy,
+  .skylent-footer-legal-note,
+  .skylent-footer-legal-label {
+    margin: 0;
+    color: var(--skylent-color-slate);
+    font-family: var(--font-mono);
+    font-size: var(--skylent-t-caption-size);
+  }
+  .skylent-footer-legal {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--space-2);
+  }
+  .skylent-footer-legal-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-5);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  @media (max-width: 1100px) {
+    .skylent-footer-grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+    .skylent-footer-brand {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 640px) {
+    .skylent-footer-grid {
+      grid-template-columns: minmax(0, 1fr) !important;
+      margin-bottom: var(--space-10);
+    }
+    .skylent-footer-col[aria-label="Career"] .skylent-footer-link-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--space-4);
+      row-gap: var(--space-1);
+    }
+    .skylent-footer-meta {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .skylent-footer-legal {
+      align-items: flex-start;
+      width: 100%;
+    }
+    .skylent-footer-brand-copy,
+    .skylent-footer-social-note {
+      max-width: none;
+    }
   }
 `

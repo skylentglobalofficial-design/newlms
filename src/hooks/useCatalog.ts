@@ -4,7 +4,9 @@ import {
   fetchCatalogCourses,
   fetchCatalogProgram,
   fetchCatalogPrograms,
+  type CatalogCourseDetail,
   type CatalogCourseSummary,
+  type CatalogProgramDetail,
   type CatalogProgramSummary,
 } from "../lib/catalog-api"
 
@@ -49,7 +51,7 @@ export function useCatalogPrograms() {
 }
 
 export function useCatalogCourse(slug: string | undefined) {
-  const [data, setData] = useState<CatalogCourseSummary | null>(null)
+  const [data, setData] = useState<CatalogCourseDetail | null>(null)
   const [loading, setLoading] = useState(Boolean(slug))
   const [error, setError] = useState<string | null>(null)
 
@@ -79,7 +81,7 @@ export function useCatalogCourse(slug: string | undefined) {
 }
 
 export function useCatalogProgram(slug: string | undefined) {
-  const [data, setData] = useState<CatalogProgramSummary | null>(null)
+  const [data, setData] = useState<CatalogProgramDetail | null>(null)
   const [loading, setLoading] = useState(Boolean(slug))
   const [error, setError] = useState<string | null>(null)
 

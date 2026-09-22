@@ -38,26 +38,37 @@ export function VisualStat({ label, value }: { label: string; value: string }) {
   )
 }
 
-function BarRow({ name, value, max }: { name: string; value: number; max: number }) {
-  const pct = Math.max(8, Math.round((value / max) * 100))
+function BarRow({ name, value, max }: { name: string; value?: number; max?: number }) {
+  const structural = value == null || max == null || max <= 0
+  const pct = structural ? 100 : Math.max(8, Math.round((value / max) * 100))
   return (
-    <div className="pl-bar-row">
+    <div className={structural ? "pl-bar-row is-struct" : "pl-bar-row"}>
       <span>{name}</span>
       <div className="pl-bar-track" aria-hidden="true">
-        <span style={{ width: `${pct}%` }} />
+        <span className={structural ? "is-struct" : undefined} style={{ width: `${pct}%` }} />
       </div>
-      <b>{formatInr(value)}</b>
+      {structural || value == null ? <b aria-hidden="true"> </b> : <b>{formatInr(value)}</b>}
     </div>
   )
 }
 
-function Spark({ mini = false }: { mini?: boolean }) {
-  const monthMax = Math.max(...NW.months.map((item) => item.value))
+function Spark({ mini = false, values }: { mini?: boolean; values?: readonly number[] }) {
+  const series = values?.length ? values : null
+  const monthMax = series ? Math.max(...series) : 1
+  const bars = series
+    ? series.map((value, index) => ({
+        key: NW.months[index]?.name ?? String(index),
+        height: Math.max(mini ? 18 : 12, Math.round((value / monthMax) * 100)),
+      }))
+    : [0, 1, 2, 3].map((index) => ({ key: String(index), height: mini ? 42 : 44 }))
   return (
-    <div className={mini ? "pl-spark pl-spark-mini" : "pl-spark"} aria-hidden="true">
-      {NW.months.map((item) => (
-        <span key={item.name} style={{ height: `${Math.max(mini ? 18 : 12, Math.round((item.value / monthMax) * 100))}%` }}>
-          {mini ? null : <em>{item.name}</em>}
+    <div
+      className={mini ? "pl-spark pl-spark-mini" : series ? "pl-spark" : "pl-spark is-struct"}
+      aria-hidden="true"
+    >
+      {bars.map((item) => (
+        <span key={item.key} style={{ height: `${item.height}%` }}>
+          {mini || !series ? null : <em>{item.key}</em>}
         </span>
       ))}
     </div>
@@ -87,39 +98,38 @@ function NorthwindTable() {
 }
 
 function NorthwindExtract({ compact = false }: { compact?: boolean }) {
-  const catMax = NW.categories[0].value
   return (
     <div className={compact ? "pl-nw is-compact" : "pl-nw"}>
-      <div className="pl-stat-row" aria-label="Northwind extract">
-        <VisualStat label="Orders" value={String(NW.rows)} />
-        <VisualStat label="Valid rows" value={String(NW.validRows)} />
-        <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
+      <div className="pl-stat-row" aria-label="Analytics workspace structure">
+        <VisualStat label="Dataset" value="Source" />
+        <VisualStat label="Quality" value="Checks" />
+        <VisualStat label="Output" value="Read" />
       </div>
       <div className="pl-nw-split">
         <div>
-          <p className="pl-kicker">Valid net revenue by category</p>
-          {NW.categories.map((item) => (
-            <BarRow key={item.name} name={item.name} value={item.value} max={catMax} />
+          <p className="pl-kicker">Breakdown</p>
+          {[0, 1, 2].map((index) => (
+            <BarRow key={index} name="Dimension" />
           ))}
         </div>
         <div>
-          <p className="pl-kicker">Month trend</p>
+          <p className="pl-kicker">Time</p>
           <Spark />
-          <p className="pl-fine">{NW.weakestMonth} is the weakest month in this extract.</p>
+          <p className="pl-fine">Example structure — not a live result.</p>
         </div>
       </div>
       {!compact ? (
         <pre className="pl-sql" tabIndex={0}>
-          <code>{NW.sql}</code>
+          <code>{"SELECT column\nFROM table\nGROUP BY column"}</code>
         </pre>
       ) : null}
     </div>
   )
 }
 
-export function NorthwindWorkspace({ compact = false }: { compact?: boolean }) {
+export function NorthwindWorkspace({ compact = false, meta }: { compact?: boolean; meta?: string }) {
   return (
-    <ProductFrame title="Data Analytics" meta={`${NW.filename} · ${NW.window}`} compact={compact}>
+    <ProductFrame title="Data Analytics" meta={meta ?? "Example structure"} compact={compact}>
       <NorthwindExtract compact={compact} />
     </ProductFrame>
   )
@@ -137,8 +147,8 @@ const HARBOR = {
 function HarborStores() {
   return (
     <div className="pl-hd-stores" aria-hidden="true">
-      {Array.from({ length: HARBOR.stores }, (_, index) => (
-        <span key={index} className={index < HARBOR.weekendExceptions ? "is-ex" : undefined} />
+      {Array.from({ length: 6 }, (_, index) => (
+        <span key={index} />
       ))}
     </div>
   )
@@ -147,31 +157,29 @@ function HarborStores() {
 function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
   return (
     <div className={compact ? "pl-hd is-compact" : "pl-hd"}>
-      <div className="pl-stat-row" aria-label="Harbor Desk case">
-        <VisualStat label="Stores" value={String(HARBOR.stores)} />
-        <VisualStat label="Interviews" value={String(HARBOR.interviews)} />
-        <VisualStat label="Weekend exceptions" value={String(HARBOR.weekendExceptions)} />
+      <div className="pl-stat-row" aria-label="Product case structure">
+        <VisualStat label="Evidence" value="Notes" />
+        <VisualStat label="Frame" value="Problem" />
+        <VisualStat label="Spec" value="Write" />
       </div>
       <div className="pl-hd-board">
         <div>
-          <p className="pl-kicker">Harbor Retail stores</p>
+          <p className="pl-kicker">Board</p>
           <HarborStores />
         </div>
-        {!compact ? (
-          <div>
-            <p className="pl-kicker">Exception log</p>
-            <p className="pl-hd-quote">
-              {HARBOR.unlogged} of {HARBOR.weekendExceptions} weekend exceptions never appeared in a channel.
-            </p>
-            <p className="pl-fine">{HARBOR.interviews} interviews · fictional Harbor Retail — not Northwind.</p>
-          </div>
-        ) : null}
+        <div className={compact ? "pl-hd-board-compact-quote" : undefined}>
+          <p className="pl-kicker">Notes</p>
+          <p className="pl-hd-quote is-empty">
+            <span />
+            <span />
+          </p>
+        </div>
       </div>
       <ol className="pl-hd-flow" aria-label="Product case path">
         <li>
           <span>01</span>
           <strong>Evidence</strong>
-          <p>Quotes and the exception log — not a solution name.</p>
+          <p>Source notes — not a solution name.</p>
         </li>
         <li>
           <span>02</span>
@@ -181,7 +189,7 @@ function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
         <li>
           <span>03</span>
           <strong>One bet</strong>
-          <p>{HARBOR.bet} under {HARBOR.constraint}.</p>
+          <p>One constraint. Not a backlog of features.</p>
         </li>
         <li>
           <span>04</span>
@@ -193,9 +201,15 @@ function HarborDeskBoard({ compact = false }: { compact?: boolean }) {
   )
 }
 
-export function HarborDeskWorkspace({ compact = false }: { compact?: boolean }) {
+export function HarborDeskWorkspace({
+  compact = false,
+  meta,
+}: {
+  compact?: boolean
+  meta?: string
+}) {
   return (
-    <ProductFrame title="Product Management" meta="harbor-desk-case.md · fictional ops" compact={compact}>
+    <ProductFrame title="Product Management" meta={meta ?? "Example structure"} compact={compact}>
       <HarborDeskBoard compact={compact} />
     </ProductFrame>
   )
@@ -212,6 +226,183 @@ export function CourseProductVisual({
   return <NorthwindWorkspace compact={compact} />
 }
 
+const WORKFLOW_STAGES = [
+  { id: "learn", label: "Learn", lesson: "Spreadsheet tables, types, and filters" },
+  { id: "practise", label: "Practise", lesson: "Spreadsheet analysis check" },
+  { id: "project", label: "Project", lesson: "Northwind commercial review" },
+  { id: "evidence", label: "Evidence", lesson: "Work sample you keep" },
+] as const
+
+export function SkylentWorkflowStory() {
+  return (
+    <ProductFrame title="Data Analytics" meta={`${NW.filename} · one pathway through Skylent OS`}>
+      <div className="pl-workflow-rail" aria-hidden="true">
+        {WORKFLOW_STAGES.map((stage, index) => (
+          <span key={stage.id} className={index === 0 ? "is-on" : undefined}>
+            {stage.label}
+          </span>
+        ))}
+      </div>
+      <div className="pl-workflow-strip" aria-label="One pathway from lesson to evidence">
+        <article className="pl-workflow-pane is-learn">
+          <p className="pl-kicker">01 · Learn</p>
+          <div className="pl-flow-visual is-learn">
+            <div className="pl-flow-lesson">
+              <em>Written lesson</em>
+              <b>{WORKFLOW_STAGES[0].lesson}</b>
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        </article>
+        <span className="pl-workflow-join" aria-hidden="true" />
+        <article className="pl-workflow-pane is-practise">
+          <p className="pl-kicker">02 · Practise</p>
+          <div className="pl-flow-visual is-practice">
+            <div className="pl-flow-quiz">
+              <em>{WORKFLOW_STAGES[1].lesson}</em>
+              <span className="pl-opt is-on" />
+              <span className="pl-opt" />
+              <span className="pl-opt" />
+            </div>
+          </div>
+        </article>
+        <span className="pl-workflow-join" aria-hidden="true" />
+        <article className="pl-workflow-pane is-project">
+          <p className="pl-kicker">03 · Project</p>
+          <div className="pl-flow-visual is-build">
+            <em>{WORKFLOW_STAGES[2].lesson}</em>
+            <Spark mini />
+            <p className="pl-fine">{NW.topCategory} leads {NW.netRevenueLabel} in this extract.</p>
+          </div>
+        </article>
+        <span className="pl-workflow-join" aria-hidden="true" />
+        <article className="pl-workflow-pane is-evidence">
+          <p className="pl-kicker">04 · Evidence</p>
+          <div className="pl-flow-visual is-keep">
+            <div className="pl-flow-keep">
+              <em>Work sample</em>
+              <strong>{WORKFLOW_STAGES[3].lesson}</strong>
+            </div>
+            <div className="pl-workflow-evidence">
+              <VisualStat label="Dataset" value={NW.filename.replace(".csv", "")} />
+              <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
+            </div>
+          </div>
+        </article>
+      </div>
+    </ProductFrame>
+  )
+}
+
+export function SkylentOsPreview() {
+  return (
+    <ProductFrame title="Progress" meta="Learning · Practice · Projects · Evidence">
+      <div className="pl-os-layers" aria-label="Skylent OS layers">
+        <article className="pl-os-layer">
+          <div className="pl-flow-visual is-learn">
+            <div className="pl-flow-lesson">
+              <em>Learning</em>
+              <b>Written lesson</b>
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        </article>
+        <article className="pl-os-layer">
+          <div className="pl-flow-visual is-practice">
+            <div className="pl-flow-quiz">
+              <em>Practice</em>
+              <span className="pl-opt is-on" />
+              <span className="pl-opt" />
+              <span className="pl-opt" />
+            </div>
+          </div>
+        </article>
+        <article className="pl-os-layer">
+          <div className="pl-flow-visual is-build">
+            <em>Projects</em>
+            <b>Work you produce</b>
+            <span className="pl-os-bars" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+              <i />
+            </span>
+          </div>
+        </article>
+        <article className="pl-os-layer">
+          <div className="pl-flow-visual is-keep">
+            <div className="pl-flow-keep">
+              <em>Evidence</em>
+              <strong>Keep what you built</strong>
+            </div>
+          </div>
+        </article>
+      </div>
+    </ProductFrame>
+  )
+}
+
+const CERTIFICATE_JOURNEY = [
+  { id: "learn", label: "Learn", note: "Structured courses", state: "done" as const },
+  { id: "practise", label: "Practise", note: "Checks on the work", state: "done" as const },
+  { id: "build", label: "Build", note: "A project you produce", state: "now" as const },
+  { id: "evidence", label: "Evidence", note: "Work you keep", state: "next" as const },
+]
+
+function JourneyMark({ state }: { state: "done" | "now" | "next" }) {
+  if (state === "done") {
+    return (
+      <span className="pl-cert-mark is-done" aria-hidden="true">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none">
+          <path d="M2.2 6.2 4.7 8.6 9.8 3.4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+    )
+  }
+  if (state === "now") {
+    return <span className="pl-cert-mark is-now" aria-hidden="true" />
+  }
+  return <span className="pl-cert-mark is-next" aria-hidden="true" />
+}
+
+/** Generic Professional Certificate workspace — not a named course. */
+export function CertificateOsPreview() {
+  return (
+    <ProductFrame title="Professional learning" meta="Programme workspace">
+      <div className="pl-cert">
+        <ol className="pl-cert-rail" aria-label="Learner journey in Skylent OS">
+          {CERTIFICATE_JOURNEY.map((step) => (
+            <li key={step.id} className={`is-${step.state}`}>
+              <JourneyMark state={step.state} />
+              <div>
+                <strong>{step.label}</strong>
+                <span>{step.note}</span>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div className="pl-cert-stage">
+          <p className="pl-kicker">Current work</p>
+          <p className="pl-cert-stage-title">Project workspace</p>
+          <p className="pl-fine">Produce work from what the courses taught. Nothing here is a grade or a job claim.</p>
+          <div className="pl-cert-paper" aria-hidden="true">
+            <em>Brief</em>
+            <span />
+            <span />
+            <span />
+            <b />
+          </div>
+          <p className="pl-cert-keep">This becomes evidence you keep.</p>
+        </div>
+      </div>
+    </ProductFrame>
+  )
+}
+
 export function CourseWorkspacePreview({
   courseTitle,
   lessonTitle,
@@ -220,6 +411,7 @@ export function CourseWorkspacePreview({
   modules,
   lessonCount,
   visual = "northwind",
+  marketing = false,
 }: {
   courseTitle: string
   lessonTitle: string
@@ -228,6 +420,7 @@ export function CourseWorkspacePreview({
   modules: string[]
   lessonCount?: number
   visual?: "northwind" | "harbor-desk"
+  marketing?: boolean
 }) {
   return (
     <ProductFrame
@@ -263,11 +456,11 @@ export function CourseWorkspacePreview({
               <p className="pl-kicker">{NW.filename}</p>
               <div className="pl-stat-row">
                 <VisualStat label="Valid rows" value={String(NW.validRows)} />
-                <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
+                <VisualStat label={marketing ? "Sample KPI" : "Net revenue"} value={marketing ? "Category mix" : NW.netRevenueLabel} />
                 <VisualStat label="Top category" value={NW.topCategory} />
               </div>
               <div className="pl-ws-viz">
-                <Spark mini />
+                <Spark mini values={NW.months.map((item) => item.value)} />
                 <NorthwindTable />
               </div>
             </div>
@@ -290,8 +483,8 @@ export function CourseThumb({
       {authored && visual === "harbor-desk" ? (
         <>
           <div className="pl-thumb-kpis">
-            <b>{HARBOR.weekendExceptions} exceptions</b>
-            <span>{HARBOR.constraint}</span>
+            <b>Product case</b>
+            <span>Evidence → spec</span>
           </div>
           <ol className="pl-hd-mini">
             <li />
@@ -303,14 +496,15 @@ export function CourseThumb({
       ) : authored ? (
         <>
           <div className="pl-thumb-kpis">
-            <b>{NW.netRevenueLabel}</b>
-            <span>{NW.validRows} valid rows</span>
+            <b>Northwind extract</b>
+            <span>SQL · {NW.filename}</span>
           </div>
           <Spark mini />
         </>
       ) : (
         <div className="pl-thumb-outline">
-          <span />
+          <b>Outline</b>
+          <span>LMS titles only</span>
           <span />
           <span />
         </div>
@@ -397,23 +591,6 @@ export function PathwayTrack({
         </li>
       ))}
     </ol>
-  )
-}
-
-export function CareerEvidencePreview() {
-  return (
-    <ProductFrame title="Career OS" meta="Evidence workspace" compact>
-      <div className="pl-evidence">
-        <p className="pl-kicker">Work sample</p>
-        <p className="pl-ws-lesson">Northwind commercial review</p>
-        <div className="pl-stat-row">
-          <VisualStat label="Source" value="Capstone" />
-          <VisualStat label="Dataset" value="Northwind" />
-          <VisualStat label="Kept by" value="You" />
-        </div>
-        <p className="pl-fine">A work sample from Data Analytics. Career OS is a workspace — not a job guarantee.</p>
-      </div>
-    </ProductFrame>
   )
 }
 
@@ -594,7 +771,7 @@ export function LessonContextPanel({ courseSlug, lessonId }: { courseSlug: strin
             <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
             <VisualStat label="Top category" value={NW.topCategory} />
           </div>
-          {visual === "chart" ? <Spark mini /> : <NorthwindTable />}
+          {visual === "chart" ? <Spark mini values={NW.months.map((item) => item.value)} /> : <NorthwindTable />}
         </div>
       ) : null}
       {visual === "case" || visual === "bet" || visual === "spec" ? (

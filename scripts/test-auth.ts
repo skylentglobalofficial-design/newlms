@@ -253,6 +253,35 @@ async function main() {
   const googleUserCount = await prisma.user.count({ where: { email: googleEmail } })
   assert(googleUserCount === 1, "Duplicate Google login should not create duplicate users")
 
+  console.log("13. Authenticated learner can update display name")
+  const profileJar: CookieJar = new Map()
+  const profileEmail = `auth-profile-${Date.now()}@example.com`
+  await request(profileJar, "/auth/csrf")
+  const profileSignup = await request(profileJar, "/auth/signup", {
+    method: "POST",
+    csrf: true,
+    body: { displayName: "Before Name", email: profileEmail, password: "test-password-123" },
+  })
+  assert(profileSignup.response.status === 201, "Profile signup should succeed")
+  const profilePatch = await request(profileJar, "/auth/me", {
+    method: "PATCH",
+    csrf: true,
+    body: { displayName: "After Name" },
+  })
+  assert(profilePatch.response.ok, "PATCH /auth/me should succeed")
+  const patched = profilePatch.data as { user?: { displayName?: string; name?: string } }
+  assert(patched.user?.displayName === "After Name", "Display name should update")
+  const meAfterPatch = await request(profileJar, "/auth/me")
+  const meData = meAfterPatch.data as { user?: { displayName?: string } }
+  assert(meData.user?.displayName === "After Name", "Session /me should reflect the new display name")
+
+  const anonPatch = await request(new Map(), "/auth/me", {
+    method: "PATCH",
+    csrf: true,
+    body: { displayName: "Hacker" },
+  })
+  assert(anonPatch.response.status === 401, "Unauthenticated profile update should be rejected")
+
   console.log("All auth lifecycle checks passed.")
   await prisma.$disconnect()
 }

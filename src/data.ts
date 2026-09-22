@@ -838,8 +838,6 @@ export type Workshop = {
   date: string
   mode: string
   instructor: string
-  seats: number
-  seatsLeft: number
   price: number
   originalPrice: number
   desc: string
@@ -855,8 +853,6 @@ export const workshops: Workshop[] = [
     date: '24 August 2026',
     mode: 'Online',
     instructor: 'Skylent Faculty',
-    seats: 120,
-    seatsLeft: 34,
     price: 999,
     originalPrice: 2499,
     desc: 'How to evaluate, adopt, and lead AI transformation in your organisation without a technical background.',
@@ -870,8 +866,6 @@ export const workshops: Workshop[] = [
     date: '30 August 2026',
     mode: 'Online',
     instructor: 'Skylent Faculty',
-    seats: 80,
-    seatsLeft: 12,
     price: 1499,
     originalPrice: 3499,
     desc: 'From zero-shot to chain-of-thought to multi-agent prompting. Practical, hands-on, immediately applicable.',
@@ -885,11 +879,9 @@ export const workshops: Workshop[] = [
     date: '28 August 2026',
     mode: 'Online',
     instructor: 'Skylent Career Team',
-    seats: 200,
-    seatsLeft: 67,
     price: 499,
     originalPrice: 1499,
-    desc: 'Build an ATS-optimised resume and a recruiter-ready LinkedIn profile with live feedback from Skylent career coaches.',
+    desc: 'Build an ATS-optimised resume and a recruiter-ready LinkedIn profile.',
     whatYouGet: ['Resume template pack', 'ATS check process', 'LinkedIn optimisation guide', 'Live coach feedback', 'Recording access'],
   },
   {
@@ -900,8 +892,6 @@ export const workshops: Workshop[] = [
     date: '6 September 2026',
     mode: 'Online',
     instructor: 'Skylent Faculty',
-    seats: 100,
-    seatsLeft: 28,
     price: 1999,
     originalPrice: 4999,
     desc: 'SQL, Python, statistics, and case interviews — the full data job interview preparation in one intensive session.',
@@ -915,8 +905,6 @@ export const workshops: Workshop[] = [
     date: '13–14 September 2026',
     mode: 'Online',
     instructor: 'Skylent Faculty',
-    seats: 60,
-    seatsLeft: 19,
     price: 2499,
     originalPrice: 5999,
     desc: 'Build three professional Power BI dashboards in two days. Hands-on from data import to published report.',
@@ -965,24 +953,20 @@ LLMs are a powerful tool inside that system. They are not the system itself.`,
     category: 'Career',
     date: '2 August 2026',
     readTime: '5 min read',
-    excerpt: 'A sample editorial on what data hiring teams look for in portfolios, SQL skills, and dashboard work.',
-    body: `This is an illustrative editorial — not a published research study.
+    excerpt: 'Why the Data Analytics programme teaches SQL against a real commercial dataset instead of tool tours.',
+    body: `This is a position, not a study. We have not surveyed hiring teams and we are not going to quote percentages we did not measure.
 
-We outline what hiring teams commonly look for when reviewing data analyst and data scientist applications: SQL fluency, dashboard storytelling, and evidence of working with messy business datasets.
+What we can explain is why the Data Analytics programme is built the way it is.
 
-The results were different from what most course providers would have you believe.
+**SQL is taught as proficiency, not familiarity.** The programme does not stop at SELECT. It works through joins across a real commercial dataset, because the gap between "I have seen SQL" and "I can answer a business question with SQL" is where most self-taught learners stall.
 
-**SQL remains the single most demanded skill.** Nearly 91% of data analyst job listings required SQL proficiency. Not familiarity. Proficiency. Hiring managers told us that the most common reason candidates fail early-stage screening is an inability to write a multi-table join without help.
+**Spreadsheets are treated as real analysis tooling.** Much commercial analysis happens in a spreadsheet before it ever reaches a dashboard. The programme treats that as a skill rather than a step people are expected to already know.
 
-**Excel is underrated.** 78% of listings still required Excel. At companies that primarily use Power BI or Tableau, hiring managers told us they still expect candidates to be fluent in Excel because much of real business analysis happens in spreadsheets before it ever reaches a dashboard.
+**The dataset is commercial, not a tutorial dataset.** Northwind has customers, orders, suppliers, discounts, and the kind of untidiness a tutorial dataset removes. That is the point — cleaning and reconciling the data is part of the work, not a preamble to it.
 
-**Python is expected, but not always at depth.** Most data analyst roles wanted Python for data manipulation — pandas, cleaning, basic visualisation. Very few analyst roles at the entry level required machine learning. The expectation was competent, not expert.
+**The output is an argument, not a chart.** The capstone is a commercial review: what the data says, what you would do about it, and what you are still uncertain about. Producing a dashboard that looks finished is easier than defending what it means.
 
-**Communication is the actual differentiator.** Every single hiring manager we spoke to said the same thing in different words: "We can teach tools. We cannot easily teach someone to explain what their analysis means to a business leader who doesn't care about the methodology."
-
-The implication for how we build Skylent programs is straightforward. We teach SQL, Excel, Python, and Power BI as foundations. We add projects that require synthesis and decision-making, not just execution. And every program includes a communication and presentation component.
-
-Because the goal is not to produce someone who can use tools. The goal is to produce someone who can create value from data.`,
+None of this predicts an outcome for any individual. It describes what the programme asks you to do and what you are left holding when you finish.`,
   },
   {
     slug: 'building-a-portfolio',
@@ -999,7 +983,7 @@ A data portfolio, in the sense that it actually gets people hired, has three pro
 
 **First: it answers a real question that someone actually cared about.**
 
-The best portfolios we have seen from Skylent students start with a question before they start with a dataset. "Why do customers churn in the first 30 days?" is a question. "I cleaned a dataset and made some visualisations" is not.
+A strong project starts with a question before it starts with a dataset. "Why do customers churn in the first 30 days?" is a question. "I cleaned a dataset and made some visualisations" is not.
 
 **Second: it shows the thinking, not just the output.**
 
@@ -1009,9 +993,9 @@ A good portfolio project includes a brief explanation of why you chose the appro
 
 Three well-documented, genuinely interesting projects that demonstrate range — data collection, analysis, visualisation, communication of insight — are worth more than fifteen notebooks that prove you have completed fifteen courses.
 
-In every Skylent program, we build the portfolio alongside the learning. By the time a student finishes, they have projects that demonstrate real decision-making, not just technical execution.
+This is the standard Skylent programmes are designed against. The capstone is a named piece of work produced against real material, and the evidence you keep records the decisions you made — not just the cells you ran.
 
-That is the difference between a portfolio that gets you an interview and a repository that proves you have internet access.`,
+That is the difference between a body of work and a repository that proves you have internet access.`,
   },
   {
     slug: 'institutions-and-lms',
@@ -1028,13 +1012,11 @@ The technology is almost never the barrier to modern learning outcomes. The barr
 
 A university can deploy the most sophisticated learning management system available. If the curriculum is designed around what is easy to teach rather than what prepares students for the workforce, the LMS will deliver exactly what it always has — a slightly more digital version of the same experience.
 
-What Skylent brings to institutional partnerships is not primarily software. It is an outcome-first design process. We begin every institutional engagement with the question: "What should a student be able to do, and be hired to do, after completing this program?" Then we design backward from that answer.
+The institutional direction Skylent is building toward is not primarily software. It is an outcome-first design process that starts from one question: "What should a student be able to do after completing this programme?" Then the curriculum is designed backward from that answer.
 
-The LMS is the delivery infrastructure for a program that has already been designed to work. It is not the solution to the design problem.
+The LMS is the delivery infrastructure for a programme that has already been designed to work. It is not the solution to the design problem.
 
-Institutions that understand this — and there are more of them than the technology vendors want you to believe — are the ones that produce consistently employable graduates.
-
-That is the partnership Skylent is built for.`,
+To be clear about where this stands: institutional deployment is a direction, not a live offering. Skylent today is a learner-first product. The argument above is why we would approach institutional work this way when we do.`,
   },
   {
     slug: 'career-os-approach',
@@ -1043,43 +1025,29 @@ That is the partnership Skylent is built for.`,
     date: '14 July 2026',
     readTime: '4 min read',
     excerpt: "Most edtech platforms treat career support as a feature added at the end of a course. We built it into the beginning.",
-    body: `Most education platforms treat career support as a feature. Something you add at the end of a learning experience — a few job listings, a resume template, a WhatsApp group.
+    body: `Most education platforms treat career support as a feature bolted on at the end — a few job listings, a resume template, a WhatsApp group.
 
-The problem is that career outcomes are not produced by career services. They are produced by the quality of the learning, the depth of the projects, the strength of the portfolio, and the readiness of the student to actually do the job on day one.
+The problem is that career outcomes are not produced by career services. They are produced by the quality of the learning and the depth of the work you actually did.
 
 Career services at the end of a course is like adding a quality check at the end of a manufacturing line. By the time you get there, the product is already determined.
 
-Skylent's Career OS is built into the beginning of every program. Students track their career readiness score from week one. They build their portfolio in parallel with their learning. They practice interviews before they need to pass one.
+So Career OS is not a placement service and it is not a job board. It is the workspace where the work you produced while learning becomes evidence you can present.
 
-By the time a student finishes a Skylent program, their resume has already been reviewed. Their LinkedIn profile is already optimised. They have already done ten mock interviews and received feedback on each one. They have already mapped their target companies and understood what each role requires.
+The chain is deliberate. You learn something. You practise it. You build a named piece of work against real material. That work is kept as evidence. Career OS is where that evidence lives, alongside your profile, your applications, and interview preparation.
 
-The job search starts on the day of graduation not because we begin it then. It starts on the day of graduation because we have been preparing for it since day one.
+What that means in practice: Career OS has nothing to show you until you have produced something. It is not a feed that fills itself with activity. If the opportunities surface is empty, no partner has published a role, and we would rather show you an empty surface than an invented one.
 
-That is the difference between a career service and a career system.`,
+We are not claiming this guarantees a job. We are claiming the sequence is the right way round — work first, then evidence, then the conversation about what is next.`,
   },
 ]
 
-// ─── JOBS (used across career OS) ─────────────────────────────────────────────
-export type Job = {
-  id: string
-  role: string
-  company: string
-  salary: string
-  location: string
-  mode: string
-  skills: string[]
-  exp: string
-  desc: string
-  postedDays: number
-}
-
-export const jobs: Job[] = [
-  { id: 'jr-data-analyst', role: 'Junior Data Analyst', company: 'XYZ Technologies', salary: '₹5–7 LPA', location: 'Bengaluru / Hybrid', mode: 'Hybrid', skills: ['SQL', 'Excel', 'Power BI', 'Python'], exp: '0–2 yrs', desc: 'Analyse business data, build dashboards, and generate insights to support decision-making across product and marketing teams.', postedDays: 2 },
-  { id: 'ml-engineer', role: 'ML Engineer', company: 'DataCraft Pvt Ltd', salary: '₹8–12 LPA', location: 'Mumbai / Remote', mode: 'Remote', skills: ['Python', 'TensorFlow', 'Sklearn', 'AWS'], exp: '1–3 yrs', desc: 'Build and deploy machine learning models for recommendation, fraud detection, and demand forecasting at scale.', postedDays: 5 },
-  { id: 'full-stack-dev', role: 'Full Stack Developer', company: 'NovaBridge Solutions', salary: '₹7–10 LPA', location: 'Hyderabad / On-site', mode: 'On-site', skills: ['React', 'Node.js', 'PostgreSQL', 'Docker'], exp: '1–3 yrs', desc: 'Design and develop end-to-end web applications for enterprise clients in fintech and logistics.', postedDays: 1 },
-  { id: 'product-analyst', role: 'Product Analyst', company: 'Finova Digital', salary: '₹6–9 LPA', location: 'Pune / Hybrid', mode: 'Hybrid', skills: ['SQL', 'Looker', 'Product Sense', 'Excel'], exp: '0–2 yrs', desc: 'Work with product managers to define metrics, analyse user behaviour, and drive growth decisions.', postedDays: 3 },
-  { id: 'ai-intern', role: 'AI Research Intern', company: 'Cognosphere Labs', salary: '₹3–5 LPA', location: 'Bengaluru / Hybrid', mode: 'Hybrid', skills: ['Python', 'PyTorch', 'NLP', 'Research'], exp: 'Fresher', desc: 'Contribute to applied NLP research projects and help deploy language models to production environments.', postedDays: 7 },
-]
+// ─── JOBS ─────────────────────────────────────────────────────────────────────
+/**
+ * Intentionally absent. Career OS is a learner workspace, not a job board, and
+ * Skylent does not invent employers, salaries, or openings. Real roles reach the
+ * learner through `/api/v1/career/jobs` and render in /career-os/jobs; when no
+ * partner has published a role, that surface stays empty.
+ */
 
 // ─── SUCCESS STORIES ──────────────────────────────────────────────────────────
 /** Unpublished. StoriesPage refuses unverified names, salaries, and placement claims. */
@@ -1095,11 +1063,12 @@ export const stories: Array<{
 }> = []
 
 // ─── DEMO USERS (for role dashboard switcher) ─────────────────────────────────
+/** Role identities only. No learner counts, cohort sizes, or tenant totals are invented. */
 export const demoUsers = [
-  { role: 'student' as const, name: 'Arjun Sharma', email: 'arjun@demo.skylent.in', avatar: 'AS', program: 'Data Science & AI', progress: 72 },
-  { role: 'faculty' as const, name: 'Dr. Priya Nair', email: 'priya@demo.skylent.in', avatar: 'PN', course: 'Data Science & AI', students: 128 },
-  { role: 'organisation' as const, name: 'Apex College', email: 'admin@apex.edu.in', avatar: 'AC', students: 1240, programs: 4 },
-  { role: 'superadmin' as const, name: 'Skylent Admin', email: 'admin@skylent.in', avatar: 'SA', totalUsers: 12450, totalOrgs: 48 },
+  { role: 'student' as const, name: 'Demo Learner', email: 'learner@demo.skylent.in', avatar: 'DL' },
+  { role: 'faculty' as const, name: 'Demo Faculty', email: 'faculty@demo.skylent.in', avatar: 'DF' },
+  { role: 'organisation' as const, name: 'Demo Institution', email: 'institution@demo.skylent.in', avatar: 'DI' },
+  { role: 'superadmin' as const, name: 'Demo Admin', email: 'admin@demo.skylent.in', avatar: 'DA' },
 ]
 
 // ─── LABS ─────────────────────────────────────────────────────────────────────

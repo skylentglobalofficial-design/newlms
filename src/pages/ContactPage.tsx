@@ -51,7 +51,7 @@ export default function ContactPage() {
 
   return (
     <PageShell auroraTheme="general">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `${T.navH + 28}px ${T.gutter} clamp(40px, 5vw, 56px)` }}>
+      <section style={{ position: 'relative', overflow: 'hidden', padding: `28px ${T.gutter} clamp(40px, 5vw, 56px)` }}>
         <Aurora themeId="general" variant="hero" />
         <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
           <FadeIn>

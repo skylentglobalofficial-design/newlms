@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FadeIn } from './shared'
-import { C, T, glass, type } from '../tokens'
+import { C, T, dsClass, glass, typography } from '../tokens'
 import { MediaImage } from './foundation'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 
@@ -21,9 +21,29 @@ type Tone = 'light' | 'dark' | 'canvas'
 // ── Section wrapper ──────────────────────────────────────────────────────────
 function sectionBg(tone: Tone, bg?: string): string {
   if (bg) return bg
-  if (tone === 'canvas') return C.warmWhite
-  if (tone === 'dark') return C.warmWhite
+  if (tone === 'dark') return C.ink
+  if (tone === 'canvas') return C.sand
   return C.warmWhite
+}
+
+function sectionTextColor(tone: Tone): string {
+  return tone === 'dark' ? C.white : C.ink
+}
+
+export function Rail({
+  children,
+  className,
+  style,
+}: {
+  children: React.ReactNode
+  className?: string
+  style?: React.CSSProperties
+}) {
+  return (
+    <div className={className ? `skylent-rail ${className}` : 'skylent-rail'} style={style}>
+      {children}
+    </div>
+  )
 }
 
 export function Section({
@@ -42,7 +62,7 @@ export function Section({
   divider?: boolean
 }) {
   const background = sectionBg(tone, bg)
-  const textColor = C.ink
+  const textColor = sectionTextColor(tone)
   return (
     <>
       {divider && <div className="skylent-section-divider" />}
@@ -51,12 +71,12 @@ export function Section({
         style={{
           background,
           color: textColor,
-          padding: `${T.section} ${T.gutter}`,
+          padding: `${T.section} 0`,
           position: 'relative',
           ...style,
         }}
       >
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative' }}>{children}</div>
+        <Rail style={{ position: 'relative' }}>{children}</Rail>
       </section>
     </>
   )
@@ -66,7 +86,7 @@ export function Section({
 export function Eyebrow({ children, tone = 'light', accent }: { children: React.ReactNode; tone?: Tone; accent?: boolean }) {
   const color = accent ? brandAccent.text : C.slate
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color, fontSize: 11, fontFamily: 'var(--font-mono)', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 10, color, fontFamily: typography.eyebrow.family, fontSize: typography.eyebrow.size, fontWeight: typography.eyebrow.weight, letterSpacing: typography.eyebrow.tracking, lineHeight: typography.eyebrow.line, textTransform: 'uppercase' }}>
       <span style={{ width: 20, height: 1, background: 'currentColor', opacity: 0.5 }} />
       {children}
     </div>
@@ -85,14 +105,16 @@ export function Heading({
   size?: 'sm' | 'md' | 'lg' | 'xl'
   style?: React.CSSProperties
 }) {
-  const sizes = {
-    sm: 'clamp(20px, 2.4vw, 26px)',
-    md: 'clamp(22px, 2.8vw, 30px)',
-    lg: 'clamp(26px, 3.4vw, 40px)',
-    xl: 'clamp(30px, 4vw, 44px)',
-  }
+  const role = size === 'xl'
+    ? typography.heading.xl
+    : size === 'lg'
+      ? typography.heading.xl
+      : size === 'md'
+        ? typography.heading.md
+        : typography.heading.sm
+  const color = tone === 'dark' ? C.white : C.ink
   return (
-    <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: sizes[size], lineHeight: 1.04, letterSpacing: '-0.03em', color: C.ink, margin: 0, ...style }}>
+    <h2 style={{ fontFamily: role.family, fontWeight: role.weight, fontSize: role.size, lineHeight: role.line, letterSpacing: role.tracking, color, margin: 0, ...style }}>
       {children}
     </h2>
   )
@@ -120,7 +142,7 @@ export function SectionHeader({
         {eyebrow && <div style={{ marginBottom: 22 }}><Eyebrow tone={tone}>{eyebrow}</Eyebrow></div>}
         <Heading tone={tone}>{title}</Heading>
         {lead && (
-          <p style={{ color: C.slate, fontSize: type.bodyLg, lineHeight: 1.7, margin: '22px 0 0', maxWidth: 560, ...(align === 'center' ? { marginLeft: 'auto', marginRight: 'auto' } : {}) }}>{lead}</p>
+          <p style={{ color: C.slate, fontFamily: typography.body.lg.family, fontSize: typography.body.lg.size, lineHeight: typography.body.lg.line, fontWeight: typography.body.lg.weight, margin: '22px 0 0', maxWidth: typography.measure.narrow, ...(align === 'center' ? { marginLeft: 'auto', marginRight: 'auto' } : {}) }}>{lead}</p>
         )}
       </div>
       {action}
@@ -129,13 +151,16 @@ export function SectionHeader({
 }
 
 // ── Button ───────────────────────────────────────────────────────────────────
-type BtnVariant = 'primary' | 'secondary' | 'ghost' | 'dark' | 'light'
+type BtnVariant = 'primary' | 'secondary' | 'ghost' | 'dark' | 'light' | 'destructive'
 export function Button({
   children,
   onClick,
   variant = 'primary',
   size = 'md',
   full,
+  disabled,
+  loading,
+  className,
   style,
   type = 'button',
   themeId,
@@ -145,74 +170,86 @@ export function Button({
   variant?: BtnVariant
   size?: 'sm' | 'md' | 'lg'
   full?: boolean
+  disabled?: boolean
+  loading?: boolean
+  className?: string
   style?: React.CSSProperties
   type?: 'button' | 'submit'
   themeId?: AuroraThemeId
 }) {
   const accent = themeId ? getDomainAccent(themeId) : brandAccent
-  const primaryFill = accent.primary
-  const pad = size === 'lg' ? '15px 32px' : size === 'sm' ? '9px 18px' : '13px 26px'
-  const fontSize = size === 'lg' ? 16 : size === 'sm' ? 13 : 14.5
-  const base: React.CSSProperties = {
-    display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-    borderRadius: T.rControl, padding: pad, fontSize, fontWeight: 600, cursor: 'pointer',
-    fontFamily: 'var(--font-body)', border: '1px solid transparent', transition: 'all 0.22s ease',
-    width: full ? '100%' : undefined, whiteSpace: 'nowrap', letterSpacing: '-0.01em',
+  const variantClass: Record<BtnVariant, string> = {
+    primary: dsClass.btnPrimary,
+    secondary: dsClass.btnSecondary,
+    ghost: dsClass.btnGhost,
+    dark: dsClass.btnPrimary,
+    light: dsClass.btnSecondary,
+    destructive: dsClass.btnDestructive,
   }
-  const variants: Record<BtnVariant, React.CSSProperties> = {
-    primary: { background: primaryFill, color: C.white },
-    secondary: { background: 'transparent', color: C.ink, borderColor: T.lineStrong },
-    ghost: { background: 'transparent', color: C.ink, borderColor: T.lineStrong },
-    dark: { background: primaryFill, color: C.white },
-    light: { background: C.cream, color: C.ink, borderColor: T.lineLight },
-  }
+  const sizeClass = size === 'sm' ? 'skylent-btn--sm' : size === 'lg' ? 'skylent-btn--lg' : ''
+  const themeStyle = themeId
+    ? ({
+        ['--skylent-color-accent' as string]: accent.primary,
+        ['--skylent-color-accent-hover' as string]: accent.secondary,
+        ['--skylent-color-accent-strong' as string]: accent.secondary,
+      } as React.CSSProperties)
+    : undefined
+  const classes = [
+    variantClass[variant],
+    sizeClass,
+    full ? dsClass.btnFull : '',
+    loading ? 'is-loading' : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')
   return (
     <button
       type={type}
+      className={classes}
       onClick={onClick}
-      style={{ ...base, ...variants[variant], ...style }}
-      onMouseEnter={e => {
-        const t = e.currentTarget
-        if (variant === 'primary') { t.style.background = accent.secondary; t.style.transform = 'translateY(-1px)' }
-        else if (variant === 'dark') { t.style.background = accent.secondary; t.style.transform = 'translateY(-1px)' }
-        else if (variant === 'light') { t.style.transform = 'translateY(-1px)'; t.style.boxShadow = '0 10px 30px rgba(21,23,26,0.08)' }
-        else if (variant === 'secondary') t.style.borderColor = C.ink
-        else t.style.borderColor = C.ink
-      }}
-      onMouseLeave={e => {
-        const t = e.currentTarget
-        if (variant === 'primary') { t.style.background = primaryFill; t.style.transform = 'none' }
-        else if (variant === 'dark') { t.style.background = primaryFill; t.style.transform = 'none' }
-        else if (variant === 'light') { t.style.transform = 'none'; t.style.boxShadow = 'none' }
-        else if (variant === 'secondary') t.style.borderColor = T.lineStrong
-        else t.style.borderColor = T.lineStrong
-      }}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
+      style={{ whiteSpace: 'nowrap', ...themeStyle, ...style }}
     >
+      {loading ? <span className={dsClass.spinner} aria-hidden /> : null}
       {children}
     </button>
   )
 }
 
 // ── Text link with underline reveal ──────────────────────────────────────────
-export function TextLink({ children, onClick, tone = 'light' }: { children: React.ReactNode; onClick?: () => void; tone?: Tone }) {
-  const color = C.ink
+export function TextLink({ children, onClick, className }: { children: React.ReactNode; onClick?: () => void; tone?: Tone; className?: string }) {
   return (
-    <button onClick={onClick} style={{ background: 'none', border: 'none', cursor: 'pointer', color, fontSize: 14, fontWeight: 600, fontFamily: 'var(--font-body)', padding: 0, display: 'inline-flex', alignItems: 'center', gap: 7, borderBottom: `1px solid ${color}`, paddingBottom: 2 }}>
+    <button type="button" onClick={onClick} className={className ? `${dsClass.textLink} ${className}` : dsClass.textLink}>
       {children} <span aria-hidden>→</span>
     </button>
   )
 }
 
 // ── Badge / pill ─────────────────────────────────────────────────────────────
-export function Badge({ children, tone = 'light', accent }: { children: React.ReactNode; tone?: Tone; accent?: boolean }) {
-  const styles: React.CSSProperties = accent
-    ? { background: brandAccent.subtle, border: `1px solid ${brandAccent.border}`, color: brandAccent.text }
-    : { background: C.cream, border: `1px solid ${T.lineStrong}`, color: C.slate }
-  return (
-    <span style={{ ...styles, borderRadius: 6, padding: '4px 11px', fontSize: 10.5, fontFamily: 'var(--font-mono)', letterSpacing: '0.06em', textTransform: 'uppercase', display: 'inline-flex', alignItems: 'center', gap: 6, whiteSpace: 'nowrap' }}>
-      {children}
-    </span>
-  )
+type BadgeStatus = 'neutral' | 'accent' | 'success' | 'warning' | 'error' | 'info'
+
+export function Badge({
+  children,
+  accent,
+  status = 'neutral',
+}: {
+  children: React.ReactNode
+  tone?: Tone
+  accent?: boolean
+  status?: BadgeStatus
+}) {
+  const resolved: BadgeStatus = accent ? 'accent' : status
+  const statusClass: Record<BadgeStatus, string> = {
+    neutral: dsClass.badge,
+    accent: dsClass.badgeAccent,
+    success: dsClass.badgeSuccess,
+    warning: dsClass.badgeWarning,
+    error: dsClass.badgeError,
+    info: dsClass.badgeInfo,
+  }
+  return <span className={statusClass[resolved]}>{children}</span>
 }
 
 // ── Card (light or dark, optional hover lift) ────────────────────────────────
@@ -220,32 +257,84 @@ export function Card({
   children,
   tone = 'light',
   hover = true,
+  elevated,
   onClick,
+  className,
   style,
 }: {
   children: React.ReactNode
   tone?: Tone
   hover?: boolean
+  elevated?: boolean
   onClick?: () => void
+  className?: string
   style?: React.CSSProperties
 }) {
-  const base: React.CSSProperties = { background: C.cream, border: `1px solid ${T.lineLight}` }
+  const classes = [
+    dsClass.card,
+    dsClass.cardPad,
+    elevated ? 'skylent-card--raised' : '',
+    tone === 'dark' ? dsClass.cardProductDark : '',
+    hover && onClick ? dsClass.cardInteractive : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')
   return (
     <div
       onClick={onClick}
-      style={{ borderRadius: T.rCard, padding: 30, transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease', cursor: onClick ? 'pointer' : 'default', ...base, ...style }}
-      onMouseEnter={hover ? e => {
-        e.currentTarget.style.transform = 'translateY(-2px)'
-        e.currentTarget.style.boxShadow = T.shadow
-        e.currentTarget.style.borderColor = T.lineStrong
-      } : undefined}
-      onMouseLeave={hover ? e => {
-        e.currentTarget.style.transform = 'none'
-        e.currentTarget.style.boxShadow = 'none'
-        e.currentTarget.style.borderColor = T.lineLight
-      } : undefined}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={onClick ? e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick() } } : undefined}
+      className={classes}
+      style={{ cursor: onClick ? 'pointer' : undefined, ...style }}
     >
       {children}
+    </div>
+  )
+}
+
+// ── Feedback primitives ───────────────────────────────────────────────────────
+export function LoadingState({ label = 'Loading…', className }: { label?: string; className?: string }) {
+  return (
+    <div className={className ? `${dsClass.stateInline} ${className}` : dsClass.stateInline} role="status" aria-live="polite">
+      <span className={dsClass.spinner} aria-hidden />
+      <span>{label}</span>
+    </div>
+  )
+}
+
+export function EmptyState({
+  message,
+  action,
+  className,
+}: {
+  message: React.ReactNode
+  action?: React.ReactNode
+  className?: string
+}) {
+  return (
+    <div className={className ? `${dsClass.stateEmpty} ${className}` : dsClass.stateEmpty}>
+      <p style={{ margin: 0 }}>{message}</p>
+      {action ? <div className="skylent-state-panel__actions">{action}</div> : null}
+    </div>
+  )
+}
+
+export function ErrorState({ message, action, className }: { message: React.ReactNode; action?: React.ReactNode; className?: string }) {
+  return (
+    <div className={className ? `${dsClass.stateErrorPanel} ${className}` : dsClass.stateErrorPanel} role="alert">
+      <p style={{ margin: 0 }}>{message}</p>
+      {action ? <div className="skylent-state-panel__actions">{action}</div> : null}
+    </div>
+  )
+}
+
+export function SuccessState({ message, action, className }: { message: React.ReactNode; action?: React.ReactNode; className?: string }) {
+  return (
+    <div className={className ? `${dsClass.stateSuccessPanel} ${className}` : dsClass.stateSuccessPanel} role="status">
+      <p style={{ margin: 0 }}>{message}</p>
+      {action ? <div className="skylent-state-panel__actions">{action}</div> : null}
     </div>
   )
 }
@@ -305,8 +394,8 @@ export function PageHero({
   photoAspect?: '4/3' | '16/9' | '4/5' | '3/2'
 }) {
   return (
-    <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `clamp(88px, 10vw, 120px) ${T.gutter} clamp(48px, 6vw, 72px)` }}>
-      <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
+    <section style={{ background: bg, position: 'relative', overflow: 'hidden', padding: 'clamp(88px, 10vw, 120px) 0 clamp(48px, 6vw, 72px)' }}>
+      <Rail style={{ position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'grid', gridTemplateColumns: photo ? '1.05fr 0.95fr' : '1fr', gap: 'clamp(28px, 5vw, 64px)', alignItems: 'center' }} className="two-col skylent-page-hero">
           <div>
             <div style={{ marginBottom: 20 }}><Eyebrow tone="light" accent>{eyebrow}</Eyebrow></div>
@@ -329,7 +418,7 @@ export function PageHero({
             />
           )}
         </div>
-      </div>
+      </Rail>
     </section>
   )
 }
@@ -373,8 +462,9 @@ export function CTABand({
 }) {
   const navigate = useNavigate()
   return (
-    <section className="skylent-cta-band" style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `${T.section} ${T.gutter}`, borderTop: `1px solid ${T.lineLight}` }}>
-      <div style={{ maxWidth: 900, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
+    <section className="skylent-cta-band" style={{ background: bg, position: 'relative', overflow: 'hidden', padding: `${T.section} 0`, borderTop: `1px solid ${T.lineLight}` }}>
+      <Rail style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
         <FadeIn>
           {eyebrow && <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'center' }}><Eyebrow tone="light" accent>{eyebrow}</Eyebrow></div>}
           <Heading tone="light" size="lg" style={{ textAlign: 'center' }}>{title}</Heading>
@@ -384,7 +474,8 @@ export function CTABand({
             {secondary && <Button variant="ghost" size="lg" onClick={() => navigate(secondary.to)}>{secondary.label}</Button>}
           </div>
         </FadeIn>
-      </div>
+        </div>
+      </Rail>
     </section>
   )
 }

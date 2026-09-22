@@ -1,0 +1,205 @@
+/* Scroll 15 — kinetic circular process around one artefact */
+
+.hp-ch.hp-ws {
+  --ws-ink: #15171a;
+  --ws-muted: #8a8f96;
+  --ws-line: rgba(21, 23, 26, 0.08);
+  --ws-accent: #4f46e5;
+  --ws-top: #f4f5fc;
+  --ws-left: #e4e7f7;
+  --ws-right: #d7dbf2;
+  background: #ffffff;
+  border-top: 1px solid var(--ws-line);
+}
+
+.hp-ws-stage {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(20px, 3vh, 32px);
+}
+
+.hp-ws-copy {
+  max-width: 34em;
+}
+
+.hp-ws-copy .hp-ch-title {
+  max-width: 10em;
+}
+
+.hp-ws-visual {
+  position: relative;
+  width: min(100%, 400px);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  min-width: 0;
+}
+
+.hp-ws-ring {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.hp-ws-ring .is-track {
+  fill: none;
+  stroke: rgba(21, 23, 26, 0.1);
+  stroke-width: 1.1;
+}
+
+.hp-ws-ring .is-spin {
+  fill: none;
+  stroke: rgba(79, 70, 229, 0.45);
+  stroke-width: 1.2;
+  stroke-dasharray: 18 92;
+  stroke-linecap: square;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.hp-ws-orbit {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.hp-ws-orbit li {
+  position: absolute;
+  display: grid;
+  gap: 3px;
+  max-width: 11em;
+}
+
+.hp-ws-orbit .is-question {
+  top: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.hp-ws-orbit .is-try {
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  text-align: right;
+}
+
+.hp-ws-orbit .is-make {
+  bottom: 2%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.hp-ws-orbit .is-reflect {
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.hp-ws-orbit b {
+  color: var(--ws-ink);
+  font: 600 16px/1.2 var(--font-body);
+}
+
+.hp-ws-orbit span {
+  color: var(--ws-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.hp-ws-core {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.hp-ws-cube {
+  width: min(28%, 128px);
+  height: auto;
+}
+
+.hp-ws-cube .is-top {
+  fill: var(--ws-top);
+}
+
+.hp-ws-cube .is-left {
+  fill: var(--ws-left);
+}
+
+.hp-ws-cube .is-right {
+  fill: var(--ws-right);
+}
+
+.hp-ws-cube .is-stroke {
+  fill: none;
+  stroke: var(--ws-accent);
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hp-ws-ring .is-spin {
+    animation: hp-ws-orbit 28s linear infinite;
+  }
+}
+
+@keyframes hp-ws-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 768px) {
+  .hp-ws-visual {
+    width: min(100%, 360px);
+    margin-inline: 0;
+  }
+}
+
+@media (max-width: 430px) {
+  .hp-ws-visual {
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: auto;
+    height: auto;
+  }
+
+  .hp-ws-ring {
+    display: none;
+  }
+
+  .hp-ws-orbit {
+    position: static;
+    display: grid;
+    order: 0;
+    gap: 16px;
+    padding-left: 18px;
+    border-left: 1px solid rgba(79, 70, 229, 0.28);
+  }
+
+  .hp-ws-orbit li,
+  .hp-ws-orbit .is-question,
+  .hp-ws-orbit .is-try,
+  .hp-ws-orbit .is-make,
+  .hp-ws-orbit .is-reflect {
+    position: static;
+    transform: none;
+    text-align: left;
+  }
+
+  .hp-ws-core {
+    position: static;
+    order: 1;
+    justify-content: start;
+    padding: 10px 0 0 18px;
+  }
+
+  .hp-ws-cube {
+    width: 108px;
+  }
+}

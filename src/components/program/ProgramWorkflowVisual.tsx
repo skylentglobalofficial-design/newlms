@@ -18,7 +18,7 @@ const SLUG_WORKFLOW: Record<string, WorkflowStep[]> = {
     { label: 'Dataset', detail: 'Source & quality' },
     { label: 'SQL', detail: 'Query & transform' },
     { label: 'Dashboard', detail: 'Visualise KPIs' },
-    { label: 'Insight', detail: 'Recommend action' },
+    { label: 'Insight', detail: 'Interpret evidence' },
   ],
   'full-stack': [
     { label: 'Code', detail: 'Frontend & API' },
@@ -54,10 +54,10 @@ const SLUG_WORKFLOW: Record<string, WorkflowStep[]> = {
     { label: 'Assessment', detail: 'Timed test' },
   ],
   'product-management': [
-    { label: 'Campaign', detail: 'Goal & audience' },
-    { label: 'Channel', detail: 'Touchpoints' },
-    { label: 'Analytics', detail: 'Track metrics' },
-    { label: 'ROAS', detail: 'Conversion outcome' },
+    { label: 'Evidence', detail: 'Source notes' },
+    { label: 'Frame', detail: 'Problem' },
+    { label: 'Bet', detail: 'One constraint' },
+    { label: 'Spec', detail: 'Write it down' },
   ],
 }
 
@@ -173,21 +173,21 @@ function DataAnalyticsWorkspace({ accent }: { accent: Accent }) {
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }} className="program-workflow-panels">
       <Panel label="SQL" accent={accent}>
         <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, lineHeight: 1.6 }}>
-          SELECT region,<br />SUM(revenue)<br />GROUP BY 1
+          SELECT column<br />FROM table<br />GROUP BY column
         </div>
       </Panel>
       <Panel label="DASHBOARD" accent={accent}>
-        {[{ label: 'Revenue', w: 68 }, { label: 'Conv.', w: 42 }].map(k => (
-          <div key={k.label} style={{ marginBottom: 8 }}>
-            <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: C.slate, marginBottom: 3 }}>{k.label}</div>
+        {['Measure', 'Series'].map((label) => (
+          <div key={label} style={{ marginBottom: 8 }}>
+            <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: C.slate, marginBottom: 3 }}>{label}</div>
             <div style={{ height: 28, background: C.cream, borderRadius: 4, position: 'relative', overflow: 'hidden' }}>
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: `${k.w}%`, background: accent.primary, opacity: 0.5, borderRadius: '4px 4px 0 0' }} />
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '100%', background: accent.primary, opacity: 0.22, borderRadius: 4 }} />
             </div>
           </div>
         ))}
       </Panel>
       <Panel label="INSIGHT" accent={accent} highlight>
-        <div style={{ fontSize: 11, color: C.ink, lineHeight: 1.5 }}>West region underperforming — investigate channel mix</div>
+        <div style={{ fontSize: 11, color: C.ink, lineHeight: 1.5 }}>Interpret evidence</div>
       </Panel>
     </div>
   )
@@ -227,7 +227,7 @@ function JeeExamWorkspace({ accent }: { accent: Accent }) {
   const mathAccent = getDomainAccent('jee')
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: 10 }} className="program-workflow-panels">
-      <Panel label="QUESTION · MATH" accent={accent}>
+      <Panel label="QUESTION" accent={accent}>
         <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
           {['Physics', 'Chemistry', 'Math'].map((s, i) => (
             <span key={s} style={{
@@ -238,25 +238,26 @@ function JeeExamWorkspace({ accent }: { accent: Accent }) {
             }}>{s}</span>
           ))}
         </div>
-        <div style={{ fontSize: 11, color: C.ink, lineHeight: 1.5, marginBottom: 10 }}>If ∫₀² 3t² dt = k, find k.</div>
+        <div style={{ height: 10, maxWidth: '88%', background: 'rgba(21,23,26,0.08)', borderRadius: 4, marginBottom: 8 }} />
+        <div style={{ height: 8, maxWidth: '64%', background: 'rgba(21,23,26,0.06)', borderRadius: 4, marginBottom: 10 }} />
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {['A', 'B', 'C', 'D'].map(opt => (
             <span key={opt} style={{
               fontSize: 10, fontFamily: 'var(--font-mono)', padding: '4px 10px', borderRadius: 4,
-              background: opt === 'B' ? accent.subtleStrong : C.cream,
-              border: `1px solid ${opt === 'B' ? accent.border : T.lineDark}`,
-              color: opt === 'B' ? accent.text : C.slate,
+              background: C.cream,
+              border: `1px solid ${T.lineDark}`,
+              color: C.slate,
             }}>{opt}</span>
           ))}
         </div>
       </Panel>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <Panel label="TIMER" accent={accent}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 22, color: accent.text, letterSpacing: '0.06em' }}>04:32</div>
-          <div style={{ fontSize: 9, color: C.slate, marginTop: 4 }}>Q 14 · timed practice</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text, letterSpacing: '0.04em' }}>Timer</div>
+          <div style={{ fontSize: 9, color: C.slate, marginTop: 4 }}>Timed attempt</div>
         </Panel>
         <Panel label="SOLUTION" accent={accent} highlight>
-          <div style={{ fontSize: 10, color: C.slate, lineHeight: 1.5 }}>∫₀² 3t² dt = 8 units</div>
+          <div style={{ fontSize: 10, color: C.slate, lineHeight: 1.5 }}>Worked method</div>
         </Panel>
       </div>
     </div>
@@ -269,19 +270,20 @@ function NeetExamWorkspace({ accent }: { accent: Accent }) {
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="program-workflow-panels">
       <Panel label="BIOLOGY · DIAGRAM" accent={accent}>
         <div style={{ height: 52, borderRadius: 6, border: `1px dashed ${bioAccent.border}`, background: bioAccent.subtle, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, color: C.slate, marginBottom: 8 }}>
-          Cell · NCERT Fig 8.2
+          Diagram
         </div>
-        <div style={{ fontSize: 10, color: C.slate }}>Label organelles · guided practice</div>
+        <div style={{ fontSize: 10, color: C.slate }}>Label · guided practice</div>
       </Panel>
-      <Panel label="MCQ · BOTANY" accent={accent} highlight>
-        <div style={{ fontSize: 11, color: C.ink, lineHeight: 1.45, marginBottom: 10 }}>Which enzyme fixes CO₂ in C₄ plants?</div>
+      <Panel label="MCQ" accent={accent} highlight>
+        <div style={{ height: 10, maxWidth: '90%', background: 'rgba(21,23,26,0.08)', borderRadius: 4, marginBottom: 8 }} />
+        <div style={{ height: 8, maxWidth: '55%', background: 'rgba(21,23,26,0.06)', borderRadius: 4, marginBottom: 10 }} />
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-          {['PEP', 'RuBisCO', 'ATP'].map((o, i) => (
+          {['A', 'B', 'C'].map((o) => (
             <span key={o} style={{
               fontSize: 9, fontFamily: 'var(--font-mono)', padding: '4px 10px', borderRadius: 4,
-              background: i === 0 ? accent.subtleStrong : C.cream,
-              border: `1px solid ${i === 0 ? accent.border : T.lineDark}`,
-              color: i === 0 ? accent.text : C.slate,
+              background: C.cream,
+              border: `1px solid ${T.lineDark}`,
+              color: C.slate,
             }}>{o}</span>
           ))}
         </div>
@@ -305,47 +307,40 @@ function CatExamWorkspace({ accent }: { accent: Accent }) {
             }}>{s}</span>
           ))}
         </div>
-        <div style={{ fontSize: 11, color: C.ink, lineHeight: 1.5, marginBottom: 10 }}>Should the brand enter Tier-2 cities this quarter?</div>
-        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: C.slate }}>DI table · Region · revenue</div>
+        <div style={{ height: 10, maxWidth: '92%', background: 'rgba(21,23,26,0.08)', borderRadius: 4, marginBottom: 8 }} />
+        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: C.slate }}>DI table · column · column</div>
       </Panel>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         <Panel label="REASONING" accent={accent} highlight>
-          <div style={{ fontSize: 10, color: accent.text, marginBottom: 6 }}>Option B · margin analysis</div>
-          <div style={{ fontSize: 10, color: C.slate, lineHeight: 1.5 }}>Expansion cost vs projected lift</div>
+          <div style={{ fontSize: 10, color: C.slate, lineHeight: 1.5 }}>Logic path</div>
         </Panel>
         <Panel label="SECTION TIMER" accent={accent}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: accent.text }}>18:45</div>
-          <div style={{ fontSize: 9, color: C.slate, marginTop: 4 }}>DILR · sectional clock</div>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: accent.text }}>Timer</div>
+          <div style={{ fontSize: 9, color: C.slate, marginTop: 4 }}>Sectional clock</div>
         </Panel>
       </div>
     </div>
   )
 }
 
-function MarketingWorkspace({ accent }: { accent: Accent }) {
+function ProductCaseWorkspace({ accent }: { accent: Accent }) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }} className="program-workflow-panels">
-      <Panel label="CAMPAIGN" accent={accent}>
-        <div style={{ fontSize: 11, color: C.ink, marginBottom: 6 }}>Q3 product launch</div>
-        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: C.slate }}>Goal: qualified leads</div>
+      <Panel label="EVIDENCE" accent={accent}>
+        <div style={{ fontSize: 11, color: C.ink, marginBottom: 6 }}>Source notes</div>
+        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: C.slate }}>Quotes · constraints</div>
       </Panel>
-      <Panel label="CHANNELS" accent={accent}>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-          {['email', 'paid', 'organic'].map(ch => (
-            <span key={ch} style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: accent.text, background: accent.subtle, padding: '3px 8px', borderRadius: 4, border: `1px solid ${accent.border}` }}>{ch}</span>
-          ))}
-        </div>
+      <Panel label="FRAME" accent={accent}>
+        <div style={{ fontSize: 11, color: C.ink, marginBottom: 6 }}>Problem</div>
+        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: C.slate }}>User · pain</div>
       </Panel>
-      <Panel label="ANALYTICS" accent={accent}>
-        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 4, height: 36 }}>
-          {[40, 65, 48, 80, 58].map((h, i) => (
-            <div key={i} style={{ flex: 1, height: `${h}%`, background: accent.primary, opacity: 0.45 + i * 0.08, borderRadius: '2px 2px 0 0' }} />
-          ))}
-        </div>
+      <Panel label="BET" accent={accent}>
+        <div style={{ fontSize: 11, color: C.ink, marginBottom: 6 }}>One constraint</div>
+        <div style={{ height: 8, maxWidth: '70%', background: 'rgba(21,23,26,0.08)', borderRadius: 4, marginTop: 8 }} />
       </Panel>
-      <Panel label="ROAS" accent={accent} highlight>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 20, color: accent.text }}>3.2×</div>
-        <div style={{ fontSize: 9, color: C.slate, marginTop: 4 }}>conversion vs spend</div>
+      <Panel label="SPEC" accent={accent} highlight>
+        <div style={{ fontSize: 11, color: C.ink, marginBottom: 6 }}>Write it down</div>
+        <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text }}>Trigger · path · edge</div>
       </Panel>
     </div>
   )
@@ -368,7 +363,7 @@ function resolveWorkspace(slug: string, programType: ProgramType, accent: Accent
   if (slug === 'data-science-ai' || slug === 'generative-ai-program') return <DataScienceWorkspace accent={accent} />
   if (slug === 'data-analytics-pro' || slug === 'sql-certificate') return <DataAnalyticsWorkspace accent={accent} />
   if (slug === 'full-stack') return <FullStackWorkspace accent={accent} />
-  if (slug === 'product-management') return <MarketingWorkspace accent={accent} />
+  if (slug === 'product-management') return <ProductCaseWorkspace accent={accent} />
   if (slug.includes('neet')) return <NeetExamWorkspace accent={accent} />
   if (slug.includes('cat')) return <CatExamWorkspace accent={accent} />
   if (slug.includes('jee') || programType === 'EXAM_PREP') return <JeeExamWorkspace accent={accent} />
