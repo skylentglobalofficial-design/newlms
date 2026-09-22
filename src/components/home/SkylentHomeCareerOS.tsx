@@ -2,7 +2,14 @@ import { Link } from "react-router-dom"
 import { CAREER_OS_IA } from "../../lib/product-architecture"
 import "./SkylentHomeCareerOS.css"
 
-const DESTINATIONS = CAREER_OS_IA.filter((item) => item.label !== "Support")
+const CAREER_LAYERS = [
+  { label: "Profile", to: "/career-os/profile", sub: "Identity, skills, and evidence" },
+  { label: "Projects", to: "/career-os/projects", sub: "Work you keep from Skylent OS" },
+  { label: "Opportunities", to: "/career-os/jobs", sub: "Roles when partners publish them" },
+  { label: "Applications", to: "/career-os/applications", sub: "Track what you submitted" },
+  { label: "Interviews", to: "/career-os/interviews", sub: "Rounds and preparation" },
+  { label: "Support", to: "/career-os/support", sub: "Help on the career workflow" },
+] as const
 
 const HARBOR_EVIDENCE = [
   { label: "Problem", value: "Late inbound has no owner before open." },
@@ -171,18 +178,13 @@ export default function SkylentHomeCareerOS() {
             <i aria-hidden="true" />
             Career OS
           </p>
-          <h2 id="home-career-os-heading">
-            From learning
-            <br />
-            {"to what's next."}
-          </h2>
+          <h2 id="home-career-os-heading">The career layer connected to your learning.</h2>
           <p className="hp-cos-lead">
-            {
-              "Keep the work you build, the skills it demonstrates, and the career activity that follows — in one place."
-            }
+            Career OS holds profile, projects, opportunities, applications, interviews, and support — so evidence
+            from Skylent OS can move toward real next steps when they exist.
           </p>
           <ol className="hp-cos-dest" aria-label="Career OS destinations">
-            {DESTINATIONS.map((item, index) => (
+            {CAREER_LAYERS.map((item, index) => (
               <li key={item.to}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <Link to={item.to}>

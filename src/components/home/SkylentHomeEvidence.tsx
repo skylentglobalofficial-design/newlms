@@ -11,6 +11,14 @@ const STEPS = [
   { id: "ready", label: "Ready", state: "next" as const },
 ]
 
+const SYSTEM_CHAIN = [
+  { label: "Learn", detail: "Structured lessons and teaching in Skylent OS.", to: "/courses" },
+  { label: "Practice", detail: "Quizzes, labs, and checks after you learn.", to: "/labs" },
+  { label: "Build", detail: "Projects and applied work on real briefs.", to: "/career-os/projects" },
+  { label: "Evidence", detail: "Artifacts you keep and can showcase.", to: "/career-os/projects" },
+  { label: "Career", detail: "Profile, opportunities, and applications when published.", to: "/career-os" },
+] as const
+
 function HarborEvidenceWorkspace({ active }: { active: boolean }) {
   return (
     <div className={active ? "hp-ev-work is-in" : "hp-ev-work"} aria-label="Harbor Desk project case">
@@ -95,25 +103,35 @@ export default function SkylentHomeEvidence() {
         <header className="hp-ev-copy">
           <p className="hp-ev-kicker">
             <i aria-hidden="true" />
-            Real work
+            How Skylent works
           </p>
-          <h2 id="home-evidence-heading">
-            Learning becomes
-            <br />
-            something you can show.
-          </h2>
+          <h2 id="home-evidence-heading">One connected system from learning to career.</h2>
           <p className="hp-ev-lead">
-            Turn what you learn into projects, cases, analyses, products and other evidence of what you can
-            actually do.
+            Skylent is not a catalogue of videos — it is Learn → Practice → Build → Evidence → Career, wired
+            together in Skylent OS.
           </p>
+          <ol className="hp-ev-chain" aria-label="Skylent learning system">
+            {SYSTEM_CHAIN.map((step, index) => (
+              <li key={step.label}>
+                <Link to={step.to}>
+                  <span className="hp-ev-chain-index">{String(index + 1).padStart(2, "0")}</span>
+                  <span className="hp-ev-chain-copy">
+                    <strong>{step.label}</strong>
+                    <em>{step.detail}</em>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+          <p className="hp-ev-specimen-label">Evidence in practice — Harbor Desk</p>
         </header>
 
         <HarborEvidenceWorkspace active={inView} />
       </div>
 
       <div className="hp-rail hp-ev-foot">
-        <p>Build something worth showing.</p>
-        <Link to="/career-os/projects">Explore projects →</Link>
+        <p>Keep work that proves what you can do.</p>
+        <Link to="/career-os">Open Career OS →</Link>
       </div>
     </section>
   )

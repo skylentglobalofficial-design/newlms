@@ -8,20 +8,19 @@ export default function SkylentHomeFinal() {
         <div className="hp-end-copy">
           <p className="hp-ch-kicker">
             <i aria-hidden="true" />
-            20
+            Start
           </p>
           <h2 id="home-final-heading" className="hp-ch-title hp-end-title">
-            Build the future you want to work in.
+            Start learning on Skylent.
           </h2>
-          <p className="hp-ch-lead">Learn something useful. Build something real. Keep the evidence.</p>
+          <p className="hp-ch-lead">
+            Choose a programme with authored teaching, or sign in to resume where you left off in Skylent OS.
+          </p>
         </div>
         <div className="hp-end-links">
           <Link className="hp-end-primary" to="/programs">
-            Explore programmes
+            Start learning
             <span aria-hidden="true"> →</span>
-          </Link>
-          <Link className="hp-ch-link" to="/os">
-            Explore learning →
           </Link>
           <Link className="hp-ch-link" to="/login">
             Sign in

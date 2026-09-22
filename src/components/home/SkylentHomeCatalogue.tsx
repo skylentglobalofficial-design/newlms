@@ -3,69 +3,42 @@ import "./SkylentHomeCatalogue.css"
 
 type IconId = "code" | "data" | "exam" | "design" | "business" | "tech" | "growth"
 
-const RAIL = [
-  {
-    id: "code" as const,
-    title: "Coding & Development",
-    copy: "Build interfaces, APIs and systems from the engineering catalogue.",
-    to: "/courses/full-stack-web",
-  },
-  {
-    id: "data" as const,
-    title: "Data & Analytics",
-    copy: "SQL, spreadsheets, and a dashboard you keep — on Northwind.",
-    to: "/courses/data-analytics",
-  },
-  {
-    id: "exam" as const,
-    title: "Competitive Exams",
-    copy: "Named paths for JEE, NEET, CAT, GATE and government papers.",
-    to: "/education/exams",
-  },
-  {
-    id: "design" as const,
-    title: "Design & Creative",
-    copy: "Start from a skill, then follow it into a course.",
-    to: "/skills",
-  },
-] as const
-
-const AREAS = [
-  {
-    id: "data" as const,
-    title: "Data & Analytics",
-    copy: "Learn to work with data",
-    to: "/courses/data-analytics",
-  },
+const ECOSYSTEM = [
   {
     id: "business" as const,
-    title: "Business & Management",
-    copy: "Work a product case",
+    title: "Programmes",
+    copy: "Pathways that link courses, practice, and capstone work.",
     to: "/programs",
   },
   {
-    id: "tech" as const,
-    title: "Tech & Development",
-    copy: "Start building",
-    to: "/skills?intent=software",
-  },
-  {
-    id: "design" as const,
-    title: "Design & Creative",
-    copy: "Bring ideas to life",
-    to: "/skills",
-  },
-  {
-    id: "exam" as const,
-    title: "Exams & Academics",
-    copy: "Prepare with structure",
-    to: "/education/exams",
+    id: "data" as const,
+    title: "Courses",
+    copy: "Authored teaching you progress through in Skylent OS.",
+    to: "/courses",
   },
   {
     id: "growth" as const,
-    title: "Personal Growth",
-    copy: "Learn something new",
+    title: "Skills",
+    copy: "Intent-led paths when you want to start from a capability.",
     to: "/skills",
+  },
+  {
+    id: "design" as const,
+    title: "Workshops",
+    copy: "Focused sessions listed in the public catalogue.",
+    to: "/workshops",
+  },
+  {
+    id: "code" as const,
+    title: "Labs",
+    copy: "Hands-on environments such as the Northwind SQL lab.",
+    to: "/labs",
+  },
+  {
+    id: "tech" as const,
+    title: "Projects",
+    copy: "Applied work and evidence you keep in Career OS.",
+    to: "/career-os/projects",
   },
 ] as const
 
@@ -180,12 +153,12 @@ export default function SkylentHomeCatalogue() {
         <header className="hp-cat-copy">
           <p className="hp-cat-kicker">
             <i aria-hidden="true" />
-            Catalogue
+            Learning ecosystem
           </p>
-          <h2 id="home-discover-heading">{"Explore what's worth learning."}</h2>
+          <h2 id="home-discover-heading">What you can learn and build on Skylent.</h2>
           <p className="hp-cat-lead">
-            Practical skills, real projects and structured learning — everything you need to grow, in one
-            place.
+            Programmes, courses, skills, workshops, labs, and projects — one ecosystem, not six disconnected
+            products.
           </p>
           <Link className="hp-cat-cta" to="/programs">
             Browse all programs
@@ -220,8 +193,8 @@ export default function SkylentHomeCatalogue() {
           </div>
         </article>
 
-        <ul className="hp-cat-rail" aria-label="Catalogue areas">
-          {RAIL.map((item) => (
+        <ul className="hp-cat-rail" aria-label="Skylent learning ecosystem">
+          {ECOSYSTEM.map((item) => (
             <li key={item.id}>
               <Link className="hp-cat-rail-item" to={item.to}>
                 <span className="hp-cat-thumb">
@@ -234,34 +207,6 @@ export default function SkylentHomeCatalogue() {
                 <span className="hp-cat-go" aria-hidden="true">
                   →
                 </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="hp-rail hp-cat-areas">
-        <header className="hp-cat-areas-head">
-          <div>
-            <p className="hp-cat-kicker">
-              <i aria-hidden="true" />
-              Browse by area
-            </p>
-            <h3 id="home-cat-areas-heading">Find your next skill.</h3>
-          </div>
-          <Link className="hp-cat-all" to="/courses">
-            View all categories →
-          </Link>
-        </header>
-        <ul className="hp-cat-area-list" aria-labelledby="home-cat-areas-heading">
-          {AREAS.map((item) => (
-            <li key={item.id}>
-              <Link className="hp-cat-area" to={item.to}>
-                <span className="hp-cat-area-icon">
-                  <LineIcon id={item.id} />
-                </span>
-                <b>{item.title}</b>
-                <em>{item.copy}</em>
               </Link>
             </li>
           ))}

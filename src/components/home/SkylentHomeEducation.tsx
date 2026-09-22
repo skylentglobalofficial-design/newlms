@@ -2,8 +2,8 @@ import { Link } from "react-router-dom"
 import { ACADEMIC_LINES, MATURITY_LABEL } from "../../lib/product-architecture"
 import "./SkylentHomeEducation.css"
 
-const CHAIN = ["Learning", "Work", "Evidence", "Identity"] as const
 const EDUCATION_HREF = "/education"
+const EXAMS_HREF = "/education/exams"
 
 const LEVELS = [
   {
@@ -30,10 +30,20 @@ const LEVELS = [
     themes: ["Advanced learning", "Research", "Specialisation"],
     kind: "postgrad" as const,
   },
+  {
+    id: "exams",
+    index: "04",
+    title: "Competitive exams",
+    copy: "Named paths for JEE, NEET, GATE, CAT, UPSC, and similar papers.",
+    themes: ["Syllabus", "Practice", "Test series", "Progress"],
+    kind: "exams" as const,
+    href: EXAMS_HREF,
+  },
 ] as const
 
-function routeFor(id: string) {
-  return ACADEMIC_LINES.find((line) => line.id === id)?.to ?? EDUCATION_HREF
+function routeFor(level: (typeof LEVELS)[number]) {
+  if ("href" in level && level.href) return level.href
+  return ACADEMIC_LINES.find((line) => line.id === level.id)?.to ?? EDUCATION_HREF
 }
 
 function SchoolGlyph() {
@@ -116,7 +126,16 @@ function PostgradGlyph() {
 function LevelGlyph({ kind }: { kind: (typeof LEVELS)[number]["kind"] }) {
   if (kind === "school") return <SchoolGlyph />
   if (kind === "undergrad") return <UndergradGlyph />
-  return <PostgradGlyph />
+  if (kind === "postgrad") return <PostgradGlyph />
+  return (
+    <svg className="hp-edu-glyph" viewBox="0 0 168 118" aria-hidden="true">
+      <rect className="is-ground" x="24" y="88" width="120" height="8" rx="2" />
+      <path className="is-stroke" d="M44 88V52l40-20 40 20v36" />
+      <path className="is-stroke" d="M64 72h40" />
+      <path className="is-stroke" d="M64 58h28" />
+      <circle className="is-window" cx="118" cy="44" r="10" />
+    </svg>
+  )
 }
 
 function IconBook() {
@@ -136,24 +155,19 @@ export default function SkylentHomeEducation() {
         <header className="hp-edu-copy">
           <p className="hp-ch-kicker">
             <i aria-hidden="true" />
-            11 Education
+            Education
           </p>
           <h2 id="home-education-heading" className="hp-ch-title">
-            Learn beyond a single course.
+            A pathway layer beyond the catalogue.
           </h2>
           <p className="hp-ch-lead">
-            A broader academic ecosystem — from foundational learning to degrees and specialisation.
+            School, undergraduate, postgraduate, and competitive exams — academic direction on Skylent, separate
+            from individual courses and programmes.
           </p>
           <Link className="hp-edu-cta" to={EDUCATION_HREF}>
             Explore education
             <span aria-hidden="true"> →</span>
           </Link>
-          <ol className="hp-edu-chain" aria-label="Chapter relationship">
-            {CHAIN.map((step) => (
-              <li key={step}>{step}</li>
-            ))}
-            <li className="is-here">Education</li>
-          </ol>
         </header>
 
         <article className="hp-edu-board" aria-labelledby="home-education-board-title">
@@ -168,13 +182,15 @@ export default function SkylentHomeEducation() {
           <ol className="hp-edu-levels">
             {LEVELS.map((level) => (
               <li key={level.id}>
-                <Link className="hp-edu-level" to={routeFor(level.id)}>
+                <Link className="hp-edu-level" to={routeFor(level)}>
                   <span className="hp-edu-idx">{level.index}</span>
                   <LevelGlyph kind={level.kind} />
                   <div className="hp-edu-level-copy">
                     <div className="hp-edu-level-top">
                       <h4>{level.title}</h4>
-                      <span className="hp-edu-soon">{MATURITY_LABEL.coming_soon}</span>
+                      {level.id === "exams" ? null : (
+                        <span className="hp-edu-soon">{MATURITY_LABEL.coming_soon}</span>
+                      )}
                     </div>
                     <p>{level.copy}</p>
                     <ul>

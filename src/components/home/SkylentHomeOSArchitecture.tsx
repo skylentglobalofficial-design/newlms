@@ -10,14 +10,14 @@ export default function SkylentHomeOSArchitecture() {
         <header className="hp-ch-copy">
           <p className="hp-ch-kicker">
             <i aria-hidden="true" />
-            16 Skylent OS
+            Skylent OS
           </p>
           <h2 id="home-os-arch-heading" className="hp-ch-title">
-            One system for the work behind learning.
+            Learning, work, evidence, and career — together.
           </h2>
           <p className="hp-ch-lead">
-            Learning, practice, projects, evidence and career activity can live together instead of becoming
-            separate destinations.
+            Skylent OS is the workspace where teaching, practice, labs, projects, and career activity connect —
+            so progress is not scattered across tabs and tools.
           </p>
           <Link className="hp-ch-cta" to={OS_HREF}>
             Explore Skylent OS

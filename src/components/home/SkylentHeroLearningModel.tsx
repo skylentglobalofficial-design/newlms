@@ -885,12 +885,30 @@ export default function SkylentHeroLearningModel() {
 
   return (
     <section className="hp-hero hp-lpb" aria-labelledby="home-hero-heading">
-      <h1 id="home-hero-heading" className="hp-lpb-sr">
-        Learn, practice, and build in Skylent OS
-      </h1>
       <div className="hp-rail hp-lpb-stage">
         <div className="hp-lpb-journey" role="radiogroup" aria-label="Learning journey" onKeyDown={onJourneyKey}>
-          <p className="hp-lpb-eyebrow">A brighter you through learning</p>
+          <header className="hp-lpb-intro">
+            <p className="hp-lpb-eyebrow">Skylent</p>
+            <h1 id="home-hero-heading">
+              Learn, practice, and build — in one learning workspace.
+            </h1>
+            <p className="hp-lpb-intro-lead">
+              Skylent is an editorial learning platform and OS for structured teaching, applied practice, real
+              projects, and evidence you can carry into Career OS.
+            </p>
+            <div className="hp-lpb-intro-actions">
+              <Link className="hp-lpb-cta hp-lpb-cta-primary" to="/programs">
+                Browse programmes
+              </Link>
+              <Link className="hp-lpb-cta hp-lpb-cta-secondary" to="/courses">
+                View courses
+              </Link>
+            </div>
+          </header>
+          <h2 className="hp-lpb-journey-title">Learn → Practice → Build</h2>
+          <p className="hp-lpb-journey-note">
+            The same model runs inside Skylent OS — pick a stage to see how it works.
+          </p>
           {STAGES.map((item) => {
             const on = stage === item.id
             return (
@@ -913,11 +931,6 @@ export default function SkylentHeroLearningModel() {
               </button>
             )
           })}
-          <p className="hp-lpb-foot">
-            Any goal. Any subject.
-            <br />
-            A complete learning journey, in one place.
-          </p>
         </div>
 
         <Frame stage={stage} onStage={pickStage}>

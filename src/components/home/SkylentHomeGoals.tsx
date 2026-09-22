@@ -15,32 +15,32 @@ const DESTINATIONS: Array<{
   {
     id: "career",
     index: "01",
-    title: "Build a career",
-    copy: "Build practical skills, create real work, and move toward your next opportunity.",
+    title: "Career",
+    copy: "Build skills, ship real work, and connect what you learn to Career OS.",
     node: "Career",
     to: "/career-os",
   },
   {
     id: "exam",
     index: "02",
-    title: "Prepare for an exam",
-    copy: "Build understanding, practise deliberately, and prepare with structure.",
+    title: "Exam",
+    copy: "Prepare with syllabus structure, practice, and progress you can follow.",
     node: "Exam",
     to: "/education/exams",
   },
   {
     id: "study",
     index: "03",
-    title: "Study a subject",
-    copy: "Go deeper into a subject with clear explanations, examples and practice.",
+    title: "Subject",
+    copy: "Go deeper on a topic with lessons, examples, and checks as you go.",
     node: "Subject",
     to: "/courses",
   },
   {
     id: "skill",
     index: "04",
-    title: "Learn something new",
-    copy: "Explore a new skill, experiment, and turn curiosity into capability.",
+    title: "New skill",
+    copy: "Explore a skill path, try practice, and turn curiosity into capability.",
     node: "New skill",
     to: "/skills",
   },
@@ -146,11 +146,9 @@ export default function SkylentHomeGoals() {
       <div className="hp-rail hp-dir-stage">
         <header className="hp-dir-copy">
           <p className="hp-dir-kicker">Start with a goal</p>
-          <h2 id="home-goals-heading">Where do you want to go?</h2>
+          <h2 id="home-goals-heading">Where do you want to start?</h2>
           <p className="hp-dir-lead">
-            Choose a direction.
-            <br />
-            {"We'll help you build the skills to get there."}
+            Four entry points into Skylent — each opens a real route in the product, not a marketing tile.
           </p>
         </header>
 
@@ -211,8 +209,8 @@ export default function SkylentHomeGoals() {
       </ol>
 
       <div className="hp-rail hp-dir-foot">
-        <p>New goals. Real skills. A brighter tomorrow.</p>
-        <Link to="/programs">Explore programs →</Link>
+        <p className="hp-dir-foot-note">Not sure yet?</p>
+        <Link to="/programs">Browse programmes →</Link>
       </div>
     </section>
   )
