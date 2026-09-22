@@ -208,17 +208,43 @@ const EXAM_PROGRAM_PATHS = ['/programs/jee-advanced-prep', '/programs/cat-prep']
 
 function pathInGroup(label: string, to: string | undefined, pathname: string): boolean {
   const examProgram = EXAM_PROGRAM_PATHS.includes(pathname)
-  if (label === 'Programs') {
+
+  if (label === 'Learn') {
     if (examProgram) return false
-    return pathname === '/programs' || pathname.startsWith('/programs/') || pathname === '/workshops' || pathname.startsWith('/workshops/')
+    return (
+      pathname === '/courses' ||
+      pathname.startsWith('/courses/') ||
+      pathname === '/programs' ||
+      pathname.startsWith('/programs/') ||
+      pathname === '/skills' ||
+      pathname.startsWith('/skills/') ||
+      pathname === '/workshops' ||
+      pathname.startsWith('/workshops/')
+    )
   }
+
+  if (label === 'Practice') {
+    return (
+      pathname === '/labs' ||
+      pathname.startsWith('/labs/') ||
+      pathname === '/os/projects' ||
+      pathname.startsWith('/os/projects/')
+    )
+  }
+
   if (label === 'Education') {
     if (pathname === '/education/exams' || pathname.startsWith('/education/exams/')) return false
     return pathname === '/education' || pathname.startsWith('/education/')
   }
+
+  if (label === 'Career') {
+    return pathname === '/career-os' || pathname.startsWith('/career-os/')
+  }
+
   if (label === 'Competitive Exams') {
     return pathname === '/education/exams' || pathname.startsWith('/exams/') || examProgram
   }
+
   if (!to) return false
   return pathname === to || pathname.startsWith(`${to}/`)
 }

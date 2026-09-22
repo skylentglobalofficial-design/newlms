@@ -143,35 +143,55 @@ export type MegaNavGroup = {
   sections?: MegaNavSection[]
 }
 
-export const COURSES_NAV: MegaNavGroup = {
-  label: "Courses",
+export const LEARN_NAV: MegaNavGroup = {
+  label: "Learn",
   to: "/courses",
-  tagline: "Focused courses you can start",
+  tagline: "Structured learning from focused courses to longer programmes",
   items: [
-    { label: "All courses", sub: "Ready courses and catalogue listings.", to: "/courses" },
-    { label: "Data Analytics", sub: "SQL, spreadsheets, and a dashboard you keep.", to: "/courses/data-analytics" },
-    { label: "Product Management", sub: "Evidence → spec on a live case.", to: "/courses/product-management" },
-    { label: "Skills", sub: "Not sure where to start? Pick a skill.", to: "/skills" },
+    { label: "Courses", sub: "Focused learning units you can start", to: "/courses" },
+    { label: "Programmes", sub: "Structured professional learning pathways", to: "/programs" },
+    { label: "Skills", sub: "Start with what you want to be able to do", to: "/skills" },
+    { label: "Workshops", sub: "Short, focused live sessions", to: "/workshops" },
+  ],
+  sections: [
+    {
+      heading: "Learning",
+      items: [
+        { label: "Courses", sub: "Focused learning units you can start", to: "/courses" },
+        { label: "Programmes", sub: "Structured professional learning pathways", to: "/programs" },
+        { label: "Skills", sub: "Start with what you want to be able to do", to: "/skills" },
+      ],
+    },
+    {
+      heading: "Live learning",
+      items: [
+        { label: "Workshops", sub: "Short, focused live sessions", to: "/workshops" },
+      ],
+    },
   ],
 }
 
-export const PROGRAMS_NAV: MegaNavGroup = {
-  label: "Programs",
-  tagline: "Professional learning and short sessions",
+export const COURSES_NAV: MegaNavGroup = LEARN_NAV
+
+export const PRACTICE_NAV: MegaNavGroup = {
+  label: "Practice",
+  to: "/labs",
+  tagline: "Turn concepts into experiments and working projects",
   items: [
-    { label: "Professional Certificate Programs", sub: "Structured professional learning", to: "/programs" },
-    { label: "Workshops", sub: "Short, focused live sessions", to: "/workshops" },
+    { label: "Labs", sub: "Hands-on subject workbenches and experiments", to: "/labs" },
+
   ],
 }
 
 export const EDUCATION_NAV: MegaNavGroup = {
   label: "Education",
   to: "/education",
-  tagline: "Academic pathways for school and degrees",
+  tagline: "Academic pathways for school, degrees, and formal study",
   items: [
     { label: "Schooling", sub: "Grade, subject, practice, assessment.", to: "/education/schooling", mark: "coming_soon" },
     { label: "Undergraduate", sub: "Degree, semester, modules, projects.", to: "/education/undergraduate", mark: "coming_soon" },
     { label: "Postgraduate", sub: "Programme, specialisation, case, project.", to: "/education/postgraduate", mark: "coming_soon" },
+    { label: "Competitive Exams", sub: "Diagnostics, practice, mocks, and analytics.", to: "/education/exams", mark: "coming_soon" },
   ],
 }
 
@@ -242,15 +262,14 @@ export const EXAM_STUBS: Record<string, { title: string; group: string; summary:
   },
 }
 
-/** @deprecated Use COURSES_NAV. Kept so older imports keep compiling. */
-export const LEARN_NAV: MegaNavGroup = COURSES_NAV
-
 export const CAREER_NAV: MegaNavGroup = {
   label: "Career",
   to: "/career-os",
-  tagline: "Keep track of the work and evidence you build while learning.",
+  tagline: "Keep the work and evidence you build while learning connected to your career",
   items: [
-    { label: "Career OS", sub: "Keep your profile and learning evidence in one place.", to: "/career-os" },
+    { label: "Career OS", sub: "Profile, projects, opportunities, applications, and interviews", to: "/career-os" },
+    { label: "Projects", sub: "Learner work kept as evidence", to: "/career-os/projects" },
+    { label: "Opportunities", sub: "Roles when partners publish them", to: "/career-os/jobs" },
   ],
 }
 
@@ -293,33 +312,40 @@ export function studyNavGroup(session: { signedIn: boolean; isStudent: boolean }
 }
 
 export function buildPrimaryNav(_session?: { signedIn: boolean; isStudent: boolean }): MegaNavGroup[] {
-  return [PROGRAMS_NAV, EDUCATION_NAV, EXAMS_NAV]
+  return [LEARN_NAV, PRACTICE_NAV, EDUCATION_NAV, CAREER_NAV]
 }
 
-/** Locked public destinations. Study/Career stay off the first row. */
-export const MEGA_NAV: MegaNavGroup[] = [PROGRAMS_NAV, EDUCATION_NAV, EXAMS_NAV]
+/** Public first-row navigation. Authenticated workspace actions remain contextual. */
+export const MEGA_NAV: MegaNavGroup[] = [
+  LEARN_NAV,
+  PRACTICE_NAV,
+  EDUCATION_NAV,
+  CAREER_NAV,
+]
 
-/** Future / secondary destinations — footer and mobile More only. Not first-row nav. */
+/** Secondary destinations — footer and mobile More. */
 export const MORE_NAV: MegaNavItem[] = [
-  { label: "Skills", sub: "What do you want to be able to do?", to: "/skills" },
-  { label: "Courses", sub: "Focused units inside professional programmes", to: "/courses" },
-  { label: "Institutions", sub: "Institution tools — not the student product", to: "/institutions", mark: "direction" },
+  { label: "Skylent OS", sub: "Your learning workspace", to: "/os" },
+  { label: "Institutions", sub: "Institution tools and partnerships", to: "/institutions", mark: "direction" },
+  { label: "Universities", sub: "University ecosystem", to: "/universities", mark: "direction" },
+  { label: "Stories", sub: "Learner and institutional stories", to: "/stories" },
+  { label: "Blog", sub: "Ideas and updates from Skylent", to: "/blog" },
 ]
 
 export const FOOTER_COLS = [
   {
-    heading: "Courses",
+    heading: "Learn",
     links: [
-      ["All courses", "/courses"],
-      ["Skills", "/skills"],
+      ["Courses", "/courses"],
       ["Programmes", "/programs"],
+      ["Skills", "/skills"],
+      ["Workshops", "/workshops"],
     ],
   },
   {
-    heading: "Workspace",
+    heading: "Practice",
     links: [
-      ["Student dashboard", "/dashboard/student"],
-      ["Skylent OS", "/os"],
+      ["Labs", "/labs"],
     ],
   },
   {
@@ -329,20 +355,19 @@ export const FOOTER_COLS = [
     ],
   },
   {
+    heading: "Education",
+    links: [
+      ["Education", "/education"],
+      ["Competitive Exams", "/education/exams"],
+    ],
+  },
+  {
     heading: "Company",
     links: [
       ["About", "/about"],
       ["Contact", "/contact"],
       ["Blog", "/blog"],
       ["Stories", "/stories"],
-    ],
-  },
-  {
-    heading: "Future",
-    links: [
-      ["Education", "/education"],
-      ["Institutions", "/institutions"],
-      ["Universities", "/universities"],
     ],
   },
 ] as const
