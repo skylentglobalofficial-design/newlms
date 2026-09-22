@@ -1,0 +1,867 @@
+/**
+ * Skylent design system foundation (Phase 2 — Block 1)
+ * Paper-first, editorial, product-grade. CSS tokens + optional utility classes.
+ * JS inline styles: keep src/tokens.ts in sync with :root below.
+ */
+
+:root {
+  /*
+   * Skylent color & surface system (Phase 2 Block 4)
+   * Public canvas = warm paper (#f7f4ec). Raised panels = cream (#fffdf8).
+   * Brief alternates: cream-warm #f5f2e9, soft wash #eeeae0 — use for section hierarchy only.
+   */
+
+  /* ── Surfaces (public, warm editorial) ── */
+  --skylent-surface-paper: #f7f4ec;
+  --skylent-surface-cream: #fffdf8;
+  --skylent-surface-cream-warm: #f5f2e9;
+  --skylent-surface-soft: #eeeae0;
+  --skylent-surface-sand: #e8e2d6;
+  --skylent-surface-elevated: #ffffff;
+  --skylent-surface-inverse: #15171a;
+
+  /* Canonical aliases (Block 1 — keep imports stable) */
+  --skylent-color-paper: var(--skylent-surface-paper);
+  --skylent-color-cream: var(--skylent-surface-cream);
+  --skylent-color-soft: var(--skylent-surface-soft);
+  --skylent-color-soft-surface: var(--skylent-surface-elevated);
+  --skylent-color-sand: var(--skylent-surface-sand);
+  --skylent-color-canvas: var(--skylent-surface-paper);
+  --skylent-color-elevated: var(--skylent-surface-elevated);
+
+  /* ── Text ── */
+  --skylent-color-ink: #15171a;
+  --skylent-color-ink-2: #1c1f24;
+  --skylent-color-ink-3: #2a2e35;
+  --skylent-color-slate: #5c6168;
+  --skylent-color-muted: #6e737a;
+  --skylent-color-text-subtle: #8a8f96;
+  --skylent-color-text-inverse: #fffdf8;
+  --skylent-color-text-inverse-muted: #c4beb3;
+
+  /* ── Borders (warm ink alpha — not cool grey) ── */
+  --skylent-color-border-subtle: rgba(21, 23, 26, 0.08);
+  --skylent-color-border: rgba(21, 23, 26, 0.1);
+  --skylent-color-border-strong: rgba(21, 23, 26, 0.16);
+
+  /* ── Primary accent (indigo — interaction, links, focus) ── */
+  --skylent-color-accent: #4f46e5;
+  --skylent-color-accent-hover: #2563eb;
+  --skylent-color-accent-soft: #eef2ff;
+  --skylent-color-accent-border: #c7d2fe;
+  --skylent-color-accent-strong: #4338ca;
+  --skylent-color-text-on-accent: #fffdf8;
+
+  /* ── Secondary brand (orange — restrained mark / highlights) ── */
+  --skylent-color-orange: #f97316;
+  --skylent-color-orange-soft: #fff4eb;
+  --skylent-color-orange-strong: #ea580c;
+  --skylent-color-mark: var(--skylent-color-orange);
+
+  /* ── Semantic states ── */
+  --skylent-color-success: #15803d;
+  --skylent-color-success-soft: #f0fdf4;
+  --skylent-color-success-border: #bbf7d0;
+  --skylent-color-warning: #b45309;
+  --skylent-color-warning-soft: #fffbeb;
+  --skylent-color-warning-border: #fde68a;
+  --skylent-color-error: #b91c1c;
+  --skylent-color-error-soft: rgba(239, 68, 68, 0.08);
+  --skylent-color-error-border: rgba(239, 68, 68, 0.25);
+  --skylent-color-info: #2563eb;
+  --skylent-color-info-soft: #eff6ff;
+  --skylent-color-info-border: #bfdbfe;
+  --skylent-color-information: var(--skylent-color-info);
+  --skylent-color-information-soft: var(--skylent-color-info-soft);
+  --skylent-color-information-border: var(--skylent-color-info-border);
+
+  /* ── Product / application UI (specimens — not public page chrome) ── */
+  --skylent-product-dark: #171b1a;
+  --skylent-product-dark-surface: #1c211f;
+  --skylent-product-dark-muted: #8aa39a;
+  --skylent-product-dark-border: rgba(232, 240, 237, 0.14);
+  --skylent-product-dark-accent: #4f46e5;
+  --skylent-color-surface-product-dark: var(--skylent-product-dark);
+  --skylent-color-text-on-dark: #e8f0ed;
+  --skylent-color-muted-on-dark: var(--skylent-product-dark-muted);
+
+  /* ── Overlays & scrims ── */
+  --skylent-overlay-scrim: rgba(21, 23, 26, 0.35);
+  --skylent-overlay-soft: rgba(21, 23, 26, 0.28);
+
+  /* ── Legacy aliases (existing pages & Tailwind @theme) ── */
+  --color-ink: var(--skylent-color-ink);
+  --color-ink-2: var(--skylent-color-ink-2);
+  --color-ink-3: var(--skylent-color-ink-3);
+  --color-orange: var(--skylent-color-mark);
+  --color-indigo: var(--skylent-color-accent);
+  --color-blue: var(--skylent-color-accent-hover);
+  --color-warm-white: var(--skylent-color-paper);
+  --color-cream: var(--skylent-color-cream);
+  --color-sand: var(--skylent-color-sand);
+  --color-slate: var(--skylent-color-slate);
+  --color-canvas: var(--skylent-color-canvas);
+  --color-line: var(--skylent-color-border);
+  --color-line-strong: var(--skylent-color-border-strong);
+
+  /* ── Typography: families (serif display + sans UI) ── */
+  --font-brand: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --font-display: "DM Sans", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-mono: "DM Mono", monospace;
+  --skylent-font-serif: var(--font-brand);
+  --skylent-font-sans: var(--font-body);
+  --skylent-font-mono: var(--font-mono);
+
+  /* ── Typography: readable measure ── */
+  --skylent-measure-prose: 42rem;
+  --skylent-measure-narrow: 34rem;
+
+  /* ── Typography: semantic roles (family · size · line · weight · tracking) ── */
+
+  /* Display — serif editorial moments */
+  --skylent-t-display-xl-family: var(--skylent-font-serif);
+  --skylent-t-display-xl-size: clamp(36px, 4.4vw, 56px);
+  --skylent-t-display-xl-line: 1.06;
+  --skylent-t-display-xl-weight: 600;
+  --skylent-t-display-xl-tracking: -0.03em;
+
+  --skylent-t-display-lg-family: var(--skylent-font-serif);
+  --skylent-t-display-lg-size: clamp(28px, 3.2vw, 40px);
+  --skylent-t-display-lg-line: 1.1;
+  --skylent-t-display-lg-weight: 600;
+  --skylent-t-display-lg-tracking: -0.03em;
+
+  --skylent-t-display-md-family: var(--skylent-font-serif);
+  --skylent-t-display-md-size: clamp(24px, 2.8vw, 32px);
+  --skylent-t-display-md-line: 1.12;
+  --skylent-t-display-md-weight: 600;
+  --skylent-t-display-md-tracking: -0.025em;
+
+  /* Headings — serif for page/section; sm stays sans for in-page UI titles */
+  --skylent-t-heading-xl-family: var(--skylent-font-serif);
+  --skylent-t-heading-xl-size: clamp(28px, 3.2vw, 40px);
+  --skylent-t-heading-xl-line: 1.12;
+  --skylent-t-heading-xl-weight: 600;
+  --skylent-t-heading-xl-tracking: -0.03em;
+
+  --skylent-t-heading-lg-family: var(--skylent-font-serif);
+  --skylent-t-heading-lg-size: clamp(24px, 2.6vw, 30px);
+  --skylent-t-heading-lg-line: 1.14;
+  --skylent-t-heading-lg-weight: 600;
+  --skylent-t-heading-lg-tracking: -0.025em;
+
+  --skylent-t-heading-md-family: var(--skylent-font-serif);
+  --skylent-t-heading-md-size: clamp(20px, 2.2vw, 24px);
+  --skylent-t-heading-md-line: 1.16;
+  --skylent-t-heading-md-weight: 600;
+  --skylent-t-heading-md-tracking: -0.02em;
+
+  --skylent-t-heading-sm-family: var(--skylent-font-sans);
+  --skylent-t-heading-sm-size: 17px;
+  --skylent-t-heading-sm-line: 1.25;
+  --skylent-t-heading-sm-weight: 600;
+  --skylent-t-heading-sm-tracking: -0.02em;
+
+  /* Body — sans, readable */
+  --skylent-t-body-lg-family: var(--skylent-font-sans);
+  --skylent-t-body-lg-size: clamp(16px, 1.6vw, 17px);
+  --skylent-t-body-lg-line: 1.65;
+  --skylent-t-body-lg-weight: 400;
+  --skylent-t-body-lg-tracking: 0;
+
+  --skylent-t-body-md-family: var(--skylent-font-sans);
+  --skylent-t-body-md-size: 15px;
+  --skylent-t-body-md-line: 1.65;
+  --skylent-t-body-md-weight: 400;
+  --skylent-t-body-md-tracking: 0;
+
+  --skylent-t-body-sm-family: var(--skylent-font-sans);
+  --skylent-t-body-sm-size: 13.5px;
+  --skylent-t-body-sm-line: 1.55;
+  --skylent-t-body-sm-weight: 400;
+  --skylent-t-body-sm-tracking: 0;
+
+  /* UI labels — sans */
+  --skylent-t-label-lg-family: var(--skylent-font-sans);
+  --skylent-t-label-lg-size: 14px;
+  --skylent-t-label-lg-line: 1.35;
+  --skylent-t-label-lg-weight: 600;
+  --skylent-t-label-lg-tracking: -0.01em;
+
+  --skylent-t-label-md-family: var(--skylent-font-sans);
+  --skylent-t-label-md-size: 12px;
+  --skylent-t-label-md-line: 1.35;
+  --skylent-t-label-md-weight: 600;
+  --skylent-t-label-md-tracking: 0;
+
+  --skylent-t-label-sm-family: var(--skylent-font-sans);
+  --skylent-t-label-sm-size: 11px;
+  --skylent-t-label-sm-line: 1.35;
+  --skylent-t-label-sm-weight: 600;
+  --skylent-t-label-sm-tracking: 0;
+
+  /* Meta */
+  --skylent-t-eyebrow-family: var(--skylent-font-mono);
+  --skylent-t-eyebrow-size: 11px;
+  --skylent-t-eyebrow-line: 1.3;
+  --skylent-t-eyebrow-weight: 600;
+  --skylent-t-eyebrow-tracking: 0.12em;
+
+  --skylent-t-caption-family: var(--skylent-font-mono);
+  --skylent-t-caption-size: 10px;
+  --skylent-t-caption-line: 1.35;
+  --skylent-t-caption-weight: 500;
+  --skylent-t-caption-tracking: 0.06em;
+
+  --skylent-t-nav-family: var(--skylent-font-sans);
+  --skylent-t-nav-size: 14px;
+  --skylent-t-nav-line: 1.3;
+  --skylent-t-nav-weight: 500;
+  --skylent-t-nav-tracking: -0.01em;
+
+  --skylent-t-stat-family: var(--skylent-font-sans);
+  --skylent-t-stat-size: clamp(28px, 3.2vw, 48px);
+  --skylent-t-stat-line: 1;
+  --skylent-t-stat-weight: 600;
+  --skylent-t-stat-tracking: -0.04em;
+
+  /* Legacy aliases (existing CSS + Tailwind consumers) */
+  --type-display-xl: var(--skylent-t-display-xl-size);
+  --type-display-lg: var(--skylent-t-display-lg-size);
+  --type-display-md: var(--skylent-t-display-md-size);
+  --type-display-sm: clamp(20px, 2.2vw, 26px);
+  --type-body-lg: var(--skylent-t-body-lg-size);
+  --type-body: var(--skylent-t-body-md-size);
+  --type-body-sm: var(--skylent-t-body-sm-size);
+  --type-label: var(--skylent-t-label-md-size);
+  --type-caption: var(--skylent-t-caption-size);
+  --skylent-type-nav: var(--skylent-t-nav-size);
+  --skylent-type-stat: var(--skylent-t-stat-size);
+  --skylent-type-display-family: var(--skylent-font-serif);
+  --skylent-type-heading-family: var(--skylent-font-serif);
+  --skylent-type-body-family: var(--skylent-font-sans);
+  --skylent-type-label-family: var(--skylent-font-sans);
+  --skylent-type-caption-family: var(--skylent-font-mono);
+  --skylent-type-nav-family: var(--skylent-font-sans);
+  --skylent-type-stat-family: var(--skylent-font-sans);
+
+  /* ── Spacing scale (4px base) ── */
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 28px;
+  --space-8: 32px;
+  --space-9: 40px;
+  --space-10: 48px;
+  --space-11: 56px;
+  --space-12: 64px;
+  --space-13: 80px;
+  --space-14: 96px;
+  --space-15: 120px;
+
+  /* ── Layout (semantic — Phase 2 Block 5) ── */
+  --gutter: clamp(20px, 4.5vw, 56px);
+  --skylent-gutter-page: var(--gutter);
+  --skylent-gutter-section: var(--space-6);
+
+  --section-pad: clamp(48px, 7vw, 80px);
+  --section-pad-sm: clamp(32px, 5vw, 56px);
+  --skylent-section-pad: var(--section-pad);
+  --skylent-section-pad-sm: var(--section-pad-sm);
+  --skylent-section-pad-compact: clamp(40px, 5vw, 60px);
+  --skylent-section-pad-spacious: clamp(64px, 8vw, var(--space-14));
+  --skylent-section-pad-hero-block-start: clamp(var(--space-13), 8vw, var(--space-15));
+  --skylent-section-pad-hero-block-end: var(--space-14);
+
+  --max-w: 1360px;
+  --max-w-content: 1360px;
+  --max-w-wide: var(--max-w);
+  --max-w-prose: 720px;
+  --max-w-narrow: 560px;
+  --max-w-workspace: 1040px;
+  --max-w-career: 1120px;
+  --skylent-measure-reading: var(--skylent-measure-prose);
+
+  --skylent-gap-grid: clamp(var(--space-4), 2vw, var(--space-7));
+  --skylent-gap-grid-tight: var(--space-4);
+  --skylent-gap-grid-loose: var(--space-8);
+  --skylent-gap-editorial: clamp(var(--space-7), 4vw, 52px);
+  --skylent-gap-cards: var(--space-6);
+  --skylent-gap-stack: var(--space-6);
+
+  --rail: min(var(--max-w-wide), calc(100% - (2 * var(--skylent-gutter-page))));
+  --nav-h: 64px;
+
+  /* Breakpoints (reference — use in @media literals) */
+  --bp-xs: 390px;
+  --bp-sm: 640px;
+  --bp-md: 768px;
+  --bp-lg: 900px;
+  --bp-xl: 1100px;
+  --bp-2xl: 1360px;
+
+  /* ── Radius & elevation (restrained) ── */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --border-subtle: 1px solid var(--skylent-color-border);
+  --border-subtle-strong: 1px solid var(--skylent-color-border-strong);
+  --shadow-none: none;
+  --shadow-subtle: 0 1px 2px rgba(21, 23, 26, 0.04);
+  --shadow-raised: 0 4px 12px rgba(21, 23, 26, 0.05);
+  --shadow-overlay: 0 8px 20px rgba(21, 23, 26, 0.07);
+
+  /* Raised surfaces (solid; no blur) */
+  --glass-01-bg: var(--skylent-color-cream);
+  --glass-01-border: var(--skylent-color-border);
+  --glass-01-blur: none;
+  --glass-01-shadow: var(--shadow-subtle);
+  --glass-02-bg: var(--skylent-color-soft-surface);
+  --glass-02-border: var(--skylent-color-border);
+  --glass-02-blur: none;
+  --glass-02-shadow: var(--shadow-raised);
+  --glass-03-bg: var(--skylent-color-soft-surface);
+  --glass-03-border: var(--skylent-color-border);
+  --glass-03-blur: none;
+  --glass-03-shadow: var(--shadow-overlay);
+
+  /* ── Focus & motion ── */
+  --skylent-focus-ring: var(--skylent-color-accent);
+  --skylent-focus-offset: 3px;
+  --skylent-duration-fast: 0.15s;
+  --skylent-duration-ui: 0.22s;
+  --skylent-ease-ui: ease;
+
+  /* ── Control metrics ── */
+  --skylent-control-height-sm: 36px;
+  --skylent-control-height-md: 44px;
+  --skylent-control-height-lg: 48px;
+  --skylent-control-pad-x: 20px;
+}
+
+/* ── Layout utilities (stacks; page/grid/section → src/styles/layout.css) ── */
+.skylent-stack-2 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.skylent-stack-4 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.skylent-stack-6 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.skylent-prose-width {
+  max-width: var(--max-w-prose);
+}
+
+.skylent-workspace-width {
+  width: min(100%, var(--max-w-workspace));
+  margin-inline: auto;
+}
+
+.skylent-section-divider {
+  height: 1px;
+  background: var(--skylent-color-border);
+  max-width: var(--max-w);
+  margin-inline: auto;
+}
+
+/* ── Links ── */
+.skylent-link {
+  color: var(--skylent-color-accent);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color var(--skylent-duration-fast) var(--skylent-ease-ui),
+    border-color var(--skylent-duration-fast) var(--skylent-ease-ui);
+}
+
+.skylent-link:hover {
+  color: var(--skylent-color-accent-hover);
+  border-bottom-color: rgba(37, 99, 235, 0.35);
+}
+
+.skylent-link-muted {
+  color: var(--skylent-color-slate);
+  text-decoration: none;
+}
+
+.skylent-link-muted:hover {
+  color: var(--skylent-color-ink);
+}
+
+/* ── Buttons (class-based mirror of ui.tsx variants; opt-in) ── */
+.skylent-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--skylent-control-height-md);
+  padding: 0 var(--skylent-control-pad-x);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--skylent-duration-ui) var(--skylent-ease-ui),
+    border-color var(--skylent-duration-ui) var(--skylent-ease-ui),
+    color var(--skylent-duration-ui) var(--skylent-ease-ui);
+}
+
+.skylent-btn--primary {
+  background: var(--skylent-color-accent);
+  color: var(--skylent-color-text-on-accent);
+}
+
+.skylent-btn--primary:hover:not(:disabled) {
+  background: var(--skylent-color-accent-hover);
+}
+
+.skylent-btn--secondary {
+  background: transparent;
+  color: var(--skylent-color-ink);
+  border-color: var(--skylent-color-border-strong);
+}
+
+.skylent-btn--secondary:hover:not(:disabled) {
+  background: var(--skylent-color-cream);
+}
+
+.skylent-btn--ghost {
+  background: transparent;
+  color: var(--skylent-color-ink);
+  border-color: var(--skylent-color-border);
+}
+
+.skylent-btn--ghost:hover:not(:disabled) {
+  background: var(--skylent-color-cream);
+}
+
+.skylent-btn--sm {
+  min-height: var(--skylent-control-height-sm);
+  padding-inline: var(--space-4);
+  font-size: 13px;
+}
+
+.skylent-btn--lg {
+  min-height: var(--skylent-control-height-lg);
+  font-size: 15px;
+}
+
+.skylent-btn:disabled,
+.skylent-btn[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.skylent-btn.is-loading {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+/* ── Cards & badges ── */
+.skylent-card {
+  background: var(--skylent-color-cream);
+  border: var(--border-subtle);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-none);
+}
+
+.skylent-card--raised,
+.skylent-card--elevated {
+  box-shadow: var(--shadow-subtle);
+}
+
+.skylent-card--interactive {
+  transition: border-color var(--skylent-duration-ui) var(--skylent-ease-ui),
+    background var(--skylent-duration-ui) var(--skylent-ease-ui);
+}
+
+.skylent-card--interactive:hover {
+  border-color: var(--skylent-color-border-strong);
+  background: var(--skylent-color-soft-surface);
+}
+
+.skylent-card--interactive:active {
+  background: var(--skylent-surface-soft);
+}
+
+.skylent-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-xs);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border: 1px solid var(--skylent-color-border);
+  background: var(--skylent-color-paper);
+  color: var(--skylent-color-slate);
+}
+
+.skylent-badge--accent {
+  border-color: var(--skylent-color-accent-border);
+  background: var(--skylent-color-accent-soft);
+  color: var(--skylent-color-accent);
+}
+
+.skylent-badge--success {
+  border-color: var(--skylent-color-success-border);
+  background: var(--skylent-color-success-soft);
+  color: var(--skylent-color-success);
+}
+
+.skylent-badge--warning {
+  border-color: var(--skylent-color-warning-border);
+  background: var(--skylent-color-warning-soft);
+  color: var(--skylent-color-warning);
+}
+
+.skylent-badge--error {
+  border-color: var(--skylent-color-error-border);
+  background: var(--skylent-color-error-soft);
+  color: var(--skylent-color-error);
+}
+
+/* ── Form controls ── */
+.skylent-input,
+.skylent-select,
+.skylent-textarea {
+  width: 100%;
+  min-height: var(--skylent-control-height-md);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--skylent-color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--skylent-color-cream);
+  color: var(--skylent-color-ink);
+  font-family: var(--font-body);
+  font-size: var(--type-body);
+  transition: border-color var(--skylent-duration-fast) var(--skylent-ease-ui),
+    box-shadow var(--skylent-duration-fast) var(--skylent-ease-ui);
+}
+
+.skylent-textarea {
+  min-height: 120px;
+  padding-block: var(--space-3);
+  resize: vertical;
+}
+
+.skylent-input:hover:not(:disabled),
+.skylent-select:hover:not(:disabled),
+.skylent-textarea:hover:not(:disabled) {
+  border-color: rgba(21, 23, 26, 0.22);
+}
+
+.skylent-input:focus-visible,
+.skylent-select:focus-visible,
+.skylent-textarea:focus-visible {
+  outline: 2px solid var(--skylent-focus-ring);
+  outline-offset: 2px;
+  border-color: var(--skylent-color-accent);
+}
+
+.skylent-input:disabled,
+.skylent-select:disabled,
+.skylent-textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--skylent-color-paper);
+}
+
+.skylent-input.is-error,
+.skylent-select.is-error,
+.skylent-textarea.is-error {
+  border-color: var(--skylent-color-error-border);
+  background: var(--skylent-color-error-soft);
+}
+
+.skylent-field-error {
+  margin-top: var(--space-2);
+  color: var(--skylent-color-error);
+  font-size: var(--type-body-sm);
+  line-height: 1.45;
+}
+
+/* ── Tabs ── */
+.skylent-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  border-bottom: 1px solid var(--skylent-color-border);
+}
+
+.skylent-tab {
+  min-height: var(--skylent-control-height-sm);
+  padding: 0 var(--space-3);
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: transparent;
+  color: var(--skylent-color-slate);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.skylent-tab:hover {
+  color: var(--skylent-color-ink);
+}
+
+.skylent-tab.is-active,
+.skylent-tab[aria-selected="true"] {
+  color: var(--skylent-color-accent);
+  border-bottom-color: var(--skylent-color-accent);
+}
+
+/* ── Modal shell (structure only; overlay pairs with existing modals) ── */
+.skylent-modal-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(21, 23, 26, 0.35);
+  z-index: 500;
+}
+
+.skylent-modal-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 501;
+  width: min(540px, 94vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: var(--space-7) var(--space-6);
+  background: var(--skylent-color-cream);
+  border: 1px solid var(--skylent-color-border-strong);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-overlay);
+  color: var(--skylent-color-ink);
+}
+
+/* ── Progress ── */
+.skylent-progress {
+  height: 6px;
+  border-radius: var(--radius-xs);
+  background: rgba(21, 23, 26, 0.08);
+  overflow: hidden;
+}
+
+.skylent-progress > i,
+.skylent-progress-bar {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--skylent-color-accent);
+}
+
+/* ── Feedback: loading, empty, error, success ── */
+.skylent-state-panel {
+  padding: var(--space-6);
+  border: var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--skylent-color-cream);
+  text-align: center;
+}
+
+.skylent-state-panel--empty {
+  color: var(--skylent-color-slate);
+}
+
+.skylent-state-panel--error {
+  border-color: var(--skylent-color-error-border);
+  background: var(--skylent-color-error-soft);
+  color: var(--skylent-color-error);
+}
+
+.skylent-state-panel--success {
+  border-color: var(--skylent-color-success-border);
+  background: var(--skylent-color-success-soft);
+  color: var(--skylent-color-success);
+}
+
+.skylent-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--skylent-color-border);
+  border-top-color: var(--skylent-color-accent);
+  border-radius: 50%;
+  animation: skylent-spin 0.7s linear infinite;
+}
+
+@keyframes skylent-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Section header pattern ── */
+.skylent-section-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-8);
+  margin-bottom: var(--space-11);
+}
+
+.skylent-section-header__lead {
+  max-width: var(--max-w-narrow);
+  margin-top: var(--space-5);
+  color: var(--skylent-color-slate);
+  font-size: var(--type-body-lg);
+  line-height: 1.7;
+}
+
+/* ── Navigation item (supplement to site nav; opt-in) ── */
+.skylent-nav-item {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--skylent-control-height-sm);
+  padding: var(--space-2) var(--space-3);
+  color: var(--skylent-color-slate);
+  font-family: var(--skylent-type-nav-family);
+  font-size: var(--skylent-type-nav);
+  font-weight: 500;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.skylent-nav-item:hover {
+  color: var(--skylent-color-ink);
+  background: rgba(21, 23, 26, 0.04);
+}
+
+.skylent-nav-item.is-active {
+  color: var(--skylent-color-ink);
+  font-weight: 600;
+}
+
+/* ── Surface utilities (opt-in) ── */
+.skylent-surface-paper {
+  background-color: var(--skylent-surface-paper);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-surface-cream {
+  background-color: var(--skylent-surface-cream);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-surface-soft {
+  background-color: var(--skylent-surface-soft);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-surface-sand {
+  background-color: var(--skylent-surface-sand);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-surface-elevated {
+  background-color: var(--skylent-surface-elevated);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-surface-product-dark {
+  background-color: var(--skylent-product-dark);
+  color: var(--skylent-color-text-on-dark);
+  border-color: var(--skylent-product-dark-border);
+}
+
+.skylent-border-subtle {
+  border: 1px solid var(--skylent-color-border-subtle);
+}
+
+.skylent-border-default {
+  border: 1px solid var(--skylent-color-border);
+}
+
+.skylent-border-strong {
+  border: 1px solid var(--skylent-color-border-strong);
+}
+
+/* ── Semantic state surfaces (opt-in) ── */
+.skylent-state-success {
+  color: var(--skylent-color-success);
+  background: var(--skylent-color-success-soft);
+  border: 1px solid var(--skylent-color-success-border);
+}
+
+.skylent-state-warning {
+  color: var(--skylent-color-warning);
+  background: var(--skylent-color-warning-soft);
+  border: 1px solid var(--skylent-color-warning-border);
+}
+
+.skylent-state-error {
+  color: var(--skylent-color-error);
+  background: var(--skylent-color-error-soft);
+  border: 1px solid var(--skylent-color-error-border);
+}
+
+.skylent-state-info {
+  color: var(--skylent-color-info);
+  background: var(--skylent-color-info-soft);
+  border: 1px solid var(--skylent-color-info-border);
+}
+
+/* ── Interactive states (shared) ── */
+.skylent-btn:focus-visible,
+.skylent-tab:focus-visible,
+.skylent-nav-item:focus-visible,
+.skylent-link:focus-visible {
+  outline: 2px solid var(--skylent-focus-ring);
+  outline-offset: var(--skylent-focus-offset);
+}
+
+@media (max-width: 768px) {
+  :root {
+    --gutter: clamp(16px, 4vw, 24px);
+    --skylent-gap-grid: var(--space-4);
+    --skylent-gap-editorial: var(--space-7);
+    --skylent-gap-cards: var(--space-5);
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --section-pad: clamp(40px, 9vw, 64px);
+    --section-pad-sm: clamp(28px, 7vw, 48px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skylent-spinner {
+    animation: none;
+    border-top-color: var(--skylent-color-accent);
+  }
+
+  .skylent-btn,
+  .skylent-link,
+  .skylent-card--interactive,
+  .skylent-input,
+  .skylent-select,
+  .skylent-textarea {
+    transition: none;
+  }
+}

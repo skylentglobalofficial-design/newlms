@@ -1,19 +1,33 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=Source+Serif+4:ital,opsz,wght@0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,500&display=swap');
 @import 'tailwindcss';
+@import './styles/design-system.css';
+@import './styles/layout.css';
+@import './styles/components.css';
+@import './styles/typography.css';
 
 @theme inline {
-  --color-ink: #15171A;
-  --color-ink-2: #1C1F24;
-  --color-ink-3: #2A2E35;
-  --color-orange: #F97316;
-  --color-indigo: #4F46E5;
-  --color-blue: #2563EB;
-  --color-warm-white: #F7F4EC;
-  --color-sand: #E8E2D6;
-  --color-slate: #5C6168;
-  --color-canvas: #F7F4EC;
-  --color-line: rgba(21, 23, 26, 0.10);
-  --color-line-strong: rgba(21, 23, 26, 0.16);
+  --color-ink: var(--skylent-color-ink);
+  --color-ink-2: var(--skylent-color-ink-2);
+  --color-ink-3: var(--skylent-color-ink-3);
+  --color-orange: var(--skylent-color-mark);
+  --color-indigo: var(--skylent-color-accent);
+  --color-blue: var(--skylent-color-accent-hover);
+  --color-warm-white: var(--skylent-color-paper);
+  --color-cream: var(--skylent-color-cream);
+  --color-sand: var(--skylent-color-sand);
+  --color-slate: var(--skylent-color-slate);
+  --color-canvas: var(--skylent-color-canvas);
+  --color-line: var(--skylent-color-border);
+  --color-line-strong: var(--skylent-color-border-strong);
+  --color-paper: var(--skylent-color-paper);
+  --color-accent: var(--skylent-color-accent);
+  --color-success: var(--skylent-color-success);
+  --color-warning: var(--skylent-color-warning);
+  --color-error: var(--skylent-color-error);
+  --color-information: var(--skylent-color-information);
+  --color-soft: var(--skylent-surface-soft);
+  --color-elevated: var(--skylent-surface-elevated);
+  --color-product-dark: var(--skylent-product-dark);
 }
 
 :root {
@@ -88,9 +102,12 @@ html {
 }
 
 body {
-  font-family: var(--font-body);
-  background-color: var(--color-canvas);
-  color: #15171A;
+  font-family: var(--skylent-t-body-md-family);
+  font-size: var(--skylent-t-body-md-size);
+  line-height: var(--skylent-t-body-md-line);
+  font-weight: var(--skylent-t-body-md-weight);
+  background-color: var(--skylent-color-paper);
+  color: var(--skylent-color-ink);
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;
@@ -112,28 +129,7 @@ body {
   animation: fadeIn 0.18s ease both;
 }
 
-/* Shared content rail. Backgrounds stay full-width; this bounds CONTENT only. */
-.skylent-rail,
-.hp-rail,
-.cat-rail,
-.sk-rail {
-  width: var(--rail);
-  margin-inline: auto;
-  min-width: 0;
-}
-
-/* Optional 12-column composition inside the rail. Sections keep their own splits. */
-.skylent-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: clamp(16px, 2vw, 28px);
-  row-gap: clamp(16px, 2vw, 28px);
-  min-width: 0;
-}
-
-.skylent-grid > * {
-  min-width: 0;
-}
+/* Rails, containers, grids: src/styles/layout.css */
 
 @media (prefers-reduced-motion: reduce) {
   .skylent-fade-in {
@@ -235,7 +231,7 @@ body {
 .home-hero-product-grid span { display: block; color: #8a928f; font: 9px var(--font-mono); text-transform: uppercase; margin-bottom: 4px; }
 .home-hero-product-grid strong { font-size: 12px; }
 .home-hero-product-foot { margin-top: 14px; color: #8a928f; font-size: 11px; }
-.home-section-heading--center { text-align: center; max-width: 720px; margin: 0 auto; }
+.home-section-heading--center { text-align: center; max-width: var(--max-w-prose); margin: 0 auto; }
 .home-section-heading--center p { margin-top: 20px; }
 .home-problem-section { background: #fffdfa; border-block: 1px solid rgba(8,9,9,.08); }
 .home-pillar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; }
@@ -581,7 +577,7 @@ body {
 .home-final-section { padding: 140px var(--gutter); text-align: center; background: #F7F4EC; border-top: 1px solid rgba(21,23,26,.10); }
 .home-final-section .home-section-label { justify-content: center; }
 .home-final-section h2 { font-size: clamp(40px, 5.6vw, 68px); }
-.home-final-section > p { max-width: 560px; margin: 24px auto 0; }
+.home-final-section > p { max-width: var(--max-w-narrow); margin: 24px auto 0; }
 .home-final-section .home-primary-button { margin-top: 30px; }
 
 @media (max-width: 1100px) {
@@ -642,43 +638,7 @@ body {
   .home-metric { flex: 1 1 auto; }
 }
 
-/* Typography utilities */
-.skylent-display-xl {
-  font-family: var(--font-display);
-  font-size: var(--type-display-xl);
-  font-weight: 600;
-  line-height: 0.98;
-  letter-spacing: -0.035em;
-}
-
-.skylent-display-lg {
-  font-family: var(--font-display);
-  font-size: var(--type-display-lg);
-  font-weight: 600;
-  line-height: 1.03;
-  letter-spacing: -0.03em;
-}
-
-.skylent-display-md {
-  font-family: var(--font-display);
-  font-size: var(--type-display-md);
-  font-weight: 600;
-  line-height: 1.06;
-  letter-spacing: -0.025em;
-}
-
-.skylent-body-lg {
-  font-size: var(--type-body-lg);
-  line-height: 1.7;
-}
-
-.skylent-label {
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0;
-  text-transform: none;
-}
+/* Typography utilities: src/styles/typography.css */
 
 /* Responsive media art direction */
 @media (max-width: 768px) {
@@ -692,7 +652,7 @@ body {
 
 @media (max-width: 375px) {
   .skylent-display-xl {
-    letter-spacing: -0.03em;
+    letter-spacing: -0.028em;
   }
   .home-hero-visual {
     min-height: 0 !important;

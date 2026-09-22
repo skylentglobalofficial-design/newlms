@@ -1,17 +1,12 @@
 // Skylent design tokens — single source of truth for JS inline styles.
-// CSS custom properties live in index.css; keep both in sync.
+// CSS custom properties live in src/styles/design-system.css; keep both in sync.
 //
 // LIGHT ONLY (non-negotiable — public site, login, dashboard, LMS / Skylent OS, Career OS):
-//   canvas  #F7F4EC  warm ivory
-//   cream   #FFFDF8  warm cream
-//   white   #FFFFFF
-//   ink     #15171A  dark ink
-//   slate   #5C6168
-//   sand    #E8E2D6  borders
-//   indigo  #4F46E5  primary action
-//   blue    #2563EB  semantic secondary
-//   orange  #F97316  brand mark only
-// There is no dark mode and no separate dark LMS theme.
+//   paper / canvas  warm ivory
+//   cream           warm cream raised surface
+//   ink             dark charcoal text
+//   accent          indigo primary action
+// Dark surfaces are for genuine product specimens only (see surfaceProductDark).
 
 export const C = {
   ink: '#15171A',
@@ -22,26 +17,117 @@ export const C = {
   blue: '#2563EB',
   warmWhite: '#F7F4EC',
   cream: '#FFFDF8',
+  creamWarm: '#F5F2E9',
+  soft: '#EEEAE0',
   sand: '#E8E2D6',
   slate: '#5C6168',
   muted: '#6E737A',
+  textSubtle: '#8A8F96',
   white: '#FFFFFF',
   black: '#15171A',
   canvas: '#F7F4EC',
   success: '#15803D',
+  warning: '#B45309',
+  information: '#2563EB',
   danger: '#B91C1C',
+  surfaceProductDark: '#171B1A',
+  textOnDark: '#E8F0ED',
+  mutedOnDark: '#8AA39A',
+  textOnAccent: '#FFFDF8',
+} as const
+
+/** Public surfaces — mirrors --skylent-surface-* in design-system.css */
+export const surfaces = {
+  paper: C.warmWhite,
+  cream: C.cream,
+  creamWarm: C.creamWarm,
+  soft: C.soft,
+  sand: C.sand,
+  elevated: C.white,
+  inverse: C.ink,
+} as const
+
+/** Semantic color groups for inline styles */
+export const colors = {
+  text: {
+    ink: C.ink,
+    slate: C.slate,
+    muted: C.muted,
+    subtle: C.textSubtle,
+    inverse: C.textOnAccent,
+    inverseMuted: '#C4BEB3',
+    onDark: C.textOnDark,
+    onAccent: C.textOnAccent,
+  },
+  border: {
+    subtle: 'rgba(21,23,26,0.08)',
+    default: 'rgba(21,23,26,0.10)',
+    strong: 'rgba(21,23,26,0.16)',
+  },
+  accent: {
+    default: C.indigo,
+    hover: C.blue,
+    soft: '#EEF2FF',
+    border: '#C7D2FE',
+    strong: '#4338CA',
+  },
+  orange: {
+    default: C.orange,
+    soft: '#FFF4EB',
+    strong: '#EA580C',
+  },
+  state: {
+    success: { fg: C.success, soft: '#F0FDF4', border: '#BBF7D0' },
+    warning: { fg: C.warning, soft: '#FFFBEB', border: '#FDE68A' },
+    error: { fg: C.danger, soft: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.25)' },
+    info: { fg: C.information, soft: '#EFF6FF', border: '#BFDBFE' },
+  },
+  productDark: {
+    bg: C.surfaceProductDark,
+    surface: '#1C211F',
+    muted: C.mutedOnDark,
+    border: 'rgba(232,240,237,0.14)',
+    accent: C.indigo,
+  },
+  overlay: {
+    scrim: 'rgba(21,23,26,0.35)',
+    soft: 'rgba(21,23,26,0.28)',
+  },
+} as const
+
+/** @deprecated Prefer `surfaces` / `colors` — flat aliases for existing call sites */
+export const semantic = {
+  paper: surfaces.paper,
+  cream: surfaces.cream,
+  softSurface: surfaces.elevated,
+  ink: C.ink,
+  muted: C.muted,
+  border: colors.border.default,
+  borderStrong: colors.border.strong,
+  accent: colors.accent.default,
+  accentHover: colors.accent.hover,
+  success: C.success,
+  warning: C.warning,
+  error: C.danger,
+  information: C.information,
+  surfaceProductDark: C.surfaceProductDark,
 } as const
 
 export const T = {
   rControl: 8,
   rCard: 12,
   rPill: 100,
-  section: 'clamp(48px, 7vw, 80px)',
-  sectionSm: 'clamp(32px, 5vw, 56px)',
+  section: 'var(--skylent-section-pad)',
+  sectionSm: 'var(--skylent-section-pad-sm)',
   sectionTight: 'clamp(48px, 6vw, 72px)',
-  sectionCompact: 'clamp(40px, 5vw, 60px)',
-  gutter: 'clamp(20px, 4.5vw, 56px)',
+  sectionCompact: 'var(--skylent-section-pad-compact)',
+  sectionSpacious: 'var(--skylent-section-pad-spacious)',
+  gutter: 'var(--skylent-gutter-page)',
   maxW: 1360,
+  maxWProse: 720,
+  maxWNarrow: 560,
+  maxWWorkspace: 1040,
+  maxWCareer: 1120,
   navH: 64,
   lineLight: 'rgba(21,23,26,0.10)',
   lineStrong: 'rgba(21,23,26,0.16)',
@@ -51,16 +137,243 @@ export const T = {
   shadowLg: '0 16px 40px rgba(21,23,26,0.08)',
 } as const
 
+/** Radius & elevation — mirrors components.css / design-system.css */
+export const radius = {
+  xs: 'var(--radius-xs)',
+  sm: 'var(--radius-sm)',
+  control: 'var(--radius-control)',
+  card: 'var(--radius-card)',
+  modal: 'var(--radius-modal)',
+  pill: 100,
+} as const
+
+export const elevation = {
+  none: 'var(--shadow-elevation-none)',
+  subtle: 'var(--shadow-elevation-subtle)',
+  raised: 'var(--shadow-elevation-raised)',
+  overlay: 'var(--shadow-elevation-overlay)',
+} as const
+
+/** Shared component metrics & state tokens for inline styles */
+export const components = {
+  controlHeight: {
+    sm: 'var(--skylent-control-height-sm)',
+    md: 'var(--skylent-control-height-md)',
+    lg: 'var(--skylent-control-height-lg)',
+  },
+  focusRing: 'var(--skylent-focus-ring)',
+  focusOffset: 'var(--skylent-focus-offset)',
+  disabledOpacity: 'var(--skylent-disabled-opacity)',
+  duration: {
+    fast: 'var(--skylent-duration-fast)',
+    ui: 'var(--skylent-duration-ui)',
+  },
+} as const
+
+/** 4px-based spacing scale (matches --space-* in design-system.css). */
+export const space = {
+  0: 0,
+  1: 4,
+  2: 8,
+  3: 12,
+  4: 16,
+  5: 20,
+  6: 24,
+  7: 28,
+  8: 32,
+  9: 40,
+  10: 48,
+  11: 56,
+  12: 64,
+  13: 80,
+  14: 96,
+  15: 120,
+} as const
+
+/** Layout tokens — mirrors semantic layout vars in design-system.css / layout.css */
+export const layout = {
+  gutterPage: 'var(--skylent-gutter-page)',
+  gutterSection: 'var(--skylent-gutter-section)',
+  sectionPad: 'var(--skylent-section-pad)',
+  sectionPadSm: 'var(--skylent-section-pad-sm)',
+  sectionPadCompact: 'var(--skylent-section-pad-compact)',
+  sectionPadSpacious: 'var(--skylent-section-pad-spacious)',
+  sectionPadHeroStart: 'var(--skylent-section-pad-hero-block-start)',
+  sectionPadHeroEnd: 'var(--skylent-section-pad-hero-block-end)',
+  rail: 'var(--rail)',
+  gapGrid: 'var(--skylent-gap-grid)',
+  gapGridTight: 'var(--skylent-gap-grid-tight)',
+  gapGridLoose: 'var(--skylent-gap-grid-loose)',
+  gapEditorial: 'var(--skylent-gap-editorial)',
+  gapCards: 'var(--skylent-gap-cards)',
+  gapStack: 'var(--skylent-gap-stack)',
+  measureReading: 'var(--skylent-measure-reading)',
+  measureNarrow: 'var(--skylent-measure-narrow)',
+  maxContent: 1360,
+  maxWide: 1360,
+  maxProse: 720,
+  maxNarrow: 560,
+  maxWorkspace: 1040,
+  maxCareer: 1120,
+} as const
+
+/** Layout breakpoints (px) — use in JS matchMedia; CSS uses the same literals. */
+export const breakpoints = {
+  xs: 390,
+  sm: 640,
+  md: 768,
+  lg: 900,
+  xl: 1100,
+  '2xl': 1360,
+} as const
+
+/** Semantic typography roles — mirrors --skylent-t-* in src/styles/design-system.css */
+export const typography = {
+  display: {
+    xl: {
+      family: 'var(--skylent-t-display-xl-family)',
+      size: 'var(--skylent-t-display-xl-size)',
+      line: 'var(--skylent-t-display-xl-line)',
+      weight: 'var(--skylent-t-display-xl-weight)',
+      tracking: 'var(--skylent-t-display-xl-tracking)',
+    },
+    lg: {
+      family: 'var(--skylent-t-display-lg-family)',
+      size: 'var(--skylent-t-display-lg-size)',
+      line: 'var(--skylent-t-display-lg-line)',
+      weight: 'var(--skylent-t-display-lg-weight)',
+      tracking: 'var(--skylent-t-display-lg-tracking)',
+    },
+    md: {
+      family: 'var(--skylent-t-display-md-family)',
+      size: 'var(--skylent-t-display-md-size)',
+      line: 'var(--skylent-t-display-md-line)',
+      weight: 'var(--skylent-t-display-md-weight)',
+      tracking: 'var(--skylent-t-display-md-tracking)',
+    },
+  },
+  heading: {
+    xl: {
+      family: 'var(--skylent-t-heading-xl-family)',
+      size: 'var(--skylent-t-heading-xl-size)',
+      line: 'var(--skylent-t-heading-xl-line)',
+      weight: 'var(--skylent-t-heading-xl-weight)',
+      tracking: 'var(--skylent-t-heading-xl-tracking)',
+    },
+    lg: {
+      family: 'var(--skylent-t-heading-lg-family)',
+      size: 'var(--skylent-t-heading-lg-size)',
+      line: 'var(--skylent-t-heading-lg-line)',
+      weight: 'var(--skylent-t-heading-lg-weight)',
+      tracking: 'var(--skylent-t-heading-lg-tracking)',
+    },
+    md: {
+      family: 'var(--skylent-t-heading-md-family)',
+      size: 'var(--skylent-t-heading-md-size)',
+      line: 'var(--skylent-t-heading-md-line)',
+      weight: 'var(--skylent-t-heading-md-weight)',
+      tracking: 'var(--skylent-t-heading-md-tracking)',
+    },
+    sm: {
+      family: 'var(--skylent-t-heading-sm-family)',
+      size: 'var(--skylent-t-heading-sm-size)',
+      line: 'var(--skylent-t-heading-sm-line)',
+      weight: 'var(--skylent-t-heading-sm-weight)',
+      tracking: 'var(--skylent-t-heading-sm-tracking)',
+    },
+  },
+  body: {
+    lg: {
+      family: 'var(--skylent-t-body-lg-family)',
+      size: 'var(--skylent-t-body-lg-size)',
+      line: 'var(--skylent-t-body-lg-line)',
+      weight: 'var(--skylent-t-body-lg-weight)',
+      tracking: 'var(--skylent-t-body-lg-tracking)',
+    },
+    md: {
+      family: 'var(--skylent-t-body-md-family)',
+      size: 'var(--skylent-t-body-md-size)',
+      line: 'var(--skylent-t-body-md-line)',
+      weight: 'var(--skylent-t-body-md-weight)',
+      tracking: 'var(--skylent-t-body-md-tracking)',
+    },
+    sm: {
+      family: 'var(--skylent-t-body-sm-family)',
+      size: 'var(--skylent-t-body-sm-size)',
+      line: 'var(--skylent-t-body-sm-line)',
+      weight: 'var(--skylent-t-body-sm-weight)',
+      tracking: 'var(--skylent-t-body-sm-tracking)',
+    },
+  },
+  label: {
+    lg: {
+      family: 'var(--skylent-t-label-lg-family)',
+      size: 'var(--skylent-t-label-lg-size)',
+      line: 'var(--skylent-t-label-lg-line)',
+      weight: 'var(--skylent-t-label-lg-weight)',
+      tracking: 'var(--skylent-t-label-lg-tracking)',
+    },
+    md: {
+      family: 'var(--skylent-t-label-md-family)',
+      size: 'var(--skylent-t-label-md-size)',
+      line: 'var(--skylent-t-label-md-line)',
+      weight: 'var(--skylent-t-label-md-weight)',
+      tracking: 'var(--skylent-t-label-md-tracking)',
+    },
+    sm: {
+      family: 'var(--skylent-t-label-sm-family)',
+      size: 'var(--skylent-t-label-sm-size)',
+      line: 'var(--skylent-t-label-sm-line)',
+      weight: 'var(--skylent-t-label-sm-weight)',
+      tracking: 'var(--skylent-t-label-sm-tracking)',
+    },
+  },
+  eyebrow: {
+    family: 'var(--skylent-t-eyebrow-family)',
+    size: 'var(--skylent-t-eyebrow-size)',
+    line: 'var(--skylent-t-eyebrow-line)',
+    weight: 'var(--skylent-t-eyebrow-weight)',
+    tracking: 'var(--skylent-t-eyebrow-tracking)',
+  },
+  caption: {
+    family: 'var(--skylent-t-caption-family)',
+    size: 'var(--skylent-t-caption-size)',
+    line: 'var(--skylent-t-caption-line)',
+    weight: 'var(--skylent-t-caption-weight)',
+    tracking: 'var(--skylent-t-caption-tracking)',
+  },
+  nav: {
+    family: 'var(--skylent-t-nav-family)',
+    size: 'var(--skylent-t-nav-size)',
+    line: 'var(--skylent-t-nav-line)',
+    weight: 'var(--skylent-t-nav-weight)',
+    tracking: 'var(--skylent-t-nav-tracking)',
+  },
+  measure: {
+    prose: 'var(--skylent-measure-prose)',
+    narrow: 'var(--skylent-measure-narrow)',
+  },
+} as const
+
+/** @deprecated Prefer `typography.*` — kept for existing inline style call sites */
 export const type = {
-  displayXl: 'clamp(40px, 6vw, 84px)',
-  displayLg: 'clamp(34px, 5.2vw, 64px)',
-  displayMd: 'clamp(28px, 3.6vw, 44px)',
-  displaySm: 'clamp(24px, 3vw, 34px)',
-  bodyLg: 'clamp(16px, 2vw, 18px)',
-  body: '15px',
-  bodySm: '13.5px',
-  label: '11px',
-  caption: '10px',
+  displayXl: typography.display.xl.size,
+  displayLg: typography.display.lg.size,
+  displayMd: typography.display.md.size,
+  displaySm: 'clamp(20px, 2.2vw, 26px)',
+  bodyLg: typography.body.lg.size,
+  body: typography.body.md.size,
+  bodySm: typography.body.sm.size,
+  label: typography.label.md.size,
+  caption: typography.caption.size,
+  nav: typography.nav.size,
+  stat: 'var(--skylent-t-stat-size)',
+} as const
+
+export const fonts = {
+  serif: "'Source Serif 4', 'Iowan Old Style', Georgia, serif",
+  sans: "'DM Sans', system-ui, sans-serif",
+  mono: "'DM Mono', monospace",
 } as const
 
 export type GlassLevel = 1 | 2 | 3
@@ -85,4 +398,79 @@ export const glass = {
     blur: 'none',
     shadow: '0 12px 32px rgba(21,23,26,0.07)',
   },
+} as const
+
+/** Opt-in CSS class names from design-system.css (for documentation / gradual adoption). */
+export const dsClass = {
+  btn: 'skylent-btn',
+  btnPrimary: 'skylent-btn skylent-btn--primary',
+  btnSecondary: 'skylent-btn skylent-btn--secondary',
+  btnGhost: 'skylent-btn skylent-btn--ghost',
+  btnDestructive: 'skylent-btn skylent-btn--destructive',
+  btnFull: 'skylent-btn--full',
+  card: 'skylent-card',
+  cardRaised: 'skylent-card skylent-card--raised',
+  cardInteractive: 'skylent-card skylent-card--interactive',
+  cardPad: 'skylent-card--pad',
+  cardProductDark: 'skylent-card skylent-card--product-dark',
+  badge: 'skylent-badge',
+  badgeAccent: 'skylent-badge skylent-badge--accent',
+  badgeSuccess: 'skylent-badge skylent-badge--success',
+  badgeWarning: 'skylent-badge skylent-badge--warning',
+  badgeError: 'skylent-badge skylent-badge--error',
+  badgeInfo: 'skylent-badge skylent-badge--info',
+  input: 'skylent-input',
+  fieldLabel: 'skylent-field-label',
+  fieldError: 'skylent-field-error',
+  tabs: 'skylent-tabs',
+  tabsScroll: 'skylent-tabs skylent-tabs--scroll',
+  tab: 'skylent-tab',
+  navItem: 'skylent-nav-item',
+  textLink: 'skylent-text-link',
+  linkMuted: 'skylent-link-muted',
+  spinner: 'skylent-spinner',
+  stateInline: 'skylent-state-inline',
+  stateLoading: 'skylent-state-panel skylent-state-panel--loading',
+  modalScrim: 'skylent-modal-scrim',
+  modalPanel: 'skylent-modal-panel',
+  progress: 'skylent-progress',
+  stateEmpty: 'skylent-state-panel skylent-state-panel--empty',
+  stateErrorPanel: 'skylent-state-panel skylent-state-panel--error',
+  stateSuccessPanel: 'skylent-state-panel skylent-state-panel--success',
+  stateInfoPanel: 'skylent-state-panel skylent-state-panel--info',
+  sectionHeader: 'skylent-section-header',
+  link: 'skylent-link',
+  displayXl: 'skylent-t-display-xl',
+  displayLg: 'skylent-t-display-lg',
+  headingXl: 'skylent-t-heading-xl',
+  bodyLg: 'skylent-t-body-lg',
+  bodyMd: 'skylent-t-body-md',
+  eyebrow: 'skylent-t-eyebrow',
+  caption: 'skylent-t-caption',
+  measure: 'skylent-measure',
+  measureReading: 'skylent-measure-reading',
+  page: 'skylent-page',
+  rail: 'skylent-rail',
+  container: 'skylent-container',
+  containerProse: 'skylent-container--prose',
+  containerNarrow: 'skylent-container--narrow',
+  section: 'skylent-section',
+  sectionCompact: 'skylent-section--compact',
+  sectionSm: 'skylent-section--sm',
+  sectionSpacious: 'skylent-section--spacious',
+  sectionHero: 'skylent-section--hero',
+  grid: 'skylent-grid',
+  layoutEditorial: 'skylent-layout-editorial',
+  layoutAsymmetric: 'skylent-layout-asymmetric',
+  layoutCards3: 'skylent-layout-cards-3',
+  layoutDiscovery4: 'skylent-layout-discovery-4',
+  stack6: 'skylent-stack-6',
+  surfacePaper: 'skylent-surface-paper',
+  surfaceCream: 'skylent-surface-cream',
+  surfaceSoft: 'skylent-surface-soft',
+  surfaceProductDark: 'skylent-surface-product-dark',
+  stateSuccessSurface: 'skylent-state-success',
+  stateErrorSurface: 'skylent-state-error',
+  stateWarningSurface: 'skylent-state-warning',
+  stateInfoSurface: 'skylent-state-info',
 } as const

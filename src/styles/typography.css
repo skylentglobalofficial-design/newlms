@@ -1,0 +1,305 @@
+/**
+ * Skylent typography system — semantic roles + utilities.
+ * Tokens live in :root (design-system.css). Keep src/tokens.ts in sync.
+ */
+
+/* ── Role utilities (opt-in) ── */
+
+.skylent-t-display-xl,
+.skylent-display-xl {
+  font-family: var(--skylent-t-display-xl-family);
+  font-size: var(--skylent-t-display-xl-size);
+  line-height: var(--skylent-t-display-xl-line);
+  font-weight: var(--skylent-t-display-xl-weight);
+  letter-spacing: var(--skylent-t-display-xl-tracking);
+  color: var(--skylent-color-ink);
+  text-wrap: balance;
+}
+
+.skylent-t-display-lg,
+.skylent-display-lg {
+  font-family: var(--skylent-t-display-lg-family);
+  font-size: var(--skylent-t-display-lg-size);
+  line-height: var(--skylent-t-display-lg-line);
+  font-weight: var(--skylent-t-display-lg-weight);
+  letter-spacing: var(--skylent-t-display-lg-tracking);
+  color: var(--skylent-color-ink);
+  text-wrap: balance;
+}
+
+.skylent-t-display-md,
+.skylent-display-md {
+  font-family: var(--skylent-t-display-md-family);
+  font-size: var(--skylent-t-display-md-size);
+  line-height: var(--skylent-t-display-md-line);
+  font-weight: var(--skylent-t-display-md-weight);
+  letter-spacing: var(--skylent-t-display-md-tracking);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-t-heading-xl {
+  font-family: var(--skylent-t-heading-xl-family);
+  font-size: var(--skylent-t-heading-xl-size);
+  line-height: var(--skylent-t-heading-xl-line);
+  font-weight: var(--skylent-t-heading-xl-weight);
+  letter-spacing: var(--skylent-t-heading-xl-tracking);
+  color: var(--skylent-color-ink);
+  text-wrap: balance;
+}
+
+.skylent-t-heading-lg {
+  font-family: var(--skylent-t-heading-lg-family);
+  font-size: var(--skylent-t-heading-lg-size);
+  line-height: var(--skylent-t-heading-lg-line);
+  font-weight: var(--skylent-t-heading-lg-weight);
+  letter-spacing: var(--skylent-t-heading-lg-tracking);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-t-heading-md {
+  font-family: var(--skylent-t-heading-md-family);
+  font-size: var(--skylent-t-heading-md-size);
+  line-height: var(--skylent-t-heading-md-line);
+  font-weight: var(--skylent-t-heading-md-weight);
+  letter-spacing: var(--skylent-t-heading-md-tracking);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-t-heading-sm {
+  font-family: var(--skylent-t-heading-sm-family);
+  font-size: var(--skylent-t-heading-sm-size);
+  line-height: var(--skylent-t-heading-sm-line);
+  font-weight: var(--skylent-t-heading-sm-weight);
+  letter-spacing: var(--skylent-t-heading-sm-tracking);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-t-body-lg,
+.skylent-body-lg {
+  font-family: var(--skylent-t-body-lg-family);
+  font-size: var(--skylent-t-body-lg-size);
+  line-height: var(--skylent-t-body-lg-line);
+  font-weight: var(--skylent-t-body-lg-weight);
+  letter-spacing: var(--skylent-t-body-lg-tracking);
+  color: var(--skylent-color-ink);
+  max-width: var(--skylent-measure-prose);
+}
+
+.skylent-t-body-md {
+  font-family: var(--skylent-t-body-md-family);
+  font-size: var(--skylent-t-body-md-size);
+  line-height: var(--skylent-t-body-md-line);
+  font-weight: var(--skylent-t-body-md-weight);
+  letter-spacing: var(--skylent-t-body-md-tracking);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-t-body-sm {
+  font-family: var(--skylent-t-body-sm-family);
+  font-size: var(--skylent-t-body-sm-size);
+  line-height: var(--skylent-t-body-sm-line);
+  font-weight: var(--skylent-t-body-sm-weight);
+  letter-spacing: var(--skylent-t-body-sm-tracking);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-t-body-muted {
+  font-family: var(--skylent-t-body-md-family);
+  font-size: var(--skylent-t-body-md-size);
+  line-height: var(--skylent-t-body-md-line);
+  font-weight: var(--skylent-t-body-md-weight);
+  letter-spacing: var(--skylent-t-body-md-tracking);
+  color: var(--skylent-color-slate);
+}
+
+.skylent-t-label-lg {
+  font-family: var(--skylent-t-label-lg-family);
+  font-size: var(--skylent-t-label-lg-size);
+  line-height: var(--skylent-t-label-lg-line);
+  font-weight: var(--skylent-t-label-lg-weight);
+  letter-spacing: var(--skylent-t-label-lg-tracking);
+  color: var(--skylent-color-slate);
+}
+
+.skylent-t-label-md,
+.skylent-label {
+  font-family: var(--skylent-t-label-md-family);
+  font-size: var(--skylent-t-label-md-size);
+  line-height: var(--skylent-t-label-md-line);
+  font-weight: var(--skylent-t-label-md-weight);
+  letter-spacing: var(--skylent-t-label-md-tracking);
+  color: var(--skylent-color-slate);
+  text-transform: none;
+}
+
+.skylent-t-label-sm {
+  font-family: var(--skylent-t-label-sm-family);
+  font-size: var(--skylent-t-label-sm-size);
+  line-height: var(--skylent-t-label-sm-line);
+  font-weight: var(--skylent-t-label-sm-weight);
+  letter-spacing: var(--skylent-t-label-sm-tracking);
+  color: var(--skylent-color-slate);
+}
+
+.skylent-t-eyebrow {
+  font-family: var(--skylent-t-eyebrow-family);
+  font-size: var(--skylent-t-eyebrow-size);
+  line-height: var(--skylent-t-eyebrow-line);
+  font-weight: var(--skylent-t-eyebrow-weight);
+  letter-spacing: var(--skylent-t-eyebrow-tracking);
+  text-transform: uppercase;
+  color: var(--skylent-color-accent);
+}
+
+.skylent-t-caption {
+  font-family: var(--skylent-t-caption-family);
+  font-size: var(--skylent-t-caption-size);
+  line-height: var(--skylent-t-caption-line);
+  font-weight: var(--skylent-t-caption-weight);
+  letter-spacing: var(--skylent-t-caption-tracking);
+  text-transform: uppercase;
+  color: var(--skylent-color-muted);
+}
+
+.skylent-t-mono {
+  font-family: var(--skylent-font-mono);
+  font-size: var(--skylent-t-caption-size);
+  line-height: var(--skylent-t-caption-line);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--skylent-color-muted);
+}
+
+.skylent-t-nav {
+  font-family: var(--skylent-t-nav-family);
+  font-size: var(--skylent-t-nav-size);
+  line-height: var(--skylent-t-nav-line);
+  font-weight: var(--skylent-t-nav-weight);
+  letter-spacing: var(--skylent-t-nav-tracking);
+  color: var(--skylent-color-slate);
+}
+
+/* Legacy aliases (Block 1 utilities → role map) */
+.skylent-type-display {
+  font-family: var(--skylent-t-display-lg-family);
+  font-size: var(--skylent-t-display-lg-size);
+  line-height: var(--skylent-t-display-lg-line);
+  font-weight: var(--skylent-t-display-lg-weight);
+  letter-spacing: var(--skylent-t-display-lg-tracking);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-type-heading {
+  font-family: var(--skylent-t-heading-md-family);
+  font-size: var(--skylent-t-heading-md-size);
+  line-height: var(--skylent-t-heading-md-line);
+  font-weight: var(--skylent-t-heading-md-weight);
+  letter-spacing: var(--skylent-t-heading-md-tracking);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-type-body {
+  font-family: var(--skylent-t-body-md-family);
+  font-size: var(--skylent-t-body-md-size);
+  line-height: var(--skylent-t-body-md-line);
+  font-weight: var(--skylent-t-body-md-weight);
+  color: var(--skylent-color-ink);
+}
+
+.skylent-type-body-muted {
+  font-family: var(--skylent-t-body-md-family);
+  font-size: var(--skylent-t-body-md-size);
+  line-height: var(--skylent-t-body-md-line);
+  color: var(--skylent-color-slate);
+}
+
+.skylent-type-label {
+  font-family: var(--skylent-t-label-md-family);
+  font-size: var(--skylent-t-label-md-size);
+  line-height: var(--skylent-t-label-md-line);
+  font-weight: var(--skylent-t-label-md-weight);
+  color: var(--skylent-color-slate);
+}
+
+.skylent-type-caption {
+  font-family: var(--skylent-t-caption-family);
+  font-size: var(--skylent-t-caption-size);
+  line-height: var(--skylent-t-caption-line);
+  font-weight: var(--skylent-t-caption-weight);
+  letter-spacing: var(--skylent-t-caption-tracking);
+  text-transform: uppercase;
+  color: var(--skylent-color-muted);
+}
+
+.skylent-type-nav {
+  font-family: var(--skylent-t-nav-family);
+  font-size: var(--skylent-t-nav-size);
+  line-height: var(--skylent-t-nav-line);
+  font-weight: var(--skylent-t-nav-weight);
+  letter-spacing: var(--skylent-t-nav-tracking);
+  color: var(--skylent-color-slate);
+}
+
+.skylent-type-stat {
+  font-family: var(--skylent-t-stat-family);
+  font-size: var(--skylent-t-stat-size);
+  line-height: var(--skylent-t-stat-line);
+  font-weight: var(--skylent-t-stat-weight);
+  letter-spacing: var(--skylent-t-stat-tracking);
+  color: var(--skylent-color-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.skylent-measure {
+  max-width: var(--skylent-measure-prose);
+}
+
+.skylent-measure-narrow {
+  max-width: var(--skylent-measure-narrow);
+}
+
+/* Public canvas: default heading voice (serif for major levels) */
+.skylent-public-canvas main h1 {
+  font-family: var(--skylent-t-display-xl-family);
+  font-weight: var(--skylent-t-display-xl-weight);
+  letter-spacing: var(--skylent-t-display-xl-tracking);
+  line-height: var(--skylent-t-display-xl-line);
+  text-wrap: balance;
+}
+
+.skylent-public-canvas main h2 {
+  font-family: var(--skylent-t-heading-xl-family);
+  font-weight: var(--skylent-t-heading-xl-weight);
+  letter-spacing: var(--skylent-t-heading-xl-tracking);
+  line-height: var(--skylent-t-heading-xl-line);
+  text-wrap: balance;
+}
+
+.skylent-public-canvas main h3 {
+  font-family: var(--skylent-t-heading-sm-family);
+  font-weight: var(--skylent-t-heading-sm-weight);
+  letter-spacing: var(--skylent-t-heading-sm-tracking);
+  line-height: var(--skylent-t-heading-sm-line);
+}
+
+.skylent-public-canvas main p,
+.skylent-public-canvas main li {
+  font-family: var(--skylent-t-body-md-family);
+  line-height: var(--skylent-t-body-md-line);
+}
+
+@media (max-width: 768px) {
+  .skylent-t-display-xl,
+  .skylent-display-xl {
+    letter-spacing: -0.028em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skylent-t-display-xl,
+  .skylent-display-xl,
+  .skylent-t-display-lg,
+  .skylent-display-lg {
+    text-wrap: pretty;
+  }
+}
