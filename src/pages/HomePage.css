@@ -141,17 +141,20 @@
 .hp-hero-preview .pl-ws {
   min-height: 0;
   max-height: 220px;
-  grid-template-columns: minmax(92px, 0.52fr) minmax(0, 1.48fr);
+  grid-template-columns: minmax(124px, 0.62fr) minmax(0, 1.38fr);
   gap: 8px;
   overflow: hidden;
 }
 
 .hp-hero-preview .pl-ws-rail {
   padding: 4px;
+  min-width: 0;
 }
 
 .hp-hero-preview .pl-ws-rail li {
   padding: 5px 6px;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .hp-hero-preview .pl-ws-current {
