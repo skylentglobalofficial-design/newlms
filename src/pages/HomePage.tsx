@@ -80,15 +80,17 @@ export default function HomePage() {
                     Product Management
                   </button>
                 </div>
-                <CourseWorkspacePreview
-                  courseTitle={featured.title}
-                  lessonTitle={work.firstLesson?.title ?? "Open the first lesson"}
-                  practiceTitle={work.firstQuiz?.title ?? "A short check"}
-                  workTitle={work.capstone?.title ?? "Capstone"}
-                  modules={featured.modules.map((module) => module.title)}
-                  lessonCount={work.lessonCount}
-                  visual={hero === "product" ? "harbor-desk" : "northwind"}
-                />
+                <div className="hp-hero-preview">
+                  <CourseWorkspacePreview
+                    courseTitle={featured.title}
+                    lessonTitle={work.firstLesson?.title ?? "Open the first lesson"}
+                    practiceTitle={work.firstQuiz?.title ?? "A short check"}
+                    workTitle={work.capstone?.title ?? "Capstone"}
+                    modules={featured.modules.map((module) => module.title)}
+                    lessonCount={work.lessonCount}
+                    visual={hero === "product" ? "harbor-desk" : "northwind"}
+                  />
+                </div>
               </div>
             ) : null}
           </div>
