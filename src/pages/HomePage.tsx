@@ -16,11 +16,11 @@ const analytics = courses.find((course) => course.slug === FLAGSHIP_COURSE_SLUG)
 const product = courses.find((course) => course.slug === PRODUCT_MANAGEMENT_SLUG)
 
 const studyLoop = [
-  { title: "Choose", copy: "Pick Data Analytics or Product Management.", kind: "choose" as const },
-  { title: "Learn", copy: "Read the idea in Skylent OS.", kind: "learn" as const },
-  { title: "Practise", copy: "Check whether you can use it.", kind: "practice" as const },
-  { title: "Build", copy: "Turn it into useful work.", kind: "build" as const },
-  { title: "Keep", copy: "Save the evidence of what you built.", kind: "keep" as const },
+  { title: "Choose", copy: "Pick a focused course and a clear outcome.", kind: "choose" as const },
+  { title: "Learn", copy: "Understand the idea in Skylent OS.", kind: "learn" as const },
+  { title: "Practise", copy: "Check whether you can actually use it.", kind: "practice" as const },
+  { title: "Build", copy: "Turn the learning into useful work.", kind: "build" as const },
+  { title: "Keep", copy: "Save evidence of what you built.", kind: "keep" as const },
 ] as const
 
 function workspaceFor(course: NonNullable<typeof analytics>) {
@@ -28,12 +28,7 @@ function workspaceFor(course: NonNullable<typeof analytics>) {
   const firstLesson = course.modules[0]?.lessons[0]
   const firstQuiz = course.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")
   const capstone = course.modules.flatMap((module) => module.lessons).find((lesson) => /capstone|product case/i.test(lesson.title))
-  return {
-    lessonCount,
-    firstLesson,
-    firstQuiz,
-    capstone,
-  }
+  return { lessonCount, firstLesson, firstQuiz, capstone }
 }
 
 export default function HomePage() {
@@ -46,38 +41,23 @@ export default function HomePage() {
   return (
     <PageShell aurora={false}>
       <div className="home-p3">
-        <section className="hp-hero">
+        <section className="hp-hero" aria-labelledby="home-hero-heading">
           <div className="hp-rail hp-hero-grid">
             <div className="hp-hero-copy">
-              <h1>Learn something useful.</h1>
+              <p className="hp-kicker">LEARN · PRACTISE · BUILD</p>
+              <h1 id="home-hero-heading">Learn something useful.</h1>
               <p>
-                Open a focused course. Do the exercises in a real workspace. Keep the work.
+                Focused courses, hands-on practice, and work you can keep. Start with a clear skill and build from there.
               </p>
               <div className="hp-actions">
                 <Link className="hp-btn hp-btn-primary" to="/courses/data-analytics">Start Data Analytics</Link>
-                <Link className="hp-btn hp-btn-ghost" to="/courses">Explore courses</Link>
+                <Link className="hp-btn hp-btn-ghost" to="/programs">Explore programmes</Link>
               </div>
-              <div className="hp-start-pair">
-                {analytics ? (
-                  <Link className="hp-start-card" to="/courses/data-analytics">
-                    <CourseThumb authored visual="northwind" />
-                    <span>
-                      <strong>Data Analytics</strong>
-                      <em>Northwind · SQL · dashboard</em>
-                    </span>
-                  </Link>
-                ) : null}
-                {product ? (
-                  <Link className="hp-start-card" to="/courses/product-management">
-                    <CourseThumb authored visual="harbor-desk" />
-                    <span>
-                      <strong>Product Management</strong>
-                      <em>Harbor Desk · evidence → spec</em>
-                    </span>
-                  </Link>
-                ) : null}
-              </div>
+              <p className="hp-hero-note">
+                Skylent is built around a simple loop: understand the idea, practise it, build something, and keep the evidence.
+              </p>
             </div>
+
             {featured && work ? (
               <div className="hp-hero-stage">
                 <div className="hp-hero-switch" role="tablist" aria-label="Featured course workspace">
@@ -114,15 +94,17 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="hp-flagship" id="start-learning" aria-labelledby="start-learning-heading">
+        <section className="hp-flagship" aria-labelledby="featured-heading">
           <div className="hp-rail">
-            <div className="hp-flagship-head">
+            <div className="hp-section-head">
               <div>
-                <h2 id="start-learning-heading" className="hp-h2">Start with a course you can actually do.</h2>
-                <p className="hp-lead">Two live courses. Different work. Same learning product.</p>
+                <p className="hp-kicker">START HERE</p>
+                <h2 id="featured-heading" className="hp-h2">Courses you can actually do.</h2>
+                <p className="hp-lead">Start with one of the focused learning experiences currently authored in Skylent.</p>
               </div>
-              <Link className="hp-text-link" to="/skills">Not sure where to start? Use Skills</Link>
+              <Link className="hp-text-link" to="/courses">View all courses</Link>
             </div>
+
             <div className="hp-product-pair">
               {analytics ? (
                 <Link className="hp-product" to="/courses/data-analytics">
@@ -130,12 +112,7 @@ export default function HomePage() {
                   <div className="hp-product-copy">
                     <h3>{analytics.title}</h3>
                     <p>Northwind revenue, categories, SQL, and a dashboard you keep.</p>
-                    <p className="hp-flagship-meta">
-                      {analytics.duration}
-                      {analyticsLessons > 0 ? ` · ${analyticsLessons} lessons` : ""}
-                      {analytics.projects > 0 ? ` · ${analytics.projects} assignments` : ""}
-                      {" · Self-paced"}
-                    </p>
+                    <p className="hp-flagship-meta">{analytics.duration}{analyticsLessons > 0 ? ` · ${analyticsLessons} lessons` : ""}{analytics.projects > 0 ? ` · ${analytics.projects} assignments` : ""} · Self-paced</p>
                     <span className="hp-btn hp-btn-primary">Open Data Analytics</span>
                   </div>
                 </Link>
@@ -146,12 +123,7 @@ export default function HomePage() {
                   <div className="hp-product-copy">
                     <h3>{product.title}</h3>
                     <p>Harbor Desk: 12 stores, 4 interviews, 9 weekend exceptions. Evidence → Spec.</p>
-                    <p className="hp-flagship-meta">
-                      {product.duration}
-                      {productLessons > 0 ? ` · ${productLessons} lessons` : ""}
-                      {product.projects > 0 ? ` · ${product.projects} assignments` : ""}
-                      {" · Self-paced"}
-                    </p>
+                    <p className="hp-flagship-meta">{product.duration}{productLessons > 0 ? ` · ${productLessons} lessons` : ""}{product.projects > 0 ? ` · ${product.projects} assignments` : ""} · Self-paced</p>
                     <span className="hp-btn hp-btn-primary">Open Product Management</span>
                   </div>
                 </Link>
@@ -162,7 +134,9 @@ export default function HomePage() {
 
         <section className="hp-section" aria-labelledby="how-study-heading">
           <div className="hp-rail">
+            <p className="hp-kicker">HOW IT WORKS</p>
             <h2 id="how-study-heading" className="hp-h2">Choose. Learn. Practise. Build. Keep.</h2>
+            <p className="hp-lead">The learning experience is designed to move beyond watching lessons into practice and visible work.</p>
             <div className="hp-flow-wrap">
               <LearnFlow steps={studyLoop} />
             </div>
@@ -172,32 +146,32 @@ export default function HomePage() {
         <section className="hp-section hp-career" aria-labelledby="work-heading">
           <div className="hp-rail hp-career-grid">
             <div>
-              <h2 id="work-heading" className="hp-h2">Keep the work in Career OS</h2>
+              <p className="hp-kicker">EXPLORE SKYLENT</p>
+              <h2 id="work-heading" className="hp-h2">Go deeper when you are ready.</h2>
               <p className="hp-lead">
-                Your learning evidence can stay with you in Career OS. It is a workspace for your profile, projects, and career activity — not a job guarantee.
+                The homepage introduces the system. Dedicated pages hold the detail, so you can go straight to the part of Skylent you need.
               </p>
-              <Link className="hp-text-link" to="/career-os">See Career OS</Link>
+              <div className="hp-explore-grid">
+                <Link to="/programs" className="hp-explore-card"><strong>Programmes</strong><span>Structured learning paths.</span></Link>
+                <Link to="/skills" className="hp-explore-card"><strong>Skills</strong><span>Explore skills and where they lead.</span></Link>
+                <Link to="/career-os" className="hp-explore-card"><strong>Career OS</strong><span>Keep your profile, projects, and career activity.</span></Link>
+                <Link to="/institutions" className="hp-explore-card"><strong>Institutions</strong><span>See the institutional side of Skylent.</span></Link>
+              </div>
             </div>
             <CareerEvidencePreview />
           </div>
         </section>
 
-        <section className="hp-section hp-future" aria-labelledby="future-heading">
-          <div className="hp-rail">
-            <h2 id="future-heading" className="hp-future-title">More ways to learn are coming.</h2>
-            <p>
-              Academic paths for school, degrees, and exams are being built later. They are not the product you start with today.
-            </p>
-          </div>
-        </section>
-
-        <section className="hp-section hp-final" aria-labelledby="final-heading">
+        <section className="hp-final" aria-labelledby="final-heading">
           <div className="hp-rail">
             <div className="hp-final-card">
-              <h2 id="final-heading" className="hp-h2">Ready to start learning?</h2>
+              <div>
+                <p className="hp-kicker">YOUR NEXT STEP</p>
+                <h2 id="final-heading" className="hp-h2">Start with one useful skill.</h2>
+              </div>
               <div className="hp-actions">
                 <Link className="hp-btn hp-btn-primary" to="/courses/data-analytics">Start Data Analytics</Link>
-                <Link className="hp-btn hp-btn-ghost" to="/courses">Explore courses</Link>
+                <Link className="hp-btn hp-btn-ghost" to="/programs">Explore programmes</Link>
               </div>
             </div>
           </div>
