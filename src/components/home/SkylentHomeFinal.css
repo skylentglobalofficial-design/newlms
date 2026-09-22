@@ -60,9 +60,29 @@
   }
 }
 
+@media (max-width: 760px) {
+  .hp-end-stage,
+  .hp-end-copy,
+  .hp-end-links {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .hp-end-title {
+    max-width: none;
+  }
+}
+
 @media (max-width: 430px) {
   .hp-end-links {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .hp-end-primary {
+    justify-content: center;
+    width: 100%;
+    box-sizing: border-box;
   }
 }
