@@ -1,0 +1,34 @@
+diff --git a/src/App.tsx b/src/App.tsx
+--- a/src/App.tsx
++++ b/src/App.tsx
+@@ -1,7 +1,6 @@
+ import { lazy, Suspense } from 'react'
+-import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom'
+-import { C, Nav, Footer, globalCSS } from './components/shared'
+-import { PublicCanvas } from './components/foundation'
++import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
++import { globalCSS } from './components/shared'
+ import { AuthProvider } from './context/AuthContext'
+@@ -51,6 +50,7 @@ const DashboardAdminPage = lazy(() => import('./pages/DashboardAdminPage'))
+ const LearnPage = lazy(() => import('./pages/LearnPage'))
+ const NorthwindLabPage = lazy(() => import('./pages/NorthwindLabPage'))
+ const NorthwindProjectPage = lazy(() => import('./pages/NorthwindProjectPage'))
++const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
+ 
+ function AppRoutes() {
+@@ -91,6 +91,7 @@ function AppRoutes() {
+         <Route path="/blog" element={<BlogPage />} />
+         <Route path="/blog/:slug" element={<BlogPostPage />} />
+         <Route path="/contact" element={<ContactPage />} />
++        {/* Intentional shell opt-outs: auth, LMS/learn workspace, lab/experiment workspaces, dashboards, Career OS app shell */}
+         <Route path="/login" element={<LoginPage />} />
+         <Route path="/signup" element={<LoginPage />} />
+@@ -105,7 +106,7 @@ function AppRoutes() {
+         <Route path="/labs/:labId/:experimentId" element={<Navigate to="/labs" replace />} />
+         <Route path="/jobs" element={<Navigate to="/career-os/jobs" replace />} />
+         <Route path="/jobs/:id" element={<Navigate to="/career-os/jobs" replace />} />
+-        <Route path="*" element={<PublicCanvas themeId="general"><Nav /><div style={{ paddingTop: 120, textAlign: 'center', minHeight: '100vh' }}><h2 className="skylent-display-md" style={{ color: C.ink }}>Page not found</h2><Link to="/" style={{ color: C.orange }}>← Back to home</Link></div><Footer /></PublicCanvas>} />
++        <Route path="*" element={<NotFoundPage />} />
+       </Routes>
+     </Suspense>
+   )

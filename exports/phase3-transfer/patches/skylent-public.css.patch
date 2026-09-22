@@ -1,0 +1,12 @@
+diff --git a/src/skylent-public.css b/src/skylent-public.css
+index 705f564..97394a8 100644
+--- a/src/skylent-public.css
++++ b/src/skylent-public.css
+@@ -7,6 +7,7 @@ html, body {
+   color: var(--skylent-color-ink);
+ }
+ 
++/* PublicCanvas (foundation.tsx) — surface only; Nav/main/Footer via PageShell (shared.tsx). */
+ .skylent-public-canvas {
+   background: var(--skylent-color-paper);
+   color: var(--skylent-color-ink);
