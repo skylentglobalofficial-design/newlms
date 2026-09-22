@@ -445,6 +445,30 @@
   }
 }
 
+@media (max-width: 760px) {
+  .hp-cos-stage,
+  .hp-cos-copy,
+  .hp-cos-work,
+  .hp-cos-work-grid,
+  .hp-cos-main {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .hp-cos-copy h2 {
+    max-width: none;
+  }
+
+  .hp-cos-dest li {
+    min-height: 44px;
+    padding: 12px 0;
+  }
+
+  .hp-cos-work {
+    overflow-x: clip;
+  }
+}
+
 @media (max-width: 900px) {
   .hp-section.hp-cos {
     padding: 36px 0 40px;
