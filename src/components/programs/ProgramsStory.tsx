@@ -6,7 +6,7 @@ import {
   NorthwindWorkspace,
   SkylentOsPreview,
 } from "../product/ProductLanguage"
-import { PROGRAMS_STUDY_CAMPUS, PROGRAMS_STUDY_DESK, PROGRAMS_STUDY_LIBRARY } from "../../media"
+import { ProductVisual } from "../product/ProductVisuals"
 import { PROGRAMME_WORK_SURFACES, type ProgrammeDiscoveryCard } from "../../lib/programme-discovery"
 import { programmeBuildLine } from "../../lib/programme-catalogue"
 import "./ProgramsStory.css"
@@ -41,8 +41,8 @@ function ShowcaseBand({
   flip,
 }: {
   row: ProgrammeDiscoveryCard
-  photo: string
-  photoAlt: string
+  visualId: "learning-loop" | "analytics-workspace"
+  visualLabel: string
   flip?: boolean
 }) {
   const title = row.courseTitle || row.title
@@ -73,7 +73,7 @@ function ShowcaseBand({
       </div>
       <div className="pg-show-visual">
         <figure className="pg-show-stage">
-          <img src={photo} alt={photoAlt} width={1800} height={1200} decoding="async" />
+          <ProductVisual id={visualId} className="pg-show-product-visual" label={visualLabel} />
           <div className="pg-show-product">
             {row.visual === "harbor-desk" ? (
               <HarborDeskWorkspace compact meta="harbor-desk-case.md · 4 interviews" />
@@ -106,15 +106,15 @@ export default function ProgramsStory({ live }: { live: ProgrammeDiscoveryCard[]
             {pm ? (
               <ShowcaseBand
                 row={pm}
-                photo={PROGRAMS_STUDY_CAMPUS}
-                photoAlt="A university student working on a laptop on campus"
+                visualId="learning-loop"
+                visualLabel="Product Management · learning loop"
               />
             ) : null}
             {da ? (
               <ShowcaseBand
                 row={da}
-                photo={PROGRAMS_STUDY_LIBRARY}
-                photoAlt="College students studying at a library table"
+                visualId="analytics-workspace"
+                visualLabel="Data Analytics · workspace"
                 flip
               />
             ) : null}
@@ -145,13 +145,7 @@ export default function ProgramsStory({ live }: { live: ProgrammeDiscoveryCard[]
             </p>
           </div>
           <figure className="pg-photo pg-pair-photo">
-            <img
-              src={PROGRAMS_STUDY_DESK}
-              alt="Overhead view of a student working at a laptop with open books"
-              width={1800}
-              height={1200}
-              decoding="async"
-            />
+            <ProductVisual id="study-session" className="pg-pair-product-visual" label="Study · practice set" />
           </figure>
           <div className="pg-pair-product">
             <CertificateOsPreview />

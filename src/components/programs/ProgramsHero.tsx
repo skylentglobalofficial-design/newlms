@@ -1,4 +1,4 @@
-import { PROGRAMS_STUDY_UNIVERSITY } from "../../media"
+import { ProductVisual } from "../product/ProductVisuals"
 import type { ProgrammeDiscoveryCard } from "../../lib/programme-discovery"
 import "./ProgramsHero.css"
 
@@ -49,14 +49,7 @@ export default function ProgramsHero({
 
         <figure className="pg-hero-figure">
           <div className="pg-hero-photo">
-            <img
-              src={PROGRAMS_STUDY_UNIVERSITY}
-              alt="Adult learners working together in a university library"
-              width={1800}
-              height={1200}
-              fetchPriority="high"
-              decoding="async"
-            />
+            <ProductVisual id="catalog-browser" className="pg-hero-product-visual" label="Programmes · catalogue" />
           </div>
           <figcaption>Study, not a live stream</figcaption>
         </figure>
