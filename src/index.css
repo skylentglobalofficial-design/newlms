@@ -1826,6 +1826,47 @@ html, body {
   text-decoration: none;
 }
 .arch-academic-subnav a.is-active { color: #15171A; font-weight: 600; }
+.arch-pillar-subnav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 0 0 8px;
+  padding: 12px 0 16px;
+  border-bottom: 1px solid rgba(21, 23, 26, 0.10);
+}
+.arch-pillar-kicker {
+  font: 600 10px/1 var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #4F46E5;
+  margin-right: 2px;
+}
+.arch-pillar-subnav a {
+  color: #5C6168;
+  font-size: 13px;
+  text-decoration: none;
+  padding: 4px 0;
+}
+.arch-pillar-subnav a.is-active { color: #15171A; font-weight: 600; }
+.arch-pillar-index { margin-top: 8px; }
+.cat-pillar-bar {
+  padding-top: 12px;
+  background: #f7f4ec;
+}
+.pg-pillar-bar {
+  padding: 16px 0 0;
+  background: #f7f4ec;
+}
+@media (max-width: 760px) {
+  .arch-pillar-subnav {
+    gap: 6px 12px;
+    padding-bottom: 12px;
+  }
+  .arch-pillar-subnav a {
+    font-size: 12px;
+  }
+}
 .arch-section {
   padding: 8px 0 56px;
 }

@@ -1,66 +1,25 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
+import { LearnPillarSubnav } from "../components/product/Architecture"
 import { CourseThumb } from "../components/product/ProductLanguage"
-import { isAuthoredCourse } from "../lib/authored-courses"
-import { fetchCatalogCourses, type CatalogCourseSummary } from "../lib/catalog-api"
+import { catalogCourseListView, type CatalogCourseListView } from "../lib/catalog-maturity"
+import { useCatalogCourses } from "../hooks/useCatalog"
 import "./Catalog.css"
-
-type CourseCatalogView = {
-  course: CatalogCourseSummary
-  slug: string
-  title: string
-  maturity: "ready" | "listing"
-  maturityLabel: string
-  duration: string
-  lessonLabel: string
-  ctaLabel: string
-}
-
-function toView(course: CatalogCourseSummary): CourseCatalogView {
-  const authored = isAuthoredCourse(course.slug)
-  return {
-    course,
-    slug: course.slug,
-    title: course.title,
-    maturity: authored ? "ready" : "listing",
-    maturityLabel: authored ? "Ready to start" : "Catalogue listing",
-    duration: authored ? course.duration : "Duration TBA",
-    lessonLabel: authored ? `${course.lessonCount} lessons` : `${course.lessonCount} outline items`,
-    ctaLabel: authored ? "Start this course" : "View listing",
-  }
-}
 
 export default function CoursesPage() {
   const [searchParams] = useSearchParams()
   const [search, setSearch] = useState(searchParams.get("q") ?? "")
   const [category, setCategory] = useState("All")
-  const [courses, setCourses] = useState<CatalogCourseSummary[]>([])
-  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading")
+  const catalog = useCatalogCourses()
 
   useEffect(() => {
     const q = searchParams.get("q")
     if (q) setSearch(q)
   }, [searchParams])
 
-  useEffect(() => {
-    let cancelled = false
-    void fetchCatalogCourses()
-      .then((rows) => {
-        if (cancelled) return
-        setCourses(rows)
-        setStatus("ready")
-      })
-      .catch(() => {
-        if (cancelled) return
-        setStatus("error")
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
-
-  const views = useMemo(() => courses.map(toView), [courses])
+  const courses = catalog.data ?? []
+  const views = useMemo(() => courses.map(catalogCourseListView), [courses])
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(courses.map((course) => course.category)))],
     [courses],
@@ -79,6 +38,11 @@ export default function CoursesPage() {
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
+        <div className="cat-pillar-bar">
+          <div className="cat-rail">
+            <LearnPillarSubnav current="courses" />
+          </div>
+        </div>
         <section className="cat-hero">
           <div className="cat-rail">
             <h1>Courses you can start this week.</h1>
@@ -112,10 +76,15 @@ export default function CoursesPage() {
 
         <section className="cat-section">
           <div className="cat-rail">
-            {status === "loading" ? (
+            {catalog.loading ? (
               <p className="cat-empty">Loading the current catalogue…</p>
-            ) : status === "error" ? (
-              <p className="cat-empty">The catalogue could not be loaded. Try again in a moment.</p>
+            ) : catalog.error ? (
+              <div className="cat-empty">
+                <p>The course catalogue could not be loaded.</p>
+                <button type="button" className="cat-btn cat-btn-ghost" onClick={() => void catalog.reload()}>
+                  Try again
+                </button>
+              </div>
             ) : filtered.length === 0 ? (
               <p className="cat-empty">No courses match these filters.</p>
             ) : (
@@ -150,7 +119,7 @@ export default function CoursesPage() {
   )
 }
 
-function CourseUnitChrome({ view }: { view: CourseCatalogView }) {
+function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
   return (
     <div className="cat-unit" aria-hidden="true">
       <p className="cat-unit-brand">Skylent OS</p>
@@ -163,7 +132,7 @@ function CourseUnitChrome({ view }: { view: CourseCatalogView }) {
   )
 }
 
-function CourseCard({ view, featured = false }: { view: CourseCatalogView; featured?: boolean }) {
+function CourseCard({ view, featured = false }: { view: CatalogCourseListView; featured?: boolean }) {
   return (
     <Link className={featured ? "cat-tile is-ready" : "cat-tile is-listing"} to={`/courses/${view.slug}`}>
       {view.maturity === "ready" ? <CourseUnitChrome view={view} /> : <CourseThumb authored={false} />}

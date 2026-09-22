@@ -2,8 +2,11 @@ import { Link } from "react-router-dom"
 import { C, T } from "../../tokens"
 import {
   ACADEMIC_LINES,
+  CAREER_PUBLIC_DESTINATIONS,
+  LEARN_DESTINATIONS,
   LIVE_CORE,
   MATURITY_LABEL,
+  PRACTICE_DESTINATIONS,
   type ProductMaturity,
 } from "../../lib/product-architecture"
 
@@ -192,6 +195,90 @@ export function AcademicSubnav({ current }: { current?: string }) {
           {line.label}
         </Link>
       ))}
+    </nav>
+  )
+}
+
+export function LearnPillarSubnav({ current }: { current: string }) {
+  return (
+    <nav className="arch-pillar-subnav" aria-label="Learn destinations">
+      <span className="arch-pillar-kicker">Learn</span>
+      {LEARN_DESTINATIONS.map((line) => (
+        <Link
+          key={line.id}
+          to={line.to}
+          className={current === line.id ? "is-active" : undefined}
+          aria-current={current === line.id ? "page" : undefined}
+        >
+          {line.label}
+        </Link>
+      ))}
+    </nav>
+  )
+}
+
+export function PracticePillarSubnav({ current }: { current: string }) {
+  return (
+    <nav className="arch-pillar-subnav" aria-label="Practice destinations">
+      <span className="arch-pillar-kicker">Practice</span>
+      {PRACTICE_DESTINATIONS.map((line) => (
+        <Link
+          key={line.id}
+          to={line.to}
+          className={current === line.id ? "is-active" : undefined}
+          aria-current={current === line.id ? "page" : undefined}
+        >
+          {line.label}
+        </Link>
+      ))}
+    </nav>
+  )
+}
+
+export function CareerPublicSubnav({ current }: { current: string }) {
+  return (
+    <nav className="arch-pillar-subnav cos-public-subnav" aria-label="Career OS destinations">
+      <span className="arch-pillar-kicker">Career</span>
+      {CAREER_PUBLIC_DESTINATIONS.map((line) => (
+        <Link
+          key={line.id}
+          to={line.to}
+          className={current === line.id ? "is-active" : undefined}
+          aria-current={current === line.id ? "page" : undefined}
+        >
+          {line.label}
+        </Link>
+      ))}
+    </nav>
+  )
+}
+
+export function PillarDestinationIndex({
+  lines,
+  current,
+  ariaLabel,
+}: {
+  lines: readonly { id: string; label: string; to: string; job: string; maturity: ProductMaturity }[]
+  current?: string
+  ariaLabel: string
+}) {
+  return (
+    <nav className="arch-line-index arch-pillar-index" aria-label={ariaLabel}>
+      {lines.map((line) => {
+        const active = current === line.id
+        return (
+          <Link
+            key={line.id}
+            to={line.to}
+            className={active ? "is-active" : undefined}
+            aria-current={active ? "page" : undefined}
+          >
+            <span className="arch-line-name">{line.label}</span>
+            <MaturityMark maturity={line.maturity} compact />
+            <span className="arch-line-job">{line.job}</span>
+          </Link>
+        )
+      })}
     </nav>
   )
 }

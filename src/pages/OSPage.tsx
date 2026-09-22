@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
+import { PracticePillarSubnav } from "../components/product/Architecture"
 import { CourseWorkspacePreview } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { countStaticCourseLessons } from "../lib/curriculum-counts"
@@ -40,17 +41,24 @@ export default function OSPage() {
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
+        <div className="cat-pillar-bar">
+          <div className="cat-rail">
+            <PracticePillarSubnav current="os" />
+          </div>
+        </div>
         <section className="cat-hero">
           <div className="cat-rail cat-hero-split">
             <div>
-              <p className="cat-label">Skylent OS</p>
+              <p className="cat-label">Skylent OS · public entry</p>
               <h1>Your learning workspace</h1>
               <p className="cat-lead">
-                Written lessons, quizzes, and assignments in one place. It is the same product as the student dashboard — not a separate operating system, and not a video classroom.
+                This page explains the workspace. After you enrol, lessons, checks, and assignments open in Skylent
+                OS — the same surface as the student dashboard. It is not a public project marketplace.
               </p>
               <div className="cat-actions">
                 <Link className="cat-btn cat-btn-primary cat-btn-lg" to="/courses/data-analytics">Start Data Analytics</Link>
                 <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">Start Product Management</Link>
+                <Link className="cat-btn cat-btn-ghost" to="/login">Sign in to your workspace</Link>
               </div>
               <p className="cat-honesty">
                 Open a course, enrol, then Skylent OS starts at the first lesson. Payment is not collected in this pilot.

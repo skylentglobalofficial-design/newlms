@@ -1,4 +1,5 @@
 import { courses, programs, type Course, type CourseLesson, type Program } from "../data"
+import type { CatalogCourseSummary } from "./catalog-api"
 import { AUTHORED_COURSE_SLUG, isAuthoredCourse } from "./authored-courses"
 import { courseProductProfile } from "./course-product"
 import { countStaticCourseLessons } from "./curriculum-counts"
@@ -174,6 +175,32 @@ export type CoursePublicView = {
 
 function listingSummary(course: Course): string {
   return `${course.title} is a catalogue listing. The LMS has an outline, not a finished course like Data Analytics or Product Management.`
+}
+
+export type CatalogCourseListView = {
+  course: CatalogCourseSummary
+  slug: string
+  title: string
+  maturity: PublicMaturity
+  maturityLabel: string
+  duration: string
+  lessonLabel: string
+  ctaLabel: string
+}
+
+/** List-row view for API course summaries — readiness from the authored registry. */
+export function catalogCourseListView(course: CatalogCourseSummary): CatalogCourseListView {
+  const authored = isAuthoredCourse(course.slug)
+  return {
+    course,
+    slug: course.slug,
+    title: course.title,
+    maturity: authored ? "ready" : "listing",
+    maturityLabel: authored ? "Ready to start" : "Catalogue listing",
+    duration: authored ? course.duration : "Duration TBA",
+    lessonLabel: authored ? `${course.lessonCount} lessons` : `${course.lessonCount} outline items`,
+    ctaLabel: authored ? "Start this course" : "View listing",
+  }
 }
 
 export function coursePublicView(course: Course): CoursePublicView {

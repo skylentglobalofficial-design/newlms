@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
+import { LearnPillarSubnav } from "../components/product/Architecture"
 import { workshops } from "../data"
 import "./Catalog.css"
 
@@ -20,6 +21,11 @@ export default function WorkshopsPage() {
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
+        <div className="cat-pillar-bar">
+          <div className="cat-rail">
+            <LearnPillarSubnav current="workshops" />
+          </div>
+        </div>
         <section className="cat-hero">
           <div className="cat-rail">
             <p className="cat-label">Workshops · coming soon</p>
@@ -32,6 +38,14 @@ export default function WorkshopsPage() {
               Dates and prices are indicative planning information. Attendance, payment, and certificates are not
               built.
             </p>
+            <div className="cat-actions">
+              <Link className="cat-btn cat-btn-primary" to="/courses">
+                Start with a live course
+              </Link>
+              <Link className="cat-btn cat-btn-ghost" to="/programs">
+                Browse programmes
+              </Link>
+            </div>
           </div>
         </section>
 

@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
+import { LearnPillarSubnav } from "../components/product/Architecture"
 import { HarborDeskWorkspace, NorthwindWorkspace } from "../components/product/ProductLanguage"
 import { courses } from "../data"
 import { courseLessonStats, coursePracticeGroups } from "../lib/catalog-maturity"
@@ -288,11 +289,19 @@ export default function SkillsPage() {
       <div className="skills-p4">
         <section className="sk-hero">
           <div className="sk-rail">
+            <LearnPillarSubnav current="skills" />
             <p className="sk-eyebrow">START FROM A GOAL</p>
             <h1>What do you want to be able to do?</h1>
             <p className="sk-hero-lead">
               Pick a direction. Skylent shows what you would learn, where you would practise it, and what you
               would have to show afterwards &mdash; using only the teaching that exists today.
+            </p>
+            <p className="sk-fine">
+              Skills connects to{" "}
+              <Link to="/courses">courses</Link>,{" "}
+              <Link to="/programs">programmes</Link>,{" "}
+              <Link to="/labs">practice</Link>, and{" "}
+              <Link to="/career-os">Career OS evidence</Link> when a path is authored.
             </p>
             <IntentPicker value={intentId} onChange={selectIntent} />
           </div>

@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { CAREER_OS_IA } from "../../lib/product-architecture"
-import { MaturityMark } from "../../components/product/Architecture"
+import { CareerPublicSubnav, MaturityMark } from "../../components/product/Architecture"
 import { programmeDiscoveryCards } from "../../lib/programme-discovery"
 import "./CareerOS.css"
 
@@ -33,6 +33,15 @@ const EVIDENCE_CHAIN = [
   },
 ] as const
 
+const PUBLIC_AREA_ORDER = [
+  "Profile",
+  "Projects",
+  "Opportunities",
+  "Applications",
+  "Interviews",
+  "Support",
+] as const
+
 /** Real state of each workspace area for someone who has not signed in yet. */
 const IA_STATE: Record<string, string> = {
   Opportunities: "Empty until roles are published",
@@ -50,6 +59,9 @@ export default function CareerOSPublicPage() {
     <PageShell aurora={false}>
       <div className="cos-public-page">
         <section className="cos-public" aria-labelledby="cos-public-title">
+          <div className="sk-rail">
+            <CareerPublicSubnav current="overview" />
+          </div>
           <div className="sk-rail cos-public-split">
             <div className="cos-public-copy">
               <div className="cos-kicker">
@@ -108,9 +120,13 @@ export default function CareerOSPublicPage() {
             <p className="cos-eyebrow">IN THE WORKSPACE</p>
             <h2 id="cos-areas-title">What Career OS holds.</h2>
             <ul className="cos-area-list">
-              {CAREER_OS_IA.map((item) => (
+              {PUBLIC_AREA_ORDER.map((label) => CAREER_OS_IA.find((row) => row.label === label))
+                .filter((item): item is (typeof CAREER_OS_IA)[number] => Boolean(item))
+                .map((item) => (
                 <li key={item.label}>
-                  <strong>{item.label}</strong>
+                  <Link to={item.to} className="cos-area-link">
+                    <strong>{item.label}</strong>
+                  </Link>
                   <span className="cos-area-sub">{item.sub}</span>
                   <span className="cos-area-state">{IA_STATE[item.label] ?? "Opens after sign in"}</span>
                 </li>

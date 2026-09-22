@@ -434,3 +434,72 @@ export const CAREER_OS_IA = [
   { label: "Interviews", to: "/career-os/interviews", sub: "Rounds and practice" },
   { label: "Support", to: "/career-os/support", sub: "Help on the career workflow" },
 ] as const
+
+export type PillarDestinationLine = {
+  id: string
+  label: string
+  to: string
+  job: string
+  maturity: ProductMaturity
+}
+
+/** Learn pillar destinations — shared subnav across /programs, /courses, /skills, /workshops. */
+export const LEARN_DESTINATIONS: readonly PillarDestinationLine[] = [
+  {
+    id: "programs",
+    label: "Programs",
+    to: "/programs",
+    job: "Structured pathways with honest live vs later rows.",
+    maturity: "live",
+  },
+  {
+    id: "courses",
+    label: "Courses",
+    to: "/courses",
+    job: "API-backed catalogue with ready vs listing courses.",
+    maturity: "live",
+  },
+  {
+    id: "skills",
+    label: "Skills",
+    to: "/skills",
+    job: "Pick a goal — see course, practice, and evidence links.",
+    maturity: "live",
+  },
+  {
+    id: "workshops",
+    label: "Workshops",
+    to: "/workshops",
+    job: "Planned sessions — registration and payment not built.",
+    maturity: "coming_soon",
+  },
+] as const
+
+/** Practice pillar destinations — /labs and public /os entry. */
+export const PRACTICE_DESTINATIONS: readonly PillarDestinationLine[] = [
+  {
+    id: "labs",
+    label: "Labs",
+    to: "/labs",
+    job: "Workbenches inside enrolled courses — not a standalone marketplace.",
+    maturity: "live",
+  },
+  {
+    id: "os",
+    label: "Skylent OS",
+    to: "/os",
+    job: "How the learning workspace works before you sign in.",
+    maturity: "live",
+  },
+] as const
+
+/** Career OS public subnav — overview plus workspace areas (sign-in required for data). */
+export const CAREER_PUBLIC_DESTINATIONS: readonly { id: string; label: string; to: string }[] = [
+  { id: "overview", label: "Overview", to: "/career-os" },
+  { id: "profile", label: "Profile", to: "/career-os/profile" },
+  { id: "projects", label: "Projects", to: "/career-os/projects" },
+  { id: "jobs", label: "Opportunities", to: "/career-os/jobs" },
+  { id: "applications", label: "Applications", to: "/career-os/applications" },
+  { id: "interviews", label: "Interviews", to: "/career-os/interviews" },
+  { id: "support", label: "Support", to: "/career-os/support" },
+] as const

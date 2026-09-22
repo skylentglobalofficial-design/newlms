@@ -289,6 +289,45 @@
   transition: background 150ms ease;
 }
 
+.cos-public-actions a.cos-public-secondary {
+  background: transparent;
+  color: #5c6168;
+  box-shadow: none;
+  border: 1px solid rgba(21, 23, 26, 0.12);
+}
+
+.cos-public-actions a.cos-public-secondary:hover {
+  color: #15171a;
+  border-color: rgba(21, 23, 26, 0.22);
+}
+
+.cos-area-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.cos-area-link strong {
+  text-decoration: underline;
+  text-decoration-color: rgba(79, 70, 229, 0.35);
+  text-underline-offset: 3px;
+}
+
+.cos-area-link:hover strong {
+  color: #4f46e5;
+}
+
+.cos-area-state-prominent {
+  display: block;
+  margin: 12px 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #15171a;
+}
+
+.cos-public-area {
+  padding: 28px 0 64px;
+}
+
 .cos-public-actions a:hover {
   background: #4338ca;
 }

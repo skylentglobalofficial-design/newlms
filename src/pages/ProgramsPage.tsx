@@ -1,6 +1,7 @@
 import { useEffect } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
+import { LearnPillarSubnav } from "../components/product/Architecture"
 import ProgramsHero from "../components/programs/ProgramsHero"
 import ProgramsStory from "../components/programs/ProgramsStory"
 import { useCatalogPrograms } from "../hooks/useCatalog"
@@ -131,6 +132,9 @@ export default function ProgramsPage() {
   return (
     <PageShell aurora={false}>
       <div className="pg-page">
+        <div className="pg-pillar-bar cat-rail">
+          <LearnPillarSubnav current="programs" />
+        </div>
         <ProgramsHero live={live} catalogReady={!catalog.loading && !catalog.error} />
         <ProgramsStory live={live} />
 

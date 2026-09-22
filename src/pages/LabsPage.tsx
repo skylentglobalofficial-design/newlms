@@ -1,11 +1,18 @@
 import { Link } from 'react-router-dom'
 import { PageShell } from '../components/shared'
+import { CapabilityRail, PracticePillarSubnav } from '../components/product/Architecture'
+import { LAB_PATHWAY } from '../lib/product-architecture'
 import './Catalog.css'
 
 export default function LabsPage() {
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
+        <div className="cat-pillar-bar">
+          <div className="cat-rail">
+            <PracticePillarSubnav current="labs" />
+          </div>
+        </div>
         <section className="cat-hero">
           <div className="cat-rail">
             <p className="cat-label">Skylent Labs</p>
@@ -45,6 +52,17 @@ export default function LabsPage() {
             <p className="cat-fine">
               Sign in, enrol, then the lab chip appears on the relevant lesson. Progress belongs to the course.
             </p>
+            <p className="cat-label" style={{ marginTop: 28 }}>How a lab fits the path</p>
+            <CapabilityRail
+              items={[
+                { label: "Lab model", status: "live", note: LAB_PATHWAY.map((step) => step.label).join(" → ") },
+                {
+                  label: "Standalone marketplace",
+                  status: "direction",
+                  note: "Not offered — labs stay attached to enrolled learning.",
+                },
+              ]}
+            />
           </div>
         </section>
       </div>
