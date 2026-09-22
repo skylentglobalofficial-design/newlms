@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => {
       // Bind all interfaces so localhost, 127.0.0.1, and LAN IPs can connect.
       // Figma Make injects PORT (typically 8443); locally use Vite's default 5173.
       host: '0.0.0.0',
-      port: parseInt(process.env.PORT || '5173', 10),
+      port: parseInt(process.env.PORT || '5174', 10),
       strictPort: true,
       // Cursor Cloud Agent preview proxies with a *.cursor.sh / *.cursor.com Host
       // header. Vite 8 rejects unknown hosts unless they are listed here.
@@ -65,7 +65,7 @@ export default defineConfig(({ mode }) => {
     },
     preview: {
       host: '0.0.0.0',
-      port: parseInt(process.env.PORT || '5173', 10),
+      port: parseInt(process.env.PORT || '5174', 10),
     },
   }
 })
