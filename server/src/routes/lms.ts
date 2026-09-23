@@ -284,7 +284,12 @@ lmsRouter.get("/courses/:slug/access", async (req, res) => {
     })
   } catch (error) {
     console.error("Failed to check course access:", error)
-    res.status(500).json({ error: "Failed to check access" })
+    res.status(500).json({
+      error: "Failed to check access",
+      ...(process.env.NODE_ENV !== "production"
+        ? { detail: error instanceof Error ? error.message : String(error) }
+        : {}),
+    })
   }
 })
 
