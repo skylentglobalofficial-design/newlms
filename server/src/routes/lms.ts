@@ -9,6 +9,7 @@ import {
   type AuthenticatedRequest,
 } from "../lib/auth.js"
 import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
+import { isAuthoredCourse } from "../lib/authored-courses.js"
 import {
   assertLessonUnlocked,
   buildCourseWorkspace,
@@ -179,9 +180,7 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
         return res.status(400).json({ error: "Program has no linked courses" })
       }
 
-      const hasAuthoredCourse = program.programCourses.some(
-        (link) => link.course.curriculum.some((module) => module.nodes.length > 0),
-      )
+      const hasAuthoredCourse = program.programCourses.some((link) => isAuthoredCourse(link.course.slug))
       if (!hasAuthoredCourse) {
         return res.status(400).json({ error: "Program has no authored courses available for enrollment" })
       }
@@ -212,6 +211,9 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
 
     const course = await findCourseBySlug(parsed.data.courseSlug!)
     if (!course) return res.status(404).json({ error: "Course not found" })
+    if (!isAuthoredCourse(course.slug)) {
+      return res.status(400).json({ error: "This course is not open for enrollment yet" })
+    }
 
     const existing = await prisma.userEnrollment.findUnique({
       where: { userId_courseId: { userId, courseId: course.id } },

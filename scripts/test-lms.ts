@@ -441,6 +441,48 @@ async function main() {
     await prisma.program.delete({ where: { slug: unlinkedSlug } })
   }
 
+  console.log("14c2. OPEN program linked only to listing-only course is rejected")
+  const listingSlug = "python-programming"
+  const listingCourse = await prisma.course.findUnique({ where: { slug: listingSlug } })
+  if (!listingCourse) throw new Error(`Expected seeded listing course ${listingSlug}`)
+  const listingOnlyProgramSlug = `phase5-open-listing-${Date.now()}`
+  await prisma.program.create({
+    data: {
+      slug: listingOnlyProgramSlug,
+      name: "Temp Open Listing Only",
+      duration: "1 month",
+      moduleCount: 0,
+      projectCount: 0,
+      format: "Self-paced",
+      cert: "None",
+      outcome: "Test",
+      desc: "Temporary program for authored enrollment enforcement",
+      upcomingBatch: "N/A",
+      programType: "CERTIFICATE",
+      level: "Beginner",
+      whoIsItFor: [],
+      whatYouWillLearn: [],
+      learningExperience: [],
+      enrollmentStatus: "OPEN",
+      programCourses: {
+        create: { courseId: listingCourse.id, sortOrder: 0 },
+      },
+    },
+  })
+  try {
+    const listingOnly = await request(programJar, "/lms/enrollments", {
+      method: "POST",
+      csrf: true,
+      body: { programSlug: listingOnlyProgramSlug },
+    })
+    assert(
+      listingOnly.response.status === 400,
+      `OPEN + listing-only link enrollment should be 400, got ${listingOnly.response.status}`,
+    )
+  } finally {
+    await prisma.program.delete({ where: { slug: listingOnlyProgramSlug } })
+  }
+
   console.log("14d. Programme workspace aggregates linked-course progress and resume")
   const programSlug = "data-science-ai"
   const secondCourseSlug = "python-programming"

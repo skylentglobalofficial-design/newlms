@@ -90,13 +90,14 @@ export function AssessmentSurface({
   }
 
   if (passed) {
+    const showClientExplanations = !usesServerGrading && qs.some((q) => q.explanation)
     return (
       <div className="lx-quiz-passed">
         <h2>Assessment passed</h2>
-        <p className="dash-empty-copy">{qs.some((q) => q.explanation)
+        <p className="dash-empty-copy">{showClientExplanations
           ? 'Read the explanations, then continue to the next lesson.'
           : 'Your answers were graded by the learning service. Continue to the next lesson.'}</p>
-        {qs.some((q) => q.explanation) && (
+        {showClientExplanations && (
           <div className="lms-quiz-review" style={{ marginTop: 16 }}>
             {qs.map((q, qi) => (
               <div key={qi} className="lx-question">
@@ -147,7 +148,7 @@ export function AssessmentSurface({
         </div>
       )}
       {qs.map((q, qi) => {
-        const reveal = submitted && !submitting && q.correct !== undefined
+        const reveal = !usesServerGrading && submitted && !submitting && q.correct !== undefined
         return (
           <div key={qi} className="lx-question">
             <p className="lx-question-kicker">Question {qi + 1} of {qs.length}</p>
@@ -175,7 +176,7 @@ export function AssessmentSurface({
                 )
               })}
             </div>
-            {submitted && q.explanation && (
+            {submitted && !usesServerGrading && q.explanation && (
               <div className="lx-explain">{q.explanation}</div>
             )}
           </div>
