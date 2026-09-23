@@ -20,9 +20,98 @@
   --lpb-line-soft: rgba(21, 23, 26, 0.06);
   --lpb-accent: #4f46e5;
   --lpb-wash: #f6f6f7;
-  background: #ffffff;
+  background: transparent;
   color: var(--lpb-ink);
-  padding: clamp(32px, 5vh, 56px) 0 clamp(64px, 9vh, 112px);
+  padding: clamp(28px, 4vh, 48px) 0 clamp(56px, 8vh, 96px);
+  border-top: none;
+}
+
+.hp-lpb-intro {
+  margin-bottom: clamp(28px, 4vh, 40px);
+  padding-bottom: clamp(24px, 3vh, 32px);
+  border-bottom: 1px solid var(--lpb-line-soft);
+}
+
+.hp-lpb-intro h1 {
+  margin: 0;
+  max-width: 11em;
+  color: var(--lpb-ink);
+  font-family: var(--font-brand);
+  font-size: clamp(32px, 3.6vw, 46px);
+  font-weight: 600;
+  letter-spacing: -0.038em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.hp-lpb-intro-lead {
+  margin: 14px 0 0;
+  max-width: 32em;
+  color: var(--lpb-secondary);
+  font-size: 15.5px;
+  line-height: 1.58;
+  text-wrap: pretty;
+}
+
+.hp-lpb-intro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.hp-lpb-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0 18px;
+  border-radius: var(--btn-radius, 8px);
+  font: 600 14.5px/1 var(--font-body);
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.hp-lpb-cta-primary {
+  background: var(--lpb-accent);
+  color: #fffdf8;
+}
+
+.hp-lpb-cta-primary:hover {
+  background: #4338ca;
+}
+
+.hp-lpb-cta-secondary {
+  color: var(--lpb-ink);
+  border-color: var(--lpb-line);
+  background: color-mix(in srgb, #fffdf8 70%, transparent);
+}
+
+.hp-lpb-cta-secondary:hover {
+  border-color: rgba(21, 23, 26, 0.22);
+}
+
+.hp-lpb-cta:focus-visible {
+  outline: 2px solid var(--lpb-accent);
+  outline-offset: 3px;
+}
+
+.hp-lpb-journey-title {
+  margin: 0;
+  color: var(--lpb-ink);
+  font-family: var(--font-brand);
+  font-size: clamp(22px, 2.4vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.hp-lpb-journey-note {
+  margin: 8px 0 20px;
+  max-width: 28em;
+  color: var(--lpb-muted);
+  font-size: 13.5px;
+  line-height: 1.5;
 }
 
 .hp-lpb-stage {
@@ -1151,6 +1240,13 @@ span.hp-lpb-path-item {
     grid-template-columns: 1fr;
     gap: 32px;
     align-items: stretch;
+    min-width: 0;
+  }
+
+  .hp-lpb-journey,
+  .hp-lpb-frame {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .hp-lpb-journey {
@@ -1293,7 +1389,116 @@ span.hp-lpb-path-item {
   }
 }
 
+@media (max-width: 760px) {
+  .hp-lpb-intro {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+  }
+
+  .hp-lpb-intro h1 {
+    max-width: none;
+    font-size: clamp(28px, 8.2vw, 36px);
+    line-height: 1.08;
+  }
+
+  .hp-lpb-intro-lead {
+    font-size: 15px;
+    max-width: none;
+  }
+
+  .hp-lpb-journey-title {
+    font-size: clamp(20px, 5.5vw, 24px);
+  }
+
+  .hp-lpb-step {
+    min-height: 44px;
+  }
+
+  .hp-lpb-step-copy strong {
+    font-size: clamp(28px, 7.5vw, 36px);
+  }
+
+  .hp-lpb-frame {
+    width: 100%;
+    border-radius: 14px;
+  }
+
+  .hp-lpb-main {
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  .hp-lpb-toolbar,
+  .hp-lpb-search,
+  .hp-lpb-search input {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .hp-lpb-search input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .hp-lpb-body,
+  .hp-lpb-head,
+  .hp-lpb-modes,
+  .hp-lpb-split {
+    min-width: 0;
+  }
+
+  .hp-lpb-journey {
+    order: 1;
+  }
+
+  .hp-lpb-frame {
+    order: 2;
+    margin-top: 8px;
+  }
+
+  .hp-lpb-lesson-grid,
+  .hp-lpb-tiles,
+  .hp-lpb-create {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hp-lpb-path {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .hp-lpb-path-item,
+  .hp-lpb-path-item button {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 375px) {
+  .hp-lpb-intro h1 {
+    font-size: clamp(26px, 7vw, 30px);
+  }
+
+  .hp-lpb-step-copy strong {
+    font-size: clamp(26px, 7vw, 30px);
+  }
+
+  .hp-lpb-step {
+    grid-template-columns: 1.75rem minmax(0, 1fr) 2.25rem;
+    gap: 8px 10px;
+  }
+}
+
 @media (max-width: 430px) {
+  .hp-lpb-intro-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hp-lpb-cta {
+    width: 100%;
+  }
+
   .hp-lpb-modes {
     grid-template-columns: 1fr 1fr;
     gap: 6px;

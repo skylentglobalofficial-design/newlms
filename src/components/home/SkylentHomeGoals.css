@@ -248,13 +248,11 @@
   border-top: 1px solid var(--dir-line);
 }
 
-.hp-dir-foot p {
+.hp-dir-foot-note {
   margin: 0;
-  color: var(--dir-ink);
-  font-family: var(--font-brand);
-  font-size: clamp(20px, 2.2vw, 28px);
-  font-weight: 600;
-  letter-spacing: -0.03em;
+  color: var(--dir-secondary);
+  font-size: 15px;
+  line-height: 1.45;
 }
 
 .hp-dir-foot a {
@@ -434,5 +432,23 @@
     align-items: flex-start;
     gap: 12px;
     margin-top: 32px;
+  }
+}
+
+@media (max-width: 760px) {
+  .hp-dir-stage,
+  .hp-dir-spine,
+  .hp-dir-foot {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .hp-dir-spine-item {
+    min-height: 44px;
+    padding: 14px 0 16px;
+  }
+
+  .hp-dir-spine-item b {
+    font-size: clamp(20px, 5.5vw, 24px);
   }
 }
