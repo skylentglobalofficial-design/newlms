@@ -241,7 +241,13 @@ lmsRouter.get("/courses/:slug/access", async (req, res) => {
   }
 
   try {
-    const course = await findCourseBySlug(parsed.data.slug)
+    // The public access check only needs course identity metadata. Avoid loading
+    // the full curriculum here so this lightweight endpoint cannot fail on
+    // unrelated curriculum data/schema issues.
+    const course = await prisma.course.findUnique({
+      where: { slug: parsed.data.slug },
+      select: { id: true, slug: true, title: true },
+    })
     if (!course) {
       return res.status(404).json({ error: "Course not found" })
     }
