@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import { PathwayTrack, SkylentOsPreview } from "../components/product/ProductLanguage"
 import { ProductVisual } from "../components/product/ProductVisuals"
+import { PROGRAMS_STUDY_CLASSROOM } from "../media"
 import { PublicEditorialShell } from "./public-editorial"
 
 const GAP_STAGES = [

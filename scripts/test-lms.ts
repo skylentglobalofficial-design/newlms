@@ -228,8 +228,13 @@ async function main() {
   })
   assert(lockedAssignment.response.status === 403, "Locked assignment submit should be rejected")
 
-  console.log("7b. Unlocked quiz and assignment cannot be completed through generic progress")
+  console.log("8. Completing previous lesson unlocks next lesson")
   await completeLesson(userAJar, courseSlug, "l1")
+  const afterL1 = await request(userAJar, `/lms/courses/${courseSlug}`)
+  assert(afterL1.data.data.lessonStates.l2?.locked === false, "l2 should unlock after l1 completion")
+  assert(afterL1.data.data.lessonStates.l3?.locked === true, "l3 should remain locked until l2 completes")
+
+  console.log("7b. Unlocked quiz and assignment cannot be completed through generic progress")
   await completeLesson(userAJar, courseSlug, "l2")
 
   const quizBypass = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l3/progress`, {
@@ -246,12 +251,6 @@ async function main() {
     body: { action: "complete" },
   })
   assert(assignmentLockedByOrder.response.status === 403, "Assignment completion must still respect curriculum locking")
-
-  console.log("8. Completing previous lesson unlocks next lesson")
-  await completeLesson(userAJar, courseSlug, "l1")
-  const afterL1 = await request(userAJar, `/lms/courses/${courseSlug}`)
-  assert(afterL1.data.data.lessonStates.l2?.locked === false, "l2 should unlock after l1 completion")
-  assert(afterL1.data.data.lessonStates.l3?.locked === true, "l3 should remain locked until l2 completes")
 
   console.log("9. User can complete lessons in order and persist progress")
   await completeLesson(userAJar, courseSlug, "l2")
