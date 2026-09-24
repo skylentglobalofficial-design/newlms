@@ -73,7 +73,8 @@ assert(questionCount === 15, "Expected 15 PM quiz questions")
 
 assert(seedSource.includes("pmQuizSeedKey('l3')") || seedSource.includes("product-management:l3"), "Seed must key PM quizzes by course slug")
 assert(existsSync(join(root, "public/content/product-management/harbor-desk-case.md")), "Missing Harbor Desk case file")
-assert(learnSource.includes("getCourseQuiz"), "LearnPage quizzes must look up by course slug")
+assert(learnSource.includes("fetchQuizQuestions"), "LearnPage quizzes must load from the LMS API")
+assert(!learnSource.includes("getCourseQuiz"), "LearnPage must not import client quiz banks")
 
 const fake = ["instructor", "faculty spotlight", "4.8 stars", "learners enrolled", "get hired", "certificate issued"]
 const allText = pm.outcomes.join(" ") + Object.values(PM_ASSIGNMENTS).map((row) => `${row.scenario} ${row.objective}`).join(" ")

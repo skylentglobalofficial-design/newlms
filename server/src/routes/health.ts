@@ -9,7 +9,7 @@ router.get("/", async (_request, response) => {
     response.json({ status: "ok", db: "ok" })
   } catch (error) {
     console.error("Health check database failure:", error instanceof Error ? error.message : error)
-    response.status(503).json({ status: "error", db: "error" })
+    response.status(503).json({ status: "error", db: "error", ...(process.env.NODE_ENV !== "production" ? { detail: error instanceof Error ? error.message : String(error) } : {}) })
   }
 })
 

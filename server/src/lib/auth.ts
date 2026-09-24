@@ -102,8 +102,9 @@ export function csrfCookieOptions(req?: Request, maxAgeSeconds = SESSION_MAX_AGE
 
 export function clearSessionCookies(res: Response, req?: Request) {
   const secure = shouldUseSecureCookies(req)
-  res.clearCookie(SESSION_COOKIE, { path: "/", secure })
-  res.clearCookie(CSRF_COOKIE, { path: "/", secure })
+  const options = { path: "/", secure, sameSite: "lax" as const }
+  res.clearCookie(SESSION_COOKIE, options)
+  res.clearCookie(CSRF_COOKIE, options)
 }
 
 export function setSessionCookies(

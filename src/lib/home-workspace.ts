@@ -1,6 +1,7 @@
 import { authoredCourseList, courseProductProfile } from "./course-product"
 import { coursePublicView } from "./catalog-maturity"
-import { getCareerEvidence, getCourseQuiz, getLessonMeta } from "../content/course-lookups"
+import { getCareerEvidence, getLessonMeta } from "../content/course-lookups"
+import { getPracticeQuizPrompt } from "../content/quiz-practice-prompts"
 
 export function authoredWorkspace(slug: string) {
   const course = authoredCourseList().find((item) => item.slug === slug)
@@ -11,7 +12,7 @@ export function authoredWorkspace(slug: string) {
   const firstLesson = course.modules[0]?.lessons[0]
   const firstQuiz = lessons.find((lesson) => lesson.type === "quiz")
   const capstone = lessons.find((lesson) => /capstone|product case/i.test(lesson.title))
-  const quiz = getCourseQuiz(course.slug, firstQuiz?.id)
+  const practicePrompt = firstQuiz ? getPracticeQuizPrompt(course.slug, firstQuiz.id) : null
   const lessonMeta = firstLesson ? getLessonMeta(course.slug, firstLesson.id) : undefined
   const evidence = capstone ? getCareerEvidence(course.slug, capstone.id) : undefined
   return {
@@ -27,7 +28,7 @@ export function authoredWorkspace(slug: string) {
     lessonTitle: firstLesson?.title ?? "Open the first lesson",
     lessonObjective: lessonMeta?.objective ?? null,
     practiceTitle: firstQuiz?.title ?? "Practice",
-    practicePrompt: quiz?.questions[0]?.prompt ?? null,
+    practicePrompt,
     workTitle: profile?.project?.note?.split(" — ")[0] ?? capstone?.title ?? "Capstone",
     workNote: profile?.project?.note ?? null,
     material: profile?.datasets[0]?.filename ?? null,

@@ -36,8 +36,8 @@ const LEARN_STEPS = [
 
 function ShowcaseBand({
   row,
-  photo,
-  photoAlt,
+  visualId,
+  visualLabel,
   flip,
 }: {
   row: ProgrammeDiscoveryCard
