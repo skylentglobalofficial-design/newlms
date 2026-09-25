@@ -26,16 +26,7 @@ import { useCatalogProgram } from "../hooks/useCatalog"
 import "./Catalog.css"
 import "./ProgramPage.css"
 
-const AUTHORED_NAV = [
-  { id: "pd-overview", label: "Overview" },
-  { id: "pd-workspace", label: "Workspace" },
-  { id: "outcomes", label: "Work" },
-  { id: "pd-path", label: "Path" },
-  { id: "pd-os", label: "OS" },
-  { id: "pd-evidence", label: "Evidence" },
-  { id: "career", label: "Career OS" },
-  { id: "pd-enrol", label: "Enrol" },
-] as const
+
 
 function useDetailNarrow() {
   const [narrow, setNarrow] = useState(
