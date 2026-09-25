@@ -383,6 +383,37 @@
 .pp-career-flow span { color: var(--pp-accent); font: 10px/1 var(--font-mono); }
 .pp-career-flow strong { font: 500 22px/1 var(--font-display); }
 
+.pp-credential-section { background: var(--pp-soft); }
+.pp-credential {
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  gap: 70px;
+  align-items: center;
+}
+.pp-credential-card {
+  padding: 30px;
+  border: 1px solid var(--pp-line);
+  border-radius: 14px;
+  background: var(--pp-paper);
+}
+.pp-credential-card span {
+  display: block;
+  color: var(--pp-muted);
+  font: 10px/1.2 var(--font-mono);
+  text-transform: uppercase;
+}
+.pp-credential-card strong {
+  display: block;
+  margin-top: 18px;
+  font: 500 34px/1 var(--font-display);
+}
+.pp-credential-card p {
+  margin: 16px 0 0;
+  color: var(--pp-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
 .pp-plan-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -446,6 +477,7 @@
   .pp-journey article:nth-child(3),
   .pp-journey article:nth-child(4) { border-top: 1px solid var(--pp-line); }
   .pp-faq-grid { grid-template-columns: 1fr; gap: 38px; }
+  .pp-credential { grid-template-columns: 1fr; gap: 38px; }
 }
 
 @media (max-width: 640px) {
