@@ -10,7 +10,7 @@ type Props = {
   program: CatalogProgramDetail
   authoredRecord: Program
   authoredCourse: import("../../data").Course | null
-  discovery: ProgrammeDiscoveryCard
+  discovery: ProgrammeDiscoveryCard | null
   taughtOutcomes: string[]
   afterEnrol: string
   cta: string
@@ -63,6 +63,7 @@ export default function ProfessionalProgrammeTemplate({
   const curriculum = curriculumFor(authoredCourse, authoredRecord)
   const projects = authoredRecord.projectsDetail ?? []
   const outcomes = taughtOutcomes.length > 0 ? taughtOutcomes : authoredRecord.whatYouWillLearn ?? []
+  const decisionLine = discovery?.decisionLine || authoredRecord.outcome || "Build practical product and professional capability through structured work."
   const facts = [
     { label: "Duration", value: program.duration || authoredRecord.duration },
     { label: "Level", value: program.level || authoredRecord.level },
@@ -78,7 +79,7 @@ export default function ProfessionalProgrammeTemplate({
             <Link className="pp-back" to="/programs">← Programmes</Link>
             <p className="pp-eyebrow">Professional Programme</p>
             <h1 id="pp-title">{authoredRecord.name}</h1>
-            <p className="pp-hero-lead">{discovery.decisionLine}</p>
+            <p className="pp-hero-lead">{decisionLine}</p>
             <p className="pp-hero-description">
               {authoredRecord.desc}
             </p>
@@ -205,13 +206,13 @@ export default function ProfessionalProgrammeTemplate({
               </article>
             ))}
           </div>
-          {discovery.capstone ? (
+          {discovery?.capstone ? (
             <div className="pp-capstone">
               <div>
                 <p className="pp-kicker">Final case</p>
                 <h3>{discovery.capstone}</h3>
               </div>
-              <p>Produced against <strong>{discovery.material}</strong> inside the taught course.</p>
+              <p>Produced against <strong>{discovery.material || "the programme case"}</strong> inside the taught course.</p>
             </div>
           ) : null}
         </div>
