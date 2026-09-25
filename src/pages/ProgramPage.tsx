@@ -116,7 +116,7 @@ export default function ProgramPage() {
   const discovery = programmeDiscoveryFor(program.slug)
   const overlayView = authoredRecord ? programmePublicView(authoredRecord) : null
   const linked = linkedLearningFromApi(program.linkedCourseSlugs)
-  const hasTaughtPath = hasAuthoredProgrammePath(program.slug)
+  const hasTaughtPath = linked.some((item) => item.authored)
   const enrollable = isProgramEnrollable(program) && hasTaughtPath
   const comingLater = program.enrollmentStatus === "coming_soon" || program.enrollmentStatus === "waitlist"
   const maturity = comingLater ? "coming_later" as const : "listing" as const
@@ -138,7 +138,7 @@ export default function ProgramPage() {
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
-        {discovery && authoredRecord ? (
+        {authoredRecord && program.programType === "PROFESSIONAL" ? (
           <AuthoredProgramme
             program={program}
             authoredRecord={authoredRecord}
@@ -206,7 +206,7 @@ function AuthoredProgramme({
   program: CatalogProgramDetail
   authoredRecord: Program
   authoredCourse: import("../data").Course | null
-  discovery: ProgrammeDiscoveryCard
+  discovery: ProgrammeDiscoveryCard | null
   taughtOutcomes: string[]
   afterEnrol: string
   cta: string
