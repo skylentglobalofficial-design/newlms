@@ -18,7 +18,6 @@ import {
   type LinkedLearning,
 } from "../lib/catalog-maturity"
 import {
-  hasAuthoredProgrammePath,
   programmeDiscoveryFor,
   type ProgrammeDiscoveryCard,
 } from "../lib/programme-discovery"
