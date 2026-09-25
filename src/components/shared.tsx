@@ -439,6 +439,74 @@ export function Nav() {
   const searchHints = searchSuggestionsFor(searchQuery)
 
   const accountPath = user ? dashRoute(user.role) : '/login'
+  const homeNav = location.pathname === '/'
+
+  if (homeNav) {
+    const homeLinks = [
+      { label: 'Programmes', to: '/programs' },
+      { label: 'Education', to: '/education' },
+      { label: 'Career OS', to: '/career-os' },
+    ]
+    return (
+      <nav ref={navRef} className="skylent-site-nav is-home-nav" aria-label="Primary">
+        <div className="skylent-rail" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH, gap: 12, minWidth: 0 }}>
+          <Link to="/" className="skylent-mark" style={{ fontSize: 22, color: C.ink, textDecoration: 'none', padding: 0, flexShrink: 0 }}>
+            Skylent
+          </Link>
+          <div className="home-nav-links">
+            {homeLinks.map((item) => (
+              <Link key={item.to} to={item.to} aria-current={location.pathname === item.to ? 'page' : undefined}>
+                {item.label}
+              </Link>
+            ))}
+          </div>
+          <div className="home-nav-actions">
+            {user ? (
+              <Link to={accountPath} className="home-nav-signin">Your account</Link>
+            ) : (
+              <Link to="/login" className="home-nav-signin">Sign in</Link>
+            )}
+            <Link to="/signup" className="home-nav-start">Get started <span aria-hidden="true">→</span></Link>
+            <button
+              ref={menuTriggerRef}
+              type="button"
+              className="show-mobile"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-site-menu"
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              onClick={() => setMenuOpen((open) => !open)}
+              style={{ background: 'none', border: 'none', color: C.ink, cursor: 'pointer', padding: 10, minWidth: 44, minHeight: 44, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 4 }}
+            >
+              <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
+              <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
+              <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
+            </button>
+          </div>
+        </div>
+        {menuOpen ? (
+          <div ref={mobileMenuRef} id="mobile-site-menu" className="mobile-nav-overlay" role="dialog" aria-modal="true" aria-label="Site menu">
+            <div className="mobile-nav-toolbar">
+              <p className="mobile-nav-toolbar-title">Menu</p>
+              <button type="button" className="mobile-nav-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">Close</button>
+            </div>
+            {homeLinks.map((item) => (
+              <Link key={item.to} to={item.to} onClick={() => setMenuOpen(false)} className="mobile-nav-link">
+                {item.label}
+              </Link>
+            ))}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
+              {user ? (
+                <Link to={accountPath} onClick={() => setMenuOpen(false)} className="home-nav-signin">Your account</Link>
+              ) : (
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="home-nav-signin">Sign in</Link>
+              )}
+              <Link to="/signup" onClick={() => setMenuOpen(false)} className="home-nav-start">Get started</Link>
+            </div>
+          </div>
+        ) : null}
+      </nav>
+    )
+  }
 
   return (
     <nav
