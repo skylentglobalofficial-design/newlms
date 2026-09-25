@@ -297,6 +297,22 @@ export default function ProfessionalProgrammeTemplate({
         </div>
       </section>
 
+      <section className="pp-section pp-credential-section" aria-labelledby="pp-credential-title">
+        <div className="pp-rail pp-credential">
+          <div>
+            <p className="pp-kicker">Credential</p>
+            <h2 id="pp-credential-title">A clear record of what you completed.</h2>
+          </div>
+          <div>
+            <div className="pp-credential-card">
+              <span>Programme credential</span>
+              <strong>{authoredRecord.cert}</strong>
+              <p>Credential status and issuance rules are shown here from the programme record. They are not implied by enrolment.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="pp-section pp-section-paper" id="pp-plans" aria-labelledby="pp-plans-title">
         <div className="pp-rail">
           <div className="pp-section-intro">
