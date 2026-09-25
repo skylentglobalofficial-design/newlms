@@ -50,6 +50,7 @@ function typeLabel(type: string) {
 export default function ProfessionalProgrammeTemplate({
   program,
   authoredRecord,
+  authoredCourse,
   discovery,
   taughtOutcomes,
   afterEnrol,
