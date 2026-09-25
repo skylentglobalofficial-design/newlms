@@ -9,6 +9,7 @@ import "./ProfessionalProgrammeTemplate.css"
 type Props = {
   program: CatalogProgramDetail
   authoredRecord: Program
+  authoredCourse: import("../../data").Course | null
   discovery: ProgrammeDiscoveryCard
   taughtOutcomes: string[]
   afterEnrol: string
@@ -24,58 +25,22 @@ type CurriculumSource = {
   lessons: Array<{ title: string; type: string; duration?: string }>
 }
 
-function curriculumFor(program: Program): CurriculumSource[] {
-  const linked = program.slug === "product-management"
-    ? [
-        {
-          title: "Product thinking",
-          lessons: [
-            { title: "What product management is for", type: "Lesson", duration: "40 min" },
-            { title: "Problems, users, and outcomes", type: "Lesson", duration: "40 min" },
-            { title: "Product thinking check", type: "Check", duration: "20 min" },
-          ],
-        },
-        {
-          title: "Users and evidence",
-          lessons: [
-            { title: "Talking to users without leading them", type: "Lesson", duration: "45 min" },
-            { title: "Evidence, not opinions", type: "Lesson", duration: "45 min" },
-            { title: "Research note — Harbor Desk interviews", type: "Assignment", duration: "3 hr" },
-          ],
-        },
-        {
-          title: "Framing",
-          lessons: [
-            { title: "Problem statements that can be tested", type: "Lesson", duration: "45 min" },
-            { title: "Jobs, constraints, and non-goals", type: "Lesson", duration: "45 min" },
-            { title: "Framing check", type: "Check", duration: "20 min" },
-          ],
-        },
-        {
-          title: "Prioritisation",
-          lessons: [
-            { title: "Opportunity versus solution", type: "Lesson", duration: "45 min" },
-            { title: "Choosing one bet", type: "Lesson", duration: "45 min" },
-            { title: "Priority memo — Harbor Desk", type: "Assignment", duration: "3 hr" },
-          ],
-        },
-        {
-          title: "Specification and product case",
-          lessons: [
-            { title: "Writing a specification someone can build", type: "Lesson", duration: "50 min" },
-            { title: "Capstone — Harbor Desk product case", type: "Assignment", duration: "6 hr" },
-            { title: "Final check", type: "Check", duration: "25 min" },
-          ],
-        },
-      ]
-    : []
+function curriculumFor(course: import("../../data").Course | null, program: Program): CurriculumSource[] {
+  if (course?.modules?.length) {
+    return course.modules.map((module) => ({
+      title: module.title,
+      lessons: module.lessons.map((lesson) => ({
+        title: lesson.title,
+        type: lesson.type,
+        duration: lesson.duration,
+      })),
+    }))
+  }
 
-  return linked.length > 0
-    ? linked
-    : (program.curriculumDetail ?? []).map((module) => ({
-        title: module.title,
-        lessons: (module.topics ?? []).map((topic) => ({ title: topic, type: "Topic" })),
-      }))
+  return (program.curriculumDetail ?? []).map((module) => ({
+    title: module.title,
+    lessons: (module.topics ?? []).map((topic) => ({ title: topic, type: "topic" })),
+  }))
 }
 
 function typeLabel(type: string) {
@@ -94,7 +59,7 @@ export default function ProfessionalProgrammeTemplate({
   narrow,
   onEnrol,
 }: Props) {
-  const curriculum = curriculumFor(authoredRecord)
+  const curriculum = curriculumFor(authoredCourse, authoredRecord)
   const projects = authoredRecord.projectsDetail ?? []
   const outcomes = taughtOutcomes.length > 0 ? taughtOutcomes : authoredRecord.whatYouWillLearn ?? []
   const facts = [
