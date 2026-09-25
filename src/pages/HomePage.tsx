@@ -1,5 +1,6 @@
+import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import SkylentHeroLearningModel from "../components/home/SkylentHeroLearningModel"
+import HomeHeroVisual from "../components/home/HomeHeroVisual"
 import SkylentHomeGoals from "../components/home/SkylentHomeGoals"
 import SkylentHomeEvidence from "../components/home/SkylentHomeEvidence"
 import SkylentHomeCatalogue from "../components/home/SkylentHomeCatalogue"
@@ -14,28 +15,33 @@ export default function HomePage() {
   return (
     <PageShell aurora={false}>
       <div className="home-p3">
-        {/* 01 — What Skylent is */}
-        <SkylentHeroLearningModel />
+        <section className="home-hero" aria-labelledby="home-hero-title">
+          <div className="home-wrap home-hero-grid">
+            <div className="home-hero-copy">
+              <p className="home-eyebrow">Learn with purpose</p>
+              <h1 id="home-hero-title">Build what matters next.</h1>
+              <p className="home-hero-lead">
+                Structured learning, applied practice and real projects — designed to help you move from understanding something to actually doing it.
+              </p>
+              <div className="home-cta-row">
+                <Link className="home-cta home-cta-primary" to="/programs">
+                  Explore programmes <span aria-hidden="true">→</span>
+                </Link>
+                <Link className="home-cta home-cta-secondary" to="/courses">
+                  Explore courses <span aria-hidden="true">→</span>
+                </Link>
+              </div>
+            </div>
+            <HomeHeroVisual />
+          </div>
+        </section>
 
-        {/* 02 — Start with a goal */}
         <SkylentHomeGoals />
-
-        {/* 03 — How Skylent works */}
         <SkylentHomeEvidence />
-
-        {/* 04 — Learning ecosystem */}
         <SkylentHomeCatalogue />
-
-        {/* 05 — Career OS */}
         <SkylentHomeCareerOS />
-
-        {/* 06 — Education */}
         <SkylentHomeEducation />
-
-        {/* 07 — The Skylent OS */}
         <SkylentHomeOSArchitecture />
-
-        {/* 08 — Final CTA */}
         <SkylentHomeFinal />
       </div>
     </PageShell>
