@@ -446,6 +446,7 @@ export function Nav() {
       { label: 'Programmes', to: '/programs' },
       { label: 'Education', to: '/education' },
       { label: 'Career OS', to: '/career-os' },
+      { label: 'About', to: '/about' },
     ]
     return (
       <nav ref={navRef} className="skylent-site-nav is-home-nav" aria-label="Primary">
@@ -461,6 +462,46 @@ export function Nav() {
             ))}
           </div>
           <div className="home-nav-actions">
+            <div className="home-nav-search">
+              <button
+                type="button"
+                className="home-nav-search-btn"
+                aria-label="Search courses"
+                aria-expanded={searchOpen}
+                onClick={() => {
+                  setSearchOpen((open) => !open)
+                  window.setTimeout(() => searchRef.current?.focus(), 0)
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>
+              </button>
+              {searchOpen ? (
+                <form className="home-nav-search-panel" onSubmit={handleSearch}>
+                  <input
+                    ref={searchRef}
+                    value={searchQuery}
+                    onChange={(event) => {
+                      setSearchQuery(event.target.value)
+                      setSearchOpen(true)
+                    }}
+                    placeholder="Search courses"
+                    aria-label="Search courses"
+                    autoComplete="off"
+                  />
+                  {searchHints.length > 0 ? (
+                    <ul role="listbox">
+                      {searchHints.map((item) => (
+                        <li key={item.to}>
+                          <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => pickSearchSuggestion(item.to)}>
+                            {item.label}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </form>
+              ) : null}
+            </div>
             {user ? (
               <Link to={accountPath} className="home-nav-signin">Your account</Link>
             ) : (

@@ -1,43 +1,72 @@
-import photo from "../../assets/home/pexels-3987012-macbook.jpg"
-import { CourseWorkspacePreview } from "../product/ProductLanguage"
-import { courses } from "../../data"
-import { FLAGSHIP_COURSE_SLUG } from "../../lib/authored-courses"
-import { countStaticCourseLessons } from "../../lib/curriculum-counts"
-
-const course = courses.find((item) => item.slug === FLAGSHIP_COURSE_SLUG)
-const lessons = course?.modules.flatMap((module) => module.lessons) ?? []
-const firstLesson = course?.modules[0]?.lessons[0]
-const firstQuiz = lessons.find((lesson) => lesson.type === "quiz")
-const capstone = lessons.find((lesson) => /capstone/i.test(lesson.title))
+import photo from "../../assets/home/pexels-3874631-cafe.jpg"
 
 export default function HomeHeroVisual() {
   return (
     <figure className="home-hero-visual">
-      <div className="home-hero-stage">
-        <img
-          src={photo}
-          alt="A person working on a laptop at a white desk"
-          width={2000}
-          height={1333}
-        />
-        {course ? (
-          <div className="home-hero-screen" aria-hidden="true">
-            <div className="home-hero-screen-ui">
-              <CourseWorkspacePreview
-                courseTitle={course.title}
-                lessonTitle={firstLesson?.title ?? "Open the first lesson"}
-                practiceTitle={firstQuiz?.title ?? "Practice"}
-                workTitle={capstone?.title ?? "Capstone"}
-                modules={course.modules.map((module) => module.title)}
-                lessonCount={countStaticCourseLessons(course)}
-                visual="northwind"
-              />
+      <img
+        src={photo}
+        alt="A person working on a laptop in a bright cafe"
+        width={2000}
+        height={1333}
+      />
+      <div className="home-os-card" aria-hidden="true">
+        <header className="home-os-bar">
+          <strong>Skylent OS</strong>
+          <span className="home-os-search">Search courses, skills or career paths…</span>
+          <i />
+        </header>
+        <div className="home-os-body">
+          <nav>
+            <b>Home</b>
+            <span>Learn</span>
+            <span>Practice</span>
+            <span>Career OS</span>
+            <span>Certificates</span>
+          </nav>
+          <div className="home-os-main">
+            <div className="home-os-head">
+              <p>Continue learning</p>
+              <span>View all →</span>
+            </div>
+            <article className="home-os-course">
+              <em />
+              <div>
+                <strong>Data Analytics</strong>
+                <small>Lesson 4 of 12</small>
+                <b><i style={{ width: "33%" }} /></b>
+              </div>
+              <span>33%</span>
+            </article>
+            <div className="home-os-head">
+              <p>Recommended for you</p>
+              <span>View all →</span>
+            </div>
+            <div className="home-os-recs">
+              <article>
+                <em />
+                <strong>Python for Data Science</strong>
+                <small>Beginner · 6 weeks</small>
+              </article>
+              <article>
+                <em />
+                <strong>SQL for Analytics</strong>
+                <small>Beginner · 4 weeks</small>
+              </article>
+            </div>
+            <div className="home-os-head">
+              <p>Career OS</p>
+              <span>Explore →</span>
+            </div>
+            <div className="home-os-careers">
+              <article><em /> <strong>Browse Jobs</strong><small>Live opportunities</small></article>
+              <article><em /> <strong>Build Profile</strong><small>Showcase your skills</small></article>
+              <article><em /> <strong>Get Placed</strong><small>Career guidance</small></article>
             </div>
           </div>
-        ) : null}
+        </div>
       </div>
       <figcaption className="home-hero-caption">
-        The laptop shows the Data Analytics workspace in Skylent OS.
+        The card shows the Skylent OS learning workspace.
       </figcaption>
     </figure>
   )
