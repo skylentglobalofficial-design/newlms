@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useState, type KeyboardEvent, type ReactNode } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import {
@@ -25,6 +25,8 @@ import type {
   TargetOutcome,
   TimelineConstraint,
 } from "../../lib/path/types"
+import PathJourneyVisual from "./PathJourneyVisual"
+import { PATH_V2_STAGE_HEADLINE } from "./pathV2Copy"
 import "./PathPages.css"
 
 const DEFAULT_DRAFT: PathFlowDraft = {
@@ -108,6 +110,30 @@ function draftToDiagnosis(draft: PathFlowDraft): PathDiagnosis {
   }
 }
 
+function PathChoiceRow({
+  selected,
+  onClick,
+  children,
+  hint,
+}: {
+  selected: boolean
+  onClick: () => void
+  children: ReactNode
+  hint?: string
+}) {
+  return (
+    <button type="button" className={`path-v2-choice${selected ? " is-selected" : ""}`} aria-pressed={selected} onClick={onClick}>
+      <span className="path-v2-choice__mark" aria-hidden="true">
+        {selected ? "✓" : ""}
+      </span>
+      <span className="path-v2-choice__body">
+        <span className="path-v2-choice__label">{children}</span>
+        {hint ? <span className="path-v2-choice__hint">{hint}</span> : null}
+      </span>
+    </button>
+  )
+}
+
 export default function PathPage() {
   const navigate = useNavigate()
   const [ready, setReady] = useState(false)
@@ -115,6 +141,7 @@ export default function PathPage() {
   const [draft, setDraft] = useState<PathFlowDraft>(DEFAULT_DRAFT)
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const [stageVisible, setStageVisible] = useState(true)
 
   useEffect(() => {
     const stored = loadPathState()
@@ -141,16 +168,26 @@ export default function PathPage() {
   )
 
   const stage = PATH_STAGES[step]
-  const progressPct = useMemo(() => ((step + 1) / PATH_STAGES.length) * 100, [step])
+  const editorial = PATH_V2_STAGE_HEADLINE[stage.id]
   const stored = ready ? loadPathState() : null
   const hasSavedResult = Boolean(stored?.roadmap && stored?.diagnosis)
 
+  const transitionToStep = useCallback(
+    (nextStep: number, nextDraft: PathFlowDraft) => {
+      setStageVisible(false)
+      window.setTimeout(() => {
+        setStep(nextStep)
+        persist(nextStep, nextDraft)
+        setStageVisible(true)
+      }, 120)
+    },
+    [persist],
+  )
+
   function goBack() {
     if (step === 0) return
-    const nextStep = step - 1
-    setStep(nextStep)
-    persist(nextStep, draft)
     setError(null)
+    transitionToStep(step - 1, draft)
   }
 
   function goNext() {
@@ -166,10 +203,8 @@ export default function PathPage() {
       navigate("/path/result")
       return
     }
-    const nextStep = step + 1
-    setStep(nextStep)
-    persist(nextStep, draft)
     setError(null)
+    transitionToStep(step + 1, draft)
   }
 
   function restartFlow() {
@@ -180,13 +215,21 @@ export default function PathPage() {
     setError(null)
   }
 
+  function handleMainKeyDown(event: KeyboardEvent) {
+    if (event.key !== "Enter" || event.metaKey || event.ctrlKey || event.altKey) return
+    const tag = (event.target as HTMLElement)?.tagName
+    if (tag === "TEXTAREA") return
+    event.preventDefault()
+    goNext()
+  }
+
   if (!ready) {
     return (
       <PageShell aurora={false}>
-        <main className="skylent-path-flow" aria-busy="true">
-          <div className="skylent-path-flow__rail">
-            <p className="skylent-path-flow__kicker">Skylent Path</p>
-            <p style={{ color: "#5b5d61", marginTop: 16 }}>Loading your path…</p>
+        <main className="path-v2" aria-busy="true">
+          <div className="path-v2__shell">
+            <p className="path-v2__kicker">Skylent Path</p>
+            <p className="path-v2__loading">Loading diagnosis…</p>
           </div>
         </main>
       </PageShell>
@@ -195,233 +238,238 @@ export default function PathPage() {
 
   return (
     <PageShell aurora={false}>
-      <main className="skylent-path-flow">
-        <div className="skylent-path-flow__rail">
-          <div className="skylent-path-flow__top">
-            <p className="skylent-path-flow__kicker">Skylent Path · Diagnose</p>
-            <div className="skylent-path-flow__progress" aria-label="Progress">
-              <div className="skylent-path-flow__progress-meta">
-                <span>
-                  Stage {stage.number} of {PATH_STAGES.length}
-                </span>
-                <span>{Math.round(progressPct)}%</span>
-              </div>
-              <div className="skylent-path-flow__progress-bar">
-                <i style={{ width: `${progressPct}%` }} />
-              </div>
+      <main className="path-v2" onKeyDown={handleMainKeyDown}>
+        <div className="path-v2__shell">
+          <header className="path-v2__header">
+            <div>
+              <p className="path-v2__kicker">Skylent Path</p>
+              <p className="path-v2__tagline">Career diagnosis · direction · sequence</p>
             </div>
-          </div>
+            <p className="path-v2__counter" aria-live="polite">
+              {String(stage.number).padStart(2, "0")} / {String(PATH_STAGES.length).padStart(2, "0")}
+            </p>
+          </header>
 
           {hasSavedResult ? (
-            <div className="skylent-path-flow__resume">
-              You already have a path saved.{" "}
-              <Link to="/path/result">View your result</Link>
+            <div className="path-v2__resume">
+              You already have a path on this device.{" "}
+              <Link to="/path/result">View your path</Link>
               {" · "}
-              <button type="button" className="skylent-path-flow__restart" onClick={restartFlow}>
+              <button type="button" onClick={restartFlow}>
                 Start fresh
               </button>
             </div>
           ) : null}
 
-          <div className="skylent-path-flow__card" key={stage.id}>
-            <p className="skylent-path-flow__kicker">Stage {String(stage.number).padStart(2, "0")}</p>
-            <h1>{stage.title}</h1>
-            <p>{stage.subtitle}</p>
-
-            {stage.id === "academic" ? (
-              <>
-                <span className="skylent-path-flow__field-label">Context</span>
-                <div className="skylent-path-flow__chips" role="group" aria-label="Academic background">
-                  {ACADEMIC_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      className={`skylent-path-flow__chip${draft.academicBackground === option.value ? " is-selected" : ""}`}
-                      aria-pressed={draft.academicBackground === option.value}
-                      onClick={() => updateDraft({ academicBackground: option.value as AcademicBackground })}
+          <div className="path-v2__layout">
+            <aside className="path-v2__aside">
+              <PathJourneyVisual step={step} />
+              <nav className="path-v2-rail" aria-label="Diagnosis journey">
+                <ol>
+                  {PATH_STAGES.map((row, index) => (
+                    <li
+                      key={row.id}
+                      className={[
+                        index === step ? "is-current" : "",
+                        index < step ? "is-done" : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
                     >
-                      {option.label}
-                      <small>{option.hint}</small>
-                    </button>
+                      <span>{String(row.number).padStart(2, "0")}</span>
+                      {PATH_V2_STAGE_HEADLINE[row.id].journeyLabel}
+                    </li>
                   ))}
-                </div>
-                <span className="skylent-path-flow__field-label">Current education</span>
-                <div className="skylent-path-flow__chips" role="group" aria-label="Current education">
-                  {EDUCATION_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      className={`skylent-path-flow__chip${draft.currentEducation === option.value ? " is-selected" : ""}`}
-                      aria-pressed={draft.currentEducation === option.value}
-                      onClick={() => updateDraft({ currentEducation: option.value as CurrentEducation })}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-              </>
-            ) : null}
+                </ol>
+              </nav>
+            </aside>
 
-            {stage.id === "interests" ? (
-              <div className="skylent-path-flow__chips" role="group" aria-label="Interests">
-                {INTEREST_OPTIONS.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={`skylent-path-flow__chip${draft.interests?.includes(option.value) ? " is-selected" : ""}`}
-                    aria-pressed={draft.interests?.includes(option.value)}
-                    onClick={() =>
-                      updateDraft({ interests: toggleInterest(draft.interests ?? [], option.value) })
-                    }
-                  >
-                    {option.label}
-                  </button>
+            <div
+              className={`path-v2__stage${stageVisible ? " is-visible" : ""}`}
+              key={stage.id}
+              aria-labelledby="path-v2-question"
+            >
+              <h1 id="path-v2-question" className="path-v2__question">
+                {editorial.lines.map((line) => (
+                  <span key={line}>{line}</span>
                 ))}
-              </div>
-            ) : null}
+              </h1>
+              <p className="path-v2__lede">{editorial.lede}</p>
 
-            {stage.id === "skills" ? (
-              <>
-                <div className="skylent-path-flow__chips" role="radiogroup" aria-label="Existing skills">
-                  {SKILL_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      className={`skylent-path-flow__chip${draft.existingSkills === option.value ? " is-selected" : ""}`}
-                      aria-pressed={draft.existingSkills === option.value}
-                      onClick={() => updateDraft({ existingSkills: option.value as SkillLevel })}
-                    >
-                      {option.label}
-                      <small>{option.hint}</small>
-                    </button>
-                  ))}
+              {stage.id === "academic" ? (
+                <div className="path-v2__answers">
+                  <p className="path-v2__group-label">Context</p>
+                  <div className="path-v2__choices" role="group" aria-label="Academic background">
+                    {ACADEMIC_OPTIONS.map((option) => (
+                      <PathChoiceRow
+                        key={option.value}
+                        selected={draft.academicBackground === option.value}
+                        hint={option.hint}
+                        onClick={() => updateDraft({ academicBackground: option.value as AcademicBackground })}
+                      >
+                        {option.label}
+                      </PathChoiceRow>
+                    ))}
+                  </div>
+                  <p className="path-v2__group-label">Current education</p>
+                  <div className="path-v2__choices" role="group" aria-label="Current education">
+                    {EDUCATION_OPTIONS.map((option) => (
+                      <PathChoiceRow
+                        key={option.value}
+                        selected={draft.currentEducation === option.value}
+                        onClick={() => updateDraft({ currentEducation: option.value as CurrentEducation })}
+                      >
+                        {option.label}
+                      </PathChoiceRow>
+                    ))}
+                  </div>
                 </div>
-                <label className="skylent-path-flow__field-label" htmlFor="path-strengths">
-                  Strengths (optional)
-                </label>
-                <input
-                  id="path-strengths"
-                  className="skylent-path-flow__input"
-                  value={draft.strengths ?? ""}
-                  onChange={(event) => updateDraft({ strengths: event.target.value })}
-                  placeholder="e.g. writing, maths, teaching, sales, coding basics…"
-                  maxLength={200}
-                />
-              </>
-            ) : null}
-
-            {stage.id === "direction" ? (
-              <>
-                <div className="skylent-path-flow__chips" role="radiogroup" aria-label="Career direction">
-                  {DIRECTION_OPTIONS.map((option) => (
-                    <button
-                      key={option.value}
-                      type="button"
-                      className={`skylent-path-flow__chip${draft.careerDirection === option.value ? " is-selected" : ""}`}
-                      aria-pressed={draft.careerDirection === option.value}
-                      onClick={() => updateDraft({ careerDirection: option.value as CareerDirection })}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-                <label className="skylent-path-flow__field-label" htmlFor="path-direction-detail">
-                  In your words
-                </label>
-                <input
-                  id="path-direction-detail"
-                  className="skylent-path-flow__input"
-                  value={draft.directionDetail ?? ""}
-                  onChange={(event) => updateDraft({ directionDetail: event.target.value })}
-                  placeholder="e.g. data analyst, UPSC, AI research, my own SaaS…"
-                  maxLength={160}
-                />
-              </>
-            ) : null}
-
-            {stage.id === "gaps" ? (
-              <>
-                <div className="skylent-path-flow__chips" role="group" aria-label="Gap themes">
-                  {GAP_OPTIONS.map((option) => (
-                    <button
-                      key={option}
-                      type="button"
-                      className={`skylent-path-flow__chip${draft.gaps?.includes(option) ? " is-selected" : ""}`}
-                      aria-pressed={draft.gaps?.includes(option)}
-                      onClick={() => updateDraft({ gaps: toggleGap(draft.gaps ?? [], option) })}
-                    >
-                      {option}
-                    </button>
-                  ))}
-                </div>
-                <label className="skylent-path-flow__field-label" htmlFor="path-gap-detail">
-                  Anything else? (optional)
-                </label>
-                <textarea
-                  id="path-gap-detail"
-                  className="skylent-path-flow__textarea"
-                  value={draft.gapDetail ?? ""}
-                  onChange={(event) => updateDraft({ gapDetail: event.target.value })}
-                  placeholder="What feels missing when you compare yourself to where you want to be?"
-                  maxLength={400}
-                />
-              </>
-            ) : null}
-
-            {stage.id === "outcome" ? (
-              <div className="skylent-path-flow__chips" role="radiogroup" aria-label="Target outcome">
-                {OUTCOME_OPTIONS.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={`skylent-path-flow__chip${draft.targetOutcome === option.value ? " is-selected" : ""}`}
-                    aria-pressed={draft.targetOutcome === option.value}
-                    onClick={() => updateDraft({ targetOutcome: option.value as TargetOutcome })}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-
-            {stage.id === "timeline" ? (
-              <div className="skylent-path-flow__chips" role="radiogroup" aria-label="Timeline">
-                {TIMELINE_OPTIONS.map((option) => (
-                  <button
-                    key={option.value}
-                    type="button"
-                    className={`skylent-path-flow__chip${draft.timeline === option.value ? " is-selected" : ""}`}
-                    aria-pressed={draft.timeline === option.value}
-                    onClick={() => updateDraft({ timeline: option.value as TimelineConstraint })}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            ) : null}
-
-            {error ? <div className="skylent-path-flow__error">{error}</div> : null}
-
-            <div className="skylent-path-flow__nav">
-              {step > 0 ? (
-                <button type="button" className="skylent-path-flow__back" onClick={goBack}>
-                  Back
-                </button>
               ) : null}
-              <button
-                type="button"
-                className="skylent-path-flow__next"
-                onClick={goNext}
-                disabled={submitting}
-              >
-                {step >= PATH_STAGES.length - 1 ? "Build my path" : "Continue"}
-                <span aria-hidden="true">→</span>
-              </button>
-              <button type="button" className="skylent-path-flow__restart" onClick={restartFlow}>
-                Restart
-              </button>
+
+              {stage.id === "interests" ? (
+                <div className="path-v2__choices" role="group" aria-label="Interests">
+                  {INTEREST_OPTIONS.map((option) => (
+                    <PathChoiceRow
+                      key={option.value}
+                      selected={Boolean(draft.interests?.includes(option.value))}
+                      onClick={() => updateDraft({ interests: toggleInterest(draft.interests ?? [], option.value) })}
+                    >
+                      {option.label}
+                    </PathChoiceRow>
+                  ))}
+                </div>
+              ) : null}
+
+              {stage.id === "skills" ? (
+                <div className="path-v2__answers">
+                  <div className="path-v2__choices" role="radiogroup" aria-label="Existing skills">
+                    {SKILL_OPTIONS.map((option) => (
+                      <PathChoiceRow
+                        key={option.value}
+                        selected={draft.existingSkills === option.value}
+                        hint={option.hint}
+                        onClick={() => updateDraft({ existingSkills: option.value as SkillLevel })}
+                      >
+                        {option.label}
+                      </PathChoiceRow>
+                    ))}
+                  </div>
+                  <label className="path-v2__group-label" htmlFor="path-strengths">
+                    Strengths you already have (optional)
+                  </label>
+                  <input
+                    id="path-strengths"
+                    className="path-v2__input"
+                    value={draft.strengths ?? ""}
+                    onChange={(event) => updateDraft({ strengths: event.target.value })}
+                    placeholder="e.g. writing, analysis, teaching, sales…"
+                    maxLength={200}
+                  />
+                </div>
+              ) : null}
+
+              {stage.id === "direction" ? (
+                <div className="path-v2__answers">
+                  <div className="path-v2__choices" role="radiogroup" aria-label="Career direction">
+                    {DIRECTION_OPTIONS.map((option) => (
+                      <PathChoiceRow
+                        key={option.value}
+                        selected={draft.careerDirection === option.value}
+                        onClick={() => updateDraft({ careerDirection: option.value as CareerDirection })}
+                      >
+                        {option.label}
+                      </PathChoiceRow>
+                    ))}
+                  </div>
+                  <label className="path-v2__group-label" htmlFor="path-direction-detail">
+                    In your words
+                  </label>
+                  <input
+                    id="path-direction-detail"
+                    className="path-v2__input"
+                    value={draft.directionDetail ?? ""}
+                    onChange={(event) => updateDraft({ directionDetail: event.target.value })}
+                    placeholder="e.g. data analyst, product, UPSC, research question…"
+                    maxLength={160}
+                  />
+                </div>
+              ) : null}
+
+              {stage.id === "gaps" ? (
+                <div className="path-v2__answers">
+                  <div className="path-v2__choices" role="group" aria-label="Gap themes">
+                    {GAP_OPTIONS.map((option) => (
+                      <PathChoiceRow
+                        key={option}
+                        selected={Boolean(draft.gaps?.includes(option))}
+                        onClick={() => updateDraft({ gaps: toggleGap(draft.gaps ?? [], option) })}
+                      >
+                        {option}
+                      </PathChoiceRow>
+                    ))}
+                  </div>
+                  <label className="path-v2__group-label" htmlFor="path-gap-detail">
+                    Anything else? (optional)
+                  </label>
+                  <textarea
+                    id="path-gap-detail"
+                    className="path-v2__textarea"
+                    value={draft.gapDetail ?? ""}
+                    onChange={(event) => updateDraft({ gapDetail: event.target.value })}
+                    placeholder="What feels missing when you compare yourself to where you want to be?"
+                    maxLength={400}
+                  />
+                </div>
+              ) : null}
+
+              {stage.id === "outcome" ? (
+                <div className="path-v2__choices" role="radiogroup" aria-label="Target outcome">
+                  {OUTCOME_OPTIONS.map((option) => (
+                    <PathChoiceRow
+                      key={option.value}
+                      selected={draft.targetOutcome === option.value}
+                      onClick={() => updateDraft({ targetOutcome: option.value as TargetOutcome })}
+                    >
+                      {option.label}
+                    </PathChoiceRow>
+                  ))}
+                </div>
+              ) : null}
+
+              {stage.id === "timeline" ? (
+                <div className="path-v2__choices" role="radiogroup" aria-label="Timeline">
+                  {TIMELINE_OPTIONS.map((option) => (
+                    <PathChoiceRow
+                      key={option.value}
+                      selected={draft.timeline === option.value}
+                      onClick={() => updateDraft({ timeline: option.value as TimelineConstraint })}
+                    >
+                      {option.label}
+                    </PathChoiceRow>
+                  ))}
+                </div>
+              ) : null}
+
+              {error ? <div className="path-v2__error" role="alert">{error}</div> : null}
             </div>
           </div>
+
+          <footer className="path-v2__foot">
+            {step > 0 ? (
+              <button type="button" className="path-v2__back" onClick={goBack}>
+                Back
+              </button>
+            ) : (
+              <span />
+            )}
+            <button type="button" className="path-v2__continue" onClick={goNext} disabled={submitting}>
+              {step >= PATH_STAGES.length - 1 ? "Construct my path" : "Continue"}
+              <span aria-hidden="true">→</span>
+            </button>
+            <button type="button" className="path-v2__restart" onClick={restartFlow}>
+              Restart
+            </button>
+          </footer>
         </div>
       </main>
     </PageShell>
