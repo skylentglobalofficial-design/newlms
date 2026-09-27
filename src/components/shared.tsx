@@ -439,6 +439,115 @@ export function Nav() {
   const searchHints = searchSuggestionsFor(searchQuery)
 
   const accountPath = user ? dashRoute(user.role) : '/login'
+  const homeNav = location.pathname === '/'
+
+  if (homeNav) {
+    const homeLinks = [
+      { label: 'Programmes', to: '/programs' },
+      { label: 'Education', to: '/education' },
+      { label: 'Career OS', to: '/career-os' },
+      { label: 'About', to: '/about' },
+    ]
+    return (
+      <nav ref={navRef} className="skylent-site-nav is-home-nav" aria-label="Primary">
+        <div className="skylent-rail" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH, gap: 12, minWidth: 0 }}>
+          <Link to="/" className="skylent-mark" style={{ fontSize: 22, color: C.ink, textDecoration: 'none', padding: 0, flexShrink: 0 }}>
+            Skylent
+          </Link>
+          <div className="home-nav-links">
+            {homeLinks.map((item) => (
+              <Link key={item.to} to={item.to} aria-current={location.pathname === item.to ? 'page' : undefined}>
+                {item.label}
+              </Link>
+            ))}
+          </div>
+          <div className="home-nav-actions">
+            <div className="home-nav-search">
+              <button
+                type="button"
+                className="home-nav-search-btn"
+                aria-label="Search courses"
+                aria-expanded={searchOpen}
+                onClick={() => {
+                  setSearchOpen((open) => !open)
+                  window.setTimeout(() => searchRef.current?.focus(), 0)
+                }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><line x1="20" y1="20" x2="16.5" y2="16.5"/></svg>
+              </button>
+              {searchOpen ? (
+                <form className="home-nav-search-panel" onSubmit={handleSearch}>
+                  <input
+                    ref={searchRef}
+                    value={searchQuery}
+                    onChange={(event) => {
+                      setSearchQuery(event.target.value)
+                      setSearchOpen(true)
+                    }}
+                    placeholder="Search courses"
+                    aria-label="Search courses"
+                    autoComplete="off"
+                  />
+                  {searchHints.length > 0 ? (
+                    <ul role="listbox">
+                      {searchHints.map((item) => (
+                        <li key={item.to}>
+                          <button type="button" onMouseDown={(event) => event.preventDefault()} onClick={() => pickSearchSuggestion(item.to)}>
+                            {item.label}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </form>
+              ) : null}
+            </div>
+            {user ? (
+              <Link to={accountPath} className="home-nav-signin">Your account</Link>
+            ) : (
+              <Link to="/login" className="home-nav-signin">Sign in</Link>
+            )}
+            <Link to="/signup" className="home-nav-start">Get started <span aria-hidden="true">→</span></Link>
+            <button
+              ref={menuTriggerRef}
+              type="button"
+              className="show-mobile"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-site-menu"
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              onClick={() => setMenuOpen((open) => !open)}
+              style={{ background: 'none', border: 'none', color: C.ink, cursor: 'pointer', padding: 10, minWidth: 44, minHeight: 44, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 4 }}
+            >
+              <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
+              <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
+              <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
+            </button>
+          </div>
+        </div>
+        {menuOpen ? (
+          <div ref={mobileMenuRef} id="mobile-site-menu" className="mobile-nav-overlay" role="dialog" aria-modal="true" aria-label="Site menu">
+            <div className="mobile-nav-toolbar">
+              <p className="mobile-nav-toolbar-title">Menu</p>
+              <button type="button" className="mobile-nav-close" onClick={() => setMenuOpen(false)} aria-label="Close menu">Close</button>
+            </div>
+            {homeLinks.map((item) => (
+              <Link key={item.to} to={item.to} onClick={() => setMenuOpen(false)} className="mobile-nav-link">
+                {item.label}
+              </Link>
+            ))}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
+              {user ? (
+                <Link to={accountPath} onClick={() => setMenuOpen(false)} className="home-nav-signin">Your account</Link>
+              ) : (
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="home-nav-signin">Sign in</Link>
+              )}
+              <Link to="/signup" onClick={() => setMenuOpen(false)} className="home-nav-start">Get started</Link>
+            </div>
+          </div>
+        ) : null}
+      </nav>
+    )
+  }
 
   return (
     <nav
