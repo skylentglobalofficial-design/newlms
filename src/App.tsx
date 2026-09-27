@@ -59,14 +59,28 @@ function AppRoutes() {
     <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<HomePage />} />
+
+        {/* Core Skylent path product */}
         <Route path="/path" element={<PathDiscoveryPage />} />
+
+        {/* Education: canonical public IA + backwards-compatible legacy routes */}
         <Route path="/education" element={<EducationPage />} />
-        <Route path="/education/schooling" element={<SchoolingPage />} />
-        <Route path="/education/undergraduate" element={<UndergraduatePage />} />
+        <Route path="/education/school" element={<SchoolingPage />} />
+        <Route path="/education/schooling" element={<Navigate to="/education/school" replace />} />
+        <Route path="/education/online-degree" element={<UndergraduatePage />} />
+        <Route path="/education/offline-degree" element={<UndergraduatePage />} />
+        <Route path="/education/undergraduate" element={<Navigate to="/education/online-degree" replace />} />
         <Route path="/education/postgraduate" element={<PostgraduatePage />} />
         <Route path="/education/exams" element={<ExamsPage />} />
         <Route path="/exams" element={<Navigate to="/education/exams" replace />} />
         <Route path="/exams/:slug" element={<PathComingPage />} />
+
+        {/* Programmes are the learner-facing product layer; keep /programs for compatibility. */}
+        <Route path="/programmes" element={<ProgramsPage />} />
+        <Route path="/programmes/:slug" element={<ProgramPage />} />
+        <Route path="/programs" element={<Navigate to="/programmes" replace />} />
+        <Route path="/programs/:slug" element={<ProgramPage />} />
+
         <Route path="/skills" element={<SkillsPage />} />
         <Route path="/career-os" element={<CareerOSLayout />}>
           <Route index element={<CareerOSOverviewPage />} />
@@ -81,10 +95,11 @@ function AppRoutes() {
           <Route path="support" element={<CareerOSSupportPage />} />
           <Route path="support/:id" element={<CareerOSSupportDetailPage />} />
         </Route>
+
         <Route path="/institutions" element={<InstitutionsPage />} />
+        <Route path="/universities" element={<UniversitiesPage />} />
+        <Route path="/labs" element={<LabsPage />} />
         <Route path="/os" element={<OSPage />} />
-        <Route path="/programs" element={<ProgramsPage />} />
-        <Route path="/programs/:slug" element={<ProgramPage />} />
         <Route path="/courses" element={<CoursesPage />} />
         <Route path="/courses/:slug" element={<CourseDetailPage />} />
         <Route path="/workshops" element={<WorkshopsPage />} />
@@ -96,6 +111,15 @@ function AppRoutes() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<LoginPage />} />
+
+        {/* /app is the authenticated workspace entry. Existing role-specific dashboards remain the source of truth. */}
+        <Route path="/app" element={<Navigate to="/dashboard/student" replace />} />
+        <Route path="/app/student" element={<Navigate to="/dashboard/student" replace />} />
+        <Route path="/app/faculty" element={<Navigate to="/dashboard/faculty" replace />} />
+        <Route path="/app/organisation" element={<Navigate to="/dashboard/organisation" replace />} />
+        <Route path="/app/recruiter" element={<Navigate to="/dashboard/recruiter" replace />} />
+        <Route path="/app/admin" element={<Navigate to="/dashboard/admin" replace />} />
+
         <Route path="/dashboard/student" element={<RoleRouteGuard allowedRoles={['student']}><DashboardStudentPage /></RoleRouteGuard>} />
         <Route path="/dashboard/faculty" element={<RoleRouteGuard allowedRoles={['faculty']}><DashboardFacultyPage /></RoleRouteGuard>} />
         <Route path="/dashboard/organisation" element={<RoleRouteGuard allowedRoles={['organisation']}><DashboardOrgPage /></RoleRouteGuard>} />
@@ -105,13 +129,12 @@ function AppRoutes() {
         <Route path="/learn/:slug/:lessonId" element={<RoleRouteGuard allowedRoles={['student']}><LearnPage /></RoleRouteGuard>} />
         <Route path="/os/labs/data-analytics/northwind" element={<RoleRouteGuard allowedRoles={['student']}><NorthwindLabPage /></RoleRouteGuard>} />
         <Route path="/os/projects/:courseSlug/:projectType" element={<RoleRouteGuard allowedRoles={['student']}><NorthwindProjectPage /></RoleRouteGuard>} />
+
         <Route path="/career" element={<Navigate to="/career-os" replace />} />
-        <Route path="/universities" element={<UniversitiesPage />} />
-        <Route path="/labs" element={<LabsPage />} />
-        <Route path="/labs/:labId" element={<Navigate to="/labs" replace />} />
-        <Route path="/labs/:labId/:experimentId" element={<Navigate to="/labs" replace />} />
         <Route path="/jobs" element={<Navigate to="/career-os/jobs" replace />} />
         <Route path="/jobs/:id" element={<Navigate to="/career-os/jobs" replace />} />
+        <Route path="/labs/:labId" element={<Navigate to="/labs" replace />} />
+        <Route path="/labs/:labId/:experimentId" element={<Navigate to="/labs" replace />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Suspense>
