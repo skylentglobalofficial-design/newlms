@@ -7,6 +7,7 @@ import SkylentHomeEducation from "../components/home/SkylentHomeEducation"
 import SkylentHomeOSArchitecture from "../components/home/SkylentHomeOSArchitecture"
 import SkylentHomeFinal from "../components/home/SkylentHomeFinal"
 import "./HomePage.css"
+import "./HomePathHero.css"
 import "../components/home/SkylentHomeChapters.css"
 
 export default function HomePage() {
