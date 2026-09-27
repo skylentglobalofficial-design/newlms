@@ -38,8 +38,13 @@ export function savePathDraft(flowStep: number, draft: PathFlowDraft): void {
   savePathState({
     ...current,
     flowStep,
-    draft: { ...current.draft, ...draft },
+    draft,
   })
+}
+
+/** Clears diagnosis, roadmap, draft, and flow step (full path reset). */
+export function resetPathState(): void {
+  savePathState(emptyPathState())
 }
 
 export function completePathDiagnosis(diagnosis: PathDiagnosis): PersonalRoadmap {
@@ -56,5 +61,5 @@ export function completePathDiagnosis(diagnosis: PathDiagnosis): PersonalRoadmap
 }
 
 export function clearPathState(): void {
-  localStorage.removeItem(SKYLENT_PATH_STORAGE_KEY)
+  resetPathState()
 }

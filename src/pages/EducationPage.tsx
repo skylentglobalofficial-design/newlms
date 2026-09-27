@@ -45,6 +45,9 @@ export default function EducationPage() {
               </Link>
             </div>
             <div style={{ display: "flex", gap: 18, flexWrap: "wrap", marginTop: 16 }}>
+              <Link to="/path" style={{ color: C.indigo, fontWeight: 600, fontSize: 14, textDecoration: "none" }}>
+                Start Your Path →
+              </Link>
               <Link to="/programs" style={{ color: C.indigo, fontWeight: 600, fontSize: 14, textDecoration: "none" }}>Open programmes →</Link>
               <Link to="/courses" style={{ color: C.slate, fontSize: 14, textDecoration: "none" }}>Open courses</Link>
             </div>

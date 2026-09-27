@@ -373,6 +373,13 @@ export const MORE_NAV: MegaNavItem[] = [
 /** Public footer columns — mirrors four pillars + About secondary discovery. */
 export const FOOTER_COLS = [
   {
+    heading: "Path",
+    links: [
+      ["Skylent Path", "/path"],
+      ["Your roadmap", "/path/result"],
+    ],
+  },
+  {
     heading: "Learn",
     links: [
       ["Programs", "/programs"],

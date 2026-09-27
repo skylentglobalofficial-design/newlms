@@ -178,7 +178,7 @@ export default function PathResultPage() {
               Explore programmes
             </Link>
             <Link className="skylent-path-result__btn is-ghost" to="/login">
-              Sign in to save progress
+              Sign in
             </Link>
           </div>
 

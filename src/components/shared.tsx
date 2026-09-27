@@ -17,6 +17,7 @@ import {
   type MegaNavItem,
 } from '../lib/product-architecture'
 import { MaturityMark } from './product/Architecture'
+import { pathPrimaryCta } from '../lib/path/nav'
 import { C, T } from '../tokens'
 import { PublicCanvas, useAuroraTheme } from './foundation'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
@@ -313,6 +314,8 @@ export function Nav() {
   const location = useLocation()
   const { user, logout } = useAuth()
 
+  const pathCta = useMemo(() => pathPrimaryCta(), [location.pathname])
+
   const primaryNav = useMemo(
     () =>
       buildPrimaryNav({
@@ -512,7 +515,9 @@ export function Nav() {
             ) : (
               <Link to="/login" className="home-nav-signin">Sign in</Link>
             )}
-            <Link to="/path" className="home-nav-start">Start Your Path <span aria-hidden="true">→</span></Link>
+            <Link to={pathCta.to} className="home-nav-start">
+              {pathCta.label} <span aria-hidden="true">→</span>
+            </Link>
             <button
               ref={menuTriggerRef}
               type="button"
@@ -546,7 +551,9 @@ export function Nav() {
               ) : (
                 <Link to="/login" onClick={() => setMenuOpen(false)} className="home-nav-signin">Sign in</Link>
               )}
-              <Link to="/path" onClick={() => setMenuOpen(false)} className="home-nav-start">Start Your Path</Link>
+              <Link to={pathCta.to} onClick={() => setMenuOpen(false)} className="home-nav-start">
+                {pathCta.label}
+              </Link>
             </div>
           </div>
         ) : null}
@@ -565,7 +572,7 @@ export function Nav() {
           Skylent<span style={{ color: C.orange }}>.</span>
         </Link>
 
-        <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0 }}>
+        <div className="nav-primary-row" style={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0, flex: 1 }}>
           <Link
             to="/path"
             aria-current={pathInGroup('Path', '/path', location.pathname) ? 'page' : undefined}
@@ -580,10 +587,12 @@ export function Nav() {
               letterSpacing: '-0.01em',
               textDecoration: 'none',
               fontWeight: 600,
+              flexShrink: 0,
             }}
           >
             Path
           </Link>
+          <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0 }}>
           {primaryNav.map(group => {
             const open = activeMenu === group.label
             const menuId = `nav-menu-${group.label.toLowerCase()}`
@@ -705,6 +714,7 @@ export function Nav() {
             )
           })}
         </div>
+        </div>
 
         <div className="nav-search-wrap">
           <form className="nav-search-desktop" onSubmit={handleSearch}>
@@ -794,7 +804,7 @@ export function Nav() {
                 Sign in
               </Link>
               <Link
-                to="/path"
+                to={pathCta.to}
                 className="nav-path-cta"
                 style={{
                   background: C.indigo,
@@ -811,10 +821,33 @@ export function Nav() {
                   minHeight: 36,
                 }}
               >
-                Start Your Path
+                {pathCta.label}
               </Link>
             </>
           )}
+          {user ? (
+            <Link
+              to={pathCta.to}
+              className="nav-path-cta"
+              style={{
+                background: C.indigo,
+                border: 'none',
+                color: C.white,
+                borderRadius: 7,
+                padding: '7px 16px',
+                fontSize: 13,
+                fontWeight: 600,
+                textDecoration: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                whiteSpace: 'nowrap',
+                minHeight: 36,
+                marginLeft: user ? 0 : undefined,
+              }}
+            >
+              {pathCta.label}
+            </Link>
+          ) : null}
           <button
             ref={menuTriggerRef}
             type="button"
@@ -993,6 +1026,9 @@ export function Nav() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
             {user ? (
               <>
+                <Link to={pathCta.to} onClick={() => setMenuOpen(false)} className="mobile-nav-cta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', borderRadius: 7, background: C.indigo, color: C.white, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
+                  {pathCta.label}
+                </Link>
                 <Link to={accountPath} onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', border: `1px solid ${T.lineStrong}`, borderRadius: 7, color: C.ink, textDecoration: 'none', fontSize: 14 }}>
                   Your account
                 </Link>
@@ -1005,8 +1041,8 @@ export function Nav() {
                 <Link to="/login" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', border: `1px solid ${T.lineStrong}`, borderRadius: 7, color: C.ink, textDecoration: 'none', fontSize: 14 }}>
                   Sign in
                 </Link>
-                <Link to="/path" onClick={() => setMenuOpen(false)} className="mobile-nav-cta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', borderRadius: 7, background: C.indigo, color: C.white, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
-                  Start Your Path
+                <Link to={pathCta.to} onClick={() => setMenuOpen(false)} className="mobile-nav-cta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', borderRadius: 7, background: C.indigo, color: C.white, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
+                  {pathCta.label}
                 </Link>
               </>
             )}
@@ -1134,6 +1170,7 @@ export const globalCSS = `
   }
 
   .nav-links { display: flex !important; }
+  .nav-path-primary { display: inline-flex !important; flex-shrink: 0; }
   .show-mobile { display: none !important; }
   .nav-search-wrap {
     position: relative;
@@ -1382,6 +1419,7 @@ export const globalCSS = `
 
   @media (max-width: 1100px) {
     .nav-links { display: none !important; }
+    .nav-path-primary { display: inline-flex !important; }
     .nav-search-wrap { display: none !important; }
     .nav-search-desktop { display: none !important; }
     .show-mobile { display: flex !important; }

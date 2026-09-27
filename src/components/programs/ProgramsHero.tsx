@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import { ProductVisual } from "../product/ProductVisuals"
 import type { ProgrammeDiscoveryCard } from "../../lib/programme-discovery"
 import "./ProgramsHero.css"
@@ -37,6 +38,12 @@ export default function ProgramsHero({
                 →
               </span>
             </a>
+            <Link className="pg-hero-cta pg-hero-cta-secondary" to="/path">
+              Start Your Path
+              <span className="pg-hero-cta-arrow" aria-hidden="true">
+                →
+              </span>
+            </Link>
           </p>
           {showMeta ? (
             <ul className="pg-hero-meta">

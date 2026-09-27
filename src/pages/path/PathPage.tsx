@@ -12,7 +12,8 @@ import {
   SKILL_OPTIONS,
   TIMELINE_OPTIONS,
 } from "../../lib/path/constants"
-import { completePathDiagnosis, loadPathState, savePathDraft } from "../../lib/path/storage"
+import { completePathDiagnosis, loadPathState, resetPathState, savePathDraft } from "../../lib/path/storage"
+import { resolvePathFormBootstrap } from "../../lib/path/nav"
 import type {
   AcademicBackground,
   CareerDirection,
@@ -117,8 +118,9 @@ export default function PathPage() {
 
   useEffect(() => {
     const stored = loadPathState()
-    setDraft(mergeDraft(stored.draft))
-    setStep(Math.min(Math.max(stored.flowStep, 0), PATH_STAGES.length - 1))
+    const { draft: bootDraft, flowStep } = resolvePathFormBootstrap(stored)
+    setDraft(mergeDraft(bootDraft))
+    setStep(flowStep)
     setReady(true)
   }, [])
 
@@ -171,10 +173,10 @@ export default function PathPage() {
   }
 
   function restartFlow() {
+    resetPathState()
     const reset = { ...DEFAULT_DRAFT }
     setDraft(reset)
     setStep(0)
-    persist(0, reset)
     setError(null)
   }
 
