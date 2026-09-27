@@ -1,4 +1,13 @@
-import type { PathPhaseKey, PathPhaseStatus, PathExecutionProgress, PersonalRoadmap } from "./types"
+import type {
+  PathPhaseKey,
+  PathPhaseStatus,
+  PathExecutionProgress,
+  PersonalRoadmap,
+  PathCompletionSource,
+  PathPhaseExecutionAction,
+} from "./types"
+import { resolvePhaseExecutionAction, primaryRoadmapActionLabel } from "./actionBindings"
+import type { PathDiagnosis } from "./types"
 
 export const PATH_PHASE_KEYS: PathPhaseKey[] = [
   "foundation",
@@ -39,6 +48,9 @@ export function normalizeExecutionProgress(raw: PathExecutionProgress | undefine
       status: row.status,
       startedAt: row.startedAt,
       completedAt: row.completedAt,
+      completionSource: row.completionSource,
+      resourceType: row.resourceType,
+      resourceId: row.resourceId,
     }
   }
   return { phases, updatedAt: raw.updatedAt ?? new Date(0).toISOString() }
@@ -57,9 +69,7 @@ export function getPhaseStatus(progress: PathExecutionProgress, key: PathPhaseKe
 }
 
 function primaryActionForPhase(roadmap: PersonalRoadmap, key: PathPhaseKey): string {
-  const actions = roadmap[key].actions
-  if (actions.length > 0) return actions[0]
-  return roadmap.nextAction
+  return primaryRoadmapActionLabel(roadmap, key)
 }
 
 export type PathExecutionSnapshot = {
@@ -67,7 +77,25 @@ export type PathExecutionSnapshot = {
   currentPhaseLabel: string
   status: PathPhaseStatus | "all_complete"
   actionText: string
+  action: PathPhaseExecutionAction | null
   allComplete: boolean
+}
+
+export function buildExecutionSnapshot(
+  progress: PathExecutionProgress,
+  roadmap: PersonalRoadmap,
+  diagnosis: PathDiagnosis | null,
+): PathExecutionSnapshot {
+  const base = getExecutionSnapshot(progress, roadmap)
+  if (!diagnosis || !base.currentPhaseKey) {
+    return { ...base, action: null }
+  }
+  const action = resolvePhaseExecutionAction(diagnosis, roadmap, base.currentPhaseKey)
+  return {
+    ...base,
+    actionText: action.label,
+    action,
+  }
 }
 
 /**
@@ -87,6 +115,7 @@ export function getExecutionSnapshot(
       actionText:
         "You marked every Skylent path phase complete on this device. Review execution options below or edit your path if your situation changed.",
       allComplete: true,
+      action: null,
     }
   }
 
@@ -101,6 +130,7 @@ export function getExecutionSnapshot(
       status,
       actionText: action,
       allComplete: false,
+      action: null,
     }
   }
 
@@ -111,6 +141,7 @@ export function getExecutionSnapshot(
       status,
       actionText: action,
       allComplete: false,
+      action: null,
     }
   }
 
@@ -120,6 +151,7 @@ export function getExecutionSnapshot(
     status: "not_started",
     actionText: action,
     allComplete: false,
+    action: null,
   }
 }
 
@@ -127,6 +159,7 @@ export function startPhase(
   progress: PathExecutionProgress,
   key: PathPhaseKey,
   now = new Date().toISOString(),
+  action?: PathPhaseExecutionAction,
 ): PathExecutionProgress {
   const current = getCurrentPhaseKey(progress)
   if (current !== key) {
@@ -135,10 +168,16 @@ export function startPhase(
   if (progress.phases[key].status !== "not_started") {
     throw new Error(`Phase ${key} is not in not_started state.`)
   }
+  const resource = action?.resource
   return {
     phases: {
       ...progress.phases,
-      [key]: { status: "in_progress", startedAt: now },
+      [key]: {
+        status: "in_progress",
+        startedAt: now,
+        resourceType: resource?.type,
+        resourceId: resource?.resourceId,
+      },
     },
     updatedAt: now,
   }
@@ -148,6 +187,7 @@ export function completePhase(
   progress: PathExecutionProgress,
   key: PathPhaseKey,
   now = new Date().toISOString(),
+  completionSource: PathCompletionSource = "manual",
 ): PathExecutionProgress {
   const current = getCurrentPhaseKey(progress)
   if (current !== key) {
@@ -164,6 +204,9 @@ export function completePhase(
         status: "completed",
         startedAt: progress.phases[key].startedAt,
         completedAt: now,
+        completionSource,
+        resourceType: progress.phases[key].resourceType,
+        resourceId: progress.phases[key].resourceId,
       },
     },
     updatedAt: now,

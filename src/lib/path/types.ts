@@ -104,10 +104,38 @@ export type PathPhaseKey =
 
 export type PathPhaseStatus = "not_started" | "in_progress" | "completed"
 
+/** How a phase was marked complete on the Path device record. */
+export type PathCompletionSource = "manual" | "lms_verified"
+
+/** Linked Skylent surface for an execution step (real ids/routes only). */
+export type PathResourceType = "lms_lesson" | "lms_lab" | "learner_project" | "site_route"
+
+export type PathExecutionResource = {
+  type: PathResourceType
+  /** Stable key for persistence, e.g. lms_lesson:data-analytics:l7 */
+  resourceId: string
+  href: string
+  courseSlug?: string
+  lessonId?: string
+  labSlug?: string
+  projectType?: string
+}
+
+export type PathPhaseExecutionAction = {
+  /** Matches roadmap phase action text (first action). */
+  label: string
+  /** When skylent_resource, completion should prefer LMS verification. */
+  completionMode: "manual_only" | "skylent_resource"
+  resource?: PathExecutionResource
+}
+
 export type PathPhaseProgress = {
   status: PathPhaseStatus
   startedAt?: string
   completedAt?: string
+  completionSource?: PathCompletionSource
+  resourceType?: PathResourceType
+  resourceId?: string
 }
 
 /** Local execution loop — ready to mirror server-side later. */

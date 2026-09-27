@@ -448,6 +448,20 @@
   cursor: pointer;
 }
 
+.skylent-path-result__exec-verify {
+  margin: 0 0 14px !important;
+  font-size: 12px !important;
+  color: #74767a !important;
+  line-height: 1.45 !important;
+}
+
+.skylent-path-result__exec-hint {
+  margin: 14px 0 0 !important;
+  font-size: 13px !important;
+  color: var(--path-muted) !important;
+  line-height: 1.5 !important;
+}
+
 .skylent-path-result__programmes {
   margin-top: 56px;
 }

@@ -1,4 +1,5 @@
 import { buildRoadmap } from "../src/lib/path/buildRoadmap.ts"
+import { resolvePhaseExecutionAction } from "../src/lib/path/actionBindings.ts"
 import {
   completePhase,
   emptyExecutionProgress,
@@ -9,7 +10,12 @@ import {
   normalizeExecutionProgress,
   resetExecutionProgress,
   startPhase,
+  buildExecutionSnapshot,
 } from "../src/lib/path/execution.ts"
+import {
+  isPathActionVerifiedComplete,
+  isResourceCompleteInSnapshot,
+} from "../src/lib/path/lmsVerification.ts"
 import type { PathDiagnosis, PathExecutionProgress } from "../src/lib/path/types.ts"
 
 function assert(condition: unknown, message: string) {
@@ -109,5 +115,72 @@ try {
   threw = true
 }
 assert(threw, "cannot complete before start")
+
+// real resource bindings (data analytics)
+const dataDiag = baseDiagnosis({})
+const skillsAction = resolvePhaseExecutionAction(dataDiag, roadmap, "skills")
+assert(skillsAction.completionMode === "skylent_resource", "data skills links to Skylent resource")
+assert(skillsAction.resource?.type === "lms_lesson", "data skills is an LMS lesson")
+assert(skillsAction.resource?.href === "/learn/data-analytics/l7", "data skills opens SQL lesson")
+
+const practiceAction = resolvePhaseExecutionAction(dataDiag, roadmap, "practice")
+assert(practiceAction.resource?.type === "lms_lab", "data practice links to Northwind lab")
+assert(practiceAction.resource?.href.includes("/os/labs/data-analytics/northwind"), "northwind lab href")
+
+// manual fallback (exam track)
+const examRoadmap = buildRoadmap(
+  baseDiagnosis({
+    interests: ["competitive_exams"],
+    careerDirection: "exam_path",
+    targetOutcome: "pass_exam",
+    directionDetail: "CAT 2027",
+  }),
+)
+const examDiag = baseDiagnosis({
+  interests: ["competitive_exams"],
+  careerDirection: "exam_path",
+  targetOutcome: "pass_exam",
+  directionDetail: "CAT 2027",
+})
+const examPractice = resolvePhaseExecutionAction(examDiag, examRoadmap, "practice")
+assert(examPractice.completionMode === "manual_only", "exam practice stays manual")
+assert(!examPractice.resource || examPractice.resource.type !== "lms_lesson", "exam has no fake lesson id")
+
+// verified vs manual completion metadata
+const foundationAction = resolvePhaseExecutionAction(dataDiag, roadmap, "foundation")
+const withResource = startPhase(initial, "foundation", NOW, foundationAction)
+const verifiedDone = completePhase(withResource, "foundation", NOW, "lms_verified")
+assert(verifiedDone.phases.foundation.completionSource === "lms_verified", "stores lms_verified source")
+const manualDone = completePhase(withResource, "foundation", NOW, "manual")
+assert(manualDone.phases.foundation.completionSource === "manual", "stores manual source")
+
+// pure LMS verification helper
+const lessonCompleteSnapshot = {
+  lessonStatesByCourse: {
+    "data-analytics": {
+      l7: {
+        started: true,
+        complete: true,
+        locked: false,
+        videoWatched: true,
+        quizPassed: false,
+        assignmentSubmitted: false,
+      },
+    },
+  },
+  projects: [],
+  northwindLabWorkCount: 0,
+}
+assert(
+  isResourceCompleteInSnapshot(skillsAction.resource!, lessonCompleteSnapshot),
+  "lesson complete in LMS snapshot verifies resource",
+)
+assert(
+  !isPathActionVerifiedComplete({ label: "x", completionMode: "manual_only" }, lessonCompleteSnapshot),
+  "manual-only action never verifies via LMS",
+)
+
+const snap = buildExecutionSnapshot(initial, roadmap, dataDiag)
+assert(snap.action?.resource?.courseSlug === "data-analytics", "snapshot includes bound action")
 
 console.log("test-path-execution: all assertions passed")

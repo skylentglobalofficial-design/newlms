@@ -1,24 +1,39 @@
 import { localPathRecommendationService } from "./recommendation"
+import { resolvePhaseExecutionAction } from "./actionBindings"
+import { verifyPathActionOnServer } from "./lmsVerification"
 import {
   completePhase,
   emptyExecutionProgress,
+  getCurrentPhaseKey,
   normalizeExecutionProgress,
   resetExecutionProgress,
   startPhase,
   type PathExecutionSnapshot,
-  getExecutionSnapshot,
+  buildExecutionSnapshot,
   nextActionAfterComplete,
 } from "./execution"
-import type { PathDiagnosis, PathExecutionProgress, PathFlowDraft, PathPhaseKey, PathStoredState, PersonalRoadmap } from "./types"
+import type {
+  PathCompletionSource,
+  PathDiagnosis,
+  PathExecutionProgress,
+  PathFlowDraft,
+  PathPhaseKey,
+  PathStoredState,
+  PersonalRoadmap,
+} from "./types"
 
 export {
   getCurrentPhaseKey,
+  buildExecutionSnapshot,
   getExecutionSnapshot,
   getPhaseStatus,
   nextActionAfterComplete,
   PATH_PHASE_KEYS,
   PATH_PHASE_LABELS,
 } from "./execution"
+export { resolvePhaseExecutionAction } from "./actionBindings"
+export { isPathActionVerifiedComplete, isResourceCompleteInSnapshot } from "./lmsVerification"
+export type { PathLmsVerificationSnapshot } from "./lmsVerification"
 export type { PathExecutionSnapshot } from "./execution"
 
 export const SKYLENT_PATH_STORAGE_KEY = "skylent-path-v1"
@@ -93,32 +108,69 @@ export function getPathExecutionProgress(): PathExecutionProgress {
   return normalizeExecutionProgress(state.execution)
 }
 
-export function getPathExecutionSnapshot(): PathExecutionSnapshot | null {
-  const state = loadPathState()
+function snapshotForState(state: PathStoredState): PathExecutionSnapshot | null {
   if (!state.roadmap) return null
-  return getExecutionSnapshot(getPathExecutionProgress(), state.roadmap)
+  return buildExecutionSnapshot(
+    normalizeExecutionProgress(state.execution),
+    state.roadmap,
+    state.diagnosis,
+  )
+}
+
+export function getPathExecutionSnapshot(): PathExecutionSnapshot | null {
+  return snapshotForState(loadPathState())
 }
 
 export function startPathPhase(phaseKey: PathPhaseKey): PathExecutionSnapshot {
   const state = loadPathState()
   const roadmap = requireRoadmap(state)
-  const next = startPhase(getPathExecutionProgress(), phaseKey)
+  if (!state.diagnosis) throw new Error("No path diagnosis saved.")
+  const action = resolvePhaseExecutionAction(state.diagnosis, roadmap, phaseKey)
+  const next = startPhase(getPathExecutionProgress(), phaseKey, new Date().toISOString(), action)
   savePathState({ ...state, execution: next })
-  return getExecutionSnapshot(next, roadmap)
+  return buildExecutionSnapshot(next, roadmap, state.diagnosis)
 }
 
-export function completePathPhase(phaseKey: PathPhaseKey): {
+export function completePathPhase(
+  phaseKey: PathPhaseKey,
+  completionSource: PathCompletionSource = "manual",
+): {
   snapshot: PathExecutionSnapshot
   followUp: string
 } {
   const state = loadPathState()
   const roadmap = requireRoadmap(state)
-  const next = completePhase(getPathExecutionProgress(), phaseKey)
+  const next = completePhase(getPathExecutionProgress(), phaseKey, new Date().toISOString(), completionSource)
   savePathState({ ...state, execution: next })
+  const snapshot = buildExecutionSnapshot(next, roadmap, state.diagnosis)
   return {
-    snapshot: getExecutionSnapshot(next, roadmap),
+    snapshot,
     followUp: nextActionAfterComplete(next, roadmap),
   }
+}
+
+/** When LMS reports the linked resource complete, advance Path with lms_verified source. */
+export async function tryCompletePathPhaseFromLms(phaseKey: PathPhaseKey): Promise<{
+  verified: boolean
+  snapshot: PathExecutionSnapshot | null
+  followUp?: string
+}> {
+  const state = loadPathState()
+  if (!state.roadmap || !state.diagnosis) return { verified: false, snapshot: null }
+  const progress = getPathExecutionProgress()
+  if (getCurrentPhaseKey(progress) !== phaseKey) return { verified: false, snapshot: snapshotForState(state) }
+  if (progress.phases[phaseKey].status !== "in_progress") {
+    return { verified: false, snapshot: snapshotForState(state) }
+  }
+
+  const action = resolvePhaseExecutionAction(state.diagnosis, state.roadmap, phaseKey)
+  const verified = await verifyPathActionOnServer(action)
+  if (!verified) {
+    return { verified: false, snapshot: snapshotForState(state) }
+  }
+
+  const result = completePathPhase(phaseKey, "lms_verified")
+  return { verified: true, snapshot: result.snapshot, followUp: result.followUp }
 }
 
 export function resetPathExecutionProgress(): PathExecutionSnapshot | null {
@@ -126,7 +178,7 @@ export function resetPathExecutionProgress(): PathExecutionSnapshot | null {
   if (!state.roadmap) return null
   const execution = resetExecutionProgress()
   savePathState({ ...state, execution })
-  return getExecutionSnapshot(execution, state.roadmap)
+  return buildExecutionSnapshot(execution, state.roadmap, state.diagnosis)
 }
 
 export function clearPathState(): void {

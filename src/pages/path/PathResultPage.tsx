@@ -11,6 +11,7 @@ import {
   loadPathState,
   resetPathExecutionProgress,
   startPathPhase,
+  tryCompletePathPhaseFromLms,
 } from "../../lib/path/storage"
 import "./PathPages.css"
 
@@ -55,6 +56,8 @@ export default function PathResultPage() {
   const [roadmap, setRoadmap] = useState<PersonalRoadmap | null>(null)
   const [execution, setExecution] = useState<PathExecutionSnapshot | null>(null)
   const [phaseJustCompleted, setPhaseJustCompleted] = useState<string | null>(null)
+  const [lmsCheckMessage, setLmsCheckMessage] = useState<string | null>(null)
+  const [lmsChecking, setLmsChecking] = useState(false)
 
   useEffect(() => {
     const next = refreshFromStorage()
@@ -73,10 +76,36 @@ export default function PathResultPage() {
   const handleCompletePhase = () => {
     const key = execution?.currentPhaseKey
     if (!key) return
-    const result = completePathPhase(key)
+    const result = completePathPhase(key, "manual")
     setExecution(result.snapshot)
     setPhaseJustCompleted(result.followUp)
+    setLmsCheckMessage(null)
   }
+
+  const handleVerifySkylentProgress = async () => {
+    const key = execution?.currentPhaseKey
+    if (!key || !execution?.action) return
+    setLmsChecking(true)
+    setLmsCheckMessage(null)
+    try {
+      const result = await tryCompletePathPhaseFromLms(key)
+      if (result.snapshot) setExecution(result.snapshot)
+      if (result.verified && result.followUp) {
+        setPhaseJustCompleted(result.followUp)
+        setLmsCheckMessage("Verified by Skylent — phase advanced from your LMS progress.")
+      } else {
+        setLmsCheckMessage(
+          "Skylent has not recorded completion for this step yet. Finish the linked activity while signed in, then check again.",
+        )
+      }
+    } finally {
+      setLmsChecking(false)
+    }
+  }
+
+  const skylentResource = execution?.action?.completionMode === "skylent_resource"
+  const manualOnly = execution?.action?.completionMode === "manual_only"
+  const openHref = execution?.action?.resource?.href
 
   const handleResetExecution = () => {
     const snap = resetPathExecutionProgress()
@@ -187,6 +216,13 @@ export default function PathResultPage() {
                   Current phase · {execution.currentPhaseLabel}
                 </p>
               ) : null}
+              {!execution.allComplete && execution.action ? (
+                <p className="skylent-path-result__exec-verify">
+                  {skylentResource
+                    ? "Verified by Skylent when your linked course, lab, or project progress shows complete."
+                    : "Learner marked complete — not verified by Skylent."}
+                </p>
+              ) : null}
               {phaseJustCompleted ? (
                 <>
                   <p className="skylent-path-result__exec-status is-complete">Completed</p>
@@ -198,17 +234,44 @@ export default function PathResultPage() {
                 <>
                   <p className="skylent-path-result__exec-status is-active">In progress</p>
                   <p className="skylent-path-result__exec-action">→ {execution.actionText}</p>
-                  <button
-                    type="button"
-                    className="skylent-path-result__btn is-primary skylent-path-result__exec-btn"
-                    onClick={handleCompletePhase}
-                  >
-                    Mark Skylent task complete
-                  </button>
+                  {openHref ? (
+                    <Link className="skylent-path-result__btn is-secondary skylent-path-result__exec-btn" to={openHref}>
+                      Open in Skylent
+                    </Link>
+                  ) : null}
+                  {skylentResource ? (
+                    <button
+                      type="button"
+                      className="skylent-path-result__btn is-primary skylent-path-result__exec-btn"
+                      onClick={handleVerifySkylentProgress}
+                      disabled={lmsChecking}
+                    >
+                      {lmsChecking ? "Checking…" : "Check Skylent progress"}
+                    </button>
+                  ) : null}
+                  {manualOnly || skylentResource ? (
+                    <button
+                      type="button"
+                      className="skylent-path-result__btn is-ghost skylent-path-result__exec-btn"
+                      onClick={handleCompletePhase}
+                    >
+                      Mark complete (not verified by Skylent)
+                    </button>
+                  ) : null}
+                  {lmsCheckMessage ? (
+                    <p className="skylent-path-result__exec-hint" role="status">
+                      {lmsCheckMessage}
+                    </p>
+                  ) : null}
                 </>
               ) : (
                 <>
                   <p className="skylent-path-result__exec-action">→ {execution.actionText}</p>
+                  {openHref && execution.action?.resource?.type === "site_route" ? (
+                    <Link className="skylent-path-result__btn is-secondary skylent-path-result__exec-btn" to={openHref}>
+                      Open link
+                    </Link>
+                  ) : null}
                   <button
                     type="button"
                     className="skylent-path-result__btn is-primary skylent-path-result__exec-btn"
