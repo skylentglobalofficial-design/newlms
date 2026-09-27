@@ -219,12 +219,14 @@ export default function PathResultPage() {
               {pathDate ? <time className="path-result-v2__date">{pathDate}</time> : null}
             </div>
             <div className="path-result-v2__vectors">
-              <div>
+              <div className="path-result-v2__vector path-result-v2__vector--from">
                 <span className="path-result-v2__vector-label">From</span>
                 <p>{roadmap.currentPosition}</p>
               </div>
-              <div className="path-result-v2__vector-rule" aria-hidden="true" />
-              <div>
+              <div className="path-result-v2__vector-bridge" aria-hidden="true">
+                <span className="path-result-v2__vector-arrow">→</span>
+              </div>
+              <div className="path-result-v2__vector path-result-v2__vector--toward">
                 <span className="path-result-v2__vector-label">Toward</span>
                 <p>{roadmap.target}</p>
               </div>
@@ -290,7 +292,7 @@ export default function PathResultPage() {
                     </span>
                     <span>
                       <strong>{EVIDENCE_KIND_LABEL[row.kind]}</strong>
-                      <em>{trustLabel(row.trust)}</em>
+                      <span className="path-result-v2__trust-tag">{trustLabel(row.trust)}</span>
                     </span>
                   </li>
                 ))}

@@ -26,7 +26,7 @@ import type {
   TimelineConstraint,
 } from "../../lib/path/types"
 import PathJourneyVisual from "./PathJourneyVisual"
-import { PATH_V2_STAGE_HEADLINE } from "./pathV2Copy"
+import { PATH_V2_INTRO, PATH_V2_STAGE_HEADLINE } from "./pathV2Copy"
 import "./PathPages.css"
 
 const DEFAULT_DRAFT: PathFlowDraft = {
@@ -240,16 +240,6 @@ export default function PathPage() {
     <PageShell aurora={false}>
       <main className="path-v2" onKeyDown={handleMainKeyDown}>
         <div className="path-v2__shell">
-          <header className="path-v2__header">
-            <div>
-              <p className="path-v2__kicker">Skylent Path</p>
-              <p className="path-v2__tagline">Career diagnosis · direction · sequence</p>
-            </div>
-            <p className="path-v2__counter" aria-live="polite">
-              {String(stage.number).padStart(2, "0")} / {String(PATH_STAGES.length).padStart(2, "0")}
-            </p>
-          </header>
-
           {hasSavedResult ? (
             <div className="path-v2__resume">
               You already have a path on this device.{" "}
@@ -262,39 +252,44 @@ export default function PathPage() {
           ) : null}
 
           <div className="path-v2__layout">
-            <aside className="path-v2__aside">
-              <PathJourneyVisual step={step} />
-              <nav className="path-v2-rail" aria-label="Diagnosis journey">
-                <ol>
-                  {PATH_STAGES.map((row, index) => (
-                    <li
-                      key={row.id}
-                      className={[
-                        index === step ? "is-current" : "",
-                        index < step ? "is-done" : "",
-                      ]
-                        .filter(Boolean)
-                        .join(" ")}
-                    >
-                      <span>{String(row.number).padStart(2, "0")}</span>
-                      {PATH_V2_STAGE_HEADLINE[row.id].journeyLabel}
-                    </li>
+            <div className="path-v2__main">
+              <header className="path-v2__hero">
+                <div className="path-v2__hero-head">
+                  <p className="path-v2__kicker">Skylent · Path system</p>
+                  <p className="path-v2__counter" aria-live="polite">
+                    {String(stage.number).padStart(2, "0")} / {String(PATH_STAGES.length).padStart(2, "0")}
+                  </p>
+                </div>
+                <p className="path-v2__eyebrow">{editorial.eyebrow}</p>
+                <h1 id="path-v2-question" className="path-v2__question">
+                  {editorial.lines.map((line) => (
+                    <span key={line}>{line}</span>
                   ))}
-                </ol>
-              </nav>
-            </aside>
+                </h1>
+                <p className="path-v2__lede">{editorial.lede}</p>
+                {step === 0 ? (
+                  <>
+                    <p className="path-v2__lede path-v2__lede--secondary">{PATH_V2_INTRO.secondaryLede}</p>
+                    <div className="path-v2__hero-actions">
+                      <button type="button" className="path-v2__cta-primary" onClick={goNext} disabled={submitting}>
+                        Start Your Path
+                        <span aria-hidden="true">→</span>
+                      </button>
+                      <Link className="path-v2__cta-secondary" to="/programmes">
+                        Explore programmes
+                        <span aria-hidden="true">→</span>
+                      </Link>
+                    </div>
+                    <p className="path-v2__note">{PATH_V2_INTRO.note}</p>
+                  </>
+                ) : null}
+              </header>
 
-            <div
-              className={`path-v2__stage${stageVisible ? " is-visible" : ""}`}
-              key={stage.id}
-              aria-labelledby="path-v2-question"
-            >
-              <h1 id="path-v2-question" className="path-v2__question">
-                {editorial.lines.map((line) => (
-                  <span key={line}>{line}</span>
-                ))}
-              </h1>
-              <p className="path-v2__lede">{editorial.lede}</p>
+              <div
+                className={`path-v2__stage${stageVisible ? " is-visible" : ""}`}
+                key={stage.id}
+                aria-labelledby="path-v2-question"
+              >
 
               {stage.id === "academic" ? (
                 <div className="path-v2__answers">
@@ -451,10 +446,9 @@ export default function PathPage() {
               ) : null}
 
               {error ? <div className="path-v2__error" role="alert">{error}</div> : null}
-            </div>
-          </div>
+              </div>
 
-          <footer className="path-v2__foot">
+              <footer className={`path-v2__foot${step === 0 ? " path-v2__foot--intro" : ""}`}>
             {step > 0 ? (
               <button type="button" className="path-v2__back" onClick={goBack}>
                 Back
@@ -463,13 +457,42 @@ export default function PathPage() {
               <span />
             )}
             <button type="button" className="path-v2__continue" onClick={goNext} disabled={submitting}>
-              {step >= PATH_STAGES.length - 1 ? "Construct my path" : "Continue"}
+              {step >= PATH_STAGES.length - 1
+                ? "Construct my path"
+                : step === 0
+                  ? "Start Your Path"
+                  : "Continue"}
               <span aria-hidden="true">→</span>
             </button>
             <button type="button" className="path-v2__restart" onClick={restartFlow}>
               Restart
             </button>
-          </footer>
+              </footer>
+            </div>
+
+            <aside className="path-v2__aside">
+              <PathJourneyVisual step={step} stageId={stage.id} />
+              <nav className="path-v2-rail" aria-label="Diagnosis journey">
+                <p className="path-v2-rail__title">Index</p>
+                <ol>
+                  {PATH_STAGES.map((row, index) => (
+                    <li
+                      key={row.id}
+                      className={[
+                        index === step ? "is-current" : "",
+                        index < step ? "is-done" : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
+                    >
+                      <span>{String(row.number).padStart(2, "0")}</span>
+                      {PATH_V2_STAGE_HEADLINE[row.id].journeyLabel}
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            </aside>
+          </div>
         </div>
       </main>
     </PageShell>
