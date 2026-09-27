@@ -8,6 +8,7 @@ import { DemoStateProvider } from './demo/DemoStateContext'
 import RouteFallback from './components/RouteFallback'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
+const PathDiscoveryPage = lazy(() => import('./pages/PathDiscoveryPage'))
 const EducationPage = lazy(() => import('./pages/EducationPage'))
 const SchoolingPage = lazy(() => import('./pages/education/SchoolingPage'))
 const UndergraduatePage = lazy(() => import('./pages/education/UndergraduatePage'))
@@ -58,6 +59,7 @@ function AppRoutes() {
     <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/path" element={<PathDiscoveryPage />} />
         <Route path="/education" element={<EducationPage />} />
         <Route path="/education/schooling" element={<SchoolingPage />} />
         <Route path="/education/undergraduate" element={<UndergraduatePage />} />
