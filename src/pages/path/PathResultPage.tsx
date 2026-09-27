@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { programmeDiscoveryCards } from "../../lib/programme-discovery"
-import type { PersonalRoadmap, RoadmapPhase } from "../../lib/path/types"
+import type { PersonalRoadmap, RoadmapPhase, PathEvidenceRecord } from "../../lib/path/types"
 import type { PathExecutionSnapshot } from "../../lib/path/storage"
+import { trustLabel } from "../../lib/path/evidence"
 import {
   clearPathState,
   completePathPhase,
@@ -58,6 +59,7 @@ export default function PathResultPage() {
   const [phaseJustCompleted, setPhaseJustCompleted] = useState<string | null>(null)
   const [lmsCheckMessage, setLmsCheckMessage] = useState<string | null>(null)
   const [lmsChecking, setLmsChecking] = useState(false)
+  const [recordedEvidence, setRecordedEvidence] = useState<PathEvidenceRecord[] | null>(null)
 
   useEffect(() => {
     const next = refreshFromStorage()
@@ -70,6 +72,7 @@ export default function PathResultPage() {
     const key = execution?.currentPhaseKey
     if (!key) return
     setPhaseJustCompleted(null)
+    setRecordedEvidence(null)
     setExecution(startPathPhase(key))
   }
 
@@ -79,6 +82,7 @@ export default function PathResultPage() {
     const result = completePathPhase(key, "manual")
     setExecution(result.snapshot)
     setPhaseJustCompleted(result.followUp)
+    setRecordedEvidence(result.evidence)
     setLmsCheckMessage(null)
   }
 
@@ -92,6 +96,7 @@ export default function PathResultPage() {
       if (result.snapshot) setExecution(result.snapshot)
       if (result.verified && result.followUp) {
         setPhaseJustCompleted(result.followUp)
+        setRecordedEvidence(result.evidence ?? null)
         setLmsCheckMessage("Verified by Skylent — phase advanced from your LMS progress.")
       } else {
         setLmsCheckMessage(
@@ -227,6 +232,11 @@ export default function PathResultPage() {
                 <>
                   <p className="skylent-path-result__exec-status is-complete">Completed</p>
                   <p className="skylent-path-result__exec-follow">→ {phaseJustCompleted}</p>
+                  {recordedEvidence?.length ? (
+                    <p className="skylent-path-result__exec-hint">
+                      Evidence: {recordedEvidence.map((row) => trustLabel(row.trust)).join(" · ")}
+                    </p>
+                  ) : null}
                 </>
               ) : execution.allComplete ? (
                 <p>{execution.actionText}</p>

@@ -1,6 +1,16 @@
 import { localPathRecommendationService } from "./recommendation"
+import { listCareerEvidenceProjects } from "../career-api"
 import { resolvePhaseExecutionAction } from "./actionBindings"
-import { verifyPathActionOnServer } from "./lmsVerification"
+import {
+  appendEvidenceEntries,
+  buildManualEvidenceRecord,
+  buildVerifiedEvidenceRecords,
+  emptyPathEvidenceLog,
+  evidenceForPhase,
+  normalizePathEvidenceLog,
+  resolveVerifiedCompletionSource,
+} from "./evidence"
+import { fetchLmsVerificationSnapshot } from "./lmsVerification"
 import {
   completePhase,
   emptyExecutionProgress,
@@ -15,6 +25,7 @@ import {
 import type {
   PathCompletionSource,
   PathDiagnosis,
+  PathEvidenceRecord,
   PathExecutionProgress,
   PathFlowDraft,
   PathPhaseKey,
@@ -32,6 +43,19 @@ export {
   PATH_PHASE_LABELS,
 } from "./execution"
 export { resolvePhaseExecutionAction } from "./actionBindings"
+export {
+  appendEvidenceEntries,
+  buildManualEvidenceRecord,
+  buildVerifiedEvidenceRecords,
+  completionSourceToTrust,
+  evidenceForPhase,
+  latestEvidenceForPhase,
+  normalizePathEvidenceLog,
+  resolveVerifiedCompletionSource,
+  trustLabel,
+  verifiedEvidenceMatchesSnapshot,
+} from "./evidence"
+export type { PathEvidenceInputSnapshot } from "./evidence"
 export { isPathActionVerifiedComplete, isResourceCompleteInSnapshot } from "./lmsVerification"
 export type { PathLmsVerificationSnapshot } from "./lmsVerification"
 export type { PathExecutionSnapshot } from "./execution"
@@ -61,6 +85,7 @@ export function loadPathState(): PathStoredState {
       execution: parsed.roadmap
         ? normalizeExecutionProgress(parsed.execution)
         : normalizeExecutionProgress(undefined),
+      evidence: normalizePathEvidenceLog(parsed.evidence),
     }
   } catch {
     return emptyPathState()
@@ -94,6 +119,7 @@ export function completePathDiagnosis(diagnosis: PathDiagnosis): PersonalRoadmap
     flowStep: 0,
     draft: {},
     execution: emptyExecutionProgress(),
+    evidence: emptyPathEvidenceLog(),
   })
   return roadmap
 }
@@ -106,6 +132,45 @@ function requireRoadmap(state: PathStoredState): PersonalRoadmap {
 export function getPathExecutionProgress(): PathExecutionProgress {
   const state = loadPathState()
   return normalizeExecutionProgress(state.execution)
+}
+
+function recordEvidenceForPhaseComplete(
+  state: PathStoredState,
+  phaseKey: PathPhaseKey,
+  completionSource: PathCompletionSource,
+  options?: {
+    snapshot?: import("./lmsVerification").PathLmsVerificationSnapshot
+    careerProjects?: import("../career-api").CareerEvidenceSummary[]
+  },
+): PathStoredState {
+  if (!state.diagnosis || !state.roadmap) return state
+  const action = resolvePhaseExecutionAction(state.diagnosis, state.roadmap, phaseKey)
+  const recordedAt = new Date().toISOString()
+  let entries: PathEvidenceRecord[] = []
+
+  if (completionSource === "manual") {
+    entries = [buildManualEvidenceRecord({ action, phaseKey, recordedAt })]
+  } else if (action.resource && options?.snapshot) {
+    entries = buildVerifiedEvidenceRecords({
+      action,
+      phaseKey,
+      resource: action.resource,
+      snapshot: options.snapshot,
+      careerProjects: options.careerProjects ?? [],
+      completionSource,
+      recordedAt,
+    })
+  }
+
+  if (!entries.length) return state
+  return {
+    ...state,
+    evidence: appendEvidenceEntries(normalizePathEvidenceLog(state.evidence), entries),
+  }
+}
+
+export function getPathEvidenceLog(): import("./types").PathEvidenceLog {
+  return normalizePathEvidenceLog(loadPathState().evidence)
 }
 
 function snapshotForState(state: PathStoredState): PathExecutionSnapshot | null {
@@ -134,18 +199,27 @@ export function startPathPhase(phaseKey: PathPhaseKey): PathExecutionSnapshot {
 export function completePathPhase(
   phaseKey: PathPhaseKey,
   completionSource: PathCompletionSource = "manual",
+  evidenceContext?: {
+    snapshot?: import("./lmsVerification").PathLmsVerificationSnapshot
+    careerProjects?: import("../career-api").CareerEvidenceSummary[]
+  },
 ): {
   snapshot: PathExecutionSnapshot
   followUp: string
+  evidence: import("./types").PathEvidenceRecord[]
 } {
-  const state = loadPathState()
+  let state = loadPathState()
   const roadmap = requireRoadmap(state)
   const next = completePhase(getPathExecutionProgress(), phaseKey, new Date().toISOString(), completionSource)
-  savePathState({ ...state, execution: next })
+  state = { ...state, execution: next }
+  state = recordEvidenceForPhaseComplete(state, phaseKey, completionSource, evidenceContext)
+  savePathState(state)
   const snapshot = buildExecutionSnapshot(next, roadmap, state.diagnosis)
+  const log = normalizePathEvidenceLog(state.evidence)
   return {
     snapshot,
     followUp: nextActionAfterComplete(next, roadmap),
+    evidence: evidenceForPhase(log, phaseKey),
   }
 }
 
@@ -154,6 +228,7 @@ export async function tryCompletePathPhaseFromLms(phaseKey: PathPhaseKey): Promi
   verified: boolean
   snapshot: PathExecutionSnapshot | null
   followUp?: string
+  evidence?: import("./types").PathEvidenceRecord[]
 }> {
   const state = loadPathState()
   if (!state.roadmap || !state.diagnosis) return { verified: false, snapshot: null }
@@ -164,20 +239,37 @@ export async function tryCompletePathPhaseFromLms(phaseKey: PathPhaseKey): Promi
   }
 
   const action = resolvePhaseExecutionAction(state.diagnosis, state.roadmap, phaseKey)
-  const verified = await verifyPathActionOnServer(action)
-  if (!verified) {
+  if (!action.resource) {
     return { verified: false, snapshot: snapshotForState(state) }
   }
 
-  const result = completePathPhase(phaseKey, "lms_verified")
-  return { verified: true, snapshot: result.snapshot, followUp: result.followUp }
+  const lmsSnapshot = await fetchLmsVerificationSnapshot(action.resource)
+  let careerProjects: import("../career-api").CareerEvidenceSummary[] = []
+  try {
+    careerProjects = await listCareerEvidenceProjects()
+  } catch {
+    careerProjects = []
+  }
+
+  const completionSource = resolveVerifiedCompletionSource(action.resource, lmsSnapshot)
+  if (!completionSource) {
+    return { verified: false, snapshot: snapshotForState(state) }
+  }
+
+  const result = completePathPhase(phaseKey, completionSource, { snapshot: lmsSnapshot, careerProjects })
+  return {
+    verified: true,
+    snapshot: result.snapshot,
+    followUp: result.followUp,
+    evidence: result.evidence,
+  }
 }
 
 export function resetPathExecutionProgress(): PathExecutionSnapshot | null {
   const state = loadPathState()
   if (!state.roadmap) return null
   const execution = resetExecutionProgress()
-  savePathState({ ...state, execution })
+  savePathState({ ...state, execution, evidence: emptyPathEvidenceLog() })
   return buildExecutionSnapshot(execution, state.roadmap, state.diagnosis)
 }
 

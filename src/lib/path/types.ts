@@ -105,7 +105,37 @@ export type PathPhaseKey =
 export type PathPhaseStatus = "not_started" | "in_progress" | "completed"
 
 /** How a phase was marked complete on the Path device record. */
-export type PathCompletionSource = "manual" | "lms_verified"
+export type PathCompletionSource = "manual" | "lms_verified" | "project_verified" | "career_evidence"
+
+/** What the learner demonstrated — not employment or placement outcomes. */
+export type PathEvidenceKind =
+  | "learning_completed"
+  | "quiz_passed"
+  | "lab_completed"
+  | "project_completed"
+  | "project_artifact"
+  | "portfolio_evidence"
+
+export type PathEvidenceTrustClass = PathCompletionSource
+
+export type PathEvidenceRecord = {
+  id: string
+  phaseKey: PathPhaseKey
+  kind: PathEvidenceKind
+  trust: PathEvidenceTrustClass
+  /** Plain-language statement of demonstrated work on Skylent. */
+  demonstrated: string
+  resourceId?: string
+  href?: string
+  /** Career OS evidence project id when trust is career_evidence. */
+  sourceRef?: string
+  recordedAt: string
+}
+
+export type PathEvidenceLog = {
+  entries: PathEvidenceRecord[]
+  updatedAt: string
+}
 
 /** Linked Skylent surface for an execution step (real ids/routes only). */
 export type PathResourceType = "lms_lesson" | "lms_lab" | "learner_project" | "site_route"
@@ -159,6 +189,8 @@ export type PathStoredState = {
   draft: PathFlowDraft
   /** Progress through Foundation → Opportunity on this device. */
   execution?: PathExecutionProgress
+  /** Append-only evidence derived from Path completion + Skylent signals (not a copy of LMS DB). */
+  evidence?: PathEvidenceLog
 }
 
 export interface PathRecommendationService {
