@@ -8,7 +8,8 @@ import { DemoStateProvider } from './demo/DemoStateContext'
 import RouteFallback from './components/RouteFallback'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
-const PathDiscoveryPage = lazy(() => import('./pages/PathDiscoveryPage'))
+const PathPage = lazy(() => import('./pages/path/PathPage'))
+const PathResultPage = lazy(() => import('./pages/path/PathResultPage'))
 const EducationPage = lazy(() => import('./pages/EducationPage'))
 const SchoolingPage = lazy(() => import('./pages/education/SchoolingPage'))
 const UndergraduatePage = lazy(() => import('./pages/education/UndergraduatePage'))
@@ -61,7 +62,8 @@ function AppRoutes() {
         <Route path="/" element={<HomePage />} />
 
         {/* Core Skylent path product */}
-        <Route path="/path" element={<PathDiscoveryPage />} />
+        <Route path="/path" element={<PathPage />} />
+        <Route path="/path/result" element={<PathResultPage />} />
 
         {/* Education: canonical public IA + backwards-compatible legacy routes */}
         <Route path="/education" element={<EducationPage />} />

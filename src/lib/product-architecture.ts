@@ -161,10 +161,10 @@ export const LEARN_NAV: MegaNavGroup = {
   to: "/courses",
   tagline: "Programs, courses, skills, and workshops",
   items: [
-    { label: "Programs", sub: "Structured professional learning pathways.", to: "/programs" },
     { label: "Courses", sub: "Focused units you can start today.", to: "/courses" },
     { label: "Skills", sub: "Choose what you want to be able to do.", to: "/skills" },
     { label: "Workshops", sub: "Short, focused live sessions.", to: "/workshops" },
+    { label: "Programs", sub: "Structured professional learning pathways.", to: "/programs" },
   ],
 }
 

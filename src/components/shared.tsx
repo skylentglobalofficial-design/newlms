@@ -238,6 +238,10 @@ function pathInGroup(label: string, to: string | undefined, pathname: string): b
     return pathname === '/career-os' || pathname.startsWith('/career-os/')
   }
 
+  if (label === 'Path') {
+    return pathname === '/path' || pathname.startsWith('/path/')
+  }
+
   if (label === 'Competitive Exams') {
     return pathname === '/education/exams' || pathname.startsWith('/exams/') || examProgram
   }
@@ -443,7 +447,8 @@ export function Nav() {
 
   if (homeNav) {
     const homeLinks = [
-      { label: 'Programmes', to: '/programs' },
+      { label: 'Path', to: '/path' },
+      { label: 'Programmes', to: '/programmes' },
       { label: 'Education', to: '/education' },
       { label: 'Career OS', to: '/career-os' },
       { label: 'About', to: '/about' },
@@ -507,7 +512,7 @@ export function Nav() {
             ) : (
               <Link to="/login" className="home-nav-signin">Sign in</Link>
             )}
-            <Link to="/signup" className="home-nav-start">Get started <span aria-hidden="true">→</span></Link>
+            <Link to="/path" className="home-nav-start">Start Your Path <span aria-hidden="true">→</span></Link>
             <button
               ref={menuTriggerRef}
               type="button"
@@ -541,7 +546,7 @@ export function Nav() {
               ) : (
                 <Link to="/login" onClick={() => setMenuOpen(false)} className="home-nav-signin">Sign in</Link>
               )}
-              <Link to="/signup" onClick={() => setMenuOpen(false)} className="home-nav-start">Get started</Link>
+              <Link to="/path" onClick={() => setMenuOpen(false)} className="home-nav-start">Start Your Path</Link>
             </div>
           </div>
         ) : null}
@@ -561,6 +566,24 @@ export function Nav() {
         </Link>
 
         <div className="nav-links" style={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0 }}>
+          <Link
+            to="/path"
+            aria-current={pathInGroup('Path', '/path', location.pathname) ? 'page' : undefined}
+            className="nav-path-primary"
+            style={{
+              color: pathInGroup('Path', '/path', location.pathname) ? C.ink : C.slate,
+              fontSize: 14,
+              padding: '8px 12px',
+              display: 'inline-flex',
+              alignItems: 'center',
+              fontFamily: 'var(--font-body)',
+              letterSpacing: '-0.01em',
+              textDecoration: 'none',
+              fontWeight: 600,
+            }}
+          >
+            Path
+          </Link>
           {primaryNav.map(group => {
             const open = activeMenu === group.label
             const menuId = `nav-menu-${group.label.toLowerCase()}`
@@ -770,6 +793,26 @@ export function Nav() {
               <Link to="/login" className="nav-signin" style={{ background: 'transparent', border: '1px solid rgba(8,9,9,0.16)', color: C.ink, borderRadius: 7, padding: '7px 16px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', minHeight: 36 }}>
                 Sign in
               </Link>
+              <Link
+                to="/path"
+                className="nav-path-cta"
+                style={{
+                  background: C.indigo,
+                  border: 'none',
+                  color: C.white,
+                  borderRadius: 7,
+                  padding: '7px 16px',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  whiteSpace: 'nowrap',
+                  minHeight: 36,
+                }}
+              >
+                Start Your Path
+              </Link>
             </>
           )}
           <button
@@ -841,6 +884,14 @@ export function Nav() {
               ))}
             </ul>
           ) : null}
+          <Link
+            to="/path"
+            onClick={() => setMenuOpen(false)}
+            className={`mobile-nav-link mobile-nav-path${pathInGroup('Path', '/path', location.pathname) ? ' is-active' : ''}`}
+            aria-current={pathInGroup('Path', '/path', location.pathname) ? 'page' : undefined}
+          >
+            Path
+          </Link>
           {primaryNav.map((group) => {
             const expanded = mobileExpandedGroup === group.label
             const inGroup = pathInGroup(group.label, group.to, location.pathname)
@@ -953,6 +1004,9 @@ export function Nav() {
               <>
                 <Link to="/login" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', border: `1px solid ${T.lineStrong}`, borderRadius: 7, color: C.ink, textDecoration: 'none', fontSize: 14 }}>
                   Sign in
+                </Link>
+                <Link to="/path" onClick={() => setMenuOpen(false)} className="mobile-nav-cta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', borderRadius: 7, background: C.indigo, color: C.white, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
+                  Start Your Path
                 </Link>
               </>
             )}
