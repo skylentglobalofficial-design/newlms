@@ -4,143 +4,72 @@ import { PageShell } from "../components/shared"
 import "./PathDiscoveryPage.css"
 
 type Stage = "school" | "college" | "graduate" | "working" | "switching"
-type Goal = "job" | "build" | "research" | "business" | "exam" | "unsure"
+type Goal = "career" | "build" | "research" | "business" | "exam" | "unsure"
+type Confidence = "low" | "developing" | "strong"
 
-type StarterPath = {
-  title: string
-  summary: string
-  steps: string[]
-  destinations: { label: string; to: string }[]
-}
+type Answers = { stage: Stage; goal: Goal; confidence: Confidence; direction: string }
 
-const STAGES: { id: Stage; label: string }[] = [
-  { id: "school", label: "School" },
-  { id: "college", label: "College" },
-  { id: "graduate", label: "Graduate" },
-  { id: "working", label: "Working" },
-  { id: "switching", label: "Changing direction" },
-]
+type StarterPath = { title: string; summary: string; steps: string[]; destinations: { label: string; to: string }[] }
 
-const GOALS: { id: Goal; label: string }[] = [
-  { id: "job", label: "Get into a career" },
-  { id: "build", label: "Build something" },
-  { id: "research", label: "Go deeper into research" },
-  { id: "business", label: "Build a business" },
-  { id: "exam", label: "Prepare for an exam" },
-  { id: "unsure", label: "I am not sure yet" },
-]
+const STAGES = [
+  ["school", "School"], ["college", "College"], ["graduate", "Graduate"], ["working", "Working"], ["switching", "Changing direction"],
+] as const
 
-function starterPath(stage: Stage, goal: Goal): StarterPath {
-  if (goal === "exam") {
-    return {
-      title: "Start with a diagnostic, not a course list.",
-      summary: `For someone at the ${stage} stage, the first useful step is to identify the target exam, current level, and the topics that need work.`,
-      steps: ["Choose the target exam", "Run a baseline diagnostic", "Build topic-level practice", "Use timed mocks and review the evidence"],
-      destinations: [{ label: "Explore exam pathways", to: "/education/exams" }],
-    }
-  }
+const GOALS = [
+  ["career", "Build a career"], ["build", "Build something"], ["research", "Go deeper into research"], ["business", "Build a business"], ["exam", "Prepare for an exam"], ["unsure", "I am not sure yet"],
+] as const
 
-  if (goal === "research") {
-    return {
-      title: "Build depth before collecting credentials.",
-      summary: `At the ${stage} stage, a research-oriented path should connect foundations, technical depth, experiments, and visible evidence of independent work.`,
-      steps: ["Map your current foundations", "Choose a technical domain", "Run experiments or projects", "Build a research-ready evidence trail"],
-      destinations: [{ label: "Explore education", to: "/education" }, { label: "Explore labs", to: "/labs" }],
-    }
-  }
+const CONFIDENCE = [["low", "I am starting"], ["developing", "I can do some of it"], ["strong", "I can already do a lot"]] as const
 
-  if (goal === "build" || goal === "business") {
-    return {
-      title: "Move from capability to evidence.",
-      summary: `For a ${stage} learner who wants to build, the useful sequence is capability → practice → real work → evidence → opportunity.`,
-      steps: ["Identify the capability you need", "Learn only the missing pieces", "Build a real project", "Publish evidence and iterate"],
-      destinations: [{ label: "Explore skills", to: "/skills" }, { label: "Explore labs", to: "/labs" }],
-    }
-  }
-
-  if (goal === "unsure") {
-    return {
-      title: "You do not need to pick a course yet.",
-      summary: `Start by understanding your current position, interests, constraints, and possible directions. The next version of Skylent will turn this intake into a deeper personalised path.`,
-      steps: ["Understand your current position", "Compare a few possible directions", "Identify the common foundations", "Choose a small next step and test it"],
-      destinations: [{ label: "Browse skills", to: "/skills" }, { label: "Explore education", to: "/education" }],
-    }
-  }
-
-  return {
-    title: "Build a career path around evidence, not a course count.",
-    summary: `For a ${stage} learner focused on a career, Skylent should first identify the target role, compare it with your current capabilities, then connect only the missing learning and practice.`,
-    steps: ["Define the target role", "Map current capabilities", "Close the highest-value gaps", "Build and prove the work", "Use Career OS for opportunities"],
-    destinations: [{ label: "Explore programmes", to: "/programs" }, { label: "Open Career OS", to: "/career-os" }],
-  }
+function starterPath({ stage, goal, confidence, direction }: Answers): StarterPath {
+  const focus = direction.trim() || "your chosen direction"
+  if (goal === "exam") return { title: "Build an evidence-led exam path.", summary: `At the ${stage} stage, Skylent should establish your baseline before recommending preparation. Your current confidence is ${confidence}, and your stated direction is ${focus}.`, steps: ["Define the exact target exam", "Run a baseline diagnostic", "Map topic-level gaps", "Practise and review evidence", "Use timed mocks to measure readiness"], destinations: [{ label: "Explore exam pathways", to: "/education/exams" }] }
+  if (goal === "research") return { title: "Build depth before collecting credentials.", summary: `For ${stage} learners, the research path should connect foundations, technical depth, experiments and visible evidence around ${focus}.`, steps: ["Map your foundations", "Choose a research domain", "Learn only the missing concepts", "Run experiments or projects", "Publish a research-ready evidence trail"], destinations: [{ label: "Explore education", to: "/education" }, { label: "Explore labs", to: "/labs" }] }
+  if (goal === "build" || goal === "business") return { title: "Move from capability to evidence.", summary: `For a ${stage} learner who wants to build, Skylent should connect missing capability to real work around ${focus}.`, steps: ["Define the outcome", "Identify the highest-value gaps", "Learn and practise", "Build something real", "Publish evidence and iterate"], destinations: [{ label: "Explore skills", to: "/skills" }, { label: "Explore labs", to: "/labs" }] }
+  if (goal === "unsure") return { title: "You do not need to pick a course yet.", summary: `The first job is to understand your current position, constraints and possible directions. Skylent should help you test directions before asking you to commit.`, steps: ["Understand your current state", "Compare possible directions", "Find common foundations", "Test a small real task", "Choose the next direction from evidence"], destinations: [{ label: "Browse skills", to: "/skills" }, { label: "Explore education", to: "/education" }] }
+  return { title: "Build a career path around evidence, not course count.", summary: `For a ${stage} learner targeting ${focus}, Skylent should compare the destination with the capabilities already present, then connect only the missing learning and practice.`, steps: ["Define the target role", "Map current capabilities", "Close the highest-value gaps", "Build and prove the work", "Move into Career OS and opportunities"], destinations: [{ label: "Explore programmes", to: "/programs" }, { label: "Open Career OS", to: "/career-os" }] }
 }
 
 export default function PathDiscoveryPage() {
-  const [stage, setStage] = useState<Stage>("college")
-  const [goal, setGoal] = useState<Goal>("job")
+  const [answers, setAnswers] = useState<Answers>({ stage: "college", goal: "career", confidence: "developing", direction: "" })
   const [submitted, setSubmitted] = useState(false)
-  const result = useMemo(() => starterPath(stage, goal), [stage, goal])
+  const result = useMemo(() => starterPath(answers), [answers])
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setSubmitted(true)
-  }
+  function handleSubmit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); setSubmitted(true) }
 
   return (
     <PageShell aurora={false}>
       <main className="path-page">
         <section className="path-hero">
-          <p className="path-kicker">SKYLENT PATH</p>
+          <p className="path-kicker">SKYLENT PATH · EARLY PRODUCT</p>
           <h1>Don't start with a course.<br /><em>Start with your direction.</em></h1>
-          <p className="path-intro">
-            Skylent is being built around a simple question: where are you now, where do you want to go, and what is actually missing between the two?
-          </p>
+          <p className="path-intro">Tell Skylent where you are, what you are trying to change, what you can already do and what direction is on your mind. The long-term product turns this into a living learner model.</p>
         </section>
 
-        <section className="path-workspace" aria-label="Path discovery">
+        <section className="path-workspace" aria-label="Skylent Path diagnostic">
           <form className="path-form" onSubmit={handleSubmit}>
-            <div className="path-question">
-              <span>01</span>
-              <div>
-                <h2>Where are you right now?</h2>
-                <p>This changes the context of the path.</p>
-              </div>
-            </div>
-            <div className="path-options">
-              {STAGES.map((item) => (
-                <button key={item.id} type="button" className={stage === item.id ? "selected" : ""} onClick={() => { setStage(item.id); setSubmitted(false) }}>
-                  {item.label}
-                </button>
-              ))}
-            </div>
+            <div className="path-question"><span>01</span><div><h2>Where are you right now?</h2><p>Your academic or professional context.</p></div></div>
+            <div className="path-options">{STAGES.map(([id, label]) => <button key={id} type="button" className={answers.stage === id ? "selected" : ""} onClick={() => { setAnswers((current) => ({ ...current, stage: id })); setSubmitted(false) }}>{label}</button>)}</div>
 
-            <div className="path-question">
-              <span>02</span>
-              <div>
-                <h2>What are you trying to move toward?</h2>
-                <p>You can change this later. You are not choosing a course.</p>
-              </div>
-            </div>
-            <div className="path-options">
-              {GOALS.map((item) => (
-                <button key={item.id} type="button" className={goal === item.id ? "selected" : ""} onClick={() => { setGoal(item.id); setSubmitted(false) }}>
-                  {item.label}
-                </button>
-              ))}
-            </div>
+            <div className="path-question"><span>02</span><div><h2>What are you moving toward?</h2><p>You are choosing a direction, not a course.</p></div></div>
+            <div className="path-options">{GOALS.map(([id, label]) => <button key={id} type="button" className={answers.goal === id ? "selected" : ""} onClick={() => { setAnswers((current) => ({ ...current, goal: id })); setSubmitted(false) }}>{label}</button>)}</div>
 
-            <button className="path-submit" type="submit">Show my starter path <span>→</span></button>
+            <div className="path-question"><span>03</span><div><h2>How capable do you feel today?</h2><p>Self-reported confidence is only one signal; later versions will combine it with evidence.</p></div></div>
+            <div className="path-options">{CONFIDENCE.map(([id, label]) => <button key={id} type="button" className={answers.confidence === id ? "selected" : ""} onClick={() => { setAnswers((current) => ({ ...current, confidence: id })); setSubmitted(false) }}>{label}</button>)}</div>
+
+            <div className="path-question"><span>04</span><div><h2>What direction is on your mind?</h2><p>It can be a role, field, exam, research area, business idea or simply a question.</p></div></div>
+            <input className="path-direction-input" value={answers.direction} onChange={(event) => { setAnswers((current) => ({ ...current, direction: event.target.value })); setSubmitted(false) }} placeholder="e.g. data science, aerospace, product, UPSC, my own company…" maxLength={120} />
+
+            <button className="path-submit" type="submit">Build my starter path <span>→</span></button>
           </form>
 
           <aside className={`path-result ${submitted ? "is-visible" : ""}`} aria-live="polite">
-            <p className="path-result-label">YOUR STARTER PATH</p>
-            <h2>{submitted ? result.title : "Your path will start here."}</h2>
-            <p>{submitted ? result.summary : "Answer two questions and Skylent will show the kind of sequence we are building around you."}</p>
-            <ol>
-              {(submitted ? result.steps : ["Where you are", "Where you want to go", "What is missing", "What to do next"]).map((step) => <li key={step}>{step}</li>)}
-            </ol>
+            <p className="path-result-label">{submitted ? "YOUR STARTER PATH" : "THE SKYLENT MODEL"}</p>
+            <h2>{submitted ? result.title : "Understand → diagnose → build → prove → move."}</h2>
+            <p>{submitted ? result.summary : "The first version is deliberately simple. The long-term system will combine education history, skills, projects, assessments, communication, goals and evidence to continuously update what the learner should do next."}</p>
+            <ol>{(submitted ? result.steps : ["Understand your starting point", "Diagnose the gap", "Recommend only what is missing", "Build and verify evidence", "Connect the next opportunity"]).map((step) => <li key={step}>{step}</li>)}</ol>
             {submitted && <div className="path-destinations">{result.destinations.map((destination) => <Link key={destination.to} to={destination.to}>{destination.label} <span>→</span></Link>)}</div>}
-            <small>This is a starter product flow, not an AI career guarantee. The deeper assessment and recommendation engine will be connected to this experience later.</small>
+            <small>This starter experience does not claim to predict a career or guarantee a job. It is the foundation for a deeper recommendation system that will be connected to real learner evidence as the product matures.</small>
           </aside>
         </section>
       </main>
