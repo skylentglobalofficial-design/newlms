@@ -1,5 +1,4 @@
-import type { PathRecommendationContext } from "./classifyTrack"
-import type { PathTrack } from "./classifyTrack"
+import type { PathRecommendationContext, PathTrack } from "./classifyTrack"
 import type { RoadmapPhase } from "./types"
 import { nonProgrammeExecutionSteps, suggestProgrammeSlugs } from "./programmeMatch"
 

@@ -3,7 +3,15 @@ import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { programmeDiscoveryCards } from "../../lib/programme-discovery"
 import type { PersonalRoadmap, RoadmapPhase } from "../../lib/path/types"
-import { clearPathState, loadPathState } from "../../lib/path/storage"
+import type { PathExecutionSnapshot } from "../../lib/path/storage"
+import {
+  clearPathState,
+  completePathPhase,
+  getPathExecutionSnapshot,
+  loadPathState,
+  resetPathExecutionProgress,
+  startPathPhase,
+} from "../../lib/path/storage"
 import "./PathPages.css"
 
 const PHASE_ORDER: { key: keyof Pick<PersonalRoadmap, "foundation" | "skills" | "practice" | "build" | "proof" | "opportunity">; label: string }[] = [
@@ -34,15 +42,47 @@ function PhaseBlock({ index, label, phase }: { index: number; label: string; pha
   )
 }
 
+function refreshFromStorage(): { roadmap: PersonalRoadmap | null; snapshot: PathExecutionSnapshot | null } {
+  const stored = loadPathState()
+  return {
+    roadmap: stored.roadmap,
+    snapshot: stored.roadmap ? getPathExecutionSnapshot() : null,
+  }
+}
+
 export default function PathResultPage() {
   const [ready, setReady] = useState(false)
   const [roadmap, setRoadmap] = useState<PersonalRoadmap | null>(null)
+  const [execution, setExecution] = useState<PathExecutionSnapshot | null>(null)
+  const [phaseJustCompleted, setPhaseJustCompleted] = useState<string | null>(null)
 
   useEffect(() => {
-    const stored = loadPathState()
-    setRoadmap(stored.roadmap)
+    const next = refreshFromStorage()
+    setRoadmap(next.roadmap)
+    setExecution(next.snapshot)
     setReady(true)
   }, [])
+
+  const handleStartPhase = () => {
+    const key = execution?.currentPhaseKey
+    if (!key) return
+    setPhaseJustCompleted(null)
+    setExecution(startPathPhase(key))
+  }
+
+  const handleCompletePhase = () => {
+    const key = execution?.currentPhaseKey
+    if (!key) return
+    const result = completePathPhase(key)
+    setExecution(result.snapshot)
+    setPhaseJustCompleted(result.followUp)
+  }
+
+  const handleResetExecution = () => {
+    const snap = resetPathExecutionProgress()
+    setPhaseJustCompleted(null)
+    if (snap) setExecution(snap)
+  }
 
   const programmes = useMemo(() => {
     if (!roadmap?.suggestedProgrammeSlugs.length) return []
@@ -98,10 +138,20 @@ export default function PathResultPage() {
                 onClick={() => {
                   clearPathState()
                   setRoadmap(null)
+                  setExecution(null)
+                  setPhaseJustCompleted(null)
                 }}
               >
                 Clear saved path
               </button>
+              {roadmap ? (
+                <>
+                  {" · "}
+                  <button type="button" onClick={handleResetExecution}>
+                    Reset execution progress
+                  </button>
+                </>
+              ) : null}
             </div>
           </div>
 
@@ -126,6 +176,65 @@ export default function PathResultPage() {
             </div>
           </div>
 
+          {execution ? (
+            <section
+              className="skylent-path-result__next skylent-path-result__execution"
+              aria-label="Your next action"
+            >
+              <span>{execution.allComplete ? "Path execution" : "Your next action"}</span>
+              {!execution.allComplete ? (
+                <p className="skylent-path-result__exec-phase">
+                  Current phase · {execution.currentPhaseLabel}
+                </p>
+              ) : null}
+              {phaseJustCompleted ? (
+                <>
+                  <p className="skylent-path-result__exec-status is-complete">Completed</p>
+                  <p className="skylent-path-result__exec-follow">→ {phaseJustCompleted}</p>
+                </>
+              ) : execution.allComplete ? (
+                <p>{execution.actionText}</p>
+              ) : execution.status === "in_progress" ? (
+                <>
+                  <p className="skylent-path-result__exec-status is-active">In progress</p>
+                  <p className="skylent-path-result__exec-action">→ {execution.actionText}</p>
+                  <button
+                    type="button"
+                    className="skylent-path-result__btn is-primary skylent-path-result__exec-btn"
+                    onClick={handleCompletePhase}
+                  >
+                    Mark Skylent task complete
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="skylent-path-result__exec-action">→ {execution.actionText}</p>
+                  <button
+                    type="button"
+                    className="skylent-path-result__btn is-primary skylent-path-result__exec-btn"
+                    onClick={() => handleStartPhase()}
+                  >
+                    Start
+                  </button>
+                </>
+              )}
+              {phaseJustCompleted && execution.currentPhaseKey && execution.status === "not_started" ? (
+                <>
+                  <p className="skylent-path-result__exec-action" style={{ marginTop: 16 }}>
+                    → {execution.actionText}
+                  </p>
+                  <button
+                    type="button"
+                    className="skylent-path-result__btn is-primary skylent-path-result__exec-btn"
+                    onClick={handleStartPhase}
+                  >
+                    Start
+                  </button>
+                </>
+              ) : null}
+            </section>
+          ) : null}
+
           <section className="skylent-path-result__chain" aria-label="Your path">
             <p className="skylent-path-result__kicker" style={{ marginTop: 8 }}>
               Your path
@@ -139,11 +248,6 @@ export default function PathResultPage() {
               />
             ))}
           </section>
-
-          <div className="skylent-path-result__next">
-            <span>Next action</span>
-            <p>{roadmap.nextAction}</p>
-          </div>
 
           {programmes.length > 0 ? (
             <section className="skylent-path-result__programmes" aria-labelledby="path-programmes-heading">

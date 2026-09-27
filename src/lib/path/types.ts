@@ -93,6 +93,29 @@ export type PersonalRoadmap = {
   generatedAt: string
 }
 
+/** Keys for the six roadmap execution phases (order matters). */
+export type PathPhaseKey =
+  | "foundation"
+  | "skills"
+  | "practice"
+  | "build"
+  | "proof"
+  | "opportunity"
+
+export type PathPhaseStatus = "not_started" | "in_progress" | "completed"
+
+export type PathPhaseProgress = {
+  status: PathPhaseStatus
+  startedAt?: string
+  completedAt?: string
+}
+
+/** Local execution loop — ready to mirror server-side later. */
+export type PathExecutionProgress = {
+  phases: Record<PathPhaseKey, PathPhaseProgress>
+  updatedAt: string
+}
+
 export type PathFlowDraft = Partial<
   Omit<PathDiagnosis, "completedAt" | "interests" | "gaps"> & {
     interests: InterestArea[]
@@ -106,6 +129,8 @@ export type PathStoredState = {
   roadmap: PersonalRoadmap | null
   flowStep: number
   draft: PathFlowDraft
+  /** Progress through Foundation → Opportunity on this device. */
+  execution?: PathExecutionProgress
 }
 
 export interface PathRecommendationService {

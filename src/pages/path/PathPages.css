@@ -405,6 +405,49 @@
   line-height: 1.55;
 }
 
+.skylent-path-result__execution {
+  margin-top: 40px;
+}
+
+.skylent-path-result__exec-phase {
+  margin: 0 0 12px !important;
+  font-size: 13px !important;
+  color: var(--path-muted) !important;
+}
+
+.skylent-path-result__exec-action {
+  margin: 0 0 20px !important;
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.skylent-path-result__exec-status {
+  margin: 0 0 8px !important;
+  font: 700 10px/1 var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.skylent-path-result__exec-status.is-active {
+  color: var(--path-ink);
+}
+
+.skylent-path-result__exec-status.is-complete {
+  color: #2d6a4f;
+}
+
+.skylent-path-result__exec-follow {
+  margin: 0 0 16px !important;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.skylent-path-result__exec-btn {
+  margin-top: 4px;
+  border: none;
+  cursor: pointer;
+}
+
 .skylent-path-result__programmes {
   margin-top: 56px;
 }
