@@ -69,6 +69,20 @@
 
 .pg-hero-actions {
   margin: 28px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.pg-hero-cta-secondary {
+  background: transparent;
+  color: var(--pg-hero-ink);
+  border: 1px solid var(--pg-hero-line);
+}
+
+.pg-hero-cta-secondary:hover {
+  background: rgba(21, 23, 26, 0.04);
 }
 
 .pg-hero-cta {

@@ -24,6 +24,7 @@ function starterPath({ stage, goal, confidence, direction }: Answers): StarterPa
   return { title: "Build a career path around evidence, not course count.", summary: `For a ${stage} learner targeting ${focus}, Skylent should compare the destination with the capabilities already present, then connect only the missing learning and practice.`, steps: ["Define the target role", "Map current capabilities", "Close the highest-value gaps", "Build and prove the work", "Move into Career OS and opportunities"], destinations: [{ label: "Explore programmes", to: "/programs" }, { label: "Open Career OS", to: "/career-os" }] }
 }
 
+/** @deprecated Superseded by `/path` (PathPage). Kept for reference; not routed. */
 export default function PathDiscoveryPage() {
   const [answers, setAnswers] = useState<Answers>({ stage: "college", goal: "career", confidence: "developing", direction: "" })
   const [submitted, setSubmitted] = useState(false)

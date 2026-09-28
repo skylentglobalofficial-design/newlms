@@ -56,6 +56,9 @@ importers:
       tsx:
         specifier: ^4.23.13
         version: 4.23.13
+      vite:
+        specifier: ^8.0.0
+        version: 8.0.3(@types/node@22.19.17)(jiti@2.6.1)(tsx@4.23.13)
       zod:
         specifier: ^4.5.4
         version: 4.6.5
@@ -90,9 +93,6 @@ importers:
       typescript:
         specifier: ^5.7.0
         version: 5.9.3
-      vite:
-        specifier: ^8.0.0
-        version: 8.0.3(@types/node@22.19.17)(jiti@2.6.1)(tsx@4.23.13)
 
 packages:
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
+import { CourseThumb } from "../components/product/ProductLanguage"
 import ProfessionalProgrammeTemplate from "../components/programme/ProfessionalProgrammeTemplate"
 import { programs, type Program } from "../data"
 import {
