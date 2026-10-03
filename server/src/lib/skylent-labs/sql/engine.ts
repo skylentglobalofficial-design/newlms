@@ -16,7 +16,7 @@ type SqlValue = number | string | Uint8Array | null
 const require = createRequire(import.meta.url)
 
 let sqlJsPromise: Promise<SqlJsStatic> | null = null
-let seedBytes: Uint8Array | null = null
+let seedBytes: Uint8Array<ArrayBuffer> | null = null
 
 function loadSqlJs() {
   if (!sqlJsPromise) {
@@ -60,7 +60,10 @@ async function getSeed(): Promise<Uint8Array> {
       insert.run(headers.map((name, index) => cellValue(row[name] ?? "", types[index] ?? "text")))
     }
     insert.free()
-    seedBytes = db.export()
+    const exported = db.export()
+    const copy = new Uint8Array<ArrayBuffer>(exported.length)
+    copy.set(exported)
+    seedBytes = copy
     return seedBytes
   } finally {
     db.close()
