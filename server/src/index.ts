@@ -24,6 +24,9 @@ import { projectsRouter } from "./routes/projects.js"
 import { facultyRouter } from "./routes/faculty.js"
 import { organisationRouter } from "./routes/organisation.js"
 import { careerRouter } from "./routes/career/index.js"
+import { skylentCertificatesRouter } from "./routes/skylent/certificates.js"
+import { skylentEnquiriesRouter } from "./routes/skylent/enquiries.js"
+import { revaRouter } from "./routes/skylent/reva.js"
 
 assertProductionEnv()
 
@@ -53,6 +56,9 @@ app.use("/api/v1/faculty", facultyRouter)
 app.use("/api/v1/organisation", organisationRouter)
 app.use("/api/v1/career", careerRouter)
 app.use("/api/v1/admin", adminRouter)
+app.use("/api/v1/certificates", skylentCertificatesRouter)
+app.use("/api/v1/enquiries", skylentEnquiriesRouter)
+app.use("/api/v1/reva", revaRouter)
 
 if (process.env.NODE_ENV === "production") {
   const clientDist = resolve(dirname(fileURLToPath(import.meta.url)), "../../dist")

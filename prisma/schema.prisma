@@ -879,3 +879,39 @@ model CareerSupportTask {
 
   @@index([requestId, status])
 }
+
+// ---------------------------------------------------------------------------
+// Skylent additions (merged from the Skylent website)
+// ---------------------------------------------------------------------------
+
+/// One certificate per learner per course, minted only by the server at 100% progress.
+model SkylentCertificate {
+  id           String   @id @default(uuid()) @db.Uuid
+  code         String   @unique /// SKL-<year>-<course code>-<random>
+  userId       String   @db.Uuid
+  courseId     String   @db.Uuid
+  learnerName  String
+  courseTitle  String
+  issuedAt     DateTime @default(now())
+  revoked      Boolean  @default(false)
+
+  @@unique([userId, courseId])
+  @@index([code])
+}
+
+/// Counselling calls and programme/degree enquiries from the public website.
+model SkylentEnquiry {
+  id            String   @id @default(uuid()) @db.Uuid
+  kind          String   @default("enquiry") /// enquiry | counselling | degree
+  name          String
+  email         String
+  phone         String?
+  programSlug   String?
+  preferredDate DateTime?
+  preferredSlot String?
+  message       String?
+  status        String   @default("new") /// new | contacted | closed
+  createdAt     DateTime @default(now())
+
+  @@index([status, createdAt])
+}
