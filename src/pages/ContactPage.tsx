@@ -3,6 +3,7 @@ import { C, FadeIn, PageShell } from '../components/shared'
 import { Button, Eyebrow, T } from '../components/ui'
 import { Aurora, GlassSurface } from '../components/foundation'
 import { getDomainAccent } from '../aurora-themes'
+import { apiV1 } from '../lib/api-base'
 
 const accent = getDomainAccent('general')
 const CONTACT_EMAIL = 'hello@skylent.in'
@@ -26,22 +27,41 @@ function fieldStyle(focused: boolean): CSSProperties {
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', iam: '', iwant: '', message: '' })
   const [focused, setFocused] = useState<string | null>(null)
+  const [sending, setSending] = useState(false)
+  const [reference, setReference] = useState<string | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const subject = encodeURIComponent(`Skylent enquiry — ${form.iwant || 'General'}`)
-    const body = encodeURIComponent(
-      [
-        `Name: ${form.name}`,
-        `Email: ${form.email}`,
-        `Phone: ${form.phone || '—'}`,
-        `I am a: ${form.iam}`,
-        `I want to: ${form.iwant}`,
-        '',
-        form.message,
-      ].join('\n'),
-    )
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`
+    setSending(true)
+    setSubmitError(null)
+    const message = [
+      form.iam ? `I am a: ${form.iam}` : "",
+      form.iwant ? `I want to: ${form.iwant}` : "",
+      form.message,
+    ].filter(Boolean).join("\n\n")
+    try {
+      const response = await fetch(`${apiV1()}/enquiries`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          kind: "enquiry",
+          name: form.name,
+          email: form.email,
+          phone: form.phone ? form.phone.slice(0, 20) : undefined,
+          message,
+        }),
+      })
+      const data = await response.json().catch(() => null) as { error?: string; data?: { id?: string } } | null
+      if (!response.ok) {
+        throw new Error(data?.error || "Could not send your enquiry. Email hello@skylent.in instead.")
+      }
+      setReference(data?.data?.id ?? "received")
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : "Could not send your enquiry.")
+    } finally {
+      setSending(false)
+    }
   }
 
   const contactItems = [
@@ -60,7 +80,7 @@ export default function ContactPage() {
               Reach the team directly.
             </h1>
             <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 480, margin: 0 }}>
-              Questions about programs, partnerships, or institutional delivery — email {CONTACT_EMAIL}. This page opens your mail client; it does not send a ticket on its own.
+              Questions about programs, partnerships, or institutional delivery — send an enquiry here, or email {CONTACT_EMAIL}.
             </p>
           </FadeIn>
         </div>
@@ -73,8 +93,16 @@ export default function ContactPage() {
               <GlassSurface level={2} padding="clamp(28px, 4vw, 40px)">
                 <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: C.ink, margin: '0 0 6px', letterSpacing: '-0.02em' }}>Compose an enquiry</h2>
                 <p style={{ color: C.slate, fontSize: 14, margin: '0 0 24px', lineHeight: 1.6 }}>
-                  Required fields are marked. Submit opens a mailto draft to {CONTACT_EMAIL}. No enquiry is recorded until you send that email.
+                  Required fields are marked. Submit records the enquiry with the Skylent team.
                 </p>
+                {reference ? (
+                  <p role="status" style={{ color: C.ink, fontSize: 14, margin: '0 0 16px', lineHeight: 1.5 }}>
+                    Enquiry received. Reference {reference}.
+                  </p>
+                ) : null}
+                {submitError ? (
+                  <p role="alert" style={{ color: '#b91c1c', fontSize: 14, margin: '0 0 16px', lineHeight: 1.5 }}>{submitError}</p>
+                ) : null}
                 <form onSubmit={handleSubmit}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }} className="two-col-sm">
                     {([['Full Name', 'name', 'text', 'Your full name'], ['Email', 'email', 'email', 'your@email.com']] as const).map(([label, field, type, ph]) => (
@@ -159,7 +187,9 @@ export default function ContactPage() {
                       onBlur={() => setFocused(null)}
                     />
                   </div>
-                  <Button type="submit" variant="primary" style={{ width: '100%' }}>Open email draft →</Button>
+                  <Button type="submit" variant="primary" style={{ width: '100%' }} disabled={sending || Boolean(reference)}>
+                    {sending ? "Sending…" : reference ? "Enquiry sent" : "Send enquiry"}
+                  </Button>
                 </form>
               </GlassSurface>
             </FadeIn>

@@ -10,7 +10,7 @@ export function getAllowedOrigins(): string[] {
     .map((value) => value.trim())
     .filter(Boolean) ?? []
 
-  if (explicit.length > 0) return explicit
+  if (explicit.length > 0) return expandSkylentSiteOrigins(explicit)
 
   const origins = new Set<string>()
   const frontend = process.env.FRONTEND_URL?.trim()
@@ -23,7 +23,22 @@ export function getAllowedOrigins(): string[] {
     }
   }
 
-  return [...origins]
+  return expandSkylentSiteOrigins([...origins])
+}
+
+/** Apex and www are the same public site. Credentialed calls must work from both. */
+function expandSkylentSiteOrigins(origins: string[]): string[] {
+  const next = new Set(origins)
+  for (const origin of origins) {
+    try {
+      const url = new URL(origin)
+      if (url.hostname === "skylent.live") next.add(`${url.protocol}//www.skylent.live`)
+      if (url.hostname === "www.skylent.live") next.add(`${url.protocol}//skylent.live`)
+    } catch {
+      // Ignore malformed allow-list entries; cors will reject them as usual.
+    }
+  }
+  return [...next]
 }
 
 export function createCorsMiddleware() {

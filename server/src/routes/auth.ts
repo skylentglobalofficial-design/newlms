@@ -163,13 +163,14 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
     })
 
     const { sessionToken, csrfToken } = await createSession(user.id)
-    setSessionCookies(res, req, sessionToken, csrfToken)
+    const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
 
     const roles = user.roles.map((entry) => entry.role)
     res.status(201).json({
       user: toSafeUser(user),
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
+      csrfToken: issuedCsrf,
     })
   } catch (error) {
     console.error("Signup failed:", error)
@@ -203,13 +204,14 @@ authRouter.post("/login", requireCsrf, async (req, res) => {
 
   try {
     const { sessionToken, csrfToken } = await createSession(user.id)
-    setSessionCookies(res, req, sessionToken, csrfToken)
+    const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
 
     const roles = user.roles.map((entry) => entry.role)
     res.json({
       user: toSafeUser(user),
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
+      csrfToken: issuedCsrf,
     })
   } catch (error) {
     console.error("Login failed:", error)

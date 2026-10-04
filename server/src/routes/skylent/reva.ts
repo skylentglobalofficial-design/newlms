@@ -45,7 +45,17 @@ revaRouter.post("/chat", limit, async (req, res) => {
   if (isIdentityQuestion(last)) return void res.json({ data: { answer: REVA_IDENTITY_REPLY } })
 
   const apiKey = process.env.SKYLENT_AI_API_KEY?.trim()
-  if (!apiKey) return void res.status(503).json({ error: "Reva isn't available yet." })
+  if (!apiKey) {
+    const courses = await prisma.course.findMany({ select: { title: true }, orderBy: { title: "asc" }, take: 80 })
+    const titles = courses.map((course) => course.title).join(", ")
+    return void res.json({
+      data: {
+        answer: titles
+          ? `SKYLENT courses you can open today: ${titles}. Compare them on /programs, start with /path if you are not sure, or use /contact to reach the team. Fees are not listed here. [[go:/programs]]`
+          : "Open /programs to see what is available, /path to find a direction, or /contact to reach the team. [[go:/programs]]",
+      },
+    })
+  }
 
   const courses = await prisma.course.findMany({ select: { slug: true, title: true }, take: 80 })
   let context = `${SITE}\nCourses: ${courses.map((c) => `${c.title} (/programs/${c.slug})`).join("; ")}`

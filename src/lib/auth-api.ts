@@ -1,6 +1,7 @@
+import { apiV1 } from "./api-base"
 import { parseApiJson } from "./http"
 
-const API_BASE = "/api/v1"
+const API_BASE = apiV1()
 
 export type ApiRole = "student" | "faculty" | "organisation" | "recruiter" | "superadmin"
 
@@ -82,7 +83,15 @@ async function authRequest<T>(
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
   })
 
-  return parseJson<T>(response)
+  const parsed = await parseJson<T>(response)
+  rememberIssuedCsrf(parsed)
+  return parsed
+}
+
+function rememberIssuedCsrf(payload: unknown) {
+  if (!payload || typeof payload !== "object" || !("csrfToken" in payload)) return
+  const token = (payload as { csrfToken?: unknown }).csrfToken
+  if (typeof token === "string" && token) csrfToken = token
 }
 
 export async function fetchCurrentUser(): Promise<AuthResponse | null> {

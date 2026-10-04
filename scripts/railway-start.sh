@@ -33,4 +33,6 @@ if [ -z "${CORS_ALLOWED_ORIGINS:-}" ]; then
   export CORS_ALLOWED_ORIGINS
 fi
 
+pnpm exec prisma migrate deploy
+
 exec node server/dist/index.js

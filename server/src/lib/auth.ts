@@ -114,8 +114,14 @@ export function setSessionCookies(
   csrfToken: string,
   maxAgeSeconds = SESSION_MAX_AGE_SECONDS,
 ) {
+  // Keep the CSRF value the browser already proved. Rotating it on login/signup
+  // breaks clients that cannot read the Set-Cookie (public site → api host).
+  // SameSite, Secure, and Path stay as they are.
+  const existing = parseCookies(req)[CSRF_COOKIE]
+  const issued = existing || csrfToken
   res.cookie(SESSION_COOKIE, sessionToken, sessionCookieOptions(req, maxAgeSeconds))
-  res.cookie(CSRF_COOKIE, csrfToken, csrfCookieOptions(req, maxAgeSeconds))
+  res.cookie(CSRF_COOKIE, issued, csrfCookieOptions(req, maxAgeSeconds))
+  return issued
 }
 
 export function toSafeUser(user: User) {

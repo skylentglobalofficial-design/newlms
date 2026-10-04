@@ -106,12 +106,14 @@ async function main() {
   assert(csrfBootstrap.response.ok, "CSRF bootstrap failed")
   assert(jar.has("csrf"), "CSRF cookie missing")
 
+  const csrfBeforeSignup = jar.get("csrf")
   const signup = await request(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
     body: { displayName, email, password },
   })
   assert(signup.response.status === 201, `Signup failed: ${signup.response.status}`)
+  assert(jar.get("csrf") === csrfBeforeSignup, "Signup must not rotate the CSRF cookie")
   assert(signup.data.user?.email === email, "Signup email mismatch")
   assertNoSecrets(signup.data)
   assert(jar.has("sid"), "Session cookie missing after signup")
@@ -140,12 +142,14 @@ async function main() {
   jar.clear()
   const loginCsrf = await request(jar, "/auth/csrf")
   assert(loginCsrf.response.ok, "CSRF bootstrap failed for login")
+  const csrfBeforeLogin = jar.get("csrf")
   const login = await request(jar, "/auth/login", {
     method: "POST",
     csrf: true,
     body: { email, password },
   })
   assert(login.response.ok, "Valid login failed")
+  assert(jar.get("csrf") === csrfBeforeLogin, "Login must not rotate the CSRF cookie")
   assertNoSecrets(login.data)
   assert(jar.has("sid"), "Session cookie missing after login")
 

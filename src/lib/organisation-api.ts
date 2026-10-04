@@ -1,6 +1,8 @@
 import { parseApiJson } from "./http"
 
-const API_BASE = "/api/v1"
+import { apiV1 } from "./api-base"
+
+const API_BASE = apiV1()
 
 export type OrganisationDashboard = {
   organisation: {

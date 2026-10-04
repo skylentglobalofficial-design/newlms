@@ -8,6 +8,7 @@ import type {
   QuizAttempt,
   UserEnrollment,
 } from "@prisma/client"
+import { ensureProgramCourseLinks } from "./program-course-links.js"
 import { prisma } from "./prisma.js"
 
 export type LessonKey = string
@@ -584,6 +585,7 @@ export async function syncCertificateState(enrollmentId: string, courseId?: stri
 }
 
 export async function findProgramBySlug(slug: string) {
+  await ensureProgramCourseLinks()
   return prisma.program.findUnique({
     where: { slug },
     include: {
