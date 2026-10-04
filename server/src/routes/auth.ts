@@ -73,7 +73,10 @@ const loginSchema = z.object({
 const AUTH_FAILURE = { error: "Invalid email or password" }
 
 authRouter.get("/csrf", (req, res) => {
-  const csrfToken = generateCsrfToken()
+  // Re-issuing a new value here invalidates a token the browser already stored
+  // and cannot re-read from a cross-site Set-Cookie. Keep the proved value.
+  const existing = parseCookies(req)[CSRF_COOKIE]
+  const csrfToken = existing || generateCsrfToken()
   res.cookie(CSRF_COOKIE, csrfToken, csrfCookieOptions(req))
   res.json({ csrfToken })
 })

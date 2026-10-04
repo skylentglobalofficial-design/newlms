@@ -1,11 +1,17 @@
 // Hostinger Node.js entrypoint compatibility shim.
 // Apply pending Prisma migrations, then start the compiled API.
 import { spawnSync } from "node:child_process"
-import { dirname } from "node:path"
+import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
 const root = dirname(fileURLToPath(import.meta.url))
-const migrate = spawnSync("npx", ["prisma", "migrate", "deploy"], {
+
+if (!process.env.DIRECT_URL && process.env.DATABASE_URL) {
+  process.env.DIRECT_URL = process.env.DATABASE_URL
+}
+
+const prismaCli = join(root, "node_modules", "prisma", "build", "index.js")
+const migrate = spawnSync(process.execPath, [prismaCli, "migrate", "deploy"], {
   cwd: root,
   stdio: "inherit",
   env: process.env,

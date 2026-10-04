@@ -105,6 +105,10 @@ async function main() {
   const csrfBootstrap = await request(jar, "/auth/csrf")
   assert(csrfBootstrap.response.ok, "CSRF bootstrap failed")
   assert(jar.has("csrf"), "CSRF cookie missing")
+  const csrfBootstrapped = jar.get("csrf")
+  const csrfAgain = await request(jar, "/auth/csrf")
+  assert(csrfAgain.response.ok, "CSRF refresh failed")
+  assert(jar.get("csrf") === csrfBootstrapped, "CSRF refresh must keep the existing cookie")
 
   const csrfBeforeSignup = jar.get("csrf")
   const signup = await request(jar, "/auth/signup", {

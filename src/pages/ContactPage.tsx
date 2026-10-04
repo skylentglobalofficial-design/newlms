@@ -46,10 +46,10 @@ export default function ContactPage() {
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           kind: "enquiry",
-          name: form.name,
+          name: form.name.slice(0, 120),
           email: form.email,
           phone: form.phone ? form.phone.slice(0, 20) : undefined,
-          message,
+          message: message.slice(0, 2000) || undefined,
         }),
       })
       const data = await response.json().catch(() => null) as { error?: string; data?: { id?: string } } | null
