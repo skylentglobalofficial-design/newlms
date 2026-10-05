@@ -13,6 +13,7 @@ const PathResultPage = lazy(() => import('./pages/path/PathResultPage'))
 const EducationPage = lazy(() => import('./pages/EducationPage'))
 const SchoolingPage = lazy(() => import('./pages/education/SchoolingPage'))
 const UndergraduatePage = lazy(() => import('./pages/education/UndergraduatePage'))
+const DegreeSamplePage = lazy(() => import('./pages/education/DegreeSamplePage'))
 const PostgraduatePage = lazy(() => import('./pages/education/PostgraduatePage'))
 const ExamsPage = lazy(() => import('./pages/education/ExamsPage'))
 const OSPage = lazy(() => import('./pages/OSPage'))
@@ -67,6 +68,7 @@ function AppRoutes() {
 
         {/* Education: canonical public IA + backwards-compatible legacy routes */}
         <Route path="/education" element={<EducationPage />} />
+        <Route path="/education/degrees/:slug" element={<DegreeSamplePage />} />
         <Route path="/education/school" element={<SchoolingPage />} />
         <Route path="/education/schooling" element={<Navigate to="/education/school" replace />} />
         <Route path="/education/online-degree" element={<UndergraduatePage />} />

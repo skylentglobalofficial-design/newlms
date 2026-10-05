@@ -1064,7 +1064,7 @@ export function Footer() {
               Skylent<span className="skylent-footer-mark-accent">.</span>
             </Link>
             <p className="skylent-footer-brand-copy">
-              Programmes, practice, education paths, and Career OS ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â structured learning with evidence you keep.
+              Programmes, practice, education paths, and Career OS — structured learning with evidence you keep.
             </p>
             <p className="skylent-footer-social-note">
               Public social profiles are not linked here yet.{" "}
