@@ -1,31 +1,36 @@
 // Skylent design tokens — single source of truth for JS inline styles.
 // CSS custom properties live in src/styles/design-system.css; keep both in sync.
 //
-// LIGHT ONLY (non-negotiable — public site, login, dashboard, LMS / Skylent OS, Career OS):
-//   paper / canvas  warm ivory
-//   cream           warm cream raised surface
-//   ink             dark charcoal text
-//   accent          indigo primary action
+// LIGHT ONLY (non-negotiable — public site, login, dashboard, LMS / Skylent OS, Career OS).
+// Two light themes share these tokens:
+//   signed-in product (:root)          paper/cream warm ivory · charcoal ink · indigo accent
+//   public shell (.skylent-public-canvas) pure white · navy ink · royal-blue accent
 // Dark surfaces are for genuine product specimens only (see surfaceProductDark).
 
 export const C = {
-  ink: '#15171A',
-  ink2: '#1C1F24',
-  ink3: '#2A2E35',
+  // Themeable tokens resolve through the CSS custom properties in
+  // src/styles/design-system.css. On :root those are the exact values that used to be
+  // hard-coded here (#15171A ink, #F7F4EC paper, #FFFDF8 cream, #4F46E5 accent …), so the
+  // signed-in product renders the same. Inside the public shell
+  // (.skylent-public-canvas, src/skylent-public.css) the same properties are
+  // re-declared, which lets inline-styled public pages follow the white theme.
+  ink: 'var(--skylent-color-ink)',
+  ink2: 'var(--skylent-color-ink-2)',
+  ink3: 'var(--skylent-color-ink-3)',
   orange: '#F97316',
-  indigo: '#4F46E5',
-  blue: '#2563EB',
-  warmWhite: '#F7F4EC',
-  cream: '#FFFDF8',
-  creamWarm: '#F5F2E9',
-  soft: '#EEEAE0',
-  sand: '#E8E2D6',
-  slate: '#5C6168',
-  muted: '#6E737A',
-  textSubtle: '#8A8F96',
+  indigo: 'var(--skylent-color-accent)',
+  blue: 'var(--skylent-color-accent-hover)',
+  warmWhite: 'var(--skylent-color-paper)',
+  cream: 'var(--skylent-color-cream)',
+  creamWarm: 'var(--skylent-surface-cream-warm)',
+  soft: 'var(--skylent-color-soft)',
+  sand: 'var(--skylent-color-sand)',
+  slate: 'var(--skylent-color-slate)',
+  muted: 'var(--skylent-color-muted)',
+  textSubtle: 'var(--skylent-color-text-subtle)',
   white: '#FFFFFF',
-  black: '#15171A',
-  canvas: '#F7F4EC',
+  black: 'var(--skylent-color-ink)',
+  canvas: 'var(--skylent-color-canvas)',
   success: '#15803D',
   warning: '#B45309',
   information: '#2563EB',
@@ -381,7 +386,7 @@ export type GlassLevel = 1 | 2 | 3
 /** Raised surfaces — solid cream/white, thin border, no blur. */
 export const glass = {
   1: {
-    bg: '#FFFDF8',
+    bg: 'var(--skylent-color-cream)',
     border: 'rgba(21,23,26,0.10)',
     blur: 'none',
     shadow: '0 4px 16px rgba(21,23,26,0.05)',

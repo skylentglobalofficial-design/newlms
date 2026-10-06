@@ -1,9 +1,9 @@
 /* /programs hero — white editorial opening with a study photograph. */
 
 .pg-hero {
-  --pg-hero-ink: #15171a;
-  --pg-hero-muted: #5c6168;
-  --pg-hero-faint: #8a8f96;
+  --pg-hero-ink: var(--skylent-color-ink);
+  --pg-hero-muted: var(--skylent-color-slate);
+  --pg-hero-faint: var(--skylent-color-text-subtle);
   --pg-hero-line: rgba(21, 23, 26, 0.1);
   --pg-hero-orange: #f97316;
   background: #ffffff;
@@ -98,7 +98,7 @@
 }
 
 .pg-hero-cta:hover {
-  background: #4338ca;
+  background: var(--skylent-color-accent-strong);
 }
 
 .pg-hero-cta:focus-visible {
@@ -148,7 +148,7 @@
 .pg-hero-photo {
   overflow: hidden;
   aspect-ratio: 3 / 2;
-  background: #f7f4ec;
+  background: var(--skylent-color-paper);
   border-radius: var(--radius-md);
 }
 

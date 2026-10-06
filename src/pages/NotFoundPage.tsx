@@ -11,7 +11,7 @@ export default function NotFoundPage() {
         <h2 className="skylent-display-md" style={{ color: C.ink }}>
           Page not found
         </h2>
-        <Link to="/" style={{ color: C.orange }}>
+        <Link to="/" style={{ color: 'var(--skylent-color-accent)' }}>
           ← Back to home
         </Link>
       </div>

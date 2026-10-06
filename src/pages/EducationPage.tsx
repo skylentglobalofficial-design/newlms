@@ -20,7 +20,7 @@ export default function EducationPage() {
       <div className="arch-academic-shell">
         <div className="arch-academic-inner">
           <AcademicSubnav />
-          <header className="arch-line-header" style={{ marginBottom: 36 }}>
+          <header id="degrees" className="arch-line-header" style={{ marginBottom: 36 }}>
             <div className="skylent-label" style={{ color: C.indigo, marginBottom: 14 }}>Education</div>
             <h1 className="skylent-display-md" style={{ color: C.ink, margin: "0 0 14px", maxWidth: 740 }}>
               Academic product lines.<br />Not a live course catalogue.

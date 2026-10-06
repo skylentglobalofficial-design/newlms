@@ -3,15 +3,15 @@
    shared public indigo so these pages sit with /programs and /courses. */
 
 .pe-page {
-  --pe-ink: #15171a;
+  --pe-ink: var(--skylent-color-ink);
   --pe-muted: #62676d;
-  --pe-faint: #8a8f96;
+  --pe-faint: var(--skylent-color-text-subtle);
   --pe-line: rgba(21, 23, 26, 0.12);
   --pe-orange: #f36f21;
-  --pe-paper: #fffdf8;
-  --pe-warm: #f5f2e9;
-  --pe-soft: #eeeae0;
-  --pe-accent: #4f46e5;
+  --pe-paper: var(--skylent-color-cream);
+  --pe-warm: var(--skylent-surface-cream-warm);
+  --pe-soft: var(--skylent-color-soft);
+  --pe-accent: var(--skylent-color-accent);
   --pe-sticky-clear: calc(var(--nav-h) + 20px);
   background: var(--pe-paper);
   color: var(--pe-ink);
@@ -146,7 +146,7 @@
 }
 
 .pe-cta:hover {
-  background: #4338ca;
+  background: var(--skylent-color-accent-strong);
 }
 
 .pe-cta-ghost {
@@ -471,7 +471,7 @@ a.pe-example:hover h3 {
 }
 
 .pe-page .pl-frame-bar {
-  background: #fffdf8;
+  background: var(--skylent-color-cream);
 }
 
 .pe-page .pl-frame-body {
@@ -936,7 +936,7 @@ a.pe-map-row:hover strong {
   font-weight: 600;
   letter-spacing: -0.06em;
   line-height: 0.86;
-  color: rgba(243, 111, 33, 0.18);
+  color: color-mix(in srgb, var(--pe-orange) 18%, transparent);
 }
 
 .pe-folio.is-flip .pe-folio-n {

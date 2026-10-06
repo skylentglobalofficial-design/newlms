@@ -1,0 +1,591 @@
+/* =====================================================================
+   SKYLENT 2.0 SITE DESIGN SYSTEM
+   Public-shell visual tokens: site.* CSS variables, sk-* utilities,
+   shell scopes (.site-light, .portal-dark), animations.
+
+   SCOPE: applies only to public pages/components that use .site-light
+   or .sk-* classes. Does NOT replace the signed-in LMS token system
+   (--skylent-color-*, --skylent-surface-*, etc.).
+
+   Ported from: lovable_src/src/index.css (Skylent 2.0 approved design).
+   Final public direction: PURE WHITE canvas (#FFFFFF). No cream / ivory /
+   warm paper. Navy ink, restrained royal-blue accent, cool hairlines.
+   ===================================================================== */
+
+/* ---------- Brand palette (raw HSL channels) ---------- */
+:root {
+  --site-paper: 0 0% 100%;             /* #FFFFFF page canvas — pure white */
+  --site-white: 0 0% 100%;             /* panels / cards */
+  --site-soft: 214 40% 97.5%;          /* #F6F8FB small UI fills only (chips, skeletons, hover) — never a section background */
+  --site-raised: 215 42% 92%;          /* muted fill, progress track */
+  --site-border: 215 28% 86%;          /* cool blue hairline */
+  --site-border-strong: 215 22% 69%;   /* inputs, secondary buttons */
+  --site-ink: 214 60% 20%;             /* deep navy ink */
+  --site-navy: 213 78% 20%;            /* #0B2B5B */
+  --site-deep: 217 73% 55%;            /* #2F6FED */
+  --site-ocean: 214 72% 42%;           /* hover / pressed */
+  --site-highlight: 217 73% 55%;       /* focus ring */
+  --site-soft-blue: 213 55% 92%;       /* #DCE8F8 */
+  --site-light-blue: 213 55% 86%;      /* quiet blue rules */
+  --site-orange: 42 64% 48%;           /* restrained evidence accent */
+  --site-warm: 42 64% 48%;
+  --site-muted: 218 17% 35%;           /* secondary text (AA on white) */
+  --site-dim: 217 13% 46%;             /* metadata */
+  --site-green: 152 55% 30%;           /* success */
+  --site-amber: 32 90% 34%;            /* warning text */
+  --site-red: 2 70% 42%;               /* error */
+
+  /* Shape, shadow, layout, motion */
+  --sk-radius: 6px;
+  --sk-radius-card: 8px;
+  --sk-radius-lg: 12px;
+  --sk-shadow: 0 1px 2px hsl(var(--site-ink) / .04), 0 8px 24px -12px hsl(var(--site-ink) / .12);
+  --sk-shadow-lg: 0 1px 2px hsl(var(--site-ink) / .05), 0 28px 56px -28px hsl(var(--site-ink) / .26);  /* product screenshots */
+  --sk-container: 1240px;
+  --sk-container-wide: 1320px;
+  --sk-container-text: 720px;
+  --sk-gutter: clamp(1.25rem, 4vw, 2rem);
+  --sk-section-y: clamp(4rem, 7vw, 6.5rem);
+  --sk-section-y-sm: clamp(2.5rem, 5vw, 3.5rem);
+  --sk-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --sk-fast: 150ms;
+  --sk-base: 250ms;
+  --ed-ease: var(--sk-ease);
+  --sk-font-heading: "Space Grotesk", system-ui, sans-serif;
+  --sk-font-body: "DM Sans", system-ui, sans-serif;
+}
+
+/* ---------- Tailwind v4 theme bridge ----------
+   The approved components are written with the Lovable (Tailwind v3) utility
+   names: text-site-ink, bg-site-white, border-site-border, font-heading,
+   rounded-card, rounded-sk-lg, shadow-sk. Tailwind v4 has no config file, so
+   those utilities only exist once the tokens are registered here. Without this
+   block they are silently dropped and the page falls back to inherited styles. */
+@theme inline {
+  --color-site-paper: hsl(var(--site-paper));
+  --color-site-white: hsl(var(--site-white));
+  --color-site-soft: hsl(var(--site-soft));
+  --color-site-raised: hsl(var(--site-raised));
+  --color-site-border: hsl(var(--site-border));
+  --color-site-border-strong: hsl(var(--site-border-strong));
+  --color-site-ink: hsl(var(--site-ink));
+  --color-site-navy: hsl(var(--site-navy));
+  --color-site-deep: hsl(var(--site-deep));
+  --color-site-ocean: hsl(var(--site-ocean));
+  --color-site-highlight: hsl(var(--site-highlight));
+  --color-site-soft-blue: hsl(var(--site-soft-blue));
+  --color-site-light-blue: hsl(var(--site-light-blue));
+  --color-site-orange: hsl(var(--site-orange));
+  --color-site-warm: hsl(var(--site-warm));
+  --color-site-muted: hsl(var(--site-muted));
+  --color-site-dim: hsl(var(--site-dim));
+  --color-site-green: hsl(var(--site-green));
+  --color-site-amber: hsl(var(--site-amber));
+  --color-site-red: hsl(var(--site-red));
+
+  --font-heading: var(--sk-font-heading);
+  --radius-card: var(--sk-radius-card);
+  --radius-sk-lg: var(--sk-radius-lg);
+  --shadow-sk: var(--sk-shadow);
+  --shadow-sk-lg: var(--sk-shadow-lg);
+}
+
+/* ---------- Shell scopes ---------- */
+.site-light {
+  background: hsl(var(--site-paper));
+  color: hsl(var(--site-ink));
+  color-scheme: light;
+  font-family: "DM Sans", system-ui, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
+}
+.site-light em,
+.site-light i { font-style: normal; }
+.site-light h1,
+.site-light h2,
+.site-serif {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.site-light .font-degree-serif {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* Signed-in shell (name kept for existing wrappers; it is light) */
+.portal-dark {
+  background-color: hsl(var(--site-paper));
+  color: hsl(var(--site-ink));
+  color-scheme: light;
+}
+.portal-dark .glass-panel {
+  background: hsl(var(--site-white));
+  border: 1px solid hsl(var(--site-border));
+  box-shadow: none;
+}
+.portal-dark .gold-text {
+  color: hsl(var(--site-deep));
+  background: none;
+  -webkit-background-clip: initial;
+  background-clip: initial;
+}
+.portal-dark .gold-border { border: 1px solid hsl(var(--site-border)); }
+.portal-dark .gold-glow { box-shadow: var(--sk-shadow); }
+.portal-dark .grid-bg { background: hsl(var(--site-paper)); }
+
+/* ---------- Containers & sections ---------- */
+.sk-container {
+  width: 100%;
+  max-width: var(--sk-container);
+  margin-inline: auto;
+  padding-inline: var(--sk-gutter);
+}
+.sk-container-wide {
+  width: 100%;
+  max-width: var(--sk-container-wide);
+  margin-inline: auto;
+  padding-inline: var(--sk-gutter);
+}
+.sk-container-text {
+  width: 100%;
+  max-width: var(--sk-container-text);
+  margin-inline: auto;
+  padding-inline: var(--sk-gutter);
+}
+.sk-section { padding-block: var(--sk-section-y); }
+.sk-section-sm { padding-block: var(--sk-section-y-sm); }
+.sk-section + .sk-section { border-top: 1px solid hsl(var(--site-border)); }
+.section-padding { padding-block: var(--sk-section-y); }
+.section-padding-sm { padding-block: var(--sk-section-y-sm); }
+.sk-split { display: grid; gap: 1.375rem; }
+@media (min-width: 640px) { .sk-split { gap: 1.75rem; } }
+@media (min-width: 1024px) {
+  .sk-split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 3rem;
+  }
+}
+.sk-dark {
+  background: hsl(var(--site-navy));
+  color: hsl(var(--site-paper));
+}
+
+/* ---------- Typography scale ---------- */
+.sk-display {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(2.25rem, 4.6vw, 3.75rem);
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+.sk-h1 {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(2rem, 3.8vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+.sk-h2 {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: clamp(1.625rem, 3vw, 2.25rem);
+  line-height: 1.15;
+  letter-spacing: 0;
+}
+.sk-h3 {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  letter-spacing: 0;
+}
+.sk-h4 {
+  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-weight: 600;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+.sk-body-lg { font-size: 1.1875rem; line-height: 1.6; color: hsl(var(--site-muted)); max-width: 62ch; }
+.sk-body { font-size: 1.0625rem; line-height: 1.65; color: hsl(var(--site-muted)); max-width: 62ch; }
+.sk-body-sm { font-size: .9375rem; line-height: 1.55; color: hsl(var(--site-muted)); }
+.sk-caption { font-size: .8125rem; line-height: 1.45; color: hsl(var(--site-dim)); }
+.sk-label { font-size: .8125rem; font-weight: 500; line-height: 1.3; color: hsl(var(--site-ink)); }
+.sk-eyebrow {
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: hsl(var(--site-deep));
+}
+.sk-nav { font-size: .9375rem; font-weight: 500; color: hsl(var(--site-ink)); }
+.sk-btn-text { font-size: .9375rem; font-weight: 600; }
+
+/* ---------- Buttons ---------- */
+.sk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .625rem;
+  min-height: 2.75rem;
+  padding: 0 1.125rem 0 1.25rem;
+  border-radius: 8px;
+  font-size: .9rem;
+  font-weight: 600;
+  letter-spacing: -.005em;
+  line-height: 1;
+  border: 1px solid transparent;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--sk-fast) var(--sk-ease),
+    border-color var(--sk-fast) var(--sk-ease),
+    color var(--sk-fast) var(--sk-ease),
+    box-shadow var(--sk-fast) var(--sk-ease);
+}
+.sk-btn:disabled,
+.sk-btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
+.sk-btn-primary,
+.site-cta-primary {
+  background: hsl(var(--site-navy));
+  color: hsl(var(--site-white)) !important;
+  box-shadow: inset 0 -1px 0 hsl(var(--site-ink) / .25);
+}
+.sk-btn-primary:hover,
+.site-cta-primary:hover { background: hsl(var(--site-deep)); }
+.sk-btn-secondary {
+  background: transparent;
+  color: hsl(var(--site-navy));
+  border-color: hsl(var(--site-navy) / .22);
+}
+.sk-btn-secondary:hover {
+  background: hsl(var(--site-soft-blue));
+  border-color: hsl(var(--site-deep) / .45);
+  color: hsl(var(--site-deep));
+}
+.sk-link {
+  color: hsl(var(--site-deep));
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--sk-fast) var(--sk-ease);
+}
+.sk-link:hover { color: hsl(var(--site-ocean)); }
+.sk-link svg,
+.sk-btn svg { transition: transform var(--sk-fast) var(--sk-ease); }
+.sk-link:hover svg,
+.sk-btn:hover svg { transform: translateX(3px); }
+.site-gradient-text { color: hsl(var(--site-deep)); }
+
+/* ---------- Cards ---------- */
+.sk-card {
+  background: hsl(var(--site-white));
+  border: 1px solid hsl(var(--site-border));
+  border-radius: var(--sk-radius-card);
+  padding: 1.5rem;
+  transition: border-color var(--sk-fast) var(--sk-ease);
+}
+a.sk-card:hover,
+.sk-card-interactive:hover { border-color: hsl(var(--site-ink) / .35); }
+.sk-card-raised { box-shadow: var(--sk-shadow); }
+.sk-dense .sk-card { padding: 1rem; }
+
+/* Catalogue tile — the linked card used for programmes and degree routes.
+   One restrained hover: 2px lift, blue hairline, soft shadow. */
+.sk-tile {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid hsl(var(--site-border));
+  border-radius: var(--sk-radius-lg);
+  background: hsl(var(--site-white));
+  color: inherit;
+  text-decoration: none;
+  transition:
+    transform 200ms var(--sk-ease),
+    border-color 200ms var(--sk-ease),
+    box-shadow 200ms var(--sk-ease);
+}
+.sk-tile:hover {
+  transform: translateY(-2px);
+  border-color: hsl(var(--site-deep) / .45);
+  box-shadow: var(--sk-shadow);
+}
+.sk-tile:focus-visible {
+  outline: 2px solid hsl(var(--site-highlight));
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sk-tile,
+  .sk-tile:hover { transform: none; transition: none; }
+}
+
+/* ---------- Status ---------- */
+.sk-status {
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
+  min-height: 1.5rem;
+  padding: .125rem .5rem;
+  border-radius: var(--sk-radius);
+  border: 1px solid hsl(var(--site-border));
+  background: hsl(var(--site-white));
+  font-size: .75rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: hsl(var(--site-muted));
+  white-space: nowrap;
+}
+.sk-status-dot {
+  width: .375rem;
+  height: .375rem;
+  border-radius: 999px;
+  background: currentColor;
+  flex-shrink: 0;
+}
+.sk-status--live { color: hsl(var(--site-green)); }
+.sk-status--soon { color: hsl(var(--site-muted)); background: hsl(var(--site-soft)); }
+.sk-status--sample { color: hsl(var(--site-muted)); background: hsl(var(--site-soft)); border-style: dashed; }
+.sk-status--photo { color: hsl(var(--site-dim)); background: hsl(var(--site-white) / .92); }
+.sk-status--info { color: hsl(var(--site-navy)); background: hsl(var(--site-soft-blue)); border-color: hsl(var(--site-light-blue)); }
+.sk-status--success { color: hsl(var(--site-green)); }
+.sk-status--warning { color: hsl(var(--site-amber)); }
+.sk-status--error { color: hsl(var(--site-red)); }
+.sk-status--empty { color: hsl(var(--site-dim)); }
+
+/* ---------- Navigation & dropdowns ---------- */
+.sk-navbar {
+  background: hsl(var(--site-paper) / .96);
+  border-bottom: 1px solid hsl(var(--site-border));
+}
+.sk-nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding-inline: .75rem;
+  border-radius: var(--sk-radius);
+  font-size: .9375rem;
+  font-weight: 500;
+  color: hsl(var(--site-ink));
+  text-decoration: none;
+  transition: color var(--sk-fast), background-color var(--sk-fast);
+}
+.sk-nav-link:hover { color: hsl(var(--site-deep)); }
+.sk-nav-link[aria-current="page"] {
+  color: hsl(var(--site-deep));
+  box-shadow: inset 0 -2px 0 hsl(var(--site-deep));
+}
+.sk-dropdown {
+  background: hsl(var(--site-white));
+  border: 1px solid hsl(var(--site-border));
+  border-radius: var(--sk-radius-card);
+  box-shadow: var(--sk-shadow);
+  padding: .5rem;
+}
+.sk-dropdown-item {
+  display: block;
+  border-radius: var(--sk-radius);
+  padding: .5rem .75rem;
+  font-size: .9375rem;
+  color: hsl(var(--site-ink));
+  text-decoration: none;
+  transition: background-color var(--sk-fast), color var(--sk-fast);
+}
+.sk-dropdown-item:hover,
+.sk-dropdown-item:focus-visible {
+  background: hsl(var(--site-soft));
+  color: hsl(var(--site-deep));
+  outline: none;
+}
+
+/* ---------- Forms ---------- */
+.sk-input {
+  width: 100%;
+  min-height: 2.75rem;
+  border-radius: var(--sk-radius);
+  border: 1px solid hsl(var(--site-border-strong));
+  background: hsl(var(--site-white));
+  padding-inline: .875rem;
+  font-size: 1rem;
+  color: hsl(var(--site-ink));
+  transition: border-color var(--sk-fast), box-shadow var(--sk-fast);
+}
+textarea.sk-input { padding-block: .625rem; min-height: 6rem; }
+.sk-input::placeholder { color: hsl(var(--site-dim)); }
+.sk-input:focus {
+  outline: none;
+  border-color: hsl(var(--site-deep));
+  box-shadow: 0 0 0 3px hsl(var(--site-deep) / .15);
+}
+.sk-input[aria-invalid="true"] { border-color: hsl(var(--site-red)); }
+.sk-input:disabled {
+  background: hsl(var(--site-soft));
+  color: hsl(var(--site-dim));
+  cursor: not-allowed;
+}
+.sk-check { width: 1.125rem; height: 1.125rem; accent-color: hsl(var(--site-deep)); }
+.sk-help { margin-top: .375rem; font-size: .8125rem; color: hsl(var(--site-dim)); }
+.sk-error { margin-top: .375rem; font-size: .8125rem; color: hsl(var(--site-red)); }
+
+/* ---------- Images ---------- */
+.sk-image {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--sk-radius-card);
+  background: hsl(var(--site-soft));
+}
+.sk-image-lg { border-radius: var(--sk-radius-lg); }
+.sk-image img { width: 100%; height: 100%; object-fit: cover; }
+.sk-image-label { position: absolute; left: .75rem; bottom: .75rem; }
+
+/* ---------- Focus (public-shell context) ---------- */
+.site-light :is(a, button, [role="button"], input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid hsl(var(--site-highlight));
+  outline-offset: 2px;
+}
+
+/* ---------- Signal animations ---------- */
+.sk-signal {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  opacity: 0;
+  transition: stroke-dashoffset 1.4s var(--sk-ease), opacity .2s;
+}
+.sk-signal.is-on { stroke-dashoffset: 0; opacity: 1; }
+.sk-signal.is-done { stroke-dasharray: none; }
+@media (prefers-reduced-motion: reduce) {
+  .sk-signal { transition: none; stroke-dasharray: none; stroke-dashoffset: 0; opacity: 1; }
+}
+
+/* ---------- Motion ---------- */
+@keyframes site-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes site-mask { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes site-blue { from { color: hsl(var(--site-ink)); } to { color: hsl(var(--site-deep)); } }
+@keyframes ed-draw { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes hero-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+.site-rise { animation: site-rise .6s var(--sk-ease) both; }
+.site-mask { animation: site-mask .8s var(--sk-ease) both; }
+.site-blue { animation: site-blue .8s var(--sk-ease) both; }
+.ed-draw { transform-origin: left; animation: ed-draw 1s var(--sk-ease) both; }
+.hero-float { animation: hero-float 5s ease-in-out infinite; }
+.hero-float:nth-of-type(odd) { animation-delay: -2.5s; }
+.site-path-line {
+  height: 1px;
+  background: hsl(var(--site-deep));
+  transform-origin: left;
+  transition: transform .5s var(--sk-ease), opacity .5s;
+}
+.story-reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .6s var(--sk-ease), transform .6s var(--sk-ease);
+}
+.is-in .story-reveal,
+.story-reveal.is-in { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .site-light *, .site-light *::before, .site-light *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  .story-reveal { opacity: 1; transform: none; }
+}
+
+/* ---------- Retired visual systems (kept as inert hooks) ---------- */
+.site-aurora { position: relative; }
+.site-aurora-field, .site-row-glow, .site-eco-halo { display: none !important; }
+.site-eco-path { opacity: .9; }
+.site-card-lit { position: relative; }
+.site-program-visual { background: hsl(var(--site-soft)); }
+
+/* ---------- Editorial/catalogue/cockpit areas ---------- */
+.sk-editorial { background: hsl(var(--site-paper)); }
+.sk-catalogue { background: hsl(var(--site-soft)); }
+.sk-cockpit { background: hsl(var(--site-paper)); }
+.sk-cockpit-grid { display: grid; gap: 1rem; }
+@media (min-width: 768px) {
+  .sk-cockpit-grid { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+}
+.sk-metric { border-left: 2px solid hsl(var(--site-deep)); padding-left: .875rem; }
+.sk-media-frame {
+  position: relative;
+  overflow: hidden;
+  background: hsl(var(--site-soft-blue));
+  border: 1px solid hsl(var(--site-border));
+  border-radius: var(--sk-radius-card);
+}
+.sk-media-frame img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Product-led proof surfaces ---------- */
+.sk-proof-shell {
+  background: hsl(var(--site-navy));
+  color: hsl(var(--site-white));
+  border-radius: var(--sk-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--sk-shadow);
+}
+.sk-proof-window {
+  background: hsl(var(--site-white));
+  color: hsl(var(--site-ink));
+  border: 1px solid hsl(var(--site-border));
+  border-radius: var(--sk-radius-card);
+  overflow: hidden;
+}
+.sk-fact-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border: 1px solid hsl(var(--site-border));
+  border-radius: var(--sk-radius-card);
+  overflow: hidden;
+  background: hsl(var(--site-white));
+}
+.sk-fact-row > * {
+  min-width: 0;
+  padding: 1rem;
+  border-bottom: 1px solid hsl(var(--site-border));
+}
+.sk-fact-row > *:nth-child(odd) { border-right: 1px solid hsl(var(--site-border)); }
+@media (min-width: 768px) {
+  .sk-fact-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .sk-fact-row > * { border-bottom: 0; border-right: 1px solid hsl(var(--site-border)); }
+  .sk-fact-row > *:last-child { border-right: 0; }
+}
+.sk-premium-panel {
+  border: 1px solid hsl(var(--site-border));
+  background: hsl(var(--site-white));
+  border-radius: var(--sk-radius-card);
+  transition:
+    transform var(--sk-base) var(--sk-ease),
+    border-color var(--sk-fast),
+    box-shadow var(--sk-base);
+}
+.sk-premium-panel:hover {
+  transform: translateY(-3px);
+  border-color: hsl(var(--site-deep) / .4);
+  box-shadow: var(--sk-shadow);
+}
+.sk-rule-title {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  font-size: .75rem;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: hsl(var(--site-deep));
+}
+.sk-rule-title::after {
+  content: "";
+  height: 1px;
+  flex: 1;
+  background: hsl(var(--site-border));
+}
