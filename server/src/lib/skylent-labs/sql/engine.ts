@@ -16,7 +16,7 @@ type SqlValue = number | string | Uint8Array | null
 const require = createRequire(import.meta.url)
 
 let sqlJsPromise: Promise<SqlJsStatic> | null = null
-let seedBytes: Uint8Array | null = null
+let seedBytes: Uint8Array<ArrayBufferLike> | null = null
 
 function loadSqlJs() {
   if (!sqlJsPromise) {
