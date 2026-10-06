@@ -18,8 +18,8 @@ import { Link } from "react-router-dom";
 import { HomeNav, HomeFooter } from "@/components/site/GlobalShell";
 import { useAuth } from "@/context/AuthContext";
 import { useLivePrograms, type LiveProgram } from "@/hooks/useLivePrograms";
-import { degrees, levelLabel, modeLabel } from "@/data/education";
-import { degreeImages } from "@/data/educationImages";
+import { DEGREE_ROUTES, degreeLevelLabel, type DegreeRoute } from "@/data/education";
+import { degreeImage } from "@/data/educationImages";
 import { cn } from "@/lib/utils";
 
 // ── Asset imports ─────────────────────────────────────────────────────────────
@@ -240,7 +240,8 @@ const CATEGORY_ALL = "All";
 
 /** FIX #2: CatalogueCard redesign — colour-block, rounded-card, hover lift, curriculum footer, no price */
 function CatalogueCard({ p }: { p: LiveProgram }) {
-  const facts = [p.level, p.duration, p.deliveryMode ?? p.mode].filter(Boolean);
+  const facts = [p.level, p.duration, p.deliveryMode].filter(Boolean);
+  const hasCurriculum = p.modules > 0 || p.projects > 0;
   return (
     <Link
       to={`/programs/${p.slug}`}
@@ -253,9 +254,9 @@ function CatalogueCard({ p }: { p: LiveProgram }) {
         <h3 className="mt-2 font-heading text-[1.3rem] font-semibold leading-snug text-site-ink group-hover:text-site-deep">{p.title}</h3>
         {p.description && <p className="mt-1.5 line-clamp-2 text-[14px] leading-relaxed text-site-muted">{p.description}</p>}
         {facts.length > 0 && <p className="mt-4 text-[13px] font-medium text-site-ink">{facts.join("  ·  ")}</p>}
-        {p.lessonCount > 0 && (
-          <dl className="mt-4 grid grid-cols-3 divide-x divide-site-border rounded-[8px] border border-site-border text-center">
-            {([["Modules", p.moduleCount], ["Lessons", p.lessonCount], ["Tasks", p.projectCount]] as const).map(([k, v]) => (v as number) > 0 && (
+        {hasCurriculum && (
+          <dl className="mt-4 grid grid-cols-2 divide-x divide-site-border rounded-[8px] border border-site-border text-center">
+            {([["Modules", p.modules], ["Tasks", p.projects]] as const).map(([k, v]) => v > 0 && (
               <div key={k} className="px-1 py-2.5">
                 <dd className="font-heading text-[1.05rem] font-semibold tabular-nums text-site-ink">{v}</dd>
                 <dt className="text-[10.5px] uppercase tracking-[0.1em] text-site-dim">{k}</dt>
@@ -274,7 +275,7 @@ function CatalogueCard({ p }: { p: LiveProgram }) {
 }
 
 function Programs() {
-  const { programs, isLoading, error } = useLivePrograms();
+  const { programs, isLoading, isUnavailable } = useLivePrograms();
   const [activeCategory, setActiveCategory] = useState(CATEGORY_ALL);
 
   const categories = [CATEGORY_ALL, ...Array.from(new Set(programs.map((p) => p.category))).sort()];
@@ -334,17 +335,16 @@ function Programs() {
             ))}
           </div>
         )}
-        {!isLoading && error && (
+        {!isLoading && isUnavailable && (
           <div className="mt-10 rounded-[12px] border border-site-border bg-site-white px-6 py-10 text-center">
             <p className="text-[14px] text-site-muted">Unable to load programmes right now.</p>
-            <p className="mt-1 text-[13px] text-site-dim">{error}</p>
           </div>
         )}
-        {!isLoading && !error && visible.length === 0 && (
+        {!isLoading && !isUnavailable && visible.length === 0 && (
           <div className="mt-10 py-20 text-center text-[14px] text-site-muted">No programmes in this category yet.</div>
         )}
         {/* FIX #16: gap-x-6 gap-y-10 */}
-        {!isLoading && !error && visible.length > 0 && (
+        {!isLoading && !isUnavailable && visible.length > 0 && (
           <div className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
             {visible.map((p) => (
               <Reveal key={p.slug}>
@@ -531,9 +531,9 @@ function SeeItWorking() {
 
 // ── Section: Education (Degrees) ──────────────────────────────────────────────
 /** FIX #16: DegreeCard redesign — rounded-[16px], aspect-[16/9], level badge, hover-translate */
-function DegreeCard({ d }: { d: (typeof degrees)[number] }) {
-  const img = degreeImages[d.slug];
-  const level = d.level === "UG" ? "Undergraduate" : "Postgraduate";
+function DegreeCard({ d }: { d: DegreeRoute }) {
+  const img = degreeImage(d.slug);
+  const level = degreeLevelLabel(d.level);
   return (
     <Link
       to={`/education/degrees/${d.slug}`}
@@ -563,7 +563,7 @@ function DegreeCard({ d }: { d: (typeof degrees)[number] }) {
 
 function Education() {
   const [level, setLevel] = useState<"all" | "UG" | "PG">("all");
-  const filtered = level === "all" ? degrees : degrees.filter((d) => d.level === level);
+  const filtered = level === "all" ? DEGREE_ROUTES : DEGREE_ROUTES.filter((d) => d.level === level);
 
   return (
     <section id="education" className="border-t border-site-border bg-site-white sk-section">
@@ -593,7 +593,7 @@ function Education() {
                   : "border-site-border bg-site-white text-site-muted hover:border-site-ink hover:text-site-ink"
               )}
             >
-              {v === "all" ? "All" : levelLabel[v]}
+              {v === "all" ? "All" : degreeLevelLabel(v)}
             </button>
           ))}
         </div>
