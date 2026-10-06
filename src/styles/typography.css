@@ -258,8 +258,13 @@
   max-width: var(--skylent-measure-narrow);
 }
 
-/* Public canvas: default heading voice (serif for major levels) */
-.skylent-public-canvas main h1 {
+/* Public canvas: default heading voice for legacy public pages.
+   Scoped out of .site-light (Skylent 2.0 sections), which set their own type per
+   element with utilities. :where() keeps the original specificity (0,1,2), so the
+   rest of the legacy cascade is unaffected. Because these rules are unlayered they
+   would otherwise override every Tailwind utility (font, leading, tracking) on the
+   homepage headings and paragraphs. */
+.skylent-public-canvas main h1:where(:not(.site-light *)) {
   font-family: var(--skylent-t-display-xl-family);
   font-weight: var(--skylent-t-display-xl-weight);
   letter-spacing: var(--skylent-t-display-xl-tracking);
@@ -267,7 +272,7 @@
   text-wrap: balance;
 }
 
-.skylent-public-canvas main h2 {
+.skylent-public-canvas main h2:where(:not(.site-light *)) {
   font-family: var(--skylent-t-heading-xl-family);
   font-weight: var(--skylent-t-heading-xl-weight);
   letter-spacing: var(--skylent-t-heading-xl-tracking);
@@ -275,15 +280,15 @@
   text-wrap: balance;
 }
 
-.skylent-public-canvas main h3 {
+.skylent-public-canvas main h3:where(:not(.site-light *)) {
   font-family: var(--skylent-t-heading-sm-family);
   font-weight: var(--skylent-t-heading-sm-weight);
   letter-spacing: var(--skylent-t-heading-sm-tracking);
   line-height: var(--skylent-t-heading-sm-line);
 }
 
-.skylent-public-canvas main p,
-.skylent-public-canvas main li {
+.skylent-public-canvas main p:where(:not(.site-light *)),
+.skylent-public-canvas main li:where(:not(.site-light *)) {
   font-family: var(--skylent-t-body-md-family);
   line-height: var(--skylent-t-body-md-line);
 }

@@ -12,7 +12,7 @@
   font-size: clamp(24px, 2.6vw, 30px);
   font-weight: 650;
   letter-spacing: -0.03em;
-  color: #15171a;
+  color: var(--skylent-color-ink);
 }
 
 .cos-page h2 {
@@ -20,12 +20,12 @@
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 650;
-  color: #15171a;
+  color: var(--skylent-color-ink);
 }
 
 .cos-lead {
   margin: 0 0 22px;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -48,7 +48,7 @@
 .cos-artifact-stage {
   min-width: 0;
   padding: 12px;
-  background: #f7f4ec;
+  background: var(--skylent-color-paper);
 }
 
 .cos-artifact-stage .pl-thumb,
@@ -74,13 +74,13 @@
 
 .cos-artifact-meta {
   margin: 6px 0 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13px;
 }
 
 .cos-artifact-skills {
   margin: 12px 0 0;
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -112,7 +112,7 @@
 
 .cos-kicker {
   margin: 0 0 6px;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 12px;
   font-weight: 600;
 }
@@ -129,14 +129,14 @@
   min-height: 36px;
   padding: 0 10px;
   border-radius: 8px;
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-size: 13.5px;
   font-weight: 600;
   text-decoration: none;
 }
 
 .cos-quick a:hover {
-  background: #f7f4ec;
+  background: var(--skylent-color-paper);
 }
 
 .cos-stat-row {
@@ -159,7 +159,7 @@
 .cos-stat-row span {
   display: block;
   margin-top: 2px;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 12px;
 }
 
@@ -199,7 +199,7 @@
 
 .cos-empty-row p {
   margin: 4px 0 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13px;
   line-height: 1.45;
 }
@@ -210,7 +210,7 @@
 
 .cos-empty p {
   margin: 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 14px;
   line-height: 1.55;
   max-width: 42em;
@@ -219,15 +219,15 @@
 .cos-empty-cta {
   width: fit-content;
   margin-top: 4px;
-  color: #4f46e5;
+  color: var(--skylent-color-accent);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
 }
 
 .cos-public-page {
-  background: #f7f4ec;
-  color: #15171a;
+  background: var(--skylent-color-paper);
+  color: var(--skylent-color-ink);
 }
 
 .cos-public {
@@ -265,7 +265,7 @@
 .cos-public-lead {
   margin: 14px 0 0;
   max-width: 36em;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 15.5px;
   line-height: 1.6;
 }
@@ -291,13 +291,13 @@
 
 .cos-public-actions a.cos-public-secondary {
   background: transparent;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   box-shadow: none;
   border: 1px solid rgba(21, 23, 26, 0.12);
 }
 
 .cos-public-actions a.cos-public-secondary:hover {
-  color: #15171a;
+  color: var(--skylent-color-ink);
   border-color: rgba(21, 23, 26, 0.22);
 }
 
@@ -308,12 +308,12 @@
 
 .cos-area-link strong {
   text-decoration: underline;
-  text-decoration-color: rgba(79, 70, 229, 0.35);
+  text-decoration-color: color-mix(in srgb, var(--skylent-color-accent) 35%, transparent);
   text-underline-offset: 3px;
 }
 
 .cos-area-link:hover strong {
-  color: #4f46e5;
+  color: var(--skylent-color-accent);
 }
 
 .cos-area-state-prominent {
@@ -321,7 +321,7 @@
   margin: 12px 0 16px;
   font-size: 14px;
   font-weight: 600;
-  color: #15171a;
+  color: var(--skylent-color-ink);
 }
 
 .cos-public-area {
@@ -329,11 +329,11 @@
 }
 
 .cos-public-actions a:hover {
-  background: #4338ca;
+  background: var(--skylent-color-accent-strong);
 }
 
 .cos-public-actions a:focus-visible {
-  outline: 2px solid #4f46e5;
+  outline: 2px solid var(--skylent-color-accent);
   outline-offset: 3px;
 }
 
@@ -375,11 +375,11 @@
   gap: 6px;
   min-width: 0;
   padding: 18px 18px 20px;
-  background: #fffdf8;
+  background: var(--skylent-color-cream);
 }
 
 .cos-hero-sources strong {
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-family: var(--font-brand);
   font-size: 20px;
   font-weight: 600;
@@ -388,7 +388,7 @@
 }
 
 .cos-hero-sources span {
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13.5px;
   line-height: 1.5;
 }
@@ -400,7 +400,7 @@
 
 .cos-eyebrow {
   margin: 0;
-  color: #4f46e5;
+  color: var(--skylent-color-accent);
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.15em;
@@ -419,7 +419,7 @@
 .cos-chain h2,
 .cos-areas h2 {
   margin: 10px 0 0;
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-family: var(--font-brand);
   font-size: clamp(24px, 2.6vw, 32px);
   font-weight: 600;
@@ -453,12 +453,12 @@
 
 .cos-chain-steps li:first-child {
   border-top-color: transparent;
-  box-shadow: inset 0 2px 0 #4f46e5;
+  box-shadow: inset 0 2px 0 var(--skylent-color-accent);
 }
 
 .cos-chain-step {
   margin: 0;
-  color: #4f46e5;
+  color: var(--skylent-color-accent);
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.12em;
@@ -466,7 +466,7 @@
 
 .cos-chain-label {
   margin: 8px 0 0;
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-family: var(--font-brand);
   font-size: 20px;
   font-weight: 600;
@@ -475,14 +475,14 @@
 
 .cos-chain-copy {
   margin: 8px 0 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13.5px;
   line-height: 1.55;
 }
 
 .cos-chain-steps li:not(:last-child) .cos-chain-label::after {
   content: " →";
-  color: #8a8f96;
+  color: var(--skylent-color-text-subtle);
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 400;
@@ -510,14 +510,14 @@
 }
 
 .cos-area-list strong {
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-size: 14.5px;
   font-weight: 650;
   letter-spacing: -0.015em;
 }
 
 .cos-area-sub {
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13px;
   line-height: 1.45;
 }

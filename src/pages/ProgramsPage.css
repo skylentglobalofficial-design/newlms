@@ -1,11 +1,11 @@
 /* /programs — editorial catalogue. Independent of homepage chapter CSS. */
 
 .pg-page {
-  --pg-ink: #15171a;
-  --pg-muted: #5c6168;
-  --pg-faint: #8a8f96;
+  --pg-ink: var(--skylent-color-ink);
+  --pg-muted: var(--skylent-color-slate);
+  --pg-faint: var(--skylent-color-text-subtle);
   --pg-line: rgba(21, 23, 26, 0.1);
-  --pg-accent: #4f46e5;
+  --pg-accent: var(--skylent-color-accent);
   --pg-orange: #f97316;
   --pg-sticky-clear: calc(var(--nav-h) + 20px);
   background: #ffffff;
@@ -127,7 +127,7 @@
 }
 
 .pg-cat-later {
-  background: #fffdf8;
+  background: var(--skylent-color-cream);
 }
 
 .pg-cat-later h2 {

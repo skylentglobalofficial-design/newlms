@@ -2,11 +2,11 @@
 
 .path-v2,
 .path-result-v2 {
-  --path-ink: #15171a;
+  --path-ink: var(--skylent-color-ink);
   --path-muted: #5b5d61;
   --path-line: #e7e2d8;
-  --path-paper: #fffdf8;
-  --path-soft: #f5f2e9;
+  --path-paper: var(--skylent-color-cream);
+  --path-soft: var(--skylent-surface-cream-warm);
   --path-mark: #f36f21;
   --path-serif: var(--font-brand, "Iowan Old Style", "Palatino Linotype", Georgia, serif);
   --path-sans: var(--font-body, ui-sans-serif, system-ui, sans-serif);
@@ -18,35 +18,10 @@
   overflow-x: clip;
 }
 
-/* Path routes: fix global nav spacing (inline gap:2px) without changing nav logic */
-.skylent-public-canvas:has(.path-v2) .skylent-site-nav .nav-primary-row,
-.skylent-public-canvas:has(.path-result-v2) .skylent-site-nav .nav-primary-row {
-  gap: 10px !important;
-}
-
-.skylent-public-canvas:has(.path-v2) .skylent-site-nav .nav-links,
-.skylent-public-canvas:has(.path-result-v2) .skylent-site-nav .nav-links {
-  gap: 6px !important;
-}
-
-.skylent-public-canvas:has(.path-v2) .skylent-site-nav .nav-links a,
-.skylent-public-canvas:has(.path-v2) .skylent-site-nav .nav-links button,
-.skylent-public-canvas:has(.path-result-v2) .skylent-site-nav .nav-links a,
-.skylent-public-canvas:has(.path-result-v2) .skylent-site-nav .nav-links button {
-  margin-inline: 2px;
-}
-
-.skylent-public-canvas:has(.path-v2) .skylent-site-nav .skylent-rail > div:last-child,
-.skylent-public-canvas:has(.path-result-v2) .skylent-site-nav .skylent-rail > div:last-child {
-  gap: 12px !important;
-}
-
-.skylent-public-canvas:has(.path-v2) .nav-path-cta,
-.skylent-public-canvas:has(.path-result-v2) .nav-path-cta {
-  background: var(--path-ink) !important;
-  border-radius: 0 !important;
-  letter-spacing: 0.02em;
-}
+/* Nav spacing used to be patched here for the Path routes only, and the CTA
+   override read var(--path-ink) outside the element that defines it, which
+   left "Start Your Path" invisible on /path. The nav is now styled once for
+   every public route in src/skylent-public.css. */
 
 .skylent-public-main:has(.path-v2),
 .skylent-public-main:has(.path-result-v2) {

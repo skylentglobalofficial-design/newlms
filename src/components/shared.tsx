@@ -157,7 +157,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
         ? 'Register interest'
         : 'Enrolment not available yet'
     : user
-      ? submitting ? 'Opening Skylent OSÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦' : 'Open Skylent OS'
+      ? submitting ? 'Opening Skylent OS…' : 'Open Skylent OS'
       : 'Sign in to enrol'
 
   return (
@@ -176,7 +176,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
 
         <div style={{ background: C.warmWhite, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: '16px 18px', marginBottom: 16 }}>
           <div style={{ color: C.slate, fontSize: 13, marginBottom: 4 }}>Listed price</div>
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 600, color: C.ink }}>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¹{item.price.toLocaleString('en-IN')}</div>
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 600, color: C.ink }}>₹{item.price.toLocaleString('en-IN')}</div>
           <div id="enrollment-modal-copy" style={{ color: C.slate, fontSize: 13, marginTop: 8, lineHeight: 1.6 }}>
             Payment is not collected here yet. {item.enrollable ? 'If you are signed in, this opens Skylent OS. If you are not, you will be asked to sign in first.' : 'We will notify you when enrolment opens.'}
           </div>
@@ -279,6 +279,18 @@ const navLinkHover = {
   enter: (e: React.MouseEvent<HTMLElement>) => { e.currentTarget.style.background = 'rgba(8,9,9,0.04)' },
   leave: (e: React.MouseEvent<HTMLElement>) => { e.currentTarget.style.background = 'transparent' },
 }
+
+/** Public nav palette — CSS variables, so the public shell theme (skylent-public.css) drives the colours. */
+const N = {
+  ink: 'var(--skylent-color-ink)',
+  slate: 'var(--skylent-color-slate)',
+  accent: 'var(--skylent-color-accent)',
+  surface: 'var(--skylent-color-cream)',
+  white: '#FFFFFF',
+  line: 'var(--skylent-color-border)',
+  lineStrong: 'var(--skylent-color-border-strong)',
+  shadow: 'var(--sk-shadow)',
+} as const
 
 const SEARCH_SUGGESTIONS = [
   { label: 'Data Analytics', to: '/courses/data-analytics' },
@@ -459,7 +471,7 @@ export function Nav() {
     return (
       <nav ref={navRef} className="skylent-site-nav is-home-nav" aria-label="Primary">
         <div className="skylent-rail" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH, gap: 12, minWidth: 0 }}>
-          <Link to="/" className="skylent-mark" style={{ fontSize: 22, color: C.ink, textDecoration: 'none', padding: 0, flexShrink: 0 }}>
+          <Link to="/" className="skylent-mark skylent-nav-mark" aria-label="Skylent home">
             Skylent
           </Link>
           <div className="home-nav-links">
@@ -511,26 +523,25 @@ export function Nav() {
               ) : null}
             </div>
             {user ? (
-              <Link to={accountPath} className="home-nav-signin">Your account</Link>
+              <Link to={accountPath} className="home-nav-signin sk-btn sk-btn-secondary">Your account</Link>
             ) : (
-              <Link to="/login" className="home-nav-signin">Sign in</Link>
+              <Link to="/login" className="home-nav-signin sk-btn sk-btn-secondary">Sign in</Link>
             )}
-            <Link to={pathCta.to} className="home-nav-start">
-              {pathCta.label} <span aria-hidden="true">→</span>
+            <Link to={pathCta.to} className="home-nav-start sk-btn sk-btn-primary">
+              {pathCta.label}
             </Link>
             <button
               ref={menuTriggerRef}
               type="button"
-              className="show-mobile"
+              className="show-mobile nav-burger"
               aria-expanded={menuOpen}
               aria-controls="mobile-site-menu"
               aria-label={menuOpen ? 'Close menu' : 'Open menu'}
               onClick={() => setMenuOpen((open) => !open)}
-              style={{ background: 'none', border: 'none', color: C.ink, cursor: 'pointer', padding: 10, minWidth: 44, minHeight: 44, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 4 }}
             >
-              <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
-              <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
-              <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -547,11 +558,11 @@ export function Nav() {
             ))}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
               {user ? (
-                <Link to={accountPath} onClick={() => setMenuOpen(false)} className="home-nav-signin">Your account</Link>
+                <Link to={accountPath} onClick={() => setMenuOpen(false)} className="mobile-nav-action sk-btn sk-btn-secondary">Your account</Link>
               ) : (
-                <Link to="/login" onClick={() => setMenuOpen(false)} className="home-nav-signin">Sign in</Link>
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="mobile-nav-action sk-btn sk-btn-secondary">Sign in</Link>
               )}
-              <Link to={pathCta.to} onClick={() => setMenuOpen(false)} className="home-nav-start">
+              <Link to={pathCta.to} onClick={() => setMenuOpen(false)} className="mobile-nav-cta sk-btn sk-btn-primary">
                 {pathCta.label}
               </Link>
             </div>
@@ -568,27 +579,15 @@ export function Nav() {
       aria-label="Primary"
     >
       <div className="skylent-rail" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: T.navH, gap: 12, minWidth: 0 }}>
-        <Link to="/" className="skylent-mark" style={{ fontSize: 22, color: C.ink, textDecoration: 'none', padding: 0, flexShrink: 0 }}>
-          Skylent<span style={{ color: C.orange }}>.</span>
+        <Link to="/" className="skylent-mark skylent-nav-mark" aria-label="Skylent home">
+          Skylent
         </Link>
 
         <div className="nav-primary-row" style={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: 0, flex: 1 }}>
           <Link
             to="/path"
             aria-current={pathInGroup('Path', '/path', location.pathname) ? 'page' : undefined}
-            className="nav-path-primary"
-            style={{
-              color: pathInGroup('Path', '/path', location.pathname) ? C.ink : C.slate,
-              fontSize: 14,
-              padding: '8px 12px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              fontFamily: 'var(--font-body)',
-              letterSpacing: '-0.01em',
-              textDecoration: 'none',
-              fontWeight: 600,
-              flexShrink: 0,
-            }}
+            className={`nav-path-primary nav-top-link${pathInGroup('Path', '/path', location.pathname) ? ' is-active' : ''}`}
           >
             Path
           </Link>
@@ -634,7 +633,7 @@ export function Nav() {
                       <Link
                         to={group.to!}
                         aria-current={inGroup ? 'page' : undefined}
-                        style={{ background: 'none', color: open || inGroup ? C.ink : C.slate, fontSize: 14, padding: '8px 8px 8px 12px', display: 'inline-flex', alignItems: 'center', fontFamily: 'var(--font-body)', letterSpacing: '-0.01em', textDecoration: 'none', fontWeight: 500 }}
+                        className={`nav-top-link has-menu${open || inGroup ? ' is-active' : ''}`}
                       >
                         {group.label}
                       </Link>
@@ -645,7 +644,7 @@ export function Nav() {
                         aria-haspopup="true"
                         aria-label={`${group.label} menu`}
                         onClick={toggleMenu}
-                        style={{ background: 'none', border: 'none', color: open || inGroup ? C.ink : C.slate, cursor: 'pointer', padding: '8px 10px 8px 2px', display: 'inline-flex', alignItems: 'center' }}
+                        className={`nav-top-chevron${open || inGroup ? ' is-active' : ''}`}
                       >
                         <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" aria-hidden="true" style={{ opacity: 0.5, transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }}><path d="M0 0l5 6 5-6z"/></svg>
                       </button>
@@ -658,11 +657,11 @@ export function Nav() {
                     className={dropdownClass}
                     role="group"
                     aria-label={group.label}
-                    style={{ position: 'absolute', top: 'calc(100% + 6px)', left: group.sections?.length ? 'auto' : 0, right: group.sections?.length ? 0 : 'auto', background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: isDiscoveryOnly ? 8 : 6, minWidth: group.sections?.length ? 560 : isDiscoveryOnly ? 340 : 260, maxWidth: group.sections?.length ? 680 : isDiscoveryOnly ? 400 : 320, boxShadow: T.shadow, zIndex: 300 }}
+                    style={{ position: 'absolute', top: 'calc(100% + 6px)', left: group.sections?.length ? 'auto' : 0, right: group.sections?.length ? 0 : 'auto', background: N.white, border: `1px solid ${N.line}`, borderRadius: 12, padding: isDiscoveryOnly ? 8 : 6, minWidth: group.sections?.length ? 560 : isDiscoveryOnly ? 340 : 260, maxWidth: group.sections?.length ? 680 : isDiscoveryOnly ? 400 : 320, boxShadow: N.shadow, zIndex: 300 }}
                   >
                     <div className={isDiscoveryOnly ? 'nav-discovery-head' : undefined} style={isDiscoveryOnly ? undefined : { padding: '10px 12px 12px', marginBottom: 2, borderBottom: '1px solid rgba(8,9,9,0.08)' }}>
-                      <div style={{ color: C.ink, fontSize: isDiscoveryOnly ? 15 : 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
-                      <div style={{ color: C.slate, fontSize: isDiscoveryOnly ? 12 : 11, marginTop: isDiscoveryOnly ? 4 : 2, lineHeight: 1.45 }}>{group.tagline}</div>
+                      <div style={{ color: N.ink, fontSize: isDiscoveryOnly ? 15 : 14, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{group.label}</div>
+                      <div style={{ color: N.slate, fontSize: isDiscoveryOnly ? 12 : 11, marginTop: isDiscoveryOnly ? 4 : 2, lineHeight: 1.45 }}>{group.tagline}</div>
                     </div>
                     {group.sections?.length ? (
                       <div className="nav-mega-sections">
@@ -679,10 +678,10 @@ export function Nav() {
                                 onMouseLeave={navLinkHover.leave}
                               >
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                                  <div style={{ color: C.ink, fontSize: 13, fontWeight: 500 }}>{item.label}</div>
+                                  <div style={{ color: N.ink, fontSize: 13, fontWeight: 500 }}>{item.label}</div>
                                   {item.mark && <MaturityMark maturity={item.mark} compact />}
                                 </div>
-                                <div style={{ color: C.slate, fontSize: 11, marginTop: 1 }}>{item.sub}</div>
+                                <div style={{ color: N.slate, fontSize: 11, marginTop: 1 }}>{item.sub}</div>
                               </Link>
                             ))}
                           </div>
@@ -700,10 +699,10 @@ export function Nav() {
                             onMouseLeave={navLinkHover.leave}
                           >
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                              <div style={{ color: C.ink, fontSize: isDiscoveryOnly ? 14 : 13, fontWeight: 500 }}>{item.label}</div>
+                              <div style={{ color: N.ink, fontSize: isDiscoveryOnly ? 14 : 13, fontWeight: 500 }}>{item.label}</div>
                               {item.mark && <MaturityMark maturity={item.mark} compact />}
                             </div>
-                            <div style={{ color: C.slate, fontSize: isDiscoveryOnly ? 12 : 11, marginTop: isDiscoveryOnly ? 3 : 1, lineHeight: 1.4 }}>{item.sub}</div>
+                            <div style={{ color: N.slate, fontSize: isDiscoveryOnly ? 12 : 11, marginTop: isDiscoveryOnly ? 3 : 1, lineHeight: 1.4 }}>{item.sub}</div>
                           </Link>
                         ))}
                       </div>
@@ -732,9 +731,9 @@ export function Nav() {
               aria-expanded={searchOpen}
               aria-controls="nav-search-suggest"
               autoComplete="off"
-              style={{ background: 'transparent', border: 'none', outline: 'none', color: C.ink, fontSize: 13, padding: '8px 12px', width: '100%', fontFamily: 'var(--font-body)' }}
+              style={{ background: 'transparent', border: 'none', outline: 'none', color: N.ink, fontSize: 13, padding: '8px 12px', width: '100%', fontFamily: 'var(--font-body)' }}
             />
-            <button type="submit" aria-label="Submit search" style={{ background: 'none', border: 'none', color: C.indigo, padding: '8px 10px', cursor: 'pointer', minHeight: 40, minWidth: 40 }}>
+            <button type="submit" aria-label="Submit search" style={{ background: 'none', border: 'none', color: N.accent, padding: '8px 10px', cursor: 'pointer', minHeight: 40, minWidth: 40 }}>
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             </button>
           </form>
@@ -765,10 +764,10 @@ export function Nav() {
                 aria-controls="nav-account-menu"
                 aria-label={`Account menu${user.name ? `, ${user.name}` : ''}`}
                 onClick={() => { setActiveMenu(null); setAccountOpen(o => !o) }}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: C.cream, border: `1px solid ${T.lineLight}`, borderRadius: 7, padding: '5px 10px', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: N.surface, border: `1px solid ${N.line}`, borderRadius: 7, padding: '5px 10px', cursor: 'pointer', fontFamily: 'var(--font-body)' }}
               >
-                <div style={{ width: 26, height: 26, borderRadius: '50%', background: C.indigo, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: C.white, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>{user.avatar}</div>
-                <span className="nav-account-name" style={{ color: C.ink, fontSize: 12, fontWeight: 500, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name.length > 14 ? user.name.slice(0, 14) + '...' : user.name}</span>
+                <div style={{ width: 26, height: 26, borderRadius: '50%', background: N.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 9, fontWeight: 700, color: N.white, fontFamily: 'var(--font-mono)', flexShrink: 0 }}>{user.avatar}</div>
+                <span className="nav-account-name" style={{ color: N.ink, fontSize: 12, fontWeight: 500, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user.name.length > 14 ? user.name.slice(0, 14) + '...' : user.name}</span>
               </button>
               {accountOpen && (
                 <div
@@ -776,11 +775,11 @@ export function Nav() {
                   role="group"
                   aria-label="Account"
                   className="nav-mega-dropdown"
-                  style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, background: C.white, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: 6, minWidth: 200, boxShadow: T.shadow, zIndex: 300 }}
+                  style={{ position: 'absolute', top: 'calc(100% + 6px)', right: 0, background: N.white, border: `1px solid ${N.line}`, borderRadius: 12, padding: 6, minWidth: 200, boxShadow: N.shadow, zIndex: 300 }}
                 >
                   <Link
                     to={accountPath}
-                    style={{ display: 'block', padding: '10px 12px', borderRadius: 8, textDecoration: 'none', color: C.ink, fontSize: 13, fontWeight: 500, minHeight: 44, boxSizing: 'border-box' }}
+                    style={{ display: 'block', padding: '10px 12px', borderRadius: 8, textDecoration: 'none', color: N.ink, fontSize: 13, fontWeight: 500, minHeight: 44, boxSizing: 'border-box' }}
                     onMouseEnter={navLinkHover.enter}
                     onMouseLeave={navLinkHover.leave}
                   >
@@ -789,7 +788,7 @@ export function Nav() {
                   <button
                     type="button"
                     onClick={() => { logout(); navigate('/'); setAccountOpen(false) }}
-                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8, border: 'none', background: 'none', color: C.slate, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', minHeight: 44 }}
+                    style={{ display: 'block', width: '100%', textAlign: 'left', padding: '10px 12px', borderRadius: 8, border: 'none', background: 'none', color: N.slate, fontSize: 13, cursor: 'pointer', fontFamily: 'var(--font-body)', minHeight: 44 }}
                     onMouseEnter={navLinkHover.enter}
                     onMouseLeave={navLinkHover.leave}
                   >
@@ -800,67 +799,31 @@ export function Nav() {
             </div>
           ) : (
             <>
-              <Link to="/login" className="nav-signin" style={{ background: 'transparent', border: '1px solid rgba(8,9,9,0.16)', color: C.ink, borderRadius: 7, padding: '7px 16px', fontSize: 13, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap', minHeight: 36 }}>
+              <Link to="/login" className="nav-signin sk-btn sk-btn-secondary">
                 Sign in
               </Link>
-              <Link
-                to={pathCta.to}
-                className="nav-path-cta"
-                style={{
-                  background: C.indigo,
-                  border: 'none',
-                  color: C.white,
-                  borderRadius: 7,
-                  padding: '7px 16px',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  textDecoration: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  whiteSpace: 'nowrap',
-                  minHeight: 36,
-                }}
-              >
+              <Link to={pathCta.to} className="nav-path-cta sk-btn sk-btn-primary">
                 {pathCta.label}
               </Link>
             </>
           )}
           {user ? (
-            <Link
-              to={pathCta.to}
-              className="nav-path-cta"
-              style={{
-                background: C.indigo,
-                border: 'none',
-                color: C.white,
-                borderRadius: 7,
-                padding: '7px 16px',
-                fontSize: 13,
-                fontWeight: 600,
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                whiteSpace: 'nowrap',
-                minHeight: 36,
-                marginLeft: user ? 0 : undefined,
-              }}
-            >
+            <Link to={pathCta.to} className="nav-path-cta sk-btn sk-btn-primary">
               {pathCta.label}
             </Link>
           ) : null}
           <button
             ref={menuTriggerRef}
             type="button"
-            className="show-mobile"
+            className="show-mobile nav-burger"
             aria-expanded={menuOpen}
             aria-controls="mobile-site-menu"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             onClick={() => { setAccountOpen(false); setMenuOpen(o => !o) }}
-            style={{ background: 'none', border: 'none', color: C.ink, cursor: 'pointer', padding: 10, minWidth: 44, minHeight: 44, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 4 }}
           >
-            <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
-            <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
-            <span style={{ display: 'block', width: 20, height: 2, background: C.ink, borderRadius: 1 }} />
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
           </button>
         </div>
       </div>
@@ -1026,22 +989,22 @@ export function Nav() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 20 }}>
             {user ? (
               <>
-                <Link to={pathCta.to} onClick={() => setMenuOpen(false)} className="mobile-nav-cta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', borderRadius: 7, background: C.indigo, color: C.white, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
+                <Link to={pathCta.to} onClick={() => setMenuOpen(false)} className="mobile-nav-cta sk-btn sk-btn-primary">
                   {pathCta.label}
                 </Link>
-                <Link to={accountPath} onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', border: `1px solid ${T.lineStrong}`, borderRadius: 7, color: C.ink, textDecoration: 'none', fontSize: 14 }}>
+                <Link to={accountPath} onClick={() => setMenuOpen(false)} className="mobile-nav-action sk-btn sk-btn-secondary">
                   Your account
                 </Link>
-                <button type="button" onClick={() => { logout(); navigate('/'); setMenuOpen(false) }} style={{ minHeight: 44, textAlign: 'center', padding: '11px', border: `1px solid ${T.lineLight}`, borderRadius: 7, color: C.slate, background: 'none', fontSize: 14, cursor: 'pointer', fontFamily: 'var(--font-body)' }}>
+                <button type="button" onClick={() => { logout(); navigate('/'); setMenuOpen(false) }} className="mobile-nav-action sk-btn sk-btn-secondary">
                   Sign out
                 </button>
               </>
             ) : (
               <>
-                <Link to="/login" onClick={() => setMenuOpen(false)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', border: `1px solid ${T.lineStrong}`, borderRadius: 7, color: C.ink, textDecoration: 'none', fontSize: 14 }}>
+                <Link to="/login" onClick={() => setMenuOpen(false)} className="mobile-nav-action sk-btn sk-btn-secondary">
                   Sign in
                 </Link>
-                <Link to={pathCta.to} onClick={() => setMenuOpen(false)} className="mobile-nav-cta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 44, textAlign: 'center', padding: '11px', borderRadius: 7, background: C.indigo, color: C.white, textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>
+                <Link to={pathCta.to} onClick={() => setMenuOpen(false)} className="mobile-nav-cta sk-btn sk-btn-primary">
                   {pathCta.label}
                 </Link>
               </>
@@ -1060,8 +1023,8 @@ export function Footer() {
       <div className="skylent-rail">
         <div className="footer-grid skylent-footer-grid">
           <div className="skylent-footer-brand">
-            <Link to="/" className="skylent-mark skylent-footer-mark">
-              Skylent<span className="skylent-footer-mark-accent">.</span>
+            <Link to="/" className="skylent-mark skylent-footer-mark" aria-label="Skylent home">
+              Skylent
             </Link>
             <p className="skylent-footer-brand-copy">
               Programmes, practice, education paths, and Career OS — structured learning with evidence you keep.
@@ -1090,7 +1053,7 @@ export function Footer() {
           ))}
         </div>
         <div className="skylent-footer-meta">
-          <p className="skylent-footer-copy">ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â© 2026 Skylent Global. All rights reserved.</p>
+          <p className="skylent-footer-copy">© 2026 Skylent Global. All rights reserved.</p>
           <div className="skylent-footer-legal">
             <ul className="skylent-footer-legal-list">
               {FOOTER_LEGAL_LABELS.map((label) => (

@@ -2,10 +2,15 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
 import { Button, Eyebrow, Section, T } from '../components/ui'
 import { Aurora, GlassSurface } from '../components/foundation'
-import { getDomainAccent } from '../aurora-themes'
 import { blogPosts } from '../data'
 
-const accent = getDomainAccent('general')
+/** Public accent as CSS variables, so the public shell theme (skylent-public.css) drives it. */
+const accent = {
+  primary: 'var(--skylent-color-accent)',
+  text: 'var(--skylent-color-accent)',
+  subtle: 'var(--skylent-color-accent-soft)',
+  border: 'var(--skylent-color-accent-border)',
+} as const
 const ARTICLE_MAX = 680
 
 export default function BlogPostPage() {

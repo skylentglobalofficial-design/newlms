@@ -11,6 +11,10 @@
  *  - specimens → direct asset imports
  *  - ProductSpecimen → inline <figure>/<img> with frame styles
  *  - PageShell from @/components/shared (provides existing nav + footer)
+ *
+ * Visual system: src/skylent-site.css (site.* tokens, sk-* utilities, and the
+ * Tailwind v4 @theme bridge that makes text-site-*, bg-site-*, font-heading,
+ * rounded-card and shadow-sk resolve). Canvas is pure white.
  */
 
 import { useState, useEffect, useRef } from "react";
@@ -29,6 +33,11 @@ function cn(...classes: (string | false | null | undefined)[]): string {
 // ── Asset imports ─────────────────────────────────────────────────────────────
 import heroStudent from "@/assets/site/hero-student.jpg";
 import eduImg from "@/assets/site/hero-classroom.jpg";
+import programAnalytics from "@/assets/site/program-analytics.jpg";
+import programProduct from "@/assets/site/program-product.jpg";
+import programAi from "@/assets/site/program-ai.jpg";
+import programWeb from "@/assets/site/program-web.jpg";
+import programLibrary from "@/assets/site/program-library.jpg";
 
 // Product screenshots
 import studentHomeImg from "@/assets/product/U01_student_home.webp";
@@ -42,6 +51,19 @@ const specimens = {
   player: { src: playerImg, alt: "The Skylent OS learning player with structured lessons and progress" },
   careerEvidence: { src: careerEvidenceImg, alt: "Career OS evidence panels showing learning record and certificates" },
 };
+
+/** Presentation-only photography, matched to the programme slug by subject keyword.
+ *  It never changes what the catalogue API says about a programme. */
+const PROGRAM_IMAGES: { test: RegExp; src: string; alt: string }[] = [
+  { test: /data|analytics/i, src: programAnalytics, alt: "Analytics charts on paper beside a laptop" },
+  { test: /web|stack|full/i, src: programWeb, alt: "A developer writing code across several screens" },
+  { test: /ai|machine|prompt|gen/i, src: programAi, alt: "A researcher working at monitors in a technology lab" },
+  { test: /product|mba|business/i, src: programProduct, alt: "A product team working around a shared table" },
+];
+
+function programImage(slug: string): { src: string; alt: string } {
+  return PROGRAM_IMAGES.find((item) => item.test.test(slug)) ?? { src: programLibrary, alt: "A learner studying in a library" };
+}
 
 // ── Inline SVG icons ──────────────────────────────────────────────────────────
 function IcoArrowRight({ className }: { className?: string }) {
@@ -142,11 +164,16 @@ function Cta({ to, primary, children }: { to: string; primary?: boolean; childre
 /** Inline text link with arrow — FIX #19: TextLink component */
 function TextLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
-    <Link to={to} className="group inline-flex items-center gap-1.5 text-[14px] font-semibold text-site-deep hover:underline">
+    <Link to={to} className="sk-link group text-[15px]">
       {children}
-      <IcoArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" />
+      <IcoArrowRight className="h-4 w-4" />
     </Link>
   );
+}
+
+/** Truth label — one quiet chip for every availability / sample status. */
+function StatusChip({ kind, children }: { kind: "info" | "soon" | "sample"; children: React.ReactNode }) {
+  return <span className={cn("sk-status", `sk-status--${kind}`)}>{children}</span>;
 }
 
 /** Eyebrow / kicker label — FIX #6: text-[12px] */
@@ -172,7 +199,7 @@ function Hero() {
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
           {/* Left column — copy */}
           <div className="lg:col-span-7 lg:pb-8">
-            <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-site-deep">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-site-deep">
               Skill programs · Degrees · Career OS
             </p>
             {/* FIX #8: tracking-[-0.015em] */}
@@ -197,7 +224,7 @@ function Hero() {
             >
               Not sure where to start?{" "}
               <span className="font-semibold text-site-deep">Find My Path</span>
-              <IcoArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" />
+              <IcoArrowRight className="h-3.5 w-3.5 text-site-deep transition-transform group-hover:translate-x-1 motion-reduce:transition-none" />
             </Link>
           </div>
 
@@ -215,10 +242,10 @@ function Hero() {
                 />
               </div>
               {/* Product screenshot overlay — FIX #11: sm:w-[68%] lg:w-[70%]; FIX #13: px-3.5 py-2.5 */}
-              <div className="absolute bottom-0 left-0 w-[78%] overflow-hidden rounded-[12px] border border-site-border bg-site-white shadow-[0_4px_24px_0_rgba(30,32,44,0.10)] ring-[8px] ring-site-paper sm:w-[68%] lg:w-[70%]">
-                <div className="flex items-center justify-between gap-3 border-b border-site-border bg-site-soft-blue px-3.5 py-2.5">
-                  <span className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-site-deep">Skylent Learning</span>
-                  <span className="hidden text-[10.5px] text-site-muted sm:inline">Published course workspace</span>
+              <div className="absolute bottom-0 left-0 w-[78%] overflow-hidden rounded-card border border-site-border bg-site-white shadow-sk ring-[8px] ring-site-paper sm:w-[68%] lg:w-[70%]">
+                <div className="flex items-center justify-between gap-3 border-b border-site-border px-3.5 py-2.5">
+                  <span className="whitespace-nowrap text-[10.5px] font-semibold uppercase tracking-[0.14em] text-site-deep">Skylent Learning</span>
+                  <span className="hidden whitespace-nowrap text-[10.5px] text-site-muted sm:inline lg:hidden xl:inline">Published course workspace</span>
                 </div>
                 <img
                   src={specimens.studentHome.src}
@@ -242,36 +269,71 @@ function Hero() {
 // ── Section: Programs ─────────────────────────────────────────────────────────
 const CATEGORY_ALL = "All";
 
-/** FIX #2: CatalogueCard redesign — colour-block, rounded-card, hover lift, curriculum footer, no price */
+/** Availability comes straight from the catalogue API (enrollmentStatus). Unknown shows nothing. */
+function ProgramStatus({ status }: { status: LiveProgram["status"] }) {
+  if (status === "open") return <StatusChip kind="info">Live</StatusChip>;
+  if (status === "waitlist") return <StatusChip kind="soon">Waitlist</StatusChip>;
+  if (status === "coming_soon") return <StatusChip kind="soon">Coming soon</StatusChip>;
+  return null;
+}
+
+/** Card photo with quiet loading / error states — the frame keeps its ratio either way. */
+function CatalogueImage({ src, alt }: { src: string; alt: string }) {
+  const [state, setState] = useState<"loading" | "loaded" | "error">("loading");
+  return (
+    <div className="relative aspect-[4/3] overflow-hidden border-b border-site-border bg-site-soft-blue">
+      {state === "error" && (
+        <span className="absolute inset-0 flex items-center justify-center text-[12px] text-site-dim">Image unavailable</span>
+      )}
+      <img
+        src={src}
+        alt={alt}
+        loading="lazy"
+        width={800}
+        height={600}
+        onLoad={() => setState("loaded")}
+        onError={() => setState("error")}
+        className={cn(
+          "absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-700 motion-reduce:transition-none",
+          state === "loaded" ? "opacity-100 group-hover:scale-[1.03]" : "opacity-0"
+        )}
+      />
+    </div>
+  );
+}
+
 function CatalogueCard({ p }: { p: LiveProgram }) {
-  const facts = [p.level, p.duration, p.deliveryMode].filter(Boolean);
-  const hasCurriculum = p.modules > 0 || p.projects > 0;
+  const img = programImage(p.slug);
+  const facts = [p.duration, p.deliveryMode, p.level].filter(Boolean);
+  const counts = ([["Modules", p.modules], ["Tasks", p.projects]] as const).filter(([, v]) => v > 0);
   return (
     <Link
       to={`/programs/${p.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-card border border-site-border bg-site-white transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-site-deep/40 hover:shadow-sk focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-site-ocean"
+      className="group flex h-full flex-col overflow-hidden rounded-card border border-site-border bg-site-white transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-site-deep/40 hover:shadow-sk focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-site-ocean motion-reduce:transition-none"
     >
-      {/* Colour-block image area */}
-      <div className="aspect-[4/3] overflow-hidden border-b border-site-border bg-site-soft-blue" />
+      <CatalogueImage src={img.src} alt={img.alt} />
       <div className="flex flex-1 flex-col p-5">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-site-deep">{p.category ?? "Skill program"}</p>
+        <p className="flex items-center justify-between gap-3 text-[11px] font-semibold uppercase tracking-[0.14em]">
+          <span className="text-site-deep">{p.category || "Skill program"}</span>
+          <ProgramStatus status={p.status} />
+        </p>
         <h3 className="mt-2 font-heading text-[1.3rem] font-semibold leading-snug text-site-ink group-hover:text-site-deep">{p.title}</h3>
         {p.description && <p className="mt-1.5 line-clamp-2 text-[14px] leading-relaxed text-site-muted">{p.description}</p>}
         {facts.length > 0 && <p className="mt-4 text-[13px] font-medium text-site-ink">{facts.join("  ·  ")}</p>}
-        {hasCurriculum && (
-          <dl className="mt-4 grid grid-cols-2 divide-x divide-site-border rounded-[8px] border border-site-border text-center">
-            {([["Modules", p.modules], ["Tasks", p.projects]] as const).map(([k, v]) => v > 0 && (
+        {counts.length > 0 ? (
+          <dl className={cn("mt-4 grid divide-x divide-site-border rounded-[8px] border border-site-border bg-site-white text-center", counts.length === 2 ? "grid-cols-2" : "grid-cols-1")}>
+            {counts.map(([k, v]) => (
               <div key={k} className="px-1 py-2.5">
                 <dd className="font-heading text-[1.05rem] font-semibold tabular-nums text-site-ink">{v}</dd>
                 <dt className="text-[10.5px] uppercase tracking-[0.1em] text-site-dim">{k}</dt>
               </div>
             ))}
           </dl>
-        )}
+        ) : null}
         <div className="min-h-4 flex-1" />
         <span className="mt-5 flex items-center justify-between border-t border-site-border pt-4 text-[14px] font-semibold text-site-deep">
           View curriculum
-          <IcoArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          <IcoArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 motion-reduce:transition-none" />
         </span>
       </div>
     </Link>
@@ -279,31 +341,37 @@ function CatalogueCard({ p }: { p: LiveProgram }) {
 }
 
 function Programs() {
-  const { programs, isLoading, isUnavailable } = useLivePrograms();
+  const { programs, isLoading, isLive, isUnavailable, retry } = useLivePrograms();
   const [activeCategory, setActiveCategory] = useState(CATEGORY_ALL);
 
   const categories = [CATEGORY_ALL, ...Array.from(new Set(programs.map((p) => p.category))).sort()];
   const visible = activeCategory === CATEGORY_ALL ? programs : programs.filter((p) => p.category === activeCategory);
 
   return (
-    /* FIX #13: bg-site-white */
-    <section id="programs" className="border-t border-site-border bg-site-white sk-section">
+    <section id="programs" className="scroll-mt-20 bg-site-white sk-section">
       <div className="sk-container">
-        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-          <SectionHead
-            k="Skill programmes"
-            title="Programmes built for where you want to go."
-            body="Online courses with structured modules, practice, and a verifiable certificate."
-          />
-          {/* FIX #19: TextLink "Explore all programs" */}
-          <Reveal>
+        <div className="grid gap-6 border-b border-site-border pb-8 lg:grid-cols-12 lg:items-end">
+          <div className="lg:col-span-7">
+            <SectionHead
+              k="Skill programmes"
+              title="Programmes built for where you want to go."
+              body="Online courses with structured modules, practice, and a verifiable certificate."
+            />
+          </div>
+          <Reveal className="flex flex-col gap-3 lg:col-span-5 lg:items-end">
+            {/* Count is derived from the live response — never hardcoded. */}
+            {isLive && (
+              <p className="text-[13px] text-site-dim">
+                {programs.length} published {programs.length === 1 ? "programme" : "programmes"} · updated from the Skylent catalogue
+              </p>
+            )}
             <TextLink to="/programs">Explore all programs</TextLink>
           </Reveal>
         </div>
 
         {/* Category filter tabs */}
-        {categories.length > 1 && (
-          <div className="mt-8 flex flex-wrap gap-2" role="tablist" aria-label="Filter by category">
+        {categories.length > 2 && (
+          <div className="-mx-5 mt-6 flex gap-2 overflow-x-auto px-5 pb-1 sm:mx-0 sm:flex-wrap sm:px-0" role="tablist" aria-label="Filter programmes by category">
             {categories.map((cat) => (
               <button
                 key={cat}
@@ -311,22 +379,24 @@ function Programs() {
                 aria-selected={cat === activeCategory}
                 onClick={() => setActiveCategory(cat)}
                 className={cn(
-                  "rounded-full border px-4 py-1.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-site-ocean",
+                  "shrink-0 rounded-full border px-4 py-1.5 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-site-ocean",
                   cat === activeCategory
-                    ? "border-site-deep bg-site-deep text-white"
-                    : "border-site-border bg-site-white text-site-muted hover:border-site-ink hover:text-site-ink"
+                    ? "border-site-deep bg-site-deep text-site-white"
+                    : "border-site-border bg-site-white text-site-muted hover:border-site-deep/40 hover:text-site-ink"
                 )}
               >
                 {cat}
+                {cat !== CATEGORY_ALL && (
+                  <span className="ml-1.5 tabular-nums opacity-70">{programs.filter((p) => p.category === cat).length}</span>
+                )}
               </button>
             ))}
           </div>
         )}
 
-        {/* FIX #18: skeleton loading cards */}
         {isLoading && (
-          <div className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
+          <div className="mt-8 grid gap-x-6 gap-y-10 md:grid-cols-2 lg:grid-cols-3" aria-busy="true" aria-label="Loading programmes">
+            {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} aria-hidden className="h-[440px] animate-pulse overflow-hidden rounded-card border border-site-border bg-site-white motion-reduce:animate-none">
                 <div className="aspect-[4/3] bg-site-soft-blue" />
                 <div className="space-y-3 p-5">
@@ -339,23 +409,39 @@ function Programs() {
             ))}
           </div>
         )}
+
+        {/* The catalogue API is the only source. If it does not answer, say so — no sample cards. */}
         {!isLoading && isUnavailable && (
-          <div className="mt-10 rounded-[12px] border border-site-border bg-site-white px-6 py-10 text-center">
-            <p className="text-[14px] text-site-muted">Unable to load programmes right now.</p>
+          <div role="status" className="mt-8 flex flex-col items-start gap-5 rounded-card border border-site-border bg-site-white p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+            <div className="flex items-start gap-4">
+              <span aria-hidden className="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-full border border-site-border bg-site-soft text-site-deep">
+                <IcoBookOpen className="h-[18px] w-[18px]" />
+              </span>
+              <div>
+                <p className="font-heading text-[1.15rem] font-semibold leading-snug text-site-ink">Unable to load programmes right now.</p>
+                <p className="mt-1 max-w-[52ch] text-[14px] leading-[1.6] text-site-muted">
+                  The live catalogue did not respond, so nothing is shown in its place. Please try again in a moment.
+                </p>
+              </div>
+            </div>
+            <button type="button" onClick={retry} className="sk-btn sk-btn-secondary shrink-0">
+              Try again
+            </button>
           </div>
         )}
         {!isLoading && !isUnavailable && visible.length === 0 && (
-          <div className="mt-10 py-20 text-center text-[14px] text-site-muted">No programmes in this category yet.</div>
+          <div className="mt-8 rounded-card border border-site-border bg-site-white px-6 py-14 text-center text-[14px] text-site-muted">No programmes in this category yet.</div>
         )}
-        {/* FIX #16: gap-x-6 gap-y-10 */}
         {!isLoading && !isUnavailable && visible.length > 0 && (
-          <div className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-            {visible.map((p) => (
-              <Reveal key={p.slug}>
-                <CatalogueCard p={p} />
-              </Reveal>
+          <ul className="mt-8 grid gap-x-6 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
+            {visible.slice(0, 6).map((p) => (
+              <li key={p.slug} className="h-full">
+                <Reveal className="h-full">
+                  <CatalogueCard p={p} />
+                </Reveal>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
     </section>
@@ -372,94 +458,65 @@ const howItWorksLoop = [
   { t: "Grow", b: "Carry your record into Career OS.", I: IcoBriefcase },
 ];
 
+function prefersReducedMotion(): boolean {
+  return typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 function HowItWorks() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const [p, setP] = useState(0); // 0 → 1 as section scrolls into view
+  const listRef = useRef<HTMLOListElement>(null);
+  const [p, setP] = useState(0); // 0 → 1 as the six steps scroll through the viewport
 
   useEffect(() => {
+    if (prefersReducedMotion()) {
+      setP(1);
+      return;
+    }
     function onScroll() {
-      const el = sectionRef.current;
+      const el = listRef.current;
       if (!el) return;
       const rect = el.getBoundingClientRect();
-      const windowH = window.innerHeight;
-      const start = rect.top - windowH * 0.8;
-      const end = rect.bottom - windowH * 0.2;
-      const raw = -start / (end - start);
-      setP(Math.max(0, Math.min(1, raw)));
+      const vh = window.innerHeight;
+      setP(Math.max(0, Math.min(1, (vh * 0.85 - rect.top) / (rect.height + vh * 0.35))));
     }
-    window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, []);
 
   return (
-    /* FIX #14: border-y border-site-border bg-site-soft */
-    <section ref={sectionRef} id="how-it-works" className="border-y border-site-border bg-site-soft sk-section">
+    <section id="how-it-works" className="scroll-mt-20 border-y border-site-border bg-site-white sk-section">
       <div className="sk-container">
-        {/* FIX #4: SectionHead self-wraps; correct title; no body */}
         <SectionHead k="How Skylent works" title="One connected route, from first lesson to proof." />
-
-        {/* Mobile: vertical progress line */}
-        <div className="relative mt-12 flex flex-col gap-0 lg:hidden">
-          <div className="absolute left-[19px] top-0 bottom-0 w-[2px] bg-site-border" aria-hidden>
-            <div
-              className="origin-top w-full bg-site-deep"
-              style={{ height: `${p * 100}%` }}
-            />
-          </div>
+        {/* One list for every width: a vertical rail on phones, a horizontal rail from lg. */}
+        <ol ref={listRef} className="relative mt-14 grid gap-0 lg:grid-cols-6 lg:gap-6">
+          <span aria-hidden className="absolute bottom-5 left-[19px] top-5 w-px bg-site-border lg:bottom-auto lg:left-5 lg:right-5 lg:top-5 lg:h-px lg:w-auto" />
+          <span aria-hidden className="absolute bottom-5 left-[19px] top-5 w-px origin-top bg-site-deep lg:hidden" style={{ transform: `scaleY(${p})` }} />
+          <span aria-hidden className="absolute left-5 right-5 top-5 hidden h-px origin-left bg-site-deep lg:block" style={{ transform: `scaleX(${p})` }} />
           {howItWorksLoop.map(({ t, b, I }, i) => {
             const lit = p >= i / (howItWorksLoop.length - 1) - 0.02;
             return (
-              <div key={t} className="relative flex gap-5 pb-10 last:pb-0">
-                {/* FIX #3: border-only when lit, single border */}
-                <div
+              <li key={t} className="relative grid grid-cols-[2.5rem_1fr] gap-4 pb-8 last:pb-0 lg:block lg:pb-0">
+                <span
                   className={cn(
-                    "relative z-10 mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-colors",
-                    lit ? "border-site-deep bg-site-white text-site-deep" : "border-site-border bg-site-white text-site-muted"
+                    "relative z-10 grid h-10 w-10 place-items-center rounded-full border bg-site-white transition-colors duration-300 motion-reduce:transition-none",
+                    lit ? "border-site-deep text-site-deep" : "border-site-border text-site-dim"
                   )}
                 >
-                  <I className="h-[18px] w-[18px]" />
+                  <I className="h-4 w-4" />
+                </span>
+                <div className="lg:mt-6">
+                  <p className="text-[12px] font-semibold tabular-nums tracking-[0.14em] text-site-deep">{String(i + 1).padStart(2, "0")}</p>
+                  <p className="mt-1 font-heading text-[19px] font-semibold text-site-ink">{t}</p>
+                  <p className="mt-1.5 max-w-[34ch] text-[14px] leading-relaxed text-site-muted">{b}</p>
                 </div>
-                <div className="pt-1.5">
-                  {/* FIX #20: font-heading text-[19px] title, text-[14px] body */}
-                  <p className={cn("font-heading text-[19px] font-semibold", lit ? "text-site-ink" : "text-site-muted")}>{t}</p>
-                  <p className="mt-1 text-[14px] leading-[1.55] text-site-muted">{b}</p>
-                </div>
-              </div>
+              </li>
             );
           })}
-        </div>
-
-        {/* Desktop: horizontal progress line */}
-        <div className="relative mt-12 hidden lg:block">
-          <div className="absolute top-[19px] left-[19px] right-[19px] h-[2px] bg-site-border" aria-hidden>
-            <div
-              className="h-full bg-site-deep"
-              style={{ transform: `scaleX(${p})`, transformOrigin: "left" }}
-            />
-          </div>
-          <div className="relative grid grid-cols-6 gap-4">
-            {howItWorksLoop.map(({ t, b, I }, i) => {
-              const lit = p >= i / (howItWorksLoop.length - 1) - 0.02;
-              return (
-                <div key={t} className="flex flex-col items-center text-center">
-                  {/* FIX #3: border-only when lit, single border */}
-                  <div
-                    className={cn(
-                      "relative z-10 flex h-10 w-10 items-center justify-center rounded-full border transition-colors",
-                      lit ? "border-site-deep bg-site-white text-site-deep" : "border-site-border bg-site-white text-site-muted"
-                    )}
-                  >
-                    <I className="h-[18px] w-[18px]" />
-                  </div>
-                  {/* FIX #20: font-heading text-[19px] title, text-[14px] body */}
-                  <p className={cn("mt-4 font-heading text-[19px] font-semibold", lit ? "text-site-ink" : "text-site-muted")}>{t}</p>
-                  <p className="mt-1.5 text-[14px] leading-[1.55] text-site-muted">{b}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        </ol>
       </div>
     </section>
   );
@@ -501,8 +558,7 @@ function SeeItScreen({ img, label, note, i }: { img: { src: string; alt: string 
 function SeeItWorking() {
   const { user } = useAuth();
   return (
-    /* FIX #14: border-y border-site-border bg-site-soft */
-    <section id="see-it-working" className="border-y border-site-border bg-site-soft sk-section">
+    <section id="see-it-working" className="scroll-mt-20 overflow-hidden border-b border-site-border bg-site-white sk-section">
       <div className="sk-container">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           <SectionHead
@@ -510,7 +566,7 @@ function SeeItWorking() {
             title="This is what learning on Skylent looks like."
             body="Real screens from the student workspace — not mock-ups."
           />
-          <Reveal>
+          <Reveal className="shrink-0">
             {user ? (
               <Cta to="/dashboard">Open Dashboard</Cta>
             ) : (
@@ -558,7 +614,7 @@ function DegreeCard({ d }: { d: DegreeRoute }) {
         </p>
         <span className="mt-4 flex items-center justify-between gap-2 border-t border-site-border pt-4 text-[14px] font-semibold text-site-deep">
           <span className="flex items-center gap-1.5">View pathway<IcoArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
-          {d.sample && <span className="rounded-full border border-site-border bg-site-white px-2 py-0.5 text-[10.5px] text-site-dim">Sample</span>}
+          {d.sample && <StatusChip kind="sample">Sample listing</StatusChip>}
         </span>
       </div>
     </Link>
@@ -570,7 +626,7 @@ function Education() {
   const filtered = level === "all" ? DEGREE_ROUTES : DEGREE_ROUTES.filter((d) => d.level === level);
 
   return (
-    <section id="education" className="border-t border-site-border bg-site-white sk-section">
+    <section id="degrees" className="scroll-mt-20 bg-site-white sk-section">
       <div className="sk-container">
         <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
           {/* FIX #17: updated section copy */}
@@ -580,21 +636,23 @@ function Education() {
             body="Compare the listed study modes and open each degree page for the information currently available."
           />
           {/* FIX #19: TextLink "Explore all degrees" */}
-          <Reveal>
+          <Reveal className="shrink-0">
             <TextLink to="/education">Explore all degrees</TextLink>
           </Reveal>
         </div>
 
-        <div className="mt-8 flex flex-wrap gap-2">
+        <div className="mt-8 flex flex-wrap gap-2" role="group" aria-label="Filter degree routes by level">
           {(["all", "UG", "PG"] as const).map((v) => (
             <button
               key={v}
+              type="button"
+              aria-pressed={v === level}
               onClick={() => setLevel(v)}
               className={cn(
-                "rounded-full border px-4 py-1.5 text-[13px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-site-ocean",
+                "rounded-full border px-4 py-1.5 text-[13px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-site-ocean",
                 v === level
-                  ? "border-site-deep bg-site-deep text-white"
-                  : "border-site-border bg-site-white text-site-muted hover:border-site-ink hover:text-site-ink"
+                  ? "border-site-deep bg-site-deep text-site-white"
+                  : "border-site-border bg-site-white text-site-muted hover:border-site-deep/40 hover:text-site-ink"
               )}
             >
               {v === "all" ? "All" : degreeLevelLabel(v)}
@@ -602,16 +660,18 @@ function Education() {
           ))}
         </div>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <ul className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {filtered.map((d) => (
-            <Reveal key={d.id}>
-              <DegreeCard d={d} />
-            </Reveal>
+            <li key={d.id} className="h-full">
+              <Reveal className="h-full">
+                <DegreeCard d={d} />
+              </Reveal>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        <Reveal className="mt-10">
-          <p className="text-[12.5px] text-site-dim">
+        <Reveal className="mt-6">
+          <p className="max-w-[92ch] text-[13px] leading-[1.6] text-site-dim">
             Degree entries marked "Coming soon" reflect planned partnerships, not confirmed enrolment. Sample entries use placeholder institution names.
           </p>
         </Reveal>
@@ -628,19 +688,13 @@ const careerOs = [
   { t: "Openings board", b: "Opportunities will appear here once published. None are listed yet.", s: "Coming soon" },
 ];
 
-/** FIX #17: CareerOsStatusBadge — remove custom green, use site tokens */
+/** Live rows read as available; everything else stays visibly not-yet-available. */
 function CareerOsStatusBadge({ s }: { s: string }) {
-  const live = s === "Live";
-  const inDev = s === "In development";
   return (
     <span
       className={cn(
-        "rounded-full px-2.5 py-0.5 text-[10.5px] font-semibold",
-        live
-          ? "bg-site-soft-blue text-site-deep"
-          : inDev
-          ? "bg-site-soft-blue text-site-deep border border-site-border"
-          : "bg-site-border text-site-dim"
+        "rounded-full px-2 py-0.5 text-[11px] font-semibold",
+        s === "Live" ? "bg-site-soft-blue text-site-deep" : "border border-site-border bg-site-white text-site-muted"
       )}
     >
       {s}
@@ -650,7 +704,7 @@ function CareerOsStatusBadge({ s }: { s: string }) {
 
 function CareerOSSpotlight() {
   return (
-    <section id="career-os" className="border-t border-site-border bg-site-paper sk-section">
+    <section id="career-os" className="scroll-mt-20 border-t border-site-border bg-site-paper sk-section">
       <div className="sk-container grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
         <Reveal className="lg:col-span-7">
           <figure>
@@ -674,7 +728,7 @@ function CareerOSSpotlight() {
         <Reveal className="lg:col-span-5" delay={80}>
           <p className={eyebrow}>Career OS</p>
           {/* FIX #17: clamp(1.9rem,3.4vw,2.75rem) */}
-          <h2 className="mt-4 font-heading text-[clamp(1.9rem,3.4vw,2.75rem)] font-semibold leading-[1.06] tracking-normal text-site-ink">
+          <h2 className="mt-4 max-w-[16ch] font-heading text-[clamp(1.9rem,3.4vw,2.75rem)] font-semibold leading-[1.06] tracking-normal text-site-ink">
             Turn learning into evidence you can use.
           </h2>
           {/* FIX #17: text-[16.5px] leading-[1.65] */}

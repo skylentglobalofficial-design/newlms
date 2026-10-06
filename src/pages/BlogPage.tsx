@@ -3,11 +3,16 @@ import { Link } from 'react-router-dom'
 import { C, FadeIn, PageShell } from '../components/shared'
 import { Eyebrow, Section, T } from '../components/ui'
 import { Aurora, GlassSurface, MediaImage } from '../components/foundation'
-import { getDomainAccent } from '../aurora-themes'
 import { blogPosts } from '../data'
 import { PHOTO } from '../media'
 
-const accent = getDomainAccent('general')
+/** Public accent as CSS variables, so the public shell theme (skylent-public.css) drives it. */
+const accent = {
+  primary: 'var(--skylent-color-accent)',
+  text: 'var(--skylent-color-accent)',
+  subtle: 'var(--skylent-color-accent-soft)',
+  border: 'var(--skylent-color-accent-border)',
+} as const
 
 export default function BlogPage() {
   const [category, setCategory] = useState('All')
@@ -88,7 +93,7 @@ export default function BlogPage() {
                 <Link to={`/blog/${post.slug}`} style={{ textDecoration: 'none', display: 'block', height: '100%' }}>
                   <GlassSurface level={2} padding="22px 24px" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14, gap: 8, flexWrap: 'wrap' }}>
-                      <span style={{ background: C.cream, borderRadius: 5, padding: '3px 10px', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{post.category}</span>
+                      <span style={{ background: 'var(--skylent-color-soft)', borderRadius: 5, padding: '3px 10px', color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{post.category}</span>
                       <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.readTime}</span>
                     </div>
                     <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 18, fontWeight: 600, color: C.ink, letterSpacing: '-0.02em', lineHeight: 1.25, margin: '0 0 10px', flex: 1 }}>{post.title}</h3>

@@ -5,7 +5,13 @@ import { C, T, dsClass, glass, typography } from '../tokens'
 import { MediaImage } from './foundation'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 
-const brandAccent = getDomainAccent('general')
+/** Brand accent as CSS variables — these primitives are only used inside the public shell. */
+const brandAccent = {
+  primary: 'var(--skylent-color-accent)',
+  secondary: 'var(--skylent-color-accent-hover)',
+  text: 'var(--skylent-color-accent)',
+  border: 'var(--skylent-color-accent-border)',
+}
 
 // Re-export tokens for backward compatibility
 export { T } from '../tokens'
@@ -22,7 +28,8 @@ type Tone = 'light' | 'dark' | 'canvas'
 function sectionBg(tone: Tone, bg?: string): string {
   if (bg) return bg
   if (tone === 'dark') return C.ink
-  if (tone === 'canvas') return C.sand
+  // Public sections sit on the shell canvas (white); separation comes from hairlines, not tinted bands.
+  if (tone === 'canvas') return C.canvas
   return C.warmWhite
 }
 

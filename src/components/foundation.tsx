@@ -19,7 +19,7 @@ export function AuroraBand(_props: { themeId?: AuroraThemeId }) {
         inset: 0,
         pointerEvents: 'none',
         zIndex: 0,
-        background: 'linear-gradient(180deg, #FFFDF8 0%, transparent 42%)',
+        background: `linear-gradient(180deg, ${C.cream} 0%, transparent 42%)`,
       }}
     />
   )
@@ -36,7 +36,7 @@ export function Aurora(_props: { themeId?: AuroraThemeId; variant?: 'default' | 
         overflow: 'hidden',
         pointerEvents: 'none',
         zIndex: 0,
-        background: 'linear-gradient(180deg, #F7F4EC 0%, #FFFDF8 48%, #F7F4EC 100%)',
+        background: `linear-gradient(180deg, ${C.warmWhite} 0%, ${C.cream} 48%, ${C.warmWhite} 100%)`,
       }}
     />
   )
@@ -49,7 +49,8 @@ export function useAuroraTheme(): AuroraThemeId {
 }
 
 // ─── Public canvas ────────────────────────────────────────────────────────────
-// Surface layer for the public marketing site: warm background, optional atmosphere.
+// Surface layer for the public site. Background and ink come from the
+// .skylent-public-canvas rule (skylent-public.css) so the public theme owns them.
 // Does not compose Nav, main, or Footer — use PageShell (shared.tsx) for that.
 
 export function PublicCanvas({
@@ -66,7 +67,7 @@ export function PublicCanvas({
   return (
     <div
       className="skylent-public-canvas"
-      style={{ position: 'relative', minHeight: '100%', background: C.canvas, color: C.ink }}
+      style={{ position: 'relative', minHeight: '100%' }}
     >
       {aurora && <div className="skylent-light-atmosphere" aria-hidden />}
       <div style={{ position: 'relative', zIndex: 1 }}>{children}</div>

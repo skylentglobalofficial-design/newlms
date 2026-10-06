@@ -1,10 +1,10 @@
 /* Reusable Professional Programme template. Content is data-driven; layout is shared. */
 
 .pp-page {
-  --pp-paper: #fffdf8;
-  --pp-cream: #f5f2e9;
-  --pp-soft: #eeeae0;
-  --pp-ink: #15171a;
+  --pp-paper: var(--skylent-color-cream);
+  --pp-cream: var(--skylent-surface-cream-warm);
+  --pp-soft: var(--skylent-color-soft);
+  --pp-ink: var(--skylent-color-ink);
   --pp-muted: #666b72;
   --pp-line: rgba(21, 23, 26, 0.12);
   --pp-accent: #6d4aff;

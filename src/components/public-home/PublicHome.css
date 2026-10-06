@@ -1,6 +1,7 @@
 .public-home {
-  --ph-paper: hsl(39 48% 94%);
-  --ph-soft: hsl(38 35% 97%);
+  /* Same palette as src/skylent-site.css — the page canvas is pure white. */
+  --ph-paper: hsl(var(--site-paper));
+  --ph-soft: hsl(var(--site-white));
   --ph-white: #fff;
   --ph-border: hsl(215 28% 86%);
   --ph-ink: hsl(214 60% 20%);
@@ -28,7 +29,7 @@
   margin: 0;
 }
 
-/* Beat the public-canvas serif and #15171A !important rules without
+/* Beat the public-canvas serif and var(--skylent-color-ink) !important rules without
    changing headings outside the homepage. */
 .skylent-public-canvas main .public-home h1,
 .skylent-public-canvas main .public-home h2,
@@ -996,137 +997,10 @@
   }
 }
 
-/* Homepage nav only. These rules live with the public homepage because
-   .is-home-nav is rendered solely on /. */
-.is-home-nav .skylent-rail {
-  display: grid !important;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  min-width: 0;
-}
-
-.is-home-nav .home-nav-links {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  gap: 4px;
-}
-
-.is-home-nav .home-nav-links a {
-  color: var(--ph-ink, #15171a);
-  font-size: 14px;
-  font-weight: 550;
-  text-decoration: none;
-  padding: 8px 12px;
-  white-space: nowrap;
-}
-
-.home-nav-search {
-  position: relative;
-}
-
-.home-nav-search-btn {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border: 0;
-  background: transparent;
-  color: #15171a;
-  cursor: pointer;
-}
-
-.home-nav-search-panel {
-  position: absolute;
-  top: 46px;
-  right: 0;
-  z-index: 20;
-  width: min(260px, calc(100vw - 32px));
-  padding: 8px;
-  border-radius: 12px;
-  background: #fffdf8;
-  box-shadow: 0 12px 32px rgba(21, 23, 26, 0.12);
-}
-
-.home-nav-search-panel input {
-  width: 100%;
-  border: 0;
-  outline: none;
-  background: transparent;
-  color: #15171a;
-  font: 14px var(--font-body);
-  padding: 8px;
-}
-
-.home-nav-search-panel ul {
-  margin: 4px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.home-nav-search-panel button {
-  width: 100%;
-  border: 0;
-  background: transparent;
-  text-align: left;
-  padding: 8px;
-  cursor: pointer;
-  color: #15171a;
-}
-
-.home-nav-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  min-width: 0;
-}
-
-.home-nav-signin,
-.home-nav-start {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 38px;
-  padding: 0 14px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.home-nav-signin {
-  color: #15171a;
-  background: #fffdf8;
-  box-shadow: inset 0 0 0 1px rgba(21, 23, 26, 0.14);
-}
-
-.home-nav-start {
-  background: #3157d5;
-  color: #fffdf8;
-  padding: 0 16px;
-}
-
-.is-home-nav .show-mobile {
-  display: none !important;
-}
-
-@media (max-width: 1100px) {
-  .is-home-nav .home-nav-links {
-    display: none;
-  }
-
-  .is-home-nav .show-mobile {
-    display: flex !important;
-  }
-}
-
-@media (max-width: 720px) {
-  .is-home-nav .home-nav-signin,
-  .is-home-nav .home-nav-start {
-    display: none;
-  }
-}
+/* Homepage nav rules used to live here. This stylesheet only loads with the
+   degree page chunk, so on a fresh visit to / the nav rendered unstyled
+   ("PathProgrammesEducationCareer OSAbout"). They now live in
+   src/skylent-public.css, which is always loaded with the public shell. */
 
 @media (prefers-reduced-motion: reduce) {
   .ph-skel {
