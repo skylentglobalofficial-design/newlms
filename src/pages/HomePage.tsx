@@ -10,17 +10,21 @@
  *  - No @tanstack/react-query → useState/useEffect via useLivePrograms hook
  *  - specimens → direct asset imports
  *  - ProductSpecimen → inline <figure>/<img> with frame styles
- *  - HomeNav/HomeFooter from @/components/site/GlobalShell
+ *  - PageShell from @/components/shared (provides existing nav + footer)
  */
 
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { HomeNav, HomeFooter } from "@/components/site/GlobalShell";
+import { PageShell } from "@/components/shared";
 import { useAuth } from "@/context/AuthContext";
 import { useLivePrograms, type LiveProgram } from "@/hooks/useLivePrograms";
 import { DEGREE_ROUTES, degreeLevelLabel, type DegreeRoute } from "@/data/education";
 import { degreeImage } from "@/data/educationImages";
-import { cn } from "@/lib/utils";
+
+/** Minimal class-name joiner — replaces the cn() import that is not in this repo. */
+function cn(...classes: (string | false | null | undefined)[]): string {
+  return classes.filter(Boolean).join(" ");
+}
 
 // ── Asset imports ─────────────────────────────────────────────────────────────
 import heroStudent from "@/assets/site/hero-student.jpg";
@@ -773,9 +777,8 @@ function FinalCta() {
 // ── Page assembly ─────────────────────────────────────────────────────────────
 export default function HomePage() {
   return (
-    <div className="site-light min-h-screen">
-      <HomeNav />
-      <main>
+    <PageShell aurora={false}>
+      <div className="site-light">
         <Hero />
         <Programs />
         <HowItWorks />
@@ -784,8 +787,7 @@ export default function HomePage() {
         <CareerOSSpotlight />
         <PathSection />
         <FinalCta />
-      </main>
-      <HomeFooter />
-    </div>
+      </div>
+    </PageShell>
   );
 }
