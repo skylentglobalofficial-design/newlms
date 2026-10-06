@@ -137,7 +137,7 @@ function Reveal({ children, className, delay = 0 }: { children: React.ReactNode;
       ref={ref}
       style={delay ? { transitionDelay: `${Math.min(delay, 120)}ms` } : undefined}
       className={cn(
-        "transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none",
+        "transition-[opacity,transform] duration-[250ms] ease-out motion-reduce:transition-none",
         visible ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0",
         className
       )}
@@ -172,8 +172,13 @@ function TextLink({ to, children }: { to: string; children: React.ReactNode }) {
 }
 
 /** Truth label — one quiet chip for every availability / sample status. */
-function StatusChip({ kind, children }: { kind: "info" | "soon" | "sample"; children: React.ReactNode }) {
-  return <span className={cn("sk-status", `sk-status--${kind}`)}>{children}</span>;
+function StatusChip({ kind, children }: { kind: "info" | "live" | "soon" | "sample"; children: React.ReactNode }) {
+  return (
+    <span className={cn("sk-status", `sk-status--${kind}`)}>
+      {kind === "live" && <span aria-hidden className="sk-status-dot" />}
+      {children}
+    </span>
+  );
 }
 
 /** Eyebrow / kicker label — FIX #6: text-[12px] */
@@ -194,7 +199,7 @@ function SectionHead({ k, title, body }: { k: string; title: string; body?: stri
 function Hero() {
   return (
     /* FIX #9: corrected padding */
-    <section className="overflow-hidden border-b border-site-border bg-site-paper pt-8 pb-12 md:pt-10 md:pb-14 lg:pt-12 lg:pb-16">
+    <section className="overflow-hidden border-b border-site-border bg-site-paper pt-10 pb-14 md:pt-12 md:pb-16 lg:pt-16 lg:pb-20">
       <div className="sk-container relative">
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
           {/* Left column — copy */}
@@ -211,10 +216,10 @@ function Hero() {
               </span>
             </h1>
             {/* FIX #12: approved body copy */}
-            <p className="mt-5 max-w-[48ch] text-[clamp(1rem,1.25vw,1.1rem)] leading-[1.65] text-site-muted">
+            <p className="mt-6 max-w-[48ch] text-[clamp(1rem,1.25vw,1.1rem)] leading-[1.65] text-site-muted">
               Skylent offers online skill programmes and university degree routes for students and working learners. Study published modules, practise with quizzes and tasks, and earn certificates anyone can verify.
             </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Cta to="/programs" primary>Explore Skill Programs</Cta>
               <Cta to="#degrees">Explore University Degrees</Cta>
             </div>
@@ -232,7 +237,7 @@ function Hero() {
           <figure className="lg:col-span-5">
             <div className="relative pb-28 sm:pb-24 lg:-mr-10 lg:pb-12">
               {/* Main editorial photo — FIX #10: rounded-sk-lg bg-site-soft-blue shadow-sk */}
-              <div className="ml-auto w-[92%] overflow-hidden rounded-sk-lg border border-site-border bg-site-soft-blue shadow-sk lg:w-[88%]">
+              <div className="ml-auto w-[92%] overflow-hidden rounded-[16px] border border-site-border bg-site-soft-blue shadow-sk lg:w-[88%]">
                 <img
                   src={heroStudent}
                   alt="A student studying with a laptop and books"
@@ -242,7 +247,7 @@ function Hero() {
                 />
               </div>
               {/* Product screenshot overlay — FIX #11: sm:w-[68%] lg:w-[70%]; FIX #13: px-3.5 py-2.5 */}
-              <div className="absolute bottom-0 left-0 w-[78%] overflow-hidden rounded-card border border-site-border bg-site-white shadow-sk ring-[8px] ring-site-paper sm:w-[68%] lg:w-[70%]">
+              <div className="absolute bottom-0 left-0 w-[78%] overflow-hidden rounded-sk-lg border border-site-border bg-site-white shadow-sk-lg ring-[6px] ring-site-paper sm:w-[68%] lg:w-[72%]">
                 <div className="flex items-center justify-between gap-3 border-b border-site-border px-3.5 py-2.5">
                   <span className="whitespace-nowrap text-[10.5px] font-semibold uppercase tracking-[0.14em] text-site-deep">Skylent Learning</span>
                   <span className="hidden whitespace-nowrap text-[10.5px] text-site-muted sm:inline lg:hidden xl:inline">Published course workspace</span>
@@ -256,8 +261,9 @@ function Hero() {
                 />
               </div>
             </div>
-            <figcaption className="mt-4 text-[12.5px] text-site-dim lg:ml-[18%]">
-              The real Skylent learning workspace: modules, lessons, practice and progress.
+            <figcaption className="mt-5 flex items-start gap-3 text-[12.5px] leading-[1.5] text-site-dim">
+              <span aria-hidden className="mt-[9px] h-px w-8 shrink-0 bg-site-deep" />
+              <span>The real Skylent learning workspace: modules, lessons, practice and progress.</span>
             </figcaption>
           </figure>
         </div>
@@ -281,7 +287,7 @@ function ProgramStatus({ status }: { status: LiveProgram["status"] }) {
 function CatalogueImage({ src, alt }: { src: string; alt: string }) {
   const [state, setState] = useState<"loading" | "loaded" | "error">("loading");
   return (
-    <div className="relative aspect-[4/3] overflow-hidden border-b border-site-border bg-site-soft-blue">
+    <div className="relative aspect-[16/10] overflow-hidden border-b border-site-border bg-site-soft-blue">
       {state === "error" && (
         <span className="absolute inset-0 flex items-center justify-center text-[12px] text-site-dim">Image unavailable</span>
       )}
@@ -294,7 +300,7 @@ function CatalogueImage({ src, alt }: { src: string; alt: string }) {
         onLoad={() => setState("loaded")}
         onError={() => setState("error")}
         className={cn(
-          "absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-700 motion-reduce:transition-none",
+          "absolute inset-0 h-full w-full object-cover transition-[opacity,transform] duration-500 ease-out motion-reduce:transition-none",
           state === "loaded" ? "opacity-100 group-hover:scale-[1.03]" : "opacity-0"
         )}
       />
@@ -309,16 +315,16 @@ function CatalogueCard({ p }: { p: LiveProgram }) {
   return (
     <Link
       to={`/programs/${p.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-card border border-site-border bg-site-white transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-site-deep/40 hover:shadow-sk focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-site-ocean motion-reduce:transition-none"
+      className="sk-tile group"
     >
       <CatalogueImage src={img.src} alt={img.alt} />
-      <div className="flex flex-1 flex-col p-5">
-        <p className="flex items-center justify-between gap-3 text-[11px] font-semibold uppercase tracking-[0.14em]">
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <p className="flex min-h-6 items-center justify-between gap-3 text-[11px] font-semibold uppercase tracking-[0.14em]">
           <span className="text-site-deep">{p.category || "Skill program"}</span>
           <ProgramStatus status={p.status} />
         </p>
-        <h3 className="mt-2 font-heading text-[1.3rem] font-semibold leading-snug text-site-ink group-hover:text-site-deep">{p.title}</h3>
-        {p.description && <p className="mt-1.5 line-clamp-2 text-[14px] leading-relaxed text-site-muted">{p.description}</p>}
+        <h3 className="mt-3 font-heading text-[1.3rem] font-semibold leading-[1.25] text-site-ink transition-colors duration-200 group-hover:text-site-deep">{p.title}</h3>
+        {p.description && <p className="mt-2 line-clamp-2 text-[14px] leading-[1.6] text-site-muted">{p.description}</p>}
         {facts.length > 0 && <p className="mt-4 text-[13px] font-medium text-site-ink">{facts.join("  ·  ")}</p>}
         {counts.length > 0 ? (
           <dl className={cn("mt-4 grid divide-x divide-site-border rounded-[8px] border border-site-border bg-site-white text-center", counts.length === 2 ? "grid-cols-2" : "grid-cols-1")}>
@@ -398,7 +404,7 @@ function Programs() {
           <div className="mt-8 grid gap-x-6 gap-y-10 md:grid-cols-2 lg:grid-cols-3" aria-busy="true" aria-label="Loading programmes">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} aria-hidden className="h-[440px] animate-pulse overflow-hidden rounded-card border border-site-border bg-site-white motion-reduce:animate-none">
-                <div className="aspect-[4/3] bg-site-soft-blue" />
+                <div className="aspect-[16/10] bg-site-soft-blue" />
                 <div className="space-y-3 p-5">
                   <div className="h-3 w-24 rounded bg-site-soft" />
                   <div className="h-5 w-3/4 rounded bg-site-soft" />
@@ -494,22 +500,22 @@ function HowItWorks() {
         {/* One list for every width: a vertical rail on phones, a horizontal rail from lg. */}
         <ol ref={listRef} className="relative mt-14 grid gap-0 lg:grid-cols-6 lg:gap-6">
           <span aria-hidden className="absolute bottom-5 left-[19px] top-5 w-px bg-site-border lg:bottom-auto lg:left-5 lg:right-5 lg:top-5 lg:h-px lg:w-auto" />
-          <span aria-hidden className="absolute bottom-5 left-[19px] top-5 w-px origin-top bg-site-deep lg:hidden" style={{ transform: `scaleY(${p})` }} />
-          <span aria-hidden className="absolute left-5 right-5 top-5 hidden h-px origin-left bg-site-deep lg:block" style={{ transform: `scaleX(${p})` }} />
+          <span aria-hidden className="absolute bottom-5 left-[18.5px] top-5 w-0.5 origin-top bg-site-deep lg:hidden" style={{ transform: `scaleY(${p})` }} />
+          <span aria-hidden className="absolute left-5 right-5 top-[19.5px] hidden h-0.5 origin-left bg-site-deep lg:block" style={{ transform: `scaleX(${p})` }} />
           {howItWorksLoop.map(({ t, b, I }, i) => {
             const lit = p >= i / (howItWorksLoop.length - 1) - 0.02;
             return (
               <li key={t} className="relative grid grid-cols-[2.5rem_1fr] gap-4 pb-8 last:pb-0 lg:block lg:pb-0">
                 <span
                   className={cn(
-                    "relative z-10 grid h-10 w-10 place-items-center rounded-full border bg-site-white transition-colors duration-300 motion-reduce:transition-none",
-                    lit ? "border-site-deep text-site-deep" : "border-site-border text-site-dim"
+                    "relative z-10 grid h-10 w-10 place-items-center rounded-full border transition-colors duration-[250ms] motion-reduce:transition-none",
+                    lit ? "border-site-deep bg-site-deep text-site-white" : "border-site-border bg-site-white text-site-dim"
                   )}
                 >
                   <I className="h-4 w-4" />
                 </span>
                 <div className="lg:mt-6">
-                  <p className="text-[12px] font-semibold tabular-nums tracking-[0.14em] text-site-deep">{String(i + 1).padStart(2, "0")}</p>
+                  <p className={cn("text-[12px] font-semibold tabular-nums tracking-[0.14em] transition-colors duration-[250ms] motion-reduce:transition-none", lit ? "text-site-deep" : "text-site-dim")}>{String(i + 1).padStart(2, "0")}</p>
                   <p className="mt-1 font-heading text-[19px] font-semibold text-site-ink">{t}</p>
                   <p className="mt-1.5 max-w-[34ch] text-[14px] leading-relaxed text-site-muted">{b}</p>
                 </div>
@@ -531,24 +537,48 @@ const seeItScreens = [
 ];
 
 /** FIX #15: shadow-sk, p-1.5, hover:-translate-y-1, aspect-[16/10] all, numbered figcaption with border-t */
-function SeeItScreen({ img, label, note, i }: { img: { src: string; alt: string }; label: string; note: string; i: number }) {
+function SeeItScreen({ img, label, note, i, lead }: { img: { src: string; alt: string }; label: string; note: string; i: number; lead?: boolean }) {
+  const frame = (
+    <div
+      className={cn(
+        "overflow-hidden border border-site-border bg-site-white transition-[transform,box-shadow] duration-[250ms] ease-out motion-reduce:transition-none",
+        lead ? "rounded-[16px] p-2 shadow-sk-lg" : "rounded-[14px] p-1.5 shadow-sk hover:-translate-y-0.5 hover:shadow-sk-lg"
+      )}
+    >
+      <img
+        src={img.src}
+        alt={img.alt}
+        loading="lazy"
+        width={1280}
+        height={800}
+        className={cn("aspect-[16/10] w-full object-cover object-left-top", lead ? "rounded-[10px]" : "rounded-[9px]")}
+      />
+    </div>
+  );
+  const number = <span className="text-[12px] font-semibold tabular-nums tracking-[0.14em] text-site-deep">{String(i + 1).padStart(2, "0")}</span>;
+
+  // The first screen leads: larger frame, with its caption set beside it from lg up.
+  if (lead) {
+    return (
+      <figure className="grid gap-5 lg:grid-cols-12 lg:items-end lg:gap-10">
+        <div className="lg:col-span-9">{frame}</div>
+        <figcaption className="border-t border-site-border pt-4 lg:col-span-3 lg:pb-3">
+          {number}
+          <span className="mt-2 block font-heading text-[1.35rem] font-semibold leading-[1.2] text-site-ink">{label}</span>
+          <span className="mt-2 block text-[15px] leading-[1.6] text-site-muted">{note}</span>
+        </figcaption>
+      </figure>
+    );
+  }
+
   return (
     <figure>
-      <div className="overflow-hidden rounded-[14px] border border-site-border bg-site-white p-1.5 shadow-sk transition-transform duration-500 hover:-translate-y-1 motion-reduce:transition-none">
-        <img
-          src={img.src}
-          alt={img.alt}
-          loading="lazy"
-          width={1280}
-          height={800}
-          className="w-full rounded-[10px] object-cover object-left-top aspect-[16/10]"
-        />
-      </div>
-      <figcaption className="mt-4 flex gap-4 border-t border-site-border pt-3">
-        <span className="text-[12px] font-semibold tabular-nums text-site-deep">{String(i + 1).padStart(2, "0")}</span>
+      {frame}
+      <figcaption className="mt-4 flex gap-4 border-t border-site-border pt-3.5">
+        {number}
         <span>
           <span className="block text-[15px] font-semibold text-site-ink">{label}</span>
-          <span className="block text-[14px] text-site-muted">{note}</span>
+          <span className="mt-0.5 block text-[14px] leading-[1.55] text-site-muted">{note}</span>
         </span>
       </figcaption>
     </figure>
@@ -575,9 +605,9 @@ function SeeItWorking() {
           </Reveal>
         </div>
         <Reveal className="mt-12">
-          <SeeItScreen {...seeItScreens[0]} i={0} />
+          <SeeItScreen {...seeItScreens[0]} i={0} lead />
         </Reveal>
-        <div className="mt-12 grid gap-10 md:grid-cols-3">
+        <div className="mt-12 grid gap-8 md:grid-cols-3 lg:mt-14 lg:gap-10">
           {seeItScreens.slice(1).map((s, i) => (
             <Reveal key={s.label} delay={i * 60}>
               <SeeItScreen {...s} i={i + 1} />
@@ -597,23 +627,23 @@ function DegreeCard({ d }: { d: DegreeRoute }) {
   return (
     <Link
       to={`/education/degrees/${d.slug}`}
-      className="group flex h-full flex-col overflow-hidden rounded-[16px] border border-site-border bg-site-white transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:border-site-deep/40 hover:shadow-md motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-site-ocean"
+      className="sk-tile group"
     >
       {img && (
-        <div className="relative overflow-hidden">
-          <img src={img.src} alt={img.alt} loading="lazy" className="aspect-[16/9] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transition-none" />
-          <span className="absolute left-3 top-3 rounded-full bg-site-paper/95 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-site-deep">{level}</span>
+        <div className="relative overflow-hidden border-b border-site-border bg-site-soft-blue">
+          <img src={img.src} alt={img.alt} loading="lazy" className="aspect-[3/2] w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none" />
+          <span className="absolute left-3 top-3 rounded-full border border-site-border bg-site-white px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-site-deep">{level}</span>
         </div>
       )}
       <div className="flex flex-1 flex-col p-5">
         <p className="text-[10.5px] font-semibold uppercase tracking-[0.14em] text-site-dim">Degree area</p>
-        <h3 className="mt-1 text-[1.1rem] font-semibold leading-snug tracking-[-0.02em] text-site-ink group-hover:text-site-deep">{d.field} degrees</h3>
+        <h3 className="mt-1.5 font-heading text-[1.15rem] font-semibold leading-[1.25] text-site-ink transition-colors duration-200 group-hover:text-site-deep">{d.field} degrees</h3>
         <p className="mt-3 flex flex-1 flex-wrap content-start gap-1.5">
           <span className="h-fit rounded-full border border-site-border bg-site-soft px-2.5 py-0.5 text-[12px] text-site-ink">{level}</span>
           <span className="h-fit rounded-full border border-site-border bg-site-soft px-2.5 py-0.5 text-[12px] text-site-ink">{d.studyMode === "online" ? "Online" : "On-campus"}</span>
         </p>
-        <span className="mt-4 flex items-center justify-between gap-2 border-t border-site-border pt-4 text-[14px] font-semibold text-site-deep">
-          <span className="flex items-center gap-1.5">View pathway<IcoArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
+        <span className="mt-4 flex flex-wrap items-center justify-between gap-x-2 gap-y-2.5 border-t border-site-border pt-4 text-[14px] font-semibold text-site-deep">
+          <span className="flex items-center gap-1.5 whitespace-nowrap">View pathway<IcoArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" /></span>
           {d.sample && <StatusChip kind="sample">Sample listing</StatusChip>}
         </span>
       </div>
@@ -688,28 +718,19 @@ const careerOs = [
   { t: "Openings board", b: "Opportunities will appear here once published. None are listed yet.", s: "Coming soon" },
 ];
 
-/** Live rows read as available; everything else stays visibly not-yet-available. */
+/** Live rows read as available (green dot); everything else stays visibly not-yet-available. */
 function CareerOsStatusBadge({ s }: { s: string }) {
-  return (
-    <span
-      className={cn(
-        "rounded-full px-2 py-0.5 text-[11px] font-semibold",
-        s === "Live" ? "bg-site-soft-blue text-site-deep" : "border border-site-border bg-site-white text-site-muted"
-      )}
-    >
-      {s}
-    </span>
-  );
+  return <StatusChip kind={s === "Live" ? "live" : "soon"}>{s}</StatusChip>;
 }
 
 function CareerOSSpotlight() {
   return (
     <section id="career-os" className="scroll-mt-20 border-t border-site-border bg-site-paper sk-section">
-      <div className="sk-container grid items-center gap-12 lg:grid-cols-12 lg:gap-16">
+      <div className="sk-container grid items-center gap-12 lg:grid-cols-12 lg:gap-14">
         <Reveal className="lg:col-span-7">
           <figure>
             {/* FIX #17: shadow-sk */}
-            <div className="overflow-hidden rounded-[14px] border border-site-border bg-site-white p-1.5 shadow-sk">
+            <div className="overflow-hidden rounded-[16px] border border-site-border bg-site-white p-2 shadow-sk-lg">
               <img
                 src={specimens.careerEvidence.src}
                 alt={specimens.careerEvidence.alt}
@@ -719,8 +740,9 @@ function CareerOSSpotlight() {
                 className="aspect-[16/11] w-full rounded-[10px] object-cover object-left-top"
               />
             </div>
-            <figcaption className="mt-3 text-[12.5px] text-site-dim">
-              Career OS in the student workspace — real screen.
+            <figcaption className="mt-5 flex items-start gap-3 text-[12.5px] leading-[1.5] text-site-dim">
+              <span aria-hidden className="mt-[9px] h-px w-8 shrink-0 bg-site-deep" />
+              <span>Career OS in the student workspace — real screen.</span>
             </figcaption>
           </figure>
         </Reveal>
@@ -737,9 +759,9 @@ function CareerOSSpotlight() {
           </p>
           <ul className="mt-8 border-t border-site-border">
             {careerOs.map((c) => (
-              <li key={c.t} className="border-b border-site-border py-4">
+              <li key={c.t} className="border-b border-site-border py-[18px]">
                 <p className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-[16px] font-semibold text-site-ink">{c.t}</span>
+                  <span className="font-heading text-[17px] font-semibold text-site-ink">{c.t}</span>
                   <CareerOsStatusBadge s={c.s} />
                 </p>
                 <p className="mt-1 text-[14px] leading-[1.55] text-site-muted">{c.b}</p>
@@ -767,7 +789,7 @@ function PathSection() {
       <div className="sk-container grid items-center gap-10 lg:grid-cols-12 lg:gap-16">
         <Reveal className="lg:col-span-5">
           {/* FIX: rounded-card */}
-          <div className="overflow-hidden rounded-card border border-site-border bg-site-soft-blue">
+          <div className="overflow-hidden rounded-[16px] border border-site-border bg-site-soft-blue shadow-sk">
             <img
               src={eduImg}
               alt="Students planning their next step together"

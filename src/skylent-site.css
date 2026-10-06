@@ -40,6 +40,7 @@
   --sk-radius-card: 8px;
   --sk-radius-lg: 12px;
   --sk-shadow: 0 1px 2px hsl(var(--site-ink) / .04), 0 8px 24px -12px hsl(var(--site-ink) / .12);
+  --sk-shadow-lg: 0 1px 2px hsl(var(--site-ink) / .05), 0 28px 56px -28px hsl(var(--site-ink) / .26);  /* product screenshots */
   --sk-container: 1240px;
   --sk-container-wide: 1320px;
   --sk-container-text: 720px;
@@ -86,6 +87,7 @@
   --radius-card: var(--sk-radius-card);
   --radius-sk-lg: var(--sk-radius-lg);
   --shadow-sk: var(--sk-shadow);
+  --shadow-sk-lg: var(--sk-shadow-lg);
 }
 
 /* ---------- Shell scopes ---------- */
@@ -293,6 +295,37 @@ a.sk-card:hover,
 .sk-card-interactive:hover { border-color: hsl(var(--site-ink) / .35); }
 .sk-card-raised { box-shadow: var(--sk-shadow); }
 .sk-dense .sk-card { padding: 1rem; }
+
+/* Catalogue tile — the linked card used for programmes and degree routes.
+   One restrained hover: 2px lift, blue hairline, soft shadow. */
+.sk-tile {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid hsl(var(--site-border));
+  border-radius: var(--sk-radius-lg);
+  background: hsl(var(--site-white));
+  color: inherit;
+  text-decoration: none;
+  transition:
+    transform 200ms var(--sk-ease),
+    border-color 200ms var(--sk-ease),
+    box-shadow 200ms var(--sk-ease);
+}
+.sk-tile:hover {
+  transform: translateY(-2px);
+  border-color: hsl(var(--site-deep) / .45);
+  box-shadow: var(--sk-shadow);
+}
+.sk-tile:focus-visible {
+  outline: 2px solid hsl(var(--site-highlight));
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sk-tile,
+  .sk-tile:hover { transform: none; transition: none; }
+}
 
 /* ---------- Status ---------- */
 .sk-status {
