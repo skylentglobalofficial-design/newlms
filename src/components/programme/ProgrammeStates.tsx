@@ -11,28 +11,26 @@ function Crumb() {
   )
 }
 
-/** Skeleton in the shape of the hero and the spec strip. */
+/** Skeleton in the shape of the hero and the navy stage. */
 export function ProgrammeSkeleton() {
   return (
     <div className="pp-page" aria-busy="true">
       <section className="sky-container pp-hero">
-        <div className="pp-hero__copy">
-          <Crumb />
-          <h1 className="pp-sr">Loading this programme</h1>
-          <div className="pp-skel" aria-hidden="true">
-            <span className="sky-skeleton pp-skel-h" />
-            <span className="sky-skeleton pp-skel-h" style={{ width: "72%" }} />
-            <span className="sky-skeleton" style={{ width: "92%", marginTop: 18 }} />
-            <span className="sky-skeleton" style={{ width: "64%" }} />
-            <span className="sky-skeleton pp-skel-btn" />
-          </div>
-        </div>
-        <div className="sky-mat pp-hero__plate" aria-hidden="true">
-          <div className="sky-plate">
-            <div className="sky-plate__inner pp-skel-plate" />
-          </div>
+        <Crumb />
+        <h1 className="pp-sr">Loading this programme</h1>
+        <div className="pp-skel" aria-hidden="true">
+          <span className="sky-skeleton pp-skel-h" style={{ width: "58%" }} />
+          <span className="sky-skeleton pp-skel-h" style={{ width: "44%" }} />
+          <span className="sky-skeleton" style={{ width: "38%", marginTop: 18 }} />
+          <span className="sky-skeleton" style={{ width: "30%" }} />
+          <span className="sky-skeleton pp-skel-btn" />
         </div>
       </section>
+      <div className="sky-stage sky-band-navy pp-stage" aria-hidden="true">
+        <div className="sky-container pp-stage__inner">
+          <div className="pp-skel-plate" />
+        </div>
+      </div>
     </div>
   )
 }
