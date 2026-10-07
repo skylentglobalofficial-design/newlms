@@ -864,14 +864,14 @@ body:has(.skylent-public-canvas) {
    4c. Shared public primitives
    --------------------------------------------------------------------- */
 
-/* Primary actions are navy with white text (AA), matching .sk-btn-primary.
+/* Primary actions are cobalt with white text (AA), matching .sk-btn-primary.
    The accent blue stays for links, eyebrows, focus and state. */
 .skylent-public-canvas .skylent-btn--primary {
-  background: hsl(var(--site-navy));
+  background: hsl(var(--site-deep));
   color: #ffffff;
 }
 .skylent-public-canvas .skylent-btn--primary:hover:not(:disabled) {
-  background: hsl(var(--site-deep));
+  background: hsl(var(--site-ocean));
 }
 .skylent-public-canvas .skylent-btn--primary:active:not(:disabled) {
   background: hsl(var(--site-ocean));
@@ -940,4 +940,17 @@ body:has(.skylent-public-canvas) {
 .os-gateway {
   background: var(--skylent-surface-paper) !important;
   color: var(--skylent-color-ink);
+}
+
+/* Older editorial and catalogue pages: primary actions join the cobalt system. */
+.skylent-public-canvas :is(.pe-cta, .cat-btn-primary) {
+  background: hsl(var(--site-deep));
+  border-color: hsl(var(--site-deep));
+  color: #ffffff;
+  border-radius: var(--sk-radius);
+}
+.skylent-public-canvas :is(.pe-cta, .cat-btn-primary):hover {
+  background: hsl(var(--site-ocean));
+  border-color: hsl(var(--site-ocean));
+  color: #ffffff;
 }

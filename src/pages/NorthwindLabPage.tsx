@@ -335,6 +335,7 @@ export default function NorthwindLabPage() {
           </Link>
         </div>
       </header>
+      <h1 className="sr-only">{workspace.labTitle}</h1>
 
       <div className="lab-context">
         <p>
