@@ -11,8 +11,25 @@ import { NORTHWIND_PREVIEW } from "@/lib/northwind-preview"
 import type { ArtefactKind, HomeProgramme } from "./programme-model"
 
 /** Same grouping as NORTHWIND_PREVIEW.netRevenueLabel, so the two figures in one sentence match. */
-function formatInr(value: number): string {
+export function formatInr(value: number): string {
   return `₹${value.toLocaleString("en-US")}`
+}
+
+/** The category query from Data Analytics lesson 7, as shown in the lesson and the lab. */
+export function NorthwindSql({ className = "" }: { className?: string }) {
+  return (
+    <pre className={`sky-workbench ${className}`.trim()}>
+      <span className="kw">SELECT CASE</span> … <span className="kw">END AS</span> category_std,{"\n"}
+      {"  "}ROUND(SUM(units * unit_price{"\n"}
+      {"    "}* (1.0 - discount_pct / 100.0)), 0){"\n"}
+      {"    "}<span className="kw">AS</span> net_revenue{"\n"}
+      <span className="kw">FROM</span> sales{"\n"}
+      <span className="kw">WHERE</span> units &gt; 0 <span className="kw">AND</span> unit_price &gt; 0{"\n"}
+      {"  "}<span className="kw">AND</span> returned = <span className="str">'no'</span>{"\n"}
+      <span className="kw">GROUP BY</span> 1{"\n"}
+      <span className="kw">ORDER BY</span> net_revenue <span className="kw">DESC</span>;
+    </pre>
+  )
 }
 
 /** Data Analytics: the category query beside its result. */
@@ -25,17 +42,7 @@ export function NorthwindArtefact() {
     <div className="hm-nw">
       <div className="hm-nw__code">
         <div className="hm-art-label hm-art-label--navy">Lesson 7 SQL · excerpt</div>
-        <pre className="sky-workbench hm-nw__pre">
-          <span className="kw">SELECT CASE</span> … <span className="kw">END AS</span> category_std,{"\n"}
-          {"  "}ROUND(SUM(units * unit_price{"\n"}
-          {"    "}* (1.0 - discount_pct / 100.0)), 0){"\n"}
-          {"    "}<span className="kw">AS</span> net_revenue{"\n"}
-          <span className="kw">FROM</span> sales{"\n"}
-          <span className="kw">WHERE</span> units &gt; 0 <span className="kw">AND</span> unit_price &gt; 0{"\n"}
-          {"  "}<span className="kw">AND</span> returned = <span className="str">'no'</span>{"\n"}
-          <span className="kw">GROUP BY</span> 1{"\n"}
-          <span className="kw">ORDER BY</span> net_revenue <span className="kw">DESC</span>;
-        </pre>
+        <NorthwindSql className="hm-nw__pre" />
       </div>
       <div className="hm-nw__result">
         <div className="hm-nw__title">Net revenue by category, {period}</div>

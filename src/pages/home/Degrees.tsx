@@ -6,6 +6,7 @@
 import { Action, SectionIndex, SpecSheet, TruthChip } from "@/components/skylent/primitives"
 import { DEGREE_ROUTES, DEGREE_SAMPLE_NOTE, type DegreeRoute } from "@/data/education"
 import { degreeImage } from "@/data/educationImages"
+import { Reveal } from "@/components/skylent/Reveal"
 import { truthOf } from "@/lib/truth"
 
 const NOT_PUBLISHED = "Not yet published"
@@ -77,59 +78,70 @@ export function Degrees() {
   if (!online && !campus) return null
   const campusImage = campus ? degreeImage(campus.slug) : null
   return (
-    <section id="degrees" className="sky-container hm-section" aria-labelledby="hm-degrees-title">
-      <div className="hm-head hm-head--row">
-        <div className="hm-head__main hm-head__main--wide">
-          <SectionIndex n="04" label="Degrees" />
-          <h2 id="hm-degrees-title" className="hm-h2">Study online or on campus.</h2>
-        </div>
-        <Action to="/education" kind="quiet">Explore degrees</Action>
-      </div>
+    <section id="degrees" className="hm-study sky-band-proof" aria-labelledby="hm-degrees-title">
+      <div className="sky-container">
+        <Reveal className="hm-head">
+          <div className="hm-head__main">
+            <SectionIndex n="05" label="Study" />
+            <h2 id="hm-degrees-title" className="sky-display sky-display--md">
+              Study online <em>or on campus.</em>
+            </h2>
+          </div>
+          <div className="hm-head__aside">
+            <p>Two different ways to take a degree, kept apart: a week you arrange yourself, or a place you go to.</p>
+            <Action to="/education" kind="quiet">Explore degrees</Action>
+          </div>
+        </Reveal>
 
-      <div className="hm-degrees">
-        {online ? (
-          <article className="hm-degree">
-            <div className="hm-degree__mat">
-              <LearningWeek />
-            </div>
-            <div className="hm-degree__caption hm-degree__caption--mat">
-              <span>FIG. 03 · A week of online study</span>
-              <span>Not a real timetable</span>
-            </div>
-            <DegreeBody
-              route={online}
-              mode="Online"
-              rows={[
-                { label: "Institution", value: NOT_PUBLISHED },
-                { label: "Duration", value: NOT_PUBLISHED },
-              ]}
-            />
-          </article>
-        ) : null}
-
-        {campus ? (
-          <article className="hm-degree">
-            {campusImage ? (
-              <>
-                <img className="hm-degree__photo" src={campusImage.src} alt={campusImage.alt} decoding="async" />
-                <div className="hm-degree__caption">
-                  <span>FIG. 04 · A campus computer lab</span>
-                  <span>Stand-in photograph</span>
+        <div className="hm-degrees">
+          {online ? (
+            <Reveal as="article" className="hm-degree">
+              <figure className="hm-degree__media">
+                <div className="hm-degree__box hm-degree__box--mat">
+                  <LearningWeek />
                 </div>
-              </>
-            ) : null}
-            <DegreeBody
-              route={campus}
-              mode="On campus"
-              rows={[
-                { label: "Institution", value: NOT_PUBLISHED },
-                { label: "Campus", value: NOT_PUBLISHED },
-              ]}
-            />
-          </article>
-        ) : null}
+                <figcaption className="hm-degree__caption">
+                  <span>FIG. 03 · A week of online study</span>
+                  <span>Not a real timetable</span>
+                </figcaption>
+              </figure>
+              <DegreeBody
+                route={online}
+                mode="Online"
+                rows={[
+                  { label: "Institution", value: NOT_PUBLISHED },
+                  { label: "Duration", value: NOT_PUBLISHED },
+                ]}
+              />
+            </Reveal>
+          ) : null}
+
+          {campus ? (
+            <Reveal as="article" className="hm-degree" delay={100}>
+              {campusImage ? (
+                <figure className="hm-degree__media">
+                  <div className="hm-degree__box">
+                    <img className="hm-degree__photo" src={campusImage.src} alt={campusImage.alt} decoding="async" />
+                  </div>
+                  <figcaption className="hm-degree__caption">
+                    <span>FIG. 04 · A campus computer lab</span>
+                    <span>Stand-in photograph</span>
+                  </figcaption>
+                </figure>
+              ) : null}
+              <DegreeBody
+                route={campus}
+                mode="On campus"
+                rows={[
+                  { label: "Institution", value: NOT_PUBLISHED },
+                  { label: "Campus", value: NOT_PUBLISHED },
+                ]}
+              />
+            </Reveal>
+          ) : null}
+        </div>
+        <p className="hm-note hm-note--wide">{DEGREE_SAMPLE_NOTE}</p>
       </div>
-      <p className="hm-note hm-note--wide">{DEGREE_SAMPLE_NOTE}</p>
     </section>
   )
 }

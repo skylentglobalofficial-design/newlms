@@ -1,9 +1,10 @@
 /**
  * HomePage — the public homepage, ported from the approved Skylent v2 design.
  *
- * Section order (frozen):
- *   Hero → Learn · Study · Grow → One path, seven stages → Featured programmes →
- *   Degrees → Career OS → Skylent AI → Find My Path → closing band
+ * Section order and ground (v3 presentation pass):
+ *   Hero (white) → What Skylent is, with Learn · Study · Grow (white) → One path, seven stages (navy) →
+ *   Learn + programmes (white) → Study (warm) → Build and prove (white) → Career OS (navy stage) →
+ *   Skylent AI (white) → Find My Path (warm) → closing statement (navy)
  * Navigation, the journey locator and the footer come from PageShell.
  *
  * Data: programmes are read once from GET /catalog/programs (useLivePrograms) and shared
@@ -18,7 +19,9 @@ import { PageShell } from "@/components/shared"
 import { useLivePrograms } from "@/hooks/useLivePrograms"
 import { Degrees } from "./home/Degrees"
 import { Hero } from "./home/Hero"
-import { Journey, Offer } from "./home/Journey"
+import { Journey, System } from "./home/Journey"
+import { Learn } from "./home/Learn"
+import { BuildProve } from "./home/Build"
 import { Programmes } from "./home/Programmes"
 import { CareerOs, Closing, FindMyPath, SkylentAi } from "./home/Proof"
 import { orderForHome } from "./home/programme-model"
@@ -32,10 +35,12 @@ export default function HomePage() {
     <PageShell aurora={false}>
       <div className="site-light hm-page">
         <Hero programmes={programmes} isLoading={isLoading} />
-        <Offer />
+        <System />
         <Journey />
+        <Learn />
         <Programmes programmes={programmes} isLoading={isLoading} isUnavailable={isUnavailable} retry={retry} />
         <Degrees />
+        <BuildProve />
         <CareerOs />
         <SkylentAi />
         <FindMyPath />

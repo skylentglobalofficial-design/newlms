@@ -1,39 +1,77 @@
 /**
- * Learn · Study · Grow, then the seven public stages as a path rail.
+ * The system statement with its three entry points (Learn · Study · Grow) as a ruled rail,
+ * then the seven public stages as one path on navy.
  */
-import { Action, PUBLIC_JOURNEY, SectionIndex, TruthChip, type JourneyStage } from "@/components/skylent/primitives"
+import { Link } from "react-router-dom"
+import { ArrowRight, PUBLIC_JOURNEY, SectionIndex, TruthChip, type JourneyStage, type TruthState } from "@/components/skylent/primitives"
+import { Reveal } from "@/components/skylent/Reveal"
 import { truthOf } from "@/lib/truth"
 
-/* ── Learn · Study · Grow ──────────────────────────────────────────────────── */
+/* ── What Skylent is ───────────────────────────────────────────────────────── */
 
-export function Offer() {
+const ENTRIES: { key: string; word: string; what: string; text: string; to: string; action: string; chip?: TruthState }[] = [
+  {
+    key: "A",
+    word: "Learn",
+    what: "Skill programmes",
+    text: "Each programme is built around one dataset or case you get to know properly.",
+    to: "/programmes",
+    action: "Explore programmes",
+  },
+  {
+    key: "B",
+    word: "Study",
+    what: "Degrees",
+    text: "Degree pathways, online or on campus. Listings are samples until institutions are confirmed.",
+    to: "/education",
+    action: "Explore degrees",
+    chip: truthOf("degrees"),
+  },
+  {
+    key: "C",
+    word: "Grow",
+    what: "Career OS",
+    text: "A career profile today, with project evidence being built on top of it.",
+    to: "/career-os",
+    action: "See Career OS",
+  },
+]
+
+export function System() {
   return (
-    <section className="sky-container" aria-label="What Skylent offers">
-      <div className="hm-offer">
-        <div className="hm-offer__col">
-          <div className="sky-label hm-offer__head">
-            <span><b>A</b> / Skill programmes</span>
-          </div>
-          <h2 className="hm-offer__title">Learn</h2>
-          <p className="hm-offer__text">Skill programmes, each built around one dataset or case you get to know properly.</p>
-          <Action to="/programmes" kind="quiet">Explore programmes</Action>
-        </div>
-        <div className="hm-offer__col">
-          <div className="sky-label hm-offer__head">
-            <span><b>B</b> / Degrees</span>
-            <TruthChip state={truthOf("degrees")} />
-          </div>
-          <h2 className="hm-offer__title">Study</h2>
-          <p className="hm-offer__text">Degree pathways, online or on campus. Listings are samples until institutions are confirmed.</p>
-          <Action to="/education" kind="quiet">Explore degrees</Action>
-        </div>
-        <div className="hm-offer__col">
-          <div className="sky-label hm-offer__head">
-            <span><b>C</b> / Career OS</span>
-          </div>
-          <h2 className="hm-offer__title">Grow</h2>
-          <p className="hm-offer__text">A career profile today, with project evidence being built on top of it.</p>
-          <Action to="/career-os" kind="quiet">See Career OS</Action>
+    <section className="hm-system" aria-labelledby="hm-system-title">
+      <div className="sky-container">
+        <Reveal className="hm-system__head">
+          <SectionIndex n="01" label="What Skylent is" />
+          <h2 id="hm-system-title" className="sky-display sky-display--lg hm-system__title">
+            Education, skills, practice, evidence and career, <em>built as one system.</em>
+          </h2>
+        </Reveal>
+        <div className="hm-system__body">
+          <Reveal as="p" className="hm-system__lead">
+            Most learning stops at the lesson. Skylent carries it on: what you study becomes practice, practice becomes a finished piece of work, and the work stays on a record you can show.
+          </Reveal>
+          <Reveal as="ul" className="hm-rail" delay={80} aria-label="Three ways in">
+            {ENTRIES.map((entry) => (
+              <li key={entry.key}>
+                <Link to={entry.to} className="hm-rail__row">
+                  <span className="hm-rail__key">{entry.key}</span>
+                  <span className="hm-rail__word">{entry.word}</span>
+                  <span className="hm-rail__text">
+                    <span className="hm-rail__what">
+                      {entry.what}
+                      {entry.chip ? <TruthChip state={entry.chip} /> : null}
+                    </span>
+                    <span className="hm-rail__desc">{entry.text}</span>
+                  </span>
+                  <span className="hm-rail__go">
+                    {entry.action}
+                    <ArrowRight />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </Reveal>
         </div>
       </div>
     </section>
@@ -55,34 +93,38 @@ const STAGE_COPY: Record<JourneyStage, { does: string; handledBy: string }> = {
 export function Journey({ current = "Discover" }: { current?: JourneyStage }) {
   const evidenceInDevelopment = truthOf("projectsAndEvidence") === "development"
   return (
-    <section id="journey" className="hm-journey sky-band-navy" aria-labelledby="hm-journey-title">
+    <section id="journey" className="hm-journey sky-stage sky-band-navy" aria-labelledby="hm-journey-title">
       <div className="sky-container">
-      <div className="hm-head hm-head--split">
-        <div className="hm-head__main">
-          <SectionIndex n="02" label="The journey" />
-          <h2 id="hm-journey-title" className="hm-h2">One path, seven stages.</h2>
-        </div>
-        <p className="hm-head__aside">
-          Each stage is handled by a named part of Skylent. The marker under the navigation shows which stage a page belongs to.
-        </p>
-      </div>
+        <Reveal className="hm-journey__head">
+          <div>
+            <SectionIndex n="02" label="The journey" />
+            <h2 id="hm-journey-title" className="sky-display sky-display--lg">
+              One path, <em>seven stages.</em>
+            </h2>
+          </div>
+          <p className="hm-journey__aside">
+            Each stage is handled by a named part of Skylent. The marker under the navigation shows which stage a page belongs to.
+          </p>
+        </Reveal>
 
-      <ol className="hm-stages">
-        {PUBLIC_JOURNEY.map((stage, i) => (
-          <li key={stage} className="hm-stage" aria-current={stage === current ? "step" : undefined}>
-            <div className="hm-stage__rail" aria-hidden="true">
-              <span className={stage === current ? "sky-step__node sky-step__node--on" : "sky-step__node"}>{String(i + 1).padStart(2, "0")}</span>
-              {i < PUBLIC_JOURNEY.length - 1 ? <span className="hm-stage__line" /> : null}
-            </div>
-            <h3 className="hm-stage__name">{stage}</h3>
-            <p className="hm-stage__does">{STAGE_COPY[stage].does}</p>
-            <div className="hm-stage__by">{STAGE_COPY[stage].handledBy}</div>
-          </li>
-        ))}
-      </ol>
-      <p className="hm-note">
-        Northwind Lab belongs to the Data Analytics programme.{evidenceInDevelopment ? " Evidence in Career OS is in development." : ""}
-      </p>
+        <Reveal className="hm-path-signal" delay={80}>
+          <ol className="hm-stages">
+            {PUBLIC_JOURNEY.map((stage, i) => (
+              <li key={stage} className="hm-stage" aria-current={stage === current ? "step" : undefined}>
+                <span className="hm-stage__node" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+                <h3 className="hm-stage__name">{stage}</h3>
+                <p className="hm-stage__does">{STAGE_COPY[stage].does}</p>
+                <p className="hm-stage__by">
+                  <span className="hm-sr">Handled by </span>
+                  {STAGE_COPY[stage].handledBy}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </Reveal>
+        <p className="hm-journey__note">
+          Northwind Lab belongs to the Data Analytics programme.{evidenceInDevelopment ? " Evidence in Career OS is in development." : ""}
+        </p>
       </div>
     </section>
   )
