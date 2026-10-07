@@ -748,3 +748,103 @@ textarea.sk-input { padding-block: .625rem; min-height: 6rem; }
   .sky-chip, .sky-plate, .sky-step__line { transition: none !important; }
 }
 
+
+/* ───────────────────────────────────────────────────────────────────────────
+   SKYLENT v3 — PRESENTATION LAYER (premium visual pass)
+   Display type, statement blocks, navy product stages, reveal motion.
+   Same palette and fonts as v2; nothing here introduces a new colour.
+   ─────────────────────────────────────────────────────────────────────────── */
+:root {
+  --sk-display-xl: clamp(2.75rem, 6.4vw, 5.75rem);
+  --sk-display-lg: clamp(2.25rem, 4.6vw, 4rem);
+  --sk-display-md: clamp(1.75rem, 3vw, 2.625rem);
+  --sk-reveal-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --sk-shadow-stage: 0 40px 80px -32px rgba(4, 8, 20, 0.7), 0 2px 0 rgba(255, 255, 255, 0.04) inset;
+}
+
+/* Display headlines: type as the visual object. Ink plus one cobalt phrase. */
+.sky-display {
+  margin: 0;
+  font-family: var(--sk-font-heading);
+  font-weight: 600;
+  font-size: var(--sk-display-xl);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  color: hsl(var(--site-ink));
+}
+.sky-display--lg { font-size: var(--sk-display-lg); line-height: 1.02; letter-spacing: -0.03em; }
+.sky-display--md { font-size: var(--sk-display-md); line-height: 1.08; letter-spacing: -0.02em; }
+.sky-display em,
+.sky-signal { font-style: normal; color: hsl(var(--site-deep)) !important; }
+:is(.sky-band-navy, .sky-on-navy) .sky-display { color: hsl(var(--site-white)) !important; }
+:is(.sky-band-navy, .sky-on-navy) :is(.sky-display em, .sky-signal) { color: #7ea2ff !important; }
+:is(.sky-band-navy, .sky-on-navy) .sky-signal--ai { color: hsl(var(--site-cyan)) !important; }
+
+/* Navy stage: a deep surface that presents one large white product plate. */
+.sky-stage {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: hsl(var(--site-navy));
+  color: hsl(var(--site-on-navy));
+}
+/* One quiet structural grid, fading out; no gradients of colour. */
+.sky-stage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(hsl(var(--site-navy-line) / 0.55) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--site-navy-line) / 0.55) 1px, transparent 1px);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, #000 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 70% 40%, #000 0%, transparent 75%);
+  pointer-events: none;
+}
+.sky-stage__plate {
+  border-radius: 14px;
+  background: hsl(var(--site-white));
+  color: hsl(var(--site-ink));
+  box-shadow: var(--sk-shadow-stage);
+  outline: 1px solid hsl(var(--site-navy-line-2) / 0.6);
+  outline-offset: 6px;
+  overflow: hidden;
+}
+.sky-stage__caption {
+  margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 20px;
+  font-family: var(--sk-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--site-on-navy-muted));
+}
+
+/* Reveal: visible by default, armed only by Reveal.tsx when motion is allowed. */
+.sky-reveal--armed {
+  opacity: 0;
+  transform: translate3d(0, 28px, 0);
+  transition: opacity 720ms var(--sk-reveal-ease), transform 900ms var(--sk-reveal-ease);
+  will-change: opacity, transform;
+}
+.sky-reveal--plate.sky-reveal--armed { transform: translate3d(0, 40px, 0) scale(0.975); transform-origin: 50% 100%; }
+.sky-reveal--armed.sky-reveal--in { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .sky-reveal--armed { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* Micro-interactions shared by actions and plates. */
+.sk-btn { transition: background var(--sk-fast) var(--sk-ease), border-color var(--sk-fast) var(--sk-ease), color var(--sk-fast) var(--sk-ease), transform var(--sk-fast) var(--sk-ease), box-shadow var(--sk-fast) var(--sk-ease); }
+.sk-btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px -12px hsl(var(--site-deep) / 0.7); }
+.sk-btn:active { transform: translateY(0); box-shadow: none; }
+.sk-btn svg { transition: transform var(--sk-fast) var(--sk-ease); }
+.sk-btn:hover svg { transform: translateX(3px); }
+@media (prefers-reduced-motion: reduce) {
+  .sk-btn, .sk-btn svg { transition: none; }
+  .sk-btn-primary:hover, .sk-btn:hover svg { transform: none; }
+}
