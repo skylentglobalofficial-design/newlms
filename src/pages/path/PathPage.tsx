@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type KeyboardEvent, type ReactNode } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { PageShell } from "../../components/shared"
+import { ArrowRight } from "../../components/skylent/primitives"
 import {
   ACADEMIC_OPTIONS,
   DIRECTION_OPTIONS,
@@ -25,7 +26,7 @@ import type {
   TargetOutcome,
   TimelineConstraint,
 } from "../../lib/path/types"
-import PathJourneyVisual from "./PathJourneyVisual"
+import { PathProgress, PathSummary, PathTruthNote, type PathSummaryRow } from "./PathJourneyVisual"
 import { PATH_V2_INTRO, PATH_V2_STAGE_HEADLINE } from "./pathV2Copy"
 import "./PathPages.css"
 
@@ -110,21 +111,84 @@ function draftToDiagnosis(draft: PathFlowDraft): PathDiagnosis {
   }
 }
 
+function labelOf<T extends string>(options: { value: T; label: string }[], value: T | undefined): string {
+  return options.find((row) => row.value === value)?.label ?? ""
+}
+
+/**
+ * Rows for the "what you have told us so far" card. Only stages the learner has
+ * continued past are listed, so a pre-selected option never reads as an answer.
+ */
+function summaryRows(step: number, draft: PathFlowDraft): PathSummaryRow[] {
+  const rows: PathSummaryRow[] = []
+  PATH_STAGES.slice(0, step).forEach((stage) => {
+    const label = PATH_V2_STAGE_HEADLINE[stage.id].short
+    let value = ""
+    let note = ""
+    switch (stage.id) {
+      case "academic":
+        value = [labelOf(ACADEMIC_OPTIONS, draft.academicBackground), labelOf(EDUCATION_OPTIONS, draft.currentEducation)]
+          .filter(Boolean)
+          .join(" · ")
+        break
+      case "interests":
+        value = (draft.interests ?? []).map((row) => labelOf(INTEREST_OPTIONS, row)).filter(Boolean).join(", ")
+        break
+      case "skills":
+        value = labelOf(SKILL_OPTIONS, draft.existingSkills)
+        note = draft.strengths?.trim() ? `Strengths: ${draft.strengths.trim()}` : ""
+        break
+      case "direction":
+        value = labelOf(DIRECTION_OPTIONS, draft.careerDirection)
+        note = draft.directionDetail?.trim() ?? ""
+        break
+      case "gaps":
+        value = (draft.gaps ?? []).join(", ")
+        note = draft.gapDetail?.trim() ?? ""
+        if (!value) {
+          value = note
+          note = ""
+        }
+        break
+      case "outcome":
+        value = labelOf(OUTCOME_OPTIONS, draft.targetOutcome)
+        break
+      case "timeline":
+        value = labelOf(TIMELINE_OPTIONS, draft.timeline)
+        break
+    }
+    if (value) rows.push({ n: stage.number, label, value, note: note || undefined })
+  })
+  return rows
+}
+
 function PathChoiceRow({
   selected,
   onClick,
   children,
   hint,
+  multi = false,
 }: {
   selected: boolean
   onClick: () => void
   children: ReactNode
   hint?: string
+  /** Square mark for "pick any", round mark for "pick one". Visual only. */
+  multi?: boolean
 }) {
   return (
-    <button type="button" className={`path-v2-choice${selected ? " is-selected" : ""}`} aria-pressed={selected} onClick={onClick}>
+    <button
+      type="button"
+      className={`path-v2-choice${selected ? " is-selected" : ""}${multi ? " is-multi" : ""}`}
+      aria-pressed={selected}
+      onClick={onClick}
+    >
       <span className="path-v2-choice__mark" aria-hidden="true">
-        {selected ? "✓" : ""}
+        {selected ? (
+          <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3.5 8.5l3 3 6-7" />
+          </svg>
+        ) : null}
       </span>
       <span className="path-v2-choice__body">
         <span className="path-v2-choice__label">{children}</span>
@@ -228,61 +292,53 @@ export default function PathPage() {
       <PageShell aurora={false}>
         <main className="path-v2" aria-busy="true">
           <div className="path-v2__shell">
-            <p className="path-v2__kicker">Skylent Path</p>
-            <p className="path-v2__loading">Loading diagnosis…</p>
+            <p className="sky-label">Find my path</p>
+            <p className="path-v2__loading">Loading your answers…</p>
           </div>
         </main>
       </PageShell>
     )
   }
 
+  const isLast = step >= PATH_STAGES.length - 1
+  const answered = summaryRows(step, draft)
+
   return (
     <PageShell aurora={false}>
       <main className="path-v2" onKeyDown={handleMainKeyDown}>
-        <div className="path-v2__shell">
+        <div className="site-light path-v2__shell">
+          <header className="path-v2__top">
+            <p className="sky-label">Find my path</p>
+            <PathTruthNote />
+          </header>
+
           {hasSavedResult ? (
             <div className="path-v2__resume">
-              You already have a path on this device.{" "}
+              <span>You already have a path saved in this browser.</span>
               <Link to="/path/result">View your path</Link>
-              {" · "}
               <button type="button" onClick={restartFlow}>
                 Start fresh
               </button>
             </div>
           ) : null}
 
+          <PathProgress step={step} />
+
           <div className="path-v2__layout">
             <div className="path-v2__main">
               <header className="path-v2__hero">
-                <div className="path-v2__hero-head">
-                  <p className="path-v2__kicker">Skylent · Path system</p>
-                  <p className="path-v2__counter" aria-live="polite">
-                    {String(stage.number).padStart(2, "0")} / {String(PATH_STAGES.length).padStart(2, "0")}
-                  </p>
-                </div>
-                <p className="path-v2__eyebrow">{editorial.eyebrow}</p>
+                <p className="path-v2__eyebrow" aria-live="polite">
+                  <b>
+                    Stage {String(stage.number).padStart(2, "0")} of {String(PATH_STAGES.length).padStart(2, "0")}
+                  </b>
+                  <span aria-hidden="true"> / </span>
+                  {editorial.short}
+                </p>
                 <h1 id="path-v2-question" className="path-v2__question">
-                  {editorial.lines.map((line) => (
-                    <span key={line}>{line}</span>
-                  ))}
+                  {editorial.lines.join(" ")}
                 </h1>
                 <p className="path-v2__lede">{editorial.lede}</p>
-                {step === 0 ? (
-                  <>
-                    <p className="path-v2__lede path-v2__lede--secondary">{PATH_V2_INTRO.secondaryLede}</p>
-                    <div className="path-v2__hero-actions">
-                      <button type="button" className="path-v2__cta-primary" onClick={goNext} disabled={submitting}>
-                        Start your path
-                        <span aria-hidden="true">→</span>
-                      </button>
-                      <Link className="path-v2__cta-secondary" to="/programmes">
-                        Explore programmes
-                        <span aria-hidden="true">→</span>
-                      </Link>
-                    </div>
-                    <p className="path-v2__note">{PATH_V2_INTRO.note}</p>
-                  </>
-                ) : null}
+                {step === 0 ? <p className="path-v2__note">{PATH_V2_INTRO.note}</p> : null}
               </header>
 
               <div
@@ -293,7 +349,7 @@ export default function PathPage() {
 
               {stage.id === "academic" ? (
                 <div className="path-v2__answers">
-                  <p className="path-v2__group-label">Context</p>
+                  <p className="path-v2__group-label">Your situation <span>Pick one</span></p>
                   <div className="path-v2__choices" role="group" aria-label="Academic background">
                     {ACADEMIC_OPTIONS.map((option) => (
                       <PathChoiceRow
@@ -306,7 +362,7 @@ export default function PathPage() {
                       </PathChoiceRow>
                     ))}
                   </div>
-                  <p className="path-v2__group-label">Current education</p>
+                  <p className="path-v2__group-label">Current education <span>Pick one</span></p>
                   <div className="path-v2__choices" role="group" aria-label="Current education">
                     {EDUCATION_OPTIONS.map((option) => (
                       <PathChoiceRow
@@ -322,21 +378,26 @@ export default function PathPage() {
               ) : null}
 
               {stage.id === "interests" ? (
-                <div className="path-v2__choices" role="group" aria-label="Interests">
-                  {INTEREST_OPTIONS.map((option) => (
-                    <PathChoiceRow
-                      key={option.value}
-                      selected={Boolean(draft.interests?.includes(option.value))}
-                      onClick={() => updateDraft({ interests: toggleInterest(draft.interests ?? [], option.value) })}
-                    >
-                      {option.label}
-                    </PathChoiceRow>
-                  ))}
+                <div className="path-v2__answers">
+                  <p className="path-v2__group-label">Interests <span>Pick any that apply</span></p>
+                  <div className="path-v2__choices" role="group" aria-label="Interests">
+                    {INTEREST_OPTIONS.map((option) => (
+                      <PathChoiceRow
+                        key={option.value}
+                        multi
+                        selected={Boolean(draft.interests?.includes(option.value))}
+                        onClick={() => updateDraft({ interests: toggleInterest(draft.interests ?? [], option.value) })}
+                      >
+                        {option.label}
+                      </PathChoiceRow>
+                    ))}
+                  </div>
                 </div>
               ) : null}
 
               {stage.id === "skills" ? (
                 <div className="path-v2__answers">
+                  <p className="path-v2__group-label">Your level today <span>Pick one</span></p>
                   <div className="path-v2__choices" role="radiogroup" aria-label="Existing skills">
                     {SKILL_OPTIONS.map((option) => (
                       <PathChoiceRow
@@ -357,7 +418,7 @@ export default function PathPage() {
                     className="path-v2__input"
                     value={draft.strengths ?? ""}
                     onChange={(event) => updateDraft({ strengths: event.target.value })}
-                    placeholder="e.g. writing, analysis, teaching, sales…"
+                    placeholder="For example: writing, analysis, teaching, sales"
                     maxLength={200}
                   />
                 </div>
@@ -365,6 +426,7 @@ export default function PathPage() {
 
               {stage.id === "direction" ? (
                 <div className="path-v2__answers">
+                  <p className="path-v2__group-label">Kind of direction <span>Pick one</span></p>
                   <div className="path-v2__choices" role="radiogroup" aria-label="Career direction">
                     {DIRECTION_OPTIONS.map((option) => (
                       <PathChoiceRow
@@ -384,7 +446,7 @@ export default function PathPage() {
                     className="path-v2__input"
                     value={draft.directionDetail ?? ""}
                     onChange={(event) => updateDraft({ directionDetail: event.target.value })}
-                    placeholder="e.g. data analyst, product, UPSC, research question…"
+                    placeholder="For example: data analyst, product, UPSC, a research question"
                     maxLength={160}
                   />
                 </div>
@@ -392,10 +454,12 @@ export default function PathPage() {
 
               {stage.id === "gaps" ? (
                 <div className="path-v2__answers">
+                  <p className="path-v2__group-label">Gap themes <span>Pick any that apply</span></p>
                   <div className="path-v2__choices" role="group" aria-label="Gap themes">
                     {GAP_OPTIONS.map((option) => (
                       <PathChoiceRow
                         key={option}
+                        multi
                         selected={Boolean(draft.gaps?.includes(option))}
                         onClick={() => updateDraft({ gaps: toggleGap(draft.gaps ?? [], option) })}
                       >
@@ -418,79 +482,60 @@ export default function PathPage() {
               ) : null}
 
               {stage.id === "outcome" ? (
-                <div className="path-v2__choices" role="radiogroup" aria-label="Target outcome">
-                  {OUTCOME_OPTIONS.map((option) => (
-                    <PathChoiceRow
-                      key={option.value}
-                      selected={draft.targetOutcome === option.value}
-                      onClick={() => updateDraft({ targetOutcome: option.value as TargetOutcome })}
-                    >
-                      {option.label}
-                    </PathChoiceRow>
-                  ))}
+                <div className="path-v2__answers">
+                  <p className="path-v2__group-label">Outcome <span>Pick one</span></p>
+                  <div className="path-v2__choices" role="radiogroup" aria-label="Target outcome">
+                    {OUTCOME_OPTIONS.map((option) => (
+                      <PathChoiceRow
+                        key={option.value}
+                        selected={draft.targetOutcome === option.value}
+                        onClick={() => updateDraft({ targetOutcome: option.value as TargetOutcome })}
+                      >
+                        {option.label}
+                      </PathChoiceRow>
+                    ))}
+                  </div>
                 </div>
               ) : null}
 
               {stage.id === "timeline" ? (
-                <div className="path-v2__choices" role="radiogroup" aria-label="Timeline">
-                  {TIMELINE_OPTIONS.map((option) => (
-                    <PathChoiceRow
-                      key={option.value}
-                      selected={draft.timeline === option.value}
-                      onClick={() => updateDraft({ timeline: option.value as TimelineConstraint })}
-                    >
-                      {option.label}
-                    </PathChoiceRow>
-                  ))}
+                <div className="path-v2__answers">
+                  <p className="path-v2__group-label">Timeline <span>Pick one</span></p>
+                  <div className="path-v2__choices" role="radiogroup" aria-label="Timeline">
+                    {TIMELINE_OPTIONS.map((option) => (
+                      <PathChoiceRow
+                        key={option.value}
+                        selected={draft.timeline === option.value}
+                        onClick={() => updateDraft({ timeline: option.value as TimelineConstraint })}
+                      >
+                        {option.label}
+                      </PathChoiceRow>
+                    ))}
+                  </div>
                 </div>
               ) : null}
 
               {error ? <div className="path-v2__error" role="alert">{error}</div> : null}
               </div>
 
-              <footer className={`path-v2__foot${step === 0 ? " path-v2__foot--intro" : ""}`}>
-            {step > 0 ? (
-              <button type="button" className="path-v2__back" onClick={goBack}>
-                Back
-              </button>
-            ) : (
-              <span />
-            )}
-            <button type="button" className="path-v2__continue" onClick={goNext} disabled={submitting}>
-              {step >= PATH_STAGES.length - 1
-                ? "Construct my path"
-                : step === 0
-                  ? "Start your path"
-                  : "Continue"}
-              <span aria-hidden="true">→</span>
-            </button>
-            <button type="button" className="path-v2__restart" onClick={restartFlow}>
-              Restart
-            </button>
+              <footer className="path-v2__foot">
+                {step > 0 ? (
+                  <button type="button" className="sk-btn sk-btn-secondary path-v2__back" onClick={goBack}>
+                    Back
+                  </button>
+                ) : null}
+                <button type="button" className="sk-btn sk-btn-primary path-v2__continue" onClick={goNext} disabled={submitting}>
+                  {isLast ? "Build my path" : "Continue"}
+                  <ArrowRight />
+                </button>
+                <button type="button" className="path-v2__restart" onClick={restartFlow}>
+                  Restart
+                </button>
               </footer>
             </div>
 
             <aside className="path-v2__aside">
-              <PathJourneyVisual step={step} stageId={stage.id} />
-              <nav className="path-v2-rail" aria-label="Diagnosis journey">
-                <p className="path-v2-rail__title">Index</p>
-                <ol>
-                  {PATH_STAGES.map((row, index) => (
-                    <li
-                      key={row.id}
-                      className={[
-                        index === step ? "is-current" : "",
-                        index < step ? "is-done" : "",
-                      ]
-                        .filter(Boolean)
-                        .join(" ")}
-                    >
-                      <span>{String(row.number).padStart(2, "0")}</span>
-                      {PATH_V2_STAGE_HEADLINE[row.id].journeyLabel}
-                    </li>
-                  ))}
-                </ol>
-              </nav>
+              <PathSummary rows={answered} total={PATH_STAGES.length} />
             </aside>
           </div>
         </div>
