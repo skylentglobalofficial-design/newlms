@@ -341,11 +341,15 @@ export default function DashboardStudentPage() {
               <p className="sh-next-label">
                 <span aria-hidden="true" />
                 {allComplete ? 'Course complete' : 'Continue learning'}
-                <em>
-                  {course.title} · M{resume.moduleIndex}
-                  {resumeLesson ? ` · ${lessonTypeLabel(resumeLesson.type, resumeLesson.title)}` : ''}
-                  {resumeLesson?.duration ? ` · ${resumeLesson.duration}` : ''}
-                </em>
+                {allComplete ? (
+                  <em>{course.title}</em>
+                ) : (
+                  <em>
+                    {course.title} · M{resume.moduleIndex}
+                    {resumeLesson ? ` · ${lessonTypeLabel(resumeLesson.type, resumeLesson.title)}` : ''}
+                    {resumeLesson?.duration ? ` · ${resumeLesson.duration}` : ''}
+                  </em>
+                )}
               </p>
               <h2 id="sh-continue">
                 {allComplete

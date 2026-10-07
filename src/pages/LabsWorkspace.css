@@ -776,7 +776,7 @@
 .lab-toolbar { border-radius: 8px; }
 .lab-toolbar label { color: var(--skylent-color-muted); font-family: var(--font-mono); font-size: 10.5px; font-weight: 400; letter-spacing: 0.08em; text-transform: uppercase; }
 .lab-toolbar select { min-height: 44px; border-color: var(--skylent-color-border-strong); }
-.lab-formula { background: var(--skylent-navy); color: var(--skylent-on-navy); }
+.lab-formula, .lab-workspace .lab-formula, .lab-toolbar .lab-formula { background: var(--skylent-navy); color: var(--skylent-on-navy); }
 .lab-sql-editor { box-sizing: border-box; padding: 14px 18px; border: 0; border-radius: 8px; background: var(--skylent-navy); color: var(--skylent-on-navy); caret-color: #ffffff; line-height: 1.6; }
 .lab-sql-editor::placeholder { color: var(--skylent-on-navy-muted); }
 .lab-sql-editor:focus { outline: 2px solid var(--skylent-color-accent); outline-offset: 2px; }

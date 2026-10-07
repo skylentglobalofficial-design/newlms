@@ -308,7 +308,7 @@
   left: 280px;
   z-index: 40;
   width: auto;
-  max-height: min(76dvh, 620px);
+  max-height: min(88dvh, 720px);
   overflow: hidden;
   border: 1px solid var(--skylent-navy);
   border-radius: 12px;
