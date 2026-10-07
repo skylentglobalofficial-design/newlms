@@ -237,9 +237,13 @@ export default function DashboardStudentPage() {
                     <strong>{cert.courseTitle}</strong>
                     <span className="sh-note">{cert.code} · issued {formatDate(cert.issuedAt)}</span>
                   </div>
-                  <Link className="os-link sh-row-link" to={`/verify/${cert.code}`} aria-label={`Verify the ${cert.courseTitle} certificate`}>
-                    Verify <ArrowRight />
-                  </Link>
+                  {cert.revoked ? (
+                    <span className="os-status is-idle">Revoked</span>
+                  ) : (
+                    <Link className="os-link sh-row-link" to={`/verify/${cert.code}`} aria-label={`Verify the ${cert.courseTitle} certificate`}>
+                      Verify <ArrowRight />
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
