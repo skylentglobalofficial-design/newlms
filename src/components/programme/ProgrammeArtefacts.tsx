@@ -378,13 +378,7 @@ function NotebookThumb() {
             <span key={part.name} className={index === 0 ? "is-on" : undefined} style={{ flexGrow: part.share }} />
           ))}
         </div>
-        <div className="pa-split__names" aria-hidden="true">
-          {SPLIT.map((part) => (
-            <span key={part.name} style={{ flexGrow: part.share }}>
-              {part.name}
-            </span>
-          ))}
-        </div>
+        <p className="pa-thumb__foot" aria-hidden="true">{SPLIT.map((part) => part.name).join(" · ")}</p>
       </div>
     </div>
   )

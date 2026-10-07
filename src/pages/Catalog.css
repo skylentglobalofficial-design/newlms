@@ -2288,3 +2288,12 @@
     transition: none;
   }
 }
+
+/* Truth chips inside catalogue tiles and the enrol bar keep their own width. */
+.cat-tile-copy .sky-chip,
+.cat-enrol-bar-copy .sky-chip {
+  align-self: flex-start;
+  width: fit-content;
+}
+.cat-enrol-bar-copy span.sky-chip--live { color: hsl(var(--site-white)); }
+.cat-enrol-bar-copy span.sky-chip--development { color: hsl(var(--site-navy)); }

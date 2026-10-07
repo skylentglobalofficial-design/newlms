@@ -33,7 +33,7 @@ function toRow(program: CatalogProgramSummary): Row {
     truth,
     title,
     line,
-    search: `${title} ${program.name} ${program.desc} ${program.level} ${program.format} ${linkedTitles}`.toLowerCase(),
+    search: `${title} ${program.name} ${line} ${program.desc} ${program.level} ${program.format} ${linkedTitles} ${content?.capstoneTitle ?? ""}`.toLowerCase(),
   }
 }
 
