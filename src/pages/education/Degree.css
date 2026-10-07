@@ -477,3 +477,15 @@
   .dg .dg-crumb a { transition: none; }
   .dg .dg-quiet:hover svg { transform: none; }
 }
+
+/* ── Visual polish pass: online listings as one plate plus ruled rows ──────
+   Three identical interface plates read as a template. The plate now appears
+   once and the degrees sit beside it as a ruled list, mirroring the campus group. */
+.dg .dg-online { margin-top: clamp(24px, 3vw, 36px); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 32px clamp(28px, 4vw, 56px); align-items: start; }
+.dg .dg-online__art { min-width: 0; }
+.dg .dg-online__list { min-width: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0 32px; border-top: 1px solid var(--dg-line-strong); }
+.dg .dg-online__row { min-width: 0; display: flex; flex-direction: column; padding: 20px 0 8px; border-bottom: 1px solid var(--dg-line); }
+.dg .dg-online__row:hover .dg-card__title a { color: var(--dg-cobalt); }
+@media (max-width: 900px) {
+  .dg .dg-online { grid-template-columns: minmax(0, 1fr); }
+}

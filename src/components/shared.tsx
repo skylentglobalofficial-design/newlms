@@ -752,30 +752,46 @@ export function Nav() {
    Every entry is a route that exists in App.tsx. Legal pages are not published,
    so the footer says that instead of showing links that go nowhere. */
 
-const FOOTER_LINKS: readonly (readonly [string, string])[] = [
-  ['Programmes', '/programmes'],
-  ['Education', '/education'],
-  ['Career OS', '/career-os'],
-  ['Find my path', '/path'],
-  ['About', '/about'],
-  ['Contact', '/contact'],
+/* Footer columns follow the same Learn · Study · Grow split as the homepage. Every link is a route in App.tsx. */
+const FOOTER_COLUMNS: readonly { title: string; links: readonly (readonly [string, string])[] }[] = [
+  { title: 'Learn', links: [['Programmes', '/programmes'], ['Courses', '/courses'], ['Skills', '/skills']] },
+  { title: 'Study', links: [['Degrees', '/education'], ['Online degrees', '/education?mode=online'], ['Campus degrees', '/education?mode=campus']] },
+  { title: 'Grow', links: [['Career OS', '/career-os'], ['Find my path', '/path'], ['Check a certificate', '/verify']] },
+  { title: 'Skylent', links: [['About', '/about'], ['Contact', '/contact'], ['Sign in', '/login']] },
 ]
+const FOOTER_JOURNEY = ['Discover', 'Choose', 'Learn', 'Practice', 'Build', 'Prove', 'Grow'] as const
 
 export function Footer() {
   return (
     <footer className="skylent-site-footer skf">
-      <div className="skf__bar">
-        <Link to="/" className="skf__mark" aria-label="Skylent home">
-          Skylent
-        </Link>
-        <nav aria-label="Footer">
-          <ul className="skf__links">
-            {FOOTER_LINKS.map(([label, to]) => (
-              <li key={to}>
-                <Link to={to}>{label}</Link>
-              </li>
+      <div className="skf__top">
+        <div className="skf__brand">
+          <Link to="/" className="skf__mark" aria-label="Skylent home">
+            Skylent
+          </Link>
+          <p className="skf__line">Learn a skill or study for a degree, build work as you go, and keep it as evidence for what comes next.</p>
+          <p className="skf__journey" aria-label="The seven stages">
+            {FOOTER_JOURNEY.map((stage, i) => (
+              <span key={stage}>
+                {i > 0 ? <i aria-hidden="true">→</i> : null}
+                {stage}
+              </span>
             ))}
-          </ul>
+          </p>
+        </div>
+        <nav aria-label="Footer" className="skf__nav">
+          {FOOTER_COLUMNS.map((column) => (
+            <div key={column.title} className="skf__col">
+              <h2 className="skf__title">{column.title}</h2>
+              <ul className="skf__links">
+                {column.links.map(([label, to]) => (
+                  <li key={to}>
+                    <Link to={to}>{label}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
       </div>
       <div className="skf__meta">

@@ -2,16 +2,16 @@
 
 .path-v2,
 .path-result-v2 {
-  --path-ink: var(--skylent-color-ink);
-  --path-muted: #5b5d61;
-  --path-line: #e7e2d8;
-  --path-paper: var(--skylent-color-cream);
-  --path-soft: var(--skylent-surface-cream-warm);
-  --path-mark: #f36f21;
-  --path-serif: var(--font-brand, "Iowan Old Style", "Palatino Linotype", Georgia, serif);
-  --path-sans: var(--font-body, ui-sans-serif, system-ui, sans-serif);
-  --path-mono: var(--font-mono, ui-monospace, monospace);
-  --path-nav-clearance: calc(var(--nav-h, 72px) + 28px);
+  --path-ink: hsl(var(--site-ink));
+  --path-muted: hsl(var(--site-dim));
+  --path-line: hsl(var(--site-border));
+  --path-paper: #ffffff;
+  --path-soft: hsl(var(--site-proof));
+  --path-mark: hsl(var(--site-deep));
+  --path-serif: var(--sk-font-heading);
+  --path-sans: var(--sk-font-body);
+  --path-mono: var(--sk-font-mono);
+  --path-nav-clearance: clamp(40px, 5vw, 64px);
   color: var(--path-ink);
   background: var(--path-paper);
   min-height: 100vh;
@@ -1151,4 +1151,29 @@
     opacity: 1;
     transform: none;
   }
+}
+
+/* ── Visual polish pass: Find My Path on the shared Skylent system ─────────
+   The page keeps its layout and logic. Tokens above now point at the site
+   palette and type; these rules bring the actions in line with .sk-btn. */
+.path-v2__cta-primary,
+.path-result-v2__btn.is-primary {
+  background: hsl(var(--site-deep));
+  border-color: hsl(var(--site-deep));
+  color: #ffffff;
+  border-radius: var(--sk-radius, 6px);
+  letter-spacing: 0;
+  transition: background var(--sk-fast, 140ms) var(--sk-ease, ease);
+}
+.path-v2__cta-primary:hover:not(:disabled),
+.path-result-v2__btn.is-primary:hover {
+  background: hsl(var(--site-ocean));
+  border-color: hsl(var(--site-ocean));
+}
+.path-result-v2__btn { border-radius: var(--sk-radius, 6px); letter-spacing: 0; }
+.path-v2__cta-secondary { color: hsl(var(--site-deep)); border-bottom-color: transparent; }
+.path-v2__cta-secondary:hover { border-bottom-color: hsl(var(--site-deep)); }
+.path-v2__note { color: hsl(var(--site-dim)); }
+@media (prefers-reduced-motion: reduce) {
+  .path-v2__cta-primary, .path-result-v2__btn { transition: none; }
 }

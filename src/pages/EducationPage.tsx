@@ -25,7 +25,7 @@ import {
 import { ACADEMIC_LINES, EDUCATION_HASH_REDIRECTS } from "../lib/product-architecture"
 import { truthOf } from "../lib/truth"
 import { ClosingBand, DegreeCrumb, DegreeShell, LearningWeek, ListingChips, Photo, QuietLink, Unpublished } from "./education/DegreeParts"
-import { campusHeroFor } from "./education/degreeStandIns"
+import { campusCardPhotoFor } from "./education/degreeStandIns"
 
 const MODES: DeliveryMode[] = ["ONLINE", "CAMPUS"]
 
@@ -53,25 +53,21 @@ function degreeFacts(degree: Degree) {
   ]
 }
 
-function OnlineCard({ degree, fig }: { degree: Degree; fig: string }) {
+/** One online listing as a ruled row. The interface plate is shown once for the whole group, not once per degree. */
+function OnlineRow({ degree }: { degree: Degree }) {
   return (
-    <article className="dg-card">
-      <Plate className="dg-card__art" fig={fig} caption="A study week" note="Placeholder days and counts">
-        <LearningWeek compact />
-      </Plate>
-      <div className="dg-card__body">
-        <div className="dg-listing">
-          <ListingChips degree={degree} showStatus />
-        </div>
-        <h3 className="dg-card__title">
-          <Link to={degreePath(degree)}>{degree.title}</Link>
-        </h3>
-        <SpecSheet className="dg-card__facts" rows={degreeFacts(degree)} />
-        <div className="dg-card__foot">
-          <QuietLink to={degreePath(degree)}>
-            View pathway<span className="sr-only">: {degree.title}</span>
-          </QuietLink>
-        </div>
+    <article className="dg-online__row">
+      <div className="dg-listing">
+        <ListingChips degree={degree} showStatus />
+      </div>
+      <h3 className="dg-card__title">
+        <Link to={degreePath(degree)}>{degree.title}</Link>
+      </h3>
+      <SpecSheet className="dg-card__facts" rows={degreeFacts(degree)} />
+      <div className="dg-card__foot">
+        <QuietLink to={degreePath(degree)}>
+          View pathway<span className="sr-only">: {degree.title}</span>
+        </QuietLink>
       </div>
     </article>
   )
@@ -80,7 +76,7 @@ function OnlineCard({ degree, fig }: { degree: Degree; fig: string }) {
 function CampusCard({ degree }: { degree: Degree }) {
   return (
     <article className="dg-campus-card">
-      <Photo asset={campusHeroFor(degree)} className="dg-campus-card__photo" plain />
+      <Photo asset={campusCardPhotoFor(degree)} className="dg-campus-card__photo" plain />
       <div className="dg-campus-card__body">
         <div className="dg-listing">
           <ListingChips degree={degree} showStatus />
@@ -170,10 +166,15 @@ export default function EducationPage() {
                   <p>{copy.empty}</p>
                 </div>
               ) : m === "ONLINE" ? (
-                <div className="dg-cards">
-                  {degrees.map((degree, n) => (
-                    <OnlineCard key={degree.slug} degree={degree} fig={`FIG. ${index(n + 1)}`} />
-                  ))}
+                <div className="dg-online">
+                  <Plate className="dg-online__art" fig="FIG. 01" caption="A study week in the online learning environment" note="Placeholder days and counts">
+                    <LearningWeek />
+                  </Plate>
+                  <div className="dg-online__list">
+                    {degrees.map((degree) => (
+                      <OnlineRow key={degree.slug} degree={degree} />
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <div className="dg-campus-list">

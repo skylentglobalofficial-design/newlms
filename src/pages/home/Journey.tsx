@@ -55,7 +55,8 @@ const STAGE_COPY: Record<JourneyStage, { does: string; handledBy: string }> = {
 export function Journey({ current = "Discover" }: { current?: JourneyStage }) {
   const evidenceInDevelopment = truthOf("projectsAndEvidence") === "development"
   return (
-    <section id="journey" className="sky-container hm-section" aria-labelledby="hm-journey-title">
+    <section id="journey" className="hm-journey sky-band-navy" aria-labelledby="hm-journey-title">
+      <div className="sky-container">
       <div className="hm-head hm-head--split">
         <div className="hm-head__main">
           <SectionIndex n="02" label="The journey" />
@@ -82,6 +83,7 @@ export function Journey({ current = "Discover" }: { current?: JourneyStage }) {
       <p className="hm-note">
         Northwind Lab belongs to the Data Analytics programme.{evidenceInDevelopment ? " Evidence in Career OS is in development." : ""}
       </p>
+      </div>
     </section>
   )
 }

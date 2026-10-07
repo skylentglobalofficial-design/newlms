@@ -272,7 +272,7 @@ export default function PathPage() {
                     <p className="path-v2__lede path-v2__lede--secondary">{PATH_V2_INTRO.secondaryLede}</p>
                     <div className="path-v2__hero-actions">
                       <button type="button" className="path-v2__cta-primary" onClick={goNext} disabled={submitting}>
-                        Start Your Path
+                        Start your path
                         <span aria-hidden="true">→</span>
                       </button>
                       <Link className="path-v2__cta-secondary" to="/programmes">
@@ -460,7 +460,7 @@ export default function PathPage() {
               {step >= PATH_STAGES.length - 1
                 ? "Construct my path"
                 : step === 0
-                  ? "Start Your Path"
+                  ? "Start your path"
                   : "Continue"}
               <span aria-hidden="true">→</span>
             </button>

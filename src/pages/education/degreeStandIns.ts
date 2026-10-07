@@ -43,20 +43,33 @@ const CAMPUS_GALLERY: DegreeAsset[] = [
 ]
 
 /**
- * Lead photograph for a campus listing: the record's own hero, else the photograph the
- * repository already maps to that degree area, else a generic campus stand-in.
+ * Lead photograph for a campus listing: the record's own hero, else the lecture hall stand-in.
+ * A campus page opens on people in a room, so the area photograph (often an empty lab) moves
+ * into the gallery instead of leading the page.
  */
 export function campusHeroFor(degree: Degree): DegreeAsset {
+  if (degree.heroAsset) return degree.heroAsset
+  return CAMPUS_GALLERY[0]
+}
+
+/** Card photograph on listings: the photograph the repository maps to that degree area. */
+export function campusCardPhotoFor(degree: Degree): DegreeAsset {
   if (degree.heroAsset) return degree.heroAsset
   const mapped = degreeImage(degree.slug)
   if (mapped) return { src: mapped.src, alt: mapped.alt, caption: mapped.alt, standIn: true }
   return CAMPUS_HERO_FALLBACK
 }
 
-/** Campus gallery: the record's own, else stand-ins (never repeating the lead photograph). */
+/**
+ * Campus gallery: the record's own, else the area photograph followed by stand-ins.
+ * The library photograph is left out because the homepage already uses it.
+ */
 export function campusGalleryFor(degree: Degree, hero: DegreeAsset): DegreeAsset[] {
   if (degree.gallery && degree.gallery.length > 0) return degree.gallery
-  return CAMPUS_GALLERY.filter((asset) => asset.src !== hero.src)
+  const area = campusCardPhotoFor(degree)
+  return [area, ...CAMPUS_GALLERY.filter((asset) => asset.src !== library)].filter(
+    (asset, i, all) => asset.src !== hero.src && all.findIndex((other) => other.src === asset.src) === i,
+  )
 }
 
 /** The one photograph on an online degree page: study at a screen, never a campus. */

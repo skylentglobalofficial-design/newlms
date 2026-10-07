@@ -1394,3 +1394,32 @@
     transition: none !important;
   }
 }
+
+/* ── Journey as the page's one navy band (visual polish pass) ─────────────
+   The seven stages are Skylent's signature, so they get the page's deepest
+   surface. Cyan marks only the current stage. */
+.hm-page .hm-journey {
+  margin-top: clamp(64px, 7vw, 104px);
+  padding-block: clamp(56px, 6.5vw, 96px);
+}
+.hm-page .hm-journey .hm-h2 { color: hsl(var(--site-white)); }
+.hm-page .hm-journey .hm-head__aside { color: hsl(var(--site-on-navy)); }
+.hm-page .hm-journey .hm-stage__line { height: 1px; background: hsl(var(--site-navy-line-2)); }
+.hm-page .hm-journey .sky-step__node {
+  background: transparent;
+  border-color: hsl(var(--site-navy-line-2));
+  color: hsl(var(--site-on-navy));
+}
+.hm-page .hm-journey .sky-step__node--on {
+  background: hsl(var(--site-cyan));
+  border-color: hsl(var(--site-cyan));
+  color: hsl(var(--site-navy));
+  font-weight: 500;
+}
+.hm-page .hm-journey .hm-stage__name { color: hsl(var(--site-white)); }
+.hm-page .hm-journey .hm-stage__does { color: hsl(var(--site-on-navy-muted)); }
+.hm-page .hm-journey .hm-stage__by {
+  border-top-color: hsl(var(--site-navy-line));
+  color: hsl(var(--site-on-navy));
+}
+.hm-page .hm-journey .hm-note { color: hsl(var(--site-on-navy-muted)); }
