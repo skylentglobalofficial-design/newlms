@@ -671,7 +671,10 @@ Expected-route mapping: `/find-my-path` → `/path`; `/education/:slug` → `/ed
 
 - Build: the harness build of the real source passes. The project's own `npm run build` was not run.
 - Types: a strict check with stub typings shows the same six stub artefacts as before the work and no new error. The project's own `npx tsc --noEmit` was not run.
-- Rendering: 152 route × width checks at 1440, 1024 and 390 (public and signed-in, with fixtures and with the API down) with no horizontal overflow, no element past the viewport and no console error.
+- Rendering: 192 route × width checks on this commit with no horizontal overflow, no element past the viewport and no console error. 152 cover the main public and signed-in routes at 1440, 1024 and 390, with fixtures and with the API down. 40 cover the secondary public routes (`/stories`, `/universities`, `/institutions`, `/labs`, `/os`, `/workshops`, `/blog`, `/education/school`, `/education/postgraduate`, `/education/exams`, `/path/result`, `/exams/:slug`, not found, the degree redirects) and the faculty, organisation, recruiter and admin dashboards at 1440 and 390.
+- Behaviour: 55 scripted checks pass against the fixture server. They confirm the header labels, the hero line, the seven-stage journey, the three Data Analytics lines, the request body of `POST /enquiries`, `GET /certificates/verify/:code`, `POST /reva/chat` and `POST /lms/ai/ask` (with the CSRF header), that the word "Reva" is never shown, and that each form shows a failure and not a success when the API is down.
+- API base: a second build with `VITE_API_BASE_URL` set to an absolute URL with a trailing slash passes the same behaviour checks, so every client honours the variable. A cross-origin deployment (cookies, CORS, CSRF) was not exercised; that is task P1.
+- The fixture server returns contract-shaped JSON written from the route source. It proves the frontend sends and reads the documented shapes. It does not prove the deployed API returns them.
 - Not exercised anywhere: real sign-up, sign-in, enrolment, lesson completion, progress persistence, lab runs, project saves, certificate issue, logout and login again. These are section D and need a browser against the deployed API.
 
 ### G4. Known frontend follow-ups
