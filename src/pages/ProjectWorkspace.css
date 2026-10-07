@@ -22,7 +22,7 @@
 }
 
 .proj-goal strong {
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 11px;
   font-weight: 650;
   letter-spacing: 0.06em;
@@ -32,7 +32,7 @@
 .proj-brief {
   margin: 0;
   padding-left: 18px;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13px;
   line-height: 1.45;
 }
@@ -63,11 +63,11 @@
 }
 
 .proj-tasks button.is-active {
-  background: #fffdf8;
+  background: var(--skylent-surface-elevated);
 }
 
 .proj-tasks span {
-  color: #8a8f96;
+  color: var(--skylent-color-muted);
   font-size: 12px;
   font-variant-numeric: tabular-nums;
 }
@@ -80,7 +80,7 @@
 }
 
 .proj-tasks em {
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 11px;
   font-style: normal;
 }
@@ -107,8 +107,8 @@
   width: 100%;
   min-height: 40px;
   padding: 8px 10px;
-  border: 1px solid rgba(21, 23, 26, 0.12);
-  background: #fffdf8;
+  border: 1px solid var(--skylent-color-border);
+  background: var(--skylent-surface-elevated);
   color: inherit;
   font: 13px var(--font-body);
 }
@@ -118,7 +118,7 @@
   flex-direction: column;
   gap: 8px;
   padding: 12px;
-  background: #fffdf8;
+  background: var(--skylent-surface-elevated);
 }
 
 .proj-evidence-card h3 {
@@ -137,8 +137,8 @@
   width: 100%;
   min-height: 88px;
   padding: 10px 12px;
-  border: 1px solid rgba(21, 23, 26, 0.12);
-  background: #fffdf8;
+  border: 1px solid var(--skylent-color-border);
+  background: var(--skylent-surface-elevated);
   color: inherit;
   font: 14px/1.45 var(--font-body);
   resize: vertical;
@@ -161,14 +161,14 @@
   gap: 8px;
   margin: 0 16px 12px;
   padding: 12px 14px;
-  border: 1px solid rgba(21, 23, 26, 0.1);
-  background: #fffdf8;
+  border: 1px solid var(--skylent-color-border);
+  background: var(--skylent-surface-elevated);
   min-width: 0;
 }
 
 .proj-career p {
   margin: 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13px;
   line-height: 1.45;
 }

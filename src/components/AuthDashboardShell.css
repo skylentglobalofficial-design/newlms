@@ -1,0 +1,374 @@
+/*
+ * Signed-in shell — navy rail, slim white bar, white workspace.
+ * The rail is the product anchor; the current item carries the only cobalt in it.
+ * Small screens: the rail becomes a navy top bar with a drawer; phones also get a bottom nav.
+ */
+
+.auth-shell {
+  --shell-rail-w: 248px;
+  position: relative;
+  min-height: 100vh;
+  background: var(--skylent-surface-paper);
+  color: var(--skylent-color-ink);
+  font-family: var(--font-body);
+}
+
+/* ── Rail ── */
+.auth-shell-rail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  width: var(--shell-rail-w);
+  background: var(--skylent-navy);
+  color: var(--skylent-on-navy);
+}
+
+.auth-shell-rail--drawer {
+  display: none;
+  z-index: 210;
+  width: min(86vw, 300px);
+  transform: translateX(-100%);
+  transition: transform 220ms ease, visibility 0s linear 220ms;
+  visibility: hidden;
+}
+
+.auth-shell-rail--drawer.is-open {
+  transform: translateX(0);
+  transition: transform 220ms ease, visibility 0s;
+  visibility: visible;
+}
+
+.auth-shell-brand {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 12px;
+  box-sizing: border-box;
+  min-height: 56px;
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--skylent-navy-line);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.auth-shell-wordmark {
+  font-family: var(--skylent-font-heading);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ffffff;
+}
+
+.auth-shell-workspace {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--skylent-on-navy-muted);
+}
+
+.auth-shell-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 12px 16px;
+}
+
+.auth-shell-nav ul {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.auth-shell-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 0 10px 0 14px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--skylent-on-navy);
+  font: 500 14px/1.3 var(--font-body);
+  text-align: left;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.auth-shell-nav-item:hover {
+  background: var(--skylent-navy-2);
+  color: #ffffff;
+}
+
+.auth-shell-nav-item[aria-current="page"] {
+  background: var(--skylent-navy-2);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.auth-shell-nav-item[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 13px;
+  bottom: 13px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--skylent-color-accent);
+}
+
+.auth-shell-user {
+  padding: 12px 16px 16px 22px;
+  border-top: 1px solid var(--skylent-navy-line);
+}
+
+.auth-shell-user-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.auth-shell-avatar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  box-sizing: border-box;
+  border: 1px solid var(--skylent-navy-line);
+  border-radius: 6px;
+  background: var(--skylent-navy-2);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+}
+
+.auth-shell-user-name {
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.auth-shell-user-role {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--skylent-on-navy-muted);
+}
+
+.auth-shell-signout {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 12px;
+  border: 1px solid var(--skylent-navy-line-2);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--skylent-on-navy);
+  font: 500 13px/1 var(--font-body);
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.auth-shell-signout:hover {
+  background: var(--skylent-navy-2);
+  border-color: var(--skylent-on-navy-muted);
+}
+
+.auth-shell-rail :is(a, button):focus-visible,
+.auth-shell-topbar :is(a, button):focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.auth-shell-bottom-nav button:focus-visible {
+  outline: 2px solid var(--skylent-color-accent);
+  outline-offset: -2px;
+}
+
+.auth-shell-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  border: 0;
+  background: var(--skylent-overlay-scrim);
+}
+
+/* ── Main column ── */
+.auth-shell-main {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  margin-left: var(--shell-rail-w);
+  overflow-x: hidden;
+  background: var(--skylent-surface-paper);
+}
+
+/* Small screens: the navy anchor moves to the top */
+.auth-shell-topbar {
+  display: none;
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  align-items: center;
+  gap: 4px;
+  min-height: 56px;
+  padding: 0 16px 0 6px;
+  background: var(--skylent-navy);
+  color: #ffffff;
+}
+
+.auth-shell-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.auth-shell-topbar .auth-shell-wordmark {
+  font-size: 16px;
+}
+
+.auth-shell-topbar .auth-shell-workspace {
+  margin-left: 10px;
+}
+
+/* Slim white bar: where this screen sits */
+.auth-shell-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px 24px;
+  box-sizing: border-box;
+  min-height: 52px;
+  padding: 8px clamp(16px, 2.6vw, 36px);
+  border-bottom: 1px solid var(--skylent-color-border);
+  background: var(--skylent-surface-paper);
+}
+
+.auth-shell-content {
+  min-width: 0;
+  padding: clamp(18px, 2.4vw, 28px) clamp(16px, 2.6vw, 36px) 96px;
+}
+
+/* Phone bottom nav */
+.auth-shell-bottom-nav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  display: none;
+  justify-content: space-around;
+  padding: 4px 4px max(4px, env(safe-area-inset-bottom));
+  border-top: 1px solid var(--skylent-color-border);
+  background: var(--skylent-surface-paper);
+}
+
+.auth-shell-bottom-nav button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
+  min-height: 52px;
+  padding: 6px 2px;
+  border: 0;
+  border-top: 2px solid transparent;
+  background: none;
+  color: var(--skylent-color-muted);
+  font: 500 10.5px/1.1 var(--font-body);
+  cursor: pointer;
+}
+
+.auth-shell-bottom-nav button[aria-current="page"] {
+  border-top-color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent);
+  font-weight: 600;
+}
+
+/* Shared two-column dashboard layout */
+.auth-dashboard-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  gap: clamp(16px, 2vw, 24px);
+  align-items: start;
+}
+
+.auth-dashboard-primary,
+.auth-dashboard-rail {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .auth-shell-rail--desktop {
+    display: none;
+  }
+
+  .auth-shell-rail--drawer {
+    display: flex;
+  }
+
+  .auth-shell-main {
+    margin-left: 0;
+  }
+
+  .auth-shell-topbar {
+    display: flex;
+  }
+
+  .auth-dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-dashboard-rail {
+    order: 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .auth-shell-bottom-nav {
+    display: flex;
+  }
+
+  .auth-shell-content {
+    padding-bottom: 96px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-shell-rail--drawer,
+  .auth-shell-nav-item,
+  .auth-shell-signout {
+    transition: none;
+  }
+}

@@ -5,7 +5,7 @@
   min-width: 0;
   overflow: hidden;
   background: #ffffff;
-  border: 1px solid rgba(21, 23, 26, 0.08);
+  border: 1px solid var(--skylent-color-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-raised);
 }
@@ -25,7 +25,7 @@
   min-height: 40px;
   padding: 0 14px;
   background: var(--skylent-color-cream);
-  border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+  border-bottom: 1px solid var(--skylent-color-border);
 }
 
 .pl-frame-brand {
@@ -239,7 +239,7 @@
 .pl-table th,
 .pl-table td {
   padding: 5px 0;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+  border-bottom: 1px solid var(--skylent-color-border);
   text-align: left;
 }
 
@@ -265,7 +265,7 @@
   margin: 0;
   padding: 8px;
   list-style: none;
-  background: #efebe1;
+  background: var(--skylent-surface-soft);
   border-radius: 12px;
 }
 
@@ -308,7 +308,7 @@
 
 .pl-ws-current {
   padding-bottom: 12px;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
+  border-bottom: 1px solid var(--skylent-color-border);
 }
 
 .pl-ws-extract {
@@ -573,8 +573,8 @@
 }
 
 .pl-flow-choose-pair i:last-child {
-  background: #fff7ed;
-  box-shadow: inset 0 0 0 1px #fed7aa;
+  background: var(--skylent-color-accent-soft);
+  box-shadow: inset 0 0 0 1px var(--skylent-color-accent-border);
 }
 
 .pl-flow strong {
@@ -615,7 +615,7 @@
 }
 
 .pl-path li.is-later .pl-path-index {
-  color: #9a9488;
+  color: var(--skylent-color-muted);
 }
 
 .pl-path li:last-child {
@@ -628,7 +628,7 @@
   margin-top: 4px;
   border-radius: 50%;
   background: #ffffff;
-  border: 2px solid #c9c2b4;
+  border: 2px solid var(--skylent-color-border-strong);
   z-index: 1;
 }
 
@@ -702,7 +702,7 @@
 .pl-path.is-board li.is-later {
   opacity: 1;
   background: var(--skylent-color-paper);
-  box-shadow: inset 0 0 0 1px rgba(21, 23, 26, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(11, 18, 32, 0.08);
 }
 
 .pl-path.is-board li.is-later strong {
@@ -761,7 +761,7 @@
   background: var(--skylent-color-paper);
   border-radius: 0;
   box-shadow: none;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
+  border-bottom: 1px solid var(--skylent-color-border);
 }
 
 .pl-lesson-ctx .pl-stat {
@@ -786,8 +786,8 @@
   border-left: 3px solid transparent;
 }
 
-.pl-lane-item.is-learn { border-left-color: #d8d1c4; }
-.pl-lane-item.is-sheet { border-left-color: #818cf8; background: var(--skylent-color-cream); }
+.pl-lane-item.is-learn { border-left-color: var(--skylent-color-border-strong); }
+.pl-lane-item.is-sheet { border-left-color: var(--skylent-color-accent-border); background: var(--skylent-color-cream); }
 .pl-lane-item.is-sql { border-left-color: var(--skylent-color-accent); background: var(--skylent-color-cream); }
 .pl-lane-item.is-chart { border-left-color: var(--skylent-color-accent); background: #ffffff; }
 .pl-lane-item.is-build { border-left-color: var(--skylent-color-ink); background: var(--skylent-color-cream); }
@@ -1007,7 +1007,7 @@
   display: block;
   height: 8px;
   max-width: 88%;
-  background: rgba(21, 23, 26, 0.08);
+  background: var(--skylent-surface-soft);
   border-radius: 4px;
 }
 
@@ -1100,7 +1100,7 @@
   gap: 8px;
   margin-bottom: 12px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+  border-bottom: 1px solid var(--skylent-color-border);
 }
 
 .pl-workflow-rail span {
@@ -1119,7 +1119,7 @@
   align-items: stretch;
   min-width: 0;
   background: var(--skylent-color-paper);
-  border: 1px solid rgba(21, 23, 26, 0.08);
+  border: 1px solid var(--skylent-color-border);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -1136,7 +1136,7 @@
 
 .pl-workflow-pane.is-evidence {
   background: var(--skylent-color-cream);
-  box-shadow: inset 3px 0 0 #f97316;
+  box-shadow: inset 3px 0 0 var(--skylent-color-accent);
 }
 
 .pl-workflow-pane .pl-kicker {
@@ -1201,7 +1201,7 @@
   }
 
   .pl-workflow-pane.is-evidence {
-    box-shadow: inset 0 3px 0 #f97316;
+    box-shadow: inset 0 3px 0 var(--skylent-color-accent);
   }
 }
 
@@ -1309,7 +1309,7 @@
 }
 
 .pl-cert-mark.is-next {
-  box-shadow: inset 0 0 0 1px #c9c2b4;
+  box-shadow: inset 0 0 0 1px var(--skylent-color-border-strong);
   background: var(--skylent-color-cream);
 }
 
@@ -1335,7 +1335,7 @@
 
 .pl-cert-rail li.is-next strong,
 .pl-cert-rail li.is-next span {
-  color: #8a8478;
+  color: var(--skylent-color-muted);
 }
 
 .pl-cert-stage {

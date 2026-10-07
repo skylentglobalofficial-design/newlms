@@ -66,7 +66,7 @@ function AssignmentBriefView({ brief }: { brief: AssignmentBrief; accent: Accent
       </section>
       <section className="as-block">
         <h3>Rubric</h3>
-        <p style={{ marginBottom: 10, color: '#5c6168', fontSize: 13 }}>What complete work shows. This is not a grade.</p>
+        <p className="as-fine" style={{ marginBottom: 10 }}>What complete work shows. This is not a grade.</p>
         <div className="lx-table-wrap" style={{ margin: 0 }}>
           <table>
             <thead>

@@ -4,8 +4,8 @@
   min-height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  background: #f7f4ec;
-  color: #15171a;
+  background: var(--skylent-surface-soft);
+  color: var(--skylent-color-ink);
   font-family: var(--font-body);
 }
 
@@ -15,8 +15,8 @@
   gap: 12px;
   min-height: 56px;
   padding: 10px 16px;
-  background: #fffdf8;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+  background: var(--skylent-surface-elevated);
+  border-bottom: 1px solid var(--skylent-color-border);
   flex-shrink: 0;
 }
 
@@ -35,13 +35,13 @@
 }
 
 .lab-brand span {
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 12px;
 }
 
 .lab-top-course {
   min-width: 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13px;
 }
 
@@ -58,19 +58,19 @@
   gap: 8px 20px;
   padding: 10px 16px;
   background: #ffffff;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
+  border-bottom: 1px solid var(--skylent-color-border);
   flex-shrink: 0;
 }
 
 .lab-context p {
   margin: 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13px;
   line-height: 1.4;
 }
 
 .lab-context strong {
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-weight: 600;
 }
 
@@ -100,7 +100,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  border: 1px solid rgba(21, 23, 26, 0.08);
+  border: 1px solid var(--skylent-color-border);
   border-radius: 14px;
 }
 
@@ -112,14 +112,14 @@
   padding: 0 16px;
   list-style: none;
   background: #ffffff;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
+  border-bottom: 1px solid var(--skylent-color-border);
   flex-shrink: 0;
 }
 
 .lab-flow li {
   position: relative;
   padding: 12px 10px;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 12px;
   font-weight: 600;
   text-align: center;
@@ -132,20 +132,20 @@
   top: 50%;
   width: 8px;
   height: 1px;
-  background: #e8e2d6;
+  background: var(--skylent-surface-sand);
 }
 
 .lab-flow li.is-on {
-  color: #4f46e5;
+  color: var(--skylent-color-accent);
 }
 
 .lab-panel {
   border-radius: 16px;
-  box-shadow: 0 16px 40px rgba(21, 23, 26, 0.06);
+  box-shadow: 0 16px 40px rgba(11, 18, 32, 0.06);
 }
 
 .lab-rail {
-  background: #fffdf8;
+  background: var(--skylent-surface-elevated);
 }
 
 .lab-workspace {
@@ -174,7 +174,7 @@
 .lab-results p,
 .lab-note {
   margin: 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -183,7 +183,7 @@
   margin: 0;
   font-family: var(--font-mono);
   font-size: 13px;
-  color: #15171a;
+  color: var(--skylent-color-ink);
 }
 
 .lab-meta-list,
@@ -199,19 +199,19 @@
   justify-content: space-between;
   gap: 10px;
   padding: 6px 0;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
+  border-bottom: 1px solid var(--skylent-color-border);
   font-size: 12px;
 }
 
 .lab-columns span {
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-family: var(--font-mono);
 }
 
 .lab-table-wrap {
   overflow-x: auto;
   max-width: 100%;
-  border: 1px solid rgba(21, 23, 26, 0.08);
+  border: 1px solid var(--skylent-color-border);
   border-radius: 10px;
 }
 
@@ -226,13 +226,13 @@
   padding: 7px 8px;
   text-align: left;
   white-space: nowrap;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
+  border-bottom: 1px solid var(--skylent-color-border);
 }
 
 .lab-table th {
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-weight: 600;
-  background: #fffdf8;
+  background: var(--skylent-surface-elevated);
   position: sticky;
   top: 0;
   z-index: 1;
@@ -246,14 +246,14 @@
 
 .lab-metric {
   padding: 10px;
-  background: #fffdf8;
+  background: var(--skylent-surface-elevated);
   border-radius: 10px;
   min-width: 0;
 }
 
 .lab-metric span {
   display: block;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 11px;
 }
 
@@ -271,7 +271,7 @@
   flex-direction: column;
   gap: 12px;
   padding: 14px;
-  background: #fffdf8;
+  background: var(--skylent-surface-elevated);
   border-radius: 12px;
 }
 
@@ -281,13 +281,13 @@
   gap: 12px;
   align-items: end;
   padding: 12px;
-  background: #f7f4ec;
+  background: var(--skylent-surface-soft);
   border-radius: 12px;
 }
 
 .lab-toolbar label {
   display: block;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 6px;
@@ -297,7 +297,7 @@
   width: 100%;
   min-height: 40px;
   padding: 8px 10px;
-  border: 1px solid rgba(21, 23, 26, 0.12);
+  border: 1px solid var(--skylent-color-border);
   border-radius: 8px;
   background: #ffffff;
   font: inherit;
@@ -313,12 +313,12 @@
 }
 
 .lab-metrics.is-idle .lab-metric strong {
-  color: #c9c2b4;
+  color: var(--skylent-color-border-strong);
 }
 
 .lab-run-box label {
   display: block;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 6px;
@@ -328,7 +328,7 @@
   width: 100%;
   min-height: 44px;
   padding: 8px 10px;
-  border: 1px solid rgba(21, 23, 26, 0.12);
+  border: 1px solid var(--skylent-color-border);
   border-radius: 8px;
   background: #ffffff;
   font: inherit;
@@ -354,7 +354,7 @@
 
 .lab-saved article {
   padding: 10px;
-  background: #fffdf8;
+  background: var(--skylent-surface-elevated);
   border-radius: 10px;
 }
 
@@ -366,7 +366,7 @@
 
 .lab-error {
   margin: 0;
-  color: #9a3412;
+  color: var(--skylent-color-ink);
   font-size: 13px;
 }
 
@@ -381,13 +381,13 @@
 
 .lab-error p {
   margin: 0;
-  color: #9a3412;
+  color: var(--skylent-color-ink);
 }
 
 .lab-modes {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+  border-bottom: 1px solid var(--skylent-color-border);
 }
 
 .lab-modes button {
@@ -399,13 +399,13 @@
   padding: 8px 12px;
   min-height: 44px;
   font: 600 13px var(--font-body);
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   cursor: pointer;
 }
 
 .lab-modes button.is-active {
-  color: #15171a;
-  border-bottom-color: #4f46e5;
+  color: var(--skylent-color-ink);
+  border-bottom-color: var(--skylent-color-accent);
 }
 
 .lab-schema {
@@ -413,16 +413,16 @@
   flex-direction: column;
   gap: 8px;
   padding-top: 4px;
-  border-top: 1px solid rgba(21, 23, 26, 0.08);
+  border-top: 1px solid var(--skylent-color-border);
 }
 
 .lab-sql-editor {
   width: 100%;
   min-height: 220px;
   padding: 12px;
-  border: 1px solid rgba(21, 23, 26, 0.14);
-  background: #fffdf8;
-  color: #15171a;
+  border: 1px solid var(--skylent-color-border-strong);
+  background: var(--skylent-surface-elevated);
+  color: var(--skylent-color-ink);
   font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.55;
@@ -430,7 +430,7 @@
 }
 
 .lab-sql-editor:focus {
-  outline: 2px solid #4f46e5;
+  outline: 2px solid var(--skylent-color-accent);
   outline-offset: 1px;
 }
 
@@ -443,7 +443,7 @@
 
 .lab-sql-actions p {
   margin: 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 12px;
 }
 
@@ -457,9 +457,9 @@
   appearance: none;
   min-height: 36px;
   padding: 6px 10px;
-  border: 1px solid rgba(21, 23, 26, 0.14);
-  background: #fffdf8;
-  color: #15171a;
+  border: 1px solid var(--skylent-color-border-strong);
+  background: var(--skylent-surface-elevated);
+  color: var(--skylent-color-ink);
   font: 600 12px var(--font-body);
   cursor: pointer;
 }
@@ -478,15 +478,15 @@
 
 .lab-prompts li {
   padding: 6px 0;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.06);
-  color: #5c6168;
+  border-bottom: 1px solid var(--skylent-color-border);
+  color: var(--skylent-color-slate);
   font-size: 13px;
 }
 
 .lab-sql-status {
   font-family: var(--font-mono);
   font-size: 12px;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
 }
 
 .lab-sql-table td,
@@ -506,7 +506,7 @@
 .lab-result-views {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+  border-bottom: 1px solid var(--skylent-color-border);
 }
 
 .lab-result-views button {
@@ -518,18 +518,18 @@
   padding: 8px 12px;
   min-height: 40px;
   font: 600 13px var(--font-body);
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   cursor: pointer;
 }
 
 .lab-result-views button.is-active {
-  color: #15171a;
-  border-bottom-color: #4f46e5;
+  color: var(--skylent-color-ink);
+  border-bottom-color: var(--skylent-color-accent);
 }
 
 .lab-chart-hint {
   margin: 0;
-  color: #8a8f96;
+  color: var(--skylent-color-muted);
   font-size: 12px;
   line-height: 1.4;
 }
@@ -550,7 +550,7 @@
 
 .lab-chart-summary {
   margin: 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 12px;
   line-height: 1.45;
 }
@@ -575,14 +575,14 @@
 }
 
 .lab-bar-label {
-  color: #15171a;
+  color: var(--skylent-color-ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .lab-bar-value {
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-variant-numeric: tabular-nums;
   text-align: right;
   white-space: nowrap;
@@ -590,13 +590,13 @@
 
 .lab-bar-track {
   height: 10px;
-  background: #e8e2d6;
+  background: var(--skylent-surface-sand);
   min-width: 0;
 }
 
 .lab-bar-fill {
   height: 10px;
-  background: #4f46e5;
+  background: var(--skylent-color-accent);
   max-width: 100%;
 }
 
@@ -604,7 +604,7 @@
   display: flex;
   justify-content: space-between;
   padding-left: 96px;
-  color: #8a8f96;
+  color: var(--skylent-color-muted);
   font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
@@ -616,28 +616,28 @@
 }
 
 .lab-plot-grid {
-  stroke: rgba(21, 23, 26, 0.08);
+  stroke: var(--skylent-color-border);
   stroke-width: 1;
 }
 
 .lab-plot-spine {
-  stroke: rgba(21, 23, 26, 0.28);
+  stroke: var(--skylent-color-border-strong);
   stroke-width: 1;
 }
 
 .lab-plot-line {
-  stroke: #4f46e5;
+  stroke: var(--skylent-color-accent);
   stroke-width: 2;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
 
 .lab-plot-dot {
-  fill: #4f46e5;
+  fill: var(--skylent-color-accent);
 }
 
 .lab-plot-axis {
-  fill: #5c6168;
+  fill: var(--skylent-color-slate);
   font-size: 9px;
   font-family: var(--font-body);
 }
@@ -671,7 +671,7 @@
 
 .lab-disclaimer {
   margin: 4px 2px 8px;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 12px;
   line-height: 1.45;
 }
