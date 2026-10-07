@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { z } from 'zod'
 
 import { prisma } from '../lib/prisma.js'
+import { ensureProgramCourseLinks } from '../lib/program-course-links.js'
 
 const router = Router()
 
@@ -113,6 +114,7 @@ router.get('/courses', async (_request, response, next) => {
 
 router.get('/programs', async (_request, response, next) => {
   try {
+    await ensureProgramCourseLinks()
     const programs = await prisma.program.findMany({
       orderBy: { name: 'asc' },
       include: { pricing: true, ...programCourseInclude },
@@ -131,6 +133,7 @@ router.get('/programs/:slug', async (request, response, next) => {
   }
 
   try {
+    await ensureProgramCourseLinks()
     const program = await prisma.program.findUnique({
       where: { slug: parsed.data.slug },
       include: { ...curriculumInclude, pricing: true, ...programCourseInclude },

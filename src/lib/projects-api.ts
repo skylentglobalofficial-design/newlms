@@ -1,8 +1,10 @@
 import { ensureCsrfToken } from "./auth-api"
-import { API_ROOT, parseApiJson } from "./http"
+import { parseApiJson } from "./http"
 import type { LabChartSpec } from "./labs-api"
 
-const API_BASE = API_ROOT
+import { apiV1 } from "./api-base"
+
+const API_BASE = apiV1()
 
 export const NORTHWIND_PROJECT_TYPE = "northwind-commercial-review"
 

@@ -1,7 +1,9 @@
 import { ensureCsrfToken } from "./auth-api"
-import { API_ROOT, parseApiJson } from "./http"
+import { parseApiJson } from "./http"
 
-const API_BASE = API_ROOT
+import { apiV1 } from "./api-base"
+
+const API_BASE = apiV1()
 
 export type LabColumnPreview = {
   name: string

@@ -1,5 +1,8 @@
 export type AiAction = "ask" | "explain" | "example" | "quiz" | "practice"
 
+/** Decided by the server from lesson type and learner state. Clients cannot set this. */
+export type AcademicPolicy = "lesson" | "open_quiz" | "open_assignment" | "post_assessment"
+
 export type ChatTurn = {
   role: "user" | "assistant"
   content: string
@@ -33,6 +36,8 @@ export type LessonAiContext = {
     topCategory: string
     weakestMonth: string
     sql: string
+    /** True while an assessment is open: computed results must not reach a prompt or an answer. */
+    withheld?: boolean
   } | null
   harbor: {
     filename: string
@@ -79,6 +84,9 @@ export type AiAskInput = {
   question: string
   history: ChatTurn[]
   context: LessonAiContext
+  policy?: AcademicPolicy
+  /** Open-quiz question text and options, used only to recognise a pasted question. Never sent to a provider. */
+  quizGuard?: { question: string; options: string[] }[]
 }
 
 export type AiAskResult = {

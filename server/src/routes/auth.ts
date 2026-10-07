@@ -73,7 +73,10 @@ const loginSchema = z.object({
 const AUTH_FAILURE = { error: "Invalid email or password" }
 
 authRouter.get("/csrf", (req, res) => {
-  const csrfToken = generateCsrfToken()
+  // Re-issuing a new value here invalidates a token the browser already stored
+  // and cannot re-read from a cross-site Set-Cookie. Keep the proved value.
+  const existing = parseCookies(req)[CSRF_COOKIE]
+  const csrfToken = existing || generateCsrfToken()
   res.cookie(CSRF_COOKIE, csrfToken, csrfCookieOptions(req))
   res.json({ csrfToken })
 })
@@ -163,13 +166,14 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
     })
 
     const { sessionToken, csrfToken } = await createSession(user.id)
-    setSessionCookies(res, req, sessionToken, csrfToken)
+    const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
 
     const roles = user.roles.map((entry) => entry.role)
     res.status(201).json({
       user: toSafeUser(user),
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
+      csrfToken: issuedCsrf,
     })
   } catch (error) {
     console.error("Signup failed:", error)
@@ -203,13 +207,14 @@ authRouter.post("/login", requireCsrf, async (req, res) => {
 
   try {
     const { sessionToken, csrfToken } = await createSession(user.id)
-    setSessionCookies(res, req, sessionToken, csrfToken)
+    const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
 
     const roles = user.roles.map((entry) => entry.role)
     res.json({
       user: toSafeUser(user),
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
+      csrfToken: issuedCsrf,
     })
   } catch (error) {
     console.error("Login failed:", error)
