@@ -44,6 +44,13 @@ export default function CareerProfileWorkspace() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [profile])
 
+  const hasProfile = Boolean(profile)
+  useEffect(() => {
+    if (!hasProfile) return
+    const id = window.location.hash.slice(1)
+    if (id) document.getElementById(id)?.scrollIntoView({ block: "start" })
+  }, [hasProfile])
+
   if (loading) {
     return <LoadingBlock label="Loading your career profile…" />
   }

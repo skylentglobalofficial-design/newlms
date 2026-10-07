@@ -615,3 +615,115 @@
     grid-template-columns: 108px minmax(0, 1fr);
   }
 }
+
+/* =====================================================================
+   Frozen palette for signed-in Career OS content (set on .cos-scope by CareerOSShell).
+   The Career OS components style themselves through the --skylent-* custom properties
+   (src/tokens.ts), so re-declaring them here re-themes every page without touching markup:
+   white workspace, navy ink, cool hairlines, cobalt action. No cream, no indigo, no shadows.
+   ===================================================================== */
+.cos-scope {
+  --skylent-surface-paper: #ffffff;
+  --skylent-surface-cream: #ffffff;
+  --skylent-surface-cream-warm: hsl(var(--site-proof));
+  --skylent-surface-soft: hsl(var(--site-soft));
+  --skylent-surface-sand: hsl(var(--site-raised));
+  --skylent-surface-elevated: #ffffff;
+  --skylent-color-paper: #ffffff;
+  --skylent-color-cream: #ffffff;
+  --skylent-color-soft: hsl(var(--site-soft));
+  --skylent-color-soft-surface: #ffffff;
+  --skylent-color-sand: hsl(var(--site-raised));
+  --skylent-color-canvas: #ffffff;
+  --skylent-color-elevated: #ffffff;
+  --skylent-color-ink: hsl(var(--site-ink));
+  --skylent-color-ink-2: hsl(var(--site-ink));
+  --skylent-color-ink-3: hsl(var(--site-navy));
+  --skylent-color-slate: hsl(var(--site-muted));
+  --skylent-color-muted: hsl(var(--site-dim));
+  --skylent-color-text-subtle: hsl(var(--site-dim));
+  --skylent-color-border-subtle: hsl(var(--site-border));
+  --skylent-color-border: hsl(var(--site-border));
+  --skylent-color-border-strong: hsl(var(--site-border-strong));
+  --skylent-color-accent: hsl(var(--site-deep));
+  --skylent-color-accent-hover: hsl(var(--site-ocean));
+  --skylent-color-accent-soft: hsl(var(--site-soft-blue));
+  --skylent-color-accent-border: hsl(var(--site-light-blue));
+  --skylent-color-accent-strong: hsl(var(--site-ocean));
+  --skylent-color-text-on-accent: #ffffff;
+  --skylent-color-mark: hsl(var(--site-deep));
+  --skylent-color-info: hsl(var(--site-deep));
+  --skylent-color-info-soft: hsl(var(--site-soft-blue));
+  --skylent-color-info-border: hsl(var(--site-light-blue));
+  --skylent-color-error: hsl(var(--site-red));
+  --skylent-color-error-soft: #ffffff;
+  --skylent-color-error-border: hsl(var(--site-border-strong));
+  --skylent-focus-ring: hsl(var(--site-highlight));
+  --color-ink: hsl(var(--site-ink));
+  --color-slate: hsl(var(--site-muted));
+  --color-cream: #ffffff;
+  --color-canvas: #ffffff;
+  --color-indigo: hsl(var(--site-deep));
+  --color-blue: hsl(var(--site-ocean));
+  --color-line: hsl(var(--site-border));
+  --color-line-strong: hsl(var(--site-border-strong));
+  --btn-bg: hsl(var(--site-deep));
+  --btn-fg: #ffffff;
+  --btn-radius: 8px;
+  --border-subtle: 1px solid hsl(var(--site-border));
+  --border-subtle-strong: 1px solid hsl(var(--site-border-strong));
+  --shadow-subtle: none;
+  --shadow-raised: none;
+  --shadow-overlay: none;
+  --glass-01-bg: #ffffff;
+  --glass-01-border: hsl(var(--site-border));
+  --glass-01-shadow: none;
+  --glass-02-bg: #ffffff;
+  --glass-02-border: hsl(var(--site-border));
+  --glass-02-shadow: none;
+  --glass-03-bg: #ffffff;
+  --glass-03-border: hsl(var(--site-border));
+  --glass-03-shadow: none;
+  --font-display: var(--sk-font-heading);
+  --font-brand: var(--sk-font-heading);
+  --font-body: var(--sk-font-body);
+  --font-mono: var(--sk-font-mono);
+  min-width: 0;
+  color: hsl(var(--site-ink));
+  font-family: var(--sk-font-body);
+}
+
+/* Legacy Career OS classes in the same language: hairline panels, no shadows, Space Grotesk headings. */
+.cos-scope .cos-page h1,
+.cos-scope .cos-page h2 { font-family: var(--sk-font-heading); font-weight: 600; letter-spacing: -0.01em; color: hsl(var(--site-ink)); }
+.cos-scope .cos-artifact,
+.cos-scope .cos-panel,
+.cos-scope .cos-empty { box-shadow: none; border: 1px solid hsl(var(--site-border)); border-radius: 12px; }
+.cos-scope .cos-artifact-stage { background: hsl(var(--site-proof-2)); }
+.cos-scope .cos-empty-cta { display: inline-flex; align-items: center; min-height: 44px; color: hsl(var(--site-deep)); }
+
+/* =====================================================================
+   Public Career OS entry (signed out). Prefix cosp-. Sits inside .site-light.
+   ===================================================================== */
+.cosp { background: hsl(var(--site-white)); color: hsl(var(--site-ink)); }
+.cosp-hero { padding-block: clamp(2.5rem, 5vw, 4rem) clamp(2rem, 4vw, 3rem); }
+.cosp-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; }
+.cosp h1 { margin: 0; max-width: 22ch; font-size: clamp(2.1rem, 3.7vw, 3.2rem); line-height: 1.07; }
+.cosp-lead { margin: 18px 0 0; max-width: 58ch; font-size: 1.03125rem; line-height: 1.6; color: hsl(var(--site-muted)); }
+.cosp-actions { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 12px; }
+.cosp-section { padding-block: 0 clamp(3rem, 6vw, 5rem); }
+.cosp h2 { margin: 10px 0 0; font-size: clamp(1.5rem, 2.4vw, 2rem); line-height: 1.15; }
+.cosp-caps { margin: 24px 0 0; padding: 0; list-style: none; border-top: 1px solid hsl(var(--site-border-strong)); }
+.cosp-caps li { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) auto; align-items: baseline; gap: 6px 28px; padding: 18px 0; border-bottom: 1px solid hsl(var(--site-border)); }
+.cosp-caps strong { font-family: var(--sk-font-heading); font-size: 1.125rem; font-weight: 600; }
+.cosp-caps p { margin: 0; font-size: .9375rem; line-height: 1.55; color: hsl(var(--site-muted)); }
+.cosp-caps p a { color: hsl(var(--site-deep)); font-weight: 600; white-space: nowrap; }
+.cosp-proof { margin-top: 28px; padding: 20px 22px; }
+.cosp-proof p { margin: 8px 0 0; max-width: 72ch; font-size: .9375rem; line-height: 1.6; color: hsl(var(--site-ink)); }
+.cosp-fine { margin: 16px 0 0; font-size: .8125rem; line-height: 1.5; color: hsl(var(--site-dim)); }
+.cosp-area { padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 6vw, 5rem); }
+@media (max-width: 760px) {
+  .cosp-caps li { grid-template-columns: minmax(0, 1fr) auto; }
+  .cosp-caps li p { grid-column: 1 / -1; grid-row: 2; }
+  .cosp-actions .sk-btn { flex: 1 1 100%; }
+}

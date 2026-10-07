@@ -111,9 +111,9 @@ export const secondaryButtonStyle: React.CSSProperties = {
 export const dangerButtonStyle: React.CSSProperties = {
   padding: "9px 14px",
   borderRadius: T.rControl,
-  border: "1px solid rgba(239,68,68,0.35)",
+  border: "1px solid hsl(var(--site-border-strong))",
   background: "transparent",
-  color: "#FCA5A5",
+  color: "hsl(var(--site-red))",
   fontSize: 13,
   cursor: "pointer",
   fontFamily: "var(--font-body)",

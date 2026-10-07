@@ -91,8 +91,7 @@
 .cosh-cell__n { margin-right: 8px; }
 .cosh-cell__n--on { color: hsl(var(--site-deep)); }
 .cosh-cell__value { margin-top: 8px; min-height: 26px; display: flex; align-items: center; font-size: 15px; font-weight: 600; color: hsl(var(--site-ink)); overflow-wrap: anywhere; }
-.cosh-cell__quiet,
-.cosh-cell__link--quiet { color: hsl(var(--site-dim)) !important; }
+.cosh-cell__quiet { color: hsl(var(--site-dim)) !important; }
 .cosh-cell__link { text-decoration: underline !important; text-decoration-color: hsl(var(--site-border-strong)) !important; text-underline-offset: 4px; }
 .cosh-cell__link:hover { text-decoration-color: hsl(var(--site-deep)) !important; }
 .cosh-cell__link--quiet { color: hsl(var(--site-deep)) !important; }
