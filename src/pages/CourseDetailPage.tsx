@@ -21,6 +21,7 @@ import {
 import { courseProductProfile } from "../lib/course-product"
 import type { CatalogCurriculumModule } from "../lib/catalog-api"
 import { useCatalogCourse } from "../hooks/useCatalog"
+import { TruthChip } from "../components/skylent/primitives"
 import "./Catalog.css"
 
 const LISTING_HONESTY =
@@ -126,7 +127,7 @@ export default function CourseDetailPage() {
           <div className="cat-rail cat-enrol-bar-inner">
             <div className="cat-enrol-bar-copy">
               <strong>{course.title}</strong>
-              <span>{authored ? "Ready to start" : "Catalogue listing"}</span>
+              <TruthChip state={authored ? "live" : "development"} />
             </div>
             {listingClosed ? (
               <div className="cat-enrol-actions">
