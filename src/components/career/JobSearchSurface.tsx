@@ -1,9 +1,9 @@
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import type { CareerEmploymentType, CareerWorkMode, JobListParams } from "../../lib/career-api"
 import { fieldInputStyle } from "./section-ui"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 const WORK_MODES: CareerWorkMode[] = ["REMOTE", "HYBRID", "ONSITE", "FLEXIBLE"]
 const EMPLOYMENT_TYPES: CareerEmploymentType[] = ["FULL_TIME", "PART_TIME", "CONTRACT", "INTERNSHIP", "FREELANCE", "OTHER"]

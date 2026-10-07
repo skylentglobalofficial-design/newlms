@@ -1,9 +1,9 @@
 import { type ReactNode } from "react"
 import { C, T, dsClass } from "../../tokens"
 import { Button, LoadingState, EmptyState } from "../ui"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 export function SectionShell({
   id,

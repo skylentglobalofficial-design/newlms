@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import { GlassSurface } from "../foundation"
 import type { ApplicationEvent, InterviewRound, JobApplication, JobApplicationStatus } from "../../lib/career-api"
 import {
@@ -33,7 +33,7 @@ import {
   secondaryButtonStyle,
 } from "./section-ui"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 type Props = {
   applicationId: string

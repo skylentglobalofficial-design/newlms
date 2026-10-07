@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import type { CareerSupportRequest } from "../../lib/career-api"
 import {
   formatPriority,
@@ -10,7 +10,7 @@ import {
   isActiveRequest,
 } from "./support-utils"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 type Props = {
   requests: CareerSupportRequest[]

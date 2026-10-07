@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import type { CareerSupportTask } from "../../lib/career-api"
 import { formatSupportDateTime, formatTaskStatus, isOpenTask } from "./support-utils"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 type Props = {
   tasks: CareerSupportTask[]

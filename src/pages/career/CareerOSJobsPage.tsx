@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "../../components/career/career-accent"
 import { useJobBoard } from "../../hooks/useJobBoard"
 import { saveJob, unsaveJob, listApplications, fetchJob, type JobListing } from "../../lib/career-api"
 import JobSearchSurface from "../../components/career/JobSearchSurface"
@@ -8,7 +8,7 @@ import JobResultRow from "../../components/career/JobResultRow"
 import JobDetailPanel from "../../components/career/JobDetailPanel"
 import { EmptyBlock, FeedbackBanner, LoadingBlock } from "../../components/career/section-ui"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 export default function CareerOSJobsPage() {
   const board = useJobBoard()

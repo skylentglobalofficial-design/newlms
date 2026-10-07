@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import type { JobApplication, JobApplicationStatus } from "../../lib/career-api"
 import ApplicationCard from "./ApplicationCard"
 import {
@@ -9,7 +9,7 @@ import {
   groupApplicationsByStatus,
 } from "./application-utils"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 type Props = {
   applications: JobApplication[]

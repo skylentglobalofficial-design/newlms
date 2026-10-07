@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom"
 import { C } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import type { CareerEvidenceSummary } from "../../lib/career-api"
 import { CourseThumb, evidenceVisualFor } from "../product/ProductLanguage"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 export default function CareerEvidenceCard({ project }: { project: CareerEvidenceSummary }) {
   const visual = evidenceVisualFor(project.title, project.context)

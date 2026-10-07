@@ -1,12 +1,12 @@
 import { useState } from "react"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import type { ApplicationEvent } from "../../lib/career-api"
 import { createApplicationEvent } from "../../lib/career-api"
 import { formatApplicationDateTime } from "./application-utils"
 import { FeedbackBanner, Field, fieldInputStyle, primaryButtonStyle, secondaryButtonStyle } from "./section-ui"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 type Props = {
   applicationId: string

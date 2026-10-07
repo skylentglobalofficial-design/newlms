@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import { ContextualNavBar, ContextualNavPanel, type ContextualNavItem } from "../foundation"
 import { useCareerProfile } from "../../hooks/useCareerProfile"
 import ProfileOverview from "./ProfileOverview"
@@ -11,7 +11,7 @@ import ProjectsSection from "./ProjectsSection"
 import LinksSection from "./LinksSection"
 import { LoadingBlock, FeedbackBanner } from "./section-ui"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 const PROFILE_NAV: ContextualNavItem[] = [
   { id: "profile-basics", label: "Basics", sub: "Headline & summary" },

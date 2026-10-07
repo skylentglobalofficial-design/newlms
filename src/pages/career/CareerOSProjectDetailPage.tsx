@@ -8,10 +8,10 @@ import {
 import { workspaceErrorMessage } from "../../lib/http"
 import { FeedbackBanner, LoadingBlock, primaryButtonStyle, secondaryButtonStyle } from "../../components/career/section-ui"
 import { C } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "../../components/career/career-accent"
 import { CourseProductVisual, evidenceVisualFor } from "../../components/product/ProductLanguage"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 function ReflectionBlock({ label, value }: { label: string; value: string }) {
   return (
