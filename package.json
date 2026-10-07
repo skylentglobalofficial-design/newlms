@@ -24,6 +24,8 @@
     "test:google-oauth": "tsx scripts/test-google-oauth.ts",
     "test:lms": "tsx scripts/test-lms.ts",
     "test:ai": "tsx scripts/test-skylent-ai.ts",
+    "test:ai-policy": "tsx scripts/test-ai-policy.ts",
+    "test:quiz-guard": "tsx scripts/test-quiz-guard.ts",
     "test:ai:live": "tsx scripts/test-skylent-ai-live.ts",
     "test:labs": "tsx scripts/test-skylent-labs.ts",
     "test:labs-sql": "tsx scripts/test-skylent-labs-sql.ts",

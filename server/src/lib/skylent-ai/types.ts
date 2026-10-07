@@ -1,5 +1,8 @@
 export type AiAction = "ask" | "explain" | "example" | "quiz" | "practice"
 
+/** Decided by the server from lesson type and learner state. Clients cannot set this. */
+export type AcademicPolicy = "lesson" | "open_quiz" | "open_assignment" | "post_assessment"
+
 export type ChatTurn = {
   role: "user" | "assistant"
   content: string
@@ -79,6 +82,7 @@ export type AiAskInput = {
   question: string
   history: ChatTurn[]
   context: LessonAiContext
+  policy?: AcademicPolicy
 }
 
 export type AiAskResult = {

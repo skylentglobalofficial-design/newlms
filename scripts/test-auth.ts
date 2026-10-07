@@ -191,8 +191,8 @@ async function main() {
   assert(meExpired.response.status === 401, "Expired session should be rejected")
 
   console.log("6. Invalid CSRF rejected")
-  const csrfAgain = await request(jar, "/auth/csrf")
-  assert(csrfAgain.response.ok, "CSRF bootstrap failed for CSRF rejection test")
+  const csrfForRejection = await request(jar, "/auth/csrf")
+  assert(csrfForRejection.response.ok, "CSRF bootstrap failed for CSRF rejection test")
   const badCsrf = await request(jar, "/auth/login", {
     method: "POST",
     csrf: true,

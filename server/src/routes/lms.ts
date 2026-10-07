@@ -10,6 +10,7 @@ import {
 } from "../lib/auth.js"
 import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
 import { isAuthoredCourse } from "../lib/authored-courses.js"
+import { answersInOptionRange, QuizAttemptThrottled, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
 import {
   assertLessonUnlocked,
   buildCourseWorkspace,
@@ -570,7 +571,7 @@ lmsRouter.get(
           questions: questions.map((q) => ({
             id: q.id,
             q: q.question,
-            options: q.options as string[],
+            options: Array.isArray(q.options) ? q.options.filter((option): option is string => typeof option === "string") : [],
           })),
         },
       })
@@ -622,77 +623,40 @@ lmsRouter.post(
         return res.status(400).json({ error: "Answer count mismatch" })
       }
 
-      const score = questions.reduce((total, question, index) => {
-        return total + (bodyParsed.data.answers[index] === question.correctIndex ? 1 : 0)
-      }, 0)
-      const passed = score === questions.length
+      if (!answersInOptionRange(bodyParsed.data.answers, questions)) {
+        return res.status(400).json({ error: "Answer out of range" })
+      }
 
-      const priorAttempts = await prisma.quizAttempt.count({
-        where: { enrollmentId: enrollment.id, nodeId: located.node.id },
+      const recorded = await recordScoredQuizAttempt({
+        userId: req.auth!.user.id,
+        enrollmentId: enrollment.id,
+        nodeId: located.node.id,
+        answers: bodyParsed.data.answers,
+        questions,
       })
 
-      const attempt = await prisma.quizAttempt.create({
-        data: {
-          userId: req.auth!.user.id,
-          enrollmentId: enrollment.id,
-          nodeId: located.node.id,
-          attemptNumber: priorAttempts + 1,
-          score,
-          totalQuestions: questions.length,
-          passed,
-          answers: bodyParsed.data.answers,
-        },
-      })
-
-      const now = new Date()
-      if (passed) {
-        await prisma.lessonProgress.upsert({
-          where: {
-            enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
-          },
-          create: {
-            enrollmentId: enrollment.id,
-            nodeId: located.node.id,
-            startedAt: now,
-            lastAccessedAt: now,
-            completedAt: now,
-          },
-          update: {
-            lastAccessedAt: now,
-            completedAt: now,
-          },
-        })
-        await prisma.userEnrollment.update({
-          where: { id: enrollment.id },
-          data: { lastAccessedNodeId: located.node.id },
-        })
+      if (recorded.passed) {
         await syncCertificateState(enrollment.id, course.id)
-      } else {
-        await prisma.lessonProgress.upsert({
-          where: {
-            enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
-          },
-          create: {
-            enrollmentId: enrollment.id,
-            nodeId: located.node.id,
-            startedAt: now,
-            lastAccessedAt: now,
-          },
-          update: { lastAccessedAt: now },
-        })
       }
 
       res.status(201).json({
         data: {
-          attemptId: attempt.id,
-          attemptNumber: attempt.attemptNumber,
-          score,
-          totalQuestions: questions.length,
-          passed,
-          submittedAt: attempt.submittedAt.toISOString(),
+          attemptId: recorded.attempt.id,
+          attemptNumber: recorded.attempt.attemptNumber,
+          score: recorded.score,
+          totalQuestions: recorded.totalQuestions,
+          passed: recorded.passed,
+          submittedAt: recorded.attempt.submittedAt.toISOString(),
         },
       })
     } catch (error) {
+      if (error instanceof QuizAttemptThrottled) {
+        res.setHeader("Retry-After", String(error.retryAfterSeconds))
+        return res.status(429).json({
+          error: "Too many quiz attempts. Try again later.",
+          retryAfterSeconds: error.retryAfterSeconds,
+        })
+      }
       console.error("Failed to submit quiz attempt:", error)
       res.status(500).json({ error: "Failed to submit quiz attempt" })
     }

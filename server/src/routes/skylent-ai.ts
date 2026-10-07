@@ -9,8 +9,9 @@ import {
   loadLessonStates,
   resolveCourseEnrollment,
 } from "../lib/lms.js"
+import { deriveAcademicPolicy } from "../lib/skylent-ai/integrity.js"
 import { answerLessonQuestion, isAiConfigured } from "../lib/skylent-ai/service.js"
-import type { AiAction, ChatTurn } from "../lib/skylent-ai/types.js"
+import type { AcademicPolicy, AiAction, ChatTurn } from "../lib/skylent-ai/types.js"
 
 export const skylentAiRouter = Router()
 
@@ -124,6 +125,14 @@ async function respondToLessonAsk(
     return
   }
 
+  const lessonState = lessonStates[lessonKey]
+  const lessonKind = String(located.node.nodeType ?? "notes").toLowerCase()
+  const policy: AcademicPolicy = deriveAcademicPolicy({
+    lessonKind,
+    complete: Boolean(lessonState?.complete),
+    quizPassed: Boolean(lessonState?.quizPassed),
+    assignmentSubmitted: Boolean(lessonState?.assignmentSubmitted),
+  })
   const result = await answerLessonQuestion({
     action: payload.action,
     question: payload.question,
@@ -133,7 +142,8 @@ async function respondToLessonAsk(
     moduleTitle: located.module.title,
     lessonId: lessonKey,
     lessonTitle: located.node.title,
-    lessonKind: String(located.node.nodeType ?? "notes").toLowerCase(),
+    lessonKind,
+    policy,
   })
 
   if ("unavailable" in result) {

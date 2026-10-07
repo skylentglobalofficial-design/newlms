@@ -1,8 +1,9 @@
 import { buildLessonAiContext } from "./authored.js"
 import { createLessonGroundedProvider } from "./grounded.js"
+import { academicIntegrityRefusal, redactPrivilegedAssessmentContext } from "./integrity.js"
 import { createOpenAiCompatibleProvider, readOpenAiCompatibleConfig } from "./openai-compatible.js"
 import { buildProviderMessages, pickRelated } from "./prompts.js"
-import type { AiAskInput, AiAskResult, AiProvider, ChatTurn, LessonAiContext } from "./types.js"
+import type { AcademicPolicy, AiAskInput, AiAskResult, AiProvider, ChatTurn, LessonAiContext } from "./types.js"
 
 const DEFAULT_TIMEOUT_MS = 30_000
 
@@ -47,6 +48,7 @@ export function buildAskInput(options: {
   lessonId: string
   lessonTitle: string
   lessonKind: string
+  policy?: AcademicPolicy
 }): AiAskInput {
   const context: LessonAiContext = buildLessonAiContext({
     courseSlug: options.courseSlug,
@@ -61,19 +63,37 @@ export function buildAskInput(options: {
     question: options.question,
     history: options.history,
     context,
+    policy: options.policy ?? "lesson",
   }
 }
 
 export async function completeLessonAsk(input: AiAskInput, provider: AiProvider): Promise<AiAskResult> {
+  const policy = input.policy ?? "lesson"
+  const refusal = academicIntegrityRefusal(policy, input.question, input.history, input.context)
+  if (refusal) {
+    return {
+      answer: refusal,
+      basedOn: input.context.lessonTitle,
+      provider: "policy",
+      related: pickRelated(input.context, input.question, input.action),
+      caseLabel: input.context.caseLabel,
+    }
+  }
+
+  const safeInput: AiAskInput = {
+    ...input,
+    policy,
+    context: redactPrivilegedAssessmentContext(input.context, policy),
+  }
   const result = provider.answerLesson
-    ? await provider.answerLesson(input)
-    : await provider.complete(buildProviderMessages(input))
+    ? await provider.answerLesson(safeInput)
+    : await provider.complete(buildProviderMessages(safeInput))
   return {
     answer: result.answer,
-    basedOn: input.context.lessonTitle,
+    basedOn: safeInput.context.lessonTitle,
     provider: provider.id,
-    related: pickRelated(input.context, input.question, input.action),
-    caseLabel: input.context.caseLabel,
+    related: pickRelated(safeInput.context, input.question, input.action),
+    caseLabel: safeInput.context.caseLabel,
   }
 }
 
