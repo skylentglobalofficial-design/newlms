@@ -82,11 +82,29 @@ export function learningLoopLabel(lesson: Pick<CourseLesson, 'title' | 'type'>):
 export function lessonTypeLabel(type: CourseLesson['type'], title?: string) {
   if (title && /capstone/i.test(title) && type === 'assignment') return 'Capstone'
   switch (type) {
-    case 'video': return 'Lesson'
-    case 'notes': return 'Reading'
-    case 'quiz': return 'Quiz'
+    case 'video': return 'Video'
+    case 'notes': return 'Notes'
+    case 'quiz': return 'Check'
     case 'assignment': return 'Assignment'
   }
+}
+
+/**
+ * Where a lesson sits in the product model slice shown in the player:
+ * notes and video → Learn, a check → Practice, an assignment → Build,
+ * the capstone or the course's last assignment → Prove.
+ */
+export function productStepForLesson(
+  lesson: Pick<CourseLesson, 'id' | 'title' | 'type'>,
+  allLessons: Array<Pick<CourseLesson, 'id' | 'type'>>,
+): 'Learn' | 'Practice' | 'Build' | 'Prove' {
+  if (lesson.type === 'quiz') return 'Practice'
+  if (lesson.type === 'assignment') {
+    const assignments = allLessons.filter((item) => item.type === 'assignment')
+    const isFinalAssignment = assignments.length > 0 && assignments[assignments.length - 1].id === lesson.id
+    return isCapstoneLesson(lesson) || isFinalAssignment ? 'Prove' : 'Build'
+  }
+  return 'Learn'
 }
 
 export function lessonObjective(lesson: Pick<CourseLesson, 'title' | 'type'>) {

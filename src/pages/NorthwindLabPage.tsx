@@ -19,6 +19,7 @@ import {
 } from "../lib/labs-api"
 import { northwindProjectPath } from "../lib/projects-api"
 import LabSqlChart from "../components/labs/LabSqlChart"
+import { ProductSlice, TruthChip } from "../components/skylent/primitives"
 import "./LearnWorkspace.css"
 import "./LabsWorkspace.css"
 
@@ -266,8 +267,11 @@ export default function NorthwindLabPage() {
     return (
       <div className="lab-shell">
         <div className="lab-empty">
-          <p className="os-eyebrow">Skylent Labs</p>
-          <p>Loading the Northwind lab…</p>
+          <div className="os-state-skeleton" role="status" aria-label="Loading the Northwind lab">
+            <span className="os-skeleton" style={{ width: "30%" }} />
+            <span className="os-skeleton" style={{ height: 28, width: "70%" }} />
+            <span className="os-skeleton" />
+          </div>
         </div>
       </div>
     )
@@ -277,8 +281,8 @@ export default function NorthwindLabPage() {
     return (
       <div className="lab-shell">
         <div className="lab-empty">
-          <p className="os-eyebrow">Skylent Labs</p>
-          <h1>Practice this from Data Analytics.</h1>
+          <p className="os-eyebrow">Practice lab</p>
+          <h1>This lab belongs to Data Analytics</h1>
           <p>{error}</p>
           <div className="os-actions">
             <Link className="os-btn os-btn-primary" to="/learn/data-analytics">
@@ -294,8 +298,8 @@ export default function NorthwindLabPage() {
     return (
       <div className="lab-shell">
         <div className="lab-empty">
-          <p className="os-eyebrow">Skylent Labs</p>
-          <h1>This lab could not load.</h1>
+          <p className="os-eyebrow">Practice lab</p>
+          <h1>This lab could not be opened</h1>
           <p>{error ?? "Try returning to the lesson."}</p>
           <div className="os-actions">
             <Link className="os-btn os-btn-primary" to={lessonReturnTo(lessonKey)}>
@@ -314,10 +318,12 @@ export default function NorthwindLabPage() {
     <div className="lab-shell">
       <header className="lab-top">
         <Link className="lab-brand" to={northwindLabPath(lessonKey, null, mode)}>
-          <strong>Skylent Labs</strong>
-          <span>Northwind Lab</span>
+          <strong>{workspace.labTitle}</strong>
+          <span>Practice lab · {workspace.courseTitle}</span>
         </Link>
-        <p className="lab-top-course">{workspace.courseTitle}</p>
+        <div className="sky-on-navy lab-slice">
+          <ProductSlice steps={["Learn", "Practice", "Build", "Prove"]} current="Practice" label="Where this lab sits" />
+        </div>
         <div className="lab-top-actions">
           {projectSlug === "northwind-commercial-review" ? (
             <Link className="os-btn os-btn-ghost" to={northwindProjectPath()}>
@@ -338,6 +344,7 @@ export default function NorthwindLabPage() {
         <p>
           Dataset: <strong>{workspace.dataset.filename}</strong>
         </p>
+        <TruthChip state="sample" label="Fictional dataset" />
       </div>
       <ol className="lab-flow" aria-label="Lab workflow">
         <li className="is-on">Dataset</li>

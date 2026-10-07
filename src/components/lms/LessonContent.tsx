@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom'
-import { C } from '../../tokens'
 import type { CourseLesson } from '../../data'
 import type { LessonState } from '../../demo/types'
 import { getCareerEvidence } from '../../content/course-lookups'
@@ -188,19 +186,21 @@ export function LessonContentView({
     return (
       <div className="lms-lesson-quiz">
         {material?.body && (
-          <div style={{ marginBottom: 16 }}>
-            <LessonDocument markdown={material.body} accent={accent} skipHeading={lesson.title} />
-          </div>
+          <LessonDocument markdown={material.body} accent={accent} skipHeading={lesson.title} />
         )}
         {quizStatus === 'loading' ? (
-          <div style={{ color: C.slate, fontSize: 14 }}>Quiz questions are loading…</div>
+          <div className="os-state-skeleton" role="status" aria-label="Loading the questions">
+            <span className="os-skeleton" style={{ width: '40%' }} />
+            <span className="os-skeleton" style={{ height: 96 }} />
+            <span className="os-skeleton" style={{ height: 96 }} />
+          </div>
         ) : questions.length === 0 ? (
-          <div style={{ color: C.slate, fontSize: 14, lineHeight: 1.6 }}>No quiz is configured for this lesson.</div>
+          <p className="dash-empty-copy">No questions are available for this check right now.</p>
         ) : (
           <AssessmentSurface
             mode="mcq"
             title={lesson.title}
-            subtitle={`${questions.length} questions. Results appear after you submit.`}
+            subtitle={`${questions.length} questions. Your answers are checked when you submit.`}
             questions={questions}
             accent={accent}
             passed={lessonState.complete || lessonState.quizPassed}
@@ -214,15 +214,12 @@ export function LessonContentView({
 
   return (
     <div className="lms-lesson-assignment">
-      <p className="os-eyebrow" style={{ marginBottom: 8 }}>Assignment</p>
       {material?.body && (
-        <div style={{ marginBottom: 16 }}>
-          <LessonDocument markdown={material.body} accent={accent} skipHeading={lesson.title} />
-        </div>
+        <LessonDocument markdown={material.body} accent={accent} skipHeading={lesson.title} />
       )}
       {material?.assignment && <AssignmentBriefView brief={material.assignment} accent={accent} />}
       {!material?.assignment && (
-        <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.7 }}>
+        <p className="dash-empty-copy" style={{ marginBottom: 16 }}>
           A structured brief has not been authored for this assignment. Paste the work you can defend. There is no grading in this pilot.
         </p>
       )}
@@ -247,45 +244,49 @@ export function LessonNavigation({
   prev,
   next,
   nextPreview,
-  courseSlug,
   onNavigate,
-  completeAction,
+  primaryAction,
+  hint,
 }: {
   prev: CourseLesson | null
+  /** The next lesson when it is already unlocked. */
   next: CourseLesson | null
+  /** The next lesson in the course, unlocked or not (for the "Next:" label). */
   nextPreview?: CourseLesson | null
-  courseSlug: string
-  accent: Accent
   onNavigate: (id: string) => void
-  completeAction?: { label: string; onClick: () => void }
+  /** The one primary action for this lesson (complete and continue, or continue). */
+  primaryAction?: { label: string; onClick: () => void; busy?: boolean }
+  /** Plain sentence shown when there is no primary action (e.g. a check that must be passed first). */
+  hint?: string
 }) {
   const upcoming = next ?? nextPreview ?? null
   return (
     <div className="lx-footer">
-      {completeAction ? (
-        <button type="button" className="os-btn os-btn-primary" onClick={completeAction.onClick}>
-          {completeAction.label}
+      {prev ? (
+        <button type="button" className="lx-prev" onClick={() => onNavigate(prev.id)}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Previous
         </button>
       ) : null}
-      {upcoming ? (
-        <p className="lx-next-label" style={{ marginTop: completeAction ? 16 : 0 }}>
-          Next: <strong>{upcoming.title}</strong>
+      <div className="lx-footer-next">
+        <p className="lx-next-label">
+          {upcoming ? `Next: ${upcoming.title}` : 'This is the last activity in the course.'}
+          {hint ? ` · ${hint}` : ''}
         </p>
-      ) : (
-        <p className="lx-next-label" style={{ marginTop: completeAction ? 16 : 0 }}>
-          This is the last activity in the course.
-        </p>
-      )}
-      <div className="os-actions">
-        {prev ? (
-          <button type="button" className="os-btn os-btn-ghost" onClick={() => onNavigate(prev.id)}>
-            Previous
+        {primaryAction ? (
+          <button
+            type="button"
+            className="os-btn os-btn-primary os-btn-lg"
+            onClick={primaryAction.onClick}
+            disabled={primaryAction.busy}
+          >
+            {primaryAction.busy ? 'Saving…' : primaryAction.label}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
           </button>
-        ) : null}
-        {next ? (
-          <Link className="os-btn os-btn-primary" to={`/learn/${courseSlug}/${next.id}`} onClick={() => onNavigate(next.id)}>
-            Next lesson →
-          </Link>
         ) : null}
       </div>
     </div>
