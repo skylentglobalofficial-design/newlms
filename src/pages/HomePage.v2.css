@@ -465,8 +465,9 @@
   line-height: 1.5;
   color: hsl(var(--site-muted));
 }
+/* Tall enough for a two-line label, so the rules stay level across the row. */
 .hm-page .hm-stage__by {
-  min-height: 34px;
+  min-height: 44px;
   margin-top: auto;
   padding: 10px 16px 0 0;
   border-top: 1px solid hsl(var(--site-border));

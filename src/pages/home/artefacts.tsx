@@ -7,8 +7,13 @@
  * Programmes without authored lessons get an ILLUSTRATIVE artefact (chip set by the tile)
  * or a plain sheet of the facts the catalogue returned.
  */
-import { NORTHWIND_PREVIEW, formatInr } from "@/lib/northwind-preview"
+import { NORTHWIND_PREVIEW } from "@/lib/northwind-preview"
 import type { ArtefactKind, HomeProgramme } from "./programme-model"
+
+/** Same grouping as NORTHWIND_PREVIEW.netRevenueLabel, so the two figures in one sentence match. */
+function formatInr(value: number): string {
+  return `₹${value.toLocaleString("en-US")}`
+}
 
 /** Data Analytics: the category query beside its result. */
 export function NorthwindArtefact() {

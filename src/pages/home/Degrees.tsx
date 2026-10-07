@@ -111,7 +111,7 @@ export function Degrees() {
           <article className="hm-degree">
             {campusImage ? (
               <>
-                <img className="hm-degree__photo" src={campusImage.src} alt={campusImage.alt} loading="lazy" />
+                <img className="hm-degree__photo" src={campusImage.src} alt={campusImage.alt} decoding="async" />
                 <div className="hm-degree__caption">
                   <span>FIG. 04 · A campus computer lab</span>
                   <span>Stand-in photograph</span>
