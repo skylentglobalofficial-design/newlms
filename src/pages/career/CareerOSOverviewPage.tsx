@@ -984,121 +984,6 @@ export default function CareerOSOverviewPage() {
               an employment outcome, and Career OS records none.
             </p>
           </Panel>
-        </div>
-
-        <div className="cosh-side">
-          {/* Profile completeness */}
-          <Panel
-            id="cosh-complete-title"
-            title="Profile completeness"
-            meta={
-              completenessLoad.status === "ready"
-                ? `${completenessLoad.data.items.filter((item) => item.complete).length} of ${completenessLoad.data.items.length} sections`
-                : undefined
-            }
-          >
-            {completenessLoad.status === "loading" ? (
-              <div className="cosh-panel__pad cosh-stack" aria-busy="true">
-                <Skeleton width="45%" height={36} />
-                <Skeleton height={4} />
-                <Skeleton width="80%" height={12} />
-                <Skeleton width="70%" height={12} />
-              </div>
-            ) : completenessLoad.status === "error" ? (
-              <div className="cosh-panel__pad">
-                <BlockError what="Profile completeness" message={completenessLoad.message} onRetry={retryCompleteness} />
-              </div>
-            ) : (
-              <div className="cosh-panel__pad cosh-panel__pad--flush">
-                <div className="cosh-pct">
-                  <span className="cosh-pct__n">{completenessLoad.data.percent}%</span>
-                  <span>of your profile is filled in</span>
-                </div>
-                <div
-                  className="cosh-pctbar"
-                  role="progressbar"
-                  aria-label="Profile completeness"
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={completenessLoad.data.percent}
-                >
-                  <div style={{ width: `${completenessLoad.data.percent}%` }} />
-                </div>
-                <ul className="cosh-sections">
-                  {completenessLoad.data.items
-                    .filter((item) => !item.complete)
-                    .map((item) => (
-                      <li key={item.key}>
-                        <span className="cosh-sections__box" aria-hidden="true" />
-                        <span className="cosh-sections__name">{item.label}</span>
-                        <span className="cosh-label cosh-label--ink">Missing</span>
-                        <Link className="cosh-sections__add" to={`/career-os/profile#profile-${item.section}`} aria-label={`Add ${item.label}`}>
-                          Add
-                        </Link>
-                      </li>
-                    ))}
-                  {completenessLoad.data.items
-                    .filter((item) => item.complete)
-                    .map((item) => (
-                      <li key={item.key} className="cosh-sections__done">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M20 6L9 17l-5-5" />
-                        </svg>
-                        <span className="cosh-sections__name">{item.label}</span>
-                        <span className="cosh-label">Done</span>
-                      </li>
-                    ))}
-                </ul>
-              </div>
-            )}
-            <p className="cosh-footnote">Measures profile sections filled in. It is not a readiness score.</p>
-          </Panel>
-
-          {/* Openings */}
-          <Panel
-            id="cosh-openings-title"
-            title="Openings"
-            chip={
-              jobs.status === "ready" && jobTotal > 0 ? (
-                <span className="cosh-meta">{jobTotal} published</span>
-              ) : (
-                <TruthChip state={truthOf("openings")} />
-              )
-            }
-          >
-            <div className="cosh-panel__pad">
-              {jobs.status === "loading" ? (
-                <div className="cosh-stack" aria-busy="true">
-                  <Skeleton width="72%" height={14} />
-                  <Skeleton width="56%" height={12} />
-                </div>
-              ) : jobs.status === "error" ? (
-                <BlockError what="Openings" message={jobs.message} onRetry={retryJobs} />
-              ) : jobs.data.jobs.length === 0 ? (
-                <div className="sky-empty">
-                  <strong>No openings published yet.</strong>
-                  Saved jobs, applications and interviews stay empty until there are.
-                </div>
-              ) : (
-                <>
-                  <ul className="cosh-rows">
-                    {jobs.data.jobs.slice(0, 3).map((job) => (
-                      <li key={job.id}>
-                        <Link to="/career-os/jobs">
-                          <strong>{job.title}</strong>
-                          <span>{[job.employer?.name, job.location].filter(Boolean).join(" · ")}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                  <Link className="cosh-textlink cosh-textlink--arrow" to="/career-os/jobs">
-                    See all openings
-                    <ArrowRight />
-                  </Link>
-                </>
-              )}
-            </div>
-          </Panel>
 
           {/* Applications, interviews and support: the learner's own records */}
           <Panel id="cosh-activity-title" title="Your activity">
@@ -1163,6 +1048,119 @@ export default function CareerOSOverviewPage() {
                 </li>
               </ul>
             )}
+          </Panel>
+        </div>
+
+        <div className="cosh-side">
+          {/* Profile completeness */}
+          <Panel
+            id="cosh-complete-title"
+            title="Profile completeness"
+            meta={
+              completenessLoad.status === "ready"
+                ? `${completenessLoad.data.items.filter((item) => item.complete).length} of ${completenessLoad.data.items.length} sections`
+                : undefined
+            }
+          >
+            {completenessLoad.status === "loading" ? (
+              <div className="cosh-panel__pad cosh-stack" aria-busy="true">
+                <Skeleton width="45%" height={36} />
+                <Skeleton height={4} />
+                <Skeleton width="80%" height={12} />
+                <Skeleton width="70%" height={12} />
+              </div>
+            ) : completenessLoad.status === "error" ? (
+              <div className="cosh-panel__pad">
+                <BlockError what="Profile completeness" message={completenessLoad.message} onRetry={retryCompleteness} />
+              </div>
+            ) : (
+              <div className="cosh-panel__pad cosh-panel__pad--flush">
+                <div className="cosh-pct">
+                  <span className="cosh-pct__n">{completenessLoad.data.percent}%</span>
+                  <span>of your profile is filled in</span>
+                </div>
+                <div
+                  className="cosh-pctbar"
+                  role="progressbar"
+                  aria-label="Profile completeness"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={completenessLoad.data.percent}
+                >
+                  <div style={{ width: `${completenessLoad.data.percent}%` }} />
+                </div>
+                <ul className="cosh-sections">
+                  {completenessLoad.data.items
+                    .filter((item) => !item.complete)
+                    .map((item) => (
+                      <li key={item.key}>
+                        <span className="cosh-sections__box" aria-hidden="true" />
+                        <span className="cosh-sections__name">{item.label}</span>
+                        <span className="cosh-label cosh-label--ink">Missing</span>
+                        <Link className="cosh-sections__add" to={`/career-os/profile#profile-${item.section}`} aria-label={`Add ${item.label}`}>
+                          Add
+                        </Link>
+                      </li>
+                    ))}
+                  {completenessLoad.data.completed.length > 0 ? (
+                    <li className="cosh-sections__done">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M20 6L9 17l-5-5" />
+                      </svg>
+                      <span className="cosh-sections__name">{completenessLoad.data.completed.join(" · ")}</span>
+                      <span className="cosh-label">Done</span>
+                    </li>
+                  ) : null}
+                </ul>
+              </div>
+            )}
+            <p className="cosh-footnote">Measures profile sections filled in. It is not a readiness score.</p>
+          </Panel>
+
+          {/* Openings */}
+          <Panel
+            id="cosh-openings-title"
+            title="Openings"
+            chip={
+              jobs.status === "ready" && jobTotal > 0 ? (
+                <span className="cosh-meta">{jobTotal} published</span>
+              ) : (
+                <TruthChip state={truthOf("openings")} />
+              )
+            }
+          >
+            <div className="cosh-panel__pad">
+              {jobs.status === "loading" ? (
+                <div className="cosh-stack" aria-busy="true">
+                  <Skeleton width="72%" height={14} />
+                  <Skeleton width="56%" height={12} />
+                </div>
+              ) : jobs.status === "error" ? (
+                <BlockError what="Openings" message={jobs.message} onRetry={retryJobs} />
+              ) : jobs.data.jobs.length === 0 ? (
+                <div className="sky-empty">
+                  <strong>No openings published yet.</strong>
+                  Saved jobs, applications and interviews stay empty until there are.
+                </div>
+              ) : (
+                <>
+                  <ul className="cosh-rows">
+                    {jobs.data.jobs.slice(0, 3).map((job) => (
+                      <li key={job.id}>
+                        <Link to="/career-os/jobs">
+                          <strong>{job.title}</strong>
+                          <span>{[job.employer?.name, job.location].filter(Boolean).join(" · ")}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link className="cosh-textlink cosh-textlink--arrow" to="/career-os/jobs">
+                    See all openings
+                    <ArrowRight />
+                  </Link>
+                </>
+              )}
+            </div>
           </Panel>
 
           {/* Skylent AI: career context is not built */}
