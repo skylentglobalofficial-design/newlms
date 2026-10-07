@@ -92,6 +92,7 @@
 /* ── The rest: ruled rows ─────────────────────────────────────────────────── */
 .pg-list { padding-bottom: clamp(64px, 7.4vw, 112px); }
 .pg-results__rest { padding-top: clamp(40px, 5vw, 72px); }
+.pg-results__rest--first { padding-top: 0; }
 .pg-rows__label { margin-bottom: 14px; }
 .pg-rows { border-top: 1px solid hsl(var(--site-ink)); }
 .pg-rows--first { border-top-color: hsl(var(--site-border)); }
@@ -164,9 +165,13 @@
 .pg-page .pg-h2 { margin-top: 18px; }
 .pg-next .sk-btn { margin-bottom: 6px; }
 
-@media (max-width: 999px) {
+@media (max-width: 1099px) {
   .pg-feature__inner { grid-template-columns: minmax(0, 1fr); }
+  .pg-feature__copy { max-width: 640px; }
+}
+@media (max-width: 999px) {
   .pg-row { grid-template-columns: minmax(0, 240px) minmax(0, 1fr); align-items: start; }
+  .pg-row__art { grid-row: span 2; }
   .pg-row__side { grid-column: 2; }
 }
 @media (max-width: 640px) {
@@ -180,7 +185,7 @@
   /* An illustrative figure is not worth a screen on a phone: the row keeps its facts and drops the picture and its chip. */
   .pg-row--illustrative .pg-row__art,
   .pg-row--illustrative .pg-row__figchip { display: none; }
-  .pg-row__art { min-height: 0; }
+  .pg-row__art { min-height: 0; grid-row: auto; }
   .pg-next .sk-btn { width: 100%; }
 }
 

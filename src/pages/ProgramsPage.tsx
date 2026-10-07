@@ -305,7 +305,7 @@ export default function ProgramsPage() {
                   <ul className="pg-results">
                     {feature ? <ProgrammeFeature key={feature.program.slug} row={feature} /> : null}
                     {rest.length > 0 ? (
-                      <li className="pg-results__rest">
+                      <li className={feature ? "pg-results__rest" : "pg-results__rest pg-results__rest--first"}>
                         <div className="sky-container">
                           {feature ? (
                             <p className="sky-label pg-rows__label">
