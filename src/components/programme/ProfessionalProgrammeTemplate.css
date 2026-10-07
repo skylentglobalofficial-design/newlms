@@ -10,8 +10,8 @@
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
-.pp-page :is(p, h1, h2, h3, dl, dd, ul, ol) { margin: 0; }
-.pp-page :is(ul, ol) { padding: 0; list-style: none; }
+.pp-page :where(p, h1, h2, h3, dl, dd, ul, ol) { margin: 0; }
+.pp-page :where(ul, ol) { padding: 0; list-style: none; }
 .pp-page a:not(.sk-btn):not(.sk-link) { color: hsl(var(--site-ink)); text-decoration: none; }
 .pp-page a:not(.sk-btn):not(.sk-link):hover { color: hsl(var(--site-deep)); }
 .pp-page .sk-btn { min-height: 2.875rem; font-size: 0.9375rem; }
@@ -90,14 +90,8 @@
 }
 .pp-hero__plate { flex: 1.45 1 520px; align-self: flex-start; }
 .pp-hero__plate--thumb { flex: 0 1 440px; }
-.pp-hero__spec { margin-top: auto; }
-.pp-hero__copy > .pp-hero__spec { margin-top: 40px; }
-@media (min-width: 1000px) {
-  .pp-hero__copy > .pp-hero__spec { margin-top: auto; }
-  .pp-hero__copy > .pp-note + .pp-hero__spec { padding-top: 0; }
-  .pp-hero__copy::after { content: none; }
-  .pp-hero__copy > :nth-last-child(2) { margin-bottom: 40px; }
-}
+.pp-hero__copy > .pp-hero__spec { margin-top: auto; }
+.pp-hero__copy > :has(+ .pp-hero__spec) { margin-bottom: 40px; }
 .pp-crumb a { display: inline-block; padding-block: 6px; color: hsl(var(--site-dim)); }
 .pp-crumb a:hover { color: hsl(var(--site-deep)); }
 .pp-crumb [aria-current="page"] { color: hsl(var(--site-dim)); }
@@ -188,7 +182,7 @@
   transition: transform var(--sk-base) var(--sk-ease);
 }
 .pp-mod[open] .pp-mod__chev { transform: rotate(180deg); }
-.pp-mod__list { padding: 0 0 14px 50px !important; font-size: 0.9375rem; }
+.pp-mod__list { padding: 0 0 14px 50px; font-size: 0.9375rem; }
 .pp-mod__list li {
   display: flex;
   justify-content: space-between;
@@ -313,7 +307,7 @@
   .pp-strip__grid > div { padding: 18px 16px; }
   .pp-strip__grid > div:nth-child(odd) { padding-left: 0; }
   .pp-mod__meta { margin-left: 50px; flex: 1 1 auto; }
-  .pp-mod__list { padding-left: 0 !important; }
+  .pp-mod__list { padding-left: 0; }
   .pp-mod__list li { flex-wrap: wrap; gap: 2px 16px; }
   .pp-record__rows dt { flex-basis: 100%; }
   .pp-actions .sk-btn { flex: 1 1 auto; }

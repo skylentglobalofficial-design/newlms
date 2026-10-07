@@ -1,218 +1,224 @@
-import { useEffect } from "react"
+/**
+ * Programme catalogue. Every card is a row returned by GET /catalog/programs;
+ * nothing is listed here that the API did not return, and search and filters
+ * only cover those rows. Authored copy is an overlay on a row, never a row.
+ */
+import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { LearnPillarSubnav } from "../components/product/Architecture"
-import ProgramsHero from "../components/programs/ProgramsHero"
-import ProgramsStory from "../components/programs/ProgramsStory"
+import { ArrowRight, JourneyLocator, TruthChip, type TruthState } from "../components/skylent/primitives"
+import { ProgrammeThumb, programmeThumbInfo } from "../components/programme/ProgrammeArtefacts"
+import { authoredProgrammeContent } from "../components/programme/programme-content"
+import { plural, programmeTruth, type ProgrammeTruth } from "../components/programme/programme-truth"
 import { useCatalogPrograms } from "../hooks/useCatalog"
-import { isAuthoredCourse } from "../lib/authored-courses"
-import { courseBySlug } from "../lib/catalog-maturity"
 import type { CatalogProgramSummary } from "../lib/catalog-api"
-import { partitionCatalogPrograms, programmeBuildLine } from "../lib/programme-catalogue"
-import type { LaterProgrammeRow } from "../lib/programme-catalogue"
-import { hasAuthoredProgrammePath, type ProgrammeDiscoveryCard } from "../lib/programme-discovery"
+import { isPublicProgrammeIndexRow } from "../lib/programme-catalogue"
+import { programmeDiscoveryFor } from "../lib/programme-discovery"
 import "./ProgramsPage.css"
 
-function courseFor(program: CatalogProgramSummary) {
-  const slug = program.linkedCourseSlugs.find((row) => isAuthoredCourse(row))
-  return slug ? courseBySlug(slug) : undefined
+type Row = { program: CatalogProgramSummary; truth: ProgrammeTruth; title: string; line: string; search: string }
+
+const STATE_ORDER: Array<Row["truth"]["state"]> = ["live", "development", "soon"]
+const STATE_LABEL: Record<Row["truth"]["state"], string> = { live: "Live", development: "In development", soon: "Coming soon" }
+
+function toRow(program: CatalogProgramSummary): Row {
+  const truth = programmeTruth(program)
+  const content = truth.state === "live" ? authoredProgrammeContent(program.slug) : null
+  const discovery = content ? programmeDiscoveryFor(program.slug) : null
+  const title = discovery?.courseTitle || program.name
+  const line = content?.cardLine || program.desc
+  const linkedTitles = truth.linked.map((item) => item.title).join(" ")
+  return {
+    program,
+    truth,
+    title,
+    line,
+    search: `${title} ${program.name} ${program.desc} ${program.level} ${program.format} ${linkedTitles}`.toLowerCase(),
+  }
 }
 
-function LiveRow({ row, program }: { row: ProgrammeDiscoveryCard; program: CatalogProgramSummary }) {
-  const course = courseFor(program)
-  const leadsTo = course?.outcomes ?? []
-  const build = programmeBuildLine(row)
-  const title = row.courseTitle || row.title
-  const format = program.format || course?.mode || row.format
-  const level = program.level || course?.level || row.level
+function ProgrammeCard({ row }: { row: Row }) {
+  const { program, truth, title, line } = row
+  const thumb = programmeThumbInfo(program.slug)
+  const live = truth.state === "live"
+  const discovery = live ? programmeDiscoveryFor(program.slug) : null
+  const content = live ? authoredProgrammeContent(program.slug) : null
+  const facts: Array<{ label: string; value: string }> = [
+    { label: "Format", value: program.format },
+    { label: "Level", value: live ? "" : program.level },
+    { label: "Modules", value: !live && program.moduleCount > 0 ? String(program.moduleCount) : "" },
+    { label: "Capstone", value: content?.capstoneTitle ?? "" },
+  ].filter((fact) => fact.value)
 
   return (
-    <article className="pg-row is-live">
-      <div className="pg-row-main">
-        <header className="pg-row-head">
-          <p className="pg-row-kicker">Ready to start</p>
-          <h3>
-            <Link to={row.href}>{title}</Link>
-          </h3>
-          <p className="pg-row-decision">{row.decisionLine}</p>
-          <p className="pg-row-shape">
-            {row.taughtModules} modules · {row.taughtLessons} lessons · {format} · {level}
+    <li className="pg-card">
+      <div className="pg-card__art">
+        <ProgrammeThumb program={program} />
+      </div>
+      <div className="pg-card__body">
+        <p className="pg-card__chips">
+          <TruthChip state={truth.state as TruthState} />
+          {thumb.illustrative ? <TruthChip state="illustrative" /> : null}
+        </p>
+        <h2 className="pg-card__title">
+          <Link to={`/programmes/${program.slug}`}>{title}</Link>
+        </h2>
+        {title !== program.name ? <p className="pg-card__aka">Listed as {program.name}</p> : null}
+        {line ? <p className="pg-card__line">{line}</p> : null}
+        {discovery ? (
+          <p className="pg-card__counts">
+            {plural(discovery.taughtModules, "module")} · {plural(discovery.taughtLessons, "lesson")} ·{" "}
+            {plural(discovery.taughtAssignments, "assignment")}
           </p>
-        </header>
-
-        <p className="pg-row-note">{row.honesty}</p>
-
-        <p className="pg-row-cta">
-          <Link to={row.href}>
-            Explore programme
-            <span aria-hidden="true"> →</span>
+        ) : null}
+        {facts.length > 0 ? (
+          <dl className="pg-card__facts">
+            {facts.map((fact) => (
+              <div key={fact.label}>
+                <dt>{fact.label}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
+        <p className="pg-card__foot">
+          <Link className="sk-link" to={`/programmes/${program.slug}`} aria-label={`View programme: ${title}`}>
+            View programme
+            <ArrowRight />
           </Link>
+          {!truth.enrollable ? <span className="pg-card__closed">Enrolment not open</span> : null}
         </p>
       </div>
-
-      <dl className="pg-row-facts">
-        <div>
-          <dt>What it is</dt>
-          <dd>{course?.desc ?? program.desc ?? row.decisionLine}</dd>
-        </div>
-        <div>
-          <dt>What it leads to</dt>
-          <dd>
-            {leadsTo.length ? (
-              <ul>
-                {leadsTo.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            ) : (
-              level
-            )}
-          </dd>
-        </div>
-        <div>
-          <dt>What you will build</dt>
-          <dd>{build}</dd>
-        </div>
-        <div>
-          <dt>Learning shape</dt>
-          <dd>
-            <ol>
-              {row.modules.map((module) => (
-                <li key={module.id}>{module.title}</li>
-              ))}
-            </ol>
-          </dd>
-        </div>
-      </dl>
-    </article>
-  )
-}
-
-function LaterRow({ row, index }: { row: LaterProgrammeRow; index: number }) {
-  return (
-    <article className="pg-row is-later">
-      <header className="pg-row-head">
-        <p className="pg-row-kicker">
-          <span className="pg-row-index">{String(index + 1).padStart(2, "0")}</span>
-          {row.statusLabel}
-        </p>
-        <h3>
-          <Link to={row.href}>{row.title}</Link>
-        </h3>
-      </header>
-      <div className="pg-row-later-body">
-        <p className="pg-row-decision">{row.summary}</p>
-        <p className="pg-row-note">{row.honesty}</p>
-        <p className="pg-row-cta">
-          <Link to={row.href}>
-            Explore programme
-            <span aria-hidden="true"> →</span>
-          </Link>
-        </p>
-      </div>
-    </article>
+    </li>
   )
 }
 
 export default function ProgramsPage() {
   const catalog = useCatalogPrograms()
-  const rows = !catalog.loading && !catalog.error ? (catalog.data ?? []) : []
-  const { live, later } = partitionCatalogPrograms(rows)
-  const liveBySlug = new Map(rows.filter((row) => hasAuthoredProgrammePath(row.slug)).map((row) => [row.slug, row]))
+  const [query, setQuery] = useState("")
+  const [state, setState] = useState<"all" | Row["truth"]["state"]>("all")
 
-  useEffect(() => {
-    const root = document.documentElement
-    const previous = root.style.scrollPaddingTop
-    root.style.scrollPaddingTop = "calc(var(--nav-h) + 20px)"
-    return () => {
-      root.style.scrollPaddingTop = previous
-    }
-  }, [])
+  const rows = useMemo(() => {
+    const list = (catalog.data ?? []).filter(isPublicProgrammeIndexRow).map(toRow)
+    return list.sort((a, b) => STATE_ORDER.indexOf(a.truth.state) - STATE_ORDER.indexOf(b.truth.state))
+  }, [catalog.data])
+
+  const states = STATE_ORDER.filter((item) => rows.some((row) => row.truth.state === item))
+  const needle = query.trim().toLowerCase()
+  const shown = rows.filter((row) => (state === "all" || row.truth.state === state) && (!needle || row.search.includes(needle)))
+  const liveCount = rows.filter((row) => row.truth.state === "live").length
+  const ready = !catalog.loading && !catalog.error
 
   return (
     <PageShell aurora={false}>
-      <div className="pg-page">
-        <div className="pg-pillar-bar cat-rail">
-          <LearnPillarSubnav current="programs" />
-        </div>
-        <ProgramsHero live={live} catalogReady={!catalog.loading && !catalog.error} />
-        <ProgramsStory live={live} />
+      <div className="site-light">
+        <JourneyLocator current="Choose" />
+        <div className="pg-page">
+          <section className="sky-container pg-hero" aria-labelledby="pg-title">
+            <p className="sky-label">Programmes</p>
+            <h1 id="pg-title" className="pg-h1">
+              Choose a programme by the work it produces.
+            </h1>
+            <p className="pg-lede">
+              Every programme below is a row in the Skylent catalogue. Live means a written course sits behind it and
+              you can enrol today. The others are listed as they are: in development or coming soon.
+            </p>
+            {ready && rows.length > 0 ? (
+              <p className="pg-count">
+                {plural(rows.length, "programme")} listed · {liveCount} live
+              </p>
+            ) : null}
+          </section>
 
-        <div className="pg-cat">
-          {catalog.loading ? (
-            <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
-              <div className="cat-rail">
-                <p className="pg-cat-label">Catalogue</p>
-                <h2 id="pg-cat-live-title">Loading programmes</h2>
-                <p className="pg-cat-status">Loading the current catalogue…</p>
-              </div>
-            </section>
-          ) : catalog.error ? (
-            <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
-              <div className="cat-rail">
-                <p className="pg-cat-label">Catalogue</p>
-                <h2 id="pg-cat-live-title">The programme catalogue could not be loaded</h2>
-                <p className="pg-cat-status">
-                  The catalogue request failed. This is not an empty catalogue.
-                </p>
-                <p className="pg-row-cta">
-                  <button type="button" onClick={() => { void catalog.reload() }}>
-                    Try again
-                  </button>
-                </p>
-              </div>
-            </section>
-          ) : rows.length === 0 ? (
-            <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
-              <div className="cat-rail">
-                <p className="pg-cat-label">Catalogue</p>
-                <h2 id="pg-cat-live-title">The programme catalogue is empty</h2>
-                <p className="pg-cat-status">No programmes are listed in the catalogue right now.</p>
-              </div>
-            </section>
-          ) : (
-            <>
-              {live.length > 0 ? (
-                <section className="pg-cat-live" id="pg-catalogue" aria-labelledby="pg-cat-live-title">
-                  <div className="cat-rail">
-                    <p className="pg-cat-label">Authored / Ready to start</p>
-                    <h2 id="pg-cat-live-title">Authored programmes</h2>
-                    <p className="pg-cat-intro">
-                      Each row is built from the linked course, not from brochure length. Open a programme for the full
-                      taught path and enrolment.
-                    </p>
-                    <div className="pg-cat-list">
-                      {live.map((row) => {
-                        const program = liveBySlug.get(row.slug)
-                        return program ? <LiveRow key={row.slug} row={row} program={program} /> : null
-                      })}
+          <section className="sky-container pg-list" aria-label="Programme catalogue">
+            {catalog.loading ? (
+              <ul className="pg-grid" aria-busy="true" aria-label="Loading programmes">
+                {[0, 1, 2].map((item) => (
+                  <li className="pg-card pg-card--skeleton" key={item} aria-hidden="true">
+                    <div className="pg-card__art" />
+                    <div className="pg-card__body">
+                      <span className="sky-skeleton" style={{ width: 84 }} />
+                      <span className="sky-skeleton" style={{ width: "70%", height: 20 }} />
+                      <span className="sky-skeleton" style={{ width: "94%" }} />
+                      <span className="sky-skeleton" style={{ width: "58%" }} />
                     </div>
-                  </div>
-                </section>
-              ) : null}
-
-              {later.length > 0 ? (
-                <section
-                  className="pg-cat-later"
-                  id={live.length > 0 ? undefined : "pg-catalogue"}
-                  aria-labelledby="pg-cat-later-title"
-                >
-                  <div className="cat-rail">
-                    <p className="pg-cat-label">Coming later</p>
-                    <h2 id="pg-cat-later-title">Listed, not yet taught</h2>
-                    <p className="pg-cat-intro">
-                      Listings without a finished authored programme. You can still open the page.
-                    </p>
-                    <div className="pg-cat-list">
-                      {later.map((row, index) => (
-                        <LaterRow key={row.slug} row={row} index={index} />
+                  </li>
+                ))}
+              </ul>
+            ) : catalog.error ? (
+              <div className="pg-state" role="alert">
+                <p className="sky-error">The programme catalogue could not be loaded.</p>
+                <p>The request failed. That is not the same as an empty catalogue.</p>
+                <button type="button" className="sk-btn sk-btn-secondary" onClick={() => void catalog.reload()}>
+                  Try again
+                </button>
+              </div>
+            ) : rows.length === 0 ? (
+              <p className="sky-empty">
+                <strong>No programmes are published yet.</strong>
+                When a programme is added to the catalogue it will appear here.
+              </p>
+            ) : (
+              <>
+                <div className="pg-tools">
+                  <label className="pg-search">
+                    <span className="sky-label">Search programmes</span>
+                    <input
+                      className="sk-input"
+                      type="search"
+                      value={query}
+                      onChange={(event) => setQuery(event.target.value)}
+                      placeholder="Title, level or format"
+                    />
+                  </label>
+                  {states.length > 1 ? (
+                    <div className="pg-filters" role="group" aria-label="Filter by status">
+                      {(["all", ...states] as const).map((item) => (
+                        <button
+                          key={item}
+                          type="button"
+                          className={state === item ? "pg-filter is-on" : "pg-filter"}
+                          aria-pressed={state === item}
+                          onClick={() => setState(item)}
+                        >
+                          {item === "all" ? "All" : STATE_LABEL[item]}
+                        </button>
                       ))}
                     </div>
+                  ) : null}
+                </div>
+                {shown.length === 0 ? (
+                  <div className="pg-state">
+                    <p>No programme in the catalogue matches that.</p>
+                    <button type="button" className="sk-btn sk-btn-secondary" onClick={() => { setQuery(""); setState("all") }}>
+                      Clear search and filter
+                    </button>
                   </div>
-                </section>
-              ) : null}
-            </>
-          )}
+                ) : (
+                  <ul className="pg-grid">
+                    {shown.map((row) => (
+                      <ProgrammeCard key={row.program.slug} row={row} />
+                    ))}
+                  </ul>
+                )}
+              </>
+            )}
+          </section>
+
+          <section className="sky-band-navy pg-next" aria-labelledby="pg-next-title">
+            <div className="sky-container pg-next__inner">
+              <div>
+                <p className="sky-label">Next step</p>
+                <h2 id="pg-next-title" className="pg-h2">
+                  Not sure which one fits? Answer a few questions first.
+                </h2>
+              </div>
+              <Link className="sk-btn sk-btn-primary" to="/path">
+                Find my path
+                <ArrowRight />
+              </Link>
+            </div>
+          </section>
         </div>
       </div>
     </PageShell>

@@ -453,7 +453,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
             </table>
           </div>
 
-          <div className="pp-career" aria-labelledby="pp-career-title">
+          <div className="pp-career" role="group" aria-labelledby="pp-career-title">
             <h3 id="pp-career-title" className="sky-label pp-career__label">
               In Career OS today
             </h3>

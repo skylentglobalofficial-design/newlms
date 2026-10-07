@@ -123,7 +123,7 @@
   tab-size: 2;
 }
 
-.pa-lab__out { display: flex; flex-wrap: wrap; }
+.pa-lab__out { display: flex; flex-wrap: wrap; overflow: hidden; }
 .pa-lab__result,
 .pa-lab__chart {
   min-width: 0;
@@ -381,7 +381,6 @@
 .pa-clauses .is-on { border-color: hsl(var(--site-navy)); background: hsl(var(--site-navy)); color: hsl(var(--site-white)); }
 
 @media (max-width: 560px) {
-  .pa-lab__chart { border-left: 0; margin-left: 0; }
   .pa-lab__sql { font-size: 0.71875rem; }
   .pa-lab__codehead { padding-inline: 14px; }
   .pa-lab__result,
