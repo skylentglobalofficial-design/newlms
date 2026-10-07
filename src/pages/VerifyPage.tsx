@@ -6,7 +6,7 @@
 import { useEffect, useId, useState, type FormEvent } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { JourneyLocator, TruthChip } from "../components/skylent/primitives"
+import { TruthChip } from "../components/skylent/primitives"
 import { CERTIFICATE_CODE_PATTERN, verifyCertificate } from "../lib/skylent-api"
 import { truthOf } from "../lib/truth"
 import "./VerifyPage.css"
@@ -86,7 +86,6 @@ export default function VerifyPage() {
   return (
     <PageShell aurora={false}>
       <div className="site-light vfy">
-        <JourneyLocator current="Prove" />
         <div className="sky-container vfy-wrap">
           <div className="vfy-intro">
             <div className="vfy-kicker">

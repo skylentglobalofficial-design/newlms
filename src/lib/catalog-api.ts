@@ -1,4 +1,4 @@
-import { parseApiJson } from "./http"
+import { API_ROOT, parseApiJson } from "./http"
 
 export type CatalogEnrollmentStatus = "open" | "waitlist" | "coming_soon"
 
@@ -64,7 +64,7 @@ export type CatalogProgramSummary = {
 
 export type CatalogProgramDetail = CatalogProgramSummary
 
-const API_BASE = "/api/v1/catalog"
+const API_BASE = `${API_ROOT}/catalog`
 
 async function catalogFetch<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`)

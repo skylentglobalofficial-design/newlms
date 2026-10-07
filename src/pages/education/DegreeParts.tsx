@@ -7,7 +7,7 @@
 import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
-import { ArrowRight, JourneyLocator, ProductSlice, TruthChip } from "../../components/skylent/primitives"
+import { ArrowRight, ProductSlice, TruthChip } from "../../components/skylent/primitives"
 import {
   PUBLISHED_BY_INSTITUTION,
   degreeListingPath,
@@ -26,7 +26,6 @@ export function DegreeShell({ children }: { children: ReactNode }) {
   return (
     <PageShell aurora={false}>
       <div className="site-light dg">
-        <JourneyLocator current="Choose" />
         {children}
       </div>
     </PageShell>

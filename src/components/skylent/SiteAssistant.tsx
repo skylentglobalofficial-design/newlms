@@ -12,6 +12,7 @@ import { Link } from "react-router-dom"
 import { AI_NAME, AiMark, ArrowRight, displayAiText } from "./primitives"
 import type { SiteAiTurn } from "../../lib/skylent-api"
 import "./SiteAssistant.css"
+import { API_ROOT } from "../../lib/http"
 
 type Failure = "unavailable" | "rate" | "failed"
 type Exchange = {
@@ -65,7 +66,7 @@ type AskResult = { ok: true; answer: string; goTo: string | null } | { ok: false
 async function askWithStatus(messages: SiteAiTurn[], signal: AbortSignal): Promise<AskResult> {
   let response: Response
   try {
-    response = await fetch("/api/v1/reva/chat", {
+    response = await fetch(`${API_ROOT}/reva/chat`, {
       method: "POST",
       credentials: "include",
       signal,

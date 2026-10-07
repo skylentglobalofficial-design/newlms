@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { CareerPublicSubnav } from "../../components/product/Architecture"
-import { Action, JourneyLocator, SectionIndex, TruthChip } from "../../components/skylent/primitives"
+import { Action, SectionIndex, TruthChip } from "../../components/skylent/primitives"
 import { truthOf, type Capability } from "../../lib/truth"
 import "./CareerOS.css"
 
@@ -41,7 +41,6 @@ export default function CareerOSPublicPage() {
   return (
     <PageShell aurora={false}>
       <div className="site-light cosp">
-        <JourneyLocator current="Grow" />
         <div className="sky-container">
           <CareerPublicSubnav current="overview" />
         </div>

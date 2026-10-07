@@ -1,6 +1,6 @@
-import { parseApiJson } from "./http"
+import { API_ROOT, parseApiJson } from "./http"
 
-const API_BASE = "/api/v1"
+const API_BASE = API_ROOT
 
 export type ApiRole = "student" | "faculty" | "organisation" | "recruiter" | "superadmin"
 

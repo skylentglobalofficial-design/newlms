@@ -10,7 +10,8 @@ import { sendEnquiry, type EnquiryKind } from "../lib/skylent-api"
 import { truthOf } from "../lib/truth"
 import "./ContactPage.css"
 
-const CONTACT_EMAIL = "hello@skylent.in"
+/** Support contacts named by the backend (server/src/routes/skylent/reva.ts). */
+const SUPPORT_PHONE = "6370044001"
 const SUPPORT_EMAIL = "support@skylent.live"
 
 type ContactKind = Extract<EnquiryKind, "enquiry" | "counselling">
@@ -229,16 +230,12 @@ export default function ContactPage() {
             <div className="sky-label">Reach the team directly</div>
             <dl className="sky-spec ctc-details">
               <div className="sky-spec__row">
-                <dt className="sky-spec__label">Email</dt>
-                <dd className="sky-spec__value"><a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a></dd>
-              </div>
-              <div className="sky-spec__row">
                 <dt className="sky-spec__label">Support</dt>
                 <dd className="sky-spec__value"><a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></dd>
               </div>
               <div className="sky-spec__row">
-                <dt className="sky-spec__label">Office</dt>
-                <dd className="sky-spec__value">Bengaluru, India</dd>
+                <dt className="sky-spec__label">Phone</dt>
+                <dd className="sky-spec__value"><a href={`tel:${SUPPORT_PHONE}`}>{SUPPORT_PHONE}</a></dd>
               </div>
             </dl>
           </aside>

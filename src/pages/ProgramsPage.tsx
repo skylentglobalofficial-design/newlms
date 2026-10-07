@@ -6,7 +6,7 @@
 import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
-import { ArrowRight, JourneyLocator, TruthChip, type TruthState } from "../components/skylent/primitives"
+import { ArrowRight, TruthChip, type TruthState } from "../components/skylent/primitives"
 import { ProgrammeThumb, programmeThumbInfo } from "../components/programme/ProgrammeArtefacts"
 import { authoredProgrammeContent } from "../components/programme/programme-content"
 import { plural, programmeTruth, type ProgrammeTruth } from "../components/programme/programme-truth"
@@ -112,7 +112,6 @@ export default function ProgramsPage() {
   return (
     <PageShell aurora={false}>
       <div className="site-light">
-        <JourneyLocator current="Choose" />
         <div className="pg-page">
           <section className="sky-container pg-hero" aria-labelledby="pg-title">
             <p className="sky-label">Programmes</p>

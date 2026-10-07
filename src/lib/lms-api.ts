@@ -1,10 +1,10 @@
 import { ensureCsrfToken } from "./auth-api"
-import { parseApiJson } from "./http"
+import { API_ROOT, parseApiJson } from "./http"
 import type { LmsCourseView } from "../components/lms/lms-utils"
 
 export type { LmsCourseView }
 
-const API_BASE = "/api/v1"
+const API_BASE = API_ROOT
 
 export type ApiLessonState = {
   started: boolean

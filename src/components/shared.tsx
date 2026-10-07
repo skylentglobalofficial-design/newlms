@@ -22,6 +22,7 @@ import { C, T } from '../tokens'
 import { PublicCanvas, useAuroraTheme } from './foundation'
 import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 import { ArrowRight, JourneyLocator, TruthChip, type JourneyStage, type TruthState } from './skylent/primitives'
+import SiteAssistant from './skylent/SiteAssistant'
 
 // Re-export color tokens for backward compatibility
 export { C } from '../tokens'
@@ -826,6 +827,8 @@ export function PageShell({
       </div>
       <main className="skylent-public-main">{children}</main>
       <Footer />
+      {/* Site-wide Skylent AI: POST /api/v1/reva/chat (legacy internal route name). */}
+      <SiteAssistant />
     </PublicCanvas>
   )
 }

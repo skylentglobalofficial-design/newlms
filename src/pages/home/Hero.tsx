@@ -2,7 +2,7 @@
  * Homepage hero: the statement on the left, a learner photograph with the learning player
  * overlapping it on the right, and a short ledger of what is real today.
  */
-import heroStudent from "@/assets/site/hero-student.jpg"
+import heroLearner from "@/assets/site/program-library.jpg"
 import { Action, TruthChip, type TruthState } from "@/components/skylent/primitives"
 import { AUTHORED_COURSE_SLUG, courseBySlug } from "@/lib/catalog-maturity"
 import { truthOf } from "@/lib/truth"
@@ -168,10 +168,10 @@ export function Hero({ programmes, isLoading }: { programmes: HomeProgramme[]; i
         <figure className="hm-hero__figure">
           <div className="hm-hero__photo">
             <img
-              src={heroStudent}
-              alt="A learner standing in a study room, holding a laptop and a notebook."
-              width={1024}
-              height={1280}
+              src={heroLearner}
+              alt="A learner working at a laptop at a library table."
+              width={1000}
+              height={666}
             />
           </div>
           <div className="hm-hero__below">

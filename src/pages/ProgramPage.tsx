@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
-import { JourneyLocator } from "../components/skylent/primitives"
 import ProfessionalProgrammeTemplate from "../components/programme/ProfessionalProgrammeTemplate"
 import ProgrammeListing from "../components/programme/ProgrammeListing"
 import { ProgrammeMessage, ProgrammeSkeleton } from "../components/programme/ProgrammeStates"
@@ -16,7 +15,6 @@ function Shell({ children }: { children: ReactNode }) {
   return (
     <PageShell aurora={false}>
       <div className="site-light">
-        <JourneyLocator current="Choose" />
         {children}
       </div>
     </PageShell>

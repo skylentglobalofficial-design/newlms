@@ -6,9 +6,9 @@
  * No mock data and no fallbacks: a failed request throws, and the caller shows an honest error state.
  */
 import { ensureCsrfToken } from "./auth-api"
-import { parseApiJson } from "./http"
+import { API_ROOT, parseApiJson } from "./http"
 
-const API_BASE = "/api/v1"
+const API_BASE = API_ROOT
 
 /* ── Certificates ──────────────────────────────────────────────────────────── */
 
