@@ -462,6 +462,8 @@
   .dg .dg-lines b { flex-basis: 100%; }
   .dg .dg-prove__rows dt { flex-basis: 100%; }
   .dg .dg-cards { grid-template-columns: minmax(0, 1fr); }
+  /* One interface plate is enough on a phone: later cards keep their facts and drop the repeat. */
+  .dg .dg-card + .dg-card .dg-card__art { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
