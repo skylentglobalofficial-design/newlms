@@ -12,8 +12,7 @@ const PathPage = lazy(() => import('./pages/path/PathPage'))
 const PathResultPage = lazy(() => import('./pages/path/PathResultPage'))
 const EducationPage = lazy(() => import('./pages/EducationPage'))
 const SchoolingPage = lazy(() => import('./pages/education/SchoolingPage'))
-const UndergraduatePage = lazy(() => import('./pages/education/UndergraduatePage'))
-const DegreeSamplePage = lazy(() => import('./pages/education/DegreeSamplePage'))
+const DegreeDetailPage = lazy(() => import('./pages/education/DegreeDetailPage'))
 const PostgraduatePage = lazy(() => import('./pages/education/PostgraduatePage'))
 const ExamsPage = lazy(() => import('./pages/education/ExamsPage'))
 const OSPage = lazy(() => import('./pages/OSPage'))
@@ -70,11 +69,13 @@ function AppRoutes() {
 
         {/* Education: canonical public IA + backwards-compatible legacy routes */}
         <Route path="/education" element={<EducationPage />} />
-        <Route path="/education/degrees/:slug" element={<DegreeSamplePage />} />
+        <Route path="/education/online/:slug" element={<DegreeDetailPage mode="ONLINE" />} />
+        <Route path="/education/campus/:slug" element={<DegreeDetailPage mode="CAMPUS" />} />
+        <Route path="/education/degrees/:slug" element={<DegreeDetailPage />} />
         <Route path="/education/school" element={<SchoolingPage />} />
         <Route path="/education/schooling" element={<Navigate to="/education/school" replace />} />
-        <Route path="/education/online-degree" element={<UndergraduatePage />} />
-        <Route path="/education/offline-degree" element={<UndergraduatePage />} />
+        <Route path="/education/online-degree" element={<Navigate to="/education?mode=online" replace />} />
+        <Route path="/education/offline-degree" element={<Navigate to="/education?mode=campus" replace />} />
         <Route path="/education/undergraduate" element={<Navigate to="/education/online-degree" replace />} />
         <Route path="/education/postgraduate" element={<PostgraduatePage />} />
         <Route path="/education/exams" element={<ExamsPage />} />
