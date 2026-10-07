@@ -65,6 +65,8 @@ function AppRoutes() {
         {/* Core Skylent path product */}
         <Route path="/path" element={<PathPage />} />
         <Route path="/path/result" element={<PathResultPage />} />
+        <Route path="/find-my-path" element={<Navigate to="/path" replace />} />
+        <Route path="/find-my-path/result" element={<Navigate to="/path/result" replace />} />
 
         {/* Education: canonical public IA + backwards-compatible legacy routes */}
         <Route path="/education" element={<EducationPage />} />
