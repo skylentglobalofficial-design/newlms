@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import type { JobApplication } from "../../lib/career-api"
 import {
   applicationEmployerName,
@@ -11,7 +11,7 @@ import {
   formatStatusLabel,
 } from "./application-utils"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 type Props = {
   application: JobApplication

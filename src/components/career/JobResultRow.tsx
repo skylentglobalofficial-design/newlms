@@ -1,9 +1,9 @@
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import type { JobListing } from "../../lib/career-api"
 import { jobMetaLine, jobSecondaryLine } from "./job-utils"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 type Props = {
   job: JobListing

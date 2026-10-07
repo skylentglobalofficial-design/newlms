@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import { GlassSurface } from "../foundation"
 import {
   updateCareerProfile,
@@ -23,7 +23,7 @@ import {
   EntryCard,
 } from "./section-ui"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 const WORK_MODES: CareerWorkMode[] = ["REMOTE", "HYBRID", "ONSITE", "FLEXIBLE"]
 const VISIBILITY_OPTIONS: CareerProfileVisibility[] = ["PRIVATE", "NETWORK", "PUBLIC"]

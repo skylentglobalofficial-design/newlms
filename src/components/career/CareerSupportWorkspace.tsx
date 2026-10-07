@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import { GlassSurface } from "../foundation"
 import { useCareerSupport } from "../../hooks/useCareerSupport"
 import {
@@ -23,7 +23,7 @@ import {
 } from "./support-utils"
 import { FeedbackBanner, Field, fieldInputStyle, LoadingBlock, primaryButtonStyle, secondaryButtonStyle } from "./section-ui"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 const REQUEST_TYPES = Object.keys(REQUEST_TYPE_LABELS) as CareerSupportRequestType[]
 const PRIORITIES: CareerSupportPriority[] = ["LOW", "MEDIUM", "HIGH"]
 

@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import type { InterviewRound } from "../../lib/career-api"
 import { formatInterviewDateTime, formatRoundStatus, formatRoundType, isUpcomingRound } from "./interview-utils"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 type Props = {
   rounds: InterviewRound[]

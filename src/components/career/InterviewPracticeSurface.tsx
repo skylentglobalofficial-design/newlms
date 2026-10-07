@@ -1,12 +1,12 @@
 import { useState } from "react"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import type { InterviewPractice, InterviewQuestion } from "../../lib/career-api"
 import { createPracticeRecord } from "../../lib/career-api"
 import { formatInterviewDateTime } from "./interview-utils"
 import { FeedbackBanner, Field, fieldInputStyle, primaryButtonStyle } from "./section-ui"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 type Props = {
   practice: InterviewPractice[]

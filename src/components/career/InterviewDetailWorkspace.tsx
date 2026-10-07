@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import { GlassSurface } from "../foundation"
 import type { InterviewRound, InterviewRoundStatus } from "../../lib/career-api"
 import {
@@ -26,7 +26,7 @@ import {
 import { FeedbackBanner, Field, dangerButtonStyle, fieldInputStyle, primaryButtonStyle, secondaryButtonStyle } from "./section-ui"
 import { applicationRoleTitle } from "./application-utils"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 const ALL_STATUSES = Object.keys(ROUND_STATUS_LABELS) as InterviewRoundStatus[]
 
 type Props = {

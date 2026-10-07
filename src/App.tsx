@@ -43,6 +43,7 @@ const CareerOSSupportDetailPage = lazy(() => import('./pages/career/CareerOSSupp
 const BlogPage = lazy(() => import('./pages/BlogPage'))
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
+const VerifyPage = lazy(() => import('./pages/VerifyPage'))
 const LoginPage = lazy(() => import('./pages/LoginPage'))
 const PathComingPage = lazy(() => import('./pages/PathComingPage'))
 const DashboardStudentPage = lazy(() => import('./pages/DashboardStudentPage'))
@@ -116,6 +117,8 @@ function AppRoutes() {
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:slug" element={<BlogPostPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/verify" element={<VerifyPage />} />
+        <Route path="/verify/:code" element={<VerifyPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<LoginPage />} />
 
