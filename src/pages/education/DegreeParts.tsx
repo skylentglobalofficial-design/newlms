@@ -8,6 +8,7 @@ import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { ArrowRight, ProductSlice, TruthChip } from "../../components/skylent/primitives"
+import { Reveal } from "../../components/skylent/Reveal"
 import {
   PUBLISHED_BY_INSTITUTION,
   degreeListingPath,
@@ -286,12 +287,23 @@ export function ClosingBand({
   title: string
   secondary: { to: string; label: string }
 }) {
+  /* A question followed by its answer: the answer is the one cobalt phrase. */
+  const split = title.indexOf("? ")
   return (
-    <section className="sky-band-navy dg-close">
-      <div className="sky-container dg-close__inner">
+    <section className="sky-stage sky-band-navy dg-close">
+      <Reveal className="sky-container dg-close__inner">
         <div className="dg-close__lead">
           <div className="sky-label">{label}</div>
-          <h2 className="dg-h2">{title}</h2>
+          <h2 className="sky-display sky-display--lg dg-close__title">
+            {split > 0 ? (
+              <>
+                {title.slice(0, split + 2)}
+                <em>{title.slice(split + 2)}</em>
+              </>
+            ) : (
+              title
+            )}
+          </h2>
         </div>
         <div className="dg-close__actions">
           <Link to="/path" className="sk-btn sk-btn-primary">
@@ -302,7 +314,7 @@ export function ClosingBand({
             {secondary.label}
           </Link>
         </div>
-      </div>
+      </Reveal>
     </section>
   )
 }

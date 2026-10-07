@@ -166,7 +166,6 @@
 
 @media (max-width: 999px) {
   .pg-feature__inner { grid-template-columns: minmax(0, 1fr); }
-  .pg-feature__figure { order: -1; }
   .pg-row { grid-template-columns: minmax(0, 240px) minmax(0, 1fr); align-items: start; }
   .pg-row__side { grid-column: 2; }
 }
