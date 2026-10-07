@@ -1,8 +1,8 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { C, T } from '../tokens'
-import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
+import type { AuroraThemeId } from '../aurora-themes'
 import { useAuth } from '../context/AuthContext'
+import './AuthDashboardShell.css'
 
 export type AuthNavItem = {
   id: string
@@ -15,8 +15,12 @@ export type AuthNavItem = {
 }
 
 export type AuthDashboardShellProps = {
+  /**
+   * Kept for call-site compatibility. The shell no longer takes a per-role colour:
+   * every signed-in surface uses the same navy rail and cobalt current marker.
+   */
   themeId: AuroraThemeId
-  /** Subtitle under Skylent logo, e.g. "Learning" */
+  /** Mono label beside the wordmark, e.g. "My learning" */
   workspaceLabel: string
   roleLabel: string
   navItems: AuthNavItem[]
@@ -27,10 +31,15 @@ export type AuthDashboardShellProps = {
   children: ReactNode
   /** Optional compact page header above main layout */
   header?: ReactNode
+  /** Optional slim white bar above the content: breadcrumb on the left, product slice on the right. */
+  bar?: ReactNode
+}
+
+function prefersReducedMotion() {
+  return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
 export function AuthDashboardShell({
-  themeId,
   workspaceLabel,
   roleLabel,
   navItems,
@@ -40,13 +49,28 @@ export function AuthDashboardShell({
   renderNavIcon,
   children,
   header,
+  bar,
 }: AuthDashboardShellProps) {
-  const accent = getDomainAccent(themeId)
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const drawerId = useId()
+  const menuRef = useRef<HTMLButtonElement>(null)
+  const drawerRef = useRef<HTMLElement>(null)
 
   const mobileNav = bottomNavItems ?? navItems.slice(0, 5)
+
+  useEffect(() => {
+    if (!mobileOpen) return
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setMobileOpen(false)
+      menuRef.current?.focus()
+    }
+    window.addEventListener('keydown', onKey)
+    drawerRef.current?.querySelector<HTMLElement>('button, a')?.focus()
+    return () => window.removeEventListener('keydown', onKey)
+  }, [mobileOpen])
 
   function handleNav(item: AuthNavItem) {
     onNavChange(item.id)
@@ -56,7 +80,9 @@ export function AuthDashboardShell({
       return
     }
     if (item.sectionId) {
-      document.getElementById(item.sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      document
+        .getElementById(item.sectionId)
+        ?.scrollIntoView({ behavior: prefersReducedMotion() ? 'auto' : 'smooth', block: 'start' })
     }
   }
 
@@ -65,84 +91,39 @@ export function AuthDashboardShell({
     navigate('/login')
   }
 
-  const sidebarContent = (
+  const railContent = (
     <>
-      <div style={{ padding: '22px 20px 18px' }}>
-        <Link to="/" style={{ textDecoration: 'none' }}>
-          <div className="skylent-mark" style={{ fontSize: 20, color: C.ink }}>
-            Skylent<span style={{ color: C.orange }}>.</span>
-          </div>
-        </Link>
-        <div style={{ color: C.slate, fontSize: 11, marginTop: 4, letterSpacing: '0.04em' }}>{workspaceLabel}</div>
-      </div>
+      <Link to="/" className="auth-shell-brand">
+        <span className="auth-shell-wordmark">Skylent</span>
+        <span className="auth-shell-workspace">{workspaceLabel}</span>
+      </Link>
 
-      <nav style={{ flex: 1, padding: '14px 12px', overflowY: 'auto' }}>
-        {navItems.map(item => {
-          const isActive = activeNav === item.id
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => handleNav(item)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 12,
-                width: '100%',
-                textAlign: 'left',
-                padding: '10px 12px',
-                marginBottom: 2,
-                borderRadius: T.rControl,
-                border: 'none',
-                background: isActive ? C.white : 'transparent',
-                boxShadow: isActive ? `0 0 0 1px ${accent.primary}` : 'none',
-                color: isActive ? C.ink : C.slate,
-                fontSize: 13.5,
-                fontFamily: 'var(--font-body)',
-                cursor: 'pointer',
-                fontWeight: isActive ? 600 : 400,
-              }}
-            >
-              <span style={{ color: isActive ? accent.text : C.slate, display: 'flex' }}>
-                {renderNavIcon(item.id)}
-              </span>
-              <span>{item.label}</span>
-            </button>
-          )
-        })}
+      <nav className="auth-shell-nav" aria-label={`${workspaceLabel} sections`}>
+        <ul>
+          {navItems.map(item => (
+            <li key={item.id}>
+              <button
+                type="button"
+                className="auth-shell-nav-item"
+                aria-current={activeNav === item.id ? 'page' : undefined}
+                onClick={() => handleNav(item)}
+              >
+                {item.label}
+              </button>
+            </li>
+          ))}
+        </ul>
       </nav>
 
-      <div style={{ padding: '16px 16px 14px' }}>
-        <div style={{
-          display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12,
-          padding: '10px 12px', background: C.white,
-          borderRadius: T.rControl,
-        }}>
-          <div style={{
-            width: 34, height: 34, borderRadius: '50%',
-            background: accent.primary,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontSize: 11, fontWeight: 700, color: C.white, flexShrink: 0,
-          }}>
-            {user?.avatar || '??'}
-          </div>
-          <div style={{ overflow: 'hidden', minWidth: 0 }}>
-            <div style={{ color: C.ink, fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {user?.name || 'User'}
-            </div>
-            <div style={{ color: C.slate, fontSize: 11 }}>{roleLabel}</div>
+      <div className="auth-shell-user">
+        <div className="auth-shell-user-row">
+          <span className="auth-shell-avatar" aria-hidden="true">{user?.avatar || '··'}</span>
+          <div style={{ minWidth: 0 }}>
+            <div className="auth-shell-user-name">{user?.name || 'Signed in'}</div>
+            <div className="auth-shell-user-role">{roleLabel}</div>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={handleLogout}
-          style={{
-            width: '100%', padding: '9px', background: 'transparent',
-            border: `1px solid ${T.lineLight}`, borderRadius: T.rControl,
-            color: C.slate, fontSize: 12, cursor: 'pointer',
-            fontFamily: 'var(--font-body)',
-          }}
-        >
+        <button type="button" className="auth-shell-signout" onClick={handleLogout}>
           Sign out
         </button>
       </div>
@@ -150,99 +131,73 @@ export function AuthDashboardShell({
   )
 
   return (
-    <div className="auth-shell" style={{ minHeight: '100vh', background: C.canvas, fontFamily: 'var(--font-body)', position: 'relative' }}>
-      {/* Level 1 — desktop sidebar chrome */}
-      <aside className="auth-shell-sidebar-desktop" style={{
-        position: 'fixed', top: 0, left: 0, bottom: 0, width: 236,
-        background: '#EFEBE1', borderRight: '1px solid rgba(21,23,26,0.06)',
-        display: 'flex', flexDirection: 'column', zIndex: 120,
-      }}>
-        {sidebarContent}
+    <div className="auth-shell">
+      <aside className="auth-shell-rail auth-shell-rail--desktop" aria-label={workspaceLabel}>
+        {railContent}
       </aside>
 
-      {mobileOpen && (
-        <div
+      {mobileOpen ? (
+        <button
+          type="button"
           className="auth-shell-overlay"
+          aria-label="Close menu"
+          tabIndex={-1}
           onClick={() => setMobileOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(21,23,26,0.35)', zIndex: 200 }}
         />
-      )}
+      ) : null}
       <aside
-        className={`auth-shell-sidebar-mobile${mobileOpen ? ' open' : ''}`}
-        style={{
-          position: 'fixed', top: 0, left: 0, bottom: 0, width: 280,
-          background: '#EFEBE1', borderRight: '1px solid rgba(21,23,26,0.06)',
-          display: 'flex', flexDirection: 'column', zIndex: 210,
-          transform: mobileOpen ? 'translateX(0)' : 'translateX(-100%)',
-          transition: 'transform 0.25s ease',
-        }}
+        ref={drawerRef}
+        id={drawerId}
+        className={`auth-shell-rail auth-shell-rail--drawer${mobileOpen ? ' is-open' : ''}`}
+        aria-label={workspaceLabel}
+        aria-hidden={!mobileOpen}
+        {...(!mobileOpen ? { inert: true } : {})}
       >
-        {sidebarContent}
+        {railContent}
       </aside>
 
-      <div className="auth-shell-main" style={{ position: 'relative', zIndex: 1, marginLeft: 236, minHeight: '100vh' }}>
-        {/* Level 1 — mobile header chrome */}
-        <header className="auth-shell-mobile-header" style={{
-          display: 'none', position: 'sticky', top: 0, zIndex: 90,
-          padding: '12px 16px', background: C.canvas, borderBottom: `1px solid ${T.lineLight}`,
-          alignItems: 'center', justifyContent: 'space-between',
-        }}>
-          <button type="button" onClick={() => setMobileOpen(true)} aria-label="Open menu" style={{ background: 'none', border: 'none', color: C.ink, padding: 8, cursor: 'pointer' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      <div className="auth-shell-main">
+        <header className="auth-shell-topbar">
+          <button
+            ref={menuRef}
+            type="button"
+            className="auth-shell-menu"
+            onClick={() => setMobileOpen(true)}
+            aria-label="Open menu"
+            aria-expanded={mobileOpen}
+            aria-controls={drawerId}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
           </button>
-          <span className="skylent-mark" style={{ fontSize: 16, color: C.ink }}>
-            Skylent<span style={{ color: C.orange }}>.</span>
-          </span>
-          <div style={{ width: 36 }} />
+          <span className="auth-shell-wordmark">Skylent</span>
+          <span className="auth-shell-workspace">{workspaceLabel}</span>
         </header>
 
-        <div className="auth-shell-content" style={{ padding: 'clamp(16px, 2.4vw, 28px) clamp(16px, 2.6vw, 28px) 96px', minWidth: 0 }}>
+        {bar ? <div className="auth-shell-bar">{bar}</div> : null}
+
+        <div className="auth-shell-content">
           {header}
           {children}
         </div>
       </div>
 
-      {/* Level 1 — mobile bottom nav */}
-      <nav className="auth-shell-bottom-nav" style={{
-        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
-        background: C.canvas, borderTop: `1px solid ${T.lineLight}`,
-        display: 'none', justifyContent: 'space-around',
-        padding: '8px 4px max(8px, env(safe-area-inset-bottom))',
-      }}>
-        {mobileNav.map(item => {
-          const isActive = activeNav === item.id
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => handleNav(item)}
-              style={{
-                flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
-                background: 'none', border: 'none', cursor: 'pointer', padding: '6px 4px',
-                color: isActive ? accent.text : C.slate,
-              }}
-            >
-              {renderNavIcon(item.id)}
-              <span style={{ fontSize: 9, fontWeight: isActive ? 600 : 400 }}>{item.short ?? item.label}</span>
-            </button>
-          )
-        })}
+      <nav className="auth-shell-bottom-nav" aria-label={`${workspaceLabel} quick navigation`}>
+        {mobileNav.map(item => (
+          <button
+            key={item.id}
+            type="button"
+            aria-current={activeNav === item.id ? 'page' : undefined}
+            onClick={() => handleNav(item)}
+          >
+            {renderNavIcon(item.id)}
+            <span>{item.short ?? item.label}</span>
+          </button>
+        ))}
       </nav>
-
-      <style>{`
-        .auth-shell-sidebar-mobile { display: none; }
-        .auth-shell-main { overflow-x: hidden; }
-        @media (max-width: 900px) {
-          .auth-shell-sidebar-desktop { display: none !important; }
-          .auth-shell-sidebar-mobile { display: flex !important; }
-          .auth-shell-main { margin-left: 0 !important; }
-          .auth-shell-mobile-header { display: flex !important; }
-        }
-        @media (max-width: 600px) {
-          .auth-shell-bottom-nav { display: flex !important; }
-          .auth-shell-content { padding-bottom: 88px !important; }
-        }
-      `}</style>
     </div>
   )
 }
@@ -258,20 +213,9 @@ export function AuthDashboardLayout({
   className?: string
 }) {
   return (
-    <div className={`auth-dashboard-layout${className ? ` ${className}` : ''}`} style={{
-      display: 'grid',
-      gridTemplateColumns: 'minmax(0, 1fr) minmax(260px, 340px)',
-      gap: 'clamp(16px, 2vw, 24px)',
-      alignItems: 'start',
-    }}>
-      <div className="auth-dashboard-primary" style={{ minWidth: 0 }}>{primary}</div>
-      <aside className="auth-dashboard-rail" style={{ minWidth: 0 }}>{rail}</aside>
-      <style>{`
-        @media (max-width: 900px) {
-          .auth-dashboard-layout { grid-template-columns: 1fr !important; }
-          .auth-dashboard-rail { order: 2; }
-        }
-      `}</style>
+    <div className={`auth-dashboard-layout${className ? ` ${className}` : ''}`}>
+      <div className="auth-dashboard-primary">{primary}</div>
+      <aside className="auth-dashboard-rail">{rail}</aside>
     </div>
   )
 }

@@ -1,23 +1,22 @@
 // Skylent design tokens — single source of truth for JS inline styles.
 // CSS custom properties live in src/styles/design-system.css; keep both in sync.
 //
-// LIGHT ONLY (non-negotiable — public site, login, dashboard, LMS / Skylent OS, Career OS).
-// Two light themes share these tokens:
-//   signed-in product (:root)          paper/cream warm ivory · charcoal ink · indigo accent
-//   public shell (.skylent-public-canvas) pure white · navy ink · royal-blue accent
-// Dark surfaces are for genuine product specimens only (see surfaceProductDark).
+// One frozen palette on every surface (public site, login, dashboards, learning player, Career OS):
+//   white workspace · warm paper for proof only · deep navy ink and product anchors ·
+//   cobalt for action and progress · cyan for the Skylent AI mark only.
+// Type: Space Grotesk (headings), DM Sans (body), DM Mono (labels, numbers, code). No serif.
+// Navy surfaces are product anchors: the shell rail, product top bars and the code workbench.
 
 export const C = {
   // Themeable tokens resolve through the CSS custom properties in
-  // src/styles/design-system.css. On :root those are the exact values that used to be
-  // hard-coded here (#15171A ink, #F7F4EC paper, #FFFDF8 cream, #4F46E5 accent …), so the
-  // signed-in product renders the same. Inside the public shell
-  // (.skylent-public-canvas, src/skylent-public.css) the same properties are
-  // re-declared, which lets inline-styled public pages follow the white theme.
+  // src/styles/design-system.css (:root = the signed-in product). Inside the public shell
+  // (.skylent-public-canvas, src/skylent-public.css) the same properties are re-declared.
+  // Legacy names are kept so call sites stay stable: `orange` and `indigo` are cobalt,
+  // `cream` and `warmWhite` are white.
   ink: 'var(--skylent-color-ink)',
   ink2: 'var(--skylent-color-ink-2)',
   ink3: 'var(--skylent-color-ink-3)',
-  orange: '#F97316',
+  orange: 'var(--skylent-color-mark)',
   indigo: 'var(--skylent-color-accent)',
   blue: 'var(--skylent-color-accent-hover)',
   warmWhite: 'var(--skylent-color-paper)',
@@ -31,14 +30,26 @@ export const C = {
   white: '#FFFFFF',
   black: 'var(--skylent-color-ink)',
   canvas: 'var(--skylent-color-canvas)',
-  success: '#15803D',
-  warning: '#B45309',
-  information: '#2563EB',
-  danger: '#B91C1C',
-  surfaceProductDark: '#171B1A',
-  textOnDark: '#E8F0ED',
-  mutedOnDark: '#8AA39A',
-  textOnAccent: '#FFFDF8',
+  success: 'var(--skylent-color-success)',
+  warning: 'var(--skylent-color-warning)',
+  information: 'var(--skylent-color-info)',
+  danger: 'var(--skylent-color-error)',
+  surfaceProductDark: '#0B1220',
+  textOnDark: '#E8ECF5',
+  mutedOnDark: '#9AA6BF',
+  textOnAccent: '#FFFFFF',
+  // Frozen-system additions
+  navy: '#0B1220',
+  navyRaised: '#141C2E',
+  navyLine: '#26304A',
+  onNavy: '#E8ECF5',
+  onNavyMuted: '#9AA6BF',
+  cobalt: '#2563FF',
+  cobaltTint: '#EAF0FF',
+  proof: '#FAF9F6',
+  proofInset: '#F3F0E8',
+  proofLine: '#E6E1D6',
+  cyan: '#22C7F2',
 } as const
 
 /** Public surfaces — mirrors --skylent-surface-* in design-system.css */
@@ -60,43 +71,43 @@ export const colors = {
     muted: C.muted,
     subtle: C.textSubtle,
     inverse: C.textOnAccent,
-    inverseMuted: '#C4BEB3',
+    inverseMuted: '#9AA6BF',
     onDark: C.textOnDark,
     onAccent: C.textOnAccent,
   },
   border: {
-    subtle: 'rgba(21,23,26,0.08)',
-    default: 'rgba(21,23,26,0.10)',
-    strong: 'rgba(21,23,26,0.16)',
+    subtle: '#E6EAF2',
+    default: '#DDE2EC',
+    strong: '#A9B4C8',
   },
   accent: {
     default: C.indigo,
     hover: C.blue,
-    soft: '#EEF2FF',
-    border: '#C7D2FE',
-    strong: '#4338CA',
+    soft: '#EAF0FF',
+    border: '#BFD0FF',
+    strong: '#1D4FD8',
   },
   orange: {
     default: C.orange,
-    soft: '#FFF4EB',
-    strong: '#EA580C',
+    soft: '#EAF0FF',
+    strong: '#1D4FD8',
   },
   state: {
-    success: { fg: C.success, soft: '#F0FDF4', border: '#BBF7D0' },
-    warning: { fg: C.warning, soft: '#FFFBEB', border: '#FDE68A' },
-    error: { fg: C.danger, soft: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.25)' },
-    info: { fg: C.information, soft: '#EFF6FF', border: '#BFDBFE' },
+    success: { fg: C.success, soft: '#EAF0FF', border: '#BFD0FF' },
+    warning: { fg: C.warning, soft: '#F6F8FB', border: '#A9B4C8' },
+    error: { fg: C.danger, soft: 'rgba(182,37,32,0.05)', border: 'rgba(182,37,32,0.3)' },
+    info: { fg: C.information, soft: '#EAF0FF', border: '#BFD0FF' },
   },
   productDark: {
     bg: C.surfaceProductDark,
-    surface: '#1C211F',
+    surface: '#141C2E',
     muted: C.mutedOnDark,
-    border: 'rgba(232,240,237,0.14)',
+    border: '#26304A',
     accent: C.indigo,
   },
   overlay: {
-    scrim: 'rgba(21,23,26,0.35)',
-    soft: 'rgba(21,23,26,0.28)',
+    scrim: 'rgba(11,18,32,0.45)',
+    soft: 'rgba(11,18,32,0.3)',
   },
 } as const
 
@@ -134,12 +145,12 @@ export const T = {
   maxWWorkspace: 1040,
   maxWCareer: 1120,
   navH: 64,
-  lineLight: 'rgba(21,23,26,0.10)',
-  lineStrong: 'rgba(21,23,26,0.16)',
-  lineDark: 'rgba(21,23,26,0.10)',
-  lineDarkStrong: 'rgba(21,23,26,0.16)',
-  shadow: '0 8px 24px rgba(21,23,26,0.06)',
-  shadowLg: '0 16px 40px rgba(21,23,26,0.08)',
+  lineLight: '#DDE2EC',
+  lineStrong: '#A9B4C8',
+  lineDark: '#DDE2EC',
+  lineDarkStrong: '#A9B4C8',
+  shadow: '0 1px 2px rgba(11,18,32,0.05), 0 18px 40px -24px rgba(11,18,32,0.22)',
+  shadowLg: '0 1px 2px rgba(11,18,32,0.06), 0 28px 56px -28px rgba(11,18,32,0.30)',
 } as const
 
 /** Radius & elevation — mirrors components.css / design-system.css */
@@ -376,32 +387,34 @@ export const type = {
 } as const
 
 export const fonts = {
-  serif: "'Source Serif 4', 'Iowan Old Style', Georgia, serif",
+  heading: "'Space Grotesk', system-ui, sans-serif",
+  /** @deprecated Legacy name. There is no serif in the system; this is the heading face. */
+  serif: "'Space Grotesk', system-ui, sans-serif",
   sans: "'DM Sans', system-ui, sans-serif",
-  mono: "'DM Mono', monospace",
+  mono: "'DM Mono', ui-monospace, monospace",
 } as const
 
 export type GlassLevel = 1 | 2 | 3
 
-/** Raised surfaces — solid cream/white, thin border, no blur. */
+/** Raised surfaces — solid white, cool hairline, no blur. */
 export const glass = {
   1: {
     bg: 'var(--skylent-color-cream)',
-    border: 'rgba(21,23,26,0.10)',
+    border: '#DDE2EC',
     blur: 'none',
-    shadow: '0 4px 16px rgba(21,23,26,0.05)',
+    shadow: '0 1px 2px rgba(11,18,32,0.05)',
   },
   2: {
     bg: '#FFFFFF',
-    border: 'rgba(21,23,26,0.10)',
+    border: '#DDE2EC',
     blur: 'none',
-    shadow: '0 8px 24px rgba(21,23,26,0.06)',
+    shadow: '0 1px 2px rgba(11,18,32,0.05), 0 18px 40px -24px rgba(11,18,32,0.22)',
   },
   3: {
     bg: '#FFFFFF',
-    border: 'rgba(21,23,26,0.10)',
+    border: '#DDE2EC',
     blur: 'none',
-    shadow: '0 12px 32px rgba(21,23,26,0.07)',
+    shadow: '0 1px 2px rgba(11,18,32,0.06), 0 28px 56px -28px rgba(11,18,32,0.30)',
   },
 } as const
 

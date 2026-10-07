@@ -1,0 +1,329 @@
+/*
+ * Student home — answers "What should I do next?".
+ * One cobalt-tinted next step, then dense ruled cards. Warm paper only on the evidence card.
+ */
+
+.sh {
+  max-width: 1180px;
+  color: var(--skylent-color-ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.sh h1 {
+  margin: 8px 0 0;
+  font-family: var(--skylent-font-heading);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.sh-crumb {
+  color: var(--skylent-color-muted);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sh-crumb b {
+  color: var(--skylent-color-ink);
+  font-weight: 500;
+}
+
+.sh-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
+  gap: 22px;
+  align-items: start;
+  margin-top: 22px;
+}
+
+.sh-stack {
+  display: grid;
+  gap: 22px;
+  min-width: 0;
+}
+
+.sh > .sh-next,
+.sh > .sh-stack {
+  margin-top: 22px;
+  max-width: 760px;
+}
+
+/* The one next step */
+.sh-next {
+  padding: 22px 22px 24px;
+  border: 1px solid var(--skylent-color-accent);
+  border-radius: 12px;
+  background: var(--skylent-color-accent-soft);
+}
+
+.sh-next-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  margin: 0;
+  color: var(--skylent-color-ink);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sh-next-label > span {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: var(--skylent-color-accent);
+}
+
+.sh-next-label em {
+  margin-left: 6px;
+  color: var(--skylent-color-muted);
+  font-style: normal;
+}
+
+.sh-next h2 {
+  margin: 12px 0 0;
+  max-width: 28ch;
+  font-family: var(--skylent-font-heading);
+  font-size: clamp(20px, 2.2vw, 24px);
+  font-weight: 600;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.sh-body {
+  margin: 8px 0 0;
+  max-width: 60ch;
+  color: var(--skylent-color-slate);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.sh-progress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 16px;
+}
+
+.sh-progress .os-progress-bar {
+  flex: 1 1 160px;
+  max-width: 280px;
+  background: #ffffff;
+}
+
+.sh-note {
+  color: var(--skylent-color-muted);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Dense ruled card */
+.sh-card {
+  min-width: 0;
+  border: 1px solid var(--skylent-color-border);
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.sh-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 14px;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--skylent-color-border-strong);
+}
+
+.sh-card-head h2 {
+  margin: 0;
+  font-family: var(--skylent-font-heading);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.sh-rows {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sh-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--skylent-color-border);
+}
+
+.sh-card > .sh-row:last-child,
+.sh-rows:last-child > .sh-row:last-child {
+  border-bottom: 0;
+}
+
+.sh-row-main {
+  flex: 1 1 220px;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sh-row-main strong {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.sh-row-main .os-error {
+  margin: 4px 0 0;
+}
+
+.sh-row-bar {
+  width: min(220px, 100%);
+  margin-top: 8px;
+}
+
+.sh-row-link {
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.sh-empty,
+.sh-card > .sh-body {
+  margin: 0;
+  padding: 16px 18px;
+  color: var(--skylent-color-slate);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
+.sh-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+  margin: 0;
+  padding: 4px 18px 6px;
+  border-top: 1px solid var(--skylent-color-border);
+  color: var(--skylent-color-muted);
+  font-size: 13px;
+}
+
+.sh-foot .os-link {
+  min-height: 44px;
+}
+
+/* Evidence is proof: the warm surface */
+.sh-proof {
+  border-color: var(--skylent-color-proof-line);
+  background: var(--skylent-surface-proof);
+}
+
+.sh-proof .sh-card-head,
+.sh-proof .sh-row,
+.sh-proof .sh-foot {
+  border-color: var(--skylent-color-proof-line);
+}
+
+.sh-proof .sh-card-head {
+  border-bottom-color: var(--skylent-color-border-strong);
+}
+
+/* Skylent AI: navy strip with the mark */
+.sh-ai {
+  overflow: hidden;
+}
+
+.sh-ai-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 14px;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 10px 18px;
+  background: var(--skylent-navy);
+  color: #ffffff;
+}
+
+.sh-ai-head .sky-chip--live {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: var(--skylent-navy);
+}
+
+.sh-ai-head .sky-chip--development,
+.sh-ai-head .sky-chip--soon {
+  border-color: var(--skylent-navy-line-2);
+  color: var(--skylent-on-navy);
+}
+
+.sh-state {
+  max-width: 560px;
+  padding-top: 24px;
+}
+
+.sh-skeleton {
+  display: grid;
+  gap: 16px;
+  max-width: 760px;
+}
+
+.sh a:focus-visible,
+.sh button:focus-visible {
+  outline: 2px solid var(--skylent-color-accent);
+  outline-offset: 2px;
+}
+
+@media (max-width: 1100px) {
+  .sh-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .sh h1 {
+    font-size: 26px;
+  }
+
+  .sh-next {
+    padding: 18px 16px 20px;
+  }
+
+  .sh-next-label em {
+    flex: 1 1 100%;
+    margin-left: 0;
+  }
+
+  .sh-next .os-btn {
+    width: 100%;
+  }
+
+  .sh-card-head,
+  .sh-row,
+  .sh-empty,
+  .sh-card > .sh-body {
+    padding-inline: 14px;
+  }
+
+  .sh-foot {
+    padding-inline: 14px;
+  }
+}

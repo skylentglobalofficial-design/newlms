@@ -57,12 +57,12 @@ function MuxPlaybackSurface({
       data-mux-ready="true"
       data-playback-provider="mux"
       style={{
-        background: C.cream,
+        background: C.soft,
         borderRadius: T.rCard,
         aspectRatio: "16/9",
         marginBottom: 20,
         overflow: "hidden",
-        border: `1px solid ${accent.border}`,
+        border: `1px solid ${T.lineDark}`,
       }}
     >
       {createElement("mux-player", {
@@ -95,7 +95,7 @@ function VideoPreviewSurface({
         data-mux-ready="true"
         data-playback-provider="unavailable"
         style={{
-          background: C.cream,
+          background: C.soft,
           borderRadius: T.rCard,
           aspectRatio: "16/9",
           display: "flex",
@@ -107,18 +107,17 @@ function VideoPreviewSurface({
           border: `1px solid ${T.lineDark}`,
         }}
       >
-        <div style={{ position: "absolute", inset: 0, background: `radial-gradient(ellipse 70% 60% at 30% 20%, ${accent.subtle} 0%, transparent 70%)` }} />
         <div style={{ position: "absolute", top: 12, left: 12, fontSize: 9, fontFamily: "var(--font-mono)", color: C.muted, letterSpacing: "0.06em" }}>
           VIDEO
         </div>
         <div style={{ position: "relative", textAlign: "center", padding: 24, maxWidth: 420 }}>
           <div style={{
             width: 64, height: 64, borderRadius: "50%",
-            background: accent.subtle, border: `2px solid ${accent.border}`,
+            background: C.cobaltTint, border: `1px solid ${C.cobalt}`,
             display: "flex", alignItems: "center", justifyContent: "center",
             margin: "0 auto", cursor: "default",
           }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill={accent.primary}><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill={C.cobalt}><polygon points="5 3 19 12 5 21 5 3"/></svg>
           </div>
           <div style={{ color: C.ink, fontSize: 13, fontWeight: 500, marginTop: 14, lineHeight: 1.4 }}>{title}</div>
           {duration && (
@@ -129,7 +128,7 @@ function VideoPreviewSurface({
           </div>
         </div>
         {watched && (
-          <div style={{ position: "absolute", bottom: 12, right: 12, fontSize: 10, fontFamily: "var(--font-mono)", color: "#22c55e", background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.3)", padding: "4px 10px", borderRadius: T.rPill }}>
+          <div style={{ position: "absolute", bottom: 12, right: 12, fontSize: 10, fontFamily: "var(--font-mono)", color: "#FFFFFF", background: C.navy, border: `1px solid ${C.navy}`, letterSpacing: "0.08em", textTransform: "uppercase", padding: "4px 9px", borderRadius: 6 }}>
             Watched
           </div>
         )}
@@ -139,7 +138,7 @@ function VideoPreviewSurface({
           type="button"
           onClick={onMarkWatched}
           style={{
-            background: accent.primary, border: "none", color: C.white,
+            background: C.cobalt, border: "none", color: C.white,
             padding: "12px 24px", borderRadius: T.rControl, fontSize: 14, fontWeight: 600,
             cursor: "pointer", fontFamily: "var(--font-body)",
           }}
