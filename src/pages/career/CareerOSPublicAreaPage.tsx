@@ -4,28 +4,13 @@ import { CareerPublicSubnav } from "../../components/product/Architecture"
 import { CAREER_OS_IA } from "../../lib/product-architecture"
 import "./CareerOS.css"
 
-const IA_STATE: Record<string, string> = {
-  Opportunities: "Empty until roles are published",
-  Projects: "Filled from your finished work",
-  Profile: "Yours to write",
-  Applications: "Filled from what you submit",
-  Interviews: "Filled from scheduled rounds",
-  Support: "Request help on the workflow",
-}
-
 function areaFromPath(pathname: string) {
   const match = CAREER_OS_IA.find((item) => pathname === item.to || pathname.startsWith(`${item.to}/`))
   return match ?? null
 }
 
 function subnavId(pathname: string): string {
-  if (pathname.startsWith("/career-os/profile")) return "profile"
-  if (pathname.startsWith("/career-os/projects")) return "projects"
-  if (pathname.startsWith("/career-os/jobs")) return "jobs"
-  if (pathname.startsWith("/career-os/applications")) return "applications"
-  if (pathname.startsWith("/career-os/interviews")) return "interviews"
-  if (pathname.startsWith("/career-os/support")) return "support"
-  return "overview"
+  return areaFromPath(pathname)?.id ?? "overview"
 }
 
 export default function CareerOSPublicAreaPage() {
@@ -56,7 +41,7 @@ export default function CareerOSPublicAreaPage() {
             <p className="cos-eyebrow">CAREER OS · SIGN IN REQUIRED</p>
             <h1 id="cos-area-title">{area.label}</h1>
             <p className="cos-public-lead">{area.sub}</p>
-            <p className="cos-area-state cos-area-state-prominent">{IA_STATE[area.label] ?? "Opens after sign in"}</p>
+            <p className="cos-area-state cos-area-state-prominent">{area.empty}</p>
             <p className="cos-public-fine">
               Career OS does not show sample jobs, applications, or interviews on public pages. Sign in to see your
               workspace — empty areas stay empty.

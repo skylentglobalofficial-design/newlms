@@ -1394,3 +1394,17 @@
     transition: none;
   }
 }
+
+/* A part of the lesson that failed to load: one sentence and a retry */
+.os-inline-state {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  padding: 18px 20px;
+  border: 1px dashed var(--skylent-color-border-strong);
+  border-radius: 10px;
+}
+
+.os-inline-state .dash-empty-copy {
+  margin: 0;
+}

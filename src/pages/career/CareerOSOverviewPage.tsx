@@ -4,7 +4,9 @@
  *
  * Everything on this screen is read from the learner's own account. Nothing is invented:
  * a step with no backend support shows a truth chip and one honest line instead of a value.
- * The eleven-step Career OS model lives only here; the public seven-stage journey is not shown.
+ * The Career OS steps (names, order, summaries, states) come from src/lib/product-manifest.ts, the
+ * same source as the public Career OS plates; only the values are the learner's own. The public
+ * seven-stage journey is not shown.
  */
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { Link } from "react-router-dom"
@@ -36,7 +38,7 @@ import {
 } from "../../lib/projects-api"
 import { listNorthwindLabWork, northwindLabPath, type SavedLabWorkSummary } from "../../lib/labs-api"
 import { fetchMyCertificates, type SkylentCertificate } from "../../lib/skylent-api"
-import { truthOf } from "../../lib/truth"
+import { CAREER_OS_FEATURES, aiFeature, careerFeature, type ProductFeature } from "../../lib/product-manifest"
 import { workspaceErrorMessage } from "../../lib/http"
 import { AI_NAME, AiMark, ArrowRight, TruthChip, type TruthState } from "../../components/skylent/primitives"
 import { applicationEmployerName, applicationRoleTitle, formatStatusLabel } from "../../components/career/application-utils"
@@ -170,7 +172,14 @@ function Panel({
   )
 }
 
-/* ── Career path: the eleven-step Career OS model ───────────────────────────── */
+/* ── Career path: the Career OS steps, in the order of src/lib/product-manifest.ts ── */
+
+/** Labels, order, summaries and states come from the product manifest; the values come from the learner's account. */
+const NEXT_STEP = careerFeature("next-step")
+const SKILLS = careerFeature("skills")
+const EVIDENCE = careerFeature("evidence")
+const OPPORTUNITIES = careerFeature("opportunities")
+const CAREER_AI = aiFeature("career-context")
 
 type CellKind = "data" | "none" | "development" | "soon" | "loading" | "error"
 
@@ -196,7 +205,9 @@ function CareerPath({ cells, onRetry }: { cells: PathCell[]; onRetry: () => void
         <div className="cosh-panel__title">
           <h2 id="cosh-path-title">Career path</h2>
         </div>
-        <span className="cosh-meta">11 steps · target role to next gap</span>
+        <span className="cosh-meta">
+          {cells.length} steps · {cells[0]?.label.toLowerCase()} to {cells[cells.length - 1]?.label.toLowerCase()}
+        </span>
       </div>
       <ol className="cosh-path__grid">
         {cells.map((cell, index) => {
@@ -234,7 +245,7 @@ function CareerPath({ cells, onRetry }: { cells: PathCell[]; onRetry: () => void
             </li>
           )
         })}
-        <li className="cosh-cell cosh-cell--legend" aria-label="Status of the eleven steps today">
+        <li className="cosh-cell cosh-cell--legend" aria-label={`Status of the ${cells.length} steps today`}>
           <div className="cosh-label">Today</div>
           {settled ? (
             <dl className="cosh-legend">
@@ -344,7 +355,7 @@ function TaskRail({ project }: { project: ProjectWorkspace }) {
 
 /* ── Page ───────────────────────────────────────────────────────────────────── */
 
-/** What Skylent AI is designed to do with career context. None of it is built: see truthOf("careerAi"). */
+/** What Skylent AI is designed to do with career context. None of it is built: see the manifest's career-context state. */
 const CAREER_AI_DESIGNED = ["Explain my skill gaps", "Explain my readiness", "Recommend what to learn next", "Compare paths", "Explain an opportunity"]
 
 export default function CareerOSOverviewPage() {
@@ -401,7 +412,7 @@ export default function CareerOSOverviewPage() {
     nextStep = (
       <div className="cosh-next__body" aria-busy="true">
         <div className="cosh-next__eyebrow">
-          <span className="cosh-next__tag">Next step</span>
+          <span className="cosh-next__tag">{NEXT_STEP.label}</span>
         </div>
         <div className="cosh-stack" aria-hidden="true">
           <Skeleton width="78%" height={18} />
@@ -414,7 +425,7 @@ export default function CareerOSOverviewPage() {
     nextStep = (
       <div className="cosh-next__body">
         <div className="cosh-next__eyebrow">
-          <span className="cosh-next__tag">Next step</span>
+          <span className="cosh-next__tag">{NEXT_STEP.label}</span>
         </div>
         <BlockError
           what="Your next step"
@@ -435,7 +446,7 @@ export default function CareerOSOverviewPage() {
       <>
         <div className="cosh-next__body">
           <div className="cosh-next__eyebrow">
-            <span className="cosh-next__tag">Next step</span>
+            <span className="cosh-next__tag">{NEXT_STEP.label}</span>
             <span>{meta}</span>
           </div>
           <h2>
@@ -460,7 +471,7 @@ export default function CareerOSOverviewPage() {
       <>
         <div className="cosh-next__body">
           <div className="cosh-next__eyebrow">
-            <span className="cosh-next__tag">Next step</span>
+            <span className="cosh-next__tag">{NEXT_STEP.label}</span>
             <span>Career profile</span>
           </div>
           <h2>Fill in your profile · {firstMissing.label}</h2>
@@ -487,7 +498,7 @@ export default function CareerOSOverviewPage() {
       <>
         <div className="cosh-next__body">
           <div className="cosh-next__eyebrow">
-            <span className="cosh-next__tag">Next step</span>
+            <span className="cosh-next__tag">{NEXT_STEP.label}</span>
             <span>Programmes</span>
           </div>
           <h2>Browse programmes</h2>
@@ -518,87 +529,133 @@ export default function CareerOSOverviewPage() {
 
   const loading = (label: string): PathCell => ({ label, kind: "loading", note: "" })
   const failed = (label: string): PathCell => ({ label, kind: "error", value: "Not loaded", note: "Could not be read" })
+  /** A step the product cannot fill yet: its manifest state, and one line saying why. */
+  const pending = (item: ProductFeature, note = item.pending ?? item.summary): PathCell => ({
+    label: item.label,
+    kind: item.status === "soon" ? "soon" : "development",
+    note,
+  })
+  const empty = (item: ProductFeature, note: string, to?: string): PathCell => ({
+    label: item.label,
+    kind: "none",
+    value: item.specimen?.empty ?? "Nothing yet",
+    note,
+    to,
+  })
 
-  const cells: PathCell[] = [
-    profileLoad.status === "loading"
-      ? loading("Target role")
-      : profileLoad.status === "error"
-        ? failed("Target role")
-        : targetRole
-          ? { label: "Target role", kind: "data", value: targetRole, note: "Entered by you" }
-          : { label: "Target role", kind: "none", value: "Not set", note: "Free text in your profile", to: "/career-os/profile#profile-basics" },
-    // No role catalogue or required-skill data exists in the backend.
-    { label: "Required skills", kind: "development", note: "Not defined per role yet" },
-    profileLoad.status === "loading"
-      ? loading("Your skills")
-      : profileLoad.status === "error"
-        ? failed("Your skills")
-        : skills.length > 0
-          ? { label: "Your skills", kind: "data", value: `${skills.length} entered`, note: "Self-entered" }
-          : { label: "Your skills", kind: "none", value: "None entered", note: "Add them in your profile", to: "/career-os/profile#profile-skills" },
-    { label: "Gaps", kind: "development", note: "Needs required skills first" },
-    dashboard.status === "loading"
-      ? loading("Learning")
-      : dashboard.status === "error"
-        ? failed("Learning")
-        : workspace
-          ? {
-              label: "Learning",
-              kind: "data",
-              value: `${workspace.progress.completedCount} of ${workspace.progress.totalLessons} lessons`,
-              note: workspace.course.title,
-              bar: { value: workspace.progress.completedCount, max: workspace.progress.totalLessons, label: "Lessons complete" },
-              to: `/learn/${workspace.course.slug}`,
-            }
-          : { label: "Learning", kind: "none", value: "Not enrolled", note: "Starts with a programme", to: "/programmes" },
-    dashboard.status === "loading" || enrollments.status === "loading" || (hasNorthwindLab && labWork.status === "loading")
-      ? loading("Practice")
-      : hasNorthwindLab
-        ? labWork.status === "error"
-          ? failed("Practice")
-          : labWork.status === "ready" && labWork.data.length > 0
-            ? { label: "Practice", kind: "data", value: `${labWork.data.length} saved`, note: "Northwind Lab", to: northwindLabPath() }
-            : { label: "Practice", kind: "none", value: "Nothing saved", note: "Northwind Lab", to: northwindLabPath() }
-        : dashboard.status === "error" && enrollments.status === "error"
-          ? failed("Practice")
-          : { label: "Practice", kind: "none", value: "No lab yet", note: workspace ? "This course has no lab" : "Starts with a programme" },
-    learnerProjects.status === "loading"
-      ? loading("Project")
-      : learnerProjects.status === "error"
-        ? failed("Project")
-        : leadProject
-          ? {
-              label: "Project",
-              kind: "data",
-              value: `${leadProject.progress.complete} of ${leadProject.progress.total} tasks`,
-              note: leadProject.title,
-              bar: { value: leadProject.progress.complete, max: leadProject.progress.total, label: "Project tasks complete" },
-              to: learnerProjectPath(leadProject.courseSlug, leadProject.projectType),
-            }
-          : { label: "Project", kind: "none", value: "Not started", note: "Opens inside a course" },
-    careerProjects.status === "loading" || certificates.status === "loading"
-      ? loading("Evidence")
-      : {
-          label: "Evidence",
-          kind: truthOf("projectsAndEvidence") === "live" ? (careerProjectCount + certificateCount > 0 ? "data" : "none") : "development",
-          value: careerProjectCount + certificateCount > 0 ? `${careerProjectCount + certificateCount} on record` : "Nothing yet",
-          note:
-            careerProjects.status === "error" && certificates.status === "error"
-              ? "Could not be read"
-              : careerProjectCount + certificateCount > 0
-                ? [careerProjectCount > 0 ? plural(careerProjectCount, "project") : "", certificateCount > 0 ? plural(certificateCount, "certificate") : ""]
-                    .filter(Boolean)
-                    .join(" · ")
-                : "Records not released",
-        },
-    { label: "Readiness", kind: "development", note: "No score is calculated" },
-    jobs.status === "loading"
-      ? loading("Opportunity")
-      : jobs.status === "ready" && jobTotal > 0
-        ? { label: "Opportunity", kind: "data", value: plural(jobTotal, "opening"), note: "Published roles", to: "/career-os/jobs" }
-        : { label: "Opportunity", kind: "soon", note: jobs.status === "error" ? "Openings could not be read" : "No openings published" },
-    { label: "Next gap", kind: "development", note: "Follows from gaps" },
-  ]
+  const cellFor = (item: ProductFeature): PathCell => {
+    const { label } = item
+    switch (item.id) {
+      case "profile":
+        return profileLoad.status === "loading"
+          ? loading(label)
+          : profileLoad.status === "error"
+            ? failed(label)
+            : targetRole
+              ? { label, kind: "data", value: targetRole, note: "Entered by you" }
+              : empty(item, "Free text in your profile", "/career-os/profile#profile-basics")
+      case "skills":
+        return profileLoad.status === "loading"
+          ? loading(label)
+          : profileLoad.status === "error"
+            ? failed(label)
+            : skills.length > 0
+              ? { label, kind: "data", value: `${skills.length} entered`, note: "Self-entered" }
+              : empty(item, "Add them in your profile", "/career-os/profile#profile-skills")
+      case "learning":
+        return dashboard.status === "loading"
+          ? loading(label)
+          : dashboard.status === "error"
+            ? failed(label)
+            : workspace
+              ? {
+                  label,
+                  kind: "data",
+                  value: `${workspace.progress.completedCount} of ${workspace.progress.totalLessons} lessons`,
+                  note: workspace.course.title,
+                  bar: { value: workspace.progress.completedCount, max: workspace.progress.totalLessons, label: "Lessons complete" },
+                  to: `/learn/${workspace.course.slug}`,
+                }
+              : empty(item, "Starts with a programme", "/programmes")
+      case "practice":
+        return dashboard.status === "loading" || enrollments.status === "loading" || (hasNorthwindLab && labWork.status === "loading")
+          ? loading(label)
+          : hasNorthwindLab
+            ? labWork.status === "error"
+              ? failed(label)
+              : labWork.status === "ready" && labWork.data.length > 0
+                ? { label, kind: "data", value: `${labWork.data.length} saved`, note: "Northwind Lab", to: northwindLabPath() }
+                : empty(item, "Northwind Lab", northwindLabPath())
+            : dashboard.status === "error" && enrollments.status === "error"
+              ? failed(label)
+              : { label, kind: "none", value: "No lab yet", note: workspace ? "This course has no lab" : "Starts with a programme" }
+      case "projects":
+        return learnerProjects.status === "loading"
+          ? loading(label)
+          : learnerProjects.status === "error"
+            ? failed(label)
+            : leadProject
+              ? {
+                  label,
+                  kind: "data",
+                  value: `${leadProject.progress.complete} of ${leadProject.progress.total} tasks`,
+                  note: leadProject.title,
+                  bar: { value: leadProject.progress.complete, max: leadProject.progress.total, label: "Project tasks complete" },
+                  to: learnerProjectPath(leadProject.courseSlug, leadProject.projectType),
+                }
+              : empty(item, item.pending ?? "Opens inside a course")
+      case "evidence":
+        return careerProjects.status === "loading"
+          ? loading(label)
+          : careerProjects.status === "error"
+            ? pending(item, "Could not be read")
+            : careerProjectCount > 0
+              ? item.status === "live"
+                ? { label, kind: "data", value: plural(careerProjectCount, "record"), note: "Added to Career OS by you" }
+                : pending(item, `${plural(careerProjectCount, "record")} · sharing not released`)
+              : item.status === "live"
+                ? empty(item, "Added from a finished project")
+                : pending(item)
+      case "certificates":
+        return certificates.status === "loading"
+          ? loading(label)
+          : certificates.status === "error"
+            ? failed(label)
+            : certificateCount > 0
+              ? { label, kind: "data", value: plural(certificateCount, "certificate"), note: "Each has an ID anyone can check" }
+              : item.status === "live"
+                ? empty(item, item.pending ?? "Issued on course completion")
+                : pending(item)
+      case "opportunities":
+        return jobs.status === "loading"
+          ? loading(label)
+          : jobs.status === "ready" && jobTotal > 0
+            ? { label, kind: "data", value: plural(jobTotal, "opening"), note: "Published roles", to: "/career-os/jobs" }
+            : pending(item, jobs.status === "error" ? "Openings could not be read" : item.pending)
+      case "next-step":
+        if (dashboard.status === "loading" || (!resumeLesson && dashboard.status === "ready" && completenessLoad.status === "loading")) return loading(label)
+        if (dashboard.status === "error") return failed(label)
+        if (resumeLesson && workspace) {
+          const number = lessons.findIndex((lesson) => lesson.id === resumeLesson.lessonId) + 1
+          return {
+            label,
+            kind: "data",
+            value: number > 0 ? `Lesson ${number}` : "Your lesson",
+            note: resumeLesson.lessonTitle,
+            to: `/learn/${workspace.course.slug}/${resumeLesson.lessonId}`,
+          }
+        }
+        if (firstMissing) {
+          return { label, kind: "data", value: firstMissing.label, note: "Missing from your profile", to: `/career-os/profile#profile-${firstMissing.section}` }
+        }
+        return empty(item, "Opens the catalogue", "/programmes")
+      default:
+        // Gaps, readiness and any other step the backend cannot fill yet.
+        return item.status === "live" ? empty(item, item.summary) : pending(item)
+    }
+  }
+
+  const cells: PathCell[] = CAREER_OS_FEATURES.map(cellFor)
 
   function retryPath() {
     if (profileLoad.status === "error") void reloadProfile()
@@ -606,6 +663,7 @@ export default function CareerOSOverviewPage() {
     if (enrollments.status === "error") retryEnrollments()
     if (learnerProjects.status === "error") retryLearnerProjects()
     if (labWork.status === "error") retryLabWork()
+    if (certificates.status === "error") retryCertificates()
   }
 
   /* ── Evidence rows: a certificate is not project evidence, and neither is an employment outcome ── */
@@ -807,7 +865,7 @@ export default function CareerOSOverviewPage() {
           {/* Your skills */}
           <Panel
             id="cosh-skills-title"
-            title="Your skills"
+            title={SKILLS.label}
             meta={profileLoad.status === "ready" ? `${skills.length} entered · not assessed by Skylent` : undefined}
           >
             {profileLoad.status === "loading" ? (
@@ -883,10 +941,10 @@ export default function CareerOSOverviewPage() {
           {/* Evidence: the warm proof surface */}
           <Panel
             id="cosh-evidence-title"
-            title="Evidence"
+            title={EVIDENCE.label}
             tone="proof"
             meta={!evidenceLoading && !evidenceAllFailed ? `Ledger · ${plural(ledger.length, "item")}` : undefined}
-            chip={<TruthChip state={truthOf("projectsAndEvidence")} />}
+            chip={<TruthChip state={EVIDENCE.status} />}
           >
             {evidenceLoading ? (
               <div className="cosh-panel__pad cosh-stack" aria-busy="true">
@@ -1120,12 +1178,12 @@ export default function CareerOSOverviewPage() {
           {/* Openings */}
           <Panel
             id="cosh-openings-title"
-            title="Openings"
+            title={OPPORTUNITIES.label}
             chip={
               jobs.status === "ready" && jobTotal > 0 ? (
                 <span className="cosh-meta">{jobTotal} published</span>
               ) : (
-                <TruthChip state={truthOf("openings")} />
+                <TruthChip state={OPPORTUNITIES.status} />
               )
             }
           >
@@ -1168,7 +1226,7 @@ export default function CareerOSOverviewPage() {
             <div className="sky-ai-head sky-on-navy cosh-ai__head">
               <div className="cosh-ai__top">
                 <AiMark />
-                <TruthChip state={truthOf("careerAi")} />
+                <TruthChip state={CAREER_AI.status} />
               </div>
               <div className="sky-label">Context in use</div>
               <div className="cosh-ai__context">

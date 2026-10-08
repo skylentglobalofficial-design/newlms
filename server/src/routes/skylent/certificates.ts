@@ -78,7 +78,9 @@ skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedReq
     where: { userId: req.auth!.user.id },
     orderBy: { issuedAt: "desc" },
   })
-  res.json({ data: rows.map(issuedView) })
+  // The learner's own list also says whether a certificate was revoked, so the UI never offers
+  // "Verify" for one the public check will reject. The public verify response is unchanged.
+  res.json({ data: rows.map((row) => ({ ...issuedView(row), revoked: row.revoked })) })
 })
 
 /** Public check. Returns only name, course, and date. */

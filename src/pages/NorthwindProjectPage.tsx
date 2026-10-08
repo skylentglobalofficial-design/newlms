@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { workspaceErrorMessage } from "../lib/http"
+import { isSignInError, learnerErrorMessage } from "../components/lms/lms-utils"
 import {
   attachProjectEvidence,
   completeProjectTask,
@@ -34,11 +35,13 @@ export default function LearnerProjectPage() {
   const [whyItMatters, setWhyItMatters] = useState("")
   const [recommendation, setRecommendation] = useState("")
   const [attachId, setAttachId] = useState("")
-  const [status, setStatus] = useState<"loading" | "ready" | "error" | "forbidden">("loading")
+  const [status, setStatus] = useState<"loading" | "ready" | "error" | "forbidden" | "signin">("loading")
+  const [attempt, setAttempt] = useState(0)
   const [busy, setBusy] = useState<"save" | "task" | "attach" | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [careerLink, setCareerLink] = useState<CareerProjectLink | null>(null)
+  const [careerLinkStatus, setCareerLinkStatus] = useState<"loading" | "ready" | "error">("loading")
   const [careerBusy, setCareerBusy] = useState(false)
   const [careerNotice, setCareerNotice] = useState<string | null>(null)
 
@@ -62,25 +65,37 @@ export default function LearnerProjectPage() {
         setRecommendation(next.reflection.recommendation)
         setSelectedKey(firstOpenTask(next)?.key ?? next.tasks[0]?.key ?? null)
         setStatus("ready")
+        setCareerLinkStatus("loading")
         void fetchCareerLinkForLearnerProject(next.id, controller.signal)
-          .then(setCareerLink)
+          .then((link) => {
+            setCareerLink(link)
+            setCareerLinkStatus("ready")
+          })
           .catch(() => {
-            if (!controller.signal.aborted) setCareerLink(null)
+            // Unknown, not "not added": the page must not offer to add it again on a failed check.
+            if (!controller.signal.aborted) {
+              setCareerLink(null)
+              setCareerLinkStatus("error")
+            }
           })
       })
       .catch((err) => {
         if (controller.signal.aborted) return
+        if (isSignInError(err)) {
+          setStatus("signin")
+          return
+        }
         const message = workspaceErrorMessage(err)
         if (/enrol/i.test(message) || /403/.test(message)) {
           setStatus("forbidden")
-          setError(message || "Enrol in this course to work on this project.")
+          setError(learnerErrorMessage(err, "Enrol in this course to work on this project."))
           return
         }
         setStatus("error")
-        setError(message || "Could not open this project.")
+        setError(learnerErrorMessage(err))
       })
     return () => controller.abort()
-  }, [courseSlug, projectType])
+  }, [courseSlug, projectType, attempt])
 
   const selected = useMemo(
     () => project?.tasks.find((task) => task.key === selectedKey) ?? project?.tasks[0] ?? null,
@@ -105,7 +120,7 @@ export default function LearnerProjectPage() {
       applyProject(await completeProjectTask(project.id, task.key))
       setNotice("Task marked complete.")
     } catch (err) {
-      setError(workspaceErrorMessage(err) || "Could not complete that task.")
+      setError(learnerErrorMessage(err, "That task could not be marked complete. Try again in a moment."))
     } finally {
       setBusy(null)
     }
@@ -121,7 +136,7 @@ export default function LearnerProjectPage() {
       setNotice("Saved lab work attached.")
       setAttachId("")
     } catch (err) {
-      setError(workspaceErrorMessage(err) || "Could not attach that work.")
+      setError(learnerErrorMessage(err, "That work could not be attached. Try again in a moment."))
     } finally {
       setBusy(null)
     }
@@ -137,7 +152,7 @@ export default function LearnerProjectPage() {
       setCareerLink({ id: linked.id, href: `/career-os/projects/${linked.id}` })
       setCareerNotice(null)
     } catch (err) {
-      setCareerNotice(workspaceErrorMessage(err) || "Finish the project before adding it to Career OS.")
+      setCareerNotice(learnerErrorMessage(err, "The project could not be added to Career OS right now. Try again in a moment."))
     } finally {
       setCareerBusy(false)
     }
@@ -152,7 +167,7 @@ export default function LearnerProjectPage() {
       applyProject(await saveProject(project.id, { finding, whyItMatters, recommendation }), true)
       setNotice("Project saved.")
     } catch (err) {
-      setError(workspaceErrorMessage(err) || "Could not save this project.")
+      setError(learnerErrorMessage(err, "Your project could not be saved. Your text is still here. Try again."))
     } finally {
       setBusy(null)
     }
@@ -172,6 +187,27 @@ export default function LearnerProjectPage() {
     )
   }
 
+  if (status === "signin") {
+    return (
+      <div className="lab-shell">
+        <div className="lab-empty">
+          <p className="os-eyebrow">Project</p>
+          <h1>Sign in to open your project</h1>
+          <p>Your project is saved to your account. Sign in to continue where you left off.</p>
+          <div className="os-actions">
+            <Link
+              className="os-btn os-btn-primary"
+              to="/login"
+              state={{ returnTo: courseSlug && projectType ? learnerProjectPath(courseSlug, projectType) : "/dashboard/student" }}
+            >
+              Sign in
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   if (status === "forbidden" || status === "error" || !project) {
     const courseHref = courseSlug ? `/learn/${courseSlug}` : "/dashboard/student"
     return (
@@ -181,7 +217,12 @@ export default function LearnerProjectPage() {
           <h1>{status === "forbidden" ? "Enrol in this course to open the project" : "This project could not be opened"}</h1>
           <p>{error}</p>
           <div className="os-actions">
-            <Link className="os-btn os-btn-primary" to={courseHref}>
+            {status === "error" ? (
+              <button type="button" className="os-btn os-btn-primary" onClick={() => setAttempt((value) => value + 1)}>
+                Try again
+              </button>
+            ) : null}
+            <Link className={status === "error" ? "os-btn os-btn-ghost" : "os-btn os-btn-primary"} to={courseHref}>
               {courseSlug ? "Open course" : "Open dashboard"}
             </Link>
           </div>
@@ -247,6 +288,10 @@ export default function LearnerProjectPage() {
               View in Career OS
             </Link>
           </>
+        ) : careerLinkStatus === "loading" ? (
+          <p>Checking Career OS…</p>
+        ) : careerLinkStatus === "error" ? (
+          <p>Career OS could not be checked for this project. Reload the page to try again.</p>
         ) : project.progress.complete === project.progress.total ? (
           <button
             type="button"

@@ -12,13 +12,15 @@ type Props = {
   lessonNumber?: number
   /** Lesson kind from the course workspace: notes, video, quiz or assignment. */
   lessonKind?: string | null
+  /** True while this check or assignment is still open for the learner (server policy open_quiz / open_assignment). */
+  assessmentOpen?: boolean
   compact: boolean
 }
 
-type UiState = "checking" | "unavailable" | "ready" | "loading" | "error"
+type UiState = "checking" | "unavailable" | "unreachable" | "ready" | "loading" | "error"
 
 /** What the panel keeps per turn. Only `role` and `content` are ever sent back to the API. */
-type UiTurn = SkylentAiTurn & { basedOn?: string }
+type UiTurn = SkylentAiTurn & { basedOn?: string; heldBack?: boolean }
 
 /** The four real modes of POST /lms/ai/ask (plus the free question, mode "ask"). Nothing else exists. */
 const QUICK: Array<{ action: SkylentAiAction; label: string }> = [
@@ -28,7 +30,11 @@ const QUICK: Array<{ action: SkylentAiAction; label: string }> = [
   { action: "practice", label: "Practice question" },
 ]
 
-const UNAVAILABLE = `${AI_NAME} isn't available right now.`
+const UNAVAILABLE = `${AI_NAME} isn't switched on yet.`
+const UNREACHABLE = `${AI_NAME} could not be reached.`
+
+/** Courses whose lesson text, concepts and case facts the server loads (server/src/lib/skylent-ai/authored.ts). */
+const AUTHORED_AI_COURSES = new Set(["data-analytics", "product-management"])
 
 /** Case facts the server attaches to the lesson context (server/src/lib/skylent-ai/authored.ts). */
 function caseChipFor(courseSlug: string, caseLabel?: string | null): string | null {
@@ -38,16 +44,51 @@ function caseChipFor(courseSlug: string, caseLabel?: string | null): string | nu
   return null
 }
 
-/** Academic integrity notice. The rule itself is enforced by the server; this only states it. */
-function integrityNotice(kind?: string | null): string | null {
-  if (kind === "quiz") return `During a check, ${AI_NAME} explains concepts and gives similar practice. It does not answer the questions.`
-  if (kind === "assignment") return `During an assignment, ${AI_NAME} gives hints and feedback. It does not write your submission.`
+/**
+ * Exactly what the server puts in the prompt. Authored courses: the lesson excerpt, its key concepts
+ * and the course case facts (Northwind results are withheld while an assessment is open). Any other
+ * course: only the course, module and lesson titles. Never progress, projects, evidence or career data.
+ */
+function contextChips(courseSlug: string, caseLabel: string | null, assessmentOpen: boolean): Array<{ label: string; off?: boolean }> {
+  if (!AUTHORED_AI_COURSES.has(courseSlug)) {
+    return [{ label: "Lesson title only" }]
+  }
+  const chips: Array<{ label: string; off?: boolean }> = [{ label: "Lesson text" }, { label: "Key concepts" }]
+  if (caseLabel) {
+    chips.push({ label: assessmentOpen && courseSlug === "data-analytics" ? `${caseLabel} · results withheld` : caseLabel })
+  }
+  return chips
+}
+
+/** Academic integrity notice, only while the assessment is open. The server enforces the rule; this states it. */
+function integrityNotice(kind: string | null | undefined, open: boolean): string | null {
+  if (!open) return null
+  if (kind === "quiz") return `This check is still open. ${AI_NAME} explains concepts and gives similar practice. It does not answer the questions.`
+  if (kind === "assignment") return `This assignment is still open. ${AI_NAME} gives hints and feedback. It does not write your submission.`
   return null
+}
+
+/**
+ * The server answers a request it will not fulfil with its own refusal sentence
+ * (server/src/lib/skylent-ai/integrity.ts and prompts.ts). These are their opening words.
+ */
+const REFUSAL_OPENINGS = [
+  /^This quiz is still open, so I will not/i,
+  /^This assignment is still open, so I will not/i,
+  /^I will not give the current quiz answer/i,
+  /^I will not complete the assessed assignment/i,
+  /^I will not reveal graded answer keys/i,
+]
+
+function isHeldBack(answer: string): boolean {
+  const text = answer.trim()
+  return REFUSAL_OPENINGS.some((pattern) => pattern.test(text))
 }
 
 function friendlyError(err: unknown): { message: string; unavailable: boolean } {
   const raw = workspaceErrorMessage(err)
   if (/isn't available/i.test(raw)) return { message: UNAVAILABLE, unavailable: true }
+  if (/sign in to continue/i.test(raw)) return { message: "Your session has ended. Sign in again to ask.", unavailable: false }
   if (/Enrolment required|Lesson locked|do not have access/i.test(raw)) {
     return { message: `${AI_NAME} cannot open this lesson yet.`, unavailable: false }
   }
@@ -72,7 +113,7 @@ function AnswerText({ text }: { text: string }) {
   )
 }
 
-export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNumber, lessonKind, compact }: Props) {
+export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNumber, lessonKind, assessmentOpen = false, compact }: Props) {
   const inputId = useId()
   const sheetId = useId()
   const listRef = useRef<HTMLDivElement>(null)
@@ -135,7 +176,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
       })
       .catch((err) => {
         if (cancelled || (err instanceof DOMException && err.name === "AbortError")) return
-        setUi("unavailable")
+        setUi("unreachable")
       })
     return () => {
       cancelled = true
@@ -165,9 +206,10 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
   }, [compact, open])
 
   const busy = ui === "loading"
-  const inputDisabled = ui === "unavailable" || ui === "checking" || busy
-  const chip = caseChipFor(courseSlug, caseLabel)
-  const notice = integrityNotice(lessonKind)
+  const off = ui === "unavailable" || ui === "unreachable"
+  const inputDisabled = off || ui === "checking" || busy
+  const chips = contextChips(courseSlug, caseChipFor(courseSlug, caseLabel), assessmentOpen)
+  const notice = integrityNotice(lessonKind, assessmentOpen)
 
   function clearConversation() {
     abortRef.current?.abort()
@@ -180,7 +222,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
   }
 
   async function submit(action: SkylentAiAction, extra?: string) {
-    if (busy || ui === "unavailable" || ui === "checking") return
+    if (busy || off || ui === "checking") return
     const text = (extra ?? (action === "ask" ? draft : "")).trim()
     if (action === "ask" && !text) return
 
@@ -211,7 +253,13 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
       if (requestId !== seqRef.current) return
       setTurns([
         ...pending,
-        { role: "assistant", content: result.answer, related: result.related, basedOn: result.basedOn || lessonTitle },
+        {
+          role: "assistant",
+          content: result.answer,
+          related: result.related,
+          basedOn: result.basedOn || lessonTitle,
+          heldBack: result.refused ?? isHeldBack(result.answer),
+        },
       ])
       setCaseLabel(result.caseLabel ?? caseChipFor(courseSlug))
       setUi("ready")
@@ -248,9 +296,10 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
         {lessonTitle}
       </p>
       <ul className="os-ai-chips" aria-label={`What ${AI_NAME} can see`}>
-        <li>Lesson text</li>
-        {chip ? <li>{chip}</li> : null}
-        <li className="is-off">Your progress · not connected</li>
+        {chips.map((chip) => (
+          <li key={chip.label} className={chip.off ? "is-off" : undefined}>{chip.label}</li>
+        ))}
+        <li className="is-off">Progress, projects, career · not connected</li>
       </ul>
     </header>
   )
@@ -268,10 +317,14 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
           </div>
         ) : null}
 
-        {ui === "unavailable" ? (
+        {off ? (
           <div className="os-ai-off" role="status">
-            <p>{UNAVAILABLE}</p>
-            <p className="os-fine">You can still study this lesson as normal.</p>
+            <p>{ui === "unavailable" ? UNAVAILABLE : UNREACHABLE}</p>
+            <p className="os-fine">
+              {ui === "unavailable"
+                ? "The server has no AI provider configured. You can still study this lesson as normal."
+                : "The learning service did not answer. You can still study this lesson as normal."}
+            </p>
           </div>
         ) : null}
 
@@ -287,10 +340,10 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
                     <p>{exchange.answer.basedOn}</p>
                   </div>
                 ) : null}
-                <div className="os-ai-block">
+                <div className={exchange.answer.heldBack ? "os-ai-block is-held" : "os-ai-block"}>
                   <p className="os-ai-label">
                     <span className="os-ai-dot" aria-hidden="true" />
-                    Answer
+                    {exchange.answer.heldBack ? "Held back while this assessment is open" : "Answer"}
                   </p>
                   <AnswerText text={exchange.answer.content} />
                 </div>

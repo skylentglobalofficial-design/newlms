@@ -1,27 +1,16 @@
 import { type ReactNode } from "react"
 import { useLocation } from "react-router-dom"
 import { AuthDashboardShell, type AuthNavItem } from "../AuthDashboardShell"
+import { CAREER_OS_NAV } from "../../lib/product-manifest"
 
-const NAV_ITEMS: AuthNavItem[] = [
-  { id: "overview", label: "Overview", short: "Home", href: "/career-os" },
-  { id: "projects", label: "Projects", short: "Work", href: "/career-os/projects" },
-  { id: "profile", label: "Profile", short: "Profile", href: "/career-os/profile" },
-  { id: "jobs", label: "Opportunities", short: "Roles", href: "/career-os/jobs" },
-  { id: "applications", label: "Applications", short: "Apps", href: "/career-os/applications" },
-  { id: "interviews", label: "Interviews", short: "Prep", href: "/career-os/interviews" },
-  { id: "support", label: "Support", short: "Help", href: "/career-os/support" },
-]
+/** Names and order from src/lib/product-manifest.ts, shared with the public Career OS pages. */
+const NAV_ITEMS: AuthNavItem[] = CAREER_OS_NAV.map((item) => ({ id: item.id, label: item.label, short: item.short, href: item.route }))
 
 const BOTTOM_NAV = NAV_ITEMS.filter(n => ["overview", "projects", "profile", "applications", "support"].includes(n.id))
 
 function navIdFromPath(pathname: string): string {
-  if (pathname.startsWith("/career-os/projects")) return "projects"
-  if (pathname.startsWith("/career-os/profile")) return "profile"
-  if (pathname.startsWith("/career-os/jobs")) return "jobs"
-  if (pathname.startsWith("/career-os/applications")) return "applications"
-  if (pathname.startsWith("/career-os/interviews")) return "interviews"
-  if (pathname.startsWith("/career-os/support")) return "support"
-  return "overview"
+  const match = CAREER_OS_NAV.find((item) => item.id !== "overview" && (pathname === item.route || pathname.startsWith(`${item.route}/`)))
+  return match?.id ?? "overview"
 }
 
 function NavIcon({ id }: { id: string }) {

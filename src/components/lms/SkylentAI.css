@@ -155,6 +155,15 @@
   border-top: 1px solid var(--skylent-color-border);
 }
 
+/* A request the server declined under the academic-integrity rule: calm, not an error */
+.os-ai-block.is-held .os-ai-dot {
+  background: var(--skylent-color-muted);
+}
+
+.os-ai-block.is-held .os-ai-text {
+  color: var(--skylent-color-slate);
+}
+
 .os-ai-block.is-inline {
   display: flex;
   gap: 12px;

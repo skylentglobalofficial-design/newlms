@@ -25,7 +25,7 @@ export async function askSkylentAi(input: {
   question?: string
   messages?: SkylentAiTurn[]
   signal?: AbortSignal
-}): Promise<{ answer: string; basedOn: string; related: string | null; caseLabel: string | null }> {
+}): Promise<{ answer: string; basedOn: string; related: string | null; caseLabel: string | null; refused: boolean | null }> {
   const token = await ensureCsrfToken()
   const response = await fetch(`${API_BASE}/lms/ai/ask`, {
     method: "POST",
@@ -44,12 +44,14 @@ export async function askSkylentAi(input: {
     }),
   })
   const parsed = await parseApiJson<{
-    data: { answer: string; basedOn: string; related?: string | null; caseLabel?: string | null }
+    data: { answer: string; basedOn: string; related?: string | null; caseLabel?: string | null; refused?: boolean }
   }>(response)
   return {
     answer: parsed.data.answer,
     basedOn: parsed.data.basedOn,
     related: parsed.data.related ?? null,
     caseLabel: parsed.data.caseLabel ?? null,
+    // null when the server predates the field; the panel then falls back to its sentence match.
+    refused: typeof parsed.data.refused === "boolean" ? parsed.data.refused : null,
   }
 }

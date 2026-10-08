@@ -120,6 +120,7 @@ export function LessonContentView({
   onComplete,
   quizQuestions,
   quizStatus = 'ready',
+  onQuizRetry,
   onQuizSubmit,
   onAssignmentSubmit,
   lessonMedia,
@@ -130,9 +131,11 @@ export function LessonContentView({
   accent: Accent
   onComplete: () => void
   quizQuestions?: QuizQuestion[]
-  quizStatus?: 'loading' | 'ready'
+  quizStatus?: 'loading' | 'ready' | 'error'
+  onQuizRetry?: () => void
   onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
-  onAssignmentSubmit?: (text: string) => Promise<void>
+  /** Resolves true only once the server has recorded the submission. */
+  onAssignmentSubmit?: (text: string) => Promise<boolean>
   lessonMedia?: VideoPlaybackSource
   courseSlug?: string
 }) {
@@ -183,19 +186,30 @@ export function LessonContentView({
 
   if (lesson.type === 'quiz') {
     const questions = quizQuestions ?? []
+    const passed = lessonState.complete || lessonState.quizPassed
     return (
       <div className="lms-lesson-quiz">
         {material?.body && (
           <LessonDocument markdown={material.body} accent={accent} skipHeading={lesson.title} />
         )}
-        {quizStatus === 'loading' ? (
+        {passed ? (
+          // Recorded by the server; the questions are not needed to show that.
+          <AssessmentSurface mode="mcq" title={lesson.title} accent={accent} passed onSubmitAnswers={onQuizSubmit} />
+        ) : quizStatus === 'error' ? (
+          <div className="os-inline-state" role="status">
+            <p className="dash-empty-copy">The questions for this check could not be loaded. Nothing has been recorded.</p>
+            {onQuizRetry ? (
+              <button type="button" className="os-btn os-btn-ghost" onClick={onQuizRetry}>Try again</button>
+            ) : null}
+          </div>
+        ) : quizStatus === 'loading' ? (
           <div className="os-state-skeleton" role="status" aria-label="Loading the questions">
             <span className="os-skeleton" style={{ width: '40%' }} />
             <span className="os-skeleton" style={{ height: 96 }} />
             <span className="os-skeleton" style={{ height: 96 }} />
           </div>
         ) : questions.length === 0 ? (
-          <p className="dash-empty-copy">No questions are available for this check right now.</p>
+          <p className="dash-empty-copy">This check has no questions published yet.</p>
         ) : (
           <AssessmentSurface
             mode="mcq"
@@ -203,7 +217,7 @@ export function LessonContentView({
             subtitle={`${questions.length} questions. Your answers are checked when you submit.`}
             questions={questions}
             accent={accent}
-            passed={lessonState.complete || lessonState.quizPassed}
+            passed={false}
             onPass={onComplete}
             onSubmitAnswers={onQuizSubmit}
           />
@@ -229,7 +243,7 @@ export function LessonContentView({
         subtitle={material?.assignment ? 'Paste your work below. Submission records progress; it is not a grade.' : 'Apply concepts from this module. Submission records progress; it is not a grade.'}
         accent={accent}
         passed={lessonState.complete || lessonState.assignmentSubmitted}
-        onSubmitAssignment={(text) => { void onAssignmentSubmit?.(text) }}
+        onSubmitAssignment={onAssignmentSubmit}
         completionNote={
           evidence
             ? `Submission recorded. There is no grading in this pilot. Add “${evidence.artifact}” to Career OS → Projects yourself if you want it as portfolio evidence.`

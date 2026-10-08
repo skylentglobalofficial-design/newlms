@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react"
 import { Link, useSearchParams } from "react-router-dom"
-import { workspaceErrorMessage } from "../lib/http"
+import { WORKSPACE_LOAD_ERROR, workspaceErrorMessage } from "../lib/http"
+import { isSignInError, learnerErrorMessage } from "../components/lms/lms-utils"
 import {
   fetchNorthwindLab,
   fetchNorthwindLabWork,
@@ -95,11 +96,13 @@ export default function NorthwindLabPage() {
   const mode = params.get("mode") === "sql" ? "sql" : "analysis"
   const [workspace, setWorkspace] = useState<LabWorkspace | null>(null)
   const [saved, setSaved] = useState<SavedLabWorkSummary[]>([])
+  const [savedStatus, setSavedStatus] = useState<"loading" | "ready" | "error">("loading")
+  const [attempt, setAttempt] = useState(0)
   const [guidedResult, setGuidedResult] = useState<LabGuidedRunResult | null>(null)
   const [sqlResult, setSqlResult] = useState<LabSqlRunResult | null>(null)
   const [query, setQuery] = useState("")
   const [resultView, setResultView] = useState<"table" | "chart">("table")
-  const [status, setStatus] = useState<"loading" | "ready" | "error" | "forbidden">("loading")
+  const [status, setStatus] = useState<"loading" | "ready" | "error" | "forbidden" | "signin">("loading")
   const [busy, setBusy] = useState<"run" | "save" | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [savedNotice, setSavedNotice] = useState<string | null>(null)
@@ -120,18 +123,20 @@ export default function NorthwindLabPage() {
   useEffect(() => {
     const controller = new AbortController()
     setStatus("loading")
+    setSavedStatus("loading")
     setError(null)
-    void Promise.all([
-      fetchNorthwindLab(lessonKey, controller.signal),
-      listNorthwindLabWork(controller.signal),
-    ])
-      .then(([nextWorkspace, nextSaved]) => {
+    // The lab and the saved-work list load separately: a failed list must not hide the lab.
+    void fetchNorthwindLab(lessonKey, controller.signal)
+      .then((nextWorkspace) => {
         setWorkspace(nextWorkspace)
-        setSaved(nextSaved)
         setStatus("ready")
       })
       .catch((err) => {
         if (controller.signal.aborted) return
+        if (isSignInError(err)) {
+          setStatus("signin")
+          return
+        }
         const message = workspaceErrorMessage(err)
         if (/enrol/i.test(message) || /403/.test(message)) {
           setStatus("forbidden")
@@ -139,10 +144,18 @@ export default function NorthwindLabPage() {
           return
         }
         setStatus("error")
-        setError(message || "Could not open this lab.")
+        setError(learnerErrorMessage(err))
+      })
+    void listNorthwindLabWork(controller.signal)
+      .then((nextSaved) => {
+        setSaved(nextSaved)
+        setSavedStatus("ready")
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setSavedStatus("error")
       })
     return () => controller.abort()
-  }, [lessonKey])
+  }, [lessonKey, attempt])
 
   useEffect(() => {
     if (!workspace || workId) return
@@ -181,7 +194,7 @@ export default function NorthwindLabPage() {
       })
       .catch((err) => {
         if (controller.signal.aborted) return
-        setError(workspaceErrorMessage(err) || "Could not open that saved work.")
+        setError(learnerErrorMessage(err, "That saved work could not be opened. Try again in a moment."))
       })
     return () => controller.abort()
   }, [workId, status, setParams])
@@ -207,7 +220,7 @@ export default function NorthwindLabPage() {
       const next = await runNorthwindLab({ operation, lessonKey })
       setGuidedResult(next)
     } catch (err) {
-      setError(workspaceErrorMessage(err) || "Could not run that analysis.")
+      setError(learnerErrorMessage(err, "The analysis could not be run right now. Try again in a moment."))
     } finally {
       setBusy(null)
     }
@@ -225,7 +238,13 @@ export default function NorthwindLabPage() {
       revealResults()
     } catch (err) {
       setSqlResult(null)
-      setError(workspaceErrorMessage(err) || "That query could not be run.")
+      // The SQL engine's own message (syntax, unknown column) is useful; transport noise is not.
+      const message = workspaceErrorMessage(err)
+      setError(
+        !message || message === WORKSPACE_LOAD_ERROR || /failed to fetch|networkerror|csrf token/i.test(message)
+          ? "The query could not be sent. Check your connection and run it again."
+          : message,
+      )
     } finally {
       setBusy(null)
     }
@@ -242,6 +261,7 @@ export default function NorthwindLabPage() {
       if (isSqlRunResult(work.result)) setSqlResult(work.result)
       if (isGuidedRunResult(work.result)) setGuidedResult(work.result)
       setSaved((current) => [work, ...current.filter((row) => row.id !== work.id)].slice(0, 20))
+      setSavedStatus((current) => (current === "error" ? current : "ready"))
       setSavedNotice("Saved to your lab work.")
       setParams((current) => {
         const next = new URLSearchParams(current)
@@ -250,7 +270,7 @@ export default function NorthwindLabPage() {
         return next
       }, { replace: true })
     } catch (err) {
-      setError(workspaceErrorMessage(err) || "Could not save that work.")
+      setError(learnerErrorMessage(err, "Your work could not be saved. It is still on screen. Try again."))
     } finally {
       setBusy(null)
     }
@@ -271,6 +291,23 @@ export default function NorthwindLabPage() {
             <span className="os-skeleton" style={{ width: "30%" }} />
             <span className="os-skeleton" style={{ height: 28, width: "70%" }} />
             <span className="os-skeleton" />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (status === "signin") {
+    return (
+      <div className="lab-shell">
+        <div className="lab-empty">
+          <p className="os-eyebrow">Practice lab</p>
+          <h1>Sign in to open the lab</h1>
+          <p>Your lab work is saved to your account. Sign in to continue where you left off.</p>
+          <div className="os-actions">
+            <Link className="os-btn os-btn-primary" to="/login" state={{ returnTo: northwindLabPath(lessonKey, workId, mode) }}>
+              Sign in
+            </Link>
           </div>
         </div>
       </div>
@@ -300,9 +337,12 @@ export default function NorthwindLabPage() {
         <div className="lab-empty">
           <p className="os-eyebrow">Practice lab</p>
           <h1>This lab could not be opened</h1>
-          <p>{error ?? "Try returning to the lesson."}</p>
+          <p>{error ?? "Try again, or return to the lesson."}</p>
           <div className="os-actions">
-            <Link className="os-btn os-btn-primary" to={lessonReturnTo(lessonKey)}>
+            <button type="button" className="os-btn os-btn-primary" onClick={() => setAttempt((value) => value + 1)}>
+              Try again
+            </button>
+            <Link className="os-btn os-btn-ghost" to={lessonReturnTo(lessonKey)}>
               Return to lesson
             </Link>
           </div>
@@ -643,7 +683,20 @@ export default function NorthwindLabPage() {
 
             <div className="lab-saved">
               <p className="os-eyebrow">Saved work</p>
-              {saved.length === 0 ? <p>Nothing saved yet. Results stay in this lab; they are not a certificate.</p> : null}
+              {savedStatus === "loading" && saved.length === 0 ? (
+                <div className="os-state-skeleton" role="status" aria-label="Loading your saved work">
+                  <span className="os-skeleton" style={{ width: "60%" }} />
+                </div>
+              ) : savedStatus === "error" && saved.length === 0 ? (
+                <p>
+                  Your saved work could not be loaded.{" "}
+                  <button type="button" className="os-link" onClick={() => setAttempt((value) => value + 1)}>
+                    Try again
+                  </button>
+                </p>
+              ) : saved.length === 0 ? (
+                <p>Nothing saved yet. Results stay in this lab; they are not a certificate.</p>
+              ) : null}
               {saved.map((item) => (
                 <article key={item.id}>
                   <h3>{item.title}</h3>

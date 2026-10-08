@@ -24,7 +24,8 @@ export function AssessmentSurface({
   accent: Accent
   passed?: boolean
   onPass?: () => void
-  onSubmitAssignment?: (text: string) => void | Promise<void>
+  /** Resolves false (or rejects) when the server did not record the submission. */
+  onSubmitAssignment?: (text: string) => boolean | void | Promise<boolean | void>
   onSubmitAnswers?: (answers: Record<number, number>) => Promise<boolean>
   completionNote?: string
 }) {
@@ -51,7 +52,7 @@ export function AssessmentSurface({
           <p className="dash-empty-copy">
             {completionNote ?? 'There is no grading in this pilot. Record the artifact on Career OS → Projects if you want portfolio evidence.'}
           </p>
-          <Link className="os-link" to="/career-os/profile" style={{ display: 'inline-block', marginTop: 14 }}>
+          <Link className="os-link" to="/career-os/projects" style={{ display: 'inline-block', marginTop: 14 }}>
             Open Career OS Projects
           </Link>
         </div>
@@ -78,8 +79,10 @@ export function AssessmentSurface({
           onClick={() => {
             if (!text.trim() || submitting) return
             setSubmitting(true)
+            // "Submission recorded" appears only after the server confirms it.
             void Promise.resolve(onSubmitAssignment?.(text))
-              .then(() => setAssignmentDone(true))
+              .then((recorded) => { if (recorded !== false) setAssignmentDone(true) })
+              .catch(() => undefined)
               .finally(() => setSubmitting(false))
           }}
         >
@@ -124,6 +127,10 @@ export function AssessmentSurface({
       }
       setSubmitted(true)
       if (correct === qs.length) onPass?.()
+    } catch {
+      // The request failed: the attempt was not graded. Keep the answers so the learner can resend.
+      setSubmitted(false)
+      setServerPassed(null)
     } finally {
       setSubmitting(false)
     }

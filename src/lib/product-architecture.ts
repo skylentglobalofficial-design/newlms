@@ -1,5 +1,7 @@
 /** Product maturity and information architecture for public Skylent. */
 
+import { CAREER_OS_NAV } from "./product-manifest"
+
 export type ProductMaturity = "live" | "coming_soon" | "direction" | "demo"
 
 export const MATURITY_LABEL: Record<ProductMaturity, string> = {
@@ -433,14 +435,10 @@ export const FOOTER_COLS = [
 /** Legal labels shown in the footer until dedicated routes exist. */
 export const FOOTER_LEGAL_LABELS = ["Privacy", "Terms", "Cookies"] as const
 
-export const CAREER_OS_IA = [
-  { label: "Projects", to: "/career-os/projects", sub: "Learner work kept as evidence" },
-  { label: "Profile", to: "/career-os/profile", sub: "Identity, skills, evidence" },
-  { label: "Opportunities", to: "/career-os/jobs", sub: "Job board when roles are published" },
-  { label: "Applications", to: "/career-os/applications", sub: "Track what you submitted" },
-  { label: "Interviews", to: "/career-os/interviews", sub: "Rounds and practice" },
-  { label: "Support", to: "/career-os/support", sub: "Help on the career workflow" },
-] as const
+/** Career OS workspace areas (signed-in nav minus Overview), from src/lib/product-manifest.ts. */
+export const CAREER_OS_IA: readonly { id: string; label: string; to: string; sub: string; empty: string }[] = CAREER_OS_NAV.filter(
+  (item) => item.id !== "overview",
+).map((item) => ({ id: item.id, label: item.label, to: item.route, sub: item.summary, empty: item.empty }))
 
 export type PillarDestinationLine = {
   id: string
@@ -501,12 +499,8 @@ export const PRACTICE_DESTINATIONS: readonly PillarDestinationLine[] = [
 ] as const
 
 /** Career OS public subnav — overview plus workspace areas (sign-in required for data). */
-export const CAREER_PUBLIC_DESTINATIONS: readonly { id: string; label: string; to: string }[] = [
-  { id: "overview", label: "Overview", to: "/career-os" },
-  { id: "profile", label: "Profile", to: "/career-os/profile" },
-  { id: "projects", label: "Projects", to: "/career-os/projects" },
-  { id: "jobs", label: "Opportunities", to: "/career-os/jobs" },
-  { id: "applications", label: "Applications", to: "/career-os/applications" },
-  { id: "interviews", label: "Interviews", to: "/career-os/interviews" },
-  { id: "support", label: "Support", to: "/career-os/support" },
-] as const
+export const CAREER_PUBLIC_DESTINATIONS: readonly { id: string; label: string; to: string }[] = CAREER_OS_NAV.map((item) => ({
+  id: item.id,
+  label: item.label,
+  to: item.route,
+}))

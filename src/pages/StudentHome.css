@@ -327,3 +327,19 @@
     padding-inline: 14px;
   }
 }
+
+/* A list that failed to load: one sentence and a retry, never the server's text */
+.sh-list-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+.sh-list-error .os-link {
+  min-height: 44px;
+}
+
+.sh-programme {
+  margin: 10px 0 0;
+}
