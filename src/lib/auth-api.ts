@@ -1,6 +1,7 @@
+import { apiV1 } from "./api-base"
 import { parseApiJson } from "./http"
 
-const API_BASE = "/api/v1"
+const API_BASE = apiV1()
 
 export type ApiRole = "student" | "faculty" | "organisation" | "recruiter" | "superadmin"
 
@@ -38,27 +39,53 @@ export type AuthResponse = {
 }
 
 let csrfToken: string | null = null
+let csrfRequest: Promise<string> | null = null
 
 function readCsrfCookie(): string | null {
   const match = document.cookie.match(/(?:^|;\s*)csrf=([^;]+)/)
   return match ? decodeURIComponent(match[1]) : null
 }
 
+/**
+ * The csrf cookie is host-only. On skylent.live the page can still hold a
+ * cookie from the colocated API, which is not the token api.skylent.live checks.
+ */
+function csrfCookieMatchesApi(): boolean {
+  if (typeof window === "undefined") return true
+  if (API_BASE.startsWith("/")) return true
+  try {
+    return new URL(API_BASE, window.location.origin).origin === window.location.origin
+  } catch {
+    return false
+  }
+}
+
 export async function ensureCsrfToken(): Promise<string> {
-  const fromCookie = readCsrfCookie()
-  if (fromCookie) {
-    csrfToken = fromCookie
-    return fromCookie
+  if (csrfCookieMatchesApi()) {
+    const fromCookie = readCsrfCookie()
+    if (fromCookie) {
+      csrfToken = fromCookie
+      return fromCookie
+    }
   }
   if (csrfToken) return csrfToken
+  if (!csrfRequest) {
+    csrfRequest = requestCsrfToken().finally(() => {
+      csrfRequest = null
+    })
+  }
+  return csrfRequest
+}
 
+async function requestCsrfToken(): Promise<string> {
   const response = await fetch(`${API_BASE}/auth/csrf`, { credentials: "include" })
   if (!response.ok) {
     throw new Error("Failed to fetch CSRF token")
   }
 
   const parsed = await parseApiJson<{ csrfToken: string }>(response)
-  csrfToken = readCsrfCookie() ?? parsed.csrfToken
+  const fromCookie = csrfCookieMatchesApi() ? readCsrfCookie() : null
+  csrfToken = fromCookie ?? parsed.csrfToken
   return csrfToken
 }
 
@@ -82,7 +109,15 @@ async function authRequest<T>(
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
   })
 
-  return parseJson<T>(response)
+  const parsed = await parseJson<T>(response)
+  rememberIssuedCsrf(parsed)
+  return parsed
+}
+
+function rememberIssuedCsrf(payload: unknown) {
+  if (!payload || typeof payload !== "object" || !("csrfToken" in payload)) return
+  const token = (payload as { csrfToken?: unknown }).csrfToken
+  if (typeof token === "string" && token) csrfToken = token
 }
 
 export async function fetchCurrentUser(): Promise<AuthResponse | null> {

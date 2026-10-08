@@ -17,6 +17,7 @@ import {
   type CareerProjectLink,
 } from "../lib/career-api"
 import LabSqlChart from "../components/labs/LabSqlChart"
+import { ProductSlice } from "../components/skylent/primitives"
 import "./LearnWorkspace.css"
 import "./LabsWorkspace.css"
 import "./ProjectWorkspace.css"
@@ -161,8 +162,11 @@ export default function LearnerProjectPage() {
     return (
       <div className="lab-shell">
         <div className="lab-empty">
-          <p className="os-eyebrow">Project</p>
-          <p>Loading the project workspace…</p>
+          <div className="os-state-skeleton" role="status" aria-label="Loading the project">
+            <span className="os-skeleton" style={{ width: "30%" }} />
+            <span className="os-skeleton" style={{ height: 28, width: "70%" }} />
+            <span className="os-skeleton" />
+          </div>
         </div>
       </div>
     )
@@ -174,7 +178,7 @@ export default function LearnerProjectPage() {
       <div className="lab-shell">
         <div className="lab-empty">
           <p className="os-eyebrow">Project</p>
-          <h1>{status === "forbidden" ? "Enrol in this course to open the project." : "This project could not load."}</h1>
+          <h1>{status === "forbidden" ? "Enrol in this course to open the project" : "This project could not be opened"}</h1>
           <p>{error}</p>
           <div className="os-actions">
             <Link className="os-btn os-btn-primary" to={courseHref}>
@@ -190,10 +194,12 @@ export default function LearnerProjectPage() {
     <div className="lab-shell proj-shell">
       <header className="lab-top">
         <Link className="lab-brand" to={learnerProjectPath(project.courseSlug, project.projectType)}>
-          <strong>Skylent</strong>
-          <span>Project</span>
+          <strong>{project.title}</strong>
+          <span>Project · {project.courseTitle}</span>
         </Link>
-        <p className="lab-top-course">{project.courseTitle}</p>
+        <div className="sky-on-navy lab-slice">
+          <ProductSlice steps={["Learn", "Practice", "Build", "Prove"]} current="Build" label="Where this project sits" />
+        </div>
         <div className="lab-top-actions">
           <Link className="os-btn os-btn-ghost" to={`/learn/${project.courseSlug}`}>
             Return to course
@@ -219,7 +225,10 @@ export default function LearnerProjectPage() {
           ) : null}
         </p>
         <p>
-          Status: <strong>{projectStatusLabel(project.status)}</strong>
+          Status:{" "}
+          <span className={project.status === "ready_to_review" ? "os-status is-done" : project.status === "not_started" ? "os-status is-idle" : "os-status"}>
+            {projectStatusLabel(project.status)}
+          </span>
         </p>
         <p>
           Progress:{" "}

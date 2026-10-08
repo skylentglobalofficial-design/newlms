@@ -1,8 +1,7 @@
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 import type { CourseLesson, CourseModule } from '../../data'
 import type { LessonState } from '../../demo/types'
 import {
-  computeCourseProgress,
   computeModuleProgress,
   isLessonUnlocked,
   lessonStatusLabel,
@@ -12,138 +11,149 @@ import {
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
 
-function StateGlyph({
-  complete,
-  locked,
-  current,
-}: {
-  complete?: boolean
-  locked: boolean
-  current: boolean
-}) {
-  if (complete) {
-    return (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#15803d" strokeWidth="2.5" aria-hidden="true">
-        <polyline points="20 6 9 17 4 12" />
-      </svg>
-    )
-  }
-  if (locked) {
-    return (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6e737a" strokeWidth="2" aria-hidden="true">
-        <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-        <rect x="5" y="11" width="14" height="10" rx="2" />
-        <circle cx="12" cy="16" r="1.2" fill="#6e737a" stroke="none" />
-      </svg>
-    )
-  }
-  if (current) {
-    return (
-      <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
-        <circle cx="5" cy="5" r="4" fill="#4f46e5" />
-      </svg>
-    )
-  }
+function CheckGlyph({ label }: { label?: string }) {
   return (
-    <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
-      <circle cx="5" cy="5" r="3.4" fill="none" stroke="#8a8f96" strokeWidth="1.4" />
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.4"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      role={label ? 'img' : undefined}
+      aria-label={label}
+      aria-hidden={label ? undefined : true}
+    >
+      <path d="M20 6L9 17l-5-5" />
     </svg>
   )
 }
 
+function LockGlyph() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+      <rect x="5" y="11" width="14" height="10" rx="2" />
+    </svg>
+  )
+}
+
+/**
+ * Course outline: modules with real completion, lessons with real state.
+ * The module that holds the open lesson is expanded; any other module can be opened from its row.
+ */
 export default function CurriculumRail({
   course,
   lessonStates,
   selectedLessonId,
-  accent,
   onSelectLesson,
   onClose,
 }: {
   course: LmsCourseView
   lessonStates: Record<string, LessonState>
   selectedLessonId: string
-  accent: Accent
+  /** Kept for call-site compatibility; the outline uses the system tokens. */
+  accent?: Accent
   onSelectLesson: (id: string) => void
   onClose?: () => void
 }) {
   const allLessons = course.modules.flatMap((module) => module.lessons)
-  const { completedCount, totalLessons, progressPct } = computeCourseProgress(allLessons, lessonStates)
+  const currentModuleId =
+    course.modules.find((module) => module.lessons.some((lesson) => lesson.id === selectedLessonId))?.id ?? null
+  const [openModules, setOpenModules] = useState<Record<string, boolean>>(() =>
+    currentModuleId ? { [currentModuleId]: true } : {},
+  )
+
+  useEffect(() => {
+    if (!currentModuleId) return
+    setOpenModules((current) => (current[currentModuleId] ? current : { ...current, [currentModuleId]: true }))
+  }, [currentModuleId])
 
   return (
     <div className="os-curriculum">
       <div className="os-rail-head">
         {onClose ? (
-          <button type="button" className="os-rail-close" onClick={onClose} aria-label="Close curriculum">
-            Close curriculum
+          <button type="button" className="os-rail-close" onClick={onClose}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+            Close outline
           </button>
         ) : null}
-        <Link to="/" className="os-rail-brand">
-          Skylent<span>.</span>
-        </Link>
-        <p className="os-eyebrow">Course</p>
-        <h2 className="os-rail-title">{course.title}</h2>
-        <div className="os-progress" aria-label={`${completedCount} of ${totalLessons} lessons complete`}>
-          <div className="os-progress-meta">
-            <span>{completedCount} of {totalLessons} lessons complete</span>
-          </div>
-          <div className="os-progress-bar" aria-hidden="true">
-            <span style={{ width: `${progressPct}%`, background: accent.primary }} />
-          </div>
-        </div>
+        <p className="os-eyebrow">Outline</p>
       </div>
-      <nav className="os-rail-scroll" aria-label="Course curriculum">
+      <nav className="os-rail-scroll" aria-label="Course outline">
         {course.modules.map((mod: CourseModule, mi: number) => {
           const mp = computeModuleProgress(mod, lessonStates)
+          const isCurrent = mod.id === currentModuleId
+          const open = Boolean(openModules[mod.id])
+          const firstLesson = mod.lessons[0]
+          const ahead = !mp.complete && !isCurrent && Boolean(firstLesson) && !isLessonUnlocked(firstLesson.id, allLessons, lessonStates)
+          const panelId = `os-module-${mod.id}`
           return (
-            <div className="os-module" key={mod.id}>
-              <div className="os-module-head">
-                <span className="os-module-num">{String(mi + 1).padStart(2, '0')}</span>
-                <div className="os-module-label">{mod.title}</div>
-                <div className="os-module-meta">
-                  {mod.lessons.length} {mod.lessons.length === 1 ? 'activity' : 'activities'} · {mp.completed}/{mp.total}
-                </div>
-                {mp.pct > 0 ? (
-                  <div className="os-module-track" aria-hidden="true">
-                    <span style={{ width: `${mp.pct}%` }} />
-                  </div>
-                ) : null}
+            <div
+              className={`os-module${isCurrent ? ' is-current' : ''}${ahead ? ' is-ahead' : ''}`}
+              key={mod.id}
+            >
+              <button
+                type="button"
+                className="os-module-toggle"
+                aria-expanded={open}
+                aria-controls={panelId}
+                onClick={() => setOpenModules((current) => ({ ...current, [mod.id]: !current[mod.id] }))}
+              >
+                <span className="os-module-name">
+                  <span className="os-module-num">M{mi + 1}</span>
+                  <span className="os-module-label">{mod.title}</span>
+                </span>
+                {mp.complete ? (
+                  <span className="os-state-glyph"><CheckGlyph label="Module complete" /></span>
+                ) : (
+                  <span className="os-module-meta">{mp.completed} of {mp.total}</span>
+                )}
+              </button>
+              <div className="os-module-track" aria-hidden="true">
+                <span style={{ width: `${mp.pct}%` }} />
               </div>
-              {mod.lessons.map((lesson: CourseLesson) => {
-                const unlocked = isLessonUnlocked(lesson.id, allLessons, lessonStates)
-                const state = lessonStates[lesson.id]
-                const isActive = selectedLessonId === lesson.id
-                const status = lessonStatusLabel(state, isActive && unlocked && !state?.complete)
-                const classes = [
-                  'os-lesson',
-                  isActive ? 'is-current' : '',
-                  state?.complete ? 'is-complete' : '',
-                  !unlocked ? 'is-locked' : '',
-                ].filter(Boolean).join(' ')
-                return (
-                  <button
-                    key={lesson.id}
-                    type="button"
-                    className={classes}
-                    onClick={() => unlocked && onSelectLesson(lesson.id)}
-                    disabled={!unlocked}
-                    aria-current={isActive ? 'page' : undefined}
-                    aria-disabled={!unlocked}
-                    aria-label={`${lesson.title}, ${lessonTypeLabel(lesson.type, lesson.title)}, ${status}${lesson.duration ? `, ${lesson.duration}` : ''}`}
-                  >
-                    <span className="os-state-glyph">
-                      <StateGlyph complete={state?.complete} locked={!unlocked} current={isActive && unlocked && !state?.complete} />
-                    </span>
-                    <span>
-                      <span className="os-lesson-title">{lesson.title}</span>
-                      <span className="os-lesson-meta">
-                        {lessonTypeLabel(lesson.type, lesson.title)}
-                        {lesson.duration ? ` · ${lesson.duration}` : ''}
-                        {!unlocked ? ' · Locked' : ''}
-                      </span>
-                    </span>
-                  </button>
-                )
-              })}
+              {open ? (
+                <ul className="os-lessons" id={panelId}>
+                  {mod.lessons.map((lesson: CourseLesson) => {
+                    const unlocked = isLessonUnlocked(lesson.id, allLessons, lessonStates)
+                    const state = lessonStates[lesson.id]
+                    const isActive = selectedLessonId === lesson.id
+                    const status = lessonStatusLabel(state, isActive && unlocked && !state?.complete)
+                    const number = allLessons.findIndex((item) => item.id === lesson.id) + 1
+                    const classes = [
+                      'os-lesson',
+                      isActive ? 'is-current' : '',
+                      state?.complete ? 'is-complete' : '',
+                      !unlocked ? 'is-locked' : '',
+                    ].filter(Boolean).join(' ')
+                    return (
+                      <li key={lesson.id}>
+                        <button
+                          type="button"
+                          className={classes}
+                          onClick={() => unlocked && onSelectLesson(lesson.id)}
+                          disabled={!unlocked}
+                          aria-current={isActive ? 'page' : undefined}
+                          aria-label={`Lesson ${number}: ${lesson.title}, ${lessonTypeLabel(lesson.type, lesson.title)}, ${status}${lesson.duration ? `, ${lesson.duration}` : ''}`}
+                        >
+                          <span className="os-lesson-num" aria-hidden="true">L{number}</span>
+                          <span className="os-lesson-title">{lesson.title}</span>
+                          {state?.complete ? (
+                            <span className="os-state-glyph"><CheckGlyph /></span>
+                          ) : !unlocked ? (
+                            <span className="os-state-glyph"><LockGlyph /></span>
+                          ) : null}
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              ) : null}
             </div>
           )
         })}

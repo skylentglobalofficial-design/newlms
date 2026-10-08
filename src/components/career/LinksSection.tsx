@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { C } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import {
   createLink,
   updateLink,
@@ -22,7 +22,7 @@ import {
   EntryCard,
 } from "./section-ui"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 const LINK_TYPES: CareerLinkType[] = ["LINKEDIN", "GITHUB", "PORTFOLIO", "OTHER"]
 
 type Props = {

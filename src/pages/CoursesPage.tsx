@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { LearnPillarSubnav } from "../components/product/Architecture"
 import { CourseThumb } from "../components/product/ProductLanguage"
+import { TruthChip } from "../components/skylent/primitives"
 import { catalogCourseListView, type CatalogCourseListView } from "../lib/catalog-maturity"
 import { useCatalogCourses } from "../hooks/useCatalog"
 import "./Catalog.css"
@@ -50,7 +51,7 @@ export default function CoursesPage() {
               Focused learning units in Skylent OS. Data Analytics and Product Management are ready to enrol;
               the rest are thinner catalogue listings.
             </p>
-            <Link className="cat-text-link" to="/programs">Looking for a longer pathway? See programmes</Link>
+            <Link className="cat-text-link" to="/programmes">Looking for a longer pathway? See programmes</Link>
             <input
               className="cat-search"
               value={search}
@@ -137,9 +138,7 @@ function CourseCard({ view, featured = false }: { view: CatalogCourseListView; f
     <Link className={featured ? "cat-tile is-ready" : "cat-tile is-listing"} to={`/courses/${view.slug}`}>
       {view.maturity === "ready" ? <CourseUnitChrome view={view} /> : <CourseThumb authored={false} />}
       <div className="cat-tile-copy">
-        <span className={view.maturity === "ready" ? "cat-mark cat-mark-ready" : "cat-mark"}>
-          {view.maturity === "ready" ? "Ready" : view.maturityLabel}
-        </span>
+        <TruthChip state={view.maturity === "ready" ? "live" : "development"} />
         <h3>{view.title}</h3>
         <div className="cat-card-stats">
           <span>{view.duration}</span>

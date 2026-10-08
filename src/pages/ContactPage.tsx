@@ -1,197 +1,246 @@
-import { useState, type CSSProperties } from 'react'
-import { C, FadeIn, PageShell } from '../components/shared'
-import { Button, Eyebrow, T } from '../components/ui'
-import { Aurora, GlassSurface } from '../components/foundation'
-import { getDomainAccent } from '../aurora-themes'
+/**
+ * Contact (/contact). The form records a real enquiry through POST /enquiries (sendEnquiry);
+ * it no longer opens an email draft. Nothing on this page is a sample: the success state shows
+ * the reference id the server returned, and a failed request says so.
+ */
+import { useId, useState, type FormEvent } from "react"
+import { PageShell } from "../components/shared"
+import { ArrowRight, TruthChip } from "../components/skylent/primitives"
+import { sendEnquiry, type EnquiryKind } from "../lib/skylent-api"
+import { truthOf } from "../lib/truth"
+import "./ContactPage.css"
 
-const accent = getDomainAccent('general')
-const CONTACT_EMAIL = 'hello@skylent.in'
+/** Support contacts named by the backend (server/src/routes/skylent/reva.ts). */
+const SUPPORT_PHONE = "6370044001"
+const SUPPORT_EMAIL = "support@skylent.live"
 
-function fieldStyle(focused: boolean): CSSProperties {
-  return {
-    width: '100%',
-    background: C.cream,
-    border: `1px solid ${focused ? accent.primary : T.lineDark}`,
-    borderRadius: T.rControl,
-    padding: '11px 14px',
-    fontSize: 14,
-    color: C.ink,
-    fontFamily: 'var(--font-body)',
-    outline: 'none',
-    transition: 'border-color 0.2s',
-    boxSizing: 'border-box',
-  }
+type ContactKind = Extract<EnquiryKind, "enquiry" | "counselling">
+type Fields = { name: string; email: string; phone: string; kind: ContactKind; message: string }
+type FieldErrors = Partial<Record<"name" | "email" | "phone" | "message", string>>
+type Submit = { status: "idle" } | { status: "sending" } | { status: "sent"; id: string; kind: ContactKind } | { status: "failed" }
+
+const EMPTY: Fields = { name: "", email: "", phone: "", kind: "enquiry", message: "" }
+const KINDS: Array<{ value: ContactKind; label: string; note: string }> = [
+  { value: "enquiry", label: "General enquiry", note: "A question about programmes, degrees or the platform." },
+  { value: "counselling", label: "Counselling call", note: "Ask the team to call you about choosing a path." },
+]
+
+/** Mirrors the server schema in server/src/routes/skylent/enquiries.ts so most errors are caught before sending. */
+function validate(fields: Fields): FieldErrors {
+  const errors: FieldErrors = {}
+  const name = fields.name.trim()
+  const email = fields.email.trim()
+  if (!name) errors.name = "Enter your name."
+  else if (name.length > 120) errors.name = "Use 120 characters or fewer."
+  if (!email) errors.email = "Enter your email address."
+  else if (email.length > 200 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Enter a valid email address."
+  if (fields.phone.trim().length > 20) errors.phone = "Use 20 characters or fewer."
+  if (fields.message.length > 2000) errors.message = "Use 2,000 characters or fewer."
+  return errors
 }
 
 export default function ContactPage() {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', iam: '', iwant: '', message: '' })
-  const [focused, setFocused] = useState<string | null>(null)
+  const formId = useId()
+  const [fields, setFields] = useState<Fields>(EMPTY)
+  const [errors, setErrors] = useState<FieldErrors>({})
+  const [submit, setSubmit] = useState<Submit>({ status: "idle" })
+  const sending = submit.status === "sending"
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const subject = encodeURIComponent(`Skylent enquiry — ${form.iwant || 'General'}`)
-    const body = encodeURIComponent(
-      [
-        `Name: ${form.name}`,
-        `Email: ${form.email}`,
-        `Phone: ${form.phone || '—'}`,
-        `I am a: ${form.iam}`,
-        `I want to: ${form.iwant}`,
-        '',
-        form.message,
-      ].join('\n'),
-    )
-    window.location.href = `mailto:${CONTACT_EMAIL}?subject=${subject}&body=${body}`
+  function set<K extends keyof Fields>(key: K, value: Fields[K]) {
+    setFields((current) => ({ ...current, [key]: value }))
+    if (key !== "kind" && errors[key as keyof FieldErrors]) setErrors((current) => ({ ...current, [key]: undefined }))
   }
 
-  const contactItems = [
-    { label: 'Email', value: CONTACT_EMAIL, href: `mailto:${CONTACT_EMAIL}` },
-    { label: 'Office', value: 'Bengaluru, India', href: undefined },
-  ]
+  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (sending) return
+    const found = validate(fields)
+    setErrors(found)
+    const firstInvalid = (["name", "email", "phone", "message"] as const).find((key) => found[key])
+    if (firstInvalid) {
+      setSubmit({ status: "idle" })
+      document.getElementById(`${formId}-${firstInvalid}`)?.focus()
+      return
+    }
+    setSubmit({ status: "sending" })
+    try {
+      const result = await sendEnquiry({
+        kind: fields.kind,
+        name: fields.name,
+        email: fields.email,
+        phone: fields.phone || undefined,
+        message: fields.message || undefined,
+      })
+      setSubmit({ status: "sent", id: result.id, kind: fields.kind })
+      setFields(EMPTY)
+    } catch {
+      setSubmit({ status: "failed" })
+    }
+  }
+
+  const describe = (key: keyof FieldErrors) => (errors[key] ? `${formId}-${key}-error` : undefined)
 
   return (
-    <PageShell auroraTheme="general">
-      <section style={{ position: 'relative', overflow: 'hidden', padding: `28px ${T.gutter} clamp(40px, 5vw, 56px)` }}>
-        <Aurora themeId="general" variant="hero" />
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', position: 'relative', zIndex: 1 }}>
-          <FadeIn>
-            <Eyebrow tone="light" accent>Contact Skylent</Eyebrow>
-            <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '18px 0 14px', maxWidth: 560 }}>
-              Reach the team directly.
-            </h1>
-            <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 480, margin: 0 }}>
-              Questions about programs, partnerships, or institutional delivery — email {CONTACT_EMAIL}. This page opens your mail client; it does not send a ticket on its own.
+    <PageShell aurora={false}>
+      <div className="site-light ctc">
+        <div className="sky-container ctc-wrap">
+          <div className="ctc-main">
+            <div className="ctc-kicker">
+              <span className="sky-label">Contact Skylent</span>
+              <TruthChip state={truthOf("enquiries")} />
+            </div>
+            <h1>Send the team an enquiry</h1>
+            <p className="ctc-lead">
+              Ask a question or request a counselling call. Your enquiry is recorded with a reference, and the team replies by email or
+              phone.
             </p>
-          </FadeIn>
-        </div>
-      </section>
 
-      <section style={{ position: 'relative', padding: `${T.sectionTight} ${T.gutter}` }}>
-        <div style={{ maxWidth: T.maxW, margin: '0 auto', display: 'grid', gridTemplateColumns: '1.15fr 0.85fr', gap: 'clamp(32px, 5vw, 56px)', alignItems: 'start' }} className="edu-grid">
-          <div>
-            <FadeIn>
-              <GlassSurface level={2} padding="clamp(28px, 4vw, 40px)">
-                <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 700, color: C.ink, margin: '0 0 6px', letterSpacing: '-0.02em' }}>Compose an enquiry</h2>
-                <p style={{ color: C.slate, fontSize: 14, margin: '0 0 24px', lineHeight: 1.6 }}>
-                  Required fields are marked. Submit opens a mailto draft to {CONTACT_EMAIL}. No enquiry is recorded until you send that email.
-                </p>
-                <form onSubmit={handleSubmit}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }} className="two-col-sm">
-                    {([['Full Name', 'name', 'text', 'Your full name'], ['Email', 'email', 'email', 'your@email.com']] as const).map(([label, field, type, ph]) => (
-                      <div key={field}>
-                        <label htmlFor={`contact-${field}`} style={{ display: 'block', color: C.slate, fontSize: 11, marginBottom: 6, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>{label.toUpperCase()}</label>
+            {submit.status === "sent" ? (
+              <section className="sky-panel-proof ctc-sent" aria-labelledby={`${formId}-sent`} role="status">
+                <h2 id={`${formId}-sent`}>{submit.kind === "counselling" ? "Counselling call requested" : "Enquiry sent"}</h2>
+                <dl className="sky-spec">
+                  <div className="sky-spec__row">
+                    <dt className="sky-spec__label">Reference</dt>
+                    <dd className="sky-spec__value sky-mono">{submit.id}</dd>
+                  </div>
+                </dl>
+                <p>Keep this reference. Quote it if you email {SUPPORT_EMAIL} about this enquiry.</p>
+                <button type="button" className="sk-btn sk-btn-secondary" onClick={() => setSubmit({ status: "idle" })}>
+                  Send another enquiry
+                </button>
+              </section>
+            ) : (
+              <form className="ctc-form" onSubmit={onSubmit} noValidate aria-busy={sending}>
+                <fieldset className="ctc-kinds">
+                  <legend className="sky-label">What do you need?</legend>
+                  <div className="ctc-kinds__row">
+                    {KINDS.map((kind) => (
+                      <label key={kind.value} className={fields.kind === kind.value ? "ctc-kind ctc-kind--on" : "ctc-kind"}>
                         <input
-                          id={`contact-${field}`}
-                          name={field}
-                          type={type}
-                          placeholder={ph}
-                          required
-                          autoComplete={field === 'email' ? 'email' : 'name'}
-                          value={form[field]}
-                          onChange={e => setForm(f => ({ ...f, [field]: e.target.value }))}
-                          style={fieldStyle(focused === field)}
-                          onFocus={() => setFocused(field)}
-                          onBlur={() => setFocused(null)}
+                          type="radio"
+                          name="kind"
+                          value={kind.value}
+                          checked={fields.kind === kind.value}
+                          onChange={() => set("kind", kind.value)}
+                          disabled={sending}
                         />
-                      </div>
+                        <span>
+                          <strong>{kind.label}</strong>
+                          <span>{kind.note}</span>
+                        </span>
+                      </label>
                     ))}
                   </div>
-                  <div style={{ marginBottom: 14 }}>
-                    <label htmlFor="contact-phone" style={{ display: 'block', color: C.slate, fontSize: 11, marginBottom: 6, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>PHONE (OPTIONAL)</label>
+                </fieldset>
+
+                <div className="ctc-grid">
+                  <div className="ctc-field">
+                    <label className="sky-label" htmlFor={`${formId}-name`}>Name</label>
                     <input
-                      id="contact-phone"
-                      name="phone"
-                      type="tel"
-                      placeholder="Your number, if you want a callback"
-                      autoComplete="tel"
-                      value={form.phone}
-                      onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                      style={fieldStyle(focused === 'phone')}
-                      onFocus={() => setFocused('phone')}
-                      onBlur={() => setFocused(null)}
+                      id={`${formId}-name`}
+                      className="sk-input"
+                      name="name"
+                      autoComplete="name"
+                      maxLength={120}
+                      value={fields.name}
+                      onChange={(event) => set("name", event.target.value)}
+                      aria-invalid={errors.name ? true : undefined}
+                      aria-describedby={describe("name")}
+                      disabled={sending}
+                      required
                     />
+                    {errors.name ? <p className="sk-error" id={`${formId}-name-error`}>{errors.name}</p> : null}
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }} className="two-col-sm">
-                    <div>
-                      <label htmlFor="contact-iam" style={{ display: 'block', color: C.slate, fontSize: 11, marginBottom: 6, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>I AM A</label>
-                      <select
-                        id="contact-iam"
-                        name="iam"
-                        required
-                        value={form.iam}
-                        onChange={e => setForm(f => ({ ...f, iam: e.target.value }))}
-                        style={{ ...fieldStyle(focused === 'iam'), cursor: 'pointer', color: form.iam ? C.ink : C.slate }}
-                        onFocus={() => setFocused('iam')}
-                        onBlur={() => setFocused(null)}
-                      >
-                        <option value="">Select...</option>
-                        {['Student', 'Parent', 'Institution', 'University', 'Industry', 'Other'].map(o => <option key={o} value={o}>{o}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label htmlFor="contact-iwant" style={{ display: 'block', color: C.slate, fontSize: 11, marginBottom: 6, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>I WANT TO</label>
-                      <select
-                        id="contact-iwant"
-                        name="iwant"
-                        required
-                        value={form.iwant}
-                        onChange={e => setForm(f => ({ ...f, iwant: e.target.value }))}
-                        style={{ ...fieldStyle(focused === 'iwant'), cursor: 'pointer', color: form.iwant ? C.ink : C.slate }}
-                        onFocus={() => setFocused('iwant')}
-                        onBlur={() => setFocused(null)}
-                      >
-                        <option value="">Select...</option>
-                        {['Explore Courses', 'Join a Program', 'Workshop enquiry', 'Partner With Skylent', 'Institutional LMS', 'Career Support', 'General Enquiry'].map(o => <option key={o} value={o}>{o}</option>)}
-                      </select>
-                    </div>
-                  </div>
-                  <div style={{ marginBottom: 22 }}>
-                    <label htmlFor="contact-message" style={{ display: 'block', color: C.slate, fontSize: 11, marginBottom: 6, fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>MESSAGE</label>
-                    <textarea
-                      id="contact-message"
-                      name="message"
-                      rows={4}
-                      placeholder="Tell us a bit about what you are looking for..."
-                      value={form.message}
-                      onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-                      style={{ ...fieldStyle(focused === 'message'), resize: 'vertical' }}
-                      onFocus={() => setFocused('message')}
-                      onBlur={() => setFocused(null)}
+                  <div className="ctc-field">
+                    <label className="sky-label" htmlFor={`${formId}-email`}>Email</label>
+                    <input
+                      id={`${formId}-email`}
+                      className="sk-input"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      maxLength={200}
+                      value={fields.email}
+                      onChange={(event) => set("email", event.target.value)}
+                      aria-invalid={errors.email ? true : undefined}
+                      aria-describedby={describe("email")}
+                      disabled={sending}
+                      required
                     />
+                    {errors.email ? <p className="sk-error" id={`${formId}-email-error`}>{errors.email}</p> : null}
                   </div>
-                  <Button type="submit" variant="primary" style={{ width: '100%' }}>Open email draft →</Button>
-                </form>
-              </GlassSurface>
-            </FadeIn>
+                </div>
+
+                <div className="ctc-field">
+                  <label className="sky-label" htmlFor={`${formId}-phone`}>
+                    Phone (optional)
+                  </label>
+                  <input
+                    id={`${formId}-phone`}
+                    className="sk-input ctc-phone"
+                    name="phone"
+                    type="tel"
+                    autoComplete="tel"
+                    maxLength={20}
+                    value={fields.phone}
+                    onChange={(event) => set("phone", event.target.value)}
+                    aria-invalid={errors.phone ? true : undefined}
+                    aria-describedby={describe("phone")}
+                    disabled={sending}
+                  />
+                  {errors.phone ? <p className="sk-error" id={`${formId}-phone-error`}>{errors.phone}</p> : null}
+                </div>
+
+                <div className="ctc-field">
+                  <label className="sky-label" htmlFor={`${formId}-message`}>Message (optional)</label>
+                  <textarea
+                    id={`${formId}-message`}
+                    className="sk-input"
+                    name="message"
+                    rows={5}
+                    maxLength={2000}
+                    value={fields.message}
+                    onChange={(event) => set("message", event.target.value)}
+                    aria-invalid={errors.message ? true : undefined}
+                    aria-describedby={describe("message")}
+                    disabled={sending}
+                  />
+                  {errors.message ? <p className="sk-error" id={`${formId}-message-error`}>{errors.message}</p> : null}
+                </div>
+
+                {sending ? <div className="ctc-progress" aria-hidden="true" /> : null}
+                {submit.status === "failed" ? (
+                  <p className="ctc-failed" role="alert">
+                    We could not send this. Try again, or email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
+                  </p>
+                ) : null}
+
+                <div className="ctc-actions">
+                  <button type="submit" className="sk-btn sk-btn-primary" disabled={sending}>
+                    {sending ? "Sending" : fields.kind === "counselling" ? "Request a call" : "Send enquiry"}
+                    {sending ? null : <ArrowRight />}
+                  </button>
+                  <span className="ctc-note">Name and email are required.</span>
+                </div>
+              </form>
+            )}
           </div>
 
-          <div>
-            <FadeIn delay={60}>
-              <div style={{ marginBottom: 20 }}>
-                <div className="skylent-label" style={{ color: C.slate, marginBottom: 16 }}>Get in touch</div>
-                {contactItems.map(({ label, value, href }) => (
-                  <GlassSurface key={label} level={1} padding="16px 18px" style={{ marginBottom: 10 }}>
-                    <div style={{ color: C.slate, fontSize: 10, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', marginBottom: 4 }}>{label.toUpperCase()}</div>
-                    {href ? (
-                      <a href={href} style={{ color: C.ink, fontSize: 15, fontWeight: 500, textDecoration: 'none' }}>{value}</a>
-                    ) : (
-                      <div style={{ color: C.ink, fontSize: 15, fontWeight: 500 }}>{value}</div>
-                    )}
-                  </GlassSurface>
-                ))}
+          <aside className="ctc-side" aria-label="Other ways to reach Skylent">
+            <div className="sky-label">Reach the team directly</div>
+            <dl className="sky-spec ctc-details">
+              <div className="sky-spec__row">
+                <dt className="sky-spec__label">Support</dt>
+                <dd className="sky-spec__value"><a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></dd>
               </div>
-            </FadeIn>
-            <FadeIn delay={100}>
-              <GlassSurface level={1} padding="22px 24px">
-                <div className="skylent-label" style={{ color: C.slate, marginBottom: 12 }}>Channels</div>
-                <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.65, margin: 0 }}>
-                  Public social profiles are not published here yet. Use email until official channel links are available.
-                </p>
-              </GlassSurface>
-            </FadeIn>
-          </div>
+              <div className="sky-spec__row">
+                <dt className="sky-spec__label">Phone</dt>
+                <dd className="sky-spec__value"><a href={`tel:${SUPPORT_PHONE}`}>{SUPPORT_PHONE}</a></dd>
+              </div>
+            </dl>
+          </aside>
         </div>
-      </section>
+      </div>
     </PageShell>
   )
 }

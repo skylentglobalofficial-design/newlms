@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { C } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import {
   createProject,
   updateProject,
@@ -22,7 +22,7 @@ import {
   EntryCard,
 } from "./section-ui"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 type Props = {
   profile: CareerProfile

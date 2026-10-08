@@ -57,9 +57,9 @@ const EXAM_SCENES: {
     wide: true,
     note: "Intended paper structure for MBA entrance. No live mocks, sectional timers, or score predictor.",
     sections: [
-      { abbr: "VARC", label: "Verbal Ability & Reading Comprehension", color: "#4F46E5" },
-      { abbr: "DILR", label: "Data Interpretation & Logical Reasoning", color: "#2563EB" },
-      { abbr: "QA", label: "Quantitative Aptitude", color: "#4F46E5" },
+      { abbr: "VARC", label: "Verbal Ability & Reading Comprehension", color: "hsl(var(--site-navy))" },
+      { abbr: "DILR", label: "Data Interpretation & Logical Reasoning", color: "hsl(var(--site-deep))" },
+      { abbr: "QA", label: "Quantitative Aptitude", color: "hsl(var(--site-data-rest))" },
     ],
   },
 ]
@@ -85,7 +85,7 @@ export default function ExamsPage() {
           Subject and section maps — not a running engine.
         </h2>
         <p className="exam-scenes-lead">
-          These ProductVisual scenes show how JEE, NEET, and CAT prep is meant to look. They are taxonomy, not live
+          These drawn scenes show how JEE, NEET, and CAT prep is meant to look. They are taxonomy, not live
           practice, analytics, or admissions tools.
         </p>
         <div className="exam-scene-grid">

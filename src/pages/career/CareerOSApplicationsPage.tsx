@@ -1,13 +1,13 @@
 import { Link } from "react-router-dom"
 import { useState } from "react"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "../../components/career/career-accent"
 import { useApplications } from "../../hooks/useApplications"
 import ApplicationPipeline from "../../components/career/ApplicationPipeline"
 import { createApplication } from "../../lib/career-api"
 import { EmptyBlock, FeedbackBanner, Field, LoadingBlock, fieldInputStyle, primaryButtonStyle, secondaryButtonStyle } from "../../components/career/section-ui"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 export default function CareerOSApplicationsPage() {
   const { applications, filtered, loading, error, statusFilter, setStatusFilter, reload } = useApplications()

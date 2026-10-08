@@ -11,7 +11,7 @@ export default function CareerOSLayout() {
 
   if (!ready) {
     return (
-      <div style={{ minHeight: "40vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#5C6168", fontSize: 14 }}>
+      <div style={{ minHeight: "40vh", display: "flex", alignItems: "center", justifyContent: "center", color: "hsl(var(--site-dim))", fontSize: 14 }}>
         Loading Career OS…
       </div>
     )

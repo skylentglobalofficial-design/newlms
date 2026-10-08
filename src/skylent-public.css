@@ -1,26 +1,169 @@
-/* Skylent public brand — light-first, editorial, academic.
-   Tokens: src/styles/design-system.css (loaded via index.css).
-   LIGHT ONLY across public site, login, dashboard, LMS / Skylent OS, and Career OS. */
+/* =====================================================================
+   SKYLENT PUBLIC SHELL — pure-white theme
 
-html, body {
+   Everything here is scoped to .skylent-public-canvas, the wrapper that
+   PageShell (components/shared.tsx) renders around the public Nav, <main>
+   and Footer. The signed-in surfaces (dashboards, LMS / Skylent OS, the
+   signed-in Career OS shell, login) do not render that wrapper, so they keep
+   the :root tokens from styles/design-system.css untouched.
+
+   Loaded from main.tsx after index.css, so it is always present and wins
+   over the base layer at equal specificity.
+
+   Direction: #FFFFFF canvas, deep navy ink, restrained royal-blue accent,
+   Space Grotesk headings, DM Sans body/UI. No cream, ivory or warm paper.
+   Palette source: src/skylent-site.css (--site-*).
+   ===================================================================== */
+
+html,
+body {
   background-color: var(--skylent-color-paper);
   color: var(--skylent-color-ink);
 }
 
-/* PublicCanvas (foundation.tsx) — surface only; Nav/main/Footer via PageShell (shared.tsx). */
-.skylent-public-canvas {
-  background: var(--skylent-color-paper);
-  color: var(--skylent-color-ink);
+/* While the public shell is mounted the document behind it is white too, so no
+   warm strip shows on short pages or during overscroll. */
+html:has(.skylent-public-canvas),
+body:has(.skylent-public-canvas) {
+  background-color: #ffffff;
 }
 
-/* Display/label typography: src/styles/typography.css */
+/* ---------------------------------------------------------------------
+   1. Token bridge
+   Custom properties that reference other variables are resolved where they
+   are declared, so every alias that points at a surface / ink / accent /
+   font token is redeclared here; overriding only the source token on this
+   element would not reach the aliases computed on :root.
+   --------------------------------------------------------------------- */
+.skylent-public-canvas {
+  /* Surfaces — white everywhere; the two "wash" steps become cool, quiet fills
+     for small UI (chips, tracks, table heads), not page or section backgrounds. */
+  --skylent-surface-paper: #ffffff;
+  --skylent-surface-cream: #ffffff;
+  --skylent-surface-cream-warm: #ffffff;
+  --skylent-surface-soft: hsl(var(--site-soft));
+  --skylent-surface-sand: hsl(var(--site-raised));
+  --skylent-surface-elevated: #ffffff;
+  --skylent-surface-inverse: hsl(var(--site-navy));
 
-/* Public content written for a former dark canvas */
-.skylent-public-canvas main h1,
-.skylent-public-canvas main h2,
-.skylent-public-canvas main h3,
-.skylent-public-canvas main h4 {
-  color: #15171A !important;
+  --skylent-color-paper: var(--skylent-surface-paper);
+  --skylent-color-cream: var(--skylent-surface-cream);
+  --skylent-color-soft: var(--skylent-surface-soft);
+  --skylent-color-soft-surface: var(--skylent-surface-elevated);
+  --skylent-color-sand: var(--skylent-surface-sand);
+  --skylent-color-canvas: var(--skylent-surface-paper);
+  --skylent-color-elevated: var(--skylent-surface-elevated);
+
+  /* Text — navy ink scale */
+  --skylent-color-ink: hsl(var(--site-ink));
+  --skylent-color-ink-2: hsl(var(--site-ink));
+  --skylent-color-ink-3: hsl(var(--site-navy));
+  --skylent-color-slate: hsl(var(--site-muted));
+  --skylent-color-muted: hsl(var(--site-dim));
+  --skylent-color-text-subtle: hsl(var(--site-dim));
+  --skylent-color-text-inverse: #ffffff;
+  --skylent-color-text-inverse-muted: hsl(var(--site-light-blue));
+
+  /* Borders — cool hairlines */
+  --skylent-color-border-subtle: hsl(var(--site-border) / 0.7);
+  --skylent-color-border: hsl(var(--site-border));
+  --skylent-color-border-strong: hsl(var(--site-border-strong));
+
+  /* Accent — royal blue for links, focus and state; navy for primary actions */
+  --skylent-color-accent: hsl(var(--site-deep));
+  --skylent-color-accent-hover: hsl(var(--site-ocean));
+  --skylent-color-accent-soft: hsl(var(--site-soft-blue) / 0.55);
+  --skylent-color-accent-border: hsl(var(--site-light-blue));
+  --skylent-color-accent-strong: hsl(var(--site-ocean));
+  --skylent-color-text-on-accent: #ffffff;
+  --skylent-color-mark: hsl(var(--site-deep));
+  --skylent-color-info: hsl(var(--site-deep));
+  --skylent-color-info-soft: hsl(var(--site-soft-blue) / 0.55);
+  --skylent-color-info-border: hsl(var(--site-light-blue));
+  --skylent-color-information: var(--skylent-color-info);
+  --skylent-color-information-soft: var(--skylent-color-info-soft);
+  --skylent-color-information-border: var(--skylent-color-info-border);
+  --skylent-focus-ring: hsl(var(--site-highlight));
+
+  --btn-bg: hsl(var(--site-navy));
+  --btn-fg: #ffffff;
+  --btn-radius: 8px;
+
+  /* Legacy aliases read directly by older public CSS */
+  --color-ink: var(--skylent-color-ink);
+  --color-ink-2: var(--skylent-color-ink-2);
+  --color-ink-3: var(--skylent-color-ink-3);
+  --color-orange: var(--skylent-color-mark);
+  --color-indigo: var(--skylent-color-accent);
+  --color-blue: var(--skylent-color-accent-hover);
+  --color-warm-white: var(--skylent-color-paper);
+  --color-cream: var(--skylent-color-cream);
+  --color-sand: var(--skylent-color-sand);
+  --color-slate: var(--skylent-color-slate);
+  --color-canvas: var(--skylent-color-canvas);
+  --color-line: var(--skylent-color-border);
+  --color-line-strong: var(--skylent-color-border-strong);
+
+  /* Elevation — one restrained shadow system, navy-tinted */
+  --border-subtle: 1px solid var(--skylent-color-border);
+  --border-subtle-strong: 1px solid var(--skylent-color-border-strong);
+  --shadow-subtle: 0 1px 2px hsl(var(--site-ink) / 0.05);
+  --shadow-raised: var(--sk-shadow);
+  --shadow-overlay: 0 1px 2px hsl(var(--site-ink) / 0.05), 0 12px 28px -14px hsl(var(--site-ink) / 0.18);
+  --glass-01-bg: #ffffff;
+  --glass-01-border: var(--skylent-color-border);
+  --glass-01-shadow: var(--shadow-subtle);
+  --glass-02-bg: #ffffff;
+  --glass-02-border: var(--skylent-color-border);
+  --glass-02-shadow: var(--shadow-raised);
+  --glass-03-bg: #ffffff;
+  --glass-03-border: var(--skylent-color-border);
+  --glass-03-shadow: var(--shadow-overlay);
+
+  /* Typography — the former serif display voice becomes Space Grotesk.
+     Tracking is relaxed: the old values were tuned for a serif. */
+  --font-brand: var(--sk-font-heading);
+  --display-font: var(--sk-font-heading);
+  --skylent-font-serif: var(--sk-font-heading);
+  --skylent-type-display-family: var(--sk-font-heading);
+  --skylent-type-heading-family: var(--sk-font-heading);
+
+  --skylent-t-display-xl-family: var(--sk-font-heading);
+  --skylent-t-display-xl-tracking: -0.015em;
+  --skylent-t-display-lg-family: var(--sk-font-heading);
+  --skylent-t-display-lg-tracking: -0.015em;
+  --skylent-t-display-md-family: var(--sk-font-heading);
+  --skylent-t-display-md-tracking: -0.01em;
+  --skylent-t-heading-xl-family: var(--sk-font-heading);
+  --skylent-t-heading-xl-tracking: -0.01em;
+  --skylent-t-heading-lg-family: var(--sk-font-heading);
+  --skylent-t-heading-lg-tracking: -0.01em;
+  --skylent-t-heading-md-family: var(--sk-font-heading);
+  --skylent-t-heading-md-tracking: -0.005em;
+
+  /* Eyebrows and captions: DM Sans, not monospace */
+  --skylent-t-eyebrow-family: var(--sk-font-body);
+  --skylent-t-caption-family: var(--sk-font-body);
+  --skylent-type-caption-family: var(--sk-font-body);
+
+  background: #ffffff;
+  color: var(--skylent-color-ink);
+  min-height: 100vh;
+  font-family: var(--sk-font-body);
+}
+
+/* ---------------------------------------------------------------------
+   2. Legacy public content (pages written for older canvases)
+   --------------------------------------------------------------------- */
+
+/* Headings on legacy public pages take the ink token. Skylent 2.0 sections
+   (.site-light) colour their own headings with utilities and are left alone —
+   this used to force #15171A onto the homepage headings with !important. */
+.skylent-public-canvas main h1:where(:not(.site-light *)),
+.skylent-public-canvas main h2:where(:not(.site-light *)),
+.skylent-public-canvas main h3:where(:not(.site-light *)),
+.skylent-public-canvas main h4:where(:not(.site-light *)) {
+  color: var(--skylent-color-ink) !important;
 }
 
 .skylent-public-canvas main p[style*="color: rgba(255"],
@@ -28,7 +171,7 @@ html, body {
 .skylent-public-canvas main div[style*="color: rgba(255,255,255"],
 .skylent-public-canvas main span[style*="color: rgba(255, 255, 255"],
 .skylent-public-canvas main span[style*="color: rgba(255,255,255"] {
-  color: #5C6168 !important;
+  color: var(--skylent-color-slate) !important;
 }
 
 .skylent-public-canvas main div[style*="color: #FFFFFF"],
@@ -37,18 +180,18 @@ html, body {
 .skylent-public-canvas main li[style*="color: #FFFFFF"],
 .skylent-public-canvas main strong[style*="color: #FFFFFF"],
 .skylent-public-canvas main td[style*="color: #FFFFFF"] {
-  color: #15171A !important;
+  color: var(--skylent-color-ink) !important;
 }
 
 .skylent-public-canvas main input,
 .skylent-public-canvas main textarea,
 .skylent-public-canvas main select {
-  color: #15171A;
+  color: var(--skylent-color-ink);
 }
 
 .skylent-public-canvas main input::placeholder,
 .skylent-public-canvas main textarea::placeholder {
-  color: #8A8F96;
+  color: var(--skylent-color-text-subtle);
 }
 
 .skylent-public-canvas .scroll-control-strip::before {
@@ -60,11 +203,804 @@ html, body {
 
 @media (max-width: 768px) {
   .skylent-public-canvas .labs-filter-group {
-    border-right: 1px solid rgba(21, 23, 26, 0.10);
+    border-right: 1px solid var(--skylent-color-border);
   }
 }
 
-/* Labs / OS / lab workspace shells */
+/* ---------------------------------------------------------------------
+   3. Navigation (Nav in components/shared.tsx — class prefix skn-)
+   One header for every public page: wordmark · four destinations · sign in
+   · path action. Fresh class names, so the older nav rules in index.css no
+   longer reach it. Below 1000px the destinations and search live in the
+   menu sheet and the bar is wordmark + actions + menu button.
+   --------------------------------------------------------------------- */
+.skylent-public-canvas .skn {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 200;
+  background: #ffffff;
+  border-bottom: 1px solid hsl(var(--site-border));
+  font-family: var(--sk-font-body);
+}
+.skylent-public-canvas .skn__bar {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--sk-container);
+  height: var(--nav-h);
+  margin-inline: auto;
+  padding-inline: var(--sk-gutter);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(12px, 2.4vw, 32px);
+}
+.skylent-public-canvas .skn :is(a, button, input):focus-visible {
+  outline: 2px solid hsl(var(--site-highlight));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Wordmark (header and footer) */
+.skylent-public-canvas :is(.skn__mark, .skf__mark) {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  min-height: 44px;
+  font-family: var(--sk-font-heading);
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: hsl(var(--site-deep));
+}
+
+/* Destinations */
+.skylent-public-canvas .skn__links {
+  display: flex;
+  align-items: stretch;
+  gap: clamp(14px, 2vw, 30px);
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.skylent-public-canvas .skn__group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.skylent-public-canvas .skn__link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  color: hsl(var(--site-ink) / 0.82);
+  font: 500 14.5px/1 var(--sk-font-body);
+  letter-spacing: -0.005em;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--sk-fast) var(--sk-ease);
+}
+/* The cobalt signal: a 2px line on the bar's lower edge that travels in from the left
+   on hover and focus, and rests under the current destination. */
+.skylent-public-canvas .skn__link::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -1px 0;
+  height: 2px;
+  background: hsl(var(--site-deep));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.skylent-public-canvas .skn__link:hover,
+.skylent-public-canvas .skn__group:focus-within > .skn__link {
+  color: hsl(var(--site-ink));
+}
+.skylent-public-canvas .skn__link:hover::after,
+.skylent-public-canvas .skn__link:focus-visible::after,
+.skylent-public-canvas .skn__group:has(.skn__toggle[aria-expanded="true"]) > .skn__link::after,
+.skylent-public-canvas .skn__link[aria-current="page"]::after {
+  transform: scaleX(1);
+}
+.skylent-public-canvas .skn__link[aria-current="page"] {
+  color: hsl(var(--site-ink));
+  font-weight: 600;
+}
+.skylent-public-canvas .skn__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 44px;
+  margin-left: 1px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: hsl(var(--site-dim));
+  cursor: pointer;
+  transition: color var(--sk-fast) var(--sk-ease);
+}
+.skylent-public-canvas .skn__group:hover > .skn__toggle {
+  color: hsl(var(--site-ink));
+}
+.skylent-public-canvas .skn__toggle:hover,
+.skylent-public-canvas .skn__toggle[aria-expanded="true"] {
+  color: hsl(var(--site-deep));
+}
+.skylent-public-canvas .skn-chevron {
+  transition: transform var(--sk-fast) var(--sk-ease);
+}
+.skylent-public-canvas .skn-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+/* Dropdown panels (destinations and account) */
+.skylent-public-canvas .skn-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: -14px;
+  z-index: 300;
+  box-sizing: border-box;
+  width: 304px;
+  max-height: min(72vh, 520px);
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid hsl(var(--site-border));
+  border-radius: var(--sk-radius-lg);
+  background: #ffffff;
+  box-shadow: 0 1px 2px hsl(var(--site-ink) / 0.05), 0 28px 56px -28px hsl(var(--site-ink) / 0.3);
+  animation: skn-menu-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes skn-menu-in {
+  from { opacity: 0; translate: 0 -6px; }
+  to { opacity: 1; translate: 0 0; }
+}
+.skylent-public-canvas .skn-menu--sections {
+  left: 50%;
+  width: min(600px, calc(100vw - 32px));
+  transform: translateX(-50%);
+}
+.skylent-public-canvas .skn-menu--account {
+  left: auto;
+  right: 0;
+  width: 220px;
+}
+.skylent-public-canvas .skn-menu__tagline,
+.skylent-public-canvas .skn-menu__heading {
+  margin: 0;
+  font-family: var(--sk-font-mono);
+  font-size: 10.5px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--site-dim));
+}
+.skylent-public-canvas .skn-menu__tagline {
+  margin-bottom: 4px;
+  padding: 10px 12px;
+  border-bottom: 1px solid hsl(var(--site-border));
+}
+.skylent-public-canvas .skn-menu__heading {
+  padding: 10px 12px 4px;
+  color: hsl(var(--site-ink));
+}
+.skylent-public-canvas .skn-menu__sections {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 8px;
+}
+.skylent-public-canvas .skn-menu__item {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font-family: var(--sk-font-body);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--sk-fast) var(--sk-ease);
+}
+.skylent-public-canvas .skn-menu__item:hover,
+.skylent-public-canvas .skn-menu__item:focus-visible {
+  background: hsl(var(--site-soft));
+}
+.skylent-public-canvas .skn-menu__label {
+  transition: color var(--sk-fast) var(--sk-ease);
+}
+.skylent-public-canvas .skn-menu__item:hover .skn-menu__label,
+.skylent-public-canvas .skn-menu__item[aria-current="page"] .skn-menu__label {
+  color: hsl(var(--site-deep));
+}
+.skylent-public-canvas .skn-menu__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.skylent-public-canvas .skn-menu__label {
+  color: hsl(var(--site-ink));
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+.skylent-public-canvas .skn-menu__item[aria-current="page"] .skn-menu__label {
+  font-weight: 600;
+}
+.skylent-public-canvas .skn-menu__sub {
+  display: block;
+  margin-top: 2px;
+  color: hsl(var(--site-dim));
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+/* Actions: search, sign in or account, path action, menu button */
+.skylent-public-canvas .skn__actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: clamp(8px, 1.4vw, 18px);
+}
+.skylent-public-canvas .skn__search,
+.skylent-public-canvas .skn__account {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.skylent-public-canvas .skn__icon-btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: hsl(var(--site-ink));
+  cursor: pointer;
+  transition: background-color var(--sk-fast), color var(--sk-fast);
+}
+.skylent-public-canvas .skn__icon-btn:hover,
+.skylent-public-canvas .skn__icon-btn[aria-expanded="true"] {
+  background: hsl(var(--site-soft));
+  color: hsl(var(--site-deep));
+}
+.skylent-public-canvas .skn-search {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 320;
+  box-sizing: border-box;
+  width: min(300px, calc(100vw - 32px));
+  padding: 8px;
+  border: 1px solid hsl(var(--site-border));
+  border-radius: var(--sk-radius-lg);
+  background: #ffffff;
+  box-shadow: 0 1px 2px hsl(var(--site-ink) / 0.05), 0 18px 40px -24px hsl(var(--site-ink) / 0.22);
+}
+.skylent-public-canvas .skn-search input,
+.skylent-public-canvas .skn-sheet__search input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid hsl(var(--site-border-strong));
+  border-radius: 8px;
+  background: #ffffff;
+  color: hsl(var(--site-ink));
+  font: 14.5px/1.3 var(--sk-font-body);
+}
+.skylent-public-canvas .skn-search input::placeholder,
+.skylent-public-canvas .skn-sheet__search input::placeholder {
+  color: hsl(var(--site-dim));
+}
+.skylent-public-canvas .skn-search input:focus-visible,
+.skylent-public-canvas .skn-sheet__search input:focus-visible {
+  outline: none;
+  border-color: hsl(var(--site-deep));
+  box-shadow: 0 0 0 3px hsl(var(--site-deep) / 0.15);
+}
+.skylent-public-canvas :is(.skn-search, .skn-sheet__hints) ul,
+.skylent-public-canvas ul.skn-sheet__hints {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.skylent-public-canvas :is(.skn-search, .skn-sheet__hints) li button {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: hsl(var(--site-ink));
+  font: 500 14px/1.3 var(--sk-font-body);
+  text-align: left;
+  cursor: pointer;
+}
+.skylent-public-canvas :is(.skn-search, .skn-sheet__hints) li button:hover,
+.skylent-public-canvas :is(.skn-search, .skn-sheet__hints) li button:focus-visible {
+  background: hsl(var(--site-soft));
+  color: hsl(var(--site-deep));
+}
+.skylent-public-canvas .skn__signin {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: hsl(var(--site-ink));
+  font: 500 14.5px/1 var(--sk-font-body);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--sk-fast) var(--sk-ease);
+}
+.skylent-public-canvas .skn__signin {
+  position: relative;
+}
+.skylent-public-canvas .skn__signin::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 11px 0;
+  height: 1px;
+  background: hsl(var(--site-deep));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.skylent-public-canvas .skn__signin:hover {
+  color: hsl(var(--site-deep));
+}
+.skylent-public-canvas .skn__signin:hover::after,
+.skylent-public-canvas .skn__signin:focus-visible::after {
+  transform: scaleX(1);
+}
+.skylent-public-canvas .skn__cta.sk-btn {
+  min-height: 44px;
+  padding: 0 16px 0 18px;
+  font-size: 14.5px;
+  box-shadow: none;
+}
+.skylent-public-canvas .skn__account-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px 0 8px;
+  border: 1px solid hsl(var(--site-border));
+  border-radius: 8px;
+  background: #ffffff;
+  font-family: var(--sk-font-body);
+  cursor: pointer;
+}
+.skylent-public-canvas .skn__avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: hsl(var(--site-navy));
+  color: #ffffff;
+  font: 500 10px/1 var(--sk-font-mono);
+}
+.skylent-public-canvas .skn__account-name {
+  max-width: 110px;
+  overflow: hidden;
+  color: hsl(var(--site-ink));
+  font-size: 13.5px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.skylent-public-canvas .skn__burger {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 44px;
+  height: 44px;
+  margin-right: -10px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+}
+.skylent-public-canvas .skn__burger span {
+  display: block;
+  width: 20px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: hsl(var(--site-ink));
+  transition: width var(--sk-fast) var(--sk-ease);
+}
+.skylent-public-canvas .skn__burger span:nth-child(2) {
+  width: 14px;
+  align-self: flex-start;
+  margin-left: 12px;
+}
+.skylent-public-canvas .skn__burger:hover span:nth-child(2),
+.skylent-public-canvas .skn__burger[aria-expanded="true"] span:nth-child(2) {
+  width: 20px;
+}
+.skylent-public-canvas .skn__burger:hover {
+  background: hsl(var(--site-soft));
+}
+
+/* Menu sheet (below 1000px) */
+.skylent-public-canvas .skn-sheet {
+  position: fixed;
+  inset: var(--nav-h) 0 0 0;
+  z-index: 250;
+  box-sizing: border-box;
+  padding: 10px var(--sk-gutter) 36px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  background: #ffffff;
+  border-top: 1px solid hsl(var(--site-border));
+  animation: skn-sheet-in 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes skn-sheet-in {
+  from { opacity: 0; translate: 0 -8px; }
+  to { opacity: 1; translate: 0 0; }
+}
+.skylent-public-canvas .skn-sheet__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.skylent-public-canvas .skn-sheet__title {
+  margin: 0;
+  font-family: var(--sk-font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--site-dim));
+}
+.skylent-public-canvas .skn-sheet__close {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid hsl(var(--site-border-strong));
+  border-radius: 8px;
+  background: #ffffff;
+  color: hsl(var(--site-ink));
+  font: 600 13.5px/1 var(--sk-font-body);
+  cursor: pointer;
+}
+.skylent-public-canvas .skn-sheet__search {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+.skylent-public-canvas .skn-sheet__search input {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  font-size: 16px;
+}
+.skylent-public-canvas .skn-sheet__search button {
+  min-height: 48px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  background: hsl(var(--site-navy));
+  color: #ffffff;
+  font: 600 14px/1 var(--sk-font-body);
+  cursor: pointer;
+}
+.skylent-public-canvas .skn-sheet__groups {
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid hsl(var(--site-ink));
+}
+.skylent-public-canvas .skn-sheet__group {
+  border-bottom: 1px solid hsl(var(--site-border));
+}
+.skylent-public-canvas .skn-sheet__row {
+  display: flex;
+  align-items: stretch;
+}
+.skylent-public-canvas .skn-sheet__hub {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  position: relative;
+  min-height: 68px;
+  padding: 12px 12px 12px 0;
+  text-decoration: none;
+}
+.skylent-public-canvas .skn-sheet__label {
+  color: hsl(var(--site-ink));
+  font: 600 20px/1.25 var(--sk-font-heading);
+  letter-spacing: -0.015em;
+}
+.skylent-public-canvas .skn-sheet__hub[aria-current="page"] {
+  padding-left: 14px;
+}
+.skylent-public-canvas .skn-sheet__hub[aria-current="page"]::before {
+  content: "";
+  position: absolute;
+  inset: 14px auto 14px 0;
+  width: 2px;
+  background: hsl(var(--site-deep));
+}
+.skylent-public-canvas .skn-sheet__hub[aria-current="page"] .skn-sheet__label {
+  color: hsl(var(--site-deep));
+}
+.skylent-public-canvas .skn-sheet__tagline {
+  color: hsl(var(--site-dim));
+  font-size: 13px;
+  line-height: 1.4;
+}
+.skylent-public-canvas .skn-sheet__toggle {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 52px;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid hsl(var(--site-border));
+  background: none;
+  color: hsl(var(--site-ink));
+  cursor: pointer;
+  transition: background-color var(--sk-fast) var(--sk-ease), color var(--sk-fast) var(--sk-ease);
+}
+.skylent-public-canvas .skn-sheet__toggle:hover,
+.skylent-public-canvas .skn-sheet__toggle[aria-expanded="true"] {
+  background: hsl(var(--site-soft));
+  color: hsl(var(--site-deep));
+}
+.skylent-public-canvas .skn-sheet__panel {
+  padding: 0 0 12px;
+  border-top: 1px solid hsl(var(--site-border));
+}
+.skylent-public-canvas .skn-sheet__panel .skn-menu__item {
+  padding-inline: 0;
+}
+.skylent-public-canvas .skn-sheet__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 28px;
+}
+.skylent-public-canvas .skn-sheet__actions .sk-btn {
+  width: 100%;
+  min-height: 48px;
+  font-size: 15px;
+}
+
+@media (max-width: 999px) {
+  .skylent-public-canvas .skn__links,
+  .skylent-public-canvas .skn__search,
+  .skylent-public-canvas .skn__account-name {
+    display: none;
+  }
+  .skylent-public-canvas .skn__burger {
+    display: flex;
+  }
+  .skylent-public-canvas .skn__account-btn {
+    padding: 0 8px;
+  }
+}
+/* On phones the bar is the wordmark and the menu button; sign in and the path
+   action are the first things in the sheet, so the bar never wraps. */
+@media (max-width: 720px) {
+  .skylent-public-canvas .skn__signin,
+  .skylent-public-canvas .skn__cta {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skylent-public-canvas .skn *,
+  .skylent-public-canvas .skn *::after,
+  .skylent-public-canvas .skf * {
+    transition: none !important;
+  }
+  .skylent-public-canvas .skn-menu,
+  .skylent-public-canvas .skn-sheet {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------
+   3b. Journey locator strip
+   PageShell renders the seven-stage locator between the fixed header and
+   <main>. The strip carries the fixed-header clearance, so <main> starts
+   directly under it.
+   --------------------------------------------------------------------- */
+.skylent-public-canvas .sk-shell-locator {
+  padding-top: var(--nav-h);
+  background: #ffffff;
+}
+.skylent-public-canvas .sk-shell-locator + .skylent-public-main {
+  padding-top: 0;
+}
+
+/* ---------------------------------------------------------------------
+   4. Footer (Footer in components/shared.tsx — class prefix skf-)
+   One row of links to routes that exist, and one honest meta line.
+   --------------------------------------------------------------------- */
+.skylent-public-canvas .skf {
+  background: #ffffff;
+  border-top: 1px solid hsl(var(--site-border));
+  font-family: var(--sk-font-body);
+}
+.skylent-public-canvas .skf__top,
+.skylent-public-canvas .skf__meta {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--sk-container);
+  margin-inline: auto;
+  padding-inline: var(--sk-gutter);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+.skylent-public-canvas .skf__top {
+  gap: 40px 64px;
+  padding-block: clamp(40px, 5vw, 64px) clamp(28px, 3vw, 40px);
+  align-items: flex-start;
+}
+.skylent-public-canvas .skf__brand {
+  flex: 1 1 280px;
+  min-width: 0;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.skylent-public-canvas .skf__mark {
+  font-size: 18px;
+  align-self: flex-start;
+}
+.skylent-public-canvas .skf__line {
+  margin: 0;
+  color: hsl(var(--site-muted));
+  font-size: 15px;
+  line-height: 1.55;
+}
+.skylent-public-canvas .skf__journey {
+  margin: 4px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-family: var(--sk-font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--site-dim));
+}
+.skylent-public-canvas .skf__journey span { display: inline-flex; gap: 8px; }
+.skylent-public-canvas .skf__journey i { font-style: normal; color: hsl(var(--site-deep)); }
+.skylent-public-canvas .skf__nav {
+  flex: 2 1 480px;
+  min-width: 0;
+  max-width: 680px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+  gap: 28px 24px;
+}
+.skylent-public-canvas .skf__title {
+  margin: 0 0 6px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid hsl(var(--site-border));
+  font-family: var(--sk-font-mono) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase;
+  color: hsl(var(--site-ink)) !important;
+}
+.skylent-public-canvas .skf__links {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.skylent-public-canvas .skf__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  color: hsl(var(--site-muted));
+  font-size: 14.5px;
+  text-decoration: none;
+  transition: color var(--sk-fast) var(--sk-ease);
+}
+.skylent-public-canvas .skf__links a:hover {
+  color: hsl(var(--site-deep));
+}
+.skylent-public-canvas .skf :is(a, button):focus-visible {
+  outline: 2px solid hsl(var(--site-highlight));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.skylent-public-canvas .skf__meta {
+  gap: 4px 24px;
+  align-items: center;
+  padding-block: 16px 28px;
+  border-top: 1px solid hsl(var(--site-border));
+  color: hsl(var(--site-dim));
+  font-family: var(--sk-font-mono);
+  font-size: 11px;
+  line-height: 1.55;
+  letter-spacing: 0.04em;
+}
+.skylent-public-canvas .skf__meta p {
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------------
+   4c. Shared public primitives
+   --------------------------------------------------------------------- */
+
+/* Primary actions are cobalt with white text (AA), matching .sk-btn-primary.
+   The accent blue stays for links, eyebrows, focus and state. */
+.skylent-public-canvas .skylent-btn--primary {
+  background: hsl(var(--site-deep));
+  color: #ffffff;
+}
+.skylent-public-canvas .skylent-btn--primary:hover:not(:disabled) {
+  background: hsl(var(--site-ocean));
+}
+.skylent-public-canvas .skylent-btn--primary:active:not(:disabled) {
+  background: hsl(var(--site-ocean));
+}
+
+/* Full-width section washes on the editorial pages become white bands divided
+   by the existing hairline; the wash tokens remain for small fills only. */
+.skylent-public-canvas .pe-section.is-warm,
+.skylent-public-canvas .pe-section.is-soft {
+  background: #ffffff;
+}
+
+/* Page modules that keep a small local palette: point the leftover warm
+   hairlines, muted text and orange marks at the public palette. */
+.skylent-public-canvas .pe-page {
+  --pe-muted: hsl(var(--site-muted));
+  --pe-line: hsl(var(--site-border));
+  --pe-orange: hsl(var(--site-deep));
+}
+.skylent-public-canvas .path-v2,
+.skylent-public-canvas .path-result-v2 {
+  --path-muted: hsl(var(--site-muted));
+  --path-line: hsl(var(--site-border));
+  --path-mark: hsl(var(--site-deep));
+}
+.skylent-public-canvas .pg-page,
+.skylent-public-canvas .pg-story {
+  --pg-line: hsl(var(--site-border));
+  --pg-orange: hsl(var(--site-deep));
+}
+.skylent-public-canvas .pg-hero {
+  --pg-hero-line: hsl(var(--site-border));
+  --pg-hero-orange: hsl(var(--site-deep));
+}
+.skylent-public-canvas .pl-ws-rail {
+  background: hsl(var(--site-soft));
+}
+
+/* ---------------------------------------------------------------------
+   5. Labs / OS / lab workspace shells (unchanged — signed-in product)
+   --------------------------------------------------------------------- */
 .skylent-lab-shell {
   background: var(--skylent-surface-paper) !important;
   color: var(--skylent-color-ink);
@@ -92,4 +1028,17 @@ html, body {
 .os-gateway {
   background: var(--skylent-surface-paper) !important;
   color: var(--skylent-color-ink);
+}
+
+/* Older editorial and catalogue pages: primary actions join the cobalt system. */
+.skylent-public-canvas :is(.pe-cta, .cat-btn-primary) {
+  background: hsl(var(--site-deep));
+  border-color: hsl(var(--site-deep));
+  color: #ffffff;
+  border-radius: var(--sk-radius);
+}
+.skylent-public-canvas :is(.pe-cta, .cat-btn-primary):hover {
+  background: hsl(var(--site-ocean));
+  border-color: hsl(var(--site-ocean));
+  color: #ffffff;
 }

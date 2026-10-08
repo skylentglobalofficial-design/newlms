@@ -29,14 +29,14 @@ export default function WorkshopsPage() {
         <section className="cat-hero">
           <div className="cat-rail">
             <p className="cat-label">Workshops · coming soon</p>
-            <h1>Short sessions. Planned subjects. Registration not open.</h1>
+            <h1 className="cat-h1--display">Short sessions. Planned subjects. Registration not open.</h1>
             <p className="cat-lead">
-              Workshops are event-shaped: a date, a duration, and a single skill. None of these sessions are
-              scheduled for delivery yet, and nothing on this page can be booked.
+              A workshop is a short session on a single skill. None of these sessions are scheduled for delivery
+              yet, and nothing on this page can be booked.
             </p>
             <p className="cat-honesty">
-              Dates and prices are indicative planning information. Attendance, payment, and certificates are not
-              built.
+              These are planned subjects only. Dates and prices are not set, and attendance, payment, and
+              certificates are not built.
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/courses">
@@ -86,7 +86,7 @@ export default function WorkshopsPage() {
                 {filtered.map((workshop) => (
                   <li key={workshop.slug}>
                     <Link className="ws-row" to={`/workshops/${workshop.slug}`}>
-                      <span className="ws-date">{workshop.date}</span>
+                      <span className="ws-date">Date not set</span>
                       <span className="ws-body">
                         <strong>{workshop.title}</strong>
                         <em>{workshop.category}</em>
@@ -94,13 +94,12 @@ export default function WorkshopsPage() {
                       <span className="ws-meta">{workshop.mode}</span>
                       <span className="ws-meta">{workshop.duration}</span>
                       <span className="ws-state">Not open</span>
-                      <span className="ws-price">₹{workshop.price.toLocaleString("en-IN")}</span>
                     </Link>
                   </li>
                 ))}
               </ul>
             )}
-            <p className="cat-fine">Indicative prices. Payment is not collected.</p>
+            <p className="cat-fine">No dates or prices are set. Payment is not collected.</p>
           </div>
         </section>
       </div>

@@ -731,65 +731,24 @@ export function ModuleLane({ modules }: { modules: ModuleLaneItem[] }) {
   )
 }
 
+/** Objective, why it matters and what the learner produces, as a ruled spec above the lesson text. */
 export function LessonContextPanel({ courseSlug, lessonId }: { courseSlug: string; lessonId: string }) {
   const meta = getLessonMeta(courseSlug, lessonId)
   if (!meta) return null
-  const haystack = `${meta.title} ${meta.concepts.join(" ")} ${meta.objective}`
-  const isProduct = courseSlug === PRODUCT_MANAGEMENT_SLUG
-  const visual = isProduct
-    ? /spec|accept|happy path/i.test(haystack)
-      ? "spec"
-      : /priorit|bet|score/i.test(haystack)
-        ? "bet"
-        : /interview|quote|evidence|research|job/i.test(haystack)
-          ? "case"
-          : "case"
-    : /sql|select|join/i.test(haystack)
-      ? "sql"
-      : /dashboard|chart|pivot|stand-up/i.test(haystack)
-        ? "chart"
-        : /northwind|spreadsheet|dataset|valid row|revenue/i.test(haystack)
-          ? "dataset"
-          : "none"
-
+  const rows = [
+    { label: "Objective", value: meta.objective },
+    { label: "Why this matters", value: meta.whyItMatters },
+    { label: "You produce", value: meta.practicalOutput },
+  ].filter((row) => Boolean(row.value))
+  if (rows.length === 0) return null
   return (
-    <aside className="pl-lesson-ctx">
-      <div>
-        <p className="pl-kicker">You produce</p>
-        <p className="pl-ws-lesson pl-lesson-obj">{meta.practicalOutput}</p>
-        <p className="pl-fine">{meta.whyItMatters}</p>
-      </div>
-      {visual === "sql" ? (
-        <pre className="pl-sql">
-          <code>{NW.sql}</code>
-        </pre>
-      ) : null}
-      {visual === "chart" || visual === "dataset" ? (
-        <div className="pl-lesson-extract" aria-label="Northwind extract">
-          <div className="pl-stat-row">
-            <VisualStat label="Valid rows" value={String(NW.validRows)} />
-            <VisualStat label="Net revenue" value={NW.netRevenueLabel} />
-            <VisualStat label="Top category" value={NW.topCategory} />
-          </div>
-          {visual === "chart" ? <Spark mini values={NW.months.map((item) => item.value)} /> : <NorthwindTable />}
+    <dl className="os-spec">
+      {rows.map((row) => (
+        <div key={row.label}>
+          <dt>{row.label}</dt>
+          <dd>{row.value}</dd>
         </div>
-      ) : null}
-      {visual === "case" || visual === "bet" || visual === "spec" ? (
-        <div className="pl-lesson-extract" aria-label="Harbor Desk case">
-          <div className="pl-stat-row">
-            <VisualStat label="Stores" value={String(HARBOR.stores)} />
-            <VisualStat label="Exceptions" value={String(HARBOR.weekendExceptions)} />
-            <VisualStat label="Unlogged" value={String(HARBOR.unlogged)} />
-          </div>
-          {visual === "spec" ? (
-            <p className="pl-fine">Thin spec: trigger, happy path, one edge, out of scope. Not Gmail.</p>
-          ) : visual === "bet" ? (
-            <p className="pl-fine">{HARBOR.bet} — {HARBOR.constraint}. Not an ERP.</p>
-          ) : (
-            <p className="pl-fine">harbor-desk-case.md · {HARBOR.interviews} interviews · fictional Harbor Retail</p>
-          )}
-        </div>
-      ) : null}
-    </aside>
+      ))}
+    </dl>
   )
 }

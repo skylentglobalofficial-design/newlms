@@ -1,22 +1,22 @@
-import { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react'
+import { useState, useEffect, useCallback, useRef, lazy, Suspense, type ReactNode } from 'react'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { EMPTY_LESSON_STATE } from '../demo/DemoStateContext'
-import { getLmsRoleAccent, getLmsTabAccent } from '../role-themes'
 import CurriculumRail from '../components/lms/CurriculumRail'
 import { LessonContentView, LessonNavigation } from '../components/lms/LessonContent'
 import { LessonContextPanel } from '../components/product/ProductLanguage'
+import { AiMark, ProductSlice } from '../components/skylent/primitives'
 import { getLessonMeta } from '../content/course-lookups'
 import { isAuthoredCourse } from '../lib/live-intents'
 import type { QuizQuestion } from '../components/lms/AssessmentSurface'
 import { courseProductProfile } from '../lib/course-product'
 import {
   computeCourseProgress,
-  defaultTabForLesson,
   getAdjacentLessons,
   isLessonUnlocked,
   lessonObjective,
   lessonTypeLabel,
+  productStepForLesson,
 } from '../components/lms/lms-utils'
 import { useLmsCourse } from '../hooks/useLms'
 import LockedLessonState from '../components/lms/LockedLessonState'
@@ -31,22 +31,24 @@ import {
 } from '../lib/lms-api'
 import { workspaceErrorMessage } from '../lib/http'
 import './LearnWorkspace.css'
+import '../components/lms/SkylentAI.css'
 
 const SkylentAI = lazy(() => import('../components/lms/SkylentAI'))
 
+/** One accent for the whole player: cobalt, from the system tokens. */
+const ACCENT = {
+  primary: 'var(--skylent-color-accent)',
+  subtle: 'var(--skylent-color-accent-soft)',
+  border: 'var(--skylent-color-accent-border)',
+  text: 'var(--skylent-color-accent)',
+}
+
+const SLICE = ['Learn', 'Practice', 'Build', 'Prove'] as const
+
 function SkylentAiFallback({ compact }: { compact: boolean }) {
-  if (compact) {
-    return (
-      <section className="os-ai is-compact os-ai-fallback" aria-hidden="true">
-        <p className="os-eyebrow">Skylent AI</p>
-        <p className="os-ai-idle">Ask about this lesson</p>
-      </section>
-    )
-  }
   return (
-    <aside className="os-ai os-ai-fallback" aria-hidden="true">
-      <p className="os-eyebrow">Skylent AI</p>
-      <p className="os-ai-idle">Ask about this lesson.</p>
+    <aside className={compact ? 'os-ai is-compact os-ai-fallback' : 'os-ai os-ai-fallback'} aria-hidden="true">
+      <AiMark />
     </aside>
   )
 }
@@ -61,13 +63,20 @@ function dashRoute(role?: string) {
   }
 }
 
+function StateScreen({ children }: { children: ReactNode }) {
+  return (
+    <div className="os-state">
+      <div className="os-state-body">{children}</div>
+    </div>
+  )
+}
+
 export default function LearnPage() {
   const { slug, lessonId } = useParams<{ slug: string; lessonId?: string }>()
   const navigate = useNavigate()
   const location = useLocation()
   const { user, ready: authReady } = useAuth()
   const { access, lessonStates, reload, enroll } = useLmsCourse(slug)
-  const roleAccent = getLmsRoleAccent(user?.role)
 
   const course = access.status === 'ready' ? access.course : null
   const allLessons = course ? course.modules.flatMap((module) => module.lessons) : []
@@ -84,7 +93,9 @@ export default function LearnPage() {
   const [enrolling, setEnrolling] = useState(false)
   const [enrollError, setEnrollError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [completing, setCompleting] = useState(false)
   const menuBtnRef = useRef<HTMLButtonElement>(null)
+  const stageRef = useRef<HTMLElement>(null)
 
   const selectedLessonType = allLessons.find((lesson) => lesson.id === selectedLessonId)?.type ?? null
   const selectedLessonLocked = Boolean(selectedLessonId && lessonStates[selectedLessonId]?.locked)
@@ -105,6 +116,10 @@ export default function LearnPage() {
   useEffect(() => {
     if (lessonId) setSelectedLessonId(lessonId)
   }, [lessonId])
+
+  useEffect(() => {
+    stageRef.current?.scrollTo({ top: 0 })
+  }, [selectedLessonId])
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 900px)')
@@ -202,63 +217,83 @@ export default function LearnPage() {
 
   if (!slug) {
     return (
-      <div className="os-state">
+      <StateScreen>
+        <p className="os-eyebrow">My learning</p>
         <h1>Course not found</h1>
-        <Link className="os-link" to="/courses">Back to courses</Link>
-      </div>
+        <p>This address does not point to a course.</p>
+        <div className="os-actions">
+          <Link className="os-btn os-btn-primary" to="/dashboard/student">Back to my learning</Link>
+        </div>
+      </StateScreen>
     )
   }
 
   if (!authReady || access.status === 'loading') {
     return (
-      <div className="os-state">
-        <p>Loading course…</p>
-      </div>
+      <StateScreen>
+        <div className="os-state-skeleton" role="status" aria-label="Loading the course">
+          <span className="os-skeleton" style={{ width: '30%' }} />
+          <span className="os-skeleton" style={{ height: 28, width: '80%' }} />
+          <span className="os-skeleton" />
+          <span className="os-skeleton" style={{ width: '90%' }} />
+          <span className="os-skeleton" style={{ width: '60%' }} />
+        </div>
+      </StateScreen>
     )
   }
 
   if (access.status === 'login_required') {
     return (
-      <div className="os-state">
+      <StateScreen>
+        <p className="os-eyebrow">My learning</p>
         <h1>Sign in to continue learning</h1>
         <p>Course content is available after you sign in and enrol.</p>
-        <Link className="os-btn os-btn-primary" to="/login" state={{ returnTo: location.pathname }}>Go to sign in</Link>
-      </div>
+        <div className="os-actions">
+          <Link className="os-btn os-btn-primary" to="/login" state={{ returnTo: location.pathname }}>Go to sign in</Link>
+        </div>
+      </StateScreen>
     )
   }
 
   if (access.status === 'not_enrolled') {
     return (
-      <div className="os-state">
+      <StateScreen>
+        <p className="os-eyebrow">Not enrolled</p>
         <h1>{access.courseTitle}</h1>
         <p>You are signed in but not enrolled in this course yet.</p>
-        <button
-          type="button"
-          className="os-btn os-btn-primary"
-          disabled={enrolling}
-          onClick={() => {
-            setEnrolling(true)
-            setEnrollError(null)
-            void enroll()
-              .catch((err) => setEnrollError(workspaceErrorMessage(err)))
-              .finally(() => setEnrolling(false))
-          }}
-        >
-          {enrolling ? 'Enrolling…' : 'Enrol to start learning'}
-        </button>
-        {enrollError ? <p className="os-error">{enrollError}</p> : null}
-        <Link className="os-link" to="/dashboard/student">Back to dashboard</Link>
-      </div>
+        <div className="os-actions">
+          <button
+            type="button"
+            className="os-btn os-btn-primary"
+            disabled={enrolling}
+            onClick={() => {
+              setEnrolling(true)
+              setEnrollError(null)
+              void enroll()
+                .catch((err) => setEnrollError(workspaceErrorMessage(err)))
+                .finally(() => setEnrolling(false))
+            }}
+          >
+            {enrolling ? 'Enrolling…' : 'Enrol to start learning'}
+          </button>
+          <Link className="os-link" to="/dashboard/student">Back to my learning</Link>
+        </div>
+        {enrollError ? <p className="os-error" role="alert">{enrollError}</p> : null}
+      </StateScreen>
     )
   }
 
   if (access.status !== 'ready') {
     return (
-      <div className="os-state">
-        <h1>Course unavailable</h1>
-        <p>This course could not be opened. Check your connection, then try again.</p>
-        <Link className="os-link" to="/dashboard/student">Back to dashboard</Link>
-      </div>
+      <StateScreen>
+        <p className="os-eyebrow">My learning</p>
+        <h1>This course could not be opened</h1>
+        <p>The learning service did not respond. Check your connection, then try again.</p>
+        <div className="os-actions">
+          <button type="button" className="os-btn os-btn-primary" onClick={() => void reload()}>Try again</button>
+          <Link className="os-link" to="/dashboard/student">Back to my learning</Link>
+        </div>
+      </StateScreen>
     )
   }
 
@@ -266,7 +301,6 @@ export default function LearnPage() {
   const selectedLesson = allLessons.find((lesson) => lesson.id === selectedLessonId)
   const selectedState = selectedLessonId ? (lessonStates[selectedLessonId] ?? { ...EMPTY_LESSON_STATE }) : { ...EMPTY_LESSON_STATE }
   const { progressPct, completedCount, totalLessons, allComplete } = computeCourseProgress(allLessons, lessonStates)
-  const tabAccent = getLmsTabAccent(selectedLesson ? defaultTabForLesson(selectedLesson) : 'notes')
   const { prev, next } = getAdjacentLessons(allLessons, selectedLessonId)
   const prevUnlocked = prev && isLessonUnlocked(prev.id, allLessons, lessonStates) ? prev : null
   const currentModule = selectedLesson
@@ -275,11 +309,12 @@ export default function LearnPage() {
   const moduleIndex = currentModule
     ? readyCourse.modules.findIndex((module) => module.id === currentModule.id) + 1
     : 0
-  const moduleTotal = readyCourse.modules.length
   const lessonIndex = selectedLesson
     ? allLessons.findIndex((lesson) => lesson.id === selectedLesson.id) + 1
     : 0
   const nextUnlocked = next && isLessonUnlocked(next.id, allLessons, lessonStates) ? next : null
+  const showAi = Boolean(selectedLesson && !selectedState.locked)
+  const profile = courseProductProfile(readyCourse.slug)
 
   function handleLessonSelect(id: string) {
     if (!isLessonUnlocked(id, allLessons, lessonStates)) return
@@ -288,14 +323,28 @@ export default function LearnPage() {
     setActionError(null)
   }
 
-  async function handleLessonComplete() {
-    if (!slug || !selectedLesson) return
+  async function handleLessonComplete(): Promise<boolean> {
+    if (!slug || !selectedLesson) return false
     setActionError(null)
     try {
       await markLessonComplete(slug, selectedLesson.id)
       await refreshWorkspace()
+      return true
     } catch (err) {
       setActionError(workspaceErrorMessage(err) || 'Could not save your progress. Try again.')
+      return false
+    }
+  }
+
+  /** Records completion with the server, then moves to the next lesson it has just unlocked. */
+  async function handleCompleteAndContinue() {
+    if (completing) return
+    setCompleting(true)
+    const saved = await handleLessonComplete()
+    setCompleting(false)
+    if (saved && next) {
+      setSelectedLessonId(next.id)
+      setActionError(null)
     }
   }
 
@@ -308,7 +357,7 @@ export default function LearnPage() {
       if (result.passed) await refreshWorkspace()
       return result.passed
     } catch (err) {
-      setActionError(workspaceErrorMessage(err) || 'Could not submit the quiz. Try again.')
+      setActionError(workspaceErrorMessage(err) || 'Could not submit the check. Try again.')
       return false
     }
   }
@@ -324,125 +373,154 @@ export default function LearnPage() {
     }
   }
 
+  let primaryAction: { label: string; onClick: () => void; busy?: boolean } | undefined
+  let navHint: string | undefined
+  if (selectedLesson && !selectedState.locked) {
+    if (selectedLesson.type === 'notes' && !selectedState.complete) {
+      primaryAction = {
+        label: next ? 'Complete and continue' : 'Complete lesson',
+        onClick: () => { void handleCompleteAndContinue() },
+        busy: completing,
+      }
+    } else if (selectedState.complete && nextUnlocked) {
+      primaryAction = { label: 'Continue', onClick: () => handleLessonSelect(nextUnlocked.id) }
+    } else if (!selectedState.complete && next) {
+      navHint =
+        selectedLesson.type === 'quiz'
+          ? 'opens when you pass this check'
+          : selectedLesson.type === 'assignment'
+            ? 'opens when you submit this assignment'
+            : 'opens when you finish this lesson'
+    }
+  }
+
   return (
     <div className="os-shell">
-      {sidebarOpen ? (
-        <div className="os-overlay" onClick={() => setSidebarOpen(false)} role="presentation" />
-      ) : null}
-      <aside
-        className={sidebarOpen ? 'os-rail is-open' : 'os-rail'}
-        id="os-curriculum"
-        aria-label="Course curriculum"
-        aria-hidden={compact && !sidebarOpen}
-        {...(compact && !sidebarOpen ? { inert: true } : {})}
-        {...(sidebarOpen && compact ? { role: 'dialog', 'aria-modal': true } : {})}
-      >
-        <CurriculumRail
-          course={readyCourse}
-          lessonStates={lessonStates}
-          selectedLessonId={selectedLessonId}
-          accent={roleAccent}
-          onSelectLesson={handleLessonSelect}
-          onClose={() => {
-            setSidebarOpen(false)
-            menuBtnRef.current?.focus()
-          }}
-        />
-      </aside>
-
-      <div className="os-main">
-        <header className="os-top">
-          <button ref={menuBtnRef} type="button" className="os-menu" onClick={() => setSidebarOpen(true)} aria-label="Open curriculum" aria-expanded={sidebarOpen} aria-controls="os-curriculum">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-          </button>
-          <nav className="os-crumb" aria-label="Course location">
-            <button type="button" className="os-top-link" onClick={() => navigate(dashRoute(user?.role))} aria-label="Dashboard">
-              <svg className="os-top-dash-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                <rect x="3" y="3" width="7" height="7" rx="1" />
-                <rect x="14" y="3" width="7" height="7" rx="1" />
-                <rect x="3" y="14" width="7" height="7" rx="1" />
-                <rect x="14" y="14" width="7" height="7" rx="1" />
-              </svg>
-              <span className="os-top-dash-label">Dashboard</span>
-            </button>
-            <span className="os-crumb-sep" aria-hidden="true">→</span>
-            <span className="os-top-course">{readyCourse.title}</span>
-            {selectedLesson ? (
-              <>
-                <span className="os-crumb-sep os-crumb-sep-lesson" aria-hidden="true">→</span>
-                <span className="os-top-lesson">{selectedLesson.title}</span>
-              </>
-            ) : null}
-          </nav>
-          <div
-            className="os-top-progress"
-            aria-label={
-              moduleIndex
-                ? `Module ${moduleIndex} of ${moduleTotal}, lesson ${lessonIndex} of ${totalLessons}, ${completedCount} complete`
-                : `${completedCount} of ${totalLessons} lessons complete`
-            }
+      <header className="os-top">
+        <div className="os-top-lead">
+          <button
+            ref={menuBtnRef}
+            type="button"
+            className="os-menu"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="Open course outline"
+            aria-expanded={sidebarOpen}
+            aria-controls="os-curriculum"
           >
-            <span>{moduleIndex ? `Module ${moduleIndex} / ${moduleTotal}` : `${completedCount} / ${totalLessons}`}</span>
-            <div className="os-progress-bar" aria-hidden="true">
-              <span style={{ width: `${progressPct}%` }} />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+          <Link className="os-top-back" to={dashRoute(user?.role)} aria-label="Back to my learning">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            <span>My learning</span>
+          </Link>
+          <span className="os-top-rule" aria-hidden="true" />
+          <div className="os-top-context">
+            <div className="os-top-module">
+              {currentModule ? `Module ${moduleIndex} · ${currentModule.title}` : 'Course'}
             </div>
-            <span>{lessonIndex ? `Lesson ${lessonIndex} / ${totalLessons}` : `${completedCount} complete`}</span>
+            <div className="os-top-course">{readyCourse.title}</div>
           </div>
-        </header>
+        </div>
+        <div className="sky-on-navy">
+          <ProductSlice
+            steps={SLICE}
+            current={selectedLesson ? productStepForLesson(selectedLesson, allLessons) : undefined}
+            label="Where this lesson sits"
+          />
+        </div>
+        <div className="os-top-progress">
+          <span>{completedCount} of {totalLessons} complete · {progressPct}%</span>
+          <div
+            className="os-progress-bar"
+            role="progressbar"
+            aria-label="Course progress"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={progressPct}
+          >
+            <span style={{ width: `${progressPct}%` }} />
+          </div>
+        </div>
+      </header>
 
-        <div className={selectedLesson && !selectedState.locked && aiCompact ? 'os-stage is-ai-compact' : 'os-stage'}>
-          <div className={selectedLesson && !selectedState.locked ? 'os-stage-grid' : undefined}>
+      <div className="os-body">
+        {sidebarOpen ? (
+          <div className="os-overlay" onClick={() => setSidebarOpen(false)} role="presentation" />
+        ) : null}
+        <aside
+          className={sidebarOpen ? 'os-rail is-open' : 'os-rail'}
+          id="os-curriculum"
+          aria-label="Course outline"
+          aria-hidden={compact && !sidebarOpen}
+          {...(compact && !sidebarOpen ? { inert: true } : {})}
+          {...(sidebarOpen && compact ? { role: 'dialog', 'aria-modal': true } : {})}
+        >
+          <CurriculumRail
+            course={readyCourse}
+            lessonStates={lessonStates}
+            selectedLessonId={selectedLessonId}
+            onSelectLesson={handleLessonSelect}
+            onClose={() => {
+              setSidebarOpen(false)
+              menuBtnRef.current?.focus()
+            }}
+          />
+        </aside>
+
+        <main ref={stageRef} className={showAi && aiCompact ? 'os-stage is-ai-compact' : 'os-stage'}>
           <div className="os-workspace">
             {allComplete ? (
               <div className="os-banner">
                 <p className="os-eyebrow">Course complete</p>
                 <h2>{readyCourse.title}</h2>
-                <p className="os-lead">You have finished every lesson in this workspace. Certificates are not issued in this pilot. You can carry learning evidence into Career OS.</p>
+                <p className="os-lead">You have completed every lesson. Claim your certificate from My learning, and add your project to Career OS when you want it on your profile.</p>
                 <div className="os-actions">
-                  <Link className="os-btn os-btn-primary" to="/career-os">Open Career OS</Link>
+                  <Link className="os-btn os-btn-primary" to="/dashboard/student">Go to my learning</Link>
+                  <Link className="os-btn os-btn-ghost" to="/career-os">Open Career OS</Link>
                 </div>
               </div>
             ) : null}
 
             {selectedLesson ? (
-              <div className="os-lesson-stage">
+              <article className="os-lesson-stage">
                 <div className="os-lesson-head">
-                <p className="os-kicker">
-                  <span className="lx-type-pill">
-                    <strong>{lessonTypeLabel(selectedLesson.type, selectedLesson.title)}</strong>
-                  </span>
-                  <span>{selectedLesson.duration ?? 'Self-paced'}</span>
-                  <span>{currentModule?.title ?? 'Current module'}</span>
-                </p>
-                <h1>{selectedLesson.title}</h1>
-                <p className={selectedState.complete ? 'os-status is-done' : 'os-status'}>
-                  {selectedState.locked ? 'Locked until the previous lesson is complete.' : selectedState.complete ? 'Completed' : 'In progress'}
-                </p>
-                {(() => {
-                  const profile = courseProductProfile(readyCourse.slug)
-                  if (!profile || selectedState.locked) return null
-                  return (
-                    <div className="os-tools">
-                      {profile.lab ? (
-                        <Link className="os-chip" to={profile.lab.href(selectedLesson.id)} title={profile.lab.note}>
-                          {profile.lab.label}
-                        </Link>
-                      ) : profile.labOmission ? (
-                        <span className="os-chip is-mute" title={profile.labOmission}>Lab not in this course</span>
-                      ) : null}
-                      {profile.project ? (
-                        <Link className="os-chip" to={profile.project.href} title={profile.project.note}>
-                          {profile.project.label}
-                        </Link>
-                      ) : null}
-                    </div>
-                  )
-                })()}
+                  <p className="os-kicker">
+                    {moduleIndex ? `Module ${moduleIndex} · ` : ''}
+                    Lesson {lessonIndex} · {lessonTypeLabel(selectedLesson.type, selectedLesson.title)} · {selectedLesson.duration ?? 'Self-paced'}
+                  </p>
+                  <h1>{selectedLesson.title}</h1>
+                  <div className="os-lesson-sub">
+                    <span className={selectedState.locked ? 'os-status is-idle' : selectedState.complete ? 'os-status is-done' : 'os-status'}>
+                      {selectedState.locked ? 'Locked' : selectedState.complete ? 'Completed' : 'In progress'}
+                    </span>
+                    {profile && !selectedState.locked ? (
+                      <div className="os-tools">
+                        {profile.lab ? (
+                          <Link className="os-chip" to={profile.lab.href(selectedLesson.id)} title={profile.lab.note}>
+                            {profile.lab.label}
+                          </Link>
+                        ) : profile.labOmission ? (
+                          <span className="os-chip is-mute" title={profile.labOmission}>No lab in this course</span>
+                        ) : null}
+                        {profile.project ? (
+                          <Link className="os-chip" to={profile.project.href} title={profile.project.note}>
+                            {profile.project.label}
+                          </Link>
+                        ) : null}
+                      </div>
+                    ) : null}
+                  </div>
                 </div>
-                {isAuthoredCourse(readyCourse.slug) && !selectedState.locked ? (
+                {selectedState.locked ? null : isAuthoredCourse(readyCourse.slug) ? (
                   <LessonContextPanel courseSlug={readyCourse.slug} lessonId={selectedLesson.id} />
                 ) : (
-                  <p className="os-lead" style={{ padding: '0 18px' }}>
+                  <p className="os-lead">
                     {getLessonMeta(readyCourse.slug, selectedLesson.id)?.objective ?? lessonObjective(selectedLesson)}
                   </p>
                 )}
@@ -471,7 +549,7 @@ export default function LearnPage() {
                     <LessonContentView
                       lesson={selectedLesson}
                       lessonState={selectedState}
-                      accent={{ ...tabAccent, text: roleAccent.text }}
+                      accent={ACCENT}
                       onComplete={() => { void handleLessonComplete() }}
                       quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
                       quizStatus={selectedLesson.type === 'quiz' ? quizStatus : undefined}
@@ -482,40 +560,41 @@ export default function LearnPage() {
                     />
                   )}
                 </div>
-                {actionError ? <p className="os-error">{actionError}</p> : null}
+                {actionError ? <p className="os-error" role="alert">{actionError}</p> : null}
                 {!selectedState.locked ? (
                   <LessonNavigation
                     prev={prevUnlocked}
                     next={nextUnlocked}
                     nextPreview={next}
-                    courseSlug={readyCourse.slug}
-                    accent={roleAccent}
                     onNavigate={handleLessonSelect}
-                    completeAction={
-                      selectedLesson.type === 'notes' && !selectedState.complete
-                        ? { label: 'Mark lesson complete', onClick: () => { void handleLessonComplete() } }
-                        : undefined
-                    }
+                    primaryAction={primaryAction}
+                    hint={navHint}
                   />
                 ) : null}
-              </div>
+              </article>
             ) : (
-              <p className="os-lead">This lesson is unavailable. Choose another from the curriculum.</p>
+              <div className="os-locked">
+                <p className="os-eyebrow">Not found</p>
+                <h2>This lesson is not in the course</h2>
+                <p className="os-lead">Choose another lesson from the outline.</p>
+              </div>
             )}
           </div>
-          {selectedLesson && !selectedState.locked ? (
-            <Suspense fallback={<SkylentAiFallback compact={aiCompact} />}>
-              <SkylentAI
-                key={selectedLesson.id}
-                courseSlug={readyCourse.slug}
-                lessonId={selectedLesson.id}
-                lessonTitle={selectedLesson.title}
-                compact={aiCompact}
-              />
-            </Suspense>
-          ) : null}
-          </div>
-        </div>
+        </main>
+
+        {showAi && selectedLesson ? (
+          <Suspense fallback={<SkylentAiFallback compact={aiCompact} />}>
+            <SkylentAI
+              key={selectedLesson.id}
+              courseSlug={readyCourse.slug}
+              lessonId={selectedLesson.id}
+              lessonTitle={selectedLesson.title}
+              lessonNumber={lessonIndex}
+              lessonKind={selectedLesson.type}
+              compact={aiCompact}
+            />
+          </Suspense>
+        ) : null}
       </div>
     </div>
   )

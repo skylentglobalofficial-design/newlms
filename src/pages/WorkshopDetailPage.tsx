@@ -48,7 +48,7 @@ export default function WorkshopDetailPage() {
             <dl className="pd-facts">
               <div>
                 <dt>Planned date</dt>
-                <dd>{workshop.date}</dd>
+                <dd>Not set</dd>
               </div>
               <div>
                 <dt>Duration</dt>
@@ -65,7 +65,7 @@ export default function WorkshopDetailPage() {
             </dl>
 
             <p className="cat-honesty">
-              Indicative price ₹{workshop.price.toLocaleString("en-IN")}. Payment is not collected. This is not a
+              No price is set. Payment is not collected. This is not a
               scheduled session you can book.
             </p>
             <div className="cat-actions">

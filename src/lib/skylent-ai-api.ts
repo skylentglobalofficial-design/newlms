@@ -1,7 +1,8 @@
+import { apiV1 } from "./api-base"
 import { ensureCsrfToken } from "./auth-api"
 import { parseApiJson } from "./http"
 
-const API_BASE = "/api/v1"
+const API_BASE = apiV1()
 
 export type SkylentAiAction = "ask" | "explain" | "example" | "quiz" | "practice"
 

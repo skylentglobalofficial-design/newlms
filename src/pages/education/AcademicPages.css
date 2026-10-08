@@ -1,0 +1,23 @@
+/* Schooling, postgraduate and exams pages: consistency with the current public system.
+   The header and banner come from shared components with inline styles, so the few
+   overrides here carry !important and stay scoped under .arch-academic-shell. */
+.arch-academic-shell .arch-line-header { padding-top: clamp(4px, 1vw, 12px); margin-bottom: clamp(24px, 3vw, 36px); }
+.arch-academic-shell .arch-line-header .skylent-label { font-family: var(--sk-font-mono); font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: hsl(var(--site-dim)) !important; }
+.arch-academic-shell .arch-line-header h1 {
+  max-width: 15em !important;
+  margin: 4px 0 20px !important;
+  font-family: var(--sk-font-heading) !important;
+  font-size: var(--sk-display-lg) !important;
+  font-weight: 600 !important;
+  line-height: 1.02 !important;
+  letter-spacing: -0.03em !important;
+  text-wrap: balance;
+}
+.arch-academic-shell .arch-line-header p { max-width: 36em !important; font-size: clamp(1.0625rem, 1.4vw, 1.1875rem) !important; line-height: 1.55 !important; }
+/* The not-yet-running notice: a hairline proof card, not a coloured side bar. */
+.arch-academic-shell .arch-upcoming {
+  border: 1px solid hsl(var(--site-proof-line)) !important;
+  border-radius: 12px;
+  background: hsl(var(--site-proof)) !important;
+  padding: 18px 20px !important;
+}

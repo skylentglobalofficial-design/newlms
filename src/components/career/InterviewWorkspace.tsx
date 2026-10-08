@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import { GlassSurface } from "../foundation"
 import { useInterviews } from "../../hooks/useInterviews"
 import InterviewRoundRail from "./InterviewRoundRail"
@@ -10,7 +10,7 @@ import InterviewPracticeSurface from "./InterviewPracticeSurface"
 import { formatInterviewDateTime, formatRoundStatus, formatRoundType } from "./interview-utils"
 import { EmptyBlock, FeedbackBanner, LoadingBlock } from "./section-ui"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 export default function InterviewWorkspace() {
   const board = useInterviews()

@@ -290,7 +290,7 @@ export default function SkillsPage() {
         <section className="sk-hero">
           <div className="sk-rail">
             <LearnPillarSubnav current="skills" />
-            <p className="sk-eyebrow">START FROM A GOAL</p>
+            <p className="skl-eyebrow">START FROM A GOAL</p>
             <h1>What do you want to be able to do?</h1>
             <p className="sk-hero-lead">
               Pick a direction. Skylent shows what you would learn, where you would practise it, and what you

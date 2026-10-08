@@ -1,26 +1,51 @@
 /**
- * Skylent design system foundation (Phase 2 — Block 1)
- * Paper-first, editorial, product-grade. CSS tokens + optional utility classes.
+ * Skylent design system foundation
+ * Signed-in product tokens (:root). White workspace, deep navy anchors, cobalt action.
  * JS inline styles: keep src/tokens.ts in sync with :root below.
+ *
+ * The public shell (.skylent-public-canvas, src/skylent-public.css) re-declares every
+ * --skylent-* token on its own element, so the values here reach the signed-in product
+ * (dashboards, learning player, labs, projects, Career OS) and /login only.
  */
 
 :root {
   /*
-   * Skylent color & surface system (Phase 2 Block 4)
-   * Public canvas = warm paper (#f7f4ec). Raised panels = cream (#fffdf8).
-   * Brief alternates: cream-warm #f5f2e9, soft wash #eeeae0 — use for section hierarchy only.
+   * Frozen Skylent palette — five colours, each with one meaning.
+   *   White  #FFFFFF  the workspace and learning content
+   *   Warm   #FAF9F6 / #F3F0E8  proof: evidence, certificates, career
+   *   Navy   #0B1220  ink and product anchors (top bar, rail, code workbench)
+   *   Cobalt #2563FF  action, links, current state, progress
+   *   Cyan   #22C7F2  the Skylent AI mark only
    */
 
-  /* ── Surfaces (public, warm editorial) ── */
-  --skylent-surface-paper: #f7f4ec;
-  --skylent-surface-cream: #fffdf8;
-  --skylent-surface-cream-warm: #f5f2e9;
-  --skylent-surface-soft: #eeeae0;
-  --skylent-surface-sand: #e8e2d6;
+  /* ── Surfaces ── */
+  --skylent-surface-paper: #ffffff;
+  --skylent-surface-cream: #ffffff;
+  --skylent-surface-cream-warm: #faf9f6;
+  --skylent-surface-soft: #f6f8fb;
+  --skylent-surface-sand: #e6eaf2;
   --skylent-surface-elevated: #ffffff;
-  --skylent-surface-inverse: #15171a;
+  --skylent-surface-inverse: #0b1220;
 
-  /* Canonical aliases (Block 1 — keep imports stable) */
+  /* Proof surfaces — evidence and certificates only */
+  --skylent-surface-proof: #faf9f6;
+  --skylent-surface-proof-2: #f3f0e8;
+  --skylent-color-proof-line: #e6e1d6;
+
+  /* Navy anchors — shell rail, product top bars, workbench */
+  --skylent-navy: #0b1220;
+  --skylent-navy-2: #141c2e;
+  --skylent-navy-line: #26304a;
+  --skylent-navy-line-2: #4a5878;
+  --skylent-on-navy: #e8ecf5;
+  --skylent-on-navy-muted: #9aa6bf;
+  --skylent-code-keyword: #8fb0ff;
+  --skylent-code-string: #e9dfc6;
+
+  /* Skylent AI mark */
+  --skylent-color-cyan: #22c7f2;
+
+  /* Canonical aliases (keep imports stable) */
   --skylent-color-paper: var(--skylent-surface-paper);
   --skylent-color-cream: var(--skylent-surface-cream);
   --skylent-color-soft: var(--skylent-surface-soft);
@@ -30,64 +55,64 @@
   --skylent-color-elevated: var(--skylent-surface-elevated);
 
   /* ── Text ── */
-  --skylent-color-ink: #15171a;
-  --skylent-color-ink-2: #1c1f24;
-  --skylent-color-ink-3: #2a2e35;
-  --skylent-color-slate: #5c6168;
-  --skylent-color-muted: #6e737a;
-  --skylent-color-text-subtle: #8a8f96;
-  --skylent-color-text-inverse: #fffdf8;
-  --skylent-color-text-inverse-muted: #c4beb3;
+  --skylent-color-ink: #0b1220;
+  --skylent-color-ink-2: #0b1220;
+  --skylent-color-ink-3: #141c2e;
+  --skylent-color-slate: #3d4760;
+  --skylent-color-muted: #5b6680;
+  --skylent-color-text-subtle: #5b6680;
+  --skylent-color-text-inverse: #ffffff;
+  --skylent-color-text-inverse-muted: #9aa6bf;
 
-  /* ── Borders (warm ink alpha — not cool grey) ── */
-  --skylent-color-border-subtle: rgba(21, 23, 26, 0.08);
-  --skylent-color-border: rgba(21, 23, 26, 0.1);
-  --skylent-color-border-strong: rgba(21, 23, 26, 0.16);
+  /* ── Borders (cool hairlines) ── */
+  --skylent-color-border-subtle: #e6eaf2;
+  --skylent-color-border: #dde2ec;
+  --skylent-color-border-strong: #a9b4c8;
 
-  /* ── Primary accent (indigo — interaction, links, focus) ── */
-  --skylent-color-accent: #4f46e5;
-  --skylent-color-accent-hover: #2563eb;
-  --skylent-color-accent-soft: #eef2ff;
-  --skylent-color-accent-border: #c7d2fe;
-  --skylent-color-accent-strong: #4338ca;
-  --skylent-color-text-on-accent: #fffdf8;
+  /* ── Action (cobalt — buttons, links, focus, current state, progress) ── */
+  --skylent-color-accent: #2563ff;
+  --skylent-color-accent-hover: #1d4fd8;
+  --skylent-color-accent-soft: #eaf0ff;
+  --skylent-color-accent-border: #bfd0ff;
+  --skylent-color-accent-strong: #1d4fd8;
+  --skylent-color-text-on-accent: #ffffff;
 
-  /* ── Secondary brand (orange — restrained mark / highlights) ── */
-  --skylent-color-orange: #f97316;
-  --skylent-color-orange-soft: #fff4eb;
-  --skylent-color-orange-strong: #ea580c;
-  --skylent-color-mark: var(--skylent-color-orange);
+  /* Legacy "orange" names resolve to cobalt: there is no second accent. */
+  --skylent-color-orange: var(--skylent-color-accent);
+  --skylent-color-orange-soft: var(--skylent-color-accent-soft);
+  --skylent-color-orange-strong: var(--skylent-color-accent-strong);
+  --skylent-color-mark: var(--skylent-color-accent);
 
-  /* ── Semantic states ── */
-  --skylent-color-success: #15803d;
-  --skylent-color-success-soft: #f0fdf4;
-  --skylent-color-success-border: #bbf7d0;
-  --skylent-color-warning: #b45309;
-  --skylent-color-warning-soft: #fffbeb;
-  --skylent-color-warning-border: #fde68a;
-  --skylent-color-error: #b91c1c;
-  --skylent-color-error-soft: rgba(239, 68, 68, 0.08);
-  --skylent-color-error-border: rgba(239, 68, 68, 0.25);
-  --skylent-color-info: #2563eb;
-  --skylent-color-info-soft: #eff6ff;
-  --skylent-color-info-border: #bfdbfe;
+  /* ── Semantic states (no green, no amber: solidity and ink carry state) ── */
+  --skylent-color-success: #0b1220;
+  --skylent-color-success-soft: #eaf0ff;
+  --skylent-color-success-border: #bfd0ff;
+  --skylent-color-warning: #0b1220;
+  --skylent-color-warning-soft: #f6f8fb;
+  --skylent-color-warning-border: #a9b4c8;
+  --skylent-color-error: #b62520;
+  --skylent-color-error-soft: rgba(182, 37, 32, 0.05);
+  --skylent-color-error-border: rgba(182, 37, 32, 0.3);
+  --skylent-color-info: #2563ff;
+  --skylent-color-info-soft: #eaf0ff;
+  --skylent-color-info-border: #bfd0ff;
   --skylent-color-information: var(--skylent-color-info);
   --skylent-color-information-soft: var(--skylent-color-info-soft);
   --skylent-color-information-border: var(--skylent-color-info-border);
 
-  /* ── Product / application UI (specimens — not public page chrome) ── */
-  --skylent-product-dark: #171b1a;
-  --skylent-product-dark-surface: #1c211f;
-  --skylent-product-dark-muted: #8aa39a;
-  --skylent-product-dark-border: rgba(232, 240, 237, 0.14);
-  --skylent-product-dark-accent: #4f46e5;
+  /* ── Product / application UI on navy ── */
+  --skylent-product-dark: #0b1220;
+  --skylent-product-dark-surface: #141c2e;
+  --skylent-product-dark-muted: #9aa6bf;
+  --skylent-product-dark-border: #26304a;
+  --skylent-product-dark-accent: #2563ff;
   --skylent-color-surface-product-dark: var(--skylent-product-dark);
-  --skylent-color-text-on-dark: #e8f0ed;
+  --skylent-color-text-on-dark: #e8ecf5;
   --skylent-color-muted-on-dark: var(--skylent-product-dark-muted);
 
   /* ── Overlays & scrims ── */
-  --skylent-overlay-scrim: rgba(21, 23, 26, 0.35);
-  --skylent-overlay-soft: rgba(21, 23, 26, 0.28);
+  --skylent-overlay-scrim: rgba(11, 18, 32, 0.45);
+  --skylent-overlay-soft: rgba(11, 18, 32, 0.3);
 
   /* ── Legacy aliases (existing pages & Tailwind @theme) ── */
   --color-ink: var(--skylent-color-ink);
@@ -104,12 +129,14 @@
   --color-line: var(--skylent-color-border);
   --color-line-strong: var(--skylent-color-border-strong);
 
-  /* ── Typography: families (serif display + sans UI) ── */
-  --font-brand: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  /* ── Typography: three voices — Space Grotesk (headings), DM Sans (body), DM Mono (labels, numbers, code). No serif. ── */
+  --skylent-font-heading: "Space Grotesk", system-ui, sans-serif;
+  --font-brand: var(--skylent-font-heading);
   --font-display: "DM Sans", system-ui, sans-serif;
   --font-body: "DM Sans", system-ui, sans-serif;
-  --font-mono: "DM Mono", monospace;
-  --skylent-font-serif: var(--font-brand);
+  --font-mono: "DM Mono", ui-monospace, monospace;
+  /* Legacy name: the former serif display voice is Space Grotesk. */
+  --skylent-font-serif: var(--skylent-font-heading);
   --skylent-font-sans: var(--font-body);
   --skylent-font-mono: var(--font-mono);
 
@@ -119,43 +146,43 @@
 
   /* ── Typography: semantic roles (family · size · line · weight · tracking) ── */
 
-  /* Display — serif editorial moments */
+  /* Display — Space Grotesk */
   --skylent-t-display-xl-family: var(--skylent-font-serif);
   --skylent-t-display-xl-size: clamp(36px, 4.4vw, 56px);
   --skylent-t-display-xl-line: 1.06;
   --skylent-t-display-xl-weight: 600;
-  --skylent-t-display-xl-tracking: -0.03em;
+  --skylent-t-display-xl-tracking: -0.015em;
 
   --skylent-t-display-lg-family: var(--skylent-font-serif);
   --skylent-t-display-lg-size: clamp(28px, 3.2vw, 40px);
   --skylent-t-display-lg-line: 1.1;
   --skylent-t-display-lg-weight: 600;
-  --skylent-t-display-lg-tracking: -0.03em;
+  --skylent-t-display-lg-tracking: -0.015em;
 
   --skylent-t-display-md-family: var(--skylent-font-serif);
   --skylent-t-display-md-size: clamp(24px, 2.8vw, 32px);
   --skylent-t-display-md-line: 1.12;
   --skylent-t-display-md-weight: 600;
-  --skylent-t-display-md-tracking: -0.025em;
+  --skylent-t-display-md-tracking: -0.01em;
 
-  /* Headings — serif for page/section; sm stays sans for in-page UI titles */
+  /* Headings — Space Grotesk for page/section; sm stays DM Sans for in-page UI titles */
   --skylent-t-heading-xl-family: var(--skylent-font-serif);
   --skylent-t-heading-xl-size: clamp(28px, 3.2vw, 40px);
   --skylent-t-heading-xl-line: 1.12;
   --skylent-t-heading-xl-weight: 600;
-  --skylent-t-heading-xl-tracking: -0.03em;
+  --skylent-t-heading-xl-tracking: -0.01em;
 
   --skylent-t-heading-lg-family: var(--skylent-font-serif);
   --skylent-t-heading-lg-size: clamp(24px, 2.6vw, 30px);
   --skylent-t-heading-lg-line: 1.14;
   --skylent-t-heading-lg-weight: 600;
-  --skylent-t-heading-lg-tracking: -0.025em;
+  --skylent-t-heading-lg-tracking: -0.01em;
 
   --skylent-t-heading-md-family: var(--skylent-font-serif);
   --skylent-t-heading-md-size: clamp(20px, 2.2vw, 24px);
   --skylent-t-heading-md-line: 1.16;
   --skylent-t-heading-md-weight: 600;
-  --skylent-t-heading-md-tracking: -0.02em;
+  --skylent-t-heading-md-tracking: -0.005em;
 
   --skylent-t-heading-sm-family: var(--skylent-font-sans);
   --skylent-t-heading-sm-size: 17px;
@@ -314,9 +341,9 @@
   --border-subtle: 1px solid var(--skylent-color-border);
   --border-subtle-strong: 1px solid var(--skylent-color-border-strong);
   --shadow-none: none;
-  --shadow-subtle: 0 1px 2px rgba(21, 23, 26, 0.04);
-  --shadow-raised: 0 4px 12px rgba(21, 23, 26, 0.05);
-  --shadow-overlay: 0 8px 20px rgba(21, 23, 26, 0.07);
+  --shadow-subtle: 0 1px 2px rgba(11, 18, 32, 0.05);
+  --shadow-raised: 0 4px 12px rgba(11, 18, 32, 0.08);
+  --shadow-overlay: 0 8px 20px rgba(11, 18, 32, 0.12);
 
   /* Raised surfaces (solid; no blur) */
   --glass-01-bg: var(--skylent-color-cream);
@@ -344,6 +371,27 @@
   --skylent-control-height-md: 44px;
   --skylent-control-height-lg: 48px;
   --skylent-control-pad-x: 20px;
+}
+
+/*
+ * src/index.css is imported around this file and re-declares a few of the tokens above on
+ * :root after it (a serif --font-brand, warm-ink hairlines and shadows). `html:root` out-ranks
+ * that block so the signed-in product gets the frozen system; the public shell is unaffected
+ * because .skylent-public-canvas declares the same properties on its own element.
+ */
+html:root {
+  --font-brand: var(--skylent-font-heading);
+  --display-font: var(--skylent-font-heading);
+  --font-mono: "DM Mono", ui-monospace, monospace;
+  --btn-radius: 8px;
+  --border-subtle: 1px solid var(--skylent-color-border);
+  --border-subtle-strong: 1px solid var(--skylent-color-border-strong);
+  --shadow-subtle: 0 1px 2px rgba(11, 18, 32, 0.05);
+  --shadow-raised: 0 1px 2px rgba(11, 18, 32, 0.05), 0 18px 40px -24px rgba(11, 18, 32, 0.22);
+  --shadow-overlay: 0 1px 2px rgba(11, 18, 32, 0.06), 0 28px 56px -28px rgba(11, 18, 32, 0.3);
+  --glass-01-border: var(--skylent-color-border);
+  --glass-02-border: var(--skylent-color-border);
+  --glass-03-border: var(--skylent-color-border);
 }
 
 /* ── Layout utilities (stacks; page/grid/section → src/styles/layout.css) ── */
@@ -392,7 +440,7 @@
 
 .skylent-link:hover {
   color: var(--skylent-color-accent-hover);
-  border-bottom-color: rgba(37, 99, 235, 0.35);
+  border-bottom-color: var(--skylent-color-accent-border);
 }
 
 .skylent-link-muted {
@@ -568,7 +616,7 @@
 .skylent-input:hover:not(:disabled),
 .skylent-select:hover:not(:disabled),
 .skylent-textarea:hover:not(:disabled) {
-  border-color: rgba(21, 23, 26, 0.22);
+  border-color: var(--skylent-color-ink);
 }
 
 .skylent-input:focus-visible,
@@ -637,7 +685,7 @@
 .skylent-modal-scrim {
   position: fixed;
   inset: 0;
-  background: rgba(21, 23, 26, 0.35);
+  background: var(--skylent-overlay-scrim);
   z-index: 500;
 }
 
@@ -662,7 +710,7 @@
 .skylent-progress {
   height: 6px;
   border-radius: var(--radius-xs);
-  background: rgba(21, 23, 26, 0.08);
+  background: var(--skylent-surface-sand);
   overflow: hidden;
 }
 
@@ -748,7 +796,7 @@
 
 .skylent-nav-item:hover {
   color: var(--skylent-color-ink);
-  background: rgba(21, 23, 26, 0.04);
+  background: rgba(11, 18, 32, 0.05);
 }
 
 .skylent-nav-item.is-active {

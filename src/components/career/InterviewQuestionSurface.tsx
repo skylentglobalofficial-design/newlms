@@ -1,11 +1,11 @@
 import type { CSSProperties } from "react"
 import { useState } from "react"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import type { InterviewQuestion, InterviewQuestionDifficulty } from "../../lib/career-api"
 import { formatDifficulty } from "./interview-utils"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 type Props = {
   questions: InterviewQuestion[]

@@ -53,7 +53,7 @@ export default function CareerOSShell({ children, header }: { children: ReactNod
       renderNavIcon={id => <NavIcon id={id} />}
       header={header}
     >
-      {children}
+      <div className="cos-scope">{children}</div>
     </AuthDashboardShell>
   )
 }

@@ -1,3 +1,11 @@
+import { apiV1 } from "./api-base"
+/**
+ * Base URL of the Skylent API. Defaults to the same-origin path the app has always used.
+ * Set VITE_API_BASE_URL at build time (for example https://api.skylent.live/api/v1) when the
+ * site and the API are served from different origins. See docs/CURSOR-HANDOFF.md, task P1.
+ */
+export const API_ROOT: string = apiV1()
+
 /** User-facing copy when an API body is missing, empty, or not JSON. Never leak parser text. */
 export const WORKSPACE_LOAD_ERROR = "Unable to load this workspace. Try again."
 

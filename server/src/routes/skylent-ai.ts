@@ -9,8 +9,10 @@ import {
   loadLessonStates,
   resolveCourseEnrollment,
 } from "../lib/lms.js"
+import { prisma } from "../lib/prisma.js"
+import { deriveAcademicPolicy } from "../lib/skylent-ai/integrity.js"
 import { answerLessonQuestion, isAiConfigured } from "../lib/skylent-ai/service.js"
-import type { AiAction, ChatTurn } from "../lib/skylent-ai/types.js"
+import type { AcademicPolicy, AiAction, ChatTurn } from "../lib/skylent-ai/types.js"
 
 export const skylentAiRouter = Router()
 
@@ -124,6 +126,26 @@ async function respondToLessonAsk(
     return
   }
 
+  const lessonState = lessonStates[lessonKey]
+  const lessonKind = String(located.node.nodeType ?? "notes").toLowerCase()
+  const policy: AcademicPolicy = deriveAcademicPolicy({
+    lessonKind,
+    complete: Boolean(lessonState?.complete),
+    quizPassed: Boolean(lessonState?.quizPassed),
+    assignmentSubmitted: Boolean(lessonState?.assignmentSubmitted),
+  })
+  // Open quiz only: load the questions to recognise a pasted one. They are never sent to a provider or returned.
+  const quizRows =
+    policy === "open_quiz"
+      ? await prisma.quizQuestion.findMany({
+          where: { nodeId: located.node.id },
+          select: { question: true, options: true },
+        })
+      : []
+  const quizGuard = quizRows.map((row) => ({
+    question: row.question,
+    options: Array.isArray(row.options) ? row.options.filter((option): option is string => typeof option === "string") : [],
+  }))
   const result = await answerLessonQuestion({
     action: payload.action,
     question: payload.question,
@@ -133,7 +155,9 @@ async function respondToLessonAsk(
     moduleTitle: located.module.title,
     lessonId: lessonKey,
     lessonTitle: located.node.title,
-    lessonKind: String(located.node.nodeType ?? "notes").toLowerCase(),
+    lessonKind,
+    policy,
+    quizGuard,
   })
 
   if ("unavailable" in result) {

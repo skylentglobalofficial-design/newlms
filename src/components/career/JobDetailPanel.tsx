@@ -1,14 +1,14 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import { C, T } from "../../tokens"
-import { getDomainAccent } from "../../aurora-themes"
+import { careerAccent } from "./career-accent"
 import { GlassSurface } from "../foundation"
 import type { JobListing } from "../../lib/career-api"
 import { createApplication } from "../../lib/career-api"
 import { FeedbackBanner } from "./section-ui"
 import { formatEmploymentType, formatExperience, formatPostedDate, formatSalary, formatWorkMode, jobMetaLine } from "./job-utils"
 
-const accent = getDomainAccent("career")
+const accent = careerAccent
 
 type Props = {
   job: JobListing

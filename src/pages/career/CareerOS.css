@@ -12,7 +12,7 @@
   font-size: clamp(24px, 2.6vw, 30px);
   font-weight: 650;
   letter-spacing: -0.03em;
-  color: #15171a;
+  color: var(--skylent-color-ink);
 }
 
 .cos-page h2 {
@@ -20,12 +20,12 @@
   font-family: var(--font-body);
   font-size: 16px;
   font-weight: 650;
-  color: #15171a;
+  color: var(--skylent-color-ink);
 }
 
 .cos-lead {
   margin: 0 0 22px;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 14px;
   line-height: 1.6;
 }
@@ -48,7 +48,7 @@
 .cos-artifact-stage {
   min-width: 0;
   padding: 12px;
-  background: #f7f4ec;
+  background: var(--skylent-color-paper);
 }
 
 .cos-artifact-stage .pl-thumb,
@@ -74,13 +74,13 @@
 
 .cos-artifact-meta {
   margin: 6px 0 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13px;
 }
 
 .cos-artifact-skills {
   margin: 12px 0 0;
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -112,7 +112,7 @@
 
 .cos-kicker {
   margin: 0 0 6px;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 12px;
   font-weight: 600;
 }
@@ -129,14 +129,14 @@
   min-height: 36px;
   padding: 0 10px;
   border-radius: 8px;
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-size: 13.5px;
   font-weight: 600;
   text-decoration: none;
 }
 
 .cos-quick a:hover {
-  background: #f7f4ec;
+  background: var(--skylent-color-paper);
 }
 
 .cos-stat-row {
@@ -159,7 +159,7 @@
 .cos-stat-row span {
   display: block;
   margin-top: 2px;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 12px;
 }
 
@@ -199,7 +199,7 @@
 
 .cos-empty-row p {
   margin: 4px 0 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13px;
   line-height: 1.45;
 }
@@ -210,7 +210,7 @@
 
 .cos-empty p {
   margin: 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 14px;
   line-height: 1.55;
   max-width: 42em;
@@ -219,15 +219,15 @@
 .cos-empty-cta {
   width: fit-content;
   margin-top: 4px;
-  color: #4f46e5;
+  color: var(--skylent-color-accent);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
 }
 
 .cos-public-page {
-  background: #f7f4ec;
-  color: #15171a;
+  background: var(--skylent-color-paper);
+  color: var(--skylent-color-ink);
 }
 
 .cos-public {
@@ -265,7 +265,7 @@
 .cos-public-lead {
   margin: 14px 0 0;
   max-width: 36em;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 15.5px;
   line-height: 1.6;
 }
@@ -291,13 +291,13 @@
 
 .cos-public-actions a.cos-public-secondary {
   background: transparent;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   box-shadow: none;
   border: 1px solid rgba(21, 23, 26, 0.12);
 }
 
 .cos-public-actions a.cos-public-secondary:hover {
-  color: #15171a;
+  color: var(--skylent-color-ink);
   border-color: rgba(21, 23, 26, 0.22);
 }
 
@@ -308,12 +308,12 @@
 
 .cos-area-link strong {
   text-decoration: underline;
-  text-decoration-color: rgba(79, 70, 229, 0.35);
+  text-decoration-color: color-mix(in srgb, var(--skylent-color-accent) 35%, transparent);
   text-underline-offset: 3px;
 }
 
 .cos-area-link:hover strong {
-  color: #4f46e5;
+  color: var(--skylent-color-accent);
 }
 
 .cos-area-state-prominent {
@@ -321,7 +321,7 @@
   margin: 12px 0 16px;
   font-size: 14px;
   font-weight: 600;
-  color: #15171a;
+  color: var(--skylent-color-ink);
 }
 
 .cos-public-area {
@@ -329,11 +329,11 @@
 }
 
 .cos-public-actions a:hover {
-  background: #4338ca;
+  background: var(--skylent-color-accent-strong);
 }
 
 .cos-public-actions a:focus-visible {
-  outline: 2px solid #4f46e5;
+  outline: 2px solid var(--skylent-color-accent);
   outline-offset: 3px;
 }
 
@@ -375,11 +375,11 @@
   gap: 6px;
   min-width: 0;
   padding: 18px 18px 20px;
-  background: #fffdf8;
+  background: var(--skylent-color-cream);
 }
 
 .cos-hero-sources strong {
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-family: var(--font-brand);
   font-size: 20px;
   font-weight: 600;
@@ -388,7 +388,7 @@
 }
 
 .cos-hero-sources span {
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13.5px;
   line-height: 1.5;
 }
@@ -400,7 +400,7 @@
 
 .cos-eyebrow {
   margin: 0;
-  color: #4f46e5;
+  color: var(--skylent-color-accent);
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.15em;
@@ -419,7 +419,7 @@
 .cos-chain h2,
 .cos-areas h2 {
   margin: 10px 0 0;
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-family: var(--font-brand);
   font-size: clamp(24px, 2.6vw, 32px);
   font-weight: 600;
@@ -453,12 +453,12 @@
 
 .cos-chain-steps li:first-child {
   border-top-color: transparent;
-  box-shadow: inset 0 2px 0 #4f46e5;
+  box-shadow: inset 0 2px 0 var(--skylent-color-accent);
 }
 
 .cos-chain-step {
   margin: 0;
-  color: #4f46e5;
+  color: var(--skylent-color-accent);
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.12em;
@@ -466,7 +466,7 @@
 
 .cos-chain-label {
   margin: 8px 0 0;
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-family: var(--font-brand);
   font-size: 20px;
   font-weight: 600;
@@ -475,14 +475,14 @@
 
 .cos-chain-copy {
   margin: 8px 0 0;
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13.5px;
   line-height: 1.55;
 }
 
 .cos-chain-steps li:not(:last-child) .cos-chain-label::after {
   content: " →";
-  color: #8a8f96;
+  color: var(--skylent-color-text-subtle);
   font-family: var(--font-body);
   font-size: 14px;
   font-weight: 400;
@@ -510,14 +510,14 @@
 }
 
 .cos-area-list strong {
-  color: #15171a;
+  color: var(--skylent-color-ink);
   font-size: 14.5px;
   font-weight: 650;
   letter-spacing: -0.015em;
 }
 
 .cos-area-sub {
-  color: #5c6168;
+  color: var(--skylent-color-slate);
   font-size: 13px;
   line-height: 1.45;
 }
@@ -614,4 +614,116 @@
   .cos-empty-row {
     grid-template-columns: 108px minmax(0, 1fr);
   }
+}
+
+/* =====================================================================
+   Frozen palette for signed-in Career OS content (set on .cos-scope by CareerOSShell).
+   The Career OS components style themselves through the --skylent-* custom properties
+   (src/tokens.ts), so re-declaring them here re-themes every page without touching markup:
+   white workspace, navy ink, cool hairlines, cobalt action. No cream, no indigo, no shadows.
+   ===================================================================== */
+.cos-scope {
+  --skylent-surface-paper: #ffffff;
+  --skylent-surface-cream: #ffffff;
+  --skylent-surface-cream-warm: hsl(var(--site-proof));
+  --skylent-surface-soft: hsl(var(--site-soft));
+  --skylent-surface-sand: hsl(var(--site-raised));
+  --skylent-surface-elevated: #ffffff;
+  --skylent-color-paper: #ffffff;
+  --skylent-color-cream: #ffffff;
+  --skylent-color-soft: hsl(var(--site-soft));
+  --skylent-color-soft-surface: #ffffff;
+  --skylent-color-sand: hsl(var(--site-raised));
+  --skylent-color-canvas: #ffffff;
+  --skylent-color-elevated: #ffffff;
+  --skylent-color-ink: hsl(var(--site-ink));
+  --skylent-color-ink-2: hsl(var(--site-ink));
+  --skylent-color-ink-3: hsl(var(--site-navy));
+  --skylent-color-slate: hsl(var(--site-muted));
+  --skylent-color-muted: hsl(var(--site-dim));
+  --skylent-color-text-subtle: hsl(var(--site-dim));
+  --skylent-color-border-subtle: hsl(var(--site-border));
+  --skylent-color-border: hsl(var(--site-border));
+  --skylent-color-border-strong: hsl(var(--site-border-strong));
+  --skylent-color-accent: hsl(var(--site-deep));
+  --skylent-color-accent-hover: hsl(var(--site-ocean));
+  --skylent-color-accent-soft: hsl(var(--site-soft-blue));
+  --skylent-color-accent-border: hsl(var(--site-light-blue));
+  --skylent-color-accent-strong: hsl(var(--site-ocean));
+  --skylent-color-text-on-accent: #ffffff;
+  --skylent-color-mark: hsl(var(--site-deep));
+  --skylent-color-info: hsl(var(--site-deep));
+  --skylent-color-info-soft: hsl(var(--site-soft-blue));
+  --skylent-color-info-border: hsl(var(--site-light-blue));
+  --skylent-color-error: hsl(var(--site-red));
+  --skylent-color-error-soft: #ffffff;
+  --skylent-color-error-border: hsl(var(--site-border-strong));
+  --skylent-focus-ring: hsl(var(--site-highlight));
+  --color-ink: hsl(var(--site-ink));
+  --color-slate: hsl(var(--site-muted));
+  --color-cream: #ffffff;
+  --color-canvas: #ffffff;
+  --color-indigo: hsl(var(--site-deep));
+  --color-blue: hsl(var(--site-ocean));
+  --color-line: hsl(var(--site-border));
+  --color-line-strong: hsl(var(--site-border-strong));
+  --btn-bg: hsl(var(--site-deep));
+  --btn-fg: #ffffff;
+  --btn-radius: 8px;
+  --border-subtle: 1px solid hsl(var(--site-border));
+  --border-subtle-strong: 1px solid hsl(var(--site-border-strong));
+  --shadow-subtle: none;
+  --shadow-raised: none;
+  --shadow-overlay: none;
+  --glass-01-bg: #ffffff;
+  --glass-01-border: hsl(var(--site-border));
+  --glass-01-shadow: none;
+  --glass-02-bg: #ffffff;
+  --glass-02-border: hsl(var(--site-border));
+  --glass-02-shadow: none;
+  --glass-03-bg: #ffffff;
+  --glass-03-border: hsl(var(--site-border));
+  --glass-03-shadow: none;
+  --font-display: var(--sk-font-heading);
+  --font-brand: var(--sk-font-heading);
+  --font-body: var(--sk-font-body);
+  --font-mono: var(--sk-font-mono);
+  min-width: 0;
+  color: hsl(var(--site-ink));
+  font-family: var(--sk-font-body);
+}
+
+/* Legacy Career OS classes in the same language: hairline panels, no shadows, Space Grotesk headings. */
+.cos-scope .cos-page h1,
+.cos-scope .cos-page h2 { font-family: var(--sk-font-heading); font-weight: 600; letter-spacing: -0.01em; color: hsl(var(--site-ink)); }
+.cos-scope .cos-artifact,
+.cos-scope .cos-panel,
+.cos-scope .cos-empty { box-shadow: none; border: 1px solid hsl(var(--site-border)); border-radius: 12px; }
+.cos-scope .cos-artifact-stage { background: hsl(var(--site-proof-2)); }
+.cos-scope .cos-empty-cta { display: inline-flex; align-items: center; min-height: 44px; color: hsl(var(--site-deep)); }
+
+/* =====================================================================
+   Public Career OS entry (signed out). Prefix cosp-. Sits inside .site-light.
+   ===================================================================== */
+.cosp { background: hsl(var(--site-white)); color: hsl(var(--site-ink)); }
+.cosp-hero { padding-block: clamp(2.5rem, 5vw, 4rem) clamp(2rem, 4vw, 3rem); }
+.cosp-kicker { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; }
+.cosp h1 { margin: 0; max-width: 22ch; font-size: clamp(2.1rem, 3.7vw, 3.2rem); line-height: 1.07; }
+.cosp-lead { margin: 18px 0 0; max-width: 58ch; font-size: 1.03125rem; line-height: 1.6; color: hsl(var(--site-muted)); }
+.cosp-actions { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 12px; }
+.cosp-section { padding-block: 0 clamp(3rem, 6vw, 5rem); }
+.cosp h2 { margin: 10px 0 0; font-size: clamp(1.5rem, 2.4vw, 2rem); line-height: 1.15; }
+.cosp-caps { margin: 24px 0 0; padding: 0; list-style: none; border-top: 1px solid hsl(var(--site-border-strong)); }
+.cosp-caps li { display: grid; grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) auto; align-items: baseline; gap: 6px 28px; padding: 18px 0; border-bottom: 1px solid hsl(var(--site-border)); }
+.cosp-caps strong { font-family: var(--sk-font-heading); font-size: 1.125rem; font-weight: 600; }
+.cosp-caps p { margin: 0; font-size: .9375rem; line-height: 1.55; color: hsl(var(--site-muted)); }
+.cosp-caps p a { color: hsl(var(--site-deep)); font-weight: 600; white-space: nowrap; }
+.cosp-proof { margin-top: 28px; padding: 20px 22px; }
+.cosp-proof p { margin: 8px 0 0; max-width: 72ch; font-size: .9375rem; line-height: 1.6; color: hsl(var(--site-ink)); }
+.cosp-fine { margin: 16px 0 0; font-size: .8125rem; line-height: 1.5; color: hsl(var(--site-dim)); }
+.cosp-area { padding-block: clamp(2rem, 4vw, 3rem) clamp(3rem, 6vw, 5rem); }
+@media (max-width: 760px) {
+  .cosp-caps li { grid-template-columns: minmax(0, 1fr) auto; }
+  .cosp-caps li p { grid-column: 1 / -1; grid-row: 2; }
+  .cosp-actions .sk-btn { flex: 1 1 100%; }
 }

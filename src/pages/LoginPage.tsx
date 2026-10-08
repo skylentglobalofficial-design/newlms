@@ -225,11 +225,11 @@ export default function LoginPage() {
 
       <main className="entry-main">
         <div className="entry-col">
-          <Link className="entry-mark" to="/">Skylent<span>.</span></Link>
+          <Link className="entry-mark" to="/">Skylent</Link>
 
           <div className="entry-frame">
             <div className="entry-frame-bar">
-              <b>Skylent OS</b>
+              <b>My learning</b>
               <span>{signingIn ? 'Sign in' : 'New account'}</span>
             </div>
 
@@ -246,7 +246,7 @@ export default function LoginPage() {
                 <h1 className="entry-title">{signingIn ? 'Welcome back.' : 'Create your account.'}</h1>
                 <p className="entry-lead">
                   {signingIn
-                    ? 'Continue where you left off in Skylent OS.'
+                    ? 'Continue where you left off.'
                     : 'One account for your learning, your practice, and the work you keep.'}
                 </p>
 
@@ -375,7 +375,7 @@ export default function LoginPage() {
           </div>
 
           <p className="entry-note">
-            Signing in opens Skylent OS — your lessons, practice, projects, and the evidence you keep.
+            Signing in opens your lessons, practice, projects, and the evidence you keep.
             Password resets are handled by hand for now, so <Link to="/contact">contact us</Link> if you
             cannot get in.
           </p>
