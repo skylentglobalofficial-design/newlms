@@ -21,7 +21,7 @@ import {
   isActiveRequest,
   REQUEST_TYPE_LABELS,
 } from "./support-utils"
-import { FeedbackBanner, Field, fieldInputStyle, LoadingBlock, primaryButtonStyle, secondaryButtonStyle } from "./section-ui"
+import { FeedbackBanner, Field, fieldInputStyle, LoadingBlock, PageHead, primaryButtonStyle, secondaryButtonStyle } from "./section-ui"
 
 const accent = careerAccent
 const REQUEST_TYPES = Object.keys(REQUEST_TYPE_LABELS) as CareerSupportRequestType[]
@@ -80,20 +80,17 @@ export default function CareerSupportWorkspace() {
   }
 
   return (
-    <div className="support-workspace" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
-          Career support
-        </h1>
-        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
-          See your support requests, track assigned tasks, and request help when you need it.
-        </p>
-      </div>
+    <div className="support-workspace cos-work" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
+      <PageHead
+        eyebrow="Career OS · Support"
+        title="Career support"
+        lead="See your support requests, track assigned tasks, and request help when you need it."
+      />
 
       {board.error && (
         <div style={{ marginBottom: 16 }}>
           <FeedbackBanner tone="error" message={board.error} />
-          <button type="button" onClick={() => void board.reload()} style={{ marginTop: 10, padding: "9px 16px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "transparent", color: accent.text, fontSize: 13, cursor: "pointer" }}>
+          <button type="button" onClick={() => void board.reload()} style={{ ...secondaryButtonStyle, marginTop: 10 }}>
             Retry
           </button>
         </div>
@@ -105,7 +102,7 @@ export default function CareerSupportWorkspace() {
         <LoadingBlock label="Loading career support…" />
       ) : (
         <>
-          <GlassSurface level={2} padding="18px 20px" style={{ marginBottom: 20 }}>
+          <GlassSurface className="cos-sheet" level={2} padding="18px 20px" style={{ marginBottom: 20 }}>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 140px), 1fr))", gap: 12 }}>
               <SummaryStat label="Active requests" value={activeCount} />
               <SummaryStat label="Open tasks" value={openTaskCount} />
@@ -140,7 +137,7 @@ export default function CareerSupportWorkspace() {
 
             <div style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: 20 }}>
               {showForm && (
-                <GlassSurface level={2} padding="18px 20px">
+                <GlassSurface className="cos-sheet" level={2} padding="18px 20px">
                   <h2 style={{ margin: "0 0 14px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>
                     Request support
                   </h2>
@@ -178,7 +175,7 @@ export default function CareerSupportWorkspace() {
 
               {selected ? (
                 <>
-                  <GlassSurface level={2} padding="18px 20px">
+                  <GlassSurface className="cos-sheet" level={2} padding="18px 20px">
                     <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", alignItems: "flex-start" }}>
                       <div style={{ minWidth: 0 }}>
                         <h2 style={{ margin: "0 0 6px", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: C.ink, wordBreak: "break-word" }}>
@@ -203,7 +200,7 @@ export default function CareerSupportWorkspace() {
                     </p>
                   </GlassSurface>
 
-                  <GlassSurface level={2} padding="18px 20px">
+                  <GlassSurface className="cos-sheet" level={2} padding="18px 20px">
                     <h2 style={{ margin: "0 0 14px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>
                       Tasks
                     </h2>
@@ -216,7 +213,7 @@ export default function CareerSupportWorkspace() {
                   </GlassSurface>
                 </>
               ) : board.requests.length === 0 && !showForm ? (
-                <GlassSurface level={2} padding="18px 20px">
+                <GlassSurface className="cos-sheet" level={2} padding="18px 20px">
                   <p style={{ margin: "0 0 12px", color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
                     Submit a support request for resume feedback, interview preparation, or job search guidance.
                   </p>
@@ -242,8 +239,8 @@ export default function CareerSupportWorkspace() {
 function SummaryStat({ label, value }: { label: string; value: number }) {
   return (
     <div style={{ minWidth: 0 }}>
-      <div style={{ fontSize: 11, color: C.slate, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>{label}</div>
-      <div style={{ fontSize: 28, fontWeight: 700, color: C.ink, fontFamily: "var(--font-display)" }}>{value}</div>
+      <div style={{ fontSize: 10.5, color: C.slate, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.08em", fontFamily: "var(--font-mono)" }}>{label}</div>
+      <div style={{ fontSize: 26, fontWeight: 600, color: C.ink, fontFamily: "var(--font-display)" }}>{value}</div>
     </div>
   )
 }

@@ -935,3 +935,69 @@
   text-decoration: none;
 }
 .cos-scope .cos-profile .cos-suggest a:hover { color: hsl(var(--site-ocean)); }
+
+/* Applications, Opportunities, Interviews, Support and their detail views —
+   the same finish as Profile / Projects: one page header, hairline 12px panels,
+   ruled empty states, visible focus. */
+.cos-scope .cos-head-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px 24px;
+  margin: 0 0 28px;
+}
+.cos-scope .cos-head-row .cos-head { margin: 0; flex: 1 1 320px; }
+.cos-scope .cos-head-action { flex: 0 0 auto; }
+.cos-scope .cos-work .cos-sheet {
+  border: 1px solid hsl(var(--site-border)) !important;
+  border-radius: 12px !important;
+  background: hsl(var(--site-white)) !important;
+  box-shadow: none !important;
+}
+.cos-scope .cos-work .skylent-state-panel--empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  margin: 0;
+  padding: 16px 18px;
+  border: 1px dashed hsl(var(--site-border-strong));
+  border-radius: 12px;
+  background: hsl(var(--site-white));
+  color: hsl(var(--site-muted));
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+}
+.cos-scope .cos-work .skylent-state-panel--empty .skylent-state-panel__actions { margin: 0; }
+.cos-scope .cos-work .skylent-state-panel--empty button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid hsl(var(--site-border-strong));
+  border-radius: 8px;
+  background: hsl(var(--site-white));
+  color: hsl(var(--site-ink));
+  font: 600 13px/1 var(--sk-font-body);
+}
+.cos-scope .cos-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: -10px 0 8px;
+  font-family: var(--sk-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: hsl(var(--site-dim));
+  text-decoration: none;
+}
+.cos-scope .cos-back:hover { color: hsl(var(--site-ink)); }
+.cos-scope .cos-work :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid hsl(var(--site-deep));
+  outline-offset: 2px;
+}
+@media (max-width: 600px) {
+  .cos-scope .cos-head-row .cos-head { flex-basis: 100%; }
+}

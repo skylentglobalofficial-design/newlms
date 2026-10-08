@@ -34,6 +34,24 @@ export function SectionShell({
   )
 }
 
+/** Career OS page header: mono eyebrow, Space Grotesk title, muted lead (styles in CareerOS.css). */
+export function PageHead({ eyebrow, title, lead, action }: { eyebrow: string; title: string; lead?: ReactNode; action?: ReactNode }) {
+  const head = (
+    <header className="cos-head">
+      <span className="cos-eyebrow">{eyebrow}</span>
+      <h1>{title}</h1>
+      {lead ? <p>{lead}</p> : null}
+    </header>
+  )
+  if (!action) return head
+  return (
+    <div className="cos-head-row">
+      {head}
+      <div className="cos-head-action">{action}</div>
+    </div>
+  )
+}
+
 export function EmptyBlock({ message, onAction, actionLabel }: { message: string; onAction?: () => void; actionLabel?: string }) {
   return (
     <EmptyState

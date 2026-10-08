@@ -1,13 +1,10 @@
 import { Link } from "react-router-dom"
 import { useState } from "react"
 import { C, T } from "../../tokens"
-import { careerAccent } from "../../components/career/career-accent"
 import { useApplications } from "../../hooks/useApplications"
 import ApplicationPipeline from "../../components/career/ApplicationPipeline"
 import { createApplication } from "../../lib/career-api"
-import { EmptyBlock, FeedbackBanner, Field, LoadingBlock, fieldInputStyle, primaryButtonStyle, secondaryButtonStyle } from "../../components/career/section-ui"
-
-const accent = careerAccent
+import { EmptyBlock, FeedbackBanner, Field, LoadingBlock, PageHead, fieldInputStyle, primaryButtonStyle, secondaryButtonStyle } from "../../components/career/section-ui"
 
 export default function CareerOSApplicationsPage() {
   const { applications, filtered, loading, error, statusFilter, setStatusFilter, reload } = useApplications()
@@ -39,20 +36,17 @@ export default function CareerOSApplicationsPage() {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, marginBottom: 24, flexWrap: "wrap" }}>
-        <div style={{ minWidth: 0 }}>
-          <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
-            Applications
-          </h1>
-          <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
-            Track every role you apply to and where each application stands.
-          </p>
-        </div>
-        <button type="button" onClick={() => setShowAdd(v => !v)} style={{ ...secondaryButtonStyle, marginTop: 0 }}>
-          {showAdd ? "Cancel" : "Track application"}
-        </button>
-      </div>
+    <div className="cos-work" style={{ maxWidth: 900, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
+      <PageHead
+        eyebrow="Career OS · Applications"
+        title="Applications"
+        lead="Track every role you apply to and where each application stands."
+        action={
+          <button type="button" onClick={() => setShowAdd(v => !v)} style={{ ...secondaryButtonStyle, marginTop: 0 }}>
+            {showAdd ? "Cancel" : "Track application"}
+          </button>
+        }
+      />
 
       {addFeedback && <FeedbackBanner tone={addFeedback.tone} message={addFeedback.message} />}
 
@@ -62,7 +56,7 @@ export default function CareerOSApplicationsPage() {
           style={{
             marginBottom: 20,
             padding: "16px 18px",
-            borderRadius: T.rControl,
+            borderRadius: T.rCard,
             border: `1px solid ${T.lineDark}`,
             background: C.cream,
           }}
@@ -102,14 +96,10 @@ export default function CareerOSApplicationsPage() {
           <Link
             to="/career-os/jobs"
             style={{
-              display: "inline-block",
-              marginTop: 14,
-              padding: "10px 16px",
-              borderRadius: T.rControl,
-              background: accent.primary,
-              color: C.ink,
-              fontSize: 13,
-              fontWeight: 600,
+              ...secondaryButtonStyle,
+              display: "inline-flex",
+              alignItems: "center",
+              marginTop: 12,
               textDecoration: "none",
             }}
           >

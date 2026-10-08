@@ -6,7 +6,7 @@ import { saveJob, unsaveJob, listApplications, fetchJob, type JobListing } from 
 import JobSearchSurface from "../../components/career/JobSearchSurface"
 import JobResultRow from "../../components/career/JobResultRow"
 import JobDetailPanel from "../../components/career/JobDetailPanel"
-import { EmptyBlock, FeedbackBanner, LoadingBlock } from "../../components/career/section-ui"
+import { EmptyBlock, FeedbackBanner, LoadingBlock, PageHead, secondaryButtonStyle } from "../../components/career/section-ui"
 
 const accent = careerAccent
 
@@ -68,15 +68,12 @@ export default function CareerOSJobsPage() {
     && board.meta.offset + board.meta.limit < board.meta.total
 
   return (
-    <div className="career-jobs-page" style={{ maxWidth: 1200, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
-          Opportunities
-        </h1>
-        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
-          Roles appear here when a partner publishes them. Until then this surface stays empty — we do not invent openings.
-        </p>
-      </div>
+    <div className="career-jobs-page cos-work" style={{ maxWidth: 1200, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
+      <PageHead
+        eyebrow="Career OS · Opportunities"
+        title="Opportunities"
+        lead="Roles appear here when a partner publishes them. Until then this surface stays empty — we do not invent openings."
+      />
 
       <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
         {(["browse", "saved"] as const).map(tab => {
@@ -86,14 +83,16 @@ export default function CareerOSJobsPage() {
               key={tab}
               type="button"
               onClick={() => board.setView(tab)}
+              aria-pressed={active}
               style={{
-                padding: "9px 16px",
+                minHeight: 44,
+                padding: "0 16px",
                 borderRadius: T.rControl,
-                border: `1px solid ${active ? accent.border : T.lineDark}`,
-                background: active ? accent.subtle : "transparent",
-                color: active ? accent.text : C.slate,
+                border: `1px solid ${active ? C.ink : T.lineDark}`,
+                background: C.white,
+                color: active ? C.ink : C.slate,
                 fontSize: 13,
-                fontWeight: active ? 600 : 400,
+                fontWeight: active ? 600 : 500,
                 cursor: "pointer",
                 fontFamily: "var(--font-body)",
               }}
@@ -129,17 +128,7 @@ export default function CareerOSJobsPage() {
           <button
             type="button"
             onClick={() => void board.reload()}
-            style={{
-              marginTop: 10,
-              padding: "9px 16px",
-              borderRadius: T.rControl,
-              border: `1px solid ${T.lineDark}`,
-              background: "transparent",
-              color: accent.text,
-              fontSize: 13,
-              cursor: "pointer",
-              fontFamily: "var(--font-body)",
-            }}
+            style={{ ...secondaryButtonStyle, marginTop: 10 }}
           >
             Retry
           </button>
@@ -213,12 +202,12 @@ export default function CareerOSJobsPage() {
             />
           ) : !board.loading && (
             <div style={{
-              padding: "24px 20px",
-              borderRadius: T.rControl,
-              border: `1px dashed ${T.lineDark}`,
+              padding: "16px 18px",
+              borderRadius: T.rCard,
+              border: "1px dashed hsl(var(--site-border-strong))",
+              background: C.white,
               color: C.slate,
               fontSize: 14,
-              textAlign: "center",
             }}>
               Select a job to view details
             </div>

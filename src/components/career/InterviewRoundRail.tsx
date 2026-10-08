@@ -19,9 +19,9 @@ export default function InterviewRoundRail({ rounds, selectedId, onSelect }: Pro
   if (rounds.length === 0) {
     return (
       <div style={{
-        padding: "18px 16px",
-        borderRadius: T.rControl,
-        border: `1px dashed ${T.lineDark}`,
+        padding: "16px 18px",
+        borderRadius: T.rCard,
+        border: "1px dashed hsl(var(--site-border-strong))",
         background: C.cream,
       }}>
         <p style={{ margin: "0 0 12px", color: C.slate, fontSize: 14, lineHeight: 1.6 }}>

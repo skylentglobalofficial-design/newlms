@@ -815,9 +815,17 @@
 .lab-metrics.is-idle .lab-metric strong { margin: 0; font-family: var(--font-mono); font-size: 13px; font-weight: 400; }
 
 @media (max-width: 768px) {
-  .lab-flow { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
-  .lab-flow::-webkit-scrollbar { display: none; }
+  /* Wraps instead of clipping: all six steps stay readable, nothing hides past the edge. */
+  .lab-flow { flex-wrap: wrap; overflow: visible; }
   .lab-flow li { flex: 0 0 auto; white-space: nowrap; }
+}
+
+@media (max-width: 560px) {
+  /* Phones: the six steps as a ruled two-row list, three per row. */
+  .lab-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 2px 16px; }
+  .lab-flow li, .lab-flow li + li { padding: 9px 8px 9px 0; }
+  .lab-flow li:nth-child(n + 4) { border-top: 1px solid var(--skylent-color-border); }
+  .lab-flow li + li::before { display: none; }
 }
 
 @media (max-width: 600px) {

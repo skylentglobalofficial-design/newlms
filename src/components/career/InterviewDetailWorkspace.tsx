@@ -160,17 +160,17 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
-      <Link to="/career-os/interviews" style={{ display: "inline-block", marginBottom: 16, color: accent.text, fontSize: 13, textDecoration: "none" }}>
+    <div className="cos-work" style={{ maxWidth: 900, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
+      <Link to="/career-os/interviews" className="cos-back">
         ← Interview prep
       </Link>
 
       {feedback && <FeedbackBanner tone={feedback.tone} message={feedback.message} />}
 
-      <GlassSurface level={2} padding="22px" style={{ marginBottom: 20 }}>
+      <GlassSurface className="cos-sheet" level={2} padding="22px" style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div style={{ minWidth: 0 }}>
-            <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: C.ink, wordBreak: "break-word" }}>
+            <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.01em", color: C.ink, wordBreak: "break-word" }}>
               {round.title}
             </h1>
             <p style={{ margin: 0, color: C.slate, fontSize: 14 }}>
@@ -191,7 +191,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
         </div>
 
         {application && (
-          <div style={{ marginTop: 16, padding: "12px 14px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
+          <div style={{ marginTop: 16, padding: "12px 14px", borderRadius: T.rCard, border: `1px solid ${T.lineDark}`, background: C.cream }}>
             <div style={{ fontSize: 11, color: accent.text, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.06em" }}>Linked application</div>
             <Link to={`/career-os/applications/${application.id}`} style={{ color: C.ink, fontSize: 14, fontWeight: 600, textDecoration: "none", wordBreak: "break-word" }}>
               {applicationRoleTitle(application)}
@@ -239,7 +239,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
         </div>
       </div>
 
-      <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
+      <GlassSurface className="cos-sheet" level={2} padding="20px" style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
           <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>Round notes</h2>
           {!editing && <button type="button" onClick={() => setEditing(true)} style={{ ...secondaryButtonStyle, marginTop: 0 }}>Edit</button>}
@@ -266,7 +266,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
         )}
       </GlassSurface>
 
-      <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
+      <GlassSurface className="cos-sheet" level={2} padding="20px" style={{ marginBottom: 20 }}>
         <InterviewQuestionSurface
           questions={filteredQuestions}
           categories={categories}
@@ -279,7 +279,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
         />
       </GlassSurface>
 
-      <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
+      <GlassSurface className="cos-sheet" level={2} padding="20px" style={{ marginBottom: 20 }}>
         <InterviewPracticeSurface
           practice={practice}
           questions={questions}
