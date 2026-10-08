@@ -17,7 +17,16 @@ const migrate = spawnSync(process.execPath, [prismaCli, "migrate", "deploy"], {
   env: process.env,
 })
 if (migrate.status !== 0) {
-  console.error("prisma migrate deploy failed")
+  // Name the host only: the URL carries credentials.
+  let host = "unknown"
+  try {
+    host = new URL(process.env.DIRECT_URL ?? "").host
+  } catch {}
+  console.error(`prisma migrate deploy failed (DIRECT_URL host: ${host}). The API will not start.`)
+  console.error(
+    "If the host cannot be reached: a Supabase direct host (db.<ref>.supabase.co) resolves to IPv6 only. " +
+      "On a server without IPv6, set DIRECT_URL to the session pooler URL (port 5432) instead.",
+  )
   process.exit(migrate.status ?? 1)
 }
 

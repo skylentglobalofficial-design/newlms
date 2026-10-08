@@ -98,25 +98,49 @@ jobs:
           npx tsx scripts/test-path-execution.ts
           npx tsx scripts/test-path-evidence.ts
 
+      # Every suite signs up its own users. The sign-in rate limit is held in memory at its production
+      # default (20 per 15 minutes), so each suite gets a freshly started API instead of a raised limit.
       - name: Start the API
         if: always()
         run: |
-          nohup npm start > api.log 2>&1 &
+          cat > "$RUNNER_TEMP/restart-api.sh" <<'SCRIPT'
+          #!/usr/bin/env bash
+          set -uo pipefail
+          if [ -f "$RUNNER_TEMP/api.pid" ]; then
+            kill "$(cat "$RUNNER_TEMP/api.pid")" 2>/dev/null || true
+            for i in $(seq 1 20); do
+              curl -fsS "$API_BASE/health" > /dev/null 2>&1 || break
+              sleep 1
+            done
+          fi
+          echo "--- api start $(date -u +%H:%M:%S)" >> api.log
+          nohup node server.js >> api.log 2>&1 &
+          echo $! > "$RUNNER_TEMP/api.pid"
           for i in $(seq 1 40); do
-            curl -fsS "$API_BASE/health" && break
+            curl -fsS "$API_BASE/health" > /dev/null 2>&1 && break
             sleep 2
           done
           curl -fsS "$API_BASE/health"
+          echo
+          SCRIPT
+          chmod +x "$RUNNER_TEMP/restart-api.sh"
+          "$RUNNER_TEMP/restart-api.sh"
 
       - name: test:auth
         if: always()
-        run: npm run test:auth
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:auth
       - name: test:lms
         if: always()
-        run: npm run test:lms
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:lms
       - name: test:ai
         if: always()
-        run: npm run test:ai
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:ai
       - name: test-product-manifest
         if: always()
         run: npx tsx scripts/test-product-manifest.ts
@@ -125,30 +149,46 @@ jobs:
         run: npm run test:ai-policy
       - name: test:quiz-guard (real PostgreSQL throttle and advisory lock)
         if: always()
-        run: npm run test:quiz-guard
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:quiz-guard
       - name: test:labs
         if: always()
-        run: npm run test:labs
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:labs
       - name: test:labs-sql
         if: always()
-        run: npm run test:labs-sql
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:labs-sql
       - name: test:projects
         if: always()
-        run: npm run test:projects
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:projects
       - name: test:career
         if: always()
-        run: npm run test:career
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:career
       - name: test:career-evidence
         if: always()
-        run: npm run test:career-evidence
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:career-evidence
       - name: Learner journey against the QA API and database
         if: always()
-        run: npx tsx scripts/qa-learner-journey.ts
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npx tsx scripts/qa-learner-journey.ts
 
-      # Last of the API tests: it deliberately trips the sign-in rate limit.
+      # This one deliberately trips the sign-in rate limit.
       - name: test:security-middleware (CORS, CSRF, body limit, auth rate limit)
         if: always()
-        run: npm run test:security-middleware
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:security-middleware
 
       - name: Client bundle carries no answer keys
         if: always()
