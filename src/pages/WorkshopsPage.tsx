@@ -29,7 +29,7 @@ export default function WorkshopsPage() {
         <section className="cat-hero">
           <div className="cat-rail">
             <p className="cat-label">Workshops · coming soon</p>
-            <h1>Short sessions. Planned subjects. Registration not open.</h1>
+            <h1 className="cat-h1--display">Short sessions. Planned subjects. Registration not open.</h1>
             <p className="cat-lead">
               A workshop is a short session on a single skill. None of these sessions are scheduled for delivery
               yet, and nothing on this page can be booked.

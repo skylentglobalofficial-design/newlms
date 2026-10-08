@@ -28,7 +28,7 @@ export default function BlogPage() {
           <div className="two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr', gap: 'clamp(28px, 5vw, 48px)', alignItems: 'center' }}>
             <FadeIn>
               <Eyebrow tone="light" accent>Editorial</Eyebrow>
-              <h1 className="skylent-display-lg" style={{ color: C.ink, margin: '18px 0 14px' }}>
+              <h1 className="sky-display sky-display--lg" style={{ color: C.ink, margin: '18px 0 14px' }}>
                 Notes on education<br />and careers.
               </h1>
               <p className="skylent-body-lg" style={{ color: C.slate, maxWidth: 480, margin: 0 }}>

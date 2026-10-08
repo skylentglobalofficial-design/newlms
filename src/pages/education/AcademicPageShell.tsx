@@ -3,6 +3,7 @@ import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { AcademicSubnav, LiveCoreRail } from "../../components/product/Architecture"
 import { C } from "../../tokens"
+import "./AcademicPages.css"
 
 export default function AcademicPageShell({
   current,

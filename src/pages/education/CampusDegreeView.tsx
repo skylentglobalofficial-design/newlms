@@ -38,17 +38,19 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
       <section className="sky-container dg-title">
         <div className="dg-title__row">
           <div className="dg-title__main">
-            <DegreeCrumb mode={degree.deliveryMode} />
-            <div className="dg-chips">
+            <div className="cine-in cine-in--fade">
+              <DegreeCrumb mode={degree.deliveryMode} />
+            </div>
+            <div className="dg-chips cine-in cine-in--fade cine-d1">
               <ListingChips degree={degree} />
             </div>
-            <h1 className="dg-h1 dg-h1--campus">{degree.title}</h1>
-            <p className="dg-lead">
+            <h1 className="dg-h1 dg-h1--campus cine-in cine-d1">{degree.title}</h1>
+            <p className="dg-lead cine-in cine-d2">
               A degree you attend in person, taught on campus by the institution that awards it.
               {degree.sample ? ` This is a sample listing for the ${degree.discipline} area.` : null}
               {degree.institution ? null : " The institution's name, place and dates appear here once it is confirmed."}
             </p>
-            <div className="dg-actions">
+            <div className="dg-actions cine-in cine-d3">
               <Link to="#taught" className="sk-btn sk-btn-primary">
                 View pathway
                 <ArrowRight />
@@ -57,7 +59,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             </div>
           </div>
 
-          <dl className="dg-title__facts sky-spec" aria-label="About this listing">
+          <dl className="dg-title__facts sky-spec cine-in cine-d4" aria-label="About this listing">
             <div className="sky-label dg-title__factshead">This listing</div>
             {degree.status === "coming_soon" ? (
               <div className="sky-spec__row">
@@ -83,7 +85,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
       </section>
 
       {/* Lead photograph: the campus leads */}
-      <div className="sky-container dg-lead-photo">
+      <div className="sky-container dg-lead-photo cine-in cine-in--plate cine-d5">
         <Photo asset={hero} fig="FIG. 01" aside={place} eager />
       </div>
 

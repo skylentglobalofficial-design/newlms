@@ -21,6 +21,7 @@ import {
 import { PathClosingBand, PathTruthNote } from "./PathJourneyVisual"
 import { PATH_V2_HOW_IT_WORKS } from "./pathV2Copy"
 import "./PathPages.css"
+import "../cine.css"
 
 const PHASE_ORDER: { key: PathPhaseKey; label: string }[] = [
   { key: "foundation", label: "Foundation" },
@@ -199,8 +200,8 @@ export default function PathResultPage() {
           <div className="site-light">
             <div className="path-result-v2__shell path-result-v2__empty">
               <div className="path-result-v2__empty-copy">
-                <p className="sky-label">Find my path · Your result</p>
-                <h1 className="path-result-v2__title">No path saved yet</h1>
+                <p className="sky-label cine-in cine-in--fade">Find my path · Your result</p>
+                <h1 className="path-result-v2__title cine-in cine-d1">No path saved yet</h1>
                 <p className="path-result-v2__intro">
                   There is no path in this browser. Answer the seven stages and your path appears on this page. If you
                   built one on another device or cleared your browser data, it will not be here.
@@ -213,7 +214,7 @@ export default function PathResultPage() {
                   </Link>
                 </div>
               </div>
-              <section className="path-result-v2__how" aria-labelledby="path-how-title">
+              <section className="path-result-v2__how cine-in cine-in--plate cine-d3" aria-labelledby="path-how-title">
                 <p className="sky-label">How it works</p>
                 <h2 id="path-how-title" className="path-result-v2__how-title">
                   What the tool does, in three steps
@@ -290,13 +291,15 @@ export default function PathResultPage() {
         <div className="site-light">
           <div className="path-result-v2__shell">
             <header className="path-result-v2__hero">
-              <p className="sky-label">Find my path · Your result</p>
-              <h1 className="path-result-v2__title">Your path, built from your answers</h1>
-              <PathTruthNote />
+              <p className="sky-label cine-in cine-in--fade">Find my path · Your result</p>
+              <h1 className="path-result-v2__title cine-in cine-d1">Your path, built from your answers</h1>
+              <div className="cine-in cine-in--fade cine-d2">
+                <PathTruthNote />
+              </div>
             </header>
 
             <div className="path-result-v2__top">
-              <section className="path-result-v2__findings" aria-labelledby="path-findings-heading">
+              <section className="path-result-v2__findings cine-in cine-d3" aria-labelledby="path-findings-heading">
                 <SectionIndex n="01" label="Diagnosis" />
                 <h2 id="path-findings-heading">What your answers say</h2>
                 <SpecSheet rows={diagnosisRows} className="path-result-v2__spec" />
@@ -319,7 +322,7 @@ export default function PathResultPage() {
                 </div>
               </section>
 
-              <section className="path-result-v2__next" aria-labelledby="path-next-heading">
+              <section className="path-result-v2__next cine-in cine-in--plate cine-d4" aria-labelledby="path-next-heading">
                 <p className="sky-label">
                   {execution?.allComplete || currentIndex < 0
                     ? "Next action"
@@ -423,7 +426,7 @@ export default function PathResultPage() {
                 </p>
               </section>
 
-              <section className="path-result-v2__journey" aria-labelledby="path-journey-heading">
+              <section className="path-result-v2__journey cine-in cine-d5" aria-labelledby="path-journey-heading">
                 <SectionIndex n="02" label="Recommended path" />
                 <h2 id="path-journey-heading" className="path-result-v2__journey-title">
                   Six phases, in order

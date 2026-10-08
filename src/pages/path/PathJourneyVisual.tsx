@@ -74,7 +74,7 @@ export function PathSummary({ rows, total }: { rows: PathSummaryRow[]; total: nu
       {rows.length ? (
         <dl className="path-v2-summary__list">
           {rows.map((row) => (
-            <div key={row.n} className="path-v2-summary__row">
+            <div key={row.n} className="path-v2-summary__row cine-in">
               <dt>
                 <b>{String(row.n).padStart(2, "0")}</b> {row.label}
               </dt>

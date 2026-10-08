@@ -29,6 +29,7 @@ import type {
 import { PathProgress, PathSummary, PathTruthNote, type PathSummaryRow } from "./PathJourneyVisual"
 import { PATH_V2_INTRO, PATH_V2_STAGE_HEADLINE } from "./pathV2Copy"
 import "./PathPages.css"
+import "../cine.css"
 
 const DEFAULT_DRAFT: PathFlowDraft = {
   academicBackground: "college",
@@ -307,7 +308,7 @@ export default function PathPage() {
     <PageShell aurora={false}>
       <main className="path-v2" onKeyDown={handleMainKeyDown}>
         <div className="site-light path-v2__shell">
-          <header className="path-v2__top">
+          <header className="path-v2__top cine-in cine-in--fade">
             <p className="sky-label">Find my path</p>
             <PathTruthNote />
           </header>
@@ -322,10 +323,14 @@ export default function PathPage() {
             </div>
           ) : null}
 
-          <PathProgress step={step} />
+          <div className="cine-in cine-in--fade cine-d1">
+            <PathProgress step={step} />
+          </div>
 
           <div className="path-v2__layout">
             <div className="path-v2__main">
+              {/* The question and its support are keyed by stage, so each new question arrives the same way.
+                  The eyebrow stays mounted because it is the live region that announces the stage. */}
               <header className="path-v2__hero">
                 <p className="path-v2__eyebrow" aria-live="polite">
                   <b>
@@ -334,11 +339,11 @@ export default function PathPage() {
                   <span aria-hidden="true"> / </span>
                   {editorial.short}
                 </p>
-                <h1 id="path-v2-question" className="path-v2__question">
+                <h1 key={`q-${stage.id}`} id="path-v2-question" className="path-v2__question cine-in cine-d1">
                   {editorial.lines.join(" ")}
                 </h1>
-                <p className="path-v2__lede">{editorial.lede}</p>
-                {step === 0 ? <p className="path-v2__note">{PATH_V2_INTRO.note}</p> : null}
+                <p key={`l-${stage.id}`} className="path-v2__lede cine-in cine-d2">{editorial.lede}</p>
+                {step === 0 ? <p className="path-v2__note cine-in cine-d3">{PATH_V2_INTRO.note}</p> : null}
               </header>
 
               <div
@@ -534,7 +539,7 @@ export default function PathPage() {
               </footer>
             </div>
 
-            <aside className="path-v2__aside">
+            <aside className="path-v2__aside cine-in cine-d3">
               <PathSummary rows={answered} total={PATH_STAGES.length} />
             </aside>
           </div>

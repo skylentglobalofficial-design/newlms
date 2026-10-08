@@ -8,6 +8,7 @@ import { Reveal } from "../../components/skylent/Reveal"
 import { truthOf, type Capability } from "../../lib/truth"
 import "./CareerOS.css"
 import "./CareerOSPublic.css"
+import "../cine.css"
 
 /**
  * Public entry to Career OS (signed out). Four capabilities, each with the state recorded in
@@ -197,18 +198,18 @@ export default function CareerOSPublicPage() {
         </div>
 
         <section className="sky-container cosp-hero cop-hero" aria-labelledby="cosp-title">
-          <div className="cosp-kicker">
+          <div className="cosp-kicker cine-in cine-in--fade">
             <span className="sky-label">Career OS</span>
           </div>
-          <h1 id="cosp-title" className="sky-display cop-h1">
+          <h1 id="cosp-title" className="sky-display cop-h1 cine-in cine-d1">
             Turn learning into <em>evidence you can use.</em>
           </h1>
           <div className="cop-hero__row">
-            <p className="cosp-lead cop-lead">
+            <p className="cosp-lead cop-lead cine-in cine-d2">
               Career OS is the signed-in workspace that reads your career profile and your learning. It shows your target role, your skills,
               the work you have built and your next step. It is a workspace, not a placement service.
             </p>
-            <div className="cosp-actions cop-actions">
+            <div className="cosp-actions cop-actions cine-in cine-d3">
               <Action to="/login">Sign in to Career OS</Action>
               <Action to="/programmes" kind="secondary">
                 Explore programmes
@@ -219,7 +220,7 @@ export default function CareerOSPublicPage() {
 
         <section className="sky-stage sky-band-navy cop-stage" aria-labelledby="cop-stage-title">
           <div className="sky-container cop-stage__inner">
-            <div className="cop-stage__head">
+            <Reveal className="cop-stage__head">
               <div>
                 <SectionIndex n="01" label="The workspace" />
                 <h2 id="cop-stage-title" className="sky-display sky-display--md cop-h2">
@@ -229,10 +230,10 @@ export default function CareerOSPublicPage() {
               <p className="cop-stage__side">
                 Each part of the workspace states what it is: entered by you, read from your course, in development or coming soon.
               </p>
-            </div>
+            </Reveal>
 
-            <Reveal as="figure" variant="plate" className="cop-stage__figure">
-              <div className="sky-stage__plate cop-stage__plate">
+            <Reveal as="figure" variant="plate" delay={120} className="cop-stage__figure">
+              <div className="sky-stage__plate cop-stage__plate cine-plate">
                 <WorkspacePlate />
               </div>
               <figcaption className="sky-stage__caption">
@@ -289,12 +290,12 @@ export default function CareerOSPublicPage() {
                 Every area opens after you sign in. <em>None is filled with example data.</em>
               </h2>
             </div>
-            <div className="cosp-actions cop-actions">
+            <Reveal delay={180} className="cosp-actions cop-actions">
               <Action to="/login">Sign in to Career OS</Action>
               <Action to="/programmes" kind="secondary">
                 Explore programmes
               </Action>
-            </div>
+            </Reveal>
           </Reveal>
         </section>
       </div>

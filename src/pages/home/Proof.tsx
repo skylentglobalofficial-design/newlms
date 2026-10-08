@@ -32,7 +32,7 @@ export function CareerOs() {
   return (
     <section id="career-os" className="hm-cos sky-stage sky-band-navy" aria-labelledby="hm-career-title">
       <div className="sky-container">
-        <Reveal className="hm-cos__head">
+        <Reveal className="hm-cos__head" stagger>
           <SectionIndex n="07" label="Grow · Career OS" />
           <h2 id="hm-career-title" className="sky-display sky-display--lg hm-split">
             Turn learning into <em>evidence you can use.</em>
@@ -44,7 +44,7 @@ export function CareerOs() {
         </Reveal>
 
         <figure className="hm-cos__figure">
-          <Reveal variant="plate" delay={80}>
+          <Reveal variant="plate" delay={140}>
             <div
               className="sky-stage__plate hm-light hm-cosplate"
               role="img"
@@ -154,7 +154,7 @@ export function SkylentAi() {
   return (
     <section id="skylent-ai" className="hm-ai" aria-labelledby="hm-ai-title">
       <div className="sky-container hm-ai__grid">
-        <Reveal className="hm-ai__copy">
+        <Reveal className="hm-ai__copy" stagger=":scope > :not(ol), .hm-ai__moves > li" step={70}>
           <SectionIndex n="08" label={AI_NAME} />
           <h2 id="hm-ai-title" className="sky-display sky-display--md">
             Help that knows <em>which lesson you are on.</em>
@@ -175,7 +175,7 @@ export function SkylentAi() {
         </Reveal>
 
         <figure className="hm-ai__figure">
-          <Reveal variant="plate" delay={80}>
+          <Reveal variant="plate" delay={280}>
             <div
               className="hm-plate hm-aipanel"
               role="img"
@@ -247,8 +247,8 @@ export function FindMyPath() {
   return (
     <section id="find-my-path" className="hm-path sky-band-proof" aria-labelledby="hm-path-title">
       <div className="sky-container">
-        <Reveal className="hm-path__lead">
-          <div className="hm-path__main">
+        <Reveal className="hm-path__lead" stagger>
+          <div className="hm-path__main" data-reveal-group>
             <div className="hm-path__index">
               <SectionIndex n="09" label="Find my path" />
               <TruthChip state={truthOf("findMyPath")} />
@@ -258,13 +258,13 @@ export function FindMyPath() {
               Not sure <em>where to start?</em>
             </h2>
           </div>
-          <div className="hm-path__aside">
+          <div className="hm-path__aside" data-reveal-group>
             <p>Seven short stages about where you are and where you want to go. The same answers always give the same path.</p>
             <Action to="/path">Find my path</Action>
           </div>
         </Reveal>
 
-        <Reveal as="ol" className="hm-diag" delay={80} aria-label="How Find My Path works">
+        <Reveal as="ol" className="hm-diag" stagger axis="x" step={110} delay={220} aria-label="How Find My Path works">
           <li className="hm-diag__cell">
             <span className="hm-diag__k">01 · Question</span>
             <span className="hm-diag__t">Where you are</span>
@@ -310,7 +310,7 @@ export function Closing() {
   return (
     <section className="hm-close sky-stage sky-band-navy" aria-labelledby="hm-close-title">
       <div className="sky-container hm-close__inner">
-        <Reveal>
+        <Reveal stagger step={110}>
           <p className="sky-label hm-close__label">Next step · Choose</p>
           <h2 id="hm-close-title" className="sky-display hm-close__title hm-split">
             Pick where to start. <em>Keep what you build.</em>

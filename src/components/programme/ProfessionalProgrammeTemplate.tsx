@@ -23,6 +23,7 @@ import { HarborDeskPlate, NorthwindLabPlate, NorthwindTrend } from "./ProgrammeA
 import type { AuthoredProgrammeContent, ProgrammeStep } from "./programme-content"
 import { numberWord, plural, type ProgrammeTruth } from "./programme-truth"
 import "./ProfessionalProgrammeTemplate.css"
+import "../../pages/cine.css"
 
 type Props = {
   program: CatalogProgramDetail
@@ -189,17 +190,17 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
     <div className="pp-page">
       {/* Hero: display headline, the offer, and a ruled metadata rail */}
       <section className="sky-container pp-hero" aria-labelledby="pp-title">
-        <nav className="sky-label pp-crumb" aria-label="Breadcrumb">
+        <nav className="sky-label pp-crumb cine-in cine-in--fade" aria-label="Breadcrumb">
           <Link to="/programmes">Programmes</Link>
           <span aria-hidden="true"> / </span>
           <span aria-current="page">{courseTitle}</span>
         </nav>
-        <h1 id="pp-title" className={`sky-display sky-display--lg pp-h1${content.hero.headline.length > 72 ? " pp-h1--long" : ""}`}>
+        <h1 id="pp-title" className={`sky-display sky-display--lg pp-h1 cine-in cine-d1${content.hero.headline.length > 72 ? " pp-h1--long" : ""}`}>
           <SignalText text={content.hero.headline} signal={content.hero.signal} />
         </h1>
         <div className="pp-hero__grid">
-          <p className="pp-lede">{content.hero.summary(numberWord(moduleCount, true))}</p>
-          <div className="pp-hero__side">
+          <p className="pp-lede cine-in cine-d2">{content.hero.summary(numberWord(moduleCount, true))}</p>
+          <div className="pp-hero__side cine-in cine-d3">
             <div className="pp-actions">
               {primaryAction}
               <a className="sk-btn sk-btn-secondary" href="#pp-curriculum">
@@ -213,7 +214,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           </div>
         </div>
         <SpecSheet
-          className="pp-rail"
+          className="pp-rail cine-in cine-in--fade cine-d4"
           rows={[
             { label: "Enrolment", value: enrolChip },
             { label: "Format", value: program.format },
@@ -226,10 +227,10 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
       <section className="sky-stage sky-band-navy pp-stage" aria-labelledby="pp-build-title">
         <div className="sky-container pp-stage__inner">
           <Reveal as="figure" variant="plate" className="pp-stage__figure">
-            <div className="sky-stage__plate pp-stage__plate">
+            <div className="sky-stage__plate pp-stage__plate cine-plate cine-in cine-in--plate cine-d5">
               {content.artefact === "northwind" ? <NorthwindLabPlate /> : <HarborDeskPlate />}
             </div>
-            <figcaption className="sky-stage__caption">
+            <figcaption className="sky-stage__caption cine-in cine-in--fade cine-d6">
               <span>FIG. 01 · {content.hero.figure}</span>
               <span>{content.hero.figureNote}</span>
             </figcaption>
@@ -555,12 +556,12 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               <SignalText text={closingLine} signal={closingSignal} />
             </h2>
           </div>
-          <div className="pp-actions">
+          <Reveal delay={180} className="pp-actions">
             {primaryAction}
             <Link className="sk-btn sk-btn-secondary" to="/path">
               {canEnrol ? "Not sure yet? Find my path" : "Find my path"}
             </Link>
-          </div>
+          </Reveal>
         </Reveal>
       </section>
     </div>

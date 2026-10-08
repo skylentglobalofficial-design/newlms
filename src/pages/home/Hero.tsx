@@ -5,7 +5,6 @@
  */
 import heroLearner from "@/assets/site/program-library.jpg"
 import { Action, AiMark, TruthChip, type TruthState } from "@/components/skylent/primitives"
-import { Reveal } from "@/components/skylent/Reveal"
 import { NORTHWIND_PREVIEW } from "@/lib/northwind-preview"
 import { truthOf } from "@/lib/truth"
 import { formatInr } from "./artefacts"
@@ -175,36 +174,43 @@ function Ledger({ programmes, isLoading }: { programmes: HomeProgramme[]; isLoad
 /* ── Hero ──────────────────────────────────────────────────────────────────── */
 
 export function Hero({ programmes, isLoading }: { programmes: HomeProgramme[]; isLoading: boolean }) {
+  // Entrance order on load (HomePage.v2.css, .hm-enter): eyebrow, headline line by line, support,
+  // actions, then the player settles, the photograph fades in and the lab result arrives last.
+  // The keyframes only exist under prefers-reduced-motion: no-preference, so without them
+  // everything is simply there.
   return (
     <section className="hm-hero" aria-labelledby="hm-hero-title">
       <div className="sky-container">
         <div className="hm-hero__statement">
-          <p className="sky-label hm-hero__eyebrow">Skill programmes · Degrees · Career OS</p>
+          <p className="sky-label hm-hero__eyebrow hm-enter">Skill programmes · Degrees · Career OS</p>
           <h1 id="hm-hero-title" className="sky-display hm-hero__title">
-            Education built for <em>what comes next.</em>
+            <span className="hm-hero__line hm-enter">Education built for</span>{" "}
+            <em className="hm-hero__line hm-enter">what comes next.</em>
           </h1>
-          <p className="hm-hero__lead">
+          <p className="hm-hero__lead hm-enter">
             Learn a skill or study for a degree. Build work as you go, keep it as evidence, and connect what you learn to what comes next.
           </p>
-          <div className="hm-hero__actions">
-            <Action to="/programmes">Explore programmes</Action>
-            <Action to="/education" kind="secondary">Explore degrees</Action>
+          <div className="hm-hero__cta hm-enter">
+            <div className="hm-hero__actions">
+              <Action to="/programmes">Explore programmes</Action>
+              <Action to="/education" kind="secondary">Explore degrees</Action>
+            </div>
+            <p className="hm-hero__quiet">
+              <span>Not sure where to start?</span>
+              <Action to="/path" kind="quiet">Find my path</Action>
+            </p>
           </div>
-          <p className="hm-hero__quiet">
-            <span>Not sure where to start?</span>
-            <Action to="/path" kind="quiet">Find my path</Action>
-          </p>
         </div>
 
         <figure className="hm-hero__stage">
-          <div className="hm-hero__player">
+          <div className="hm-hero__player hm-enter hm-enter--plate">
             <PlayerPlate />
           </div>
           <div className="hm-hero__photo">
-            <img src={heroLearner} alt="A learner working at a laptop at a library table." width={1000} height={666} />
-            <Reveal className="hm-hero__result" delay={160}>
+            <img className="hm-enter hm-enter--fade" src={heroLearner} alt="A learner working at a laptop at a library table." width={1000} height={666} />
+            <div className="hm-hero__result hm-enter hm-enter--card">
               <ResultCard />
-            </Reveal>
+            </div>
           </div>
           <figcaption className="hm-hero__caption">
             <span>FIG. 01 · Learning player, lesson 7, with its lab result</span>

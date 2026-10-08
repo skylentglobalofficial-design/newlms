@@ -945,6 +945,16 @@
   overflow-wrap: break-word;
 }
 
+/* Page title at the shared display scale (used where a catalogue page title needs it). */
+.cat-hero h1.cat-h1--display {
+  max-width: 15em;
+  font-family: var(--sk-font-heading);
+  font-size: var(--sk-display-lg);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
 .cat-enrol-bar {
   position: sticky;
   top: var(--nav-h);

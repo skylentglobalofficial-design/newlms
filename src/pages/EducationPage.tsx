@@ -125,16 +125,18 @@ export default function EducationPage() {
       <section className="sky-container dg-land">
         <div className="dg-land__row">
           <div className="dg-land__main">
-            <DegreeCrumb />
-            <h1 className="dg-h1">
+            <div className="cine-in cine-in--fade">
+              <DegreeCrumb />
+            </div>
+            <h1 className="dg-h1 cine-in cine-d1">
               Degrees, <em>online or on campus.</em>
             </h1>
-            <p className="dg-lead">
+            <p className="dg-lead cine-in cine-d2">
               A degree is studied on screen or attended in person, and the two are listed apart. These are sample listings by
               degree area: no institution is confirmed, so none of them can be applied for yet.
             </p>
           </div>
-          <nav className="dg-land__switch" aria-label="Show degrees by delivery mode">
+          <nav className="dg-land__switch cine-in cine-d3" aria-label="Show degrees by delivery mode">
             <span className="sky-label">Show</span>
             <div className="dg-switch">
               <Link to={degreeListingPath()} aria-current={mode ? undefined : "true"}>
@@ -160,7 +162,7 @@ export default function EducationPage() {
               <section key={m} className="sky-stage sky-band-navy dg-group dg-group--online" aria-labelledby={headingId}>
                 <div className="sky-container">
                   <div className="dg-onstage">
-                    <div className="dg-onstage__lead">
+                    <div className="dg-onstage__lead cine-in cine-d4">
                       <SectionIndex n={index(i + 1)} label={deliveryModeLabel(m)} />
                       <h2 className="dg-h2" id={headingId}>
                         {copy.heading}
@@ -170,8 +172,8 @@ export default function EducationPage() {
                         {degrees.length === 1 ? "1 sample listing" : `${degrees.length} sample listings`} · no institution confirmed
                       </p>
                     </div>
-                    <Reveal as="figure" variant="plate" className="dg-onstage__figure">
-                      <div className="sky-stage__plate dg-stage__plate">
+                    <Reveal as="figure" variant="plate" delay={120} className="dg-onstage__figure">
+                      <div className="sky-stage__plate dg-stage__plate cine-plate cine-in cine-in--plate cine-d5">
                         <LearningWeek />
                       </div>
                       <figcaption className="sky-stage__caption">

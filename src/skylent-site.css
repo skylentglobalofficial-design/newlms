@@ -848,3 +848,20 @@ textarea.sk-input { padding-block: .625rem; min-height: 6rem; }
   .sk-btn, .sk-btn svg { transition: none; }
   .sk-btn-primary:hover, .sk-btn:hover svg { transform: none; }
 }
+
+/* Staggered reveal: the wrapper holds still, its parts arrive in reading order. */
+.sky-reveal--stagger.sky-reveal--armed { opacity: 1; transform: none; transition: none; will-change: auto; }
+.sky-reveal--armed .sky-reveal__step {
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  transition: opacity 680ms var(--sk-reveal-ease), transform 860ms var(--sk-reveal-ease);
+}
+.sky-reveal--armed.sky-reveal--x .sky-reveal__step { transform: translate3d(28px, 0, 0); }
+.sky-reveal--armed.sky-reveal--in .sky-reveal__step { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .sky-reveal--armed .sky-reveal__step { opacity: 1 !important; transform: none !important; transition: none !important; }
+}
+
+/* Quiet links: a hairline that draws in under the label. */
+.sk-link { text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.sk-link:hover { text-decoration-line: underline; }

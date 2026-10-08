@@ -58,18 +58,20 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
     <DegreeShell>
       {/* Hero: the listing, stated at display scale */}
       <section className="sky-container dg-hero">
-        <DegreeCrumb mode={degree.deliveryMode} />
-        <div className="dg-chips">
+        <div className="cine-in cine-in--fade">
+          <DegreeCrumb mode={degree.deliveryMode} />
+        </div>
+        <div className="dg-chips cine-in cine-in--fade cine-d1">
           <ListingChips degree={degree} />
         </div>
-        <h1 className="dg-h1">{degree.title}</h1>
+        <h1 className="dg-h1 cine-in cine-d1">{degree.title}</h1>
         <div className="dg-hero__row">
-          <p className="dg-lead">
+          <p className="dg-lead cine-in cine-d2">
             Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the
             week runs on a laptop and not on a campus.
             {degree.institution ? null : " The institution, its timetable and its entry details are not published yet."}
           </p>
-          <div className="dg-actions">
+          <div className="dg-actions cine-in cine-d3">
             <Link to="#week" className="sk-btn sk-btn-primary">
               View pathway
               <ArrowRight />
@@ -77,7 +79,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
             <QuietLink to="/path">Find my path</QuietLink>
           </div>
         </div>
-        <div className="dg-hero__facts">
+        <div className="dg-hero__facts cine-in cine-in--fade cine-d4">
           <SpecSheet
             className="dg-rail"
             rows={[
@@ -101,7 +103,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
       <section className="sky-stage sky-band-navy dg-stage" aria-label="Degree facts">
         <div className="sky-container dg-stage__inner">
           <Reveal as="figure" variant="plate" className="dg-stage__figure">
-            <div className="sky-stage__plate dg-stage__plate">
+            <div className="sky-stage__plate dg-stage__plate cine-plate cine-in cine-in--plate cine-d5">
               <LearningWeek />
             </div>
             <figcaption className="sky-stage__caption">
@@ -110,7 +112,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
             </figcaption>
           </Reveal>
 
-          <Reveal className="dg-stage__facts">
+          <Reveal delay={160} className="dg-stage__facts">
             <SectionIndex n="01" label="The degree" />
             <dl className="dg-stagefacts">
               <div>

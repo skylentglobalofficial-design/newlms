@@ -42,14 +42,23 @@ const CAMPUS_GALLERY: DegreeAsset[] = [
   },
 ]
 
+/** Lead stand-in for a campus listing: people on a campus, outdoors, in front of its buildings. */
+const CAMPUS_LEAD: DegreeAsset = {
+  src: campusGrounds,
+  alt: "Two students reading a notebook on a lawn in front of a brick campus building",
+  caption: "Campus grounds",
+  standIn: true,
+}
+
 /**
- * Lead photograph for a campus listing: the record's own hero, else the lecture hall stand-in.
- * A campus page opens on people in a room, so the area photograph (often an empty lab) moves
- * into the gallery instead of leading the page.
+ * Lead photograph for a campus listing: the record's own hero, else the campus grounds stand-in.
+ * A campus page opens on people at a place, so the area photograph (often an empty lab) moves
+ * into the gallery instead of leading the page. The lecture hall is not the lead because the
+ * homepage already leads its degree section with it.
  */
 export function campusHeroFor(degree: Degree): DegreeAsset {
   if (degree.heroAsset) return degree.heroAsset
-  return CAMPUS_GALLERY[0]
+  return CAMPUS_LEAD
 }
 
 /** Card photograph on listings: the photograph the repository maps to that degree area. */

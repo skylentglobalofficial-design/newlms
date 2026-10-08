@@ -19,6 +19,7 @@ import type { CatalogProgramSummary } from "../lib/catalog-api"
 import { isPublicProgrammeIndexRow } from "../lib/programme-catalogue"
 import { programmeDiscoveryFor } from "../lib/programme-discovery"
 import "./ProgramsPage.css"
+import "./cine.css"
 
 type Row = { program: CatalogProgramSummary; truth: ProgrammeTruth; title: string; line: string; search: string }
 
@@ -66,16 +67,16 @@ function ProgrammeFeature({ row }: { row: Row }) {
     <li className="pg-card pg-feature sky-stage sky-band-navy">
       <div className="sky-container pg-feature__inner">
         <Reveal className="pg-feature__copy">
-          <p className="pg-card__chips">
+          <p className="pg-card__chips cine-in cine-in--fade cine-d3">
             <TruthChip state={truth.state as TruthState} />
             <span className="sky-label">Start here</span>
           </p>
-          <h2 className="sky-display sky-display--md pg-feature__title">
+          <h2 className="sky-display sky-display--md pg-feature__title cine-in cine-d3">
             <Link to={to}>{title}</Link>
           </h2>
           {title !== program.name ? <p className="pg-card__aka">Listed as {program.name}</p> : null}
-          {line ? <p className="pg-feature__line">{line}</p> : null}
-          <dl className="pg-feature__spec">
+          {line ? <p className="pg-feature__line cine-in cine-d4">{line}</p> : null}
+          <dl className="pg-feature__spec cine-in cine-in--fade cine-d4">
             {discovery ? (
               <div>
                 <dt>Taught today</dt>
@@ -92,7 +93,7 @@ function ProgrammeFeature({ row }: { row: Row }) {
               </div>
             ))}
           </dl>
-          <p className="pg-feature__foot">
+          <p className="pg-feature__foot cine-in cine-d5">
             <Link className="sk-btn sk-btn-primary" to={to} aria-label={`View programme: ${title}`}>
               View programme
               <ArrowRight />
@@ -101,8 +102,8 @@ function ProgrammeFeature({ row }: { row: Row }) {
           </p>
         </Reveal>
 
-        <Reveal as="figure" variant="plate" className="pg-feature__figure">
-          <div className="sky-stage__plate pg-feature__plate">
+        <Reveal as="figure" variant="plate" delay={120} className="pg-feature__figure">
+          <div className="sky-stage__plate pg-feature__plate cine-plate cine-in cine-in--plate cine-d4">
             {content?.artefact === "northwind" ? (
               <NorthwindLabPlate />
             ) : content?.artefact === "harbor-desk" ? (
@@ -203,17 +204,17 @@ export default function ProgramsPage() {
       <div className="site-light">
         <div className="pg-page">
           <section className="sky-container pg-hero" aria-labelledby="pg-title">
-            <p className="sky-label">Programmes</p>
-            <h1 id="pg-title" className="sky-display sky-display--lg pg-h1">
+            <p className="sky-label cine-in cine-in--fade">Programmes</p>
+            <h1 id="pg-title" className="sky-display sky-display--lg pg-h1 cine-in cine-d1">
               Choose a programme by <em>the work it produces.</em>
             </h1>
             <div className="pg-hero__row">
-              <p className="pg-lede">
+              <p className="pg-lede cine-in cine-d2">
                 Every programme below is a row in the Skylent catalogue. Live means a written course sits behind it and
                 you can enrol today. The others are listed as they are: in development or coming soon.
               </p>
               {ready && rows.length > 0 ? (
-                <dl className="pg-count" aria-label={`${plural(rows.length, "programme")} listed, ${liveCount} live`}>
+                <dl className="pg-count cine-in cine-in--fade cine-d3" aria-label={`${plural(rows.length, "programme")} listed, ${liveCount} live`}>
                   <div>
                     <dt className="sky-label">Listed</dt>
                     <dd>{rows.length}</dd>
@@ -264,7 +265,7 @@ export default function ProgramsPage() {
             ) : (
               <>
                 <div className="sky-container">
-                  <div className="pg-tools">
+                  <div className="pg-tools cine-in cine-in--fade cine-d3">
                     <label className="pg-search">
                       <span className="sky-label">Search programmes</span>
                       <input
@@ -334,10 +335,12 @@ export default function ProgramsPage() {
                   Not sure which one fits? <em>Answer a few questions first.</em>
                 </h2>
               </div>
-              <Link className="sk-btn sk-btn-primary" to="/path">
-                Find my path
-                <ArrowRight />
-              </Link>
+              <Reveal delay={180}>
+                <Link className="sk-btn sk-btn-primary" to="/path">
+                  Find my path
+                  <ArrowRight />
+                </Link>
+              </Reveal>
             </Reveal>
           </section>
         </div>

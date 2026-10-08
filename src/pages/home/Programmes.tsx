@@ -196,8 +196,8 @@ export function Programmes({
   return (
     <section id="programmes" className="hm-programmes" aria-labelledby="hm-programmes-title">
       <div className="sky-container">
-        <Reveal className="hm-head">
-          <div className="hm-head__main">
+        <Reveal className="hm-head" stagger>
+          <div className="hm-head__main" data-reveal-group>
             <SectionIndex n="04" label="Programmes" />
             <h2 id="hm-programmes-title" className="sky-display sky-display--md">
               {rest ? (
@@ -212,7 +212,7 @@ export function Programmes({
           <Action to="/programmes" kind="quiet">All programmes</Action>
         </Reveal>
 
-        <Reveal className="hm-programmes__body" variant="plate" delay={60}>
+        <Reveal className="hm-programmes__body" variant="plate" delay={200}>
           {isLoading ? <LoadingProgrammes /> : null}
           {!isLoading && isUnavailable ? <UnavailableProgrammes retry={retry} /> : null}
           {loaded ? <LoadedProgrammes programmes={programmes} /> : null}

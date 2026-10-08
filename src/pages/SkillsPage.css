@@ -31,12 +31,13 @@
 
 .skills-p4 .sk-hero h1 {
   margin: 12px 0 0;
-  max-width: 19em;
-  font-family: var(--font-brand);
-  font-size: clamp(30px, 4vw, 46px);
+  max-width: 16em;
+  font-family: var(--sk-font-heading);
+  font-size: var(--sk-display-lg);
   font-weight: 600;
-  line-height: 1.06;
+  line-height: 1.02;
   letter-spacing: -0.03em;
+  text-wrap: balance;
 }
 
 .skills-p4 .sk-hero-lead {

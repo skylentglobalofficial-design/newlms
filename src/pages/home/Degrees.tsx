@@ -83,8 +83,8 @@ export function Degrees() {
   return (
     <section id="degrees" className="hm-study sky-band-proof" aria-labelledby="hm-degrees-title">
       <div className="sky-container">
-        <Reveal className="hm-head">
-          <div className="hm-head__main">
+        <Reveal className="hm-head" stagger>
+          <div className="hm-head__main" data-reveal-group>
             <SectionIndex n="05" label="Study" />
             <h2 id="hm-degrees-title" className="sky-display sky-display--md">
               Study online <em>or on campus.</em>
@@ -98,7 +98,7 @@ export function Degrees() {
 
         <div className="hm-degrees">
           {online ? (
-            <Reveal as="article" className="hm-degree">
+            <Reveal as="article" className="hm-degree" stagger delay={160} step={120}>
               <figure className="hm-degree__media">
                 <div className="hm-degree__box hm-degree__box--mat">
                   <LearningWeek />
@@ -120,7 +120,7 @@ export function Degrees() {
           ) : null}
 
           {campus ? (
-            <Reveal as="article" className="hm-degree" delay={100}>
+            <Reveal as="article" className="hm-degree" stagger delay={280} step={120}>
               {campusImage ? (
                 <figure className="hm-degree__media">
                   <div className="hm-degree__box">

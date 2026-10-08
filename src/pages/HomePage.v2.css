@@ -513,20 +513,46 @@
 }
 
 /* Product plate: a white interface with depth. Never holds a heading element. */
+/* Framing: a 1px hairline, a light inner top edge, and three layers of soft shadow
+   (contact, near, far). Outer radius 12px; panels inside a plate use 8px. */
+.hm-page {
+  --hm-plate-shadow:
+    0 0 0 1px hsl(var(--site-ink) / 0.02),
+    0 1px 2px hsl(var(--site-ink) / 0.06),
+    0 12px 24px -14px hsl(var(--site-ink) / 0.16),
+    0 40px 80px -36px hsl(var(--site-ink) / 0.34);
+  --hm-plate-shadow-hover:
+    0 0 0 1px hsl(var(--site-ink) / 0.02),
+    0 2px 4px hsl(var(--site-ink) / 0.06),
+    0 18px 32px -16px hsl(var(--site-ink) / 0.2),
+    0 56px 100px -40px hsl(var(--site-ink) / 0.42);
+}
 .hm-page .hm-plate {
+  position: relative;
   overflow: hidden;
   border: 1px solid hsl(var(--site-border));
   border-radius: 12px;
   background: hsl(var(--site-white));
-  box-shadow: 0 1px 2px hsl(var(--site-ink) / 0.06), 0 36px 72px -32px hsl(var(--site-ink) / 0.34);
+  box-shadow: var(--hm-plate-shadow);
   color: hsl(var(--site-ink));
   font-size: 13.5px;
   line-height: 1.5;
   transition: transform 420ms var(--hm-ease), box-shadow 420ms var(--hm-ease);
 }
-.hm-page .hm-plate:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 1px 2px hsl(var(--site-ink) / 0.06), 0 48px 88px -32px hsl(var(--site-ink) / 0.4);
+/* Inner highlight: one light line along the top edge, over light or navy heads alike. */
+.hm-page .hm-plate::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  pointer-events: none;
+}
+@media (hover: hover) and (min-width: 960px) {
+  .hm-page .hm-plate:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--hm-plate-shadow-hover);
+  }
 }
 .hm-page .hm-mat {
   box-sizing: border-box;
@@ -539,7 +565,7 @@
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 4px 20px;
-  margin-top: 16px;
+  margin-top: 20px;
   padding-top: 12px;
   border-top: 1px solid hsl(var(--site-border));
   font-family: var(--sk-font-mono);
@@ -586,8 +612,10 @@
 }
 
 /* ── 1. Hero ────────────────────────────────────────────────────────── */
+/* One launch composition: the statement is kept compact so that, at 1440×900, the player,
+   the photograph and the lab result already share the first screen with the headline. */
 .hm-page .hm-hero {
-  padding-block: clamp(48px, 7vw, 104px) clamp(56px, 7vw, 96px);
+  padding-block: clamp(28px, 2.6vw, 40px) clamp(56px, 6vw, 88px);
 }
 .hm-page .hm-hero__statement {
   display: flex;
@@ -597,22 +625,35 @@
 }
 .hm-page .hm-hero__title {
   max-width: 11.6em;
-  margin-top: 22px;
-  font-size: clamp(2.5rem, 6.6vw, 6rem);
+  margin-top: 18px;
+  font-size: clamp(2.5rem, 5.6vw, 5.125rem);
+}
+/* Each line moves on its own; inline-block at full width keeps the sentence one phrase
+   for copy, search and assistive text (a block would read as two). */
+.hm-page .hm-hero__line {
+  display: inline-block;
+  width: 100%;
 }
 .hm-page .hm-hero__lead {
-  max-width: 33em;
-  margin-top: clamp(20px, 2.4vw, 30px);
-  font-size: clamp(17px, 1.5vw, 20px);
+  max-width: 34em;
+  margin-top: clamp(16px, 1.6vw, 22px);
+  font-size: clamp(17px, 1.35vw, 19px);
   line-height: 1.55;
   color: hsl(var(--site-muted));
+}
+.hm-page .hm-hero__cta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 28px;
+  margin-top: clamp(22px, 2vw, 28px);
 }
 .hm-page .hm-hero__actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
-  margin-top: 32px;
 }
 .hm-page .hm-hero__actions .sk-btn {
   min-height: 52px;
@@ -625,31 +666,33 @@
   align-items: center;
   justify-content: center;
   gap: 0 10px;
-  margin-top: 14px;
   font-size: 15px;
   color: hsl(var(--site-dim));
 }
 
-/* The composition: photograph as context, the player as the dominant object, a result as the work */
+/* The composition: the player is the dominant object, the photograph sits behind it as the
+   human context, and the lab result overlaps both as the work. */
 .hm-page .hm-hero__stage {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: 24px;
-  margin-top: clamp(48px, 6vw, 88px);
+  margin-top: clamp(32px, 3vw, 44px);
 }
 .hm-page .hm-hero__photo {
   position: relative;
   grid-column: 1 / 7;
   grid-row: 1;
   align-self: start;
+  margin-top: clamp(24px, 2.6vw, 40px);
 }
 .hm-page .hm-hero__photo img {
   display: block;
   width: 100%;
-  height: clamp(420px, 41vw, 580px);
+  height: clamp(340px, 28vw, 410px);
   border-radius: 14px;
   object-fit: cover;
   object-position: 66% 40%;
+  box-shadow: 0 1px 2px hsl(var(--site-ink) / 0.08), 0 30px 60px -36px hsl(var(--site-ink) / 0.45);
 }
 .hm-page .hm-hero__player {
   position: relative;
@@ -657,12 +700,18 @@
   grid-column: 5 / 13;
   grid-row: 1;
   align-self: start;
-  margin-top: clamp(40px, 5vw, 76px);
+}
+.hm-page .hm-hero__player .hm-plate {
+  box-shadow:
+    0 0 0 1px hsl(var(--site-ink) / 0.03),
+    0 2px 4px hsl(var(--site-ink) / 0.05),
+    0 18px 36px -18px hsl(var(--site-ink) / 0.22),
+    0 56px 96px -40px hsl(var(--site-ink) / 0.42);
 }
 .hm-page .hm-hero__result {
   position: absolute;
   z-index: 3;
-  bottom: -44px;
+  bottom: clamp(20px, 2.4vw, 36px);
   left: clamp(16px, 2.4vw, 36px);
   width: min(272px, 58%);
 }
@@ -672,7 +721,7 @@
   grid-column: 1 / -1;
   justify-content: space-between;
   gap: 4px 20px;
-  margin-top: 72px;
+  margin-top: 40px;
   padding-top: 12px;
   border-top: 1px solid hsl(var(--site-border));
   font-family: var(--sk-font-mono);
@@ -680,6 +729,45 @@
   line-height: 1.5;
   letter-spacing: 0.04em;
   color: hsl(var(--site-dim));
+}
+
+/* Entrance, once on load: about 1.8 s from eyebrow to lab result, no overshoot.
+   Only defined when motion is allowed; fill-mode both holds each part until its turn. */
+@media (prefers-reduced-motion: no-preference) {
+  .hm-page .hm-enter {
+    animation: hm-enter 820ms var(--hm-ease) both;
+  }
+  .hm-page .hm-hero__eyebrow { animation-delay: 60ms; }
+  .hm-page .hm-hero__line:first-child { animation-delay: 160ms; }
+  .hm-page em.hm-hero__line { animation-delay: 300ms; }
+  .hm-page .hm-hero__lead { animation-delay: 460ms; }
+  .hm-page .hm-hero__cta { animation-delay: 600ms; }
+  .hm-page .hm-enter--plate {
+    animation-name: hm-enter-plate;
+    animation-duration: 1100ms;
+    animation-delay: 740ms;
+  }
+  .hm-page .hm-enter--fade {
+    animation-name: hm-enter-fade;
+    animation-duration: 900ms;
+    animation-delay: 960ms;
+  }
+  .hm-page .hm-enter--card {
+    animation-duration: 760ms;
+    animation-delay: 1180ms;
+  }
+}
+@keyframes hm-enter {
+  from { opacity: 0; transform: translate3d(0, 22px, 0); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hm-enter-plate {
+  from { opacity: 0; transform: translate3d(0, 44px, 0) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes hm-enter-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Learning player */
@@ -1618,8 +1706,10 @@
   object-position: 50% 60%;
   transition: transform 900ms var(--hm-ease);
 }
-.hm-page .hm-degree:hover .hm-degree__photo {
-  transform: scale(1.03);
+@media (hover: hover) and (min-width: 960px) {
+  .hm-page .hm-degree:hover .hm-degree__photo {
+    transform: scale(1.03);
+  }
 }
 .hm-page .hm-degree__caption {
   display: flex;
@@ -1799,8 +1889,10 @@
   background: hsl(var(--site-proof-2));
   transition: transform 420ms var(--hm-ease);
 }
-.hm-page .hm-record:hover {
-  transform: translateY(-4px);
+@media (hover: hover) and (min-width: 960px) {
+  .hm-page .hm-record:hover {
+    transform: translateY(-4px);
+  }
 }
 .hm-page .hm-record__head {
   display: flex;
@@ -1855,7 +1947,7 @@
   color: hsl(var(--site-on-navy-muted));
 }
 .hm-page .hm-cos__figure {
-  max-width: 1080px;
+  max-width: 1160px;
   margin-top: clamp(48px, 6vw, 84px);
   margin-inline: auto;
 }
@@ -1864,8 +1956,18 @@
   line-height: 1.5;
   transition: transform 420ms var(--hm-ease);
 }
-.hm-page .hm-cosplate:hover {
-  transform: translateY(-4px);
+/* The centrepiece: the largest plate on the page, with the deepest shadow, on navy. */
+.hm-page .hm-cosplate {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 2px 0 rgba(255, 255, 255, 0.05) inset,
+    0 24px 48px -24px rgba(4, 8, 20, 0.6),
+    0 72px 140px -48px rgba(4, 8, 20, 0.85);
+}
+@media (hover: hover) and (min-width: 960px) {
+  .hm-page .hm-cosplate:hover {
+    transform: translateY(-4px);
+  }
 }
 .hm-page .hm-cosplate__bar {
   display: flex;
@@ -2064,7 +2166,7 @@
 .hm-page .hm-aipanel__ctx span {
   padding: 4px 10px;
   border: 1px solid hsl(var(--site-navy-line-2));
-  border-radius: 6px;
+  border-radius: 8px;
   font-family: var(--sk-font-mono);
   font-size: 11.5px;
   color: hsl(var(--site-on-navy));
@@ -2213,17 +2315,28 @@
   border-left: 0;
 }
 /* The connector between two steps */
+/* Read left to right: each step hands on to the next through a cobalt chevron on the
+   shared edge, and the step keys sit on one baseline across the strip. */
 .hm-page .hm-diag__cell + .hm-diag__cell::before {
   content: "";
   position: absolute;
-  top: 20px;
-  left: -5px;
-  width: 8px;
-  height: 8px;
-  border-top: 1px solid hsl(var(--site-border-strong));
-  border-right: 1px solid hsl(var(--site-border-strong));
+  z-index: 1;
+  top: 22px;
+  left: -6px;
+  width: 10px;
+  height: 10px;
+  border-top: 1.5px solid hsl(var(--site-deep));
+  border-right: 1.5px solid hsl(var(--site-deep));
   background: hsl(var(--site-white));
   transform: rotate(45deg);
+}
+.hm-page .hm-diag__cell--end::before {
+  border-color: #7ea2ff;
+  background: hsl(var(--site-navy));
+}
+.hm-page .hm-cos__lead,
+.hm-page .hm-hero__lead {
+  text-wrap: balance;
 }
 .hm-page .hm-diag__cell--end {
   border-radius: 0 11px 11px 0;
@@ -2747,5 +2860,346 @@
   .hm-page .hm-cosplate:hover,
   .hm-page .hm-degree:hover .hm-degree__photo {
     transform: none;
+  }
+}
+
+/* =====================================================================
+   PRESENTATION POLISH — phone length and rhythm
+   The same story in less height: one vertical rhythm, captions kept,
+   duplicate ledgers and repeated lists left to the sections that own them.
+   ===================================================================== */
+@media (max-width: 719px) {
+  .hm-page {
+    --hm-y: 48px;
+  }
+  .hm-page .hm-caption {
+    margin-top: 14px;
+    padding-top: 10px;
+  }
+  .hm-page .hm-facts .sky-spec__row,
+  .hm-page .hm-degree__spec .sky-spec__row {
+    padding: 8px 0;
+  }
+  .hm-page .hm-lead,
+  .hm-page .hm-system__lead,
+  .hm-page .hm-cos__lead {
+    font-size: 16px;
+    line-height: 1.55;
+  }
+  .hm-page .hm-head {
+    margin-bottom: 28px;
+  }
+  .hm-page .sky-display--lg {
+    font-size: 2rem;
+    line-height: 1.04;
+  }
+  .hm-page .sky-display--md {
+    font-size: 1.75rem;
+  }
+
+  /* Hero: headline, copy, actions, then the player, then the photograph. */
+  .hm-page .hm-hero {
+    padding-block: 28px 48px;
+  }
+  .hm-page .hm-hero__cta {
+    flex-direction: column;
+    align-items: stretch;
+    align-self: stretch;
+    gap: 10px;
+  }
+  .hm-page .hm-hero__quiet {
+    justify-content: flex-start;
+  }
+  .hm-page .hm-hero__stage {
+    margin-top: 32px;
+  }
+  .hm-page .hm-player__rail {
+    display: none;
+  }
+  .hm-page .hm-player__body {
+    padding: 16px 16px 14px;
+  }
+  .hm-page .hm-hero__photo img {
+    height: 230px;
+  }
+  .hm-page .hm-hero__caption {
+    margin-top: 52px;
+  }
+  /* The programme and degree sections carry these chips themselves. */
+  .hm-page .hm-ledger {
+    display: none;
+  }
+
+  /* What Skylent is: the row is the link, so the arrow rides with the word. */
+  .hm-page .hm-system {
+    padding-top: 48px;
+  }
+  .hm-page .hm-system__body {
+    margin-top: 28px;
+    gap: 24px;
+  }
+  .hm-page .hm-rail__row {
+    position: relative;
+    padding: 16px 28px 16px 0;
+  }
+  .hm-page .hm-rail__go {
+    position: absolute;
+    top: 18px;
+    right: 0;
+    min-height: 0;
+  }
+  .hm-page .hm-rail__go {
+    font-size: 0;
+  }
+  .hm-page .hm-rail__go svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Journey: name and owner on one line, the sentence under them. */
+  .hm-page .hm-path-signal {
+    margin-top: 32px;
+  }
+  .hm-page .hm-stage {
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+    column-gap: 14px;
+    row-gap: 2px;
+    padding-bottom: 16px;
+  }
+  .hm-page .hm-stage__node {
+    grid-row: 1 / 3;
+  }
+  .hm-page .hm-stage__name {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .hm-page .hm-stage__by {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: baseline;
+    max-width: 13em;
+    text-align: right;
+  }
+  .hm-page .hm-stage__does {
+    grid-column: 2 / 4;
+    grid-row: 2;
+  }
+  .hm-page .hm-stage__node {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+  }
+  .hm-page .hm-stage:not(:last-child)::before {
+    top: 32px;
+    left: 16px;
+  }
+  .hm-page .hm-stage__name {
+    padding-top: 4px;
+    font-size: 18px;
+  }
+  .hm-page .hm-stage__does {
+    font-size: 14px;
+  }
+  .hm-page .hm-stage__by {
+    margin-top: 0;
+    padding-top: 7px;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+  .hm-page .hm-journey__note {
+    margin-top: 12px;
+  }
+
+  /* Learn: facts as a 2 × 2 sheet; the plate runs full width with its rail of modules left to the player. */
+  .hm-page .hm-learn__grid {
+    gap: 32px;
+  }
+  .hm-page .hm-learn__speclabel {
+    margin-top: 24px;
+  }
+  .hm-page .hm-learn .hm-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 20px;
+  }
+  .hm-page .hm-learn .hm-facts .sky-spec__row {
+    padding: 8px 0;
+  }
+  .hm-page .hm-learn .hm-facts .sky-spec__label {
+    flex-basis: 84px;
+  }
+  .hm-page .hm-mat {
+    padding: 10px;
+  }
+  .hm-page .hm-home__grid > .hm-home__panel:first-child {
+    display: none;
+  }
+  .hm-page .hm-programmes {
+    padding-top: 40px;
+  }
+
+  /* The lesson 7 query is shown in full once, in the lab further down. */
+  .hm-page .hm-prog__art .hm-nw__code {
+    display: none;
+  }
+
+  /* Study */
+  .hm-page .hm-degrees {
+    gap: 40px;
+  }
+  .hm-page .hm-degree__box:not(.hm-degree__box--mat) {
+    height: 190px;
+  }
+  .hm-page .hm-degree__box--mat {
+    min-height: 0;
+  }
+  .hm-page .hm-degree__body {
+    margin-top: 18px;
+  }
+  .hm-page .hm-study .hm-note {
+    margin-top: 28px;
+  }
+
+  /* Build */
+  .hm-page .hm-build__grid {
+    gap: 32px;
+  }
+  .hm-page .hm-lab__pre {
+    font-size: 11.5px;
+    line-height: 1.6;
+  }
+
+  /* Career OS */
+  .hm-page .hm-cos__lead {
+    margin: 16px 0 22px;
+  }
+  .hm-page .hm-cos__figure {
+    margin-top: 36px;
+  }
+  .hm-page .hm-cosplate__top {
+    gap: 18px;
+    padding: 20px 16px;
+  }
+  .hm-page .hm-cosplate__roletitle {
+    font-size: 34px;
+  }
+
+  /* Skylent AI: the four moves as a 2 × 2 grid. */
+  .hm-page .hm-ai__grid {
+    gap: 36px;
+  }
+  .hm-page .hm-ai__moves {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+    margin-top: 22px;
+  }
+  .hm-page .hm-ai__moves li {
+    grid-template-columns: 22px minmax(0, 1fr);
+    align-content: start;
+    padding: 12px 0;
+  }
+  .hm-page .hm-ai__movewhat {
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+  .hm-page .hm-aipanel__body {
+    padding: 18px 16px 18px;
+  }
+
+  /* Find My Path: five compact steps down one line. */
+  .hm-page .hm-path {
+    padding-block: 56px;
+  }
+  .hm-page .hm-diag__cell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+    padding: 14px 16px;
+  }
+  .hm-page .hm-diag__opts {
+    display: none;
+  }
+  .hm-page .hm-diag__segs {
+    margin-top: 6px;
+  }
+
+  /* Closing: the seven stages were just read in the journey. */
+  .hm-page .hm-close {
+    padding-block: 72px 56px;
+  }
+  .hm-page .hm-close__title {
+    max-width: none;
+    font-size: clamp(1.75rem, 8.6vw, 2.5rem);
+    line-height: 1.02;
+  }
+  .hm-page .hm-close__stages {
+    display: none;
+  }
+}
+@media (max-width: 359px) {
+  .hm-page .hm-ai__moves {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hm-page .hm-learn .hm-facts .sky-spec__label {
+    flex-basis: 72px;
+  }
+}
+@media (max-width: 719px) {
+  .hm-page .sky-index + .sky-display {
+    margin-top: 12px;
+  }
+  .hm-page .hm-lead {
+    margin-top: 14px;
+  }
+  .hm-page .hm-head {
+    gap: 14px;
+  }
+  .hm-page .hm-journey__head {
+    gap: 14px;
+  }
+  .hm-page .hm-path__aside {
+    gap: 14px;
+  }
+  .hm-page .hm-path__index {
+    margin-bottom: 12px;
+  }
+  .hm-page .hm-learn__speclabel {
+    margin-top: 20px;
+  }
+  .hm-page .hm-degrees {
+    gap: 32px;
+  }
+  .hm-page .hm-hero__caption {
+    margin-top: 48px;
+  }
+  /* Two of the four follow-up actions say enough at this width. */
+  .hm-page .hm-aipanel__action:nth-child(n + 3) {
+    display: none;
+  }
+  .hm-page .hm-aipanel__actions {
+    margin-top: 16px;
+    padding-top: 14px;
+  }
+  .hm-page .hm-cos__lead {
+    margin: 12px 0 18px;
+  }
+  .hm-page .hm-record {
+    padding: 18px 16px;
+  }
+  .hm-page .hm-record__title {
+    margin-top: 12px;
+  }
+}
+@media (max-width: 719px) {
+  /* Said again, word for word, in the Skill gaps cell below. */
+  .hm-page .hm-cosplate__note {
+    display: none;
+  }
+  .hm-page .hm-player__clause:nth-child(n + 4) {
+    display: none;
+  }
+  .hm-page .hm-degree__body .sk-link {
+    margin-top: 2px;
   }
 }

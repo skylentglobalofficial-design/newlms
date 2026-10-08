@@ -85,8 +85,8 @@ export function BuildProve() {
   return (
     <section id="build" className="hm-build" aria-labelledby="hm-build-title">
       <div className="sky-container">
-        <Reveal className="hm-head">
-          <div className="hm-head__main">
+        <Reveal className="hm-head" stagger>
+          <div className="hm-head__main" data-reveal-group>
             <SectionIndex n="06" label="Practice · Build · Prove" />
             <h2 id="hm-build-title" className="sky-display sky-display--lg hm-split">
               Build the work. <em>Keep the proof.</em>
@@ -99,7 +99,7 @@ export function BuildProve() {
 
         <div className="hm-build__grid">
           <figure className="hm-build__lab">
-            <Reveal variant="plate">
+            <Reveal variant="plate" delay={200}>
               <LabPlate />
             </Reveal>
             <figcaption className="hm-caption">
@@ -109,7 +109,7 @@ export function BuildProve() {
           </figure>
 
           <div className="hm-build__prove">
-            <Reveal delay={120}>
+            <Reveal delay={340}>
               <EvidenceRecord title={facts?.capstoneTitle || "Northwind project"} />
             </Reveal>
             <p className="hm-caption hm-caption--plain">

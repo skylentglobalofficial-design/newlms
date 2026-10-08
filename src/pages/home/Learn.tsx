@@ -89,7 +89,7 @@ export function Learn() {
   return (
     <section id="learn" className="hm-learn" aria-labelledby="hm-learn-title">
       <div className="sky-container hm-learn__grid">
-        <Reveal className="hm-learn__copy">
+        <Reveal className="hm-learn__copy" stagger step={80}>
           <SectionIndex n="03" label="Learn" />
           <h2 id="hm-learn-title" className="sky-display sky-display--md">
             Open it and <em>know what to do next.</em>
@@ -111,11 +111,9 @@ export function Learn() {
         </Reveal>
 
         <figure className="hm-learn__figure">
-          <div className="hm-mat">
-            <Reveal variant="plate" delay={80}>
-              <StudentHomePlate facts={facts} />
-            </Reveal>
-          </div>
+          <Reveal className="hm-mat" variant="plate" delay={260}>
+            <StudentHomePlate facts={facts} />
+          </Reveal>
           <figcaption className="hm-caption">
             <span>FIG. 02 · Student home, part-way through {facts.title}</span>
             <span>Representation of the signed-in screen</span>

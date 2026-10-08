@@ -113,6 +113,15 @@
 .cop-close__lead p { margin: 0; }
 .cosp .cop-close__title { margin: 18px 0 0; max-width: none; font-size: var(--sk-display-lg); line-height: 1.02; }
 .cosp .cop-close .cop-actions { margin-top: 0; padding-bottom: 6px; }
+/* The statement takes the full measure; the actions sit under it (no three-line fold beside buttons). */
+.cop-close__inner { flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: clamp(28px, 3.4vw, 44px); }
+.cop-close__lead { flex: none; width: 100%; max-width: none; }
+.cosp .cop-close__title { max-width: 20em; }
+.cosp .cop-close__title em { display: block; }
+
+/* Plate finish: one inner radius for everything drawn inside the workspace. */
+.cop-ws__panel,
+.cop-ws__next { border-radius: 8px; }
 
 @media (max-width: 999px) {
   .cop-hero__row,

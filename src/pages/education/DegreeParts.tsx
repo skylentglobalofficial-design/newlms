@@ -19,6 +19,7 @@ import {
 } from "../../lib/degrees"
 import { assetAlt } from "./degreeStandIns"
 import "./Degree.css"
+import "../cine.css"
 
 /* ── Shell ─────────────────────────────────────────────────────────────────── */
 
@@ -305,7 +306,7 @@ export function ClosingBand({
             )}
           </h2>
         </div>
-        <div className="dg-close__actions">
+        <Reveal delay={180} className="dg-close__actions">
           <Link to="/path" className="sk-btn sk-btn-primary">
             Find my path
             <ArrowRight />
@@ -313,7 +314,7 @@ export function ClosingBand({
           <Link to={secondary.to} className="sk-btn sk-btn-secondary">
             {secondary.label}
           </Link>
-        </div>
+        </Reveal>
       </Reveal>
     </section>
   )

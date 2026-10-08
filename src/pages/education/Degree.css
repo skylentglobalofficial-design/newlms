@@ -608,10 +608,15 @@
 .dg .dg-title__facts .sky-spec__row:last-of-type { border-bottom-color: var(--dg-line); }
 .dg .dg-lead-photo { padding-top: clamp(28px, 3.4vw, 44px); }
 .dg .dg-lead-photo img { height: clamp(280px, 46vw, 640px); border-radius: 14px; }
+/* The listing sheet sits beside the headline and never over the photograph, so no face
+   in the lead picture is covered at any width. */
+.dg .dg-title__facts { border-top: 1px solid var(--dg-line); box-shadow: inset 0 1px 0 hsl(var(--site-white)), 0 1px 2px hsl(var(--site-ink) / 0.04), 0 18px 40px -28px hsl(var(--site-ink) / 0.28); }
 @media (min-width: 1000px) {
-  .dg .dg-title__facts { flex: 0 1 360px; margin-bottom: -96px; margin-right: 28px; }
+  .dg .dg-title__facts { flex: 0 1 360px; }
   .dg .dg-title__main { padding-bottom: 8px; }
 }
+/* Campus grounds: the two students sit in the upper half of the frame. */
+.dg .dg-lead-photo img { object-position: 50% 32%; }
 .dg .dg-photo img { border-radius: 14px; }
 .dg .dg-gallery .dg-photo { overflow: hidden; }
 .dg .dg-panel { border-radius: 14px; }
@@ -621,6 +626,10 @@
 .dg .dg-close__lead { flex: 1 1 520px; max-width: 860px; }
 .dg .dg-close__lead .dg-close__title { margin-top: 18px; }
 .dg .dg-close__actions { padding-bottom: 6px; }
+/* Statement first at full measure, actions under it: no three-line fold beside the buttons. */
+.dg .dg-close__inner { flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: clamp(28px, 3.4vw, 44px); }
+.dg .dg-close__lead { flex: none; width: 100%; max-width: none; }
+.dg .dg-close__lead .dg-close__title { max-width: 18em; }
 
 @media (max-width: 999px) {
   .dg .dg-hero__row,

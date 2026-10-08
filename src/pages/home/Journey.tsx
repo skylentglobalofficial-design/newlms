@@ -41,17 +41,17 @@ export function System() {
   return (
     <section className="hm-system" aria-labelledby="hm-system-title">
       <div className="sky-container">
-        <Reveal className="hm-system__head">
+        <Reveal className="hm-system__head" stagger>
           <SectionIndex n="01" label="What Skylent is" />
           <h2 id="hm-system-title" className="sky-display sky-display--lg hm-system__title">
             Education, skills, practice, evidence and career, <em>built as one system.</em>
           </h2>
         </Reveal>
-        <div className="hm-system__body">
-          <Reveal as="p" className="hm-system__lead">
+        <Reveal className="hm-system__body" stagger=".hm-system__lead, .hm-rail > li" delay={120}>
+          <p className="hm-system__lead">
             Most learning stops at the lesson. Skylent carries it on: what you study becomes practice, practice becomes a finished piece of work, and the work stays on a record you can show.
-          </Reveal>
-          <Reveal as="ul" className="hm-rail" delay={80} aria-label="Three ways in">
+          </p>
+          <ul className="hm-rail" aria-label="Three ways in">
             {ENTRIES.map((entry) => (
               <li key={entry.key}>
                 <Link to={entry.to} className="hm-rail__row">
@@ -71,8 +71,8 @@ export function System() {
                 </Link>
               </li>
             ))}
-          </Reveal>
-        </div>
+          </ul>
+        </Reveal>
       </div>
     </section>
   )
@@ -95,8 +95,8 @@ export function Journey({ current = "Discover" }: { current?: JourneyStage }) {
   return (
     <section id="journey" className="hm-journey sky-stage sky-band-navy" aria-labelledby="hm-journey-title">
       <div className="sky-container">
-        <Reveal className="hm-journey__head">
-          <div>
+        <Reveal className="hm-journey__head" stagger>
+          <div data-reveal-group>
             <SectionIndex n="02" label="The journey" />
             <h2 id="hm-journey-title" className="sky-display sky-display--lg">
               One path, <em>seven stages.</em>
@@ -107,7 +107,7 @@ export function Journey({ current = "Discover" }: { current?: JourneyStage }) {
           </p>
         </Reveal>
 
-        <Reveal className="hm-path-signal" delay={80}>
+        <Reveal className="hm-path-signal" stagger=".hm-stage" axis="x" step={70} delay={160}>
           <ol className="hm-stages">
             {PUBLIC_JOURNEY.map((stage, i) => (
               <li key={stage} className="hm-stage" aria-current={stage === current ? "step" : undefined}>

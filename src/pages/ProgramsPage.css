@@ -164,6 +164,10 @@
 .pg-next__inner > div { flex: 1 1 520px; min-width: 0; max-width: 860px; }
 .pg-page .pg-h2 { margin-top: 18px; }
 .pg-next .sk-btn { margin-bottom: 6px; }
+/* Statement at full measure, the action under it. */
+.pg-next__inner { flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: clamp(28px, 3.4vw, 44px); }
+.pg-next__inner > div { flex: none; width: 100%; max-width: none; }
+.pg-page .pg-next .pg-h2 { max-width: 18em; }
 
 @media (max-width: 1099px) {
   .pg-feature__inner { grid-template-columns: minmax(0, 1fr); }
