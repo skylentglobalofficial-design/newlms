@@ -1,0 +1,146 @@
+# Skylent final engineering gate.
+# Runs the real toolchain, migrations on a throwaway Postgres, every test script and the learner journey.
+# Triggered on pull requests to main and on demand.
+
+#
+# It uses a throwaway PostgreSQL service container. It never touches production.
+# The seed step and the API start command are the two places most likely to need
+# adjusting to how this repository is normally run in QA.
+name: release-gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [skylent/product-truth]
+  pull_request:
+    branches: [main]
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: skylent
+          POSTGRES_PASSWORD: skylent_qa
+          POSTGRES_DB: skylent_qa
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U skylent" --health-interval 5s
+          --health-timeout 5s --health-retries 20
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://skylent:skylent_qa@127.0.0.1:5432/skylent_qa
+      DIRECT_URL: postgresql://skylent:skylent_qa@127.0.0.1:5432/skylent_qa
+      SESSION_SECRET: qa-only-session-secret-0123456789abcdef0123456789
+      FRONTEND_URL: http://127.0.0.1:8443
+      COOKIE_SECURE: "false"
+      PORT: "3099"
+      API_BASE: http://127.0.0.1:3099/api/v1
+      # Deterministic lesson-grounded provider: no external AI key is used in the gate.
+      SKYLENT_AI_PROVIDER: lesson-grounded
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Show the commit under test
+        run: |
+          git log --oneline -1
+
+      - name: npm ci
+        run: npm ci
+
+      - name: Frontend TypeScript
+        if: always()
+        run: npx tsc --noEmit
+      - name: Backend TypeScript
+        if: always()
+        run: npm run backend:typecheck
+      - name: Production build
+        if: always()
+        run: npm run build
+
+      - name: Prisma validate
+        if: always()
+        run: npx prisma validate
+      - name: Apply existing migrations to the QA database
+        if: always()
+        run: |
+          ls prisma/migrations
+          test -d prisma/migrations/20261004000000_skylent_additions
+          test -d prisma/migrations/20261004180000_backfill_program_course_links
+          npx prisma migrate deploy
+          npx prisma migrate status
+      - name: Seed QA content (courses, lessons, quizzes)
+        if: always()
+        run: npm run db:seed
+
+      - name: Start the API
+        if: always()
+        run: |
+          nohup npm start > api.log 2>&1 &
+          for i in $(seq 1 40); do
+            curl -fsS "$API_BASE/health" && break
+            sleep 2
+          done
+          curl -fsS "$API_BASE/health"
+
+      - name: test:auth
+        if: always()
+        run: npm run test:auth
+      - name: test:lms
+        if: always()
+        run: npm run test:lms
+      - name: test:ai
+        if: always()
+        run: npm run test:ai
+      - name: test-product-manifest
+        if: always()
+        run: npx tsx scripts/test-product-manifest.ts
+      - name: test:ai-policy
+        if: always()
+        run: npm run test:ai-policy
+      - name: test:quiz-guard (real PostgreSQL throttle and advisory lock)
+        if: always()
+        run: npm run test:quiz-guard
+      - name: test:labs
+        if: always()
+        run: npm run test:labs
+      - name: test:labs-sql
+        if: always()
+        run: npm run test:labs-sql
+      - name: test:projects
+        if: always()
+        run: npm run test:projects
+      - name: test:career
+        if: always()
+        run: npm run test:career
+      - name: test:career-evidence
+        if: always()
+        run: npm run test:career-evidence
+      - name: Learner journey against the QA API and database
+        if: always()
+        run: npx tsx scripts/qa-learner-journey.ts
+
+      - name: Client bundle carries no answer keys
+        if: always()
+        run: |
+          ! grep -rl "correctIndex" dist/assets || (echo "correctIndex found in client bundle" && exit 1)
+
+      - name: Inspect the QA database after the run
+        if: always()
+        run: |
+          psql "$DATABASE_URL" -c 'select count(*) as quiz_attempts from "QuizAttempt";'
+          psql "$DATABASE_URL" -c 'select count(*) as certificates from "SkylentCertificate";'
+          psql "$DATABASE_URL" -c 'select count(*) as enquiries from "SkylentEnquiry";'
+
+      - name: API log
+        if: always()
+        run: tail -n 200 api.log || true

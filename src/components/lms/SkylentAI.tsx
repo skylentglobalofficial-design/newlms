@@ -68,23 +68,6 @@ function integrityNotice(kind: string | null | undefined, open: boolean): string
   return null
 }
 
-/**
- * The server answers a request it will not fulfil with its own refusal sentence
- * (server/src/lib/skylent-ai/integrity.ts and prompts.ts). These are their opening words.
- */
-const REFUSAL_OPENINGS = [
-  /^This quiz is still open, so I will not/i,
-  /^This assignment is still open, so I will not/i,
-  /^I will not give the current quiz answer/i,
-  /^I will not complete the assessed assignment/i,
-  /^I will not reveal graded answer keys/i,
-]
-
-function isHeldBack(answer: string): boolean {
-  const text = answer.trim()
-  return REFUSAL_OPENINGS.some((pattern) => pattern.test(text))
-}
-
 function friendlyError(err: unknown): { message: string; unavailable: boolean } {
   const raw = workspaceErrorMessage(err)
   if (/isn't available/i.test(raw)) return { message: UNAVAILABLE, unavailable: true }
@@ -258,7 +241,8 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
           content: result.answer,
           related: result.related,
           basedOn: result.basedOn || lessonTitle,
-          heldBack: result.refused ?? isHeldBack(result.answer),
+          // The server decides: `refused` is set when the academic-integrity policy held the answer back.
+          heldBack: result.refused === true,
         },
       ])
       setCaseLabel(result.caseLabel ?? caseChipFor(courseSlug))
