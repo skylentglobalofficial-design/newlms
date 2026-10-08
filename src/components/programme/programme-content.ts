@@ -149,6 +149,8 @@ export type AuthoredProgrammeContent = {
   capstoneTitle: string
   hero: {
     headline: string
+    /** The one phrase of the headline set in cobalt. Must be a substring of `headline`. */
+    signal?: string
     summary: (moduleWord: string) => string
     figure: string
     figureNote: string
@@ -213,6 +215,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
   capstoneTitle: "Northwind Commercial Review",
   hero: {
     headline: "Turn a messy sales extract into a finding someone can act on.",
+    signal: "a finding someone can act on.",
     summary: (moduleWord) =>
       `${moduleWord} modules take you from a first question to a commercial review. Spreadsheets, SQL and dashboards, all on one dataset you get to know properly.`,
     figure: "Northwind Lab, revenue by category",
@@ -330,6 +333,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
   capstoneTitle: "Harbor Desk product case",
   hero: {
     headline: "Decide what to build when engineering time is limited, and write the specification for it.",
+    signal: "write the specification for it.",
     summary: (moduleWord) =>
       `${moduleWord} modules on one fictional retail operations case. You read the notes, frame a problem that can be tested, choose one bet under a stated constraint and specify it.`,
     figure: "Harbor Desk case, weekend exception log",

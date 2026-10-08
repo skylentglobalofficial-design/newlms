@@ -1,9 +1,10 @@
 /**
  * Authored programme page (approved design: the Data Analytics programme).
  *
- * Order: hero with the discipline plate, spec strip, capstone as a step rail,
- * curriculum, practice, evidence on the warm proof band with the Career OS
- * status row, and the navy next-step band.
+ * Order: display headline with a ruled metadata rail, the discipline plate large
+ * on the navy stage with what you will build and the page rail, capstone as a
+ * step rail, curriculum, practice on navy, evidence on the warm proof band with
+ * the Career OS status row, and the navy closing statement.
  *
  * Data: the programme row comes from GET /catalog/programs/:slug (passed in).
  * That response carries no lesson outline, so the curriculum and the lesson
@@ -16,7 +17,8 @@ import { courseBySlug } from "../../lib/catalog-maturity"
 import { courseProductProfile } from "../../lib/course-product"
 import { truthOf, type Capability } from "../../lib/truth"
 import { useCatalogCourse } from "../../hooks/useCatalog"
-import { ArrowRight, Plate, SectionIndex, SpecSheet, TruthChip } from "../skylent/primitives"
+import { ArrowRight, SectionIndex, SpecSheet, TruthChip } from "../skylent/primitives"
+import { Reveal } from "../skylent/Reveal"
 import { HarborDeskPlate, NorthwindLabPlate, NorthwindTrend } from "./ProgrammeArtefacts"
 import type { AuthoredProgrammeContent, ProgrammeStep } from "./programme-content"
 import { numberWord, plural, type ProgrammeTruth } from "./programme-truth"
@@ -95,6 +97,19 @@ function StepNote({ step, artefact }: { step: ProgrammeStep; artefact: AuthoredP
   return <span className="pp-step__note">{step.note.text}</span>
 }
 
+/** The headline with its one cobalt phrase. Falls back to plain text when the phrase is not found. */
+export function SignalText({ text, signal }: { text: string; signal?: string }) {
+  const at = signal ? text.indexOf(signal) : -1
+  if (!signal || at < 0) return <>{text}</>
+  return (
+    <>
+      {text.slice(0, at)}
+      <em>{signal}</em>
+      {text.slice(at + signal.length)}
+    </>
+  )
+}
+
 function Chevron() {
   return (
     <svg className="pp-mod__chev" aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
@@ -148,118 +163,167 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
     </button>
   ) : null
 
+  const closingLine = canEnrol ? content.closing.line : "Enrolment is not open on this programme yet."
+  const closingSplit = closingLine.indexOf(": ")
+  const closingSignal = closingSplit > 0 ? closingLine.slice(closingSplit + 2) : undefined
+
+  /* The page rail: the five things the page answers, each a jump to its section. */
+  const jumps: Array<{ n: string; verb: string; what: string; href: string }> = [
+    { n: "02", verb: "Build", what: content.capstoneTitle, href: "#pp-capstone" },
+    {
+      n: "03",
+      verb: "Learn",
+      what: courseReady && lessonCount > 0 ? `${plural(moduleCount, "module")}, ${plural(lessonCount, "lesson")}` : "Modules and lessons",
+      href: "#pp-curriculum",
+    },
+    { n: "04", verb: "Practise", what: content.specSheet.material.value, href: "#pp-practice" },
+    { n: "05", verb: "Prove", what: `${plural(content.evidence.rows.length, "piece")} of reviewable work`, href: "#pp-evidence" },
+    { n: "06", verb: "Where it leads", what: "Career OS", href: "#pp-career" },
+  ]
+
   const nextStepLabel = ["Next step", firstNode ? "Lesson 1" : "", firstNode ? nodeKind(firstNode.nodeType) : "", firstNode?.duration ?? ""]
     .filter(Boolean)
     .join(" · ")
 
   return (
     <div className="pp-page">
-      {/* Hero */}
+      {/* Hero: display headline, the offer, and a ruled metadata rail */}
       <section className="sky-container pp-hero" aria-labelledby="pp-title">
-        <div className="pp-hero__copy">
-          <nav className="sky-label pp-crumb" aria-label="Breadcrumb">
-            <Link to="/programmes">Programmes</Link>
-            <span aria-hidden="true"> / </span>
-            <span aria-current="page">{courseTitle}</span>
-          </nav>
-          <h1 id="pp-title" className="pp-h1">
-            {content.hero.headline}
-          </h1>
+        <nav className="sky-label pp-crumb" aria-label="Breadcrumb">
+          <Link to="/programmes">Programmes</Link>
+          <span aria-hidden="true"> / </span>
+          <span aria-current="page">{courseTitle}</span>
+        </nav>
+        <h1 id="pp-title" className={`sky-display sky-display--lg pp-h1${content.hero.headline.length > 72 ? " pp-h1--long" : ""}`}>
+          <SignalText text={content.hero.headline} signal={content.hero.signal} />
+        </h1>
+        <div className="pp-hero__grid">
           <p className="pp-lede">{content.hero.summary(numberWord(moduleCount, true))}</p>
-          <div className="pp-actions">
-            {primaryAction}
-            <a className="sk-btn sk-btn-secondary" href="#pp-curriculum">
-              View curriculum
-            </a>
+          <div className="pp-hero__side">
+            <div className="pp-actions">
+              {primaryAction}
+              <a className="sk-btn sk-btn-secondary" href="#pp-curriculum">
+                View curriculum
+              </a>
+            </div>
+            <p className="pp-note">
+              {program.name && program.name !== courseTitle ? `Listed in the catalogue as ${program.name}. ` : ""}
+              {afterEnrol}
+            </p>
           </div>
-          <p className="pp-note">
-            {program.name && program.name !== courseTitle ? `Listed in the catalogue as ${program.name}. ` : ""}
-            {afterEnrol}
-          </p>
-          <SpecSheet
-            className="pp-hero__spec"
-            rows={[
-              { label: "Enrolment", value: enrolChip },
-              { label: "Format", value: program.format },
-              { label: "You start with", value: startsWith },
-            ]}
-          />
         </div>
-
-        <Plate className="pp-hero__plate" fig="FIG. 01" caption={content.hero.figure} note={content.hero.figureNote}>
-          {content.artefact === "northwind" ? <NorthwindLabPlate /> : <HarborDeskPlate />}
-        </Plate>
+        <SpecSheet
+          className="pp-rail"
+          rows={[
+            { label: "Enrolment", value: enrolChip },
+            { label: "Format", value: program.format },
+            { label: "You start with", value: startsWith },
+          ]}
+        />
       </section>
 
-      {/* What you will build: spec strip */}
-      <section className="sky-container pp-strip" aria-label="What you will build">
-        <SectionIndex n="01" label="What you will build" />
-        <dl className="pp-strip__grid">
-          {moduleCount > 0 ? (
-            <div>
-              <dt className="sky-label">Modules</dt>
-              <dd className="pp-strip__num">{moduleCount}</dd>
+      {/* The discipline artefact, large, on the navy stage. What you will build sits under it. */}
+      <section className="sky-stage sky-band-navy pp-stage" aria-labelledby="pp-build-title">
+        <div className="sky-container pp-stage__inner">
+          <Reveal as="figure" variant="plate" className="pp-stage__figure">
+            <div className="sky-stage__plate pp-stage__plate">
+              {content.artefact === "northwind" ? <NorthwindLabPlate /> : <HarborDeskPlate />}
             </div>
-          ) : null}
-          {course.loading ? (
-            <div aria-hidden="true">
-              <dt className="sky-label">Lessons</dt>
-              <dd className="pp-strip__num">
-                <span className="sky-skeleton pp-skel-num" />
-              </dd>
+            <figcaption className="sky-stage__caption">
+              <span>FIG. 01 · {content.hero.figure}</span>
+              <span>{content.hero.figureNote}</span>
+            </figcaption>
+          </Reveal>
+
+          <Reveal className="pp-build">
+            <div className="pp-build__lead">
+              <SectionIndex n="01" label="What you will build" />
+              <h2 id="pp-build-title" className="pp-build__title">
+                {content.capstoneTitle}
+              </h2>
             </div>
-          ) : null}
-          {courseReady && lessonCount > 0 ? (
-            <div>
-              <dt className="sky-label">Lessons</dt>
-              <dd className="pp-strip__num">{lessonCount}</dd>
-            </div>
-          ) : null}
-          {courseReady && assignmentCount > 0 ? (
-            <div>
-              <dt className="sky-label">Assignments</dt>
-              <dd className="pp-strip__num">{assignmentCount}</dd>
-            </div>
-          ) : null}
-          {courseReady && checkCount > 0 ? (
-            <div>
-              <dt className="sky-label">Checks</dt>
-              <dd className="pp-strip__num">{checkCount}</dd>
-            </div>
-          ) : null}
-          <div>
-            <dt className="sky-label">{content.specSheet.material.label}</dt>
-            <dd className="pp-strip__text">
-              {content.specSheet.material.value}
-              <span>{content.specSheet.material.note}</span>
-            </dd>
-          </div>
-          {profile && profile.tools.length > 0 ? (
-            <div>
-              <dt className="sky-label">{content.specSheet.tools.label}</dt>
-              <dd className="pp-strip__text">
-                {profile.tools[0]}
-                {profile.tools.slice(1).map((tool) => (
-                  <span key={tool}>{tool}</span>
-                ))}
-              </dd>
-            </div>
-          ) : null}
-        </dl>
+            <dl className="pp-build__grid">
+              {moduleCount > 0 ? (
+                <div>
+                  <dt className="sky-label">Modules</dt>
+                  <dd className="pp-build__num">{moduleCount}</dd>
+                </div>
+              ) : null}
+              {course.loading ? (
+                <div aria-hidden="true">
+                  <dt className="sky-label">Lessons</dt>
+                  <dd className="pp-build__num">
+                    <span className="sky-skeleton pp-skel-num" />
+                  </dd>
+                </div>
+              ) : null}
+              {courseReady && lessonCount > 0 ? (
+                <div>
+                  <dt className="sky-label">Lessons</dt>
+                  <dd className="pp-build__num">{lessonCount}</dd>
+                </div>
+              ) : null}
+              {courseReady && assignmentCount > 0 ? (
+                <div>
+                  <dt className="sky-label">Assignments</dt>
+                  <dd className="pp-build__num">{assignmentCount}</dd>
+                </div>
+              ) : null}
+              {courseReady && checkCount > 0 ? (
+                <div>
+                  <dt className="sky-label">Checks</dt>
+                  <dd className="pp-build__num">{checkCount}</dd>
+                </div>
+              ) : null}
+              <div className="pp-build__wide">
+                <dt className="sky-label">{content.specSheet.material.label}</dt>
+                <dd className="pp-build__text">
+                  {content.specSheet.material.value}
+                  <span>{content.specSheet.material.note}</span>
+                </dd>
+              </div>
+              {profile && profile.tools.length > 0 ? (
+                <div className="pp-build__wide">
+                  <dt className="sky-label">{content.specSheet.tools.label}</dt>
+                  <dd className="pp-build__text">
+                    {profile.tools[0]}
+                    {profile.tools.slice(1).map((tool) => (
+                      <span key={tool}>{tool}</span>
+                    ))}
+                  </dd>
+                </div>
+              ) : null}
+            </dl>
+          </Reveal>
+
+          <nav className="pp-jump" aria-label="On this page">
+            <ol>
+              {jumps.map((jump) => (
+                <li key={jump.href}>
+                  <a href={jump.href}>
+                    <span className="pp-jump__n">{jump.n}</span>
+                    <span className="pp-jump__verb">{jump.verb}</span>
+                    <span className="pp-jump__what">{jump.what}</span>
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </div>
       </section>
 
       {/* Learning journey and project */}
-      <section className="sky-container pp-section" id="pp-capstone" aria-labelledby="pp-capstone-title">
+      <Reveal as="section" className="sky-container pp-section" id="pp-capstone" aria-labelledby="pp-capstone-title">
         <div className="pp-split">
           <div className="pp-split__intro">
             <SectionIndex n="02" label={content.project.label} />
-            <h2 id="pp-capstone-title" className="pp-h2">
+            <h2 id="pp-capstone-title" className="sky-display sky-display--md pp-h2">
               {content.project.heading}
             </h2>
             <p className="pp-body">{content.project.intro}</p>
             <p className="pp-disclaimer">{content.project.disclaimer}</p>
           </div>
-          <ol className="sky-steps pp-split__main">
+          <ol className="sky-steps pp-split__main pp-steps">
             {content.project.steps.map((step, index) => {
               const next = content.project.steps[index + 1]
               return (
@@ -280,14 +344,14 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
             })}
           </ol>
         </div>
-      </section>
+      </Reveal>
 
       {/* Curriculum */}
-      <section className="sky-container pp-section" id="pp-curriculum" aria-labelledby="pp-curriculum-title">
+      <Reveal as="section" className="sky-container pp-section pp-section--end" id="pp-curriculum" aria-labelledby="pp-curriculum-title">
         <div className="pp-split">
           <div className="pp-split__intro">
             <SectionIndex n="03" label="Curriculum" />
-            <h2 id="pp-curriculum-title" className="pp-h2">
+            <h2 id="pp-curriculum-title" className="sky-display sky-display--md pp-h2">
               {courseReady && curriculum.length > 0
                 ? `${numberWord(curriculum.length, true)} modules, ${numberWord(lessonCount)} lessons.`
                 : "The module and lesson outline."}
@@ -348,49 +412,51 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
             )}
           </div>
         </div>
-      </section>
+      </Reveal>
 
-      {/* Practice */}
-      <section className="sky-container pp-section" id="pp-practice" aria-labelledby="pp-practice-title">
-        <div className="pp-split">
-          <div className="pp-split__intro">
-            <SectionIndex n="04" label="Practice" />
-            <h2 id="pp-practice-title" className="pp-h2">
-              {content.practice.heading}
-            </h2>
-            <p className="pp-body">{content.practice.intro}</p>
-            {content.practice.link ? (
-              <Link className="sk-link pp-practice__link" to={content.practice.link.to}>
-                {content.practice.link.label}
-                <ArrowRight />
-              </Link>
-            ) : null}
+      {/* Practice: the workbench colour carries the section */}
+      <section className="sky-band-navy pp-practice" id="pp-practice" aria-labelledby="pp-practice-title">
+        <Reveal className="sky-container">
+          <div className="pp-split">
+            <div className="pp-split__intro">
+              <SectionIndex n="04" label="Practice" />
+              <h2 id="pp-practice-title" className="sky-display sky-display--md pp-h2">
+                {content.practice.heading}
+              </h2>
+              <p className="pp-body">{content.practice.intro}</p>
+              {content.practice.link ? (
+                <Link className="sk-link pp-practice__link" to={content.practice.link.to}>
+                  {content.practice.link.label}
+                  <ArrowRight />
+                </Link>
+              ) : null}
+            </div>
+            <div className="pp-split__main">
+              <SpecSheet
+                rows={content.practice.rows.map((row) => ({
+                  label: row.label,
+                  value: row.mono ? <span className="sky-mono pp-mono">{row.value}</span> : row.value,
+                }))}
+              />
+              <p className="pp-disclaimer pp-disclaimer--plain">{content.practice.disclaimer}</p>
+            </div>
           </div>
-          <div className="pp-split__main">
-            <SpecSheet
-              rows={content.practice.rows.map((row) => ({
-                label: row.label,
-                value: row.mono ? <span className="sky-mono pp-mono">{row.value}</span> : row.value,
-              }))}
-            />
-            <p className="pp-disclaimer pp-disclaimer--plain">{content.practice.disclaimer}</p>
-          </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Evidence and career connection: warm proof band */}
       <section className="sky-band-proof pp-proof" id="pp-evidence" aria-labelledby="pp-evidence-title">
         <div className="sky-container">
           <div className="pp-split">
-            <div className="pp-split__intro">
+            <Reveal className="pp-split__intro">
               <SectionIndex n="05" label="What you can prove" />
-              <h2 id="pp-evidence-title" className="pp-h2">
+              <h2 id="pp-evidence-title" className="sky-display sky-display--md pp-h2">
                 {content.evidence.heading}
               </h2>
               <p className="pp-body">{content.evidence.lede}</p>
-            </div>
+            </Reveal>
 
-            <article className="pp-record pp-split__main" aria-labelledby="pp-record-title">
+            <Reveal as="article" variant="plate" className="pp-record pp-split__main" aria-labelledby="pp-record-title">
               <header className="pp-record__head">
                 <span className="sky-label">Evidence record · Career OS</span>
                 <TruthChip state={truthOf("projectsAndEvidence")} />
@@ -420,9 +486,10 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                 </dl>
               </div>
               <p className="pp-record__foot">{content.evidence.record.footnote}</p>
-            </article>
+            </Reveal>
           </div>
 
+          <Reveal>
           <div className="pp-evtable" tabIndex={0} role="group" aria-label="Assignments and the evidence each one leaves">
             <table>
               <thead>
@@ -452,15 +519,21 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               </tbody>
             </table>
           </div>
+          </Reveal>
 
-          <div className="pp-career" role="group" aria-labelledby="pp-career-title">
-            <h3 id="pp-career-title" className="sky-label pp-career__label">
-              In Career OS today
-            </h3>
+          <Reveal>
+          <div className="pp-career" id="pp-career" role="group" aria-labelledby="pp-career-title">
+            <div className="pp-career__head">
+              <SectionIndex n="06" label="Where it leads" />
+              <h3 id="pp-career-title" className="pp-career__title">
+                In Career OS today
+              </h3>
+            </div>
             <ul className="pp-career__list">
               {CAREER_STATUS.map((item) => (
                 <li key={item.capability}>
-                  {item.label} <TruthChip state={truthOf(item.capability)} />
+                  <span>{item.label}</span>
+                  <TruthChip state={truthOf(item.capability)} />
                 </li>
               ))}
             </ul>
@@ -469,16 +542,17 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               <ArrowRight />
             </Link>
           </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* Next action: navy anchor */}
-      <section className="sky-band-navy pp-next" aria-labelledby="pp-next-title">
-        <div className="sky-container pp-next__inner">
+      {/* Next action: navy closing statement */}
+      <section className="sky-stage sky-band-navy pp-next" aria-labelledby="pp-next-title">
+        <Reveal className="sky-container pp-next__inner">
           <div className="pp-next__copy">
             <p className="sky-label">{canEnrol ? nextStepLabel : "Next step"}</p>
-            <h2 id="pp-next-title" className="pp-h2">
-              {canEnrol ? content.closing.line : "Enrolment is not open on this programme yet."}
+            <h2 id="pp-next-title" className="sky-display sky-display--lg pp-next__title">
+              <SignalText text={closingLine} signal={closingSignal} />
             </h2>
           </div>
           <div className="pp-actions">
@@ -487,7 +561,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               {canEnrol ? "Not sure yet? Find my path" : "Find my path"}
             </Link>
           </div>
-        </div>
+        </Reveal>
       </section>
     </div>
   )

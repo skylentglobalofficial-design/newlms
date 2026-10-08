@@ -7,10 +7,14 @@
  *
  * Cards come only from listDegrees() (src/lib/degrees.ts). Degrees are not in the backend, so
  * every card is a sample listing and says so. Nothing here names a university, a fee or a date.
+ *
+ * The two modes are kept visibly apart: online degrees sit on the navy stage beside the
+ * learning-environment plate, on-campus degrees sit on white behind a photograph.
  */
 import { useEffect } from "react"
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom"
-import { Plate, SectionIndex, SpecSheet, TruthChip, type TruthState } from "../components/skylent/primitives"
+import { SectionIndex, SpecSheet, TruthChip, type TruthState } from "../components/skylent/primitives"
+import { Reveal } from "../components/skylent/Reveal"
 import { AUTHORED_COURSE_SLUGS } from "../lib/authored-courses"
 import {
   degreeLevelName,
@@ -122,7 +126,9 @@ export default function EducationPage() {
         <div className="dg-land__row">
           <div className="dg-land__main">
             <DegreeCrumb />
-            <h1 className="dg-h1">Degrees, online or on campus.</h1>
+            <h1 className="dg-h1">
+              Degrees, <em>online or on campus.</em>
+            </h1>
             <p className="dg-lead">
               A degree is studied on screen or attended in person, and the two are listed apart. These are sample listings by
               degree area: no institution is confirmed, so none of them can be applied for yet.
@@ -149,8 +155,49 @@ export default function EducationPage() {
           const degrees = all.filter((d) => d.deliveryMode === m)
           const copy = GROUP_COPY[m]
           const headingId = `dg-group-${m.toLowerCase()}`
+          if (m === "ONLINE") {
+            return (
+              <section key={m} className="sky-stage sky-band-navy dg-group dg-group--online" aria-labelledby={headingId}>
+                <div className="sky-container">
+                  <div className="dg-onstage">
+                    <div className="dg-onstage__lead">
+                      <SectionIndex n={index(i + 1)} label={deliveryModeLabel(m)} />
+                      <h2 className="dg-h2" id={headingId}>
+                        {copy.heading}
+                      </h2>
+                      <p className="dg-onstage__side">{copy.side}</p>
+                      <p className="sky-label dg-onstage__count">
+                        {degrees.length === 1 ? "1 sample listing" : `${degrees.length} sample listings`} · no institution confirmed
+                      </p>
+                    </div>
+                    <Reveal as="figure" variant="plate" className="dg-onstage__figure">
+                      <div className="sky-stage__plate dg-stage__plate">
+                        <LearningWeek />
+                      </div>
+                      <figcaption className="sky-stage__caption">
+                        <span>FIG. 01 · A study week in the online learning environment</span>
+                        <span>Placeholder days and counts</span>
+                      </figcaption>
+                    </Reveal>
+                  </div>
+
+                  {degrees.length === 0 ? (
+                    <div className="sky-empty dg-empty">
+                      <p>{copy.empty}</p>
+                    </div>
+                  ) : (
+                    <Reveal className="dg-online__list">
+                      {degrees.map((degree) => (
+                        <OnlineRow key={degree.slug} degree={degree} />
+                      ))}
+                    </Reveal>
+                  )}
+                </div>
+              </section>
+            )
+          }
           return (
-            <section key={m} className="sky-container dg-group" aria-labelledby={headingId}>
+            <section key={m} className="sky-container dg-group dg-group--campus" aria-labelledby={headingId}>
               <div className="dg-head-row">
                 <div className="dg-head-row__main">
                   <SectionIndex n={index(i + 1)} label={deliveryModeLabel(m)} />
@@ -165,21 +212,12 @@ export default function EducationPage() {
                 <div className="sky-empty dg-empty">
                   <p>{copy.empty}</p>
                 </div>
-              ) : m === "ONLINE" ? (
-                <div className="dg-online">
-                  <Plate className="dg-online__art" fig="FIG. 01" caption="A study week in the online learning environment" note="Placeholder days and counts">
-                    <LearningWeek />
-                  </Plate>
-                  <div className="dg-online__list">
-                    {degrees.map((degree) => (
-                      <OnlineRow key={degree.slug} degree={degree} />
-                    ))}
-                  </div>
-                </div>
               ) : (
                 <div className="dg-campus-list">
                   {degrees.map((degree) => (
-                    <CampusCard key={degree.slug} degree={degree} />
+                    <Reveal key={degree.slug}>
+                      <CampusCard degree={degree} />
+                    </Reveal>
                   ))}
                 </div>
               )}
@@ -195,7 +233,7 @@ export default function EducationPage() {
       </div>
 
       <section className="sky-band-proof dg-band" aria-labelledby="dg-other-lines">
-        <div className="sky-container dg-band__inner dg-two">
+        <Reveal className="sky-container dg-band__inner dg-two">
           <div className="dg-two__lead">
             <SectionIndex n={index(shownModes.length + 1)} label="Other education areas" />
             <h2 className="dg-h2 dg-h2--sm" id="dg-other-lines">
@@ -220,10 +258,10 @@ export default function EducationPage() {
               ))}
             </ul>
           </div>
-        </div>
+        </Reveal>
       </section>
 
-      <section className="sky-container dg-adds" aria-labelledby="dg-start-now">
+      <Reveal as="section" className="sky-container dg-adds" aria-labelledby="dg-start-now">
         <div className="dg-head-row">
           <div className="dg-head-row__main">
             <SectionIndex n={index(shownModes.length + 2)} label="Open today" />
@@ -256,7 +294,7 @@ export default function EducationPage() {
             <QuietLink to="/courses/product-management">Open the course</QuietLink>
           </div>
         </div>
-      </section>
+      </Reveal>
 
       <ClosingBand
         label="Next step · Choose"

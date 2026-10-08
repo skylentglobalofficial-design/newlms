@@ -1,11 +1,12 @@
 /**
  * Online degree detail: /education/online/:slug  (approved design: OnlineDegree)
- * It looks digital on purpose: the learning environment is drawn as product plates, and the
- * one photograph is a learner at a screen. No campus imagery.
+ * It looks digital on purpose: the learning environment is drawn as product plates, the first
+ * of them large on the navy stage, and the one photograph is a learner at a screen. No campus imagery.
  * Every plate is ILLUSTRATIVE: Skylent has no degree learning environment in production.
  */
 import { Link } from "react-router-dom"
 import { ArrowRight, Plate, SectionIndex, SpecSheet, TruthChip, type TruthState } from "../../components/skylent/primitives"
+import { Reveal } from "../../components/skylent/Reveal"
 import { degreeLevelName, deliveryModeLabel, type Degree } from "../../lib/degrees"
 import { truthOf } from "../../lib/truth"
 import { DegreeEnquiry } from "./DegreeEnquiry"
@@ -55,100 +56,103 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
 
   return (
     <DegreeShell>
-      {/* Hero: the listing left, the learning week right */}
+      {/* Hero: the listing, stated at display scale */}
       <section className="sky-container dg-hero">
+        <DegreeCrumb mode={degree.deliveryMode} />
+        <div className="dg-chips">
+          <ListingChips degree={degree} />
+        </div>
+        <h1 className="dg-h1">{degree.title}</h1>
         <div className="dg-hero__row">
-          <div className="dg-hero__text">
-            <DegreeCrumb mode={degree.deliveryMode} />
-            <div className="dg-chips">
-              <ListingChips degree={degree} />
-            </div>
-            <h1 className="dg-h1">{degree.title}</h1>
-            <p className="dg-lead">
-              Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the
-              week runs on a laptop and not on a campus.
-              {degree.institution ? null : " The institution, its timetable and its entry details are not published yet."}
-            </p>
-            <div className="dg-actions">
-              <Link to="#week" className="sk-btn sk-btn-primary">
-                View pathway
-                <ArrowRight />
-              </Link>
-              <QuietLink to="/path">Find my path</QuietLink>
-            </div>
-            <div className="dg-hero__facts">
-              <SpecSheet
-                rows={[
-                  { label: "Mode", value: deliveryModeLabel(degree.deliveryMode) },
-                  { label: "Level", value: level },
-                  {
-                    label: "Listing",
-                    value: (
-                      <span className="dg-listing">
-                        <span>{degree.sample ? "Sample, details not published" : "Published"}</span>
-                        {degree.status === "coming_soon" ? <TruthChip state="soon" /> : null}
-                      </span>
-                    ),
-                  },
-                ]}
-              />
-            </div>
+          <p className="dg-lead">
+            Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the
+            week runs on a laptop and not on a campus.
+            {degree.institution ? null : " The institution, its timetable and its entry details are not published yet."}
+          </p>
+          <div className="dg-actions">
+            <Link to="#week" className="sk-btn sk-btn-primary">
+              View pathway
+              <ArrowRight />
+            </Link>
+            <QuietLink to="/path">Find my path</QuietLink>
           </div>
-
-          <Plate
-            className="dg-hero__plate dg-stretch"
-            fig="FIG. 01"
-            caption="A week in the online learning environment"
-            note="Days and counts are placeholders. Times come from the institution."
-          >
-            <LearningWeek />
-          </Plate>
+        </div>
+        <div className="dg-hero__facts">
+          <SpecSheet
+            className="dg-rail"
+            rows={[
+              { label: "Mode", value: deliveryModeLabel(degree.deliveryMode) },
+              { label: "Level", value: level },
+              {
+                label: "Listing",
+                value: (
+                  <span className="dg-listing">
+                    <span>{degree.sample ? "Sample, details not published" : "Published"}</span>
+                    {degree.status === "coming_soon" ? <TruthChip state="soon" /> : null}
+                  </span>
+                ),
+              },
+            ]}
+          />
         </div>
       </section>
 
-      {/* Fact strip: three facts from the record, the rest published by the institution */}
-      <section className="sky-container" aria-label="Degree facts">
-        <div className="dg-strip">
-          <dl className="dg-strip__grid">
-            <div className="dg-strip__cell">
-              <dt className="sky-label">Mode</dt>
-              <dd className="dg-strip__value">{deliveryModeLabel(degree.deliveryMode)}</dd>
-              <dd className="dg-strip__sub">Studied on screen</dd>
+      {/* The online learning environment, large, on the navy stage; the degree facts beside it */}
+      <section className="sky-stage sky-band-navy dg-stage" aria-label="Degree facts">
+        <div className="sky-container dg-stage__inner">
+          <Reveal as="figure" variant="plate" className="dg-stage__figure">
+            <div className="sky-stage__plate dg-stage__plate">
+              <LearningWeek />
             </div>
-            <div className="dg-strip__cell">
-              <dt className="sky-label">Level</dt>
-              <dd className="dg-strip__value">{level}</dd>
-              <dd className="dg-strip__sub">Awarded by the institution</dd>
-            </div>
-            <div className="dg-strip__cell">
-              <dt className="sky-label">Discipline</dt>
-              <dd className="dg-strip__value">{degree.discipline}</dd>
-              <dd className="dg-strip__sub">Degree area</dd>
-            </div>
-            <div className="dg-strip__cell">
-              <dt className="sky-label">Pacing</dt>
-              <dd className="dg-strip__unpub">{orUnpublished(degree.learningMode?.pacing)}</dd>
-            </div>
-            <div className="dg-strip__cell">
-              <dt className="sky-label">Live sessions</dt>
-              <dd className="dg-strip__unpub">{orUnpublished(degree.learningMode?.liveSessions)}</dd>
-            </div>
-            <div className="dg-strip__cell">
-              <dt className="sky-label">Assessment</dt>
-              <dd className="dg-strip__unpub">{orUnpublished(degree.assessments?.join(", "))}</dd>
-            </div>
-          </dl>
+            <figcaption className="sky-stage__caption">
+              <span>FIG. 01 · A week in the online learning environment</span>
+              <span>Days and counts are placeholders. Times come from the institution.</span>
+            </figcaption>
+          </Reveal>
+
+          <Reveal className="dg-stage__facts">
+            <SectionIndex n="01" label="The degree" />
+            <dl className="dg-stagefacts">
+              <div>
+                <dt>Mode</dt>
+                <dd className="dg-stagefacts__value">{deliveryModeLabel(degree.deliveryMode)}</dd>
+                <dd className="dg-stagefacts__sub">Studied on screen</dd>
+              </div>
+              <div>
+                <dt>Level</dt>
+                <dd className="dg-stagefacts__value">{level}</dd>
+                <dd className="dg-stagefacts__sub">Awarded by the institution</dd>
+              </div>
+              <div>
+                <dt>Discipline</dt>
+                <dd className="dg-stagefacts__value">{degree.discipline}</dd>
+                <dd className="dg-stagefacts__sub">Degree area</dd>
+              </div>
+              <div>
+                <dt>Pacing</dt>
+                <dd className="dg-stagefacts__unpub">{orUnpublished(degree.learningMode?.pacing)}</dd>
+              </div>
+              <div>
+                <dt>Live sessions</dt>
+                <dd className="dg-stagefacts__unpub">{orUnpublished(degree.learningMode?.liveSessions)}</dd>
+              </div>
+              <div>
+                <dt>Assessment</dt>
+                <dd className="dg-stagefacts__unpub">{orUnpublished(degree.assessments?.join(", "))}</dd>
+              </div>
+            </dl>
+            {degree.sample ? (
+              <p className="dg-note">
+                Sample listing by degree area. Partner confirmation is pending, so the university name and the degree title are not
+                published. The degree is always awarded by the partner institution.
+              </p>
+            ) : null}
+          </Reveal>
         </div>
-        {degree.sample ? (
-          <p className="dg-note">
-            Sample listing by degree area. Partner confirmation is pending, so the university name and the degree title are not
-            published. The degree is always awarded by the partner institution.
-          </p>
-        ) : null}
       </section>
 
       {/* 02 How a week works */}
-      <section id="week" className="sky-container dg-section">
+      <Reveal as="section" id="week" className="sky-container dg-section">
         <div className="dg-split">
           <div className="dg-split__lead">
             <SectionIndex n="02" label="How a week works" />
@@ -217,7 +221,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
             </div>
           </div>
         </div>
-      </section>
+      </Reveal>
 
       {/* 03 The environment: warm band, three captioned plates */}
       <section className="sky-band-proof dg-band">
@@ -234,6 +238,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
 
           <div className="dg-env">
             {/* (a) Virtual classroom */}
+            <Reveal variant="plate" className="dg-env__item">
             <Plate className="dg-mat--tight dg-stretch" fig="FIG. 02" caption="Virtual classroom" note="Role labels only, no people shown">
               <div className="dg-plate-bar">
                 <span className="sky-label">Classroom</span>
@@ -294,8 +299,10 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 </ul>
               </div>
             </Plate>
+            </Reveal>
 
             {/* (b) Resources */}
+            <Reveal variant="plate" delay={90} className="dg-env__item">
             <Plate className="dg-mat--tight dg-stretch" fig="FIG. 03" caption="Week resources" note="Titles and counts are placeholders">
               <div className="dg-plate-bar">
                 <span className="sky-label">Resources</span>
@@ -345,8 +352,10 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 </div>
               </div>
             </Plate>
+            </Reveal>
 
             {/* (c) Online assessment: neutral placeholder text, never a real-looking question */}
+            <Reveal variant="plate" delay={180} className="dg-env__item">
             <Plate className="dg-mat--tight dg-stretch" fig="FIG. 04" caption="Online assessment" note="Placeholder text, not a real question">
               <div className="dg-plate-bar">
                 <span className="sky-label">Assessment</span>
@@ -385,12 +394,13 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 </div>
               </div>
             </Plate>
+            </Reveal>
           </div>
         </div>
       </section>
 
       {/* 04 One photograph and what online study asks */}
-      <section className="sky-container dg-section dg-section--end">
+      <Reveal as="section" className="sky-container dg-section dg-section--end">
         <div className="dg-asks">
           <Photo asset={photo} className="dg-asks__photo" plain />
           <div className="dg-asks__main">
@@ -412,7 +422,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
             </p>
           </div>
         </div>
-      </section>
+      </Reveal>
 
       {/* 05 What you can prove: small warm proof row */}
       <section className="sky-band-proof">

@@ -6,6 +6,7 @@
  */
 import { Link } from "react-router-dom"
 import { ArrowRight, SectionIndex, TruthChip, type TruthState } from "../../components/skylent/primitives"
+import { Reveal } from "../../components/skylent/Reveal"
 import { AUTHORED_COURSE_SLUGS } from "../../lib/authored-courses"
 import { degreeLevelName, deliveryModeLabel, type Degree } from "../../lib/degrees"
 import { truthOf } from "../../lib/truth"
@@ -57,6 +58,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
           </div>
 
           <dl className="dg-title__facts sky-spec" aria-label="About this listing">
+            <div className="sky-label dg-title__factshead">This listing</div>
             {degree.status === "coming_soon" ? (
               <div className="sky-spec__row">
                 <dt className="sky-spec__label">Listing</dt>
@@ -86,7 +88,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
       </div>
 
       {/* 01 The degree sheet and the location panel */}
-      <section className="sky-container dg-degree" aria-label="Degree facts and location">
+      <Reveal as="section" className="sky-container dg-degree" aria-label="Degree facts and location">
         <div className="dg-degree__row">
           <div className="dg-degree__main">
             <SectionIndex n="01" label="The degree" />
@@ -173,10 +175,10 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <p className="dg-note">Location details come from the institution. No map is shown until an address is published.</p>
           </aside>
         </div>
-      </section>
+      </Reveal>
 
       {/* 02 The campus: photographs carry the section */}
-      <section id="campus" className="sky-container dg-section">
+      <Reveal as="section" id="campus" className="sky-container dg-section">
         <div className="dg-head-row">
           <div className="dg-head-row__main">
             <SectionIndex n="02" label="The campus" />
@@ -198,11 +200,11 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             ) : null}
           </div>
         ) : null}
-      </section>
+      </Reveal>
 
       {/* 03 How you are taught: warm editorial band */}
       <section id="taught" className="sky-band-proof dg-band">
-        <div className="sky-container dg-band__inner">
+        <Reveal className="sky-container dg-band__inner">
           <div className="dg-taught">
             <div className="dg-taught__lead">
               <SectionIndex n="03" label="How you are taught" />
@@ -275,11 +277,11 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
               )}
             </div>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* 04 What Skylent adds: the only product language on the page */}
-      <section id="adds" className="sky-container dg-adds">
+      <Reveal as="section" id="adds" className="sky-container dg-adds">
         <div className="dg-head-row">
           <div className="dg-head-row__main">
             <SectionIndex n="04" label="What Skylent adds" />
@@ -310,7 +312,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <span className="dg-monoline">No action yet</span>
           </div>
         </div>
-      </section>
+      </Reveal>
 
       <DegreeEnquiry degree={degree} index="05" ruled />
 
