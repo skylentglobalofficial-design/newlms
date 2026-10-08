@@ -145,3 +145,18 @@
 *.nc                 filter=lfs diff=lfs merge=lfs -text
 *.mat                filter=lfs diff=lfs merge=lfs -text
 "Review Design (3).zip" -filter -diff -merge
+
+# ---------------------------------------------------------------------------
+# Site images ship with the app
+# ---------------------------------------------------------------------------
+# These are served to visitors. A host that deploys from a plain checkout without
+# git-lfs would publish the pointer files instead of the pictures, so they are
+# stored as ordinary git files. Keep this block last: later rules win.
+public/**/*.jpg      !filter !diff !merge binary
+public/**/*.jpeg     !filter !diff !merge binary
+public/**/*.png      !filter !diff !merge binary
+public/**/*.webp     !filter !diff !merge binary
+src/assets/**/*.jpg  !filter !diff !merge binary
+src/assets/**/*.jpeg !filter !diff !merge binary
+src/assets/**/*.png  !filter !diff !merge binary
+src/assets/**/*.webp !filter !diff !merge binary
