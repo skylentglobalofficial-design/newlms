@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { C, T } from "../../tokens"
+import { C } from "../../tokens"
 import { careerAccent } from "./career-accent"
 import { GlassSurface } from "../foundation"
 import {
@@ -118,24 +118,24 @@ export default function ProfileOverview({ profile, onProfileUpdate }: Props) {
       >
         {feedback && <FeedbackBanner tone={feedback.tone} message={feedback.message} />}
 
-        <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
+        <GlassSurface level={2} padding="20px 22px" className="cos-id-card" style={{ marginBottom: 20 }}>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 16, alignItems: "flex-start", justifyContent: "space-between" }}>
             <div style={{ minWidth: 0 }}>
-              <div style={{ fontFamily: "var(--font-display)", fontSize: 22, fontWeight: 700, color: C.ink, marginBottom: 4 }}>{displayName}</div>
+              <div style={{ fontFamily: "var(--sk-font-heading)", fontSize: 22, fontWeight: 600, color: C.ink, marginBottom: 4 }}>{displayName}</div>
               <div style={{ color: accent.text, fontSize: 14, marginBottom: 8 }}>{profile.headline || "Add a professional headline"}</div>
               <div style={{ color: C.slate, fontSize: 13 }}>
                 {[profile.preferredRole, profile.location].filter(Boolean).join(" · ") || "Set your target role and location"}
               </div>
             </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 28, fontWeight: 700, color: C.ink, fontFamily: "var(--font-display)" }}>{profile.completeness.percent}%</div>
-              <div style={{ fontSize: 12, color: C.slate }}>Profile complete</div>
+            <div style={{ textAlign: "right", marginLeft: "auto" }}>
+              <div style={{ fontSize: 30, fontWeight: 600, lineHeight: 1.1, color: C.ink, fontFamily: "var(--sk-font-heading)" }}>{profile.completeness.percent}%</div>
+              <div style={{ marginTop: 4, fontFamily: "var(--sk-font-mono)", fontSize: 10.5, letterSpacing: "0.08em", textTransform: "uppercase", color: "hsl(var(--site-dim))" }}>Profile complete</div>
             </div>
           </div>
         </GlassSurface>
 
         {editing ? (
-          <div style={{ padding: "18px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
+          <div style={{ padding: "18px", borderRadius: 12, border: "1px solid hsl(var(--site-border))", background: "hsl(var(--site-proof))" }}>
             <FormGrid>
               <Field label="Headline">
                 <input value={form.headline} onChange={e => setForm(f => ({ ...f, headline: e.target.value }))} style={fieldInputStyle} maxLength={160} />
@@ -227,6 +227,7 @@ export default function ProfileOverview({ profile, onProfileUpdate }: Props) {
             value={resumeLabel}
             onChange={e => setResumeLabel(e.target.value)}
             placeholder="Resume label (e.g. Data Analyst — March 2026)"
+            aria-label="Resume label"
             style={{ ...fieldInputStyle, flex: "1 1 220px" }}
             maxLength={120}
           />
@@ -237,10 +238,12 @@ export default function ProfileOverview({ profile, onProfileUpdate }: Props) {
       </SectionShell>
 
       {profile.completeness.nextRecommended && (
-        <div style={{ padding: "14px 16px", borderRadius: T.rControl, border: `1px solid ${accent.border}`, background: accent.subtle }}>
-          <div style={{ fontSize: 12, color: accent.text, marginBottom: 4 }}>Suggested next step</div>
-          <div style={{ color: C.ink, fontSize: 14 }}>{profile.completeness.nextRecommended}</div>
-          <Link to="/career-os/profile" style={{ display: "inline-block", marginTop: 8, color: accent.text, fontSize: 13, textDecoration: "none" }}>
+        <div className="cos-suggest">
+          <div style={{ minWidth: 0 }}>
+            <span className="cos-suggest__tag">Suggested next step</span>
+            <strong>{profile.completeness.nextRecommended}</strong>
+          </div>
+          <Link to="/career-os/profile">
             Continue in profile →
           </Link>
         </div>

@@ -1408,3 +1408,8 @@
 .os-inline-state .dash-empty-copy {
   margin: 0;
 }
+
+/* Visual pass: keep each option's screen-reader status inside its own box, so the
+   visually hidden spans cannot stretch the document past the fixed player frame. */
+.lx-option { position: relative; }
+.lx-question { position: relative; }

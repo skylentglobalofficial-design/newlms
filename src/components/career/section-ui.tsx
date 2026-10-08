@@ -19,12 +19,12 @@ export function SectionShell({
   action?: ReactNode
 }) {
   return (
-    <section id={id} style={{ marginBottom: 32, minWidth: 0 }}>
+    <section id={id} style={{ marginBottom: 32, paddingTop: 22, borderTop: "1px solid hsl(var(--site-border))", minWidth: 0, scrollMarginTop: 72 }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
         <div style={{ minWidth: 0 }}>
-          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: C.ink }}>{title}</h2>
+          <h2 style={{ margin: 0, fontFamily: "var(--sk-font-heading)", fontSize: 19, fontWeight: 600, lineHeight: 1.3, letterSpacing: 0, color: C.ink }}>{title}</h2>
           {description && (
-            <p style={{ margin: "6px 0 0", color: C.slate, fontSize: 13.5, lineHeight: 1.5 }}>{description}</p>
+            <p style={{ margin: "6px 0 0", color: "hsl(var(--site-muted))", fontSize: 14, lineHeight: 1.5 }}>{description}</p>
           )}
         </div>
         {action}
@@ -65,18 +65,22 @@ export function FeedbackBanner({ tone, message }: { tone: "success" | "error"; m
 export const fieldLabelStyle: React.CSSProperties = {
   display: "block",
   marginBottom: 6,
-  color: C.slate,
-  fontSize: 12,
-  fontWeight: 500,
+  color: "hsl(var(--site-dim))",
+  fontFamily: "var(--sk-font-mono)",
+  fontSize: 10.5,
+  fontWeight: 400,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
 }
 
 export const fieldInputStyle: React.CSSProperties = {
   width: "100%",
   boxSizing: "border-box",
+  minHeight: 44,
   padding: "10px 12px",
   borderRadius: T.rControl,
-  border: `1px solid ${T.lineDark}`,
-  background: C.cream,
+  border: "1px solid hsl(var(--site-border-strong))",
+  background: "hsl(var(--site-white))",
   color: C.ink,
   fontSize: 14,
   fontFamily: "var(--font-body)",
@@ -84,7 +88,8 @@ export const fieldInputStyle: React.CSSProperties = {
 }
 
 export const primaryButtonStyle: React.CSSProperties = {
-  padding: "9px 16px",
+  minHeight: 44,
+  padding: "0 18px",
   borderRadius: T.rControl,
   border: "none",
   background: accent.primary,
@@ -96,25 +101,28 @@ export const primaryButtonStyle: React.CSSProperties = {
 }
 
 export const secondaryButtonStyle: React.CSSProperties = {
-  marginTop: 12,
-  padding: "9px 16px",
+  marginTop: 0,
+  minHeight: 44,
+  padding: "0 16px",
   borderRadius: T.rControl,
-  border: `1px solid ${T.lineDark}`,
-  background: "transparent",
-  color: accent.text,
+  border: "1px solid hsl(var(--site-border-strong))",
+  background: "hsl(var(--site-white))",
+  color: C.ink,
   fontSize: 13,
-  fontWeight: 500,
+  fontWeight: 600,
   cursor: "pointer",
   fontFamily: "var(--font-body)",
 }
 
 export const dangerButtonStyle: React.CSSProperties = {
-  padding: "9px 14px",
+  minHeight: 44,
+  padding: "0 14px",
   borderRadius: T.rControl,
-  border: "1px solid hsl(var(--site-border-strong))",
-  background: "transparent",
-  color: "hsl(var(--site-red))",
+  border: "1px solid hsl(var(--site-border))",
+  background: "hsl(var(--site-white))",
+  color: "hsl(var(--site-muted))",
   fontSize: 13,
+  fontWeight: 500,
   cursor: "pointer",
   fontFamily: "var(--font-body)",
 }
@@ -123,14 +131,19 @@ export function EntryCard({ children, actions }: { children: ReactNode; actions?
   return (
     <div style={{
       padding: "16px 18px",
-      borderRadius: T.rControl,
-      border: `1px solid ${T.lineDark}`,
-      background: C.cream,
+      borderRadius: 12,
+      border: "1px solid hsl(var(--site-border))",
+      background: "hsl(var(--site-white))",
       marginBottom: 10,
+      display: "flex",
+      flexWrap: "wrap",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "12px 20px",
     }}>
-      <div style={{ minWidth: 0 }}>{children}</div>
+      <div style={{ minWidth: 0, flex: "1 1 260px" }}>{children}</div>
       {actions && (
-        <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>{actions}</div>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>{actions}</div>
       )}
     </div>
   )

@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react"
-import { C, T } from "../../tokens"
-import { careerAccent } from "./career-accent"
 import { ContextualNavBar, ContextualNavPanel, type ContextualNavItem } from "../foundation"
 import { useCareerProfile } from "../../hooks/useCareerProfile"
 import ProfileOverview from "./ProfileOverview"
@@ -10,8 +8,6 @@ import SkillsSection from "./SkillsSection"
 import ProjectsSection from "./ProjectsSection"
 import LinksSection from "./LinksSection"
 import { LoadingBlock, FeedbackBanner } from "./section-ui"
-
-const accent = careerAccent
 
 const PROFILE_NAV: ContextualNavItem[] = [
   { id: "profile-basics", label: "Basics", sub: "Headline & summary" },
@@ -57,25 +53,28 @@ export default function CareerProfileWorkspace() {
 
   if (error || !profile) {
     return (
-      <div style={{ maxWidth: 520 }}>
-        <FeedbackBanner tone="error" message={error ?? "Profile unavailable"} />
-        <button type="button" onClick={() => void reload()} style={{ marginTop: 12, padding: "10px 16px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "transparent", color: accent.text, cursor: "pointer" }}>
-          Try again
-        </button>
+      <div className="cos-profile" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0 }}>
+        <header className="cos-head">
+          <span className="cos-eyebrow">Career OS · Profile</span>
+          <h1>Career profile</h1>
+        </header>
+        <div className="cos-state">
+          <FeedbackBanner tone="error" message={error ?? "Profile unavailable"} />
+          <button type="button" onClick={() => void reload()}>
+            Try again
+          </button>
+        </div>
       </div>
     )
   }
 
   return (
-    <div style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0 }}>
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
-          Career profile
-        </h1>
-        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
-          Build the profile employers see when you apply through Career OS.
-        </p>
-      </div>
+    <div className="cos-profile" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0 }}>
+      <header className="cos-head">
+        <span className="cos-eyebrow">Career OS · Profile</span>
+        <h1>Career profile</h1>
+        <p>Build the profile employers see when you apply through Career OS.</p>
+      </header>
 
       <div className="career-profile-layout" style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) minmax(200px, 240px)", gap: 24, alignItems: "start" }}>
         <div style={{ minWidth: 0 }}>

@@ -98,9 +98,11 @@
 
 .os-ai-notice {
   margin: 0 0 16px;
-  padding: 10px 12px;
-  border: 1px solid var(--skylent-color-ink);
+  padding: 10px 12px 10px 14px;
+  border: 1px solid var(--skylent-color-proof-line);
+  border-left: 2px solid var(--skylent-color-ink);
   border-radius: 8px;
+  background: var(--skylent-surface-proof);
   color: var(--skylent-color-ink);
   font-size: 13.5px;
   line-height: 1.5;

@@ -215,3 +215,37 @@
 .proj-career { flex-direction: row; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 0; padding: 10px clamp(16px, 2.4vw, 28px); border: 0; border-bottom: 1px solid var(--skylent-color-proof-line); background: var(--skylent-surface-proof); }
 .proj-career p { font-size: 14px; }
 @media (max-width: 768px) { .proj-career { margin-left: 0; margin-right: 0; } }
+
+/* ── Signed-in visual pass: the brief reads as a ruled checklist, tasks as a list ── */
+.proj-brief {
+  counter-reset: proj-brief;
+  margin: 2px 0 6px;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--skylent-color-border);
+}
+.proj-brief li {
+  counter-increment: proj-brief;
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 6px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--skylent-color-border);
+  color: var(--skylent-color-ink);
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.proj-brief li::before {
+  content: counter(proj-brief, decimal-leading-zero);
+  padding-top: 1px;
+  color: var(--skylent-color-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.proj-tasks { gap: 2px; }
+.proj-tasks button { align-items: center; padding: 10px 10px; }
+.proj-tasks strong { font-size: 13.5px; }
+.proj-shell .lab-workspace h2 { font-size: 19px; }
+@media (max-width: 1024px) {
+  .proj-grid { gap: 16px; }
+}

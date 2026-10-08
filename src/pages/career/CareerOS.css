@@ -727,3 +727,211 @@
   .cosp-caps li p { grid-column: 1 / -1; grid-row: 2; }
   .cosp-actions .sk-btn { flex: 1 1 100%; }
 }
+
+/* ───────────────────────────────────────────────────────────────────────────
+   Signed-in visual pass — one page header and one card language for every
+   Career OS screen, matching the Career OS overview (.cosh) and the public
+   CareerOSSpecimen plate: mono eyebrow, Space Grotesk title, 1px hairlines,
+   12px panels / 8px controls, no drop shadows on flat workspace surfaces.
+   ─────────────────────────────────────────────────────────────────────────── */
+.cos-scope .cos-head { margin: 0 0 28px; min-width: 0; }
+.cos-scope .cos-eyebrow {
+  display: block;
+  margin: 0 0 8px;
+  font-family: var(--sk-font-mono);
+  font-size: 10.5px;
+  line-height: 1.4;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: hsl(var(--site-dim));
+}
+.cos-scope .cos-head h1,
+.cos-scope .cos-page h1 {
+  margin: 0;
+  font-family: var(--sk-font-heading);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -.01em;
+  color: hsl(var(--site-ink));
+}
+.cos-scope .cos-head p,
+.cos-scope .cos-page .cos-lead {
+  margin: 10px 0 0;
+  max-width: 62ch;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: hsl(var(--site-muted));
+}
+.cos-scope .cos-page .cos-lead { margin-bottom: 28px; }
+
+/* Error: a plain sentence and one way out, inside the page frame */
+.cos-scope .cos-state {
+  display: grid;
+  gap: 12px;
+  max-width: 620px;
+  padding: 18px 20px;
+  border: 1px solid hsl(var(--site-border));
+  border-radius: 12px;
+  background: hsl(var(--site-white));
+}
+.cos-scope .cos-state p { margin: 0; font-size: 14px; line-height: 1.5; color: hsl(var(--site-red)); }
+.cos-scope .cos-state .skylent-state-panel { margin: 0 !important; padding: 0; border: 0; background: none; }
+.cos-scope .cos-state a,
+.cos-scope .cos-state button {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid hsl(var(--site-border-strong)) !important;
+  border-radius: 8px !important;
+  background: hsl(var(--site-white)) !important;
+  color: hsl(var(--site-ink)) !important;
+  font: 600 13.5px/1 var(--sk-font-body) !important;
+  text-decoration: none;
+  cursor: pointer;
+  margin: 0 !important;
+}
+.cos-scope .cos-state :is(a, button):hover { border-color: hsl(var(--site-ink)) !important; }
+
+/* Projects — empty ledger instead of thumbnail art */
+.cos-scope .cos-keep {
+  border: 1px solid hsl(var(--site-border));
+  border-radius: 12px;
+  background: hsl(var(--site-white));
+  overflow: hidden;
+}
+.cos-scope .cos-keep__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 16px;
+  min-height: 48px;
+  padding: 10px 18px;
+  border-bottom: 1px solid hsl(var(--site-border-strong));
+}
+.cos-scope .cos-keep__head h2 { margin: 0; font-family: var(--sk-font-heading); font-size: 16px; font-weight: 600; }
+.cos-scope .cos-keep__list { margin: 0; padding: 0; list-style: none; }
+.cos-scope .cos-keep__list li {
+  display: grid;
+  grid-template-columns: minmax(150px, 220px) minmax(0, 1fr);
+  gap: 4px 24px;
+  padding: 14px 18px;
+  border-bottom: 1px solid hsl(var(--site-border));
+}
+.cos-scope .cos-keep__list strong { font-size: 15px; font-weight: 600; color: hsl(var(--site-ink)); }
+.cos-scope .cos-keep__list span { font-size: 14px; line-height: 1.5; color: hsl(var(--site-muted)); }
+.cos-scope .cos-keep__note {
+  margin: 0;
+  padding: 12px 18px 13px;
+  background: hsl(var(--site-proof));
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: hsl(var(--site-muted));
+}
+.cos-scope .cos-keep + .cos-empty-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin-top: 8px;
+  color: hsl(var(--site-deep));
+}
+.cos-scope .cos-artifact { border: 1px solid hsl(var(--site-border)); border-radius: 12px; box-shadow: none; }
+.cos-scope .cos-artifact-stage { border-right: 1px solid hsl(var(--site-border)); background: hsl(var(--site-proof)); }
+.cos-scope .cos-artifact-body h3 { font-family: var(--sk-font-heading); font-weight: 600; letter-spacing: 0; }
+@media (max-width: 600px) {
+  .cos-scope .cos-keep__list li { grid-template-columns: 1fr; }
+  .cos-scope .cos-head h1,
+  .cos-scope .cos-page h1 { font-size: 26px; }
+}
+
+/* Profile — the same hairline panels as the overview */
+.cos-scope .cos-profile .contextual-nav-panel {
+  border: 1px solid hsl(var(--site-border)) !important;
+  border-radius: 12px !important;
+  background: hsl(var(--site-white)) !important;
+  box-shadow: none !important;
+}
+.cos-scope .cos-profile .contextual-nav-panel .skylent-label {
+  font-family: var(--sk-font-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: hsl(var(--site-dim)) !important;
+}
+.cos-scope .cos-profile .contextual-nav-bar { top: 56px !important; background: hsl(var(--site-white)) !important; }
+.cos-scope .cos-profile .scroll-control-strip::before,
+.cos-scope .cos-profile .scroll-control-strip::after { display: none; }
+.cos-scope .cos-profile .cos-id-card {
+  border: 1px solid hsl(var(--site-border)) !important;
+  border-radius: 12px !important;
+  background: hsl(var(--site-white)) !important;
+  box-shadow: none !important;
+}
+.cos-scope .cos-profile .skylent-state-panel--empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 16px;
+  padding: 16px 18px;
+  border: 1px dashed hsl(var(--site-border-strong));
+  border-radius: 12px;
+  background: hsl(var(--site-white));
+  color: hsl(var(--site-muted));
+  font-size: 14px;
+  text-align: left;
+}
+.cos-scope .cos-profile .skylent-state-panel--empty .skylent-state-panel__actions { margin: 0; }
+.cos-scope .cos-profile .skylent-state-panel--empty button {
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid hsl(var(--site-border-strong));
+  border-radius: 8px;
+  background: hsl(var(--site-white));
+  color: hsl(var(--site-ink));
+  font: 600 13px/1 var(--sk-font-body);
+}
+.cos-scope .cos-profile .skylent-state-panel--empty button:hover { border-color: hsl(var(--site-ink)); }
+.cos-scope .cos-profile :is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid hsl(var(--site-deep));
+  outline-offset: 2px;
+}
+.cos-scope .cos-profile .cos-suggest {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 20px;
+  margin: 0 0 32px;
+  padding: 14px 18px;
+  border: 1px solid hsl(var(--site-deep));
+  border-radius: 12px;
+  background: hsl(var(--site-soft-blue));
+}
+.cos-scope .cos-profile .cos-suggest__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--sk-font-mono);
+  font-size: 10.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: hsl(var(--site-ink));
+}
+.cos-scope .cos-profile .cos-suggest__tag::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: hsl(var(--site-deep)); }
+.cos-scope .cos-profile .cos-suggest strong { display: block; margin-top: 6px; font-size: 15px; font-weight: 600; color: hsl(var(--site-ink)); }
+.cos-scope .cos-profile .cos-suggest a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 600;
+  color: hsl(var(--site-deep));
+  text-decoration: none;
+}
+.cos-scope .cos-profile .cos-suggest a:hover { color: hsl(var(--site-ocean)); }
