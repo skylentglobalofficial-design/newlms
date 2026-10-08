@@ -82,6 +82,22 @@ jobs:
         if: always()
         run: npm run db:seed
 
+      - name: test:production-env
+        if: always()
+        run: npm run test:production-env
+      - name: test:catalog-parity (catalogue truth and seeded catalogue parity)
+        if: always()
+        run: npm run test:catalog-parity
+      - name: Content and path checks (no database)
+        if: always()
+        run: |
+          npm run test:da-content
+          npm run test:pm-content
+          npm run test:live-intents
+          npx tsx scripts/test-path-roadmap.ts
+          npx tsx scripts/test-path-execution.ts
+          npx tsx scripts/test-path-evidence.ts
+
       - name: Start the API
         if: always()
         run: |
@@ -128,6 +144,11 @@ jobs:
       - name: Learner journey against the QA API and database
         if: always()
         run: npx tsx scripts/qa-learner-journey.ts
+
+      # Last of the API tests: it deliberately trips the sign-in rate limit.
+      - name: test:security-middleware (CORS, CSRF, body limit, auth rate limit)
+        if: always()
+        run: npm run test:security-middleware
 
       - name: Client bundle carries no answer keys
         if: always()

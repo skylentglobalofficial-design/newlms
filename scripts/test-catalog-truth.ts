@@ -122,28 +122,42 @@ assert(/Payment is not collected/.test(courseDetail), "Course page must state th
 assert(/primaryCta/.test(courseDetail), "Course page CTA must come from the honest access helper")
 assert(/thinner than Data Analytics/.test(courseDetail), "Non-authored listings keep the thinner-listing honesty copy")
 
+// The programme page was rebuilt around ProfessionalProgrammeTemplate / ProgrammeListing. The readiness
+// rule moved into programme-truth.ts, which the index and the detail page share and which mirrors the
+// server's enrolment rule in server/src/routes/lms.ts.
 const programDetail = readFileSync(new URL("../src/pages/ProgramPage.tsx", import.meta.url), "utf8")
+const programmeTruthSource = readFileSync(new URL("../src/components/programme/programme-truth.ts", import.meta.url), "utf8")
+const programmeTemplate = readFileSync(new URL("../src/components/programme/ProfessionalProgrammeTemplate.tsx", import.meta.url), "utf8")
+const programmeListing = readFileSync(new URL("../src/components/programme/ProgrammeListing.tsx", import.meta.url), "utf8")
+const lmsRoutes = readFileSync(new URL("../server/src/routes/lms.ts", import.meta.url), "utf8")
 assert(/useCatalogProgram/.test(programDetail), "Programme page loads public identity from the catalog API")
 assert(/catalog\.loading/.test(programDetail), "Programme page distinguishes a loading state")
 assert(/catalog\.error/.test(programDetail), "Programme page distinguishes a network\/API error")
 assert(/This programme could not be loaded/.test(programDetail), "API failure renders an error state")
-assert(/This is not a missing programme/.test(programDetail), "API failure must not look like a 404")
-assert(/Programme not found/.test(programDetail), "Unknown API slug still has a not-found state")
-assert(/programmeDiscoveryFor/.test(programDetail), "Authored programmes must resolve from real discovery data")
-assert(/discovery.modules/.test(programDetail), "Programme page must show the taught module path")
-assert(/ProgramWorkflowVisual/.test(programDetail), "Authored programmes keep ProgramWorkflowVisual")
-assert(/PROGRAMME_WORK_SURFACES/.test(programDetail), "Authored programmes keep work-surface copy")
-assert(/PROGRAMME_ENROLMENT_FACTS/.test(programDetail), "Authored programmes keep enrolment facts")
-assert(/ProductLanguage/.test(programDetail), "Authored ProductLanguage remains mounted")
-assert(/hasTaughtPath/.test(programDetail), "Taught-path enrolment stays on the authored programme path")
-assert(/hasAuthoredProgrammePath\(program\.slug\)/.test(programDetail), "Programme enrolment uses the authored taught-path rule")
-assert(!/linkedCourseSlugs\.some/.test(programDetail), "A linked authored course must not make a listing enrolable")
-assert(/isAuthoredCourse/.test(programDetail), "Authored linked-course logic remains")
+assert(/not a missing programme/.test(programDetail), "API failure must not look like a 404")
+assert(/This programme is not in the catalogue/.test(programDetail), "Unknown API slug still has a not-found state")
+assert(/authoredProgrammeContent\(program\.slug\)/.test(programDetail), "Authored programmes must resolve from real authored content")
+assert(/useCatalogCourse\(content\.courseSlug\)/.test(programmeTemplate), "Programme page must show the taught module path from the linked course")
+assert(/CatalogCurriculumModule/.test(programmeTemplate), "Authored programmes render the API curriculum, not brochure modules")
+assert(/<ProfessionalProgrammeTemplate/.test(programDetail), "Authored programmes keep the authored template")
+assert(/<ProgrammeListing/.test(programDetail), "Non-authored programmes fall back to the plain listing")
+assert(/programmeListingHonesty/.test(programDetail) && /\{honesty\}/.test(programmeListing), "Non-authored listings keep their honesty copy")
+assert(/const hasTaughtPath = linked\.some\(\(item\) => item\.authored\)/.test(programmeTruthSource), "Taught-path enrolment stays on authored linked courses")
+assert(/hasAuthoredProgrammePath\(program\.slug\)/.test(programmeTruthSource), "Programme readiness uses the authored taught-path rule")
+assert(/isAuthoredCourse/.test(programmeTruthSource), "Authored linked-course logic remains")
 assert(
-  /isProgramEnrollable\(program\) && hasTaughtPath/.test(programDetail),
+  /isProgramEnrollable\(program\) && hasTaughtPath/.test(programmeTruthSource),
   "A programme is not enrolable from API presence or moduleCount alone",
 )
+assert(/authored && enrollable \? "live"/.test(programmeTruthSource), "Live needs an authored programme path as well as open enrolment")
+assert(
+  /program\.enrollmentStatus !== "OPEN"/.test(lmsRoutes) && /hasAuthoredCourse/.test(lmsRoutes),
+  "The server enforces the same enrolment rule: open and at least one authored linked course",
+)
+assert(/programmeTruth\(program\)/.test(programDetail), "Programme page takes readiness from the shared programme truth")
+assert(/truth\.authored && program\.linkedCourseSlugs\.includes\(content\.courseSlug\)/.test(programDetail), "The authored template needs the API link to its course")
 assert(!/moduleCount\s*>\s*0/.test(programDetail), "moduleCount > 0 must not make a programme ready")
+assert(!/moduleCount/.test(programmeTruthSource), "Readiness is never derived from moduleCount")
 assert(!/program\.curriculum|\.curriculum\b/.test(programDetail), "Program.curriculum is not treated as authored taught curriculum")
 assert(/linkedCourseSlugs/.test(programDetail), "API linkedCourseSlugs control the programme-to-course relationship")
 assert(/kind: "program"/.test(programDetail), "Enrolment on /programs/:slug remains a PROGRAM")
@@ -152,7 +166,17 @@ assert(!/kind: "course"/.test(programDetail), "product-management on /programs m
 assert(!/fetchCatalogCourse|useCatalogCourse/.test(programDetail), "Programme detail must not load the course catalog by slug")
 assert(!/PROGRAMME_INTENDED_STEPS/.test(programDetail), "Programme page must not present the generic intended-path board as live teaching")
 assert(!/curriculumDetail|projectsDetail|whatYouWillLearn/.test(programDetail), "Programme page must not render brochure curriculum as live teaching")
-assert(/Payment is not collected/.test(programDetail), "Programme page must state that payment is not collected")
+assert(
+  /programmeAfterEnrolCopy/.test(programDetail) && /\{afterEnrol\}/.test(programmeTemplate) && /\{afterEnrol\}/.test(programmeListing),
+  "Programme page shows the after-enrolment copy",
+)
+for (const authored of [true, false]) {
+  const linked = [{ slug: "sample", title: "Sample", to: "/courses/sample", authored, maturityLabel: "Sample" }]
+  assert(
+    /Payment is not collected/.test(programmeAfterEnrolCopy({ maturity: "listing", linked })),
+    "Programme page must state that payment is not collected",
+  )
+}
 
 const programsIndex = readFileSync(new URL("../src/pages/ProgramsPage.tsx", import.meta.url), "utf8")
 assert(/useCatalogPrograms/.test(programsIndex), "Programmes index loads public identity from the catalog API")
@@ -161,16 +185,18 @@ assert(!/liveProgrammeCatalogue\(/.test(programsIndex), "Programmes index must n
 assert(!/laterProgrammeCatalogue\(/.test(programsIndex), "Programmes index must not use laterProgrammeCatalogue as public identity")
 assert(!/LIVE_PROGRAMME_SLUGS/.test(programsIndex), "Programmes index must not use the hardcoded live slug list as existence")
 assert(!/from ["']\.\.\/data["']/.test(programsIndex), "Programmes index must not import static data.ts as its existence gate")
-assert(/partitionCatalogPrograms/.test(programsIndex), "Programmes index classifies API rows through the authored overlay")
-assert(/hasAuthoredProgrammePath/.test(programsIndex), "Index and detail share the authored taught-path helper")
+assert(/isPublicProgrammeIndexRow/.test(programsIndex), "Programmes index filters API rows through the public index rule")
+assert(/programmeTruth\(program\)/.test(programsIndex), "Programmes index classifies API rows through the shared programme truth")
 assert(/catalog\.loading/.test(programsIndex), "Programmes index distinguishes a loading state")
 assert(/catalog\.error/.test(programsIndex), "Programmes index distinguishes a network\/API error")
-assert(/This is not an empty catalogue/.test(programsIndex), "API failure must not look like an empty catalogue")
+assert(/not the same as an empty catalogue/.test(programsIndex), "API failure must not look like an empty catalogue")
 assert(/The programme catalogue could not be loaded/.test(programsIndex), "API failure renders an error state")
-assert(/The programme catalogue is empty/.test(programsIndex), "Successful empty [] has its own empty-catalogue state")
+assert(/rows\.length === 0/.test(programsIndex) && /No programmes are published yet/.test(programsIndex), "Successful empty [] has its own empty-catalogue state")
 assert(!/No programmes found|No programmes match/.test(programsIndex), "Error and empty copy must not use a filter-miss phrase")
-assert(!/moduleCount\s*>\s*0/.test(programsIndex), "moduleCount > 0 must not make a programme ready on the index")
-assert(/hasAuthoredProgrammePath/.test(programDetail) && /hasAuthoredProgrammePath/.test(programsIndex), "ProgramPage and ProgramsPage use the same readiness helper")
+for (const line of programsIndex.split("\n").filter((row) => /moduleCount\s*>\s*0/.test(row))) {
+  assert(/!live &&/.test(line), "moduleCount > 0 must not make a programme ready on the index")
+}
+assert(/programmeTruth\(program\)/.test(programDetail) && /programmeTruth\(program\)/.test(programsIndex), "ProgramPage and ProgramsPage use the same readiness helper")
 
 const expectedLinks: Record<string, string[]> = {}
 for (const link of PROGRAM_COURSE_LINKS) {
