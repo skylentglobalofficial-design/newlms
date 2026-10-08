@@ -5,7 +5,7 @@
  */
 import { Action, SectionIndex, SpecSheet, TruthChip } from "@/components/skylent/primitives"
 import { DEGREE_ROUTES, DEGREE_SAMPLE_NOTE, type DegreeRoute } from "@/data/education"
-import { degreeImage } from "@/data/educationImages"
+import lectureHall from "@/assets/site/hero-classroom.jpg"
 import { Reveal } from "@/components/skylent/Reveal"
 import { truthOf } from "@/lib/truth"
 
@@ -76,7 +76,10 @@ function DegreeBody({ route, mode, rows }: { route: DegreeRoute; mode: string; r
 export function Degrees() {
   const { online, campus } = pickRoutes()
   if (!online && !campus) return null
-  const campusImage = campus ? degreeImage(campus.slug) : null
+  // A campus listing leads with people in a room, matching the campus degree page.
+  const campusImage = campus
+    ? { src: lectureHall, alt: "Stand-in photograph. Students working at long wooden benches in a tiered lecture hall." }
+    : null
   return (
     <section id="degrees" className="hm-study sky-band-proof" aria-labelledby="hm-degrees-title">
       <div className="sky-container">
@@ -124,7 +127,7 @@ export function Degrees() {
                     <img className="hm-degree__photo" src={campusImage.src} alt={campusImage.alt} decoding="async" />
                   </div>
                   <figcaption className="hm-degree__caption">
-                    <span>FIG. 04 · A campus computer lab</span>
+                    <span>FIG. 04 · A lecture hall</span>
                     <span>Stand-in photograph</span>
                   </figcaption>
                 </figure>
