@@ -796,3 +796,44 @@
   .lab-slice { margin-left: 0; }
   .lab-top-actions { flex: 1 1 100%; }
 }
+
+/* ── Signed-in visual pass: one tool, calm idle states, deliberate phone header ── */
+.lab-rail, .lab-workspace, .lab-results { border: 1px solid var(--skylent-color-border); }
+.lab-shell .os-eyebrow { color: var(--skylent-color-muted); letter-spacing: 0.08em; }
+.lab-metrics.is-idle { gap: 0; border-top: 1px solid var(--skylent-color-border-strong); }
+.lab-metrics.is-idle .lab-metric {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border: 0;
+  border-bottom: 1px solid var(--skylent-color-border);
+  border-radius: 0;
+  background: none;
+}
+.lab-metrics.is-idle .lab-metric strong { margin: 0; font-family: var(--font-mono); font-size: 13px; font-weight: 400; }
+
+@media (max-width: 768px) {
+  /* Wraps instead of clipping: all six steps stay readable, nothing hides past the edge. */
+  .lab-flow { flex-wrap: wrap; overflow: visible; }
+  .lab-flow li { flex: 0 0 auto; white-space: nowrap; }
+}
+
+@media (max-width: 560px) {
+  /* Phones: the six steps as a ruled two-row list, three per row. */
+  .lab-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 2px 16px; }
+  .lab-flow li, .lab-flow li + li { padding: 9px 8px 9px 0; }
+  .lab-flow li:nth-child(n + 4) { border-top: 1px solid var(--skylent-color-border); }
+  .lab-flow li + li::before { display: none; }
+}
+
+@media (max-width: 600px) {
+  .lab-top { align-items: center; gap: 6px 12px; padding-top: 10px; padding-bottom: 10px; }
+  .lab-brand { flex: 1 1 0; }
+  .lab-brand strong { font-size: 15px; }
+  .lab-top-actions { flex: 0 1 auto; justify-content: flex-end; }
+  .lab-top-actions .os-btn { padding-left: 14px; padding-right: 14px; font-size: 13.5px; }
+  .lab-slice { order: 3; flex: 1 1 100%; }
+  .lab-context { gap: 4px 16px; }
+}

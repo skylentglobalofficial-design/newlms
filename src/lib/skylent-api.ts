@@ -12,15 +12,20 @@ const API_BASE = API_ROOT
 
 /* ── Certificates ──────────────────────────────────────────────────────────── */
 
+/**
+ * What the server returns (routes/skylent/certificates.ts, issuedView). The certificate code is the
+ * unique key. `revoked` is sent by GET /certificates/mine only. `id`, `userId` and `courseId` are
+ * not sent by the server; they stay optional so older callers compile, and must not be relied on.
+ */
 export type SkylentCertificate = {
-  id: string
   code: string
-  userId: string
-  courseId: string
   learnerName: string
   courseTitle: string
   issuedAt: string
-  revoked: boolean
+  revoked?: boolean
+  id?: string
+  userId?: string
+  courseId?: string
 }
 
 export type CertificateVerification =

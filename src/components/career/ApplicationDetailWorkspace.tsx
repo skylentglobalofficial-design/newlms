@@ -155,17 +155,17 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
   const nextStatuses = getNextStatuses(application.status)
 
   return (
-    <div style={{ maxWidth: 900, margin: "0 auto", minWidth: 0 }}>
-      <Link to="/career-os/applications" style={{ display: "inline-block", marginBottom: 16, color: accent.text, fontSize: 13, textDecoration: "none" }}>
+    <div className="cos-work" style={{ maxWidth: 900, margin: "0 auto", minWidth: 0 }}>
+      <Link to="/career-os/applications" className="cos-back">
         ← Applications
       </Link>
 
       {feedback && <FeedbackBanner tone={feedback.tone} message={feedback.message} />}
 
-      <GlassSurface level={2} padding="22px" style={{ marginBottom: 20 }}>
+      <GlassSurface className="cos-sheet" level={2} padding="22px" style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap", alignItems: "flex-start" }}>
           <div style={{ minWidth: 0 }}>
-            <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 700, color: C.ink, wordBreak: "break-word" }}>
+            <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(22px, 3vw, 28px)", fontWeight: 600, lineHeight: 1.2, letterSpacing: "-0.01em", color: C.ink, wordBreak: "break-word" }}>
               {role}
             </h1>
             {employer && (
@@ -216,7 +216,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
         </dl>
 
         {application.job && (
-          <div style={{ marginTop: 18, padding: "14px 16px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: C.cream }}>
+          <div style={{ marginTop: 18, padding: "14px 16px", borderRadius: T.rCard, border: `1px solid ${T.lineDark}`, background: C.cream }}>
             <div style={{ fontSize: 11, color: accent.text, marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.06em", fontFamily: "var(--font-mono)" }}>Linked job</div>
             <div style={{ color: C.ink, fontWeight: 600, fontSize: 14 }}>{application.job.title}</div>
             <div style={{ color: C.slate, fontSize: 13, marginTop: 4 }}>
@@ -258,7 +258,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
         </div>
       )}
 
-      <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
+      <GlassSurface className="cos-sheet" level={2} padding="20px" style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
           <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>Notes & follow-up</h2>
           {!editing && (
@@ -292,7 +292,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
         )}
       </GlassSurface>
 
-      <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
+      <GlassSurface className="cos-sheet" level={2} padding="20px" style={{ marginBottom: 20 }}>
         <h2 style={{ margin: "0 0 12px", fontFamily: "var(--font-display)", fontSize: 18, fontWeight: 600, color: C.ink }}>
           Interview rounds
         </h2>
@@ -328,7 +328,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
         </Link>
       </GlassSurface>
 
-      <GlassSurface level={2} padding="20px" style={{ marginBottom: 20 }}>
+      <GlassSurface className="cos-sheet" level={2} padding="20px" style={{ marginBottom: 20 }}>
         <ApplicationTimeline
           applicationId={application.id}
           events={events}

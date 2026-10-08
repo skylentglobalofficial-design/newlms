@@ -9,7 +9,8 @@
  */
 import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react"
 import { Link } from "react-router-dom"
-import { AI_NAME, AiMark, ArrowRight, displayAiText } from "./primitives"
+import { AI_NAME, AiMark, ArrowRight, TruthChip, displayAiText } from "./primitives"
+import { aiFeature } from "../../lib/product-manifest"
 import type { SiteAiTurn } from "../../lib/skylent-api"
 import "./SiteAssistant.css"
 import { API_ROOT } from "../../lib/http"
@@ -30,8 +31,14 @@ const FAILURE_COPY: Record<Failure, string> = {
   failed: `${AI_NAME} couldn't answer right now. Try again.`,
 }
 
-/** Questions the current scope (public site and catalogue) can really answer. */
-const SUGGESTED = ["Which programmes can I enrol in today?", "What does Career OS do?", "How do I check a certificate?"]
+/**
+ * Questions the server's context (server/src/routes/skylent/reva.ts: the site's page list, the course
+ * catalogue, support contacts and the fee policy) can really answer. Career OS and certificate
+ * questions are not offered: that context does not describe them.
+ */
+const SUGGESTED = ["Which courses can I open today?", "How do I reach the Skylent team?", "Are fees published?"]
+
+const SITE_AI = aiFeature("site-assistant")
 
 const KNOWN_ROUTES: Record<string, string> = {
   "/": "Go to the home page",
@@ -212,8 +219,9 @@ export default function SiteAssistant() {
           <div ref={panelRef} className="sia-panel" role="dialog" aria-modal="true" aria-labelledby={titleId} onKeyDown={onPanelKeyDown}>
             <div className="sky-ai-head sky-on-navy sia-head">
               <div className="sia-head__top">
-                <span id={titleId}>
+                <span id={titleId} className="sia-head__title">
                   <AiMark />
+                  <TruthChip state={SITE_AI.status} />
                 </span>
                 <button type="button" className="sia-close" onClick={close} aria-label={`Close ${AI_NAME}`}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

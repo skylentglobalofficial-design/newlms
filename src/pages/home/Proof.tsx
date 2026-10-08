@@ -1,34 +1,19 @@
 /**
  * The lower half of the homepage: Career OS (navy stage with one large plate), Skylent AI,
- * Find My Path and the closing statement. Availability is read from src/lib/truth.ts,
- * never hard-coded, and nothing here shows a score, a match, a salary or an opening.
+ * Find My Path and the closing statement. Career OS and Skylent AI are drawn from
+ * src/lib/product-manifest.ts (states from src/lib/truth.ts), never hard-coded, and nothing
+ * here shows a score, a match, a salary, an opening or a written AI answer.
  */
-import type { ReactNode } from "react"
-import { Action, AI_NAME, AiMark, PUBLIC_JOURNEY, SectionIndex, TruthChip, type TruthState } from "@/components/skylent/primitives"
+import { Action, AI_NAME, AiMark, PUBLIC_JOURNEY, SectionIndex, TruthChip } from "@/components/skylent/primitives"
 import { Reveal } from "@/components/skylent/Reveal"
-import { NORTHWIND_PREVIEW } from "@/lib/northwind-preview"
-import { truthOf, type Capability } from "@/lib/truth"
-import { courseFacts } from "./course-facts"
+import CareerOSSpecimen from "@/components/product/CareerOSSpecimen"
+import { LESSON_AI, SKYLENT_AI_FEATURES, aiFeature, type ProductStatus } from "@/lib/product-manifest"
+import { truthOf } from "@/lib/truth"
 
 /* ── Career OS ─────────────────────────────────────────────────────────────── */
 
-type CareerCell = { label: string; value?: ReactNode; chip?: TruthState; note: string }
-
+/** The plate is the shared specimen: names, order and states come from src/lib/product-manifest.ts. */
 export function CareerOs() {
-  const facts = courseFacts()
-  const cells: CareerCell[] = [
-    { label: "Your skills", value: "SQL · Spreadsheets · Dashboards", note: "Entered by you. Not assessed by Skylent." },
-    {
-      label: "Projects",
-      value: facts?.capstoneTitle ?? "No project yet",
-      note: facts ? `From your ${facts.title} work.` : "Projects come from the programme you enrol in.",
-    },
-    { label: "Evidence", chip: truthOf("projectsAndEvidence"), note: "Learner work on fictional cases, linked to the project behind it." },
-    { label: "Certificates", chip: truthOf("certificates"), note: "Issued once every lesson is complete, with a code anyone can check." },
-    // No capability in truth.ts yet: Career OS itself states that role-to-skill matching does not exist.
-    { label: "Skill gaps", chip: "development", note: "Skylent does not match a role to required skills yet." },
-    { label: "Openings", chip: truthOf("openings"), note: "No openings are published yet." },
-  ]
   return (
     <section id="career-os" className="hm-cos sky-stage sky-band-navy" aria-labelledby="hm-career-title">
       <div className="sky-container">
@@ -45,55 +30,13 @@ export function CareerOs() {
 
         <figure className="hm-cos__figure">
           <Reveal variant="plate" delay={140}>
-            <div
-              className="sky-stage__plate hm-light hm-cosplate"
-              role="img"
-              aria-label="Career OS overview for an illustrative learner. Target role, entered by the learner: Data analyst. Skills are self-entered and not assessed. Evidence, certificates and skill gaps are in development. Openings are coming soon. No readiness score, job match or salary is shown."
-            >
-              <div className="hm-cosplate__bar">
-                <span className="hm-cosplate__brand">Career OS</span>
-                <span className="hm-cosplate__nav">
-                  <span className="hm-cosplate__nav--on">Overview</span>
-                  <span>Profile</span>
-                  <span>Projects</span>
-                </span>
-                <TruthChip state="illustrative" label="Illustrative record" />
-              </div>
-              <div className="hm-cosplate__top">
-                <div className="hm-cosplate__role">
-                  <div className="hm-art-label">Target role</div>
-                  <div className="hm-cosplate__roletitle">Data analyst</div>
-                  <div className="hm-cosplate__by">entered by you · edit</div>
-                  <p className="hm-cosplate__note">Free text from your career profile. Skylent does not match a role to required skills yet.</p>
-                </div>
-                <div className="hm-cosplate__next">
-                  <div className="hm-art-label">Next step</div>
-                  <div className="hm-cosplate__nexttitle">
-                    {facts ? `Continue lesson ${facts.lessonNumber} · ${facts.current.title}` : "Choose a programme"}
-                  </div>
-                  <div className="hm-cosplate__nextnote">
-                    {facts ? `${facts.title} · ${facts.done} of ${facts.total} lessons complete` : "Lessons, practice and a project come from the programme you enrol in."}
-                  </div>
-                  <span className="hm-cosplate__btn">Continue learning</span>
-                </div>
-              </div>
-              <div className="hm-cosplate__cells">
-                {cells.map((cell, i) => (
-                  <div key={cell.label} className="hm-cosplate__cell">
-                    <div className="hm-art-label">
-                      <span className={cell.chip ? "hm-cosplate__n" : "hm-cosplate__n hm-cosplate__n--on"}>{String(i + 1).padStart(2, "0")}</span>
-                      {cell.label}
-                    </div>
-                    <div className="hm-cosplate__value">{cell.chip ? <TruthChip state={cell.chip} /> : cell.value}</div>
-                    <div className="hm-cosplate__cellnote">{cell.note}</div>
-                  </div>
-                ))}
-              </div>
+            <div className="sky-stage__plate hm-light hm-cosplate">
+              <CareerOSSpecimen />
             </div>
           </Reveal>
           <figcaption className="sky-stage__caption">
             <span>FIG. 07 · Career OS overview</span>
-            <span>Illustrative record · no readiness score, job match or salary</span>
+            <span>Example labels · no readiness score, job match or salary</span>
           </figcaption>
         </figure>
       </div>
@@ -103,54 +46,21 @@ export function CareerOs() {
 
 /* ── Skylent AI ────────────────────────────────────────────────────────────── */
 
-const AI_SCOPES: { capability: Capability; where: string; what: string }[] = [
-  { capability: "lessonAi", where: "inside lessons", what: "help inside lessons" },
-  { capability: "siteAi", where: "across the site", what: "a site-wide assistant" },
-  { capability: "careerAi", where: "with your career context", what: "career context" },
-]
-
-function listOf(items: string[]): string {
-  if (items.length <= 1) return items.join("")
-  return `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`
+const STATE_WORDS: Record<ProductStatus, string> = {
+  live: "available",
+  development: "in development",
+  soon: "coming soon",
+  sample: "a sample",
 }
 
-function capitalise(text: string): string {
-  return text.charAt(0).toUpperCase() + text.slice(1)
-}
-
-/** One sentence per truth state, built from the config: where the assistant works today and what is not ready. */
-function aiAvailabilityNote(): string {
-  const scopesIn = (state: TruthState) => AI_SCOPES.filter((scope) => truthOf(scope.capability) === state)
-  const pending = (state: TruthState, ending: string) => {
-    const scopes = scopesIn(state)
-    if (scopes.length === 0) return ""
-    return `${capitalise(listOf(scopes.map((scope) => scope.what)))} ${scopes.length === 1 ? "is" : "are"} ${ending}.`
-  }
-  const live = scopesIn("live")
-  return [
-    live.length ? `Available ${listOf(live.map((scope) => scope.where))}.` : "",
-    pending("development", "in development"),
-    pending("soon", "coming soon"),
-  ]
-    .filter(Boolean)
-    .join(" ")
-}
-
-const AI_MOVES = [
-  ["Explain", "The idea in the lesson, in plainer words."],
-  ["Practice", "A question on the same clause, to try yourself."],
-  ["Apply", "An example worked on the lesson's own dataset."],
-  ["Next step", "What to open once this lesson makes sense."],
-] as const
-
+/**
+ * What the lesson assistant actually is, read from the manifest (which mirrors the server):
+ * the context it receives, its modes, the shape of an answer, what it refuses during an open
+ * assessment, and where it does not work yet. No question or answer is written here.
+ */
 export function SkylentAi() {
-  const { validRows, rows } = NORTHWIND_PREVIEW
-  const facts = courseFacts()
-  const context = facts
-    ? [facts.title, `Module ${facts.currentModuleNumber}`, `Lesson ${facts.lessonNumber}`]
-    : ["Data Analytics", "Module 3", "Lesson 7"]
-  const lessonTitle = facts?.current.title ?? "SQL SELECT, WHERE, and aggregates"
-  const nextLesson = facts ? facts.currentModule.lessons[facts.currentModule.lessons.findIndex((l) => l.id === facts.current.id) + 1] : undefined
+  const lesson = aiFeature("lesson-assistant")
+  const elsewhere = SKYLENT_AI_FEATURES.filter((item) => item.id !== lesson.id)
   return (
     <section id="skylent-ai" className="hm-ai" aria-labelledby="hm-ai-title">
       <div className="sky-container hm-ai__grid">
@@ -160,76 +70,78 @@ export function SkylentAi() {
             Help that knows <em>which lesson you are on.</em>
           </h2>
           <p className="hm-lead">
-            {AI_NAME} answers from the text of the lesson you have open, and tells you which part of it the answer is based on.
+            {AI_NAME} answers from the lesson you have open and names the lesson its answer is based on. It does not see your progress, projects or career profile.
           </p>
-          <ol className="hm-ai__moves">
-            {AI_MOVES.map(([name, what], i) => (
-              <li key={name}>
+          <ol className="hm-ai__moves" aria-label={`${AI_NAME} modes in a lesson`}>
+            {LESSON_AI.modes.map((mode, i) => (
+              <li key={mode.id}>
                 <span className="hm-ai__moven">{String(i + 1).padStart(2, "0")}</span>
-                <span className="hm-ai__movename">{name}</span>
-                <span className="hm-ai__movewhat">{what}</span>
+                <span className="hm-ai__movename">{mode.label}</span>
+                <span className="hm-ai__movewhat">{mode.detail}</span>
               </li>
             ))}
           </ol>
-          <p className="hm-ai__note">{aiAvailabilityNote()}</p>
+          <p className="hm-ai__note">
+            {lesson.label}: {STATE_WORDS[lesson.status]}.{" "}
+            {elsewhere.map((item) => `${item.label}: ${STATE_WORDS[item.status]}.`).join(" ")}
+          </p>
         </Reveal>
 
         <figure className="hm-ai__figure">
           <Reveal variant="plate" delay={280}>
-            <div
-              className="hm-plate hm-aipanel"
-              role="img"
-              aria-label={`${AI_NAME} panel in the lesson player. Context in use: ${context.join(", ")}, ${lessonTitle}. A learner asks why WHERE comes before SELECT. The panel gives an answer, the part of the lesson it is based on, a recommendation and an action.`}
-            >
-              <div className="hm-aipanel__head">
+            <div className="hm-plate hm-aipanel">
+              <div className="hm-aipanel__head sky-on-navy">
                 <div className="hm-aipanel__brand">
-                  <AiMark />
-                  <span className="hm-aipanel__scope">In this lesson</span>
+                  <span className="hm-aipanel__where">
+                    <AiMark />
+                    <span className="hm-aipanel__scope">{lesson.label}</span>
+                  </span>
+                  <TruthChip state={lesson.status} />
                 </div>
-                <div className="hm-aipanel__ctxlabel">Context in use</div>
-                <div className="hm-aipanel__ctx">
-                  {context.map((part) => (
-                    <span key={part}>{part}</span>
+                <div className="hm-aipanel__ctxlabel">Context it receives</div>
+                <ul className="hm-aipanel__ctx">
+                  {LESSON_AI.receives.map((item) => (
+                    <li key={item.label}>{item.label}</li>
                   ))}
-                </div>
-                <div className="hm-aipanel__lesson">{lessonTitle}</div>
+                </ul>
+                <ul className="hm-aipanel__ctx hm-aipanel__ctx--off" aria-label="Context it does not receive">
+                  {LESSON_AI.notReceived.map((item) => (
+                    <li key={item}>{item} · not connected</li>
+                  ))}
+                </ul>
               </div>
               <div className="hm-aipanel__body">
-                <div className="hm-aipanel__asked">
-                  <div className="hm-art-label">You asked</div>
-                  <p>Why does WHERE come before SELECT?</p>
-                </div>
+                <div className="hm-art-label">How an answer is laid out</div>
                 <div className="hm-aipanel__flow">
-                  <div className="hm-aipanel__step">
-                    <div className="hm-art-label">Answer</div>
-                    <p className="hm-aipanel__answer">
-                      WHERE decides which rows survive before SELECT returns anything. On this extract, {validRows} of {rows} rows pass.
-                    </p>
-                  </div>
-                  <div className="hm-aipanel__step">
-                    <div className="hm-art-label">Reason</div>
-                    <p>Based on lesson 7, Explain: the engine reads FROM, then WHERE, then GROUP BY, and SELECT only after that.</p>
-                  </div>
-                  <div className="hm-aipanel__step">
-                    <div className="hm-art-label">Recommendation</div>
-                    <p>
-                      Try one query with the filter and one without, and compare the row counts
-                      {nextLesson ? `. Then open ${nextLesson.label.replace("L", "lesson ")}, ${nextLesson.title}.` : "."}
-                    </p>
-                  </div>
+                  {LESSON_AI.answerShape.map((part) => (
+                    <div key={part.label} className="hm-aipanel__step">
+                      <div className="hm-art-label">{part.label}</div>
+                      <p>{part.detail}</p>
+                    </div>
+                  ))}
                 </div>
-                <div className="hm-aipanel__actions">
-                  <span className="hm-aipanel__action hm-aipanel__action--on">Practice question</span>
-                  <span className="hm-aipanel__action">Explain simpler</span>
-                  <span className="hm-aipanel__action">Give an example</span>
-                  <span className="hm-aipanel__action">Quiz me</span>
+                <div className="hm-aipanel__rules">
+                  <div className="hm-art-label">What it will not do · enforced on the server</div>
+                  <ul>
+                    {LESSON_AI.integrity.map((rule) => (
+                      <li key={rule}>{rule}</li>
+                    ))}
+                  </ul>
                 </div>
+                <ul className="hm-aipanel__scopes" aria-label={`Where ${AI_NAME} works`}>
+                  {SKYLENT_AI_FEATURES.map((item) => (
+                    <li key={item.id}>
+                      <span>{item.label}</span>
+                      <TruthChip state={item.status} />
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
           </Reveal>
           <figcaption className="hm-caption">
             <span>FIG. 08 · {AI_NAME} in the lesson player</span>
-            <span>Illustrative exchange</span>
+            <span>What it receives and how it answers · no example answer is shown</span>
           </figcaption>
         </figure>
       </div>

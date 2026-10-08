@@ -1,5 +1,5 @@
 import { apiV1 } from "./api-base"
-import { parseApiJson } from "./http"
+import { parseApiJson, readJsonBody } from "./http"
 
 const API_BASE = apiV1()
 
@@ -109,9 +109,33 @@ async function authRequest<T>(
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
   })
 
+  if (!response.ok) {
+    const message = await credentialFailureMessage(path, response)
+    if (message) throw new Error(message)
+  }
+
   const parsed = await parseJson<T>(response)
   rememberIssuedCsrf(parsed)
   return parsed
+}
+
+/**
+ * The generic 401 copy ("Sign in to continue.") means an ended session. On the sign-in form a 401
+ * means wrong credentials, so the server's own sentence is shown. A 400 shows the first field error.
+ */
+async function credentialFailureMessage(path: string, response: Response): Promise<string | null> {
+  if (response.status !== 400 && !(response.status === 401 && path === "/auth/login")) return null
+  const data = (await readJsonBody(response.clone()).catch(() => null)) as
+    | { error?: unknown; details?: Record<string, unknown> }
+    | null
+  if (!data || typeof data !== "object") return null
+  if (data.details && typeof data.details === "object") {
+    for (const value of Object.values(data.details)) {
+      const first = Array.isArray(value) ? value[0] : null
+      if (typeof first === "string" && first.length <= 160) return first
+    }
+  }
+  return typeof data.error === "string" && data.error.length <= 160 ? data.error : null
 }
 
 function rememberIssuedCsrf(payload: unknown) {

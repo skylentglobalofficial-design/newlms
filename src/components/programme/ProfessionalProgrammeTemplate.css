@@ -194,6 +194,10 @@
 .pp-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.55fr); align-items: start; gap: 40px clamp(40px, 6vw, 88px); }
 .pp-split__intro { min-width: 0; }
 .pp-split__main { min-width: 0; }
+/* One editorial photograph beside the case steps: never behind text, always captioned as a stand-in. */
+.pp-photo { margin: 28px 0 0; max-width: 34em; }
+.pp-photo img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 12px; background: hsl(var(--site-proof-2)); }
+.pp-photo figcaption { margin-top: 10px; font-family: var(--sk-font-mono); font-size: 0.6875rem; line-height: 1.4; letter-spacing: 0.04em; color: hsl(var(--site-dim)); }
 @media (min-width: 1000px) {
   .pp-section .pp-split__intro { position: sticky; top: calc(var(--nav-h, 64px) + 32px); }
 }

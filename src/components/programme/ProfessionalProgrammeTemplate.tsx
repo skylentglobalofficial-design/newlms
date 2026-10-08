@@ -323,6 +323,19 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
             </h2>
             <p className="pp-body">{content.project.intro}</p>
             <p className="pp-disclaimer">{content.project.disclaimer}</p>
+            {content.project.photo ? (
+              <figure className="pp-photo">
+                <img
+                  src={content.project.photo.src}
+                  width={content.project.photo.width}
+                  height={content.project.photo.height}
+                  alt={content.project.photo.alt}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <figcaption>{content.project.photo.caption}</figcaption>
+              </figure>
+            ) : null}
           </div>
           <ol className="sky-steps pp-split__main pp-steps">
             {content.project.steps.map((step, index) => {

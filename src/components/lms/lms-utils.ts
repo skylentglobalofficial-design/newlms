@@ -185,3 +185,23 @@ export function getRecentActivity(
   }
   return items
 }
+
+/** Sentence shown when the learning service cannot be reached at all. */
+export const SERVICE_UNREACHABLE = 'The learning service did not respond. Nothing has been lost. Try again in a moment.'
+
+/**
+ * A learner-facing sentence for a failed request. Short server sentences ("Complete every lesson
+ * first.") are kept; transport noise (network failures, token fetches, parser text) never is.
+ */
+export function learnerErrorMessage(err: unknown, fallback = SERVICE_UNREACHABLE): string {
+  const raw = err instanceof Error ? err.message : ''
+  if (!raw) return fallback
+  if (/failed to fetch|networkerror|load failed|csrf token|unable to load this workspace|unexpected token|json/i.test(raw)) return fallback
+  if (/^HTTP \d+|^\d{3}\b/.test(raw) || raw.length > 160) return fallback
+  return raw
+}
+
+/** True when a failed request means the session is missing or has expired. */
+export function isSignInError(err: unknown): boolean {
+  return err instanceof Error && err.message === 'Sign in to continue.'
+}

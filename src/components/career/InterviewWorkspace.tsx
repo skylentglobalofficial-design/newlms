@@ -8,7 +8,7 @@ import InterviewRoundRail from "./InterviewRoundRail"
 import InterviewQuestionSurface from "./InterviewQuestionSurface"
 import InterviewPracticeSurface from "./InterviewPracticeSurface"
 import { formatInterviewDateTime, formatRoundStatus, formatRoundType } from "./interview-utils"
-import { EmptyBlock, FeedbackBanner, LoadingBlock } from "./section-ui"
+import { EmptyBlock, FeedbackBanner, LoadingBlock, PageHead, secondaryButtonStyle } from "./section-ui"
 
 const accent = careerAccent
 
@@ -26,20 +26,17 @@ export default function InterviewWorkspace() {
   const selectedRound = board.rounds.find(r => r.id === selectedRoundId) ?? null
 
   return (
-    <div className="interview-workspace" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: "0 0 8px", fontFamily: "var(--font-display)", fontSize: "clamp(26px, 3vw, 34px)", fontWeight: 700, color: C.ink }}>
-          Interview prep
-        </h1>
-        <p style={{ margin: 0, color: C.slate, fontSize: 14, lineHeight: 1.6 }}>
-          See your interview rounds, practice questions, and track your preparation.
-        </p>
-      </div>
+    <div className="interview-workspace cos-work" style={{ maxWidth: 1100, margin: "0 auto", minWidth: 0, overflowX: "hidden" }}>
+      <PageHead
+        eyebrow="Career OS · Interviews"
+        title="Interview prep"
+        lead="See your interview rounds, practice questions, and track your preparation."
+      />
 
       {board.error && (
         <div style={{ marginBottom: 16 }}>
           <FeedbackBanner tone="error" message={board.error} />
-          <button type="button" onClick={() => void board.reload()} style={{ marginTop: 10, padding: "9px 16px", borderRadius: T.rControl, border: `1px solid ${T.lineDark}`, background: "transparent", color: accent.text, fontSize: 13, cursor: "pointer" }}>
+          <button type="button" onClick={() => void board.reload()} style={{ ...secondaryButtonStyle, marginTop: 10 }}>
             Retry
           </button>
         </div>
@@ -64,7 +61,7 @@ export default function InterviewWorkspace() {
 
           <div style={{ minWidth: 0, display: "flex", flexDirection: "column", gap: 20 }}>
             {selectedRound ? (
-              <GlassSurface level={2} padding="18px 20px">
+              <GlassSurface className="cos-sheet" level={2} padding="18px 20px">
                 <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap", alignItems: "flex-start" }}>
                   <div style={{ minWidth: 0 }}>
                     <h2 style={{ margin: "0 0 6px", fontFamily: "var(--font-display)", fontSize: 20, fontWeight: 600, color: C.ink, wordBreak: "break-word" }}>
@@ -100,7 +97,7 @@ export default function InterviewWorkspace() {
               <EmptyBlock message="Select an interview round to prepare." />
             )}
 
-            <GlassSurface level={2} padding="18px 20px">
+            <GlassSurface className="cos-sheet" level={2} padding="18px 20px">
               <InterviewQuestionSurface
                 questions={board.filteredQuestions}
                 categories={board.categories}
@@ -113,7 +110,7 @@ export default function InterviewWorkspace() {
               />
             </GlassSurface>
 
-            <GlassSurface level={2} padding="18px 20px">
+            <GlassSurface className="cos-sheet" level={2} padding="18px 20px">
               <InterviewPracticeSurface
                 practice={board.practice}
                 questions={board.questions}

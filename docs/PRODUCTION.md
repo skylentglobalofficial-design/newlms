@@ -110,6 +110,27 @@ The process binds `0.0.0.0:$PORT`, serves `/api/v1/*`, then the client `dist/` w
 - `200` `{ "status": "ok", "db": "ok" }` — process and Postgres responded.
 - `503` `{ "status": "error", "db": "error" }` — do not send traffic.
 
+A `503` that is an HTML page from the host (on Hostinger: "The server is temporarily busy") is different: the Node process is not running at all. `server.js` runs `prisma migrate deploy` before it starts the API and exits if that fails, so a database that cannot be reached or that rejects the password stops the whole API, not only the database routes. The reason is in the application's error log.
+
+### Supabase on a host without IPv6 (Hostinger)
+
+Checked on 8 October 2026 from outside the host, with read-only probes:
+
+| Endpoint | Finding |
+|---|---|
+| `db.<ref>.supabase.co:5432` (direct) | Resolves to an IPv6 address only. Unreachable from an IPv4-only network (Prisma `P1001`). |
+| `aws-0-ap-northeast-1.pooler.supabase.com:5432` (session pooler) and `:6543` (transaction pooler) | IPv4, reachable. |
+| Pooler login with the stored connection string | Rejected: "provided database credentials are not valid". The Supabase project itself is up. |
+
+So two settings must be right before the API can start:
+
+1. **`DIRECT_URL` must not use the direct host on Hostinger.** Use the session pooler: `postgresql://postgres.<ref>:<password>@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres`. Migrations work through the session pooler.
+2. **`DATABASE_URL`** is the pooler too: either the same session URL, or the transaction pooler on port `6543` with `?pgbouncer=true&connection_limit=1`.
+
+In both, the user is `postgres.<ref>` (not `postgres`), and any special character in the password is percent-encoded. If the pooler still rejects the login, the password in the URL is not the database password: set it again under Supabase → Project Settings → Database, then update both variables. Do not reset the database or re-seed.
+
+Restart through the host's own Node.js application control (hPanel → Node.js → Restart). Use `pm2` only if `pm2 list` shows the API is actually running under it.
+
 ## 7. First admin
 
 Public signup always creates `STUDENT`. Promote one operator after the database is live:

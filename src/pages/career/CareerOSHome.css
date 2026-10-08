@@ -48,7 +48,7 @@
 .cosh-role__note { margin-top: auto !important; padding-top: 26px; max-width: 44ch; font-size: 13px; line-height: 1.45; color: hsl(var(--site-dim)); position: relative; }
 .cosh-role__note::before { content: ""; position: absolute; left: 0; right: 0; top: 16px; border-top: 1px solid hsl(var(--site-border)); }
 
-.cosh-next { flex: 2 1 340px; min-width: 0; padding: 18px 20px 18px 22px; border: 1px solid hsl(var(--site-deep)); border-radius: 12px; background: hsl(var(--site-soft-blue)); display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; }
+.cosh-next { flex: 2 1 340px; min-width: 0; padding: 18px 20px 18px 22px; border: 1px solid hsl(var(--site-deep)); border-radius: 12px; background: hsl(var(--site-soft-blue)); box-shadow: 0 1px 2px hsl(var(--site-ink) / .04), 0 14px 32px -20px hsl(var(--site-ink) / .22); display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; }
 .cosh-next__body { flex: 1 1 290px; min-width: 0; }
 .cosh-next__eyebrow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; margin-bottom: 10px; font-family: var(--sk-font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: hsl(var(--site-dim)); }
 .cosh-next__tag { display: inline-flex; align-items: center; gap: 8px; color: hsl(var(--site-ink)); font-weight: 500; }

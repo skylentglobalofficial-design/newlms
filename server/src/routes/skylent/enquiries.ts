@@ -6,7 +6,15 @@ import { requireAuth, type AuthenticatedRequest } from "../../lib/auth.js"
 
 export const skylentEnquiriesRouter = Router()
 
-const limit = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false })
+const limit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler(_request, response) {
+    response.status(429).json({ error: "Too many enquiries. Try again later." })
+  },
+})
 
 const schema = z.object({
   kind: z.enum(["enquiry", "counselling", "degree"]).default("enquiry"),

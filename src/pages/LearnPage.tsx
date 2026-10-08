@@ -11,10 +11,10 @@ import { isAuthoredCourse } from '../lib/live-intents'
 import type { QuizQuestion } from '../components/lms/AssessmentSurface'
 import { courseProductProfile } from '../lib/course-product'
 import {
-  computeCourseProgress,
   getAdjacentLessons,
   isLessonUnlocked,
   lessonObjective,
+  learnerErrorMessage,
   lessonTypeLabel,
   productStepForLesson,
 } from '../components/lms/lms-utils'
@@ -29,7 +29,6 @@ import {
   submitQuizAttempt,
   updateAssignment,
 } from '../lib/lms-api'
-import { workspaceErrorMessage } from '../lib/http'
 import './LearnWorkspace.css'
 import '../components/lms/SkylentAI.css'
 
@@ -88,7 +87,8 @@ export default function LearnPage() {
   const [compact, setCompact] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 900px)').matches)
   const [aiCompact, setAiCompact] = useState(() => typeof window !== 'undefined' && window.matchMedia('(max-width: 1200px)').matches)
   const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([])
-  const [quizStatus, setQuizStatus] = useState<'loading' | 'ready'>('ready')
+  const [quizStatus, setQuizStatus] = useState<'loading' | 'ready' | 'error'>('ready')
+  const [quizAttempt, setQuizAttempt] = useState(0)
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
   const [enrolling, setEnrolling] = useState(false)
   const [enrollError, setEnrollError] = useState<string | null>(null)
@@ -193,8 +193,9 @@ export default function LearnPage() {
           setQuizStatus('ready')
         })
         .catch(() => {
+          // Not "no questions": the request failed, and the learner can retry it.
           setQuizQuestions([])
-          setQuizStatus('ready')
+          setQuizStatus('error')
         })
     } else {
       setQuizQuestions([])
@@ -208,7 +209,7 @@ export default function LearnPage() {
     } else {
       setLessonMedia(undefined)
     }
-  }, [slug, access.status, selectedLessonId, selectedLessonType, selectedLessonLocked])
+  }, [slug, access.status, selectedLessonId, selectedLessonType, selectedLessonLocked, quizAttempt])
 
   const refreshWorkspace = useCallback(async () => {
     if (!slug) return
@@ -270,7 +271,7 @@ export default function LearnPage() {
               setEnrolling(true)
               setEnrollError(null)
               void enroll()
-                .catch((err) => setEnrollError(workspaceErrorMessage(err)))
+                .catch((err) => setEnrollError(learnerErrorMessage(err, 'Enrolment could not be completed right now. Try again in a moment.')))
                 .finally(() => setEnrolling(false))
             }}
           >
@@ -300,7 +301,8 @@ export default function LearnPage() {
   const readyCourse = access.course
   const selectedLesson = allLessons.find((lesson) => lesson.id === selectedLessonId)
   const selectedState = selectedLessonId ? (lessonStates[selectedLessonId] ?? { ...EMPTY_LESSON_STATE }) : { ...EMPTY_LESSON_STATE }
-  const { progressPct, completedCount, totalLessons, allComplete } = computeCourseProgress(allLessons, lessonStates)
+  // Course progress exactly as the server computed it for this enrolment.
+  const { progressPct, completedCount, totalLessons, allComplete } = access.workspace.progress
   const { prev, next } = getAdjacentLessons(allLessons, selectedLessonId)
   const prevUnlocked = prev && isLessonUnlocked(prev.id, allLessons, lessonStates) ? prev : null
   const currentModule = selectedLesson
@@ -314,6 +316,13 @@ export default function LearnPage() {
     : 0
   const nextUnlocked = next && isLessonUnlocked(next.id, allLessons, lessonStates) ? next : null
   const showAi = Boolean(selectedLesson && !selectedState.locked)
+  // Mirrors the server's academic policy (skylent-ai/integrity.ts deriveAcademicPolicy) so the panel
+  // states the rule that will actually apply. The server still enforces it.
+  const assessmentOpen = Boolean(
+    selectedLesson &&
+      ((selectedLesson.type === 'quiz' && !selectedState.quizPassed && !selectedState.complete) ||
+        (selectedLesson.type === 'assignment' && !selectedState.assignmentSubmitted && !selectedState.complete)),
+  )
   const profile = courseProductProfile(readyCourse.slug)
 
   function handleLessonSelect(id: string) {
@@ -331,7 +340,7 @@ export default function LearnPage() {
       await refreshWorkspace()
       return true
     } catch (err) {
-      setActionError(workspaceErrorMessage(err) || 'Could not save your progress. Try again.')
+      setActionError(learnerErrorMessage(err, 'Your progress could not be saved. Try again in a moment.'))
       return false
     }
   }
@@ -357,20 +366,24 @@ export default function LearnPage() {
       if (result.passed) await refreshWorkspace()
       return result.passed
     } catch (err) {
-      setActionError(workspaceErrorMessage(err) || 'Could not submit the check. Try again.')
-      return false
+      // A failed request is not a failed attempt: rethrow so the check keeps the learner's answers.
+      setActionError(learnerErrorMessage(err, 'Your answers could not be submitted. They have not been graded. Try again.'))
+      throw err
     }
   }
 
-  async function handleAssignmentSubmit(text: string) {
-    if (!slug || !selectedLesson) return
+  /** True only once the server has recorded the submission. */
+  async function handleAssignmentSubmit(text: string): Promise<boolean> {
+    if (!slug || !selectedLesson) return false
     setActionError(null)
     try {
       await updateAssignment(slug, selectedLesson.id, 'submit', text)
-      await handleLessonComplete()
     } catch (err) {
-      setActionError(workspaceErrorMessage(err) || 'Could not submit the assignment. Try again.')
+      setActionError(learnerErrorMessage(err, 'Your assignment could not be submitted. Your text is still here. Try again.'))
+      return false
     }
+    await handleLessonComplete()
+    return true
   }
 
   let primaryAction: { label: string; onClick: () => void; busy?: boolean } | undefined
@@ -553,6 +566,7 @@ export default function LearnPage() {
                       onComplete={() => { void handleLessonComplete() }}
                       quizQuestions={selectedLesson.type === 'quiz' ? quizQuestions : undefined}
                       quizStatus={selectedLesson.type === 'quiz' ? quizStatus : undefined}
+                      onQuizRetry={() => setQuizAttempt((value) => value + 1)}
                       onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
                       onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
                       lessonMedia={lessonMedia}
@@ -591,6 +605,7 @@ export default function LearnPage() {
               lessonTitle={selectedLesson.title}
               lessonNumber={lessonIndex}
               lessonKind={selectedLesson.type}
+              assessmentOpen={assessmentOpen}
               compact={aiCompact}
             />
           </Suspense>

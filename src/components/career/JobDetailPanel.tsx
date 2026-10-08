@@ -46,7 +46,7 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
   }
 
   return (
-    <GlassSurface level={2} padding="0" className="job-detail-panel" style={{ overflow: "hidden", minWidth: 0 }}>
+    <GlassSurface level={2} padding="0" className="job-detail-panel cos-sheet" style={{ overflow: "hidden", minWidth: 0 }}>
       <div style={{ padding: "20px 22px", borderBottom: `1px solid ${T.lineDark}` }}>
         <h2 style={{
           margin: "0 0 8px",

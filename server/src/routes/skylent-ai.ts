@@ -171,6 +171,9 @@ async function respondToLessonAsk(
       basedOn: result.basedOn,
       related: result.related,
       caseLabel: result.caseLabel,
+      // Additive: the server-derived academic policy and whether this answer is a fixed refusal.
+      policy,
+      refused: result.provider === "policy",
     },
   })
 }

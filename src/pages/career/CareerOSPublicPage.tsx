@@ -1,49 +1,26 @@
-import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { CareerPublicSubnav } from "../../components/product/Architecture"
-import { authoredProgrammeContent } from "../../components/programme/programme-content"
-import { Action, AiMark, SectionIndex, TruthChip } from "../../components/skylent/primitives"
+import CareerOSSpecimen from "../../components/product/CareerOSSpecimen"
+import { Action, SectionIndex, TruthChip } from "../../components/skylent/primitives"
 import { Reveal } from "../../components/skylent/Reveal"
-import { truthOf, type Capability } from "../../lib/truth"
+import { CAREER_OS_FEATURES, publicFeatures } from "../../lib/product-manifest"
 import "./CareerOS.css"
 import "./CareerOSPublic.css"
 import "../cine.css"
 
 /**
- * Public entry to Career OS (signed out). Four capabilities, each with the state recorded in
- * src/lib/truth.ts. No sample profiles, jobs, employers or outcomes are shown.
- *
- * The workspace plate is drawn in JSX and captioned ILLUSTRATIVE. Its project, task and skill
- * names are the Data Analytics course's own material (programme-content.ts); the states on it
- * are read from truth.ts. It shows no score, no match, no salary and no opening.
+ * Public entry to Career OS (signed out). The workspace plate and the list of parts are drawn from
+ * src/lib/product-manifest.ts, the same source the signed-in Career OS overview reads, with each
+ * state read from src/lib/truth.ts. No sample profiles, jobs, employers or outcomes are shown.
  */
-const CAPABILITIES: Array<{ capability: Capability; name: string; copy: ReactNode }> = [
-  {
-    capability: "careerProfile",
-    name: "Career profile",
-    copy: "A target role you write yourself, your education, experience and links, and skills you enter with a proficiency you choose.",
-  },
-  {
-    capability: "projectsAndEvidence",
-    name: "Projects and evidence",
-    copy: "Capstone projects from the courses you take, with their task progress. Evidence records you can share with a reviewer are not released yet.",
-  },
-  {
-    capability: "certificates",
-    name: "Certificates",
-    copy: (
-      <>
-        Issued when every lesson of a course is complete. Anyone with the certificate ID can <Link to="/verify">check it</Link>.
-      </>
-    ),
-  },
-  {
-    capability: "openings",
-    name: "Openings",
-    copy: "No openings are published. Saved jobs, applications and interviews stay empty until there are.",
-  },
-]
+const NUMBER_WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"]
+
+/** A route a signed-out visitor can open (the workspace routes all need an account). */
+function publicRoute(route: string | null): string | null {
+  if (!route || route.includes(":")) return null
+  return /^\/(career-os|dashboard|learn|os)(\/|$)/.test(route) ? null : route
+}
 
 const THREE_THINGS: Array<{ name: string; copy: string }> = [
   { name: "A certificate", copy: "Confirms that every lesson of a course was completed." },
@@ -51,145 +28,8 @@ const THREE_THINGS: Array<{ name: string; copy: string }> = [
   { name: "An employment outcome", copy: "Is neither of these, and Career OS does not record or promise one." },
 ]
 
-const PLATE_TABS = ["Overview", "Profile", "Projects", "Opportunities", "Applications"] as const
-
-/** The Career OS workspace, drawn. Every name on it comes from the Data Analytics course material. */
-function WorkspacePlate() {
-  const course = authoredProgrammeContent("data-analytics-pro")
-  const steps = course?.project.steps ?? []
-  const nextStep = steps.find((step) => !step.worked)
-  const skills = course?.evidence.record.skills ?? []
-
-  return (
-    <div className="cop-ws">
-      <div className="cop-ws__bar">
-        <span className="cop-ws__name">Career OS</span>
-        <ul className="cop-ws__tabs" aria-hidden="true">
-          {PLATE_TABS.map((tab, index) => (
-            <li key={tab} className={index === 0 ? "is-on" : undefined}>
-              {tab}
-            </li>
-          ))}
-        </ul>
-        <TruthChip state="illustrative" />
-      </div>
-
-      <div className="cop-ws__top">
-        <div className="cop-ws__role">
-          <p className="sky-label">Target role</p>
-          <p className="cop-ws__rolename">Data analyst</p>
-          <p className="cop-ws__meta">Example. Free text, entered by you.</p>
-        </div>
-        <div className="cop-ws__next">
-          <div className="cop-ws__nextbody">
-            <p className="cop-ws__tag">Next action</p>
-            <p className="cop-ws__nexttitle">
-              Continue the capstone{nextStep ? ` · step ${nextStep.number}, ${nextStep.title.toLowerCase()}` : ""}
-            </p>
-            <p className="cop-ws__nextnote">
-              {course ? `${course.capstoneTitle}. ` : ""}
-              The next action is read from your learning and your profile. It is never a score.
-            </p>
-          </div>
-          <span className="cop-ws__btn" aria-hidden="true">
-            Open project
-          </span>
-        </div>
-      </div>
-
-      <div className="cop-ws__grid">
-        <section className="cop-ws__panel" aria-label="Skills">
-          <header className="cop-ws__head">
-            <p className="cop-ws__title">Your skills</p>
-            <span className="sky-chip cop-ws__self">Self-entered</span>
-          </header>
-          <ul className="cop-ws__skills">
-            {skills.map((skill) => (
-              <li key={skill}>
-                <span>{skill}</span>
-                <span className="cop-ws__bars" role="img" aria-label="Level not set. You choose it.">
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="cop-ws__foot">You enter each skill and choose its level. Nothing here is verified.</p>
-        </section>
-
-        <div className="cop-ws__stack">
-          <section className="cop-ws__panel cop-ws__panel--dashed" aria-label="Skill gaps">
-            <header className="cop-ws__head">
-              <p className="cop-ws__title">Gaps</p>
-              <TruthChip state="development" />
-            </header>
-            <p className="cop-ws__body">
-              Career OS holds no required skills per role, so it cannot compare your skills with a role yet.
-            </p>
-          </section>
-          <section className="cop-ws__panel cop-ws__panel--ai" aria-label="Skylent AI">
-            <header className="cop-ws__head">
-              <AiMark />
-              <TruthChip state={truthOf("careerAi")} />
-            </header>
-            <p className="cop-ws__body">Skylent AI cannot read your career profile yet, so it gives no career advice here.</p>
-          </section>
-        </div>
-
-        <section className="cop-ws__panel cop-ws__panel--proof" aria-label="Projects and evidence">
-          <header className="cop-ws__head">
-            <p className="cop-ws__title">Projects and evidence</p>
-            <TruthChip state={truthOf("projectsAndEvidence")} />
-          </header>
-          {course ? (
-            <>
-              <p className="sky-label cop-ws__kicker">Capstone · Data Analytics</p>
-              <p className="cop-ws__project">{course.capstoneTitle}</p>
-              <ol className="cop-ws__rail" aria-label="The six capstone tasks">
-                {steps.map((step) => (
-                  <li key={step.number} className={step.worked ? "is-on" : undefined}>
-                    <span className="cop-ws__node" aria-hidden="true">
-                      {step.number}
-                    </span>
-                    <span>{step.title}</span>
-                  </li>
-                ))}
-              </ol>
-            </>
-          ) : null}
-          <p className="cop-ws__foot">Task progress comes from the course. A shareable evidence record is not released yet.</p>
-        </section>
-      </div>
-
-      <dl className="cop-ws__status">
-        <div>
-          <dt>Certificates</dt>
-          <dd>
-            <span>Issued when every lesson is complete</span>
-            <TruthChip state={truthOf("certificates")} />
-          </dd>
-        </div>
-        <div>
-          <dt>Openings</dt>
-          <dd>
-            <span>None published</span>
-            <TruthChip state={truthOf("openings")} />
-          </dd>
-        </div>
-        <div>
-          <dt>Applications and interviews</dt>
-          <dd>
-            <span>Empty until openings are published</span>
-          </dd>
-        </div>
-      </dl>
-    </div>
-  )
-}
-
 export default function CareerOSPublicPage() {
+  const parts = publicFeatures(CAREER_OS_FEATURES)
   return (
     <PageShell aurora={false}>
       <div className="site-light cosp">
@@ -234,11 +74,11 @@ export default function CareerOSPublicPage() {
 
             <Reveal as="figure" variant="plate" delay={120} className="cop-stage__figure">
               <div className="sky-stage__plate cop-stage__plate cine-plate">
-                <WorkspacePlate />
+                <CareerOSSpecimen />
               </div>
               <figcaption className="sky-stage__caption">
-                <span>FIG. 01 · Career OS workspace, drawn with Data Analytics course material</span>
-                <span>Illustrative. Not a learner's record. Yours starts empty.</span>
+                <span>FIG. 01 · Career OS overview</span>
+                <span>Example labels. Not a learner's record. Yours starts empty.</span>
               </figcaption>
             </Reveal>
           </div>
@@ -249,17 +89,30 @@ export default function CareerOSPublicPage() {
             <div className="cop-split__lead">
               <SectionIndex n="02" label="What it holds today" />
               <h2 id="cosp-caps-title" className="sky-display sky-display--md cop-h2">
-                Four parts, each marked with its real state.
+                {NUMBER_WORDS[parts.length] ?? parts.length} parts, each marked with its real state.
               </h2>
             </div>
             <ul className="cosp-caps cop-caps">
-              {CAPABILITIES.map((item) => (
-                <li key={item.capability}>
-                  <strong>{item.name}</strong>
-                  <p>{item.copy}</p>
-                  <TruthChip state={truthOf(item.capability)} />
-                </li>
-              ))}
+              {parts.map((item) => {
+                const to = publicRoute(item.route)
+                return (
+                  <li key={item.id}>
+                    <strong>{item.label}</strong>
+                    <p>
+                      {item.summary}
+                      {to ? (
+                        <>
+                          {" "}
+                          <Link to={to} aria-label={`Open ${item.label}`}>
+                            Open
+                          </Link>
+                        </>
+                      ) : null}
+                    </p>
+                    <TruthChip state={item.status} />
+                  </li>
+                )
+              })}
             </ul>
           </div>
         </Reveal>

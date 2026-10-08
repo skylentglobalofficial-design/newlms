@@ -372,3 +372,22 @@
     transition: none;
   }
 }
+
+/* The rail is fixed; this navy column under it keeps the anchor continuous on
+   long pages (print, full-page capture, overscroll) without changing layout. */
+.auth-shell::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--shell-rail-w);
+  background: var(--skylent-navy);
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .auth-shell::before {
+    display: none;
+  }
+}

@@ -44,14 +44,19 @@ function MuxPlaybackSurface({
   playbackId,
   title,
   accent,
+  watched,
+  onMarkWatched,
 }: {
   playbackId: string
   title: string
   accent: Accent
+  watched: boolean
+  onMarkWatched?: () => void
 }) {
   useMuxPlayerScript(true)
 
   return (
+    <div>
     <div
       className="lms-media-frame lms-media-frame--mux"
       data-mux-ready="true"
@@ -71,6 +76,12 @@ function MuxPlaybackSurface({
         title,
         style: { width: "100%", height: "100%", display: "block" },
       })}
+    </div>
+      {!watched && onMarkWatched ? (
+        <button type="button" className="os-btn os-btn-primary" onClick={onMarkWatched}>
+          Mark as watched
+        </button>
+      ) : null}
     </div>
   )
 }
@@ -110,41 +121,30 @@ function VideoPreviewSurface({
         <div style={{ position: "absolute", top: 12, left: 12, fontSize: 9, fontFamily: "var(--font-mono)", color: C.muted, letterSpacing: "0.06em" }}>
           VIDEO
         </div>
+        {/* No play control: there is nothing to play until a video is published for this lesson. */}
         <div style={{ position: "relative", textAlign: "center", padding: 24, maxWidth: 420 }}>
-          <div style={{
-            width: 64, height: 64, borderRadius: "50%",
-            background: C.cobaltTint, border: `1px solid ${C.cobalt}`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            margin: "0 auto", cursor: "default",
-          }}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill={C.cobalt}><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span className="sky-chip sky-chip--development">In development</span>
+          <div style={{ color: C.ink, fontSize: 14, fontWeight: 600, marginTop: 14, lineHeight: 1.4 }}>{title}</div>
+          <div style={{ color: C.slate, fontSize: 13, marginTop: 8, lineHeight: 1.5 }}>
+            The video for this lesson has not been published yet.
           </div>
-          <div style={{ color: C.ink, fontSize: 13, fontWeight: 500, marginTop: 14, lineHeight: 1.4 }}>{title}</div>
           {duration && (
-            <div style={{ color: C.slate, fontSize: 12, marginTop: 8, fontFamily: "var(--font-mono)" }}>{duration}</div>
+            <div style={{ color: C.muted, fontSize: 11, marginTop: 8, fontFamily: "var(--font-mono)" }}>Planned length · {duration}</div>
           )}
-          <div style={{ color: C.muted, fontSize: 10, marginTop: 10, fontFamily: "var(--font-mono)" }}>
-            Video isn’t available yet
-          </div>
         </div>
         {watched && (
           <div style={{ position: "absolute", bottom: 12, right: 12, fontSize: 10, fontFamily: "var(--font-mono)", color: "#FFFFFF", background: C.navy, border: `1px solid ${C.navy}`, letterSpacing: "0.08em", textTransform: "uppercase", padding: "4px 9px", borderRadius: 6 }}>
-            Watched
+            Complete
           </div>
         )}
       </div>
       {!watched && onMarkWatched && (
-        <button
-          type="button"
-          onClick={onMarkWatched}
-          style={{
-            background: C.cobalt, border: "none", color: C.white,
-            padding: "12px 24px", borderRadius: T.rControl, fontSize: 14, fontWeight: 600,
-            cursor: "pointer", fontFamily: "var(--font-body)",
-          }}
-        >
-          Mark as watched →
-        </button>
+        <>
+          <button type="button" className="os-btn os-btn-ghost" onClick={onMarkWatched}>
+            Mark lesson complete
+          </button>
+          <p className="dash-empty-copy" style={{ marginTop: 8 }}>This records progress only. It does not say you watched a video.</p>
+        </>
       )}
     </div>
   )
@@ -166,7 +166,16 @@ export default function LessonVideoPlayer({
   onMarkWatched?: () => void
 }) {
   if (media?.provider === "mux" && media.playbackId) {
-    return <MuxPlaybackSurface playbackId={media.playbackId} title={title} accent={accent} />
+    return <MuxPlaybackSurface playbackId={media.playbackId} title={title} accent={accent} watched={watched} onMarkWatched={onMarkWatched} />
+  }
+
+  if (!media) {
+    // Media is still being requested from /lms/courses/:slug/lessons/:key/media.
+    return (
+      <div className="os-state-skeleton" role="status" aria-label="Loading the video">
+        <span className="os-skeleton" style={{ aspectRatio: "16/9", height: "auto", width: "100%" }} />
+      </div>
+    )
   }
 
   return (

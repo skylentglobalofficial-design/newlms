@@ -32,7 +32,7 @@ export default function JobSearchSurface({ filters, onChange, onSearch, disabled
         gridTemplateColumns: "minmax(0, 1fr)",
         gap: 12,
         padding: "16px 18px",
-        borderRadius: T.rControl,
+        borderRadius: T.rCard,
         border: `1px solid ${T.lineDark}`,
         background: C.cream,
       }}>
@@ -42,6 +42,7 @@ export default function JobSearchSurface({ filters, onChange, onSearch, disabled
             value={filters.q ?? ""}
             onChange={e => setField("q", e.target.value)}
             placeholder="Search roles or keywords"
+            aria-label="Search roles or keywords"
             disabled={disabled}
             style={{ ...fieldInputStyle, flex: "1 1 200px", minWidth: 0 }}
             maxLength={120}
@@ -102,6 +103,7 @@ export default function JobSearchSurface({ filters, onChange, onSearch, disabled
             value={filters.location ?? ""}
             onChange={e => setField("location", e.target.value)}
             placeholder="Location"
+            aria-label="Location"
             disabled={disabled}
             style={fieldInputStyle}
             maxLength={120}
@@ -112,6 +114,7 @@ export default function JobSearchSurface({ filters, onChange, onSearch, disabled
             value={filters.category ?? ""}
             onChange={e => setField("category", e.target.value)}
             placeholder="Category"
+            aria-label="Category"
             disabled={disabled}
             style={fieldInputStyle}
             maxLength={80}

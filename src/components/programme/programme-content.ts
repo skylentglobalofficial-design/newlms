@@ -18,6 +18,7 @@
  */
 import { DA_CAREER_EVIDENCE } from "../../content/data-analytics/career-evidence"
 import { PM_CAREER_EVIDENCE } from "../../content/product-management/career-evidence"
+import productReviewPhoto from "../../assets/site/program-product.jpg"
 import { NORTHWIND_PREVIEW } from "../../lib/northwind-preview"
 
 /* ── Northwind (Data Analytics) ───────────────────────────────────────────── */
@@ -165,6 +166,8 @@ export type AuthoredProgrammeContent = {
     intro: string
     disclaimer: string
     steps: ProgrammeStep[]
+    /** Optional editorial photograph beside the case steps. Always captioned as a stand-in. */
+    photo?: { src: string; width: number; height: number; alt: string; caption: string }
   }
   curriculum: {
     note: string
@@ -354,6 +357,13 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
       "The Harbor Desk product case asks you to frame the Harbor Retail operations problem and recommend one constrained product bet, with a spec someone could implement. The brief does not contain the answer.",
     disclaimer:
       "This is learner work on a fictional Harbor Retail operations case. It is not a certificate, not employer-validated, and not published.",
+    photo: {
+      src: productReviewPhoto,
+      width: 1600,
+      height: 1068,
+      alt: "Seen from above, a team around a wooden table with laptops, notebooks and phones, working through a review together.",
+      caption: "Stand-in photograph · a product review session",
+    },
     steps: [
       {
         number: "01",

@@ -17,6 +17,9 @@ const limit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   keyGenerator: (req) => ipKeyGenerator(req.ip ?? "127.0.0.1"),
+  handler(_request, response) {
+    response.status(429).json({ error: "Too many questions. Try again later." })
+  },
 })
 
 const body = z.object({
@@ -95,32 +98,17 @@ revaRouter.post("/chat", limit, async (req, res) => {
     return void res.json({ data: { answer: sanitizeAssistantActions(answer), scope } })
   }
 
+  // No key means no model. The site says so instead of answering every question with a canned line.
   const apiKey = process.env.SKYLENT_AI_API_KEY?.trim()
+  if (!apiKey) {
+    return void res.status(503).json({ error: "Skylent AI isn't available yet.", code: "not_configured" })
+  }
+
   const courses = await prisma.course.findMany({
     select: { slug: true, title: true },
     orderBy: { title: "asc" },
     take: 80,
   })
-
-  if (!apiKey) {
-    const titles = courses.map((course) => course.title).join(", ")
-    let answer = titles
-      ? `SKYLENT courses you can open today: ${titles}. Compare programmes on /programs, open a course from /courses, or use /contact to reach the team. Fees are not listed here. [[go:/programs]]`
-      : "Open /programs to see what is available, or /contact to reach the team. [[go:/programs]]"
-    if (user) {
-      const mine = await prisma.userEnrollment.findMany({
-        where: { userId: user.id },
-        include: { course: { select: { title: true } }, program: { select: { name: true } } },
-      })
-      const names = mine
-        .map((row) => row.course?.title ?? row.program?.name)
-        .filter((name): name is string => Boolean(name))
-      answer = names.length
-        ? `You are signed in. Enrolments on this account: ${names.join(", ")}. I do not have lesson-by-lesson progress here. Open My Learning for what is saved. [[go:/dashboard/student]]`
-        : `You are signed in and have no enrolments yet. Open /programs to choose one. I do not invent progress. [[go:/programs]]`
-    }
-    return void res.json({ data: { answer: sanitizeAssistantActions(answer), scope } })
-  }
 
   let context = `${SITE}\nCourses: ${courses.map((course) => `${course.title} (/courses/${course.slug})`).join("; ")}`
   if (user) {

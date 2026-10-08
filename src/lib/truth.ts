@@ -9,6 +9,10 @@ import type { TruthState } from "../components/skylent/primitives"
 
 export type Capability =
   | "careerProfile"
+  | "lessons"
+  | "skillGaps"
+  | "readiness"
+  | "careerNextStep"
   | "projectsAndEvidence"
   | "certificates"
   | "openings"
@@ -21,6 +25,13 @@ export type Capability =
 
 export const TRUTH: Record<Capability, { state: TruthState; note: string }> = {
   careerProfile: { state: "live", note: "Career profile endpoints exist and are used by Career OS." },
+  // The LMS: enrolment, lessons, checks, assignments and progress, and the lab and project inside the flagship course.
+  lessons: { state: "live", note: "Enrolment, lessons and lesson progress in the LMS; the Data Analytics flagship runs end to end." },
+  // No role catalogue or required-skill data exists in the backend, so nothing can be compared.
+  skillGaps: { state: "development", note: "No required skills per role in the backend; skills cannot be compared with a role." },
+  readiness: { state: "development", note: "No readiness score is calculated anywhere." },
+  // Computed in the browser from the LMS resume point and the career profile's completeness (both live endpoints).
+  careerNextStep: { state: "live", note: "Read from the learner's resume point and profile completeness. Never a score." },
   projectsAndEvidence: { state: "development", note: "Learner projects exist; evidence records are not released as a finished product." },
   // Backend: POST /certificates/issue, GET /certificates/mine, GET /certificates/verify/:code are on main.
   // Flip to "live" once issue + verify have been checked on https://api.skylent.live.
