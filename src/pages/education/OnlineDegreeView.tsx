@@ -66,7 +66,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
           <p className="dg-lead cine-in cine-d2">
             Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the
             week runs on a laptop and not on a campus.
-            {degree.institution ? null : " Timetable, fees and entry details are shared when admissions open."}
+            {degree.institution ? null : " Timetable, fees and entry details are shared once an institution is confirmed."}
           </p>
           <div className="dg-actions cine-in cine-d3">
             <Link to="#week" className="sk-btn sk-btn-primary">
@@ -86,7 +86,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 label: "Listing",
                 value: (
                   <span className="dg-listing">
-                    <span>Admissions opening soon</span>
+                    <span>Not open yet</span>
                   </span>
                 ),
               },
@@ -138,7 +138,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 <dd className="dg-stagefacts__unpub">{orUnpublished(degree.assessments?.join(", "))}</dd>
               </div>
             </dl>
-            <p className="dg-note">The degree is awarded by the partner institution. Details are shared when admissions open.</p>
+            <p className="dg-note">A degree is awarded by an institution, not by Skylent. No institution is confirmed for this listing yet.</p>
           </Reveal>
         </div>
       </section>
@@ -410,7 +410,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
               ))}
             </ol>
             <p className="dg-note">
-              Device and software requirements: {degree.tools?.length ? degree.tools.join(", ") : <Unpublished>shared when admissions open.</Unpublished>}
+              Device and software requirements: {degree.tools?.length ? degree.tools.join(", ") : <Unpublished>shared once an institution is confirmed.</Unpublished>}
             </p>
           </div>
         </div>

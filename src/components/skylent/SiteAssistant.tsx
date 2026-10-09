@@ -77,7 +77,7 @@ export function mapAssistantPath(path: string | null): { to: string; label: stri
   return KNOWN_ROUTES[to] ? { to, label: KNOWN_ROUTES[to] } : null
 }
 
-type AskResult = { ok: true; answer: string; goTo: string | null } | { ok: false; failure: Failure }
+type AskResult = { ok: true; answer: string; goTo: string | null; generated: boolean } | { ok: false; failure: Failure }
 
 async function askWithStatus(messages: SiteAiTurn[], signal: AbortSignal): Promise<AskResult> {
   let response: Response
@@ -97,12 +97,13 @@ async function askWithStatus(messages: SiteAiTurn[], signal: AbortSignal): Promi
   if (response.status === 429) return { ok: false, failure: "rate" }
   if (!response.ok) return { ok: false, failure: "failed" }
   try {
-    const parsed = (await response.json()) as { data?: { answer?: string } }
+    const parsed = (await response.json()) as { data?: { answer?: string; source?: string } }
     const raw = parsed.data?.answer ?? ""
     const match = raw.match(/\[\[go:(\/[^\]\s]*)\]\]/)
     const answer = raw.replace(/\s*\[\[go:[^\]]*\]\]/g, "").trim()
     if (!answer) return { ok: false, failure: "failed" }
-    return { ok: true, answer, goTo: match ? match[1] : null }
+    // The server marks its own fixed replies (identity, "I cannot see your progress") as "rule".
+    return { ok: true, answer, goTo: match ? match[1] : null, generated: parsed.data?.source !== "rule" }
   } catch {
     return { ok: false, failure: "failed" }
   }
@@ -134,7 +135,7 @@ function programmeSuggestions(slugs: string[]): Suggestion[] {
     const program = catalogue.find((item) => item.slug === slug)
     if (!program) return []
     const open = programmeIsOpen(slug)
-    return [{ title: program.name, to: `/programmes/${slug}`, note: open ? `Open for enrolment · ${program.duration}` : `Opening soon · ${program.duration}`, open }]
+    return [{ title: program.name, to: `/programmes/${slug}`, note: open ? `Listed as open · ${program.duration}` : `Opening soon · ${program.duration}`, open }]
   }).sort((a, b) => Number(b.open) - Number(a.open))
 }
 
@@ -146,7 +147,7 @@ function suggestionsFor(answers: Answers): Suggestion[] {
     const list: Suggestion[] = routes.map((route) => ({
       title: route.title,
       to: `/education/${route.studyMode === "offline" ? "campus" : "online"}/${route.slug}`,
-      note: `${route.studyMode === "offline" ? "On campus" : "Online"} · admissions opening soon`,
+      note: `${route.studyMode === "offline" ? "On campus" : "Online"} · not open yet`,
       open: false,
     }))
     list.push({
@@ -205,7 +206,7 @@ function answerLabel(step: Step, value: string): string {
 type Message =
   | { id: number; from: "bot"; kind: "text"; text: string }
   | { id: number; from: "bot"; kind: "suggestions"; items: Suggestion[] }
-  | { id: number; from: "bot"; kind: "answer"; text: string; action: { to: string; label: string } | null }
+  | { id: number; from: "bot"; kind: "answer"; text: string; generated: boolean; action: { to: string; label: string } | null }
   | { id: number; from: "bot"; kind: "failure"; failure: Failure; question: string }
   | { id: number; from: "user"; kind: "text"; text: string }
 
@@ -362,7 +363,7 @@ export default function SiteAssistant() {
     requestRef.current = controller
     try {
       const result = await askWithStatus([...history, { role: "user", content: text.slice(0, 4000) }], controller.signal)
-      if (result.ok) push({ from: "bot", kind: "answer", text: displayAiText(result.answer), action: mapAssistantPath(result.goTo) })
+      if (result.ok) push({ from: "bot", kind: "answer", text: displayAiText(result.answer), generated: result.generated, action: mapAssistantPath(result.goTo) })
       else push({ from: "bot", kind: "failure", failure: result.failure, question: text })
     } catch {
       /* aborted */
@@ -391,6 +392,7 @@ export default function SiteAssistant() {
     try {
       const result = await sendEnquiry({
         kind: "counselling",
+        acceptedTerms: accepted,
         name: form.name,
         email: form.email,
         phone: form.phone || undefined,
@@ -485,17 +487,21 @@ export default function SiteAssistant() {
                     {message.text}
                   </p>
                 ) : message.kind === "suggestions" ? (
-                  <ul key={message.id} className="sia-suggest" aria-label="Suggestions">
-                    {message.items.map((item) => (
-                      <li key={item.to}>
-                        <Link to={item.to} onClick={close} className="sia-suggest__card">
-                          <span className="sia-suggest__title">{item.title}</span>
-                          <span className={item.open ? "sia-suggest__note sia-suggest__note--open" : "sia-suggest__note"}>{item.note}</span>
-                          <ArrowRight />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                  <div key={message.id}>
+                    <ul className="sia-suggest" aria-label="Suggestions">
+                      {message.items.map((item) => (
+                        <li key={item.to}>
+                          <Link to={item.to} onClick={close} className="sia-suggest__card">
+                            <span className="sia-suggest__title">{item.title}</span>
+                            <span className={item.open ? "sia-suggest__note sia-suggest__note--open" : "sia-suggest__note"}>{item.note}</span>
+                            <ArrowRight />
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                    {/* These are picked by fixed rules from the published catalogue. They are not AI output. */}
+                    <p className="sia-source">Matched to your answers from the Skylent catalogue. Not AI-generated.</p>
+                  </div>
                 ) : message.kind === "answer" ? (
                   <div key={message.id} className="sia-msg sia-msg--bot">
                     <p>{message.text}</p>
@@ -505,6 +511,7 @@ export default function SiteAssistant() {
                         <ArrowRight />
                       </Link>
                     ) : null}
+                    {message.generated ? <p className="sia-source">AI-generated answer. Check important details with the Skylent team.</p> : null}
                   </div>
                 ) : message.kind === "failure" ? (
                   <div key={message.id} className="sia-msg sia-msg--bot sia-msg--failure" role="alert">

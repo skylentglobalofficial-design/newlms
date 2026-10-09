@@ -17,6 +17,7 @@ import { openSkylentAi } from "../components/skylent/ai-events"
 import { programs as publishedProgrammes } from "../data"
 import { useCatalogPrograms } from "../hooks/useCatalog"
 import type { CatalogProgramSummary } from "../lib/catalog-api"
+import { isPublicProgrammeIndexRow } from "../lib/programme-catalogue"
 import { programmeDiscoveryFor } from "../lib/programme-discovery"
 import "./ProgramsIndex.css"
 
@@ -48,6 +49,8 @@ function outcomeFor(slug: string): string {
 }
 
 function toRow(program: CatalogProgramSummary): Row | null {
+  // Only programme types meant for the public index are listed (shared rule with the catalogue helpers).
+  if (!isPublicProgrammeIndexRow(program)) return null
   const kind = kindOf(program)
   if (!kind) return null
   const truth = programmeTruth(program)
@@ -66,7 +69,7 @@ function toRow(program: CatalogProgramSummary): Row | null {
   }
 }
 
-function OpenProgramme({ row }: { row: Row }) {
+function OpenProgramme({ row, confirmed }: { row: Row; confirmed: boolean }) {
   const { program, title, line } = row
   const content = authoredProgrammeContent(program.slug)
   const discovery = programmeDiscoveryFor(program.slug)
@@ -81,7 +84,8 @@ function OpenProgramme({ row }: { row: Row }) {
     <li className="pgx-open">
       <div className="pgx-open__body">
         <div className="pgx-open__top">
-          <span className="pgx-badge pgx-badge--open">Open for enrolment</span>
+          {/* "Open for enrolment" is a live claim: it is only made when the catalogue API answered. */}
+          <span className="pgx-badge pgx-badge--open">{confirmed ? "Open for enrolment" : "Listed as open"}</span>
           <span className="pgx-kind">{KIND_COPY[row.kind].label}</span>
         </div>
         <h3 className="pgx-open__title">
@@ -151,7 +155,7 @@ function LaterProgramme({ row }: { row: Row }) {
   )
 }
 
-function KindSection({ kind, rows }: { kind: Kind; rows: Row[] }) {
+function KindSection({ kind, rows, confirmed }: { kind: Kind; rows: Row[]; confirmed: boolean }) {
   if (rows.length === 0) return null
   const open = rows.filter((row) => row.truth.state === "live")
   const later = rows.filter((row) => row.truth.state !== "live")
@@ -166,7 +170,7 @@ function KindSection({ kind, rows }: { kind: Kind; rows: Row[] }) {
         {open.length ? (
           <ul className="pgx-open-list">
             {open.map((row) => (
-              <OpenProgramme key={row.program.slug} row={row} />
+              <OpenProgramme key={row.program.slug} row={row} confirmed={confirmed} />
             ))}
           </ul>
         ) : null}
@@ -254,13 +258,13 @@ export default function ProgramsPage() {
             {catalog.offline ? (
               <div className="sky-container">
                 <p className="pgx-offline" role="status">
-                  Enrolment is briefly unavailable. You can browse programmes now;{" "}
-                  <button type="button" onClick={() => void catalog.reload()}>try again</button> in a moment to enrol.
+                  This list could not be checked with the Skylent catalogue just now, so availability is not confirmed. You can browse programmes;{" "}
+                  <button type="button" onClick={() => void catalog.reload()}>try again</button> before enrolling.
                 </p>
               </div>
             ) : null}
-            <KindSection kind="professional" rows={byKind("professional")} />
-            <KindSection kind="certification" rows={byKind("certification")} />
+            <KindSection kind="professional" rows={byKind("professional")} confirmed={!catalog.offline} />
+            <KindSection kind="certification" rows={byKind("certification")} confirmed={!catalog.offline} />
           </>
         )}
 

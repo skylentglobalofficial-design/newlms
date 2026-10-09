@@ -44,8 +44,13 @@ and screenshots 2503–2572 from `Screenshot (2498).zip` (the first four images,
   the existing `POST /reva/chat`; if the server has no AI key (503) or fails, the panel says so and offers the enquiry form.
   The invitation appears once per session after 25 s and a 40 % scroll on discovery pages; it never claims to detect
   confusion.
-- **Consent.** The checkbox blocks submission in the browser. The backend has no consent field, so acceptance is not
-  recorded server-side. To store it, add e.g. `termsAcceptedAt` to `User`/`Enrollment`/`SkylentEnquiry` and send it.
+- **Consent.** The checkbox blocks submission in the browser, and the server now enforces and records it. Sign-up,
+  a new enrolment and an enquiry are refused without `consent: { accepted: true, policyVersion }` for the current
+  version (`400 consent_required`, `409 consent_outdated`). Each acceptance is written to `PolicyAcceptance` (user or
+  enquiry, context, enrolment id, policy version, time) in the same transaction as the thing it belongs to. Google
+  sign-in creates a new account only when the sign-up page sent the accepted version; existing accounts sign in as
+  before. Nothing is back-filled for accounts created earlier. Needs migration `20261009000000_policy_acceptance`
+  (one new table). Covered by `npm run test:consent`.
 - **Legal text** describes the product's real behaviour (accounts, progress, Career OS records, enquiries, two essential
   cookies). It must be reviewed by the Skylent owner and legal counsel before launch.
 - **Degrees.** There is no postgraduate on-campus listing in `src/data/education.ts`; that tile says listings appear when
@@ -59,4 +64,5 @@ and screenshots 2503–2572 from `Screenshot (2498).zip` (the first four images,
 - A produced product video (the Career OS walkthrough is an animated schematic built from UI shapes; it shows
   no learner data).
 - Popular / most viewed ranking (no view data).
-- Server-side consent storage; production catalogue fix (above).
+- Production catalogue fix (above). Server-side consent is implemented but its database tests have only been
+  type-checked locally; they run in the release gate.

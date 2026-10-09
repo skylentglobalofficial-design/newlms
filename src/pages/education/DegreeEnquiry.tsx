@@ -70,6 +70,7 @@ export function DegreeEnquiry({ degree, index, ruled = false }: { degree: Degree
     try {
       const result = await sendEnquiry({
         kind: "degree",
+        acceptedTerms: accepted,
         programSlug: degree.slug,
         name: fields.name,
         email: fields.email,
@@ -109,8 +110,8 @@ export function DegreeEnquiry({ degree, index, ruled = false }: { degree: Degree
             Ask about this degree
           </h2>
           <p>
-            Register your interest or ask a question. The Skylent admissions team replies by email
-            {degree.institution ? "." : " and shares fees, dates and entry requirements as soon as admissions open."}
+            Register your interest or ask a question. The Skylent team replies by email
+            {degree.institution ? "." : " and shares fees, dates and entry requirements once an institution is confirmed."}
           </p>
           <SpecSheet
             rows={[

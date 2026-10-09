@@ -184,13 +184,26 @@ assert(/fetchCatalogPrograms|useCatalogPrograms/.test(programsIndex), "Programme
 assert(!/liveProgrammeCatalogue\(/.test(programsIndex), "Programmes index must not use liveProgrammeCatalogue as public identity")
 assert(!/laterProgrammeCatalogue\(/.test(programsIndex), "Programmes index must not use laterProgrammeCatalogue as public identity")
 assert(!/LIVE_PROGRAMME_SLUGS/.test(programsIndex), "Programmes index must not use the hardcoded live slug list as existence")
-assert(!/from ["']\.\.\/data["']/.test(programsIndex), "Programmes index must not import static data.ts as its existence gate")
+// Static data.ts may supply card copy (the outcome line) but never decides which programmes exist.
+assert(
+  (programsIndex.match(/publishedProgrammes/g) ?? []).length === 2 && /function outcomeFor/.test(programsIndex),
+  "Programmes index must not import static data.ts as its existence gate",
+)
+assert(/\(catalog\.data \?\? \[\]\)/.test(programsIndex), "Programmes index rows come from the catalogue hook")
 assert(/isPublicProgrammeIndexRow/.test(programsIndex), "Programmes index filters API rows through the public index rule")
 assert(/programmeTruth\(program\)/.test(programsIndex), "Programmes index classifies API rows through the shared programme truth")
 assert(/catalog\.loading/.test(programsIndex), "Programmes index distinguishes a loading state")
-assert(/catalog\.error/.test(programsIndex), "Programmes index distinguishes a network\/API error")
-assert(/not the same as an empty catalogue/.test(programsIndex), "API failure must not look like an empty catalogue")
-assert(/The programme catalogue could not be loaded/.test(programsIndex), "API failure renders an error state")
+// When the API cannot be reached the index shows the published list, says availability is
+// unconfirmed, and stops claiming that anything is open for enrolment.
+const catalogHook = readFileSync(new URL("../src/hooks/useCatalog.ts", import.meta.url), "utf8")
+assert(/catalog\.offline/.test(programsIndex), "Programmes index distinguishes an unreachable API from a loaded catalogue")
+assert(/const offline = !state\.loading && Boolean\(state\.error\)/.test(catalogHook), "The published list is used only when the catalogue request failed")
+assert(/offline \? publishedProgrammeSummaries\(\) : state\.data/.test(catalogHook), "A successful API response is never replaced by the published list")
+assert(/availability is not confirmed/.test(programsIndex), "API failure must not look like a confirmed catalogue")
+assert(
+  /confirmed \? "Open for enrolment" : "Listed as open"/.test(programsIndex) && /confirmed=\{!catalog\.offline\}/.test(programsIndex),
+  "API failure must not claim a programme is open for enrolment",
+)
 assert(/rows\.length === 0/.test(programsIndex) && /No programmes are published yet/.test(programsIndex), "Successful empty [] has its own empty-catalogue state")
 assert(!/No programmes found|No programmes match/.test(programsIndex), "Error and empty copy must not use a filter-miss phrase")
 for (const line of programsIndex.split("\n").filter((row) => /moduleCount\s*>\s*0/.test(row))) {

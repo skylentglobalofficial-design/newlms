@@ -16,9 +16,17 @@ export function learnPathForWorkspace(workspace: ApiCourseWorkspace): string {
   return `/learn/${courseSlug}`
 }
 
-export async function fulfillCatalogEnrollment(target: CatalogEnrollTarget): Promise<ApiCourseWorkspace> {
+export async function fulfillCatalogEnrollment(
+  target: CatalogEnrollTarget,
+  acceptedTerms: boolean,
+): Promise<ApiCourseWorkspace> {
   if (target.kind === "course") {
-    return enrollInCourse(target.slug)
+    return enrollInCourse(target.slug, acceptedTerms)
   }
-  return enrollInProgram(target.slug)
+  return enrollInProgram(target.slug, acceptedTerms)
+}
+
+/** Where a learner goes to accept the terms and enrol when that was not done before signing in. */
+export function cataloguePathForTarget(target: CatalogEnrollTarget): string {
+  return target.kind === "course" ? `/courses/${target.slug}` : `/programmes/${target.slug}`
 }

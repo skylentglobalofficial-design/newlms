@@ -19,7 +19,8 @@ const TERMS: Section[] = [
     title: "Using Skylent",
     body: [
       "These terms apply when you browse skylent.live, create an account, enrol in a programme or course, or use Career OS and Skylent AI.",
-      "By creating an account or enrolling, you agree to these terms and to the Privacy Policy. If you do not agree, please do not create an account or enrol.",
+      "By creating an account, enrolling or sending an enquiry, you agree to these terms and to the Privacy Policy. If you do not agree, please do not create an account, enrol or send an enquiry.",
+      "When you agree, Skylent records the date and the version of these documents that you accepted.",
     ],
   },
   {
@@ -36,7 +37,7 @@ const TERMS: Section[] = [
     body: [
       "Enrolling gives you access to the lessons, checks, labs and projects of that programme or course while your account is active.",
       "Programme pages say whether enrolment is open. Where a fee applies, the amount and any refund terms are shown before you pay. Skylent does not take payment on this website today.",
-      "Degree listings describe study routes offered with partner institutions. The institution sets admission, fees, curriculum and assessment, and awards the degree.",
+      "Degree listings on this website are planned study areas. No institution is confirmed for them yet and you cannot apply through Skylent. If a listing is confirmed, the institution sets admission, fees, curriculum and assessment, and awards the degree.",
     ],
   },
   {
@@ -90,7 +91,8 @@ const PRIVACY: Section[] = [
       "Learning records: enrolments, lesson progress, quiz attempts, assignment and lab submissions, and project work.",
       "Career OS records you enter: target role, skills, education, experience, links, projects, applications and support requests.",
       "Enquiries: the name, email, optional phone number and message you send through a contact or degree enquiry form.",
-      "Skylent AI: the questions you ask and the lesson they relate to, so that an answer can be produced.",
+      "Skylent AI: the questions you ask and the lesson they relate to, so that an answer can be produced. To produce it, your question and the relevant lesson or catalogue text are sent to an AI service provider. If you are signed in, the site assistant also sends your display name and the names of the courses you are enrolled in.",
+      "Acceptance records: the date and the version of the Terms & Conditions and Privacy Policy you accepted when you created an account, enrolled or sent an enquiry.",
     ],
   },
   {
@@ -105,7 +107,7 @@ const PRIVACY: Section[] = [
     id: "cookies",
     title: "Cookies",
     body: [
-      "Skylent uses two essential cookies: one keeps you signed in and one protects forms against forged requests. We do not use advertising cookies.",
+      "Skylent uses two essential cookies: one keeps you signed in and one protects forms against forged requests. A third, short-lived cookie is set only while you sign in with Google. We do not use advertising cookies.",
       "Some choices, such as answers you give on the path finder, are kept only in your own browser.",
     ],
   },
@@ -115,7 +117,7 @@ const PRIVACY: Section[] = [
     body: [
       "Your learning and Career OS records are visible to you and to authorised Skylent staff who support the service.",
       "A certificate code can be checked by anyone you share it with; the check shows your name, the course and the issue date.",
-      "We share information with service providers that host and operate the platform, only as needed to run it.",
+      "We share information with service providers that host and operate the platform (hosting, database, video delivery, file storage, Google sign-in and the AI service behind Skylent AI), only as needed to run it.",
     ],
   },
   {

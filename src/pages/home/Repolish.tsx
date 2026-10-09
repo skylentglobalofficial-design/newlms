@@ -46,7 +46,7 @@ export function HomeHero() {
         <h1 id="hx-hero-title" className="hx-hero__title hx-rise">
           Education built for <em>what comes next.</em>
         </h1>
-        <p className="hx-hero__lead hx-rise">Study for a degree or learn a job skill, practise on real work, and keep everything you build in one career profile.</p>
+        <p className="hx-hero__lead hx-rise">Study for a degree or learn a job skill, practise on realistic work, and keep everything you build in one career profile.</p>
         <div className="hx-hero__actions hx-rise">
           <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
             Explore programmes
@@ -144,7 +144,7 @@ function homeRows(programmes: CatalogProgramSummary[]): HomeRow[] {
   })
 }
 
-export function HomeProgrammes({ programmes, loading }: { programmes: CatalogProgramSummary[]; loading: boolean }) {
+export function HomeProgrammes({ programmes, loading, confirmed }: { programmes: CatalogProgramSummary[]; loading: boolean; confirmed: boolean }) {
   const rows = homeRows(programmes)
   const open = rows.filter((row) => row.open)
   const later = rows.filter((row) => !row.open)
@@ -182,7 +182,7 @@ export function HomeProgrammes({ programmes, loading }: { programmes: CatalogPro
                   <li key={row.program.slug}>
                     <Link to={`/programmes/${row.program.slug}`} className="hx-prog">
                       <span className="hx-prog__top">
-                        <span className="hx-pill hx-pill--open">Open for enrolment</span>
+                        <span className="hx-pill hx-pill--open">{confirmed ? "Open for enrolment" : "Listed as open"}</span>
                         <span className="hx-prog__kind">{row.kind}</span>
                       </span>
                       <span className="hx-prog__title">{row.title}</span>
@@ -241,7 +241,7 @@ export function HomeDegrees() {
               UG and PG, <em>online or on campus.</em>
             </h2>
           </div>
-          <p className="hx-head__aside">Choose your level, then how you want to study. Online means you learn on screen; on campus means you attend in person.</p>
+          <p className="hx-head__aside">These are planned degree areas. No institution is confirmed yet, so you can register interest but not apply. Online means you learn on screen; on campus means you attend in person.</p>
         </Reveal>
         <ul className="hx-degree-grid">
           {DEGREE_TILES.map((tile) => (
@@ -283,7 +283,7 @@ const LABS = [
   {
     domain: "Product and business",
     title: "Product case workbench",
-    text: "Frame a real operations problem and recommend one constrained bet.",
+    text: "Frame a realistic operations problem and recommend one constrained bet.",
     programme: "product-management",
     Plate: HarborDeskPlate,
   },
@@ -297,10 +297,10 @@ export function HomeLabs() {
           <div data-reveal-group>
             <p className="hx-eyebrow hx-eyebrow--dark">Labs and projects</p>
             <h2 id="hx-labs-title" className="hx-h2">
-              Practice on real work, <em>in every programme.</em>
+              Practice on realistic work, <em>in every open programme.</em>
             </h2>
           </div>
-          <p className="hx-head__aside">Each programme has its own lab and a capstone project. What you finish is saved to your profile.</p>
+          <p className="hx-head__aside">Each open programme has its own lab and a capstone project. What you finish is saved to your profile.</p>
         </Reveal>
         <ul className="hx-lab-grid">
           {LABS.map((lab) => {

@@ -1,4 +1,5 @@
 import "dotenv/config"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 const ALLOWED_ORIGIN = process.env.CORS_ALLOWED_ORIGINS?.split(",")[0]?.trim()
@@ -118,7 +119,7 @@ async function main() {
     method: "POST",
     jar,
     csrf: true,
-    body: { displayName: "Security Test", email, password },
+    body: { consent: TEST_CONSENT, displayName: "Security Test", email, password },
   })
   assert(signup.response.status === 201, `signup failed: ${signup.response.status}`)
 

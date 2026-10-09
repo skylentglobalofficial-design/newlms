@@ -88,14 +88,14 @@ revaRouter.post("/chat", limit, async (req, res) => {
   const scope = user ? "learner" : "visitor"
 
   if (isIdentityQuestion(last)) {
-    return void res.json({ data: { answer: REVA_IDENTITY_REPLY, scope } })
+    return void res.json({ data: { answer: REVA_IDENTITY_REPLY, scope, source: "rule" } })
   }
 
   if (asksForProgress(last)) {
     const answer = user
       ? "I can see that you are signed in, but this assistant does not have your lesson-by-lesson progress. Open My Learning to see what is saved on your account. [[go:/dashboard/student]]"
       : "Sign in to see your own learning. This assistant does not have progress for a visitor. [[go:/login]]"
-    return void res.json({ data: { answer: sanitizeAssistantActions(answer), scope } })
+    return void res.json({ data: { answer: sanitizeAssistantActions(answer), scope, source: "rule" } })
   }
 
   // No key means no model. The site says so instead of answering every question with a canned line.
@@ -139,5 +139,5 @@ revaRouter.post("/chat", limit, async (req, res) => {
   if (!r?.ok) return void res.status(502).json({ error: "SKYLENT AI couldn't answer right now. Try again." })
   const json = (await r.json()) as { choices?: Array<{ message?: { content?: string } }> }
   const answer = sanitizeAssistantActions(json.choices?.[0]?.message?.content ?? "")
-  res.json({ data: { answer, scope } })
+  res.json({ data: { answer, scope, source: "model" } })
 })

@@ -10,6 +10,7 @@ import {
 } from "../lib/auth.js"
 import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
 import { isAuthoredCourse } from "../lib/authored-courses.js"
+import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import { answersInOptionRange, QuizAttemptThrottled, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
 import {
   assertLessonUnlocked,
@@ -199,8 +200,20 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
         return res.json({ data: workspace ? { ...workspace, program: programWorkspace } : workspace })
       }
 
-      const enrollment = await prisma.userEnrollment.create({
-        data: { userId, programId: program.id, status: "active" },
+      // A new enrolment needs the terms accepted in this request. Opening an existing one (above) does not.
+      const consent = readConsent(req.body)
+      if (!consent.ok) return res.status(consent.status).json(consent.body)
+      const enrollment = await prisma.$transaction(async (tx) => {
+        const created = await tx.userEnrollment.create({
+          data: { userId, programId: program.id, status: "active" },
+        })
+        await recordPolicyAcceptance(tx, {
+          context: "enrolment",
+          policyVersion: consent.policyVersion,
+          userId,
+          reference: created.id,
+        })
+        return created
       })
       const workspace = await buildCourseWorkspace({
         ...enrollment,
@@ -224,8 +237,19 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
       return res.json({ data: await attachProgramWorkspace(userId, workspace, null, course.id) })
     }
 
-    const enrollment = await prisma.userEnrollment.create({
-      data: { userId, courseId: course.id, status: "active" },
+    const consent = readConsent(req.body)
+    if (!consent.ok) return res.status(consent.status).json(consent.body)
+    const enrollment = await prisma.$transaction(async (tx) => {
+      const created = await tx.userEnrollment.create({
+        data: { userId, courseId: course.id, status: "active" },
+      })
+      await recordPolicyAcceptance(tx, {
+        context: "enrolment",
+        policyVersion: consent.policyVersion,
+        userId,
+        reference: created.id,
+      })
+      return created
     })
     const workspace = await buildCourseWorkspace({ ...enrollment, course })
     return res.status(201).json({ data: await attachProgramWorkspace(userId, workspace, null, course.id) })

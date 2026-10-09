@@ -280,7 +280,7 @@ export default function LearnPage() {
               }
               setEnrolling(true)
               setEnrollError(null)
-              void enroll()
+              void enroll(termsAccepted)
                 .catch((err) => setEnrollError(learnerErrorMessage(err, 'Enrolment could not be completed right now. Try again in a moment.')))
                 .finally(() => setEnrolling(false))
             }}

@@ -2,6 +2,7 @@ import "dotenv/config"
 import puppeteer from "puppeteer-core"
 import { mkdirSync } from "node:fs"
 import path from "node:path"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 
 const API_BASE = "http://localhost:3001/api/v1"
 const APP_BASE = process.env.APP_BASE ?? "http://localhost:8443"
@@ -40,12 +41,12 @@ async function setupSession(jar: CookieJar) {
   await apiRequest(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName: "Phase 6 QA", email, password: "test-password-123" },
+    body: { consent: TEST_CONSENT, displayName: "Phase 6 QA", email, password: "test-password-123" },
   })
   await apiRequest(jar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { courseSlug: "data-analytics" },
+    body: { consent: TEST_CONSENT, courseSlug: "data-analytics" },
   })
 }
 

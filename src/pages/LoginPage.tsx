@@ -2,7 +2,8 @@ import { useState, useEffect, type FormEvent } from 'react'
 import { useNavigate, useLocation, Link, type NavigateFunction } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import type { AuthUser, UserRole } from '../context/AuthContext'
-import { fulfillCatalogEnrollment, learnPathForWorkspace, type CatalogEnrollTarget, type LoginRedirectState } from '../lib/catalog-enrollment'
+import { cataloguePathForTarget, fulfillCatalogEnrollment, learnPathForWorkspace, type CatalogEnrollTarget, type LoginRedirectState } from '../lib/catalog-enrollment'
+import { takeEnrolConsent } from '../lib/policy'
 import { buildGoogleOAuthStartUrl } from '../lib/auth-api'
 import { courseBySlug } from '../lib/catalog-maturity'
 import { programmeDiscoveryFor } from '../lib/programme-discovery'
@@ -46,8 +47,17 @@ async function finishAuthNavigation(
   redirectState: LoginRedirectState | null,
 ) {
   if (redirectState?.enrollTarget) {
-    const workspace = await fulfillCatalogEnrollment(redirectState.enrollTarget)
-    navigate(learnPathForWorkspace(workspace))
+    const target = redirectState.enrollTarget
+    // The terms are accepted in the enrolment dialog before sign-in. Without that, the learner
+    // is taken to the page where they can accept them; nothing is enrolled on their behalf.
+    const acceptedTerms = takeEnrolConsent(target)
+    try {
+      const workspace = await fulfillCatalogEnrollment(target, acceptedTerms)
+      navigate(learnPathForWorkspace(workspace))
+    } catch (error) {
+      if (acceptedTerms) throw error
+      navigate(cataloguePathForTarget(target))
+    }
     return
   }
   if (redirectState?.returnTo) {
@@ -123,6 +133,12 @@ export default function LoginPage() {
   useEffect(() => {
     const params = new URLSearchParams(location.search)
     const errorParam = params.get('error')
+    if (errorParam === 'consent_required') {
+      setTab('signup')
+      setError("There is no Skylent account for that Google address yet. Accept the Terms & Conditions and Privacy Policy below, then continue with Google to create one.")
+      navigate('/signup', { replace: true, state: location.state })
+      return
+    }
     if (errorParam?.startsWith('oauth')) {
       setError('Google sign-in failed. Please try again or use email and password.')
       navigate(location.pathname, { replace: true, state: location.state })
@@ -147,12 +163,13 @@ export default function LoginPage() {
     })
   }, [location.pathname, location.search, location.state, navigate, oauthHandled, ready, user])
 
-  function startGoogleAuth() {
+  function startGoogleAuth(acceptedTerms = false) {
     setError(null)
     setGoogleLoading(true)
     window.location.assign(buildGoogleOAuthStartUrl({
       returnTo: redirectState?.returnTo,
       enrollTarget: redirectState?.enrollTarget,
+      acceptedTerms,
     }))
   }
 
@@ -214,7 +231,7 @@ export default function LoginPage() {
 
     setSubmitting(true)
     try {
-      const role = await signup(suName.trim(), suEmail.trim(), suPassword)
+      const role = await signup(suName.trim(), suEmail.trim(), suPassword, suTerms)
       await finishAuthNavigation(navigate, role, redirectState)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to create account.')
@@ -304,7 +321,7 @@ export default function LoginPage() {
                   <button
                     className="entry-google"
                     type="button"
-                    onClick={startGoogleAuth}
+                    onClick={() => startGoogleAuth()}
                     disabled={submitting || googleLoading}
                   >
                     {googleLoading ? 'Redirecting to Google…' : 'Continue with Google'}
@@ -365,7 +382,7 @@ export default function LoginPage() {
                   <button
                     className="entry-google"
                     type="button"
-                    onClick={() => { if (!suTerms) { setSuTermsTried(true); setError('Accept the Terms & Conditions and Privacy Policy to create an account.'); return } startGoogleAuth() }}
+                    onClick={() => { if (!suTerms) { setSuTermsTried(true); setError('Accept the Terms & Conditions and Privacy Policy to create an account.'); return } startGoogleAuth(true) }}
                     disabled={submitting || googleLoading}
                   >
                     {googleLoading ? 'Redirecting to Google…' : 'Continue with Google'}
@@ -386,7 +403,8 @@ export default function LoginPage() {
           <p className="entry-note">
             Signing in opens your lessons, practice, projects, and the evidence you keep.
             Password resets are handled by hand for now, so <Link to="/contact">contact us</Link> if you
-            cannot get in.
+            cannot get in. Read the <Link to="/terms">Terms &amp; Conditions</Link> and{' '}
+            <Link to="/privacy">Privacy Policy</Link>.
           </p>
 
           {DEMO_MODE ? (

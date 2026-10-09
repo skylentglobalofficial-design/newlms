@@ -51,7 +51,7 @@ export function ListingChips({ degree }: { degree: Degree; showStatus?: boolean 
   return (
     <>
       <span className="sky-chip dg-mode">{deliveryModeLabel(degree.deliveryMode)}</span>
-      {degree.status === "coming_soon" || degree.sample ? <span className="dg-soon-pill">Admissions opening soon</span> : null}
+      {degree.status === "coming_soon" || degree.sample ? <span className="dg-soon-pill">Not open yet</span> : null}
     </>
   )
 }

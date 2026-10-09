@@ -1,5 +1,6 @@
 import "dotenv/config"
 import { PrismaClient, RoleName } from "@prisma/client"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
@@ -63,7 +64,7 @@ async function signupUser(jar: CookieJar, label: string) {
   const signup = await request(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName: `LMS ${label}`, email, password },
+    body: { consent: TEST_CONSENT, displayName: `LMS ${label}`, email, password },
   })
   assert(signup.response.status === 201, `Signup failed for ${label}`)
   return { email, password }
@@ -175,7 +176,7 @@ async function main() {
   const enroll = await request(userAJar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { courseSlug },
+    body: { consent: TEST_CONSENT, courseSlug },
   })
   assert(enroll.response.status === 201 || enroll.response.ok, "Enrollment should succeed")
   assert(enroll.data.data?.course.slug === courseSlug, "Enrollment should return course workspace")
@@ -372,7 +373,7 @@ async function main() {
   const programEnroll = await request(programJar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { programSlug: "data-science-ai" },
+    body: { consent: TEST_CONSENT, programSlug: "data-science-ai" },
   })
   assert(programEnroll.response.ok, "Program enrollment should succeed")
   assert(programEnroll.data.data.course.slug === courseSlug, "Program enrollment should resolve primary course workspace")
@@ -396,14 +397,14 @@ async function main() {
   const comingSoon = await request(programJar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { programSlug: "sql-certificate" },
+    body: { consent: TEST_CONSENT, programSlug: "sql-certificate" },
   })
   assert(comingSoon.response.status === 400, `Coming-soon enrollment should be 400, got ${comingSoon.response.status}`)
 
   const jeeSoon = await request(programJar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { programSlug: "jee-advanced-prep" },
+    body: { consent: TEST_CONSENT, programSlug: "jee-advanced-prep" },
   })
   assert(jeeSoon.response.status === 400, `JEE coming-soon enrollment should be 400, got ${jeeSoon.response.status}`)
 
@@ -433,7 +434,7 @@ async function main() {
     const unlinked = await request(programJar, "/lms/enrollments", {
       method: "POST",
       csrf: true,
-      body: { programSlug: unlinkedSlug },
+      body: { consent: TEST_CONSENT, programSlug: unlinkedSlug },
     })
     assert(unlinked.response.status === 400, `OPEN + unlinked enrollment should be 400, got ${unlinked.response.status}`)
   } finally {
@@ -472,7 +473,7 @@ async function main() {
     const listingOnly = await request(programJar, "/lms/enrollments", {
       method: "POST",
       csrf: true,
-      body: { programSlug: listingOnlyProgramSlug },
+      body: { consent: TEST_CONSENT, programSlug: listingOnlyProgramSlug },
     })
     assert(
       listingOnly.response.status === 400,
@@ -544,14 +545,14 @@ async function main() {
   const mixedProgramEnroll = await request(mixedJar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { programSlug },
+    body: { consent: TEST_CONSENT, programSlug },
   })
   assert(mixedProgramEnroll.response.ok, "Mixed-resume learner should enroll in the programme")
 
   const mixedDirectEnroll = await request(mixedJar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { courseSlug },
+    body: { consent: TEST_CONSENT, courseSlug },
   })
   assert(mixedDirectEnroll.response.ok, "Mixed-resume learner should also enroll directly in Data Analytics")
   assert(mixedDirectEnroll.data.data.course.slug === courseSlug, "Direct enrollment workspace should be Data Analytics")
@@ -648,7 +649,7 @@ async function main() {
   await request(orgLearnerJar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { courseSlug },
+    body: { consent: TEST_CONSENT, courseSlug },
   })
   await grantRole(orgLearner.email, "organisation", "apex-college")
   const orgAAdmin = await signupUser(orgAAdminJar, "org-a-admin")
@@ -677,7 +678,7 @@ async function main() {
   await request(attachmentJar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { courseSlug },
+    body: { consent: TEST_CONSENT, courseSlug },
   })
   for (const lessonKey of ["l1", "l2", "l3", "l4", "l5"]) {
     await completeLesson(attachmentJar, courseSlug, lessonKey)

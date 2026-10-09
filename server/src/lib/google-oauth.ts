@@ -2,6 +2,7 @@ import { createPublicKey, timingSafeEqual, verify, type KeyObject } from "node:c
 import { AuthProvider, RoleName } from "@prisma/client"
 import { prisma } from "./prisma.js"
 import { ensureRole, normalizeEmail } from "./auth.js"
+import { recordPolicyAcceptance } from "./policy.js"
 
 const GOOGLE_ISSUERS = new Set(["https://accounts.google.com", "accounts.google.com"])
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
@@ -303,7 +304,18 @@ export async function exchangeGoogleAuthorizationCode(code: string): Promise<{ i
   return { idToken: payload.id_token }
 }
 
-export async function resolveGoogleAccount(claims: GoogleIdTokenClaims) {
+/** Thrown when Google sign-in would create a new account but the terms were not accepted first. */
+export class ConsentRequiredError extends Error {
+  constructor() {
+    super("Terms acceptance is required to create an account")
+    this.name = "ConsentRequiredError"
+  }
+}
+
+export async function resolveGoogleAccount(
+  claims: GoogleIdTokenClaims,
+  options: { policyVersion?: string | null } = {},
+) {
   const email = normalizeEmail(claims.email)
   const providerAccountId = claims.sub
 
@@ -354,25 +366,35 @@ export async function resolveGoogleAccount(claims: GoogleIdTokenClaims) {
     return existingUser
   }
 
+  // Existing accounts sign in above. Only a new account needs the terms, and it is not created without them.
+  const policyVersion = options.policyVersion
+  if (!policyVersion) {
+    throw new ConsentRequiredError()
+  }
+
   const studentRole = await ensureRole(RoleName.STUDENT)
   const displayName = claims.name?.trim() || email.split("@")[0] || "User"
 
-  return prisma.user.create({
-    data: {
-      email,
-      displayName,
-      identities: {
-        create: {
-          provider: AuthProvider.GOOGLE,
-          providerAccountId,
+  return prisma.$transaction(async (tx) => {
+    const created = await tx.user.create({
+      data: {
+        email,
+        displayName,
+        identities: {
+          create: {
+            provider: AuthProvider.GOOGLE,
+            providerAccountId,
+          },
+        },
+        roles: {
+          create: { roleId: studentRole.id },
         },
       },
-      roles: {
-        create: { roleId: studentRole.id },
+      include: {
+        roles: { include: { role: true } },
       },
-    },
-    include: {
-      roles: { include: { role: true } },
-    },
+    })
+    await recordPolicyAcceptance(tx, { context: "google_signup", policyVersion, userId: created.id })
+    return created
   })
 }

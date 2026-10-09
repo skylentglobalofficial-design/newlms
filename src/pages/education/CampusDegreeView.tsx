@@ -2,7 +2,7 @@
  * Campus degree detail: /education/campus/:slug  (approved design: CampusDegree)
  * It looks physical on purpose: photographs lead and there are no product plates.
  * Photographs are generic until an institution supplies its own (they are never captioned as a
- * particular campus), and every fact the record does not carry reads "Shared when admissions open".
+ * particular campus), and every fact the record does not carry reads "Shared once an institution is confirmed".
  */
 import { Link } from "react-router-dom"
 import { ArrowRight, SectionIndex } from "../../components/skylent/primitives"
@@ -39,7 +39,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <h1 className="dg-h1 dg-h1--campus cine-in cine-d1">{degree.title}</h1>
             <p className="dg-lead cine-in cine-d2">
               A degree you attend in person, taught on campus by the institution that awards it.
-              {degree.institution ? null : " Campus, dates and fees are shared when admissions open."}
+              {degree.institution ? null : " Campus, dates and fees are shared once an institution is confirmed."}
             </p>
             <div className="dg-actions cine-in cine-d3">
               <Link to="#taught" className="sk-btn sk-btn-primary">
@@ -54,7 +54,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <div className="sky-label dg-title__factshead">At a glance</div>
             <div className="sky-spec__row">
               <dt className="sky-spec__label">Admissions</dt>
-              <dd className="sky-spec__value">Opening soon</dd>
+              <dd className="sky-spec__value">Not open yet</dd>
             </div>
             <div className="sky-spec__row">
               <dt className="sky-spec__label">Discipline</dt>
@@ -140,7 +140,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
                 {[degree.location.city, degree.location.country].filter(Boolean).join(", ")}
               </div>
             ) : (
-              <div className="dg-panel__place dg-unpub">City shared when admissions open</div>
+              <div className="dg-panel__place dg-unpub">City shared once an institution is confirmed</div>
             )}
             <dl>
               <div>
@@ -238,7 +238,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
                 <div>
                   <dt>Calendar</dt>
                   <dd>
-                    <Unpublished>Term or semester dates, shared when admissions open</Unpublished>
+                    <Unpublished>Term or semester dates, shared once an institution is confirmed</Unpublished>
                   </dd>
                 </div>
                 <div>
@@ -254,7 +254,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
               </dl>
 
               {degree.curriculum?.length ? null : (
-                <p className="dg-monoline">The full curriculum is shared when admissions open.</p>
+                <p className="dg-monoline">The full curriculum is shared once an institution is confirmed.</p>
               )}
             </div>
           </div>

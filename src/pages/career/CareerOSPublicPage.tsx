@@ -84,7 +84,7 @@ export default function CareerOSPublicPage() {
                     <span className="cpx-card__icon" aria-hidden="true" />
                     <h3>{part.title}</h3>
                     <p>{part.text}</p>
-                    {soon ? <span className="cpx-soon">Coming soon</span> : null}
+                    {soon ? <span className="cpx-soon">{status === "development" ? "In development" : "Coming soon"}</span> : null}
                   </li>
                 )
               })}

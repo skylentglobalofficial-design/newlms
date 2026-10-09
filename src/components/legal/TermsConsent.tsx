@@ -1,8 +1,8 @@
 /**
  * The terms-acceptance control used by every join flow: sign-up, enrolment and enquiries.
- * It is a real required checkbox; callers keep the submit action disabled (and refuse to
- * submit) until it is ticked. Acceptance is not stored on the server: the backend has no
- * consent field yet (see docs/REPOLISH-REPORT.md), so nothing here claims it was recorded.
+ * It is a real required checkbox; callers refuse to submit until it is ticked, then send
+ * consentPayload() (src/lib/policy.ts). The server checks it again and records the acceptance
+ * (server/src/lib/policy.ts, PolicyAcceptance), so a request without it is refused there too.
  */
 import { useId } from "react"
 import { Link } from "react-router-dom"

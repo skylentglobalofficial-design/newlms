@@ -196,6 +196,7 @@ model User {
   supportRequests    CareerSupportRequest[]
   labWorks           LabWork[]
   learnerProjects    LearnerProject[]
+  policyAcceptances  PolicyAcceptance[]
 }
 
 model Role {
@@ -913,5 +914,26 @@ model SkylentEnquiry {
   status        String   @default("new") /// new | contacted | closed
   createdAt     DateTime @default(now())
 
+  policyAcceptances PolicyAcceptance[]
+
   @@index([status, createdAt])
+}
+
+/// One row each time someone accepts the Terms & Conditions and Privacy Policy.
+/// Written by the server in the same transaction as the account, enrolment or enquiry it belongs to.
+/// Rows are never created for people who signed up before this table existed.
+model PolicyAcceptance {
+  id            String   @id @default(uuid()) @db.Uuid
+  userId        String?  @db.Uuid
+  enquiryId     String?  @db.Uuid
+  context       String /// signup | google_signup | enrolment | enquiry
+  reference     String? /// enrolment id for an enrolment; empty otherwise
+  policyVersion String /// the version of the published terms and privacy policy that was accepted
+  acceptedAt    DateTime @default(now())
+
+  user    User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enquiry SkylentEnquiry? @relation(fields: [enquiryId], references: [id], onDelete: Cascade)
+
+  @@index([userId, context])
+  @@index([enquiryId])
 }

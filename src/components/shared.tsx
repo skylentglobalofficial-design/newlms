@@ -20,6 +20,7 @@ import { getDomainAccent, type AuroraThemeId } from '../aurora-themes'
 import { ArrowRight, TruthChip, type JourneyStage, type TruthState } from './skylent/primitives'
 import SiteAssistant from './skylent/SiteAssistant'
 import { TermsConsent } from './legal/TermsConsent'
+import { rememberEnrolConsent } from '../lib/policy'
 
 // Re-export color tokens for backward compatibility
 export { C } from '../tokens'
@@ -140,6 +141,8 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
 
     if (!user) {
       onClose()
+      // The acceptance just given is kept for this one enrolment while the visitor signs in.
+      rememberEnrolConsent({ kind: item.kind, slug: item.slug })
       navigate('/login', { state: { enrollTarget: { kind: item.kind, slug: item.slug } } })
       return
     }
@@ -147,7 +150,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
     setSubmitting(true)
     setError(null)
     try {
-      const workspace = await fulfillCatalogEnrollment({ kind: item.kind, slug: item.slug })
+      const workspace = await fulfillCatalogEnrollment({ kind: item.kind, slug: item.slug }, accepted)
       onClose()
       navigate(learnPathForWorkspace(workspace))
     } catch (err) {
@@ -185,7 +188,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
           <div style={{ color: C.slate, fontSize: 13, marginBottom: 4 }}>Listed price</div>
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 26, fontWeight: 600, color: C.ink }}>₹{item.price.toLocaleString('en-IN')}</div>
           <div id="enrollment-modal-copy" style={{ color: C.slate, fontSize: 13, marginTop: 8, lineHeight: 1.6 }}>
-            Payment is not collected here yet. {item.enrollable ? 'If you are signed in, this opens Skylent OS. If you are not, you will be asked to sign in first.' : 'We will notify you when enrolment opens.'}
+            {item.enrollable ? 'No payment is taken to enrol during this pilot, and there is no checkout. If you are signed in, this opens Skylent OS. If you are not, you will be asked to sign in first.' : 'Enrolment is not open, and no payment is taken. Use the contact form to register your interest.'}
           </div>
         </div>
 
@@ -328,13 +331,13 @@ function dashRoute(role: UserRole): string {
   }
 }
 
-/* Search: a small index of real destinations, grouped. "Open now" lists the two courses that can
+/* Search: a small index of real destinations, grouped. "Courses" lists the two courses that can
    be enrolled today (src/lib/catalog-maturity.ts); nothing is ranked by views or popularity because
    no such data exists. */
-type SearchEntry = { label: string; to: string; group: 'Open now' | 'Programmes' | 'Degrees' | 'Explore'; keywords?: string }
+type SearchEntry = { label: string; to: string; group: 'Courses' | 'Programmes' | 'Degrees' | 'Explore'; keywords?: string }
 const SEARCH_INDEX: readonly SearchEntry[] = [
-  { label: 'Data Analytics', to: '/courses/data-analytics', group: 'Open now', keywords: 'sql excel dashboards analyst data' },
-  { label: 'Product Management', to: '/courses/product-management', group: 'Open now', keywords: 'product pm roadmap discovery' },
+  { label: 'Data Analytics', to: '/courses/data-analytics', group: 'Courses', keywords: 'sql excel dashboards analyst data' },
+  { label: 'Product Management', to: '/courses/product-management', group: 'Courses', keywords: 'product pm roadmap discovery' },
   { label: 'All programmes', to: '/programmes', group: 'Programmes', keywords: 'courses certification professional' },
   { label: 'Certification programmes', to: '/programmes#certification', group: 'Programmes', keywords: 'certificate short' },
   { label: 'Professional programmes', to: '/programmes#professional', group: 'Programmes', keywords: 'capstone career' },
@@ -347,7 +350,7 @@ const SEARCH_INDEX: readonly SearchEntry[] = [
   { label: 'Check a certificate', to: '/verify', group: 'Explore', keywords: 'verify certificate' },
   { label: 'Contact', to: '/contact', group: 'Explore', keywords: 'help support call counselling' },
 ]
-const SEARCH_DEFAULT_GROUPS: readonly SearchEntry['group'][] = ['Open now', 'Degrees']
+const SEARCH_DEFAULT_GROUPS: readonly SearchEntry['group'][] = ['Courses', 'Degrees']
 
 function searchSuggestionsFor(query: string): SearchEntry[] {
   const q = query.trim().toLowerCase()
@@ -907,6 +910,9 @@ export function PageShell({
         if (el) {
           const y = el.getBoundingClientRect().top + window.scrollY - (T.navH + 8)
           window.scrollTo({ top: y, behavior: 'smooth' })
+        } else {
+          // The section is missing or not rendered yet: start at the top, not at the previous page's scroll position.
+          window.scrollTo(0, 0)
         }
       })
     } else {

@@ -72,6 +72,7 @@ export default function ContactPage() {
     try {
       const result = await sendEnquiry({
         kind: fields.kind,
+        acceptedTerms: accepted,
         name: fields.name,
         email: fields.email,
         phone: fields.phone || undefined,

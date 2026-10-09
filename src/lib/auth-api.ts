@@ -1,5 +1,6 @@
 import { apiV1 } from "./api-base"
 import { parseApiJson, readJsonBody } from "./http"
+import { POLICY_VERSION, consentPayload } from "./policy"
 
 const API_BASE = apiV1()
 
@@ -7,6 +8,8 @@ export type ApiRole = "student" | "faculty" | "organisation" | "recruiter" | "su
 
 export type GoogleOAuthStartOptions = {
   returnTo?: string
+  /** Set on the sign-up form once the terms checkbox is ticked. A new account is refused without it. */
+  acceptedTerms?: boolean
   enrollTarget?: {
     kind: "course" | "program"
     slug: string
@@ -20,6 +23,7 @@ export function buildGoogleOAuthStartUrl(options: GoogleOAuthStartOptions = {}):
     params.set("enrollKind", options.enrollTarget.kind)
     params.set("enrollSlug", options.enrollTarget.slug)
   }
+  if (options.acceptedTerms) params.set("consent", POLICY_VERSION)
   const query = params.toString()
   return `${API_BASE}/auth/google${query ? `?${query}` : ""}`
 }
@@ -154,6 +158,8 @@ export async function signupRequest(input: {
   name: string
   email: string
   password: string
+  /** The terms checkbox. The server refuses to create the account without it. */
+  acceptedTerms: boolean
 }): Promise<AuthResponse> {
   return authRequest<AuthResponse>("/auth/signup", {
     method: "POST",
@@ -161,6 +167,7 @@ export async function signupRequest(input: {
       displayName: input.name,
       email: input.email,
       password: input.password,
+      ...(input.acceptedTerms ? { consent: consentPayload() } : {}),
     },
   })
 }

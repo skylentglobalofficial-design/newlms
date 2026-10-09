@@ -89,7 +89,15 @@ skylentCertificatesRouter.get("/verify/:code", verifyLimit, async (req, res) => 
   const normalized = (Array.isArray(rawCode) ? rawCode[0] : rawCode)?.toUpperCase()
   const code = z.string().regex(/^SKL-\d{4}-[A-Z0-9]{1,6}-[A-Z0-9]{4,8}$/).safeParse(normalized)
   if (!code.success) return void res.status(400).json({ error: "Invalid certificate ID" })
-  const cert = await prisma.skylentCertificate.findUnique({ where: { code: code.data } })
+  // A failed lookup (database down, or a schema that is behind) is not "no such certificate":
+  // say the check could not be made, so nobody reads an outage as an invalid certificate.
+  let cert: Awaited<ReturnType<typeof prisma.skylentCertificate.findUnique>>
+  try {
+    cert = await prisma.skylentCertificate.findUnique({ where: { code: code.data } })
+  } catch (error) {
+    console.error("Certificate verification lookup failed:", error instanceof Error ? error.message : error)
+    return void res.status(503).json({ error: "Certificate check is unavailable right now. Try again later.", code: "unavailable" })
+  }
   if (!cert || cert.revoked) return void res.status(404).json({ data: { valid: false } })
   res.json({
     data: {

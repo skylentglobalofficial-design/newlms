@@ -96,7 +96,7 @@ export function programEnrollmentMessage(
   program: Pick<CatalogProgramSummary, "enrollmentStatus" | "linkedCourseSlugs">,
 ): string {
   if (program.enrollmentStatus === "coming_soon") {
-    return "Enrollment is not open yet. Register your interest and we will notify you when this program launches."
+    return "Enrolment is not open yet. Register your interest through the contact form and the Skylent team will reply."
   }
   if (program.enrollmentStatus === "waitlist") {
     return "This program is on waitlist. Join the waitlist and we will contact you when a seat opens."

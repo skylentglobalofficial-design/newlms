@@ -7,6 +7,7 @@
  */
 import { ensureCsrfToken } from "./auth-api"
 import { API_ROOT, parseApiJson } from "./http"
+import { consentPayload } from "./policy"
 
 const API_BASE = API_ROOT
 
@@ -81,11 +82,14 @@ export type EnquiryInput = {
   preferredDate?: string
   preferredSlot?: string
   message?: string
+  /** The terms checkbox. The server refuses the enquiry without it. */
+  acceptedTerms: boolean
 }
 
 /** POST /enquiries — public, rate limited (10 per 15 minutes). Returns the new enquiry id. */
 export async function sendEnquiry(input: EnquiryInput): Promise<{ id: string }> {
-  const body: Record<string, string> = { kind: input.kind, name: input.name.trim(), email: input.email.trim() }
+  const body: Record<string, unknown> = { kind: input.kind, name: input.name.trim(), email: input.email.trim() }
+  if (input.acceptedTerms) body.consent = consentPayload()
   if (input.phone?.trim()) body.phone = input.phone.trim()
   if (input.programSlug) body.programSlug = input.programSlug
   if (input.preferredDate) body.preferredDate = input.preferredDate

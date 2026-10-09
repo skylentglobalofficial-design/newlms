@@ -283,7 +283,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
         {chips.map((chip) => (
           <li key={chip.label} className={chip.off ? "is-off" : undefined}>{chip.label}</li>
         ))}
-        <li className="is-off">Progress, projects, career · not connected</li>
+        <li className="is-off">Does not see your progress, projects or career profile</li>
       </ul>
     </header>
   )

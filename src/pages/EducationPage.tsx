@@ -10,7 +10,7 @@
  *
  * Cards come only from listDegrees() (src/lib/degrees.ts, backed by src/data/education.ts).
  * Degrees are not in the backend and no institution is confirmed yet, so every listing says
- * "Admissions opening soon" and offers an enquiry instead of an application. Nothing names a
+ * "Not open yet" and offers an enquiry instead of an application. Nothing names a
  * university, fee, date or campus. Schooling and exam preparation are not foregrounded here.
  */
 import { useEffect } from "react"
@@ -71,7 +71,7 @@ function DegreeRow({ degree }: { degree: Degree }) {
       <Link to={degreePath(degree)} className="edx-degree">
         <span className="edx-degree__title">{degree.title}</span>
         <span className="edx-degree__meta">
-          <span className="edx-soon">Admissions opening soon</span>
+          <span className="edx-soon">Not open yet</span>
           <span>{degree.discipline}</span>
         </span>
         <span className="edx-degree__go">
@@ -107,7 +107,7 @@ function ModeCard({ level, mode, degrees }: { level: (typeof LEVELS)[number]; mo
         ) : (
           <div className="edx-none">
             <p>
-              {level.short} {copy.label.toLowerCase()} degrees will be listed here when admissions open.
+              {level.short} {copy.label.toLowerCase()} degrees will be listed here once an institution is confirmed.
             </p>
             <Link className="edx-link" to="/contact">
               Register your interest
@@ -156,7 +156,7 @@ export default function EducationPage() {
               <h1 id="edx-title" className="edx-h1">
                 UG and PG degrees, <em>online or on campus.</em>
               </h1>
-              <p className="edx-lede">Choose your level, then how you want to study. Skylent adds labs, projects and Career OS alongside the degree.</p>
+              <p className="edx-lede">Choose your level, then how you want to study. These are planned degree areas: no institution is confirmed yet, so you can register interest but not apply.</p>
             </div>
             <nav className="edx-filters" aria-label="Filter degrees">
               <div className="edx-filter" role="group" aria-label="Level">
@@ -187,6 +187,8 @@ export default function EducationPage() {
           </div>
         </section>
 
+        {/* Target of the "Degrees" breadcrumb on degree pages (/education#degrees). */}
+        <span id="degrees" aria-hidden="true" />
         {levels.map((item) => (
           <section key={item.id} id={item.param} className="edx-level" aria-labelledby={`edx-level-${item.param}`}>
             <div className="sky-container">
@@ -231,7 +233,7 @@ export default function EducationPage() {
           <div className="sky-container edx-help__inner">
             <div>
               <h2 id="edx-help-title">Not sure which degree fits?</h2>
-              <p>Answer a few questions with Skylent AI, or ask the admissions team directly.</p>
+              <p>Answer a few questions with Skylent AI, or ask the Skylent team directly.</p>
             </div>
             <div className="edx-help__actions">
               <button type="button" className="sk-btn sk-btn-primary" onClick={() => openSkylentAi("finder")}>
@@ -239,7 +241,7 @@ export default function EducationPage() {
                 <ArrowRight />
               </button>
               <Link className="sk-btn sk-btn-secondary" to="/contact">
-                Talk to admissions
+                Talk to the team
               </Link>
             </div>
           </div>

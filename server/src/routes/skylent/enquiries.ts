@@ -3,6 +3,7 @@ import rateLimit from "express-rate-limit"
 import { z } from "zod"
 import { prisma } from "../../lib/prisma.js"
 import { requireAuth, type AuthenticatedRequest } from "../../lib/auth.js"
+import { readConsent, recordPolicyAcceptance } from "../../lib/policy.js"
 
 export const skylentEnquiriesRouter = Router()
 
@@ -31,8 +32,15 @@ const schema = z.object({
 skylentEnquiriesRouter.post("/", limit, async (req, res) => {
   const body = schema.safeParse(req.body ?? {})
   if (!body.success) return void res.status(400).json({ error: "Please check your details." })
+  const consent = readConsent(req.body)
+  if (!consent.ok) return void res.status(consent.status).json(consent.body)
   const { preferredDate, ...rest } = body.data
-  const row = await prisma.skylentEnquiry.create({ data: { ...rest, preferredDate: preferredDate ? new Date(preferredDate) : null } })
+  // The enquiry and the record of what was accepted are written together or not at all.
+  const row = await prisma.$transaction(async (tx) => {
+    const created = await tx.skylentEnquiry.create({ data: { ...rest, preferredDate: preferredDate ? new Date(preferredDate) : null } })
+    await recordPolicyAcceptance(tx, { context: "enquiry", policyVersion: consent.policyVersion, enquiryId: created.id })
+    return created
+  })
   res.status(201).json({ data: { id: row.id } })
 })
 

@@ -40,7 +40,7 @@ export default function HomePage() {
       <div className="site-light hm-page hx-page">
         <HomeHero />
         <InsideProgramme />
-        <HomeProgrammes programmes={catalog.data ?? []} loading={catalog.loading} />
+        <HomeProgrammes programmes={catalog.data ?? []} loading={catalog.loading} confirmed={!catalog.offline} />
         <HomeDegrees />
         <Learn />
         <HomeLabs />

@@ -136,3 +136,7 @@
 /* Terms checkbox inside the enquiry form keeps its own compact layout. */
 .sia-enquiry .tc__row { display: flex; gap: 8px; font-size: 13px; font-weight: 400; color: hsl(var(--site-muted)); }
 .sia-enquiry .tc__box { width: 18px; height: 18px; min-height: 0; padding: 0; flex: none; }
+
+/* Says where a reply came from: the catalogue (fixed rules) or the AI endpoint. */
+.sia-source { margin: 6px 2px 0; font-size: 11.5px; line-height: 1.4; color: hsl(var(--site-dim)); }
+.sia-msg .sia-source { margin: 8px 0 0; }

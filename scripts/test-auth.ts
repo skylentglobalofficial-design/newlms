@@ -7,6 +7,7 @@ import {
   createOAuthState,
   verifySignedOAuthState,
 } from "../server/src/lib/oauth-state.js"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
@@ -114,7 +115,7 @@ async function main() {
   const signup = await request(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName, email, password },
+    body: { consent: TEST_CONSENT, displayName, email, password },
   })
   assert(signup.response.status === 201, `Signup failed: ${signup.response.status}`)
   assert(jar.get("csrf") === csrfBeforeSignup, "Signup must not rotate the CSRF cookie")
@@ -138,7 +139,7 @@ async function main() {
   const duplicate = await request(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName, email, password },
+    body: { consent: TEST_CONSENT, displayName, email, password },
   })
   assert(duplicate.response.status === 409, "Duplicate signup should be rejected")
 
@@ -268,7 +269,7 @@ async function main() {
   const profileSignup = await request(profileJar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName: "Before Name", email: profileEmail, password: "test-password-123" },
+    body: { consent: TEST_CONSENT, displayName: "Before Name", email: profileEmail, password: "test-password-123" },
   })
   assert(profileSignup.response.status === 201, "Profile signup should succeed")
   const profilePatch = await request(profileJar, "/auth/me", {
