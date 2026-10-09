@@ -2,9 +2,8 @@
  * Learn: the signed-in student home, drawn as one large plate from the authored
  * Data Analytics course. Counts and titles come from the course data; states from truth.ts.
  */
-import { Action, SectionIndex, SpecSheet, TruthChip } from "@/components/skylent/primitives"
+import { Action } from "@/components/skylent/primitives"
 import { Reveal } from "@/components/skylent/Reveal"
-import { truthOf } from "@/lib/truth"
 import { courseFacts, type CourseFacts } from "./course-facts"
 
 function StudentHomePlate({ facts }: { facts: CourseFacts }) {
@@ -70,11 +69,8 @@ function StudentHomePlate({ facts }: { facts: CourseFacts }) {
               <div className="hm-home__note">Module {facts.capstoneModuleNumber} assignment</div>
             </div>
             <div className="hm-home__panel">
-              <div className="hm-home__panelhead">Evidence and certificates</div>
-              <div className="hm-home__chips">
-                <TruthChip state={truthOf("certificates")} />
-              </div>
-              <div className="hm-home__note">A certificate is issued once every lesson is complete.</div>
+              <div className="hm-home__panelhead">Certificate</div>
+              <div className="hm-home__note">Issued once every lesson is complete, with a code anyone can check.</div>
             </div>
           </div>
         </div>
@@ -87,37 +83,28 @@ export function Learn() {
   const facts = courseFacts()
   if (!facts) return null
   return (
-    <section id="learn" className="hm-learn" aria-labelledby="hm-learn-title">
+    <section id="learn" className="hm-learn hx-learn" aria-labelledby="hm-learn-title">
       <div className="sky-container hm-learn__grid">
         <Reveal className="hm-learn__copy" stagger step={80}>
-          <SectionIndex n="03" label="Learn" />
-          <h2 id="hm-learn-title" className="sky-display sky-display--md">
-            Open it and <em>know what to do next.</em>
+          <p className="hx-eyebrow">After you enrol</p>
+          <h2 id="hm-learn-title" className="hx-h2 hx-h2--light">
+            Open Skylent and <em>know what to do next.</em>
           </h2>
-          <p className="hm-lead">
-            Lessons are written notes, checks and assignments. Student home keeps the next lesson, the current project and what still needs attention on one screen.
+          <p className="hx-learn__lead">
+            Your student home keeps the next lesson, your progress, the current project and your certificate on one screen.
           </p>
-          <div className="sky-label hm-learn__speclabel">{facts.title} · as authored today</div>
-          <SpecSheet
-            className="hm-facts"
-            rows={[
-              { label: "Modules", value: String(facts.stats.modules) },
-              { label: "Lessons", value: String(facts.stats.lessons) },
-              { label: "Assignments", value: String(facts.stats.assignments) },
-              { label: "Checks", value: String(facts.stats.checks) },
-            ]}
-          />
-          <Action to={`/courses/${facts.slug}`} kind="quiet">See the course</Action>
+          <ul className="hx-learn__list">
+            <li>Continue exactly where you stopped</li>
+            <li>See progress module by module</li>
+            <li>Projects and certificate in the same place</li>
+          </ul>
+          <Action to="/signup" kind="secondary">Create your account</Action>
         </Reveal>
 
         <figure className="hm-learn__figure">
-          <Reveal className="hm-mat" variant="plate" delay={260}>
+          <Reveal className="hm-mat hx-learn__mat" variant="plate" delay={200}>
             <StudentHomePlate facts={facts} />
           </Reveal>
-          <figcaption className="hm-caption">
-            <span>FIG. 02 · Student home, part-way through {facts.title}</span>
-            <span>Representation of the signed-in screen</span>
-          </figcaption>
         </figure>
       </div>
     </section>

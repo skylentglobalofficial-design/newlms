@@ -9,6 +9,7 @@ import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { ArrowRight, ProductSlice, TruthChip } from "../../components/skylent/primitives"
 import { Reveal } from "../../components/skylent/Reveal"
+import { openSkylentAi } from "../../components/skylent/ai-events"
 import {
   PUBLISHED_BY_INSTITUTION,
   degreeListingPath,
@@ -46,12 +47,11 @@ export function orUnpublished(value: string | undefined | null): ReactNode {
 }
 
 /** Mode chip + the truth chips the record calls for. Mode comes from metadata, never from the page. */
-export function ListingChips({ degree, showStatus = false }: { degree: Degree; showStatus?: boolean }) {
+export function ListingChips({ degree }: { degree: Degree; showStatus?: boolean }) {
   return (
     <>
       <span className="sky-chip dg-mode">{deliveryModeLabel(degree.deliveryMode)}</span>
-      {degree.sample ? <TruthChip state="sample" /> : null}
-      {showStatus && degree.status === "coming_soon" ? <TruthChip state="soon" /> : null}
+      {degree.status === "coming_soon" || degree.sample ? <span className="dg-soon-pill">Admissions opening soon</span> : null}
     </>
   )
 }
@@ -128,30 +128,13 @@ export function Photo({
   /** Plain caption: "Stand-in photograph" on the left, what it shows on the right. */
   plain?: boolean
 }) {
-  const origin = asset.standIn ? "Stand-in photograph" : "Photograph from the institution"
+  // Repolish: photographs carry no figure numbers or construction captions; the alt text describes them.
+  void fig
+  void aside
+  void plain
   return (
     <figure className={`dg-photo ${className}`.trim()}>
       <img src={asset.src} alt={assetAlt(asset)} loading={eager ? "eager" : "lazy"} decoding="async" />
-      {plain ? (
-        <figcaption>
-          <span>{origin}</span>
-          {asset.caption ? <span>{asset.caption}</span> : null}
-        </figcaption>
-      ) : (
-        <figcaption>
-          <span>
-            {fig ? (
-              <>
-                <b>{fig}</b>
-                {" · "}
-              </>
-            ) : null}
-            {asset.caption ? `${asset.caption} · ` : null}
-            {asset.standIn ? `${origin}, replace with the institution's own` : origin}
-          </span>
-          {aside ? <span>{aside}</span> : null}
-        </figcaption>
-      )}
     </figure>
   )
 }
@@ -307,10 +290,10 @@ export function ClosingBand({
           </h2>
         </div>
         <Reveal delay={180} className="dg-close__actions">
-          <Link to="/path" className="sk-btn sk-btn-primary">
-            Find my path
+          <button type="button" className="sk-btn sk-btn-primary" onClick={() => openSkylentAi("finder")}>
+            Ask Skylent AI
             <ArrowRight />
-          </Link>
+          </button>
           <Link to={secondary.to} className="sk-btn sk-btn-secondary">
             {secondary.label}
           </Link>

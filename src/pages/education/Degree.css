@@ -663,3 +663,8 @@
   .dg .dg-lines a::after { transition: none !important; }
   .dg .dg-env .sky-mat:hover .sky-plate { transform: none; }
 }
+
+/* Repolish: one neutral admissions pill replaces the sample / coming-soon chips. */
+.dg .dg-soon-pill { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; border: 1px solid hsl(32 70% 80%); background: hsl(38 90% 96%); color: hsl(32 90% 30%); font-family: var(--sk-font-body); font-size: 12.5px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+.dg .dg-soon-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.dg .sky-band-navy .dg-soon-pill { background: transparent; border-color: hsl(40 80% 60% / .5); color: hsl(40 95% 72%); }

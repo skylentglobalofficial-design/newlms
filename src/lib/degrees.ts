@@ -100,7 +100,7 @@ export type Degree = {
 }
 
 /** The one wording used wherever a fact is not published yet. */
-export const PUBLISHED_BY_INSTITUTION = "Published by the institution"
+export const PUBLISHED_BY_INSTITUTION = "Shared when admissions open"
 
 const STATIC_STATUS: Record<DegreeRoute["status"], DegreeStatus> = { "coming-soon": "coming_soon" }
 

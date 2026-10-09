@@ -9,6 +9,7 @@ import {
   type CatalogProgramDetail,
   type CatalogProgramSummary,
 } from "../lib/catalog-api"
+import { publishedProgrammeSummaries } from "../lib/catalogue-fallback"
 
 type CatalogState<T> = {
   data: T | null
@@ -46,8 +47,16 @@ export function useCatalogCourses() {
   return useCatalogResource(fetchCatalogCourses)
 }
 
+/**
+ * Programmes for the public index and homepage. When the API cannot be reached the published
+ * list (the records the seed writes, src/lib/catalogue-fallback.ts) is shown instead of an
+ * error page; `offline` tells the page so it can say enrolment needs a moment.
+ */
 export function useCatalogPrograms() {
-  return useCatalogResource(fetchCatalogPrograms)
+  const state = useCatalogResource(fetchCatalogPrograms)
+  const offline = !state.loading && Boolean(state.error)
+  const data = offline ? publishedProgrammeSummaries() : state.data
+  return { ...state, data, error: null as string | null, offline, requestError: state.error }
 }
 
 export function useCatalogCourse(slug: string | undefined) {

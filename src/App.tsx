@@ -8,6 +8,7 @@ import { DemoStateProvider } from './demo/DemoStateContext'
 import RouteFallback from './components/RouteFallback'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
+const LegalPage = lazy(() => import('./pages/LegalPage'))
 const PathPage = lazy(() => import('./pages/path/PathPage'))
 const PathResultPage = lazy(() => import('./pages/path/PathResultPage'))
 const EducationPage = lazy(() => import('./pages/EducationPage'))
@@ -117,6 +118,8 @@ function AppRoutes() {
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:slug" element={<BlogPostPage />} />
         <Route path="/contact" element={<ContactPage />} />
+        <Route path="/terms" element={<LegalPage kind="terms" />} />
+        <Route path="/privacy" element={<LegalPage kind="privacy" />} />
         <Route path="/verify" element={<VerifyPage />} />
         <Route path="/verify/:code" element={<VerifyPage />} />
         <Route path="/login" element={<LoginPage />} />

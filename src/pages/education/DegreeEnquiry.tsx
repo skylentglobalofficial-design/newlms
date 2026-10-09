@@ -5,10 +5,10 @@
  * request shows the failure state. It promises no response time and no counsellor.
  */
 import { useEffect, useId, useRef, useState, type FormEvent } from "react"
-import { ArrowRight, SectionIndex, SpecSheet, TruthChip } from "../../components/skylent/primitives"
+import { ArrowRight, SectionIndex, SpecSheet } from "../../components/skylent/primitives"
 import { degreeLevelName, deliveryModeLabel, type Degree } from "../../lib/degrees"
 import { sendEnquiry } from "../../lib/skylent-api"
-import { truthOf } from "../../lib/truth"
+import { TermsConsent } from "../../components/legal/TermsConsent"
 
 type Fields = { name: string; email: string; phone: string; message: string }
 type FieldErrors = Partial<Record<keyof Fields, string>>
@@ -38,8 +38,9 @@ export function DegreeEnquiry({ degree, index, ruled = false }: { degree: Degree
   const [status, setStatus] = useState<Status>({ kind: "idle" })
   const formRef = useRef<HTMLFormElement>(null)
   const doneRef = useRef<HTMLDivElement>(null)
-  const capability = truthOf("enquiries")
   const sending = status.kind === "sending"
+  const [accepted, setAccepted] = useState(false)
+  const [triedWithoutTerms, setTriedWithoutTerms] = useState(false)
 
   useEffect(() => {
     if (status.kind === "sent") doneRef.current?.focus()
@@ -59,6 +60,10 @@ export function DegreeEnquiry({ degree, index, ruled = false }: { degree: Degree
     if (firstInvalid) {
       setStatus({ kind: "idle" })
       formRef.current?.querySelector<HTMLElement>(`[name="${firstInvalid}"]`)?.focus()
+      return
+    }
+    if (!accepted) {
+      setTriedWithoutTerms(true)
       return
     }
     setStatus({ kind: "sending" })
@@ -99,21 +104,17 @@ export function DegreeEnquiry({ degree, index, ruled = false }: { degree: Degree
         <div className="dg-ask__lead">
           <div className="dg-ask__index">
             <SectionIndex n={index} label="Ask" />
-            {capability === "live" ? null : <TruthChip state={capability} />}
           </div>
           <h2 className="dg-h2 dg-h2--sm" id={`${uid}-title`}>
             Ask about this degree
           </h2>
           <p>
-            Send a question about this {degree.sample ? "sample listing" : "degree"}. It reaches the Skylent team with the listing
-            attached.
-            {degree.institution
-              ? null
-              : " The institution is not confirmed, so fees, dates and entry requirements cannot be answered yet."}
+            Register your interest or ask a question. The Skylent admissions team replies by email
+            {degree.institution ? "." : " and shares fees, dates and entry requirements as soon as admissions open."}
           </p>
           <SpecSheet
             rows={[
-              { label: "Listing", value: degree.title },
+              { label: "Degree", value: degree.title },
               { label: "Mode", value: deliveryModeLabel(degree.deliveryMode) },
               { label: "Level", value: degreeLevelName(degree.level) },
             ]}
@@ -167,12 +168,13 @@ export function DegreeEnquiry({ degree, index, ruled = false }: { degree: Degree
               </p>
             ) : null}
 
+            <TermsConsent checked={accepted} onChange={setAccepted} action="sending an enquiry" showError={triedWithoutTerms} />
             <div className="dg-form__foot">
               <button type="submit" className="sk-btn sk-btn-primary" disabled={sending}>
                 {sending ? "Sending" : "Send enquiry"}
                 {sending ? null : <ArrowRight />}
               </button>
-              <p className="dg-note">Your name, email and this listing are sent to Skylent. Nothing is sent to an institution.</p>
+              <p className="dg-note">Your details go to the Skylent team only.</p>
             </div>
           </form>
         )}

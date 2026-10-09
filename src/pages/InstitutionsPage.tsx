@@ -1,422 +1,140 @@
-import { useState } from "react"
+/**
+ * /institutions (repolish). The B2B entry point, now linked from the main navigation and the
+ * homepage. It describes what Skylent provides to learners today (programmes, labs, LMS progress,
+ * Career OS, lesson help) and how a partnership is set up. No partner names, logos, results or
+ * dashboards are shown; institution reporting is described as something planned with the partner.
+ */
 import { Link } from "react-router-dom"
-import { MaturityMark } from "../components/product/Architecture"
-import { ProductVisual } from "../components/product/ProductVisuals"
-import { SkylentOsPreview } from "../components/product/ProductLanguage"
-import { INSTITUTION_OS_LAYERS } from "../lib/product-architecture"
-import { PublicEditorialShell } from "./public-editorial"
+import { PageShell } from "../components/shared"
+import { ArrowRight } from "../components/skylent/primitives"
+import campusPhoto from "@/assets/site/degree-management.jpg"
+import "./HomePage.v2.css"
+import "./HomeRepolish.css"
+import "./AboutRepolish.css"
+import "./InstitutionsRepolish.css"
 
-type InstitutionType = {
-  id: string
-  label: string
-  rail: string
-  sub: string
-  problem: string
-  value: string
-  workflow: readonly string[]
-  description: string
-  offers: readonly string[]
-  href?: string
-  hrefLabel?: string
-}
-
-const INSTITUTION_TYPES: InstitutionType[] = [
-  {
-    id: "schools",
-    label: "Schools",
-    rail: "Schools",
-    sub: "K–12 · Secondary · Senior Secondary",
-    problem: "Academic progress is hard for parents and teachers to see in one place.",
-    value: "Students, teachers, classes, assessments, parent visibility, and progress in a schooling workflow.",
-    workflow: ["Students", "Teachers", "Classes", "Assessments", "Parent view", "Progress"],
-    description:
-      "Introduce structured learning, activities, and career awareness before higher education — without turning school into a corporate LMS.",
-    offers: [
-      "Grade → subject → chapter → lesson delivery",
-      "Activities and assessments teachers can run",
-      "Parent-visible progress",
-      "Faculty development resources",
-    ],
-  },
-  {
-    id: "colleges",
-    label: "Colleges",
-    rail: "Colleges",
-    sub: "Degree Colleges · Autonomous Institutions",
-    problem: "Degrees finish. Employability does not arrive automatically.",
-    value: "Programs, departments, LMS, skills, projects, and career readiness alongside the academic calendar.",
-    workflow: ["Programs", "Departments", "Students", "LMS", "Projects", "Career OS"],
-    description:
-      "Pair undergraduate study with professional programs, projects, and a path into Career OS for qualifying students.",
-    offers: [
-      "Professional Programs beside the degree",
-      "Skills tracks and project portfolios",
-      "Career OS for qualifying students",
-      "Interview and application workflow",
-    ],
-  },
-  {
-    id: "universities",
-    label: "Universities",
-    rail: "Universities",
-    sub: "Multi-program · Research Institutions",
-    problem: "Scale across departments without fragmenting student lifecycle and outcomes.",
-    value: "Multi-program curriculum, assessments, student lifecycle, and outcomes as shared infrastructure.",
-    workflow: ["Multi-program", "Departments", "Curriculum", "Assessments", "Lifecycle", "Outcomes"],
-    description:
-      "Use Skylent as institutional infrastructure in design — curriculum enrichment, LMS, career readiness, postgraduate tracks.",
-    offers: [
-      "Curriculum co-design across departments",
-      "LMS and assessment infrastructure",
-      "Career readiness at graduate scale",
-      "Postgraduate specialisation tracks",
-    ],
-    href: "/universities",
-    hrefLabel: "University partnership page",
-  },
-  {
-    id: "skill-institutions",
-    label: "Skill & Training Institutions",
-    rail: "Training",
-    sub: "Training Centers · Vocational · EdTech",
-    problem: "Batches, trainers, and certificates live in spreadsheets, not a career path.",
-    value: "Programs, batches, trainers, learners, certification, and career support as one delivery system.",
-    workflow: ["Programs", "Batches", "Trainers", "Learners", "Certification", "Career support"],
-    description: "Power delivery with Skylent infrastructure — credentials and Career OS for qualifying graduates.",
-    offers: [
-      "Batch and trainer operations — not built yet",
-      "Certification as product direction — not issued here",
-      "Career OS for qualifying learners",
-      "Job board connection — when roles are published",
-    ],
-  },
-  {
-    id: "assessment",
-    label: "Assessment & Exam Partners",
-    rail: "Assessment",
-    sub: "Boards · Assessment Bodies · Coaching",
-    problem: "Tests end at a score. Learners need a path after the result.",
-    value: "Question banks, tests, attempts, scoring, and analytics — linked to learning, not stranded.",
-    workflow: ["Question banks", "Tests", "Attempts", "Scoring", "Analytics"],
-    description:
-      "Connect examination infrastructure to continuous learning and, where relevant, exam-prep products (JEE, NEET, CAT).",
-    offers: [
-      "Assessment technology integration — intended",
-      "Analytics on attempts and scoring — intended",
-      "Link scores to learning pathways — intended",
-      "Exam-prep collaboration when those products ship",
-    ],
-  },
-  {
-    id: "industry",
-    label: "Academic & Industry Partners",
-    rail: "Industry",
-    sub: "Employers · Industry Bodies · Curriculum partners",
-    problem: "Hiring and curriculum rarely share the same pipeline.",
-    value: "Projects, experts, curriculum collaboration, and employability — co-designed, not bolted on.",
-    workflow: ["Projects", "Experts", "Curriculum", "Employability"],
-    description: "Co-design programs that create a talent pipeline from education into your industry.",
-    offers: [
-      "Custom program co-design",
-      "Expert and project collaboration",
-      "Employability-aligned curriculum",
-      "Hiring pathway into Career OS when roles exist",
-    ],
-  },
+const PROVIDES = [
+  { title: "Programmes", text: "Certification and professional programmes your learners can take alongside their studies." },
+  { title: "Labs and capstones", text: "Hands-on practice on realistic data and cases, finished with a project." },
+  { title: "Learning platform", text: "Lessons, checks, assignments and progress for every enrolled learner." },
+  { title: "Career OS", text: "Each learner keeps a profile of skills, projects and certificates." },
+  { title: "Skylent AI", text: "Lesson help that explains ideas without giving away assessment answers." },
 ]
 
-const CONNECT = [
-  {
-    name: "Education",
-    note: "Coming soon",
-    items: ["Schooling pathway", "Undergraduate tracks", "Postgraduate specialisation"],
-  },
-  {
-    name: "Skills",
-    note: "Live core",
-    items: ["Courses", "Certificate programmes", "Professional programmes"],
-  },
-  {
-    name: "Career OS",
-    note: "Live workspace",
-    items: ["Profile and evidence", "Opportunities when published", "Applications and interviews"],
-  },
-] as const
+const PARTNERS = [
+  { title: "Colleges and universities", text: "Add practical programmes and a career profile beside the degree you award." },
+  { title: "Skill and training institutions", text: "Run Skylent programmes with your cohorts and trainers." },
+  { title: "Academic and industry partners", text: "Shape programmes, cases and projects with us." },
+]
 
-const COLLABORATION = [
-  {
-    n: "01",
-    label: "Understand",
-    desc: "We map your institution's needs, learner profile, and current gaps.",
-  },
-  {
-    n: "02",
-    label: "Configure",
-    desc: "Faculty, curriculum leads, and Skylent design the programme together. Then we configure what already ships: organisation accounts, live programmes, and LMS progress.",
-  },
-  {
-    n: "03",
-    label: "Launch",
-    desc: "Learners enrol on open programmes. Batches and faculty assignment are not built yet.",
-  },
-  {
-    n: "04",
-    label: "Improve",
-    desc: "Partnership review against real enrolment and LMS progress — not a reporting suite.",
-  },
-] as const
-
-const SCOPE = [
-  { k: "Live for learners", v: "Programmes, LMS, Career OS" },
-  { k: "Organisation account", v: "Sign-in shell exists" },
-  { k: "Not built", v: "Batches, faculty assignment, reporting" },
-  { k: "Next conversation", v: "Co-design around what already ships" },
-] as const
+const STEPS = [
+  { title: "Understand", text: "We map your learners, curriculum and goals together." },
+  { title: "Configure", text: "Choose the programmes and set up an organisation account." },
+  { title: "Launch", text: "Learners enrol, learn and build projects on Skylent." },
+  { title: "Improve", text: "Review progress with us and plan reporting that fits your institution." },
+]
 
 export default function InstitutionsPage() {
-  const [activeId, setActiveId] = useState<string>("colleges")
-
   return (
-    <PublicEditorialShell>
-      <section className="pe-hero" aria-labelledby="inst-hero-title">
-        <div className="cat-rail pe-hero-stage">
-          <div className="pe-hero-copy">
-            <p className="pe-eyebrow">
-              <i aria-hidden="true" />
-              Institutions
-            </p>
-            <h1 id="inst-hero-title">
-              <span>Build the learning</span>
-              <span>ecosystem around your institution.</span>
-            </h1>
-            <p className="pe-lead">
-              Skylent works with schools, colleges, universities, training partners, assessment bodies, and industry
-              on the learning, skills, and career layer around their existing academic work. Institution OS is product
-              direction. The organisation dashboard today is an honest shell.
-            </p>
-            <p className="pe-note">
-              Batches, faculty assignment, and institutional reporting are not built. Partnership starts from what
-              already ships: live programmes, LMS progress, and Career OS.
-            </p>
-            <p className="pe-actions">
-              <Link className="pe-cta" to="/contact">
-                Talk to partnerships
-                <span className="pe-cta-arrow" aria-hidden="true">
-                  →
-                </span>
-              </Link>
-              <Link className="pe-cta-ghost" to="/login">
-                Organisation sign in
-              </Link>
-            </p>
-          </div>
-          <figure className="pe-figure">
-            <div className="pe-photo is-campus">
-              <ProductVisual id="institution-ops" className="pe-product-visual" label="Institution · operations" />
-            </div>
-            <figcaption>Study on campus — not a live class</figcaption>
-          </figure>
-        </div>
-      </section>
-
-      <nav className="pe-inkbar" aria-label="Institution types">
-        <div className="cat-rail pe-inkbar-inner" role="radiogroup">
-          {INSTITUTION_TYPES.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              role="radio"
-              aria-checked={item.id === activeId}
-              className={item.id === activeId ? "is-on" : undefined}
-              onClick={() => {
-                setActiveId(item.id)
-                document.getElementById("institution-types")?.scrollIntoView({ behavior: "smooth", block: "start" })
-              }}
-            >
-              {item.rail}
-            </button>
-          ))}
-        </div>
-      </nav>
-
-      <section className="pe-section is-warm" id="institution-types" aria-labelledby="inst-types-title">
-        <div className="cat-rail">
-          <p className="pe-kicker">Who Skylent works with</p>
-          <h2 id="inst-types-title">Partnership by institution type.</h2>
-          <p className="pe-lead">
-            An operating map — not a live control panel. Select a type to open the intended spine we would build with
-            that partner.
-          </p>
-
-          <div className="pe-map">
-            {INSTITUTION_TYPES.map((item, index) => {
-              const selected = item.id === activeId
-              return (
-                <div key={item.id} className={selected ? "pe-map-item is-on" : "pe-map-item"}>
-                  <button
-                    type="button"
-                    className="pe-map-row"
-                    aria-expanded={selected}
-                    onClick={() => setActiveId(item.id)}
-                  >
-                    <em>{String(index + 1).padStart(2, "0")}</em>
-                    <div>
-                      <strong>{item.label}</strong>
-                      <span>{item.sub}</span>
-                    </div>
-                    <b aria-hidden="true">→</b>
-                  </button>
-                  {selected ? (
-                    <div className="pe-map-detail">
-                      <p>
-                        <strong>Problem. </strong>
-                        {item.problem}
-                      </p>
-                      <p>{item.value}</p>
-                      <p>{item.description}</p>
-                      <p className="pe-note">Product direction · not a live control panel</p>
-                      <ol className="pe-map-rail" aria-label="Intended workflow">
-                        {item.workflow.map((step) => (
-                          <li key={step}>{step}</li>
-                        ))}
-                      </ol>
-                      <ul className="pe-offers" aria-label="Intended with a partner">
-                        {item.offers.map((offer) => (
-                          <li key={offer}>{offer}</li>
-                        ))}
-                      </ul>
-                      <p className="pe-actions">
-                        <Link className="pe-cta" to="/contact">
-                          Enquire now
-                          <span className="pe-cta-arrow" aria-hidden="true">
-                            →
-                          </span>
-                        </Link>
-                        {item.href ? (
-                          <Link className="pe-cta-ghost" to={item.href}>
-                            {item.hrefLabel}
-                          </Link>
-                        ) : null}
-                      </p>
-                    </div>
-                  ) : null}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section className="pe-section is-paper" id="ecosystem" aria-labelledby="inst-connect-title">
-        <div className="cat-rail">
-          <p className="pe-kicker">Operating model</p>
-          <h2 id="inst-connect-title">From institutional intent to a working learning system.</h2>
-          <p className="pe-lead">
-            Live professional programmes, LMS progress, and Career OS are real. Academic lines and institutional
-            reporting are not.
-          </p>
-          <div className="pe-connect">
-            {CONNECT.map((col) => (
-              <div className="pe-connect-col" key={col.name}>
-                <h3>{col.name}</h3>
-                <p className="pe-kicker">{col.note}</p>
-                <ul className="pe-plain">
-                  {col.items.map((item) => (
-                    <li key={item}>{item}</li>
-                  ))}
-                </ul>
+    <PageShell aurora={false}>
+      <div className="site-light hm-page hx-page abx inx">
+        <section className="hx-hero" aria-labelledby="inx-title">
+          <div className="hx-hero__glow" aria-hidden="true" />
+          <div className="sky-container hx-hero__inner inx-hero">
+            <div>
+              <p className="hx-eyebrow">For institutions</p>
+              <h1 id="inx-title" className="hx-hero__title">
+                Practical learning and <em>career readiness</em> for your learners.
+              </h1>
+              <p className="hx-hero__lead">
+                Skylent works with colleges, universities and training partners to add programmes, labs and Career OS alongside their own
+                teaching.
+              </p>
+              <div className="hx-hero__actions">
+                <Link className="sk-btn sk-btn-primary hx-btn" to="/contact">
+                  Talk to partnerships
+                  <ArrowRight />
+                </Link>
+                <Link className="sk-btn hx-btn hx-btn--ghost" to="/login">
+                  Organisation sign in
+                </Link>
               </div>
-            ))}
+            </div>
+            <div className="inx-hero__media">
+              <img src={campusPhoto} alt="Two students studying together outdoors on a campus lawn." />
+            </div>
           </div>
-          <div className="pe-ink-stage is-follow">
-            <ol className="pe-caprail" aria-label="Capability versus what ships">
-              {INSTITUTION_OS_LAYERS.map((item) => (
-                <li key={item.label} className={item.status === "live" ? "is-live" : undefined}>
-                  <strong>{item.label}</strong>
-                  <span>
-                    <MaturityMark maturity={item.status} compact />
-                  </span>
+        </section>
+
+        <section className="abx-section" aria-labelledby="inx-provides">
+          <div className="sky-container">
+            <div className="hx-head">
+              <div>
+                <p className="hx-eyebrow hx-eyebrow--dark">What Skylent provides</p>
+                <h2 id="inx-provides" className="hx-h2">
+                  Everything your learners use, <em>in one platform.</em>
+                </h2>
+              </div>
+            </div>
+            <ul className="inx-provides">
+              {PROVIDES.map((item) => (
+                <li key={item.title}>
+                  <b>{item.title}</b>
+                  <span>{item.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section className="abx-section abx-section--tint" aria-labelledby="inx-partners">
+          <div className="sky-container">
+            <p className="hx-eyebrow hx-eyebrow--dark">Who we work with</p>
+            <h2 id="inx-partners" className="hx-h2 hx-h2--sm">Partnerships by type of institution.</h2>
+            <ul className="abx-principles">
+              {PARTNERS.map((item) => (
+                <li key={item.title}>
+                  <b>{item.title}</b>
+                  <span>{item.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        <section className="abx-section" aria-labelledby="inx-steps">
+          <div className="sky-container">
+            <p className="hx-eyebrow hx-eyebrow--dark">How it works</p>
+            <h2 id="inx-steps" className="hx-h2 hx-h2--sm">Understand, configure, launch, improve.</h2>
+            <ol className="inx-steps">
+              {STEPS.map((step) => (
+                <li key={step.title}>
+                  <b>{step.title}</b>
+                  <span>{step.text}</span>
                 </li>
               ))}
             </ol>
-            <div className="pe-product">
-              <SkylentOsPreview />
-              <p className="pe-caption">Skylent OS — learner progress already in the product. Not an institution dashboard.</p>
+          </div>
+        </section>
+
+        <section className="hx-close" aria-labelledby="inx-close">
+          <div className="hx-hero__glow" aria-hidden="true" />
+          <div className="sky-container hx-close__inner">
+            <h2 id="inx-close" className="hx-close__title">
+              Bring Skylent to <em>your institution.</em>
+            </h2>
+            <div className="hx-hero__actions">
+              <Link className="sk-btn sk-btn-primary hx-btn" to="/contact">
+                Partner with Skylent
+                <ArrowRight />
+              </Link>
+              <Link className="sk-btn hx-btn hx-btn--ghost" to="/career-os">
+                See Career OS
+              </Link>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="pe-section is-paper" id="partnership" aria-labelledby="inst-collab-title">
-        <div className="cat-rail">
-          <p className="pe-kicker">How collaboration takes shape</p>
-          <h2 id="inst-collab-title" className="is-quiet">Understand, configure, launch, improve.</h2>
-          <p className="pe-lead">
-            Partnership starts with a conversation. Full Institution OS — batches, faculty, reporting — is the intended
-            product, not what an organisation account can run today.
-          </p>
-          <ol className="pe-track">
-            {COLLABORATION.map((step) => (
-              <li key={step.n}>
-                <p className="pe-kicker">{step.n}</p>
-                <h3>{step.label}</h3>
-                <p>{step.desc}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="pe-close" id="enquiries" aria-labelledby="inst-close-title">
-        <div className="cat-rail">
-          <p className="pe-kicker">Institutional partnership</p>
-          <h2 id="inst-close-title">Bring Skylent to your institution.</h2>
-          <p className="pe-lead">
-            Get in touch to discuss your institution's needs. We will map a partnership that fits your learners, your
-            curriculum, and what already ships.
-          </p>
-          <ul className="pe-marks">
-            <li>
-              <i aria-hidden="true" />
-              No long lock-ins
-            </li>
-            <li>
-              <i aria-hidden="true" />
-              Co-designed programmes
-            </li>
-            <li>
-              <i aria-hidden="true" />
-              Organisation accounts exist
-            </li>
-            <li>
-              <i aria-hidden="true" />
-              Honest capability map
-            </li>
-          </ul>
-          <p className="pe-actions">
-            <Link className="pe-cta" to="/contact">
-              Partner with Skylent
-              <span className="pe-cta-arrow" aria-hidden="true">
-                →
-              </span>
-            </Link>
-            <Link className="pe-cta-ghost" to="/career-os">
-              View Career OS
-            </Link>
-          </p>
-          <aside className="pe-scope">
-            <p className="pe-kicker">What is in scope now</p>
-            <dl>
-              {SCOPE.map((row) => (
-                <div key={row.k}>
-                  <dt>{row.k}</dt>
-                  <dd>{row.v}</dd>
-                </div>
-              ))}
-            </dl>
-          </aside>
-        </div>
-      </section>
-    </PublicEditorialShell>
+        </section>
+      </div>
+    </PageShell>
   )
 }

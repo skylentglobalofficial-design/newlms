@@ -29,7 +29,11 @@ import {
   submitQuizAttempt,
   updateAssignment,
 } from '../lib/lms-api'
+import { TermsConsent } from '../components/legal/TermsConsent'
+import LessonSlide from '../components/lms/LessonSlide'
 import './LearnWorkspace.css'
+
+const TERMS_REQUIRED = '__terms_required__'
 import '../components/lms/SkylentAI.css'
 
 const SkylentAI = lazy(() => import('../components/lms/SkylentAI'))
@@ -91,6 +95,7 @@ export default function LearnPage() {
   const [quizAttempt, setQuizAttempt] = useState(0)
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
   const [enrolling, setEnrolling] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [enrollError, setEnrollError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [completing, setCompleting] = useState(false)
@@ -262,12 +267,17 @@ export default function LearnPage() {
         <p className="os-eyebrow">Not enrolled</p>
         <h1>{access.courseTitle}</h1>
         <p>You are signed in but not enrolled in this course yet.</p>
+        <TermsConsent checked={termsAccepted} onChange={setTermsAccepted} action="enrolling" showError={enrollError === TERMS_REQUIRED} />
         <div className="os-actions">
           <button
             type="button"
             className="os-btn os-btn-primary"
             disabled={enrolling}
             onClick={() => {
+              if (!termsAccepted) {
+                setEnrollError(TERMS_REQUIRED)
+                return
+              }
               setEnrolling(true)
               setEnrollError(null)
               void enroll()
@@ -279,7 +289,7 @@ export default function LearnPage() {
           </button>
           <Link className="os-link" to="/dashboard/student">Back to my learning</Link>
         </div>
-        {enrollError ? <p className="os-error" role="alert">{enrollError}</p> : null}
+        {enrollError && enrollError !== TERMS_REQUIRED ? <p className="os-error" role="alert">{enrollError}</p> : null}
       </StateScreen>
     )
   }
@@ -502,6 +512,14 @@ export default function LearnPage() {
 
             {selectedLesson ? (
               <article className="os-lesson-stage">
+                {!selectedState.locked && selectedLesson.type !== 'video' && isAuthoredCourse(readyCourse.slug) ? (
+                  <LessonSlide
+                    courseSlug={readyCourse.slug}
+                    lessonId={selectedLesson.id}
+                    title={selectedLesson.title}
+                    kicker={`${moduleIndex ? `Module ${moduleIndex} · ` : ''}Lesson ${lessonIndex} · ${lessonTypeLabel(selectedLesson.type, selectedLesson.title)}`}
+                  />
+                ) : null}
                 <div className="os-lesson-head">
                   <p className="os-kicker">
                     {moduleIndex ? `Module ${moduleIndex} · ` : ''}

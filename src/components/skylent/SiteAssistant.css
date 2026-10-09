@@ -1,74 +1,138 @@
-/* Site-wide Skylent AI. Prefix sia-. Navy = product anchor, cyan = the Skylent AI mark only, cobalt = action. */
+/* Site-wide Skylent AI (repolish). Prefix sia-. Navy panel head, cyan only on the bot, cobalt actions. */
 .sia { font-family: var(--sk-font-body); font-size: 15px; line-height: 1.5; color: hsl(var(--site-ink)); }
 .sia *, .sia *::before, .sia *::after { box-sizing: border-box; }
-.sia :is(a, button, textarea):focus-visible { outline: 2px solid hsl(var(--site-highlight)); outline-offset: 2px; }
+.sia :is(a, button, textarea, input):focus-visible { outline: 2px solid hsl(var(--site-highlight)); outline-offset: 2px; }
+.sia .sia-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-.sia-launcher { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); z-index: 180; display: inline-flex; align-items: center; gap: 10px; min-height: 46px; padding: 0 16px 0 14px; border: 1px solid hsl(var(--site-navy)); border-radius: 8px; background: hsl(var(--site-navy)); color: hsl(var(--site-white)); font-family: var(--sk-font-mono); font-size: 12px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; box-shadow: var(--sk-shadow); transition: background-color var(--sk-fast) var(--sk-ease); }
-.sia-launcher:hover { background: hsl(var(--site-navy-2)); }
-.sia-launcher__dot { width: 8px; height: 8px; border-radius: 2px; background: hsl(var(--site-cyan)); flex: none; }
+/* Robot-dot mark */
+.sia-bot { display: block; flex: none; color: hsl(var(--site-cyan)); }
+.sia-bot__halo { fill: hsl(var(--site-cyan) / .14); }
+.sia-bot__head { fill: #fff; }
+.sia-bot__antenna { fill: hsl(var(--site-cyan)); }
+.sia-bot__eyes ellipse { fill: hsl(var(--site-navy)); transform-origin: center 20px; }
+.sia-bot__smile { stroke: hsl(var(--site-navy)); }
+@media (prefers-reduced-motion: no-preference) {
+  .sia-bot__eyes ellipse { animation: sia-blink 5.5s infinite; }
+  .sia-bot__antenna { animation: sia-pulse 2.8s ease-in-out infinite; }
+}
+@keyframes sia-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.15); } }
+@keyframes sia-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+
+/* Launcher: a small round bot with a label on wide screens */
+.sia-launcher {
+  position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); z-index: 180;
+  display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 8px 18px 8px 9px;
+  border: 1px solid hsl(var(--site-navy-line)); border-radius: 999px;
+  background: hsl(var(--site-navy)); color: #fff;
+  font-family: var(--sk-font-body); font-size: 14px; font-weight: 600; letter-spacing: 0;
+  cursor: pointer; box-shadow: 0 10px 30px -10px hsl(var(--site-navy) / .55);
+  transition: transform var(--sk-base) var(--sk-ease), background-color var(--sk-fast) var(--sk-ease);
+}
+.sia-launcher:hover { background: hsl(var(--site-navy-2)); transform: translateY(-2px); }
 .sia-launcher--hidden { visibility: hidden; pointer-events: none; }
+@media (max-width: 640px) {
+  .sia-launcher { padding: 8px; min-height: 52px; }
+  .sia-launcher__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
 
+/* Invitation bubble */
+.sia-invite {
+  position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: calc(max(16px, env(safe-area-inset-bottom)) + 64px); z-index: 181;
+  width: min(300px, calc(100vw - 32px)); padding: 14px 16px 14px;
+  border: 1px solid hsl(var(--site-border)); border-radius: 16px 16px 4px 16px;
+  background: #fff; box-shadow: var(--sk-shadow-lg);
+}
+@media (prefers-reduced-motion: no-preference) { .sia-invite { animation: sia-in 260ms var(--sk-ease) both; } }
+.sia-invite__text { margin: 0 24px 10px 0; font-size: 14.5px; line-height: 1.45; color: hsl(var(--site-ink)); }
+.sia-invite__go { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 14px; border: 0; border-radius: 999px; background: hsl(var(--site-deep)); color: #fff; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.sia-invite__close { position: absolute; top: 6px; right: 6px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 8px; background: transparent; color: hsl(var(--site-dim)); cursor: pointer; }
+.sia-invite__close:hover { background: hsl(var(--site-soft)); }
+
+/* Panel */
 .sia-backdrop { display: none; }
-.sia-panel { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); z-index: 400; width: min(420px, calc(100vw - 32px)); height: min(640px, calc(100vh - 96px)); display: flex; flex-direction: column; overflow: hidden; border: 1px solid hsl(var(--site-border-strong)); border-radius: 12px; background: hsl(var(--site-white)); box-shadow: var(--sk-shadow-lg); animation: sia-in 200ms var(--sk-ease) both; }
-@keyframes sia-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.sia-panel {
+  position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: max(16px, env(safe-area-inset-bottom)); z-index: 400;
+  width: min(400px, calc(100vw - 32px)); height: min(640px, calc(100vh - 96px));
+  display: flex; flex-direction: column; overflow: hidden;
+  border: 1px solid hsl(var(--site-border-strong)); border-radius: 18px; background: #fff; box-shadow: var(--sk-shadow-lg);
+}
+@media (prefers-reduced-motion: no-preference) { .sia-panel { animation: sia-in 220ms var(--sk-ease) both; } }
+@keyframes sia-in { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
 
-.sia-head { flex: none; padding: 10px 12px 14px 18px; }
-.sia-head__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
-.sia-head__title { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; min-width: 0; }
-.sia-close { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin: -4px -4px -4px 0; border: 0; border-radius: 8px; background: transparent; color: hsl(var(--site-on-navy)); cursor: pointer; }
+.sia-head { flex: none; display: flex; align-items: center; gap: 10px; padding: 12px 10px 12px 14px; background: hsl(var(--site-navy)); color: #fff; }
+.sia-head__text { display: grid; min-width: 0; flex: 1; }
+.sia-head__title { font-weight: 700; font-size: 15px; }
+.sia-head__sub { font-size: 12.5px; color: hsl(var(--site-on-navy-muted)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sia-restart { min-height: 36px; padding: 0 10px; border: 1px solid hsl(var(--site-navy-line-2)); border-radius: 999px; background: transparent; color: hsl(var(--site-on-navy)); font: inherit; font-size: 12.5px; cursor: pointer; }
+.sia-restart:hover { background: hsl(var(--site-navy-2)); }
+.sia-close { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border: 0; border-radius: 10px; background: transparent; color: hsl(var(--site-on-navy)); cursor: pointer; }
 .sia-close:hover { background: hsl(var(--site-navy-2)); }
-.sia-context { margin: 6px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; font-family: var(--sk-font-mono); font-size: 10.5px; letter-spacing: .04em; color: hsl(var(--site-on-navy)); }
-.sia-context li { padding: 3px 8px; border: 1px solid hsl(var(--site-navy-line-2)); border-radius: 6px; }
-.sia-context li::before { content: ""; display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 1px; background: hsl(var(--site-cyan)); vertical-align: 1px; }
-.sia-context .sia-context__off { border-style: dashed; color: hsl(var(--site-on-navy-muted)); }
-.sia-context .sia-context__off::before { background: transparent; border: 1px solid hsl(var(--site-navy-line-2)); }
 
-.sia-thread { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 18px 16px; overscroll-behavior: contain; }
-.sia-empty { padding-top: 14px; }
-.sia-empty p { margin: 6px 0 10px; font-size: 14px; color: hsl(var(--site-muted)); }
-.sia-empty ul { margin: 0; padding: 0; list-style: none; border-top: 1px solid hsl(var(--site-border)); }
-.sia-empty li { border-bottom: 1px solid hsl(var(--site-border)); }
-.sia-empty button { width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 0; border: 0; background: transparent; color: hsl(var(--site-ink)); font: inherit; font-size: 14.5px; font-weight: 500; text-align: left; cursor: pointer; }
-.sia-empty button svg { flex: none; color: hsl(var(--site-deep)); }
-.sia-empty button:hover { color: hsl(var(--site-deep)); }
+.sia-thread { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 14px 18px; display: flex; flex-direction: column; gap: 10px; overscroll-behavior: contain; background: hsl(var(--site-proof)); }
+.sia-msg { margin: 0; max-width: 88%; padding: 10px 13px; border-radius: 14px; font-size: 14.5px; line-height: 1.5; overflow-wrap: anywhere; }
+.sia-msg p { margin: 0; white-space: pre-wrap; }
+.sia-msg--bot { align-self: flex-start; background: #fff; border: 1px solid hsl(var(--site-border)); border-bottom-left-radius: 4px; color: hsl(var(--site-ink)); }
+.sia-msg--user { align-self: flex-end; background: hsl(var(--site-deep)); color: #fff; border-bottom-right-radius: 4px; }
+.sia-msg--failure p { color: hsl(var(--site-ink)); }
+.sia-msg--failure button { margin-top: 8px; min-height: 36px; padding: 0 12px; border: 1px solid hsl(var(--site-border-strong)); border-radius: 999px; background: #fff; font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+.sia-msg__action { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; color: hsl(var(--site-deep)); font-weight: 600; font-size: 14px; text-decoration: none; }
+.sia-step { display: flex; flex-direction: column; gap: 10px; }
+.sia-options { display: flex; flex-wrap: wrap; gap: 8px; }
+.sia-option { min-height: 40px; padding: 0 14px; border: 1px solid hsl(var(--site-deep) / .45); border-radius: 999px; background: #fff; color: hsl(var(--site-ocean)); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; transition: background-color var(--sk-fast) var(--sk-ease); }
+.sia-option:hover { background: hsl(var(--site-soft-blue)); }
 
-.sia-exchange { border-bottom: 1px solid hsl(var(--site-border-strong)); padding-bottom: 14px; }
-.sia-exchange:last-child { border-bottom: 0; }
-.sia-row { padding-top: 12px; margin-top: 12px; border-top: 1px solid hsl(var(--site-border)); }
-.sia-exchange > .sia-row:first-child { border-top: 0; margin-top: 2px; }
-.sia-row .sky-label { margin-bottom: 6px; }
-.sia-row .sky-label b { font-weight: 500; color: hsl(var(--site-deep)); }
-.sia-answer-label { display: flex; align-items: center; gap: 8px; }
-.sia-answer-label > span { width: 6px; height: 6px; border-radius: 1px; background: hsl(var(--site-cyan)); }
-.sia .sia-question { margin: 0; font-family: var(--sk-font-heading); font-size: 17px; font-weight: 600; line-height: 1.3; letter-spacing: 0; color: hsl(var(--site-ink)); overflow-wrap: anywhere; }
-.sia-answer { margin: 0; font-size: 15px; line-height: 1.6; color: hsl(var(--site-ink)); white-space: pre-wrap; overflow-wrap: anywhere; }
-.sia-sending { font-family: var(--sk-font-mono); font-size: 11px; letter-spacing: .04em; color: hsl(var(--site-dim)); }
-.sia-progress { position: relative; height: 2px; margin-bottom: 8px; overflow: hidden; background: hsl(var(--site-border)); }
-.sia-progress::after { content: ""; position: absolute; inset: 0 60% 0 0; background: hsl(var(--site-deep)); animation: sia-slide 1.1s var(--sk-ease) infinite; }
-@keyframes sia-slide { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
-.sia-failure p { margin: 0; font-size: 14.5px; line-height: 1.5; color: hsl(var(--site-red)); }
-.sia-failure button { margin-top: 8px; min-height: 44px; padding: 0 14px; border: 1px solid hsl(var(--site-border-strong)); border-radius: 8px; background: hsl(var(--site-white)); color: hsl(var(--site-ink)); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
-.sia-failure button:disabled { opacity: .5; cursor: default; }
-.sia-action { min-height: 44px; }
+.sia-suggest { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.sia-suggest__card { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; align-items: center; padding: 12px 14px; border: 1px solid hsl(var(--site-border)); border-radius: 12px; background: #fff; color: hsl(var(--site-ink)); text-decoration: none; transition: border-color var(--sk-fast) var(--sk-ease); }
+.sia-suggest__card:hover { border-color: hsl(var(--site-deep)); }
+.sia-suggest__card svg { grid-column: 2; grid-row: 1 / span 2; color: hsl(var(--site-deep)); }
+.sia-suggest__title { font-weight: 650; font-size: 14.5px; }
+.sia-suggest__note { font-size: 12.5px; color: hsl(var(--site-dim)); }
+.sia-suggest__note--open { color: hsl(152 55% 28%); font-weight: 600; }
 
-.sia-form { flex: none; padding: 12px 18px 16px; border-top: 1px solid hsl(var(--site-border-strong)); background: hsl(var(--site-white)); }
-.sia-form label { display: block; margin-bottom: 8px; }
+.sia-feedback { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13.5px; color: hsl(var(--site-dim)); }
+.sia-feedback button { min-height: 36px; padding: 0 12px; border: 1px solid hsl(var(--site-border-strong)); border-radius: 999px; background: #fff; font: inherit; font-size: 13.5px; cursor: pointer; }
+.sia-feedback button:hover { border-color: hsl(var(--site-deep)); }
+
+.sia-typing { display: inline-flex; gap: 4px; padding: 14px; }
+.sia-typing span { width: 6px; height: 6px; border-radius: 50%; background: hsl(var(--site-dim)); }
+@media (prefers-reduced-motion: no-preference) {
+  .sia-typing span { animation: sia-dot 1s infinite; }
+  .sia-typing span:nth-child(2) { animation-delay: .15s; }
+  .sia-typing span:nth-child(3) { animation-delay: .3s; }
+}
+@keyframes sia-dot { 0%, 100% { opacity: .3; transform: none; } 50% { opacity: 1; transform: translateY(-2px); } }
+
+.sia-enquiry { display: grid; gap: 10px; padding: 14px; border: 1px solid hsl(var(--site-border)); border-radius: 14px; background: #fff; }
+.sia-enquiry__row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.sia-enquiry label { display: grid; gap: 4px; font-size: 12.5px; font-weight: 600; color: hsl(var(--site-muted)); }
+.sia-enquiry input, .sia-enquiry textarea { width: 100%; min-height: 40px; padding: 8px 10px; border: 1px solid hsl(var(--site-border-strong)); border-radius: 8px; font: inherit; font-size: 15px; color: hsl(var(--site-ink)); background: #fff; }
+.sia-enquiry textarea { resize: vertical; }
+.sia-enquiry .tc { margin: 0; }
+.sia-enquiry__error { margin: 0; font-size: 13px; color: hsl(var(--site-red)); }
+.sia-sent { padding: 14px; border-radius: 14px; background: #fff; border: 1px solid hsl(152 45% 82%); font-size: 14px; }
+.sia-sent p { margin: 0; }
+.sia-sent__title { font-weight: 700; margin-bottom: 4px !important; }
+.sia-mono { font-family: var(--sk-font-mono); font-size: 12.5px; overflow-wrap: anywhere; }
+
+.sia-form { flex: none; padding: 10px 12px 10px; border-top: 1px solid hsl(var(--site-border)); background: #fff; }
 .sia-form__row { display: flex; gap: 8px; align-items: stretch; }
-.sia-form textarea { flex: 1; min-width: 0; min-height: 46px; max-height: 120px; padding: 11px 12px; border: 1px solid hsl(var(--site-border-strong)); border-radius: 8px; background: hsl(var(--site-white)); color: hsl(var(--site-ink)); font: inherit; font-size: 16px; line-height: 1.4; resize: none; }
+.sia-form textarea { flex: 1; min-width: 0; min-height: 44px; max-height: 120px; padding: 10px 12px; border: 1px solid hsl(var(--site-border-strong)); border-radius: 12px; background: #fff; color: hsl(var(--site-ink)); font: inherit; font-size: 16px; line-height: 1.4; resize: none; }
 .sia-form textarea::placeholder { color: hsl(var(--site-dim)); }
 .sia-form textarea:focus { outline: none; border-color: hsl(var(--site-deep)); box-shadow: 0 0 0 3px hsl(var(--site-deep) / .15); }
-.sia-send { flex: none; width: 46px; min-height: 46px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 8px; background: hsl(var(--site-deep)); color: hsl(var(--site-white)); cursor: pointer; transition: background-color var(--sk-fast) var(--sk-ease); }
-.sia-send:hover { background: hsl(var(--site-ocean)); }
+.sia-send { flex: none; width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; border: 0; border-radius: 12px; background: hsl(var(--site-deep)); color: #fff; cursor: pointer; }
 .sia-send:disabled { opacity: .45; cursor: default; }
+.sia-foot { margin: 6px 2px 0; font-size: 11.5px; color: hsl(var(--site-dim)); }
 
-/* Small screens: a compact launcher that stays clear of page actions, and a bottom sheet. */
-@media (max-width: 560px) {
-  .sia-launcher { min-height: 44px; padding: 0 12px; font-size: 11px; letter-spacing: .1em; right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); }
-  .sia-backdrop { display: block; position: fixed; inset: 0; z-index: 399; background: hsl(var(--site-navy) / .45); }
-  .sia-panel { left: 0; right: 0; bottom: 0; width: 100%; height: min(86vh, 640px); border-radius: 16px 16px 0 0; border-width: 1px 0 0; }
+@media (max-width: 640px) {
+  .sia-backdrop { display: block; position: fixed; inset: 0; z-index: 399; background: hsl(var(--site-navy) / .4); }
+  .sia-panel { right: 0; left: 0; bottom: 0; width: 100%; height: min(86vh, 680px); border-radius: 18px 18px 0 0; border-bottom: 0; }
+  .sia-enquiry__row { grid-template-columns: 1fr; }
+  .sia-head__sub { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sia-panel { animation: none; }
-  .sia-progress::after { animation: none; inset: 0; opacity: .5; }
-  .sia-launcher, .sia-send { transition: none; }
+  .sia-launcher, .sia-option, .sia-suggest__card { transition: none; }
+  .sia-launcher:hover { transform: none; }
 }
+/* Terms checkbox inside the enquiry form keeps its own compact layout. */
+.sia-enquiry .tc__row { display: flex; gap: 8px; font-size: 13px; font-weight: 400; color: hsl(var(--site-muted)); }
+.sia-enquiry .tc__box { width: 18px; height: 18px; min-height: 0; padding: 0; flex: none; }

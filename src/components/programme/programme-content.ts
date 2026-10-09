@@ -362,7 +362,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
       width: 1600,
       height: 1068,
       alt: "Seen from above, a team around a wooden table with laptops, notebooks and phones, working through a review together.",
-      caption: "Stand-in photograph · a product review session",
+      caption: "A product review session",
     },
     steps: [
       {

@@ -7,6 +7,7 @@ import { buildGoogleOAuthStartUrl } from '../lib/auth-api'
 import { courseBySlug } from '../lib/catalog-maturity'
 import { programmeDiscoveryFor } from '../lib/programme-discovery'
 import './LoginPage.css'
+import { TermsConsent } from '../components/legal/TermsConsent'
 
 // Compile-time flag (Vite replaces import.meta.env.VITE_*). Production builds set
 // VITE_DEMO_MODE=false via .env.production so the picker is tree-shaken out of dist.
@@ -103,6 +104,8 @@ export default function LoginPage() {
   const [suName, setSuName] = useState('')
   const [suEmail, setSuEmail] = useState('')
   const [suPassword, setSuPassword] = useState('')
+  const [suTerms, setSuTerms] = useState(false)
+  const [suTermsTried, setSuTermsTried] = useState(false)
 
   const [error, setError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -201,6 +204,11 @@ export default function LoginPage() {
     }
     if (suPassword.trim().length < 8) {
       setError('Choose a password of at least 8 characters.')
+      return
+    }
+    if (!suTerms) {
+      setSuTermsTried(true)
+      setError('Accept the Terms & Conditions and Privacy Policy to create an account.')
       return
     }
 
@@ -347,6 +355,7 @@ export default function LoginPage() {
                       disabled={submitting}
                     />
                   </div>
+                  <TermsConsent checked={suTerms} onChange={setSuTerms} action="creating an account" showError={suTermsTried} />
                   <button className="entry-submit" type="submit" disabled={submitting || googleLoading}>
                     {submitting ? 'Creating account…' : 'Create account'}
                   </button>
@@ -356,7 +365,7 @@ export default function LoginPage() {
                   <button
                     className="entry-google"
                     type="button"
-                    onClick={startGoogleAuth}
+                    onClick={() => { if (!suTerms) { setSuTermsTried(true); setError('Accept the Terms & Conditions and Privacy Policy to create an account.'); return } startGoogleAuth() }}
                     disabled={submitting || googleLoading}
                   >
                     {googleLoading ? 'Redirecting to Google…' : 'Continue with Google'}

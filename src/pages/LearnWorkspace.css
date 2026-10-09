@@ -1413,3 +1413,52 @@
    visually hidden spans cannot stretch the document past the fixed player frame. */
 .lx-option { position: relative; }
 .lx-question { position: relative; }
+
+/* ── Repolish: dark outline on the left, white workspace, black lesson slide ── */
+.os-rail { background: #0b1220; border-right-color: #1c2538; color: #c9d2e4; }
+.os-rail .os-eyebrow, .os-rail .os-rail-kicker { color: #8f9bb5; }
+.os-rail .os-module { border-top-color: #1f2a40; }
+.os-rail .os-module-toggle { color: #e8ecf5; }
+.os-rail .os-module-toggle:hover .os-module-label { color: #9fc0ff; }
+.os-rail .os-module-num, .os-rail .os-module-meta, .os-rail .os-lesson-num { color: #7d89a3; }
+.os-rail .os-module.is-current .os-module-num { color: #22c7f2; }
+.os-rail .os-module.is-ahead .os-module-label { color: #a9b4c8; }
+.os-rail .os-module-track { background: #1f2a40; }
+.os-rail .os-module-track > span { background: #2563ff; }
+.os-rail .os-lesson { color: #b8c2d6; }
+.os-rail .os-lesson:not(:disabled):hover { background: #141c2e; color: #ffffff; }
+.os-rail .os-lesson.is-current, .os-rail .os-lesson.is-current:not(:disabled):hover { background: #16213a; color: #ffffff; box-shadow: inset 2px 0 0 #22c7f2; }
+.os-rail .os-lesson.is-current .os-lesson-num { color: #ffffff; }
+.os-rail .os-lesson.is-locked, .os-rail .os-lesson:disabled { color: #5f6b85; }
+.os-rail .os-state-glyph { color: #4f86ff; }
+.os-rail .os-lesson.is-locked .os-state-glyph { color: #3a4560; }
+.os-rail .os-rail-close { color: #e8ecf5; }
+.os-rail :focus-visible { outline-color: #22c7f2; }
+
+.os-slide { margin: 0 0 28px; }
+.os-slide__frame {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  min-height: clamp(220px, 26vw, 320px);
+  padding: clamp(24px, 3.5vw, 44px);
+  border-radius: 16px;
+  background: radial-gradient(70% 90% at 100% 0%, rgba(37, 99, 255, 0.22), transparent 60%), #05080f;
+  color: #e8ecf5;
+  box-shadow: 0 24px 60px -30px rgba(5, 8, 15, 0.7);
+  overflow: hidden;
+}
+.os-slide__kicker { margin: 0; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: #22c7f2; }
+.os-slide__title { margin: 0; max-width: 18em; font-family: var(--skylent-font-heading, var(--font-display)); font-size: clamp(24px, 3vw, 34px); font-weight: 650; line-height: 1.12; letter-spacing: -0.02em; color: #ffffff !important; }
+.os-slide__objective { margin: 0; max-width: 40em; font-size: 15.5px; line-height: 1.6; color: #b8c2d6; }
+.os-slide__concepts { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 0; padding: 0; list-style: none; }
+.os-slide__concepts li { padding: 5px 12px; border: 1px solid #2a3550; border-radius: 999px; font-size: 13px; color: #e8ecf5; }
+.os-slide__brand { position: absolute; right: 20px; bottom: 16px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #3d4a66; }
+.os-slide + .os-lesson-head .os-kicker { display: none; }
+@media (max-width: 640px) {
+  .os-slide { margin: -8px -4px 22px; }
+  .os-slide__frame { border-radius: 12px; min-height: 0; }
+}
+.os-slide + .os-lesson-head h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; margin: 0; }

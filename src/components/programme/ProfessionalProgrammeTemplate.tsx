@@ -24,6 +24,7 @@ import type { AuthoredProgrammeContent, ProgrammeStep } from "./programme-conten
 import { numberWord, plural, type ProgrammeTruth } from "./programme-truth"
 import "./ProfessionalProgrammeTemplate.css"
 import "../../pages/cine.css"
+import { openSkylentAi } from "../skylent/ai-events"
 
 type Props = {
   program: CatalogProgramDetail
@@ -231,8 +232,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               {content.artefact === "northwind" ? <NorthwindLabPlate /> : <HarborDeskPlate />}
             </div>
             <figcaption className="sky-stage__caption cine-in cine-in--fade cine-d6">
-              <span>FIG. 01 · {content.hero.figure}</span>
-              <span>{content.hero.figureNote}</span>
+              <span>{content.hero.figure}</span>
             </figcaption>
           </Reveal>
 
@@ -571,9 +571,9 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           </div>
           <Reveal delay={180} className="pp-actions">
             {primaryAction}
-            <Link className="sk-btn sk-btn-secondary" to="/path">
-              {canEnrol ? "Not sure yet? Find my path" : "Find my path"}
-            </Link>
+            <button type="button" className="sk-btn sk-btn-secondary" onClick={() => openSkylentAi("finder")}>
+              {canEnrol ? "Not sure yet? Ask Skylent AI" : "Ask Skylent AI"}
+            </button>
           </Reveal>
         </Reveal>
       </section>

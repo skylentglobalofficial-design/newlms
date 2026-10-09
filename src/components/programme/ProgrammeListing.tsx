@@ -16,6 +16,7 @@ import { Reveal } from "../skylent/Reveal"
 import { ProgrammeThumb, programmeThumbInfo } from "./ProgrammeArtefacts"
 import { plural, type ProgrammeTruth } from "./programme-truth"
 import "./ProfessionalProgrammeTemplate.css"
+import { openSkylentAi } from "../skylent/ai-events"
 
 type Props = {
   program: CatalogProgramDetail
@@ -123,8 +124,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                 <ProgrammeThumb program={program} />
               </div>
               <figcaption className="sky-stage__caption">
-                <span>FIG. 01 · {thumb.caption}</span>
-                {thumb.illustrative ? <span>Illustrative. Not course material.</span> : null}
+                <span>{thumb.caption}</span>
               </figcaption>
             </Reveal>
           ) : null}
@@ -149,9 +149,9 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   <ArrowRight />
                 </Link>
               )}
-              <Link className="sk-btn sk-btn-secondary" to="/path">
-                Find my path
-              </Link>
+              <button type="button" className="sk-btn sk-btn-secondary" onClick={() => openSkylentAi("finder")}>
+                Ask Skylent AI
+              </button>
             </div>
           </Reveal>
         </div>

@@ -46,8 +46,8 @@ export const C = {
   onNavyMuted: '#9AA6BF',
   cobalt: '#2563FF',
   cobaltTint: '#EAF0FF',
-  proof: '#FAF9F6',
-  proofInset: '#F3F0E8',
+  proof: '#F5F7FB',
+  proofInset: '#EDF1F7',
   proofLine: '#E6E1D6',
   cyan: '#22C7F2',
 } as const
@@ -387,10 +387,10 @@ export const type = {
 } as const
 
 export const fonts = {
-  heading: "'Space Grotesk', system-ui, sans-serif",
+  heading: "'Inter', system-ui, sans-serif",
   /** @deprecated Legacy name. There is no serif in the system; this is the heading face. */
-  serif: "'Space Grotesk', system-ui, sans-serif",
-  sans: "'DM Sans', system-ui, sans-serif",
+  serif: "'Inter', system-ui, sans-serif",
+  sans: "'Inter', system-ui, sans-serif",
   mono: "'DM Mono', ui-monospace, monospace",
 } as const
 
