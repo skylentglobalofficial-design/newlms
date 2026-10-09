@@ -1,7 +1,7 @@
 import dotenv from "dotenv"
 import { PrismaClient } from "@prisma/client"
 
-dotenv.config({ override: true })
+dotenv.config()
 
 const databaseUrl = process.env.DATABASE_URL
 

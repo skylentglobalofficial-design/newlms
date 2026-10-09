@@ -78,3 +78,19 @@ Legend: **OK** means the path, method, CSRF, body, response fields and status ha
 - `final-flows`: fx 26/0 failing, down 21/0 failing, si 8/0 failing.
 - `test-product-manifest`: 129 checks pass. `test-ai-policy` passes.
 - Login fix: a harness check with mocked fetch shows the HEAD build giving "Sign in to continue." for a 401 and "Validation failed" for a 400. The fixed build gives "Invalid email or password" and "Enter a valid email address", while 403 CSRF, 409, 429, the expired `PATCH /me` 401 and the 200 cases are unchanged. A browser render of `/login` with a mocked 401 shows "Invalid email or password" in the existing error box.
+
+## 5. Release execution follow-up
+
+Changes made after the audit above, on `skylent/product-truth`:
+
+| Item | Decision |
+|---|---|
+| `POST /enquiries` 429 returned text/plain | **FIXED**: the limiter now answers `429 {error}` as JSON, like the certificate limiter |
+| `POST /reva/chat` 429 returned text/plain | **FIXED**: same JSON handler |
+| `POST /reva/chat` with no `SKYLENT_AI_API_KEY` answered every question with one canned catalogue line | **FIXED**: it now returns `503 {code:"not_configured"}`, which the site assistant already renders as "Skylent AI isn't available yet." The two rule-based replies that run before the key check (identity, and "this assistant does not have your progress") are unchanged; they state what the assistant cannot see and are covered by `qa-learner-journey` |
+| A learner can set `status` on their own career support request | **Intended, not changed.** No staff or admin route reads or writes `CareerSupportRequest`, and `assignedTo` is never set, so the record is the learner's own tracker and the detail view offers "Mark …" for each status on purpose. The route is scoped by `assertOwnedSupportRequest`. Revisit if a staff queue is ever built: status should then be staff-owned, with the learner limited to closing |
+| `src/content/course-quiz-lookups.ts` imports the quiz answer keys | Not imported by any client module; the built bundle has 0 `correctIndex` matches and the release gate fails the build if that changes. Left in place because `scripts/*` use the same content files |
+| `scripts/test-catalog-truth.ts` failed on `main` and on this branch | **FIXED (test only)**: its source assertions still pointed at the pre-redesign `ProgramPage`. The readiness rule now lives in `programme-truth.ts`, shared by the index and the detail page, and matches the server rule in `server/src/routes/lms.ts` (open, and at least one authored linked course). The assertions were moved to those files; none was dropped |
+| Release gate coverage | Added `test:production-env`, `test:catalog-parity`, the content and path checks, and `test:security-middleware` (last, because it trips the sign-in rate limit) |
+
+Frontend to backend route cross-check: 66 distinct client API paths, 104 registered server routes, 0 client paths without a server route.
