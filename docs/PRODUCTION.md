@@ -39,7 +39,7 @@ Optional:
 | `TRUST_PROXY` | Hop count for `X-Forwarded-*` (default `1` in production). |
 | `AUTH_RATE_LIMIT_WINDOW_MS` / `AUTH_RATE_LIMIT_MAX` | Login/signup limiter (default 20 / 15 minutes). |
 | `JSON_BODY_LIMIT` | Default `512kb`. |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `GOOGLE_REDIRECT_URI` | Google OAuth. Redirect URI must be `{FRONTEND_URL}/api/v1/auth/google/callback`. |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `GOOGLE_REDIRECT_URI` | Google OAuth. Production callback is `https://skylent.live/api/v1/auth/google/callback`. A localhost `GOOGLE_REDIRECT_URI` is ignored when `NODE_ENV=production`. |
 | `SKYLENT_AI_PROVIDER` | `openai-compatible` (production), `off`, or unset. |
 | `SKYLENT_AI_API_KEY` | Server-side only. Never use a `VITE_` prefix. |
 | `SKYLENT_AI_BASE_URL` | Default `https://api.openai.com/v1`. |
@@ -173,5 +173,5 @@ Against the **production** process (not `vite dev`):
 
 - Assignment attachments are metadata only (`pending/…` keys). Learners submit text in the assignment workspace.
 - Skylent AI stays unavailable until `SKYLENT_AI_API_KEY` is set. That is intentional.
-- Google sign-in stays 503 until OAuth credentials and redirect URI match `FRONTEND_URL`.
+- Google sign-in stays 503 until `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set. In production the callback is the public https `/api/v1/auth/google/callback` on the request host, or on `FRONTEND_URL` when that value is already public https. Register that exact URI in Google Cloud Console.
 - `lesson-grounded` is a preview provider and is ignored when `NODE_ENV=production`.

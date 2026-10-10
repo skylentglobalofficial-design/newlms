@@ -85,7 +85,7 @@ authRouter.get("/csrf", (req, res) => {
 })
 
 authRouter.get("/google", (req, res) => {
-  const config = getGoogleOAuthConfig()
+  const config = getGoogleOAuthConfig(req)
   if (!config) {
     return res.status(503).json({ error: "Google OAuth is not configured" })
   }
@@ -98,18 +98,18 @@ authRouter.get("/google", (req, res) => {
     const policyVersion = rawConsent.length > 0 && rawConsent.length <= 40 ? rawConsent : null
     const { state, nonce, signed } = createOAuthState({ returnTo, enrollTarget, policyVersion })
     setOAuthStateCookie(res, req, signed)
-    const authorizationUrl = buildGoogleAuthorizationUrl({ state, nonce })
+    const authorizationUrl = buildGoogleAuthorizationUrl({ state, nonce, req })
     return res.redirect(authorizationUrl)
   } catch (error) {
     console.error("Google OAuth start failed:", error instanceof Error ? error.message : error)
-    return res.redirect(oauthErrorRedirect("oauth_start"))
+    return res.redirect(oauthErrorRedirect("oauth_start", req))
   }
 })
 
 authRouter.get("/google/callback", async (req, res) => {
   const oauthError = typeof req.query.error === "string" ? req.query.error : null
   if (oauthError) {
-    return res.redirect(oauthErrorRedirect("oauth_denied"))
+    return res.redirect(oauthErrorRedirect("oauth_denied", req))
   }
 
   const code = typeof req.query.code === "string" ? req.query.code : null
@@ -120,11 +120,11 @@ authRouter.get("/google/callback", async (req, res) => {
   clearOAuthStateCookie(res, req)
 
   if (!code || !state || !payload || payload.state !== state) {
-    return res.redirect(oauthErrorRedirect("oauth_state"))
+    return res.redirect(oauthErrorRedirect("oauth_state", req))
   }
 
   try {
-    const { idToken } = await exchangeGoogleAuthorizationCode(code)
+    const { idToken } = await exchangeGoogleAuthorizationCode(code, req)
     const claims = await verifyGoogleIdToken(idToken, payload.nonce)
     const user = await resolveGoogleAccount(claims, { policyVersion: payload.policyVersion ?? null })
     const { sessionToken, csrfToken } = await createSession(user.id)
@@ -133,19 +133,19 @@ authRouter.get("/google/callback", async (req, res) => {
     return res.redirect(oauthSuccessRedirect({
       returnTo: payload.returnTo ?? null,
       enrollTarget: payload.enrollTarget ?? null,
-    }))
+    }, req))
   } catch (error) {
     if (error instanceof ConsentRequiredError) {
-      return res.redirect(oauthErrorRedirect("consent_required"))
+      return res.redirect(oauthErrorRedirect("consent_required", req))
     }
     if (error instanceof ConsentOutdatedError) {
-      return res.redirect(oauthErrorRedirect("consent_outdated"))
+      return res.redirect(oauthErrorRedirect("consent_outdated", req))
     }
     if (error instanceof GoogleEmailLinkBlockedError) {
-      return res.redirect(oauthErrorRedirect("oauth_email_in_use"))
+      return res.redirect(oauthErrorRedirect("oauth_email_in_use", req))
     }
     console.error("Google OAuth callback failed:", error instanceof Error ? error.message : error)
-    return res.redirect(oauthErrorRedirect("oauth_failed"))
+    return res.redirect(oauthErrorRedirect("oauth_failed", req))
   }
 })
 

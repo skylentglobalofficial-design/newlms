@@ -100,6 +100,7 @@ jobs:
           npx tsx scripts/test-path-evidence.ts
           npm run test:certificate-verify
           npx tsx scripts/test-google-link.ts
+          npm run test:oauth-redirect
 
       # Every suite signs up its own users. The sign-in rate limit is held in memory at its production
       # default (20 per 15 minutes), so each suite gets a freshly started API instead of a raised limit.

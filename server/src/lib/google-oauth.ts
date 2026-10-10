@@ -8,6 +8,7 @@ import {
   GoogleEmailLinkBlockedError,
   decideGoogleSignIn,
 } from "./google-link.js"
+import { resolveGoogleRedirectUri, type OAuthRequestOrigin } from "./oauth-redirect.js"
 import { recordPolicyAcceptance } from "./policy.js"
 
 export { ConsentOutdatedError, ConsentRequiredError, GoogleEmailLinkBlockedError } from "./google-link.js"
@@ -167,19 +168,26 @@ async function getGoogleCertificates(options?: { forceRefresh?: boolean }): Prom
   return keys
 }
 
-export function getGoogleOAuthConfig(): GoogleOAuthConfig | null {
-  const clientId = process.env.GOOGLE_CLIENT_ID?.trim()
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET?.trim()
-  const redirectUri = process.env.GOOGLE_REDIRECT_URI?.trim()
-  if (!clientId || !clientSecret || !redirectUri) return null
-  return { clientId, clientSecret, redirectUri }
+function googleClientCredentials(env: NodeJS.ProcessEnv = process.env): { clientId: string; clientSecret: string } | null {
+  const clientId = env.GOOGLE_CLIENT_ID?.trim()
+  const clientSecret = env.GOOGLE_CLIENT_SECRET?.trim()
+  if (!clientId || !clientSecret) return null
+  return { clientId, clientSecret }
+}
+
+export function getGoogleOAuthConfig(req?: OAuthRequestOrigin): GoogleOAuthConfig | null {
+  const client = googleClientCredentials()
+  const redirectUri = resolveGoogleRedirectUri(process.env, req)
+  if (!client || !redirectUri) return null
+  return { clientId: client.clientId, clientSecret: client.clientSecret, redirectUri }
 }
 
 export function buildGoogleAuthorizationUrl(input: {
   state: string
   nonce: string
+  req?: OAuthRequestOrigin
 }): string {
-  const config = getGoogleOAuthConfig()
+  const config = getGoogleOAuthConfig(input.req)
   if (!config) {
     throw new Error("Google OAuth is not configured")
   }
@@ -202,8 +210,8 @@ function decodeJwtPart<T>(part: string): T {
 }
 
 export async function verifyGoogleIdToken(idToken: string, expectedNonce?: string): Promise<GoogleIdTokenClaims> {
-  const config = getGoogleOAuthConfig()
-  if (!config) {
+  const client = googleClientCredentials()
+  if (!client) {
     throw new Error("Google OAuth is not configured")
   }
 
@@ -258,7 +266,7 @@ export async function verifyGoogleIdToken(idToken: string, expectedNonce?: strin
   if (!GOOGLE_ISSUERS.has(claims.iss)) {
     throw new Error("Invalid ID token issuer")
   }
-  if (claims.aud !== config.clientId) {
+  if (claims.aud !== client.clientId) {
     throw new Error("Invalid ID token audience")
   }
   if (claims.exp <= now) {
@@ -284,8 +292,8 @@ export async function verifyGoogleIdToken(idToken: string, expectedNonce?: strin
   return claims
 }
 
-export async function exchangeGoogleAuthorizationCode(code: string): Promise<{ idToken: string }> {
-  const config = getGoogleOAuthConfig()
+export async function exchangeGoogleAuthorizationCode(code: string, req?: OAuthRequestOrigin): Promise<{ idToken: string }> {
+  const config = getGoogleOAuthConfig(req)
   if (!config) {
     throw new Error("Google OAuth is not configured")
   }
