@@ -3,6 +3,7 @@ import crypto from "node:crypto"
 import { AuthProvider, RoleName, PrismaClient } from "@prisma/client"
 import { ensureRole } from "../server/src/lib/auth.js"
 import { resolveGoogleAccount, type GoogleIdTokenClaims } from "../server/src/lib/google-oauth.js"
+import { GoogleEmailLinkBlockedError } from "../server/src/lib/google-link.js"
 import {
   createOAuthState,
   verifySignedOAuthState,
@@ -235,7 +236,7 @@ async function main() {
   assert(verified?.state === signed.state, "Signed OAuth state should verify")
   assert(verified?.returnTo === "/courses/data-analytics", "OAuth returnTo should round-trip")
 
-  console.log("11. Google identity links existing email account")
+  console.log("11. Matching email does not link Google onto a password account")
   const linkEmail = `google-link-${Date.now()}@example.com`
   const studentRole = await ensureRole(RoleName.STUDENT)
   const passwordUser = await prisma.user.create({
@@ -246,12 +247,17 @@ async function main() {
       roles: { create: { roleId: studentRole.id } },
     },
   })
-  const linkedUser = await resolveGoogleAccount(googleClaims(`google-sub-${Date.now()}`, linkEmail, "Google User"))
-  assert(linkedUser.id === passwordUser.id, "Google identity should link to existing email account")
+  let linkBlocked = false
+  try {
+    await resolveGoogleAccount(googleClaims(`google-sub-${Date.now()}`, linkEmail, "Google User"))
+  } catch (error) {
+    linkBlocked = error instanceof GoogleEmailLinkBlockedError
+  }
+  assert(linkBlocked, "Google must not link to a password account from the email alone")
   const identityCount = await prisma.userIdentity.count({
     where: { userId: passwordUser.id, provider: AuthProvider.GOOGLE },
   })
-  assert(identityCount === 1, "Google identity should be linked once")
+  assert(identityCount === 0, "No Google identity should be stored for the password account")
 
   console.log("12. Duplicate Google identity cannot create duplicate users")
   const googleEmail = `google-only-${Date.now()}@example.com`

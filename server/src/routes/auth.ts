@@ -30,6 +30,7 @@ import {
   resolveGoogleAccount,
   verifyGoogleIdToken,
 } from "../lib/google-oauth.js"
+import { ConsentOutdatedError, GoogleEmailLinkBlockedError } from "../lib/google-link.js"
 import {
   clearOAuthStateCookie,
   createOAuthState,
@@ -37,7 +38,7 @@ import {
   setOAuthStateCookie,
   verifySignedOAuthState,
 } from "../lib/oauth-state.js"
-import { CURRENT_POLICY_VERSION, readConsent, recordPolicyAcceptance } from "../lib/policy.js"
+import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import { ConsentRequiredError } from "../lib/google-oauth.js"
 import {
   oauthErrorRedirect,
@@ -92,8 +93,9 @@ authRouter.get("/google", (req, res) => {
   try {
     const returnTo = sanitizeReturnTo(req.query.returnTo)
     const enrollTarget = parseEnrollTarget(req.query.enrollKind, req.query.enrollSlug)
-    // A new account can only be created through Google when the sign-up page sent the accepted policy version.
-    const policyVersion = req.query.consent === CURRENT_POLICY_VERSION ? CURRENT_POLICY_VERSION : null
+    // Carry the version the browser sent. The account is created only if it is still current.
+    const rawConsent = typeof req.query.consent === "string" ? req.query.consent.trim() : ""
+    const policyVersion = rawConsent.length > 0 && rawConsent.length <= 40 ? rawConsent : null
     const { state, nonce, signed } = createOAuthState({ returnTo, enrollTarget, policyVersion })
     setOAuthStateCookie(res, req, signed)
     const authorizationUrl = buildGoogleAuthorizationUrl({ state, nonce })
@@ -135,6 +137,12 @@ authRouter.get("/google/callback", async (req, res) => {
   } catch (error) {
     if (error instanceof ConsentRequiredError) {
       return res.redirect(oauthErrorRedirect("consent_required"))
+    }
+    if (error instanceof ConsentOutdatedError) {
+      return res.redirect(oauthErrorRedirect("consent_outdated"))
+    }
+    if (error instanceof GoogleEmailLinkBlockedError) {
+      return res.redirect(oauthErrorRedirect("oauth_email_in_use"))
     }
     console.error("Google OAuth callback failed:", error instanceof Error ? error.message : error)
     return res.redirect(oauthErrorRedirect("oauth_failed"))

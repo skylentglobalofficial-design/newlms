@@ -152,7 +152,7 @@ async function main() {
     aud: process.env.GOOGLE_CLIENT_ID ?? "test-client-id",
     exp: Math.floor(Date.now() / 1000) + 3600,
   }
-  const googleUser = await resolveGoogleAccount(claims)
+  const googleUser = await resolveGoogleAccount(claims, { policyVersion: TEST_CONSENT.policyVersion })
   createdUserIds.push(googleUser.id)
   const googleRoles = await prisma.userRole.findMany({
     where: { userId: googleUser.id },

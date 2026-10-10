@@ -139,6 +139,18 @@ export default function LoginPage() {
       navigate('/signup', { replace: true, state: location.state })
       return
     }
+    if (errorParam === 'consent_outdated') {
+      setTab('signup')
+      setError("The terms have been updated. Reload the page and accept the current version, then continue with Google.")
+      navigate('/signup', { replace: true, state: location.state })
+      return
+    }
+    if (errorParam === 'oauth_email_in_use') {
+      setTab('signin')
+      setError("That email already has a Skylent account. Google was not connected. Sign in with email and password.")
+      navigate('/login', { replace: true, state: location.state })
+      return
+    }
     if (errorParam?.startsWith('oauth')) {
       setError('Google sign-in failed. Please try again or use email and password.')
       navigate(location.pathname, { replace: true, state: location.state })

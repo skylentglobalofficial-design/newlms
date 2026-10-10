@@ -2,7 +2,15 @@ import { createPublicKey, timingSafeEqual, verify, type KeyObject } from "node:c
 import { AuthProvider, RoleName } from "@prisma/client"
 import { prisma } from "./prisma.js"
 import { ensureRole, normalizeEmail } from "./auth.js"
+import {
+  ConsentOutdatedError,
+  ConsentRequiredError,
+  GoogleEmailLinkBlockedError,
+  decideGoogleSignIn,
+} from "./google-link.js"
 import { recordPolicyAcceptance } from "./policy.js"
+
+export { ConsentOutdatedError, ConsentRequiredError, GoogleEmailLinkBlockedError } from "./google-link.js"
 
 const GOOGLE_ISSUERS = new Set(["https://accounts.google.com", "accounts.google.com"])
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth"
@@ -304,14 +312,6 @@ export async function exchangeGoogleAuthorizationCode(code: string): Promise<{ i
   return { idToken: payload.id_token }
 }
 
-/** Thrown when Google sign-in would create a new account but the terms were not accepted first. */
-export class ConsentRequiredError extends Error {
-  constructor() {
-    super("Terms acceptance is required to create an account")
-    this.name = "ConsentRequiredError"
-  }
-}
-
 export async function resolveGoogleAccount(
   claims: GoogleIdTokenClaims,
   options: { policyVersion?: string | null } = {},
@@ -349,28 +349,31 @@ export async function resolveGoogleAccount(
 
   if (existingUser) {
     const linkedGoogle = existingUser.identities.find((identity) => identity.provider === AuthProvider.GOOGLE)
-    if (linkedGoogle && linkedGoogle.providerAccountId !== providerAccountId) {
+    const decision = decideGoogleSignIn({
+      hasMatchingGoogleIdentity: false,
+      hasUserWithSameEmail: true,
+      linkedGoogleSubject: linkedGoogle?.providerAccountId ?? null,
+      incomingSubject: providerAccountId,
+      policyVersion: options.policyVersion,
+    })
+    if (decision.action === "different_google") {
       throw new Error("This email is already linked to a different Google account")
     }
-
-    if (!linkedGoogle) {
-      await prisma.userIdentity.create({
-        data: {
-          userId: existingUser.id,
-          provider: AuthProvider.GOOGLE,
-          providerAccountId,
-        },
-      })
-    }
-
-    return existingUser
+    if (decision.action === "existing_google") return existingUser
+    throw new GoogleEmailLinkBlockedError()
   }
 
-  // Existing accounts sign in above. Only a new account needs the terms, and it is not created without them.
-  const policyVersion = options.policyVersion
-  if (!policyVersion) {
-    throw new ConsentRequiredError()
-  }
+  // A new account accepts the terms here, not only when the Google redirect started.
+  const decision = decideGoogleSignIn({
+    hasMatchingGoogleIdentity: false,
+    hasUserWithSameEmail: false,
+    linkedGoogleSubject: null,
+    incomingSubject: providerAccountId,
+    policyVersion: options.policyVersion,
+  })
+  if (decision.action === "consent_outdated") throw new ConsentOutdatedError()
+  if (decision.action !== "create") throw new ConsentRequiredError()
+  const policyVersion = decision.policyVersion
 
   const studentRole = await ensureRole(RoleName.STUDENT)
   const displayName = claims.name?.trim() || email.split("@")[0] || "User"
