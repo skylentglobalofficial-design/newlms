@@ -3,6 +3,7 @@ import { z } from "zod"
 import { JobApplicationStatus, Prisma } from "@prisma/client"
 import { prisma } from "../../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../../lib/auth.js"
+import { isJobOpenForApplications } from "../../lib/career/job-eligibility.js"
 import {
   assertOwnedApplication,
 } from "../../lib/career/profile.js"
@@ -88,7 +89,7 @@ applicationsRouter.post("/", requireAuth, requireCsrf, async (req: Authenticated
   try {
     if (parsed.data.jobId) {
       const job = await prisma.job.findUnique({ where: { id: parsed.data.jobId } })
-      if (!job) return res.status(404).json({ error: "Job not found" })
+      if (!job || !isJobOpenForApplications(job.status)) return res.status(404).json({ error: "Job not found" })
     }
     if (parsed.data.employerId) {
       const employer = await prisma.employer.findUnique({ where: { id: parsed.data.employerId } })

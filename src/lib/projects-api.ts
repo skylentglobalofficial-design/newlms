@@ -97,6 +97,13 @@ export type ProjectSummary = {
   updatedAt: string
 }
 
+export function findProjectForCourse<T extends Pick<ProjectSummary, "courseSlug">>(
+  projects: readonly T[],
+  courseSlug: string,
+): T | null {
+  return projects.find((project) => project.courseSlug === courseSlug) ?? null
+}
+
 export function northwindProjectPath() {
   return "/os/projects/data-analytics/northwind-commercial-review"
 }

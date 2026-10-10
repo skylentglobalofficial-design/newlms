@@ -279,6 +279,16 @@ async function main() {
     assert(application.response.status === 201, "Application create failed")
     const applicationId = application.data.data.id
 
+    console.log("12b. Closed jobs cannot receive new applications")
+    await prisma.job.update({ where: { id: job.id }, data: { status: JobStatus.CLOSED } })
+    const closedApplication = await request(jarA, "/career/applications", {
+      method: "POST",
+      csrf: true,
+      body: { jobId: job.id, roleTitle: job.title, source: "job-board" },
+    })
+    assert(closedApplication.response.status === 404, "Closed job applications should be rejected")
+    await prisma.job.update({ where: { id: job.id }, data: { status: JobStatus.OPEN } })
+
     console.log("13. User can update application status")
     const statusPatch = await request(jarA, `/career/applications/${applicationId}`, {
       method: "PATCH",
