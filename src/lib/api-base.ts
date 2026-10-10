@@ -1,5 +1,3 @@
-const PRODUCTION_API = "https://api.skylent.live/api/v1"
-
 function trimSlash(value: string): string {
   return value.replace(/\/$/, "")
 }
