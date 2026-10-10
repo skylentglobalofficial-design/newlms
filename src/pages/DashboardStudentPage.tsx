@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { isCapstoneLesson, learnerErrorMessage, lessonTypeLabel, SERVICE_UNREACHABLE } from '../components/lms/lms-utils'
 import { useLmsDashboard } from '../hooks/useLms'
 import {
+  canOpenEnrollment,
   fetchCourseWorkspace,
   fetchLmsEnrollments,
   fetchProgramWorkspace,
@@ -12,7 +13,7 @@ import {
   type ApiEnrollmentSummary,
   type ApiProgramWorkspace,
 } from '../lib/lms-api'
-import { listLearnerProjects, learnerProjectPath, projectStatusLabel, type ProjectSummary } from '../lib/projects-api'
+import { findProjectForCourse, listLearnerProjects, learnerProjectPath, projectStatusLabel, type ProjectSummary } from '../lib/projects-api'
 import { fetchMyCertificates, issueCertificate, type SkylentCertificate } from '../lib/skylent-api'
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
 import { truthOf } from '../lib/truth'
@@ -85,11 +86,11 @@ function CertificateName() {
 }
 
 const NAV_ITEMS: AuthNavItem[] = [
-  { id: 'learning', label: 'Learning', short: 'Learn', sectionId: 'student-learning' },
-  { id: 'practice', label: 'Practice', short: 'Practice', sectionId: 'student-practice' },
+  { id: 'dashboard', label: 'Dashboard', short: 'Home', sectionId: 'student-learning' },
+  { id: 'my-courses', label: 'My Courses', short: 'Courses', sectionId: 'sh-my-learning' },
   { id: 'projects', label: 'Projects', short: 'Projects', sectionId: 'student-projects' },
-  { id: 'evidence', label: 'Evidence', short: 'Evidence', href: '/career-os/projects' },
-  { id: 'career', label: 'Career', short: 'Career', href: '/career-os' },
+  { id: 'explore-courses', label: 'Explore Courses', short: 'Explore', href: '/courses' },
+  { id: 'career-os', label: 'Career OS', short: 'Career', href: '/career-os' },
 ]
 
 const SLICE = ['Learn', 'Practice', 'Build', 'Prove'] as const
@@ -121,10 +122,10 @@ function ListError({ what, onRetry }: { what: string; onRetry: () => void }) {
 
 function NavIcon({ id }: { id: string }) {
   const s = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, 'aria-hidden': true }
-  if (id === 'learning') return <svg {...s}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-  if (id === 'practice') return <svg {...s}><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+  if (id === 'dashboard' || id === 'my-courses') return <svg {...s}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+  if (id === 'explore-courses') return <svg {...s}><circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5.5 5.5l2.8 2.8M15.7 15.7l2.8 2.8M18.5 5.5l-2.8 2.8M8.3 15.7l-2.8 2.8"/></svg>
   if (id === 'projects') return <svg {...s}><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-  if (id === 'evidence') return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+  if (id === 'career-os') return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
   return <svg {...s}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
 }
 
@@ -157,7 +158,7 @@ export default function DashboardStudentPage() {
   const { user, ready } = useAuth()
   const { workspace, course, loading, error, reload } = useLmsDashboard()
   const navigate = useNavigate()
-  const [activeNav, setActiveNav] = useState('learning')
+  const [activeNav, setActiveNav] = useState('dashboard')
   const [enrollments, setEnrollments] = useState<Loaded<ApiEnrollmentSummary[]>>({ status: 'loading' })
   const [projects, setProjects] = useState<Loaded<ProjectSummary[]>>({ status: 'loading' })
   const [certificates, setCertificates] = useState<Loaded<SkylentCertificate[]>>({ status: 'loading' })
@@ -265,7 +266,7 @@ export default function DashboardStudentPage() {
 
   const shell = {
     themeId: 'data-science' as const,
-    workspaceLabel: 'My learning',
+    workspaceLabel: 'My Courses',
     roleLabel: 'Learner',
     navItems: NAV_ITEMS,
     bottomNavItems: NAV_ITEMS,
@@ -274,7 +275,7 @@ export default function DashboardStudentPage() {
     renderNavIcon: (id: string) => <NavIcon id={id} />,
     bar: (
       <>
-        <span className="sh-crumb">My learning <span aria-hidden="true">/</span> <b>Home</b></span>
+        <span className="sh-crumb">My Courses <span aria-hidden="true">/</span> <b>Home</b></span>
         <ProductSlice steps={SLICE} current="Learn" label="Where this screen sits in the product model" />
       </>
     ),
@@ -286,7 +287,7 @@ export default function DashboardStudentPage() {
     return (
       <AuthDashboardShell {...shell}>
         <div className="sh sh-state" id="student-learning">
-          <p className="os-eyebrow">My learning</p>
+          <p className="os-eyebrow">My Courses</p>
           {error === 'Sign in to continue.' ? (
             <>
               <h1>Your session has ended</h1>
@@ -358,9 +359,11 @@ export default function DashboardStudentPage() {
             const row = progressFor(item)
             const title = item.programName ?? item.courseTitle ?? 'Enrolment'
             const progress = row && (row.status === 'course' || row.status === 'program') ? row.progress : null
-            const openHref = row && (row.status === 'course' || row.status === 'program') && row.resumeHref
-              ? row.resumeHref
-              : item.courseSlug ? `/learn/${item.courseSlug}` : null
+            const openHref = canOpenEnrollment(item.status)
+              ? row && (row.status === 'course' || row.status === 'program') && row.resumeHref
+                ? row.resumeHref
+                : item.courseSlug ? `/learn/${item.courseSlug}` : null
+              : null
             let note: string
             if (row?.status === 'program') {
               note = `${row.progress.completedCourses} of ${row.progress.totalCourses} courses · ${row.progress.completedCount} of ${row.progress.totalLessons} lessons`
@@ -484,14 +487,14 @@ export default function DashboardStudentPage() {
     return (
       <AuthDashboardShell {...shell}>
         <div className="sh" id="student-learning">
-          <p className="os-eyebrow">My learning</p>
+          <p className="os-eyebrow">My Courses</p>
           <h1>Start with a programme</h1>
           <div className="sh-next">
             <p className="sh-next-label"><span aria-hidden="true" />Next step</p>
             <h2>Choose what to learn first</h2>
             <p className="sh-body">You are signed in and have no lessons open yet. Pick a programme and its first lesson opens here.</p>
             <div className="os-actions">
-              <Link className="os-btn os-btn-primary os-btn-lg" to="/programmes">Explore programmes <ArrowRight /></Link>
+              <Link className="os-btn os-btn-primary os-btn-lg" to="/courses">Explore courses <ArrowRight /></Link>
             </div>
           </div>
           {enrolmentRows.length > 0 ? <div className="sh-stack">{myLearning}</div> : null}
@@ -520,12 +523,12 @@ export default function DashboardStudentPage() {
   })
 
   const projectRows = projects.status === 'ready' ? projects.data : []
-  const currentProject = projectRows.find((item) => item.courseSlug === course.slug) ?? projectRows[0] ?? null
+  const currentProject = findProjectForCourse(projectRows, course.slug)
 
   return (
     <AuthDashboardShell {...shell}>
       <div className="sh">
-        <p className="os-eyebrow">My learning</p>
+        <p className="os-eyebrow">My Courses</p>
         <h1>What to do next</h1>
 
         <div className="sh-grid">

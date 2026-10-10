@@ -95,6 +95,10 @@ jobs:
           npm run test:da-content
           npm run test:pm-content
           npm run test:live-intents
+          npx tsx scripts/test-dashboard-navigation.ts
+          npx tsx scripts/test-dashboard-project-selection.ts
+          npx tsx scripts/test-enrollment-access.ts
+          npx tsx scripts/test-career-job-eligibility.ts
           npx tsx scripts/test-path-roadmap.ts
           npx tsx scripts/test-path-execution.ts
           npx tsx scripts/test-path-evidence.ts

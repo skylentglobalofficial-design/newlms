@@ -153,6 +153,10 @@ export type ApiEnrollmentSummary = {
   updatedAt: string
 }
 
+export function canOpenEnrollment(status: string): boolean {
+  return status === "active" || status === "completed"
+}
+
 export async function fetchLmsEnrollments(): Promise<ApiEnrollmentSummary[]> {
   const result = await lmsGet<{ data: ApiEnrollmentSummary[] }>("/lms/enrollments")
   return result.data ?? []
