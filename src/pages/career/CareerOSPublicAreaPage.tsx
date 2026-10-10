@@ -47,7 +47,7 @@ export default function CareerOSPublicAreaPage() {
               workspace — empty areas stay empty.
             </p>
             <div className="cos-public-actions">
-              <Link to="/login">Sign in to open {area.label}</Link>
+              <Link to="/login" state={{ returnTo: pathname }}>Sign in to open {area.label}</Link>
               <Link className="cos-public-secondary" to="/career-os">
                 Read the Career OS overview
               </Link>

@@ -1,6 +1,7 @@
 import { apiV1 } from "./api-base"
 import { ensureCsrfToken } from "./auth-api"
 import { parseApiJson } from "./http"
+import { consentPayload } from "./policy"
 import type { LmsCourseView } from "../components/lms/lms-utils"
 
 export type { LmsCourseView }
@@ -167,13 +168,23 @@ export async function fetchCourseWorkspace(slug: string): Promise<ApiCourseWorks
   return result.data
 }
 
-export async function enrollInCourse(courseSlug: string): Promise<ApiCourseWorkspace> {
-  const result = await lmsMutate<{ data: ApiCourseWorkspace }>("/lms/enrollments", { courseSlug })
+/**
+ * `acceptedTerms` is the terms checkbox. The server needs it to create a new enrolment;
+ * opening an enrolment that already exists works without it.
+ */
+export async function enrollInCourse(courseSlug: string, acceptedTerms: boolean): Promise<ApiCourseWorkspace> {
+  const result = await lmsMutate<{ data: ApiCourseWorkspace }>("/lms/enrollments", {
+    courseSlug,
+    ...(acceptedTerms ? { consent: consentPayload() } : {}),
+  })
   return result.data
 }
 
-export async function enrollInProgram(programSlug: string): Promise<ApiCourseWorkspace> {
-  const result = await lmsMutate<{ data: ApiCourseWorkspace }>("/lms/enrollments", { programSlug })
+export async function enrollInProgram(programSlug: string, acceptedTerms: boolean): Promise<ApiCourseWorkspace> {
+  const result = await lmsMutate<{ data: ApiCourseWorkspace }>("/lms/enrollments", {
+    programSlug,
+    ...(acceptedTerms ? { consent: consentPayload() } : {}),
+  })
   return result.data
 }
 

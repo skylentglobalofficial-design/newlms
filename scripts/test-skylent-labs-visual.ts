@@ -3,6 +3,7 @@ import { NORTHWIND_SQL_EXAMPLES } from "../server/src/lib/skylent-labs/sql/examp
 import { buildLabChart, MAX_CHART_ROWS } from "../server/src/lib/skylent-labs/sql/chart.ts"
 import { runNorthwindSql } from "../server/src/lib/skylent-labs/sql/engine.ts"
 import { SQL_OPERATION, VALID_NET_REVENUE } from "../server/src/lib/skylent-labs/catalog.ts"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 
@@ -59,7 +60,7 @@ async function signup(jar: CookieJar, label: string) {
   const signupResult = await request(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName: `Labs Visual ${label}`, email, password: "test-password-123" },
+    body: { consent: TEST_CONSENT, displayName: `Labs Visual ${label}`, email, password: "test-password-123" },
   })
   assert(signupResult.response.status === 201, `Signup failed: ${JSON.stringify(signupResult.data)}`)
 }
@@ -68,7 +69,7 @@ async function enrollDataAnalytics(jar: CookieJar) {
   const enroll = await request(jar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { courseSlug: "data-analytics" },
+    body: { consent: TEST_CONSENT, courseSlug: "data-analytics" },
   })
   assert(enroll.response.status === 201 || enroll.response.ok, `Enrol failed: ${JSON.stringify(enroll.data)}`)
 }

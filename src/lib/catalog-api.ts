@@ -96,7 +96,7 @@ export function programEnrollmentMessage(
   program: Pick<CatalogProgramSummary, "enrollmentStatus" | "linkedCourseSlugs">,
 ): string {
   if (program.enrollmentStatus === "coming_soon") {
-    return "Enrollment is not open yet. Register your interest and we will notify you when this program launches."
+    return "Enrolment is not open yet. Register your interest through the contact form and the Skylent team will reply."
   }
   if (program.enrollmentStatus === "waitlist") {
     return "This program is on waitlist. Join the waitlist and we will contact you when a seat opens."
@@ -113,6 +113,8 @@ export function courseEnrollmentMessage(): string {
 
 export async function fetchCatalogCourses(): Promise<CatalogCourseSummary[]> {
   const result = await catalogFetch<{ data: CatalogCourseSummary[] }>("/courses")
+  // A list endpoint that does not return a list is a failed request, not an empty catalogue.
+  if (!Array.isArray(result?.data)) throw new Error("Unable to load the course catalogue.")
   return result.data
 }
 
@@ -121,7 +123,8 @@ export async function fetchCatalogCourse(slug: string): Promise<CatalogCourseDet
   if (response.status === 404) return null
   const result = await parseApiJson<{ data: Record<string, unknown> }>(response)
   const payload = asRecord(result.data)
-  if (!payload) {
+  // A record without its identity is a broken answer, not a course: treat it as a failed request.
+  if (!payload || !asString(payload.slug) || !asString(payload.title)) {
     throw new Error("Unable to load this course.")
   }
   return mapCatalogCourseDetail(payload)
@@ -150,6 +153,7 @@ export function mapCatalogCourseDetail(course: Record<string, unknown>): Catalog
 
 export async function fetchCatalogPrograms(): Promise<CatalogProgramSummary[]> {
   const result = await catalogFetch<{ data: Array<Record<string, unknown>> }>("/programs")
+  if (!Array.isArray(result?.data)) throw new Error("Unable to load the programme catalogue.")
   return result.data.map(mapProgramSummary)
 }
 
@@ -158,7 +162,8 @@ export async function fetchCatalogProgram(slug: string): Promise<CatalogProgramD
   if (response.status === 404) return null
   const result = await parseApiJson<{ data: Record<string, unknown> }>(response)
   const payload = asRecord(result.data)
-  if (!payload) {
+  // A record without its identity is a broken answer, not a programme: treat it as a failed request.
+  if (!payload || !asString(payload.slug) || !asString(payload.name)) {
     throw new Error("Unable to load this programme.")
   }
   return mapCatalogProgramDetail(payload)

@@ -1,36 +1,28 @@
 /**
  * Campus degree detail: /education/campus/:slug  (approved design: CampusDegree)
  * It looks physical on purpose: photographs lead and there are no product plates.
- * Every photograph is a stand-in until an institution supplies its own, and every fact the
- * record does not carry reads "Published by the institution".
+ * Photographs are generic until an institution supplies its own (they are never captioned as a
+ * particular campus), and every fact the record does not carry reads "Shared once an institution is confirmed".
  */
 import { Link } from "react-router-dom"
-import { ArrowRight, SectionIndex, TruthChip, type TruthState } from "../../components/skylent/primitives"
+import { ArrowRight, SectionIndex } from "../../components/skylent/primitives"
 import { Reveal } from "../../components/skylent/Reveal"
-import { AUTHORED_COURSE_SLUGS } from "../../lib/authored-courses"
 import { degreeLevelName, deliveryModeLabel, type Degree } from "../../lib/degrees"
-import { truthOf } from "../../lib/truth"
 import { DegreeEnquiry } from "./DegreeEnquiry"
 import { ClosingBand, DegreeCrumb, DegreeShell, ListingChips, Photo, QuietLink, Unpublished, orUnpublished } from "./DegreeParts"
 import { campusGalleryFor, campusHeroFor } from "./degreeStandIns"
 
 /** Layout sample used only while a record has no curriculum. It names no subject and no number of years. */
 const EMPTY_YEARS: { label: string; study: string; taught: string }[] = [
-  { label: "First year", study: "Subjects published by the institution", taught: "Weekly lectures, labs and tutorials published by the institution" },
-  { label: "Later years", study: "Subjects published by the institution", taught: "Weekly lectures, labs and tutorials published by the institution" },
-  { label: "Final year", study: "Subjects published by the institution", taught: "Project or placement, if the institution includes one" },
+  { label: "First year", study: "Foundation subjects", taught: "Weekly lectures, labs and tutorials" },
+  { label: "Later years", study: "Core and elective subjects", taught: "Lectures, labs, tutorials and group work" },
+  { label: "Final year", study: "Specialisation", taught: "A final project, or a placement where offered" },
 ]
 
 export default function CampusDegreeView({ degree }: { degree: Degree }) {
   const level = degreeLevelName(degree.level)
   const hero = campusHeroFor(degree)
   const [leadPhoto, ...sidePhotos] = campusGalleryFor(degree, hero)
-  const place = degree.institution
-    ? [degree.institution.name, degree.location?.city].filter(Boolean).join(", ")
-    : undefined
-  /* Enrolment is real only for courses with authored content; that registry decides this chip. */
-  const programmes: TruthState = AUTHORED_COURSE_SLUGS.length > 0 ? "live" : "development"
-  const evidence = truthOf("projectsAndEvidence")
 
   return (
     <DegreeShell>
@@ -47,28 +39,23 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <h1 className="dg-h1 dg-h1--campus cine-in cine-d1">{degree.title}</h1>
             <p className="dg-lead cine-in cine-d2">
               A degree you attend in person, taught on campus by the institution that awards it.
-              {degree.sample ? ` This is a sample listing for the ${degree.discipline} area.` : null}
-              {degree.institution ? null : " The institution's name, place and dates appear here once it is confirmed."}
+              {degree.institution ? null : " Campus, dates and fees are shared once an institution is confirmed."}
             </p>
             <div className="dg-actions cine-in cine-d3">
               <Link to="#taught" className="sk-btn sk-btn-primary">
                 View pathway
                 <ArrowRight />
               </Link>
-              <QuietLink to="/path">Find my path</QuietLink>
+              <QuietLink to="#ask">Ask about this degree</QuietLink>
             </div>
           </div>
 
           <dl className="dg-title__facts sky-spec cine-in cine-d4" aria-label="About this listing">
-            <div className="sky-label dg-title__factshead">This listing</div>
-            {degree.status === "coming_soon" ? (
-              <div className="sky-spec__row">
-                <dt className="sky-spec__label">Listing</dt>
-                <dd className="sky-spec__value">
-                  <TruthChip state="soon" />
-                </dd>
-              </div>
-            ) : null}
+            <div className="sky-label dg-title__factshead">At a glance</div>
+            <div className="sky-spec__row">
+              <dt className="sky-spec__label">Admissions</dt>
+              <dd className="sky-spec__value">Not open yet</dd>
+            </div>
             <div className="sky-spec__row">
               <dt className="sky-spec__label">Discipline</dt>
               <dd className="sky-spec__value">{degree.discipline}</dd>
@@ -77,16 +64,14 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
               <dt className="sky-spec__label">Awarded by</dt>
               <dd className="sky-spec__value">{orUnpublished(degree.institution?.awardingBody ?? degree.institution?.name)}</dd>
             </div>
-            {degree.sample ? (
-              <div className="dg-note">Partner confirmation is pending. University names and degree titles are not yet published.</div>
-            ) : null}
+
           </dl>
         </div>
       </section>
 
       {/* Lead photograph: the campus leads */}
       <div className="sky-container dg-lead-photo cine-in cine-in--plate cine-d5">
-        <Photo asset={hero} fig="FIG. 01" aside={place} eager />
+        <Photo asset={hero} eager />
       </div>
 
       {/* 01 The degree sheet and the location panel */}
@@ -145,10 +130,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
                 </dd>
               </div>
             </dl>
-            <p className="dg-note">
-              Mode, level and discipline come from the {degree.sample ? "sample " : ""}listing. Every other row is published by the
-              institution and stays empty until then.
-            </p>
+
           </div>
 
           <aside className="dg-panel sky-panel-proof" aria-label="Location">
@@ -158,7 +140,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
                 {[degree.location.city, degree.location.country].filter(Boolean).join(", ")}
               </div>
             ) : (
-              <div className="dg-panel__place dg-unpub">City published by the institution</div>
+              <div className="dg-panel__place dg-unpub">City shared once an institution is confirmed</div>
             )}
             <dl>
               <div>
@@ -192,11 +174,11 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
         </div>
         {leadPhoto ? (
           <div className="dg-gallery">
-            <Photo asset={leadPhoto} fig="FIG. 02" className="dg-gallery__lead" />
+            <Photo asset={leadPhoto} className="dg-gallery__lead" />
             {sidePhotos.length > 0 ? (
               <div className="dg-gallery__side">
                 {sidePhotos.map((asset, i) => (
-                  <Photo key={asset.src} asset={asset} fig={`FIG. ${String(i + 3).padStart(2, "0")}`} />
+                  <Photo key={asset.src} asset={asset} />
                 ))}
               </div>
             ) : null}
@@ -256,7 +238,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
                 <div>
                   <dt>Calendar</dt>
                   <dd>
-                    <Unpublished>Term or semester dates published by the institution</Unpublished>
+                    <Unpublished>Term or semester dates, shared once an institution is confirmed</Unpublished>
                   </dd>
                 </div>
                 <div>
@@ -265,17 +247,14 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
                     {degree.assessments?.length ? (
                       degree.assessments.join(", ")
                     ) : (
-                      <Unpublished>Examinations, coursework and project work published by the institution</Unpublished>
+                      <Unpublished>Examinations, coursework and project work</Unpublished>
                     )}
                   </dd>
                 </div>
               </dl>
 
               {degree.curriculum?.length ? null : (
-                <p className="dg-monoline">
-                  The curriculum is published by the institution. The rows above are a layout sample: the number of years follows
-                  the institution's duration.
-                </p>
+                <p className="dg-monoline">The full curriculum is shared once an institution is confirmed.</p>
               )}
             </div>
           </div>
@@ -289,29 +268,24 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <SectionIndex n="04" label="What Skylent adds" />
             <h2 className="dg-h2">Three things beside the degree.</h2>
           </div>
-          <p className="dg-head-row__side">
-            The institution teaches and awards the degree. Skylent's part is smaller, and only some of it exists today.
-          </p>
+          <p className="dg-head-row__side">The institution teaches and awards the degree. Skylent adds practical learning and a career profile beside it.</p>
         </div>
 
         <div className="dg-adds__grid">
           <div className="dg-add">
-            <TruthChip state={truthOf("findMyPath")} />
-            <h3 className="dg-h3">Find My Path</h3>
-            <p>Use it before you choose a route: a campus degree, an online degree, or a skill programme.</p>
-            <QuietLink to="/path">Find my path</QuietLink>
-          </div>
-          <div className="dg-add">
-            <TruthChip state={programmes} />
-            <h3 className="dg-h3">Skill programmes alongside a degree</h3>
-            <p>Data Analytics and Product Management are open to enrol today. The other programmes are still in development.</p>
+            <h3 className="dg-h3">Skill programmes alongside</h3>
+            <p>Take a Skylent programme such as Data Analytics or Product Management while you study.</p>
             <QuietLink to="/programmes">Explore programmes</QuietLink>
           </div>
           <div className="dg-add">
-            <TruthChip state={evidence} />
-            <h3 className="dg-h3">Career OS evidence for degree work</h3>
-            <p>Career OS records projects from Skylent programmes as evidence. Degree coursework is not connected yet.</p>
-            <span className="dg-monoline">No action yet</span>
+            <h3 className="dg-h3">Labs and projects</h3>
+            <p>Practise on realistic data and cases, and finish a capstone project you can show.</p>
+            <QuietLink to="/programmes#professional">See professional programmes</QuietLink>
+          </div>
+          <div className="dg-add">
+            <h3 className="dg-h3">A Career OS profile</h3>
+            <p>Keep your education, projects and certificates together in one career profile.</p>
+            <QuietLink to="/career-os">How Career OS works</QuietLink>
           </div>
         </div>
       </Reveal>
@@ -319,8 +293,8 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
       <DegreeEnquiry degree={degree} index="05" ruled />
 
       <ClosingBand
-        label={`Next step · Choose${degree.sample ? " · Sample listing" : ""}`}
-        title="See where a campus degree sits on your path."
+        label="Next step"
+        title="Not sure this degree fits? Ask Skylent AI."
         secondary={{ to: "/education", label: "Explore degrees" }}
       />
     </DegreeShell>

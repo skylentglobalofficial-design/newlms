@@ -504,7 +504,7 @@ export function CourseThumb({
       ) : (
         <div className="pl-thumb-outline">
           <b>Outline</b>
-          <span>LMS titles only</span>
+          <span>Planned modules</span>
           <span />
           <span />
         </div>

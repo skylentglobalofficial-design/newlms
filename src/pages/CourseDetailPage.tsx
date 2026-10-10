@@ -22,10 +22,10 @@ import { courseProductProfile } from "../lib/course-product"
 import type { CatalogCurriculumModule } from "../lib/catalog-api"
 import { useCatalogCourse } from "../hooks/useCatalog"
 import { TruthChip } from "../components/skylent/primitives"
+import CatalogueNotice, { STATUS_NOT_CONFIRMED } from "../components/programme/CatalogueNotice"
 import "./Catalog.css"
 
-const LISTING_HONESTY =
-  "Catalogue listing — thinner than Data Analytics. You can open the workspace; full teaching content is being built."
+const LISTING_HONESTY = "This course is not open for enrolment yet. Its outline is shown below."
 
 export default function CourseDetailPage() {
   const { slug } = useParams()
@@ -92,7 +92,9 @@ export default function CourseDetailPage() {
   const authoredRecord = authored ? courseBySlug(course.slug) : undefined
   const profile = courseProductProfile(course.slug)
   const showLiveCurriculum = authored
-  const enrollable = authored
+  // Drawn from the published record while the catalogue API is unreachable: enrolment is paused.
+  const confirmed = !catalog.offline
+  const enrollable = authored && confirmed
   const authoredStats = authoredRecord ? courseLessonStats(authoredRecord) : null
   const modules = authoredRecord
     ? courseModuleCards(authoredRecord, showLiveCurriculum)
@@ -107,7 +109,7 @@ export default function CourseDetailPage() {
   const cta = listingClosed ? "View outline" : enrollCta(enrollable, primaryCta)
   const summary = authored
     ? course.desc || authoredRecord?.desc || course.longDesc
-    : `${course.title} is a catalogue listing. The LMS has an outline, not a finished course like Data Analytics or Product Management.`
+    : `An outline of what ${course.title} will cover. Enrolment opens when its lessons are ready.`
   const outcomes = course.outcomes.length > 0 ? course.outcomes : authoredRecord?.outcomes ?? []
   const forWhom = course.forWhom.length > 0 ? course.forWhom : authored ? authoredRecord?.forWhom ?? [] : []
   const duration = course.duration || authoredRecord?.duration || ""
@@ -127,12 +129,12 @@ export default function CourseDetailPage() {
           <div className="cat-rail cat-enrol-bar-inner">
             <div className="cat-enrol-bar-copy">
               <strong>{course.title}</strong>
-              <TruthChip state={authored ? "live" : "development"} />
+              {confirmed ? <TruthChip state={authored ? "live" : "development"} /> : <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />}
             </div>
             {listingClosed ? (
               <div className="cat-enrol-actions">
                 <a className="cat-btn cat-btn-ghost" href="#course-outline">View outline</a>
-                <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">Start Data Analytics</Link>
+                <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">{confirmed ? "Start Data Analytics" : "View Data Analytics"}</Link>
               </div>
             ) : (
               <button
@@ -149,11 +151,12 @@ export default function CourseDetailPage() {
 
         <section className="cat-hero">
           <div className="cat-rail">
+            {confirmed ? null : <CatalogueNotice bare what="This course" onRetry={() => void catalog.reload()} />}
             <Link className="cat-back" to="/courses">← Courses</Link>
             <h1>{course.title}</h1>
             <p className="cat-lead">{summary}</p>
             <div className="cat-metrics">
-              <VisualStat label="Status" value={authored ? "Ready" : "Catalogue listing"} />
+              <VisualStat label="Status" value={!confirmed ? STATUS_NOT_CONFIRMED : authored ? "Open" : "Opening soon"} />
               <VisualStat label="Level" value={course.level} />
               <VisualStat
                 label={showLiveCurriculum ? "Lessons" : "Outline"}
@@ -165,9 +168,9 @@ export default function CourseDetailPage() {
               />
             </div>
             <p className="cat-statline">
-              <span>{authored ? "Written lessons + practice" : "LMS outline"}</span>
+              <span>{authored ? "Written lessons + practice" : "Outline"}</span>
               <span>{course.mode}</span>
-              <span>{showLiveCurriculum ? duration : duration || "Duration not finished"}</span>
+              <span>{showLiveCurriculum ? duration : duration || "Duration to be confirmed"}</span>
               <span>{course.category}</span>
               <span>{moduleCount} modules</span>
               {showLiveCurriculum && authoredStats ? <span>{authoredStats.assignmentCount} assignments</span> : null}
@@ -176,8 +179,8 @@ export default function CourseDetailPage() {
               {listingClosed ? (
                 <>
                   <a className="cat-btn cat-btn-ghost cat-btn-lg" href="#course-outline">View outline</a>
-                  <Link className="cat-btn cat-btn-primary cat-btn-lg" to="/courses/data-analytics">Start Data Analytics</Link>
-                  <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">Start Product Management</Link>
+                  <Link className="cat-btn cat-btn-primary cat-btn-lg" to="/courses/data-analytics">{confirmed ? "Start Data Analytics" : "View Data Analytics"}</Link>
+                  <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">{confirmed ? "Start Product Management" : "View Product Management"}</Link>
                 </>
               ) : (
                 <>
@@ -204,12 +207,12 @@ export default function CourseDetailPage() {
             <h2>
               {showLiveCurriculum
                 ? `${moduleCount} modules · ${lessonCount} lessons`
-                : "What exists in the LMS today"}
+                : "Course outline"}
             </h2>
             <p className="cat-fine">
               {showLiveCurriculum
-                ? "Each module is a block of written work and practice. Lesson bodies stay in Skylent OS."
-                : "Titles below are an outline, not a finished teaching path."}
+                ? "Each module mixes short written lessons with practice. You study them in your Skylent workspace after enrolling."
+                : "These are the planned modules. Lessons are added as they are ready."}
             </p>
             <ModuleLane modules={modules} />
           </div>
@@ -383,8 +386,8 @@ export default function CourseDetailPage() {
               </div>
               {listingClosed ? (
                 <div className="cat-enrol-actions">
-                  <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">Start Data Analytics</Link>
-                  <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">Start Product Management</Link>
+                  <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">{confirmed ? "Start Data Analytics" : "View Data Analytics"}</Link>
+                  <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">{confirmed ? "Start Product Management" : "View Product Management"}</Link>
                 </div>
               ) : (
                 <button type="button" className="cat-btn cat-btn-primary" disabled={!enrollable} onClick={openEnrol}>

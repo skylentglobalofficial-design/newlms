@@ -51,13 +51,13 @@
   --sk-fast: 150ms;
   --sk-base: 250ms;
   --ed-ease: var(--sk-ease);
-  --sk-font-heading: "Space Grotesk", system-ui, sans-serif;
-  --sk-font-body: "DM Sans", system-ui, sans-serif;
+  --sk-font-heading: "Inter", system-ui, sans-serif;
+  --sk-font-body: "Inter", system-ui, sans-serif;
 
   /* Skylent v2: proof surfaces, navy product surfaces, intelligence accent */
-  --site-proof: 45 28.6% 97.3%;          /* #FAF9F6 warm paper band: proof, evidence, career */
-  --site-proof-2: 44 31.4% 93.1%;        /* #F3F0E8 plate mat, inset proof panel */
-  --site-proof-line: 41 24.2% 87.1%;     /* #E6E1D6 hairline on warm paper */
+  --site-proof: 220 42.9% 97.3%;         /* #F5F7FB cool paper band (Aurora repolish; was warm #FAF9F6) */
+  --site-proof-2: 216 38.5% 94.9%;       /* #EDF1F7 plate mat, inset panel (was warm #F3F0E8) */
+  --site-proof-line: 220 28.3% 89.6%;    /* #DDE2EC hairline on cool paper */
   --site-navy-2: 222 39.4% 12.9%;         /* #141C2E raised on navy */
   --site-navy-line: 223 32.1% 22%;      /* #26304A hairline on navy */
   --site-navy-line-2: 222 23.7% 38%;    /* #4A5878 outline controls on navy */
@@ -121,7 +121,7 @@
   background: hsl(var(--site-paper));
   color: hsl(var(--site-ink));
   color-scheme: light;
-  font-family: "DM Sans", system-ui, sans-serif;
+  font-family: var(--sk-font-body);
   font-feature-settings: 'cv11', 'ss01';
 }
 .site-light em,
@@ -129,12 +129,12 @@
 .site-light h1,
 .site-light h2,
 .site-serif {
-  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-family: var(--sk-font-heading);
   font-weight: 600;
   letter-spacing: 0;
 }
 .site-light .font-degree-serif {
-  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-family: var(--sk-font-heading);
   font-weight: 600;
   letter-spacing: 0;
 }
@@ -200,35 +200,35 @@
 
 /* ---------- Typography scale ---------- */
 .sk-display {
-  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-family: var(--sk-font-heading);
   font-weight: 600;
   font-size: clamp(2.25rem, 4.6vw, 3.75rem);
   line-height: 1.05;
   letter-spacing: 0;
 }
 .sk-h1 {
-  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-family: var(--sk-font-heading);
   font-weight: 600;
   font-size: clamp(2rem, 3.8vw, 3rem);
   line-height: 1.1;
   letter-spacing: 0;
 }
 .sk-h2 {
-  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-family: var(--sk-font-heading);
   font-weight: 600;
   font-size: clamp(1.625rem, 3vw, 2.25rem);
   line-height: 1.15;
   letter-spacing: 0;
 }
 .sk-h3 {
-  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-family: var(--sk-font-heading);
   font-weight: 600;
   font-size: 1.25rem;
   line-height: 1.3;
   letter-spacing: 0;
 }
 .sk-h4 {
-  font-family: "Space Grotesk", system-ui, sans-serif;
+  font-family: var(--sk-font-heading);
   font-weight: 600;
   font-size: 1.0625rem;
   line-height: 1.35;
@@ -865,3 +865,7 @@ textarea.sk-input { padding-block: .625rem; min-height: 6rem; }
 /* Quiet links: a hairline that draws in under the label. */
 .sk-link { text-underline-offset: 4px; text-decoration-thickness: 1px; }
 .sk-link:hover { text-decoration-line: underline; }
+
+/* Catalogue unavailable notice (CatalogueNotice.tsx) */
+.cat-notice { margin: 20px 0 0; padding: 12px 16px; border-radius: 12px; background: hsl(var(--site-soft-blue)); color: hsl(var(--site-ink)); font-size: 15px; line-height: 1.5; }
+.cat-notice button { padding: 0; border: 0; background: none; color: hsl(var(--site-deep)); font: inherit; font-weight: 600; text-decoration: underline; cursor: pointer; }

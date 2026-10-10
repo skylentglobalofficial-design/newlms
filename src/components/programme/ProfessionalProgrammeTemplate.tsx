@@ -24,6 +24,8 @@ import type { AuthoredProgrammeContent, ProgrammeStep } from "./programme-conten
 import { numberWord, plural, type ProgrammeTruth } from "./programme-truth"
 import "./ProfessionalProgrammeTemplate.css"
 import "../../pages/cine.css"
+import { openSkylentAi } from "../skylent/ai-events"
+import CatalogueNotice, { STATUS_NOT_CONFIRMED } from "./CatalogueNotice"
 
 type Props = {
   program: CatalogProgramDetail
@@ -33,6 +35,8 @@ type Props = {
   cta: string
   afterEnrol: string
   onEnrol: () => void
+  /** False when the page is drawn from the published record because the catalogue API is unreachable. */
+  confirmed?: boolean
 }
 
 const CAREER_STATUS: Array<{ label: string; capability: Capability }> = [
@@ -119,7 +123,7 @@ function Chevron() {
   )
 }
 
-export default function ProfessionalProgrammeTemplate({ program, content, truth, cta, afterEnrol, onEnrol }: Props) {
+export default function ProfessionalProgrammeTemplate({ program, content, truth, cta, afterEnrol, onEnrol, confirmed = true }: Props) {
   const course = useCatalogCourse(content.courseSlug)
   const curriculum = course.data?.curriculum ?? []
   const courseReady = !course.loading && !course.error && course.data != null
@@ -132,9 +136,14 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
   const lessonCount = course.data?.lessonCount ?? 0
   const assignmentCount = countType(curriculum, "ASSIGNMENT")
   const checkCount = countType(curriculum, "QUIZ")
-  const canEnrol = truth.enrollable && !truth.comingLater
+  // The linked course request failed: its record (if shown) is the published copy, not the live catalogue.
+  const courseUnconfirmed = !course.loading && (course.offline || Boolean(course.error))
+  const verified = confirmed && !courseUnconfirmed
+  const canEnrol = verified && truth.enrollable && !truth.comingLater
 
-  const enrolChip = truth.comingLater ? (
+  const enrolChip = !verified ? (
+    <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
+  ) : truth.comingLater ? (
     <TruthChip state="soon" label={truth.enrolment || "Coming soon"} />
   ) : truth.enrollable ? (
     <TruthChip state="live" label="Open" />
@@ -164,7 +173,11 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
     </button>
   ) : null
 
-  const closingLine = canEnrol ? content.closing.line : "Enrolment is not open on this programme yet."
+  const closingLine = canEnrol
+    ? content.closing.line
+    : !verified
+      ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked.`
+      : "Enrolment is not open on this programme yet."
   const closingSplit = closingLine.indexOf(": ")
   const closingSignal = closingSplit > 0 ? closingLine.slice(closingSplit + 2) : undefined
 
@@ -188,6 +201,9 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
 
   return (
     <div className="pp-page">
+      {confirmed && courseUnconfirmed ? (
+        <CatalogueNotice what={`The linked course, ${courseTitle},`} onRetry={() => void course.reload()} />
+      ) : null}
       {/* Hero: display headline, the offer, and a ruled metadata rail */}
       <section className="sky-container pp-hero" aria-labelledby="pp-title">
         <nav className="sky-label pp-crumb cine-in cine-in--fade" aria-label="Breadcrumb">
@@ -208,7 +224,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               </a>
             </div>
             <p className="pp-note">
-              {program.name && program.name !== courseTitle ? `Listed in the catalogue as ${program.name}. ` : ""}
+              {confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}
               {afterEnrol}
             </p>
           </div>
@@ -231,8 +247,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               {content.artefact === "northwind" ? <NorthwindLabPlate /> : <HarborDeskPlate />}
             </div>
             <figcaption className="sky-stage__caption cine-in cine-in--fade cine-d6">
-              <span>FIG. 01 · {content.hero.figure}</span>
-              <span>{content.hero.figureNote}</span>
+              <span>{content.hero.figure}</span>
             </figcaption>
           </Reveal>
 
@@ -571,9 +586,9 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           </div>
           <Reveal delay={180} className="pp-actions">
             {primaryAction}
-            <Link className="sk-btn sk-btn-secondary" to="/path">
-              {canEnrol ? "Not sure yet? Find my path" : "Find my path"}
-            </Link>
+            <button type="button" className="sk-btn sk-btn-secondary" onClick={() => openSkylentAi("finder")}>
+              {canEnrol ? "Not sure yet? Ask Skylent AI" : "Ask Skylent AI"}
+            </button>
           </Reveal>
         </Reveal>
       </section>

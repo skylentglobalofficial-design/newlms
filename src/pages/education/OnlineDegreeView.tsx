@@ -5,10 +5,9 @@
  * Every plate is ILLUSTRATIVE: Skylent has no degree learning environment in production.
  */
 import { Link } from "react-router-dom"
-import { ArrowRight, Plate, SectionIndex, SpecSheet, TruthChip, type TruthState } from "../../components/skylent/primitives"
+import { ArrowRight, Plate, SectionIndex, SpecSheet, TruthChip } from "../../components/skylent/primitives"
 import { Reveal } from "../../components/skylent/Reveal"
 import { degreeLevelName, deliveryModeLabel, type Degree } from "../../lib/degrees"
-import { truthOf } from "../../lib/truth"
 import { DegreeEnquiry } from "./DegreeEnquiry"
 import {
   ClosingBand,
@@ -50,8 +49,6 @@ const RESOURCES: { kind: string; name: string; note: string; state: "opened" | "
 export default function OnlineDegreeView({ degree }: { degree: Degree }) {
   const level = degreeLevelName(degree.level)
   const photo = degree.heroAsset ?? ONLINE_STAND_IN
-  /* No capability key exists for degree evidence; it is not built, so it reads as the evidence capability does. */
-  const evidence: TruthState = truthOf("projectsAndEvidence")
   const opened = RESOURCES.filter((r) => r.state === "opened").length
 
   return (
@@ -69,14 +66,14 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
           <p className="dg-lead cine-in cine-d2">
             Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the
             week runs on a laptop and not on a campus.
-            {degree.institution ? null : " The institution, its timetable and its entry details are not published yet."}
+            {degree.institution ? null : " Timetable, fees and entry details are shared once an institution is confirmed."}
           </p>
           <div className="dg-actions cine-in cine-d3">
             <Link to="#week" className="sk-btn sk-btn-primary">
               View pathway
               <ArrowRight />
             </Link>
-            <QuietLink to="/path">Find my path</QuietLink>
+            <QuietLink to="#ask">Ask about this degree</QuietLink>
           </div>
         </div>
         <div className="dg-hero__facts cine-in cine-in--fade cine-d4">
@@ -89,8 +86,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 label: "Listing",
                 value: (
                   <span className="dg-listing">
-                    <span>{degree.sample ? "Sample, details not published" : "Published"}</span>
-                    {degree.status === "coming_soon" ? <TruthChip state="soon" /> : null}
+                    <span>Not open yet</span>
                   </span>
                 ),
               },
@@ -107,8 +103,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
               <LearningWeek />
             </div>
             <figcaption className="sky-stage__caption">
-              <span>FIG. 01 · A week in the online learning environment</span>
-              <span>Days and counts are placeholders. Times come from the institution.</span>
+              <span>A week in the online learning environment</span>
             </figcaption>
           </Reveal>
 
@@ -143,12 +138,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 <dd className="dg-stagefacts__unpub">{orUnpublished(degree.assessments?.join(", "))}</dd>
               </div>
             </dl>
-            {degree.sample ? (
-              <p className="dg-note">
-                Sample listing by degree area. Partner confirmation is pending, so the university name and the degree title are not
-                published. The degree is always awarded by the partner institution.
-              </p>
-            ) : null}
+            <p className="dg-note">A degree is awarded by an institution, not by Skylent. No institution is confirmed for this listing yet.</p>
           </Reveal>
         </div>
       </section>
@@ -241,7 +231,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
           <div className="dg-env">
             {/* (a) Virtual classroom */}
             <Reveal variant="plate" className="dg-env__item">
-            <Plate className="dg-mat--tight dg-stretch" fig="FIG. 02" caption="Virtual classroom" note="Role labels only, no people shown">
+            <Plate className="dg-mat--tight dg-stretch" caption="Virtual classroom">
               <div className="dg-plate-bar">
                 <span className="sky-label">Classroom</span>
                 <TruthChip state="illustrative" />
@@ -305,7 +295,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
 
             {/* (b) Resources */}
             <Reveal variant="plate" delay={90} className="dg-env__item">
-            <Plate className="dg-mat--tight dg-stretch" fig="FIG. 03" caption="Week resources" note="Titles and counts are placeholders">
+            <Plate className="dg-mat--tight dg-stretch" caption="Week resources">
               <div className="dg-plate-bar">
                 <span className="sky-label">Resources</span>
                 <TruthChip state="illustrative" />
@@ -358,7 +348,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
 
             {/* (c) Online assessment: neutral placeholder text, never a real-looking question */}
             <Reveal variant="plate" delay={180} className="dg-env__item">
-            <Plate className="dg-mat--tight dg-stretch" fig="FIG. 04" caption="Online assessment" note="Placeholder text, not a real question">
+            <Plate className="dg-mat--tight dg-stretch" caption="Online assessment">
               <div className="dg-plate-bar">
                 <span className="sky-label">Assessment</span>
                 <TruthChip state="illustrative" />
@@ -420,7 +410,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
               ))}
             </ol>
             <p className="dg-note">
-              Device and software requirements: {degree.tools?.length ? degree.tools.join(", ") : <Unpublished>published by the institution.</Unpublished>}
+              Device and software requirements: {degree.tools?.length ? degree.tools.join(", ") : <Unpublished>shared once an institution is confirmed.</Unpublished>}
             </p>
           </div>
         </div>
@@ -432,30 +422,21 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
           <div className="dg-prove">
             <div className="dg-prove__lead">
               <SectionIndex n="05" label="What you can prove" />
-              <h2 className="dg-h2 dg-h2--sm">Degree evidence is not in Career OS yet.</h2>
-              <p>The degree is awarded by the partner institution, not by Skylent. Skylent cannot show it as a verified record today.</p>
+              <h2 className="dg-h2 dg-h2--sm">Your Career OS profile, alongside the degree.</h2>
+              <p>The degree is awarded by the partner institution. Skylent programmes, labs and projects you take while you study are kept in Career OS.</p>
             </div>
             <dl className="dg-prove__rows dg-rows">
               <div>
-                <dt>Degree evidence</dt>
-                <dd>Not available yet. Degrees are not held in Skylent, so there is no record to show or check.</dd>
-                <dd className="dg-prove__chip">
-                  <TruthChip state={evidence} />
-                </dd>
+                <dt>Education</dt>
+                <dd>Add your degree to your career profile yourself, with your other education.</dd>
               </div>
               <div>
-                <dt>Career OS record</dt>
-                <dd>Not available yet. A degree cannot be linked to your career profile as evidence.</dd>
-                <dd className="dg-prove__chip">
-                  <TruthChip state={evidence} />
-                </dd>
+                <dt>Projects</dt>
+                <dd>Projects from Skylent programmes are kept with their brief, files and reflection.</dd>
               </div>
               <div>
-                <dt>In Career OS today</dt>
-                <dd>You can enter your education in your career profile yourself. It is self-entered, not verified.</dd>
-                <dd className="dg-prove__chip">
-                  <TruthChip state={truthOf("careerProfile")} />
-                </dd>
+                <dt>Certificates</dt>
+                <dd>Skylent course certificates carry a code anyone can check.</dd>
               </div>
             </dl>
           </div>
@@ -465,8 +446,8 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
       <DegreeEnquiry degree={degree} index="06" />
 
       <ClosingBand
-        label={`Next step · Choose${degree.sample ? " · Sample listing" : ""}`}
-        title="See where an online degree sits on your path."
+        label="Next step"
+        title="Not sure this degree fits? Ask Skylent AI."
         secondary={{ to: "/programmes", label: "Explore programmes" }}
       />
     </DegreeShell>

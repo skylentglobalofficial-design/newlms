@@ -1,0 +1,10 @@
+.tc { margin: 0 0 1rem; }
+.tc__row { display: flex; align-items: flex-start; gap: .625rem; cursor: pointer; font-size: .875rem; line-height: 1.5; }
+.tc__box { flex: none; width: 18px; height: 18px; margin: .125rem 0 0; accent-color: #2563ff; cursor: pointer; }
+.tc__box:focus-visible { outline: 2px solid #2563ff; outline-offset: 2px; }
+.tc--light .tc__text { color: #3d4760; }
+.tc--light .tc__text a { color: #1d4fd8; text-decoration: underline; text-underline-offset: 2px; }
+.tc--dark .tc__text { color: #c9d2e4; }
+.tc--dark .tc__text a { color: #9fc0ff; text-decoration: underline; text-underline-offset: 2px; }
+.tc__sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.tc__error { margin: .375rem 0 0 1.75rem; color: #b42318; font-size: .8125rem; }

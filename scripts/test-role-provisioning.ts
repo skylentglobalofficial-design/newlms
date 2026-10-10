@@ -2,6 +2,7 @@ import "dotenv/config"
 import { RoleName, PrismaClient } from "@prisma/client"
 import { ensureRole } from "../server/src/lib/auth.js"
 import { resolveGoogleAccount, type GoogleIdTokenClaims } from "../server/src/lib/google-oauth.js"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
@@ -77,7 +78,7 @@ async function signup(email: string, displayName: string) {
   const result = await request(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName, email, password: PASSWORD },
+    body: { consent: TEST_CONSENT, displayName, email, password: PASSWORD },
   })
   assert(result.response.status === 201, `Signup failed for ${email}: ${result.response.status}`)
   createdUserIds.push(result.data.user.id)
@@ -128,7 +129,7 @@ async function main() {
   const selfElevate = await request(elevationJar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: {
+    body: { consent: TEST_CONSENT,
       displayName: "Self Elevating",
       email: `role-self-elevate-${stamp}@example.com`,
       password: PASSWORD,
@@ -151,7 +152,7 @@ async function main() {
     aud: process.env.GOOGLE_CLIENT_ID ?? "test-client-id",
     exp: Math.floor(Date.now() / 1000) + 3600,
   }
-  const googleUser = await resolveGoogleAccount(claims)
+  const googleUser = await resolveGoogleAccount(claims, { policyVersion: TEST_CONSENT.policyVersion })
   createdUserIds.push(googleUser.id)
   const googleRoles = await prisma.userRole.findMany({
     where: { userId: googleUser.id },

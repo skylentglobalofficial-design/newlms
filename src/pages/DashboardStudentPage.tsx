@@ -21,6 +21,69 @@ import { AiMark, AI_NAME, ArrowRight, ProductSlice, TruthChip } from '../compone
 import './LearnWorkspace.css'
 import './StudentHome.css'
 
+/** Mirrors the server's certificate name rule (server/src/routes/skylent/certificates.ts): a full name, not an email. */
+function looksLikeFullName(name: string): boolean {
+  const parts = name.trim().split(/\s+/).filter(Boolean)
+  return parts.length >= 2 && !name.includes('@')
+}
+
+/**
+ * The name printed on certificates. A certificate needs a full name, so a learner who signed up with one
+ * word (or whose Google name is one word) can fix it here. Saves through PATCH /auth/me.
+ */
+function CertificateName() {
+  const { user, updateDisplayName } = useAuth()
+  const current = user?.name || ''
+  const [editing, setEditing] = useState(false)
+  const [draft, setDraft] = useState(current)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  if (!user) return null
+  const complete = looksLikeFullName(current)
+  async function save() {
+    const next = draft.trim().replace(/\s+/g, ' ')
+    if (!looksLikeFullName(next)) {
+      setError('Enter your first and last name as they should appear on a certificate.')
+      return
+    }
+    setSaving(true)
+    setError(null)
+    try {
+      await updateDisplayName(next)
+      setEditing(false)
+    } catch (err) {
+      setError(learnerErrorMessage(err, 'Your name could not be saved. Try again in a moment.'))
+    } finally {
+      setSaving(false)
+    }
+  }
+  return (
+    <div className="sh-row sh-name">
+      {editing ? (
+        <form className="sh-name-form" onSubmit={(event) => { event.preventDefault(); void save() }}>
+          <label htmlFor="sh-cert-name" className="sh-note">Full name on certificates</label>
+          <input id="sh-cert-name" className="sh-name-input" value={draft} maxLength={120} autoComplete="name" onChange={(event) => setDraft(event.target.value)} />
+          <div className="sh-name-actions">
+            <button type="submit" className="os-btn os-btn-primary" disabled={saving}>{saving ? 'Saving…' : 'Save name'}</button>
+            <button type="button" className="os-btn os-btn-ghost" disabled={saving} onClick={() => { setEditing(false); setDraft(current); setError(null) }}>Cancel</button>
+          </div>
+          {error ? <span className="os-error" role="alert">{error}</span> : null}
+        </form>
+      ) : (
+        <>
+          <div className="sh-row-main">
+            <strong>Name on certificates: {current || 'not set'}</strong>
+            <span className="sh-note">{complete ? 'Certificates print this name.' : 'A certificate needs your first and last name.'}</span>
+          </div>
+          <button type="button" className="os-link sh-row-link" onClick={() => { setDraft(current); setEditing(true) }}>
+            {complete ? 'Change' : 'Add full name'}
+          </button>
+        </>
+      )}
+    </div>
+  )
+}
+
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'learning', label: 'Learning', short: 'Learn', sectionId: 'student-learning' },
   { id: 'practice', label: 'Practice', short: 'Practice', sectionId: 'student-practice' },
@@ -373,6 +436,7 @@ export default function DashboardStudentPage() {
               ))}
             </ul>
           ) : null}
+          <CertificateName />
           {claimable.map((item) => (
             <div key={item.id} className="sh-row sh-claim">
               <div className="sh-row-main">

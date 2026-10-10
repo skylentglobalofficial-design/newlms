@@ -1,0 +1,15 @@
+/* /institutions (repolish) — prefix inx-, on top of hx- and abx- */
+.inx .inx-hero { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(28px, 5vw, 64px); align-items: center; }
+.inx .inx-hero__media { border-radius: 20px; overflow: hidden; aspect-ratio: 4 / 3; border: 1px solid hsl(var(--site-navy-line)); }
+.inx .inx-hero__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.inx .inx-provides { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.inx .inx-provides li { display: grid; align-content: start; gap: 6px; padding: 20px 18px; border: 1px solid hsl(var(--site-border)); border-top: 3px solid hsl(var(--site-deep)); border-radius: 14px; }
+.inx .inx-provides b { font-size: 16.5px; color: hsl(var(--site-ink)); }
+.inx .inx-provides span { font-size: 14px; line-height: 1.55; color: hsl(var(--site-muted)); }
+.inx .inx-steps { list-style: none; counter-reset: inx; margin: 24px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.inx .inx-steps li { position: relative; display: grid; gap: 6px; padding: 22px 20px 20px; border-radius: 16px; background: hsl(var(--site-proof)); border: 1px solid hsl(var(--site-border)); }
+.inx .inx-steps b { font-size: 17px; color: hsl(var(--site-ink)); }
+.inx .inx-steps span { font-size: 14.5px; line-height: 1.55; color: hsl(var(--site-muted)); }
+@media (max-width: 1100px) { .inx .inx-provides { grid-template-columns: repeat(3, minmax(0, 1fr)); } .inx .inx-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 900px) { .inx .inx-hero { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 640px) { .inx .inx-provides, .inx .inx-steps { grid-template-columns: minmax(0, 1fr); } }

@@ -1,122 +1,242 @@
 /**
- * Learn: the signed-in student home, drawn as one large plate from the authored
- * Data Analytics course. Counts and titles come from the course data; states from truth.ts.
+ * Learn ("After you enrol"): a guided walkthrough of the learner experience, from choosing a programme
+ * to the finished work appearing in Career OS. One product window stays on screen; its address and
+ * sidebar move with each step so the journey reads as one continuous flow.
+ *
+ * Titles, counts and lab figures come from the authored Data Analytics course and programme content.
+ * The window is an illustration of the product: it is not a learner account and changes nothing.
+ * Timing, pausing and reduced motion are handled by useWalkthrough.
  */
-import { Action, SectionIndex, SpecSheet, TruthChip } from "@/components/skylent/primitives"
+import { Action } from "@/components/skylent/primitives"
 import { Reveal } from "@/components/skylent/Reveal"
-import { truthOf } from "@/lib/truth"
+import { NORTHWIND, authoredProgrammeContent, rupees } from "@/components/programme/programme-content"
 import { courseFacts, type CourseFacts } from "./course-facts"
+import { WalkControls } from "./Repolish"
+import { useWalkthrough } from "./useWalkthrough"
 
-function StudentHomePlate({ facts }: { facts: CourseFacts }) {
-  const nextLesson = facts.currentModule.lessons[facts.currentModule.lessons.findIndex((l) => l.id === facts.current.id) + 1]
-  return (
-    <div
-      className="hm-plate hm-home"
-      role="img"
-      aria-label={`Student home for a learner part-way through ${facts.title}. Next: lesson ${facts.lessonNumber}, ${facts.current.title}. ${facts.done} of ${facts.total} lessons complete.`}
-    >
-      <div className="hm-home__bar">
-        <span>Student home</span>
-        <span>{facts.title}</span>
-      </div>
-      <div className="hm-home__inner">
-        <div className="hm-home__h">What to do next</div>
-        <div className="hm-home__continue">
-          <div className="hm-art-label">
-            {facts.title} · M{facts.currentModuleNumber} · {facts.current.kind} · {facts.current.duration}
+const PROGRAMME_SLUG = "data-analytics-pro"
+
+const TOUR = [
+  { key: "choose", title: "Choose a programme", path: "/programmes/data-analytics-pro", nav: null },
+  { key: "enrol", title: "Enrol", path: "/programmes/data-analytics-pro", nav: null },
+  { key: "home", title: "Arrive at your student home", path: "/dashboard/student", nav: "Learning" },
+  { key: "lesson", title: "Open the next lesson", path: "/learn/data-analytics/l7", nav: "Learning" },
+  { key: "progress", title: "Review material and progress", path: "/learn/data-analytics", nav: "Learning" },
+  { key: "lab", title: "Practise in the lab", path: "/os/labs/data-analytics/northwind", nav: "Practice" },
+  { key: "project", title: "Work on the project", path: "/dashboard/student", nav: "Projects" },
+  { key: "evidence", title: "Review your work", path: "/career-os/projects", nav: "Evidence" },
+  { key: "profile", title: "See it in your profile", path: "/career-os/profile", nav: "Career" },
+] as const
+
+type TourKey = (typeof TOUR)[number]["key"]
+const SIDEBAR = ["Learning", "Practice", "Projects", "Evidence", "Career"] as const
+
+function TourScreen({ step, facts }: { step: TourKey; facts: CourseFacts }) {
+  const content = authoredProgrammeContent(PROGRAMME_SLUG)
+  const record = content?.evidence.record
+  switch (step) {
+    case "choose":
+      return (
+        <div className="hx-tour__screen">
+          <span className="hx-tour__label">Professional programme</span>
+          <span className="hx-tour__h">{facts.title}</span>
+          <span className="hx-tour__p">{content?.cardLine}</span>
+          <span className="hx-tour__meta">
+            {facts.stats.modules} modules · {facts.stats.lessons} lessons · capstone: {content?.capstoneTitle}
+          </span>
+          <span className="hx-tour__btn is-focus">Start this programme</span>
+        </div>
+      )
+    case "enrol":
+      return (
+        <div className="hx-tour__screen hx-tour__screen--dim">
+          <div className="hx-tour__dialog">
+            <span className="hx-tour__h hx-tour__h--sm">Enrol in {facts.title}</span>
+            <span className="hx-tour__check">
+              <span className="hx-tour__box" aria-hidden="true" /> I accept the Terms &amp; Conditions and Privacy Policy
+            </span>
+            <span className="hx-tour__note">Payment is not collected in this pilot.</span>
+            <span className="hx-tour__btn is-focus">Enrol</span>
           </div>
-          <div className="hm-home__lesson">
-            Lesson {facts.lessonNumber} · {facts.current.title}
-          </div>
-          <div className="hm-home__where">
-            Module {facts.currentModuleNumber} of {facts.stats.modules} · {facts.currentModule.title}
-            {nextLesson ? `. Next: ${nextLesson.title}` : ""}
-          </div>
-          <div className="hm-home__row">
-            <div className="hm-home__progress">
-              <span>
+        </div>
+      )
+    case "home":
+      return (
+        <div className="hx-tour__screen">
+          <span className="hx-tour__h hx-tour__h--sm">What to do next</span>
+          <div className="hx-tour__card hx-tour__card--accent">
+            <span className="hx-tour__label">
+              {facts.title} · M{facts.currentModuleNumber} · {facts.current.kind}
+            </span>
+            <span className="hx-tour__t">
+              Lesson {facts.lessonNumber} · {facts.current.title}
+            </span>
+            <span className="hx-tour__track"><span style={{ width: `${facts.percent}%` }} /></span>
+            <span className="hx-tour__row">
+              <span className="hx-tour__meta">
                 {facts.done} of {facts.total} lessons complete
               </span>
-              <span className="hm-home__track">
-                <span style={{ width: `${facts.percent}%` }} />
+              <span className="hx-tour__btn hx-tour__btn--sm is-focus">Continue learning</span>
+            </span>
+          </div>
+        </div>
+      )
+    case "lesson":
+      return (
+        <div className="hx-tour__screen">
+          <div className="hx-tour__lessonhead">
+            <span className="hx-tour__label hx-tour__label--light">
+              Module {facts.currentModuleNumber} · Lesson {facts.lessonNumber} · {facts.current.kind}
+              {facts.current.duration ? ` · ${facts.current.duration}` : ""}
+            </span>
+            <span className="hx-tour__t hx-tour__t--light">{facts.current.title}</span>
+          </div>
+          <span className="hx-tour__lines" aria-hidden="true">
+            <span style={{ width: "92%" }} />
+            <span style={{ width: "84%" }} />
+            <span style={{ width: "66%" }} />
+          </span>
+        </div>
+      )
+    case "progress":
+      return (
+        <div className="hx-tour__screen">
+          <span className="hx-tour__label">Course outline</span>
+          {facts.modules.map((module) => (
+            <span key={module.id} className={`hx-tour__mod hx-tour__mod--${module.state}`}>
+              <span className="hx-tour__modn">{module.label}</span>
+              <span className="hx-tour__modt">{module.title}</span>
+              <span className="hx-tour__ticks" aria-hidden="true">
+                {module.lessons.map((lesson, i) => (
+                  <span key={lesson.id} className={i < module.done ? "is-on" : undefined} />
+                ))}
               </span>
-            </div>
-            <span className="hm-home__btn">Continue learning</span>
-          </div>
+            </span>
+          ))}
         </div>
-
-        <div className="hm-home__grid">
-          <div className="hm-home__panel">
-            <div className="hm-home__panelhead">My learning</div>
-            {facts.modules.map((module) => (
-              <div key={module.id} className={`hm-home__mod hm-home__mod--${module.state}`}>
-                <span className="hm-home__modn">{module.label}</span>
-                <span className="hm-home__modtitle">{module.title}</span>
-                <span className="hm-home__ticks">
-                  {module.lessons.map((lesson, i) => (
-                    <span key={lesson.id} className={i < module.done ? "hm-home__tick hm-home__tick--on" : "hm-home__tick"} />
-                  ))}
-                </span>
-              </div>
+      )
+    case "lab":
+      return (
+        <div className="hx-tour__screen">
+          <span className="hx-tour__label">Northwind Lab · Northwind Retail sales extract</span>
+          <span className="hx-tour__t">Net revenue by category</span>
+          <span className="hx-tour__meta">Valid rows only: units and price above zero, not returned.</span>
+          <span className="hx-tour__table">
+            {NORTHWIND.categories.map((row) => (
+              <span key={row.name} className="hx-tour__tr">
+                <span>{row.name}</span>
+                <span>{rupees(row.value)}</span>
+              </span>
             ))}
-          </div>
-          <div className="hm-home__side">
-            <div className="hm-home__panel">
-              <div className="hm-home__panelhead">
-                <span>Current project</span>
-                <span className="hm-home__status">Not started</span>
-              </div>
-              <div className="hm-home__project">{facts.capstoneTitle}</div>
-              <div className="hm-home__note">Module {facts.capstoneModuleNumber} assignment</div>
-            </div>
-            <div className="hm-home__panel">
-              <div className="hm-home__panelhead">Evidence and certificates</div>
-              <div className="hm-home__chips">
-                <TruthChip state={truthOf("certificates")} />
-              </div>
-              <div className="hm-home__note">A certificate is issued once every lesson is complete.</div>
-            </div>
-          </div>
+          </span>
         </div>
-      </div>
-    </div>
-  )
+      )
+    case "project":
+      return (
+        <div className="hx-tour__screen">
+          <span className="hx-tour__label">Capstone · Module {facts.capstoneModuleNumber} assignment</span>
+          <span className="hx-tour__t">{content?.capstoneTitle ?? facts.capstoneTitle}</span>
+          {["Read the brief", "Validate the data", "Build the analysis", "Write the recommendation"].map((task, i) => (
+            <span key={task} className="hx-tour__task">
+              <span className={i < 2 ? "hx-tour__tick is-on" : "hx-tour__tick"} aria-hidden="true" />
+              {task}
+            </span>
+          ))}
+        </div>
+      )
+    case "evidence":
+      return (
+        <div className="hx-tour__screen">
+          <span className="hx-tour__label">Evidence record</span>
+          <span className="hx-tour__t">{record?.title}</span>
+          <span className="hx-tour__kv"><span>Context</span><span>{record?.context}</span></span>
+          <span className="hx-tour__kv"><span>What it shows</span><span>{record?.workShown.split(", ").slice(0, 4).join(", ")}</span></span>
+          <span className="hx-tour__note">{record?.footnote}</span>
+        </div>
+      )
+    case "profile":
+      return (
+        <div className="hx-tour__screen">
+          <span className="hx-tour__label">Career OS · profile</span>
+          <span className="hx-tour__kv"><span>Projects</span><span><b>{record?.title}</b> · added from a finished project</span></span>
+          <span className="hx-tour__kv"><span>Skills you add</span><span>{(record?.skills ?? []).join(", ")}</span></span>
+          <span className="hx-tour__note">Your profile has a visibility setting that you control.</span>
+        </div>
+      )
+  }
 }
 
 export function Learn() {
   const facts = courseFacts()
+  const walk = useWalkthrough<HTMLElement>(TOUR.length, 2000)
   if (!facts) return null
+  const step = TOUR[walk.active]
   return (
-    <section id="learn" className="hm-learn" aria-labelledby="hm-learn-title">
-      <div className="sky-container hm-learn__grid">
-        <Reveal className="hm-learn__copy" stagger step={80}>
-          <SectionIndex n="03" label="Learn" />
-          <h2 id="hm-learn-title" className="sky-display sky-display--md">
-            Open it and <em>know what to do next.</em>
-          </h2>
-          <p className="hm-lead">
-            Lessons are written notes, checks and assignments. Student home keeps the next lesson, the current project and what still needs attention on one screen.
-          </p>
-          <div className="sky-label hm-learn__speclabel">{facts.title} · as authored today</div>
-          <SpecSheet
-            className="hm-facts"
-            rows={[
-              { label: "Modules", value: String(facts.stats.modules) },
-              { label: "Lessons", value: String(facts.stats.lessons) },
-              { label: "Assignments", value: String(facts.stats.assignments) },
-              { label: "Checks", value: String(facts.stats.checks) },
-            ]}
-          />
-          <Action to={`/courses/${facts.slug}`} kind="quiet">See the course</Action>
-        </Reveal>
-
-        <figure className="hm-learn__figure">
-          <Reveal className="hm-mat" variant="plate" delay={260}>
-            <StudentHomePlate facts={facts} />
+    <section ref={walk.rootRef} id="learn" className="hx-tour" aria-labelledby="hm-learn-title">
+      <div className="sky-container hx-tour__grid" {...walk.regionProps}>
+        <div className="hx-tour__copy">
+          <Reveal stagger step={80}>
+            <p className="hx-eyebrow hx-eyebrow--dark">After you enrol</p>
+            <h2 id="hm-learn-title" className="hx-h2">
+              Open Skylent and <em>know what to do next.</em>
+            </h2>
+            <p className="hx-tour__lead">From choosing a programme to seeing the finished work in your profile, in nine steps.</p>
           </Reveal>
-          <figcaption className="hm-caption">
-            <span>FIG. 02 · Student home, part-way through {facts.title}</span>
-            <span>Representation of the signed-in screen</span>
+          <ol className="hx-tour__steps" aria-label="What happens after you enrol">
+            {TOUR.map((item, i) => (
+              <li key={item.key}>
+                <button
+                  type="button"
+                  className={i === walk.active ? "hx-tour__step is-on" : i < walk.active ? "hx-tour__step is-done" : "hx-tour__step"}
+                  aria-current={i === walk.active ? "step" : undefined}
+                  onClick={() => walk.go(i)}
+                >
+                  <span className="hx-tour__stepn" aria-hidden="true">{i + 1}</span>
+                  {item.title}
+                </button>
+              </li>
+            ))}
+          </ol>
+          <Action to="/signup" kind="secondary">Create your account</Action>
+        </div>
+
+        <figure className="hx-tour__figure">
+          <div className="hx-tour__window">
+            <div className="hx-tour__bar" aria-hidden="true">
+              <span className="hx-tour__dots"><span /><span /><span /></span>
+              <span className="hx-tour__url">skylent.live{step.path}</span>
+            </div>
+            <div className={step.nav ? "hx-tour__app" : "hx-tour__app hx-tour__app--public"}>
+              {step.nav ? (
+                <span className="hx-tour__side" aria-hidden="true">
+                  <span className="hx-tour__brand">Skylent</span>
+                  {SIDEBAR.map((item) => (
+                    <span key={item} className={item === step.nav ? "hx-tour__nav is-on" : "hx-tour__nav"}>{item}</span>
+                  ))}
+                </span>
+              ) : (
+                <span className="hx-tour__topbar" aria-hidden="true">
+                  <span className="hx-tour__brand">Skylent</span>
+                </span>
+              )}
+              <div className="hx-tour__main" key={step.key}>
+                <p className="hx-sr">
+                  Step {walk.active + 1} of {TOUR.length}: {step.title}.
+                </p>
+                <div aria-hidden="true">
+                  <TourScreen step={step.key} facts={facts} />
+                </div>
+              </div>
+            </div>
+            <div className="hx-tour__progress" aria-hidden="true">
+              {TOUR.map((item, i) => (
+                <span key={item.key} className={i <= walk.active ? "is-on" : undefined} />
+              ))}
+            </div>
+          </div>
+          <figcaption className="hx-tour__caption">
+            <WalkControls active={walk.active} count={TOUR.length} title={step.title} playing={walk.playing} onPrev={walk.prev} onNext={walk.next} onToggle={walk.toggle} />
+            <span className="hx-tour__disclaimer">An illustration of the product using the Data Analytics programme, not a learner&apos;s account.</span>
           </figcaption>
         </figure>
       </div>

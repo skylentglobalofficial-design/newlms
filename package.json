@@ -21,6 +21,8 @@
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "test:auth": "tsx scripts/test-auth.ts",
+    "test:consent": "tsx scripts/test-consent.ts",
+    "test:certificate-verify": "tsx scripts/test-certificate-verify.ts",
     "test:google-oauth": "tsx scripts/test-google-oauth.ts",
     "test:lms": "tsx scripts/test-lms.ts",
     "test:ai": "tsx scripts/test-skylent-ai.ts",

@@ -7,6 +7,7 @@ import {
   JobStatus,
   PrismaClient,
 } from "@prisma/client"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? `http://localhost:${process.env.PORT ?? 3000}/api/v1`
@@ -58,7 +59,7 @@ async function signupUser(jar: CookieJar, label: string) {
   const signup = await request(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: {
+    body: { consent: TEST_CONSENT,
       displayName: `Career ${label}`,
       email: `career-test-${label}-${Date.now()}-${crypto.randomBytes(4).toString("hex")}@example.com`,
       password: "test-password-123",

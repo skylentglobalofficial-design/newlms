@@ -29,7 +29,11 @@ import {
   submitQuizAttempt,
   updateAssignment,
 } from '../lib/lms-api'
+import { TermsConsent } from '../components/legal/TermsConsent'
+import LessonSlide from '../components/lms/LessonSlide'
 import './LearnWorkspace.css'
+
+const TERMS_REQUIRED = '__terms_required__'
 import '../components/lms/SkylentAI.css'
 
 const SkylentAI = lazy(() => import('../components/lms/SkylentAI'))
@@ -91,6 +95,7 @@ export default function LearnPage() {
   const [quizAttempt, setQuizAttempt] = useState(0)
   const [lessonMedia, setLessonMedia] = useState<VideoPlaybackSource | undefined>()
   const [enrolling, setEnrolling] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
   const [enrollError, setEnrollError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [completing, setCompleting] = useState(false)
@@ -262,15 +267,20 @@ export default function LearnPage() {
         <p className="os-eyebrow">Not enrolled</p>
         <h1>{access.courseTitle}</h1>
         <p>You are signed in but not enrolled in this course yet.</p>
+        <TermsConsent checked={termsAccepted} onChange={setTermsAccepted} action="enrolling" showError={enrollError === TERMS_REQUIRED} />
         <div className="os-actions">
           <button
             type="button"
             className="os-btn os-btn-primary"
             disabled={enrolling}
             onClick={() => {
+              if (!termsAccepted) {
+                setEnrollError(TERMS_REQUIRED)
+                return
+              }
               setEnrolling(true)
               setEnrollError(null)
-              void enroll()
+              void enroll(termsAccepted)
                 .catch((err) => setEnrollError(learnerErrorMessage(err, 'Enrolment could not be completed right now. Try again in a moment.')))
                 .finally(() => setEnrolling(false))
             }}
@@ -279,7 +289,7 @@ export default function LearnPage() {
           </button>
           <Link className="os-link" to="/dashboard/student">Back to my learning</Link>
         </div>
-        {enrollError ? <p className="os-error" role="alert">{enrollError}</p> : null}
+        {enrollError && enrollError !== TERMS_REQUIRED ? <p className="os-error" role="alert">{enrollError}</p> : null}
       </StateScreen>
     )
   }
@@ -492,7 +502,16 @@ export default function LearnPage() {
               <div className="os-banner">
                 <p className="os-eyebrow">Course complete</p>
                 <h2>{readyCourse.title}</h2>
-                <p className="os-lead">You have completed every lesson. Claim your certificate from My learning, and add your project to Career OS when you want it on your profile.</p>
+                {/* Programme learners: the server only marks the programme eligible when every course in it is complete. */}
+                {access.workspace.program && !access.workspace.program.certificateEligible ? (
+                  <p className="os-lead">
+                    You have completed every lesson in this course. {access.workspace.program.name} continues with{' '}
+                    {access.workspace.program.progress.totalCourses - access.workspace.program.progress.completedCourses} more{' '}
+                    {access.workspace.program.progress.totalCourses - access.workspace.program.progress.completedCourses === 1 ? 'course' : 'courses'}; My learning shows where to resume.
+                  </p>
+                ) : (
+                  <p className="os-lead">You have completed every lesson. Claim your certificate from My learning, and add your project to Career OS when you want it on your profile.</p>
+                )}
                 <div className="os-actions">
                   <Link className="os-btn os-btn-primary" to="/dashboard/student">Go to my learning</Link>
                   <Link className="os-btn os-btn-ghost" to="/career-os">Open Career OS</Link>
@@ -502,6 +521,14 @@ export default function LearnPage() {
 
             {selectedLesson ? (
               <article className="os-lesson-stage">
+                {!selectedState.locked && selectedLesson.type !== 'video' && isAuthoredCourse(readyCourse.slug) ? (
+                  <LessonSlide
+                    courseSlug={readyCourse.slug}
+                    lessonId={selectedLesson.id}
+                    title={selectedLesson.title}
+                    kicker={`${moduleIndex ? `Module ${moduleIndex} · ` : ''}Lesson ${lessonIndex} · ${lessonTypeLabel(selectedLesson.type, selectedLesson.title)}`}
+                  />
+                ) : null}
                 <div className="os-lesson-head">
                   <p className="os-kicker">
                     {moduleIndex ? `Module ${moduleIndex} · ` : ''}

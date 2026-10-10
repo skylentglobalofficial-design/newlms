@@ -21,16 +21,16 @@
   /* ── Surfaces ── */
   --skylent-surface-paper: #ffffff;
   --skylent-surface-cream: #ffffff;
-  --skylent-surface-cream-warm: #faf9f6;
+  --skylent-surface-cream-warm: #f5f7fb;
   --skylent-surface-soft: #f6f8fb;
   --skylent-surface-sand: #e6eaf2;
   --skylent-surface-elevated: #ffffff;
   --skylent-surface-inverse: #0b1220;
 
   /* Proof surfaces — evidence and certificates only */
-  --skylent-surface-proof: #faf9f6;
-  --skylent-surface-proof-2: #f3f0e8;
-  --skylent-color-proof-line: #e6e1d6;
+  --skylent-surface-proof: #f5f7fb;
+  --skylent-surface-proof-2: #edf1f7;
+  --skylent-color-proof-line: #dde2ec;
 
   /* Navy anchors — shell rail, product top bars, workbench */
   --skylent-navy: #0b1220;
@@ -130,10 +130,10 @@
   --color-line-strong: var(--skylent-color-border-strong);
 
   /* ── Typography: three voices — Space Grotesk (headings), DM Sans (body), DM Mono (labels, numbers, code). No serif. ── */
-  --skylent-font-heading: "Space Grotesk", system-ui, sans-serif;
+  --skylent-font-heading: "Inter", system-ui, sans-serif;
   --font-brand: var(--skylent-font-heading);
-  --font-display: "DM Sans", system-ui, sans-serif;
-  --font-body: "DM Sans", system-ui, sans-serif;
+  --font-display: "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
   --font-mono: "DM Mono", ui-monospace, monospace;
   /* Legacy name: the former serif display voice is Space Grotesk. */
   --skylent-font-serif: var(--skylent-font-heading);

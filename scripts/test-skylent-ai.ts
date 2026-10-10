@@ -60,6 +60,7 @@ import {
 } from "../server/src/lib/skylent-ai/service.ts"
 import { askSchema, conceptualAskSchema } from "../server/src/routes/skylent-ai.ts"
 import type { AiAskInput, AiProvider, ProviderChatMessage } from "../server/src/lib/skylent-ai/types.ts"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 
@@ -230,13 +231,13 @@ async function signupAndEnroll(jar: CookieJar) {
   const signup = await request(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName: "AI Test", email, password: "test-password-123" },
+    body: { consent: TEST_CONSENT, displayName: "AI Test", email, password: "test-password-123" },
   })
   assert(signup.response.status === 201, `Signup failed: ${JSON.stringify(signup.data)}`)
   const enroll = await request(jar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { courseSlug: "data-analytics" },
+    body: { consent: TEST_CONSENT, courseSlug: "data-analytics" },
   })
   assert(enroll.response.status === 201 || enroll.response.ok, `Enrol failed: ${JSON.stringify(enroll.data)}`)
 }
@@ -997,7 +998,7 @@ async function main() {
     const enrollPm = await request(pmJar, "/lms/enrollments", {
       method: "POST",
       csrf: true,
-      body: { courseSlug: "product-management" },
+      body: { consent: TEST_CONSENT, courseSlug: "product-management" },
     })
     assert(enrollPm.response.status === 201 || enrollPm.response.ok, `PM enrol failed: ${JSON.stringify(enrollPm.data)}`)
     const pmHttp = await request(pmJar, "/lms/ai/ask", {

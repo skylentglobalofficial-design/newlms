@@ -953,16 +953,16 @@ LLMs are a powerful tool inside that system. They are not the system itself.`,
     category: 'Career',
     date: '2 August 2026',
     readTime: '5 min read',
-    excerpt: 'Why the Data Analytics programme teaches SQL against a real commercial dataset instead of tool tours.',
+    excerpt: 'Why the Data Analytics programme teaches SQL against a realistic commercial dataset instead of tool tours.',
     body: `This is a position, not a study. We have not surveyed hiring teams and we are not going to quote percentages we did not measure.
 
 What we can explain is why the Data Analytics programme is built the way it is.
 
-**SQL is taught as proficiency, not familiarity.** The programme does not stop at SELECT. It works through joins across a real commercial dataset, because the gap between "I have seen SQL" and "I can answer a business question with SQL" is where most self-taught learners stall.
+**SQL is taught as proficiency, not familiarity.** The programme does not stop at SELECT. It works through joins across a realistic commercial dataset, because the gap between "I have seen SQL" and "I can answer a business question with SQL" is where most self-taught learners stall.
 
 **Spreadsheets are treated as real analysis tooling.** Much commercial analysis happens in a spreadsheet before it ever reaches a dashboard. The programme treats that as a skill rather than a step people are expected to already know.
 
-**The dataset is commercial, not a tutorial dataset.** Northwind has customers, orders, suppliers, discounts, and the kind of untidiness a tutorial dataset removes. That is the point — cleaning and reconciling the data is part of the work, not a preamble to it.
+**The dataset is built like commercial data, not a tutorial dataset.** Northwind is synthetic, but it has customers, orders, suppliers, discounts, and the kind of untidiness a tutorial dataset removes. That is the point — cleaning and reconciling the data is part of the work, not a preamble to it.
 
 **The output is an argument, not a chart.** The capstone is a commercial review: what the data says, what you would do about it, and what you are still uncertain about. Producing a dashboard that looks finished is easier than defending what it means.
 

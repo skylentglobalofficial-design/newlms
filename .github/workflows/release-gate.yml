@@ -76,6 +76,7 @@ jobs:
           ls prisma/migrations
           test -d prisma/migrations/20261004000000_skylent_additions
           test -d prisma/migrations/20261004180000_backfill_program_course_links
+          test -d prisma/migrations/20261009000000_policy_acceptance
           npx prisma migrate deploy
           npx prisma migrate status
       - name: Seed QA content (courses, lessons, quizzes)
@@ -97,6 +98,8 @@ jobs:
           npx tsx scripts/test-path-roadmap.ts
           npx tsx scripts/test-path-execution.ts
           npx tsx scripts/test-path-evidence.ts
+          npm run test:certificate-verify
+          npx tsx scripts/test-google-link.ts
 
       # Every suite signs up its own users. The sign-in rate limit is held in memory at its production
       # default (20 per 15 minutes), so each suite gets a freshly started API instead of a raised limit.
@@ -131,6 +134,16 @@ jobs:
         run: |
           "$RUNNER_TEMP/restart-api.sh"
           npm run test:auth
+      - name: test:consent (terms acceptance enforced and recorded by the server)
+        if: always()
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:consent
+      - name: test:roles (role provisioning and authorization fixtures)
+        if: always()
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:roles
       - name: test:lms
         if: always()
         run: |
@@ -201,6 +214,7 @@ jobs:
           psql "$DATABASE_URL" -c 'select count(*) as quiz_attempts from "QuizAttempt";'
           psql "$DATABASE_URL" -c 'select count(*) as certificates from "SkylentCertificate";'
           psql "$DATABASE_URL" -c 'select count(*) as enquiries from "SkylentEnquiry";'
+          psql "$DATABASE_URL" -c 'select context, count(*) from "PolicyAcceptance" group by context order by context;'
 
       - name: API log
         if: always()

@@ -24,6 +24,7 @@ import {
 } from "./application-utils"
 import { formatWorkMode } from "./job-utils"
 import { formatInterviewDateTime, formatRoundStatus, formatRoundType } from "./interview-utils"
+import { fromDateTimeLocalInput, toDateTimeLocalInput } from "../../lib/datetime-local"
 import {
   FeedbackBanner,
   Field,
@@ -69,7 +70,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
       setInterviewRounds(rounds.filter(r => r.applicationId === applicationId))
       setNotes(app.notes ?? "")
       setSource(app.source ?? "")
-      setNextActionAt(app.nextActionAt ? app.nextActionAt.slice(0, 16) : "")
+      setNextActionAt(toDateTimeLocalInput(app.nextActionAt))
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load application")
       setApplication(null)
@@ -105,7 +106,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
       const updated = await updateApplication(application.id, {
         notes: notes.trim() || null,
         source: source.trim() || null,
-        nextActionAt: nextActionAt ? new Date(nextActionAt).toISOString() : null,
+        nextActionAt: fromDateTimeLocalInput(nextActionAt),
       })
       setApplication(updated)
       setEditing(false)

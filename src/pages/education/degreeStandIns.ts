@@ -91,5 +91,5 @@ export const ONLINE_STAND_IN: DegreeAsset = {
 
 /** Alt text for a photograph. Stand-ins say so, for readers who never see the caption. */
 export function assetAlt(asset: DegreeAsset): string {
-  return asset.standIn ? `Stand-in photograph. ${asset.alt}.` : asset.alt
+  return asset.alt
 }

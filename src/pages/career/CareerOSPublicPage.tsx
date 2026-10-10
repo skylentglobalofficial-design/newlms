@@ -1,155 +1,141 @@
+/**
+ * Public entry to Career OS (signed out), repolish.
+ *
+ * Career OS is shown as the learner's journey after enrolment (the same walkthrough as the
+ * homepage, home/Repolish.tsx), then what is inside it, then how degrees, programmes and labs all
+ * feed it. Availability comes from src/lib/product-manifest.ts (states from src/lib/truth.ts):
+ * anything not available yet says "Coming soon". No sample profiles, jobs, employers, scores or
+ * outcomes are shown, and nothing promises a placement.
+ */
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
-import { CareerPublicSubnav } from "../../components/product/Architecture"
-import CareerOSSpecimen from "../../components/product/CareerOSSpecimen"
-import { Action, SectionIndex, TruthChip } from "../../components/skylent/primitives"
-import { Reveal } from "../../components/skylent/Reveal"
-import { CAREER_OS_FEATURES, publicFeatures } from "../../lib/product-manifest"
-import "./CareerOS.css"
-import "./CareerOSPublic.css"
-import "../cine.css"
+import { ArrowRight } from "../../components/skylent/primitives"
+import { CAREER_OS_FEATURES, type ProductFeature } from "../../lib/product-manifest"
+import { CareerJourney } from "../home/Repolish"
+import "../HomePage.v2.css"
+import "../HomeRepolish.css"
+import "./CareerOSPublicRepolish.css"
 
-/**
- * Public entry to Career OS (signed out). The workspace plate and the list of parts are drawn from
- * src/lib/product-manifest.ts, the same source the signed-in Career OS overview reads, with each
- * state read from src/lib/truth.ts. No sample profiles, jobs, employers or outcomes are shown.
- */
-const NUMBER_WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve"]
+type Part = { id: string; title: string; text: string }
 
-/** A route a signed-out visitor can open (the workspace routes all need an account). */
-function publicRoute(route: string | null): string | null {
-  if (!route || route.includes(":")) return null
-  return /^\/(career-os|dashboard|learn|os)(\/|$)/.test(route) ? null : route
-}
-
-const THREE_THINGS: Array<{ name: string; copy: string }> = [
-  { name: "A certificate", copy: "Confirms that every lesson of a course was completed." },
-  { name: "Project evidence", copy: "Is your own work on a project." },
-  { name: "An employment outcome", copy: "Is neither of these, and Career OS does not record or promise one." },
+const PARTS: Part[] = [
+  { id: "profile", title: "Career profile", text: "Your target role, education, experience and links, written by you." },
+  { id: "skills", title: "Skills", text: "The skills you can show, with the level you choose for each." },
+  { id: "learning", title: "Learning", text: "Your programmes, progress and the next lesson, read from your enrolments." },
+  { id: "projects", title: "Projects and evidence", text: "Capstones from your programmes, kept with what they show and your reflection." },
+  { id: "certificates", title: "Certificates", text: "Issued when every lesson of a course is complete, with a code anyone can check." },
+  { id: "opportunities", title: "Applications", text: "Track the roles you apply to and prepare for interviews." },
 ]
 
+const SOURCES = [
+  { title: "Degrees", text: "Add your UG or PG study to your profile.", to: "/education" },
+  { title: "Programmes", text: "Lessons and progress flow in as you learn.", to: "/programmes" },
+  { title: "Labs and projects", text: "Finished work becomes evidence.", to: "/programmes#professional" },
+]
+
+function statusOf(id: string): ProductFeature["status"] | null {
+  return CAREER_OS_FEATURES.find((feature) => feature.id === id)?.status ?? null
+}
+
 export default function CareerOSPublicPage() {
-  const parts = publicFeatures(CAREER_OS_FEATURES)
   return (
     <PageShell aurora={false}>
-      <div className="site-light cosp">
-        <div className="sky-container">
-          <CareerPublicSubnav current="overview" />
-        </div>
-
-        <section className="sky-container cosp-hero cop-hero" aria-labelledby="cosp-title">
-          <div className="cosp-kicker cine-in cine-in--fade">
-            <span className="sky-label">Career OS</span>
-          </div>
-          <h1 id="cosp-title" className="sky-display cop-h1 cine-in cine-d1">
-            Turn learning into <em>evidence you can use.</em>
-          </h1>
-          <div className="cop-hero__row">
-            <p className="cosp-lead cop-lead cine-in cine-d2">
-              Career OS is the signed-in workspace that reads your career profile and your learning. It shows your target role, your skills,
-              the work you have built and your next step. It is a workspace, not a placement service.
+      <div className="site-light hm-page hx-page cpx">
+        <section className="cpx-hero" aria-labelledby="cpx-title">
+          <div className="sky-container cpx-hero__inner">
+            <p className="hx-eyebrow hx-eyebrow--dark">Career OS</p>
+            <h1 id="cpx-title" className="cpx-h1">
+              Your learning, projects and profile, <em>in one place.</em>
+            </h1>
+            <p className="cpx-lead">
+              Career OS starts the day you enrol. It keeps what you learn and build, turns it into a profile you can show, and helps
+              you prepare for what comes next.
             </p>
-            <div className="cosp-actions cop-actions cine-in cine-d3">
-              <Action to="/login">Sign in to Career OS</Action>
-              <Action to="/programmes" kind="secondary">
-                Explore programmes
-              </Action>
+            <div className="hx-hero__actions">
+              <Link className="sk-btn sk-btn-primary hx-btn" to="/signup">
+                Create your account
+                <ArrowRight />
+              </Link>
+              <Link className="sk-btn sk-btn-secondary hx-btn" to="/login" state={{ returnTo: "/career-os" }}>
+                Sign in
+              </Link>
             </div>
           </div>
         </section>
 
-        <section className="sky-stage sky-band-navy cop-stage" aria-labelledby="cop-stage-title">
-          <div className="sky-container cop-stage__inner">
-            <Reveal className="cop-stage__head">
+        <CareerJourney eyebrow="How it works" showLink={false} />
+
+        <section className="cpx-parts" aria-labelledby="cpx-parts-title">
+          <div className="sky-container">
+            <div className="hx-head">
               <div>
-                <SectionIndex n="01" label="The workspace" />
-                <h2 id="cop-stage-title" className="sky-display sky-display--md cop-h2">
-                  Your role, your skills and the work you can show, <em>on one screen.</em>
+                <p className="hx-eyebrow hx-eyebrow--dark">What's inside</p>
+                <h2 id="cpx-parts-title" className="hx-h2">
+                  Everything about your progress, <em>together.</em>
                 </h2>
               </div>
-              <p className="cop-stage__side">
-                Each part of the workspace states what it is: entered by you, read from your course, in development or coming soon.
-              </p>
-            </Reveal>
-
-            <Reveal as="figure" variant="plate" delay={120} className="cop-stage__figure">
-              <div className="sky-stage__plate cop-stage__plate cine-plate">
-                <CareerOSSpecimen />
-              </div>
-              <figcaption className="sky-stage__caption">
-                <span>FIG. 01 · Career OS overview</span>
-                <span>Example labels. Not a learner's record. Yours starts empty.</span>
-              </figcaption>
-            </Reveal>
-          </div>
-        </section>
-
-        <Reveal as="section" className="sky-container cosp-section cop-section" aria-labelledby="cosp-caps-title">
-          <div className="cop-split">
-            <div className="cop-split__lead">
-              <SectionIndex n="02" label="What it holds today" />
-              <h2 id="cosp-caps-title" className="sky-display sky-display--md cop-h2">
-                {NUMBER_WORDS[parts.length] ?? parts.length} parts, each marked with its real state.
-              </h2>
             </div>
-            <ul className="cosp-caps cop-caps">
-              {parts.map((item) => {
-                const to = publicRoute(item.route)
+            <ul className="cpx-grid">
+              {PARTS.map((part) => {
+                const status = statusOf(part.id)
+                const soon = status !== null && status !== "live"
                 return (
-                  <li key={item.id}>
-                    <strong>{item.label}</strong>
-                    <p>
-                      {item.summary}
-                      {to ? (
-                        <>
-                          {" "}
-                          <Link to={to} aria-label={`Open ${item.label}`}>
-                            Open
-                          </Link>
-                        </>
-                      ) : null}
-                    </p>
-                    <TruthChip state={item.status} />
+                  <li key={part.id} className="cpx-card">
+                    <span className="cpx-card__icon" aria-hidden="true" />
+                    <h3>{part.title}</h3>
+                    <p>{part.text}</p>
+                    {soon ? <span className="cpx-soon">{status === "development" ? "In development" : "Coming soon"}</span> : null}
                   </li>
                 )
               })}
             </ul>
           </div>
-        </Reveal>
-
-        <section className="sky-band-proof cop-proof" aria-labelledby="cop-three-title">
-          <Reveal className="sky-container">
-            <SectionIndex n="03" label="Three different things" />
-            <h2 id="cop-three-title" className="sky-display sky-display--md cop-h2">
-              A certificate, project evidence and an employment outcome are three different things.
-            </h2>
-            <ul className="cop-three">
-              {THREE_THINGS.map((item, index) => (
-                <li key={item.name}>
-                  <span className="sky-label">{String(index + 1).padStart(2, "0")}</span>
-                  <strong>{item.name}</strong>
-                  <p>{item.copy}</p>
-                </li>
-              ))}
-            </ul>
-          </Reveal>
         </section>
 
-        <section className="sky-stage sky-band-navy cop-close" aria-labelledby="cop-close-title">
-          <Reveal className="sky-container cop-close__inner">
-            <div className="cop-close__lead">
-              <p className="sky-label">Next step · Sign in</p>
-              <h2 id="cop-close-title" className="sky-display sky-display--lg cop-close__title">
-                Every area opens after you sign in. <em>None is filled with example data.</em>
-              </h2>
+        <section className="cpx-flow" aria-labelledby="cpx-flow-title">
+          <div className="sky-container">
+            <h2 id="cpx-flow-title" className="hx-h2 hx-h2--sm">
+              Whatever you study, it feeds <em>one profile.</em>
+            </h2>
+            <div className="cpx-flow__row">
+              <ul className="cpx-sources">
+                {SOURCES.map((source) => (
+                  <li key={source.title}>
+                    <Link to={source.to}>
+                      <b>{source.title}</b>
+                      <span>{source.text}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <div className="cpx-arrow" aria-hidden="true">
+                <span />
+              </div>
+              <div className="cpx-hub">
+                <b>Career OS</b>
+                <span>Profile · Projects · Evidence · Applications</span>
+              </div>
             </div>
-            <Reveal delay={180} className="cosp-actions cop-actions">
-              <Action to="/login">Sign in to Career OS</Action>
-              <Action to="/programmes" kind="secondary">
+            <p className="cpx-note">Career OS helps you prepare. It does not promise interviews, jobs or salaries.</p>
+          </div>
+        </section>
+
+        <section className="hx-close" aria-labelledby="cpx-close-title">
+          <div className="hx-hero__glow" aria-hidden="true" />
+          <div className="sky-container hx-close__inner">
+            <h2 id="cpx-close-title" className="hx-close__title">
+              Enrol once. <em>Keep everything you build.</em>
+            </h2>
+            <div className="hx-hero__actions">
+              <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
                 Explore programmes
-              </Action>
-            </Reveal>
-          </Reveal>
+                <ArrowRight />
+              </Link>
+              <Link className="sk-btn hx-btn hx-btn--ghost" to="/login" state={{ returnTo: "/career-os" }}>
+                Sign in to Career OS
+              </Link>
+            </div>
+          </div>
         </section>
       </div>
     </PageShell>

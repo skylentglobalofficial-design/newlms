@@ -1,5 +1,6 @@
 import "dotenv/config"
 import { HARBOR_DESK_PROJECT_TYPE, NORTHWIND_PROJECT_TYPE } from "../server/src/lib/skylent-projects/catalog.ts"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 
 type CookieJar = Map<string, string>
@@ -56,7 +57,7 @@ async function signupUser(jar: CookieJar, label: string) {
   const signup = await request(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName: `Flagship ${label}`, email, password: "test-password-123" },
+    body: { consent: TEST_CONSENT, displayName: `Flagship ${label}`, email, password: "test-password-123" },
   })
   assert(signup.response.status === 201, `Signup failed for ${label}`)
   return email
@@ -80,9 +81,9 @@ async function main() {
 
   console.log("1. Both authored courses load after enrolment")
   await signupUser(userA, "a")
-  const enrollDa = await request(userA, "/lms/enrollments", { method: "POST", csrf: true, body: { courseSlug: da } })
+  const enrollDa = await request(userA, "/lms/enrollments", { method: "POST", csrf: true, body: { consent: TEST_CONSENT, courseSlug: da } })
   assert(enrollDa.response.ok, "DA enrolment should succeed")
-  const enrollPm = await request(userA, "/lms/enrollments", { method: "POST", csrf: true, body: { courseSlug: pm } })
+  const enrollPm = await request(userA, "/lms/enrollments", { method: "POST", csrf: true, body: { consent: TEST_CONSENT, courseSlug: pm } })
   assert(enrollPm.response.ok, "PM enrolment should succeed")
 
   const daWs = await request(userA, `/lms/courses/${da}`)
@@ -124,7 +125,7 @@ async function main() {
   const lab = await request(userA, "/labs/data-analytics/northwind?lesson=l1")
   assert(lab.response.ok, "User enrolled in DA can still open Northwind Lab")
   await signupUser(userB, "b")
-  await request(userB, "/lms/enrollments", { method: "POST", csrf: true, body: { courseSlug: pm } })
+  await request(userB, "/lms/enrollments", { method: "POST", csrf: true, body: { consent: TEST_CONSENT, courseSlug: pm } })
   const stolenLab = await request(userB, "/labs/data-analytics/northwind?lesson=l1")
   assert(stolenLab.response.status === 403, "PM-only learner cannot open Northwind Lab")
   const unknownLab = await request(userA, "/labs/product-management/harbor-desk")

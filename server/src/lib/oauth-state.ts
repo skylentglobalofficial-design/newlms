@@ -12,6 +12,8 @@ export type OAuthStatePayload = {
   exp: number
   returnTo?: string
   enrollTarget?: OAuthEnrollTarget
+  /** Set only when the sign-up page sent the accepted policy version. */
+  policyVersion?: string
 }
 
 function signingSecret(): string {
@@ -56,6 +58,7 @@ export function verifySignedOAuthState(token: string | undefined): OAuthStatePay
 export function createOAuthState(input: {
   returnTo?: string | null
   enrollTarget?: OAuthEnrollTarget | null
+  policyVersion?: string | null
 }): { state: string; nonce: string; signed: string } {
   const state = crypto.randomBytes(32).toString("base64url")
   const nonce = crypto.randomBytes(32).toString("base64url")
@@ -65,6 +68,7 @@ export function createOAuthState(input: {
     exp: Date.now() + OAUTH_STATE_MAX_AGE_SECONDS * 1000,
     ...(input.returnTo ? { returnTo: input.returnTo } : {}),
     ...(input.enrollTarget ? { enrollTarget: input.enrollTarget } : {}),
+    ...(input.policyVersion ? { policyVersion: input.policyVersion } : {}),
   }
   return { state, nonce, signed: signPayload(payload) }
 }

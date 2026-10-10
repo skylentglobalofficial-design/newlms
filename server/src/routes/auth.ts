@@ -30,6 +30,7 @@ import {
   resolveGoogleAccount,
   verifyGoogleIdToken,
 } from "../lib/google-oauth.js"
+import { ConsentOutdatedError, GoogleEmailLinkBlockedError } from "../lib/google-link.js"
 import {
   clearOAuthStateCookie,
   createOAuthState,
@@ -37,6 +38,8 @@ import {
   setOAuthStateCookie,
   verifySignedOAuthState,
 } from "../lib/oauth-state.js"
+import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
+import { ConsentRequiredError } from "../lib/google-oauth.js"
 import {
   oauthErrorRedirect,
   oauthSuccessRedirect,
@@ -90,7 +93,10 @@ authRouter.get("/google", (req, res) => {
   try {
     const returnTo = sanitizeReturnTo(req.query.returnTo)
     const enrollTarget = parseEnrollTarget(req.query.enrollKind, req.query.enrollSlug)
-    const { state, nonce, signed } = createOAuthState({ returnTo, enrollTarget })
+    // Carry the version the browser sent. The account is created only if it is still current.
+    const rawConsent = typeof req.query.consent === "string" ? req.query.consent.trim() : ""
+    const policyVersion = rawConsent.length > 0 && rawConsent.length <= 40 ? rawConsent : null
+    const { state, nonce, signed } = createOAuthState({ returnTo, enrollTarget, policyVersion })
     setOAuthStateCookie(res, req, signed)
     const authorizationUrl = buildGoogleAuthorizationUrl({ state, nonce })
     return res.redirect(authorizationUrl)
@@ -120,7 +126,7 @@ authRouter.get("/google/callback", async (req, res) => {
   try {
     const { idToken } = await exchangeGoogleAuthorizationCode(code)
     const claims = await verifyGoogleIdToken(idToken, payload.nonce)
-    const user = await resolveGoogleAccount(claims)
+    const user = await resolveGoogleAccount(claims, { policyVersion: payload.policyVersion ?? null })
     const { sessionToken, csrfToken } = await createSession(user.id)
     setSessionCookies(res, req, sessionToken, csrfToken)
 
@@ -129,6 +135,15 @@ authRouter.get("/google/callback", async (req, res) => {
       enrollTarget: payload.enrollTarget ?? null,
     }))
   } catch (error) {
+    if (error instanceof ConsentRequiredError) {
+      return res.redirect(oauthErrorRedirect("consent_required"))
+    }
+    if (error instanceof ConsentOutdatedError) {
+      return res.redirect(oauthErrorRedirect("consent_outdated"))
+    }
+    if (error instanceof GoogleEmailLinkBlockedError) {
+      return res.redirect(oauthErrorRedirect("oauth_email_in_use"))
+    }
     console.error("Google OAuth callback failed:", error instanceof Error ? error.message : error)
     return res.redirect(oauthErrorRedirect("oauth_failed"))
   }
@@ -143,6 +158,11 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
     })
   }
 
+  const consent = readConsent(req.body)
+  if (!consent.ok) {
+    return res.status(consent.status).json(consent.body)
+  }
+
   const email = normalizeEmail(parsed.data.email)
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
@@ -153,16 +173,21 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
     const displayName = (parsed.data.displayName ?? parsed.data.name)!.trim()
     const passwordHash = await bcrypt.hash(parsed.data.password, BCRYPT_ROUNDS)
     const studentRole = await ensureRole(RoleName.STUDENT)
-    const user = await prisma.user.create({
-      data: {
-        email,
-        displayName,
-        passwordHash,
-        roles: {
-          create: { roleId: studentRole.id },
+    // The account and the record of what was accepted are written together or not at all.
+    const user = await prisma.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          email,
+          displayName,
+          passwordHash,
+          roles: {
+            create: { roleId: studentRole.id },
+          },
         },
-      },
-      include: { roles: { include: { role: true } } },
+        include: { roles: { include: { role: true } } },
+      })
+      await recordPolicyAcceptance(tx, { context: "signup", policyVersion: consent.policyVersion, userId: created.id })
+      return created
     })
 
     const { sessionToken, csrfToken } = await createSession(user.id)

@@ -31,7 +31,7 @@ type AuthContextValue = {
   roles: UserRole[]
   ready: boolean
   login: (email: string, password: string) => Promise<UserRole>
-  signup: (name: string, email: string, password: string) => Promise<UserRole>
+  signup: (name: string, email: string, password: string, acceptedTerms: boolean) => Promise<UserRole>
   updateDisplayName: (displayName: string) => Promise<void>
   loginDemo: (user: AuthUser) => void
   logout: () => Promise<void>
@@ -97,8 +97,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return nextUser.role
   }, [])
 
-  const signup = useCallback(async (name: string, email: string, password: string) => {
-    const session = await signupRequest({ name, email, password })
+  const signup = useCallback(async (name: string, email: string, password: string, acceptedTerms: boolean) => {
+    const session = await signupRequest({ name, email, password, acceptedTerms })
     const nextUser = toAuthUser(session)
     setUser(nextUser)
     setRoles(session.roles)

@@ -96,9 +96,9 @@ export function useLmsCourse(slug: string | undefined) {
     reload()
   }, [reload])
 
-  const enroll = useCallback(async () => {
+  const enroll = useCallback(async (acceptedTerms: boolean) => {
     if (!slug) return
-    const workspace = await enrollInCourse(slug)
+    const workspace = await enrollInCourse(slug, acceptedTerms)
     setAccess({
       status: "ready",
       workspace,

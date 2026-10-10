@@ -418,7 +418,7 @@ function RecordThumb({ program }: { program: Pick<CatalogProgramSummary, "slug" 
   ].filter((row) => row.value)
   return (
     <div className="pa-thumb pa-thumb--sheet">
-      <p className="pa-thumb__label">Catalogue record</p>
+      <p className="pa-thumb__label">Programme outline</p>
       <dl className="pa-problem pa-problem--record">
         {rows.map((row) => (
           <div key={row.label}>
@@ -447,7 +447,7 @@ export function programmeThumbInfo(slug: string): { hasArtefact: boolean; illust
   const entry = THUMBS[slug]
   return entry
     ? { hasArtefact: true, illustrative: entry.illustrative, caption: entry.caption }
-    : { hasArtefact: false, illustrative: false, caption: "Catalogue record" }
+    : { hasArtefact: false, illustrative: false, caption: "Programme outline" }
 }
 
 export function ProgrammeThumb({

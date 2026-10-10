@@ -5,9 +5,9 @@
  */
 import { useId, useState, type FormEvent } from "react"
 import { PageShell } from "../components/shared"
-import { ArrowRight, TruthChip } from "../components/skylent/primitives"
+import { ArrowRight } from "../components/skylent/primitives"
+import { TermsConsent } from "../components/legal/TermsConsent"
 import { sendEnquiry, type EnquiryKind } from "../lib/skylent-api"
-import { truthOf } from "../lib/truth"
 import "./ContactPage.css"
 
 /** Support contacts named by the backend (server/src/routes/skylent/reva.ts). */
@@ -45,6 +45,8 @@ export default function ContactPage() {
   const [errors, setErrors] = useState<FieldErrors>({})
   const [submit, setSubmit] = useState<Submit>({ status: "idle" })
   const sending = submit.status === "sending"
+  const [accepted, setAccepted] = useState(false)
+  const [triedWithoutTerms, setTriedWithoutTerms] = useState(false)
 
   function set<K extends keyof Fields>(key: K, value: Fields[K]) {
     setFields((current) => ({ ...current, [key]: value }))
@@ -62,10 +64,15 @@ export default function ContactPage() {
       document.getElementById(`${formId}-${firstInvalid}`)?.focus()
       return
     }
+    if (!accepted) {
+      setTriedWithoutTerms(true)
+      return
+    }
     setSubmit({ status: "sending" })
     try {
       const result = await sendEnquiry({
         kind: fields.kind,
+        acceptedTerms: accepted,
         name: fields.name,
         email: fields.email,
         phone: fields.phone || undefined,
@@ -87,7 +94,6 @@ export default function ContactPage() {
           <div className="ctc-main">
             <div className="ctc-kicker">
               <span className="sky-label">Contact Skylent</span>
-              <TruthChip state={truthOf("enquiries")} />
             </div>
             <h1>Send the team an enquiry</h1>
             <p className="ctc-lead">
@@ -215,6 +221,7 @@ export default function ContactPage() {
                   </p>
                 ) : null}
 
+                <TermsConsent checked={accepted} onChange={setAccepted} action="sending an enquiry" showError={triedWithoutTerms} />
                 <div className="ctc-actions">
                   <button type="submit" className="sk-btn sk-btn-primary" disabled={sending}>
                     {sending ? "Sending" : fields.kind === "counselling" ? "Request a call" : "Send enquiry"}

@@ -4,6 +4,7 @@ import { EnrollmentModal, PageShell } from "../components/shared"
 import ProfessionalProgrammeTemplate from "../components/programme/ProfessionalProgrammeTemplate"
 import ProgrammeListing from "../components/programme/ProgrammeListing"
 import { ProgrammeMessage, ProgrammeSkeleton } from "../components/programme/ProgrammeStates"
+import CatalogueNotice, { STATUS_NOT_CONFIRMED } from "../components/programme/CatalogueNotice"
 import { authoredProgrammeContent } from "../components/programme/programme-content"
 import { programmeTruth } from "../components/programme/programme-truth"
 import { programs } from "../data"
@@ -81,7 +82,7 @@ export default function ProgramPage() {
   const truth = programmeTruth(program)
   const { linked, comingLater, enrollable } = truth
   const maturity = comingLater ? "coming_later" as const : "listing" as const
-  const afterEnrol = programmeAfterEnrolCopy({ maturity, linked })
+  const enrolSummary = programmeAfterEnrolCopy({ maturity, linked })
   const authoredLinked = linked.filter((item) => item.authored)
   const cta = comingLater
     ? "Coming later"
@@ -91,8 +92,14 @@ export default function ProgramPage() {
         : overlayView?.ctaLabel ?? "Open linked course"
       : "Enrolment unavailable"
 
+  // Published record shown because the API is unreachable: nothing is claimed as open and enrolment is paused.
+  const confirmed = !catalog.offline
+  const afterEnrol = confirmed
+    ? enrolSummary
+    : `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ${enrolSummary}`
+
   function openEnrol() {
-    if (comingLater || !enrollable) return
+    if (!confirmed || comingLater || !enrollable) return
     setEnrollOpen(true)
   }
 
@@ -102,6 +109,7 @@ export default function ProgramPage() {
 
   return (
     <Shell>
+      {confirmed ? null : <CatalogueNotice what="This programme" onRetry={() => void catalog.reload()} />}
       {authored ? (
         <ProfessionalProgrammeTemplate
           program={program}
@@ -110,15 +118,17 @@ export default function ProgramPage() {
           cta={cta}
           afterEnrol={afterEnrol}
           onEnrol={openEnrol}
+          confirmed={confirmed}
         />
       ) : (
         <ProgrammeListing
           program={program}
           truth={truth}
           cta={cta}
-          honesty={programmeListingHonesty(program.enrollmentStatus, linked)}
+          honesty={programmeListingHonesty(program.enrollmentStatus, linked, confirmed)}
           afterEnrol={afterEnrol}
           onEnrol={openEnrol}
+          confirmed={confirmed}
         />
       )}
 
@@ -144,19 +154,26 @@ export default function ProgramPage() {
 function programmeListingHonesty(
   status: CatalogEnrollmentStatus | null,
   linked: LinkedLearning[],
+  confirmed = true,
 ): string {
   const authored = linked.filter((item) => item.authored)
+  if (!confirmed) {
+    // Drawn from the published record: nothing about availability is stated as current.
+    return authored.length
+      ? `${STATUS_NOT_CONFIRMED}. This programme opens ${authored.map((item) => item.title).join(" and ")}, but its availability could not be checked just now, so enrolment is paused.`
+      : `${STATUS_NOT_CONFIRMED}. This programme's availability could not be checked just now, so enrolment is paused.`
+  }
   if (status === "coming_soon" || status === "waitlist") {
-    return "This programme is not open yet. There is no classroom session or batch behind the listing."
+    return "Enrolment for this programme has not opened yet. No class schedule or batch has been set."
   }
   if (authored.length && linked.length === authored.length) {
-    return `Enrolment opens the ${authored[0].title} course, which is the authored learning path. Brochure modules beyond that course are not taught here yet.`
+    return `Enrolling gives you the ${authored[0].title} course, which is ready to study now. The rest of the programme is still being prepared.`
   }
   if (authored.length) {
-    return `What you can study today is ${authored.map((item) => item.title).join(" and ")}. The other linked listings are outlines, and brochure topics beyond them are not taught yet.`
+    return `You can already study ${authored.map((item) => item.title).join(" and ")} on its own. The other courses in this programme are still being prepared.`
   }
   if (linked.length) {
-    return "The linked course is a catalogue outline. Its lessons are not written yet, so there is nothing to enrol into."
+    return "The course for this programme is still being prepared, so enrolment is not open yet. You can see its outline now."
   }
-  return "There is no linked course for this programme yet."
+  return "The courses for this programme are still being prepared."
 }

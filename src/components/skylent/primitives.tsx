@@ -46,24 +46,22 @@ export function ProductSlice({ steps, current, label }: { steps: readonly Produc
 }
 
 /** Mono section index: a cobalt numeral and a label, above an H2. */
+/** Section eyebrow. Repolish: the section number is no longer shown (n is kept for call sites). */
 export function SectionIndex({ n, label }: { n: string; label: string }) {
-  return (
-    <div className="sky-index">
-      <b>{n}</b> / {label}
-    </div>
-  )
+  return <div className="sky-index" data-section={n}>{label}</div>
 }
 
 /* ── Truth chips ───────────────────────────────────────────────────────────── */
 
 export type TruthState = "live" | "development" | "soon" | "sample" | "illustrative"
 
+// Repolish: plain-language labels. The states themselves are unchanged (src/lib/truth.ts).
 const TRUTH_LABEL: Record<TruthState, string> = {
-  live: "Live",
-  development: "In development",
+  live: "Available",
+  development: "Coming soon",
   soon: "Coming soon",
-  sample: "Sample listing",
-  illustrative: "Illustrative",
+  sample: "Example",
+  illustrative: "Example",
 }
 
 /** Solidity shows how real something is: solid, outline, dashed, warm fill. Never a status colour. */
@@ -94,9 +92,10 @@ export function Plate({
       <div className="sky-plate">
         <div className="sky-plate__inner">{children}</div>
       </div>
+      {/* Repolish: no figure numbers or construction notes; the caption names what is shown. */}
       <figcaption className="sky-caption">
-        <span>{fig ? `${fig} · ${caption}` : caption}</span>
-        {note ? <span>{note}</span> : null}
+        <span>{caption}</span>
+        {fig && note ? null : null}
       </figcaption>
     </figure>
   )

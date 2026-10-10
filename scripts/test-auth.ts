@@ -3,10 +3,12 @@ import crypto from "node:crypto"
 import { AuthProvider, RoleName, PrismaClient } from "@prisma/client"
 import { ensureRole } from "../server/src/lib/auth.js"
 import { resolveGoogleAccount, type GoogleIdTokenClaims } from "../server/src/lib/google-oauth.js"
+import { GoogleEmailLinkBlockedError } from "../server/src/lib/google-link.js"
 import {
   createOAuthState,
   verifySignedOAuthState,
 } from "../server/src/lib/oauth-state.js"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
@@ -114,7 +116,7 @@ async function main() {
   const signup = await request(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName, email, password },
+    body: { consent: TEST_CONSENT, displayName, email, password },
   })
   assert(signup.response.status === 201, `Signup failed: ${signup.response.status}`)
   assert(jar.get("csrf") === csrfBeforeSignup, "Signup must not rotate the CSRF cookie")
@@ -138,7 +140,7 @@ async function main() {
   const duplicate = await request(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName, email, password },
+    body: { consent: TEST_CONSENT, displayName, email, password },
   })
   assert(duplicate.response.status === 409, "Duplicate signup should be rejected")
 
@@ -234,7 +236,7 @@ async function main() {
   assert(verified?.state === signed.state, "Signed OAuth state should verify")
   assert(verified?.returnTo === "/courses/data-analytics", "OAuth returnTo should round-trip")
 
-  console.log("11. Google identity links existing email account")
+  console.log("11. Matching email does not link Google onto a password account")
   const linkEmail = `google-link-${Date.now()}@example.com`
   const studentRole = await ensureRole(RoleName.STUDENT)
   const passwordUser = await prisma.user.create({
@@ -245,18 +247,23 @@ async function main() {
       roles: { create: { roleId: studentRole.id } },
     },
   })
-  const linkedUser = await resolveGoogleAccount(googleClaims(`google-sub-${Date.now()}`, linkEmail, "Google User"))
-  assert(linkedUser.id === passwordUser.id, "Google identity should link to existing email account")
+  let linkBlocked = false
+  try {
+    await resolveGoogleAccount(googleClaims(`google-sub-${Date.now()}`, linkEmail, "Google User"))
+  } catch (error) {
+    linkBlocked = error instanceof GoogleEmailLinkBlockedError
+  }
+  assert(linkBlocked, "Google must not link to a password account from the email alone")
   const identityCount = await prisma.userIdentity.count({
     where: { userId: passwordUser.id, provider: AuthProvider.GOOGLE },
   })
-  assert(identityCount === 1, "Google identity should be linked once")
+  assert(identityCount === 0, "No Google identity should be stored for the password account")
 
   console.log("12. Duplicate Google identity cannot create duplicate users")
   const googleEmail = `google-only-${Date.now()}@example.com`
   const googleSub = `google-sub-dup-${Date.now()}`
-  const firstGoogleUser = await resolveGoogleAccount(googleClaims(googleSub, googleEmail, "Google Only"))
-  const secondGoogleUser = await resolveGoogleAccount(googleClaims(googleSub, googleEmail, "Google Only"))
+  const firstGoogleUser = await resolveGoogleAccount(googleClaims(googleSub, googleEmail, "Google Only"), { policyVersion: TEST_CONSENT.policyVersion })
+  const secondGoogleUser = await resolveGoogleAccount(googleClaims(googleSub, googleEmail, "Google Only"), { policyVersion: TEST_CONSENT.policyVersion })
   assert(firstGoogleUser.id === secondGoogleUser.id, "Same Google subject should resolve to one user")
   const googleUserCount = await prisma.user.count({ where: { email: googleEmail } })
   assert(googleUserCount === 1, "Duplicate Google login should not create duplicate users")
@@ -268,7 +275,7 @@ async function main() {
   const profileSignup = await request(profileJar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName: "Before Name", email: profileEmail, password: "test-password-123" },
+    body: { consent: TEST_CONSENT, displayName: "Before Name", email: profileEmail, password: "test-password-123" },
   })
   assert(profileSignup.response.status === 201, "Profile signup should succeed")
   const profilePatch = await request(profileJar, "/auth/me", {

@@ -3,7 +3,19 @@
 .cat-page {
   background: var(--skylent-color-paper);
   color: var(--skylent-color-ink);
+  /* Older browsers (Safari < 16) ignore clip and keep hidden. */
   overflow-x: hidden;
+  /* clip, not hidden, where supported: hidden makes this a scroll container, which offset the
+     sticky enrol bar by the nav height and covered the top of the page. */
+  overflow-x: clip;
+}
+
+/* Where clip is unsupported the page stays a scroll container, so the enrol bar's sticky offset is
+   measured from the page itself: 0 keeps it in its normal place instead of a nav-height lower. */
+@supports not (overflow-x: clip) {
+  .cat-page .cat-enrol-bar {
+    top: 0;
+  }
 }
 
 /* /programs Scroll 01 — work-sample dual opening */

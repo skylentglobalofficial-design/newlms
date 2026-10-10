@@ -1,5 +1,6 @@
 import "dotenv/config"
 import { PrismaClient } from "@prisma/client"
+import { TEST_CONSENT } from "./test-consent-payload.ts"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://127.0.0.1:3099/api/v1"
@@ -63,14 +64,14 @@ async function signup(jar: CookieJar, displayName: string) {
   const created = await request(jar, "/auth/signup", {
     method: "POST",
     csrf: true,
-    body: { displayName, email, password: "test-password-123" },
+    body: { consent: TEST_CONSENT, displayName, email, password: "test-password-123" },
   })
   assert(created.response.status === 201, `signup failed ${created.response.status} ${JSON.stringify(created.data)}`)
   return { email, password: "test-password-123" }
 }
 
 async function enroll(jar: CookieJar, body: { courseSlug?: string; programSlug?: string }) {
-  const result = await request(jar, "/lms/enrollments", { method: "POST", csrf: true, body })
+  const result = await request(jar, "/lms/enrollments", { method: "POST", csrf: true, body: { consent: TEST_CONSENT, ...body } })
   assert(result.response.status === 201 || result.response.ok, `enrol failed ${JSON.stringify(result.data)}`)
 }
 

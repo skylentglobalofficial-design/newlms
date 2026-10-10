@@ -5,6 +5,7 @@ import type { ApplicationEvent } from "../../lib/career-api"
 import { createApplicationEvent } from "../../lib/career-api"
 import { formatApplicationDateTime } from "./application-utils"
 import { FeedbackBanner, Field, fieldInputStyle, primaryButtonStyle, secondaryButtonStyle } from "./section-ui"
+import { fromDateTimeLocalInput, toDateTimeLocalInput } from "../../lib/datetime-local"
 
 const accent = careerAccent
 
@@ -22,7 +23,7 @@ export default function ApplicationTimeline({ applicationId, events, onEventAdde
     type: "note",
     title: "",
     description: "",
-    occurredAt: new Date().toISOString().slice(0, 16),
+    occurredAt: toDateTimeLocalInput(new Date()),
   })
 
   async function handleSubmit(e: React.FormEvent) {
@@ -35,14 +36,14 @@ export default function ApplicationTimeline({ applicationId, events, onEventAdde
         type: form.type.trim(),
         title: form.title.trim(),
         description: form.description.trim() || null,
-        occurredAt: new Date(form.occurredAt).toISOString(),
+        occurredAt: fromDateTimeLocalInput(form.occurredAt) ?? new Date().toISOString(),
       })
       onEventAdded(event)
       setForm({
         type: "note",
         title: "",
         description: "",
-        occurredAt: new Date().toISOString().slice(0, 16),
+        occurredAt: toDateTimeLocalInput(new Date()),
       })
       setAdding(false)
       setFeedback({ tone: "success", message: "Event added to timeline." })
