@@ -1,3 +1,5 @@
+import { resolveBrowserReturnOrigin, type OAuthRequestOrigin } from "./oauth-redirect.js"
+
 export type OAuthEnrollTarget = {
   kind: "course" | "program"
   slug: string
@@ -24,26 +26,24 @@ export function parseEnrollTarget(
   return { kind, slug: normalized }
 }
 
-export function frontendOrigin(): string {
-  const configured = process.env.FRONTEND_URL?.trim()
-  if (configured) return configured.replace(/\/$/, "")
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("FRONTEND_URL is required in production")
-  }
-  return "http://localhost:5173"
+export function frontendOrigin(env: NodeJS.ProcessEnv = process.env, req?: OAuthRequestOrigin): string {
+  return resolveBrowserReturnOrigin(env, req)
 }
 
-export function oauthErrorRedirect(message = "oauth"): string {
-  const origin = frontendOrigin()
+export function oauthErrorRedirect(message = "oauth", req?: OAuthRequestOrigin): string {
+  const origin = frontendOrigin(process.env, req)
   const params = new URLSearchParams({ error: message })
   return `${origin}/login?${params.toString()}`
 }
 
-export function oauthSuccessRedirect(options: {
-  returnTo?: string | null
-  enrollTarget?: OAuthEnrollTarget | null
-}): string {
-  const origin = frontendOrigin()
+export function oauthSuccessRedirect(
+  options: {
+    returnTo?: string | null
+    enrollTarget?: OAuthEnrollTarget | null
+  },
+  req?: OAuthRequestOrigin,
+): string {
+  const origin = frontendOrigin(process.env, req)
   const params = new URLSearchParams({ oauth: "success" })
   if (options.returnTo) params.set("returnTo", options.returnTo)
   if (options.enrollTarget) {
