@@ -75,7 +75,7 @@ export default function BlogPage() {
                   <div>
                     <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap' }}>
                       <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 5, padding: '3px 10px', color: accent.text, fontSize: 10, fontFamily: 'var(--font-mono)' }}>{featured.category}</span>
-                      <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{featured.readTime} read</span>
+                      <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{featured.readTime}</span>
                     </div>
                     <h2 className="skylent-display-sm" style={{ color: C.ink, margin: '0 0 14px' }}>{featured.title}</h2>
                     <p style={{ color: C.slate, fontSize: 15, lineHeight: 1.75, margin: '0 0 18px' }}>{featured.excerpt}</p>

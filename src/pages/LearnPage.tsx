@@ -502,7 +502,16 @@ export default function LearnPage() {
               <div className="os-banner">
                 <p className="os-eyebrow">Course complete</p>
                 <h2>{readyCourse.title}</h2>
-                <p className="os-lead">You have completed every lesson. Claim your certificate from My learning, and add your project to Career OS when you want it on your profile.</p>
+                {/* Programme learners: the server only marks the programme eligible when every course in it is complete. */}
+                {access.workspace.program && !access.workspace.program.certificateEligible ? (
+                  <p className="os-lead">
+                    You have completed every lesson in this course. {access.workspace.program.name} continues with{' '}
+                    {access.workspace.program.progress.totalCourses - access.workspace.program.progress.completedCourses} more{' '}
+                    {access.workspace.program.progress.totalCourses - access.workspace.program.progress.completedCourses === 1 ? 'course' : 'courses'}; My learning shows where to resume.
+                  </p>
+                ) : (
+                  <p className="os-lead">You have completed every lesson. Claim your certificate from My learning, and add your project to Career OS when you want it on your profile.</p>
+                )}
                 <div className="os-actions">
                   <Link className="os-btn os-btn-primary" to="/dashboard/student">Go to my learning</Link>
                   <Link className="os-btn os-btn-ghost" to="/career-os">Open Career OS</Link>

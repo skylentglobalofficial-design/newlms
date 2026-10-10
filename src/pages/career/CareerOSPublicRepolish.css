@@ -1,9 +1,9 @@
 /* Public Career OS (repolish) — prefix cpx-, on top of the homepage hx- system */
-.cpx .cpx-hero { background: #fff; padding: clamp(48px, 7vw, 88px) 0 clamp(40px, 6vw, 72px); }
+.cpx .cpx-hero { background: radial-gradient(48% 80% at 78% 40%, hsl(223 100% 57% / .22), transparent 64%), hsl(var(--site-navy)); color: hsl(var(--site-on-navy)); padding: clamp(48px, 7vw, 88px) 0 clamp(40px, 6vw, 72px); }
 .cpx .cpx-hero__inner { display: grid; justify-items: start; }
-.cpx .cpx-h1 { margin: 0; max-width: 15em; font-family: var(--sk-font-heading); font-size: clamp(34px, 5vw, 60px); font-weight: 650; line-height: 1.05; letter-spacing: -0.034em; color: hsl(var(--site-ink)); }
-.cpx .cpx-h1 em { font-style: normal; color: hsl(var(--site-deep)); }
-.cpx .cpx-lead { margin: 20px 0 0; max-width: 38em; font-size: clamp(16.5px, 1.4vw, 19px); line-height: 1.6; color: hsl(var(--site-muted)); }
+.cpx .cpx-h1 { margin: 0; max-width: 15em; font-family: var(--sk-font-heading); font-size: clamp(34px, 5vw, 60px); font-weight: 650; line-height: 1.05; letter-spacing: -0.034em; color: #fff; }
+.cpx .cpx-h1 em { font-style: normal; color: hsl(214 100% 72%); }
+.cpx .cpx-lead { margin: 20px 0 0; max-width: 38em; font-size: clamp(16.5px, 1.4vw, 19px); line-height: 1.6; color: hsl(var(--site-on-navy-muted)); }
 .cpx .hx-hero__actions .sk-btn-secondary { min-height: 50px; }
 
 .cpx .cpx-parts { padding-block: var(--hx-y); background: #fff; }
@@ -41,3 +41,8 @@
   .cpx .cpx-arrow::after { display: none; }
 }
 @media (max-width: 520px) { .cpx .cpx-grid { grid-template-columns: minmax(0, 1fr); } }
+
+/* Navy hero: eyebrow and secondary action */
+.cpx .cpx-hero .hx-eyebrow { color: hsl(var(--site-cyan)); }
+.cpx .cpx-hero .sk-btn-secondary { background: transparent; color: #fff; border: 1px solid hsl(var(--site-navy-line-2)); }
+.cpx .cpx-hero .sk-btn-secondary:hover { background: hsl(0 0% 100% / .08); }

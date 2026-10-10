@@ -277,7 +277,7 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
       { label: 'Applications', sub: 'Track the roles you apply to.', to: '/career-os/applications' },
     ],
   },
-  { label: 'Institutions', to: '/institutions', tagline: 'For colleges, universities and training partners', match: ['/institutions', '/universities'], items: [] },
+  // Institutions is reached from the footer, the search and the homepage partner section, not the top bar.
   {
     label: 'About',
     to: '/about',

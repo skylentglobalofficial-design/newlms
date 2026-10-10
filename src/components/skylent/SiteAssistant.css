@@ -30,8 +30,14 @@
 }
 .sia-launcher:hover { background: hsl(var(--site-navy-2)); transform: translateY(-2px); }
 .sia-launcher--hidden { visibility: hidden; pointer-events: none; }
+/* Compact launcher: a small pill on wide screens, an icon-only button below 1100px so it never covers content. */
+.sia-launcher { min-height: 44px; padding: 5px 14px 5px 6px; font-size: 13px; gap: 8px; }
+@media (max-width: 1100px) {
+  .sia-launcher { padding: 6px; min-height: 44px; }
+  .sia-launcher__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
 @media (max-width: 640px) {
-  .sia-launcher { padding: 8px; min-height: 52px; }
+  .sia-launcher { padding: 6px; min-height: 44px; }
   .sia-launcher__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 
@@ -140,3 +146,6 @@
 /* Says where a reply came from: the catalogue (fixed rules) or the AI endpoint. */
 .sia-source { margin: 6px 2px 0; font-size: 11.5px; line-height: 1.4; color: hsl(var(--site-dim)); }
 .sia-msg .sia-source { margin: 8px 0 0; }
+
+/* Keep the footer's last line clear of the launcher when the page is scrolled to the end. */
+.skylent-public-canvas footer.skf .skf__meta { padding-bottom: max(84px, calc(68px + env(safe-area-inset-bottom))); }

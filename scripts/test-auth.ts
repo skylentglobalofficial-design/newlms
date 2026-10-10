@@ -256,8 +256,8 @@ async function main() {
   console.log("12. Duplicate Google identity cannot create duplicate users")
   const googleEmail = `google-only-${Date.now()}@example.com`
   const googleSub = `google-sub-dup-${Date.now()}`
-  const firstGoogleUser = await resolveGoogleAccount(googleClaims(googleSub, googleEmail, "Google Only"))
-  const secondGoogleUser = await resolveGoogleAccount(googleClaims(googleSub, googleEmail, "Google Only"))
+  const firstGoogleUser = await resolveGoogleAccount(googleClaims(googleSub, googleEmail, "Google Only"), { policyVersion: TEST_CONSENT.policyVersion })
+  const secondGoogleUser = await resolveGoogleAccount(googleClaims(googleSub, googleEmail, "Google Only"), { policyVersion: TEST_CONSENT.policyVersion })
   assert(firstGoogleUser.id === secondGoogleUser.id, "Same Google subject should resolve to one user")
   const googleUserCount = await prisma.user.count({ where: { email: googleEmail } })
   assert(googleUserCount === 1, "Duplicate Google login should not create duplicate users")

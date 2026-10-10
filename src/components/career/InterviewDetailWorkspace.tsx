@@ -25,6 +25,7 @@ import {
 } from "./interview-utils"
 import { FeedbackBanner, Field, dangerButtonStyle, fieldInputStyle, primaryButtonStyle, secondaryButtonStyle } from "./section-ui"
 import { applicationRoleTitle } from "./application-utils"
+import { fromDateTimeLocalInput, toDateTimeLocalInput } from "../../lib/datetime-local"
 
 const accent = careerAccent
 const ALL_STATUSES = Object.keys(ROUND_STATUS_LABELS) as InterviewRoundStatus[]
@@ -69,7 +70,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
       }
       setRound(found)
       setNotes(found.notes ?? "")
-      setScheduledAt(found.scheduledAt ? found.scheduledAt.slice(0, 16) : "")
+      setScheduledAt(toDateTimeLocalInput(found.scheduledAt))
       setQuestions(questionResult.questions)
       setCategories(Array.from(new Set(questionResult.questions.map(q => q.category))).sort())
       setPractice(practiceData)
@@ -120,7 +121,7 @@ export default function InterviewDetailWorkspace({ roundId }: Props) {
     try {
       const updated = await updateInterviewRound(round.id, {
         notes: notes.trim() || null,
-        scheduledAt: scheduledAt ? new Date(scheduledAt).toISOString() : null,
+        scheduledAt: fromDateTimeLocalInput(scheduledAt),
       })
       setRound(updated)
       setEditing(false)

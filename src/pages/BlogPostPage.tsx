@@ -23,7 +23,7 @@ export default function BlogPostPage() {
       <PageShell auroraTheme="general">
         <Section tone="canvas" style={{ minHeight: '50vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ textAlign: 'center' }}>
-            <h2 className="skylent-display-md" style={{ color: C.ink }}>Article not found</h2>
+            <h1 className="skylent-display-md" style={{ color: C.ink }}>Article not found</h1>
             <Button variant="secondary" onClick={() => navigate('/blog')} style={{ marginTop: 16 }}>← Back to blog</Button>
           </div>
         </Section>
@@ -48,7 +48,7 @@ export default function BlogPostPage() {
           <FadeIn>
             <div style={{ display: 'flex', gap: 10, marginBottom: 18, flexWrap: 'wrap', alignItems: 'center' }}>
               <span style={{ background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 6, padding: '4px 12px', color: accent.text, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.category}</span>
-              <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.readTime} read</span>
+              <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.readTime}</span>
               <span style={{ color: C.slate, fontSize: 11, fontFamily: 'var(--font-mono)' }}>{post.date}</span>
             </div>
             <h1 className="skylent-display-md" style={{ color: C.ink, margin: '0 0 18px', lineHeight: 1.1 }}>{post.title}</h1>
@@ -113,7 +113,7 @@ export default function BlogPostPage() {
                       </pre>
                     )
                   }
-                  return <p key={i} style={{ margin: '0 0 1.35em' }}>{para}</p>
+                  return <p key={i} style={{ margin: '0 0 1.35em' }}>{renderBold(para)}</p>
                 })}
               </article>
             </GlassSurface>
@@ -142,4 +142,10 @@ export default function BlogPostPage() {
       </Section>
     </PageShell>
   )
+}
+
+/** Posts mark lead-in phrases with **double asterisks**. Render those as <strong>; everything else stays plain text. */
+function renderBold(text: string) {
+  const parts = text.split(/\*\*(.+?)\*\*/g)
+  return parts.map((part, index) => (index % 2 === 1 ? <strong key={index}>{part}</strong> : part))
 }

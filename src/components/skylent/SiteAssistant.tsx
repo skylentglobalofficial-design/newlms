@@ -56,24 +56,37 @@ const FAILURE_COPY: Record<Failure, string> = {
 const KNOWN_ROUTES: Record<string, string> = {
   "/": "Go to the home page",
   "/programmes": "Open programmes",
+  "/courses": "Open courses",
   "/education": "Open degrees",
   "/career-os": "Open Career OS",
   "/verify": "Check a certificate",
   "/about": "About Skylent",
   "/contact": "Contact Skylent",
   "/login": "Sign in",
+  "/signup": "Create an account",
+  "/dashboard/student": "Open my learning",
   "/institutions": "For institutions",
 }
 
-/** The server speaks in its own paths. Map them to this app's routes; drop anything that is not a known route. */
+const SLUG = "[a-z0-9]+(?:-[a-z0-9]+)*"
+
+/**
+ * The server speaks in its own paths (server/src/routes/skylent/reva.ts): /programs/<slug> is a programme,
+ * /courses/<slug> a course, /career-os/<area> a Career OS area. Map them to this app's routes and drop
+ * anything that is not a known route.
+ */
 export function mapAssistantPath(path: string | null): { to: string; label: string } | null {
   if (!path) return null
   const clean = path.split(/[?#]/)[0].replace(/\/+$/, "") || "/"
   let to = clean
   if (clean === "/programs") to = "/programmes"
   else if (clean === "/learn/sign-in") to = "/login"
-  const course = clean.match(/^\/programs\/([a-z0-9][a-z0-9-]*)$/) // the server lists COURSE slugs under /programs/
+  const programme = clean.match(new RegExp(`^/(?:programs|programmes)/(${SLUG})$`))
+  if (programme) return { to: `/programmes/${programme[1]}`, label: "Open this programme" }
+  const course = clean.match(new RegExp(`^/courses/(${SLUG})$`))
   if (course) return { to: `/courses/${course[1]}`, label: "Open this course" }
+  const careerArea = clean.match(/^\/career-os\/(profile|projects|jobs|applications|interviews|support)$/)
+  if (careerArea) return { to: clean, label: "Open Career OS" }
   return KNOWN_ROUTES[to] ? { to, label: KNOWN_ROUTES[to] } : null
 }
 
@@ -135,7 +148,7 @@ function programmeSuggestions(slugs: string[]): Suggestion[] {
     const program = catalogue.find((item) => item.slug === slug)
     if (!program) return []
     const open = programmeIsOpen(slug)
-    return [{ title: program.name, to: `/programmes/${slug}`, note: open ? `Listed as open · ${program.duration}` : `Opening soon · ${program.duration}`, open }]
+    return [{ title: program.name, to: `/programmes/${slug}`, note: open ? `Status shown on its page · ${program.duration}` : `Opening soon · ${program.duration}`, open }]
   }).sort((a, b) => Number(b.open) - Number(a.open))
 }
 
@@ -318,6 +331,17 @@ export default function SiteAssistant() {
     }
   }, [location.pathname])
 
+  // While the footer is on screen the invitation steps aside, so it never covers footer links.
+  // It is hidden, not dismissed: it comes back when the visitor scrolls up again.
+  const [footerInView, setFooterInView] = useState(false)
+  useEffect(() => {
+    const footer = document.querySelector("footer")
+    if (!footer || typeof IntersectionObserver === "undefined") return
+    const observer = new IntersectionObserver(([entry]) => setFooterInView(entry.isIntersecting))
+    observer.observe(footer)
+    return () => observer.disconnect()
+  }, [location.pathname])
+
   useEffect(() => () => requestRef.current?.abort(), [])
 
   useEffect(() => {
@@ -431,7 +455,7 @@ export default function SiteAssistant() {
 
   return (
     <div className="sia">
-      {invite && !open ? (
+      {invite && !open && !footerInView ? (
         <div className="sia-invite" role="status">
           <button type="button" className="sia-invite__close" onClick={dismissInvite} aria-label="Dismiss">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" aria-hidden="true">

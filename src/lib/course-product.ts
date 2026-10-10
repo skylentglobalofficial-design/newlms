@@ -46,7 +46,7 @@ const SHARED_FAQ_PAYMENT: CourseFaq = {
 
 const SHARED_FAQ_CERT: CourseFaq = {
   q: "Is a certificate issued?",
-  a: "Not in this pilot.",
+  a: "When every lesson in the course is complete, you can claim a certificate from My learning. It carries a code anyone can check on the Verify page. It confirms course completion, not a job outcome, and the feature is still being checked before launch.",
 }
 
 const DATA_ANALYTICS_PROFILE: CourseProductProfile = {

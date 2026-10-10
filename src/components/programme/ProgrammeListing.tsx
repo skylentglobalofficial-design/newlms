@@ -17,6 +17,7 @@ import { ProgrammeThumb, programmeThumbInfo } from "./ProgrammeArtefacts"
 import { plural, type ProgrammeTruth } from "./programme-truth"
 import "./ProfessionalProgrammeTemplate.css"
 import { openSkylentAi } from "../skylent/ai-events"
+import { STATUS_NOT_CONFIRMED } from "./CatalogueNotice"
 
 type Props = {
   program: CatalogProgramDetail
@@ -25,11 +26,12 @@ type Props = {
   honesty: string
   afterEnrol: string
   onEnrol: () => void
+  confirmed?: boolean
 }
 
-export default function ProgrammeListing({ program, truth, cta, honesty, afterEnrol, onEnrol }: Props) {
+export default function ProgrammeListing({ program, truth, cta, honesty, afterEnrol, onEnrol, confirmed = true }: Props) {
   const thumb = programmeThumbInfo(program.slug)
-  const canEnrol = truth.enrollable && !truth.comingLater
+  const canEnrol = confirmed && truth.enrollable && !truth.comingLater
   const firstLinked = truth.linked[0]
 
   return (
@@ -43,7 +45,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
         <div className="pp-hero__grid pp-hero__grid--listing">
           <div className="pp-hero__main">
             <p className="pp-chips">
-              <TruthChip state={truth.state} />
+              {confirmed ? <TruthChip state={truth.state} /> : <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />}
             </p>
             <h1 id="pp-title" className="sky-display sky-display--lg pp-h1">
               {program.name}
@@ -70,21 +72,23 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
             {canEnrol ? <p className="pp-note">{afterEnrol}</p> : null}
           </div>
           <div className="pp-hero__record">
-            <p className="sky-label">Catalogue record</p>
+            <p className="sky-label">At a glance</p>
             <SpecSheet
               className="pp-hero__spec"
               rows={[
                 {
                   label: "Enrolment",
-                  value: truth.enrolment
+                  value: !confirmed
+                    ? STATUS_NOT_CONFIRMED
+                    : truth.enrolment
                     ? canEnrol || truth.comingLater
                       ? truth.enrolment
-                      : `${truth.enrolment} in the catalogue. No authored course to enrol into yet.`
-                    : "Not stated in the catalogue",
+                      : "Not open yet"
+                    : "To be announced",
                 },
                 { label: "Format", value: program.format },
                 { label: "Level", value: program.level },
-                { label: "Listed length", value: program.duration },
+                { label: "Length", value: program.duration },
                 {
                   label: "Modules",
                   value:
@@ -102,12 +106,12 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                         {truth.linked.map((item) => (
                           <span key={item.slug}>
                             <Link to={item.to}>{item.title}</Link>
-                            <TruthChip state={item.authored ? "live" : "development"} />
+                            {confirmed ? <TruthChip state={item.authored ? "live" : "development"} /> : <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />}
                           </span>
                         ))}
                       </span>
                     ) : (
-                      "None yet"
+                      "Being prepared"
                     ),
                 },
               ]}
@@ -131,11 +135,13 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
           <Reveal className="pp-listing-stage__copy">
             <p className="sky-label">Next step</p>
             <h2 id="pp-next-title" className="sky-display sky-display--md pp-next__title">
-              {truth.comingLater
+              {!confirmed
+                ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked.`
+                : truth.comingLater
                 ? "Enrolment is not open on this programme yet."
                 : canEnrol
-                  ? "The linked course is ready. The full programme is not taught yet."
-                  : "This programme is listed, not yet taught."}
+                  ? "Start with the course that is ready now."
+                  : "This programme is being prepared."}
             </h2>
             <div className="pp-actions">
               {canEnrol ? (

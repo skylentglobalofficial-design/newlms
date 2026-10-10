@@ -1059,6 +1059,6 @@ body:has(.skylent-public-canvas) {
 .skylent-public-canvas .skn-search__empty { margin: 10px 12px 6px; font: 400 13.5px/1.4 var(--sk-font-body); color: hsl(var(--site-dim)); }
 .skylent-public-canvas .skf__meta { font-family: var(--sk-font-body); font-size: 13px; letter-spacing: 0; }
 .skylent-public-canvas .skf__legal { display: flex; flex-wrap: wrap; gap: 6px 20px; }
-.skylent-public-canvas .skf__legal a { color: hsl(var(--site-muted)); text-decoration: none; }
+.skylent-public-canvas .skf__legal a { display: inline-flex; align-items: center; min-height: 44px; color: hsl(var(--site-muted)); text-decoration: none; }
 .skylent-public-canvas .skf__legal a:hover { color: hsl(var(--site-deep)); text-decoration: underline; text-underline-offset: 3px; }
 .skylent-public-canvas .skf__title { font-family: var(--sk-font-body) !important; font-size: 12px !important; font-weight: 600 !important; letter-spacing: .06em !important; }

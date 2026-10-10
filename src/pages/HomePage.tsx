@@ -1,20 +1,19 @@
 /**
- * HomePage — the public homepage (repolish).
+ * HomePage — the public homepage.
  *
- * Section order:
- *   Hero (navy: statement and three ways in) → How learning works (the learner photo, the lesson
- *   player and its lab result, one scroll down) → Programmes → Degrees (UG / PG, online / campus) →
- *   Student home (navy) → Labs and projects → Career OS walkthrough (navy) → Skylent AI →
- *   Institutions → Closing (navy).
- * Navigation, footer and the Skylent AI launcher come from PageShell. The seven-stage strip,
- * the "What Skylent is" block and the Find My Path block are retired; path discovery happens in
- * Skylent AI.
+ * Section order and surfaces (alternating on purpose):
+ *   Hero (navy) → How learning works (white: five stages with product previews) → Programmes (soft:
+ *   catalogue cards with each programme's working material) → Degrees (white: UG and PG doors) →
+ *   After you enrol (soft: nine-step walkthrough, Learn.tsx) → Career OS walkthrough (navy) →
+ *   Skylent AI (white) → Institutions (soft) → Closing (navy).
+ * Navigation, footer and the Skylent AI launcher come from PageShell. Institutions is not in the top
+ * bar; it is reached from the footer, the search and the partner section here.
  *
  * Data: programmes from GET /catalog/programs (or the published list when the API cannot be
  * reached, see useCatalogPrograms); course facts from the authored Data Analytics course;
- * degrees from src/data/education.ts.
+ * degrees from lib/degrees (the published sample routes).
  *
- * Styles: HomePage.v2.css (hm- plates reused) and HomeRepolish.css (hx- sections).
+ * Styles: HomePage.v2.css (shared hm- plates) and HomeRepolish.css (hx- sections).
  */
 import { PageShell } from "@/components/shared"
 import { useCatalogPrograms } from "@/hooks/useCatalog"
@@ -26,7 +25,6 @@ import {
   HomeDegrees,
   HomeHero,
   HomeInstitutions,
-  HomeLabs,
   HomeProgrammes,
   InsideProgramme,
 } from "./home/Repolish"
@@ -37,13 +35,12 @@ export default function HomePage() {
   const catalog = useCatalogPrograms()
   return (
     <PageShell aurora={false}>
-      <div className="site-light hm-page hx-page">
+      <div className="site-light hm-page hx-page hx-page--home">
         <HomeHero />
         <InsideProgramme />
         <HomeProgrammes programmes={catalog.data ?? []} loading={catalog.loading} confirmed={!catalog.offline} />
         <HomeDegrees />
         <Learn />
-        <HomeLabs />
         <CareerJourney />
         <HomeAi />
         <HomeInstitutions />

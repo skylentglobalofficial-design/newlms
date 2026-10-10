@@ -201,7 +201,8 @@ assert(/const offline = !state\.loading && Boolean\(state\.error\)/.test(catalog
 assert(/offline \? publishedProgrammeSummaries\(\) : state\.data/.test(catalogHook), "A successful API response is never replaced by the published list")
 assert(/availability is not confirmed/.test(programsIndex), "API failure must not look like a confirmed catalogue")
 assert(
-  /confirmed \? "Open for enrolment" : "Listed as open"/.test(programsIndex) && /confirmed=\{!catalog\.offline\}/.test(programsIndex),
+  // Offline wording is the shared "Status not confirmed" label (components/programme/CatalogueNotice.tsx).
+  /confirmed \? "Open for enrolment" : STATUS_NOT_CONFIRMED/.test(programsIndex) && /confirmed=\{!catalog\.offline\}/.test(programsIndex),
   "API failure must not claim a programme is open for enrolment",
 )
 assert(/rows\.length === 0/.test(programsIndex) && /No programmes are published yet/.test(programsIndex), "Successful empty [] has its own empty-catalogue state")

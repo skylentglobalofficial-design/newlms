@@ -56,7 +56,7 @@ export default function CareerOSPublicPage() {
                 Create your account
                 <ArrowRight />
               </Link>
-              <Link className="sk-btn sk-btn-secondary hx-btn" to="/login">
+              <Link className="sk-btn sk-btn-secondary hx-btn" to="/login" state={{ returnTo: "/career-os" }}>
                 Sign in
               </Link>
             </div>
@@ -131,7 +131,7 @@ export default function CareerOSPublicPage() {
                 Explore programmes
                 <ArrowRight />
               </Link>
-              <Link className="sk-btn hx-btn hx-btn--ghost" to="/login">
+              <Link className="sk-btn hx-btn hx-btn--ghost" to="/login" state={{ returnTo: "/career-os" }}>
                 Sign in to Career OS
               </Link>
             </div>

@@ -12,7 +12,7 @@ import "./HomeRepolish.css"
 import "./AboutRepolish.css"
 
 const PRODUCTS = [
-  { title: "Degrees", text: "Undergraduate and postgraduate degrees, online or on campus, awarded by partner institutions.", to: "/education" },
+  { title: "Degrees", text: "Undergraduate and postgraduate degree pathways, online or on campus. Institutions are not confirmed yet.", to: "/education" },
   { title: "Programmes", text: "Certification and professional programmes with lessons, labs and a capstone project.", to: "/programmes" },
   { title: "Career OS", text: "One workspace for your profile, projects, evidence and applications.", to: "/career-os" },
   { title: "Skylent AI", text: "A helper that suggests where to start and explains lessons as you learn.", to: "/#skylent-ai" },

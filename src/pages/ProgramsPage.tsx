@@ -16,6 +16,7 @@ import { plural, programmeTruth, type ProgrammeTruth } from "../components/progr
 import { openSkylentAi } from "../components/skylent/ai-events"
 import { programs as publishedProgrammes } from "../data"
 import { useCatalogPrograms } from "../hooks/useCatalog"
+import { STATUS_NOT_CONFIRMED } from "../components/programme/CatalogueNotice"
 import type { CatalogProgramSummary } from "../lib/catalog-api"
 import { isPublicProgrammeIndexRow } from "../lib/programme-catalogue"
 import { programmeDiscoveryFor } from "../lib/programme-discovery"
@@ -85,7 +86,7 @@ function OpenProgramme({ row, confirmed }: { row: Row; confirmed: boolean }) {
       <div className="pgx-open__body">
         <div className="pgx-open__top">
           {/* "Open for enrolment" is a live claim: it is only made when the catalogue API answered. */}
-          <span className="pgx-badge pgx-badge--open">{confirmed ? "Open for enrolment" : "Listed as open"}</span>
+          <span className={confirmed ? "pgx-badge pgx-badge--open" : "pgx-badge"}>{confirmed ? "Open for enrolment" : STATUS_NOT_CONFIRMED}</span>
           <span className="pgx-kind">{KIND_COPY[row.kind].label}</span>
         </div>
         <h3 className="pgx-open__title">
@@ -258,7 +259,7 @@ export default function ProgramsPage() {
             {catalog.offline ? (
               <div className="sky-container">
                 <p className="pgx-offline" role="status">
-                  This list could not be checked with the Skylent catalogue just now, so availability is not confirmed. You can browse programmes;{" "}
+                  <strong>{STATUS_NOT_CONFIRMED}.</strong> This list could not be checked with the Skylent catalogue just now, so availability is not confirmed. You can browse programmes;{" "}
                   <button type="button" onClick={() => void catalog.reload()}>try again</button> before enrolling.
                 </p>
               </div>
