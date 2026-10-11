@@ -1099,7 +1099,7 @@ export default function CareerOSOverviewPage() {
                             ? `Next task: ${nextSupportTask.title}`
                             : countOpenTasks(activeSupport) > 0
                               ? plural(countOpenTasks(activeSupport), "open task")
-                              : "Waiting on the support team"}
+                              : "Open in your tracker"}
                       </span>
                     </span>
                   </Link>

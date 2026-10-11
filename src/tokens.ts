@@ -1,9 +1,8 @@
 // Skylent design tokens — single source of truth for JS inline styles.
 // CSS custom properties live in src/styles/design-system.css; keep both in sync.
 //
-// One frozen palette on every surface (public site, login, dashboards, learning player, Career OS):
-//   white workspace · warm paper for proof only · deep navy ink and product anchors ·
-//   cobalt for action and progress · cyan for the Skylent AI mark only.
+// Dark Aurora on every surface (public site, login, dashboards, learning player, Career OS):
+//   navy canvas · raised cards · light ink · ocean blue for action · cyan for the Skylent AI mark.
 // Type: Space Grotesk (headings), DM Sans (body), DM Mono (labels, numbers, code). No serif.
 // Navy surfaces are product anchors: the shell rail, product top bars and the code workbench.
 
@@ -59,7 +58,7 @@ export const surfaces = {
   creamWarm: C.creamWarm,
   soft: C.soft,
   sand: C.sand,
-  elevated: C.white,
+  elevated: 'var(--skylent-surface-elevated)',
   inverse: C.ink,
 } as const
 
@@ -76,16 +75,16 @@ export const colors = {
     onAccent: C.textOnAccent,
   },
   border: {
-    subtle: '#E6EAF2',
-    default: '#DDE2EC',
-    strong: '#A9B4C8',
+    subtle: 'var(--skylent-color-border-subtle)',
+    default: 'var(--skylent-color-border)',
+    strong: 'var(--skylent-color-border-strong)',
   },
   accent: {
     default: C.indigo,
     hover: C.blue,
-    soft: '#EAF0FF',
-    border: '#BFD0FF',
-    strong: '#1D4FD8',
+    soft: 'var(--skylent-color-accent-soft)',
+    border: 'var(--skylent-color-accent-border)',
+    strong: 'var(--skylent-color-accent-strong)',
   },
   orange: {
     default: C.orange,
@@ -145,10 +144,10 @@ export const T = {
   maxWWorkspace: 1040,
   maxWCareer: 1120,
   navH: 64,
-  lineLight: '#DDE2EC',
-  lineStrong: '#A9B4C8',
-  lineDark: '#DDE2EC',
-  lineDarkStrong: '#A9B4C8',
+  lineLight: 'var(--skylent-color-border)',
+  lineStrong: 'var(--skylent-color-border-strong)',
+  lineDark: 'var(--skylent-color-border)',
+  lineDarkStrong: 'var(--skylent-color-border-strong)',
   shadow: '0 1px 2px rgba(11,18,32,0.05), 0 18px 40px -24px rgba(11,18,32,0.22)',
   shadowLg: '0 1px 2px rgba(11,18,32,0.06), 0 28px 56px -28px rgba(11,18,32,0.30)',
 } as const

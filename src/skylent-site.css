@@ -8,29 +8,29 @@
    (--skylent-color-*, --skylent-surface-*, etc.).
 
    Ported from: lovable_src/src/index.css (Skylent 2.0 approved design).
-   Final public direction: PURE WHITE canvas (#FFFFFF). No cream / ivory /
-   warm paper. Navy ink, restrained royal-blue accent, cool hairlines.
+   Final public direction: dark Aurora canvas (#0B1220). Light ink, ocean-blue
+   accent, restrained cyan, cool hairlines.
    ===================================================================== */
 
 /* ---------- Brand palette (raw HSL channels) ---------- */
 :root {
-  --site-paper: 0 0% 100%;             /* #FFFFFF page canvas — pure white */
-  --site-white: 0 0% 100%;             /* panels / cards */
-  --site-soft: 214 40% 97.5%;          /* #F6F8FB small UI fills only (chips, skeletons, hover) — never a section background */
-  --site-raised: 220 31.6% 92.5%;   /* #E6EAF2 muted fill, progress track */
-  --site-border: 220 28.3% 89.6%;   /* #DDE2EC cool hairline */
-  --site-border-strong: 219 22% 72.4%;   /* #A9B4C8 inputs, secondary buttons */
-  --site-ink: 220 48.8% 8.4%;   /* #0B1220 ink */
-  --site-navy: 220 48.8% 8.4%;   /* #0B1220 deep navy: structure and product anchors */
-  --site-deep: 223 100% 57.3%;   /* #2563FF cobalt: the action colour */
-  --site-ocean: 224 76.3% 48%;   /* #1D4FD8 cobalt, hover / pressed */
-  --site-highlight: 223 100% 57.3%;   /* #2563FF focus ring */
-  --site-soft-blue: 223 100% 95.9%;   /* #EAF0FF cobalt tint */
-  --site-light-blue: 224 100% 87.5%;   /* #BFD0FF quiet cobalt rules */
-  --site-orange: 223 100% 57.3%;   /* #2563FF legacy alias, no longer a separate accent */
-  --site-warm: 223 100% 57.3%;   /* #2563FF legacy alias, no longer a separate accent */
-  --site-muted: 223 22.3% 30.8%;   /* #3D4760 body text */
-  --site-dim: 222 16.9% 42.9%;   /* #5B6680 labels and metadata */
+  --site-paper: 222 48% 8.4%;          /* #0B1220 page canvas */
+  --site-white: 220 38% 13%;           /* #141C2E panels / cards */
+  --site-soft: 220 36% 12%;            /* small UI fills */
+  --site-raised: 222 32% 16%;          /* muted fill, progress track */
+  --site-border: 222 32% 22%;          /* #26304A hairline */
+  --site-border-strong: 222 24% 32%;   /* inputs, secondary buttons */
+  --site-ink: 222 33% 93%;             /* #E8ECF5 ink */
+  --site-navy: 222 48% 8.4%;           /* #0B1220 structure */
+  --site-deep: 217 98% 61%;            /* #3D8BFD ocean action */
+  --site-ocean: 217 90% 55%;           /* hover / pressed */
+  --site-highlight: 217 98% 61%;       /* focus ring */
+  --site-soft-blue: 217 50% 18%;       /* quiet accent fill */
+  --site-light-blue: 217 40% 32%;      /* quiet accent rules */
+  --site-orange: 217 98% 61%;          /* legacy alias */
+  --site-warm: 217 98% 61%;            /* legacy alias */
+  --site-muted: 220 20% 68%;           /* #9AA6BF body text */
+  --site-dim: 220 16% 58%;             /* labels and metadata */
   --site-green: 152 55% 30%;           /* success */
   --site-amber: 32 90% 34%;            /* warning text */
   --site-red: 2 70% 42%;               /* error */
@@ -120,7 +120,7 @@
 .site-light {
   background: hsl(var(--site-paper));
   color: hsl(var(--site-ink));
-  color-scheme: light;
+  color-scheme: dark;
   font-family: var(--sk-font-body);
   font-feature-settings: 'cv11', 'ss01';
 }
@@ -139,11 +139,11 @@
   letter-spacing: 0;
 }
 
-/* Signed-in shell (name kept for existing wrappers; it is light) */
+/* Signed-in shell (class name kept; the canvas is dark Aurora) */
 .portal-dark {
   background-color: hsl(var(--site-paper));
   color: hsl(var(--site-ink));
-  color-scheme: light;
+  color-scheme: dark;
 }
 .portal-dark .glass-panel {
   background: hsl(var(--site-white));

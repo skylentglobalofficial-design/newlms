@@ -18,6 +18,7 @@ import { fetchMyCertificates, issueCertificate, type SkylentCertificate } from '
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
 import { truthOf } from '../lib/truth'
 import { courseProductProfile } from '../lib/course-product'
+import { isAuthoredCourse } from '../lib/authored-courses'
 import { AiMark, AI_NAME, ArrowRight, ProductSlice, TruthChip } from '../components/skylent/primitives'
 import './LearnWorkspace.css'
 import './StudentHome.css'
@@ -214,6 +215,7 @@ export default function DashboardStudentPage() {
     if (enrollments.status !== 'ready') return
     let cancelled = false
     const covered = (item: ApiEnrollmentSummary) => {
+      if (item.courses && item.courses.length > 0) return true
       if (!workspace) return false
       if (item.programSlug) return workspace.program?.slug === item.programSlug
       if (!item.courseSlug) return false
@@ -325,6 +327,32 @@ export default function DashboardStudentPage() {
 
   /** Progress and resume point for one enrolment row, only from server responses. */
   const progressFor = (item: ApiEnrollmentSummary): RowProgress | null => {
+    if (item.courses && item.courses.length > 0) {
+      if (item.programSlug) {
+        const completedCourses = item.courses.filter((courseRow) => courseRow.progress.allComplete).length
+        const completedCount = item.courses.reduce((sum, courseRow) => sum + courseRow.progress.completedCount, 0)
+        const totalLessons = item.courses.reduce((sum, courseRow) => sum + courseRow.progress.totalLessons, 0)
+        const resumeCourse = item.courses.find((courseRow) => !courseRow.progress.allComplete) ?? item.courses[0]
+        return {
+          status: 'program',
+          progress: {
+            completedCount,
+            totalLessons,
+            progressPct: totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0,
+            allComplete: completedCourses === item.courses.length,
+            completedCourses,
+            totalCourses: item.courses.length,
+          },
+          resumeHref: resumeHrefFor(resumeCourse.slug),
+        }
+      }
+      const courseRow = item.courses.find((row) => row.slug === item.courseSlug) ?? item.courses[0]
+      return {
+        status: 'course',
+        progress: courseRow.progress,
+        resumeHref: resumeHrefFor(courseRow.slug),
+      }
+    }
     if (workspace) {
       if (item.programSlug && workspace.program?.slug === item.programSlug) {
         const program = workspace.program
@@ -401,12 +429,33 @@ export default function DashboardStudentPage() {
     </section>
   )
 
-  const claimable = enrolmentRows.filter(
-    (item) =>
+  const issuedFor = (slug: string, title: string) =>
+    certificateRows.some((cert) => (cert.courseSlug ? cert.courseSlug === slug : cert.courseTitle === title))
+  const claimable: Array<{ key: string; courseSlug: string; courseTitle: string }> = []
+  const seenClaims = new Set<string>()
+  for (const item of enrolmentRows) {
+    const linked = item.courses ?? []
+    if (linked.length > 0) {
+      for (const courseRow of linked) {
+        if (!isAuthoredCourse(courseRow.slug) || !courseRow.progress.allComplete) continue
+        if (issuedFor(courseRow.slug, courseRow.title) || seenClaims.has(courseRow.slug)) continue
+        seenClaims.add(courseRow.slug)
+        claimable.push({ key: `${item.id}:${courseRow.slug}`, courseSlug: courseRow.slug, courseTitle: courseRow.title })
+      }
+      continue
+    }
+    if (
       item.certificateEligible &&
-      Boolean(item.courseSlug) &&
-      !certificateRows.some((cert) => cert.courseTitle === item.courseTitle),
-  )
+      item.courseSlug &&
+      !item.programSlug &&
+      isAuthoredCourse(item.courseSlug) &&
+      !issuedFor(item.courseSlug, item.courseTitle ?? '') &&
+      !seenClaims.has(item.courseSlug)
+    ) {
+      seenClaims.add(item.courseSlug)
+      claimable.push({ key: item.id, courseSlug: item.courseSlug, courseTitle: item.courseTitle ?? item.courseSlug })
+    }
+  }
 
   const evidence = (
     <section className="sh-card sh-proof" id="student-evidence" aria-labelledby="sh-evidence">
@@ -441,10 +490,10 @@ export default function DashboardStudentPage() {
           ) : null}
           <CertificateName />
           {claimable.map((item) => (
-            <div key={item.id} className="sh-row sh-claim">
+            <div key={item.key} className="sh-row sh-claim">
               <div className="sh-row-main">
                 <strong>{item.courseTitle}</strong>
-                <span className="sh-note">Every lesson complete. No certificate issued yet.</span>
+                <span className="sh-note">Every lesson in this course is complete. No certificate issued yet.</span>
                 {claimError?.slug === item.courseSlug ? (
                   <span className="os-error" role="alert">{claimError.message}</span>
                 ) : null}
@@ -453,7 +502,7 @@ export default function DashboardStudentPage() {
                 type="button"
                 className="os-btn os-btn-primary"
                 disabled={claiming !== null}
-                onClick={() => void claimCertificate(item.courseSlug as string)}
+                onClick={() => void claimCertificate(item.courseSlug)}
               >
                 {claiming === item.courseSlug ? 'Issuing…' : 'Claim certificate'}
               </button>
@@ -494,10 +543,10 @@ export default function DashboardStudentPage() {
             <h2>Choose what to learn first</h2>
             <p className="sh-body">You are signed in and have no lessons open yet. Pick a programme and its first lesson opens here.</p>
             <div className="os-actions">
-              <Link className="os-btn os-btn-primary os-btn-lg" to="/courses">Explore courses <ArrowRight /></Link>
+              <Link className="os-btn os-btn-primary os-btn-lg" to="/programmes">Explore programmes <ArrowRight /></Link>
             </div>
           </div>
-          {enrolmentRows.length > 0 ? <div className="sh-stack">{myLearning}</div> : null}
+          {enrolmentRows.length > 0 ? <div className="sh-stack">{myLearning}{evidence}</div> : null}
         </div>
       </AuthDashboardShell>
     )
@@ -514,13 +563,37 @@ export default function DashboardStudentPage() {
   const resumeStarted = Boolean(resume.lessonId && workspace.lessonStates[resume.lessonId]?.started)
   const profile = courseProductProfile(course.slug)
 
-  // Needs attention: only what the lesson states say. A check or an assignment that has been
-  // opened (started) and is neither complete nor locked.
-  const attention = allLessons.filter((lesson) => {
+  // Needs attention: opened checks and assignments that are not complete, across every enrolment.
+  const primaryAttention = allLessons.flatMap((lesson) => {
     const state = workspace.lessonStates[lesson.id]
-    if (!state || !state.started || state.complete || state.locked) return false
-    return lesson.type === 'quiz' || lesson.type === 'assignment'
+    if (!state || !state.started || state.complete || state.locked) return []
+    if (lesson.type !== 'quiz' && lesson.type !== 'assignment') return []
+    return [{
+      id: lesson.id,
+      title: lesson.title,
+      href: `/learn/${course.slug}/${lesson.id}`,
+      note: lesson.type === 'quiz'
+        ? 'Check opened, not passed yet'
+        : `${isCapstoneLesson(lesson) ? 'Capstone' : 'Assignment'} opened, not submitted yet`,
+    }]
   })
+  const covered = new Set(primaryAttention.map((item) => item.href))
+  const otherAttention = enrolmentRows.flatMap((item) =>
+    (item.courses ?? []).flatMap((linked) =>
+      linked.openAssessments.flatMap((open) => {
+        const href = `/learn/${linked.slug}/${open.lessonKey}`
+        if (covered.has(href)) return []
+        covered.add(href)
+        return [{
+          id: `${linked.slug}:${open.lessonKey}`,
+          title: open.title,
+          href,
+          note: `${linked.title} · ${open.type === 'quiz' ? 'Check opened, not passed yet' : 'Assignment opened, not submitted yet'}`,
+        }]
+      }),
+    ),
+  )
+  const attention = [...primaryAttention, ...otherAttention]
 
   const projectRows = projects.status === 'ready' ? projects.data : []
   const currentProject = findProjectForCourse(projectRows, course.slug)
@@ -590,13 +663,9 @@ export default function DashboardStudentPage() {
                     <li key={lesson.id} className="sh-row">
                       <div className="sh-row-main">
                         <strong>{lesson.title}</strong>
-                        <span className="sh-note">
-                          {lesson.type === 'quiz'
-                            ? 'Check opened, not passed yet'
-                            : `${isCapstoneLesson(lesson) ? 'Capstone' : 'Assignment'} opened, not submitted yet`}
-                        </span>
+                        <span className="sh-note">{lesson.note}</span>
                       </div>
-                      <Link className="os-link sh-row-link" to={`/learn/${course.slug}/${lesson.id}`} aria-label={`Open ${lesson.title}`}>
+                      <Link className="os-link sh-row-link" to={lesson.href} aria-label={`Open ${lesson.title}`}>
                         Open <ArrowRight />
                       </Link>
                     </li>

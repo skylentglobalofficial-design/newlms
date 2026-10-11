@@ -1,5 +1,5 @@
 /* =====================================================================
-   SKYLENT PUBLIC SHELL — pure-white theme
+   SKYLENT PUBLIC SHELL — dark Aurora theme
 
    Everything here is scoped to .skylent-public-canvas, the wrapper that
    PageShell (components/shared.tsx) renders around the public Nav, <main>
@@ -10,8 +10,7 @@
    Loaded from main.tsx after index.css, so it is always present and wins
    over the base layer at equal specificity.
 
-   Direction: #FFFFFF canvas, deep navy ink, restrained royal-blue accent,
-   Space Grotesk headings, DM Sans body/UI. No cream, ivory or warm paper.
+   Direction: #0B1220 canvas, light ink, ocean-blue accent, restrained cyan.
    Palette source: src/skylent-site.css (--site-*).
    ===================================================================== */
 
@@ -25,7 +24,8 @@ body {
    warm strip shows on short pages or during overscroll. */
 html:has(.skylent-public-canvas),
 body:has(.skylent-public-canvas) {
-  background-color: #ffffff;
+  background-color: #0b1220;
+  color-scheme: dark;
 }
 
 /* ---------------------------------------------------------------------
@@ -38,12 +38,12 @@ body:has(.skylent-public-canvas) {
 .skylent-public-canvas {
   /* Surfaces — white everywhere; the two "wash" steps become cool, quiet fills
      for small UI (chips, tracks, table heads), not page or section backgrounds. */
-  --skylent-surface-paper: #ffffff;
-  --skylent-surface-cream: #ffffff;
-  --skylent-surface-cream-warm: #ffffff;
+  --skylent-surface-paper: #0b1220;
+  --skylent-surface-cream: #0b1220;
+  --skylent-surface-cream-warm: #10192b;
   --skylent-surface-soft: hsl(var(--site-soft));
   --skylent-surface-sand: hsl(var(--site-raised));
-  --skylent-surface-elevated: #ffffff;
+  --skylent-surface-elevated: #141c2e;
   --skylent-surface-inverse: hsl(var(--site-navy));
 
   --skylent-color-paper: var(--skylent-surface-paper);
@@ -110,13 +110,13 @@ body:has(.skylent-public-canvas) {
   --shadow-subtle: 0 1px 2px hsl(var(--site-ink) / 0.05);
   --shadow-raised: var(--sk-shadow);
   --shadow-overlay: 0 1px 2px hsl(var(--site-ink) / 0.05), 0 12px 28px -14px hsl(var(--site-ink) / 0.18);
-  --glass-01-bg: #ffffff;
+  --glass-01-bg: #141c2e;
   --glass-01-border: var(--skylent-color-border);
   --glass-01-shadow: var(--shadow-subtle);
-  --glass-02-bg: #ffffff;
+  --glass-02-bg: #141c2e;
   --glass-02-border: var(--skylent-color-border);
   --glass-02-shadow: var(--shadow-raised);
-  --glass-03-bg: #ffffff;
+  --glass-03-bg: #141c2e;
   --glass-03-border: var(--skylent-color-border);
   --glass-03-shadow: var(--shadow-overlay);
 

@@ -87,6 +87,8 @@ export type AiAskInput = {
   policy?: AcademicPolicy
   /** Open-quiz question text and options, used only to recognise a pasted question. Never sent to a provider. */
   quizGuard?: { question: string; options: string[] }[]
+  /** Correct option text, held on the server. Never sent to the client or included in a provider prompt. */
+  withheldAnswers?: string[]
 }
 
 export type AiAskResult = {

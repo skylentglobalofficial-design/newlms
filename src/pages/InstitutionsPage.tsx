@@ -44,7 +44,7 @@ export default function InstitutionsPage() {
             <div>
               <p className="hx-eyebrow">For institutions</p>
               <h1 id="inx-title" className="hx-hero__title">
-                Practical learning and <em>career readiness</em> for your learners.
+                Practical learning and <em>Career OS</em> for your learners.
               </h1>
               <p className="hx-hero__lead">
                 Skylent works with colleges, universities and training partners to add programmes, labs and Career OS alongside their own

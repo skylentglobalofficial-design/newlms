@@ -4,6 +4,7 @@ import { z } from "zod"
 import { prisma } from "../../lib/prisma.js"
 import { parseCookies, hashSessionToken, SESSION_COOKIE } from "../../lib/auth.js"
 import { REVA_IDENTITY_REPLY, REVA_IDENTITY_RULE, isIdentityQuestion } from "../../lib/reva-identity.js"
+import { readProviderTimeoutMs } from "../../lib/skylent-ai/service.js"
 
 /**
  * Site assistant. The legacy path stays `/api/v1/reva/chat`.
@@ -29,6 +30,7 @@ const body = z.object({
 const ALLOWED_EXACT = new Set([
   "/",
   "/programs",
+  "/programmes",
   "/courses",
   "/education",
   "/career-os",
@@ -37,11 +39,14 @@ const ALLOWED_EXACT = new Set([
   "/login",
   "/signup",
   "/dashboard/student",
+  "/path",
+  "/path/result",
+  "/verify",
 ])
 
 const SITE = `SKYLENT connects skill programmes and Career OS.
-Real pages only: / , /programs, /courses, /education, /career-os, /about, /contact, /login, /signup, /dashboard/student.
-Programme pages are /programs/<slug>. Course pages are /courses/<slug>.
+Real pages only: / , /programmes, /programs, /courses, /education, /career-os, /about, /contact, /login, /signup, /dashboard/student, /path, /verify.
+Programme pages are /programmes/<slug> (the /programs/<slug> alias is the same page). Course pages are /courses/<slug>.
 Human support: phone 6370044001, email support@skylent.live.
 Fees and discounts are not published — send people to /contact.
 Never invent partners, fees, placements, salaries, readiness scores, or numbers.
@@ -56,9 +61,12 @@ If abused, calmly ask to keep it respectful and redirect.`
 
 function isAllowedPath(path: string): boolean {
   if (ALLOWED_EXACT.has(path)) return true
+  if (/^\/programmes\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(path)) return true
   if (/^\/programs\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(path)) return true
   if (/^\/courses\/[a-z0-9]+(?:-[a-z0-9]+)*$/.test(path)) return true
   if (/^\/career-os(?:\/[a-z0-9-]+)*$/.test(path)) return true
+  if (/^\/path(?:\/[a-z0-9-]+)*$/.test(path)) return true
+  if (/^\/verify(?:\/[a-z0-9-]+)*$/i.test(path)) return true
   return false
 }
 
@@ -98,9 +106,10 @@ revaRouter.post("/chat", limit, async (req, res) => {
     return void res.json({ data: { answer: sanitizeAssistantActions(answer), scope, source: "rule" } })
   }
 
-  // No key means no model. The site says so instead of answering every question with a canned line.
+  // Site chat always calls the configured model. A missing key, or an explicit off switch, is not ready.
+  const providerName = (process.env.SKYLENT_AI_PROVIDER ?? "").trim().toLowerCase()
   const apiKey = process.env.SKYLENT_AI_API_KEY?.trim()
-  if (!apiKey) {
+  if (providerName === "off" || providerName === "none" || !apiKey) {
     return void res.status(503).json({ error: "Skylent AI isn't available yet.", code: "not_configured" })
   }
 
@@ -127,6 +136,7 @@ revaRouter.post("/chat", limit, async (req, res) => {
   const base = (process.env.SKYLENT_AI_BASE_URL?.trim() || "https://api.openai.com/v1").replace(/\/+$/, "")
   const r = await fetch(`${base}/chat/completions`, {
     method: "POST",
+    signal: AbortSignal.timeout(readProviderTimeoutMs()),
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       model: process.env.SKYLENT_AI_MODEL?.trim() || "gpt-4o-mini",

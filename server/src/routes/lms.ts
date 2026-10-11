@@ -26,6 +26,7 @@ import {
   loadLearnerDashboard,
   loadLessonStates,
   resolveCourseEnrollment,
+  summarizeEnrollmentCourses,
   syncCertificateState,
 } from "../lib/lms.js"
 
@@ -126,30 +127,31 @@ lmsRouter.get("/enrollments", requireAuth, async (req: AuthenticatedRequest, res
       },
     })
 
-    res.json({
-      data: enrollments.map((entry) => {
-        const linkedCourses =
-          entry.program?.programCourses.map((link) => ({
-            slug: link.course.slug,
-            title: link.course.title,
-          })) ??
-          (entry.course ? [{ slug: entry.course.slug, title: entry.course.title }] : [])
-        const linkedCourse = entry.course ?? entry.program?.programCourses[0]?.course ?? null
-        return {
-          id: entry.id,
-          status: entry.status,
-          courseSlug: linkedCourse?.slug ?? null,
-          courseTitle: linkedCourse?.title ?? null,
-          linkedCourses,
-          programSlug: entry.program?.slug ?? null,
-          programName: entry.program?.name ?? null,
-          certificateEligible: entry.certificateEligible,
-          certificateStatus: entry.certificateStatus,
-          createdAt: entry.createdAt.toISOString(),
-          updatedAt: entry.updatedAt.toISOString(),
-        }
-      }),
-    })
+    const data = await Promise.all(enrollments.map(async (entry) => {
+      const linkedCourses =
+        entry.program?.programCourses.map((link) => ({
+          slug: link.course.slug,
+          title: link.course.title,
+        })) ??
+        (entry.course ? [{ slug: entry.course.slug, title: entry.course.title }] : [])
+      const linkedCourse = entry.course ?? entry.program?.programCourses[0]?.course ?? null
+      const courses = await summarizeEnrollmentCourses(entry.id)
+      return {
+        id: entry.id,
+        status: entry.status,
+        courseSlug: linkedCourse?.slug ?? null,
+        courseTitle: linkedCourse?.title ?? null,
+        linkedCourses,
+        courses,
+        programSlug: entry.program?.slug ?? null,
+        programName: entry.program?.name ?? null,
+        certificateEligible: entry.certificateEligible,
+        certificateStatus: entry.certificateStatus,
+        createdAt: entry.createdAt.toISOString(),
+        updatedAt: entry.updatedAt.toISOString(),
+      }
+    }))
+    res.json({ data })
   } catch (error) {
     console.error("Failed to list enrollments:", error)
     res.status(500).json({ error: "Failed to list enrollments" })
@@ -667,7 +669,8 @@ lmsRouter.post(
         data: {
           attemptId: recorded.attempt.id,
           attemptNumber: recorded.attempt.attemptNumber,
-          score: recorded.score,
+          // A failed attempt must not return the score. The score is the count of correct answers.
+          ...(recorded.passed ? { score: recorded.score } : {}),
           totalQuestions: recorded.totalQuestions,
           passed: recorded.passed,
           submittedAt: recorded.attempt.submittedAt.toISOString(),
@@ -724,6 +727,7 @@ lmsRouter.get(
         data: {
           lessonKey: lessonParsed.data.lessonKey,
           status: assignment?.status ?? "not_started",
+          responseText: assignment?.responseText ?? null,
           submittedAt: assignment?.submittedAt?.toISOString() ?? null,
           attachments: assignment?.attachments.map((file) => ({
             id: file.id,
@@ -918,13 +922,18 @@ lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: Authenticat
       title: item.node.title,
       complete: lessonStates[item.lessonKey]?.complete ?? false,
     }))
+    const allComplete = requirements.length > 0 && requirements.every((item) => item.complete)
+    const issued = await prisma.skylentCertificate.findUnique({
+      where: { userId_courseId: { userId: req.auth!.user.id, courseId: course.id } },
+    })
+    const certificateStatus = issued && !issued.revoked ? "issued" : allComplete ? "eligible" : "locked"
 
     res.json({
       data: {
-        certificateEligible: enrollment.certificateEligible,
-        certificateStatus: enrollment.certificateStatus,
+        certificateEligible: allComplete,
+        certificateStatus,
         requirements,
-        allComplete: requirements.every((r) => r.complete),
+        allComplete,
       },
     })
   } catch (error) {

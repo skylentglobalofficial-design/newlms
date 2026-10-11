@@ -36,10 +36,10 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
         roleTitle: job.title,
         source: "career-os-jobs",
       })
-      setApplyFeedback({ tone: "success", message: "Application recorded." })
+      setApplyFeedback({ tone: "success", message: "Saved in your applications." })
       onApplied?.()
     } catch (err) {
-      setApplyFeedback({ tone: "error", message: err instanceof Error ? err.message : "Failed to apply" })
+      setApplyFeedback({ tone: "error", message: err instanceof Error ? err.message : "Could not save this application." })
     } finally {
       setApplyPending(false)
     }
@@ -214,7 +214,7 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
               opacity: alreadyApplied ? 0.7 : 1,
             }}
           >
-            {applyPending ? "Applying…" : alreadyApplied ? "Applied" : "Apply"}
+            {applyPending ? "Saving…" : alreadyApplied ? "Tracked" : "Track application"}
           </button>
         )}
 

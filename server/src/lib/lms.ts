@@ -543,7 +543,7 @@ export async function syncCertificateState(enrollmentId: string, courseId?: stri
       where: { id: enrollmentId },
       data: {
         certificateEligible: allComplete,
-        certificateStatus: allComplete ? "eligible" : "locked",
+        certificateStatus: enrollment.certificateStatus === "issued" ? "issued" : allComplete ? "eligible" : "locked",
         status: allComplete ? "completed" : "active",
       },
     })
@@ -564,7 +564,7 @@ export async function syncCertificateState(enrollmentId: string, courseId?: stri
     where: { id: enrollmentId },
     data: {
       certificateEligible: allComplete,
-      certificateStatus: allComplete ? "eligible" : "locked",
+      certificateStatus: enrollment.certificateStatus === "issued" ? "issued" : allComplete ? "eligible" : "locked",
       status: allComplete ? "completed" : "active",
     },
   })
@@ -751,6 +751,52 @@ export async function getCourseIdsForProgram(programId: string) {
     select: { courseId: true },
   })
   return links.map((link) => link.courseId)
+}
+
+export type EnrollmentCourseSummary = {
+  slug: string
+  title: string
+  progress: CourseProgressSummary
+  openAssessments: Array<{ lessonKey: string; title: string; type: "quiz" | "assignment" }>
+}
+
+/** Per-course progress for one enrolment. Programme rows report each linked course, not one blended flag. */
+export async function summarizeEnrollmentCourses(enrollmentId: string): Promise<EnrollmentCourseSummary[]> {
+  const enrollment = await prisma.userEnrollment.findUnique({
+    where: { id: enrollmentId },
+    include: {
+      course: { include: courseInclude },
+      program: {
+        include: {
+          programCourses: {
+            orderBy: { sortOrder: "asc" },
+            include: { course: { include: courseInclude } },
+          },
+        },
+      },
+    },
+  })
+  if (!enrollment) return []
+  const courses = enrollment.program?.programCourses.map((link) => link.course) ?? (enrollment.course ? [enrollment.course] : [])
+  const summaries: EnrollmentCourseSummary[] = []
+  for (const course of courses) {
+    const progressEnrollment = (await resolveCourseEnrollment(enrollment.userId, course.id)) ?? enrollment
+    const lessonStates = await loadLessonStates(progressEnrollment, course)
+    const openAssessments = flattenNodes(course).flatMap((item) => {
+      const type = nodeTypeKey(item.node.nodeType)
+      if (type !== "quiz" && type !== "assignment") return []
+      const state = lessonStates[item.lessonKey]
+      if (!state?.started || state.complete || state.locked) return []
+      return [{ lessonKey: item.lessonKey, title: item.node.title, type: type as "quiz" | "assignment" }]
+    })
+    summaries.push({
+      slug: course.slug,
+      title: course.title,
+      progress: computeProgress(course, lessonStates),
+      openAssessments,
+    })
+  }
+  return summaries
 }
 
 export function formatVideoMedia(node: CurriculumNode) {

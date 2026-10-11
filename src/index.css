@@ -83,12 +83,12 @@
   --glass-01-blur: none;
   --glass-01-shadow: var(--shadow-subtle);
 
-  --glass-02-bg: #FFFFFF;
+  --glass-02-bg: var(--skylent-surface-elevated);
   --glass-02-border: rgba(21, 23, 26, 0.10);
   --glass-02-blur: none;
   --glass-02-shadow: var(--shadow-raised);
 
-  --glass-03-bg: #FFFFFF;
+  --glass-03-bg: var(--skylent-surface-elevated);
   --glass-03-border: rgba(21, 23, 26, 0.10);
   --glass-03-blur: none;
   --glass-03-shadow: var(--shadow-overlay);
@@ -100,6 +100,7 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {

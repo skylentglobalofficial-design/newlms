@@ -145,6 +145,12 @@ export type ApiEnrollmentSummary = {
   courseSlug: string | null
   courseTitle: string | null
   linkedCourses?: Array<{ slug: string; title: string }>
+  courses?: Array<{
+    slug: string
+    title: string
+    progress: ApiCourseProgress
+    openAssessments: Array<{ lessonKey: string; title: string; type: "quiz" | "assignment" }>
+  }>
   programSlug: string | null
   programName: string | null
   certificateEligible: boolean
@@ -235,7 +241,7 @@ export async function submitQuizAttempt(slug: string, lessonKey: string, answers
     data: {
       attemptId: string
       attemptNumber: number
-      score: number
+      score?: number
       totalQuestions: number
       passed: boolean
       submittedAt: string
@@ -245,7 +251,7 @@ export async function submitQuizAttempt(slug: string, lessonKey: string, answers
 }
 
 export async function fetchAssignmentState(slug: string, lessonKey: string) {
-  const result = await lmsGet<{ data: { lessonKey: string; status: string; submittedAt: string | null } }>(
+  const result = await lmsGet<{ data: { lessonKey: string; status: string; responseText: string | null; submittedAt: string | null } }>(
     `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
   )
   return result.data

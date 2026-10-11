@@ -367,6 +367,32 @@ async function main() {
     `enrol ${programmeEnrol.response.status} issue ${programmeIssue.response.status}`,
   )
 
+  const dataScience = await signup("Data Science Programme Learner")
+  const dataScienceEnrol = await request(dataScience.jar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { consent: TEST_CONSENT, programSlug: "data-science-ai" },
+  })
+  await completeCourse(dataScience.jar)
+  const dataScienceIssue = await request(dataScience.jar, "/certificates/issue", {
+    method: "POST",
+    csrf: true,
+    body: { courseSlug: "data-analytics" },
+  })
+  const dataScienceCourse = await request(dataScience.jar, "/lms/courses/data-analytics/certificate")
+  const dataScienceProgram = await request(dataScience.jar, "/lms/programs/data-science-ai")
+  const issuedCode = String(dataScienceIssue.data?.data?.code ?? "")
+  record(
+    "data science programme keeps course certificate eligibility",
+    dataScienceEnrol.response.status === 201 &&
+      dataScienceIssue.response.status === 201 &&
+      dataScienceCourse.data?.data?.certificateStatus === "issued" &&
+      dataScienceCourse.data?.data?.certificateEligible === true &&
+      dataScienceProgram.data?.data?.certificateStatus !== "issued" &&
+      /-[A-Z0-9]{8}$/.test(issuedCode),
+    `enrol ${dataScienceEnrol.response.status} issue ${dataScienceIssue.response.status} course ${dataScienceCourse.data?.data?.certificateStatus} program ${dataScienceProgram.data?.data?.certificateStatus}`,
+  )
+
   console.log("--- enquiries and assistant ---")
   const badEnquiry = await request(new Map(), "/enquiries", { method: "POST", body: { consent: TEST_CONSENT, email: "not-an-email" } })
   record("enquiry invalid", badEnquiry.response.status === 400, `status ${badEnquiry.response.status}`)

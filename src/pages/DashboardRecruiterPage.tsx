@@ -98,42 +98,7 @@ function OpenRolesSection() {
   )
 }
 
-function FilterChip({
-  label,
-  active,
-  onClick,
-}: {
-  label: string
-  active: boolean
-  onClick: () => void
-}) {
-  return (
-    <button type="button" onClick={onClick} style={{
-      padding: '6px 12px', borderRadius: T.rPill,
-      border: `1px solid ${active ? accent.border : T.lineLight}`,
-      background: active ? accent.subtle : 'transparent',
-      color: active ? accent.text : C.slate,
-      fontSize: 11, cursor: 'pointer', fontFamily: 'var(--font-body)',
-    }}>
-      {label}
-    </button>
-  )
-}
-
-function ReviewQueueSection({
-  skillFilter,
-  setSkillFilter,
-  readinessFilter,
-  setReadinessFilter,
-}: {
-  skillFilter: string
-  setSkillFilter: (s: string) => void
-  readinessFilter: string
-  setReadinessFilter: (s: string) => void
-}) {
-  const skillOptions = ['All', 'SQL', 'Python', 'React', 'Power BI', 'ML']
-  const readinessOptions = ['All', '80%+', '60–80%']
-
+function ReviewQueueSection() {
   return (
     <section id="rec-review" className="rec-section" style={{ marginBottom: 'clamp(32px, 4vw, 48px)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 18, gap: 12, flexWrap: 'wrap' }}>
@@ -141,24 +106,9 @@ function ReviewQueueSection({
         <span style={{ color: C.slate, fontSize: 12 }}>0 to review</span>
       </div>
 
-      <div style={{ display: 'flex', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{ color: C.slate, fontSize: 11 }}>Skills</span>
-          {skillOptions.map(s => (
-            <FilterChip key={s} label={s} active={skillFilter === s} onClick={() => setSkillFilter(s)} />
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-          <span style={{ color: C.slate, fontSize: 11 }}>Readiness</span>
-          {readinessOptions.map(r => (
-            <FilterChip key={r} label={r} active={readinessFilter === r} onClick={() => setReadinessFilter(r)} />
-          ))}
-        </div>
-      </div>
-
       <div id="rec-candidates">
         <NeutralNote>
-          No candidates connected yet. Candidate pipeline will appear here when recruiter talent data is available. Filters are ready for when profiles load.
+          No candidates connected yet. A review queue appears here when recruiter talent data is available.
         </NeutralNote>
       </div>
     </section>
@@ -235,8 +185,6 @@ export default function DashboardRecruiterPage() {
   const demo = useDemoState()
   const navigate = useNavigate()
   const [activeNav, setActiveNav] = useState('review')
-  const [skillFilter, setSkillFilter] = useState('All')
-  const [readinessFilter, setReadinessFilter] = useState('All')
   const [scheduleNote, setScheduleNote] = useState<string | null>(null)
 
   const shortlistedNames = demo.shortlist
@@ -283,12 +231,7 @@ export default function DashboardRecruiterPage() {
         )}
 
         <OpenRolesSection />
-        <ReviewQueueSection
-          skillFilter={skillFilter}
-          setSkillFilter={setSkillFilter}
-          readinessFilter={readinessFilter}
-          setReadinessFilter={setReadinessFilter}
-        />
+        <ReviewQueueSection />
         <ShortlistSection
           shortlistedNames={shortlistedNames}
           onScheduleNote={name => setScheduleNote(name)}

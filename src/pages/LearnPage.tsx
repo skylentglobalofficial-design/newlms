@@ -22,6 +22,7 @@ import { useLmsCourse } from '../hooks/useLms'
 import LockedLessonState from '../components/lms/LockedLessonState'
 import type { VideoPlaybackSource } from '../lib/media/types'
 import {
+  fetchAssignmentState,
   fetchLessonMedia,
   fetchQuizQuestions,
   markLessonAccess,
@@ -99,8 +100,10 @@ export default function LearnPage() {
   const [enrollError, setEnrollError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [completing, setCompleting] = useState(false)
+  const [assignmentDraft, setAssignmentDraft] = useState<{ lessonId: string; text: string } | null>(null)
   const menuBtnRef = useRef<HTMLButtonElement>(null)
   const stageRef = useRef<HTMLElement>(null)
+  const draftTimer = useRef<number | null>(null)
 
   const selectedLessonType = allLessons.find((lesson) => lesson.id === selectedLessonId)?.type ?? null
   const selectedLessonLocked = Boolean(selectedLessonId && lessonStates[selectedLessonId]?.locked)
@@ -125,6 +128,23 @@ export default function LearnPage() {
   useEffect(() => {
     stageRef.current?.scrollTo({ top: 0 })
   }, [selectedLessonId])
+
+  useEffect(() => {
+    if (!slug || access.status !== 'ready' || !selectedLessonId || selectedLessonType !== 'assignment' || selectedLessonLocked) {
+      setAssignmentDraft(null)
+      return
+    }
+    let cancelled = false
+    setAssignmentDraft(null)
+    void fetchAssignmentState(slug, selectedLessonId)
+      .then((data) => {
+        if (!cancelled) setAssignmentDraft({ lessonId: selectedLessonId, text: data.responseText ?? '' })
+      })
+      .catch(() => {
+        if (!cancelled) setAssignmentDraft({ lessonId: selectedLessonId, text: '' })
+      })
+    return () => { cancelled = true }
+  }, [slug, access.status, selectedLessonId, selectedLessonType, selectedLessonLocked])
 
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 900px)')
@@ -382,10 +402,21 @@ export default function LearnPage() {
     }
   }
 
+  function handleAssignmentDraft(text: string) {
+    if (!slug || !selectedLessonId) return
+    if (draftTimer.current) window.clearTimeout(draftTimer.current)
+    const lessonKey = selectedLessonId
+    const courseSlug = slug
+    draftTimer.current = window.setTimeout(() => {
+      void updateAssignment(courseSlug, lessonKey, 'start', text).catch(() => undefined)
+    }, 700)
+  }
+
   /** True only once the server has recorded the submission. */
   async function handleAssignmentSubmit(text: string): Promise<boolean> {
     if (!slug || !selectedLesson) return false
     setActionError(null)
+    if (draftTimer.current) window.clearTimeout(draftTimer.current)
     try {
       await updateAssignment(slug, selectedLesson.id, 'submit', text)
     } catch (err) {
@@ -587,6 +618,7 @@ export default function LearnPage() {
                     />
                   ) : (
                     <LessonContentView
+                      key={selectedLesson.id}
                       lesson={selectedLesson}
                       lessonState={selectedState}
                       accent={ACCENT}
@@ -596,6 +628,8 @@ export default function LearnPage() {
                       onQuizRetry={() => setQuizAttempt((value) => value + 1)}
                       onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
                       onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
+                      assignmentDraft={assignmentDraft?.lessonId === selectedLesson.id ? assignmentDraft.text : undefined}
+                      onAssignmentDraft={selectedLesson.type === 'assignment' ? handleAssignmentDraft : undefined}
                       lessonMedia={lessonMedia}
                       courseSlug={readyCourse.slug}
                     />

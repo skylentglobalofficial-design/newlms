@@ -22,6 +22,8 @@ export type SkylentCertificate = {
   code: string
   learnerName: string
   courseTitle: string
+  courseSlug?: string | null
+  verifyPath?: string
   issuedAt: string
   revoked?: boolean
   id?: string

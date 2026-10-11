@@ -1,10 +1,11 @@
 import { randomBytes } from "node:crypto"
+import { Prisma } from "@prisma/client"
 import { Router } from "express"
 import rateLimit from "express-rate-limit"
 import { z } from "zod"
 import { prisma } from "../../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../../lib/auth.js"
-import { resolveCourseEnrollment } from "../../lib/lms.js"
+import { computeProgress, findCourseBySlug, loadLessonStates, resolveCourseEnrollment } from "../../lib/lms.js"
 
 export const skylentCertificatesRouter = Router()
 
@@ -47,7 +48,25 @@ function issuedView(cert: { code: string; learnerName: string; courseTitle: stri
   }
 }
 
-/** Learner claims a certificate. Server checks eligibility; never trusts the browser. */
+function issuedLearnerView(cert: { code: string; learnerName: string; courseTitle: string; issuedAt: Date }, courseSlug: string | null) {
+  return {
+    ...issuedView(cert),
+    courseSlug,
+    verifyPath: `/verify/${cert.code}`,
+  }
+}
+
+/** A direct course enrolment can be marked issued. A programme enrolment stays programme-scoped. */
+async function markDirectCourseIssued(enrollment: { id: string; courseId: string | null; certificateStatus: string; certificateEligible: boolean }, courseId: string) {
+  if (enrollment.courseId !== courseId) return
+  if (enrollment.certificateStatus === "issued" && enrollment.certificateEligible) return
+  await prisma.userEnrollment.update({
+    where: { id: enrollment.id },
+    data: { certificateStatus: "issued", certificateEligible: true },
+  })
+}
+
+/** Learner claims a certificate. Eligibility is this course's lessons, not the whole programme. */
 skylentCertificatesRouter.post("/issue", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
   const body = z.object({ courseSlug: z.string().min(1).max(120) }).safeParse(req.body ?? {})
   if (!body.success) return void res.status(400).json({ error: "Invalid request" })
@@ -56,21 +75,38 @@ skylentCertificatesRouter.post("/issue", requireAuth, requireCsrf, async (req: A
   if (!learnerName) {
     return void res.status(400).json({ error: "Add your full name before a certificate can be issued." })
   }
-  const course = await prisma.course.findFirst({ where: { slug: body.data.courseSlug } })
+  const course = await findCourseBySlug(body.data.courseSlug)
   if (!course) return void res.status(404).json({ error: "Course not found" })
   const enrollment = await resolveCourseEnrollment(user.id, course.id)
-  if (!enrollment?.certificateEligible) return void res.status(403).json({ error: "Complete every lesson first." })
+  if (!enrollment) return void res.status(403).json({ error: "Complete every lesson first." })
+  const lessonStates = await loadLessonStates(enrollment, course)
+  if (!computeProgress(course, lessonStates).allComplete) {
+    return void res.status(403).json({ error: "Complete every lesson first." })
+  }
 
   const existing = await prisma.skylentCertificate.findUnique({
     where: { userId_courseId: { userId: user.id, courseId: course.id } },
   })
-  if (existing) return void res.json({ data: issuedView(existing) })
+  if (existing) {
+    await markDirectCourseIssued(enrollment, course.id)
+    return void res.json({ data: issuedLearnerView(existing, course.slug) })
+  }
 
-  const code = `SKL-${new Date().getFullYear()}-${courseCode(course.slug)}-${randomBytes(3).toString("hex").toUpperCase()}`
-  const cert = await prisma.skylentCertificate.create({
-    data: { code, userId: user.id, courseId: course.id, learnerName, courseTitle: course.title },
-  })
-  res.status(201).json({ data: issuedView(cert) })
+  let cert: Awaited<ReturnType<typeof prisma.skylentCertificate.create>> | null = null
+  for (let attempt = 0; attempt < 2 && !cert; attempt += 1) {
+    const code = `SKL-${new Date().getFullYear()}-${courseCode(course.slug)}-${randomBytes(4).toString("hex").toUpperCase()}`
+    try {
+      cert = await prisma.skylentCertificate.create({
+        data: { code, userId: user.id, courseId: course.id, learnerName, courseTitle: course.title },
+      })
+    } catch (error) {
+      const uniqueConflict = error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002"
+      if (!uniqueConflict || attempt === 1) throw error
+    }
+  }
+  if (!cert) return void res.status(500).json({ error: "Certificate could not be issued." })
+  await markDirectCourseIssued(enrollment, course.id)
+  res.status(201).json({ data: issuedLearnerView(cert, course.slug) })
 })
 
 skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedRequest, res) => {
@@ -78,9 +114,21 @@ skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedReq
     where: { userId: req.auth!.user.id },
     orderBy: { issuedAt: "desc" },
   })
+  const courses = rows.length
+    ? await prisma.course.findMany({
+        where: { id: { in: [...new Set(rows.map((row) => row.courseId))] } },
+        select: { id: true, slug: true },
+      })
+    : []
+  const slugById = new Map(courses.map((course) => [course.id, course.slug]))
   // The learner's own list also says whether a certificate was revoked, so the UI never offers
   // "Verify" for one the public check will reject. The public verify response is unchanged.
-  res.json({ data: rows.map((row) => ({ ...issuedView(row), revoked: row.revoked })) })
+  res.json({
+    data: rows.map((row) => ({
+      ...issuedLearnerView(row, slugById.get(row.courseId) ?? null),
+      revoked: row.revoked,
+    })),
+  })
 })
 
 /** Public check. Returns only name, course, and date. */
