@@ -209,13 +209,13 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 12px;
   width: 100%;
   max-width: 560px;
   box-sizing: border-box;
   margin: 0 auto;
-  padding: 40px clamp(20px, 4vw, 32px) 64px;
+  padding: clamp(88px, 14vh, 140px) clamp(20px, 4vw, 32px) 64px;
 }
 
 .os-state h1 {

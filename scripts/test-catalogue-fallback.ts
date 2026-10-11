@@ -79,7 +79,7 @@ check(/const canEnrol = confirmed && truth\.enrollable/.test(files.listing), "Li
 check(/const enrollable = authored && confirmed/.test(files.courseDetail), "Course enrol gated on confirmed")
 
 // 5. Restored disclaimers, description and sub-navigation.
-check(/A certificate is not issued yet\./.test(files.courseDetail), "Course page keeps the certificate disclaimer")
+check(/A certificate for this course is issued when every lesson in it is complete\./.test(files.courseDetail), "Course page keeps the certificate disclaimer")
 check(/Payment is not collected/.test(files.courseDetail), "Course page keeps the payment disclaimer")
 for (const authored of [true, false]) {
   const linked = [{ slug: "sample", title: "Sample", to: "/courses/sample", authored, maturityLabel: "Sample" }]
