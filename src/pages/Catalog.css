@@ -971,9 +971,9 @@
   position: sticky;
   top: var(--nav-h);
   z-index: 80;
-  background: rgba(255, 255, 255, 0.96);
+  background: hsl(var(--site-paper) / 0.96);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid hsl(var(--site-ink) / 0.08);
+  border-bottom: 1px solid hsl(var(--site-border));
 }
 
 .cat-enrol-bar-inner {
@@ -2317,5 +2317,5 @@
   align-self: flex-start;
   width: fit-content;
 }
-.cat-enrol-bar-copy span.sky-chip--live { color: hsl(var(--site-white)); }
-.cat-enrol-bar-copy span.sky-chip--development { color: hsl(var(--site-navy)); }
+.cat-enrol-bar-copy span.sky-chip--live { color: #ffffff; }
+.cat-enrol-bar-copy span.sky-chip--development { color: hsl(var(--site-on-navy)); border-color: hsl(var(--site-navy-line-2)); }

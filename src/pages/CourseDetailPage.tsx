@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
 import {
@@ -31,6 +31,10 @@ export default function CourseDetailPage() {
   const { slug } = useParams()
   const catalog = useCatalogCourse(slug)
   const [enrollOpen, setEnrollOpen] = useState(false)
+  useEffect(() => {
+    const title = catalog.data?.title
+    if (title) document.title = `${title} · Skylent`
+  }, [catalog.data])
 
   if (catalog.loading) {
     return (

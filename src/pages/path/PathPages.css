@@ -9,7 +9,7 @@
   --path-muted: hsl(var(--site-dim));
   --path-line: hsl(var(--site-border));
   --path-line-strong: hsl(var(--site-border-strong));
-  --path-paper: #ffffff;
+  --path-paper: hsl(var(--site-white));
   --path-soft: hsl(var(--site-proof));
   --path-mark: hsl(var(--site-deep));
   --path-heading: var(--sk-font-heading);
@@ -17,7 +17,7 @@
   --path-mono: var(--sk-font-mono);
   --path-top: clamp(28px, 4vw, 48px);
   color: var(--path-ink);
-  background: var(--path-paper);
+  background: hsl(var(--site-paper));
   font-family: var(--path-sans);
   overflow-x: clip;
 }

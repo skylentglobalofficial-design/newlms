@@ -120,6 +120,21 @@ export async function linkAdminEmployerMember(employerId: string, userId: string
   )
 }
 
+export type AdminEmployerMember = {
+  userId: string
+  email: string
+  displayName: string | null
+  linkedAt: string
+}
+
+export async function listAdminEmployerMembers(employerId: string) {
+  return adminGet<{ data: AdminEmployerMember[] }>(`/admin/employers/${employerId}/members`)
+}
+
+export async function removeAdminEmployerMember(employerId: string, userId: string) {
+  return adminMutate<{ data: { removed: boolean } }>(`/admin/employers/${employerId}/members/${userId}`, "DELETE")
+}
+
 export async function updateLessonPlayback(courseSlug: string, lessonKey: string, muxPlaybackId: string | null) {
   return adminMutate<{ data: { lessonKey: string; media: { provider: string; playbackId?: string } | null } }>(
     `/admin/courses/${encodeURIComponent(courseSlug)}/lessons/${encodeURIComponent(lessonKey)}/media`,

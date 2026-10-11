@@ -63,6 +63,9 @@ app.use("/api/v1/admin", adminMediaRouter)
 app.use("/api/v1/certificates", skylentCertificatesRouter)
 app.use("/api/v1/enquiries", skylentEnquiriesRouter)
 app.use("/api/v1/reva", revaRouter)
+app.use("/api", (_request, response) => {
+  response.status(404).json({ error: "Not found" })
+})
 
 if (process.env.NODE_ENV === "production") {
   const clientDist = resolve(dirname(fileURLToPath(import.meta.url)), "../../dist")

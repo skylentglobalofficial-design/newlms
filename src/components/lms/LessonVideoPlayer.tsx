@@ -92,7 +92,7 @@ function MuxPlaybackSurface({
       element.removeEventListener("ended", onEnded)
       element.removeEventListener("error", onError)
     }
-  }, [scriptStatus, onMarkWatched, playbackId])
+  }, [scriptStatus, onMarkWatched, playbackId, attempt, playerError])
 
   if (scriptStatus === "loading") {
     return (
@@ -130,6 +130,7 @@ function MuxPlaybackSurface({
         }}
       >
         {createElement("mux-player", {
+          key: `${playbackId}-${attempt}`,
           ref: playerRef,
           "playback-id": playbackId,
           "stream-type": "on-demand",

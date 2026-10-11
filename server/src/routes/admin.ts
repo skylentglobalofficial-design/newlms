@@ -262,6 +262,9 @@ adminRouter.patch("/users/:id/role", ...guards, requireCsrf, async (req: Authent
         update: {},
         create: { userId: target.id, roleId: role.id },
       })
+      if (nextRoleName !== RoleName.RECRUITER && nextRoleName !== RoleName.ADMIN) {
+        await tx.employerMembership.deleteMany({ where: { userId: target.id } })
+      }
       if (organisationId) {
         await tx.organisationMembership.upsert({
           where: { organisationId_userId: { organisationId, userId: target.id } },
@@ -285,6 +288,7 @@ adminRouter.patch("/users/:id/role", ...guards, requireCsrf, async (req: Authent
 
 /**
  * Revokes every elevated role from the target user and leaves them as a STUDENT.
+ * Employer memberships are removed too, so a later promotion does not restore job access.
  * The same self-mutation and last-superadmin rules as the assign route apply.
  */
 adminRouter.delete("/users/:id/role", ...guards, requireCsrf, async (req: AuthenticatedRequest, res) => {
@@ -323,6 +327,7 @@ adminRouter.delete("/users/:id/role", ...guards, requireCsrf, async (req: Authen
         update: {},
         create: { userId: target.id, roleId: studentRole.id },
       })
+      await tx.employerMembership.deleteMany({ where: { userId: target.id } })
     })
 
     console.log(

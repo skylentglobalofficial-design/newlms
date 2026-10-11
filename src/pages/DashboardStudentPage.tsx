@@ -537,13 +537,13 @@ export default function DashboardStudentPage() {
       <AuthDashboardShell {...shell}>
         <div className="sh" id="student-learning">
           <p className="os-eyebrow">My Courses</p>
-          <h1>Start with a programme</h1>
+          <h1>Start with a course</h1>
           <div className="sh-next">
             <p className="sh-next-label"><span aria-hidden="true" />Next step</p>
             <h2>Choose what to learn first</h2>
-            <p className="sh-body">You are signed in and have no lessons open yet. Pick a programme and its first lesson opens here.</p>
+            <p className="sh-body">You are signed in and have no lessons open yet. Pick a course and its first lesson opens here.</p>
             <div className="os-actions">
-              <Link className="os-btn os-btn-primary os-btn-lg" to="/programmes">Explore programmes <ArrowRight /></Link>
+              <Link className="os-btn os-btn-primary os-btn-lg" to="/courses">Explore courses <ArrowRight /></Link>
             </div>
           </div>
           {enrolmentRows.length > 0 ? <div className="sh-stack">{myLearning}{evidence}</div> : null}

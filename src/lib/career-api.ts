@@ -418,6 +418,11 @@ export async function shareApplication(jobId: string): Promise<JobApplication> {
   return result.data
 }
 
+export async function unshareApplication(id: string): Promise<JobApplication> {
+  const result = await careerMutate<{ data: JobApplication }>(`/career/applications/${id}/unshare`, "POST")
+  return result.data
+}
+
 export type EmployerJobBoard = {
   jobs: JobListing[]
   employers: EmployerSummary[]

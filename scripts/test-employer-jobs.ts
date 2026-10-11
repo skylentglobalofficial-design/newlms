@@ -106,6 +106,7 @@ async function main() {
   const adminJar = await login(admin.email)
 
   const employerIds: string[] = []
+  const extraUsers: string[] = []
   let jobId: string | null = null
 
   try {
@@ -258,20 +259,103 @@ async function main() {
     const stored = await prisma.jobApplication.findUnique({ where: { id: tracked.data.data.id } })
     assert(stored?.notes?.includes("Private note") && stored.sharedWithEmployer === true, "Sharing must keep the learner note private in storage")
 
-    console.log("8. Closing removes the job from the public board")
+    console.log("8. Learners can stop sharing, and only the owner can do so")
+    const applicationId = tracked.data.data.id as string
+    const foreignUnshare = await request(jarB, `/career/applications/${applicationId}/unshare`, { method: "POST", csrf: true, body: {} })
+    assert(foreignUnshare.response.status === 404, `Another user must not unshare, got ${foreignUnshare.response.status}`)
+    const unshared = await request(studentJar, `/career/applications/${applicationId}/unshare`, { method: "POST", csrf: true, body: {} })
+    assert(unshared.response.ok && unshared.data.data.sharedWithEmployer === false, "Unshare should clear the flag")
+    const afterUnshare = await request(jarA, `/career/employer/jobs/${jobId}/applications`)
+    assert(afterUnshare.response.ok && afterUnshare.data.data.length === 0, "Unshared application must leave the employer list")
+    const reshared = await request(studentJar, "/career/applications/share", { method: "POST", csrf: true, body: { jobId } })
+    assert(reshared.response.status === 200 && reshared.data.data.id === applicationId, "Re-sharing should reuse the tracker row")
+    const afterReshare = await request(jarA, `/career/employer/jobs/${jobId}/applications`)
+    assert(afterReshare.data.data.length === 1, "Duplicate shares must not create duplicate employer rows")
+
+    console.log("9. Saved rows become applications when shared, closed rows cannot be shared")
+    const saver = await signup(`employer-saver-${stamp}@example.com`, "Saved Learner")
+    extraUsers.push(saver.userId)
+    const saverJar = await login(saver.email)
+    const savedRow = await request(saverJar, "/career/applications", { method: "POST", csrf: true, body: { jobId, status: "SAVED" } })
+    assert(savedRow.response.status === 201 && savedRow.data.data.status === "SAVED", "Saved tracker row should be created")
+    const savedShare = await request(saverJar, "/career/applications/share", { method: "POST", csrf: true, body: { jobId } })
+    assert(savedShare.response.ok && savedShare.data.data.status === "APPLIED", "Sharing a saved row should mark it applied")
+    const withdrawn = await request(saverJar, `/career/applications/${savedRow.data.data.id}`, {
+      method: "PATCH",
+      csrf: true,
+      body: { status: "WITHDRAWN" },
+    })
+    assert(withdrawn.response.ok, "Withdraw should succeed")
+    await request(saverJar, `/career/applications/${savedRow.data.data.id}/unshare`, { method: "POST", csrf: true, body: {} })
+    const withdrawnShare = await request(saverJar, "/career/applications/share", { method: "POST", csrf: true, body: { jobId } })
+    assert(withdrawnShare.response.status === 409, `Withdrawn rows must not be shared, got ${withdrawnShare.response.status}`)
+    const statusView = await request(jarA, `/career/employer/jobs/${jobId}/applications`)
+    assert(statusView.data.data.length === 1, "Withdrawn and unshared rows must stay hidden")
+
+    console.log("10. Invalid payloads and unsupported operations are rejected")
+    const badShare = await request(studentJar, "/career/applications/share", { method: "POST", csrf: true, body: { jobId: "not-a-uuid" } })
+    assert(badShare.response.status === 400, `Invalid share should be 400, got ${badShare.response.status}`)
+    const badSalary = await request(jarA, `/career/employer/jobs/${jobId}`, {
+      method: "PATCH",
+      csrf: true,
+      body: { salaryMin: 90000, salaryMax: 1000 },
+    })
+    assert(badSalary.response.status === 400, `Inverted salary range should be 400, got ${badSalary.response.status}`)
+    const missingJob = await request(jarA, `/career/employer/jobs/${crypto.randomUUID()}`, {
+      method: "PATCH",
+      csrf: true,
+      body: { title: "Missing job title" },
+    })
+    assert(missingJob.response.status === 404, "Unknown job should be 404")
+    const deleteAttempt = await request(jarB, `/career/employer/jobs/${jobId}`, { method: "DELETE", csrf: true })
+    assert(deleteAttempt.response.status === 404, `Job delete is not supported, got ${deleteAttempt.response.status}`)
+    const stillThere = await prisma.job.findUnique({ where: { id: jobId! } })
+    assert(stillThere, "A delete attempt must not remove the job")
+
+    console.log("11. Closing removes the job from the public board")
     const closed = await request(jarA, `/career/employer/jobs/${jobId}/close`, { method: "POST", csrf: true, body: {} })
     assert(closed.response.ok && closed.data.data.status === "CLOSED", "Close should mark the job closed")
     const publicClosed = await request(new Map(), `/career/jobs/${jobId}`)
     assert(publicClosed.response.status === 404, "Closed jobs must leave the public board")
     const ownerStillSees = await request(jarA, "/career/employer/jobs")
     assert(JSON.stringify(ownerStillSees.data.data).includes(jobId!), "Owner should still see a closed job")
+    const closedShare = await request(studentJar, "/career/applications/share", { method: "POST", csrf: true, body: { jobId } })
+    assert(closedShare.response.status === 404, "Closed jobs cannot receive new shares")
+    const learnerTracker = await request(studentJar, "/career/applications")
+    assert(learnerTracker.data.data.some((app: { id: string }) => app.id === applicationId), "Learner tracker must keep the row after close")
+
+    console.log("12. Admin can list and remove recruiters, which revokes access")
+    const studentMembers = await request(studentJar, `/admin/employers/${employerIds[0]}/members`)
+    assert(studentMembers.response.status === 403, "Student must not list employer members")
+    const members = await request(adminJar, `/admin/employers/${employerIds[0]}/members`)
+    assert(members.response.ok && members.data.data.length === 1 && members.data.data[0].userId === recruiterA.userId, "Member list should show recruiter A")
+    const removed = await request(adminJar, `/admin/employers/${employerIds[0]}/members/${recruiterA.userId}`, { method: "DELETE", csrf: true })
+    assert(removed.response.ok, `Member removal failed: ${removed.response.status}`)
+    const removedAgain = await request(adminJar, `/admin/employers/${employerIds[0]}/members/${recruiterA.userId}`, { method: "DELETE", csrf: true })
+    assert(removedAgain.response.status === 404, "Removing a missing membership should be 404")
+    const revokedBoard = await request(jarA, "/career/employer/jobs")
+    assert(revokedBoard.data.meta.linked === false && revokedBoard.data.data.length === 0, "Removed recruiter must lose the board")
+    const revokedApps = await request(jarA, `/career/employer/jobs/${jobId}/applications`)
+    assert(revokedApps.response.status === 404, "Removed recruiter must lose shared applications")
+
+    console.log("13. Demoting a recruiter removes employer memberships")
+    const demote = await request(adminJar, `/admin/users/${recruiterB.userId}/role`, { method: "DELETE", csrf: true })
+    assert(demote.response.ok, `Demote failed: ${demote.response.status}`)
+    const leftover = await prisma.employerMembership.count({ where: { userId: recruiterB.userId } })
+    assert(leftover === 0, "Demotion must remove employer memberships")
+    const demotedBoard = await request(jarB, "/career/employer/jobs")
+    assert(demotedBoard.response.status === 403, "Demoted user must be forbidden immediately")
+    const repromote = await request(adminJar, `/admin/users/${recruiterB.userId}/role`, { method: "PATCH", csrf: true, body: { role: "recruiter" } })
+    assert(repromote.response.ok, `Re-promote failed: ${repromote.response.status} ${JSON.stringify(repromote.data)}`)
+    const repromotedBoard = await request(jarB, "/career/employer/jobs")
+    assert(repromotedBoard.response.ok && repromotedBoard.data.meta.linked === false, "Re-promotion must not restore employer access")
 
     console.log("Employer job ownership tests passed")
   } finally {
     if (jobId) await prisma.jobApplication.deleteMany({ where: { jobId } })
     if (employerIds.length) await prisma.employer.deleteMany({ where: { id: { in: employerIds } } })
     await prisma.user.deleteMany({
-      where: { id: { in: [student.userId, recruiterA.userId, recruiterB.userId, admin.userId] } },
+      where: { id: { in: [student.userId, recruiterA.userId, recruiterB.userId, admin.userId, ...extraUsers] } },
     }).catch(() => undefined)
     await prisma.$disconnect()
   }

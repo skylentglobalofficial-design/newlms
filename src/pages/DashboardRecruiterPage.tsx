@@ -354,7 +354,7 @@ export default function DashboardRecruiterPage() {
                     <li key={application.id} style={{ ...panelStyle, marginBottom: 8 }}>
                       <strong style={{ color: C.ink }}>{application.applicantName}</strong>
                       <div style={{ color: C.slate, fontSize: 12, marginTop: 4 }}>
-                        {application.status}{application.roleTitle ? ` · ${application.roleTitle}` : ''}{application.appliedAt ? ` · ${new Date(application.appliedAt).toLocaleDateString()}` : ''}
+                        Learner-reported status: {application.status}{application.roleTitle ? ` · ${application.roleTitle}` : ''}{application.appliedAt ? ` · ${new Date(application.appliedAt).toLocaleDateString()}` : ''}
                       </div>
                     </li>
                   ))}

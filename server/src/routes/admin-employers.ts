@@ -61,6 +61,47 @@ adminEmployersRouter.post("/employers", ...guards, requireCsrf, async (req: Auth
   }
 })
 
+adminEmployersRouter.get("/employers/:id/members", ...guards, async (req: AuthenticatedRequest, res) => {
+  const id = z.string().uuid().safeParse(req.params.id)
+  if (!id.success) return res.status(400).json({ error: "Invalid employer id" })
+  try {
+    const employer = await prisma.employer.findUnique({ where: { id: id.data }, select: { id: true } })
+    if (!employer) return res.status(404).json({ error: "Employer not found" })
+    const members = await prisma.employerMembership.findMany({
+      where: { employerId: employer.id },
+      include: { user: { select: { id: true, email: true, displayName: true } } },
+      orderBy: { createdAt: "asc" },
+    })
+    res.json({
+      data: members.map((member) => ({
+        userId: member.user.id,
+        email: member.user.email,
+        displayName: member.user.displayName,
+        linkedAt: member.createdAt.toISOString(),
+      })),
+    })
+  } catch (error) {
+    console.error("Failed to list employer members:", error)
+    res.status(500).json({ error: "Failed to list employer members" })
+  }
+})
+
+adminEmployersRouter.delete("/employers/:id/members/:userId", ...guards, requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const id = z.string().uuid().safeParse(req.params.id)
+  const userId = z.string().uuid().safeParse(req.params.userId)
+  if (!id.success || !userId.success) return res.status(400).json({ error: "Invalid employer or user id" })
+  try {
+    const removed = await prisma.employerMembership.deleteMany({
+      where: { employerId: id.data, userId: userId.data },
+    })
+    if (removed.count === 0) return res.status(404).json({ error: "Membership not found" })
+    res.json({ data: { removed: true } })
+  } catch (error) {
+    console.error("Failed to remove employer member:", error)
+    res.status(500).json({ error: "Failed to remove employer member" })
+  }
+})
+
 adminEmployersRouter.post("/employers/:id/members", ...guards, requireCsrf, async (req: AuthenticatedRequest, res) => {
   const id = z.string().uuid().safeParse(req.params.id)
   const body = z.object({ userId: z.string().uuid() }).safeParse(req.body)

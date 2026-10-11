@@ -10,13 +10,16 @@ import {
   createAdminOrganisation,
   createAdminEmployer,
   linkAdminEmployerMember,
+  listAdminEmployerMembers,
   listAdminEmployers,
   listAdminEnquiries,
   listAdminOrganisations,
   listAdminUsers,
+  removeAdminEmployerMember,
   resetAdminUserToStudent,
   updateLessonPlayback,
   type AdminEmployer,
+  type AdminEmployerMember,
   type AdminEnquiry,
   type AdminOrganisation,
   type AdminRole,
@@ -310,6 +313,34 @@ function AdminEmployersSection() {
   const [location, setLocation] = useState('')
   const [employerId, setEmployerId] = useState('')
   const [userId, setUserId] = useState('')
+  const [openEmployerId, setOpenEmployerId] = useState<string | null>(null)
+  const [members, setMembers] = useState<AdminEmployerMember[]>([])
+  const [membersStatus, setMembersStatus] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle')
+
+  async function loadMembers(id: string) {
+    setOpenEmployerId(id)
+    setMembersStatus('loading')
+    try {
+      const result = await listAdminEmployerMembers(id)
+      setMembers(result.data)
+      setMembersStatus('ready')
+    } catch {
+      setMembersStatus('error')
+    }
+  }
+
+  async function removeMember(id: string, member: AdminEmployerMember) {
+    if (!window.confirm(`Remove ${member.displayName || member.email} from this employer? They lose access to its jobs and shared applications.`)) return
+    setMessage(null)
+    try {
+      await removeAdminEmployerMember(id, member.userId)
+      await load()
+      await loadMembers(id)
+      setMessage('Recruiter removed. They no longer see this employer’s jobs.')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'The recruiter could not be removed.')
+    }
+  }
 
   async function load() {
     setStatus('loading')
@@ -373,6 +404,37 @@ function AdminEmployersSection() {
             <li key={employer.id} style={{ padding: '10px 0', borderTop: `1px solid ${T.lineLight}`, color: C.ink, fontSize: 14 }}>
               <strong>{employer.name}</strong>
               <div style={{ color: C.slate, fontSize: 12 }}>{employer.slug} · {employer.memberCount} linked · {employer.jobCount} jobs</div>
+              <button
+                type="button"
+                className="os-btn os-btn-ghost"
+                aria-expanded={openEmployerId === employer.id}
+                onClick={() => (openEmployerId === employer.id ? setOpenEmployerId(null) : void loadMembers(employer.id))}
+                style={{ marginTop: 6 }}
+              >
+                {openEmployerId === employer.id ? 'Hide recruiters' : 'Show recruiters'}
+              </button>
+              {openEmployerId === employer.id ? (
+                <div style={{ marginTop: 8 }}>
+                  {membersStatus === 'loading' ? <p style={{ color: C.slate, fontSize: 13 }}>Loading recruiters…</p> : null}
+                  {membersStatus === 'error' ? (
+                    <p role="alert" style={{ color: C.ink, fontSize: 13 }}>
+                      Recruiters could not be loaded.{' '}
+                      <button type="button" className="os-btn os-btn-ghost" onClick={() => void loadMembers(employer.id)}>Try again</button>
+                    </p>
+                  ) : null}
+                  {membersStatus === 'ready' && members.length === 0 ? <p style={{ color: C.slate, fontSize: 13 }}>No recruiters linked.</p> : null}
+                  {membersStatus === 'ready' && members.length > 0 ? (
+                    <ul style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+                      {members.map((member) => (
+                        <li key={member.userId} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center', justifyContent: 'space-between', padding: '6px 0', fontSize: 13 }}>
+                          <span style={{ minWidth: 0, wordBreak: 'break-word' }}>{member.displayName || member.email} <span style={{ color: C.slate }}>· {member.email}</span></span>
+                          <button type="button" className="os-btn os-btn-ghost" onClick={() => void removeMember(employer.id, member)}>Remove</button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                </div>
+              ) : null}
             </li>
           ))}
         </ul>

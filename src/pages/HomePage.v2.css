@@ -579,15 +579,15 @@
   padding-top: 0;
 }
 
-/* A white surface inside a navy band keeps the light-ground chips and labels. */
+/* hm-light sits on the dark Aurora canvas, so chips keep light text. */
 .hm-page .hm-light .sky-chip--live {
-  background: hsl(var(--site-navy));
-  border-color: hsl(var(--site-navy));
-  color: hsl(var(--site-white));
+  background: hsl(var(--site-deep));
+  border-color: hsl(var(--site-deep));
+  color: #ffffff;
 }
 .hm-page .hm-light .sky-chip--development {
-  border-color: hsl(var(--site-navy));
-  color: hsl(var(--site-navy));
+  border-color: hsl(var(--site-navy-line-2));
+  color: hsl(var(--site-on-navy));
 }
 .hm-page .hm-light .sky-chip--soon {
   border-color: hsl(var(--site-border-strong));

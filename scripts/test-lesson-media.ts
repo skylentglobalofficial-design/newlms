@@ -157,6 +157,7 @@ async function main() {
   const adminSignup = await signup("admin")
   await setRoleDirectly(adminSignup.userId, RoleName.ADMIN)
   const adminJar = await login(adminSignup.email)
+  let foreignVideo: { id: string; original: string | null } | null = null
 
   try {
     console.log("1. Reject invalid playback ids and non-admin writes")
@@ -199,6 +200,35 @@ async function main() {
     const lessons = lessonsFromWorkspace(workspace.data)
     const videoIndex = lessons.findIndex((lesson) => lesson.id === videoKey)
     assert(videoIndex >= 0, "Video lesson missing from workspace")
+
+    const laterVideo = lessons.slice(videoIndex + 2).find((lesson) => lesson.type === "video")
+    if (laterVideo) {
+      const locked = await request(learner.jar, `/lms/courses/${COURSE_SLUG}/lessons/${laterVideo.id}/media`)
+      assert(locked.response.status === 403, `Locked video media should be 403, got ${locked.response.status}`)
+    } else {
+      console.log("   (no later locked video lesson in this course; lock check skipped)")
+    }
+
+    const otherCourse = await prisma.course.findFirst({
+      where: {
+        slug: { not: COURSE_SLUG },
+        programCourses: { none: { program: { slug: PROGRAM_SLUG } } },
+        curriculum: { some: { nodes: { some: { nodeType: CurriculumNodeType.VIDEO } } } },
+      },
+      include: { curriculum: { include: { nodes: { where: { nodeType: CurriculumNodeType.VIDEO }, take: 1 } } } },
+    })
+    if (otherCourse) {
+      const otherVideo = otherCourse.curriculum.flatMap((module) => module.nodes)[0]
+      foreignVideo = { id: otherVideo.id, original: otherVideo.muxPlaybackId }
+      await prisma.curriculumNode.update({ where: { id: otherVideo.id }, data: { muxPlaybackId: VALID_PLAYBACK_ID } })
+      const otherKey = otherVideo.sourceId ?? `l${otherVideo.order + 1}`
+      const crossCourse = await request(learner.jar, `/lms/courses/${otherCourse.slug}/lessons/${otherKey}/media`)
+      assert(crossCourse.response.status === 403, `Media for a course outside the enrolment should be 403, got ${crossCourse.response.status}`)
+      assert(!JSON.stringify(crossCourse.data).includes(VALID_PLAYBACK_ID), "Cross-course media leaked the playback id")
+    } else {
+      console.log("   (no video course outside the programme; cross-course check skipped)")
+    }
+
     for (const lesson of lessons.slice(0, videoIndex)) {
       await completeLesson(learner.jar, lesson.id, lesson.type)
     }
@@ -215,7 +245,18 @@ async function main() {
     const catalogJson = JSON.stringify(catalog.data)
     assert(!catalogJson.includes("muxPlaybackId") && !catalogJson.includes(VALID_PLAYBACK_ID), "Public catalog must not expose the playback id")
 
-    console.log("3. Lesson completion still records video progress")
+    console.log("3. Opening a video does not complete it, and completion records video progress")
+    const opened = await request(learner.jar, `/lms/courses/${COURSE_SLUG}/lessons/${videoKey}/progress`, {
+      method: "POST",
+      csrf: true,
+      body: { action: "access" },
+    })
+    assert(opened.response.ok, `Access update failed: ${JSON.stringify(opened.data)}`)
+    assert(opened.data.data.state.complete !== true, "Opening a video must not complete it")
+    assert(opened.data.data.state.videoWatched !== true, "Opening a video must not set videoWatched")
+    const afterOpen = await request(learner.jar, `/lms/courses/${COURSE_SLUG}`)
+    assert(afterOpen.data.data.lessonStates[videoKey]?.complete !== true, "Media fetch and access must not complete the lesson")
+
     const progress = await request(learner.jar, `/lms/courses/${COURSE_SLUG}/lessons/${videoKey}/progress`, {
       method: "POST",
       csrf: true,
@@ -230,6 +271,8 @@ async function main() {
     const invalidStored = await request(learner.jar, `/lms/courses/${COURSE_SLUG}/lessons/${videoKey}/media`)
     assert(invalidStored.response.ok && invalidStored.data.data.media.provider === "unavailable", "Invalid stored ids must not reach the player")
     assert(!JSON.stringify(invalidStored.data).includes("not a playback id"), "Invalid stored id leaked")
+    const afterUnavailable = await request(learner.jar, `/lms/courses/${COURSE_SLUG}`)
+    assert(afterUnavailable.data.data.lessonStates[videoKey]?.complete === true, "An unavailable video must not reset recorded progress")
 
     const cleared = await request(adminJar, `/admin/courses/${COURSE_SLUG}/lessons/${videoKey}/media`, {
       method: "PATCH",
@@ -241,6 +284,9 @@ async function main() {
     console.log("Lesson media tests passed")
   } finally {
     await prisma.curriculumNode.update({ where: { id: video.id }, data: { muxPlaybackId: originalPlaybackId } })
+    if (foreignVideo) {
+      await prisma.curriculumNode.update({ where: { id: foreignVideo.id }, data: { muxPlaybackId: foreignVideo.original } })
+    }
     await prisma.user.deleteMany({ where: { id: { in: [learner.userId, stranger.userId, adminSignup.userId] } } }).catch(() => undefined)
     await prisma.$disconnect()
   }
