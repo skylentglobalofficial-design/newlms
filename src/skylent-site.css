@@ -55,9 +55,9 @@
   --sk-font-body: "Inter", system-ui, sans-serif;
 
   /* Skylent v2: proof surfaces, navy product surfaces, intelligence accent */
-  --site-proof: 220 42.9% 97.3%;         /* #F5F7FB cool paper band (Aurora repolish; was warm #FAF9F6) */
-  --site-proof-2: 216 38.5% 94.9%;       /* #EDF1F7 plate mat, inset panel (was warm #F3F0E8) */
-  --site-proof-line: 220 28.3% 89.6%;    /* #DDE2EC hairline on cool paper */
+  --site-proof: 220 36% 11%;            /* raised band on the dark canvas */
+  --site-proof-2: 220 32% 15%;          /* inset panel */
+  --site-proof-line: 222 32% 22%;       /* hairline on a dark band */
   --site-navy-2: 222 39.4% 12.9%;         /* #141C2E raised on navy */
   --site-navy-line: 223 32.1% 22%;      /* #26304A hairline on navy */
   --site-navy-line-2: 222 23.7% 38%;    /* #4A5878 outline controls on navy */

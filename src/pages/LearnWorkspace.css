@@ -75,7 +75,7 @@
 
 .os-btn-ghost {
   border-color: var(--skylent-color-border-strong);
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 
 .os-btn-ghost:hover:not(:disabled) {
@@ -199,7 +199,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #ffffff;
+  background: var(--skylent-surface-paper);
   color: var(--skylent-color-ink);
   font-family: var(--font-body);
 }
@@ -254,7 +254,7 @@
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  background: #ffffff;
+  background: var(--skylent-surface-paper);
   color: var(--skylent-color-ink);
   font-family: var(--font-body);
   font-size: 16px;
@@ -396,7 +396,7 @@
   width: 264px;
   min-width: 0;
   border-right: 1px solid var(--skylent-color-border);
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 
 .os-curriculum {
@@ -1093,7 +1093,7 @@
   padding: 18px 18px 20px;
   border: 1px solid var(--skylent-color-border);
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 
 .lx-question-kicker {
@@ -1125,7 +1125,7 @@
   padding: 11px 14px;
   border: 1px solid var(--skylent-color-border-strong);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   color: var(--skylent-color-ink);
   font: 400 15px/1.45 var(--font-body);
   text-align: left;
@@ -1152,7 +1152,7 @@
 .lx-option.is-wrong {
   border-style: dashed;
   border-color: var(--skylent-color-error);
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   box-shadow: none;
 }
 
@@ -1301,7 +1301,7 @@
   padding: 12px 14px;
   border: 1px solid var(--skylent-color-border-strong);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   color: var(--skylent-color-ink);
   font: 400 15px/1.6 var(--font-body);
   resize: vertical;

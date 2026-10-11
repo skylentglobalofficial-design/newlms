@@ -12,7 +12,7 @@
   min-height: 0;
   box-sizing: border-box;
   border-left: 1px solid var(--skylent-color-border);
-  background: #ffffff;
+  background: var(--skylent-surface-paper);
   color: var(--skylent-color-ink);
   font-size: 15px;
   line-height: 1.55;
@@ -260,7 +260,7 @@
   padding: 10px 12px;
   border: 1px solid var(--skylent-color-border-strong);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--skylent-surface-paper);
   color: var(--skylent-color-ink);
   font: 400 14.5px/1.5 var(--font-body);
   resize: vertical;
