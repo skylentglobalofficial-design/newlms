@@ -26,7 +26,7 @@ function NeutralNote({ children }: { children: ReactNode }) {
   return (
     <div style={{
       padding: '14px 16px',
-      background: 'rgba(11,13,15,0.02)',
+      background: 'var(--skylent-surface-elevated)',
       border: `1px solid ${T.lineLight}`,
       borderRadius: T.rCard,
       color: C.slate,
@@ -88,7 +88,7 @@ function InstitutionWorkspace({
         borderTop: `1px solid ${T.lineLight}`,
         borderBottom: `1px solid ${T.lineLight}`,
         borderLeft: `3px solid ${accent.primary}`,
-        background: 'rgba(11,13,15,0.02)',
+        background: 'var(--skylent-surface-elevated)',
         borderRadius: T.rCard,
       }}>
         <div style={{ color: accent.text, fontSize: 11, fontWeight: 500, marginBottom: 10 }}>
@@ -181,7 +181,7 @@ function BatchOperations({ batchMessage }: { batchMessage: string }) {
         </div>
       </div>
 
-      <div id="org-batch-operations" style={{ padding: '16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+      <div id="org-batch-operations" style={{ padding: '16px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
         <p style={{ color: C.slate, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
           {batchMessage}
         </p>
@@ -199,7 +199,7 @@ function LearnerProgress({ enrollmentCount }: { enrollmentCount: number }) {
         Learner operations
       </div>
 
-      <div style={{ padding: '16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+      <div style={{ padding: '16px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
         <div style={{ color: C.slate, fontSize: 12, marginBottom: 8 }}>Total enrollments</div>
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 24, color: accent.text }}>{enrollmentCount}</div>
         <p style={{ color: C.slate, fontSize: 13, margin: '12px 0 0', lineHeight: 1.6 }}>
@@ -218,7 +218,7 @@ function FacultyOperations() {
       <div className="skylent-label" style={{ color: C.slate, marginBottom: 18, fontSize: 10, letterSpacing: '0.12em' }}>
         Faculty
       </div>
-      <div style={{ padding: '16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+      <div style={{ padding: '16px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
         <p style={{ color: C.slate, fontSize: 13, margin: 0, lineHeight: 1.6 }}>
           Faculty load and cohort assignment data are not represented in the current schema. Organisation membership is available; faculty workload analytics will require additional models.
         </p>

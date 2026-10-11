@@ -395,25 +395,25 @@ export const fonts = {
 
 export type GlassLevel = 1 | 2 | 3
 
-/** Raised surfaces — solid white, cool hairline, no blur. */
+/** Raised surfaces — Dark Aurora cards, cool hairline, no blur. */
 export const glass = {
   1: {
-    bg: 'var(--skylent-color-cream)',
-    border: '#DDE2EC',
+    bg: 'var(--skylent-surface-elevated)',
+    border: 'var(--skylent-color-border)',
     blur: 'none',
-    shadow: '0 1px 2px rgba(11,18,32,0.05)',
+    shadow: 'none',
   },
   2: {
-    bg: '#FFFFFF',
-    border: '#DDE2EC',
+    bg: 'var(--skylent-surface-elevated)',
+    border: 'var(--skylent-color-border)',
     blur: 'none',
-    shadow: '0 1px 2px rgba(11,18,32,0.05), 0 18px 40px -24px rgba(11,18,32,0.22)',
+    shadow: 'none',
   },
   3: {
-    bg: '#FFFFFF',
-    border: '#DDE2EC',
+    bg: 'var(--skylent-surface-elevated)',
+    border: 'var(--skylent-color-border)',
     blur: 'none',
-    shadow: '0 1px 2px rgba(11,18,32,0.06), 0 28px 56px -28px rgba(11,18,32,0.30)',
+    shadow: 'none',
   },
 } as const
 

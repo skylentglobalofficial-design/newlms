@@ -8,6 +8,7 @@ import type {
   QuizAttempt,
   UserEnrollment,
 } from "@prisma/client"
+import { isMuxPlaybackId } from "./media/playback-id.js"
 import { ensureProgramCourseLinks } from "./program-course-links.js"
 import { prisma } from "./prisma.js"
 
@@ -147,7 +148,7 @@ export function formatCourseModules(
       const state = lessonStates[key]
       const media =
         nodeTypeKey(node.nodeType) === "video"
-          ? node.muxPlaybackId
+          ? isMuxPlaybackId(node.muxPlaybackId)
             ? { provider: "mux" as const, playbackId: node.muxPlaybackId }
             : { provider: "unavailable" as const }
           : undefined
@@ -801,7 +802,7 @@ export async function summarizeEnrollmentCourses(enrollmentId: string): Promise<
 
 export function formatVideoMedia(node: CurriculumNode) {
   if (nodeTypeKey(node.nodeType) !== "video") return null
-  if (node.muxPlaybackId) {
+  if (isMuxPlaybackId(node.muxPlaybackId)) {
     return { provider: "mux" as const, playbackId: node.muxPlaybackId }
   }
   return { provider: "unavailable" as const }

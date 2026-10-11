@@ -197,6 +197,7 @@ model User {
   labWorks           LabWork[]
   learnerProjects    LearnerProject[]
   policyAcceptances  PolicyAcceptance[]
+  employerMemberships EmployerMembership[]
 }
 
 model Role {
@@ -655,9 +656,23 @@ model Employer {
 
   jobs         Job[]
   applications JobApplication[]
+  members      EmployerMembership[]
 
   @@index([verificationStatus])
   @@index([location])
+}
+
+model EmployerMembership {
+  id         String   @id @default(uuid()) @db.Uuid
+  userId     String   @db.Uuid
+  employerId String   @db.Uuid
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  employer Employer @relation(fields: [employerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, employerId])
+  @@index([employerId])
 }
 
 model Job {
@@ -717,9 +732,10 @@ model JobApplication {
   status       JobApplicationStatus @default(APPLIED)
   appliedAt    DateTime?
   nextActionAt DateTime?
-  notes        String?              @db.Text
-  source       String?
-  createdAt    DateTime             @default(now())
+  notes              String?              @db.Text
+  source             String?
+  sharedWithEmployer Boolean             @default(false)
+  createdAt          DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
 
   user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)

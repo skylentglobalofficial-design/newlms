@@ -182,6 +182,7 @@ export type JobApplication = {
   nextActionAt: string | null
   notes: string | null
   source: string | null
+  sharedWithEmployer: boolean
   job: JobListing | null
   employer: EmployerSummary | null
   createdAt: string
@@ -409,6 +410,72 @@ export async function createApplicationEvent(
     "POST",
     input,
   )
+  return result.data
+}
+
+export async function shareApplication(jobId: string): Promise<JobApplication> {
+  const result = await careerMutate<{ data: JobApplication }>("/career/applications/share", "POST", { jobId })
+  return result.data
+}
+
+export type EmployerJobBoard = {
+  jobs: JobListing[]
+  employers: EmployerSummary[]
+  linked: boolean
+}
+
+export type EmployerJobInput = {
+  employerId?: string
+  title: string
+  description: string
+  slug?: string
+  employmentType?: CareerEmploymentType | null
+  workMode?: CareerWorkMode | null
+  location?: string | null
+  experienceMin?: number | null
+  experienceMax?: number | null
+  salaryMin?: number | null
+  salaryMax?: number | null
+  skills?: string[]
+  category?: string | null
+  applicationUrl?: string | null
+}
+
+export type SharedJobApplication = {
+  id: string
+  status: JobApplicationStatus
+  roleTitle: string | null
+  appliedAt: string | null
+  applicantName: string
+}
+
+export async function listEmployerJobs(): Promise<EmployerJobBoard> {
+  const result = await careerGet<{ data: JobListing[]; employers: EmployerSummary[]; meta: { linked: boolean } }>("/career/employer/jobs")
+  return { jobs: result.data, employers: result.employers, linked: result.meta.linked }
+}
+
+export async function createEmployerJob(input: EmployerJobInput): Promise<JobListing> {
+  const result = await careerMutate<{ data: JobListing }>("/career/employer/jobs", "POST", input)
+  return result.data
+}
+
+export async function updateEmployerJob(id: string, input: Partial<EmployerJobInput>): Promise<JobListing> {
+  const result = await careerMutate<{ data: JobListing }>(`/career/employer/jobs/${id}`, "PATCH", input)
+  return result.data
+}
+
+export async function publishEmployerJob(id: string): Promise<JobListing> {
+  const result = await careerMutate<{ data: JobListing }>(`/career/employer/jobs/${id}/publish`, "POST")
+  return result.data
+}
+
+export async function closeEmployerJob(id: string): Promise<JobListing> {
+  const result = await careerMutate<{ data: JobListing }>(`/career/employer/jobs/${id}/close`, "POST")
+  return result.data
+}
+
+export async function listEmployerJobApplications(jobId: string): Promise<SharedJobApplication[]> {
+  const result = await careerGet<{ data: SharedJobApplication[] }>(`/career/employer/jobs/${jobId}/applications`)
   return result.data
 }
 

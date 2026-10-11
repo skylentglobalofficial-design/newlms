@@ -1,4 +1,4 @@
-import { useEffect, useRef, createElement } from "react"
+import { useEffect, useRef, useState, createElement } from "react"
 import { C, T } from "../../tokens"
 import type { VideoPlaybackSource } from "../../lib/media/types"
 
@@ -21,23 +21,36 @@ declare global {
   }
 }
 
-function useMuxPlayerScript(enabled: boolean) {
-  const loadedRef = useRef(false)
+function useMuxPlayerScript(enabled: boolean, attempt: number) {
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading")
 
   useEffect(() => {
-    if (!enabled || loadedRef.current) return
-    if (document.querySelector('script[data-mux-player="true"]')) {
-      loadedRef.current = true
+    if (!enabled) return
+    if (customElements.get("mux-player")) {
+      setStatus("ready")
       return
     }
-
+    setStatus("loading")
+    document.querySelector('script[data-mux-player="true"]')?.remove()
     const script = document.createElement("script")
+    const onLoad = () => {
+      script.dataset.loaded = "true"
+      setStatus("ready")
+    }
+    const onError = () => setStatus("error")
+    script.addEventListener("load", onLoad)
+    script.addEventListener("error", onError)
     script.src = "https://cdn.jsdelivr.net/npm/@mux/mux-player"
     script.async = true
     script.dataset.muxPlayer = "true"
     document.head.appendChild(script)
-    loadedRef.current = true
-  }, [enabled])
+    return () => {
+      script.removeEventListener("load", onLoad)
+      script.removeEventListener("error", onError)
+    }
+  }, [enabled, attempt])
+
+  return status
 }
 
 function MuxPlaybackSurface({
@@ -53,35 +66,83 @@ function MuxPlaybackSurface({
   watched: boolean
   onMarkWatched?: () => void
 }) {
-  useMuxPlayerScript(true)
+  const [attempt, setAttempt] = useState(0)
+  const [playerError, setPlayerError] = useState(false)
+  const playerRef = useRef<HTMLElement | null>(null)
+  const scriptStatus = useMuxPlayerScript(true, attempt)
+  const markedRef = useRef(false)
+
+  useEffect(() => {
+    setPlayerError(false)
+    markedRef.current = false
+  }, [playbackId, attempt])
+
+  useEffect(() => {
+    const element = playerRef.current
+    if (!element || scriptStatus !== "ready") return
+    const onEnded = () => {
+      if (markedRef.current || !onMarkWatched) return
+      markedRef.current = true
+      onMarkWatched()
+    }
+    const onError = () => setPlayerError(true)
+    element.addEventListener("ended", onEnded)
+    element.addEventListener("error", onError)
+    return () => {
+      element.removeEventListener("ended", onEnded)
+      element.removeEventListener("error", onError)
+    }
+  }, [scriptStatus, onMarkWatched, playbackId])
+
+  if (scriptStatus === "loading") {
+    return (
+      <div className="os-state-skeleton" role="status" aria-label="Loading the video player">
+        <span className="os-skeleton" style={{ aspectRatio: "16/9", height: "auto", width: "100%" }} />
+      </div>
+    )
+  }
+
+  if (scriptStatus === "error" || playerError) {
+    return (
+      <div className="lms-media-frame" role="alert" style={{ background: C.soft, borderRadius: T.rCard, padding: 24, border: `1px solid ${accent.border}` }}>
+        <p style={{ color: C.ink, margin: "0 0 8px", fontWeight: 600 }}>This video could not be played.</p>
+        <p style={{ color: C.slate, margin: "0 0 16px", lineHeight: 1.5 }}>
+          The player failed to load, or this playback id is not available. Live playback needs a real public Mux asset.
+        </p>
+        <button type="button" className="os-btn os-btn-ghost" onClick={() => setAttempt((value) => value + 1)}>Try again</button>
+      </div>
+    )
+  }
 
   return (
     <div>
-    <div
-      className="lms-media-frame lms-media-frame--mux"
-      data-mux-ready="true"
-      data-playback-provider="mux"
-      style={{
-        background: C.soft,
-        borderRadius: T.rCard,
-        aspectRatio: "16/9",
-        marginBottom: 20,
-        overflow: "hidden",
-        border: `1px solid ${T.lineDark}`,
-      }}
-    >
-      {createElement("mux-player", {
-        "playback-id": playbackId,
-        "stream-type": "on-demand",
-        title,
-        style: { width: "100%", height: "100%", display: "block" },
-      })}
-    </div>
+      <div
+        className="lms-media-frame lms-media-frame--mux"
+        data-mux-ready="true"
+        data-playback-provider="mux"
+        style={{
+          background: C.soft,
+          borderRadius: T.rCard,
+          aspectRatio: "16/9",
+          marginBottom: 20,
+          overflow: "hidden",
+          border: `1px solid ${T.lineDark}`,
+        }}
+      >
+        {createElement("mux-player", {
+          ref: playerRef,
+          "playback-id": playbackId,
+          "stream-type": "on-demand",
+          title,
+          style: { width: "100%", height: "100%", display: "block" },
+        })}
+      </div>
       {!watched && onMarkWatched ? (
         <button type="button" className="os-btn os-btn-primary" onClick={onMarkWatched}>
           Mark as watched
         </button>
       ) : null}
+      <p className="dash-empty-copy" style={{ marginTop: 8 }}>Finishing the video records the same lesson progress as Mark as watched.</p>
     </div>
   )
 }

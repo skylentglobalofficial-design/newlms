@@ -14,11 +14,15 @@ export default function CareerOSJobsPage() {
   const board = useJobBoard()
   const [savePendingId, setSavePendingId] = useState<string | null>(null)
   const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set())
+  const [sharedJobIds, setSharedJobIds] = useState<Set<string>>(new Set())
   const [detailJob, setDetailJob] = useState(board.selectedJob)
 
   useEffect(() => {
     void listApplications()
-      .then(apps => setAppliedJobIds(new Set(apps.filter(a => a.jobId).map(a => a.jobId!))))
+      .then(apps => {
+        setAppliedJobIds(new Set(apps.filter(a => a.jobId).map(a => a.jobId!)))
+        setSharedJobIds(new Set(apps.filter(a => a.jobId && a.sharedWithEmployer).map(a => a.jobId!)))
+      })
       .catch(() => undefined)
   }, [])
 
@@ -89,7 +93,7 @@ export default function CareerOSJobsPage() {
                 padding: "0 16px",
                 borderRadius: T.rControl,
                 border: `1px solid ${active ? C.ink : T.lineDark}`,
-                background: C.white,
+                background: C.cream,
                 color: active ? C.ink : C.slate,
                 fontSize: 13,
                 fontWeight: active ? 600 : 500,
@@ -198,14 +202,16 @@ export default function CareerOSJobsPage() {
               onToggleSave={() => handleToggleSaveForJob(detailJob.id, Boolean(detailJob.saved))}
               savePending={savePendingId === detailJob.id}
               alreadyApplied={appliedJobIds.has(detailJob.id)}
+              alreadyShared={sharedJobIds.has(detailJob.id)}
               onApplied={() => setAppliedJobIds(prev => new Set(prev).add(detailJob.id))}
+              onShared={() => setSharedJobIds(prev => new Set(prev).add(detailJob.id))}
             />
           ) : !board.loading && (
             <div style={{
               padding: "16px 18px",
               borderRadius: T.rCard,
               border: "1px dashed hsl(var(--site-border-strong))",
-              background: C.white,
+              background: C.cream,
               color: C.slate,
               fontSize: 14,
             }}>

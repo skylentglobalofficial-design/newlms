@@ -157,7 +157,7 @@ function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curric
                   width: isCurrent ? 12 : 8,
                   height: isCurrent ? 12 : 8,
                   borderRadius: '50%',
-                  background: isCurrent ? accent.primary : isComplete ? accent.primary : 'rgba(11,13,15,0.12)',
+                  background: isCurrent ? accent.primary : isComplete ? accent.primary : 'var(--skylent-color-border-strong)',
                   boxShadow: isCurrent ? `0 0 16px ${accent.subtleStrong}` : 'none',
                   flexShrink: 0,
                   marginTop: 4,
@@ -284,7 +284,7 @@ function LearnerProgress({ dashboard }: { dashboard: FacultyDashboard | null }) 
         Learner progress
       </div>
 
-      <div style={{ padding: '16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+      <div style={{ padding: '16px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
         <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.6 }}>
           {dashboard?.teachingScopeAvailable === false
             ? (dashboard.teachingScopeMessage ?? "Teaching scope is unavailable until faculty assignment is modeled in the backend.")

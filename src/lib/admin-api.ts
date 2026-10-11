@@ -85,3 +85,45 @@ export async function createAdminOrganisation(name: string, slug: string) {
 export async function listAdminEnquiries() {
   return adminGet<{ data: AdminEnquiry[] }>("/enquiries")
 }
+
+export type AdminEmployer = {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  website: string | null
+  location: string | null
+  verificationStatus: string
+  memberCount: number
+  jobCount: number
+}
+
+export async function listAdminEmployers() {
+  return adminGet<{ data: AdminEmployer[] }>("/admin/employers")
+}
+
+export async function createAdminEmployer(input: {
+  name: string
+  slug: string
+  description?: string
+  website?: string
+  location?: string
+}) {
+  return adminMutate<{ data: AdminEmployer }>("/admin/employers", "POST", input)
+}
+
+export async function linkAdminEmployerMember(employerId: string, userId: string) {
+  return adminMutate<{ data: { id: string; userId: string; employerId: string } }>(
+    `/admin/employers/${employerId}/members`,
+    "POST",
+    { userId },
+  )
+}
+
+export async function updateLessonPlayback(courseSlug: string, lessonKey: string, muxPlaybackId: string | null) {
+  return adminMutate<{ data: { lessonKey: string; media: { provider: string; playbackId?: string } | null } }>(
+    `/admin/courses/${encodeURIComponent(courseSlug)}/lessons/${encodeURIComponent(lessonKey)}/media`,
+    "PATCH",
+    { muxPlaybackId },
+  )
+}

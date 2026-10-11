@@ -1,5 +1,6 @@
 import { Router } from "express"
 import { profileRouter } from "./profile.js"
+import { employerJobsRouter } from "./employer-jobs.js"
 import { jobsRouter } from "./jobs.js"
 import { savedJobsRouter } from "./saved-jobs.js"
 import { applicationsRouter } from "./applications.js"
@@ -13,6 +14,7 @@ export const careerRouter = Router()
 
 careerRouter.use("/profile", profileRouter)
 careerRouter.use("/projects", careerProjectsRouter)
+careerRouter.use("/employer", employerJobsRouter)
 careerRouter.use("/jobs", jobsRouter)
 careerRouter.use("/saved-jobs", savedJobsRouter)
 careerRouter.use("/applications", applicationsRouter)

@@ -40,7 +40,7 @@ export default function CareerOSApplicationsPage() {
       <PageHead
         eyebrow="Career OS · Applications"
         title="Applications"
-        lead="Track every role you apply to and where each application stands."
+        lead="This list is private to you. A role reaches an employer only after you choose Share with employer on Opportunities."
         action={
           <button type="button" onClick={() => setShowAdd(v => !v)} style={{ ...secondaryButtonStyle, marginTop: 0 }}>
             {showAdd ? "Cancel" : "Track application"}

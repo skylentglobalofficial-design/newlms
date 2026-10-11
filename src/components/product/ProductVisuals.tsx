@@ -428,17 +428,17 @@ function InstitutionPipeline({ accent }: { accent: Accent }) {
           <div key={step} style={{ flex: '1 1 0', minWidth: 48, textAlign: 'center' }}>
             <div style={{
               height: 4, borderRadius: 2, marginBottom: 6,
-              background: i <= 2 ? accent.primary : '#E6EAF2',
+              background: i <= 2 ? accent.primary : 'var(--skylent-color-border)',
               opacity: i <= 2 ? 0.75 : 1,
             }} />
-            <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: i === 2 ? accent.text : '#5B6680' }}>{step}</div>
+            <div style={{ fontSize: 8, fontFamily: 'var(--font-mono)', color: i === 2 ? accent.text : C.slate }}>{step}</div>
           </div>
         ))}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: 8, minWidth: 0 }}>
-        <div style={{ padding: 10, background: '#F6F8FB', border: `1px solid ${T.lineDark}`, borderRadius: 8 }}>
+        <div style={{ padding: 10, background: 'var(--skylent-surface-sand)', border: `1px solid ${T.lineDark}`, borderRadius: 8 }}>
           <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 6 }}>Batch · Sem 4</div>
-          <div style={{ fontSize: 10, color: '#3D4760' }}>Modules · assessments</div>
+          <div style={{ fontSize: 10, color: C.ink }}>Modules · assessments</div>
         </div>
         <div style={{ padding: 10, background: accent.subtle, border: `1px solid ${accent.border}`, borderRadius: 8 }}>
           <div style={{ fontSize: 9, fontFamily: 'var(--font-mono)', color: accent.text, marginBottom: 6 }}>Learner progress</div>

@@ -29,11 +29,15 @@ jobsRouter.get("/", async (req: AuthenticatedRequest, res) => {
   }
 
   try {
+    if (parsed.data.status && parsed.data.status !== JobStatus.OPEN) {
+      return res.status(400).json({ error: "Only open jobs are listed publicly" })
+    }
+
     const auth = await attachAuth(req)
-    const { status, category, workMode, location, employerId, employmentType, q, limit = 20, offset = 0 } = parsed.data
+    const { category, workMode, location, employerId, employmentType, q, limit = 20, offset = 0 } = parsed.data
 
     const where: Prisma.JobWhereInput = {
-      status: status ?? JobStatus.OPEN,
+      status: JobStatus.OPEN,
     }
     if (category) where.category = { equals: category, mode: "insensitive" }
     if (workMode) where.workMode = workMode

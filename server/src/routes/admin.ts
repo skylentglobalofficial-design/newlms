@@ -104,7 +104,7 @@ const ASSIGNABLE_ROLES: Array<{
     roleName: RoleName.RECRUITER,
     requiresOrganisation: false,
     unavailableCapability:
-      "Employer/job ownership is not linked to recruiter users yet, so only the role itself is provisioned.",
+      "The recruiter role does not grant job access until an admin links the user to an employer.",
   },
   { role: "superadmin", roleName: RoleName.ADMIN, requiresOrganisation: false, unavailableCapability: null },
 ]

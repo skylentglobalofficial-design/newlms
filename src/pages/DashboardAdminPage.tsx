@@ -8,10 +8,15 @@ import { useAuth } from '../context/AuthContext'
 import {
   assignAdminUserRole,
   createAdminOrganisation,
+  createAdminEmployer,
+  linkAdminEmployerMember,
+  listAdminEmployers,
   listAdminEnquiries,
   listAdminOrganisations,
   listAdminUsers,
   resetAdminUserToStudent,
+  updateLessonPlayback,
+  type AdminEmployer,
   type AdminEnquiry,
   type AdminOrganisation,
   type AdminRole,
@@ -22,8 +27,9 @@ const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'admin-overview' },
   { id: 'users', label: 'Users', short: 'Users', sectionId: 'admin-users' },
   { id: 'orgs', label: 'Organisations', short: 'Orgs', sectionId: 'admin-orgs' },
+  { id: 'employers', label: 'Employers', short: 'Hire', sectionId: 'admin-employers' },
   { id: 'enquiries', label: 'Enquiries', short: 'Mail', sectionId: 'admin-enquiries' },
-  { id: 'courses', label: 'Courses', short: 'Courses', sectionId: 'admin-courses' },
+  { id: 'courses', label: 'Lesson video', short: 'Video', sectionId: 'admin-courses' },
   { id: 'payments', label: 'Payments', short: 'Pay', sectionId: 'admin-payments' },
   { id: 'system', label: 'System', short: 'System', sectionId: 'admin-system' },
 ]
@@ -142,6 +148,7 @@ function AdminUsersSection({ currentUserId }: { currentUserId: string }) {
                 <div>
                   <strong style={{ color: C.ink }}>{user.displayName}</strong>
                   <div style={{ color: C.slate, fontSize: 12 }}>{user.email} · {user.role}</div>
+                  <div style={{ color: C.slate, fontSize: 11, wordBreak: 'break-all' }}>User id {user.id}</div>
                 </div>
                 {self ? (
                   <span style={{ color: C.slate, fontSize: 12 }}>Your own role cannot be changed here.</span>
@@ -282,6 +289,159 @@ function AdminEnquiriesSection() {
   )
 }
 
+const adminFieldStyle = {
+  width: '100%',
+  boxSizing: 'border-box' as const,
+  padding: '8px 10px',
+  borderRadius: 8,
+  border: `1px solid ${T.lineLight}`,
+  background: 'var(--skylent-surface-paper)',
+  color: C.ink,
+  fontFamily: 'var(--font-body)',
+  fontSize: 14,
+}
+
+function AdminEmployersSection() {
+  const [rows, setRows] = useState<AdminEmployer[]>([])
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
+  const [message, setMessage] = useState<string | null>(null)
+  const [name, setName] = useState('')
+  const [slug, setSlug] = useState('')
+  const [location, setLocation] = useState('')
+  const [employerId, setEmployerId] = useState('')
+  const [userId, setUserId] = useState('')
+
+  async function load() {
+    setStatus('loading')
+    setMessage(null)
+    try {
+      const result = await listAdminEmployers()
+      setRows(result.data)
+      setStatus('ready')
+    } catch (error) {
+      setStatus('error')
+      setMessage(error instanceof Error ? error.message : 'Employers could not be loaded.')
+    }
+  }
+
+  useEffect(() => { void load() }, [])
+
+  async function create(event: FormEvent) {
+    event.preventDefault()
+    setMessage(null)
+    try {
+      await createAdminEmployer({
+        name: name.trim(),
+        slug: slug.trim(),
+        ...(location.trim() ? { location: location.trim() } : {}),
+      })
+      setName('')
+      setSlug('')
+      setLocation('')
+      await load()
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'The employer could not be created.')
+    }
+  }
+
+  async function linkMember(event: FormEvent) {
+    event.preventDefault()
+    setMessage(null)
+    try {
+      await linkAdminEmployerMember(employerId, userId.trim())
+      setUserId('')
+      await load()
+      setMessage('Recruiter linked. They can now create jobs for that employer.')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'The recruiter could not be linked.')
+    }
+  }
+
+  return (
+    <div id="admin-employers" style={canvasRow}>
+      <div style={{ color: C.slate, fontSize: 11, marginBottom: 12 }}>Employers</div>
+      <p style={{ color: C.slate, fontSize: 12, lineHeight: 1.6, marginTop: 0 }}>
+        Linking a user does not publish jobs. The user needs the recruiter or superadmin role first.
+      </p>
+      {message ? <p role="status" style={{ color: C.ink, fontSize: 13 }}>{message}</p> : null}
+      {status === 'loading' ? <p style={{ color: C.slate, fontSize: 13 }}>Loading employers…</p> : null}
+      {status === 'error' ? <button type="button" className="os-btn os-btn-ghost" onClick={() => void load()}>Try again</button> : null}
+      {status === 'ready' && rows.length === 0 ? <p style={{ color: C.slate, fontSize: 13 }}>No employers yet.</p> : null}
+      {status === 'ready' ? (
+        <ul style={{ listStyle: 'none', margin: '0 0 16px', padding: 0 }}>
+          {rows.map((employer) => (
+            <li key={employer.id} style={{ padding: '10px 0', borderTop: `1px solid ${T.lineLight}`, color: C.ink, fontSize: 14 }}>
+              <strong>{employer.name}</strong>
+              <div style={{ color: C.slate, fontSize: 12 }}>{employer.slug} · {employer.memberCount} linked · {employer.jobCount} jobs</div>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      <form onSubmit={(event) => void create(event)} style={{ display: 'grid', gap: 8, maxWidth: 480, marginBottom: 18 }}>
+        <input value={name} onChange={(event) => setName(event.target.value)} placeholder="Employer name" aria-label="Employer name" required minLength={2} style={adminFieldStyle} />
+        <input value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="employer-slug" aria-label="Employer slug" required style={adminFieldStyle} />
+        <input value={location} onChange={(event) => setLocation(event.target.value)} placeholder="Location" aria-label="Employer location" style={adminFieldStyle} />
+        <button type="submit" className="os-btn os-btn-primary" style={{ justifySelf: 'start' }}>Create employer</button>
+      </form>
+      <form onSubmit={(event) => void linkMember(event)} style={{ display: 'grid', gap: 8, maxWidth: 480 }}>
+        <select aria-label="Employer to link" required value={employerId} onChange={(event) => setEmployerId(event.target.value)} style={adminFieldStyle}>
+          <option value="">Choose employer</option>
+          {rows.map((employer) => <option key={employer.id} value={employer.id}>{employer.name}</option>)}
+        </select>
+        <input value={userId} onChange={(event) => setUserId(event.target.value)} placeholder="User id from the Users list" aria-label="User id" required style={adminFieldStyle} />
+        <button type="submit" className="os-btn os-btn-ghost" style={{ justifySelf: 'start' }}>Link recruiter</button>
+      </form>
+    </div>
+  )
+}
+
+function AdminLessonMediaSection() {
+  const [courseSlug, setCourseSlug] = useState('data-analytics')
+  const [lessonKey, setLessonKey] = useState('')
+  const [playbackId, setPlaybackId] = useState('')
+  const [message, setMessage] = useState<string | null>(null)
+  const [pending, setPending] = useState(false)
+
+  async function save(nextId: string | null) {
+    setPending(true)
+    setMessage(null)
+    try {
+      const result = await updateLessonPlayback(courseSlug.trim(), lessonKey.trim(), nextId)
+      const media = result.data.media
+      setMessage(media?.provider === 'mux' && media.playbackId
+        ? `Playback id saved for ${result.data.lessonKey}. This does not prove the asset plays.`
+        : `Playback cleared for ${result.data.lessonKey}. The lesson shows unavailable until a valid public id is saved.`)
+      if (nextId === null) setPlaybackId('')
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'The lesson video could not be updated.')
+    } finally {
+      setPending(false)
+    }
+  }
+
+  return (
+    <div id="admin-courses" style={canvasRow}>
+      <div style={{ color: C.slate, fontSize: 11, marginBottom: 12 }}>Lesson video</div>
+      <p style={{ color: C.slate, fontSize: 12, lineHeight: 1.6, marginTop: 0, maxWidth: 640 }}>
+        Attach a public Mux playback id to an existing video lesson. Signed playback and direct upload are not available. A saved id is not the same as a successful playback test.
+      </p>
+      {message ? <p role="status" style={{ color: C.ink, fontSize: 13, maxWidth: 640 }}>{message}</p> : null}
+      <form
+        onSubmit={(event) => { event.preventDefault(); void save(playbackId.trim() || null) }}
+        style={{ display: 'grid', gap: 8, maxWidth: 480 }}
+      >
+        <input value={courseSlug} onChange={(event) => setCourseSlug(event.target.value)} aria-label="Course slug" required style={adminFieldStyle} />
+        <input value={lessonKey} onChange={(event) => setLessonKey(event.target.value)} aria-label="Lesson key" placeholder="Lesson key" required style={adminFieldStyle} />
+        <input value={playbackId} onChange={(event) => setPlaybackId(event.target.value)} aria-label="Mux playback id" placeholder="Public playback id" style={adminFieldStyle} />
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button type="submit" className="os-btn os-btn-primary" disabled={pending}>{pending ? 'Saving…' : 'Save playback id'}</button>
+          <button type="button" className="os-btn os-btn-ghost" disabled={pending} onClick={() => void save(null)}>Clear playback id</button>
+        </div>
+      </form>
+    </div>
+  )
+}
+
 function AdminSection({
   id,
   title,
@@ -296,7 +456,7 @@ function AdminSection({
   return (
     <div id={id} style={last ? { paddingTop: 22 } : canvasRow}>
       <div style={{ color: C.slate, fontSize: 11, marginBottom: 12 }}>{title}</div>
-      <div style={{ padding: '18px 20px', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard, background: 'rgba(11,13,15,0.02)' }}>
+      <div style={{ padding: '18px 20px', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard, background: 'var(--skylent-surface-elevated)' }}>
         <div style={{ color: C.ink, fontSize: 13, marginBottom: 6 }}>{title} API not connected</div>
         <p style={{ color: C.slate, fontSize: 12, lineHeight: 1.7, margin: 0, maxWidth: 620 }}>{description}</p>
       </div>
@@ -317,7 +477,7 @@ export default function DashboardAdminPage() {
       workspaceLabel="Platform"
       roleLabel="Super Admin"
       navItems={NAV_ITEMS}
-      bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'users', 'orgs', 'payments', 'system'].includes(n.id))}
+      bottomNavItems={NAV_ITEMS.filter(n => ['overview', 'users', 'employers', 'courses', 'payments'].includes(n.id))}
       activeNav={activeNav}
       onNavChange={setActiveNav}
       renderNavIcon={id => <NavIcon id={id} />}
@@ -328,8 +488,9 @@ export default function DashboardAdminPage() {
         <div style={{ marginTop: 32 }}>
           <AdminUsersSection currentUserId={authUser?.id ?? user.id} />
           <AdminOrganisationsSection />
+          <AdminEmployersSection />
           <AdminEnquiriesSection />
-          <AdminSection id="admin-courses" title="Courses" description="Course administration and enrollment rankings require verified catalog and enrollment data." />
+          <AdminLessonMediaSection />
           <AdminSection id="admin-payments" title="Payments" description="Revenue reporting, refunds, and payment gateway operations require the protected payments API." />
           <AdminSection id="admin-system" title="System" description="Service health and uptime must come from live monitoring rather than placeholder values." last />
         </div>

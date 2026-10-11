@@ -56,6 +56,7 @@ export default function ApplicationCard({ application, selected }: Props) {
             {applied && <span>Applied {applied}</span>}
             {nextAction && <span>Next action {nextAction}</span>}
             {application.source && <span>Source: {application.source}</span>}
+            <span>{application.sharedWithEmployer ? "Shared with employer" : "Private to you"}</span>
           </div>
         </div>
         <span style={{

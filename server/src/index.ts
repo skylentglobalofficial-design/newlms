@@ -16,6 +16,8 @@ import {
 import catalogRouter from "./routes/catalog.js"
 import healthRouter from "./routes/health.js"
 import { adminRouter } from "./routes/admin.js"
+import { adminEmployersRouter } from "./routes/admin-employers.js"
+import { adminMediaRouter } from "./routes/admin-media.js"
 import { authRouter } from "./routes/auth.js"
 import { lmsRouter } from "./routes/lms.js"
 import { skylentAiRouter } from "./routes/skylent-ai.js"
@@ -56,6 +58,8 @@ app.use("/api/v1/faculty", facultyRouter)
 app.use("/api/v1/organisation", organisationRouter)
 app.use("/api/v1/career", careerRouter)
 app.use("/api/v1/admin", adminRouter)
+app.use("/api/v1/admin", adminEmployersRouter)
+app.use("/api/v1/admin", adminMediaRouter)
 app.use("/api/v1/certificates", skylentCertificatesRouter)
 app.use("/api/v1/enquiries", skylentEnquiriesRouter)
 app.use("/api/v1/reva", revaRouter)

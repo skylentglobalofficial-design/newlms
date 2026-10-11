@@ -39,6 +39,8 @@
     "test:pm-content": "tsx scripts/test-pm-content.ts",
     "test:second-flagship": "tsx scripts/test-second-flagship.ts",
     "test:career": "tsx scripts/test-career.ts",
+    "test:employer": "tsx scripts/test-employer-jobs.ts",
+    "test:lesson-media": "tsx scripts/test-lesson-media.ts",
     "test:catalog-parity": "tsx scripts/test-catalog-truth.ts && tsx scripts/check-catalog-parity.ts",
     "test:live-intents": "tsx scripts/test-live-intents.ts",
     "test:roles": "tsx scripts/test-role-provisioning.ts",
