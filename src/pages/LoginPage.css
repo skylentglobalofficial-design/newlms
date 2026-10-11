@@ -60,8 +60,8 @@
 
 .entry-frame {
   overflow: hidden;
-  background: #ffffff;
-  border: 1px solid var(--skylent-surface-sand);
+  background: var(--skylent-surface-elevated);
+  border: 1px solid var(--skylent-color-border);
   border-radius: 6px;
 }
 
@@ -198,7 +198,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 11px 13px;
-  background: #ffffff;
+  background: var(--skylent-surface-sand);
   border: 1px solid var(--skylent-color-border);
   border-radius: var(--btn-radius);
   color: var(--skylent-color-ink);
@@ -263,7 +263,7 @@
 .entry-google {
   width: 100%;
   padding: 11px;
-  background: #ffffff;
+  background: var(--skylent-surface-sand);
   border: 1px solid var(--skylent-color-border);
   border-radius: var(--btn-radius);
   color: var(--skylent-color-ink);
@@ -357,7 +357,7 @@
 
 .entry-demo-grid button {
   padding: 9px 6px;
-  background: #ffffff;
+  background: var(--skylent-surface-sand);
   border: 1px solid var(--skylent-color-border);
   border-radius: var(--btn-radius);
   color: var(--skylent-color-slate);
@@ -424,15 +424,15 @@
   }
 }
 
-/* ── Skylent system: white page, navy anchor, cobalt action, Space Grotesk heading ── */
-.entry { background: #ffffff; }
+/* ── Skylent system: navy page, raised frame, ocean-blue action ── */
+.entry { background: var(--skylent-surface-paper); }
 .entry-back { min-height: 44px; }
 .entry-mark { color: var(--skylent-color-ink); font: 700 20px/1.1 var(--skylent-font-heading); letter-spacing: 0.14em; text-transform: uppercase; }
 .entry-frame { border-color: var(--skylent-color-border); border-radius: 12px; }
 .entry-frame-bar { padding: 12px 16px; border-bottom: 0; background: var(--skylent-navy); }
 .entry-frame-bar b { color: #ffffff; font-weight: 500; }
 .entry-frame-bar span { color: var(--skylent-on-navy-muted); }
-.entry-rail { background: #ffffff; }
+.entry-rail { background: var(--skylent-surface-elevated); }
 .entry-title { font-family: var(--skylent-font-heading); font-size: clamp(26px, 3.4vw, 32px); line-height: 1.15; letter-spacing: -0.01em; }
 .entry-context { border: 1px solid var(--skylent-color-accent); border-radius: 8px; background: var(--skylent-color-accent-soft); }
 .entry-context-label { color: var(--skylent-color-ink); font-weight: 400; }
@@ -446,5 +446,5 @@
 .entry-submit:focus-visible, .entry-google:focus-visible, .entry-alt button:focus-visible, .entry a:focus-visible { outline: 2px solid var(--skylent-color-accent); outline-offset: 2px; }
 .entry-or::before, .entry-or::after { background: var(--skylent-color-border); }
 .entry-alt button { min-height: 32px; font-weight: 600; }
-.entry-error { border-radius: 8px; background: #ffffff; color: var(--skylent-color-error); }
+.entry-error { border-radius: 8px; background: var(--skylent-color-error-soft); color: var(--skylent-color-error); }
 .entry-demo { border-color: var(--skylent-color-border); border-radius: 12px; }

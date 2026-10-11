@@ -1,13 +1,12 @@
-/* Public editorial surfaces — /institutions, /universities, /stories, /about.
-   Scoped to .pe-page. Tokens match the locked white system; CTAs stay on the
-   shared public indigo so these pages sit with /programs and /courses. */
+/* Public editorial surfaces — /universities, /stories.
+   Scoped to .pe-page. Same dark Aurora ink, hairline and ocean-blue mark as the rest of the public site. */
 
 .pe-page {
   --pe-ink: var(--skylent-color-ink);
-  --pe-muted: #62676d;
+  --pe-muted: var(--skylent-color-muted);
   --pe-faint: var(--skylent-color-text-subtle);
-  --pe-line: rgba(21, 23, 26, 0.12);
-  --pe-orange: #f36f21;
+  --pe-line: var(--skylent-color-border);
+  --pe-orange: var(--skylent-color-accent);
   --pe-paper: var(--skylent-color-cream);
   --pe-warm: var(--skylent-surface-cream-warm);
   --pe-soft: var(--skylent-color-soft);
@@ -465,7 +464,7 @@ a.pe-example:hover h3 {
 }
 
 .pe-page .pl-frame {
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   border-color: rgba(21, 23, 26, 0.11);
   box-shadow: var(--shadow-subtle);
 }
@@ -475,7 +474,7 @@ a.pe-example:hover h3 {
 }
 
 .pe-page .pl-frame-body {
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 
 .pe-specimens .pl-frame.is-compact .pl-frame-title {

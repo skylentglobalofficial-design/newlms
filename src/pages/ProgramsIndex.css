@@ -40,7 +40,7 @@
   color: hsl(var(--site-on-navy)); font: inherit; font-size: .875rem; font-weight: 500; cursor: pointer;
   transition: background var(--sk-fast) var(--sk-ease), color var(--sk-fast) var(--sk-ease);
 }
-.pgx .pgx-tabs button.is-on { background: #fff; color: hsl(var(--site-navy)); border-color: #fff; }
+.pgx .pgx-tabs button.is-on { background: hsl(var(--site-deep)); color: #fff; border-color: hsl(var(--site-deep)); }
 .pgx .pgx-tabs button:focus-visible { outline: 2px solid hsl(var(--site-cyan)); outline-offset: 2px; }
 
 /* Sections */
@@ -55,7 +55,7 @@
   border-radius: 999px; background: hsl(var(--site-soft)); border: 1px solid hsl(var(--site-border));
   color: hsl(var(--site-muted)); font-size: .75rem; font-weight: 600;
 }
-.pgx .pgx-badge--open { background: hsl(152 60% 95%); border-color: hsl(152 45% 82%); color: hsl(152 55% 26%); }
+.pgx .pgx-badge--open { background: hsl(152 40% 16%); border-color: hsl(152 30% 28%); color: hsl(152 45% 78%); }
 .pgx .pgx-badge--open::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .pgx .pgx-kind { font-size: .75rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: hsl(var(--site-dim)); }
 .pgx .pgx-link { display: inline-flex; align-items: center; gap: .375rem; min-height: 44px; color: hsl(var(--site-deep)); font-weight: 600; font-size: .9375rem; text-decoration: none; }
@@ -88,14 +88,14 @@
 .pgx .pgx-open__actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1.25rem; margin-top: auto; padding-top: .5rem; }
 .pgx .pgx-open .pgx-link { color: hsl(214 100% 78%); }
 .pgx .pgx-open__art { position: relative; background: hsl(var(--site-proof)); padding: clamp(1rem, 2.5vw, 1.75rem); display: flex; align-items: center; min-width: 0; }
-.pgx .pgx-open__plate { width: 100%; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: var(--sk-shadow); }
+.pgx .pgx-open__plate { width: 100%; border-radius: 14px; overflow: hidden; background: hsl(var(--site-white)); box-shadow: var(--sk-shadow); }
 
 /* Later programmes: compact cards */
 .pgx .pgx-later-label { margin: 2rem 0 .875rem; font-size: .8125rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: hsl(var(--site-dim)); }
 .pgx .pgx-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
 .pgx .pgx-card {
   display: flex; flex-direction: column; border: 1px solid hsl(var(--site-border)); border-radius: 16px; overflow: hidden;
-  background: #fff; transition: border-color var(--sk-fast) var(--sk-ease), box-shadow var(--sk-base) var(--sk-ease), transform var(--sk-base) var(--sk-ease);
+  background: hsl(var(--site-white)); transition: border-color var(--sk-fast) var(--sk-ease), box-shadow var(--sk-base) var(--sk-ease), transform var(--sk-base) var(--sk-ease);
 }
 .pgx .pgx-card:hover { border-color: hsl(var(--site-border-strong)); box-shadow: var(--sk-shadow); transform: translateY(-2px); }
 .pgx .pgx-card__art { aspect-ratio: 16 / 9; overflow: hidden; background: hsl(var(--site-proof)); border-bottom: 1px solid hsl(var(--site-border)); }

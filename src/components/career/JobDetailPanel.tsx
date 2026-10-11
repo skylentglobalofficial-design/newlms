@@ -206,7 +206,7 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
               borderRadius: T.rControl,
               border: "none",
               background: alreadyApplied ? C.cream : accent.primary,
-              color: C.ink,
+              color: alreadyApplied ? C.ink : C.white,
               fontSize: 13,
               fontWeight: 600,
               cursor: applyPending || alreadyApplied ? "default" : "pointer",
