@@ -28,18 +28,33 @@ import photoCampusUg from "@/assets/site/hero-classroom.jpg"
 import photoCampusPg from "@/assets/site/degree-management.jpg"
 import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice"
 
-/* ── Hero (navy; composition after the approved reference) ───────────────
-   Left: headline in two deliberate lines, lead, two actions. Centre: a large student photograph,
-   cropped naturally. Right: the three parts of Skylent and a compact, neutral learning-journey card.
-   Nothing here is a learner account: no progress, scores or statistics. */
+/* ── Hero (white/lavender; composition after the approved violet reference) ───────
+   Left: category labels, four-line headline (last line in violet), supporting copy,
+   two CTAs, community avatars. Right: large student photo with floating offering cards.
+   Violet badge "Real projects / Real experience" on the image. */
 
-const HERO_PARTS = [
-  { title: "Degrees", text: "UG and PG degree pathways, online or on campus.", to: "/education" },
-  { title: "Skill programmes", text: "Certification and professional programmes with practice built in.", to: "/programmes" },
-  { title: "Career OS", text: "The projects you build, kept in one career profile.", to: "/career-os" },
+const HERO_OFFERINGS = [
+  { icon: "graduation", label: "Programmes & Degrees", to: "/programmes" },
+  { icon: "book", label: "Skill Courses", to: "/programmes" },
+  { icon: "briefcase", label: "Career Opportunities", to: "/career-os" },
+  { icon: "sparkle", label: "AI Guidance", to: "/path" },
 ] as const
 
-const HERO_JOURNEY = ["Learn", "Practise", "Build", "Keep your evidence"] as const
+function OfferingIcon({ type }: { type: string }) {
+  const iconColor = "#5142B5"
+  switch (type) {
+    case "graduation":
+      return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 10-10-5L2 10l10 5z"/><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/><path d="M22 10v6"/></svg>
+    case "book":
+      return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5z"/></svg>
+    case "briefcase":
+      return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+    case "sparkle":
+      return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3l1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275z"/></svg>
+    default:
+      return null
+  }
+}
 
 export function HomeHero() {
   return (
@@ -47,48 +62,134 @@ export function HomeHero() {
       <div className="hxw-hero__bg" aria-hidden="true" />
       <div className="sky-container hxw-hero__grid">
         <div className="hxw-hero__copy">
-          <p className="hxw-eyebrow hx-rise">Degrees · Skill programmes · Career OS</p>
+          <p className="hxw-eyebrow hx-rise">
+            <span>Skills</span> <span className="hxw-eyebrow__dot">&middot;</span> <span>Education</span> <span className="hxw-eyebrow__dot">&middot;</span> <span>Career</span> <span className="hxw-eyebrow__dot">&middot;</span> <span>AI</span>
+          </p>
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
-            <span>Education built for</span> <em>what comes next.</em>
+            <span>Learn skills.</span>
+            <span>Explore education.</span>
+            <span>Build real experience.</span>
+            <em>Find what comes next.</em>
           </h1>
           <p className="hxw-hero__lead hx-rise">
-            Study for a degree or learn a job skill, practise on realistic work, and keep everything you build in one career profile.
+            Skylent brings together programmes, courses, real projects and career opportunities to help you go from learning to doing.
           </p>
           <div className="hxw-hero__actions hx-rise">
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
-              Explore programmes
+              Explore Skylent
               <ArrowRight />
             </Link>
-            <Link className="sk-btn sk-btn-secondary hx-btn" to="/education">
-              Explore degrees
+            <Link className="sk-btn sk-btn-secondary hx-btn" to="/path">
+              Find My Path
             </Link>
           </div>
-        </div>
-        <div className="hxw-hero__photo hx-rise">
-          <img src={heroStudent} alt="A smiling student holding a laptop and notebook." width={903} height={1203} decoding="async" fetchPriority="high" />
-        </div>
-        <div className="hxw-hero__side hx-rise">
-          <ul className="hxw-parts" aria-label="What Skylent brings together">
-            {HERO_PARTS.map((part) => (
-              <li key={part.title}>
-                <Link to={part.to} className="hxw-part">
-                  <span className="hxw-part__title">
-                    {part.title}
-                    <ArrowRight />
-                  </span>
-                  <span className="hxw-part__text">{part.text}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-          <div className="hxw-journey" role="group" aria-label="How learning works on Skylent">
-            <p className="hxw-journey__label">How learning works</p>
-            <ol className="hxw-journey__steps">
-              {HERO_JOURNEY.map((step) => (
-                <li key={step}>{step}</li>
-              ))}
-            </ol>
+          <div className="hxw-hero__community hx-rise">
+            <div className="hxw-hero__avatars" aria-hidden="true">
+              <span className="hxw-hero__avatar" style={{ background: "#6657E8" }} />
+              <span className="hxw-hero__avatar" style={{ background: "#43349F" }} />
+              <span className="hxw-hero__avatar" style={{ background: "#5142B5" }} />
+              <span className="hxw-hero__avatar" style={{ background: "#8B7FD4" }} />
+            </div>
+            <p className="hxw-hero__community-text">
+              Join a growing community<br />of learners, builders and professionals.
+            </p>
           </div>
+        </div>
+        <div className="hxw-hero__visual hx-rise">
+          <div className="hxw-hero__photo">
+            <img src={heroStudent} alt="Students working together on a laptop" width={903} height={1203} decoding="async" fetchPriority="high" />
+            <span className="hxw-hero__badge">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5142B5" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              <span>
+                <strong>Real projects</strong><br />Real experience
+              </span>
+            </span>
+          </div>
+          <div className="hxw-hero__offerings">
+            {HERO_OFFERINGS.map((item) => (
+              <Link key={item.label} to={item.to} className="hxw-offering">
+                <span className="hxw-offering__icon">
+                  <OfferingIcon type={item.icon} />
+                </span>
+                <span className="hxw-offering__label">{item.label}</span>
+                <ArrowRight />
+              </Link>
+            ))}
+          </div>
+          <span className="hxw-hero__handwritten" aria-hidden="true">
+            A space<br />to learn,<br />build and<br />grow.
+          </span>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ── Trust bar ────────────────────────────────────────────────────────── */
+
+const TRUST_LOGOS = [
+  { name: "Microsoft", svg: <svg width="120" height="26" viewBox="0 0 120 26" fill="none"><text x="24" y="18" fontFamily="Inter,sans-serif" fontSize="14" fontWeight="600" fill="#555B7D">Microsoft</text><rect x="0" y="3" width="9" height="9" fill="#F25022"/><rect x="11" y="3" width="9" height="9" fill="#7FBA00"/><rect x="0" y="14" width="9" height="9" fill="#00A4EF"/><rect x="11" y="14" width="9" height="9" fill="#FFB900"/></svg> },
+  { name: "Google", svg: <svg width="80" height="26" viewBox="0 0 80 26"><text x="0" y="19" fontFamily="Inter,sans-serif" fontSize="16" fontWeight="600" fill="#555B7D">Google</text></svg> },
+  { name: "AWS", svg: <svg width="55" height="26" viewBox="0 0 55 26"><text x="0" y="19" fontFamily="Inter,sans-serif" fontSize="15" fontWeight="700" fill="#555B7D">aws</text></svg> },
+  { name: "Meta", svg: <svg width="65" height="26" viewBox="0 0 65 26"><text x="0" y="19" fontFamily="Inter,sans-serif" fontSize="15" fontWeight="600" fill="#555B7D">Meta</text></svg> },
+  { name: "Notion", svg: <svg width="80" height="26" viewBox="0 0 80 26"><text x="0" y="19" fontFamily="Inter,sans-serif" fontSize="14" fontWeight="600" fill="#555B7D">Notion</text></svg> },
+  { name: "GitHub", svg: <svg width="80" height="26" viewBox="0 0 80 26"><text x="0" y="19" fontFamily="Inter,sans-serif" fontSize="14" fontWeight="600" fill="#555B7D">GitHub</text></svg> },
+] as const
+
+export function HomeTrust() {
+  return (
+    <section className="hxw-trust" aria-label="Trusted by students and institutions">
+      <div className="sky-container">
+        <div className="hxw-trust__inner">
+          <p className="hxw-trust__label">Trusted by students and institutions</p>
+          <div className="hxw-trust__logos">
+            {TRUST_LOGOS.map((logo) => (
+              <span key={logo.name} className="hxw-trust__logo" aria-label={logo.name}>
+                {logo.svg}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ── Goals section — "Different goals. One platform." ──────────────────── */
+
+const GOAL_CARDS = [
+  { icon: "graduation", title: "Degrees", text: "UG and PG pathways, online or on campus.", to: "/education", color: "#5142B5" },
+  { icon: "book", title: "Skill programmes", text: "Certification and professional programmes with practice.", to: "/programmes", color: "#5142B5" },
+  { icon: "briefcase", title: "Career OS", text: "Jobs, internships and career support.", to: "/career-os", color: "#5142B5" },
+  { icon: "sparkle", title: "Skylent AI", text: "Personalised guidance for your goals.", to: "/path", color: "#5142B5" },
+] as const
+
+export function HomeGoals() {
+  return (
+    <section className="hxw-goals" aria-labelledby="hx-goals-title">
+      <div className="sky-container">
+        <div className="hxw-goals__head">
+          <div>
+            <p className="hxw-goals__eyebrow">What are you looking for?</p>
+            <h2 id="hx-goals-title" className="hxw-goals__title">Different goals. One platform.</h2>
+          </div>
+          <p className="hxw-goals__aside">
+            Whether you want a degree, a new skill, real experience or a job, Skylent helps you take the next step.
+          </p>
+        </div>
+        <div className="hxw-goals__grid">
+          {GOAL_CARDS.map((card) => (
+            <Link key={card.title} to={card.to} className="hxw-goal">
+              <span className="hxw-goal__icon">
+                <OfferingIcon type={card.icon} />
+              </span>
+              <span className="hxw-goal__content">
+                <span className="hxw-goal__name">{card.title}</span>
+                <span className="hxw-goal__text">{card.text}</span>
+              </span>
+              <ArrowRight />
+            </Link>
+          ))}
         </div>
       </div>
     </section>

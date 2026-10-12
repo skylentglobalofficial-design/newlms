@@ -23,9 +23,11 @@ import {
   HomeAi,
   HomeClosing,
   HomeDegrees,
+  HomeGoals,
   HomeHero,
   HomeInstitutions,
   HomeProgrammes,
+  HomeTrust,
   InsideProgramme,
 } from "./home/Repolish"
 import "./HomePage.v2.css"
@@ -37,6 +39,8 @@ export default function HomePage() {
     <PageShell aurora={false}>
       <div className="site-light hm-page hx-page hx-page--home">
         <HomeHero />
+        <HomeTrust />
+        <HomeGoals />
         <InsideProgramme />
         <HomeProgrammes programmes={catalog.data ?? []} loading={catalog.loading} confirmed={!catalog.offline} />
         <HomeDegrees />
