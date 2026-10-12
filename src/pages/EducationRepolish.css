@@ -1,14 +1,14 @@
 /* /education — prefix edx-, scoped under .edx (repolish) */
 .edx { background: hsl(var(--site-paper)); }
 .edx .edx-hero {
-  background: radial-gradient(55% 120% at 88% 0%, hsl(223 100% 57% / .16), transparent 60%), hsl(var(--site-navy));
+  background: hsl(var(--site-navy));
   color: hsl(var(--site-on-navy));
   padding: clamp(2.75rem, 6vw, 4.5rem) 0 clamp(2.25rem, 5vw, 3.25rem);
 }
 .edx .edx-hero__inner { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: end; }
-.edx .edx-eyebrow { margin: 0 0 .75rem; font-size: .8125rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: hsl(var(--site-cyan)); }
+.edx .edx-eyebrow { margin: 0 0 .75rem; font-size: .8125rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: hsl(var(--site-on-navy-muted)); }
 .edx .edx-h1 { margin: 0; font-family: var(--sk-font-heading); font-size: clamp(2.125rem, 4.6vw, 3.375rem); font-weight: 650; line-height: 1.05; letter-spacing: -0.03em; color: #fff !important; }
-.edx .edx-h1 em { font-style: normal; color: hsl(214 100% 76%); }
+.edx .edx-h1 em { font-style: normal; color: #fff; }
 .edx .edx-lede { margin: 1rem 0 0; max-width: 36rem; font-size: 1.0625rem; line-height: 1.6; color: hsl(var(--site-on-navy-muted)); }
 .edx .edx-filters { display: grid; gap: .75rem; }
 .edx .edx-filter { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
