@@ -75,7 +75,7 @@
 
 .os-btn-ghost {
   border-color: var(--skylent-color-border-strong);
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 
 .os-btn-ghost:hover:not(:disabled) {
@@ -100,14 +100,14 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   font: 600 14px/1.3 var(--font-body);
   text-decoration: none;
   cursor: pointer;
 }
 
 .os-link:hover {
-  color: var(--skylent-color-accent-hover);
+  color: var(--skylent-color-ink);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -199,7 +199,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: #ffffff;
+  background: var(--skylent-surface-paper);
   color: var(--skylent-color-ink);
   font-family: var(--font-body);
 }
@@ -209,13 +209,13 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 12px;
   width: 100%;
   max-width: 560px;
   box-sizing: border-box;
   margin: 0 auto;
-  padding: 40px clamp(20px, 4vw, 32px) 64px;
+  padding: clamp(88px, 14vh, 140px) clamp(20px, 4vw, 32px) 64px;
 }
 
 .os-state h1 {
@@ -254,7 +254,7 @@
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  background: #ffffff;
+  background: var(--skylent-surface-paper);
   color: var(--skylent-color-ink);
   font-family: var(--font-body);
   font-size: 16px;
@@ -396,7 +396,7 @@
   width: 264px;
   min-width: 0;
   border-right: 1px solid var(--skylent-color-border);
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 
 .os-curriculum {
@@ -457,7 +457,7 @@
 }
 
 .os-module-toggle:hover .os-module-label {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
 }
 
 .os-module-name {
@@ -473,7 +473,7 @@
 }
 
 .os-module.is-current .os-module-num {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
 }
 
 .os-module.is-ahead .os-module-label {
@@ -645,14 +645,14 @@
   align-items: center;
   gap: 6px;
   min-height: 44px;
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
 }
 
 .os-chip:hover {
-  color: var(--skylent-color-accent-hover);
+  color: var(--skylent-color-ink);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -735,7 +735,7 @@
   align-items: center;
   gap: 8px;
   min-height: 32px;
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   font-family: var(--font-mono);
   font-size: 13px;
   text-decoration: none;
@@ -792,7 +792,7 @@
 }
 
 .lx-prev:hover {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
 }
 
 .lx-prev:focus-visible {
@@ -888,7 +888,7 @@
 }
 
 .lx-doc a {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   text-underline-offset: 3px;
 }
 
@@ -1056,7 +1056,7 @@
 }
 
 .lx-section-practice .lx-section-label {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
 }
 
 .lx-section-check {
@@ -1093,7 +1093,7 @@
   padding: 18px 18px 20px;
   border: 1px solid var(--skylent-color-border);
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 
 .lx-question-kicker {
@@ -1125,7 +1125,7 @@
   padding: 11px 14px;
   border: 1px solid var(--skylent-color-border-strong);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   color: var(--skylent-color-ink);
   font: 400 15px/1.45 var(--font-body);
   text-align: left;
@@ -1152,7 +1152,7 @@
 .lx-option.is-wrong {
   border-style: dashed;
   border-color: var(--skylent-color-error);
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   box-shadow: none;
 }
 
@@ -1268,7 +1268,7 @@
 }
 
 .as-block a {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
 }
 
 .as-block .as-fine,
@@ -1301,7 +1301,7 @@
   padding: 12px 14px;
   border: 1px solid var(--skylent-color-border-strong);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   color: var(--skylent-color-ink);
   font: 400 15px/1.6 var(--font-body);
   resize: vertical;

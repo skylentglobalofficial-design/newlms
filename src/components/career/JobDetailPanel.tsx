@@ -4,7 +4,7 @@ import { C, T } from "../../tokens"
 import { careerAccent } from "./career-accent"
 import { GlassSurface } from "../foundation"
 import type { JobListing } from "../../lib/career-api"
-import { createApplication } from "../../lib/career-api"
+import { createApplication, shareApplication } from "../../lib/career-api"
 import { FeedbackBanner } from "./section-ui"
 import { formatEmploymentType, formatExperience, formatPostedDate, formatSalary, formatWorkMode, jobMetaLine } from "./job-utils"
 
@@ -15,11 +15,14 @@ type Props = {
   onToggleSave: () => void
   savePending?: boolean
   alreadyApplied?: boolean
+  alreadyShared?: boolean
   onApplied?: () => void
+  onShared?: () => void
 }
 
-export default function JobDetailPanel({ job, onToggleSave, savePending, alreadyApplied, onApplied }: Props) {
+export default function JobDetailPanel({ job, onToggleSave, savePending, alreadyApplied, alreadyShared, onApplied, onShared }: Props) {
   const [applyPending, setApplyPending] = useState(false)
+  const [sharePending, setSharePending] = useState(false)
   const [applyFeedback, setApplyFeedback] = useState<{ tone: "success" | "error"; message: string } | null>(null)
 
   const experience = formatExperience(job)
@@ -36,12 +39,27 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
         roleTitle: job.title,
         source: "career-os-jobs",
       })
-      setApplyFeedback({ tone: "success", message: "Application recorded." })
+      setApplyFeedback({ tone: "success", message: "Saved in your applications." })
       onApplied?.()
     } catch (err) {
-      setApplyFeedback({ tone: "error", message: err instanceof Error ? err.message : "Failed to apply" })
+      setApplyFeedback({ tone: "error", message: err instanceof Error ? err.message : "Could not save this application." })
     } finally {
       setApplyPending(false)
+    }
+  }
+
+  async function handleShare() {
+    setSharePending(true)
+    setApplyFeedback(null)
+    try {
+      await shareApplication(job.id)
+      setApplyFeedback({ tone: "success", message: "Shared with the employer. Your notes stay private." })
+      onApplied?.()
+      onShared?.()
+    } catch (err) {
+      setApplyFeedback({ tone: "error", message: err instanceof Error ? err.message : "Could not share this application." })
+    } finally {
+      setSharePending(false)
     }
   }
 
@@ -206,7 +224,7 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
               borderRadius: T.rControl,
               border: "none",
               background: alreadyApplied ? C.cream : accent.primary,
-              color: C.ink,
+              color: alreadyApplied ? C.ink : C.white,
               fontSize: 13,
               fontWeight: 600,
               cursor: applyPending || alreadyApplied ? "default" : "pointer",
@@ -214,9 +232,28 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
               opacity: alreadyApplied ? 0.7 : 1,
             }}
           >
-            {applyPending ? "Applying…" : alreadyApplied ? "Applied" : "Apply"}
+            {applyPending ? "Saving…" : alreadyApplied ? "Tracked" : "Track application"}
           </button>
         )}
+
+        <button
+          type="button"
+          onClick={() => void handleShare()}
+          disabled={sharePending || alreadyShared}
+          style={{
+            padding: "10px 16px",
+            borderRadius: T.rControl,
+            border: `1px solid ${accent.border}`,
+            background: "transparent",
+            color: accent.text,
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: sharePending || alreadyShared ? "default" : "pointer",
+            fontFamily: "var(--font-body)",
+          }}
+        >
+          {sharePending ? "Sharing…" : alreadyShared ? "Shared with employer" : "Share with employer"}
+        </button>
 
         {alreadyApplied && (
           <Link to="/career-os/applications" style={{ alignSelf: "center", color: accent.text, fontSize: 12.5, textDecoration: "none" }}>
@@ -224,6 +261,9 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
           </Link>
         )}
       </div>
+      <p style={{ margin: "0 22px 16px", color: C.slate, fontSize: 12, lineHeight: 1.5 }}>
+        Track application keeps this private in your tracker. Share with employer sends your name and status only. Notes are not included.
+      </p>
     </GlassSurface>
   )
 }

@@ -63,6 +63,7 @@ export function serializeApplication(app: JobApplication & { job?: Job | null; e
     nextActionAt: isoDateTime(app.nextActionAt),
     notes: app.notes,
     source: app.source,
+    sharedWithEmployer: app.sharedWithEmployer,
     job: app.job ? serializeJob(app.job) : null,
     employer: app.employer ? serializeEmployer(app.employer) : null,
     createdAt: app.createdAt.toISOString(),

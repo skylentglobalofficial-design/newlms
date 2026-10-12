@@ -3,6 +3,7 @@ import { createLessonGroundedProvider } from "./grounded.js"
 import {
   OPEN_QUIZ_REFUSAL,
   academicIntegrityRefusal,
+  answerLeaksWithheldAnswers,
   answerLeaksWithheldResult,
   historyForPolicy,
   redactPrivilegedAssessmentContext,
@@ -56,6 +57,7 @@ export function buildAskInput(options: {
   lessonKind: string
   policy?: AcademicPolicy
   quizGuard?: AiAskInput["quizGuard"]
+  withheldAnswers?: string[]
 }): AiAskInput {
   const context: LessonAiContext = buildLessonAiContext({
     courseSlug: options.courseSlug,
@@ -72,12 +74,13 @@ export function buildAskInput(options: {
     context,
     policy: options.policy ?? "lesson",
     quizGuard: options.quizGuard,
+    withheldAnswers: options.withheldAnswers,
   }
 }
 
 export async function completeLessonAsk(input: AiAskInput, provider: AiProvider): Promise<AiAskResult> {
   const policy = input.policy ?? "lesson"
-  const refusal = academicIntegrityRefusal(policy, input.question, input.history, input.context, input.quizGuard)
+  const refusal = academicIntegrityRefusal(policy, input.question, input.history, input.context, input.quizGuard, input.action)
   if (refusal) {
     return {
       answer: refusal,
@@ -94,11 +97,15 @@ export async function completeLessonAsk(input: AiAskInput, provider: AiProvider)
     history: historyForPolicy(input.history, policy),
     context: redactPrivilegedAssessmentContext(input.context, policy),
     quizGuard: undefined,
+    withheldAnswers: undefined,
   }
   const result = provider.answerLesson
     ? await provider.answerLesson(safeInput)
     : await provider.complete(buildProviderMessages(safeInput))
-  if (answerLeaksWithheldResult(result.answer, input.context, policy)) {
+  if (
+    answerLeaksWithheldResult(result.answer, input.context, policy) ||
+    answerLeaksWithheldAnswers(result.answer, input.withheldAnswers, policy)
+  ) {
     return {
       answer:
         policy === "open_quiz"

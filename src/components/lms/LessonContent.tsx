@@ -123,6 +123,8 @@ export function LessonContentView({
   onQuizRetry,
   onQuizSubmit,
   onAssignmentSubmit,
+  assignmentDraft,
+  onAssignmentDraft,
   lessonMedia,
   courseSlug,
 }: {
@@ -136,6 +138,8 @@ export function LessonContentView({
   onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
   /** Resolves true only once the server has recorded the submission. */
   onAssignmentSubmit?: (text: string) => Promise<boolean>
+  assignmentDraft?: string
+  onAssignmentDraft?: (text: string) => void
   lessonMedia?: VideoPlaybackSource
   courseSlug?: string
 }) {
@@ -243,6 +247,8 @@ export function LessonContentView({
         subtitle={material?.assignment ? 'Paste your work below. Submission records progress; it is not a grade.' : 'Apply concepts from this module. Submission records progress; it is not a grade.'}
         accent={accent}
         passed={lessonState.complete || lessonState.assignmentSubmitted}
+        initialText={assignmentDraft}
+        onDraft={onAssignmentDraft}
         onSubmitAssignment={onAssignmentSubmit}
         completionNote={
           evidence

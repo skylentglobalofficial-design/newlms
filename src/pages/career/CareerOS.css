@@ -40,7 +40,7 @@
   grid-template-columns: minmax(160px, 220px) minmax(0, 1fr);
   gap: 0;
   overflow: hidden;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   border-radius: 14px;
   box-shadow: 0 10px 28px rgba(21, 23, 26, 0.05);
 }
@@ -101,7 +101,7 @@
 
 .cos-panel {
   padding: 16px 18px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   border-radius: 14px;
   box-shadow: 0 8px 24px rgba(21, 23, 26, 0.04);
 }
@@ -174,7 +174,7 @@
   display: grid;
   gap: 12px;
   padding: 16px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   border-radius: 14px;
   box-shadow: 0 10px 28px rgba(21, 23, 26, 0.05);
 }
@@ -293,12 +293,12 @@
   background: transparent;
   color: var(--skylent-color-slate);
   box-shadow: none;
-  border: 1px solid rgba(21, 23, 26, 0.12);
+  border: 1px solid var(--skylent-color-border);
 }
 
 .cos-public-actions a.cos-public-secondary:hover {
   color: var(--skylent-color-ink);
-  border-color: rgba(21, 23, 26, 0.22);
+  border-color: var(--skylent-color-border-strong);
 }
 
 .cos-area-link {
@@ -340,7 +340,7 @@
 .cos-public-fine {
   margin: 16px 0 0;
   max-width: 44em;
-  color: #6a717b;
+  color: var(--skylent-color-slate);
   font-size: 13px;
   line-height: 1.55;
 }
@@ -351,7 +351,7 @@
 
 .cos-public-caption {
   margin: 0 0 10px;
-  color: #6a717b;
+  color: var(--skylent-color-slate);
   font-family: var(--font-mono);
   font-size: 10.5px;
   letter-spacing: 0.13em;
@@ -364,8 +364,8 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  background: rgba(21, 23, 26, 0.09);
-  border: 1px solid rgba(21, 23, 26, 0.1);
+  background: var(--skylent-color-border);
+  border: 1px solid var(--skylent-color-border);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -435,8 +435,8 @@
   margin: 26px 0 0;
   padding: 0;
   list-style: none;
-  background: #ffffff;
-  border: 1px solid rgba(21, 23, 26, 0.1);
+  background: var(--skylent-surface-elevated);
+  border: 1px solid var(--skylent-color-border);
 }
 
 .cos-chain-steps li {
@@ -444,7 +444,7 @@
   min-width: 0;
   padding: 18px 20px 20px;
   border-top: 0;
-  border-right: 1px solid rgba(21, 23, 26, 0.08);
+  border-right: 1px solid var(--skylent-color-border);
 }
 
 .cos-chain-steps li:last-child {
@@ -495,8 +495,8 @@
   margin: 24px 0 0;
   padding: 0;
   list-style: none;
-  background: rgba(21, 23, 26, 0.09);
-  border: 1px solid rgba(21, 23, 26, 0.09);
+  background: var(--skylent-color-border);
+  border: 1px solid var(--skylent-color-border);
   border-radius: 4px;
   overflow: hidden;
 }
@@ -506,7 +506,7 @@
   gap: 4px;
   min-width: 0;
   padding: 15px 16px 16px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 
 .cos-area-list strong {
@@ -524,7 +524,7 @@
 
 .cos-area-state {
   margin-top: 4px;
-  color: #6a717b;
+  color: var(--skylent-color-muted);
   font-family: var(--font-mono);
   font-size: 9.5px;
   letter-spacing: 0.11em;
@@ -542,8 +542,8 @@
   }
 
   .cos-chain-steps li {
-    border-right: 1px solid rgba(21, 23, 26, 0.08);
-    border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+    border-right: 1px solid var(--skylent-color-border);
+    border-bottom: 1px solid var(--skylent-color-border);
   }
 
   .cos-chain-steps li:nth-child(2n) {
@@ -585,11 +585,11 @@
 
   .cos-chain-steps li {
     border-right: 0;
-    border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+    border-bottom: 1px solid var(--skylent-color-border);
   }
 
   .cos-chain-steps li:nth-last-child(-n + 2) {
-    border-bottom: 1px solid rgba(21, 23, 26, 0.08);
+    border-bottom: 1px solid var(--skylent-color-border);
   }
 
   .cos-chain-steps li:last-child {
@@ -617,25 +617,24 @@
 }
 
 /* =====================================================================
-   Frozen palette for signed-in Career OS content (set on .cos-scope by CareerOSShell).
-   The Career OS components style themselves through the --skylent-* custom properties
-   (src/tokens.ts), so re-declaring them here re-themes every page without touching markup:
-   white workspace, navy ink, cool hairlines, cobalt action. No cream, no indigo, no shadows.
+   Signed-in Career OS uses the same Dark Aurora tokens as the other workspaces.
+   Components read --skylent-* from src/tokens.ts, so this scope keeps those
+   surfaces on #0B1220 / #141C2E with light ink.
    ===================================================================== */
 .cos-scope {
-  --skylent-surface-paper: #ffffff;
-  --skylent-surface-cream: #ffffff;
-  --skylent-surface-cream-warm: hsl(var(--site-proof));
-  --skylent-surface-soft: hsl(var(--site-soft));
-  --skylent-surface-sand: hsl(var(--site-raised));
-  --skylent-surface-elevated: #ffffff;
-  --skylent-color-paper: #ffffff;
-  --skylent-color-cream: #ffffff;
-  --skylent-color-soft: hsl(var(--site-soft));
-  --skylent-color-soft-surface: #ffffff;
-  --skylent-color-sand: hsl(var(--site-raised));
-  --skylent-color-canvas: #ffffff;
-  --skylent-color-elevated: #ffffff;
+  --skylent-surface-paper: #0b1220;
+  --skylent-surface-cream: #0b1220;
+  --skylent-surface-cream-warm: #10192b;
+  --skylent-surface-soft: #121c2e;
+  --skylent-surface-sand: #1a2438;
+  --skylent-surface-elevated: #141c2e;
+  --skylent-color-paper: #0b1220;
+  --skylent-color-cream: #0b1220;
+  --skylent-color-soft: #121c2e;
+  --skylent-color-soft-surface: #141c2e;
+  --skylent-color-sand: #1a2438;
+  --skylent-color-canvas: #0b1220;
+  --skylent-color-elevated: #141c2e;
   --skylent-color-ink: hsl(var(--site-ink));
   --skylent-color-ink-2: hsl(var(--site-ink));
   --skylent-color-ink-3: hsl(var(--site-navy));
@@ -656,13 +655,13 @@
   --skylent-color-info-soft: hsl(var(--site-soft-blue));
   --skylent-color-info-border: hsl(var(--site-light-blue));
   --skylent-color-error: hsl(var(--site-red));
-  --skylent-color-error-soft: #ffffff;
+  --skylent-color-error-soft: #1a2438;
   --skylent-color-error-border: hsl(var(--site-border-strong));
   --skylent-focus-ring: hsl(var(--site-highlight));
   --color-ink: hsl(var(--site-ink));
   --color-slate: hsl(var(--site-muted));
-  --color-cream: #ffffff;
-  --color-canvas: #ffffff;
+  --color-cream: #0b1220;
+  --color-canvas: #0b1220;
   --color-indigo: hsl(var(--site-deep));
   --color-blue: hsl(var(--site-ocean));
   --color-line: hsl(var(--site-border));
@@ -675,13 +674,13 @@
   --shadow-subtle: none;
   --shadow-raised: none;
   --shadow-overlay: none;
-  --glass-01-bg: #ffffff;
+  --glass-01-bg: #141c2e;
   --glass-01-border: hsl(var(--site-border));
   --glass-01-shadow: none;
-  --glass-02-bg: #ffffff;
+  --glass-02-bg: #141c2e;
   --glass-02-border: hsl(var(--site-border));
   --glass-02-shadow: none;
-  --glass-03-bg: #ffffff;
+  --glass-03-bg: #141c2e;
   --glass-03-border: hsl(var(--site-border));
   --glass-03-shadow: none;
   --font-display: var(--sk-font-heading);

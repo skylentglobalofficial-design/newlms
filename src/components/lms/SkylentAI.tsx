@@ -368,7 +368,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
 
       <div className="os-ai-foot">
         <div className="os-ai-quick" role="group" aria-label="Quick help for this lesson">
-          {QUICK.map((item) => (
+          {QUICK.filter((item) => !(assessmentOpen && item.action === "quiz")).map((item) => (
             <button
               key={item.action}
               type="button"

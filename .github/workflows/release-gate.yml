@@ -195,6 +195,16 @@ jobs:
         run: |
           "$RUNNER_TEMP/restart-api.sh"
           npm run test:career-evidence
+      - name: test:employer (employer membership, job ownership, explicit sharing)
+        if: always()
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:employer
+      - name: test:lesson-media (playback id validation and enrolled-only media)
+        if: always()
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:lesson-media
       - name: Learner journey against the QA API and database
         if: always()
         run: |

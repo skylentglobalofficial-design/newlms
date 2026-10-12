@@ -199,7 +199,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
         ) : null}
 
         {error && (
-          <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 8, padding: '12px 14px', color: '#b91c1c', fontSize: 13, marginBottom: 16 }}>
+          <div role="alert" style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(255,141,134,0.45)', borderRadius: 8, padding: '12px 14px', color: C.danger, fontSize: 13, marginBottom: 16 }}>
             {error}
           </div>
         )}

@@ -1,3 +1,4 @@
+import { looksLikeAnswerKey, looksLikeAssignmentDump, looksLikeJailbreak } from "./grounded.js"
 import type { AcademicPolicy, ChatTurn, LessonAiContext } from "./types.js"
 import { assignmentRefusalFor } from "./prompts.js"
 
@@ -41,8 +42,20 @@ export function academicIntegrityRefusal(
   history: ChatTurn[],
   context: LessonAiContext,
   quizGuard?: { question: string; options: string[] }[],
+  action?: string,
 ): string | null {
   const text = combinedLearnerText(question, history)
+  if (looksLikeJailbreak(text)) {
+    return "I can only help with this lesson. Ask about the concept, an example, or what to practise next."
+  }
+  if ((policy === "open_quiz" || policy === "open_assignment") && action === "quiz") {
+    return policy === "open_quiz" ? OPEN_QUIZ_REFUSAL : assignmentRefusalFor(context)
+  }
+  if ((policy === "open_quiz" || policy === "open_assignment") && (looksLikeAnswerKey(text) || looksLikeAssignmentDump(text))) {
+    return policy === "open_quiz"
+      ? "I will not give the current quiz answer, the correct option, or the answer key. Explain the concept in your own words, then try the question."
+      : assignmentRefusalFor(context)
+  }
   if (policy === "open_quiz" && quizGuard && looksLikePastedQuizQuestion(text, quizGuard)) {
     return OPEN_QUIZ_REFUSAL
   }
@@ -125,4 +138,15 @@ export function answerLeaksWithheldResult(answer: string, original: LessonAiCont
   if (new RegExp(`\\b${nw.validRows}\\s+(valid|rows)`, "i").test(answer)) return true
   if (nw.sql && answer.replace(/\s+/g, " ").includes(nw.sql.replace(/\s+/g, " ").slice(0, 60))) return true
   return false
+}
+
+/** True when an open-assessment answer repeats a correct option. Short options are ignored. */
+export function answerLeaksWithheldAnswers(answer: string, withheld: string[] | undefined, policy: AcademicPolicy): boolean {
+  if (policy !== "open_quiz" && policy !== "open_assignment") return false
+  if (!withheld?.length) return false
+  const flat = answer.toLowerCase()
+  return withheld.some((option) => {
+    const clean = option.trim().toLowerCase()
+    return clean.length >= 8 && flat.includes(clean)
+  })
 }

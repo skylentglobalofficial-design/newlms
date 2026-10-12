@@ -1,11 +1,9 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
 import {
   CourseProductVisual,
-  CourseWorkspacePreview,
   ModuleLane,
-  ProductFrame,
   VisualStat,
   type ModuleLaneItem,
 } from "../components/product/ProductLanguage"
@@ -31,6 +29,10 @@ export default function CourseDetailPage() {
   const { slug } = useParams()
   const catalog = useCatalogCourse(slug)
   const [enrollOpen, setEnrollOpen] = useState(false)
+  useEffect(() => {
+    const title = catalog.data?.title
+    if (title) document.title = `${title} · Skylent`
+  }, [catalog.data])
 
   if (catalog.loading) {
     return (
@@ -125,80 +127,69 @@ export default function CourseDetailPage() {
   return (
     <PageShell aurora={false}>
       <div className="cat-page">
-        <div className="cat-enrol-bar">
-          <div className="cat-rail cat-enrol-bar-inner">
-            <div className="cat-enrol-bar-copy">
-              <strong>{course.title}</strong>
-              {confirmed ? <TruthChip state={authored ? "live" : "development"} /> : <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />}
-            </div>
-            {listingClosed ? (
-              <div className="cat-enrol-actions">
-                <a className="cat-btn cat-btn-ghost" href="#course-outline">View outline</a>
-                <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">{confirmed ? "Start Data Analytics" : "View Data Analytics"}</Link>
-              </div>
-            ) : (
-              <button
-                type="button"
-                className="cat-btn cat-btn-primary"
-                disabled={!enrollable}
-                onClick={openEnrol}
-              >
-                {cta}
-              </button>
-            )}
-          </div>
-        </div>
-
         <section className="cat-hero">
           <div className="cat-rail">
-            {confirmed ? null : <CatalogueNotice bare what="This course" onRetry={() => void catalog.reload()} />}
-            <Link className="cat-back" to="/courses">← Courses</Link>
-            <h1>{course.title}</h1>
-            <p className="cat-lead">{summary}</p>
-            <div className="cat-metrics">
-              <VisualStat label="Status" value={!confirmed ? STATUS_NOT_CONFIRMED : authored ? "Open" : "Opening soon"} />
-              <VisualStat label="Level" value={course.level} />
-              <VisualStat
-                label={showLiveCurriculum ? "Lessons" : "Outline"}
-                value={String(lessonCount)}
-              />
-              <VisualStat
-                label="Practice"
-                value={showLiveCurriculum && authoredStats ? `${authoredStats.quizCount} quizzes` : "Outline only"}
-              />
+            <div className="cat-intro">
+              <div className="cat-intro-crumb">
+                {confirmed ? null : <CatalogueNotice bare what="This course" onRetry={() => void catalog.reload()} />}
+                <Link className="cat-back" to="/courses">← Courses</Link>
+              </div>
+              <div className="cat-intro-copy">
+                <div className="cat-title-row">
+                  <h1>{course.title}</h1>
+                  {confirmed ? <TruthChip state={authored ? "live" : "development"} /> : <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />}
+                </div>
+                <p className="cat-lead">{summary}</p>
+              </div>
+              <aside className="cat-intro-meta" aria-label="Course details">
+                <div className="cat-metrics">
+                  <VisualStat label="Status" value={!confirmed ? STATUS_NOT_CONFIRMED : authored ? "Open" : "Opening soon"} />
+                  <VisualStat label="Level" value={course.level} />
+                  <VisualStat
+                    label={showLiveCurriculum ? "Lessons" : "Outline"}
+                    value={String(lessonCount)}
+                  />
+                  <VisualStat
+                    label="Practice"
+                    value={showLiveCurriculum && authoredStats ? `${authoredStats.quizCount} quizzes` : "Outline only"}
+                  />
+                </div>
+                <p className="cat-statline">
+                  <span>{authored ? "Written lessons + practice" : "Outline"}</span>
+                  <span>{course.mode}</span>
+                  <span>{showLiveCurriculum ? duration : duration || "Duration to be confirmed"}</span>
+                  <span>{course.category}</span>
+                  <span>{moduleCount} modules</span>
+                  {showLiveCurriculum && authoredStats ? <span>{authoredStats.assignmentCount} assignments</span> : null}
+                </p>
+              </aside>
+              <div className="cat-intro-actions">
+                <div className="cat-actions">
+                  {listingClosed ? (
+                    <>
+                      <a className="cat-btn cat-btn-ghost cat-btn-lg" href="#course-outline">View outline</a>
+                      <Link className="cat-btn cat-btn-primary cat-btn-lg" to="/courses/data-analytics">{confirmed ? "Start Data Analytics" : "View Data Analytics"}</Link>
+                      <Link className="cat-btn cat-btn-ghost cat-btn-lg" to="/courses/product-management">{confirmed ? "Start Product Management" : "View Product Management"}</Link>
+                    </>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        className="cat-btn cat-btn-primary cat-btn-lg"
+                        disabled={!enrollable}
+                        onClick={openEnrol}
+                      >
+                        {cta}
+                      </button>
+                      <Link className="cat-btn cat-btn-ghost cat-btn-lg" to="/courses">Browse courses</Link>
+                    </>
+                  )}
+                </div>
+                <p className="cat-honesty">
+                  Payment is not collected in this pilot. A certificate for this course is issued when every lesson in it is complete.
+                </p>
+              </div>
             </div>
-            <p className="cat-statline">
-              <span>{authored ? "Written lessons + practice" : "Outline"}</span>
-              <span>{course.mode}</span>
-              <span>{showLiveCurriculum ? duration : duration || "Duration to be confirmed"}</span>
-              <span>{course.category}</span>
-              <span>{moduleCount} modules</span>
-              {showLiveCurriculum && authoredStats ? <span>{authoredStats.assignmentCount} assignments</span> : null}
-            </p>
-            <div className="cat-actions">
-              {listingClosed ? (
-                <>
-                  <a className="cat-btn cat-btn-ghost cat-btn-lg" href="#course-outline">View outline</a>
-                  <Link className="cat-btn cat-btn-primary cat-btn-lg" to="/courses/data-analytics">{confirmed ? "Start Data Analytics" : "View Data Analytics"}</Link>
-                  <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">{confirmed ? "Start Product Management" : "View Product Management"}</Link>
-                </>
-              ) : (
-                <>
-                  <button
-                    type="button"
-                    className="cat-btn cat-btn-primary cat-btn-lg"
-                    disabled={!enrollable}
-                    onClick={openEnrol}
-                  >
-                    {cta}
-                  </button>
-                  <Link className="cat-btn cat-btn-ghost" to="/courses">Browse courses</Link>
-                </>
-              )}
-            </div>
-            <p className="cat-honesty">
-              Payment is not collected in this pilot. A certificate is not issued yet.
-            </p>
           </div>
         </section>
 
@@ -215,36 +206,6 @@ export default function CourseDetailPage() {
                 : "These are the planned modules. Lessons are added as they are ready."}
             </p>
             <ModuleLane modules={modules} />
-          </div>
-        </section>
-
-        <section className="cat-section">
-          <div className="cat-rail">
-            <p className="cat-preview-caption">What you open after enrol</p>
-            {showLiveCurriculum && authoredRecord ? (
-              <CourseWorkspacePreview
-                courseTitle={course.title}
-                lessonTitle={authoredRecord.modules[0]?.lessons[0]?.title ?? "Open the first lesson"}
-                practiceTitle={authoredRecord.modules.flatMap((module) => module.lessons).find((lesson) => lesson.type === "quiz")?.title ?? "A short check"}
-                workTitle={authoredRecord.modules.flatMap((module) => module.lessons).find((lesson) => /capstone|product case/i.test(lesson.title))?.title ?? "Capstone"}
-                modules={authoredRecord.modules.map((module) => module.title)}
-                lessonCount={lessonCount}
-                visual={profile?.visual === "harbor-desk" ? "harbor-desk" : "northwind"}
-                marketing
-              />
-            ) : (
-              <ProductFrame title={course.title} meta="Outline">
-                <ol className="pl-ws-rail pl-outline">
-                  {modules.map((module) => (
-                    <li key={module.id}>
-                      <span>{String(module.index).padStart(2, "0")}</span>
-                      {module.title}
-                    </li>
-                  ))}
-                </ol>
-                <p className="pl-fine">Outline titles only — not a finished teaching path.</p>
-              </ProductFrame>
-            )}
           </div>
         </section>
 
@@ -390,7 +351,7 @@ export default function CourseDetailPage() {
                   <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">{confirmed ? "Start Product Management" : "View Product Management"}</Link>
                 </div>
               ) : (
-                <button type="button" className="cat-btn cat-btn-primary" disabled={!enrollable} onClick={openEnrol}>
+                <button type="button" className="cat-btn cat-btn-primary cat-btn-lg" disabled={!enrollable} onClick={openEnrol}>
                   {cta}
                 </button>
               )}

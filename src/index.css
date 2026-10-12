@@ -83,12 +83,12 @@
   --glass-01-blur: none;
   --glass-01-shadow: var(--shadow-subtle);
 
-  --glass-02-bg: #FFFFFF;
+  --glass-02-bg: var(--skylent-surface-elevated);
   --glass-02-border: rgba(21, 23, 26, 0.10);
   --glass-02-blur: none;
   --glass-02-shadow: var(--shadow-raised);
 
-  --glass-03-bg: #FFFFFF;
+  --glass-03-bg: var(--skylent-surface-elevated);
   --glass-03-border: rgba(21, 23, 26, 0.10);
   --glass-03-blur: none;
   --glass-03-shadow: var(--shadow-overlay);
@@ -100,6 +100,7 @@
 
 html {
   scroll-behavior: smooth;
+  color-scheme: dark;
 }
 
 body {
@@ -1303,9 +1304,9 @@ html, body {
   }
 }
 
-/* Faculty teaching workspace: presentation-only light treatment. */
+/* Faculty teaching workspace: dark Aurora, same tokens as the other dashboards. */
 .faculty-teaching-workspace {
-  color: #0b1220;
+  color: var(--skylent-color-ink);
 }
 .faculty-teaching-workspace .auth-dashboard-layout {
   gap: clamp(22px, 3vw, 38px) !important;
@@ -1314,10 +1315,10 @@ html, body {
   display: none;
 }
 .faculty-teaching-workspace .auth-dashboard-primary > :first-child {
-  border: 1px solid rgba(11, 18, 32, .1) !important;
+  border: 1px solid var(--skylent-color-border) !important;
   border-radius: 8px !important;
-  background: #ffffff !important;
-  box-shadow: 0 18px 48px rgba(11, 18, 32, .06);
+  background: var(--skylent-surface-elevated) !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, .28);
 }
 .faculty-teaching-workspace .auth-dashboard-primary > :first-child > div {
   background: transparent !important;
@@ -1327,15 +1328,15 @@ html, body {
 .faculty-teaching-workspace [style*="color: rgba(255, 255, 255"]:not(button):not(a.sk-btn),
 .faculty-teaching-workspace [style*="color: #FFFFFF"]:not(button):not(a.sk-btn),
 .faculty-teaching-workspace [style*="color: rgb(255, 255, 255"]:not(button):not(a.sk-btn) {
-  color: #5b6680 !important;
+  color: var(--skylent-color-muted) !important;
 }
 .faculty-teaching-workspace [style*="color: #FFFFFF"]:not(button):not(a.sk-btn) {
-  color: #0b1220 !important;
+  color: var(--skylent-color-ink) !important;
 }
 .faculty-teaching-workspace h1,
 .faculty-teaching-workspace h2,
 .faculty-teaching-workspace h3 {
-  color: #0b1220 !important;
+  color: var(--skylent-color-ink) !important;
 }
 .faculty-teaching-workspace [style*="border: 1px solid rgba(255,255,255"],
 .faculty-teaching-workspace [style*="border: 1px solid rgba(255, 255, 255"],
@@ -1343,44 +1344,44 @@ html, body {
 .faculty-teaching-workspace [style*="border-bottom: 1px solid rgba(255, 255, 255"],
 .faculty-teaching-workspace [style*="border-top: 1px solid rgba(255,255,255"],
 .faculty-teaching-workspace [style*="border-top: 1px solid rgba(255, 255, 255"] {
-  border-color: rgba(11, 18, 32, .1) !important;
+  border-color: var(--skylent-color-border) !important;
 }
 .faculty-teaching-workspace [style*="background: rgba(255,255,255"],
 .faculty-teaching-workspace [style*="background: rgba(255, 255, 255"] {
-  background: #f5f3ed !important;
+  background: var(--skylent-surface-sand) !important;
 }
 .faculty-teaching-workspace .faculty-path-timeline {
   padding: 22px 24px;
-  border: 1px solid rgba(11, 18, 32, .1);
+  border: 1px solid var(--skylent-color-border);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 .faculty-teaching-workspace .faculty-path-step > div:last-child > div:first-child {
-  color: #0b1220 !important;
+  color: var(--skylent-color-ink) !important;
 }
 .faculty-teaching-workspace .faculty-path-step > div:last-child > div:nth-child(2) {
-  color: #5b6680 !important;
+  color: var(--skylent-color-muted) !important;
 }
 .faculty-teaching-workspace .faculty-path-step svg,
 .faculty-teaching-workspace .faculty-path-step + svg {
   color: #2f8d78;
 }
 .faculty-teaching-workspace .auth-dashboard-rail > div {
-  border-color: rgba(11, 18, 32, .1) !important;
-  background: #ffffff !important;
+  border-color: var(--skylent-color-border) !important;
+  background: var(--skylent-surface-elevated) !important;
   border-radius: 8px !important;
 }
 .faculty-teaching-workspace .auth-dashboard-rail > div > div:first-child {
-  color: #7a837d !important;
+  color: var(--skylent-color-muted) !important;
 }
 .faculty-teaching-workspace .auth-dashboard-rail [style*="color: #FFFFFF"]:not(button):not(a.sk-btn),
 .faculty-teaching-workspace .auth-dashboard-rail [style*="color: rgba(255,255,255"]:not(button):not(a.sk-btn),
 .faculty-teaching-workspace .auth-dashboard-rail [style*="color: rgba(255, 255, 255"]:not(button):not(a.sk-btn) {
-  color: #0b1220 !important;
+  color: var(--skylent-color-ink) !important;
 }
 .faculty-teaching-workspace .auth-dashboard-rail [style*="border-bottom: 1px solid"],
 .faculty-teaching-workspace .auth-dashboard-rail [style*="border-top: 1px solid"] {
-  border-color: rgba(11, 18, 32, .1) !important;
+  border-color: var(--skylent-color-border) !important;
 }
 .faculty-teaching-workspace .auth-dashboard-rail button {
   min-height: 40px;
@@ -1390,7 +1391,7 @@ html, body {
 }
 @media (max-width: 900px) {
   .faculty-teaching-workspace .auth-dashboard-primary > :first-child {
-    box-shadow: 0 12px 28px rgba(11, 18, 32, .05);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .22);
   }
 }
 @media (max-width: 600px) {
@@ -1404,9 +1405,9 @@ html, body {
   }
 }
 
-/* Organisation workspace: calm operational presentation over existing data flows. */
+/* Organisation workspace: dark Aurora over the existing data flows. */
 .organisation-workspace {
-  color: #0b1220;
+  color: var(--skylent-color-ink);
 }
 .organisation-workspace .auth-dashboard-layout {
   gap: clamp(22px, 3vw, 38px) !important;
@@ -1416,10 +1417,10 @@ html, body {
   margin-bottom: 26px;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 16px 42px rgba(11, 18, 32, .08);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, .28);
 }
 .organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) {
-  color: #0b1220;
+  color: var(--skylent-color-ink);
 }
 .organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="color: rgba(255,255,255"]:not(button):not(a.sk-btn),
 .organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="color: rgba(255, 255, 255"]:not(button):not(a.sk-btn),
@@ -1430,12 +1431,12 @@ html, body {
 .organisation-workspace .org-context-rail [style*="color: rgba(255,255,255"]:not(button):not(a.sk-btn),
 .organisation-workspace .org-context-rail [style*="color: rgba(255, 255, 255"]:not(button):not(a.sk-btn),
 .organisation-workspace .org-context-rail [style*="color: #FFFFFF"]:not(button):not(a.sk-btn) {
-  color: #5b6680 !important;
+  color: var(--skylent-color-muted) !important;
 }
 .organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) h1,
 .organisation-workspace .org-section h3,
 .organisation-workspace .org-section [style*="color: #FFFFFF"]:not(button):not(a.sk-btn) {
-  color: #0b1220 !important;
+  color: var(--skylent-color-ink) !important;
 }
 .organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="border-top: 1px solid rgba(255,255,255"],
 .organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="border-top: 1px solid rgba(255, 255, 255"],
@@ -1447,7 +1448,7 @@ html, body {
 .organisation-workspace .org-section [style*="border-bottom: 1px solid rgba(255, 255, 255"],
 .organisation-workspace .org-context-rail [style*="border-bottom: 1px solid rgba(255,255,255"],
 .organisation-workspace .org-context-rail [style*="border-top: 1px solid rgba(255,255,255"] {
-  border-color: rgba(11, 18, 32, .1) !important;
+  border-color: var(--skylent-color-border) !important;
 }
 .organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="background: rgba(255,255,255"],
 .organisation-workspace .org-institution-workspace > div:not(.org-institution-visual) [style*="background: rgba(255, 255, 255"],
@@ -1455,18 +1456,18 @@ html, body {
 .organisation-workspace .org-section [style*="background: rgba(255, 255, 255"],
 .organisation-workspace .org-context-rail [style*="background: rgba(255,255,255"],
 .organisation-workspace .org-context-rail [style*="background: rgba(255, 255, 255"] {
-  background: #f5f3ed !important;
+  background: var(--skylent-surface-sand) !important;
 }
 .organisation-workspace .org-section {
   margin-top: clamp(24px, 3vw, 36px);
   padding: 22px 24px;
-  border: 1px solid rgba(11, 18, 32, .1);
+  border: 1px solid var(--skylent-color-border);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 .organisation-workspace .org-section > .skylent-label,
 .organisation-workspace .org-context-rail .skylent-label {
-  color: #7a837d !important;
+  color: var(--skylent-color-muted) !important;
 }
 .organisation-workspace .org-curriculum-section {
   overflow: hidden;
@@ -1475,34 +1476,34 @@ html, body {
   padding: 8px 0 2px;
 }
 .organisation-workspace .org-pipeline-node span:first-of-type {
-  color: #0b1220 !important;
+  color: var(--skylent-color-ink) !important;
 }
 .organisation-workspace .org-pipeline-node span:last-of-type {
-  color: #7a837d !important;
+  color: var(--skylent-color-muted) !important;
 }
 .organisation-workspace .org-pipeline-connector {
-  background: rgba(11, 18, 32, .12) !important;
+  background: var(--skylent-color-border) !important;
 }
 .organisation-workspace .org-context-rail {
   padding: 22px 20px;
-  border: 1px solid rgba(11, 18, 32, .1);
+  border: 1px solid var(--skylent-color-border);
   border-radius: 8px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 .organisation-workspace .org-context-rail > div + div {
-  border-top-color: rgba(11, 18, 32, .1) !important;
+  border-top-color: var(--skylent-color-border) !important;
 }
 .organisation-workspace .org-context-rail span {
-  color: #35463f;
+  color: var(--skylent-color-slate);
 }
 .organisation-workspace .org-context-rail p {
-  color: #5b6680 !important;
+  color: var(--skylent-color-muted) !important;
 }
 .organisation-workspace #org-settings {
-  border-top-color: rgba(11, 18, 32, .1) !important;
+  border-top-color: var(--skylent-color-border) !important;
 }
 .organisation-workspace #org-settings p {
-  color: #5b6680 !important;
+  color: var(--skylent-color-muted) !important;
 }
 @media (max-width: 900px) {
   .organisation-workspace .org-section {

@@ -651,82 +651,19 @@ export type ModuleLaneItem = {
   countsLabel: string
 }
 
-export function moduleVisualKind(title: string, countsLabel = "") {
-  const hay = `${title} ${countsLabel}`
-  if (/sql/i.test(hay)) return "sql" as const
-  if (/dashboard/i.test(hay)) return "chart" as const
-  if (/capstone|applied project|specification|product case/i.test(hay)) return "build" as const
-  if (/spread|sheet/i.test(hay)) return "sheet" as const
-  if (/user|evidence|research/i.test(hay)) return "research" as const
-  if (/priorit|fram|thinking/i.test(hay)) return "frame" as const
-  return "learn" as const
-}
-
-function ModuleVisual({ kind }: { kind: ReturnType<typeof moduleVisualKind> }) {
-  if (kind === "sql") {
-    return (
-      <pre className="pl-lane-sql" aria-hidden="true">
-        <code>SELECT net_revenue FROM sales</code>
-      </pre>
-    )
-  }
-  if (kind === "chart") return <Spark mini />
-  if (kind === "sheet") {
-    return (
-      <div className="pl-lane-sheet" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </div>
-    )
-  }
-  if (kind === "build") {
-    return <span className="pl-lane-doc">Work sample</span>
-  }
-  if (kind === "frame") {
-    return (
-      <ol className="pl-hd-mini" aria-hidden="true">
-        <li />
-        <li />
-        <li />
-        <li />
-      </ol>
-    )
-  }
-  if (kind === "research") {
-    return (
-      <div className="pl-lane-quote" aria-hidden="true">
-        <span />
-        <span />
-      </div>
-    )
-  }
-  return (
-    <div className="pl-lane-lines" aria-hidden="true">
-      <span />
-      <span />
-      <span />
-    </div>
-  )
-}
-
 export function ModuleLane({ modules }: { modules: ModuleLaneItem[] }) {
   return (
     <ol className="pl-lane">
-      {modules.map((module) => {
-        const kind = moduleVisualKind(module.title, module.countsLabel)
-        return (
-          <li key={module.id} className={`pl-lane-item is-${kind}${module.index === 1 ? " is-start" : ""}`}>
-            <ModuleVisual kind={kind} />
-            <span className="pl-lane-num">{String(module.index).padStart(2, "0")}</span>
-            <div className="pl-lane-copy">
-              <strong>{module.title}</strong>
-              <p>{module.workLine}</p>
-              <p>{module.countsLabel}</p>
-            </div>
-          </li>
-        )
-      })}
+      {modules.map((module) => (
+        <li key={module.id} className={`pl-lane-item${module.index === 1 ? " is-start" : ""}`}>
+          <span className="pl-lane-num">{String(module.index).padStart(2, "0")}</span>
+          <div className="pl-lane-copy">
+            <strong>{module.title}</strong>
+            <p>{module.workLine}</p>
+            <p className="pl-lane-meta">{module.countsLabel}</p>
+          </div>
+        </li>
+      ))}
     </ol>
   )
 }

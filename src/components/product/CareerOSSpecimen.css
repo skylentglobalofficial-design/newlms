@@ -14,8 +14,8 @@
 }
 
 /* Light-ground chips and mark, even when the plate sits in a navy band. */
-.cspec.cspec .sky-chip--live { background: hsl(var(--site-navy)); border-color: hsl(var(--site-navy)); color: hsl(var(--site-white)); }
-.cspec.cspec .sky-chip--development { border-color: hsl(var(--site-navy)); color: hsl(var(--site-navy)); }
+.cspec.cspec .sky-chip--live { background: hsl(var(--site-deep)); border-color: hsl(var(--site-deep)); color: #ffffff; }
+.cspec.cspec .sky-chip--development { border-color: hsl(var(--site-navy-line-2)); color: hsl(var(--site-on-navy)); }
 .cspec.cspec .sky-chip--soon { border-color: hsl(var(--site-border-strong)); color: hsl(var(--site-muted)); }
 .cspec.cspec .sky-ai-mark { color: hsl(var(--site-ink)); }
 

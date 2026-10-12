@@ -384,7 +384,7 @@ export default function LoginPage() {
                       disabled={submitting}
                     />
                   </div>
-                  <TermsConsent checked={suTerms} onChange={setSuTerms} action="creating an account" showError={suTermsTried} />
+                  <TermsConsent variant="dark" checked={suTerms} onChange={setSuTerms} action="creating an account" showError={suTermsTried} />
                   <button className="entry-submit" type="submit" disabled={submitting || googleLoading}>
                     {submitting ? 'Creating account…' : 'Create account'}
                   </button>

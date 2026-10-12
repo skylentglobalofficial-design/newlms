@@ -1,6 +1,6 @@
 /**
  * Skylent design system foundation
- * Signed-in product tokens (:root). White workspace, deep navy anchors, cobalt action.
+ * Signed-in product tokens (:root). Dark Aurora canvas, light ink, ocean-blue action.
  * JS inline styles: keep src/tokens.ts in sync with :root below.
  *
  * The public shell (.skylent-public-canvas, src/skylent-public.css) re-declares every
@@ -9,28 +9,30 @@
  */
 
 :root {
+  color-scheme: dark;
   /*
-   * Frozen Skylent palette — five colours, each with one meaning.
-   *   White  #FFFFFF  the workspace and learning content
-   *   Warm   #FAF9F6 / #F3F0E8  proof: evidence, certificates, career
-   *   Navy   #0B1220  ink and product anchors (top bar, rail, code workbench)
-   *   Cobalt #2563FF  action, links, current state, progress
-   *   Cyan   #22C7F2  the Skylent AI mark only
+   * Dark Aurora. Deep navy canvas, light ink, ocean blue for action, cyan for the AI mark.
+   *   Canvas #0B1220
+   *   Card   #141C2E
+   *   Ink    #E8ECF5
+   *   Muted  #9AA6BF
+   *   Accent #2563FF
+   *   Cyan   #22C7F2
    */
 
   /* ── Surfaces ── */
-  --skylent-surface-paper: #ffffff;
-  --skylent-surface-cream: #ffffff;
-  --skylent-surface-cream-warm: #f5f7fb;
-  --skylent-surface-soft: #f6f8fb;
-  --skylent-surface-sand: #e6eaf2;
-  --skylent-surface-elevated: #ffffff;
-  --skylent-surface-inverse: #0b1220;
+  --skylent-surface-paper: #0b1220;
+  --skylent-surface-cream: #0b1220;
+  --skylent-surface-cream-warm: #10192b;
+  --skylent-surface-soft: #121c2e;
+  --skylent-surface-sand: #1a2438;
+  --skylent-surface-elevated: #141c2e;
+  --skylent-surface-inverse: #07111f;
 
   /* Proof surfaces — evidence and certificates only */
-  --skylent-surface-proof: #f5f7fb;
-  --skylent-surface-proof-2: #edf1f7;
-  --skylent-color-proof-line: #dde2ec;
+  --skylent-surface-proof: #121c2e;
+  --skylent-surface-proof-2: #182236;
+  --skylent-color-proof-line: #26304a;
 
   /* Navy anchors — shell rail, product top bars, workbench */
   --skylent-navy: #0b1220;
@@ -55,25 +57,27 @@
   --skylent-color-elevated: var(--skylent-surface-elevated);
 
   /* ── Text ── */
-  --skylent-color-ink: #0b1220;
-  --skylent-color-ink-2: #0b1220;
-  --skylent-color-ink-3: #141c2e;
-  --skylent-color-slate: #3d4760;
-  --skylent-color-muted: #5b6680;
-  --skylent-color-text-subtle: #5b6680;
-  --skylent-color-text-inverse: #ffffff;
+  --skylent-color-ink: #e8ecf5;
+  --skylent-color-ink-2: #e8ecf5;
+  --skylent-color-ink-3: #c5cedf;
+  --skylent-color-slate: #9aa6bf;
+  --skylent-color-muted: #8b97b0;
+  --skylent-color-text-subtle: #8b97b0;
+  --skylent-color-text-inverse: #e8ecf5;
   --skylent-color-text-inverse-muted: #9aa6bf;
 
   /* ── Borders (cool hairlines) ── */
-  --skylent-color-border-subtle: #e6eaf2;
-  --skylent-color-border: #dde2ec;
-  --skylent-color-border-strong: #a9b4c8;
+  --skylent-color-border-subtle: #26304a;
+  --skylent-color-border: #26304a;
+  --skylent-color-border-strong: #3a4664;
 
-  /* ── Action (cobalt — buttons, links, focus, current state, progress) ── */
+  /* ── Action — live brand blue #2563FF, hover #1D4FD8 ── */
   --skylent-color-accent: #2563ff;
   --skylent-color-accent-hover: #1d4fd8;
-  --skylent-color-accent-soft: #eaf0ff;
-  --skylent-color-accent-border: #bfd0ff;
+  /* Text on the dark product canvas. Live .tc--dark a is #9fc0ff; #2563ff is the button fill. */
+  --skylent-color-accent-text: #9fc0ff;
+  --skylent-color-accent-soft: rgba(37, 99, 255, 0.16);
+  --skylent-color-accent-border: rgba(37, 99, 255, 0.45);
   --skylent-color-accent-strong: #1d4fd8;
   --skylent-color-text-on-accent: #ffffff;
 
@@ -84,18 +88,18 @@
   --skylent-color-mark: var(--skylent-color-accent);
 
   /* ── Semantic states (no green, no amber: solidity and ink carry state) ── */
-  --skylent-color-success: #0b1220;
-  --skylent-color-success-soft: #eaf0ff;
-  --skylent-color-success-border: #bfd0ff;
-  --skylent-color-warning: #0b1220;
-  --skylent-color-warning-soft: #f6f8fb;
-  --skylent-color-warning-border: #a9b4c8;
-  --skylent-color-error: #b62520;
-  --skylent-color-error-soft: rgba(182, 37, 32, 0.05);
-  --skylent-color-error-border: rgba(182, 37, 32, 0.3);
+  --skylent-color-success: #e8ecf5;
+  --skylent-color-success-soft: rgba(61, 139, 253, 0.16);
+  --skylent-color-success-border: rgba(61, 139, 253, 0.45);
+  --skylent-color-warning: #e8ecf5;
+  --skylent-color-warning-soft: #121c2e;
+  --skylent-color-warning-border: #3a4664;
+  --skylent-color-error: #ff8d86;
+  --skylent-color-error-soft: rgba(182, 37, 32, 0.16);
+  --skylent-color-error-border: rgba(255, 141, 134, 0.4);
   --skylent-color-info: #2563ff;
-  --skylent-color-info-soft: #eaf0ff;
-  --skylent-color-info-border: #bfd0ff;
+  --skylent-color-info-soft: rgba(37, 99, 255, 0.16);
+  --skylent-color-info-border: rgba(37, 99, 255, 0.45);
   --skylent-color-information: var(--skylent-color-info);
   --skylent-color-information-soft: var(--skylent-color-info-soft);
   --skylent-color-information-border: var(--skylent-color-info-border);
@@ -431,7 +435,7 @@ html:root {
 
 /* ── Links ── */
 .skylent-link {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: color var(--skylent-duration-fast) var(--skylent-ease-ui),
@@ -439,7 +443,7 @@ html:root {
 }
 
 .skylent-link:hover {
-  color: var(--skylent-color-accent-hover);
+  color: var(--skylent-color-ink);
   border-bottom-color: var(--skylent-color-accent-border);
 }
 
@@ -569,7 +573,7 @@ html:root {
 .skylent-badge--accent {
   border-color: var(--skylent-color-accent-border);
   background: var(--skylent-color-accent-soft);
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
 }
 
 .skylent-badge--success {
@@ -677,7 +681,7 @@ html:root {
 
 .skylent-tab.is-active,
 .skylent-tab[aria-selected="true"] {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   border-bottom-color: var(--skylent-color-accent);
 }
 

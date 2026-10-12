@@ -4,6 +4,7 @@ import { JobApplicationStatus, Prisma } from "@prisma/client"
 import { prisma } from "../../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../../lib/auth.js"
 import { isJobOpenForApplications } from "../../lib/career/job-eligibility.js"
+import { JobStatus } from "@prisma/client"
 import {
   assertOwnedApplication,
 } from "../../lib/career/profile.js"
@@ -75,6 +76,60 @@ applicationsRouter.get("/", requireAuth, async (req: AuthenticatedRequest, res) 
   } catch (error) {
     console.error("Failed to list applications:", error)
     res.status(500).json({ error: "Failed to list applications" })
+  }
+})
+
+const shareSchema = z.object({
+  jobId: z.string().uuid(),
+})
+
+applicationsRouter.post("/share", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const parsed = shareSchema.safeParse(req.body)
+  if (!parsed.success) return validationError(res, parsed.error)
+
+  try {
+    const job = await prisma.job.findUnique({ where: { id: parsed.data.jobId } })
+    if (!job || job.status !== JobStatus.OPEN) return res.status(404).json({ error: "Job not found" })
+
+    const existing = await prisma.jobApplication.findFirst({
+      where: { userId: req.auth!.user.id, jobId: job.id },
+      orderBy: { updatedAt: "desc" },
+    })
+
+    if (existing && (existing.status === JobApplicationStatus.WITHDRAWN || existing.status === JobApplicationStatus.REJECTED)) {
+      return res.status(409).json({ error: "This application is closed and cannot be shared" })
+    }
+
+    const app = existing
+      ? await prisma.jobApplication.update({
+          where: { id: existing.id },
+          data: {
+            sharedWithEmployer: true,
+            status: existing.status === JobApplicationStatus.SAVED ? JobApplicationStatus.APPLIED : undefined,
+            employerId: existing.employerId ?? job.employerId,
+            roleTitle: existing.roleTitle ?? job.title,
+            appliedAt: existing.appliedAt ?? new Date(),
+          },
+          include: { job: true, employer: true },
+        })
+      : await prisma.jobApplication.create({
+          data: {
+            userId: req.auth!.user.id,
+            jobId: job.id,
+            employerId: job.employerId,
+            roleTitle: job.title,
+            status: "APPLIED",
+            appliedAt: new Date(),
+            source: "career-os-share",
+            sharedWithEmployer: true,
+          },
+          include: { job: true, employer: true },
+        })
+
+    res.status(existing ? 200 : 201).json({ data: serializeApplication(app) })
+  } catch (error) {
+    console.error("Failed to share application:", error)
+    res.status(500).json({ error: "Failed to share application" })
   }
 })
 
@@ -166,6 +221,25 @@ applicationsRouter.patch("/:id", requireAuth, requireCsrf, async (req: Authentic
     res.json({ data: serializeApplication(updated) })
   } catch (error) {
     res.status(500).json({ error: "Failed to update application" })
+  }
+})
+
+applicationsRouter.post("/:id/unshare", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const idParsed = uuidSchema.safeParse(req.params.id)
+  if (!idParsed.success) return res.status(400).json({ error: "Invalid application id" })
+
+  const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
+  if (!app) return res.status(404).json({ error: "Application not found" })
+
+  try {
+    const updated = await prisma.jobApplication.update({
+      where: { id: app.id },
+      data: { sharedWithEmployer: false },
+      include: { job: true, employer: true },
+    })
+    res.json({ data: serializeApplication(updated) })
+  } catch (error) {
+    res.status(500).json({ error: "Failed to stop sharing application" })
   }
 })
 

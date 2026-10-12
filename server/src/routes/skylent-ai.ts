@@ -139,13 +139,18 @@ async function respondToLessonAsk(
     policy === "open_quiz"
       ? await prisma.quizQuestion.findMany({
           where: { nodeId: located.node.id },
-          select: { question: true, options: true },
+          select: { question: true, options: true, correctIndex: true },
         })
       : []
   const quizGuard = quizRows.map((row) => ({
     question: row.question,
     options: Array.isArray(row.options) ? row.options.filter((option): option is string => typeof option === "string") : [],
   }))
+  const withheldAnswers = quizRows.flatMap((row) => {
+    const options = Array.isArray(row.options) ? row.options : []
+    const correct = options[row.correctIndex]
+    return typeof correct === "string" && correct.trim() ? [correct] : []
+  })
   const result = await answerLessonQuestion({
     action: payload.action,
     question: payload.question,
@@ -158,6 +163,7 @@ async function respondToLessonAsk(
     lessonKind,
     policy,
     quizGuard,
+    withheldAnswers,
   })
 
   if ("unavailable" in result) {

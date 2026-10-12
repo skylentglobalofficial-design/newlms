@@ -8,6 +8,7 @@ import {
   clearAuthClientState,
   type ApiRole,
 } from "../lib/auth-api"
+import { setUnauthorizedHandler } from "../lib/http"
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
 export type UserRole = ApiRole
@@ -61,6 +62,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [roles, setRoles] = useState<UserRole[]>([])
   const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      setUser(null)
+      setRoles([])
+    })
+    return () => setUnauthorizedHandler(null)
+  }, [])
 
   useEffect(() => {
     let cancelled = false

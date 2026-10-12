@@ -1,11 +1,73 @@
-import { lazy, Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { lazy, Suspense, useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { globalCSS } from './components/shared'
 
 import { AuthProvider } from './context/AuthContext'
 import { RoleRouteGuard } from './components/routing/RoleRouteGuard'
 import { DemoStateProvider } from './demo/DemoStateContext'
 import RouteFallback from './components/RouteFallback'
+
+const DEFAULT_TITLE = "Skylent — Learn. Practise. Build."
+
+/** Longest prefix wins. Authenticated routes stay out of the public sitemap. */
+const PAGE_TITLES: Array<[string, string]> = [
+  ["/dashboard/student", "Learner home"],
+  ["/dashboard/faculty", "Teaching"],
+  ["/dashboard/organisation", "Organisation"],
+  ["/dashboard/recruiter", "Recruiter"],
+  ["/dashboard/admin", "Admin"],
+  ["/learn", "Lesson"],
+  ["/os/labs", "Lab"],
+  ["/os/projects", "Project"],
+  ["/career-os/profile", "Career profile"],
+  ["/career-os/projects", "Projects"],
+  ["/career-os/jobs", "Jobs"],
+  ["/career-os/applications", "Applications"],
+  ["/career-os/interviews", "Interviews"],
+  ["/career-os/support", "Support"],
+  ["/career-os", "Career OS"],
+  ["/education/school", "School"],
+  ["/education/postgraduate", "Postgraduate"],
+  ["/education/exams", "Exams"],
+  ["/education/online", "Degree"],
+  ["/education/campus", "Degree"],
+  ["/education/degrees", "Degree"],
+  ["/education", "Education"],
+  ["/programmes", "Programmes"],
+  ["/programs", "Programmes"],
+  ["/skills", "Skills"],
+  ["/courses", "Courses"],
+  ["/workshops", "Workshops"],
+  ["/institutions", "Institutions"],
+  ["/universities", "Universities"],
+  ["/labs", "Labs"],
+  ["/stories", "Stories"],
+  ["/about", "About"],
+  ["/blog", "Journal"],
+  ["/contact", "Contact"],
+  ["/terms", "Terms"],
+  ["/privacy", "Privacy"],
+  ["/verify", "Verify a certificate"],
+  ["/login", "Sign in"],
+  ["/signup", "Create an account"],
+  ["/path/result", "Path result"],
+  ["/path", "Find a path"],
+  ["/os", "Skylent OS"],
+]
+
+function titleForPath(pathname: string): string {
+  if (pathname === "/") return DEFAULT_TITLE
+  const match = PAGE_TITLES.find(([prefix]) => pathname === prefix || pathname.startsWith(`${prefix}/`))
+  return match ? `${match[1]} · Skylent` : "Skylent"
+}
+
+function DocumentTitle() {
+  const { pathname } = useLocation()
+  useEffect(() => {
+    document.title = titleForPath(pathname)
+  }, [pathname])
+  return null
+}
 
 const HomePage = lazy(() => import('./pages/HomePage'))
 const LegalPage = lazy(() => import('./pages/LegalPage'))
@@ -60,6 +122,7 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'))
 function AppRoutes() {
   return (
     <Suspense fallback={<RouteFallback />}>
+      <DocumentTitle />
       <Routes>
         <Route path="/" element={<HomePage />} />
 

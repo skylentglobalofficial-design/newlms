@@ -116,7 +116,7 @@
 .sh-progress .os-progress-bar {
   flex: 1 1 160px;
   max-width: 280px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 
 .sh-note {
@@ -133,7 +133,7 @@
   min-width: 0;
   border: 1px solid var(--skylent-color-border);
   border-radius: 12px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
 }
 
 .sh-card-head {
@@ -266,7 +266,7 @@
 .sh-ai-head .sky-chip--live {
   border-color: #ffffff;
   background: #ffffff;
-  color: var(--skylent-navy);
+  color: #0b1220;
 }
 
 .sh-ai-head .sky-chip--development,

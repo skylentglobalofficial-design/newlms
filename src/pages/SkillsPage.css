@@ -63,7 +63,7 @@
   gap: 6px;
   min-width: 0;
   padding: 16px 16px 14px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   border: 1px solid hsl(var(--site-ink) / 0.1);
   border-radius: 4px;
   text-align: left;
@@ -363,7 +363,7 @@
   gap: 3px;
   height: 100%;
   padding: 12px 14px;
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   border: 1px solid hsl(var(--site-ink) / 0.09);
   border-radius: 4px;
   text-decoration: none;
@@ -371,7 +371,7 @@
 }
 
 .skills-p4 .sk-also-list a:hover {
-  background: #ffffff;
+  background: var(--skylent-surface-elevated);
   border-color: hsl(var(--site-ink) / 0.2);
 }
 

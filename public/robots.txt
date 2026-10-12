@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /learn/
+Disallow: /login
+Disallow: /signup
+Disallow: /os/labs/
+Disallow: /os/projects/
+
+Sitemap: https://skylent.live/sitemap.xml

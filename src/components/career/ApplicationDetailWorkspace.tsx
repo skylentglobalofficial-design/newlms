@@ -9,6 +9,7 @@ import {
   fetchApplication,
   listApplicationEvents,
   listInterviewRounds,
+  unshareApplication,
   updateApplication,
 } from "../../lib/career-api"
 import ApplicationTimeline from "./ApplicationTimeline"
@@ -50,6 +51,7 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
   const [statusPending, setStatusPending] = useState(false)
   const [savePending, setSavePending] = useState(false)
   const [deletePending, setDeletePending] = useState(false)
+  const [unsharePending, setUnsharePending] = useState(false)
   const [feedback, setFeedback] = useState<{ tone: "success" | "error"; message: string } | null>(null)
   const [editing, setEditing] = useState(false)
   const [notes, setNotes] = useState("")
@@ -115,6 +117,21 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
       setFeedback({ tone: "error", message: err instanceof Error ? err.message : "Failed to update application" })
     } finally {
       setSavePending(false)
+    }
+  }
+
+  async function handleUnshare() {
+    if (!application) return
+    setUnsharePending(true)
+    setFeedback(null)
+    try {
+      const updated = await unshareApplication(application.id)
+      setApplication(updated)
+      setFeedback({ tone: "success", message: "Stopped sharing. The employer no longer sees this application." })
+    } catch (err) {
+      setFeedback({ tone: "error", message: err instanceof Error ? err.message : "Failed to stop sharing" })
+    } finally {
+      setUnsharePending(false)
     }
   }
 
@@ -228,6 +245,19 @@ export default function ApplicationDetailWorkspace({ applicationId }: Props) {
             </Link>
           </div>
         )}
+
+        <div style={{ marginTop: 14, display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center", justifyContent: "space-between" }}>
+          <p style={{ margin: 0, color: C.slate, fontSize: 13, lineHeight: 1.6, minWidth: 0, flex: "1 1 240px" }}>
+            {application.sharedWithEmployer
+              ? "Shared with the employer. They see your name, this role, and its status. Notes stay private."
+              : "Private to you. The employer cannot see this application."}
+          </p>
+          {application.sharedWithEmployer && (
+            <button type="button" onClick={() => void handleUnshare()} disabled={unsharePending} style={{ ...secondaryButtonStyle, marginTop: 0 }}>
+              {unsharePending ? "Stopping…" : "Stop sharing"}
+            </button>
+          )}
+        </div>
       </GlassSurface>
 
       {nextStatuses.length > 0 && (

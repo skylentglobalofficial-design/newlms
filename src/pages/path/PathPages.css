@@ -9,7 +9,7 @@
   --path-muted: hsl(var(--site-dim));
   --path-line: hsl(var(--site-border));
   --path-line-strong: hsl(var(--site-border-strong));
-  --path-paper: #ffffff;
+  --path-paper: hsl(var(--site-white));
   --path-soft: hsl(var(--site-proof));
   --path-mark: hsl(var(--site-deep));
   --path-heading: var(--sk-font-heading);
@@ -17,7 +17,7 @@
   --path-mono: var(--sk-font-mono);
   --path-top: clamp(28px, 4vw, 48px);
   color: var(--path-ink);
-  background: var(--path-paper);
+  background: hsl(var(--site-paper));
   font-family: var(--path-sans);
   overflow-x: clip;
 }
@@ -144,25 +144,25 @@
   margin: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(7, minmax(96px, 1fr));
+  grid-template-columns: repeat(7, minmax(88px, 1fr));
 }
 
 .path-v2-progress__item {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
   min-width: 0;
-  padding-right: 12px;
+  text-align: center;
 }
 
 .path-v2-progress__item:not(:last-child)::after {
   content: "";
   position: absolute;
-  top: 14px;
-  left: 36px;
-  right: 8px;
+  top: 17px;
+  left: calc(50% + 22px);
+  right: calc(-50% + 22px);
   height: 2px;
   background: var(--path-line);
 }
@@ -173,8 +173,8 @@
 
 .path-v2-progress__node {
   box-sizing: border-box;
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -187,8 +187,8 @@
 }
 
 .path-v2-progress__item.is-done .path-v2-progress__node {
-  background: hsl(var(--site-navy));
-  border-color: hsl(var(--site-navy));
+  background: hsl(var(--site-navy-2));
+  border-color: hsl(var(--site-deep));
   color: #ffffff;
 }
 
@@ -219,9 +219,9 @@
 
 .path-v2__layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
-  gap: clamp(32px, 5vw, 72px);
-  margin-top: clamp(28px, 4vw, 44px);
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 360px);
+  gap: clamp(24px, 3vw, 40px);
+  margin-top: clamp(24px, 3vw, 36px);
   align-items: start;
 }
 
@@ -232,7 +232,7 @@
 
 .path-v2__aside {
   position: sticky;
-  top: 24px;
+  top: calc(var(--nav-h, 72px) + 16px);
   min-width: 0;
 }
 
@@ -252,7 +252,7 @@
 
 .path-v2__question {
   margin-top: 12px;
-  max-width: 18ch;
+  max-width: 16em;
   font-family: var(--path-heading);
   font-weight: 600;
   font-size: clamp(2rem, 4.2vw, 3rem);
@@ -343,7 +343,7 @@
 }
 
 .path-v2-choice:hover {
-  border-color: hsl(var(--site-ink) / 0.55);
+  border-color: hsl(var(--site-deep));
   background: hsl(var(--site-soft));
 }
 
@@ -499,9 +499,9 @@
 
 .path-v2-summary {
   padding: 22px 22px 18px;
-  border: 1px solid hsl(var(--site-proof-line));
+  border: 1px solid hsl(var(--site-border));
   border-radius: 12px;
-  background: var(--path-soft);
+  background: var(--path-paper);
 }
 
 .path-v2-summary .sky-label {
@@ -1212,10 +1212,53 @@
 }
 
 @media (max-width: 640px) {
-  /* The strip scrolls inside its own container; the page never does. */
+  .path-v2__choices {
+    grid-template-columns: 1fr;
+    /* Leave the launcher's corner clear so an answer stays tappable. */
+    width: calc(100% - 64px);
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .path-v2-choice {
+    scroll-margin-bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+
+  /* All seven stages stay on screen. The stage name is already in the eyebrow. */
+  .path-v2-progress__scroll {
+    overflow-x: hidden;
+  }
+
   .path-v2-progress__list {
-    grid-template-columns: repeat(7, 92px);
-    width: max-content;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .path-v2-progress__item {
+    gap: 0;
+  }
+
+  .path-v2-progress__node {
+    width: 32px;
+    height: 32px;
+    font-size: 0.625rem;
+  }
+
+  .path-v2-progress__item:not(:last-child)::after {
+    top: 15px;
+    left: calc(50% + 18px);
+    right: calc(-50% + 18px);
+  }
+
+  .path-v2-progress__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
   }
 
   .path-v2__foot .path-v2__continue {

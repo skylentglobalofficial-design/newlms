@@ -50,9 +50,23 @@ export async function readJsonBody(response: Response): Promise<unknown> {
   }
 }
 
+let unauthorizedHandler: (() => void) | null = null
+
+/** Registered by the auth provider. A 401 from a signed-in request clears the session. */
+export function setUnauthorizedHandler(handler: (() => void) | null) {
+  unauthorizedHandler = handler
+}
+
+function isAuthBootstrap(url: string): boolean {
+  return /\/auth\/(me|login|signup|csrf|google)(\?|$|\/)/.test(url)
+}
+
 export async function parseApiJson<T>(response: Response): Promise<T> {
   const data = await readJsonBody(response)
   if (!response.ok) {
+    if (response.status === 401 && unauthorizedHandler && !isAuthBootstrap(response.url)) {
+      unauthorizedHandler()
+    }
     throw new Error(userFacingApiError(data, response.status))
   }
   if (data === null) {

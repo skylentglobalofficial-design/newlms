@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Skylent">
+  <rect width="32" height="32" rx="8" fill="#0B1220"/>
+  <path fill="#E8ECF5" d="M9 23.5V8.5h6.4c3 0 4.9 1.6 4.9 4.1 0 1.7-.9 3-2.4 3.5l4.1 7.4h-3.4l-3.6-6.6H12.2v6.6H9Zm3.2-9.2h3c1.4 0 2.2-.7 2.2-1.7s-.8-1.7-2.2-1.7h-3v3.4Z"/>
+  <circle cx="24.2" cy="8.2" r="2.1" fill="#22C7F2"/>
+</svg>

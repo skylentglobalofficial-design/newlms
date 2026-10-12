@@ -11,7 +11,12 @@ export function getDefaultDemoState(): DemoState {
   }
 }
 
+function demoPersistenceEnabled(): boolean {
+  return import.meta.env.VITE_DEMO_MODE === "true"
+}
+
 export function loadDemoState(): DemoState {
+  if (!demoPersistenceEnabled()) return getDefaultDemoState()
   try {
     const raw = localStorage.getItem(DEMO_STATE_KEY)
     if (!raw) return getDefaultDemoState()
@@ -30,5 +35,6 @@ export function loadDemoState(): DemoState {
 }
 
 export function saveDemoState(state: DemoState): void {
+  if (!demoPersistenceEnabled()) return
   localStorage.setItem(DEMO_STATE_KEY, JSON.stringify(state))
 }

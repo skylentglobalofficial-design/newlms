@@ -157,7 +157,7 @@ function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curric
                   width: isCurrent ? 12 : 8,
                   height: isCurrent ? 12 : 8,
                   borderRadius: '50%',
-                  background: isCurrent ? accent.primary : isComplete ? accent.primary : 'rgba(11,13,15,0.12)',
+                  background: isCurrent ? accent.primary : isComplete ? accent.primary : 'var(--skylent-color-border-strong)',
                   boxShadow: isCurrent ? `0 0 16px ${accent.subtleStrong}` : 'none',
                   flexShrink: 0,
                   marginTop: 4,
@@ -177,7 +177,7 @@ function CurriculumTeachingPath({ summary }: { summary: FacultyDashboard['curric
                   color: isCurrent ? C.ink : C.slate,
                 }}>
                   {node.label}
-                  {isCurrent && <span style={{ color: accent.text, fontSize: 11, marginLeft: 8, fontWeight: 500 }}>current</span>}
+                  {isCurrent && <span style={{ color: 'var(--skylent-color-accent-text)', fontSize: 11, marginLeft: 8, fontWeight: 500 }}>current</span>}
                 </div>
                 <div style={{
                   fontSize: 12,
@@ -222,7 +222,7 @@ function AssignmentReview({
           </h3>
         </div>
         <div style={{ display: 'flex', gap: 12, flexShrink: 0 }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: accent.text }}>{pendingCount} pending</span>
+          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--skylent-color-accent-text)' }}>{pendingCount} pending</span>
         </div>
       </div>
 
@@ -252,7 +252,7 @@ function AssignmentReview({
                 style={{
                   background: accent.subtle,
                   border: `1px solid ${accent.border}`,
-                  color: accent.text,
+                  color: 'var(--skylent-color-accent-text)',
                   padding: '7px 14px',
                   borderRadius: T.rControl,
                   fontSize: 12,
@@ -284,7 +284,7 @@ function LearnerProgress({ dashboard }: { dashboard: FacultyDashboard | null }) 
         Learner progress
       </div>
 
-      <div style={{ padding: '16px', background: 'rgba(11,13,15,0.02)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
+      <div style={{ padding: '16px', background: 'var(--skylent-surface-elevated)', border: `1px solid ${T.lineLight}`, borderRadius: T.rCard }}>
         <div style={{ color: C.slate, fontSize: 13, lineHeight: 1.6 }}>
           {dashboard?.teachingScopeAvailable === false
             ? (dashboard.teachingScopeMessage ?? "Teaching scope is unavailable until faculty assignment is modeled in the backend.")
@@ -309,7 +309,7 @@ function UpcomingTeaching({ pendingCount }: { pendingCount: number }) {
             border: `1px solid ${accent.border}`,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={accent.text} strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--skylent-color-accent-text)" strokeWidth="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           </div>
           <div style={{ minWidth: 0 }}>
             <div style={{ color: C.ink, fontSize: 14, fontWeight: 500 }}>Assignment review</div>
@@ -351,7 +351,7 @@ function ClassesRail({
         ))}
         {courses.map((course, i) => (
           <div key={course.slug} style={{ padding: '16px 0', borderBottom: i < courses.length - 1 ? `1px solid ${T.lineLight}` : 'none' }}>
-            <div style={{ color: accent.text, fontSize: 10, letterSpacing: '0.08em', marginBottom: 6 }}>LMS course</div>
+            <div style={{ color: 'var(--skylent-color-accent-text)', fontSize: 10, letterSpacing: '0.08em', marginBottom: 6 }}>LMS course</div>
             <div style={{ color: C.ink, fontSize: 14, fontWeight: 600 }}>{course.title}</div>
             <div style={{ color: C.slate, fontSize: 12, marginTop: 4 }}>{course.moduleCount} modules · {course.lessonCount} lessons</div>
           </div>

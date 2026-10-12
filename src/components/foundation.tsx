@@ -393,7 +393,7 @@ export function ContextualNavBar({
         position: 'sticky',
         top: T.navH,
         zIndex: 70,
-        background: '#FFFDF8',
+        background: 'var(--skylent-surface-elevated)',
         borderBottom: `1px solid ${T.lineDark}`,
       }}
     >

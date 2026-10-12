@@ -50,6 +50,15 @@
   .ctc-actions .sk-btn { flex: 1 1 100%; }
   .ctc-phone { max-width: none; }
 }
+@media (max-width: 700px) {
+  .ctc-form {
+    width: calc(100% - 64px);
+    padding-bottom: calc(16px + env(safe-area-inset-bottom));
+  }
+  .ctc-form :is(.sk-input, .ctc-kind, .sk-btn) {
+    scroll-margin-bottom: calc(88px + env(safe-area-inset-bottom));
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .ctc-progress::after { animation: none; inset: 0; opacity: .5; }
   .ctc-kind { transition: none; }

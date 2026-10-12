@@ -1,8 +1,8 @@
 /* /about (repolish) — prefix abx-, on top of the hx- system */
-.abx .abx-section { padding-block: var(--hx-y); background: #fff; }
+.abx .abx-section { padding-block: var(--hx-y); background: hsl(var(--site-paper)); }
 .abx .abx-section--tint { background: hsl(var(--site-proof)); border-block: 1px solid hsl(var(--site-border)); }
 .abx .abx-products { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-.abx .abx-product { position: relative; display: grid; gap: 8px; height: 100%; padding: 22px 22px 48px; border: 1px solid hsl(var(--site-border)); border-radius: 18px; background: #fff; color: hsl(var(--site-ink)); text-decoration: none; transition: border-color var(--sk-fast) var(--sk-ease), box-shadow var(--sk-base) var(--sk-ease); }
+.abx .abx-product { position: relative; display: grid; gap: 8px; height: 100%; padding: 22px 22px 48px; border: 1px solid hsl(var(--site-border)); border-radius: 18px; background: hsl(var(--site-white)); color: hsl(var(--site-ink)); text-decoration: none; transition: border-color var(--sk-fast) var(--sk-ease), box-shadow var(--sk-base) var(--sk-ease); }
 .abx .abx-product:hover { border-color: hsl(var(--site-deep)); box-shadow: var(--sk-shadow); }
 .abx .abx-product b { font-size: 19px; font-weight: 650; }
 .abx .abx-product span { font-size: 14.5px; line-height: 1.55; color: hsl(var(--site-muted)); }

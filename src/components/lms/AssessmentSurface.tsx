@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 export type QuizQuestion = { q: string; options: string[]; correct?: number; explanation?: string }
@@ -16,6 +16,8 @@ export function AssessmentSurface({
   onSubmitAssignment,
   onSubmitAnswers,
   completionNote,
+  initialText,
+  onDraft,
 }: {
   mode: 'mcq' | 'timed' | 'assignment'
   title: string
@@ -28,10 +30,19 @@ export function AssessmentSurface({
   onSubmitAssignment?: (text: string) => boolean | void | Promise<boolean | void>
   onSubmitAnswers?: (answers: Record<number, number>) => Promise<boolean>
   completionNote?: string
+  /** Saved draft from the server. Undefined until the assignment request returns. */
+  initialText?: string
+  onDraft?: (text: string) => void
 }) {
   const [answers, setAnswers] = useState<Record<number, number>>({})
   const [submitted, setSubmitted] = useState(false)
-  const [text, setText] = useState('')
+  const [text, setText] = useState(initialText ?? '')
+  const draftHydrated = useRef(initialText !== undefined)
+  useEffect(() => {
+    if (initialText === undefined || draftHydrated.current) return
+    setText(initialText)
+    draftHydrated.current = true
+  }, [initialText])
   const [assignmentDone, setAssignmentDone] = useState(false)
   const [serverPassed, setServerPassed] = useState<boolean | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -69,7 +80,11 @@ export function AssessmentSurface({
         <textarea
           id="assignment-response"
           value={text}
-          onChange={e => setText(e.target.value)}
+          onChange={e => {
+            draftHydrated.current = true
+            setText(e.target.value)
+            onDraft?.(e.target.value)
+          }}
           placeholder="Paste your work here"
         />
         <button

@@ -6,9 +6,9 @@
 .cpx .cpx-lead { margin: 20px 0 0; max-width: 38em; font-size: clamp(16.5px, 1.4vw, 19px); line-height: 1.6; color: hsl(var(--site-on-navy-muted)); }
 .cpx .hx-hero__actions .sk-btn-secondary { min-height: 50px; }
 
-.cpx .cpx-parts { padding-block: var(--hx-y); background: #fff; }
+.cpx .cpx-parts { padding-block: var(--hx-y); background: hsl(var(--site-paper)); }
 .cpx .cpx-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-.cpx .cpx-card { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 20px; border: 1px solid hsl(var(--site-border)); border-radius: 18px; background: #fff; }
+.cpx .cpx-card { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 20px; border: 1px solid hsl(var(--site-border)); border-radius: 18px; background: hsl(var(--site-white)); }
 .cpx .cpx-card__icon { width: 36px; height: 36px; border-radius: 10px; background: hsl(var(--site-soft-blue)); box-shadow: inset 0 0 0 1px hsl(var(--site-light-blue)); position: relative; }
 .cpx .cpx-card__icon::after { content: ""; position: absolute; inset: 11px; border-radius: 4px; background: hsl(var(--site-deep)); }
 .cpx .cpx-card h3 { margin: 6px 0 0; font-family: var(--sk-font-heading); font-size: 18px; font-weight: 650; letter-spacing: -0.01em; color: hsl(var(--site-ink)); }
@@ -18,7 +18,7 @@
 .cpx .cpx-flow { padding-block: var(--hx-y); background: hsl(var(--site-proof)); border-top: 1px solid hsl(var(--site-border)); }
 .cpx .cpx-flow__row { display: grid; grid-template-columns: minmax(0, 5fr) 80px minmax(0, 4fr); align-items: center; gap: 16px; margin-top: 32px; }
 .cpx .cpx-sources { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.cpx .cpx-sources a { display: grid; gap: 2px; padding: 16px 18px; border-radius: 14px; border: 1px solid hsl(var(--site-border)); background: #fff; text-decoration: none; color: hsl(var(--site-ink)); transition: border-color var(--sk-fast) var(--sk-ease); }
+.cpx .cpx-sources a { display: grid; gap: 2px; padding: 16px 18px; border-radius: 14px; border: 1px solid hsl(var(--site-border)); background: hsl(var(--site-white)); text-decoration: none; color: hsl(var(--site-ink)); transition: border-color var(--sk-fast) var(--sk-ease); }
 .cpx .cpx-sources a:hover { border-color: hsl(var(--site-deep)); }
 .cpx .cpx-sources b { font-size: 16px; }
 .cpx .cpx-sources span { font-size: 14px; color: hsl(var(--site-muted)); }

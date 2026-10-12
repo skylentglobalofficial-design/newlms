@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 import { Link, useParams } from "react-router-dom"
 import { EnrollmentModal, PageShell } from "../components/shared"
 import ProfessionalProgrammeTemplate from "../components/programme/ProfessionalProgrammeTemplate"
@@ -26,6 +26,10 @@ export default function ProgramPage() {
   const { slug } = useParams()
   const catalog = useCatalogProgram(slug)
   const [enrollOpen, setEnrollOpen] = useState(false)
+  useEffect(() => {
+    const name = catalog.data?.name
+    if (name) document.title = `${name} · Skylent`
+  }, [catalog.data])
 
   if (catalog.loading) {
     return (
