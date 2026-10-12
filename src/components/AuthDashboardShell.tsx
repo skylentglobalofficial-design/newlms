@@ -34,8 +34,8 @@ export type AuthDashboardShellProps = {
   /** Optional slim white bar above the content: breadcrumb on the left, product slice on the right. */
   bar?: ReactNode
   /**
-   * Product presentation. "career" is the light Career OS workspace.
-   * Omitted shells keep the navy learning rail.
+   * Kept for call sites. The signed-in rail is always the navy learner rail.
+   * Career OS does not get a separate sidebar.
    */
   workspace?: 'learning' | 'career'
 }

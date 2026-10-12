@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { AuthDashboardShell, type AuthNavItem } from '../components/AuthDashboardShell'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate, Link } from 'react-router-dom'
+import { AuthDashboardShell } from '../components/AuthDashboardShell'
+import { LEARNER_NAV, LearnerNavIcon, learnerNavId } from '../components/learner/learner-nav'
 import { useAuth } from '../context/AuthContext'
 import { isCapstoneLesson, learnerErrorMessage, lessonTypeLabel, SERVICE_UNREACHABLE } from '../components/lms/lms-utils'
 import { useLmsDashboard } from '../hooks/useLms'
@@ -86,14 +87,6 @@ function CertificateName() {
   )
 }
 
-const NAV_ITEMS: AuthNavItem[] = [
-  { id: 'dashboard', label: 'Dashboard', short: 'Home', sectionId: 'student-learning' },
-  { id: 'my-courses', label: 'My Courses', short: 'Courses', sectionId: 'sh-my-learning' },
-  { id: 'projects', label: 'Projects', short: 'Projects', sectionId: 'student-projects' },
-  { id: 'explore-courses', label: 'Explore Courses', short: 'Explore', href: '/courses' },
-  { id: 'career-os', label: 'Career OS', short: 'Career', href: '/career-os' },
-]
-
 const SLICE = ['Learn', 'Practice', 'Build', 'Prove'] as const
 
 /** A list the page loads beside the dashboard. `null` data with an error means it could not be loaded. */
@@ -119,15 +112,6 @@ function ListError({ what, onRetry }: { what: string; onRetry: () => void }) {
       <button type="button" className="os-link" onClick={onRetry}>Try again</button>
     </div>
   )
-}
-
-function NavIcon({ id }: { id: string }) {
-  const s = { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, 'aria-hidden': true }
-  if (id === 'dashboard' || id === 'my-courses') return <svg {...s}><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-  if (id === 'explore-courses') return <svg {...s}><circle cx="12" cy="12" r="8"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5.5 5.5l2.8 2.8M15.7 15.7l2.8 2.8M18.5 5.5l-2.8 2.8M8.3 15.7l-2.8 2.8"/></svg>
-  if (id === 'projects') return <svg {...s}><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-  if (id === 'career-os') return <svg {...s}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-  return <svg {...s}><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
 }
 
 function formatDate(iso: string) {
@@ -159,7 +143,9 @@ export default function DashboardStudentPage() {
   const { user, ready } = useAuth()
   const { workspace, course, loading, error, reload } = useLmsDashboard()
   const navigate = useNavigate()
-  const [activeNav, setActiveNav] = useState('dashboard')
+  const { pathname, hash } = useLocation()
+  const activeNav = learnerNavId(pathname, hash)
+  const previousHash = useRef(hash)
   const [enrollments, setEnrollments] = useState<Loaded<ApiEnrollmentSummary[]>>({ status: 'loading' })
   const [projects, setProjects] = useState<Loaded<ProjectSummary[]>>({ status: 'loading' })
   const [certificates, setCertificates] = useState<Loaded<SkylentCertificate[]>>({ status: 'loading' })
@@ -172,6 +158,17 @@ export default function DashboardStudentPage() {
   useEffect(() => {
     if (ready && !user) navigate('/login')
   }, [ready, user, navigate])
+
+  useEffect(() => {
+    const sectionId = hash === '#sh-my-learning' || hash === '#student-projects' ? hash.slice(1) : ''
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (sectionId) {
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' })
+    } else if (previousHash.current === '#sh-my-learning' || previousHash.current === '#student-projects') {
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
+    }
+    previousHash.current = hash
+  }, [hash, workspace, enrollments.status, projects.status])
 
   const loadLists = useCallback((signal: AbortSignal) => {
     const settle = <T,>(promise: Promise<T>, set: (value: Loaded<T>) => void) => {
@@ -271,11 +268,11 @@ export default function DashboardStudentPage() {
     workspace: 'learning' as const,
     workspaceLabel: 'My Courses',
     roleLabel: 'Learner',
-    navItems: NAV_ITEMS,
-    bottomNavItems: NAV_ITEMS,
+    navItems: LEARNER_NAV,
+    bottomNavItems: LEARNER_NAV,
     activeNav,
-    onNavChange: setActiveNav,
-    renderNavIcon: (id: string) => <NavIcon id={id} />,
+    onNavChange: () => undefined,
+    renderNavIcon: (id: string) => <LearnerNavIcon id={id} />,
     bar: (
       <>
         <span className="sh-crumb">My Courses <span aria-hidden="true">/</span> <b>Home</b></span>

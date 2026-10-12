@@ -617,12 +617,12 @@
 }
 
 /* =====================================================================
-   Signed-in Career OS. This scope owns the workspace so LMS token changes
-   do not repaint it, and so it cannot fall back to the old navy canvas.
-   White sheets, near-black type, brand blue for action. The shell rail is
-   separate and is not styled here.
+   Signed-in Career OS, inside the shared learner shell.
+   White sheets, near-black type, brand blue for action. The navy rail
+   belongs to AuthDashboardShell and is not restyled here.
    ===================================================================== */
 .cos-scope {
+  max-width: 1180px;
   --skylent-surface-paper: #ffffff;
   --skylent-surface-cream: #ffffff;
   --skylent-surface-cream-warm: #f6f8fb;
@@ -694,6 +694,44 @@
   font-family: var(--sk-font-body);
 }
 
+.cos-pagenav {
+  margin: 0 0 28px;
+  border-bottom: 1px solid #dde2ec;
+}
+.cos-pagenav ul {
+  display: flex;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+}
+.cos-pagenav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border-bottom: 2px solid transparent;
+  color: #3d4760;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.cos-pagenav a:hover { color: #0b1220; }
+.cos-pagenav a[aria-current="page"] {
+  color: #0b1220;
+  border-bottom-color: #2563ff;
+}
+.cos-pagenav a:focus-visible {
+  outline: 2px solid #2563ff;
+  outline-offset: 2px;
+}
+.cos-scope :is(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid #2563ff !important;
+  outline-offset: 2px;
+}
+
 /* Legacy Career OS classes in the same language: hairline panels, no shadows, Space Grotesk headings. */
 .cos-scope .cos-page h1,
 .cos-scope .cos-page h2 { font-family: var(--sk-font-heading); font-weight: 600; letter-spacing: -0.01em; color: hsl(var(--site-ink)); }
@@ -701,7 +739,7 @@
 .cos-scope .cos-panel,
 .cos-scope .cos-empty { box-shadow: none; border: 1px solid hsl(var(--site-border)); border-radius: 12px; }
 .cos-scope .cos-artifact-stage { background: hsl(var(--site-proof-2)); }
-.cos-scope .cos-empty-cta { display: inline-flex; align-items: center; min-height: 44px; color: hsl(var(--site-deep)); }
+.cos-scope .cos-empty-cta { display: inline-flex; align-items: center; min-height: 44px; color: hsl(var(--site-ocean)); font-weight: 600; }
 
 /* =====================================================================
    Public Career OS entry (signed out). Prefix cosp-. Sits inside .site-light.

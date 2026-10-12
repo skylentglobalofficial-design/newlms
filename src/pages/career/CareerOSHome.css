@@ -27,8 +27,8 @@
 .cosh-stack { display: grid; gap: 10px; }
 .cosh-skeleton { display: block; }
 
-.cosh-textlink { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; font-weight: 600; color: hsl(var(--site-deep)) !important; }
-.cosh-textlink:hover { color: hsl(var(--site-ocean)) !important; }
+.cosh-textlink { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; font-weight: 600; color: hsl(var(--site-ocean)) !important; }
+.cosh-textlink:hover { color: hsl(var(--site-ink)) !important; text-decoration: underline; text-underline-offset: 3px; }
 .cosh-textlink svg { transition: transform var(--sk-fast) var(--sk-ease); }
 .cosh-textlink:hover svg { transform: translateX(3px); }
 
@@ -37,6 +37,25 @@
 .cosh-retry { min-height: 44px; padding: 0 14px; border: 1px solid hsl(var(--site-border-strong)); border-radius: 8px; background: hsl(var(--site-white)); color: hsl(var(--site-ink)); font: inherit; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: border-color var(--sk-fast) var(--sk-ease); }
 .cosh-retry:hover { border-color: hsl(var(--site-ink)); }
 .cosh-retry--inline { min-height: 0; padding: 0; border: 0; background: none; color: hsl(var(--site-deep)); font-family: var(--sk-font-mono); font-size: 11px; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ── Overview: one next step, then the other real actions ── */
+.cosh-intro { margin: 0 0 4px; }
+.cosh-kicker { margin: 0 0 8px; font-size: 13px; font-weight: 650; letter-spacing: 0.04em; text-transform: uppercase; color: hsl(var(--site-ocean)); }
+.cosh-intro h1 { font-size: clamp(28px, 3vw, 36px); line-height: 1.15; letter-spacing: -0.02em; }
+.cosh-intro__meta { margin-top: 8px; max-width: 62ch; font-size: 15px; line-height: 1.5; color: hsl(var(--site-muted)); }
+.cosh-intro__meta a { color: hsl(var(--site-ocean)); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.cosh > section { margin-top: 22px; }
+.cosh > section > h2 { margin: 0 0 12px; font-size: 20px; line-height: 1.25; }
+.cosh-actions { margin: 0; padding: 0; list-style: none; border: 1px solid hsl(var(--site-border)); border-radius: 12px; background: hsl(var(--site-white)); overflow: hidden; }
+.cosh-action { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding: 16px 18px; border-top: 1px solid hsl(var(--site-border)); }
+.cosh-action:first-child { border-top: 0; }
+.cosh-action--primary { background: hsl(var(--site-soft)); }
+.cosh-action__copy { flex: 1 1 240px; min-width: 0; }
+.cosh-action__kicker { margin: 0 0 4px; font-size: 13px; font-weight: 650; color: hsl(var(--site-ocean)); }
+.cosh-action h3 { margin: 0; font-size: 17px; line-height: 1.3; }
+.cosh-action__detail { margin-top: 4px; max-width: 68ch; font-size: 15px; line-height: 1.45; color: hsl(var(--site-muted)); }
+.cosh-action .sk-btn { min-height: 44px; flex: none; }
+.cosh-follow { margin-top: 28px; }
 
 /* ── Target role + next step ── */
 .cosh-top { display: flex; flex-wrap: wrap; align-items: stretch; gap: 22px 40px; }
