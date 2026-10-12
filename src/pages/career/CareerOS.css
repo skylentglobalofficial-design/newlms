@@ -948,9 +948,9 @@
   gap: 8px 20px;
   margin: 0 0 32px;
   padding: 14px 18px;
-  border: 1px solid hsl(var(--site-deep));
+  border: 1px solid hsl(var(--site-border));
   border-radius: 12px;
-  background: hsl(var(--site-soft-blue));
+  background: hsl(var(--site-white));
 }
 .cos-scope .cos-profile .cos-suggest__tag {
   display: inline-flex;
