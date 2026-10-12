@@ -484,7 +484,7 @@
   display: block;
 }
 .hm-page :is(.sky-band-navy, .sky-on-navy) .sk-link {
-  color: #8fb0ff;
+  color: #c4b8ff;
 }
 .hm-page :is(.sky-band-navy, .sky-on-navy) .sk-link:hover {
   color: hsl(var(--site-white));
@@ -1814,7 +1814,7 @@
   width: 7px;
   height: 7px;
   border-radius: 2px;
-  background: #8fb0ff;
+  background: #c4b8ff;
 }
 .hm-page .hm-lab__run {
   display: inline-flex;
@@ -2609,7 +2609,7 @@
   .hm-page .hm-stage__by {
     margin-top: 6px;
     text-align: left;
-    color: #8fb0ff;
+    color: #c4b8ff;
   }
 
   .hm-page .hm-home__grid {
