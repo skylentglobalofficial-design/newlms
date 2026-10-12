@@ -89,28 +89,28 @@
   --skylent-color-mark: var(--skylent-color-accent);
 
   /* ── Semantic states. Ink carries success and warning; error is a dark red on white. ── */
-  --skylent-color-success: #0b1220;
-  --skylent-color-success-soft: #eaf0ff;
-  --skylent-color-success-border: #bfd0ff;
-  --skylent-color-warning: #0b1220;
-  --skylent-color-warning-soft: #f6f8fb;
+  --skylent-color-success: #171717;
+  --skylent-color-success-soft: #eae6ff;
+  --skylent-color-success-border: #ddd7ff;
+  --skylent-color-warning: #171717;
+  --skylent-color-warning-soft: #f7f6fc;
   --skylent-color-warning-border: #c5cedd;
   --skylent-color-error: #9f2a24;
   --skylent-color-error-soft: rgba(182, 37, 32, 0.08);
   --skylent-color-error-border: rgba(159, 42, 36, 0.35);
-  --skylent-color-info: #2563ff;
-  --skylent-color-info-soft: rgba(37, 99, 255, 0.16);
+  --skylent-color-info: #5142b5;
+  --skylent-color-info-soft: rgba(81, 66, 181, 0.16);
   --skylent-color-info-border: rgba(37, 99, 255, 0.45);
   --skylent-color-information: var(--skylent-color-info);
   --skylent-color-information-soft: var(--skylent-color-info-soft);
   --skylent-color-information-border: var(--skylent-color-info-border);
 
-  /* ── Product / application UI on navy ── */
-  --skylent-product-dark: #0b1220;
-  --skylent-product-dark-surface: #141c2e;
+  /* ── Product / application UI on dark violet ── */
+  --skylent-product-dark: #2e2470;
+  --skylent-product-dark-surface: #3a2f82;
   --skylent-product-dark-muted: #9aa6bf;
   --skylent-product-dark-border: #26304a;
-  --skylent-product-dark-accent: #2563ff;
+  --skylent-product-dark-accent: #6657e8;
   --skylent-color-surface-product-dark: var(--skylent-product-dark);
   --skylent-color-text-on-dark: #e8ecf5;
   --skylent-color-muted-on-dark: var(--skylent-product-dark-muted);

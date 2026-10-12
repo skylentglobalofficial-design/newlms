@@ -5,10 +5,9 @@
    do not render this wrapper, so they keep the dark product tokens in
    styles/design-system.css.
 
-   Palette extracted from the live stylesheet
-   https://skylent.live/assets/index-CZ9H4zHZ.css on 12 Oct 2026:
-   paper #FFFFFF, ink #0B1220, action #2563FF, hover #1D4FD8,
-   dark product #0B1220 / #141C2E, cyan #22C7F2 for the AI mark only.
+   Palette: violet design system, Oct 2026:
+   paper #FFFFFF, ink #171717, action #5142B5, hover #43349F,
+   dark product #2E2470 / #3A2F82, AI accent #6657E8.
    ===================================================================== */
 
 html,
@@ -61,7 +60,7 @@ body:has(.skylent-public-canvas) {
   --skylent-surface-soft: #f6f8fb;
   --skylent-surface-sand: #e6eaf2;
   --skylent-surface-elevated: #ffffff;
-  --skylent-surface-inverse: #0b1220;
+  --skylent-surface-inverse: #2e2470;
 
   --skylent-color-paper: var(--skylent-surface-paper);
   --skylent-color-cream: var(--skylent-surface-cream);

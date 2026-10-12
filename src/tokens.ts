@@ -2,9 +2,9 @@
 // CSS custom properties live in src/styles/design-system.css; keep both in sync.
 //
 // Light workspaces (public site, login, dashboards, lesson reading, Career OS):
-//   white paper · near-black ink · #2563FF for action · navy only on rails and the lesson stage.
-// Type: Space Grotesk (headings), DM Sans (body), DM Mono (labels, numbers, code). No serif.
-// Navy surfaces are product anchors: the shell rail, product top bars and the code workbench.
+//   white paper · near-black ink · #5142B5 for action · violet only on rails and the lesson stage.
+// Type: Inter (headings + body), DM Mono (labels, numbers, code). No serif.
+// Violet surfaces are product anchors: the shell rail, product top bars and the code workbench.
 
 export const C = {
   // Themeable tokens resolve through the CSS custom properties in
@@ -33,22 +33,22 @@ export const C = {
   warning: 'var(--skylent-color-warning)',
   information: 'var(--skylent-color-info)',
   danger: 'var(--skylent-color-error)',
-  surfaceProductDark: '#0B1220',
-  textOnDark: '#E8ECF5',
-  mutedOnDark: '#9AA6BF',
+  surfaceProductDark: '#2E2470',
+  textOnDark: '#F0EDFF',
+  mutedOnDark: '#B5AFE0',
   textOnAccent: '#FFFFFF',
   // Frozen-system additions
-  navy: '#0B1220',
-  navyRaised: '#141C2E',
-  navyLine: '#26304A',
-  onNavy: '#E8ECF5',
-  onNavyMuted: '#9AA6BF',
-  cobalt: '#2563FF',
-  cobaltTint: '#EAF0FF',
-  proof: '#F6F8FB',
-  proofInset: '#EEF2F8',
-  proofLine: '#DDE2EC',
-  cyan: '#22C7F2',
+  navy: '#2E2470',
+  navyRaised: '#3A2F82',
+  navyLine: '#4A3F99',
+  onNavy: '#F0EDFF',
+  onNavyMuted: '#B5AFE0',
+  cobalt: '#5142B5',
+  cobaltTint: '#EAE6FF',
+  proof: '#F7F6FC',
+  proofInset: '#F2F0FC',
+  proofLine: '#DDD7FF',
+  cyan: '#6657E8',
 } as const
 
 /** Public surfaces — mirrors --skylent-surface-* in design-system.css */
@@ -89,7 +89,7 @@ export const colors = {
   orange: {
     default: C.orange,
     soft: '#EAF0FF',
-    strong: '#1D4FD8',
+    strong: '#43349F',
   },
   state: {
     success: { fg: C.success, soft: '#EAF0FF', border: '#BFD0FF' },
