@@ -39,3 +39,15 @@ This project uses **Tailwind CSS v4** through the `@tailwindcss/vite` plugin con
 - Use double quotes for strings containing apostrophes (`"We're here to help"`), or escape them in single-quoted strings. An unescaped apostrophe in a single-quoted string breaks the build.
 - Ensure JSX tags are closed and braces are balanced.
 - Export components as default exports.
+
+## Cursor Cloud specific instructions
+
+Boot starts PostgreSQL 16, the Express API, and Vite. Vite is already listening on `$PORT` (default 8443). The API is a second process.
+
+- Install with `npm ci` from `package-lock.json` on Node.js 22. `postinstall` runs `prisma generate`, which needs `DATABASE_URL` and `DIRECT_URL`.
+- Local database `skylent`, role `skylent`, trust authentication from localhost. Both URLs are `postgresql://skylent@127.0.0.1:5432/skylent`. Boot writes a gitignored `.env` when that file is missing, including a generated `SESSION_SECRET`.
+- API: `npm run dev:api` on port 3000 (tmux session `skylent-api`). Vite: `npm run dev` on `$PORT` or 8443 (tmux session `skylent-web`). Vite proxies `/api` to port 3000. Avoid `npm run dev:all` when `PORT` is set, because both scripts read `PORT` and would bind the same port.
+- `npx prisma migrate deploy` runs on boot. `npm run db:seed` loads the catalog. Running the seed again rebuilds catalog rows. With `NODE_ENV=production` it refuses once courses exist unless `SKYLENT_ALLOW_DESTRUCTIVE_SEED=1`.
+- Google OAuth and a vendor LLM key are optional. Without them, Google sign-in returns 503 and Skylent AI uses the local `lesson-grounded` provider.
+- Account creation on `/login` requires the terms checkbox. The policy version is `2026-10-09`.
+- Checks: `npm run typecheck`, `npm run backend:typecheck`, `npm run prisma:validate`, `npm run build`. `GET /api/v1/health` returns `{"status":"ok","db":"ok"}` when Postgres is up.
