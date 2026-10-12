@@ -33,6 +33,7 @@ export default function CareerOSShell({ children, header }: { children: ReactNod
   return (
     <AuthDashboardShell
       themeId="career"
+      workspace="career"
       workspaceLabel="Career OS"
       roleLabel="Career workspace"
       navItems={NAV_ITEMS}

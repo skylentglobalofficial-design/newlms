@@ -25,6 +25,22 @@
   width: var(--shell-rail-w);
   background: var(--skylent-navy);
   color: var(--skylent-on-navy);
+  --skylent-color-accent-text: #9fc0ff;
+}
+
+/* Career OS only. The recruiter shell also uses themeId "career" and must keep the learning rail. */
+.auth-shell[data-workspace="career"] {
+  background: #f3f5f8;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-main,
+.auth-shell[data-workspace="career"] .auth-shell-content {
+  background: #f3f5f8;
+}
+
+.auth-shell[data-workspace="career"] .cos-scope {
+  display: block;
+  max-width: 1080px;
 }
 
 .auth-shell-rail--drawer {
@@ -390,4 +406,85 @@
   .auth-shell::before {
     display: none;
   }
+}
+
+/* Career OS rail: white, near-black type, one blue current mark.
+   The LMS rail above stays navy. */
+.auth-shell[data-workspace="career"]::before {
+  background: #ffffff;
+  border-right: 1px solid #dde2ec;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-rail {
+  background: #ffffff;
+  color: #0b1220;
+  border-right: 1px solid #dde2ec;
+  --skylent-color-accent-text: #1d4fd8;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-brand {
+  border-bottom-color: #dde2ec;
+  color: #0b1220;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-wordmark {
+  color: #0b1220;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-workspace {
+  color: #5b6680;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-nav-item {
+  color: #3d4760;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-nav-item:hover,
+.auth-shell[data-workspace="career"] .auth-shell-nav-item[aria-current="page"] {
+  background: #eaf0ff;
+  color: #0b1220;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-user {
+  border-top-color: #dde2ec;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-avatar {
+  border-color: #dde2ec;
+  background: #f6f8fb;
+  color: #0b1220;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-user-name {
+  color: #0b1220;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-user-role,
+.auth-shell[data-workspace="career"] .auth-shell-signout {
+  color: #3d4760;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-signout {
+  border-color: #c5cedd;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-signout:hover {
+  background: #f6f8fb;
+  border-color: #0b1220;
+  color: #0b1220;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-rail :is(a, button):focus-visible,
+.auth-shell[data-workspace="career"] .auth-shell-topbar :is(a, button):focus-visible {
+  outline-color: #2563ff;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-topbar {
+  background: #ffffff;
+  color: #0b1220;
+  border-bottom: 1px solid #dde2ec;
+}
+
+.auth-shell[data-workspace="career"] .auth-shell-menu {
+  color: #0b1220;
 }

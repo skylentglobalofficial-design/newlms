@@ -268,6 +268,7 @@ export default function DashboardStudentPage() {
 
   const shell = {
     themeId: 'data-science' as const,
+    workspace: 'learning' as const,
     workspaceLabel: 'My Courses',
     roleLabel: 'Learner',
     navItems: NAV_ITEMS,
@@ -380,7 +381,7 @@ export default function DashboardStudentPage() {
       ) : enrollments.status === 'error' ? (
         <ListError what="Your enrolments" onRetry={retryLists} />
       ) : enrolmentRows.length === 0 ? (
-        <p className="sh-empty">You are not enrolled in anything yet.</p>
+        <p className="sh-empty">You are not enrolled in anything yet. <Link className="os-link" to="/courses">Browse courses</Link></p>
       ) : (
         <ul className="sh-rows">
           {enrolmentRows.map((item) => {
@@ -603,6 +604,19 @@ export default function DashboardStudentPage() {
       <div className="sh">
         <p className="os-eyebrow">My Courses</p>
         <h1>What to do next</h1>
+        <ul className="sh-facts">
+          <li>
+            {enrollments.status === 'ready' ? (
+              <><strong>{enrolmentRows.length}</strong> {enrolmentRows.length === 1 ? 'enrolment' : 'enrolments'}</>
+            ) : enrollments.status === 'error' ? (
+              'Enrolments could not be loaded'
+            ) : (
+              'Enrolments loading'
+            )}
+          </li>
+          <li><strong>{completedCount}</strong> of {totalLessons} lessons complete</li>
+          <li>{allComplete ? 'Certificate can be claimed below' : 'Resume is the current lesson'}</li>
+        </ul>
 
         <div className="sh-grid">
           <div className="sh-stack">
