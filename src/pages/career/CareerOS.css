@@ -932,10 +932,10 @@
   min-height: 44px;
   font-size: 14px;
   font-weight: 600;
-  color: hsl(var(--site-deep));
+  color: hsl(var(--site-ocean));
   text-decoration: none;
 }
-.cos-scope .cos-profile .cos-suggest a:hover { color: hsl(var(--site-ocean)); }
+.cos-scope .cos-profile .cos-suggest a:hover { color: hsl(var(--site-ink)); text-decoration: underline; text-underline-offset: 3px; }
 
 /* Applications, Opportunities, Interviews, Support and their detail views —
    the same finish as Profile / Projects: one page header, hairline 12px panels,

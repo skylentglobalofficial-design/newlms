@@ -614,8 +614,16 @@ export default function DashboardStudentPage() {
               'Enrolments loading'
             )}
           </li>
-          <li><strong>{completedCount}</strong> of {totalLessons} lessons complete</li>
-          <li>{allComplete ? 'Certificate can be claimed below' : 'Resume is the current lesson'}</li>
+          <li><strong>{completedCount}</strong> of {totalLessons} lessons complete in {course.title}</li>
+          <li>
+            {certificates.status === 'ready' && claimable.length > 0
+              ? 'A certificate can be claimed below'
+              : allComplete
+                ? 'Every lesson in this course is complete'
+                : completedCount > 0 || resumeStarted
+                  ? 'Resume is the current lesson'
+                  : 'The first lesson is ready to start'}
+          </li>
         </ul>
 
         <div className="sh-grid">
@@ -641,7 +649,9 @@ export default function DashboardStudentPage() {
               </h2>
               <p className="sh-body">
                 {allComplete
-                  ? 'Your certificate can be claimed below.'
+                  ? certificates.status === 'ready' && claimable.length > 0
+                    ? 'Your certificate can be claimed below.'
+                    : 'Every lesson in this course is complete.'
                   : `Module ${resume.moduleIndex} of ${resume.moduleTotal} · ${resume.moduleTitle}${resume.nextLessonTitle ? `. Next: ${resume.nextLessonTitle}` : ''}`}
               </p>
               {workspace.program ? (

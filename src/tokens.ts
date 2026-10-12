@@ -45,9 +45,9 @@ export const C = {
   onNavyMuted: '#9AA6BF',
   cobalt: '#2563FF',
   cobaltTint: '#EAF0FF',
-  proof: '#F5F7FB',
-  proofInset: '#EDF1F7',
-  proofLine: '#E6E1D6',
+  proof: '#F6F8FB',
+  proofInset: '#EEF2F8',
+  proofLine: '#DDE2EC',
   cyan: '#22C7F2',
 } as const
 

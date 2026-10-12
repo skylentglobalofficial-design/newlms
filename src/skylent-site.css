@@ -120,7 +120,7 @@
 .site-light {
   background: hsl(var(--site-paper));
   color: hsl(var(--site-ink));
-  color-scheme: dark;
+  color-scheme: light;
   font-family: var(--sk-font-body);
   font-feature-settings: 'cv11', 'ss01';
 }
@@ -139,11 +139,11 @@
   letter-spacing: 0;
 }
 
-/* Signed-in shell (class name kept; the canvas is dark Aurora) */
+/* Class name kept. The shell now uses the light paper and ink tokens. */
 .portal-dark {
   background-color: hsl(var(--site-paper));
   color: hsl(var(--site-ink));
-  color-scheme: dark;
+  color-scheme: light;
 }
 .portal-dark .glass-panel {
   background: hsl(var(--site-white));
@@ -652,7 +652,8 @@ textarea.sk-input { padding-block: .625rem; min-height: 6rem; }
   text-transform: uppercase;
   color: hsl(var(--site-dim));
 }
-.sky-index b { font-weight: 500; color: hsl(var(--site-deep)); }
+.sky-index b { font-weight: 500; color: hsl(var(--site-ocean)); }
+:is(.sky-band-navy, .sky-on-navy) .sky-index b { color: #9fc0ff; }
 
 /* Chapters: white = offer, warm = proof, navy = product anchor / next step */
 .sky-band-proof { background: hsl(var(--site-proof)); border-block: 1px solid hsl(var(--site-proof-line)); }
