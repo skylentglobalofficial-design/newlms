@@ -8,8 +8,8 @@
    (--skylent-color-*, --skylent-surface-*, etc.).
 
    Ported from: lovable_src/src/index.css (Skylent 2.0 approved design).
-   Final public direction: dark Aurora canvas (#0B1220). Light ink, ocean-blue
-   accent, restrained cyan, cool hairlines.
+   :root here is the dark product fallback. The public shell redeclares the
+   live light editorial palette on .skylent-public-canvas.
    ===================================================================== */
 
 /* ---------- Brand palette (raw HSL channels) ---------- */
@@ -651,6 +651,10 @@ textarea.sk-input { padding-block: .625rem; min-height: 6rem; }
 .sky-on-navy .sky-label,
 .sky-band-navy .sky-index,
 .sky-on-navy .sky-index { color: hsl(var(--site-on-navy-muted)); }
+/* White plates inside a navy band keep on-light labels. */
+:is(.sky-band-navy, .sky-on-navy) :is(.sky-plate, .sky-plate__inner, .pa-lab__out, .pa-case, .dg-week__bar, .dg-week__rooms) :is(.sky-label, .sky-index) {
+  color: hsl(var(--site-dim));
+}
 .sky-band-navy .sk-btn-secondary,
 .sky-on-navy .sk-btn-secondary { color: hsl(var(--site-white)); border-color: hsl(var(--site-navy-line-2)); }
 .sky-band-navy .sk-btn-secondary:hover,
@@ -704,7 +708,7 @@ textarea.sk-input { padding-block: .625rem; min-height: 6rem; }
 /* 3. Truth chips: solidity shows how real it is */
 .sky-chip { display: inline-flex; align-items: center; font-family: var(--sk-font-mono); font-size: .65625rem; line-height: 1.2; font-weight: 400; letter-spacing: .08em; text-transform: uppercase; padding: 4px 9px; border-radius: 6px; border: 1px solid transparent; white-space: nowrap; }
 .sky-chip--live { background: hsl(var(--site-deep)); border-color: hsl(var(--site-deep)); color: #ffffff; }
-.sky-chip--development { border-color: hsl(var(--site-navy-line-2)); color: hsl(var(--site-on-navy)); background: transparent; }
+.sky-chip--development { border-color: hsl(var(--site-border-strong)); color: hsl(var(--site-ink)); background: transparent; }
 .sky-chip--soon { border: 1px dashed hsl(var(--site-border-strong)); color: hsl(var(--site-muted)); background: transparent; }
 .sky-chip--sample,
 .sky-chip--illustrative { background: hsl(var(--site-proof-2)); border-color: hsl(var(--site-proof-line)); color: hsl(var(--site-muted)); }

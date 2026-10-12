@@ -809,8 +809,8 @@
   width: 36px;
   height: 36px;
   border-radius: 10px;
-  background: var(--skylent-color-accent-soft);
-  color: var(--skylent-color-accent);
+  background: hsl(var(--site-soft-blue));
+  color: hsl(var(--site-ocean));
   font-size: 13px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;

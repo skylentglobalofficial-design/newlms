@@ -312,7 +312,7 @@
 
 .auth-shell-bottom-nav button[aria-current="page"] {
   border-top-color: var(--skylent-color-accent);
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   font-weight: 600;
 }
 

@@ -162,7 +162,7 @@
 }
 
 .entry-context-label {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   font: 700 9.5px/1.3 var(--font-mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -292,7 +292,7 @@
   padding: 0;
   background: none;
   border: none;
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   font: 500 13px/1.5 var(--font-body);
   cursor: pointer;
 }
@@ -323,7 +323,7 @@
 }
 
 .entry-note a {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   text-decoration: none;
 }
 

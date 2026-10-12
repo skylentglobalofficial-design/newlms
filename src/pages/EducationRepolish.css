@@ -53,8 +53,8 @@
 .edx .edx-degree__title { font-weight: 650; font-size: 1rem; }
 .edx .edx-degree__meta { grid-column: 1; display: flex; flex-wrap: wrap; gap: .25rem .75rem; font-size: .8125rem; color: hsl(var(--site-dim)); }
 .edx .edx-mode--online .edx-degree__meta { color: hsl(var(--site-on-navy-muted)); }
-.edx .edx-soon { color: hsl(40 95% 70%); font-weight: 600; }
-.edx .edx-mode--online .edx-soon { color: hsl(40 95% 70%); }
+.edx .edx-soon { color: hsl(var(--site-muted)); font-weight: 600; }
+.edx .edx-mode--online .edx-soon { color: hsl(40 92% 72%); }
 .edx .edx-degree__go { grid-column: 2; grid-row: 1 / span 2; display: inline-flex; align-items: center; gap: .375rem; font-size: .875rem; font-weight: 600; color: hsl(var(--site-deep)); }
 .edx .edx-mode--online .edx-degree__go { color: hsl(214 100% 78%); }
 .edx .edx-none { padding: 1rem; border-radius: 12px; border: 1px dashed hsl(var(--site-border-strong)); }

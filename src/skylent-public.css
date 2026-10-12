@@ -1,17 +1,14 @@
 /* =====================================================================
-   SKYLENT PUBLIC SHELL — dark Aurora theme
+   SKYLENT PUBLIC SHELL — light editorial canvas, dark product bands
 
-   Everything here is scoped to .skylent-public-canvas, the wrapper that
-   PageShell (components/shared.tsx) renders around the public Nav, <main>
-   and Footer. The signed-in surfaces (dashboards, LMS / Skylent OS, the
-   signed-in Career OS shell, login) do not render that wrapper, so they keep
-   the :root tokens from styles/design-system.css untouched.
+   Scoped to .skylent-public-canvas (Nav, main, Footer). Signed-in surfaces
+   do not render this wrapper, so they keep the dark product tokens in
+   styles/design-system.css.
 
-   Loaded from main.tsx after index.css, so it is always present and wins
-   over the base layer at equal specificity.
-
-   Direction: #0B1220 canvas, light ink, ocean-blue accent, restrained cyan.
-   Palette source: src/skylent-site.css (--site-*).
+   Palette extracted from the live stylesheet
+   https://skylent.live/assets/index-CZ9H4zHZ.css on 12 Oct 2026:
+   paper #FFFFFF, ink #0B1220, action #2563FF, hover #1D4FD8,
+   dark product #0B1220 / #141C2E, cyan #22C7F2 for the AI mark only.
    ===================================================================== */
 
 html,
@@ -24,8 +21,8 @@ body {
    warm strip shows on short pages or during overscroll. */
 html:has(.skylent-public-canvas),
 body:has(.skylent-public-canvas) {
-  background-color: #0b1220;
-  color-scheme: dark;
+  background-color: #ffffff;
+  color-scheme: light;
 }
 
 /* ---------------------------------------------------------------------
@@ -36,15 +33,35 @@ body:has(.skylent-public-canvas) {
    element would not reach the aliases computed on :root.
    --------------------------------------------------------------------- */
 .skylent-public-canvas {
-  /* Surfaces — white everywhere; the two "wash" steps become cool, quiet fills
-     for small UI (chips, tracks, table heads), not page or section backgrounds. */
-  --skylent-surface-paper: #0b1220;
-  --skylent-surface-cream: #0b1220;
-  --skylent-surface-cream-warm: #10192b;
-  --skylent-surface-soft: hsl(var(--site-soft));
-  --skylent-surface-sand: hsl(var(--site-raised));
-  --skylent-surface-elevated: #141c2e;
-  --skylent-surface-inverse: hsl(var(--site-navy));
+  /* Live public :root, redeclared here so the signed-in dark :root stays intact. */
+  --site-paper: 0 0% 100%;
+  --site-white: 0 0% 100%;
+  --site-soft: 214 40% 97.5%;
+  --site-raised: 220 31.6% 92.5%;
+  --site-border: 220 28.3% 89.6%;
+  --site-border-strong: 219 22% 72.4%;
+  --site-ink: 220 48.8% 8.4%;
+  --site-navy: 220 48.8% 8.4%;
+  --site-deep: 223 100% 57.3%;
+  --site-ocean: 224 76.3% 48%;
+  --site-highlight: 223 100% 57.3%;
+  --site-soft-blue: 223 100% 95.9%;
+  --site-light-blue: 224 100% 87.5%;
+  --site-orange: 223 100% 57.3%;
+  --site-warm: 223 100% 57.3%;
+  --site-muted: 223 22.3% 30.8%;
+  --site-dim: 222 16.9% 42.9%;
+  --site-proof: 220 42.9% 97.3%;
+  --site-proof-2: 216 38.5% 94.9%;
+  --site-proof-line: 220 28.3% 89.6%;
+
+  --skylent-surface-paper: #ffffff;
+  --skylent-surface-cream: #ffffff;
+  --skylent-surface-cream-warm: #f5f7fb;
+  --skylent-surface-soft: #f6f8fb;
+  --skylent-surface-sand: #e6eaf2;
+  --skylent-surface-elevated: #ffffff;
+  --skylent-surface-inverse: #0b1220;
 
   --skylent-color-paper: var(--skylent-surface-paper);
   --skylent-color-cream: var(--skylent-surface-cream);
@@ -69,9 +86,11 @@ body:has(.skylent-public-canvas) {
   --skylent-color-border: hsl(var(--site-border));
   --skylent-color-border-strong: hsl(var(--site-border-strong));
 
-  /* Accent — royal blue for links, focus and state; navy for primary actions */
+  /* Accent — live brand blue for actions, links, focus and state */
   --skylent-color-accent: hsl(var(--site-deep));
   --skylent-color-accent-hover: hsl(var(--site-ocean));
+  /* Live light-surface links: .tc--light a is #1d4fd8. */
+  --skylent-color-accent-text: #1d4fd8;
   --skylent-color-accent-soft: hsl(var(--site-soft-blue) / 0.55);
   --skylent-color-accent-border: hsl(var(--site-light-blue));
   --skylent-color-accent-strong: hsl(var(--site-ocean));
@@ -85,7 +104,7 @@ body:has(.skylent-public-canvas) {
   --skylent-color-information-border: var(--skylent-color-info-border);
   --skylent-focus-ring: hsl(var(--site-highlight));
 
-  --btn-bg: hsl(var(--site-navy));
+  --btn-bg: hsl(var(--site-deep));
   --btn-fg: #ffffff;
   --btn-radius: 8px;
 
@@ -110,13 +129,13 @@ body:has(.skylent-public-canvas) {
   --shadow-subtle: 0 1px 2px hsl(var(--site-ink) / 0.05);
   --shadow-raised: var(--sk-shadow);
   --shadow-overlay: 0 1px 2px hsl(var(--site-ink) / 0.05), 0 12px 28px -14px hsl(var(--site-ink) / 0.18);
-  --glass-01-bg: #141c2e;
+  --glass-01-bg: #ffffff;
   --glass-01-border: var(--skylent-color-border);
   --glass-01-shadow: var(--shadow-subtle);
-  --glass-02-bg: #141c2e;
+  --glass-02-bg: #ffffff;
   --glass-02-border: var(--skylent-color-border);
   --glass-02-shadow: var(--shadow-raised);
-  --glass-03-bg: #141c2e;
+  --glass-03-bg: #ffffff;
   --glass-03-border: var(--skylent-color-border);
   --glass-03-shadow: var(--shadow-overlay);
 
@@ -148,8 +167,19 @@ body:has(.skylent-public-canvas) {
 
   background: hsl(var(--site-paper));
   color: var(--skylent-color-ink);
+  color-scheme: light;
   min-height: 100vh;
   font-family: var(--sk-font-body);
+}
+
+.skylent-public-canvas .site-light {
+  color-scheme: light;
+}
+
+@media (max-width: 700px) {
+  .skylent-public-canvas .skylent-public-main {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  }
 }
 
 /* ---------------------------------------------------------------------

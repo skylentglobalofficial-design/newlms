@@ -16,7 +16,7 @@
    *   Card   #141C2E
    *   Ink    #E8ECF5
    *   Muted  #9AA6BF
-   *   Accent #3D8BFD
+   *   Accent #2563FF
    *   Cyan   #22C7F2
    */
 
@@ -71,12 +71,14 @@
   --skylent-color-border: #26304a;
   --skylent-color-border-strong: #3a4664;
 
-  /* ── Action (ocean blue — buttons, links, focus, current state, progress) ── */
-  --skylent-color-accent: #3d8bfd;
-  --skylent-color-accent-hover: #5aa0ff;
-  --skylent-color-accent-soft: rgba(61, 139, 253, 0.16);
-  --skylent-color-accent-border: rgba(61, 139, 253, 0.45);
-  --skylent-color-accent-strong: #2563ff;
+  /* ── Action — live brand blue #2563FF, hover #1D4FD8 ── */
+  --skylent-color-accent: #2563ff;
+  --skylent-color-accent-hover: #1d4fd8;
+  /* Text on the dark product canvas. Live .tc--dark a is #9fc0ff; #2563ff is the button fill. */
+  --skylent-color-accent-text: #9fc0ff;
+  --skylent-color-accent-soft: rgba(37, 99, 255, 0.16);
+  --skylent-color-accent-border: rgba(37, 99, 255, 0.45);
+  --skylent-color-accent-strong: #1d4fd8;
   --skylent-color-text-on-accent: #ffffff;
 
   /* Legacy "orange" names resolve to cobalt: there is no second accent. */
@@ -95,9 +97,9 @@
   --skylent-color-error: #ff8d86;
   --skylent-color-error-soft: rgba(182, 37, 32, 0.16);
   --skylent-color-error-border: rgba(255, 141, 134, 0.4);
-  --skylent-color-info: #3d8bfd;
-  --skylent-color-info-soft: rgba(61, 139, 253, 0.16);
-  --skylent-color-info-border: rgba(61, 139, 253, 0.45);
+  --skylent-color-info: #2563ff;
+  --skylent-color-info-soft: rgba(37, 99, 255, 0.16);
+  --skylent-color-info-border: rgba(37, 99, 255, 0.45);
   --skylent-color-information: var(--skylent-color-info);
   --skylent-color-information-soft: var(--skylent-color-info-soft);
   --skylent-color-information-border: var(--skylent-color-info-border);
@@ -433,7 +435,7 @@ html:root {
 
 /* ── Links ── */
 .skylent-link {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   text-decoration: none;
   border-bottom: 1px solid transparent;
   transition: color var(--skylent-duration-fast) var(--skylent-ease-ui),
@@ -441,7 +443,7 @@ html:root {
 }
 
 .skylent-link:hover {
-  color: var(--skylent-color-accent-hover);
+  color: var(--skylent-color-ink);
   border-bottom-color: var(--skylent-color-accent-border);
 }
 
@@ -571,7 +573,7 @@ html:root {
 .skylent-badge--accent {
   border-color: var(--skylent-color-accent-border);
   background: var(--skylent-color-accent-soft);
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
 }
 
 .skylent-badge--success {
@@ -679,7 +681,7 @@ html:root {
 
 .skylent-tab.is-active,
 .skylent-tab[aria-selected="true"] {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   border-bottom-color: var(--skylent-color-accent);
 }
 

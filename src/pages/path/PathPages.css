@@ -1214,6 +1214,13 @@
 @media (max-width: 640px) {
   .path-v2__choices {
     grid-template-columns: 1fr;
+    /* Leave the launcher's corner clear so an answer stays tappable. */
+    width: calc(100% - 64px);
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .path-v2-choice {
+    scroll-margin-bottom: calc(88px + env(safe-area-inset-bottom));
   }
 
   /* All seven stages stay on screen. The stage name is already in the eyebrow. */
