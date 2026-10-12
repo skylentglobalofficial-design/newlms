@@ -265,8 +265,8 @@
 
 .sh-ai-head .sky-chip--live {
   border-color: #ffffff;
-  background: var(--skylent-surface-elevated);
-  color: var(--skylent-navy);
+  background: #ffffff;
+  color: #0b1220;
 }
 
 .sh-ai-head .sky-chip--development,

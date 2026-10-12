@@ -100,14 +100,14 @@
   padding: 0;
   border: 0;
   background: none;
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   font: 600 14px/1.3 var(--font-body);
   text-decoration: none;
   cursor: pointer;
 }
 
 .os-link:hover {
-  color: var(--skylent-color-accent-hover);
+  color: var(--skylent-color-ink);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -457,7 +457,7 @@
 }
 
 .os-module-toggle:hover .os-module-label {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
 }
 
 .os-module-name {
@@ -473,7 +473,7 @@
 }
 
 .os-module.is-current .os-module-num {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
 }
 
 .os-module.is-ahead .os-module-label {
@@ -645,14 +645,14 @@
   align-items: center;
   gap: 6px;
   min-height: 44px;
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
 }
 
 .os-chip:hover {
-  color: var(--skylent-color-accent-hover);
+  color: var(--skylent-color-ink);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -735,7 +735,7 @@
   align-items: center;
   gap: 8px;
   min-height: 32px;
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   font-family: var(--font-mono);
   font-size: 13px;
   text-decoration: none;
@@ -792,7 +792,7 @@
 }
 
 .lx-prev:hover {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
 }
 
 .lx-prev:focus-visible {
@@ -888,7 +888,7 @@
 }
 
 .lx-doc a {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
   text-underline-offset: 3px;
 }
 
@@ -1056,7 +1056,7 @@
 }
 
 .lx-section-practice .lx-section-label {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
 }
 
 .lx-section-check {
@@ -1268,7 +1268,7 @@
 }
 
 .as-block a {
-  color: var(--skylent-color-accent);
+  color: var(--skylent-color-accent-text);
 }
 
 .as-block .as-fine,
