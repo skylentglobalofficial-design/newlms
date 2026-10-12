@@ -287,7 +287,7 @@ export default function LearnPage() {
         <p className="os-eyebrow">Not enrolled</p>
         <h1>{access.courseTitle}</h1>
         <p>You are signed in but not enrolled in this course yet.</p>
-        <TermsConsent variant="dark" checked={termsAccepted} onChange={setTermsAccepted} action="enrolling" showError={enrollError === TERMS_REQUIRED} />
+        <TermsConsent checked={termsAccepted} onChange={setTermsAccepted} action="enrolling" showError={enrollError === TERMS_REQUIRED} />
         <div className="os-actions">
           <button
             type="button"

@@ -617,71 +617,73 @@
 }
 
 /* =====================================================================
-   Signed-in Career OS uses the same Dark Aurora tokens as the other workspaces.
-   Components read --skylent-* from src/tokens.ts, so this scope keeps those
-   surfaces on #0B1220 / #141C2E with light ink.
+   Signed-in Career OS, inside the shared learner shell.
+   White sheets, near-black type, brand blue for action. The navy rail
+   belongs to AuthDashboardShell and is not restyled here.
    ===================================================================== */
 .cos-scope {
-  --skylent-surface-paper: #0b1220;
-  --skylent-surface-cream: #0b1220;
-  --skylent-surface-cream-warm: #10192b;
-  --skylent-surface-soft: #121c2e;
-  --skylent-surface-sand: #1a2438;
-  --skylent-surface-elevated: #141c2e;
-  --skylent-color-paper: #0b1220;
-  --skylent-color-cream: #0b1220;
-  --skylent-color-soft: #121c2e;
-  --skylent-color-soft-surface: #141c2e;
-  --skylent-color-sand: #1a2438;
-  --skylent-color-canvas: #0b1220;
-  --skylent-color-elevated: #141c2e;
-  --skylent-color-ink: hsl(var(--site-ink));
-  --skylent-color-ink-2: hsl(var(--site-ink));
-  --skylent-color-ink-3: hsl(var(--site-navy));
-  --skylent-color-slate: hsl(var(--site-muted));
-  --skylent-color-muted: hsl(var(--site-dim));
-  --skylent-color-text-subtle: hsl(var(--site-dim));
-  --skylent-color-border-subtle: hsl(var(--site-border));
-  --skylent-color-border: hsl(var(--site-border));
-  --skylent-color-border-strong: hsl(var(--site-border-strong));
-  --skylent-color-accent: hsl(var(--site-deep));
-  --skylent-color-accent-hover: hsl(var(--site-ocean));
-  --skylent-color-accent-soft: hsl(var(--site-soft-blue));
-  --skylent-color-accent-border: hsl(var(--site-light-blue));
-  --skylent-color-accent-strong: hsl(var(--site-ocean));
+  max-width: 1180px;
+  --skylent-surface-paper: #ffffff;
+  --skylent-surface-cream: #ffffff;
+  --skylent-surface-cream-warm: #f6f8fb;
+  --skylent-surface-soft: #f3f5f8;
+  --skylent-surface-sand: #e8edf5;
+  --skylent-surface-elevated: #ffffff;
+  --skylent-color-paper: #ffffff;
+  --skylent-color-cream: #ffffff;
+  --skylent-color-soft: #f3f5f8;
+  --skylent-color-soft-surface: #ffffff;
+  --skylent-color-sand: #e8edf5;
+  --skylent-color-canvas: #f3f5f8;
+  --skylent-color-elevated: #ffffff;
+  --skylent-color-ink: #0b1220;
+  --skylent-color-ink-2: #0b1220;
+  --skylent-color-ink-3: #3d4760;
+  --skylent-color-slate: #3d4760;
+  --skylent-color-muted: #5b6680;
+  --skylent-color-text-subtle: #5b6680;
+  --skylent-color-border-subtle: #e6ebf3;
+  --skylent-color-border: #dde2ec;
+  --skylent-color-border-strong: #c5cedd;
+  --skylent-color-accent: #2563ff;
+  --skylent-color-accent-hover: #1d4fd8;
+  --skylent-color-accent-text: #1d4fd8;
+  --skylent-color-accent-soft: #eaf0ff;
+  --skylent-color-accent-border: #bfd0ff;
+  --skylent-color-accent-strong: #1d4fd8;
   --skylent-color-text-on-accent: #ffffff;
-  --skylent-color-mark: hsl(var(--site-deep));
-  --skylent-color-info: hsl(var(--site-deep));
-  --skylent-color-info-soft: hsl(var(--site-soft-blue));
-  --skylent-color-info-border: hsl(var(--site-light-blue));
-  --skylent-color-error: hsl(var(--site-red));
-  --skylent-color-error-soft: #1a2438;
-  --skylent-color-error-border: hsl(var(--site-border-strong));
-  --skylent-focus-ring: hsl(var(--site-highlight));
-  --color-ink: hsl(var(--site-ink));
-  --color-slate: hsl(var(--site-muted));
-  --color-cream: #0b1220;
-  --color-canvas: #0b1220;
-  --color-indigo: hsl(var(--site-deep));
-  --color-blue: hsl(var(--site-ocean));
-  --color-line: hsl(var(--site-border));
-  --color-line-strong: hsl(var(--site-border-strong));
-  --btn-bg: hsl(var(--site-deep));
+  --skylent-color-mark: #2563ff;
+  --skylent-color-info: #2563ff;
+  --skylent-color-info-soft: #eaf0ff;
+  --skylent-color-info-border: #bfd0ff;
+  --skylent-color-error: #9f2a24;
+  --skylent-color-error-soft: rgba(182, 37, 32, 0.08);
+  --skylent-color-error-border: rgba(159, 42, 36, 0.35);
+  --skylent-focus-ring: #2563ff;
+  --color-ink: #0b1220;
+  --color-slate: #3d4760;
+  --color-cream: #ffffff;
+  --color-canvas: #f3f5f8;
+  --color-indigo: #2563ff;
+  --color-blue: #1d4fd8;
+  --color-line: #dde2ec;
+  --color-line-strong: #c5cedd;
+  --btn-bg: #2563ff;
   --btn-fg: #ffffff;
   --btn-radius: 8px;
-  --border-subtle: 1px solid hsl(var(--site-border));
-  --border-subtle-strong: 1px solid hsl(var(--site-border-strong));
+  --border-subtle: 1px solid #dde2ec;
+  --border-subtle-strong: 1px solid #c5cedd;
   --shadow-subtle: none;
   --shadow-raised: none;
   --shadow-overlay: none;
-  --glass-01-bg: #141c2e;
-  --glass-01-border: hsl(var(--site-border));
+  --glass-01-bg: #ffffff;
+  --glass-01-border: #dde2ec;
   --glass-01-shadow: none;
-  --glass-02-bg: #141c2e;
-  --glass-02-border: hsl(var(--site-border));
+  --glass-02-bg: #ffffff;
+  --glass-02-border: #dde2ec;
   --glass-02-shadow: none;
-  --glass-03-bg: #141c2e;
-  --glass-03-border: hsl(var(--site-border));
+  --glass-03-bg: #ffffff;
+  --glass-03-border: #dde2ec;
   --glass-03-shadow: none;
   --font-display: var(--sk-font-heading);
   --font-brand: var(--sk-font-heading);
@@ -692,6 +694,44 @@
   font-family: var(--sk-font-body);
 }
 
+.cos-pagenav {
+  margin: 0 0 28px;
+  border-bottom: 1px solid #dde2ec;
+}
+.cos-pagenav ul {
+  display: flex;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+}
+.cos-pagenav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 12px;
+  border-bottom: 2px solid transparent;
+  color: #3d4760;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.cos-pagenav a:hover { color: #0b1220; }
+.cos-pagenav a[aria-current="page"] {
+  color: #0b1220;
+  border-bottom-color: #2563ff;
+}
+.cos-pagenav a:focus-visible {
+  outline: 2px solid #2563ff;
+  outline-offset: 2px;
+}
+.cos-scope :is(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid #2563ff !important;
+  outline-offset: 2px;
+}
+
 /* Legacy Career OS classes in the same language: hairline panels, no shadows, Space Grotesk headings. */
 .cos-scope .cos-page h1,
 .cos-scope .cos-page h2 { font-family: var(--sk-font-heading); font-weight: 600; letter-spacing: -0.01em; color: hsl(var(--site-ink)); }
@@ -699,7 +739,7 @@
 .cos-scope .cos-panel,
 .cos-scope .cos-empty { box-shadow: none; border: 1px solid hsl(var(--site-border)); border-radius: 12px; }
 .cos-scope .cos-artifact-stage { background: hsl(var(--site-proof-2)); }
-.cos-scope .cos-empty-cta { display: inline-flex; align-items: center; min-height: 44px; color: hsl(var(--site-deep)); }
+.cos-scope .cos-empty-cta { display: inline-flex; align-items: center; min-height: 44px; color: hsl(var(--site-ocean)); font-weight: 600; }
 
 /* =====================================================================
    Public Career OS entry (signed out). Prefix cosp-. Sits inside .site-light.
@@ -930,10 +970,10 @@
   min-height: 44px;
   font-size: 14px;
   font-weight: 600;
-  color: hsl(var(--site-deep));
+  color: hsl(var(--site-ocean));
   text-decoration: none;
 }
-.cos-scope .cos-profile .cos-suggest a:hover { color: hsl(var(--site-ocean)); }
+.cos-scope .cos-profile .cos-suggest a:hover { color: hsl(var(--site-ink)); text-decoration: underline; text-underline-offset: 3px; }
 
 /* Applications, Opportunities, Interviews, Support and their detail views —
    the same finish as Profile / Projects: one page header, hairline 12px panels,

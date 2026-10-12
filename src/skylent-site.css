@@ -8,29 +8,29 @@
    (--skylent-color-*, --skylent-surface-*, etc.).
 
    Ported from: lovable_src/src/index.css (Skylent 2.0 approved design).
-   :root here is the dark product fallback. The public shell redeclares the
-   live light editorial palette on .skylent-public-canvas.
+   :root is the verified light brand. The public shell redeclares the same
+   values on .skylent-public-canvas. Navy text tokens below are for dark bands only.
    ===================================================================== */
 
 /* ---------- Brand palette (raw HSL channels) ---------- */
 :root {
-  --site-paper: 222 48% 8.4%;          /* #0B1220 page canvas */
-  --site-white: 220 38% 13%;           /* #141C2E panels / cards */
-  --site-soft: 220 36% 12%;            /* small UI fills */
-  --site-raised: 222 32% 16%;          /* muted fill, progress track */
-  --site-border: 222 32% 22%;          /* #26304A hairline */
-  --site-border-strong: 222 24% 32%;   /* inputs, secondary buttons */
-  --site-ink: 222 33% 93%;             /* #E8ECF5 ink */
-  --site-navy: 222 48% 8.4%;           /* #0B1220 structure */
-  --site-deep: 217 98% 61%;            /* #3D8BFD ocean action */
-  --site-ocean: 217 90% 55%;           /* hover / pressed */
-  --site-highlight: 217 98% 61%;       /* focus ring */
-  --site-soft-blue: 217 50% 18%;       /* quiet accent fill */
-  --site-light-blue: 217 40% 32%;      /* quiet accent rules */
-  --site-orange: 217 98% 61%;          /* legacy alias */
-  --site-warm: 217 98% 61%;            /* legacy alias */
-  --site-muted: 220 20% 68%;           /* #9AA6BF body text */
-  --site-dim: 220 16% 58%;             /* labels and metadata */
+  --site-paper: 0 0% 100%;             /* #FFFFFF page canvas */
+  --site-white: 0 0% 100%;             /* panels / cards */
+  --site-soft: 214 40% 97.5%;          /* #F6F8FB small UI fills */
+  --site-raised: 220 31.6% 92.5%;      /* muted fill, progress track */
+  --site-border: 220 28.3% 89.6%;      /* #DDE2EC hairline */
+  --site-border-strong: 219 22% 72.4%; /* inputs, secondary buttons */
+  --site-ink: 220 48.8% 8.4%;          /* #0B1220 ink */
+  --site-navy: 220 48.8% 8.4%;         /* #0B1220 structure */
+  --site-deep: 223 100% 57.3%;         /* #2563FF brand action */
+  --site-ocean: 224 76.3% 48%;         /* #1D4FD8 hover / pressed */
+  --site-highlight: 223 100% 57.3%;    /* focus ring */
+  --site-soft-blue: 223 100% 95.9%;    /* quiet accent fill */
+  --site-light-blue: 224 100% 87.5%;   /* quiet accent rules */
+  --site-orange: 223 100% 57.3%;       /* legacy alias, same blue */
+  --site-warm: 223 100% 57.3%;         /* legacy alias, same blue */
+  --site-muted: 223 22.3% 30.8%;       /* #3D4760 body text */
+  --site-dim: 222 16.9% 42.9%;         /* #5B6680 labels and metadata */
   --site-green: 152 55% 30%;           /* success */
   --site-amber: 32 90% 34%;            /* warning text */
   --site-red: 2 70% 42%;               /* error */
@@ -55,9 +55,9 @@
   --sk-font-body: "Inter", system-ui, sans-serif;
 
   /* Skylent v2: proof surfaces, navy product surfaces, intelligence accent */
-  --site-proof: 220 36% 11%;            /* raised band on the dark canvas */
-  --site-proof-2: 220 32% 15%;          /* inset panel */
-  --site-proof-line: 222 32% 22%;       /* hairline on a dark band */
+  --site-proof: 220 42.9% 97.3%;        /* evidence surface */
+  --site-proof-2: 216 38.5% 94.9%;      /* inset panel */
+  --site-proof-line: 220 28.3% 89.6%;   /* hairline on a light band */
   --site-navy-2: 222 39.4% 12.9%;         /* #141C2E raised on navy */
   --site-navy-line: 223 32.1% 22%;      /* #26304A hairline on navy */
   --site-navy-line-2: 222 23.7% 38%;    /* #4A5878 outline controls on navy */
@@ -120,7 +120,7 @@
 .site-light {
   background: hsl(var(--site-paper));
   color: hsl(var(--site-ink));
-  color-scheme: dark;
+  color-scheme: light;
   font-family: var(--sk-font-body);
   font-feature-settings: 'cv11', 'ss01';
 }
@@ -139,11 +139,11 @@
   letter-spacing: 0;
 }
 
-/* Signed-in shell (class name kept; the canvas is dark Aurora) */
+/* Class name kept. The shell now uses the light paper and ink tokens. */
 .portal-dark {
   background-color: hsl(var(--site-paper));
   color: hsl(var(--site-ink));
-  color-scheme: dark;
+  color-scheme: light;
 }
 .portal-dark .glass-panel {
   background: hsl(var(--site-white));
@@ -293,7 +293,7 @@
   color: hsl(var(--site-deep));
 }
 .sk-link {
-  color: hsl(var(--site-deep));
+  color: hsl(var(--site-ocean));
   font-weight: 600;
   display: inline-flex;
   align-items: center;
@@ -302,7 +302,21 @@
   white-space: nowrap;
   transition: color var(--sk-fast) var(--sk-ease);
 }
-.sk-link:hover { color: hsl(var(--site-ocean)); }
+.sk-link:hover { color: hsl(var(--site-ink)); }
+.sk-btn:focus-visible,
+.sk-link:focus-visible {
+  outline: 2px solid hsl(var(--site-ocean));
+  outline-offset: 3px;
+}
+:is(.sky-on-navy, .sky-band-navy, .sk-dark, .hx-hero, .hx-journey, .hx-close, .cpx-hero) .sk-link {
+  color: #9fc0ff;
+}
+:is(.sky-on-navy, .sky-band-navy, .sk-dark, .hx-hero, .hx-journey, .hx-close, .cpx-hero) .sk-link:hover {
+  color: #ffffff;
+}
+:is(.sky-on-navy, .sky-band-navy, .sk-dark, .hx-hero, .hx-journey, .hx-close, .cpx-hero) :is(.sk-btn, .sk-link):focus-visible {
+  outline-color: #ffffff;
+}
 .sk-link svg,
 .sk-btn svg { transition: transform var(--sk-fast) var(--sk-ease); }
 .sk-link:hover svg,
@@ -638,7 +652,8 @@ textarea.sk-input { padding-block: .625rem; min-height: 6rem; }
   text-transform: uppercase;
   color: hsl(var(--site-dim));
 }
-.sky-index b { font-weight: 500; color: hsl(var(--site-deep)); }
+.sky-index b { font-weight: 500; color: hsl(var(--site-ocean)); }
+:is(.sky-band-navy, .sky-on-navy) .sky-index b { color: #9fc0ff; }
 
 /* Chapters: white = offer, warm = proof, navy = product anchor / next step */
 .sky-band-proof { background: hsl(var(--site-proof)); border-block: 1px solid hsl(var(--site-proof-line)); }

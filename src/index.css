@@ -100,7 +100,7 @@
 
 html {
   scroll-behavior: smooth;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
@@ -197,6 +197,12 @@ body {
 .home-hero-copy h1 em {
   display: block;
   white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .home-hero-copy h1 em {
+    white-space: normal;
+  }
 }
 .home-hero-copy > p { max-width: 34em; margin: 24px 0 0; color: var(--skylent-color-slate); font-size: 18px; line-height: 1.65; }
 .home-hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 34px; }

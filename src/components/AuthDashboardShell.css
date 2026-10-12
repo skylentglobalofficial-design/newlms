@@ -25,6 +25,7 @@
   width: var(--shell-rail-w);
   background: var(--skylent-navy);
   color: var(--skylent-on-navy);
+  --skylent-color-accent-text: #9fc0ff;
 }
 
 .auth-shell-rail--drawer {

@@ -1,8 +1,8 @@
 // Skylent design tokens — single source of truth for JS inline styles.
 // CSS custom properties live in src/styles/design-system.css; keep both in sync.
 //
-// Dark Aurora on every surface (public site, login, dashboards, learning player, Career OS):
-//   navy canvas · raised cards · light ink · ocean blue for action · cyan for the Skylent AI mark.
+// Light workspaces (public site, login, dashboards, lesson reading, Career OS):
+//   white paper · near-black ink · #2563FF for action · navy only on rails and the lesson stage.
 // Type: Space Grotesk (headings), DM Sans (body), DM Mono (labels, numbers, code). No serif.
 // Navy surfaces are product anchors: the shell rail, product top bars and the code workbench.
 
@@ -45,9 +45,9 @@ export const C = {
   onNavyMuted: '#9AA6BF',
   cobalt: '#2563FF',
   cobaltTint: '#EAF0FF',
-  proof: '#F5F7FB',
-  proofInset: '#EDF1F7',
-  proofLine: '#E6E1D6',
+  proof: '#F6F8FB',
+  proofInset: '#EEF2F8',
+  proofLine: '#DDE2EC',
   cyan: '#22C7F2',
 } as const
 

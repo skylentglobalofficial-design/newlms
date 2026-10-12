@@ -33,6 +33,11 @@ export type AuthDashboardShellProps = {
   header?: ReactNode
   /** Optional slim white bar above the content: breadcrumb on the left, product slice on the right. */
   bar?: ReactNode
+  /**
+   * Kept for call sites. The signed-in rail is always the navy learner rail.
+   * Career OS does not get a separate sidebar.
+   */
+  workspace?: 'learning' | 'career'
 }
 
 function prefersReducedMotion() {
@@ -40,6 +45,7 @@ function prefersReducedMotion() {
 }
 
 export function AuthDashboardShell({
+  themeId,
   workspaceLabel,
   roleLabel,
   navItems,
@@ -50,6 +56,7 @@ export function AuthDashboardShell({
   children,
   header,
   bar,
+  workspace,
 }: AuthDashboardShellProps) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
@@ -131,7 +138,7 @@ export function AuthDashboardShell({
   )
 
   return (
-    <div className="auth-shell">
+    <div className="auth-shell" data-product={themeId} data-workspace={workspace}>
       <aside className="auth-shell-rail auth-shell-rail--desktop" aria-label={workspaceLabel}>
         {railContent}
       </aside>
