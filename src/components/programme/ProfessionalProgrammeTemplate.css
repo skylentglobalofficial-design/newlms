@@ -10,6 +10,29 @@
   font-size: 1.03125rem;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  /* Programme ground only. #403080. Actions stay on --site-deep (#5C47AE). */
+  --site-navy: 251.6 45.2% 34.6%;
+  /* Hairline on #403080. The shared line (#3A315E) disappears on this ground. */
+  --site-navy-line: 252 22% 62%;
+  /* Muted labels on #403080. 68% lightness is 4.2:1; this clears 4.5:1. */
+  --site-on-navy-muted: 252 18% 72%;
+}
+/* The navy token is the page ground. Buttons and active marks stay on the brighter action colour. */
+.pp-page .sk-btn-secondary {
+  color: hsl(var(--site-deep));
+  border-color: hsl(var(--site-deep) / .22);
+}
+.pp-page :is(.sky-band-navy, .sky-on-navy) .sk-btn-secondary {
+  color: hsl(var(--site-white));
+  border-color: hsl(var(--site-navy-line-2));
+}
+.pp-page .pa-lab__tabs .is-on,
+.pp-page .pa-flow .is-on .pa-flow__node,
+.pp-page .pa-clauses .is-on,
+.pp-page .pa-form__button {
+  background: hsl(var(--site-deep));
+  border-color: hsl(var(--site-deep));
+  color: hsl(var(--site-white));
 }
 .pp-page :where(p, h1, h2, h3, dl, dd, ul, ol, figure) { margin: 0; }
 .pp-page :where(ul, ol) { padding: 0; list-style: none; }
