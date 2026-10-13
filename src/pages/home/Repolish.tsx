@@ -90,7 +90,7 @@ export function HomeHero() {
               <img className="hxw-hero__avatar" src={photoCampusPg} alt="" style={{ objectPosition: "62% 35%" }} />
             </div>
             <p className="hxw-hero__community-text">
-              For learners, builders<br />and professionals.
+              Join a growing community<br />of learners, builders and professionals.
             </p>
           </div>
         </div>
@@ -101,7 +101,8 @@ export function HomeHero() {
               <img src={heroStudent} alt="A student holding a laptop and notebook." width={903} height={1203} decoding="async" fetchPriority="high" />
             </div>
             <span className="hxw-hero__badge">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5142B5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5142B5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 19V5M4 19h16M8 16v-5M12 16V8M16 16v-3"/></svg>
+              <img className="hxw-hero__badge-face" src={heroStudent} alt="" />
               <span>
                 <strong>Real projects</strong>
                 Real experience
