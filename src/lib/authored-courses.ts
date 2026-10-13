@@ -26,6 +26,13 @@ export const PRODUCT_MANAGEMENT_SLUG = "product-management"
 
 export const AUTHORED_COURSE_SLUGS = [FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG] as const
 
+/**
+ * Programmes a new learner can enter through POST /lms/enrollments.
+ * Keep this list identical to server/src/lib/authored-courses.ts.
+ * Data Science stays off it while it is in development.
+ */
+export const AUTHORED_PROGRAM_SLUGS = ["data-analytics-pro", "product-management"] as const
+
 export type AuthoredCourseSlug = (typeof AUTHORED_COURSE_SLUGS)[number]
 
 /** Data Analytics remains the homepage flagship. Prefer isAuthoredCourse for “is this teachable?”. */
@@ -33,6 +40,10 @@ export const AUTHORED_COURSE_SLUG = FLAGSHIP_COURSE_SLUG
 
 export function isAuthoredCourse(slug: string): boolean {
   return (AUTHORED_COURSE_SLUGS as readonly string[]).includes(slug)
+}
+
+export function isAuthoredProgramme(slug: string): boolean {
+  return (AUTHORED_PROGRAM_SLUGS as readonly string[]).includes(slug)
 }
 
 export function isAuthoredCourseSlug(slug: string): slug is AuthoredCourseSlug {

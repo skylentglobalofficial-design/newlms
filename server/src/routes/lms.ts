@@ -9,7 +9,7 @@ import {
   type AuthenticatedRequest,
 } from "../lib/auth.js"
 import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
-import { isAuthoredCourse } from "../lib/authored-courses.js"
+import { isAuthoredCourse, isAuthoredProgramme } from "../lib/authored-courses.js"
 import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import { answersInOptionRange, QuizAttemptThrottled, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
 import {
@@ -200,6 +200,13 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
           program.programCourses[0].course
         const workspace = await buildCourseWorkspace({ ...existing, course: primaryCourse })
         return res.json({ data: workspace ? { ...workspace, program: programWorkspace } : workspace })
+      }
+
+      // New programme enrolments only. An existing row above still reopens its workspace.
+      const approvedProgramme = isAuthoredProgramme(program.slug)
+      const everyLinkedCourseAuthored = program.programCourses.every((link) => isAuthoredCourse(link.course.slug))
+      if (!approvedProgramme || !everyLinkedCourseAuthored) {
+        return res.status(400).json({ error: "This programme is not open for enrollment" })
       }
 
       // A new enrolment needs the terms accepted in this request. Opening an existing one (above) does not.

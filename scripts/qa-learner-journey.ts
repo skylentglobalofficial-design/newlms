@@ -368,11 +368,38 @@ async function main() {
   )
 
   const dataScience = await signup("Data Science Programme Learner")
+  const dataScienceUser = await prisma.user.findUnique({ where: { email: dataScience.email } })
+  const dataScienceProgramRecord = await prisma.program.findUnique({ where: { slug: "data-science-ai" } })
+  if (!dataScienceUser || !dataScienceProgramRecord) throw new Error("Data Science fixture records are missing")
   const dataScienceEnrol = await request(dataScience.jar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
     body: { consent: TEST_CONSENT, programSlug: "data-science-ai" },
   })
+  const rejectedRows = await prisma.userEnrollment.count({
+    where: { userId: dataScienceUser.id, programId: dataScienceProgramRecord.id },
+  })
+  record(
+    "data science public enrolment rejected",
+    dataScienceEnrol.response.status === 400 && rejectedRows === 0,
+    `status ${dataScienceEnrol.response.status} rows ${rejectedRows}`,
+  )
+  await prisma.userEnrollment.create({
+    data: { userId: dataScienceUser.id, programId: dataScienceProgramRecord.id, status: "active" },
+  })
+  const dataScienceResume = await request(dataScience.jar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { consent: TEST_CONSENT, programSlug: "data-science-ai" },
+  })
+  const resumedRows = await prisma.userEnrollment.count({
+    where: { userId: dataScienceUser.id, programId: dataScienceProgramRecord.id },
+  })
+  record(
+    "existing data science enrolment remains accessible",
+    dataScienceResume.response.status === 200 && resumedRows === 1,
+    `status ${dataScienceResume.response.status} rows ${resumedRows}`,
+  )
   await completeCourse(dataScience.jar)
   const dataScienceIssue = await request(dataScience.jar, "/certificates/issue", {
     method: "POST",
@@ -384,13 +411,12 @@ async function main() {
   const issuedCode = String(dataScienceIssue.data?.data?.code ?? "")
   record(
     "data science programme keeps course certificate eligibility",
-    dataScienceEnrol.response.status === 201 &&
-      dataScienceIssue.response.status === 201 &&
+    dataScienceIssue.response.status === 201 &&
       dataScienceCourse.data?.data?.certificateStatus === "issued" &&
       dataScienceCourse.data?.data?.certificateEligible === true &&
       dataScienceProgram.data?.data?.certificateStatus !== "issued" &&
       /-[A-Z0-9]{8}$/.test(issuedCode),
-    `enrol ${dataScienceEnrol.response.status} issue ${dataScienceIssue.response.status} course ${dataScienceCourse.data?.data?.certificateStatus} program ${dataScienceProgram.data?.data?.certificateStatus}`,
+    `issue ${dataScienceIssue.response.status} course ${dataScienceCourse.data?.data?.certificateStatus} program ${dataScienceProgram.data?.data?.certificateStatus}`,
   )
 
   console.log("--- enquiries and assistant ---")
