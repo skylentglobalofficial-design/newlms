@@ -87,7 +87,11 @@ for (const authored of [true, false]) {
   check(/Payment is not collected/.test(copy), "After-enrolment copy keeps the payment disclaimer")
   if (authored) check(/It does not create a separate taught programme\./.test(copy), "After-enrolment copy keeps the taught-programme disclaimer")
 }
-check(/program\.desc \? <p className="pp-lede">\{program\.desc\}<\/p>/.test(files.listing), "Listing shows the API description")
+check(/<p className="pp-lede">\{description\}<\/p>/.test(files.listing), "Listing shows the public description")
+check(
+  /data-science-ai/.test(files.listing) && /Machine learning teaching is not in the pathway yet/.test(files.listing),
+  "Data Science listing must not repeat a stale claim that unauthored teaching is already live",
+)
 check(/<LearnPillarSubnav current="courses" \/>/.test(files.courses), "/courses keeps its sub-navigation")
 
 // 6. Course page overflow: clip with a fallback for browsers without it.

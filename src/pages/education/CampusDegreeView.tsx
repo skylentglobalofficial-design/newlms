@@ -2,7 +2,7 @@
  * Campus degree detail: /education/campus/:slug  (approved design: CampusDegree)
  * It looks physical on purpose: photographs lead and there are no product plates.
  * Photographs are generic until an institution supplies its own (they are never captioned as a
- * particular campus), and every fact the record does not carry reads "Shared once an institution is confirmed".
+ * particular campus), and every fact the record does not carry reads "Published once an institution is confirmed".
  */
 import { Link } from "react-router-dom"
 import { ArrowRight, SectionIndex } from "../../components/skylent/primitives"
@@ -11,13 +11,6 @@ import { degreeLevelName, deliveryModeLabel, type Degree } from "../../lib/degre
 import { DegreeEnquiry } from "./DegreeEnquiry"
 import { ClosingBand, DegreeCrumb, DegreeShell, ListingChips, Photo, QuietLink, Unpublished, orUnpublished } from "./DegreeParts"
 import { campusGalleryFor, campusHeroFor } from "./degreeStandIns"
-
-/** Layout sample used only while a record has no curriculum. It names no subject and no number of years. */
-const EMPTY_YEARS: { label: string; study: string; taught: string }[] = [
-  { label: "First year", study: "Foundation subjects", taught: "Weekly lectures, labs and tutorials" },
-  { label: "Later years", study: "Core and elective subjects", taught: "Lectures, labs, tutorials and group work" },
-  { label: "Final year", study: "Specialisation", taught: "A final project, or a placement where offered" },
-]
 
 export default function CampusDegreeView({ degree }: { degree: Degree }) {
   const level = degreeLevelName(degree.level)
@@ -39,7 +32,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <h1 className="dg-h1 dg-h1--campus cine-in cine-d1">{degree.title}</h1>
             <p className="dg-lead cine-in cine-d2">
               A degree you attend in person, taught on campus by the institution that awards it.
-              {degree.institution ? null : " Campus, dates and fees are shared once an institution is confirmed."}
+              {degree.institution ? null : " Campus, dates and fees are published once an institution is confirmed."}
             </p>
             <div className="dg-actions cine-in cine-d3">
               <Link to="#taught" className="sk-btn sk-btn-primary">
@@ -54,7 +47,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             <div className="sky-label dg-title__factshead">At a glance</div>
             <div className="sky-spec__row">
               <dt className="sky-spec__label">Admissions</dt>
-              <dd className="sky-spec__value">Not open yet</dd>
+              <dd className="sky-spec__value">Sample listing · not open for applications</dd>
             </div>
             <div className="sky-spec__row">
               <dt className="sky-spec__label">Discipline</dt>
@@ -140,7 +133,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
                 {[degree.location.city, degree.location.country].filter(Boolean).join(", ")}
               </div>
             ) : (
-              <div className="dg-panel__place dg-unpub">City shared once an institution is confirmed</div>
+              <div className="dg-panel__place dg-unpub">Published once an institution is confirmed</div>
             )}
             <dl>
               <div>
@@ -201,61 +194,43 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
 
             <div className="dg-taught__main">
               <h3 className="dg-h3">The programme by year</h3>
-              <div className="dg-table-wrap">
-                <table className="dg-table dg-years">
-                  <thead>
-                    <tr>
-                      <th scope="col" style={{ width: "21%" }}>Year</th>
-                      <th scope="col" style={{ width: "37%" }}>What you study</th>
-                      <th scope="col">How it is taught</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {degree.curriculum && degree.curriculum.length > 0
-                      ? degree.curriculum.map((stage) => (
-                          <tr key={stage.label}>
-                            <th scope="row">{stage.label}</th>
-                            <td>{stage.subjects.join(", ")}</td>
-                            <td>{orUnpublished(stage.teaching)}</td>
-                          </tr>
-                        ))
-                      : EMPTY_YEARS.map((row) => (
-                          <tr key={row.label}>
-                            <th scope="row">{row.label}</th>
-                            <td>
-                              <Unpublished>{row.study}</Unpublished>
-                            </td>
-                            <td>
-                              <Unpublished>{row.taught}</Unpublished>
-                            </td>
-                          </tr>
-                        ))}
-                  </tbody>
-                </table>
-              </div>
+              {degree.curriculum && degree.curriculum.length > 0 ? (
+                <div className="dg-table-wrap">
+                  <table className="dg-table dg-years">
+                    <thead>
+                      <tr>
+                        <th scope="col" style={{ width: "21%" }}>Year</th>
+                        <th scope="col" style={{ width: "37%" }}>What you study</th>
+                        <th scope="col">How it is taught</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {degree.curriculum.map((stage) => (
+                        <tr key={stage.label}>
+                          <th scope="row">{stage.label}</th>
+                          <td>{stage.subjects.join(", ")}</td>
+                          <td>{orUnpublished(stage.teaching)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="dg-monoline">Published once an institution is confirmed.</p>
+              )}
 
               <dl className="dg-taught__facts dg-rows">
                 <div>
                   <dt>Calendar</dt>
                   <dd>
-                    <Unpublished>Term or semester dates, shared once an institution is confirmed</Unpublished>
+                    <Unpublished />
                   </dd>
                 </div>
                 <div>
                   <dt>Assessment</dt>
-                  <dd>
-                    {degree.assessments?.length ? (
-                      degree.assessments.join(", ")
-                    ) : (
-                      <Unpublished>Examinations, coursework and project work</Unpublished>
-                    )}
-                  </dd>
+                  <dd>{degree.assessments?.length ? degree.assessments.join(", ") : <Unpublished />}</dd>
                 </div>
               </dl>
-
-              {degree.curriculum?.length ? null : (
-                <p className="dg-monoline">The full curriculum is shared once an institution is confirmed.</p>
-              )}
             </div>
           </div>
         </Reveal>

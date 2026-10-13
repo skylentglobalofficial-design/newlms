@@ -340,7 +340,7 @@ export const programs: Program[] = [
     format: 'Self-paced',
     cert: 'Industry Certificate',
     outcome: 'Data Scientist / ML Engineer',
-    desc: 'Advertised as an 11-month Data Science & AI pathway. The live LMS today contains the Data Analytics course and Python for Data Science — not machine learning, deep learning, or NLP teaching.',
+    desc: 'Listed as a data science direction. Machine learning teaching is not in the pathway yet.',
     upcomingBatch: '15 September 2026',
     programType: 'PROFESSIONAL',
     level: 'Advanced',

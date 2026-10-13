@@ -33,10 +33,22 @@ const IMPLEMENTATION = [
   "Career OS for qualifying professional pathways",
 ] as const
 
-const EXAMPLE_PROGRAMS = [
-  { n: "01", name: "B.Sc. Data Science", dur: "3 years", focus: "Analytics pathway with project portfolio" },
-  { n: "02", name: "PG Diploma in AI", dur: "1 year", focus: "Applied ML with faculty-reviewed projects" },
-  { n: "03", name: "MBA Tech", dur: "2 years", focus: "Product and technology management cases" },
+const EXAMPLE_REFERENCES = [
+  {
+    n: "01",
+    name: "A technology bachelor's pathway",
+    focus: "External reference example · Not a Skylent offering. Duration, fees and intake are published once an institution is confirmed.",
+  },
+  {
+    n: "02",
+    name: "A postgraduate computing pathway",
+    focus: "External reference example · Not a Skylent offering. No partner, accreditation or semester dates are published.",
+  },
+  {
+    n: "03",
+    name: "A management master's pathway",
+    focus: "External reference example · Not a Skylent offering. Skylent does not award this degree.",
+  },
 ] as const
 
 export default function UniversitiesPage() {
@@ -54,12 +66,12 @@ export default function UniversitiesPage() {
               <span>with institutional depth.</span>
             </h1>
             <p className="pe-lead">
-              Curriculum design, delivery infrastructure, assessment, and career readiness — structured for
+              Curriculum design, delivery infrastructure, assessment, and a Career OS profile — structured for
               multi-department universities. This is a partnership and product page, not a student course catalogue.
             </p>
             <p className="pe-note">
-              Illustrative programme examples below. No partner university names or placement statistics are published
-              here.
+              The pathway shapes below are external reference examples, not Skylent offerings. No partner university
+              names or placement statistics are published here.
             </p>
             <p className="pe-actions">
               <Link className="pe-cta" to="/contact">
@@ -179,20 +191,20 @@ export default function UniversitiesPage() {
 
       <section className="pe-section is-paper" id="examples" aria-labelledby="uni-examples-title">
         <div className="cat-rail">
-          <p className="pe-kicker">Illustrative programmes</p>
-          <h2 id="uni-examples-title">Example university pathways.</h2>
+          <p className="pe-kicker">External reference examples</p>
+          <h2 id="uni-examples-title">Shapes a university pathway can take.</h2>
           <p className="pe-lead">
-            Sample listings for product exploration — not verified partnerships or live enrolments.
+            External reference example · Not a Skylent offering. No university name, fee, accreditation or intake is published here.
           </p>
           <div className="pe-examples is-anatomy">
-            {EXAMPLE_PROGRAMS.map((program) => (
+            {EXAMPLE_REFERENCES.map((program) => (
               <article className="pe-example" key={program.name}>
                 <p className="pe-kicker">{program.n}</p>
                 <div>
                   <h3>{program.name}</h3>
                   <p>{program.focus}</p>
                 </div>
-                <p className="pe-kicker">{program.dur} · example</p>
+                <p className="pe-kicker">Not a Skylent offering</p>
               </article>
             ))}
           </div>

@@ -104,6 +104,7 @@ export default function ProgramPage() {
 
   function openEnrol() {
     if (!confirmed || comingLater || !enrollable) return
+    if (!truth.authored) return
     setEnrollOpen(true)
   }
 

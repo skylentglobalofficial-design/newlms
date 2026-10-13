@@ -29,10 +29,18 @@ type Props = {
   confirmed?: boolean
 }
 
+function listingDescription(program: CatalogProgramDetail, truth: ProgrammeTruth): string | null {
+  if (program.slug === "data-science-ai" && !truth.authored) {
+    return "Listed as a data science direction. Machine learning teaching is not in the pathway yet."
+  }
+  return program.desc || null
+}
+
 export default function ProgrammeListing({ program, truth, cta, honesty, afterEnrol, onEnrol, confirmed = true }: Props) {
   const thumb = programmeThumbInfo(program.slug)
-  const canEnrol = confirmed && truth.enrollable && !truth.comingLater
+  const canEnrol = confirmed && truth.enrollable && truth.authored && !truth.comingLater
   const firstLinked = truth.linked[0]
+  const description = listingDescription(program, truth)
 
   return (
     <div className="pp-page pp-page--listing">
@@ -45,12 +53,19 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
         <div className="pp-hero__grid pp-hero__grid--listing">
           <div className="pp-hero__main">
             <p className="pp-chips">
-              {confirmed ? <TruthChip state={truth.state} /> : <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />}
+              {confirmed ? (
+                <TruthChip
+                  state={truth.state}
+                  label={truth.state === "live" ? "Open" : truth.state === "soon" ? "Coming soon" : "In development"}
+                />
+              ) : (
+                <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
+              )}
             </p>
             <h1 id="pp-title" className="sky-display sky-display--lg pp-h1">
               {program.name}
             </h1>
-            {program.desc ? <p className="pp-lede">{program.desc}</p> : null}
+            {description ? <p className="pp-lede">{description}</p> : null}
             <p className="pp-note pp-note--rule">{honesty}</p>
             <div className="pp-actions">
               {canEnrol ? (
@@ -80,11 +95,13 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   label: "Enrolment",
                   value: !confirmed
                     ? STATUS_NOT_CONFIRMED
-                    : truth.enrolment
-                    ? canEnrol || truth.comingLater
-                      ? truth.enrolment
-                      : "Not open yet"
-                    : "To be announced",
+                    : canEnrol
+                      ? "Open"
+                      : truth.comingLater
+                        ? "Coming soon"
+                        : truth.state === "development"
+                          ? "In development"
+                          : "Not open yet",
                 },
                 { label: "Format", value: program.format },
                 { label: "Level", value: program.level },
@@ -106,7 +123,11 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                         {truth.linked.map((item) => (
                           <span key={item.slug}>
                             <Link to={item.to}>{item.title}</Link>
-                            {confirmed ? <TruthChip state={item.authored ? "live" : "development"} /> : <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />}
+                            {confirmed ? (
+                              <TruthChip state={item.authored ? "live" : "development"} label={item.authored ? "Ready to start" : "In development"} />
+                            ) : (
+                              <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />
+                            )}
                           </span>
                         ))}
                       </span>

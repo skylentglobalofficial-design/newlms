@@ -76,7 +76,6 @@ const PathResultPage = lazy(() => import('./pages/path/PathResultPage'))
 const EducationPage = lazy(() => import('./pages/EducationPage'))
 const SchoolingPage = lazy(() => import('./pages/education/SchoolingPage'))
 const DegreeDetailPage = lazy(() => import('./pages/education/DegreeDetailPage'))
-const PostgraduatePage = lazy(() => import('./pages/education/PostgraduatePage'))
 const ExamsPage = lazy(() => import('./pages/education/ExamsPage'))
 const OSPage = lazy(() => import('./pages/OSPage'))
 const InstitutionsPage = lazy(() => import('./pages/InstitutionsPage'))
@@ -141,8 +140,8 @@ function AppRoutes() {
         <Route path="/education/schooling" element={<Navigate to="/education/school" replace />} />
         <Route path="/education/online-degree" element={<Navigate to="/education?mode=online" replace />} />
         <Route path="/education/offline-degree" element={<Navigate to="/education?mode=campus" replace />} />
-        <Route path="/education/undergraduate" element={<Navigate to="/education/online-degree" replace />} />
-        <Route path="/education/postgraduate" element={<PostgraduatePage />} />
+        <Route path="/education/undergraduate" element={<Navigate to="/education?level=ug" replace />} />
+        <Route path="/education/postgraduate" element={<Navigate to="/education?level=pg" replace />} />
         <Route path="/education/exams" element={<ExamsPage />} />
         <Route path="/exams" element={<Navigate to="/education/exams" replace />} />
         <Route path="/exams/:slug" element={<PathComingPage />} />

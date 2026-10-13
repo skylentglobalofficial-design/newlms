@@ -7,7 +7,7 @@
  * TODAY: degrees and universities are not in the backend. The only source is the four sample
  * routes in `src/data/education.ts` (all `sample: true`, `status: "coming-soon"`). University
  * names, durations, fees, intakes, curricula and outcomes are NOT published, so every optional
- * field below is absent. Screens show "Published by the institution" for an absent field, or
+ * field below is absent. Screens show "Published once an institution is confirmed" for an absent field, or
  * drop the row. Nothing is defaulted or invented here.
  *
  * LATER: `Degree` is the contract the backend should serve from
@@ -100,7 +100,7 @@ export type Degree = {
 }
 
 /** The one wording used wherever a fact is not published yet. */
-export const PUBLISHED_BY_INSTITUTION = "Shared once an institution is confirmed"
+export const PUBLISHED_BY_INSTITUTION = "Published once an institution is confirmed"
 
 const STATIC_STATUS: Record<DegreeRoute["status"], DegreeStatus> = { "coming-soon": "coming_soon" }
 

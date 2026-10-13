@@ -2,7 +2,7 @@
  * Shared pieces of the degree surfaces (education landing, online degree, campus degree).
  * Nothing here knows a university, a fee, a date or an outcome: a degree's facts arrive as a
  * `Degree` from src/lib/degrees.ts, and anything that record does not carry is shown as
- * "Published by the institution".
+ * "Published once an institution is confirmed".
  */
 import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
@@ -51,7 +51,7 @@ export function ListingChips({ degree }: { degree: Degree; showStatus?: boolean 
   return (
     <>
       <span className="sky-chip dg-mode">{deliveryModeLabel(degree.deliveryMode)}</span>
-      {degree.sample ? <span className="dg-soon-pill">Sample listing</span> : degree.status === "coming_soon" ? <span className="dg-soon-pill">Not open yet</span> : null}
+      {degree.sample ? <span className="dg-soon-pill">Sample listing · not open for applications</span> : degree.status === "coming_soon" ? <span className="dg-soon-pill">Not open for applications</span> : null}
     </>
   )
 }

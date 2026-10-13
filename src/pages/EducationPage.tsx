@@ -10,7 +10,7 @@
  *
  * Cards come only from listDegrees() (src/lib/degrees.ts, backed by src/data/education.ts).
  * Degrees are not in the backend and no institution is confirmed yet, so every listing says
- * "Not open yet" and offers an enquiry instead of an application. Nothing names a
+ * "Sample listing · not open for applications" and offers an enquiry instead of an application. Nothing names a
  * university, fee, date or campus. Schooling and exam preparation are not foregrounded here.
  */
 import { useEffect } from "react"
@@ -71,7 +71,7 @@ function DegreeRow({ degree }: { degree: Degree }) {
       <Link to={degreePath(degree)} className="edx-degree">
         <span className="edx-degree__title">{degree.title}</span>
         <span className="edx-degree__meta">
-          <span className="edx-soon">Not open yet</span>
+          <span className="edx-soon">Sample listing · not open for applications</span>
           <span>{degree.discipline}</span>
         </span>
         <span className="edx-degree__go">
@@ -132,6 +132,20 @@ export default function EducationPage() {
     const target = EDUCATION_HASH_REDIRECTS[id]
     if (target) navigate(target, { replace: true })
   }, [location.hash, navigate])
+
+  useEffect(() => {
+    const label =
+      level === "UNDERGRADUATE"
+        ? "Undergraduate degrees"
+        : level === "POSTGRADUATE"
+          ? "Postgraduate degrees"
+          : mode === "ONLINE"
+            ? "Online degrees"
+            : mode === "CAMPUS"
+              ? "On-campus degrees"
+              : "Education"
+    document.title = `${label} · Skylent`
+  }, [level, mode])
 
   const all = listDegrees()
   const levels = level ? LEVELS.filter((item) => item.id === level) : LEVELS
