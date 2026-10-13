@@ -21,10 +21,10 @@ import {
   HomeAi,
   HomeClosing,
   HomeDegrees,
-  HomeGoals,
   HomeHero,
   HomeInstitutions,
   HomeProgrammes,
+  HomeSystems,
   HomeTrust,
   InsideProgramme,
 } from "./home/Repolish"
@@ -38,9 +38,9 @@ export default function HomePage() {
       <div className="site-light hm-page hx-page hx-page--home">
         <HomeHero />
         <HomeTrust />
-        <HomeGoals />
-        <InsideProgramme />
         <HomeProgrammes programmes={catalog.data ?? []} loading={catalog.loading} confirmed={!catalog.offline} />
+        <InsideProgramme />
+        <HomeSystems />
         <HomeDegrees />
         <Learn />
         <CareerJourney />
