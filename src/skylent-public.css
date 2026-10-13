@@ -5,10 +5,9 @@
    do not render this wrapper, so they keep the dark product tokens in
    styles/design-system.css.
 
-   Palette extracted from the live stylesheet
-   https://skylent.live/assets/index-CZ9H4zHZ.css on 12 Oct 2026:
-   paper #FFFFFF, ink #0B1220, action #2563FF, hover #1D4FD8,
-   dark product #0B1220 / #141C2E, cyan #22C7F2 for the AI mark only.
+   Palette: violet design system, Oct 2026:
+   paper #FFFFFF, ink #171717, action #5142B5, hover #43349F,
+   dark product #2E2470 / #3A2F82, AI accent #6657E8.
    ===================================================================== */
 
 html,
@@ -33,27 +32,27 @@ body:has(.skylent-public-canvas) {
    element would not reach the aliases computed on :root.
    --------------------------------------------------------------------- */
 .skylent-public-canvas {
-  /* Live public :root, redeclared here so the signed-in dark :root stays intact. */
+  /* Violet design system, redeclared here so the signed-in dark :root stays intact. */
   --site-paper: 0 0% 100%;
   --site-white: 0 0% 100%;
-  --site-soft: 214 40% 97.5%;
-  --site-raised: 220 31.6% 92.5%;
-  --site-border: 220 28.3% 89.6%;
-  --site-border-strong: 219 22% 72.4%;
-  --site-ink: 220 48.8% 8.4%;
-  --site-navy: 220 48.8% 8.4%;
-  --site-deep: 223 100% 57.3%;
-  --site-ocean: 224 76.3% 48%;
-  --site-highlight: 223 100% 57.3%;
-  --site-soft-blue: 223 100% 95.9%;
-  --site-light-blue: 224 100% 87.5%;
-  --site-orange: 223 100% 57.3%;
-  --site-warm: 223 100% 57.3%;
-  --site-muted: 223 22.3% 30.8%;
-  --site-dim: 222 16.9% 42.9%;
-  --site-proof: 220 42.9% 97.3%;
-  --site-proof-2: 216 38.5% 94.9%;
-  --site-proof-line: 220 28.3% 89.6%;
+  --site-soft: 252 40% 97.5%;
+  --site-raised: 252 28% 93%;
+  --site-border: 220 14% 90%;
+  --site-border-strong: 252 30% 85.5%;
+  --site-ink: 0 0% 9%;
+  --site-navy: 252 42% 48%;
+  --site-deep: 252 42% 48%;
+  --site-ocean: 252 48% 44%;
+  --site-highlight: 249 76% 62%;
+  --site-soft-blue: 252 100% 96%;
+  --site-light-blue: 252 62% 87.5%;
+  --site-orange: 252 42% 48%;
+  --site-warm: 252 42% 48%;
+  --site-muted: 227 16% 41%;
+  --site-dim: 220 9% 46%;
+  --site-proof: 252 40% 97.5%;
+  --site-proof-2: 252 38% 95%;
+  --site-proof-line: 252 30% 90%;
 
   --skylent-surface-paper: #ffffff;
   --skylent-surface-cream: #ffffff;
@@ -61,7 +60,7 @@ body:has(.skylent-public-canvas) {
   --skylent-surface-soft: #f6f8fb;
   --skylent-surface-sand: #e6eaf2;
   --skylent-surface-elevated: #ffffff;
-  --skylent-surface-inverse: #0b1220;
+  --skylent-surface-inverse: #2e2470;
 
   --skylent-color-paper: var(--skylent-surface-paper);
   --skylent-color-cream: var(--skylent-surface-cream);
@@ -86,11 +85,10 @@ body:has(.skylent-public-canvas) {
   --skylent-color-border: hsl(var(--site-border));
   --skylent-color-border-strong: hsl(var(--site-border-strong));
 
-  /* Accent — live brand blue for actions, links, focus and state */
+  /* Accent — brand violet for actions, links, focus and state */
   --skylent-color-accent: hsl(var(--site-deep));
   --skylent-color-accent-hover: hsl(var(--site-ocean));
-  /* Live light-surface links: .tc--light a is #1d4fd8. */
-  --skylent-color-accent-text: #1d4fd8;
+  --skylent-color-accent-text: #43349f;
   --skylent-color-accent-soft: hsl(var(--site-soft-blue) / 0.55);
   --skylent-color-accent-border: hsl(var(--site-light-blue));
   --skylent-color-accent-strong: hsl(var(--site-ocean));

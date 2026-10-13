@@ -1,14 +1,14 @@
 /* /education — prefix edx-, scoped under .edx (repolish) */
 .edx { background: hsl(var(--site-paper)); }
 .edx .edx-hero {
-  background: radial-gradient(55% 120% at 88% 0%, hsl(223 100% 57% / .16), transparent 60%), hsl(var(--site-navy));
+  background: radial-gradient(55% 120% at 88% 0%, hsl(252 76% 62% / .16), transparent 60%), linear-gradient(135deg, #2e2470 0%, #5142b5 100%);
   color: hsl(var(--site-on-navy));
   padding: clamp(2.75rem, 6vw, 4.5rem) 0 clamp(2.25rem, 5vw, 3.25rem);
 }
 .edx .edx-hero__inner { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: end; }
 .edx .edx-eyebrow { margin: 0 0 .75rem; font-size: .8125rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: hsl(var(--site-cyan)); }
 .edx .edx-h1 { margin: 0; font-family: var(--sk-font-heading); font-size: clamp(2.125rem, 4.6vw, 3.375rem); font-weight: 650; line-height: 1.05; letter-spacing: -0.03em; color: #fff !important; }
-.edx .edx-h1 em { font-style: normal; color: hsl(214 100% 76%); }
+.edx .edx-h1 em { font-style: normal; color: #c4b8ff; }
 .edx .edx-lede { margin: 1rem 0 0; max-width: 36rem; font-size: 1.0625rem; line-height: 1.6; color: hsl(var(--site-on-navy-muted)); }
 .edx .edx-filters { display: grid; gap: .75rem; }
 .edx .edx-filter { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
@@ -56,7 +56,7 @@
 .edx .edx-soon { color: hsl(var(--site-muted)); font-weight: 600; }
 .edx .edx-mode--online .edx-soon { color: hsl(40 92% 72%); }
 .edx .edx-degree__go { grid-column: 2; grid-row: 1 / span 2; display: inline-flex; align-items: center; gap: .375rem; font-size: .875rem; font-weight: 600; color: hsl(var(--site-deep)); }
-.edx .edx-mode--online .edx-degree__go { color: hsl(214 100% 78%); }
+.edx .edx-mode--online .edx-degree__go { color: #c4b8ff; }
 .edx .edx-none { padding: 1rem; border-radius: 12px; border: 1px dashed hsl(var(--site-border-strong)); }
 .edx .edx-none p { margin: 0 0 .25rem; font-size: .9375rem; color: hsl(var(--site-muted)); }
 .edx .edx-link { display: inline-flex; align-items: center; gap: .375rem; min-height: 40px; font-weight: 600; font-size: .9375rem; color: hsl(var(--site-deep)); text-decoration: none; }

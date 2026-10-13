@@ -27,9 +27,9 @@ export type AuroraTheme = {
   strength: string
 }
 
-// Frozen palette: cobalt primary, deeper cobalt secondary (no indigo).
-const INDIGO = '#2563FF'
-const BLUE = '#1D4FD8'
+// Frozen palette: violet primary, deeper violet secondary.
+const INDIGO = '#5142B5'
+const BLUE = '#43349F'
 
 export const AURORA_THEMES: Record<AuroraThemeId, AuroraTheme> = {
   general: { id: 'general', primary: INDIGO, secondary: BLUE, strength: '08' },

@@ -2,10 +2,8 @@
  * HomePage — the public homepage.
  *
  * Section order and surfaces (alternating on purpose):
- *   Hero (navy) → How learning works (white: five stages with product previews) → Programmes (soft:
- *   catalogue cards with each programme's working material) → Degrees (white: UG and PG doors) →
- *   After you enrol (soft: nine-step walkthrough, Learn.tsx) → Career OS walkthrough (navy) →
- *   Skylent AI (white) → Institutions (soft) → Closing (navy).
+ *   Hero (white) → Ways to start → Goals (lavender) → How learning works → Programmes →
+ *   Degrees → After you enrol → Career OS → Skylent AI → Institutions → Closing.
  * Navigation, footer and the Skylent AI launcher come from PageShell. Institutions is not in the top
  * bar; it is reached from the footer, the search and the partner section here.
  *
@@ -23,9 +21,11 @@ import {
   HomeAi,
   HomeClosing,
   HomeDegrees,
+  HomeGoals,
   HomeHero,
   HomeInstitutions,
   HomeProgrammes,
+  HomeTrust,
   InsideProgramme,
 } from "./home/Repolish"
 import "./HomePage.v2.css"
@@ -37,6 +37,8 @@ export default function HomePage() {
     <PageShell aurora={false}>
       <div className="site-light hm-page hx-page hx-page--home">
         <HomeHero />
+        <HomeTrust />
+        <HomeGoals />
         <InsideProgramme />
         <HomeProgrammes programmes={catalog.data ?? []} loading={catalog.loading} confirmed={!catalog.offline} />
         <HomeDegrees />
