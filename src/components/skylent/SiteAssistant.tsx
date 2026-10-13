@@ -14,7 +14,7 @@
  * A gentle invitation appears once per browser session, only after the visitor has spent time
  * and scrolled on a discovery page, and never covers content on small screens.
  */
-import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react"
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from "react"
 import { Link, useLocation } from "react-router-dom"
 import { AI_NAME, ArrowRight, displayAiText } from "./primitives"
 import { SKYLENT_AI_OPEN_EVENT, type SkylentAiMode } from "./ai-events"
@@ -334,6 +334,43 @@ export default function SiteAssistant() {
   // While the footer is on screen the invitation steps aside, so it never covers footer links.
   // It is hidden, not dismissed: it comes back when the visitor scrolls up again.
   const [footerInView, setFooterInView] = useState(false)
+  const [clearOfContent, setClearOfContent] = useState(true)
+  useLayoutEffect(() => {
+    const launcher = launcherRef.current
+    if (!launcher) return
+    let frame = 0
+    const measure = () => {
+      frame = 0
+      const box = launcher.getBoundingClientRect()
+      const keep = { left: box.left - 16, right: box.right + 8, top: box.top - 16, bottom: box.bottom + 8 }
+      const zones = document.querySelectorAll("[data-clear-launcher], .hx-page--home .hxw-goals, .hx-page--home .hxw-goal, .hx-page--home .hx-prog, .hx-page--home .hx-door, .hx-page--home .sk-btn, .hx-page--home .hxw-offering")
+      let blocked = false
+      for (const node of zones) {
+        const rect = node.getBoundingClientRect()
+        if (rect.width < 1 || rect.height < 1) continue
+        if (rect.left < keep.right && rect.right > keep.left && rect.top < keep.bottom && rect.bottom > keep.top) {
+          blocked = true
+          break
+        }
+      }
+      setClearOfContent(!blocked)
+    }
+    const schedule = () => {
+      if (frame) return
+      frame = window.requestAnimationFrame(measure)
+    }
+    measure()
+    window.addEventListener("scroll", schedule, { passive: true })
+    window.addEventListener("resize", schedule)
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(schedule)
+    observer?.observe(document.documentElement)
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.removeEventListener("scroll", schedule)
+      window.removeEventListener("resize", schedule)
+      observer?.disconnect()
+    }
+  }, [location.pathname, open])
   useEffect(() => {
     const footer = document.querySelector("footer")
     if (!footer || typeof IntersectionObserver === "undefined") return
@@ -455,7 +492,7 @@ export default function SiteAssistant() {
 
   return (
     <div className="sia">
-      {invite && !open && !footerInView ? (
+      {invite && !open && !footerInView && clearOfContent ? (
         <div className="sia-invite" role="status">
           <button type="button" className="sia-invite__close" onClick={dismissInvite} aria-label="Dismiss">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" aria-hidden="true">
@@ -473,11 +510,12 @@ export default function SiteAssistant() {
       <button
         ref={launcherRef}
         type="button"
-        className={open ? "sia-launcher sia-launcher--hidden" : "sia-launcher"}
+        className={open || !clearOfContent ? "sia-launcher sia-launcher--hidden" : "sia-launcher"}
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-label={`Ask ${AI_NAME}`}
-        tabIndex={open ? -1 : undefined}
+        aria-hidden={open || !clearOfContent ? true : undefined}
+        tabIndex={open || !clearOfContent ? -1 : undefined}
         onClick={() => openPanel("chat")}
       >
         <SkylentBot size={34} />
