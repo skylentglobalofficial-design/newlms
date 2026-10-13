@@ -12,6 +12,7 @@ import { Reveal } from "../../components/skylent/Reveal"
 import { openSkylentAi } from "../../components/skylent/ai-events"
 import {
   PUBLISHED_BY_INSTITUTION,
+  degreeLevelName,
   degreeListingPath,
   deliveryModeLabel,
   type Degree,
@@ -56,18 +57,27 @@ export function ListingChips({ degree }: { degree: Degree; showStatus?: boolean 
   )
 }
 
-export function DegreeCrumb({ mode }: { mode?: DeliveryMode }) {
+export function DegreeCrumb({ mode, level }: { mode?: DeliveryMode; level?: Degree["level"] }) {
+  const levelParam = level === "UNDERGRADUATE" ? "ug" : level === "POSTGRADUATE" ? "pg" : null
   return (
     <nav aria-label="Breadcrumb" className="sky-label dg-crumb">
       <Link to="/education">Education</Link>
       <span aria-hidden="true">/</span>
-      {mode ? (
+      {mode || levelParam ? (
         <>
           <Link to="/education#degrees">Degrees</Link>
-          <span aria-hidden="true">/</span>
-          <Link to={degreeListingPath(mode)} aria-current="page">
-            {deliveryModeLabel(mode)}
-          </Link>
+          {level ? (
+            <>
+              <span aria-hidden="true">/</span>
+              <Link to={`/education?level=${levelParam}`}>{degreeLevelName(level)}</Link>
+            </>
+          ) : null}
+          {mode ? (
+            <>
+              <span aria-hidden="true">/</span>
+              <Link to={degreeListingPath(mode, level)}>{deliveryModeLabel(mode)}</Link>
+            </>
+          ) : null}
         </>
       ) : (
         <span aria-current="page">Degrees</span>

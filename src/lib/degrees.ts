@@ -161,6 +161,11 @@ export function degreePath(degree: Pick<Degree, "slug" | "deliveryMode">): strin
   return `/education/${MODE_SEGMENT[degree.deliveryMode]}/${degree.slug}`
 }
 
-export function degreeListingPath(mode?: DeliveryMode | null): string {
-  return mode ? `/education?mode=${MODE_SEGMENT[mode]}` : "/education"
+export function degreeListingPath(mode?: DeliveryMode | null, level?: DegreeLevel | null): string {
+  const query = new URLSearchParams()
+  if (level === "UNDERGRADUATE") query.set("level", "ug")
+  if (level === "POSTGRADUATE") query.set("level", "pg")
+  if (mode) query.set("mode", MODE_SEGMENT[mode])
+  const qs = query.toString()
+  return qs ? `/education?${qs}` : "/education"
 }

@@ -56,7 +56,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
       {/* Hero: the listing, stated at display scale */}
       <section className="sky-container dg-hero">
         <div className="cine-in cine-in--fade">
-          <DegreeCrumb mode={degree.deliveryMode} />
+          <DegreeCrumb mode={degree.deliveryMode} level={degree.level} />
         </div>
         <div className="dg-chips cine-in cine-in--fade cine-d1">
           <ListingChips degree={degree} />

@@ -24,7 +24,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
         <div className="dg-title__row">
           <div className="dg-title__main">
             <div className="cine-in cine-in--fade">
-              <DegreeCrumb mode={degree.deliveryMode} />
+              <DegreeCrumb mode={degree.deliveryMode} level={degree.level} />
             </div>
             <div className="dg-chips cine-in cine-in--fade cine-d1">
               <ListingChips degree={degree} />
