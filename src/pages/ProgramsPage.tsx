@@ -1,42 +1,91 @@
 /**
- * /programmes — the programme catalogue, split the way learners choose: certification
- * programmes (one focused skill) and professional programmes (longer, with projects and a
- * capstone). Rows come from GET /catalog/programs; if the API cannot be reached, the published
- * list the API is seeded from is shown instead (useCatalogPrograms), so the page never turns
- * into an error screen. Programmes open for enrolment are drawn large with their real course
- * artefact (the lab or case the learner works on); the rest say plainly that they open later.
+ * /programmes — catalogue-first index.
+ *
+ * Rows come from GET /catalog/programs (or the published list when that request fails,
+ * see useCatalogPrograms). Readiness uses programmeTruth, the same helper as the programme page.
+ * Nothing here states a fee, a learner count, or a placement outcome.
  */
 import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { ArrowRight } from "../components/skylent/primitives"
-import { HarborDeskPlate, NorthwindLabPlate, ProgrammeThumb } from "../components/programme/ProgrammeArtefacts"
 import { authoredProgrammeContent } from "../components/programme/programme-content"
-import { plural, programmeTruth, type ProgrammeTruth } from "../components/programme/programme-truth"
-import { openSkylentAi } from "../components/skylent/ai-events"
+import { programmeTruth, type ProgrammeTruth } from "../components/programme/programme-truth"
 import { programs as publishedProgrammes } from "../data"
 import { useCatalogPrograms } from "../hooks/useCatalog"
 import { STATUS_NOT_CONFIRMED } from "../components/programme/CatalogueNotice"
 import type { CatalogProgramSummary } from "../lib/catalog-api"
 import { isPublicProgrammeIndexRow } from "../lib/programme-catalogue"
 import { programmeDiscoveryFor } from "../lib/programme-discovery"
+import analyticsVisual from "@/assets/site/program-analytics.jpg"
+import productVisual from "@/assets/site/program-product.jpg"
+import scienceVisual from "@/assets/site/program-web.jpg"
 import "./ProgramsIndex.css"
 
 type Kind = "certification" | "professional"
-type Row = { program: CatalogProgramSummary; truth: ProgrammeTruth; kind: Kind; title: string; line: string; search: string }
+type Row = {
+  program: CatalogProgramSummary
+  truth: ProgrammeTruth
+  kind: Kind
+  title: string
+  line: string
+  category: string
+  image: string | null
+  alt: string
+  search: string
+}
+
+const PROFESSIONAL_ORDER = ["data-analytics-pro", "product-management", "data-science-ai"] as const
+
+const CARD_FACE: Record<string, { title: string; line: string; category: string; image: string; alt: string }> = {
+  "data-analytics-pro": {
+    title: "Data Analytics",
+    line: "Take a messy sales extract to a finding and a recommendation someone can act on.",
+    category: "Data",
+    image: analyticsVisual,
+    alt: "Illustrative analytics charts on a desk.",
+  },
+  "product-management": {
+    title: "Product Management",
+    line: "Frame one retail operations problem and recommend a single constrained bet.",
+    category: "Product",
+    image: productVisual,
+    alt: "Illustrative product working session around a table.",
+  },
+  "data-science-ai": {
+    title: "Data Science",
+    line: "Listed as a data science direction. Machine learning teaching is not in the pathway yet.",
+    category: "Data",
+    image: scienceVisual,
+    alt: "Illustrative code on a laptop and monitors.",
+  },
+  "sql-certificate": {
+    title: "SQL for Business Analytics",
+    line: "A certificate outline. There is no linked course, and it is not open yet.",
+    category: "SQL",
+    image: "",
+    alt: "",
+  },
+}
 
 const KIND_COPY: Record<Kind, { title: string; lead: string; label: string }> = {
   certification: {
     title: "Certification programmes",
-    lead: "Short, focused programmes on one skill, finished with a certificate when every lesson is complete.",
+    lead: "Shorter listings aimed at one skill. A certificate is not issued from a listing that is not open.",
     label: "Certification",
   },
   professional: {
     title: "Professional programmes",
-    lead: "Longer programmes that combine lessons, hands-on labs and a capstone project you keep in Career OS.",
+    lead: "Longer directions that combine lessons, practice, and a project you can keep.",
     label: "Professional",
   },
 }
+
+const LEARNING_STEPS = [
+  { title: "Learn", text: "Short written lessons with checks, taken one step at a time." },
+  { title: "Practise", text: "A lab or case opened from the lesson, on a realistic piece of work." },
+  { title: "Keep the work", text: "Finished work can stay in your Career OS profile." },
+] as const
 
 function kindOf(program: CatalogProgramSummary): Kind | null {
   const type = program.programType.toUpperCase()
@@ -50,143 +99,58 @@ function outcomeFor(slug: string): string {
 }
 
 function toRow(program: CatalogProgramSummary): Row | null {
-  // Only programme types meant for the public index are listed (shared rule with the catalogue helpers).
   if (!isPublicProgrammeIndexRow(program)) return null
   const kind = kindOf(program)
   if (!kind) return null
+  if (kind === "professional" && !PROFESSIONAL_ORDER.includes(program.slug as (typeof PROFESSIONAL_ORDER)[number])) return null
   const truth = programmeTruth(program)
+  const face = CARD_FACE[program.slug]
   const content = truth.state === "live" ? authoredProgrammeContent(program.slug) : null
   const discovery = content ? programmeDiscoveryFor(program.slug) : null
-  const title = discovery?.courseTitle || program.name
-  const outcome = outcomeFor(program.slug)
-  const line = content?.cardLine || (outcome ? `For learners heading towards ${outcome} roles.` : "")
+  const title = face?.title || discovery?.courseTitle || program.name
+  const line = face?.line || content?.cardLine || (truth.comingLater ? "This programme is not open yet." : "A catalogue direction. A full taught pathway is not open yet.")
+  const category = face?.category || KIND_COPY[kind].label
   return {
     program,
     truth,
     kind,
     title,
     line,
-    search: `${title} ${program.name} ${line} ${program.level} ${program.format} ${outcome}`.toLowerCase(),
+    category,
+    image: face?.image || null,
+    alt: face?.alt ?? "",
+    search: `${title} ${program.name} ${line} ${category} ${outcomeFor(program.slug)}`.toLowerCase(),
   }
 }
 
-function OpenProgramme({ row, confirmed }: { row: Row; confirmed: boolean }) {
-  const { program, title, line } = row
-  const content = authoredProgrammeContent(program.slug)
-  const discovery = programmeDiscoveryFor(program.slug)
-  const to = `/programmes/${program.slug}`
-  const includes = [
-    discovery ? plural(discovery.taughtLessons, "lesson") : "",
-    content?.artefact === "northwind" ? "SQL lab on a sales extract" : content?.artefact === "harbor-desk" ? "Product case workbench" : "Hands-on lab",
-    content?.capstoneTitle ? `Capstone: ${content.capstoneTitle}` : "Capstone project",
-    "Career OS profile",
-  ].filter(Boolean)
-  return (
-    <li className="pgx-open">
-      <div className="pgx-open__body">
-        <div className="pgx-open__top">
-          {/* "Open for enrolment" is a live claim: it is only made when the catalogue API answered. */}
-          <span className={confirmed ? "pgx-badge pgx-badge--open" : "pgx-badge"}>{confirmed ? "Open for enrolment" : STATUS_NOT_CONFIRMED}</span>
-          <span className="pgx-kind">{KIND_COPY[row.kind].label}</span>
-        </div>
-        <h3 className="pgx-open__title">
-          <Link to={to}>{title}</Link>
-        </h3>
-        {line ? <p className="pgx-open__line">{line}</p> : null}
-        <ul className="pgx-includes" aria-label="What the programme includes">
-          {includes.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-        <dl className="pgx-facts">
-          {[
-            ["Format", program.format],
-            ["Level", program.level],
-            ["Duration", program.duration],
-          ]
-            .filter(([, value]) => value)
-            .map(([label, value]) => (
-              <div key={label}>
-                <dt>{label}</dt>
-                <dd>{value}</dd>
-              </div>
-            ))}
-        </dl>
-        <div className="pgx-open__actions">
-          <Link className="sk-btn sk-btn-primary" to={to}>
-            View programme<span className="pgx-sr">: {title}</span>
-            <ArrowRight />
-          </Link>
-          <Link className="pgx-link" to={`${to}#pp-curriculum`}>
-            Curriculum<span className="pgx-sr"> for {title}</span>
-          </Link>
-        </div>
-      </div>
-      <div className="pgx-open__art" aria-hidden="true">
-        <div className="pgx-open__plate">{content?.artefact === "harbor-desk" ? <HarborDeskPlate /> : content?.artefact === "northwind" ? <NorthwindLabPlate /> : <ProgrammeThumb program={program} />}</div>
-      </div>
-    </li>
-  )
+function statusText(row: Row, confirmed: boolean): string {
+  if (row.truth.state === "live") return confirmed ? "Open for enrolment" : STATUS_NOT_CONFIRMED
+  if (row.truth.state === "soon") return "Coming soon"
+  return "In development"
 }
 
-function LaterProgramme({ row }: { row: Row }) {
-  const { program, title, line } = row
-  const to = `/programmes/${program.slug}`
+function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
+  const to = `/programmes/${row.program.slug}`
+  const status = statusText(row, confirmed)
+  const live = row.truth.state === "live"
   return (
     <li className="pgx-card">
-      <div className="pgx-card__art" aria-hidden="true">
-        <ProgrammeThumb program={program} />
-      </div>
-      <div className="pgx-card__body">
-        <div className="pgx-card__top">
-          <span className="pgx-badge">Opening soon</span>
-          <span className="pgx-kind">{KIND_COPY[row.kind].label}</span>
-        </div>
-        <h3 className="pgx-card__title">
-          <Link to={to}>{title}</Link>
-        </h3>
-        {line ? <p className="pgx-card__line">{line}</p> : null}
-        <p className="pgx-card__meta">{[program.duration, program.level].filter(Boolean).join(" · ")}</p>
-        <Link className="pgx-link" to={to}>
-          View details<span className="pgx-sr">: {title}</span>
-          <ArrowRight />
-        </Link>
-      </div>
+      <Link to={to} className="pgx-card__link" data-clear-launcher>
+        <span className="pgx-card__media">
+          {row.image ? <img src={row.image} alt={row.alt} /> : <span className="pgx-card__fallback" aria-hidden="true" />}
+          <span className={live && confirmed ? "pgx-status pgx-status--open" : "pgx-status"}>{status}</span>
+        </span>
+        <span className="pgx-card__body">
+          <span className="pgx-card__kicker">{row.category}</span>
+          <span className="pgx-card__title">{row.title}</span>
+          <span className="pgx-card__line">{row.line}</span>
+          <span className="pgx-card__go">
+            {live ? "View programme" : "See the listing"}
+            <ArrowRight />
+          </span>
+        </span>
+      </Link>
     </li>
-  )
-}
-
-function KindSection({ kind, rows, confirmed }: { kind: Kind; rows: Row[]; confirmed: boolean }) {
-  if (rows.length === 0) return null
-  const open = rows.filter((row) => row.truth.state === "live")
-  const later = rows.filter((row) => row.truth.state !== "live")
-  const copy = KIND_COPY[kind]
-  return (
-    <section id={kind} className="pgx-section" aria-labelledby={`pgx-${kind}`}>
-      <div className="sky-container">
-        <header className="pgx-section__head">
-          <h2 id={`pgx-${kind}`}>{copy.title}</h2>
-          <p>{copy.lead}</p>
-        </header>
-        {open.length ? (
-          <ul className="pgx-open-list">
-            {open.map((row) => (
-              <OpenProgramme key={row.program.slug} row={row} confirmed={confirmed} />
-            ))}
-          </ul>
-        ) : null}
-        {later.length ? (
-          <>
-            {open.length ? <p className="pgx-later-label">Opening soon</p> : null}
-            <ul className="pgx-grid">
-              {later.map((row) => (
-                <LaterProgramme key={row.program.slug} row={row} />
-              ))}
-            </ul>
-          </>
-        ) : null}
-      </div>
-    </section>
   )
 }
 
@@ -194,40 +158,74 @@ export default function ProgramsPage() {
   const catalog = useCatalogPrograms()
   const [query, setQuery] = useState("")
   const [kind, setKind] = useState<"all" | Kind>("all")
+  const [category, setCategory] = useState("All")
 
   const rows = useMemo(() => (catalog.data ?? []).map(toRow).filter((row): row is Row => row !== null), [catalog.data])
+  const categories = useMemo(() => ["All", ...Array.from(new Set(rows.map((row) => row.category)))], [rows])
   const needle = query.trim().toLowerCase()
-  const shown = rows.filter((row) => (kind === "all" || row.kind === kind) && (!needle || row.search.includes(needle)))
-  const byKind = (k: Kind) => shown.filter((row) => row.kind === k).sort((a, b) => Number(b.truth.state === "live") - Number(a.truth.state === "live"))
+  const shown = rows.filter((row) => {
+    if (kind !== "all" && row.kind !== kind) return false
+    if (category !== "All" && row.category !== category) return false
+    return !needle || row.search.includes(needle)
+  })
+  const confirmed = !catalog.offline
+  const professional = shown.filter((row) => row.kind === "professional").sort((a, b) => PROFESSIONAL_ORDER.indexOf(a.program.slug as (typeof PROFESSIONAL_ORDER)[number]) - PROFESSIONAL_ORDER.indexOf(b.program.slug as (typeof PROFESSIONAL_ORDER)[number]))
+  const certification = shown.filter((row) => row.kind === "certification")
+  const filtersActive = Boolean(needle) || kind !== "all" || category !== "All"
+
+  function clearFilters() {
+    setQuery("")
+    setKind("all")
+    setCategory("All")
+  }
 
   return (
     <PageShell aurora={false}>
       <div className="site-light pgx">
-        <section className="pgx-hero" aria-labelledby="pgx-title">
-          <div className="sky-container pgx-hero__inner">
-            <div>
-              <p className="pgx-eyebrow">Programmes</p>
-              <h1 id="pgx-title" className="pgx-h1">
-                Learn a skill. <em>Build the proof.</em>
-              </h1>
-              <p className="pgx-lede">Every programme pairs lessons with hands-on labs and a project you keep in your Career OS profile.</p>
-            </div>
-            <div className="pgx-hero__tools">
-              <label className="pgx-search">
-                <span className="pgx-sr">Search programmes</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                  <circle cx="11" cy="11" r="7" />
-                  <line x1="20" y1="20" x2="16.5" y2="16.5" />
-                </svg>
-                <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by skill, role or level" />
-              </label>
-              <div className="pgx-tabs" role="group" aria-label="Programme type">
-                {(["all", "certification", "professional"] as const).map((item) => (
+        <section className="pgx-intro" aria-labelledby="pgx-title">
+          <div className="sky-container pgx-intro__inner">
+            <p className="pgx-eyebrow">Skylent programmes</p>
+            <h1 id="pgx-title">Find the right programme for your next step.</h1>
+            <p className="pgx-lede">Explore learning opportunities designed to help you build knowledge and practical skills.</p>
+          </div>
+        </section>
+
+        <section className="pgx-tools" aria-label="Search and filters">
+          <div className="sky-container">
+            <label className="pgx-search">
+              <span className="pgx-sr">Search programmes</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7" />
+                <line x1="20" y1="20" x2="16.5" y2="16.5" />
+              </svg>
+              <input id="programme-search" type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search programmes" />
+            </label>
+            <div className="pgx-filters">
+              <div className="pgx-filter">
+              <span className="pgx-filter__label">Type</span>
+              <div className="pgx-chips" role="group" aria-label="Programme type">
+                {(["all", "professional", "certification"] as const).map((item) => (
                   <button key={item} type="button" aria-pressed={kind === item} className={kind === item ? "is-on" : undefined} onClick={() => setKind(item)}>
                     {item === "all" ? "All" : KIND_COPY[item].label}
                   </button>
                 ))}
               </div>
+              </div>
+              <div className="pgx-filter">
+              <span className="pgx-filter__label">Subject</span>
+              <div className="pgx-chips" role="group" aria-label="Subject">
+                {categories.map((item) => (
+                  <button key={item} type="button" aria-pressed={category === item} className={category === item ? "is-on" : undefined} onClick={() => setCategory(item)}>
+                    {item}
+                  </button>
+                ))}
+              </div>
+              </div>
+              {filtersActive ? (
+                <button type="button" className="pgx-clear" onClick={clearFilters}>
+                  Clear filters
+                </button>
+              ) : null}
             </div>
           </div>
         </section>
@@ -236,9 +234,9 @@ export default function ProgramsPage() {
           <div className="sky-container pgx-loading" aria-busy="true" aria-label="Loading programmes">
             {[0, 1, 2].map((i) => (
               <div key={i} className="pgx-skel" aria-hidden="true">
-                <span className="sky-skeleton" style={{ width: 96 }} />
-                <span className="sky-skeleton" style={{ width: "60%", height: 22 }} />
-                <span className="sky-skeleton" style={{ width: "90%" }} />
+                <span className="sky-skeleton" style={{ width: "100%", height: 140 }} />
+                <span className="sky-skeleton" style={{ width: "40%" }} />
+                <span className="sky-skeleton" style={{ width: "70%", height: 22 }} />
               </div>
             ))}
           </div>
@@ -247,15 +245,8 @@ export default function ProgramsPage() {
             <p className="pgx-empty__title">No programmes are published yet.</p>
             <p>New programmes appear here as soon as they are added to the catalogue.</p>
           </div>
-        ) : shown.length === 0 ? (
-          <div className="sky-container pgx-empty">
-            <p className="pgx-empty__title">No programme matches that search.</p>
-            <button type="button" className="sk-btn sk-btn-secondary" onClick={() => { setQuery(""); setKind("all") }}>
-              Clear search
-            </button>
-          </div>
         ) : (
-          <>
+          <div id="catalogue">
             {catalog.offline ? (
               <div className="sky-container">
                 <p className="pgx-offline" role="status">
@@ -264,26 +255,78 @@ export default function ProgramsPage() {
                 </p>
               </div>
             ) : null}
-            <KindSection kind="professional" rows={byKind("professional")} confirmed={!catalog.offline} />
-            <KindSection kind="certification" rows={byKind("certification")} confirmed={!catalog.offline} />
-          </>
+            {shown.length === 0 ? (
+              <div className="sky-container pgx-empty">
+                <p className="pgx-empty__title">No programme matches that search.</p>
+                <button type="button" className="sk-btn sk-btn-secondary" onClick={clearFilters}>
+                  Clear filters
+                </button>
+              </div>
+            ) : (
+              <>
+                {professional.length ? (
+                  <section id="professional" className="pgx-section" aria-labelledby="pgx-professional">
+                    <div className="sky-container">
+                      <header className="pgx-section__head">
+                        <h2 id="pgx-professional">{KIND_COPY.professional.title}</h2>
+                        <p>{KIND_COPY.professional.lead}</p>
+                      </header>
+                      <ul className="pgx-grid">
+                        {professional.map((row) => (
+                          <ProgrammeCard key={row.program.slug} row={row} confirmed={!catalog.offline} />
+                        ))}
+                      </ul>
+                    </div>
+                  </section>
+                ) : null}
+                {certification.length ? (
+                  <section id="certification" className="pgx-section" aria-labelledby="pgx-certification">
+                    <div className="sky-container">
+                      <header className="pgx-section__head">
+                        <h2 id="pgx-certification">{KIND_COPY.certification.title}</h2>
+                        <p>{KIND_COPY.certification.lead}</p>
+                      </header>
+                      <ul className="pgx-grid">
+                        {certification.map((row) => (
+                          <ProgrammeCard key={row.program.slug} row={row} confirmed={!catalog.offline} />
+                        ))}
+                      </ul>
+                    </div>
+                  </section>
+                ) : null}
+              </>
+            )}
+          </div>
         )}
 
-        <section className="pgx-help" aria-labelledby="pgx-help-title">
-          <div className="sky-container pgx-help__inner">
+        <section className="pgx-how" aria-labelledby="pgx-how-title">
+          <div className="sky-container">
+            <header className="pgx-section__head">
+              <h2 id="pgx-how-title">How learning works</h2>
+              <p>Where a programme is open, study moves from a lesson to practice, and the finished work can stay with you.</p>
+            </header>
+            <ol className="pgx-steps">
+              {LEARNING_STEPS.map((step, index) => (
+                <li key={step.title}>
+                  <span className="pgx-steps__n" aria-hidden="true">{index + 1}</span>
+                  <span className="pgx-steps__title">{step.title}</span>
+                  <span className="pgx-steps__text">{step.text}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section className="pgx-close" aria-labelledby="pgx-close-title">
+          <div className="sky-container pgx-close__inner">
             <div>
-              <h2 id="pgx-help-title">Not sure which programme fits?</h2>
-              <p>Tell Skylent AI what you want to do next and it suggests programmes from this catalogue.</p>
+              <h2 id="pgx-close-title">Not sure where to start?</h2>
+              <p>Explore the available learning directions and discover what fits your goals.</p>
             </div>
-            <div className="pgx-help__actions">
-              <button type="button" className="sk-btn sk-btn-primary" onClick={() => openSkylentAi("finder")}>
-                Ask Skylent AI
-                <ArrowRight />
-              </button>
-              <Link className="sk-btn sk-btn-secondary pgx-help__secondary" to="/contact">
-                Talk to the team
-              </Link>
-            </div>
+            <button type="button" className="sk-btn sk-btn-primary" onClick={() => document.getElementById("programme-search")?.focus()}>
+              Search programmes
+              <ArrowRight />
+            </button>
           </div>
         </section>
       </div>
