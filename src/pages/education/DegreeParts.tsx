@@ -2,7 +2,7 @@
  * Shared pieces of the degree surfaces (education landing, online degree, campus degree).
  * Nothing here knows a university, a fee, a date or an outcome: a degree's facts arrive as a
  * `Degree` from src/lib/degrees.ts, and anything that record does not carry is shown as
- * "Published by the institution".
+ * "Published once an institution is confirmed".
  */
 import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
@@ -12,6 +12,7 @@ import { Reveal } from "../../components/skylent/Reveal"
 import { openSkylentAi } from "../../components/skylent/ai-events"
 import {
   PUBLISHED_BY_INSTITUTION,
+  degreeLevelName,
   degreeListingPath,
   deliveryModeLabel,
   type Degree,
@@ -51,23 +52,32 @@ export function ListingChips({ degree }: { degree: Degree; showStatus?: boolean 
   return (
     <>
       <span className="sky-chip dg-mode">{deliveryModeLabel(degree.deliveryMode)}</span>
-      {degree.sample ? <span className="dg-soon-pill">Sample listing</span> : degree.status === "coming_soon" ? <span className="dg-soon-pill">Not open yet</span> : null}
+      {degree.sample ? <span className="dg-soon-pill">Sample listing · not open for applications</span> : degree.status === "coming_soon" ? <span className="dg-soon-pill">Not open for applications</span> : null}
     </>
   )
 }
 
-export function DegreeCrumb({ mode }: { mode?: DeliveryMode }) {
+export function DegreeCrumb({ mode, level }: { mode?: DeliveryMode; level?: Degree["level"] }) {
+  const levelParam = level === "UNDERGRADUATE" ? "ug" : level === "POSTGRADUATE" ? "pg" : null
   return (
     <nav aria-label="Breadcrumb" className="sky-label dg-crumb">
       <Link to="/education">Education</Link>
       <span aria-hidden="true">/</span>
-      {mode ? (
+      {mode || levelParam ? (
         <>
           <Link to="/education#degrees">Degrees</Link>
-          <span aria-hidden="true">/</span>
-          <Link to={degreeListingPath(mode)} aria-current="page">
-            {deliveryModeLabel(mode)}
-          </Link>
+          {level ? (
+            <>
+              <span aria-hidden="true">/</span>
+              <Link to={`/education?level=${levelParam}`}>{degreeLevelName(level)}</Link>
+            </>
+          ) : null}
+          {mode ? (
+            <>
+              <span aria-hidden="true">/</span>
+              <Link to={degreeListingPath(mode, level)}>{deliveryModeLabel(mode)}</Link>
+            </>
+          ) : null}
         </>
       ) : (
         <span aria-current="page">Degrees</span>

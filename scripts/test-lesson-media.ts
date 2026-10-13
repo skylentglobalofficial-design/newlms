@@ -189,12 +189,33 @@ async function main() {
     assert(saved.response.ok, `Media save failed: ${JSON.stringify(saved.data)}`)
     assert(saved.data.data.media.provider === "mux" && saved.data.data.media.playbackId === VALID_PLAYBACK_ID, "Saved media should echo the playback id")
 
+    const rejected = await request(learner.jar, "/lms/enrollments", {
+      method: "POST",
+      csrf: true,
+      body: { consent: TEST_CONSENT, programSlug: PROGRAM_SLUG },
+    })
+    assert(rejected.response.status === 400, `New Data Science enrolment should be 400, got ${rejected.response.status}`)
+    const rejectedRows = await prisma.userEnrollment.count({
+      where: { userId: learner.userId, program: { slug: PROGRAM_SLUG } },
+    })
+    assert(rejectedRows === 0, "Rejected Data Science enrolment must not create a row")
+    const program = await prisma.program.findUnique({ where: { slug: PROGRAM_SLUG } })
+    assert(program, `${PROGRAM_SLUG} must exist`)
+    await prisma.userEnrollment.create({
+      data: { userId: learner.userId, programId: program.id, status: "active" },
+    })
     const enroll = await request(learner.jar, "/lms/enrollments", {
       method: "POST",
       csrf: true,
       body: { consent: TEST_CONSENT, programSlug: PROGRAM_SLUG },
     })
-    assert(enroll.response.ok, `Enrollment failed: ${JSON.stringify(enroll.data)}`)
+    assert(enroll.response.status === 200, `Existing Data Science enrolment should reopen, got ${enroll.response.status}`)
+    const pythonDirect = await request(learner.jar, "/lms/enrollments", {
+      method: "POST",
+      csrf: true,
+      body: { consent: TEST_CONSENT, courseSlug: COURSE_SLUG },
+    })
+    assert(pythonDirect.response.status === 400, `Direct Python enrolment should stay 400, got ${pythonDirect.response.status}`)
     const workspace = await request(learner.jar, `/lms/courses/${COURSE_SLUG}`)
     assert(workspace.response.ok, "Workspace failed")
     const lessons = lessonsFromWorkspace(workspace.data)

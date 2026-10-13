@@ -6,7 +6,7 @@
  * taught counts are kept separate on purpose so the page can show both honestly.
  */
 import { courses, programs, type Course } from "../data"
-import { isAuthoredCourse } from "./authored-courses"
+import { isAuthoredCourse, isAuthoredProgramme } from "./authored-courses"
 import { courseProductProfile } from "./course-product"
 import {
   courseLessonStats,
@@ -118,7 +118,7 @@ export function programmeDiscoveryFor(slug: string | undefined): ProgrammeDiscov
 
 /** Authored taught-path rule. API presence, OPEN status, links, and counts are not enough. */
 export function hasAuthoredProgrammePath(slug: string | undefined): boolean {
-  return programmeDiscoveryFor(slug) != null
+  return Boolean(slug && isAuthoredProgramme(slug) && programmeDiscoveryFor(slug))
 }
 
 /**

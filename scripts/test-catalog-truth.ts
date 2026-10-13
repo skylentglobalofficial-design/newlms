@@ -152,8 +152,24 @@ assert(
 assert(/authored && enrollable \? "live"/.test(programmeTruthSource), "Live needs an authored programme path as well as open enrolment")
 assert(
   /program\.enrollmentStatus !== "OPEN"/.test(lmsRoutes) && /hasAuthoredCourse/.test(lmsRoutes),
-  "The server enforces the same enrolment rule: open and at least one authored linked course",
+  "The server still requires OPEN status and at least one authored linked course",
 )
+assert(
+  /isAuthoredProgramme\(program\.slug\)/.test(lmsRoutes) &&
+    /program\.programCourses\.every\(\(link\) => isAuthoredCourse\(link\.course\.slug\)\)/.test(lmsRoutes),
+  "A new programme enrolment requires an approved authored programme and every linked course to be authored",
+)
+assert(
+  lmsRoutes.indexOf("if (existing)") !== -1 &&
+    lmsRoutes.indexOf("if (existing)") < lmsRoutes.indexOf("isAuthoredProgramme(program.slug)"),
+  "Existing programme enrolments reopen before the public authored-programme gate",
+)
+const clientProgrammes = readFileSync(new URL("../src/lib/authored-courses.ts", import.meta.url), "utf8")
+const serverProgrammes = readFileSync(new URL("../server/src/lib/authored-courses.ts", import.meta.url), "utf8")
+const authoredProgrammeList = 'export const AUTHORED_PROGRAM_SLUGS = ["data-analytics-pro", "product-management"] as const'
+assert(clientProgrammes.includes(authoredProgrammeList), "Client authored programmes list the public enrolment slugs")
+assert(serverProgrammes.includes(authoredProgrammeList), "Server authored programmes list the same public enrolment slugs")
+assert(/isAuthoredProgramme\(slug\)/.test(readFileSync(new URL("../src/lib/programme-discovery.ts", import.meta.url), "utf8")), "Client authored-path check uses the shared programme list")
 assert(/programmeTruth\(program\)/.test(programDetail), "Programme page takes readiness from the shared programme truth")
 assert(/truth\.authored && program\.linkedCourseSlugs\.includes\(content\.courseSlug\)/.test(programDetail), "The authored template needs the API link to its course")
 assert(!/moduleCount\s*>\s*0/.test(programDetail), "moduleCount > 0 must not make a programme ready")

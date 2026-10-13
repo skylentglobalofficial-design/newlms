@@ -31,7 +31,7 @@ export const ACADEMIC_LINES = [
   {
     id: "undergraduate",
     label: "Undergraduate",
-    to: "/education/undergraduate",
+    to: "/education?level=ug",
     maturity: "coming_soon" as const,
     job: "Degree → semester → modules → projects",
     audience: "Colleges and degree students",
@@ -39,7 +39,7 @@ export const ACADEMIC_LINES = [
   {
     id: "postgraduate",
     label: "Postgraduate",
-    to: "/education/postgraduate",
+    to: "/education?level=pg",
     maturity: "coming_soon" as const,
     job: "Programme → term → specialisation → case → project",
     audience: "Universities and working professionals",
@@ -56,8 +56,8 @@ export const ACADEMIC_LINES = [
 
 export const EDUCATION_HASH_REDIRECTS: Record<string, string> = {
   schooling: "/education/schooling",
-  undergraduate: "/education/undergraduate",
-  postgraduate: "/education/postgraduate",
+  undergraduate: "/education?level=ug",
+  postgraduate: "/education?level=pg",
   "competitive-exams": "/education/exams",
 }
 
@@ -227,8 +227,8 @@ export const EDUCATION_NAV: MegaNavGroup = {
   tagline: "School, degrees, and competitive exam preparation",
   items: [
     { label: "Schooling", sub: "Grade, subject, practice, assessment.", to: "/education/schooling", mark: "coming_soon" },
-    { label: "Undergraduate", sub: "Degree, semester, modules, projects.", to: "/education/undergraduate", mark: "coming_soon" },
-    { label: "Postgraduate", sub: "Programme, specialisation, case, project.", to: "/education/postgraduate", mark: "coming_soon" },
+    { label: "Undergraduate", sub: "Degree, semester, modules, projects.", to: "/education?level=ug", mark: "coming_soon" },
+    { label: "Postgraduate", sub: "Programme, specialisation, case, project.", to: "/education?level=pg", mark: "coming_soon" },
     {
       label: "Competitive Exams",
       sub: "JEE, NEET, CAT, and related prep paths.",
@@ -242,8 +242,8 @@ export const EDUCATION_NAV: MegaNavGroup = {
       items: [
         { label: "Education hub", sub: "Overview of academic lines on Skylent.", to: "/education" },
         { label: "Schooling", sub: "Grade, subject, practice, assessment.", to: "/education/schooling", mark: "coming_soon" },
-        { label: "Undergraduate", sub: "Degree, semester, modules, projects.", to: "/education/undergraduate", mark: "coming_soon" },
-        { label: "Postgraduate", sub: "Programme, specialisation, case, project.", to: "/education/postgraduate", mark: "coming_soon" },
+        { label: "Undergraduate", sub: "Degree, semester, modules, projects.", to: "/education?level=ug", mark: "coming_soon" },
+        { label: "Postgraduate", sub: "Programme, specialisation, case, project.", to: "/education?level=pg", mark: "coming_soon" },
         {
           label: "Competitive Exams",
           sub: "Diagnostic → mastery → practice → mocks.",
@@ -402,8 +402,8 @@ export const FOOTER_COLS = [
     links: [
       ["Education hub", "/education"],
       ["Schooling", "/education/schooling"],
-      ["Undergraduate", "/education/undergraduate"],
-      ["Postgraduate", "/education/postgraduate"],
+      ["Undergraduate", "/education?level=ug"],
+      ["Postgraduate", "/education?level=pg"],
       ["Competitive Exams", "/education/exams"],
     ],
   },

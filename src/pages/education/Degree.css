@@ -665,6 +665,6 @@
 }
 
 /* Repolish: one neutral admissions pill replaces the sample / coming-soon chips. */
-.dg .dg-soon-pill { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; border: 1px solid hsl(32 70% 80%); background: hsl(38 90% 96%); color: hsl(32 90% 30%); font-family: var(--sk-font-body); font-size: 12.5px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+.dg .dg-soon-pill { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; height: auto; padding: 4px 12px; border-radius: 999px; border: 1px solid hsl(32 70% 80%); background: hsl(38 90% 96%); color: hsl(32 90% 30%); font-family: var(--sk-font-body); font-size: 12.5px; font-weight: 600; letter-spacing: 0; text-transform: none; line-height: 1.35; max-width: 100%; white-space: normal; }
 .dg .dg-soon-pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
 .dg .sky-band-navy .dg-soon-pill { background: transparent; border-color: hsl(40 80% 60% / .5); color: hsl(40 95% 72%); }

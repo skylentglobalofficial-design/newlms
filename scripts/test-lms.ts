@@ -369,29 +369,88 @@ async function main() {
 
   console.log("14. Program enrollment resolves course access correctly")
   const programJar: CookieJar = new Map()
-  await signupUser(programJar, "program")
-  const programEnroll = await request(programJar, "/lms/enrollments", {
+  const programUser = await signupUser(programJar, "program")
+  const analyticsJar: CookieJar = new Map()
+  await signupUser(analyticsJar, "analytics-program")
+  const programEnroll = await request(analyticsJar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
-    body: { consent: TEST_CONSENT, programSlug: "data-science-ai" },
+    body: { consent: TEST_CONSENT, programSlug: "data-analytics-pro" },
   })
-  assert(programEnroll.response.ok, "Program enrollment should succeed")
+  assert(programEnroll.response.status === 201, "Data Analytics programme enrollment should succeed")
   assert(programEnroll.data.data.course.slug === courseSlug, "Program enrollment should resolve primary course workspace")
 
-  const programCourseAccess = await request(programJar, `/lms/courses/${courseSlug}`)
+  const programCourseAccess = await request(analyticsJar, `/lms/courses/${courseSlug}`)
   assert(programCourseAccess.response.ok, "Program-enrolled user should access linked course")
   assert(programCourseAccess.data.data.lessonStates.l1?.locked === false, "Program enrollment should include unlock rules")
 
-  const programListed = await request(programJar, "/lms/enrollments")
+  const programListed = await request(analyticsJar, "/lms/enrollments")
   assert(programListed.response.ok, "Program enrollments list should succeed")
   assert(
     Array.isArray(programListed.data.data) &&
       programListed.data.data.some(
         (row: { programSlug?: string; courseSlug?: string | null }) =>
-          row.programSlug === "data-science-ai" && row.courseSlug === courseSlug,
+          row.programSlug === "data-analytics-pro" && row.courseSlug === courseSlug,
       ),
     "Programme enrollment must expose the linked LMS course so Resume/evidence can open it",
   )
+
+  console.log("14a. Product Management programme enrollment succeeds")
+  const pmJar: CookieJar = new Map()
+  await signupUser(pmJar, "pm-program")
+  const pmEnroll = await request(pmJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { consent: TEST_CONSENT, programSlug: "product-management" },
+  })
+  assert(pmEnroll.response.status === 201, "Product Management programme enrollment should succeed")
+  assert(pmEnroll.data.data.course.slug === "product-management", "Product Management enrollment should open its course")
+
+  console.log("14a2. New Data Science programme enrollment is rejected")
+  const dsProgram = await prisma.program.findUnique({ where: { slug: "data-science-ai" } })
+  assert(dsProgram, "data-science-ai programme must exist")
+  const rejectedLearner = await prisma.user.findUnique({ where: { email: programUser.email } })
+  assert(rejectedLearner, "Data Science rejection learner should exist")
+  const beforeReject = await prisma.userEnrollment.count({
+    where: { userId: rejectedLearner.id, programId: dsProgram.id },
+  })
+  const rejectedEnrol = await request(programJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { consent: TEST_CONSENT, programSlug: "data-science-ai" },
+  })
+  const afterReject = await prisma.userEnrollment.count({
+    where: { userId: rejectedLearner.id, programId: dsProgram.id },
+  })
+  assert(rejectedEnrol.response.status === 400, `New Data Science enrolment should be 400, got ${rejectedEnrol.response.status}`)
+  assert(
+    rejectedEnrol.data?.error === "This programme is not open for enrollment",
+    "Rejected Data Science enrolment should use the closed-programme message",
+  )
+  assert(beforeReject === 0 && afterReject === 0, "Rejected Data Science enrolment must not create a row")
+
+  const pythonDirect = await request(programJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { consent: TEST_CONSENT, courseSlug: "python-programming" },
+  })
+  assert(pythonDirect.response.status === 400, `Direct Python enrolment should stay 400, got ${pythonDirect.response.status}`)
+
+  await prisma.userEnrollment.create({
+    data: { userId: rejectedLearner.id, programId: dsProgram.id, status: "active" },
+  })
+  const reopened = await request(programJar, "/lms/enrollments", {
+    method: "POST",
+    csrf: true,
+    body: { consent: TEST_CONSENT, programSlug: "data-science-ai" },
+  })
+  const reopenedCount = await prisma.userEnrollment.count({
+    where: { userId: rejectedLearner.id, programId: dsProgram.id },
+  })
+  assert(reopened.response.status === 200, `Existing Data Science enrolment should reopen with 200, got ${reopened.response.status}`)
+  assert(reopenedCount === 1, "Reopening an existing Data Science enrolment must not create another row")
+  const existingCourse = await request(programJar, `/lms/courses/${courseSlug}`)
+  assert(existingCourse.response.ok, "Existing Data Science learner should still open Data Analytics")
 
   console.log("14b. Coming-soon program enrollment is rejected")
   const comingSoon = await request(programJar, "/lms/enrollments", {
@@ -541,12 +600,18 @@ async function main() {
 
   console.log("14e. Direct course enrollment must not override programme resume")
   const mixedJar: CookieJar = new Map()
-  await signupUser(mixedJar, "mixed-resume")
+  const mixedUser = await signupUser(mixedJar, "mixed-resume")
+  const mixedLearner = await prisma.user.findUnique({ where: { email: mixedUser.email } })
+  assert(mixedLearner, "Mixed-resume learner should exist")
+  await prisma.userEnrollment.create({
+    data: { userId: mixedLearner.id, programId: dsProgram.id, status: "active" },
+  })
   const mixedProgramEnroll = await request(mixedJar, "/lms/enrollments", {
     method: "POST",
     csrf: true,
     body: { consent: TEST_CONSENT, programSlug },
   })
+  assert(mixedProgramEnroll.response.status === 200, "Existing Data Science enrolment should remain accessible")
   assert(mixedProgramEnroll.response.ok, "Mixed-resume learner should enroll in the programme")
 
   const mixedDirectEnroll = await request(mixedJar, "/lms/enrollments", {

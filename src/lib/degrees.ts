@@ -7,7 +7,7 @@
  * TODAY: degrees and universities are not in the backend. The only source is the four sample
  * routes in `src/data/education.ts` (all `sample: true`, `status: "coming-soon"`). University
  * names, durations, fees, intakes, curricula and outcomes are NOT published, so every optional
- * field below is absent. Screens show "Published by the institution" for an absent field, or
+ * field below is absent. Screens show "Published once an institution is confirmed" for an absent field, or
  * drop the row. Nothing is defaulted or invented here.
  *
  * LATER: `Degree` is the contract the backend should serve from
@@ -100,7 +100,7 @@ export type Degree = {
 }
 
 /** The one wording used wherever a fact is not published yet. */
-export const PUBLISHED_BY_INSTITUTION = "Shared once an institution is confirmed"
+export const PUBLISHED_BY_INSTITUTION = "Published once an institution is confirmed"
 
 const STATIC_STATUS: Record<DegreeRoute["status"], DegreeStatus> = { "coming-soon": "coming_soon" }
 
@@ -161,6 +161,11 @@ export function degreePath(degree: Pick<Degree, "slug" | "deliveryMode">): strin
   return `/education/${MODE_SEGMENT[degree.deliveryMode]}/${degree.slug}`
 }
 
-export function degreeListingPath(mode?: DeliveryMode | null): string {
-  return mode ? `/education?mode=${MODE_SEGMENT[mode]}` : "/education"
+export function degreeListingPath(mode?: DeliveryMode | null, level?: DegreeLevel | null): string {
+  const query = new URLSearchParams()
+  if (level === "UNDERGRADUATE") query.set("level", "ug")
+  if (level === "POSTGRADUATE") query.set("level", "pg")
+  if (mode) query.set("mode", MODE_SEGMENT[mode])
+  const qs = query.toString()
+  return qs ? `/education?${qs}` : "/education"
 }

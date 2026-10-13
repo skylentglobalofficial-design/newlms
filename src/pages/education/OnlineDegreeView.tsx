@@ -56,7 +56,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
       {/* Hero: the listing, stated at display scale */}
       <section className="sky-container dg-hero">
         <div className="cine-in cine-in--fade">
-          <DegreeCrumb mode={degree.deliveryMode} />
+          <DegreeCrumb mode={degree.deliveryMode} level={degree.level} />
         </div>
         <div className="dg-chips cine-in cine-in--fade cine-d1">
           <ListingChips degree={degree} />
@@ -66,7 +66,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
           <p className="dg-lead cine-in cine-d2">
             Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the
             week runs on a laptop and not on a campus.
-            {degree.institution ? null : " Timetable, fees and entry details are shared once an institution is confirmed."}
+            {degree.institution ? null : " Timetable, fees and entry details are published once an institution is confirmed."}
           </p>
           <div className="dg-actions cine-in cine-d3">
             <Link to="#week" className="sk-btn sk-btn-primary">
@@ -86,7 +86,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                 label: "Listing",
                 value: (
                   <span className="dg-listing">
-                    <span>Not open yet</span>
+                    <span>Sample listing · not open for applications</span>
                   </span>
                 ),
               },
