@@ -1,10 +1,8 @@
 /**
  * Homepage sections for the repolish (prefix hx-, styles in HomeRepolish.css).
  *
- * Order: hero (navy: statement and actions, student photograph, the three parts and a learning-journey
- * card) → how learning works (five connected stages with product previews) → programmes (catalogue
- * cards with each programme's working material) → degrees (two doors: UG and PG) → after you enrol
- * (Learn.tsx, a guided walkthrough) → Career OS walkthrough → Skylent AI → institutions → closing.
+ * Order: hero (white/lavender) → ways to start → goals → how learning works → programmes →
+ * degrees → after you enrol → Career OS → Skylent AI → institutions → closing.
  *
  * Facts come from the authored course data, the catalogue (or its published list) and lib/degrees.
  * Nothing here states a learner count, outcome, partner or placement. Previews are drawn from the
@@ -23,6 +21,8 @@ import { deliveryModeLabel, listDegrees } from "@/lib/degrees"
 import { courseFacts } from "./course-facts"
 import { useWalkthrough } from "./useWalkthrough"
 import heroStudent from "@/assets/site/hero-student.jpg"
+import photoClass from "@/assets/site/hero-classroom.jpg"
+import photoTeam from "@/assets/site/program-product.jpg"
 import photoCampusUg from "@/assets/site/hero-classroom.jpg"
 import photoCampusPg from "@/assets/site/degree-management.jpg"
 import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice"
@@ -84,23 +84,27 @@ export function HomeHero() {
           </div>
           <div className="hxw-hero__community hx-rise">
             <div className="hxw-hero__avatars" aria-hidden="true">
-              <span className="hxw-hero__avatar" style={{ background: "#6657E8" }} />
-              <span className="hxw-hero__avatar" style={{ background: "#43349F" }} />
-              <span className="hxw-hero__avatar" style={{ background: "#5142B5" }} />
-              <span className="hxw-hero__avatar" style={{ background: "#8B7FD4" }} />
+              <img className="hxw-hero__avatar" src={heroStudent} alt="" style={{ objectPosition: "50% 18%" }} />
+              <img className="hxw-hero__avatar" src={photoClass} alt="" style={{ objectPosition: "18% 42%" }} />
+              <img className="hxw-hero__avatar" src={photoTeam} alt="" style={{ objectPosition: "50% 30%" }} />
+              <img className="hxw-hero__avatar" src={photoCampusPg} alt="" style={{ objectPosition: "62% 35%" }} />
             </div>
             <p className="hxw-hero__community-text">
-              Join a growing community<br />of learners, builders and professionals.
+              For learners, builders<br />and professionals.
             </p>
           </div>
         </div>
         <div className="hxw-hero__visual hx-rise">
-          <div className="hxw-hero__photo">
-            <img src={heroStudent} alt="Students working together on a laptop" width={903} height={1203} decoding="async" fetchPriority="high" />
+          <div className="hxw-hero__blob" aria-hidden="true" />
+          <div className="hxw-hero__frame">
+            <div className="hxw-hero__photo">
+              <img src={heroStudent} alt="A student holding a laptop and notebook." width={903} height={1203} decoding="async" fetchPriority="high" />
+            </div>
             <span className="hxw-hero__badge">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5142B5" strokeWidth="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5142B5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
               <span>
-                <strong>Real projects</strong><br />Real experience
+                <strong>Real projects</strong>
+                Real experience
               </span>
             </span>
           </div>
@@ -115,39 +119,42 @@ export function HomeHero() {
               </Link>
             ))}
           </div>
-          <span className="hxw-hero__handwritten" aria-hidden="true">
-            A space<br />to learn,<br />build and<br />grow.
-          </span>
+          <p className="hxw-hero__note" aria-hidden="true">
+            A space to learn,
+            <br />
+            build and grow.
+            <svg viewBox="0 0 92 18" width="92" height="18"><path d="M4 11c14-7 28-8 44-4 10 2 22 1 40-6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
+          </p>
         </div>
       </div>
     </section>
   )
 }
 
-/* ── Trust bar ────────────────────────────────────────────────────────── */
+/* ── Ways to start ──────────────────────────────────────────────────────
+   A quiet strip in the place a logo bar would sit. Only real Skylent destinations.
+   No partner names: none are confirmed. */
 
-const TRUST_LOGOS = [
-  { name: "Microsoft", svg: <svg width="120" height="26" viewBox="0 0 120 26" fill="none"><text x="24" y="18" fontFamily="Inter,sans-serif" fontSize="14" fontWeight="600" fill="#555B7D">Microsoft</text><rect x="0" y="3" width="9" height="9" fill="#F25022"/><rect x="11" y="3" width="9" height="9" fill="#7FBA00"/><rect x="0" y="14" width="9" height="9" fill="#00A4EF"/><rect x="11" y="14" width="9" height="9" fill="#FFB900"/></svg> },
-  { name: "Google", svg: <svg width="80" height="26" viewBox="0 0 80 26"><text x="0" y="19" fontFamily="Inter,sans-serif" fontSize="16" fontWeight="600" fill="#555B7D">Google</text></svg> },
-  { name: "AWS", svg: <svg width="55" height="26" viewBox="0 0 55 26"><text x="0" y="19" fontFamily="Inter,sans-serif" fontSize="15" fontWeight="700" fill="#555B7D">aws</text></svg> },
-  { name: "Meta", svg: <svg width="65" height="26" viewBox="0 0 65 26"><text x="0" y="19" fontFamily="Inter,sans-serif" fontSize="15" fontWeight="600" fill="#555B7D">Meta</text></svg> },
-  { name: "Notion", svg: <svg width="80" height="26" viewBox="0 0 80 26"><text x="0" y="19" fontFamily="Inter,sans-serif" fontSize="14" fontWeight="600" fill="#555B7D">Notion</text></svg> },
-  { name: "GitHub", svg: <svg width="80" height="26" viewBox="0 0 80 26"><text x="0" y="19" fontFamily="Inter,sans-serif" fontSize="14" fontWeight="600" fill="#555B7D">GitHub</text></svg> },
+const START_PATHS = [
+  { label: "Degrees", to: "/education" },
+  { label: "Skill programmes", to: "/programmes" },
+  { label: "Career OS", to: "/career-os" },
+  { label: "Skylent AI", to: "/path" },
 ] as const
 
 export function HomeTrust() {
   return (
-    <section className="hxw-trust" aria-label="Trusted by students and institutions">
+    <section className="hxw-trust" aria-label="Ways to start on Skylent">
       <div className="sky-container">
         <div className="hxw-trust__inner">
-          <p className="hxw-trust__label">Trusted by students and institutions</p>
-          <div className="hxw-trust__logos">
-            {TRUST_LOGOS.map((logo) => (
-              <span key={logo.name} className="hxw-trust__logo" aria-label={logo.name}>
-                {logo.svg}
-              </span>
+          <p className="hxw-trust__label">Four ways to start</p>
+          <ul className="hxw-trust__paths">
+            {START_PATHS.map((path) => (
+              <li key={path.label}>
+                <Link to={path.to}>{path.label}</Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </div>
     </section>
@@ -157,10 +164,10 @@ export function HomeTrust() {
 /* ── Goals section — "Different goals. One platform." ──────────────────── */
 
 const GOAL_CARDS = [
-  { icon: "graduation", title: "Degrees", text: "UG and PG pathways, online or on campus.", to: "/education", color: "#5142B5" },
-  { icon: "book", title: "Skill programmes", text: "Certification and professional programmes with practice.", to: "/programmes", color: "#5142B5" },
-  { icon: "briefcase", title: "Career OS", text: "Jobs, internships and career support.", to: "/career-os", color: "#5142B5" },
-  { icon: "sparkle", title: "Skylent AI", text: "Personalised guidance for your goals.", to: "/path", color: "#5142B5" },
+  { icon: "graduation", title: "Degrees", text: "UG and PG pathways to explore, online or on campus.", to: "/education" },
+  { icon: "book", title: "Skill programmes", text: "Certification and professional programmes with practice.", to: "/programmes" },
+  { icon: "briefcase", title: "Career OS", text: "Your profile, projects and applications, in one place.", to: "/career-os" },
+  { icon: "sparkle", title: "Skylent AI", text: "A guide for where to start, from the Skylent catalogue.", to: "/path" },
 ] as const
 
 export function HomeGoals() {
@@ -336,7 +343,7 @@ export function InsideProgramme() {
           <div data-reveal-group>
             <p className="hx-eyebrow hx-eyebrow--dark">How learning works</p>
             <h2 id="hx-inside-title" className="hx-h2">
-              Every lesson leads to <em>work you can show.</em>
+              Every lesson leads to<br /><em>work you can show.</em>
             </h2>
           </div>
           <p className="hx-head__aside">Practice is part of every programme, not a separate product. What you build stays with you.</p>
