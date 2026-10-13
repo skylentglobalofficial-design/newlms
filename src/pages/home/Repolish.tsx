@@ -21,6 +21,9 @@ import { deliveryModeLabel, listDegrees } from "@/lib/degrees"
 import { courseFacts } from "./course-facts"
 import { useWalkthrough } from "./useWalkthrough"
 import heroStudent from "@/assets/site/hero-student.jpg"
+import photoAnalytics from "@/assets/site/program-analytics.jpg"
+import photoProduct from "@/assets/site/program-product.jpg"
+import photoScience from "@/assets/site/program-web.jpg"
 import photoClass from "@/assets/site/hero-classroom.jpg"
 import photoTeam from "@/assets/site/program-product.jpg"
 import photoCampusUg from "@/assets/site/hero-classroom.jpg"
@@ -31,13 +34,6 @@ import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice
    Left: category labels, four-line headline (last line in violet), supporting copy,
    two CTAs, community avatars. Right: large student photo with floating offering cards.
    Violet badge "Real projects / Real experience" on the image. */
-
-const HERO_OFFERINGS = [
-  { icon: "graduation", label: "Programmes & Degrees", to: "/programmes" },
-  { icon: "book", label: "Skill Courses", to: "/programmes" },
-  { icon: "briefcase", label: "Career Opportunities", to: "/career-os" },
-  { icon: "sparkle", label: "AI Guidance", to: "/path" },
-] as const
 
 function OfferingIcon({ type }: { type: string }) {
   const iconColor = "#5142B5"
@@ -95,37 +91,37 @@ export function HomeHero() {
           </div>
         </div>
         <div className="hxw-hero__visual hx-rise">
-          <div className="hxw-hero__blob" aria-hidden="true" />
-          <div className="hxw-hero__frame">
+          <div className="hxw-stage">
             <div className="hxw-hero__photo">
               <img src={heroStudent} alt="A student holding a laptop and notebook." width={903} height={1203} decoding="async" fetchPriority="high" />
             </div>
-            <span className="hxw-hero__badge">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5142B5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 19V5M4 19h16M8 16v-5M12 16V8M16 16v-3"/></svg>
-              <img className="hxw-hero__badge-face" src={heroStudent} alt="" />
-              <span>
-                <strong>Real projects</strong>
-                Real experience
-              </span>
-            </span>
-          </div>
-          <div className="hxw-hero__offerings">
-            {HERO_OFFERINGS.map((item) => (
-              <Link key={item.label} to={item.to} className="hxw-offering">
-                <span className="hxw-offering__icon">
-                  <OfferingIcon type={item.icon} />
+            <div className="hxw-ws" aria-label="Illustrative learning workspace. Not a connected account.">
+              <div className="hxw-ws__top">
+                <span className="hxw-ws__mark" aria-hidden="true">S</span>
+                <span>
+                  <span className="hxw-ws__title">Learning workspace</span>
+                  <span className="hxw-ws__note">Illustrative preview · Not connected</span>
                 </span>
-                <span className="hxw-offering__label">{item.label}</span>
+              </div>
+              <div className="hxw-ws__row">
+                <span>Programme direction</span>
+                <span className="hxw-ws__pill">Explore</span>
+              </div>
+              <span className="hxw-ws__track" aria-hidden="true"><span /></span>
+              <Link className="hxw-ws__item" to="/programmes/data-analytics-pro">
+                <span className="hxw-ws__plus" aria-hidden="true">+</span>
+                <span>
+                  <strong>Data Analytics</strong>
+                  <em>Sample learning activity</em>
+                </span>
                 <ArrowRight />
               </Link>
-            ))}
+              <div className="hxw-ws__pair">
+                <span><b>Learn</b> Structured course work</span>
+                <span><b>Build</b> Practical project work</span>
+              </div>
+            </div>
           </div>
-          <p className="hxw-hero__note" aria-hidden="true">
-            A space to learn,
-            <br />
-            build and grow.
-            <svg viewBox="0 0 92 18" width="92" height="18"><path d="M4 11c14-7 28-8 44-4 10 2 22 1 40-6" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
-          </p>
         </div>
       </div>
     </section>
@@ -136,27 +132,28 @@ export function HomeHero() {
    A quiet strip in the place a logo bar would sit. Only real Skylent destinations.
    No partner names: none are confirmed. */
 
-const START_PATHS = [
-  { label: "Degrees", to: "/education" },
-  { label: "Skill programmes", to: "/programmes" },
-  { label: "Career OS", to: "/career-os" },
-  { label: "Skylent AI", to: "/path" },
+const JOURNEY_STEPS = [
+  { n: "01", title: "Explore", text: "Find a meaningful learning direction." },
+  { n: "02", title: "Learn", text: "Build knowledge through structured learning." },
+  { n: "03", title: "Practise", text: "Apply concepts through assignments and practical work." },
+  { n: "04", title: "Build", text: "Create work that demonstrates developing capability." },
+  { n: "05", title: "Progress", text: "Use learning progress and completed work to inform the next step." },
 ] as const
 
 export function HomeTrust() {
   return (
-    <section className="hxw-trust" aria-label="Ways to start on Skylent">
+    <section className="hxw-journey" data-clear-launcher aria-labelledby="hx-journey-title">
       <div className="sky-container">
-        <div className="hxw-trust__inner">
-          <p className="hxw-trust__label">Four ways to start</p>
-          <ul className="hxw-trust__paths">
-            {START_PATHS.map((path) => (
-              <li key={path.label}>
-                <Link to={path.to}>{path.label}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <h2 id="hx-journey-title" className="hxw-journey__title">A connected learning journey</h2>
+        <ol className="hxw-journey__steps">
+          {JOURNEY_STEPS.map((step) => (
+            <li key={step.n}>
+              <span className="hxw-journey__n">{step.n}</span>
+              <span className="hxw-journey__name">{step.title}</span>
+              <span className="hxw-journey__text">{step.text}</span>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   )
@@ -427,10 +424,31 @@ function ProgrammeArtefact({ artefact }: { artefact: AuthoredProgrammeContent["a
   )
 }
 
+const FOCUS_SLUGS = ["data-analytics-pro", "product-management", "data-science-ai"] as const
+const FOCUS_FACE: Record<string, { title: string; image: string; alt: string; line: string }> = {
+  "data-analytics-pro": {
+    title: "Data Analytics",
+    image: photoAnalytics,
+    alt: "Illustrative analytics charts.",
+    line: "Take a messy sales extract to a finding and a recommendation someone can act on.",
+  },
+  "product-management": {
+    title: "Product Management",
+    image: photoProduct,
+    alt: "Illustrative product working session.",
+    line: "Frame one operations problem and recommend a single constrained bet.",
+  },
+  "data-science-ai": {
+    title: "Data Science",
+    image: photoScience,
+    alt: "Illustrative code on a screen.",
+    line: "A listed direction. Machine learning teaching is not in the pathway yet.",
+  },
+}
+
 export function HomeProgrammes({ programmes, loading, confirmed }: { programmes: CatalogProgramSummary[]; loading: boolean; confirmed: boolean }) {
-  const rows = homeRows(programmes)
-  const open = rows.filter((row) => row.open)
-  const later = rows.filter((row) => !row.open)
+  const rows = homeRows(programmes).filter((row) => FOCUS_SLUGS.includes(row.program.slug as (typeof FOCUS_SLUGS)[number]))
+  const ordered = [...rows].sort((a, b) => FOCUS_SLUGS.indexOf(a.program.slug as (typeof FOCUS_SLUGS)[number]) - FOCUS_SLUGS.indexOf(b.program.slug as (typeof FOCUS_SLUGS)[number]))
   return (
     <section id="programmes" className="hx-programmes" aria-labelledby="hx-programmes-title">
       <div className="sky-container">
@@ -438,7 +456,7 @@ export function HomeProgrammes({ programmes, loading, confirmed }: { programmes:
           <div data-reveal-group>
             <p className="hx-eyebrow hx-eyebrow--dark">Programmes</p>
             <h2 id="hx-programmes-title" className="hx-h2">
-              Learn a job skill, <em>step by step.</em>
+              Find your next <em>area of focus.</em>
             </h2>
           </div>
           <Link className="hx-more" to="/programmes">
@@ -464,40 +482,21 @@ export function HomeProgrammes({ programmes, loading, confirmed }: { programmes:
                 <Link to="/programmes">See programmes</Link>
               </p>
             )}
-            <ul className="hx-prog-grid">
-              {open.map((row) => {
-                const content = authoredProgrammeContent(row.program.slug)
-                const facts = [
-                  row.program.moduleCount > 0 ? `${row.program.moduleCount} ${row.program.moduleCount === 1 ? "module" : "modules"}` : null,
-                  row.program.format || null,
-                  row.program.level || null,
-                ].filter(Boolean) as string[]
+            <ul className="hx-focus">
+              {ordered.map((row) => {
+                const face = FOCUS_FACE[row.program.slug]
+                const status = !confirmed ? STATUS_NOT_CONFIRMED : row.open ? "Open for enrolment" : "In development"
                 return (
                   <li key={row.program.slug}>
-                    <Link to={`/programmes/${row.program.slug}`} className="hx-prog">
-                      {content ? <ProgrammeArtefact artefact={content.artefact} /> : null}
-                      <span className="hx-prog__body">
-                        <span className="hx-prog__top">
-                          <span className="hx-prog__kind">{row.kind} programme</span>
-                          {/* "Open" is only claimed when the catalogue answered; otherwise one notice above the list says so. */}
-                          {confirmed ? <span className="hx-pill hx-pill--open">Open for enrolment</span> : null}
-                        </span>
-                        <span className="hx-prog__title">{row.title}</span>
-                        {row.line ? <span className="hx-prog__line">{row.line}</span> : null}
-                        {content?.capstoneTitle ? (
-                          <span className="hx-prog__practice">
-                            <span className="hx-prog__k">You build</span>
-                            {content.capstoneTitle}
-                          </span>
-                        ) : null}
-                        {facts.length ? (
-                          <span className="hx-prog__facts">
-                            {facts.map((fact) => (
-                              <span key={fact}>{fact}</span>
-                            ))}
-                          </span>
-                        ) : null}
-                        <span className="hx-prog__go">
+                    <Link to={`/programmes/${row.program.slug}`} className="hx-focus__card" data-clear-launcher>
+                      <span className="hx-focus__media">
+                        {face ? <img src={face.image} alt={face.alt} /> : null}
+                        <span className={row.open && confirmed ? "hx-focus__status is-open" : "hx-focus__status"}>{status}</span>
+                      </span>
+                      <span className="hx-focus__body">
+                        <span className="hx-focus__title">{face?.title || row.title}</span>
+                        <span className="hx-focus__line">{face?.line || row.line || "A catalogue direction. A full taught pathway is not open yet."}</span>
+                        <span className="hx-focus__go">
                           View programme
                           <ArrowRight />
                         </span>
@@ -507,21 +506,6 @@ export function HomeProgrammes({ programmes, loading, confirmed }: { programmes:
                 )
               })}
             </ul>
-            {later.length ? (
-              <div className="hx-later">
-                <p className="hx-later__label">Opening soon</p>
-                <ul className="hx-later__list">
-                  {later.map((row) => (
-                    <li key={row.program.slug}>
-                      <Link to={`/programmes/${row.program.slug}`}>
-                        <span>{row.title}</span>
-                        <span className="hx-later__kind">{row.kind}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
           </>
         )}
       </div>
@@ -884,6 +868,39 @@ export function HomeInstitutions() {
   )
 }
 
+const SYSTEM_POINTS = [
+  { title: "Available now", text: "Open programmes include written lessons, checks, and practice. Career OS keeps a profile, projects, and the applications you record." },
+  { title: "Not a live dashboard here", text: "The workspace shown in the hero is an illustration. It is not connected to a learner account." },
+  { title: "Still planned", text: "Data Science does not yet include machine-learning teaching. Career OS does not compare your skills with a role, and it does not apply for jobs for you." },
+] as const
+
+export function HomeSystems() {
+  return (
+    <section className="hx-systems" aria-labelledby="hx-systems-title">
+      <div className="sky-container">
+        <header className="hx-head">
+          <div>
+            <p className="hx-eyebrow hx-eyebrow--dark">Skylent OS and Career OS</p>
+            <h2 id="hx-systems-title" className="hx-h2 hx-h2--sm">Learning progress and career work, kept apart until you connect them.</h2>
+          </div>
+        </header>
+        <ul className="hx-systems__list">
+          {SYSTEM_POINTS.map((point) => (
+            <li key={point.title}>
+              <span className="hx-systems__title">{point.title}</span>
+              <span className="hx-systems__text">{point.text}</span>
+            </li>
+          ))}
+        </ul>
+        <Link className="hx-more" to="/career-os">
+          How Career OS works
+          <ArrowRight />
+        </Link>
+      </div>
+    </section>
+  )
+}
+
 export function HomeClosing() {
   return (
     <section className="hx-close hx-close--final" aria-labelledby="hx-close-title">
@@ -892,9 +909,9 @@ export function HomeClosing() {
         <div>
           <p className="hx-eyebrow">Start with one programme</p>
           <h2 id="hx-close-title" className="hx-close__title">
-            Start learning. <em>Keep what you build.</em>
+            Your next step <em>starts here.</em>
           </h2>
-          <p className="hx-close__lead">Lessons, practice and a project in one programme, and the finished work stays in your Career OS profile.</p>
+          <p className="hx-close__lead">Explore Skylent and the learning directions that are open now.</p>
         </div>
         <div className="hx-close__actions">
           <Link className="sk-btn sk-btn-primary hx-btn" to="/signup">
