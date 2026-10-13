@@ -57,7 +57,7 @@ function OfferingIcon({ type }: { type: string }) {
 
 export function HomeHero() {
   return (
-    <section className="hxw-hero" aria-labelledby="hx-hero-title">
+    <section className="hxw-hero" data-clear-launcher aria-labelledby="hx-hero-title">
       <div className="hxw-hero__bg" aria-hidden="true" />
       <div className="sky-container hxw-hero__grid">
         <div className="hxw-hero__copy">
