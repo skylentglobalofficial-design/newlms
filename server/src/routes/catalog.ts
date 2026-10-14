@@ -35,6 +35,10 @@ const curriculumInclude = {
   },
 }
 
+/**
+ * Linked-course module rows only. The public programme response uses the row
+ * count, never the lesson nodes, so those nodes are not loaded.
+ */
 const programCourseInclude = {
   programCourses: {
     orderBy: { sortOrder: 'asc' as const },
@@ -43,8 +47,7 @@ const programCourseInclude = {
         select: {
           slug: true,
           curriculum: {
-            orderBy: { order: 'asc' as const },
-            include: { nodes: { select: { nodeType: true } } },
+            select: { id: true },
           },
         },
       },
@@ -71,7 +74,7 @@ function withProgramFacts<
     programCourses: Array<{
       course: {
         slug: string
-        curriculum: Array<{ nodes: Array<{ nodeType: string }> }>
+        curriculum: Array<{ id: string }>
       }
     }>
   },
@@ -143,7 +146,9 @@ router.get('/programs/:slug', async (request, response, next) => {
     await ensureProgramCourseLinks()
     const program = await prisma.program.findUnique({
       where: { slug: parsed.data.slug },
-      include: { ...curriculumInclude, pricing: true, ...programCourseInclude },
+      // The programme's own curriculum is brochure material. withProgramFacts
+      // discards it, so the detail query does not load it.
+      include: { pricing: true, ...programCourseInclude },
     })
     if (!program) {
       response.status(404).json({ error: 'Program not found' })

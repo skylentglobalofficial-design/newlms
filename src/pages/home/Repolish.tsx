@@ -20,14 +20,17 @@ import type { CatalogProgramSummary } from "@/lib/catalog-api"
 import { deliveryModeLabel, listDegrees } from "@/lib/degrees"
 import { courseFacts } from "./course-facts"
 import { useWalkthrough } from "./useWalkthrough"
-import heroStudent from "@/assets/site/hero-student.jpg"
-import photoAnalytics from "@/assets/site/program-analytics.jpg"
-import photoProduct from "@/assets/site/program-product.jpg"
-import photoScience from "@/assets/site/program-web.jpg"
-import photoClass from "@/assets/site/hero-classroom.jpg"
-import photoTeam from "@/assets/site/program-product.jpg"
-import photoCampusUg from "@/assets/site/hero-classroom.jpg"
-import photoCampusPg from "@/assets/site/degree-management.jpg"
+import heroStudent720 from "@/assets/site/home/hero-student-720.webp"
+import heroStudent1024 from "@/assets/site/home/hero-student-1024.webp"
+import heroStudentAvatar from "@/assets/site/home/hero-student-96.webp"
+import photoAnalytics from "@/assets/site/home/program-analytics-800.webp"
+import photoProduct from "@/assets/site/home/program-product-800.webp"
+import photoProductAvatar from "@/assets/site/home/program-product-96.webp"
+import photoScience from "@/assets/site/home/program-web-800.webp"
+import photoClass from "@/assets/site/home/hero-classroom-960.webp"
+import photoClassAvatar from "@/assets/site/home/hero-classroom-96.webp"
+import photoCampusPg from "@/assets/site/home/degree-management-960.webp"
+import photoCampusPgAvatar from "@/assets/site/home/degree-management-96.webp"
 import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice"
 
 /* ── Hero (white/lavender; composition after the approved violet reference) ───────
@@ -81,10 +84,10 @@ export function HomeHero() {
           </div>
           <div className="hxw-hero__community hx-rise">
             <div className="hxw-hero__avatars" aria-hidden="true">
-              <img className="hxw-hero__avatar" src={heroStudent} alt="" style={{ objectPosition: "50% 18%" }} />
-              <img className="hxw-hero__avatar" src={photoClass} alt="" style={{ objectPosition: "18% 42%" }} />
-              <img className="hxw-hero__avatar" src={photoTeam} alt="" style={{ objectPosition: "50% 30%" }} />
-              <img className="hxw-hero__avatar" src={photoCampusPg} alt="" style={{ objectPosition: "62% 35%" }} />
+              <img className="hxw-hero__avatar" src={heroStudentAvatar} width={96} height={120} alt="" decoding="async" style={{ objectPosition: "50% 18%" }} />
+              <img className="hxw-hero__avatar" src={photoClassAvatar} width={96} height={64} alt="" decoding="async" style={{ objectPosition: "18% 42%" }} />
+              <img className="hxw-hero__avatar" src={photoProductAvatar} width={96} height={64} alt="" decoding="async" style={{ objectPosition: "50% 30%" }} />
+              <img className="hxw-hero__avatar" src={photoCampusPgAvatar} width={96} height={64} alt="" decoding="async" style={{ objectPosition: "62% 35%" }} />
             </div>
             <p className="hxw-hero__community-text">
               Join a growing community<br />of learners, builders and professionals.
@@ -94,7 +97,16 @@ export function HomeHero() {
         <div className="hxw-hero__visual hx-rise">
           <div className="hxw-stage">
             <div className="hxw-hero__photo">
-              <img src={heroStudent} alt="A student holding a laptop and notebook." width={903} height={1203} decoding="async" fetchPriority="high" />
+              <img
+                src={heroStudent1024}
+                srcSet={`${heroStudent720} 720w, ${heroStudent1024} 1024w`}
+                sizes="(max-width: 1100px) min(640px, 92vw), 46vw"
+                width={1024}
+                height={1280}
+                alt="A student holding a laptop and notebook."
+                decoding="async"
+                fetchPriority="high"
+              />
             </div>
             <div className="hxw-ws" aria-label="Illustrative learning workspace. Not a connected account.">
               <div className="hxw-ws__top">
@@ -427,22 +439,28 @@ function ProgrammeArtefact({ artefact }: { artefact: AuthoredProgrammeContent["a
 }
 
 const FOCUS_SLUGS = ["data-analytics-pro", "product-management", "data-science-ai"] as const
-const FOCUS_FACE: Record<string, { title: string; image: string; alt: string; line: string }> = {
+const FOCUS_FACE: Record<string, { title: string; image: string; width: number; height: number; alt: string; line: string }> = {
   "data-analytics-pro": {
     title: "Data Analytics",
     image: photoAnalytics,
+    width: 800,
+    height: 530,
     alt: "Illustrative analytics charts.",
     line: "Take a messy sales extract to a finding and a recommendation someone can act on.",
   },
   "product-management": {
     title: "Product Management",
     image: photoProduct,
+    width: 800,
+    height: 534,
     alt: "Illustrative product working session.",
     line: "Frame one operations problem and recommend a single constrained bet.",
   },
   "data-science-ai": {
     title: "Data Science",
     image: photoScience,
+    width: 800,
+    height: 534,
     alt: "Illustrative code on a screen.",
     line: "A listed direction. Machine learning teaching is not in the pathway yet.",
   },
@@ -495,7 +513,7 @@ export function HomeProgrammes({ programmes, loading, confirmed }: { programmes:
                   <li key={row.program.slug}>
                     <Link to={`/programmes/${row.program.slug}`} className={open ? "hx-focus__card is-open" : "hx-focus__card is-soon"} data-clear-launcher>
                       <span className="hx-focus__media">
-                        {face ? <img src={face.image} alt={face.alt} /> : null}
+                        {face ? <img src={face.image} alt={face.alt} width={face.width} height={face.height} loading="lazy" decoding="async" /> : null}
                       </span>
                       <span className="hx-focus__body">
                         <span className={open ? "hx-focus__status is-open" : "hx-focus__status"}>{status}</span>
@@ -523,8 +541,8 @@ export function HomeProgrammes({ programmes, loading, confirmed }: { programmes:
    inside each door, not doors of their own. */
 
 const DEGREE_DOORS = [
-  { level: "UNDERGRADUATE", name: "Undergraduate", short: "UG", param: "ug", text: "Your first degree after school, studied over several years.", img: photoCampusUg, alt: "Students at long benches in a lecture hall." },
-  { level: "POSTGRADUATE", name: "Postgraduate", short: "PG", param: "pg", text: "Specialise after a first degree, alongside work or full time.", img: photoCampusPg, alt: "Two students studying together outdoors on a campus lawn." },
+  { level: "UNDERGRADUATE", name: "Undergraduate", short: "UG", param: "ug", text: "Your first degree after school, studied over several years.", img: photoClass, width: 960, height: 640, alt: "Students at long benches in a lecture hall." },
+  { level: "POSTGRADUATE", name: "Postgraduate", short: "PG", param: "pg", text: "Specialise after a first degree, alongside work or full time.", img: photoCampusPg, width: 960, height: 640, alt: "Two students studying together outdoors on a campus lawn." },
 ] as const
 
 export function HomeDegrees() {
@@ -550,7 +568,7 @@ export function HomeDegrees() {
               <li key={door.short}>
                 <Link to={`/education?level=${door.param}`} className="hx-door">
                   <span className="hx-door__media">
-                    <img src={door.img} alt={door.alt} loading="lazy" decoding="async" />
+                    <img src={door.img} alt={door.alt} width={door.width} height={door.height} loading="lazy" decoding="async" />
                     <span className="hx-door__tag">Planned · not open for applications</span>
                   </span>
                   <span className="hx-door__body">

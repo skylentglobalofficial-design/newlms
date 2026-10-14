@@ -61,10 +61,20 @@ function titleForPath(pathname: string): string {
   return match ? `${match[1]} · Skylent` : "Skylent"
 }
 
+const CANONICAL_ORIGIN = "https://skylent.live"
+
 function DocumentTitle() {
   const { pathname } = useLocation()
   useEffect(() => {
     document.title = titleForPath(pathname)
+    const href = `${CANONICAL_ORIGIN}${pathname === "/" ? "/" : pathname}`
+    let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')
+    if (!link) {
+      link = document.createElement("link")
+      link.rel = "canonical"
+      document.head.appendChild(link)
+    }
+    link.href = href
   }, [pathname])
   return null
 }

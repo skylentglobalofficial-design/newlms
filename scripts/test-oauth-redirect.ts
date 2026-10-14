@@ -3,7 +3,10 @@ import {
   resolveBrowserReturnOrigin,
   resolveGoogleRedirectUri,
 } from "../server/src/lib/oauth-redirect.ts"
-import { oauthErrorRedirect, oauthSuccessRedirect } from "../server/src/lib/safe-redirect.ts"
+import { oauthErrorRedirect, oauthSuccessRedirect, sanitizeReturnTo as sanitizeServerReturnTo } from "../server/src/lib/safe-redirect.ts"
+import { apexRedirectLocation, canonicalUrlForPath, injectCanonicalLink } from "../server/src/lib/public-host.ts"
+import { sanitizeReturnTo } from "../src/lib/safe-return.ts"
+import { readFileSync } from "node:fs"
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message)
@@ -115,6 +118,55 @@ try {
   assert(authorizationUrl.origin === "https://accounts.google.com", "authorization host must stay Google")
   assert(authorizationUrl.searchParams.get("redirect_uri") === PUBLIC_CALLBACK, "authorization redirect_uri must be public")
   assert(!authorizationUrl.toString().includes("localhost"), "authorization URL must not contain localhost")
+
+  console.log("10. Sign-in return paths stay on this site")
+  const returnCases: Array<[unknown, string | null]> = [
+    ["/career-os", "/career-os"],
+    ["/learn/data-analytics?lesson=1#notes", "/learn/data-analytics?lesson=1#notes"],
+    ["  /dashboard/student  ", "/dashboard/student"],
+    ["https://evil.example/login", null],
+    ["http://evil.example", null],
+    ["//evil.example", null],
+    ["///evil.example", null],
+    ["/\\evil.example", null],
+    ["javascript:alert(1)", null],
+    ["", null],
+    ["   ", null],
+    [null, null],
+    [undefined, null],
+  ]
+  for (const [input, expected] of returnCases) {
+    assert(sanitizeReturnTo(input) === expected, `client return ${JSON.stringify(input)} became ${JSON.stringify(sanitizeReturnTo(input))}`)
+    assert(sanitizeServerReturnTo(input) === expected, `server return ${JSON.stringify(input)} became ${JSON.stringify(sanitizeServerReturnTo(input))}`)
+  }
+  const loginPage = readFileSync(new URL("../src/pages/LoginPage.tsx", import.meta.url), "utf8")
+  assert(/const returnTo = sanitizeReturnTo\(redirectState\?\.returnTo\)/.test(loginPage), "Login navigates only a sanitized return path")
+  assert(/navigate\(returnTo\)/.test(loginPage), "Login uses the sanitized return variable")
+  assert(!/navigate\(redirectState\?\.returnTo\)/.test(loginPage), "Login must not navigate the raw return path")
+  assert(!/navigate\(redirectState\.returnTo\)/.test(loginPage), "Login must not navigate an unsanitized return field")
+
+  console.log("11. www redirects to the apex and HTML names one canonical URL")
+  assert(
+    apexRedirectLocation("www.skylent.live", "/contact?for=institution") === "https://skylent.live/contact?for=institution",
+    "www keeps the path and query",
+  )
+  assert(apexRedirectLocation("WWW.SKYLENT.LIVE", "/programmes") === "https://skylent.live/programmes", "host match ignores case")
+  assert(apexRedirectLocation("skylent.live", "/contact") === null, "the apex is not redirected")
+  assert(apexRedirectLocation("127.0.0.1", "/") === null, "local hosts are not redirected")
+  assert(apexRedirectLocation("www.skylent.live", "//evil.example") === "https://skylent.live/", "a protocol-relative path cannot leave the apex")
+  assert(apexRedirectLocation("www.skylent.live", "/\\evil") === "https://skylent.live/", "a backslash path cannot leave the apex")
+  assert(
+    canonicalUrlForPath("/programmes/data-analytics-pro") === "https://skylent.live/programmes/data-analytics-pro",
+    "canonical path stays on skylent.live",
+  )
+  assert(canonicalUrlForPath("/contact?for=institution") === "https://skylent.live/contact", "canonical omits the query")
+  assert(canonicalUrlForPath("//evil.example/phish") === "https://skylent.live/", "canonical rejects a protocol-relative path")
+  const withCanonical = injectCanonicalLink("<head><title>Skylent</title></head>", "/courses/sql")
+  assert(withCanonical.includes('<link rel="canonical" href="https://skylent.live/courses/sql">'), "HTML gains one canonical link")
+  const replaced = injectCanonicalLink(withCanonical, "/")
+  assert(replaced.includes('href="https://skylent.live/"') && !replaced.includes("/courses/sql"), "a later canonical replaces the first")
+  const serverIndex = readFileSync(new URL("../server/src/index.ts", import.meta.url), "utf8")
+  assert(serverIndex.includes("apexRedirectLocation") && serverIndex.includes("injectCanonicalLink"), "the server applies the host rules")
 
   console.log("OAuth redirect checks passed")
 } finally {

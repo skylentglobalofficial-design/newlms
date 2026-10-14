@@ -130,7 +130,7 @@ function CourseUnitChrome({ view }: { view: CatalogCourseListView }) {
       <p className="cat-unit-kicker">{view.course.category}</p>
       <p className="cat-unit-title">{view.title}</p>
       <p className="cat-unit-meta">
-        {view.course.lessonCount} lessons · {view.course.moduleCount} modules · {view.course.mode}
+        {view.countLabel}
       </p>
     </div>
   )

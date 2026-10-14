@@ -1,11 +1,12 @@
 import "dotenv/config"
-import { existsSync } from "node:fs"
+import { existsSync, readFileSync } from "node:fs"
 import { dirname, extname, resolve, sep } from "node:path"
 import { fileURLToPath } from "node:url"
 
 import express from "express"
 
 import { assertProductionEnv } from "./lib/env.js"
+import { apexRedirectLocation, injectCanonicalLink } from "./lib/public-host.js"
 import { prisma } from "./lib/prisma.js"
 import {
   authCredentialsRateLimit,
@@ -43,6 +44,15 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.use(securityHeaders)
+app.use((request, response, next) => {
+  const location = apexRedirectLocation(request.hostname, request.originalUrl)
+  if (!location) {
+    next()
+    return
+  }
+  const status = request.method === "GET" || request.method === "HEAD" ? 301 : 308
+  response.redirect(status, location)
+})
 app.use(createCorsMiddleware())
 app.use(jsonBodyParser())
 app.use("/api/v1/auth/login", authCredentialsRateLimit)
@@ -100,12 +110,19 @@ if (process.env.NODE_ENV === "production") {
       next()
       return
     }
+    let html = spaTemplate
+    try {
+      if (!html) html = spaTemplate = readFileSync(indexPath, "utf8")
+    } catch (error) {
+      next(error)
+      return
+    }
     response.setHeader("Cache-Control", "no-cache")
-    response.sendFile(indexPath, (error) => {
-      if (error) next(error)
-    })
+    response.type("html").send(injectCanonicalLink(html, request.path))
   })
 }
+
+let spaTemplate: string | null = null
 
 app.use((error: unknown, _request: express.Request, response: express.Response, next: express.NextFunction) => {
   if (

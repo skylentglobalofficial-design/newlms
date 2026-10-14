@@ -9,6 +9,7 @@ import { ConsentRequiredError, resolveGoogleAccount } from "../server/src/lib/go
 import { createOAuthState, verifySignedOAuthState } from "../server/src/lib/oauth-state.ts"
 import { CURRENT_POLICY_VERSION, readConsent } from "../server/src/lib/policy.ts"
 import { TEST_CONSENT } from "./test-consent-payload.ts"
+import { enquiryErrorMessage } from "../src/lib/skylent-api.ts"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://127.0.0.1:3099/api/v1"
@@ -20,6 +21,18 @@ type Body = { error?: string; code?: string; data?: unknown; user?: { id: string
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message)
 }
+
+assert(
+  enquiryErrorMessage(new Error("Too many enquiries. Try again later.")) === "Too many enquiries. Try again later.",
+  "a rate-limit response keeps the server's words",
+)
+const timedOut = new Error("The operation was aborted due to timeout")
+timedOut.name = "TimeoutError"
+assert(enquiryErrorMessage(timedOut) === "The request timed out before a confirmation came back.", "a timeout does not look like success")
+assert(
+  enquiryErrorMessage(new Error("Unable to load this workspace. Try again.")) === "We could not send this. No confirmation came back.",
+  "an enquiry failure does not talk about a workspace",
+)
 
 function parseSetCookie(headers: string[] | undefined, jar: CookieJar) {
   if (!headers) return
@@ -145,6 +158,23 @@ async function main() {
   assert(enquiry, "enquiry row missing")
   const enquiryRows = await prisma.policyAcceptance.findMany({ where: { enquiryId: enquiry.id } })
   assert(enquiryRows.length === 1 && enquiryRows[0].context === "enquiry" && enquiryRows[0].userId === null, "the enquiry acceptance must reference the enquiry only")
+
+  console.log("7b. An institutional enquiry is stored as its own kind")
+  const institutionEmail = uniqueEmail("institution")
+  const institution = await request(new Map(), "/enquiries", {
+    method: "POST",
+    body: {
+      kind: "institution",
+      name: "Partnership Office",
+      email: institutionEmail,
+      message: "Organisation: Northwind College\n\nWe want to add Data Analytics for a cohort.",
+      consent: TEST_CONSENT,
+    },
+  })
+  assert(institution.status === 201 && Boolean(institution.data?.data?.id), `institution enquiry failed: ${institution.status} ${JSON.stringify(institution.data)}`)
+  const institutionRow = await prisma.skylentEnquiry.findFirst({ where: { email: institutionEmail } })
+  assert(institutionRow?.kind === "institution", `institution kind was ${institutionRow?.kind}`)
+  assert(institutionRow?.message?.includes("Northwind College") === true, "institution name must be kept on the enquiry")
 
   console.log("8. Google sign-in carries consent in the signed state and never creates an account without it")
   const withConsent = createOAuthState({ policyVersion: CURRENT_POLICY_VERSION })
