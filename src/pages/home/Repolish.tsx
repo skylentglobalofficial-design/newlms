@@ -415,14 +415,14 @@ function useProductDemo(delays: readonly number[]) {
 
   useEffect(() => {
     if (reduced || !seen || holding) return
-    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % delays.length), delays[index] ?? 750)
+    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % delays.length), delays[index] ?? 1650)
     return () => window.clearTimeout(timer)
   }, [delays, holding, index, reduced, seen])
 
   return { ref, index, setIndex, reduced, setHolding }
 }
 
-const LMS_BEATS = [750, 750, 750, 750, 750] as const
+const LMS_BEATS = [1650, 1650, 1650, 1650, 1650] as const
 
 export function InsideProgramme() {
   const demo = useProductDemo(LMS_BEATS)
@@ -470,8 +470,14 @@ export function InsideProgramme() {
               <span>Learning workspace</span>
               <span>Illustrative preview · Not connected</span>
             </div>
-            <div className="hx-app__body" id="lms-panel" role="tabpanel" aria-labelledby={`lms-tab-${LMS_STAGES[stage].key}`} key={stage}>
-              <LmsCanvas stage={stage} />
+            <div className="hx-app__body" id="lms-panel" role="tabpanel" aria-labelledby={`lms-tab-${LMS_STAGES[stage].key}`}>
+              <div className="hx-stable">
+                {LMS_STAGES.map((item, index) => (
+                  <div key={item.key} className={stage === index ? "hx-stable__pane is-on" : "hx-stable__pane"} aria-hidden={stage !== index}>
+                    <LmsCanvas stage={index} />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -825,7 +831,7 @@ function JourneyScreen({ step }: { step: JourneyKey }) {
 }
 
 export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyebrow?: string; showLink?: boolean } = {}) {
-  const walk = useWalkthrough<HTMLElement>(JOURNEY.length, 2000)
+  const walk = useWalkthrough<HTMLElement>(JOURNEY.length, 1650)
   const active = walk.active
   const step = JOURNEY[active]
   return (
@@ -841,22 +847,31 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
           <p className="hx-head__aside">The projects and evidence from your programmes feed one Career OS profile. It stays with you after you enrol and keeps growing as you learn.</p>
         </Reveal>
         <div className="hx-journey__grid" {...walk.regionProps}>
-          <ol className="hx-steps" aria-label="How Career OS organises your work">
-            {JOURNEY.map((item, i) => (
-              <li key={item.key}>
-                <button
-                  type="button"
-                  className={i === active ? "hx-step is-on" : i < active ? "hx-step is-done" : "hx-step"}
-                  aria-current={i === active ? "step" : undefined}
-                  onClick={() => walk.go(i)}
-                >
-                  <span className="hx-step__dot" aria-hidden="true" />
-                  <span className="hx-step__title">{item.title}</span>
-                  <span className="hx-step__text">{item.text}</span>
-                </button>
-              </li>
-            ))}
-          </ol>
+          <div className="hx-journey__nav">
+            <ol className="hx-steps" aria-label="How Career OS organises your work">
+              {JOURNEY.map((item, i) => (
+                <li key={item.key}>
+                  <button
+                    type="button"
+                    className={i === active ? "hx-step is-on" : i < active ? "hx-step is-done" : "hx-step"}
+                    aria-current={i === active ? "step" : undefined}
+                    aria-describedby={i === active ? `hx-step-copy-${item.key}` : undefined}
+                    onClick={() => walk.go(i)}
+                  >
+                    <span className="hx-step__dot" aria-hidden="true" />
+                    <span className="hx-step__title">{item.title}</span>
+                  </button>
+                </li>
+              ))}
+            </ol>
+            <div className="hx-step__live hx-stable">
+              {JOURNEY.map((item, i) => (
+                <p id={`hx-step-copy-${item.key}`} key={item.key} className={i === active ? "hx-stable__pane is-on" : "hx-stable__pane"} aria-hidden={i !== active}>
+                  {item.text}
+                </p>
+              ))}
+            </div>
+          </div>
           <div className="hx-journey__stage">
             <p className="hx-journey__note">Illustrative preview · Not connected</p>
             <div className="hx-window">
@@ -866,9 +881,15 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
                 <span />
                 <em>Career OS</em>
               </div>
-              <div className="hx-window__body" key={step.key}>
-                <p className="hx-sr">Illustrative preview, not connected. Step {active + 1} of {JOURNEY.length}: {step.title}. {step.text}</p>
-                <JourneyScreen step={step.key} />
+              <div className="hx-window__body">
+                <p className="hx-sr">Illustrative preview, not connected. {step.title}. {step.text}</p>
+                <div className="hx-stable">
+                  {JOURNEY.map((item) => (
+                    <div key={item.key} className={item.key === step.key ? "hx-stable__pane is-on" : "hx-stable__pane"} aria-hidden={item.key !== step.key}>
+                      <JourneyScreen step={item.key} />
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="hx-window__progress" aria-hidden="true">
                 {JOURNEY.map((item, i) => (
@@ -903,11 +924,62 @@ const AI_HELPS = [
 
 const AI_FIRST_OPTIONS = ["Learn a job skill", "Study for a degree", "I'm not sure yet"] as const
 
-const AI_BEATS = [750, 650, 700, 600, 750, 650, 800, 650] as const
+const AI_BEATS = [1600, 1400, 1500, 1200, 1600, 1500, 1800] as const
+
+function AiTranscript({ beat }: { beat: number }) {
+  return (
+    <>
+      <div className="hx-chat__row">
+        <SkylentBot size={26} />
+        <p className="hx-chat__bubble">Hi. What are you looking for?</p>
+      </div>
+      {beat < 2 ? (
+        <div className="hx-chat__options">
+          {AI_FIRST_OPTIONS.map((option) => (
+            <span key={option} className={beat >= 1 && option === "Learn a job skill" ? "is-on" : undefined}>{option}</span>
+          ))}
+        </div>
+      ) : (
+        <div className="hx-chat__row hx-chat__row--user">
+          <p className="hx-chat__bubble hx-chat__bubble--user">Learn a job skill</p>
+        </div>
+      )}
+      {beat === 3 ? (
+        <div className="hx-chat__row">
+          <SkylentBot size={26} />
+          <p className="hx-chat__typing"><span /><span /><span /></p>
+        </div>
+      ) : null}
+      {beat >= 4 ? (
+        <div className="hx-chat__row">
+          <SkylentBot size={26} />
+          <p className="hx-chat__bubble">Which kind of work do you want to practise?</p>
+        </div>
+      ) : null}
+      {beat >= 5 ? (
+        <div className="hx-chat__row hx-chat__row--user">
+          <p className="hx-chat__bubble hx-chat__bubble--user">Data Analytics</p>
+        </div>
+      ) : null}
+      {beat >= 6 ? (
+        <div className="hx-chat__row">
+          <SkylentBot size={26} />
+          <p className="hx-chat__bubble">Data Analytics is open. It takes one sales extract through SQL to a recommendation you can keep. Explore it from Programmes.</p>
+        </div>
+      ) : null}
+    </>
+  )
+}
 
 export function HomeAi() {
   const demo = useProductDemo(AI_BEATS)
   const beat = demo.reduced ? 0 : demo.index
+  const [trackedBeat, setTrackedBeat] = useState(beat)
+  const [epoch, setEpoch] = useState(0)
+  if (beat !== trackedBeat) {
+    setTrackedBeat(beat)
+    if (beat < trackedBeat) setEpoch((current) => current + 1)
+  }
   return (
     <section
       ref={demo.ref}
@@ -953,46 +1025,17 @@ export function HomeAi() {
             <SkylentBot size={26} />
             <span>Skylent AI</span>
           </div>
-          <div className={beat === 7 ? "hx-chat hx-chat--reset" : "hx-chat"} aria-hidden="true">
-            <div className="hx-chat__row">
-              <SkylentBot size={26} />
-              <p className="hx-chat__bubble">Hi. What are you looking for?</p>
+          <div className="hx-chat hx-chat--stage" aria-hidden="true">
+            <div className="hx-chat__measure hx-stable">
+              {AI_BEATS.map((_, index) => (
+                <div key={index} className="hx-stable__pane">
+                  <AiTranscript beat={index} />
+                </div>
+              ))}
             </div>
-            {beat < 2 ? (
-              <div className="hx-chat__options">
-                {AI_FIRST_OPTIONS.map((option) => (
-                  <span key={option} className={beat >= 1 && option === "Learn a job skill" ? "is-on" : undefined}>{option}</span>
-                ))}
-              </div>
-            ) : null}
-            {beat >= 2 ? (
-              <div className="hx-chat__row hx-chat__row--user">
-                <p className="hx-chat__bubble hx-chat__bubble--user">Learn a job skill</p>
-              </div>
-            ) : null}
-            {beat === 3 ? (
-              <div className="hx-chat__row">
-                <SkylentBot size={26} />
-                <p className="hx-chat__typing"><span /><span /><span /></p>
-              </div>
-            ) : null}
-            {beat >= 4 ? (
-              <div className="hx-chat__row">
-                <SkylentBot size={26} />
-                <p className="hx-chat__bubble">Which kind of work do you want to practise?</p>
-              </div>
-            ) : null}
-            {beat >= 5 ? (
-              <div className="hx-chat__row hx-chat__row--user">
-                <p className="hx-chat__bubble hx-chat__bubble--user">Data Analytics</p>
-              </div>
-            ) : null}
-            {beat >= 6 ? (
-              <div className="hx-chat__row">
-                <SkylentBot size={26} />
-                <p className="hx-chat__bubble">Data Analytics is open. It takes one sales extract through SQL to a recommendation you can keep. Explore it from Programmes.</p>
-              </div>
-            ) : null}
+            <div key={epoch} className="hx-chat__live">
+              <AiTranscript beat={beat} />
+            </div>
           </div>
           <p className="hx-ai__chatnote">Illustrative preview · Not a live conversation.</p>
         </div>
