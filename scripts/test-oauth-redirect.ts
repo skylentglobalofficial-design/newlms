@@ -4,6 +4,7 @@ import {
   resolveGoogleRedirectUri,
 } from "../server/src/lib/oauth-redirect.ts"
 import { oauthErrorRedirect, oauthSuccessRedirect } from "../server/src/lib/safe-redirect.ts"
+import { sanitizeReturnTo } from "../src/lib/safe-return.ts"
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message)
@@ -115,6 +116,13 @@ try {
   assert(authorizationUrl.origin === "https://accounts.google.com", "authorization host must stay Google")
   assert(authorizationUrl.searchParams.get("redirect_uri") === PUBLIC_CALLBACK, "authorization redirect_uri must be public")
   assert(!authorizationUrl.toString().includes("localhost"), "authorization URL must not contain localhost")
+
+  console.log("10. Sign-in return paths stay on this site")
+  assert(sanitizeReturnTo("/career-os") === "/career-os", "a site path is kept")
+  assert(sanitizeReturnTo("/learn/data-analytics?lesson=1") === "/learn/data-analytics?lesson=1", "a query on a site path is kept")
+  assert(sanitizeReturnTo("https://evil.example/login") === null, "an absolute URL is rejected")
+  assert(sanitizeReturnTo("//evil.example") === null, "a protocol-relative URL is rejected")
+  assert(sanitizeReturnTo("/\\evil.example") === null, "a backslash path is rejected")
 
   console.log("OAuth redirect checks passed")
 } finally {
