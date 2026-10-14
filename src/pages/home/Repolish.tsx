@@ -8,6 +8,7 @@
  * Nothing here states a learner count, outcome, partner or placement. Previews are drawn from the
  * authored Data Analytics programme and are labelled as product previews, not account data.
  */
+import { useState } from "react"
 import { Link } from "react-router-dom"
 import { ArrowRight } from "@/components/skylent/primitives"
 import { Reveal } from "@/components/skylent/Reveal"
@@ -72,7 +73,6 @@ export function HomeHero() {
           <p className="hxw-hero__lead hx-rise">
             Skylent brings together programmes, courses, real projects and career opportunities to help you go from learning to doing.
           </p>
-          <p className="hxw-hero__today hx-rise">Explore what is open today, or ask for help choosing a direction.</p>
           <div className="hxw-hero__actions hx-rise">
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
               Explore Skylent
@@ -89,9 +89,7 @@ export function HomeHero() {
               <img className="hxw-hero__avatar" src={photoProductAvatar} width={96} height={64} alt="" decoding="async" style={{ objectPosition: "50% 30%" }} />
               <img className="hxw-hero__avatar" src={photoCampusPgAvatar} width={96} height={64} alt="" decoding="async" style={{ objectPosition: "62% 35%" }} />
             </div>
-            <p className="hxw-hero__community-text">
-              Join a growing community<br />of learners, builders and professionals.
-            </p>
+            <p className="hxw-hero__community-text">Learners, builders and professionals.</p>
           </div>
         </div>
         <div className="hxw-hero__visual hx-rise">
@@ -264,116 +262,94 @@ export function WalkControls({
 
 const DA_SLUG = "data-analytics-pro"
 
+const LMS_STAGES = ["Programme", "Lesson", "Practice", "Project", "Evidence"] as const
+
 export function InsideProgramme() {
   const facts = courseFacts()
   const content = authoredProgrammeContent(DA_SLUG)
   const topCategories = NORTHWIND.categories.slice(0, 3)
-  const stages = [
-    {
-      title: "Programme",
-      text: "Choose a certification or professional programme, or a degree pathway.",
-      preview: facts ? (
-        <span className="hx-mini hx-mini--prog">
-          <span className="hx-mini__label">Professional programme</span>
-          <span className="hx-mini__title">{facts.title}</span>
-          <span className="hx-mini__meta">
-            {facts.stats.modules} modules · {facts.stats.lessons} lessons
-          </span>
-          <span className="hx-mini__btn">Start this programme</span>
-        </span>
-      ) : null,
-    },
-    {
-      title: "Lessons",
-      text: "Short written lessons with checks, one step at a time.",
-      preview: facts ? (
-        <span className="hx-mini">
-          <span className="hx-mini__label">
-            Module {facts.currentModuleNumber} · Lesson {facts.lessonNumber}
-          </span>
-          <span className="hx-mini__title hx-mini__title--sm">{facts.current.title}</span>
-          <span className="hx-mini__track"><span style={{ width: `${facts.percent}%` }} /></span>
-          <span className="hx-mini__meta">
-            {facts.done} of {facts.total} lessons complete
-          </span>
-        </span>
-      ) : null,
-    },
-    {
-      title: "Integrated practice",
-      text: "A lab on a realistic dataset or case, opened from the lesson.",
-      preview: (
-        <span className="hx-mini hx-mini--code">
-          <span className="hx-mini__label">Northwind Lab · sales extract</span>
-          <span className="hx-mini__sql">Net revenue by category, valid rows</span>
-          {topCategories.map((row) => (
-            <span key={row.name} className="hx-mini__row">
-              <span>{row.name}</span>
-              <span>{rupees(row.value)}</span>
-            </span>
-          ))}
-        </span>
-      ),
-    },
-    {
-      title: "Project",
-      text: "Finish with a capstone you can explain and defend.",
-      preview: facts ? (
-        <span className="hx-mini">
-          <span className="hx-mini__label">Capstone · Module {facts.capstoneModuleNumber}</span>
-          <span className="hx-mini__title hx-mini__title--sm">{content?.capstoneTitle ?? facts.capstoneTitle}</span>
-          {["Read the brief", "Build the analysis", "Write the recommendation"].map((task, i) => (
-            <span key={task} className="hx-mini__task">
-              <span className={i === 0 ? "hx-mini__tick is-on" : "hx-mini__tick"} aria-hidden="true" />
-              {task}
-            </span>
-          ))}
-        </span>
-      ) : null,
-    },
-    {
-      title: "Career OS evidence",
-      text: "The finished work is kept in your career profile.",
-      preview: content ? (
-        <span className="hx-mini">
-          <span className="hx-mini__label">Evidence record</span>
-          <span className="hx-mini__title hx-mini__title--sm">{content.evidence.record.title}</span>
-          <span className="hx-mini__chips">
-            {content.evidence.record.skills.slice(0, 3).map((skill) => (
-              <span key={skill}>{skill}</span>
-            ))}
-          </span>
-        </span>
-      ) : null,
-    },
-  ]
+  const [stage, setStage] = useState(1)
 
   return (
     <section className="hx-inside" aria-labelledby="hx-inside-title">
       <div className="sky-container">
-        <Reveal className="hx-head" stagger>
-          <div data-reveal-group>
+        <header className="hx-head">
+          <div>
             <p className="hx-eyebrow hx-eyebrow--dark">How learning works</p>
-            <h2 id="hx-inside-title" className="hx-h2">
-              Every lesson leads to<br /><em>work you can show.</em>
-            </h2>
+            <h2 id="hx-inside-title" className="hx-h2 hx-h2--sm">The workspace, from the first lesson to the work you keep.</h2>
           </div>
-          <p className="hx-head__aside">Practice is part of every programme, not a separate product. What you build stays with you.</p>
-        </Reveal>
-        <ol className="hx-path" aria-label="From programme to Career OS evidence">
-          {stages.map((stage, i) => (
-            <li key={stage.title} className="hx-path__stage">
-              <span className="hx-path__marker" aria-hidden="true">{i + 1}</span>
-              <span className="hx-path__title">{stage.title}</span>
-              <span className="hx-path__text">{stage.text}</span>
-              {stage.preview ? <span className="hx-path__preview" aria-hidden="true">{stage.preview}</span> : null}
-            </li>
-          ))}
-        </ol>
-        <p className="hx-path__note">
-          Previews use the Data Analytics programme. They show the product, not a learner&apos;s account.{" "}
-          <Link to={`/programmes/${DA_SLUG}`}>See the programme</Link>
-        </p>
+        </header>
+        <div className="hx-lms">
+          <p className="hx-lms__note">Illustrative preview · Not a connected account</p>
+          <div className="hx-lms__rail" role="tablist" aria-label="Learning stages">
+            {LMS_STAGES.map((label, index) => (
+              <button
+                key={label}
+                type="button"
+                role="tab"
+                aria-selected={stage === index}
+                className={stage === index ? "is-on" : undefined}
+                onClick={() => setStage(index)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="hx-lms__body" role="tabpanel">
+            {stage === 0 ? (
+              <>
+                <p className="hx-lms__kicker">Programme</p>
+                <p className="hx-lms__title">{facts?.title ?? "Data Analytics"}</p>
+                <p className="hx-lms__meta">{facts ? `${facts.stats.modules} modules · ${facts.stats.lessons} lessons` : "Open programmes list their lessons before you enrol."}</p>
+              </>
+            ) : null}
+            {stage === 1 && facts ? (
+              <>
+                <p className="hx-lms__kicker">Module {facts.currentModuleNumber} · Lesson {facts.lessonNumber} · {facts.current.kind}</p>
+                <p className="hx-lms__title">{facts.current.title}</p>
+                <p className="hx-lms__meta">{facts.done} of {facts.total} lessons marked complete in this preview.</p>
+                <span className="hx-lms__track" aria-hidden="true"><span style={{ width: `${facts.percent}%` }} /></span>
+              </>
+            ) : null}
+            {stage === 2 ? (
+              <>
+                <p className="hx-lms__kicker">Practice · Northwind lab</p>
+                <p className="hx-lms__title">Net revenue by category</p>
+                <p className="hx-lms__meta">Valid rows only. Figures come from the course dataset.</p>
+                <div className="hx-lms__rows">
+                  {topCategories.map((row) => (
+                    <span key={row.name}><span>{row.name}</span><span>{rupees(row.value)}</span></span>
+                  ))}
+                </div>
+              </>
+            ) : null}
+            {stage === 3 ? (
+              <>
+                <p className="hx-lms__kicker">Project</p>
+                <p className="hx-lms__title">{content?.capstoneTitle ?? facts?.capstoneTitle ?? "Capstone"}</p>
+                <ul className="hx-lms__tasks">
+                  {["Read the brief", "Build the analysis", "Write the recommendation"].map((task) => (
+                    <li key={task}>{task}</li>
+                  ))}
+                </ul>
+              </>
+            ) : null}
+            {stage === 4 ? (
+              <>
+                <p className="hx-lms__kicker">Career evidence</p>
+                <p className="hx-lms__title">{content?.evidence.record.title ?? "Finished project"}</p>
+                <p className="hx-lms__meta">Kept with the project after you finish it. This is not your profile.</p>
+                {content ? (
+                  <p className="hx-lms__chips">
+                    {content.evidence.record.skills.slice(0, 3).map((skill) => (
+                      <span key={skill}>{skill}</span>
+                    ))}
+                  </p>
+                ) : null}
+              </>
+            ) : null}
+          </div>
+        </div>
       </div>
     </section>
   )
