@@ -155,10 +155,11 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
     <TruthChip state="development" />
   )
 
-  const startsWith = course.loading ? (
-    <span className="sky-skeleton pp-skel-line" aria-label="Loading the first lesson" />
-  ) : firstNode ? (
+  const authoredOutlineReady = taught != null && curriculum.length > 0
+  const startsWith = firstNode ? (
     `Lesson 1, ${displayTitle(firstNode.title)}`
+  ) : course.loading ? (
+    <span className="sky-skeleton pp-skel-line" aria-label="Loading the first lesson" />
   ) : null
 
   const lessonTitle = (lessonId: string): string => {
@@ -269,7 +270,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   <dd className="pp-build__num">{moduleCount}</dd>
                 </div>
               ) : null}
-              {course.loading ? (
+              {course.loading && !authoredOutlineReady ? (
                 <div aria-hidden="true">
                   <dt className="sky-label">Lessons</dt>
                   <dd className="pp-build__num">

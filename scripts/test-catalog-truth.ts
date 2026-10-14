@@ -3,6 +3,7 @@ import { courses, programs } from "../src/data.ts"
 import {
   AUTHORED_COURSE_SLUG,
   PROGRAM_COURSE_LINKS,
+  catalogCourseListView,
   courseLessonStats,
   courseModuleCards,
   coursePracticeGroups,
@@ -303,6 +304,22 @@ assert(pmView.maturity === "ready", "Product Management must be ready to start")
 assert(pmView.showLiveCurriculum, "Product Management curriculum is live")
 assert(courseLessonStats(pm!).lessonCount === 15, "Product Management must have 15 lessons")
 assert(courseLessonStats(pm!).moduleCount === 5, "Product Management must have 5 modules")
+const thinPm = catalogCourseListView({
+  slug: "product-management",
+  title: "Product Management",
+  category: "Business",
+  level: "Intermediate",
+  duration: "8 weeks",
+  mode: "Live Classes",
+  price: 6999,
+  originalPrice: 14999,
+  moduleCount: 1,
+  lessonCount: 3,
+  projectCount: 0,
+})
+assert(thinPm.lessonLabel === "15 lessons", "A thin Product Management catalogue row must not replace the authored lesson count")
+assert(/5 modules/.test(thinPm.countLabel), "A thin Product Management catalogue row must not say one module")
+assert(!/Live Classes/.test(thinPm.countLabel), "A thin Product Management catalogue row must not claim live classes")
 assert(pmView.outcomes.every((item) => !/sql|power bi|machine learning|\bAI\b/i.test(item)), "Product Management outcomes must not claim untaught data/AI tools")
 const pmPractice = coursePracticeGroups(pm!)
 assert(pmPractice.learning.length === 9, "Product Management has 9 written lessons")

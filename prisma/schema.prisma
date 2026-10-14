@@ -919,7 +919,7 @@ model SkylentCertificate {
 /// Counselling calls and programme/degree enquiries from the public website.
 model SkylentEnquiry {
   id            String   @id @default(uuid()) @db.Uuid
-  kind          String   @default("enquiry") /// enquiry | counselling | degree
+  kind          String   @default("enquiry") /// enquiry | counselling | degree | institution
   name          String
   email         String
   phone         String?

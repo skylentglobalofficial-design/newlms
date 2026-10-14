@@ -4,7 +4,7 @@
  * consentPayload() (src/lib/policy.ts). The server checks it again and records the acceptance
  * (server/src/lib/policy.ts, PolicyAcceptance), so a request without it is refused there too.
  */
-import { useId } from "react"
+import { useId, type Ref } from "react"
 import { Link } from "react-router-dom"
 import "./TermsConsent.css"
 
@@ -14,6 +14,7 @@ export function TermsConsent({
   variant = "light",
   action = "continuing",
   showError = false,
+  inputRef,
 }: {
   checked: boolean
   onChange: (checked: boolean) => void
@@ -21,6 +22,8 @@ export function TermsConsent({
   /** Completes the sentence "By … you agree". */
   action?: string
   showError?: boolean
+  /** Lets the form move focus here when acceptance is the thing blocking submit. */
+  inputRef?: Ref<HTMLInputElement>
 }) {
   const id = useId()
   const errorId = `${id}-error`
@@ -28,6 +31,7 @@ export function TermsConsent({
     <div className={`tc tc--${variant}`}>
       <label className="tc__row" htmlFor={id}>
         <input
+          ref={inputRef}
           id={id}
           type="checkbox"
           className="tc__box"

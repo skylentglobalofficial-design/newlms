@@ -7,12 +7,12 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from "react"
 import { ArrowRight, SectionIndex, SpecSheet } from "../../components/skylent/primitives"
 import { degreeLevelName, deliveryModeLabel, type Degree } from "../../lib/degrees"
-import { sendEnquiry } from "../../lib/skylent-api"
+import { enquiryErrorMessage, sendEnquiry } from "../../lib/skylent-api"
 import { TermsConsent } from "../../components/legal/TermsConsent"
 
 type Fields = { name: string; email: string; phone: string; message: string }
 type FieldErrors = Partial<Record<keyof Fields, string>>
-type Status = { kind: "idle" } | { kind: "sending" } | { kind: "sent"; id: string } | { kind: "failed" }
+type Status = { kind: "idle" } | { kind: "sending" } | { kind: "sent"; id: string } | { kind: "failed"; message: string }
 
 const EMPTY: Fields = { name: "", email: "", phone: "", message: "" }
 const SUPPORT_EMAIL = "support@skylent.live"
@@ -38,12 +38,16 @@ export function DegreeEnquiry({ degree, index, ruled = false }: { degree: Degree
   const [status, setStatus] = useState<Status>({ kind: "idle" })
   const formRef = useRef<HTMLFormElement>(null)
   const doneRef = useRef<HTMLDivElement>(null)
+  const termsRef = useRef<HTMLInputElement>(null)
+  const failedRef = useRef<HTMLParagraphElement>(null)
+  const sendingRef = useRef(false)
   const sending = status.kind === "sending"
   const [accepted, setAccepted] = useState(false)
   const [triedWithoutTerms, setTriedWithoutTerms] = useState(false)
 
   useEffect(() => {
     if (status.kind === "sent") doneRef.current?.focus()
+    if (status.kind === "failed") failedRef.current?.focus()
   }, [status.kind])
 
   function update(key: keyof Fields, value: string) {
@@ -53,7 +57,7 @@ export function DegreeEnquiry({ degree, index, ruled = false }: { degree: Degree
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (sending) return
+    if (sendingRef.current || sending) return
     const found = validate(fields)
     setErrors(found)
     const firstInvalid = (Object.keys(found) as (keyof Fields)[])[0]
@@ -64,8 +68,10 @@ export function DegreeEnquiry({ degree, index, ruled = false }: { degree: Degree
     }
     if (!accepted) {
       setTriedWithoutTerms(true)
+      termsRef.current?.focus()
       return
     }
+    sendingRef.current = true
     setStatus({ kind: "sending" })
     try {
       const result = await sendEnquiry({
@@ -79,8 +85,10 @@ export function DegreeEnquiry({ degree, index, ruled = false }: { degree: Degree
       })
       setFields(EMPTY)
       setStatus({ kind: "sent", id: result.id })
-    } catch {
-      setStatus({ kind: "failed" })
+    } catch (error) {
+      setStatus({ kind: "failed", message: enquiryErrorMessage(error) })
+    } finally {
+      sendingRef.current = false
     }
   }
 
@@ -164,12 +172,12 @@ export function DegreeEnquiry({ degree, index, ruled = false }: { degree: Degree
             </div>
 
             {status.kind === "failed" ? (
-              <p className="dg-form__alert" role="alert">
-                We could not send this. Try again, or email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
+              <p className="dg-form__alert" role="alert" ref={failedRef} tabIndex={-1}>
+                {status.message} You can also email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
               </p>
             ) : null}
 
-            <TermsConsent checked={accepted} onChange={setAccepted} action="sending an enquiry" showError={triedWithoutTerms} />
+            <TermsConsent inputRef={termsRef} checked={accepted} onChange={setAccepted} action="sending an enquiry" showError={triedWithoutTerms} />
             <div className="dg-form__foot">
               <button type="submit" className="sk-btn sk-btn-primary" disabled={sending}>
                 {sending ? "Sending" : "Send enquiry"}

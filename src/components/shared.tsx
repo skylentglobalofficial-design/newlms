@@ -111,6 +111,11 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
   const [error, setError] = useState<string | null>(null)
   const [accepted, setAccepted] = useState(false)
   const [triedWithoutTerms, setTriedWithoutTerms] = useState(false)
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const closeRef = useRef<HTMLButtonElement>(null)
+  const termsRef = useRef<HTMLInputElement>(null)
+  const onCloseRef = useRef(onClose)
+  onCloseRef.current = onClose
 
   const helperMessage = item.kind === 'program'
     ? programEnrollmentMessage({
@@ -120,11 +125,48 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
     : courseEnrollmentMessage()
 
   useEffect(() => {
+    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null
     document.body.style.overflow = 'hidden'
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    const root = dialogRef.current
+    function focusables(): HTMLElement[] {
+      if (!root) return []
+      return Array.from(root.querySelectorAll<HTMLElement>('a, button, input, textarea, select, [tabindex]:not([tabindex="-1"])')).filter(
+        (el) => !el.hasAttribute('disabled'),
+      )
+    }
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        onCloseRef.current()
+        return
+      }
+      if (e.key !== 'Tab') return
+      const items = focusables()
+      if (!items.length) return
+      const first = items[0]
+      const last = items[items.length - 1]
+      const active = document.activeElement as HTMLElement | null
+      if (e.shiftKey) {
+        if (active === first || !root?.contains(active)) {
+          e.preventDefault()
+          last.focus()
+        }
+        return
+      }
+      if (active === last) {
+        e.preventDefault()
+        first.focus()
+      }
+    }
     window.addEventListener('keydown', onKey)
-    return () => { document.body.style.overflow = ''; window.removeEventListener('keydown', onKey) }
-  }, [onClose])
+    const frame = requestAnimationFrame(() => closeRef.current?.focus())
+    return () => {
+      cancelAnimationFrame(frame)
+      document.body.style.overflow = ''
+      window.removeEventListener('keydown', onKey)
+      previouslyFocused?.focus()
+    }
+  }, [])
 
   async function handlePrimaryAction() {
     if (!item.enrollable) {
@@ -136,6 +178,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
     // Enrolment (and the sign-in that leads to it) is blocked until the terms are accepted.
     if (!accepted) {
       setTriedWithoutTerms(true)
+      termsRef.current?.focus()
       return
     }
 
@@ -173,7 +216,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
   return (
     <>
       <div onClick={onClose} style={{ position: 'fixed', inset: 0, background: 'rgba(21,23,26,0.35)', zIndex: 500 }} aria-hidden="true" />
-      <div role="dialog" aria-modal="true" aria-labelledby="enrollment-modal-title" aria-describedby="enrollment-modal-copy" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.cream, border: `1px solid ${T.lineStrong}`, borderRadius: 12, padding: '28px 24px', width: 540, maxWidth: '94vw', zIndex: 501, boxShadow: T.shadowLg, overflowY: 'auto', maxHeight: '92vh' }}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="enrollment-modal-title" aria-describedby="enrollment-modal-copy" style={{ position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: C.cream, border: `1px solid ${T.lineStrong}`, borderRadius: 12, padding: '28px 24px', width: 540, maxWidth: '94vw', zIndex: 501, boxShadow: T.shadowLg, overflowY: 'auto', maxHeight: '92vh' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
           <div>
             <div style={{ color: C.slate, fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
@@ -181,7 +224,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
             </div>
             <div id="enrollment-modal-title" style={{ color: C.ink, fontSize: 18, fontWeight: 600, fontFamily: 'var(--font-display)' }}>{item.title}</div>
           </div>
-          <button type="button" onClick={onClose} aria-label="Close enrolment dialog" style={{ background: C.sand, border: 'none', borderRadius: 7, padding: '7px 13px', cursor: 'pointer', color: C.slate, fontSize: 14 }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
+          <button ref={closeRef} type="button" onClick={onClose} aria-label="Close enrolment dialog" style={{ background: C.sand, border: 'none', borderRadius: 7, padding: '7px 13px', cursor: 'pointer', color: C.slate, fontSize: 14 }}><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg></button>
         </div>
 
         <div style={{ background: C.warmWhite, border: `1px solid ${T.lineLight}`, borderRadius: 12, padding: '16px 18px', marginBottom: 16 }}>
@@ -195,7 +238,7 @@ export function EnrollmentModal({ item, onClose }: { item: CatalogEnrollItem; on
         <p style={{ color: C.slate, fontSize: 14, lineHeight: 1.65, margin: '0 0 20px' }}>{helperMessage}</p>
 
         {item.enrollable ? (
-          <TermsConsent checked={accepted} onChange={setAccepted} action="enrolling" showError={triedWithoutTerms} />
+          <TermsConsent inputRef={termsRef} checked={accepted} onChange={setAccepted} action="enrolling" showError={triedWithoutTerms} />
         ) : null}
 
         {error && (
