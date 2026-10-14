@@ -11,6 +11,7 @@ import { authoredProgrammeContent } from "@/components/programme/programme-conte
 import { courseFacts } from "./course-facts"
 
 const PROGRAMME_SLUG = "data-analytics-pro"
+const STAGE_MS = 1650
 const STAGES = [
   { key: "enrol", title: "Enrol" },
   { key: "courses", title: "My Courses" },
@@ -168,7 +169,7 @@ export function Learn() {
 
   useEffect(() => {
     if (reduced || !inView || paused) return
-    const timer = window.setInterval(() => setActive((current) => (current + 1) % STAGES.length), 3200)
+    const timer = window.setInterval(() => setActive((current) => (current + 1) % STAGES.length), STAGE_MS)
     return () => window.clearInterval(timer)
   }, [reduced, inView, paused])
 
@@ -216,9 +217,15 @@ export function Learn() {
             <span>Skylent</span>
             <span>Illustrative preview · Not connected</span>
           </div>
-          <div className="hx-app__body" key={stage.key}>
+          <div className="hx-app__body">
             <p className="hx-sr">{stage.title}. Illustrative preview, not a connected account.</p>
-            <StageScreen stage={stage.key} />
+            <div className="hx-stable">
+              {STAGES.map((item, index) => (
+                <div key={item.key} className={index === active ? "hx-stable__pane is-on" : "hx-stable__pane"} aria-hidden={index !== active}>
+                  <StageScreen stage={item.key} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
