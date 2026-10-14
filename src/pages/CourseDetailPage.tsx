@@ -18,6 +18,7 @@ import {
 } from "../lib/catalog-maturity"
 import { courseProductProfile } from "../lib/course-product"
 import type { CatalogCurriculumModule } from "../lib/catalog-api"
+import { effectiveAuthoredCourseCopy } from "../lib/public-catalogue-copy"
 import { useCatalogCourse } from "../hooks/useCatalog"
 import { TruthChip } from "../components/skylent/primitives"
 import CatalogueNotice, { STATUS_NOT_CONFIRMED } from "../components/programme/CatalogueNotice"
@@ -109,11 +110,19 @@ export default function CourseDetailPage() {
     maturity: authored ? "ready" : "listing",
   })
   const cta = listingClosed ? "View outline" : enrollCta(enrollable, primaryCta)
+  const presented = effectiveAuthoredCourseCopy({
+    slug: course.slug,
+    desc: course.desc,
+    longDesc: course.longDesc,
+    outcomes: course.outcomes,
+    forWhom: course.forWhom,
+    mode: course.mode,
+  })
   const summary = authored
-    ? course.desc || authoredRecord?.desc || course.longDesc
+    ? presented.desc
     : `An outline of what ${course.title} will cover. Enrolment opens when its lessons are ready.`
-  const outcomes = course.outcomes.length > 0 ? course.outcomes : authoredRecord?.outcomes ?? []
-  const forWhom = course.forWhom.length > 0 ? course.forWhom : authored ? authoredRecord?.forWhom ?? [] : []
+  const outcomes = authored ? presented.outcomes : course.outcomes
+  const forWhom = authored ? presented.forWhom : []
   const duration = course.duration || authoredRecord?.duration || ""
   const lessonCount = authoredStats?.lessonCount ?? course.lessonCount
   const moduleCount = authoredStats?.moduleCount ?? course.moduleCount
@@ -156,7 +165,7 @@ export default function CourseDetailPage() {
                 </div>
                 <p className="cat-statline">
                   <span>{authored ? "Written lessons + practice" : "Outline"}</span>
-                  <span>{course.mode}</span>
+                  <span>{authored ? presented.mode : course.mode}</span>
                   <span>{showLiveCurriculum ? duration : duration || "Duration to be confirmed"}</span>
                   <span>{course.category}</span>
                   <span>{moduleCount} modules</span>

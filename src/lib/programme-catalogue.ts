@@ -16,6 +16,7 @@ import {
   programmeDiscoveryFor,
   type ProgrammeDiscoveryCard,
 } from "./programme-discovery"
+import { effectiveProgrammePublicFacts } from "./public-catalogue-copy"
 
 /** Display order for authored rows. Not a public existence list. */
 export const LIVE_PROGRAMME_SLUGS = ["product-management", "data-analytics-pro"] as const
@@ -97,7 +98,7 @@ export function partitionCatalogPrograms(catalogue: CatalogProgramSummary[]): {
         href: `/programs/${program.slug}`,
         title: program.name || discovery.title,
         level: program.level || discovery.level,
-        format: program.format || discovery.format,
+        format: effectiveProgrammePublicFacts(program).format || discovery.format,
       })
       continue
     }

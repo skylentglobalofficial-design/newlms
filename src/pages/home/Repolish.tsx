@@ -734,6 +734,7 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
             ))}
           </ol>
           <div className="hx-journey__stage">
+            <p className="hx-journey__note">Illustrative preview · Not connected</p>
             <div className="hx-window">
               <div className="hx-window__bar" aria-hidden="true">
                 <span />
@@ -742,7 +743,7 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
                 <em>Career OS</em>
               </div>
               <div className="hx-window__body" key={step.key}>
-                <p className="hx-sr">Step {active + 1} of {JOURNEY.length}: {step.title}. {step.text}</p>
+                <p className="hx-sr">Illustrative preview, not connected. Step {active + 1} of {JOURNEY.length}: {step.title}. {step.text}</p>
                 <JourneyScreen step={step.key} />
               </div>
               <div className="hx-window__progress" aria-hidden="true">

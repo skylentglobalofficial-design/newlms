@@ -168,6 +168,7 @@
 .hx-page .hx-step.is-on .hx-step__title, .hx-page .hx-step.is-done .hx-step__title { color: #fff; }
 .hx-page .hx-step.is-on .hx-step__text { max-height: 4em; opacity: 1; }
 .hx-page .hx-journey__stage { min-width: 0; }
+.hx-page .hx-journey__note { margin: 0 0 10px; font-size: 12.5px; font-weight: 650; letter-spacing: .04em; text-transform: uppercase; color: #f0edff; }
 .hx-page .hx-window { border-radius: 18px; overflow: hidden; background: hsl(var(--site-white)); color: hsl(var(--site-ink)); box-shadow: 0 30px 80px -30px hsl(220 60% 2% / .7); }
 .hx-page .hx-window__bar { display: flex; align-items: center; gap: 6px; padding: 12px 16px; border-bottom: 1px solid hsl(var(--site-border)); background: hsl(var(--site-proof)); }
 .hx-page .hx-window__bar span { width: 9px; height: 9px; border-radius: 50%; background: hsl(var(--site-border-strong)); }

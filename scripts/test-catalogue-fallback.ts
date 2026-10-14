@@ -4,7 +4,7 @@
  * Run: npx tsx scripts/test-catalogue-fallback.ts (no database needed).
  */
 import { readFileSync } from "node:fs"
-import { courses, programs } from "../src/data.ts"
+import { courses } from "../src/data.ts"
 import {
   publishedCourseDetail,
   publishedCourseSummaries,
@@ -25,15 +25,15 @@ const check = (condition: unknown, message: string) => {
 
 // 1. Programme module counts follow withProgramFacts() in server/src/routes/catalog.ts.
 const catalogRoute = read("server/src/routes/catalog.ts")
-check(/moduleCount: moduleCountFromCourses \|\| moduleCountFromProgram/.test(catalogRoute), "API module count rule changed: update the fallback to match")
+check(/moduleCount: moduleCountFromCourses,/.test(catalogRoute), "API module count must be the linked-course total, not brochure curriculum")
+check(!/moduleCountFromCourses \|\| moduleCountFromProgram/.test(catalogRoute), "Brochure curriculum must not fill moduleCount when no course is linked")
 for (const program of publishedProgrammeSummaries()) {
-  const source = programs.find((item) => item.slug === program.slug)!
   const fromCourses = PROGRAM_COURSE_LINKS.filter((link) => link.programSlug === program.slug).reduce(
     (sum, link) => sum + (courses.find((course) => course.slug === link.courseSlug)?.modules.length ?? 0),
     0,
   )
-  const expected = fromCourses || (source.curriculumDetail?.length ?? 0)
-  check(program.moduleCount === expected, `${program.slug}: fallback moduleCount ${program.moduleCount}, API would return ${expected}`)
+  const expected = fromCourses
+  check(program.moduleCount === expected, `${program.slug}: fallback moduleCount ${program.moduleCount}, linked courses total ${expected}`)
   check(
     JSON.stringify(program.linkedCourseSlugs) ===
       JSON.stringify(PROGRAM_COURSE_LINKS.filter((link) => link.programSlug === program.slug).map((link) => link.courseSlug)),

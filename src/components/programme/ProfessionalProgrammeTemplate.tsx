@@ -7,21 +7,23 @@
  * the Career OS status row, and the navy closing statement.
  *
  * Data: the programme row comes from GET /catalog/programs/:slug (passed in).
- * That response carries no lesson outline, so the curriculum and the lesson
- * counts are read from the linked course, GET /catalog/courses/:slug. Artefacts
- * and capstone steps are the programme's own authored material.
+ * Taught module and lesson counts, and the curriculum list, come from the
+ * linked authored course in src/data.ts. A thin or stale catalogue curriculum
+ * must not change those counts. Artefacts and capstone steps are the
+ * programme's own authored material.
  */
 import { Link } from "react-router-dom"
 import type { CatalogCurriculumModule, CatalogCurriculumNode, CatalogProgramDetail } from "../../lib/catalog-api"
-import { courseBySlug } from "../../lib/catalog-maturity"
+import { courseBySlug, courseLessonStats } from "../../lib/catalog-maturity"
 import { courseProductProfile } from "../../lib/course-product"
+import { authoredCourseCurriculum, curriculumHeading, effectiveProgrammePublicFacts } from "../../lib/public-catalogue-copy"
 import { truthOf, type Capability } from "../../lib/truth"
 import { useCatalogCourse } from "../../hooks/useCatalog"
 import { ArrowRight, SectionIndex, SpecSheet, TruthChip } from "../skylent/primitives"
 import { Reveal } from "../skylent/Reveal"
 import { HarborDeskPlate, NorthwindLabPlate, NorthwindTrend } from "./ProgrammeArtefacts"
 import type { AuthoredProgrammeContent, ProgrammeStep } from "./programme-content"
-import { numberWord, plural, type ProgrammeTruth } from "./programme-truth"
+import { plural, type ProgrammeTruth } from "./programme-truth"
 import "./ProfessionalProgrammeTemplate.css"
 import "../../pages/cine.css"
 import { openSkylentAi } from "../skylent/ai-events"
@@ -125,15 +127,17 @@ function Chevron() {
 
 export default function ProfessionalProgrammeTemplate({ program, content, truth, cta, afterEnrol, onEnrol, confirmed = true }: Props) {
   const course = useCatalogCourse(content.courseSlug)
-  const curriculum = course.data?.curriculum ?? []
-  const courseReady = !course.loading && !course.error && course.data != null
   const authoredCourse = courseBySlug(content.courseSlug)
+  const taught = authoredCourse ? courseLessonStats(authoredCourse) : null
+  const curriculum = authoredCourse ? authoredCourseCurriculum(authoredCourse) : (course.data?.curriculum ?? [])
+  const courseReady = taught != null || (!course.loading && !course.error && course.data != null)
   const courseTitle = course.data?.title || authoredCourse?.title || program.name
   const profile = courseProductProfile(content.courseSlug)
+  const facts = effectiveProgrammePublicFacts(program)
 
   const firstNode = curriculum[0]?.nodes[0] ?? null
-  const moduleCount = program.moduleCount || course.data?.moduleCount || 0
-  const lessonCount = course.data?.lessonCount ?? 0
+  const moduleCount = taught?.moduleCount ?? 0
+  const lessonCount = taught?.lessonCount ?? (course.data?.lessonCount ?? 0)
   const assignmentCount = countType(curriculum, "ASSIGNMENT")
   const checkCount = countType(curriculum, "QUIZ")
   // The linked course request failed: its record (if shown) is the published copy, not the live catalogue.
@@ -215,7 +219,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           <SignalText text={content.hero.headline} signal={content.hero.signal} />
         </h1>
         <div className="pp-hero__grid">
-          <p className="pp-lede cine-in cine-d2">{content.hero.summary(numberWord(moduleCount, true))}</p>
+          <p className="pp-lede cine-in cine-d2">{content.hero.summary(moduleCount)}</p>
           <div className="pp-hero__side cine-in cine-d3">
             <div className="pp-actions">
               {primaryAction}
@@ -233,7 +237,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           className="pp-rail cine-in cine-in--fade cine-d4"
           rows={[
             { label: "Enrolment", value: enrolChip },
-            { label: "Format", value: program.format },
+            { label: "Format", value: facts.format },
             { label: "You start with", value: startsWith },
           ]}
         />
@@ -381,15 +385,15 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           <div className="pp-split__intro">
             <SectionIndex n="03" label="Curriculum" />
             <h2 id="pp-curriculum-title" className="sky-display sky-display--md pp-h2">
-              {courseReady && curriculum.length > 0
-                ? `${numberWord(curriculum.length, true)} modules, ${numberWord(lessonCount)} lessons.`
+              {courseReady && moduleCount > 0 && lessonCount > 0
+                ? curriculumHeading(moduleCount, lessonCount)
                 : "The module and lesson outline."}
             </h2>
             {courseReady && curriculum.length > 0 ? <p className="pp-body">{content.curriculum.note}</p> : null}
           </div>
 
           <div className="pp-split__main">
-            {course.loading ? (
+            {course.loading && curriculum.length === 0 ? (
               <div className="pp-curriculum" aria-busy="true" aria-label="Loading the curriculum">
                 {[0, 1, 2, 3, 4].map((row) => (
                   <div className="pp-mod pp-mod--skeleton" key={row}>
@@ -398,7 +402,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                   </div>
                 ))}
               </div>
-            ) : course.error ? (
+            ) : course.error && curriculum.length === 0 ? (
               <div className="pp-state" role="alert">
                 <p className="sky-error">The curriculum could not be loaded.</p>
                 <button type="button" className="sk-btn sk-btn-secondary" onClick={() => void course.reload()}>

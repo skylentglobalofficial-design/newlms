@@ -20,6 +20,7 @@ import { DA_CAREER_EVIDENCE } from "../../content/data-analytics/career-evidence
 import { PM_CAREER_EVIDENCE } from "../../content/product-management/career-evidence"
 import productReviewPhoto from "../../assets/site/program-product.jpg"
 import { NORTHWIND_PREVIEW } from "../../lib/northwind-preview"
+import { dataAnalyticsModuleSummary, productManagementModuleSummary } from "../../lib/public-catalogue-copy"
 
 /* ── Northwind (Data Analytics) ───────────────────────────────────────────── */
 
@@ -152,7 +153,7 @@ export type AuthoredProgrammeContent = {
     headline: string
     /** The one phrase of the headline set in cobalt. Must be a substring of `headline`. */
     signal?: string
-    summary: (moduleWord: string) => string
+    summary: (moduleCount: number) => string
     figure: string
     figureNote: string
   }
@@ -219,8 +220,7 @@ const DATA_ANALYTICS: AuthoredProgrammeContent = {
   hero: {
     headline: "Turn a messy sales extract into a finding someone can act on.",
     signal: "a finding someone can act on.",
-    summary: (moduleWord) =>
-      `${moduleWord} modules take you from a first question to a commercial review. Spreadsheets, SQL and dashboards, all on one dataset you get to know properly.`,
+    summary: dataAnalyticsModuleSummary,
     figure: "Northwind Lab, revenue by category",
     figureNote: "Fictional retail extract written for the course",
   },
@@ -337,8 +337,7 @@ const PRODUCT_MANAGEMENT: AuthoredProgrammeContent = {
   hero: {
     headline: "Decide what to build when engineering time is limited, and write the specification for it.",
     signal: "write the specification for it.",
-    summary: (moduleWord) =>
-      `${moduleWord} modules on one fictional retail operations case. You read the notes, frame a problem that can be tested, choose one bet under a stated constraint and specify it.`,
+    summary: productManagementModuleSummary,
     figure: "Harbor Desk case, weekend exception log",
     figureNote: "Fictional teaching case written for the course",
   },

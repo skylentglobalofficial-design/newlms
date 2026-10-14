@@ -3,6 +3,7 @@ import { z } from 'zod'
 
 import { prisma } from '../lib/prisma.js'
 import { ensureProgramCourseLinks } from '../lib/program-course-links.js'
+import { overlayPublicCourse, overlayPublicProgramme, PUBLIC_COURSE_COPY } from '../lib/public-catalogue-copy.js'
 
 const router = Router()
 
@@ -62,6 +63,9 @@ function countLearnableNodes(
 
 function withProgramFacts<
   T extends {
+    slug: string
+    desc: string
+    format: string
     moduleCount: number
     curriculum?: Array<{ nodes?: Array<{ nodeType: string }> }>
     programCourses: Array<{
@@ -73,16 +77,19 @@ function withProgramFacts<
   },
 >(program: T) {
   const { programCourses, curriculum, ...rest } = program
+  void curriculum
   const moduleCountFromCourses = programCourses.reduce(
     (sum, link) => sum + link.course.curriculum.length,
     0,
   )
-  const moduleCountFromProgram = curriculum?.length ?? 0
-  return {
+  // Brochure curriculum on the programme row is not a taught module count.
+  // A programme with no linked course reports zero. Authored programmes then
+  // take the authored course's module count in overlayPublicProgramme.
+  return overlayPublicProgramme({
     ...rest,
     linkedCourseSlugs: programCourses.map((link) => link.course.slug),
-    moduleCount: moduleCountFromCourses || moduleCountFromProgram,
-  }
+    moduleCount: moduleCountFromCourses,
+  })
 }
 
 router.get('/courses', async (_request, response, next) => {
@@ -99,7 +106,7 @@ router.get('/courses', async (_request, response, next) => {
         category: course.category,
         level: course.level,
         duration: course.duration,
-        mode: course.mode,
+        mode: PUBLIC_COURSE_COPY[course.slug]?.mode ?? course.mode,
         price: course.price,
         originalPrice: course.originalPrice,
         moduleCount: course.curriculum.length,
@@ -164,6 +171,14 @@ router.get('/courses/:slug', async (request, response, next) => {
       response.status(404).json({ error: 'Course not found' })
       return
     }
+    const published = overlayPublicCourse({
+      slug: course.slug,
+      desc: course.desc,
+      longDesc: course.longDesc,
+      outcomes: course.outcomes,
+      forWhom: course.forWhom,
+      mode: course.mode,
+    })
     response.json({
       data: {
         slug: course.slug,
@@ -171,13 +186,13 @@ router.get('/courses/:slug', async (request, response, next) => {
         category: course.category,
         level: course.level,
         duration: course.duration,
-        mode: course.mode,
+        mode: published.mode,
         price: course.price,
         originalPrice: course.originalPrice,
-        desc: course.desc,
-        longDesc: course.longDesc,
-        outcomes: course.outcomes,
-        forWhom: course.forWhom,
+        desc: published.desc,
+        longDesc: published.longDesc,
+        outcomes: published.outcomes,
+        forWhom: published.forWhom,
         projectCount: course.projectCount,
         moduleCount: course.curriculum.length,
         lessonCount: countLearnableNodes(course.curriculum),
