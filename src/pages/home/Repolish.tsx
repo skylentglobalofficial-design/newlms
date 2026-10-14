@@ -72,6 +72,7 @@ export function HomeHero() {
           <p className="hxw-hero__lead hx-rise">
             Skylent brings together programmes, courses, real projects and career opportunities to help you go from learning to doing.
           </p>
+          <p className="hxw-hero__today hx-rise">Explore what is open today, or ask for help choosing a direction.</p>
           <div className="hxw-hero__actions hx-rise">
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
               Explore Skylent
@@ -124,7 +125,7 @@ export function HomeHero() {
                 <span className="hxw-ws__plus" aria-hidden="true">+</span>
                 <span>
                   <strong>Data Analytics</strong>
-                  <em>Sample learning activity</em>
+                  <em>Open this programme</em>
                 </span>
                 <ArrowRight />
               </Link>
@@ -157,10 +158,11 @@ export function HomeTrust() {
     <section className="hxw-journey" data-clear-launcher aria-labelledby="hx-journey-title">
       <div className="sky-container">
         <h2 id="hx-journey-title" className="hxw-journey__title">A connected learning journey</h2>
+        <p className="hxw-journey__lead">Five stages, in this order. Each one follows the last.</p>
         <ol className="hxw-journey__steps">
           {JOURNEY_STEPS.map((step) => (
             <li key={step.n}>
-              <span className="hxw-journey__n">{step.n}</span>
+              <span className="hxw-journey__marker">{step.n}</span>
               <span className="hxw-journey__name">{step.title}</span>
               <span className="hxw-journey__text">{step.text}</span>
             </li>
@@ -476,6 +478,7 @@ export function HomeProgrammes({ programmes, loading, confirmed }: { programmes:
             <h2 id="hx-programmes-title" className="hx-h2">
               Find your next <em>area of focus.</em>
             </h2>
+            <p className="hx-programmes__lead">Each card shows whether enrolment is open. A programme in development can be read, not started.</p>
           </div>
           <Link className="hx-more" to="/programmes">
             All programmes
@@ -503,19 +506,21 @@ export function HomeProgrammes({ programmes, loading, confirmed }: { programmes:
             <ul className="hx-focus">
               {ordered.map((row) => {
                 const face = FOCUS_FACE[row.program.slug]
-                const status = !confirmed ? STATUS_NOT_CONFIRMED : row.open ? "Open for enrolment" : "In development"
+                const open = confirmed && row.open
+                const status = !confirmed ? STATUS_NOT_CONFIRMED : open ? "Open for enrolment" : "In development"
+                const action = !confirmed ? "View programme" : open ? "View programme" : "See what is listed"
                 return (
                   <li key={row.program.slug}>
-                    <Link to={`/programmes/${row.program.slug}`} className="hx-focus__card" data-clear-launcher>
+                    <Link to={`/programmes/${row.program.slug}`} className={open ? "hx-focus__card is-open" : "hx-focus__card is-soon"} data-clear-launcher>
                       <span className="hx-focus__media">
                         {face ? <img src={face.image} alt={face.alt} width={face.width} height={face.height} loading="lazy" decoding="async" /> : null}
-                        <span className={row.open && confirmed ? "hx-focus__status is-open" : "hx-focus__status"}>{status}</span>
                       </span>
                       <span className="hx-focus__body">
+                        <span className={open ? "hx-focus__status is-open" : "hx-focus__status"}>{status}</span>
                         <span className="hx-focus__title">{face?.title || row.title}</span>
                         <span className="hx-focus__line">{face?.line || row.line || "A catalogue direction. A full taught pathway is not open yet."}</span>
                         <span className="hx-focus__go">
-                          View programme
+                          {action}
                           <ArrowRight />
                         </span>
                       </span>
