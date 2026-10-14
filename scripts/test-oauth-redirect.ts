@@ -3,8 +3,9 @@ import {
   resolveBrowserReturnOrigin,
   resolveGoogleRedirectUri,
 } from "../server/src/lib/oauth-redirect.ts"
-import { oauthErrorRedirect, oauthSuccessRedirect } from "../server/src/lib/safe-redirect.ts"
+import { oauthErrorRedirect, oauthSuccessRedirect, sanitizeReturnTo as sanitizeServerReturnTo } from "../server/src/lib/safe-redirect.ts"
 import { sanitizeReturnTo } from "../src/lib/safe-return.ts"
+import { readFileSync } from "node:fs"
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message)
@@ -118,11 +119,30 @@ try {
   assert(!authorizationUrl.toString().includes("localhost"), "authorization URL must not contain localhost")
 
   console.log("10. Sign-in return paths stay on this site")
-  assert(sanitizeReturnTo("/career-os") === "/career-os", "a site path is kept")
-  assert(sanitizeReturnTo("/learn/data-analytics?lesson=1") === "/learn/data-analytics?lesson=1", "a query on a site path is kept")
-  assert(sanitizeReturnTo("https://evil.example/login") === null, "an absolute URL is rejected")
-  assert(sanitizeReturnTo("//evil.example") === null, "a protocol-relative URL is rejected")
-  assert(sanitizeReturnTo("/\\evil.example") === null, "a backslash path is rejected")
+  const returnCases: Array<[unknown, string | null]> = [
+    ["/career-os", "/career-os"],
+    ["/learn/data-analytics?lesson=1#notes", "/learn/data-analytics?lesson=1#notes"],
+    ["  /dashboard/student  ", "/dashboard/student"],
+    ["https://evil.example/login", null],
+    ["http://evil.example", null],
+    ["//evil.example", null],
+    ["///evil.example", null],
+    ["/\\evil.example", null],
+    ["javascript:alert(1)", null],
+    ["", null],
+    ["   ", null],
+    [null, null],
+    [undefined, null],
+  ]
+  for (const [input, expected] of returnCases) {
+    assert(sanitizeReturnTo(input) === expected, `client return ${JSON.stringify(input)} became ${JSON.stringify(sanitizeReturnTo(input))}`)
+    assert(sanitizeServerReturnTo(input) === expected, `server return ${JSON.stringify(input)} became ${JSON.stringify(sanitizeServerReturnTo(input))}`)
+  }
+  const loginPage = readFileSync(new URL("../src/pages/LoginPage.tsx", import.meta.url), "utf8")
+  assert(/const returnTo = sanitizeReturnTo\(redirectState\?\.returnTo\)/.test(loginPage), "Login navigates only a sanitized return path")
+  assert(/navigate\(returnTo\)/.test(loginPage), "Login uses the sanitized return variable")
+  assert(!/navigate\(redirectState\?\.returnTo\)/.test(loginPage), "Login must not navigate the raw return path")
+  assert(!/navigate\(redirectState\.returnTo\)/.test(loginPage), "Login must not navigate an unsanitized return field")
 
   console.log("OAuth redirect checks passed")
 } finally {
