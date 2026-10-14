@@ -41,7 +41,7 @@
     "test:career": "tsx scripts/test-career.ts",
     "test:employer": "tsx scripts/test-employer-jobs.ts",
     "test:lesson-media": "tsx scripts/test-lesson-media.ts",
-    "test:catalog-parity": "tsx scripts/test-catalog-truth.ts && tsx scripts/check-catalog-parity.ts",
+    "test:catalog-parity": "tsx scripts/test-catalog-truth.ts && tsx scripts/test-public-catalogue-copy.ts && tsx scripts/check-catalog-parity.ts",
     "test:live-intents": "tsx scripts/test-live-intents.ts",
     "test:roles": "tsx scripts/test-role-provisioning.ts",
     "test:integration": "tsx scripts/run-integration-tests.ts",

@@ -15,6 +15,7 @@ import { ArrowRight, SpecSheet, TruthChip } from "../skylent/primitives"
 import { Reveal } from "../skylent/Reveal"
 import { ProgrammeThumb, programmeThumbInfo } from "./ProgrammeArtefacts"
 import { plural, type ProgrammeTruth } from "./programme-truth"
+import { effectiveProgrammePublicFacts } from "../../lib/public-catalogue-copy"
 import "./ProfessionalProgrammeTemplate.css"
 import { openSkylentAi } from "../skylent/ai-events"
 import { STATUS_NOT_CONFIRMED } from "./CatalogueNotice"
@@ -40,7 +41,8 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
   const thumb = programmeThumbInfo(program.slug)
   const canEnrol = confirmed && truth.enrollable && truth.authored && !truth.comingLater
   const firstLinked = truth.linked[0]
-  const description = listingDescription(program, truth)
+  const facts = effectiveProgrammePublicFacts(program)
+  const description = listingDescription({ ...program, desc: facts.desc }, truth)
 
   return (
     <div className="pp-page pp-page--listing">
@@ -103,16 +105,16 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                           ? "In development"
                           : "Not open yet",
                 },
-                { label: "Format", value: program.format },
+                { label: "Format", value: facts.format },
                 { label: "Level", value: program.level },
                 { label: "Length", value: program.duration },
                 {
                   label: "Modules",
                   value:
-                    program.moduleCount > 0
+                    facts.taughtModuleCount > 0
                       ? truth.linked.length > 0
-                        ? `${plural(program.moduleCount, "module")} in the linked course ${truth.linked.length === 1 ? "outline" : "outlines"}`
-                        : plural(program.moduleCount, "module")
+                        ? `${plural(facts.taughtModuleCount, "module")} in the linked course ${truth.linked.length === 1 ? "outline" : "outlines"}`
+                        : plural(facts.taughtModuleCount, "module")
                       : null,
                 },
                 {

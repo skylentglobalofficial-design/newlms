@@ -17,15 +17,15 @@ import {
 import { linkedCourseSlugsForProgram } from "./catalog-maturity"
 
 /**
- * Mirrors withProgramFacts() in server/src/routes/catalog.ts: the modules of the linked courses,
- * or, when no course is linked, the programme's own curriculum modules. Never the brochure figure.
+ * Mirrors withProgramFacts() in server/src/routes/catalog.ts: the modules of the linked courses.
+ * A programme with no linked course reports zero. Brochure curriculum is not a taught count.
+ * Authored programmes then use the authored course length, which is the same figure.
  */
 function apiModuleCount(program: (typeof programs)[number]): number {
-  const fromCourses = linkedCourseSlugsForProgram(program.slug).reduce(
+  return linkedCourseSlugsForProgram(program.slug).reduce(
     (sum, slug) => sum + (courses.find((course) => course.slug === slug)?.modules.length ?? 0),
     0,
   )
-  return fromCourses || (program.curriculumDetail?.length ?? 0)
 }
 
 export function publishedProgrammeSummaries(): CatalogProgramSummary[] {

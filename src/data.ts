@@ -835,11 +835,8 @@ export type Workshop = {
   title: string
   category: string
   duration: string
-  date: string
   mode: string
   instructor: string
-  price: number
-  originalPrice: number
   desc: string
   whatYouGet: string[]
 }
@@ -850,11 +847,8 @@ export const workshops: Workshop[] = [
     title: 'AI for Business Leaders',
     category: 'AI',
     duration: '1 day',
-    date: '24 August 2026',
     mode: 'Online',
     instructor: 'Skylent Faculty',
-    price: 999,
-    originalPrice: 2499,
     desc: 'How to evaluate, adopt, and lead AI transformation in your organisation without a technical background.',
     whatYouGet: ['AI strategy frameworks', 'Use-case identification', 'ROI evaluation models', 'Q&A with industry practitioner', 'Resource toolkit'],
   },
@@ -863,11 +857,8 @@ export const workshops: Workshop[] = [
     title: 'Prompt Engineering Masterclass',
     category: 'AI',
     duration: '1 day',
-    date: '30 August 2026',
     mode: 'Online',
     instructor: 'Skylent Faculty',
-    price: 1499,
-    originalPrice: 3499,
     desc: 'From zero-shot to chain-of-thought to multi-agent prompting. Practical, hands-on, immediately applicable.',
     whatYouGet: ['50+ prompt templates', 'Live hands-on exercises', 'Framework for any LLM', 'Access to recordings', 'Certificate of completion'],
   },
@@ -876,11 +867,8 @@ export const workshops: Workshop[] = [
     title: 'Resume & LinkedIn Masterclass',
     category: 'Career',
     duration: '3 hours',
-    date: '28 August 2026',
     mode: 'Online',
     instructor: 'Skylent Career Team',
-    price: 499,
-    originalPrice: 1499,
     desc: 'Build an ATS-optimised resume and a recruiter-ready LinkedIn profile.',
     whatYouGet: ['Resume template pack', 'ATS check process', 'LinkedIn optimisation guide', 'Live coach feedback', 'Recording access'],
   },
@@ -889,11 +877,8 @@ export const workshops: Workshop[] = [
     title: 'Data Interview Masterclass',
     category: 'Career',
     duration: '1 day',
-    date: '6 September 2026',
     mode: 'Online',
     instructor: 'Skylent Faculty',
-    price: 1999,
-    originalPrice: 4999,
     desc: 'SQL, Python, statistics, and case interviews — the full data job interview preparation in one intensive session.',
     whatYouGet: ['200+ interview questions', 'Mock interview practice (illustrative)', 'SQL and Python drill', 'Case study walkthrough'],
   },
@@ -902,11 +887,8 @@ export const workshops: Workshop[] = [
     title: 'Power BI Intensive',
     category: 'Data',
     duration: '2 days',
-    date: '13–14 September 2026',
     mode: 'Online',
     instructor: 'Skylent Faculty',
-    price: 2499,
-    originalPrice: 5999,
     desc: 'Build three professional Power BI dashboards in two days. Hands-on from data import to published report.',
     whatYouGet: ['3 real dashboard projects', 'DAX formula guide', 'Dataset access', 'Recordings'],
   },
