@@ -21,7 +21,7 @@ import { SKYLENT_AI_OPEN_EVENT, type SkylentAiMode } from "./ai-events"
 import { TermsConsent } from "../legal/TermsConsent"
 import { programs as catalogue } from "../../data"
 import { DEGREE_ROUTES } from "../../data/education"
-import { sendEnquiry, type SiteAiTurn } from "../../lib/skylent-api"
+import { enquiryErrorMessage, sendEnquiry, type SiteAiTurn } from "../../lib/skylent-api"
 import { API_ROOT } from "../../lib/http"
 import { LIVE_PROGRAMME_SLUGS } from "../../lib/programme-catalogue"
 import "./SiteAssistant.css"
@@ -256,6 +256,7 @@ export default function SiteAssistant() {
   const [sending, setSending] = useState(false)
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" })
   const [formState, setFormState] = useState<"idle" | "sending" | "sent" | "failed">("idle")
+  const [formError, setFormError] = useState("")
   const [formRef, setFormRef] = useState("")
   const [accepted, setAccepted] = useState(false)
   const [triedWithoutTerms, setTriedWithoutTerms] = useState(false)
@@ -264,6 +265,7 @@ export default function SiteAssistant() {
   const threadRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const requestRef = useRef<AbortController | null>(null)
+  const enquirySendingRef = useRef(false)
   const nextId = useRef(1)
   const titleId = useId()
 
@@ -435,7 +437,9 @@ export default function SiteAssistant() {
 
   async function submitEnquiry(event: FormEvent) {
     event.preventDefault()
+    if (enquirySendingRef.current || formState === "sending") return
     if (!form.name.trim() || !/^\S+@\S+\.\S+$/.test(form.email.trim())) {
+      setFormError("Check your name and email, then try again.")
       setFormState("failed")
       return
     }
@@ -444,6 +448,7 @@ export default function SiteAssistant() {
       return
     }
     setFormState("sending")
+    enquirySendingRef.current = true
     const summary = [
       answers.goal ? `Looking for: ${answers.goal}` : "",
       answers.level ? `Level: ${answers.level}` : "",
@@ -461,8 +466,11 @@ export default function SiteAssistant() {
       })
       setFormRef(result.id)
       setFormState("sent")
-    } catch {
+    } catch (error) {
+      setFormError(enquiryErrorMessage(error))
       setFormState("failed")
+    } finally {
+      enquirySendingRef.current = false
     }
   }
 
@@ -656,7 +664,7 @@ export default function SiteAssistant() {
                       <textarea rows={2} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} />
                     </label>
                     <TermsConsent checked={accepted} onChange={setAccepted} action="sending your details" showError={triedWithoutTerms} />
-                    {formState === "failed" ? <p className="sia-enquiry__error" role="alert">Check your name and email, then try again. You can also write to support@skylent.live.</p> : null}
+                    {formState === "failed" ? <p className="sia-enquiry__error" role="alert">{formError} You can also write to support@skylent.live.</p> : null}
                     <button type="submit" className="sk-btn sk-btn-primary" disabled={formState === "sending"}>
                       {formState === "sending" ? "Sending" : "Send to the Skylent team"}
                     </button>

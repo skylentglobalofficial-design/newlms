@@ -3,12 +3,12 @@
  * it no longer opens an email draft. Nothing on this page is a sample: the success state shows
  * the reference id the server returned, and a failed request says so.
  */
-import { useId, useState, type FormEvent } from "react"
+import { useEffect, useId, useRef, useState, type FormEvent } from "react"
 import { useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { ArrowRight } from "../components/skylent/primitives"
 import { TermsConsent } from "../components/legal/TermsConsent"
-import { sendEnquiry, type EnquiryKind } from "../lib/skylent-api"
+import { enquiryErrorMessage, sendEnquiry, type EnquiryKind } from "../lib/skylent-api"
 import "./ContactPage.css"
 
 /** Support contacts named by the backend (server/src/routes/skylent/reva.ts). */
@@ -18,7 +18,11 @@ const SUPPORT_EMAIL = "support@skylent.live"
 type ContactKind = Extract<EnquiryKind, "enquiry" | "counselling" | "institution">
 type Fields = { name: string; email: string; phone: string; organisation: string; kind: ContactKind; message: string }
 type FieldErrors = Partial<Record<"name" | "email" | "phone" | "organisation" | "message", string>>
-type Submit = { status: "idle" } | { status: "sending" } | { status: "sent"; id: string; kind: ContactKind } | { status: "failed" }
+type Submit =
+  | { status: "idle" }
+  | { status: "sending" }
+  | { status: "sent"; id: string; kind: ContactKind }
+  | { status: "failed"; message: string }
 
 const EMPTY: Fields = { name: "", email: "", phone: "", organisation: "", kind: "enquiry", message: "" }
 const KINDS: Array<{ value: ContactKind; label: string; note: string }> = [
@@ -55,8 +59,17 @@ export default function ContactPage() {
   const [errors, setErrors] = useState<FieldErrors>({})
   const [submit, setSubmit] = useState<Submit>({ status: "idle" })
   const sending = submit.status === "sending"
+  const sendingRef = useRef(false)
+  const termsRef = useRef<HTMLInputElement>(null)
+  const sentRef = useRef<HTMLHeadingElement>(null)
+  const failedRef = useRef<HTMLParagraphElement>(null)
   const [accepted, setAccepted] = useState(false)
   const [triedWithoutTerms, setTriedWithoutTerms] = useState(false)
+
+  useEffect(() => {
+    if (submit.status === "sent") sentRef.current?.focus()
+    if (submit.status === "failed") failedRef.current?.focus()
+  }, [submit])
 
   function set<K extends keyof Fields>(key: K, value: Fields[K]) {
     setFields((current) => ({ ...current, [key]: value }))
@@ -65,7 +78,7 @@ export default function ContactPage() {
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (sending) return
+    if (sendingRef.current || sending) return
     const found = validate(fields)
     setErrors(found)
     const firstInvalid = (["name", "email", "phone", "organisation", "message"] as const).find((key) => found[key])
@@ -76,8 +89,10 @@ export default function ContactPage() {
     }
     if (!accepted) {
       setTriedWithoutTerms(true)
+      termsRef.current?.focus()
       return
     }
+    sendingRef.current = true
     setSubmit({ status: "sending" })
     try {
       const organisation = fields.organisation.trim()
@@ -95,8 +110,10 @@ export default function ContactPage() {
       })
       setSubmit({ status: "sent", id: result.id, kind: fields.kind })
       setFields(EMPTY)
-    } catch {
-      setSubmit({ status: "failed" })
+    } catch (error) {
+      setSubmit({ status: "failed", message: enquiryErrorMessage(error) })
+    } finally {
+      sendingRef.current = false
     }
   }
 
@@ -112,13 +129,14 @@ export default function ContactPage() {
             </div>
             <h1>Send the team an enquiry</h1>
             <p className="ctc-lead">
-              Ask a question or request a counselling call. Your enquiry is recorded with a reference, and the team replies by email or
-              phone.
+              {fields.kind === "institution"
+                ? "Tell us about your institution. The enquiry is recorded with a reference, and the partnerships team replies by email or phone."
+                : "Ask a question or request a counselling call. Your enquiry is recorded with a reference, and the team replies by email or phone."}
             </p>
 
             {submit.status === "sent" ? (
               <section className="sky-panel-proof ctc-sent" aria-labelledby={`${formId}-sent`} role="status">
-                <h2 id={`${formId}-sent`}>
+                <h2 id={`${formId}-sent`} ref={sentRef} tabIndex={-1}>
                   {submit.kind === "counselling" ? "Counselling call requested" : submit.kind === "institution" ? "Partnership enquiry sent" : "Enquiry sent"}
                 </h2>
                 <dl className="sky-spec">
@@ -253,12 +271,12 @@ export default function ContactPage() {
 
                 {sending ? <div className="ctc-progress" aria-hidden="true" /> : null}
                 {submit.status === "failed" ? (
-                  <p className="ctc-failed" role="alert">
-                    We could not send this. Try again, or email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
+                  <p className="ctc-failed" role="alert" ref={failedRef} tabIndex={-1}>
+                    {submit.message} You can also email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>.
                   </p>
                 ) : null}
 
-                <TermsConsent checked={accepted} onChange={setAccepted} action="sending an enquiry" showError={triedWithoutTerms} />
+                <TermsConsent inputRef={termsRef} checked={accepted} onChange={setAccepted} action="sending an enquiry" showError={triedWithoutTerms} />
                 <div className="ctc-actions">
                   <button type="submit" className="sk-btn sk-btn-primary" disabled={sending}>
                     {sending ? "Sending" : fields.kind === "counselling" ? "Request a call" : "Send enquiry"}

@@ -104,6 +104,8 @@ check(
   "Data Science listing must not repeat a stale claim that unauthored teaching is already live",
 )
 check(/<LearnPillarSubnav current="courses" \/>/.test(files.courses), "/courses keeps its sub-navigation")
+const appSource = read("src/App.tsx")
+check(/https:\/\/skylent\.live/.test(appSource) && /rel="canonical"|link\.rel = "canonical"/.test(appSource), "Public pages set a canonical URL on skylent.live")
 
 // 6. Homepage photographs are sized variants, not the original multi-megapixel JPEGs.
 check(!/\.jpg/.test(files.home), "Homepage must not import the original JPEG photographs")

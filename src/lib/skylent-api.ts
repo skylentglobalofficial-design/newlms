@@ -6,7 +6,7 @@
  * No mock data and no fallbacks: a failed request throws, and the caller shows an honest error state.
  */
 import { ensureCsrfToken } from "./auth-api"
-import { API_ROOT, parseApiJson } from "./http"
+import { API_ROOT, WORKSPACE_LOAD_ERROR, parseApiJson } from "./http"
 import { consentPayload } from "./policy"
 
 const API_BASE = API_ROOT
@@ -89,6 +89,34 @@ export type EnquiryInput = {
 }
 
 /** POST /enquiries — public, rate limited (10 per 15 minutes). Returns the new enquiry id. */
+const ENQUIRY_FALLBACK = "We could not send this. No confirmation came back."
+const ENQUIRY_TIMEOUT = "The request timed out before a confirmation came back."
+
+function isTimeoutError(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false
+  const name = "name" in error ? String(error.name) : ""
+  const message = "message" in error ? String(error.message) : ""
+  if (name === "TimeoutError") return true
+  return name === "AbortError" && /timeout|timed out/i.test(message)
+}
+
+/** Copy for a failed enquiry. Rate-limit and validation text from the API is kept; timeouts say nothing was recorded. */
+export function enquiryErrorMessage(error: unknown): string {
+  if (isTimeoutError(error)) return ENQUIRY_TIMEOUT
+  if (error instanceof Error) {
+    const message = error.message.trim()
+    if (
+      message &&
+      message !== WORKSPACE_LOAD_ERROR &&
+      message.length <= 160 &&
+      !/prisma|sql|stack|unexpected token/i.test(message)
+    ) {
+      return message
+    }
+  }
+  return ENQUIRY_FALLBACK
+}
+
 export async function sendEnquiry(input: EnquiryInput): Promise<{ id: string }> {
   const body: Record<string, unknown> = { kind: input.kind, name: input.name.trim(), email: input.email.trim() }
   if (input.acceptedTerms) body.consent = consentPayload()

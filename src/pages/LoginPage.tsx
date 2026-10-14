@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from 'react'
+import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { useNavigate, useLocation, Link, type NavigateFunction } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import type { AuthUser, UserRole } from '../context/AuthContext'
@@ -120,6 +120,10 @@ export default function LoginPage() {
   const [suTermsTried, setSuTermsTried] = useState(false)
 
   const [error, setError] = useState<string | null>(null)
+  const errorRef = useRef<HTMLDivElement>(null)
+  const termsRef = useRef<HTMLInputElement>(null)
+  const submittingRef = useRef(false)
+  const pendingFocus = useRef<HTMLElement | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [oauthHandled, setOauthHandled] = useState(false)
@@ -177,6 +181,13 @@ export default function LoginPage() {
     })
   }, [location.pathname, location.search, location.state, navigate, oauthHandled, ready, user])
 
+  useEffect(() => {
+    if (!error) return
+    const target = pendingFocus.current ?? errorRef.current
+    pendingFocus.current = null
+    target?.focus()
+  }, [error])
+
   function startGoogleAuth(acceptedTerms = false) {
     setError(null)
     setGoogleLoading(true)
@@ -197,19 +208,32 @@ export default function LoginPage() {
     setSubmitting(false)
   }
 
+  function reportError(message: string, field?: HTMLElement | null) {
+    pendingFocus.current = field ?? null
+    if (error === message) {
+      const target = field ?? errorRef.current
+      pendingFocus.current = null
+      target?.focus()
+      return
+    }
+    setError(message)
+  }
+
   async function handleSignIn(e: FormEvent) {
     e.preventDefault()
-    setError(null)
+    if (submittingRef.current) return
 
     if (!siEmail.trim()) {
-      setError('Enter your email address.')
+      reportError('Enter your email address.', document.getElementById('si-email'))
       return
     }
     if (!siPassword.trim()) {
-      setError('Enter your password.')
+      reportError('Enter your password.', document.getElementById('si-password'))
       return
     }
 
+    setError(null)
+    submittingRef.current = true
     setSubmitting(true)
     try {
       const role = await login(siEmail.trim(), siPassword)
@@ -217,32 +241,35 @@ export default function LoginPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to sign in.')
     } finally {
+      submittingRef.current = false
       setSubmitting(false)
     }
   }
 
   async function handleSignUp(e: FormEvent) {
     e.preventDefault()
-    setError(null)
+    if (submittingRef.current) return
 
     if (!suName.trim()) {
-      setError('Enter your full name.')
+      reportError('Enter your full name.', document.getElementById('su-name'))
       return
     }
     if (!suEmail.trim()) {
-      setError('Enter your email address.')
+      reportError('Enter your email address.', document.getElementById('su-email'))
       return
     }
     if (suPassword.trim().length < 8) {
-      setError('Choose a password of at least 8 characters.')
+      reportError('Choose a password of at least 8 characters.', document.getElementById('su-password'))
       return
     }
     if (!suTerms) {
       setSuTermsTried(true)
-      setError('Accept the Terms & Conditions and Privacy Policy to create an account.')
+      reportError('Accept the Terms & Conditions and Privacy Policy to create an account.', termsRef.current)
       return
     }
 
+    setError(null)
+    submittingRef.current = true
     setSubmitting(true)
     try {
       const role = await signup(suName.trim(), suEmail.trim(), suPassword, suTerms)
@@ -250,6 +277,7 @@ export default function LoginPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to create account.')
     } finally {
+      submittingRef.current = false
       setSubmitting(false)
     }
   }
@@ -297,7 +325,7 @@ export default function LoginPage() {
                 ) : null}
 
                 {error ? (
-                  <div className="entry-error" role="alert" aria-live="polite">{error}</div>
+                  <div className="entry-error" role="alert" aria-live="polite" ref={errorRef} tabIndex={-1}>{error}</div>
                 ) : null}
 
                 {signingIn ? (
@@ -386,7 +414,7 @@ export default function LoginPage() {
                       disabled={submitting}
                     />
                   </div>
-                  <TermsConsent checked={suTerms} onChange={setSuTerms} action="creating an account" showError={suTermsTried} />
+                  <TermsConsent inputRef={termsRef} checked={suTerms} onChange={setSuTerms} action="creating an account" showError={suTermsTried} />
                   <button className="entry-submit" type="submit" disabled={submitting || googleLoading}>
                     {submitting ? 'Creating account…' : 'Create account'}
                   </button>
@@ -396,7 +424,7 @@ export default function LoginPage() {
                   <button
                     className="entry-google"
                     type="button"
-                    onClick={() => { if (!suTerms) { setSuTermsTried(true); setError('Accept the Terms & Conditions and Privacy Policy to create an account.'); return } startGoogleAuth(true) }}
+                    onClick={() => { if (!suTerms) { setSuTermsTried(true); reportError('Accept the Terms & Conditions and Privacy Policy to create an account.', termsRef.current); return } startGoogleAuth(true) }}
                     disabled={submitting || googleLoading}
                   >
                     {googleLoading ? 'Redirecting to Google…' : 'Continue with Google'}
