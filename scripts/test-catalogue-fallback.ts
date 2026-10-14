@@ -3,7 +3,7 @@
  * page that can draw on them must say the status is not confirmed and keep enrolment closed.
  * Run: npx tsx scripts/test-catalogue-fallback.ts (no database needed).
  */
-import { readFileSync } from "node:fs"
+import { readdirSync, readFileSync, statSync } from "node:fs"
 import { courses } from "../src/data.ts"
 import {
   publishedCourseDetail,
@@ -27,6 +27,14 @@ const check = (condition: unknown, message: string) => {
 const catalogRoute = read("server/src/routes/catalog.ts")
 check(/moduleCount: moduleCountFromCourses,/.test(catalogRoute), "API module count must be the linked-course total, not brochure curriculum")
 check(!/moduleCountFromCourses \|\| moduleCountFromProgram/.test(catalogRoute), "Brochure curriculum must not fill moduleCount when no course is linked")
+const programDetailRoute = catalogRoute.slice(
+  catalogRoute.indexOf("router.get('/programs/:slug'"),
+  catalogRoute.indexOf("router.get('/courses/:slug'"),
+)
+check(!programDetailRoute.includes("curriculumInclude"), "Programme detail must not load unused brochure curriculum")
+check(programDetailRoute.includes("programCourseInclude"), "Programme detail still loads linked courses for module counts")
+const linkInclude = catalogRoute.slice(catalogRoute.indexOf("const programCourseInclude"), catalogRoute.indexOf("function countLearnableNodes"))
+check(!/nodes:/.test(linkInclude), "Programme link query must not load lesson nodes just to count modules")
 for (const program of publishedProgrammeSummaries()) {
   const fromCourses = PROGRAM_COURSE_LINKS.filter((link) => link.programSlug === program.slug).reduce(
     (sum, link) => sum + (courses.find((course) => course.slug === link.courseSlug)?.modules.length ?? 0),
@@ -74,6 +82,9 @@ for (const [name, source] of Object.entries(files)) {
 check(/if \(!confirmed \|\| comingLater \|\| !enrollable\) return/.test(files.programPage), "Programme enrol handler refuses when unconfirmed")
 check(/const verified = confirmed && !courseUnconfirmed/.test(files.template), "Template also needs the linked course confirmed")
 check(/const canEnrol = verified && truth\.enrollable/.test(files.template), "Template enrol gated on verified")
+check(/useCatalogCourse\(content\.courseSlug\)/.test(files.template), "Linked course is still requested for enrolment confirmation")
+check(!/const startsWith = course\.loading/.test(files.template), "The first lesson must not wait on the linked-course request when the authored outline is known")
+check(/authoredOutlineReady/.test(files.template), "Authored outline paints without a lesson skeleton while the course request is in flight")
 check(/confirmed && courseUnconfirmed \? \(\s*<CatalogueNotice/.test(files.template), "Linked-course failure shows a catalogue warning")
 check(/const canEnrol = confirmed && truth\.enrollable/.test(files.listing), "Listing enrol gated on confirmed")
 check(/const enrollable = authored && confirmed/.test(files.courseDetail), "Course enrol gated on confirmed")
@@ -93,6 +104,17 @@ check(
   "Data Science listing must not repeat a stale claim that unauthored teaching is already live",
 )
 check(/<LearnPillarSubnav current="courses" \/>/.test(files.courses), "/courses keeps its sub-navigation")
+
+// 6. Homepage photographs are sized variants, not the original multi-megapixel JPEGs.
+check(!/\.jpg/.test(files.home), "Homepage must not import the original JPEG photographs")
+check(/srcSet=\{`\$\{heroStudent720\} 720w, \$\{heroStudent1024\} 1024w`\}/.test(files.home), "Hero uses a responsive srcset")
+check(/fetchPriority="high"/.test(files.home), "The hero photograph stays eligible for LCP")
+check(/loading="lazy"/.test(files.home), "Below-the-fold homepage photographs stay lazy")
+check(/width=\{96\}/.test(files.home), "Avatar images declare intrinsic dimensions")
+const homeImages = readdirSync(new URL("../src/assets/site/home", import.meta.url))
+const homeBytes = homeImages.reduce((sum, name) => sum + statSync(new URL(`../src/assets/site/home/${name}`, import.meta.url)).size, 0)
+check(homeImages.every((name) => name.endsWith(".webp")), "Homepage variants are WebP")
+check(homeBytes < 700 * 1024, `Homepage image variants are ${homeBytes} bytes, above 700 KB`)
 
 // 6. Course page overflow: clip with a fallback for browsers without it.
 const css = read("src/pages/Catalog.css")
