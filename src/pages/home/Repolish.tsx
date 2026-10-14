@@ -415,14 +415,14 @@ function useProductDemo(delays: readonly number[]) {
 
   useEffect(() => {
     if (reduced || !seen || holding) return
-    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % delays.length), delays[index] ?? 1800)
+    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % delays.length), delays[index] ?? 750)
     return () => window.clearTimeout(timer)
   }, [delays, holding, index, reduced, seen])
 
   return { ref, index, setIndex, reduced, setHolding }
 }
 
-const LMS_BEATS = [2600, 2800, 3000, 2600, 2800] as const
+const LMS_BEATS = [750, 750, 750, 750, 750] as const
 
 export function InsideProgramme() {
   const demo = useProductDemo(LMS_BEATS)
@@ -903,7 +903,7 @@ const AI_HELPS = [
 
 const AI_FIRST_OPTIONS = ["Learn a job skill", "Study for a degree", "I'm not sure yet"] as const
 
-const AI_BEATS = [1500, 900, 1100, 800, 1600, 1000, 2400, 460] as const
+const AI_BEATS = [750, 650, 700, 600, 750, 650, 800, 650] as const
 
 export function HomeAi() {
   const demo = useProductDemo(AI_BEATS)
