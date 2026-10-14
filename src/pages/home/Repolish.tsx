@@ -14,7 +14,7 @@ import { ArrowRight } from "@/components/skylent/primitives"
 import { Reveal } from "@/components/skylent/Reveal"
 import { SkylentBot } from "@/components/skylent/SiteAssistant"
 import { openSkylentAi } from "@/components/skylent/ai-events"
-import { HARBOR, NORTHWIND, authoredProgrammeContent, rupees, type AuthoredProgrammeContent } from "@/components/programme/programme-content"
+import { HARBOR, NORTHWIND, NORTHWIND_CATEGORY_SQL_EXCERPT, authoredProgrammeContent, rupees, type AuthoredProgrammeContent } from "@/components/programme/programme-content"
 import { programmeTruth } from "@/components/programme/programme-truth"
 import { programmeDiscoveryFor } from "@/lib/programme-discovery"
 import type { CatalogProgramSummary } from "@/lib/catalog-api"
@@ -256,20 +256,145 @@ export function WalkControls({
 }
 
 /* ── How learning works ───────────────────────────────────────────────────
-   Five connected stages, each with a small preview drawn from the authored Data Analytics
-   programme (titles, counts and lab figures come from the course data). Everything is visible
-   at once: hover only adds emphasis. */
+   One illustrative workspace. The dark rail is the stage list; the canvas is the
+   product. Counts and titles come from the authored Data Analytics course. */
 
 const DA_SLUG = "data-analytics-pro"
+const LMS_STAGES = [
+  { key: "programme", label: "Programme" },
+  { key: "lesson", label: "Lesson" },
+  { key: "practice", label: "Practice" },
+  { key: "project", label: "Project" },
+  { key: "evidence", label: "Evidence" },
+] as const
 
-const LMS_STAGES = ["Programme", "Lesson", "Practice", "Project", "Evidence"] as const
-
-export function InsideProgramme() {
+function LmsCanvas({ stage }: { stage: number }) {
   const facts = courseFacts()
   const content = authoredProgrammeContent(DA_SLUG)
-  const topCategories = NORTHWIND.categories.slice(0, 3)
-  const [stage, setStage] = useState(1)
+  const max = NORTHWIND.categories[0].value
+  if (stage === 0) {
+    return (
+      <div className="hx-canvas">
+        <div className="hx-canvas__head">
+          <div>
+            <p className="hx-k">Programme</p>
+            <h3>{facts?.title ?? "Data Analytics"}</h3>
+          </div>
+          <p>{facts ? `${facts.stats.modules} modules · ${facts.stats.lessons} lessons` : "Modules appear with the course."}</p>
+        </div>
+        <ol className="hx-mods">
+          {(facts?.modules ?? []).map((module) => (
+            <li key={module.id} className={`is-${module.state}`}>
+              <span>{module.label}</span>
+              <span>
+                <strong>{module.title}</strong>
+                <em>{module.lessons.length} lessons</em>
+              </span>
+              <span>{module.state === "current" ? "Open" : module.state === "complete" ? "Earlier" : "Later"}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    )
+  }
+  if (stage === 1 && facts) {
+    return (
+      <div className="hx-canvas hx-canvas--split">
+        <ol className="hx-lessons">
+          {facts.currentModule.lessons.map((lesson) => {
+            const open = lesson.id === facts.current.id
+            const earlier = facts.currentModule.lessons.findIndex((item) => item.id === lesson.id) < facts.currentModule.lessons.findIndex((item) => item.id === facts.current.id)
+            return (
+              <li key={lesson.id} className={open ? "is-open" : earlier ? "is-earlier" : undefined}>
+                <span>{lesson.label}</span>
+                <span>{lesson.title}</span>
+              </li>
+            )
+          })}
+        </ol>
+        <div>
+          <p className="hx-k">Module {facts.currentModuleNumber} · {facts.current.kind}{facts.current.duration ? ` · ${facts.current.duration}` : ""}</p>
+          <h3>{facts.current.title}</h3>
+          <p className="hx-canvas__note">{facts.done} of {facts.total} lessons sit before this one in the preview. Not your progress.</p>
+          <span className="hx-bar" aria-hidden="true"><span style={{ width: `${facts.percent}%` }} /></span>
+        </div>
+      </div>
+    )
+  }
+  if (stage === 1) {
+    return <p className="hx-canvas__note">The lesson outline is not available in this preview.</p>
+  }
+  if (stage === 2) {
+    return (
+      <div className="hx-canvas">
+        <div className="hx-canvas__head">
+          <div>
+            <p className="hx-k">Practice · Northwind lab</p>
+            <h3>Net revenue by category</h3>
+          </div>
+          <p>{NORTHWIND.validRows} of {NORTHWIND.rows} rows valid · {NORTHWIND.window}</p>
+        </div>
+        <pre className="hx-sql">{NORTHWIND_CATEGORY_SQL_EXCERPT}</pre>
+        <div className="hx-bars">
+          {NORTHWIND.categories.map((row) => (
+            <div key={row.name}>
+              <span>{row.name}</span>
+              <span className="hx-bar"><span style={{ width: `${Math.round((row.value / max) * 100)}%` }} /></span>
+              <span>{rupees(row.value)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
+  }
+  if (stage === 3) {
+    const title = content?.capstoneTitle ?? facts?.capstoneTitle ?? "Capstone"
+    return (
+      <div className="hx-canvas">
+        <div className="hx-canvas__head">
+          <div>
+            <p className="hx-k">Project · Module {facts?.capstoneModuleNumber ?? ""}</p>
+            <h3>{title}</h3>
+          </div>
+        </div>
+        <ol className="hx-deliver">
+          {["Read the brief", "Build the analysis", "Write the recommendation"].map((task, index) => (
+            <li key={task} className={index === 1 ? "is-open" : undefined}>
+              <span>{index + 1}</span>
+              <span>{task}</span>
+              <span>{index === 1 ? "Open" : index === 0 ? "Earlier" : "Later"}</span>
+            </li>
+          ))}
+        </ol>
+        <p className="hx-canvas__note">{content?.evidence.record.footnote}</p>
+      </div>
+    )
+  }
+  const record = content?.evidence.record
+  return (
+    <div className="hx-canvas">
+      <div className="hx-canvas__head">
+        <div>
+          <p className="hx-k">Career evidence</p>
+          <h3>{record?.title ?? "Finished project"}</h3>
+        </div>
+      </div>
+      <dl className="hx-record">
+        <div><dt>Context</dt><dd>{record?.context}</dd></div>
+        <div><dt>What it shows</dt><dd>{record?.workShown}</dd></div>
+      </dl>
+      <p className="hx-chips">
+        {(record?.skills ?? []).slice(0, 4).map((skill) => (
+          <span key={skill}>{skill}</span>
+        ))}
+      </p>
+      <p className="hx-canvas__note">{record?.footnote}</p>
+    </div>
+  )
+}
 
+export function InsideProgramme() {
+  const [stage, setStage] = useState(1)
   return (
     <section className="hx-inside" aria-labelledby="hx-inside-title">
       <div className="sky-container">
@@ -279,75 +404,33 @@ export function InsideProgramme() {
             <h2 id="hx-inside-title" className="hx-h2 hx-h2--sm">The workspace, from the first lesson to the work you keep.</h2>
           </div>
         </header>
-        <div className="hx-lms">
-          <p className="hx-lms__note">Illustrative preview · Not a connected account</p>
-          <div className="hx-lms__rail" role="tablist" aria-label="Learning stages">
-            {LMS_STAGES.map((label, index) => (
+        <div className="hx-app hx-app--split">
+          <div className="hx-app__side" role="tablist" aria-label="Learning stages">
+            <p className="hx-app__brand">Skylent</p>
+            {LMS_STAGES.map((item, index) => (
               <button
-                key={label}
+                key={item.key}
                 type="button"
                 role="tab"
+                id={`lms-tab-${item.key}`}
                 aria-selected={stage === index}
+                aria-controls="lms-panel"
                 className={stage === index ? "is-on" : undefined}
                 onClick={() => setStage(index)}
               >
-                {label}
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                {item.label}
               </button>
             ))}
           </div>
-          <div className="hx-lms__body" role="tabpanel">
-            {stage === 0 ? (
-              <>
-                <p className="hx-lms__kicker">Programme</p>
-                <p className="hx-lms__title">{facts?.title ?? "Data Analytics"}</p>
-                <p className="hx-lms__meta">{facts ? `${facts.stats.modules} modules · ${facts.stats.lessons} lessons` : "Open programmes list their lessons before you enrol."}</p>
-              </>
-            ) : null}
-            {stage === 1 && facts ? (
-              <>
-                <p className="hx-lms__kicker">Module {facts.currentModuleNumber} · Lesson {facts.lessonNumber} · {facts.current.kind}</p>
-                <p className="hx-lms__title">{facts.current.title}</p>
-                <p className="hx-lms__meta">{facts.done} of {facts.total} lessons marked complete in this preview.</p>
-                <span className="hx-lms__track" aria-hidden="true"><span style={{ width: `${facts.percent}%` }} /></span>
-              </>
-            ) : null}
-            {stage === 2 ? (
-              <>
-                <p className="hx-lms__kicker">Practice · Northwind lab</p>
-                <p className="hx-lms__title">Net revenue by category</p>
-                <p className="hx-lms__meta">Valid rows only. Figures come from the course dataset.</p>
-                <div className="hx-lms__rows">
-                  {topCategories.map((row) => (
-                    <span key={row.name}><span>{row.name}</span><span>{rupees(row.value)}</span></span>
-                  ))}
-                </div>
-              </>
-            ) : null}
-            {stage === 3 ? (
-              <>
-                <p className="hx-lms__kicker">Project</p>
-                <p className="hx-lms__title">{content?.capstoneTitle ?? facts?.capstoneTitle ?? "Capstone"}</p>
-                <ul className="hx-lms__tasks">
-                  {["Read the brief", "Build the analysis", "Write the recommendation"].map((task) => (
-                    <li key={task}>{task}</li>
-                  ))}
-                </ul>
-              </>
-            ) : null}
-            {stage === 4 ? (
-              <>
-                <p className="hx-lms__kicker">Career evidence</p>
-                <p className="hx-lms__title">{content?.evidence.record.title ?? "Finished project"}</p>
-                <p className="hx-lms__meta">Kept with the project after you finish it. This is not your profile.</p>
-                {content ? (
-                  <p className="hx-lms__chips">
-                    {content.evidence.record.skills.slice(0, 3).map((skill) => (
-                      <span key={skill}>{skill}</span>
-                    ))}
-                  </p>
-                ) : null}
-              </>
-            ) : null}
+          <div className="hx-app__stage">
+            <div className="hx-app__bar">
+              <span>Learning workspace</span>
+              <span>Illustrative preview · Not connected</span>
+            </div>
+            <div className="hx-app__body" id="lms-panel" role="tabpanel" aria-labelledby={`lms-tab-${LMS_STAGES[stage].key}`} key={stage}>
+              <LmsCanvas stage={stage} />
+            </div>
           </div>
         </div>
       </div>
