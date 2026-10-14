@@ -51,7 +51,7 @@ export default function InstitutionsPage() {
                 teaching.
               </p>
               <div className="hx-hero__actions">
-                <Link className="sk-btn sk-btn-primary hx-btn" to="/contact">
+                <Link className="sk-btn sk-btn-primary hx-btn" to="/contact?for=institution">
                   Talk to partnerships
                   <ArrowRight />
                 </Link>
@@ -124,7 +124,7 @@ export default function InstitutionsPage() {
               Bring Skylent to <em>your institution.</em>
             </h2>
             <div className="hx-hero__actions">
-              <Link className="sk-btn sk-btn-primary hx-btn" to="/contact">
+              <Link className="sk-btn sk-btn-primary hx-btn" to="/contact?for=institution">
                 Partner with Skylent
                 <ArrowRight />
               </Link>

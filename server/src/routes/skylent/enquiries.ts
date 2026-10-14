@@ -18,7 +18,7 @@ const limit = rateLimit({
 })
 
 const schema = z.object({
-  kind: z.enum(["enquiry", "counselling", "degree"]).default("enquiry"),
+  kind: z.enum(["enquiry", "counselling", "degree", "institution"]).default("enquiry"),
   name: z.string().trim().min(1).max(120),
   email: z.string().trim().email().max(200),
   phone: z.string().trim().max(20).optional(),

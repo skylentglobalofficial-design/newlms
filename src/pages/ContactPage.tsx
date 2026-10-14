@@ -4,6 +4,7 @@
  * the reference id the server returned, and a failed request says so.
  */
 import { useId, useState, type FormEvent } from "react"
+import { useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { ArrowRight } from "../components/skylent/primitives"
 import { TermsConsent } from "../components/legal/TermsConsent"
@@ -14,15 +15,16 @@ import "./ContactPage.css"
 const SUPPORT_PHONE = "6370044001"
 const SUPPORT_EMAIL = "support@skylent.live"
 
-type ContactKind = Extract<EnquiryKind, "enquiry" | "counselling">
-type Fields = { name: string; email: string; phone: string; kind: ContactKind; message: string }
-type FieldErrors = Partial<Record<"name" | "email" | "phone" | "message", string>>
+type ContactKind = Extract<EnquiryKind, "enquiry" | "counselling" | "institution">
+type Fields = { name: string; email: string; phone: string; organisation: string; kind: ContactKind; message: string }
+type FieldErrors = Partial<Record<"name" | "email" | "phone" | "organisation" | "message", string>>
 type Submit = { status: "idle" } | { status: "sending" } | { status: "sent"; id: string; kind: ContactKind } | { status: "failed" }
 
-const EMPTY: Fields = { name: "", email: "", phone: "", kind: "enquiry", message: "" }
+const EMPTY: Fields = { name: "", email: "", phone: "", organisation: "", kind: "enquiry", message: "" }
 const KINDS: Array<{ value: ContactKind; label: string; note: string }> = [
   { value: "enquiry", label: "General enquiry", note: "A question about programmes, degrees or the platform." },
   { value: "counselling", label: "Counselling call", note: "Ask the team to call you about choosing a path." },
+  { value: "institution", label: "Institutional partnership", note: "Colleges, universities and training partners." },
 ]
 
 /** Mirrors the server schema in server/src/routes/skylent/enquiries.ts so most errors are caught before sending. */
@@ -35,13 +37,21 @@ function validate(fields: Fields): FieldErrors {
   if (!email) errors.email = "Enter your email address."
   else if (email.length > 200 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = "Enter a valid email address."
   if (fields.phone.trim().length > 20) errors.phone = "Use 20 characters or fewer."
+  if (fields.kind === "institution") {
+    const organisation = fields.organisation.trim()
+    if (!organisation) errors.organisation = "Enter your institution's name."
+    else if (organisation.length > 120) errors.organisation = "Use 120 characters or fewer."
+  }
   if (fields.message.length > 2000) errors.message = "Use 2,000 characters or fewer."
   return errors
 }
 
 export default function ContactPage() {
   const formId = useId()
-  const [fields, setFields] = useState<Fields>(EMPTY)
+  const [params] = useSearchParams()
+  const [fields, setFields] = useState<Fields>(() => (
+    params.get("for") === "institution" ? { ...EMPTY, kind: "institution" } : EMPTY
+  ))
   const [errors, setErrors] = useState<FieldErrors>({})
   const [submit, setSubmit] = useState<Submit>({ status: "idle" })
   const sending = submit.status === "sending"
@@ -58,7 +68,7 @@ export default function ContactPage() {
     if (sending) return
     const found = validate(fields)
     setErrors(found)
-    const firstInvalid = (["name", "email", "phone", "message"] as const).find((key) => found[key])
+    const firstInvalid = (["name", "email", "phone", "organisation", "message"] as const).find((key) => found[key])
     if (firstInvalid) {
       setSubmit({ status: "idle" })
       document.getElementById(`${formId}-${firstInvalid}`)?.focus()
@@ -70,13 +80,18 @@ export default function ContactPage() {
     }
     setSubmit({ status: "sending" })
     try {
+      const organisation = fields.organisation.trim()
+      const note = fields.message.trim()
+      const message = fields.kind === "institution"
+        ? [`Organisation: ${organisation}`, note].filter(Boolean).join("\n\n")
+        : note
       const result = await sendEnquiry({
         kind: fields.kind,
         acceptedTerms: accepted,
         name: fields.name,
         email: fields.email,
         phone: fields.phone || undefined,
-        message: fields.message || undefined,
+        message: message || undefined,
       })
       setSubmit({ status: "sent", id: result.id, kind: fields.kind })
       setFields(EMPTY)
@@ -103,7 +118,9 @@ export default function ContactPage() {
 
             {submit.status === "sent" ? (
               <section className="sky-panel-proof ctc-sent" aria-labelledby={`${formId}-sent`} role="status">
-                <h2 id={`${formId}-sent`}>{submit.kind === "counselling" ? "Counselling call requested" : "Enquiry sent"}</h2>
+                <h2 id={`${formId}-sent`}>
+                  {submit.kind === "counselling" ? "Counselling call requested" : submit.kind === "institution" ? "Partnership enquiry sent" : "Enquiry sent"}
+                </h2>
                 <dl className="sky-spec">
                   <div className="sky-spec__row">
                     <dt className="sky-spec__label">Reference</dt>
@@ -196,6 +213,26 @@ export default function ContactPage() {
                   />
                   {errors.phone ? <p className="sk-error" id={`${formId}-phone-error`}>{errors.phone}</p> : null}
                 </div>
+
+                {fields.kind === "institution" ? (
+                  <div className="ctc-field">
+                    <label className="sky-label" htmlFor={`${formId}-organisation`}>Institution</label>
+                    <input
+                      id={`${formId}-organisation`}
+                      className="sk-input"
+                      name="organisation"
+                      autoComplete="organization"
+                      maxLength={120}
+                      value={fields.organisation}
+                      onChange={(event) => set("organisation", event.target.value)}
+                      aria-invalid={errors.organisation ? true : undefined}
+                      aria-describedby={describe("organisation")}
+                      disabled={sending}
+                      required
+                    />
+                    {errors.organisation ? <p className="sk-error" id={`${formId}-organisation-error`}>{errors.organisation}</p> : null}
+                  </div>
+                ) : null}
 
                 <div className="ctc-field">
                   <label className="sky-label" htmlFor={`${formId}-message`}>Message (optional)</label>

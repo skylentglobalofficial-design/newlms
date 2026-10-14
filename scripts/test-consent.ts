@@ -146,6 +146,23 @@ async function main() {
   const enquiryRows = await prisma.policyAcceptance.findMany({ where: { enquiryId: enquiry.id } })
   assert(enquiryRows.length === 1 && enquiryRows[0].context === "enquiry" && enquiryRows[0].userId === null, "the enquiry acceptance must reference the enquiry only")
 
+  console.log("7b. An institutional enquiry is stored as its own kind")
+  const institutionEmail = uniqueEmail("institution")
+  const institution = await request(new Map(), "/enquiries", {
+    method: "POST",
+    body: {
+      kind: "institution",
+      name: "Partnership Office",
+      email: institutionEmail,
+      message: "Organisation: Northwind College\n\nWe want to add Data Analytics for a cohort.",
+      consent: TEST_CONSENT,
+    },
+  })
+  assert(institution.status === 201 && Boolean(institution.data?.data?.id), `institution enquiry failed: ${institution.status} ${JSON.stringify(institution.data)}`)
+  const institutionRow = await prisma.skylentEnquiry.findFirst({ where: { email: institutionEmail } })
+  assert(institutionRow?.kind === "institution", `institution kind was ${institutionRow?.kind}`)
+  assert(institutionRow?.message?.includes("Northwind College") === true, "institution name must be kept on the enquiry")
+
   console.log("8. Google sign-in carries consent in the signed state and never creates an account without it")
   const withConsent = createOAuthState({ policyVersion: CURRENT_POLICY_VERSION })
   assert(verifySignedOAuthState(withConsent.signed)?.policyVersion === CURRENT_POLICY_VERSION, "signed state must carry the accepted version")

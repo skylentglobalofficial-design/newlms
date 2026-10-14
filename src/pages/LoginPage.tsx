@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import type { AuthUser, UserRole } from '../context/AuthContext'
 import { cataloguePathForTarget, fulfillCatalogEnrollment, learnPathForWorkspace, type CatalogEnrollTarget, type LoginRedirectState } from '../lib/catalog-enrollment'
 import { takeEnrolConsent } from '../lib/policy'
+import { sanitizeReturnTo } from '../lib/safe-return'
 import { buildGoogleOAuthStartUrl } from '../lib/auth-api'
 import { courseBySlug } from '../lib/catalog-maturity'
 import { programmeDiscoveryFor } from '../lib/programme-discovery'
@@ -60,8 +61,9 @@ async function finishAuthNavigation(
     }
     return
   }
-  if (redirectState?.returnTo) {
-    navigate(redirectState.returnTo)
+  const returnTo = sanitizeReturnTo(redirectState?.returnTo)
+  if (returnTo) {
+    navigate(returnTo)
     return
   }
   navigate(roleRoute(role))
@@ -75,7 +77,7 @@ function enrollTargetTitle(target: CatalogEnrollTarget | undefined): string | nu
 }
 
 function readOAuthRedirectState(params: URLSearchParams): LoginRedirectState | null {
-  const returnTo = params.get('returnTo') ?? undefined
+  const returnTo = sanitizeReturnTo(params.get('returnTo')) ?? undefined
   const enrollKind = params.get('enrollKind')
   const enrollSlug = params.get('enrollSlug')?.trim()
   let enrollTarget: CatalogEnrollTarget | undefined
@@ -179,7 +181,7 @@ export default function LoginPage() {
     setError(null)
     setGoogleLoading(true)
     window.location.assign(buildGoogleOAuthStartUrl({
-      returnTo: redirectState?.returnTo,
+      returnTo: sanitizeReturnTo(redirectState?.returnTo) ?? undefined,
       enrollTarget: redirectState?.enrollTarget,
       acceptedTerms,
     }))

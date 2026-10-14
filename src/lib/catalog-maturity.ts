@@ -185,20 +185,29 @@ export type CatalogCourseListView = {
   maturityLabel: string
   duration: string
   lessonLabel: string
+  /** Lessons, modules, and delivery shown on the card. Authored courses ignore a thin API count. */
+  countLabel: string
   ctaLabel: string
 }
 
 /** List-row view for API course summaries — readiness from the authored registry. */
 export function catalogCourseListView(course: CatalogCourseSummary): CatalogCourseListView {
   const authored = isAuthoredCourse(course.slug)
+  const source = authored ? courseBySlug(course.slug) : undefined
+  const stats = source ? courseLessonStats(source) : null
+  const lessons = stats?.lessonCount ?? course.lessonCount
+  const modules = stats?.moduleCount ?? course.moduleCount
+  const mode = source?.mode || course.mode
+  const lessonLabel = authored ? `${lessons} lessons` : `${course.lessonCount} outline items`
   return {
     course,
     slug: course.slug,
     title: course.title,
     maturity: authored ? "ready" : "listing",
     maturityLabel: authored ? "Ready to start" : "Catalogue listing",
-    duration: authored ? course.duration : "Duration TBA",
-    lessonLabel: authored ? `${course.lessonCount} lessons` : `${course.lessonCount} outline items`,
+    duration: authored ? source?.duration || course.duration : "Duration TBA",
+    lessonLabel,
+    countLabel: `${lessonLabel} · ${modules} ${modules === 1 ? "module" : "modules"} · ${mode}`,
     ctaLabel: authored ? "Start this course" : "View listing",
   }
 }

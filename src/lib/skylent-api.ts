@@ -72,7 +72,7 @@ export async function verifyCertificate(code: string, signal?: AbortSignal): Pro
 
 /* ── Enquiries ─────────────────────────────────────────────────────────────── */
 
-export type EnquiryKind = "enquiry" | "counselling" | "degree"
+export type EnquiryKind = "enquiry" | "counselling" | "degree" | "institution"
 
 export type EnquiryInput = {
   kind: EnquiryKind
@@ -101,6 +101,7 @@ export async function sendEnquiry(input: EnquiryInput): Promise<{ id: string }> 
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(20_000),
   })
   const parsed = await parseApiJson<{ data: { id: string } }>(response)
   return parsed.data
