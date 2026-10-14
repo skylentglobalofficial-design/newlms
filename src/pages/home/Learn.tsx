@@ -7,6 +7,7 @@
  * The window is an illustration of the product: it is not a learner account and changes nothing.
  * Timing, pausing and reduced motion are handled by useWalkthrough.
  */
+import { useState } from "react"
 import { Action } from "@/components/skylent/primitives"
 import { Reveal } from "@/components/skylent/Reveal"
 import { NORTHWIND, authoredProgrammeContent, rupees } from "@/components/programme/programme-content"
@@ -30,6 +31,14 @@ const TOUR = [
 
 type TourKey = (typeof TOUR)[number]["key"]
 const SIDEBAR = ["Learning", "Practice", "Projects", "Evidence", "Career"] as const
+
+/** Presentation groups over the existing nine steps. They do not change enrolment. */
+const OVERVIEW = [
+  { id: "choose", title: "Choose a programme.", note: "Open a programme that is available to study.", from: 0, to: 0 },
+  { id: "enrol", title: "Complete the applicable enrolment steps.", note: "Accept the terms. Payment is not collected in this pilot.", from: 1, to: 1 },
+  { id: "access", title: "Access the learning environment.", note: "Your student home shows where to continue.", from: 2, to: 2 },
+  { id: "learn", title: "Start learning and practising.", note: "Lessons, practice, a project, and the work kept on your profile.", from: 3, to: 8 },
+] as const
 
 function TourScreen({ step, facts }: { step: TourKey; facts: CourseFacts }) {
   const content = authoredProgrammeContent(PROGRAMME_SLUG)
@@ -169,8 +178,10 @@ function TourScreen({ step, facts }: { step: TourKey; facts: CourseFacts }) {
 export function Learn() {
   const facts = courseFacts()
   const walk = useWalkthrough<HTMLElement>(TOUR.length, 2000)
+  const [showDetail, setShowDetail] = useState(false)
   if (!facts) return null
   const step = TOUR[walk.active]
+  const groupIndex = OVERVIEW.findIndex((group) => walk.active >= group.from && walk.active <= group.to)
   return (
     <section ref={walk.rootRef} id="learn" className="hx-tour" aria-labelledby="hm-learn-title">
       <div className="sky-container hx-tour__grid" {...walk.regionProps}>
@@ -180,23 +191,47 @@ export function Learn() {
             <h2 id="hm-learn-title" className="hx-h2">
               Open Skylent and <em>know what to do next.</em>
             </h2>
-            <p className="hx-tour__lead">From choosing a programme to seeing the finished work in your profile, in nine steps.</p>
+            <p className="hx-tour__lead">Choose a programme, enrol, open your workspace, then start the work. The window shows that same path.</p>
+            <p className="hx-tour__pay">Payment is not collected in this pilot.</p>
           </Reveal>
-          <ol className="hx-tour__steps" aria-label="What happens after you enrol">
-            {TOUR.map((item, i) => (
-              <li key={item.key}>
+          <ol className="hx-tour__overview" aria-label="What happens after you enrol">
+            {OVERVIEW.map((group, i) => (
+              <li key={group.id}>
                 <button
                   type="button"
-                  className={i === walk.active ? "hx-tour__step is-on" : i < walk.active ? "hx-tour__step is-done" : "hx-tour__step"}
-                  aria-current={i === walk.active ? "step" : undefined}
-                  onClick={() => walk.go(i)}
+                  className={i === groupIndex ? "hx-tour__group is-on" : "hx-tour__group"}
+                  aria-current={i === groupIndex ? "step" : undefined}
+                  onClick={() => walk.go(group.from)}
                 >
                   <span className="hx-tour__stepn" aria-hidden="true">{i + 1}</span>
-                  {item.title}
+                  <span>
+                    <span className="hx-tour__group-title">{group.title}</span>
+                    <span className="hx-tour__group-note">{group.note}</span>
+                  </span>
                 </button>
               </li>
             ))}
           </ol>
+          <button type="button" className="hx-tour__detail" aria-expanded={showDetail} onClick={() => setShowDetail((open) => !open)}>
+            {showDetail ? "Hide the detailed steps" : "Show the detailed steps"}
+          </button>
+          {showDetail ? (
+            <ol className="hx-tour__steps is-detailed" aria-label="Detailed steps after you enrol">
+              {TOUR.map((item, i) => (
+                <li key={item.key}>
+                  <button
+                    type="button"
+                    className={i === walk.active ? "hx-tour__step is-on" : i < walk.active ? "hx-tour__step is-done" : "hx-tour__step"}
+                    aria-current={i === walk.active ? "step" : undefined}
+                    onClick={() => walk.go(i)}
+                  >
+                    <span className="hx-tour__stepn" aria-hidden="true">{i + 1}</span>
+                    {item.title}
+                  </button>
+                </li>
+              ))}
+            </ol>
+          ) : null}
           <Action to="/signup" kind="secondary">Create your account</Action>
         </div>
 
