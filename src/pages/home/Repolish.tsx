@@ -8,7 +8,7 @@
  * Nothing here states a learner count, outcome, partner or placement. Previews are drawn from the
  * authored Data Analytics programme and are labelled as product previews, not account data.
  */
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { ArrowRight } from "@/components/skylent/primitives"
 import { Reveal } from "@/components/skylent/Reveal"
@@ -393,10 +393,52 @@ function LmsCanvas({ stage }: { stage: number }) {
   )
 }
 
+function prefersReducedMotion(): boolean {
+  return typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)
+}
+
+/** Advances a product demo while the section is on screen. A click changes the frame; it does not stop the loop. */
+function useProductDemo(delays: readonly number[]) {
+  const ref = useRef<HTMLElement>(null)
+  const [index, setIndex] = useState(0)
+  const [reduced] = useState(prefersReducedMotion)
+  const [seen, setSeen] = useState(false)
+  const [holding, setHolding] = useState(false)
+
+  useEffect(() => {
+    const node = ref.current
+    if (!node || reduced || typeof IntersectionObserver === "undefined") return
+    const observer = new IntersectionObserver(([entry]) => setSeen(entry.isIntersecting), { threshold: 0.28 })
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [reduced])
+
+  useEffect(() => {
+    if (reduced || !seen || holding) return
+    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % delays.length), delays[index] ?? 1800)
+    return () => window.clearTimeout(timer)
+  }, [delays, holding, index, reduced, seen])
+
+  return { ref, index, setIndex, reduced, setHolding }
+}
+
+const LMS_BEATS = [2600, 2800, 3000, 2600, 2800] as const
+
 export function InsideProgramme() {
-  const [stage, setStage] = useState(1)
+  const demo = useProductDemo(LMS_BEATS)
+  const stage = demo.index
   return (
-    <section className="hx-inside" aria-labelledby="hx-inside-title">
+    <section
+      ref={demo.ref}
+      className="hx-inside"
+      aria-labelledby="hx-inside-title"
+      onMouseEnter={() => demo.setHolding(true)}
+      onMouseLeave={() => demo.setHolding(false)}
+      onFocus={() => demo.setHolding(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) demo.setHolding(false)
+      }}
+    >
       <div className="sky-container">
         <header className="hx-head">
           <div>
@@ -416,7 +458,7 @@ export function InsideProgramme() {
                 aria-selected={stage === index}
                 aria-controls="lms-panel"
                 className={stage === index ? "is-on" : undefined}
-                onClick={() => setStage(index)}
+                onClick={() => demo.setIndex(index)}
               >
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 {item.label}
@@ -861,9 +903,24 @@ const AI_HELPS = [
 
 const AI_FIRST_OPTIONS = ["Learn a job skill", "Study for a degree", "I'm not sure yet"] as const
 
+const AI_BEATS = [1500, 900, 1100, 800, 1600, 1000, 2400, 460] as const
+
 export function HomeAi() {
+  const demo = useProductDemo(AI_BEATS)
+  const beat = demo.reduced ? 0 : demo.index
   return (
-    <section id="skylent-ai" className="hx-ai hx-ai--id" aria-labelledby="hx-ai-title">
+    <section
+      ref={demo.ref}
+      id="skylent-ai"
+      className="hx-ai hx-ai--id"
+      aria-labelledby="hx-ai-title"
+      onMouseEnter={() => demo.setHolding(true)}
+      onMouseLeave={() => demo.setHolding(false)}
+      onFocus={() => demo.setHolding(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) demo.setHolding(false)
+      }}
+    >
       <div className="sky-container hx-ai__layout">
         <div className="hx-ai__intro">
           <div className="hx-ai__id">
@@ -891,23 +948,53 @@ export function HomeAi() {
             <ArrowRight />
           </button>
         </div>
-        <div className="hx-ai__chat" aria-hidden="true">
+        <div className="hx-ai__chat">
           <div className="hx-ai__chatbar">
             <SkylentBot size={26} />
             <span>Skylent AI</span>
           </div>
-          <div className="hx-chat">
+          <div className={beat === 7 ? "hx-chat hx-chat--reset" : "hx-chat"} aria-hidden="true">
             <div className="hx-chat__row">
               <SkylentBot size={26} />
               <p className="hx-chat__bubble">Hi. What are you looking for?</p>
             </div>
-            <div className="hx-chat__options">
-              {AI_FIRST_OPTIONS.map((option) => (
-                <span key={option}>{option}</span>
-              ))}
-            </div>
+            {beat < 2 ? (
+              <div className="hx-chat__options">
+                {AI_FIRST_OPTIONS.map((option) => (
+                  <span key={option} className={beat >= 1 && option === "Learn a job skill" ? "is-on" : undefined}>{option}</span>
+                ))}
+              </div>
+            ) : null}
+            {beat >= 2 ? (
+              <div className="hx-chat__row hx-chat__row--user">
+                <p className="hx-chat__bubble hx-chat__bubble--user">Learn a job skill</p>
+              </div>
+            ) : null}
+            {beat === 3 ? (
+              <div className="hx-chat__row">
+                <SkylentBot size={26} />
+                <p className="hx-chat__typing"><span /><span /><span /></p>
+              </div>
+            ) : null}
+            {beat >= 4 ? (
+              <div className="hx-chat__row">
+                <SkylentBot size={26} />
+                <p className="hx-chat__bubble">Which kind of work do you want to practise?</p>
+              </div>
+            ) : null}
+            {beat >= 5 ? (
+              <div className="hx-chat__row hx-chat__row--user">
+                <p className="hx-chat__bubble hx-chat__bubble--user">Data Analytics</p>
+              </div>
+            ) : null}
+            {beat >= 6 ? (
+              <div className="hx-chat__row">
+                <SkylentBot size={26} />
+                <p className="hx-chat__bubble">Data Analytics is open. It takes one sales extract through SQL to a recommendation you can keep. Explore it from Programmes.</p>
+              </div>
+            ) : null}
           </div>
-          <p className="hx-ai__chatnote">The first question the assistant asks.</p>
+          <p className="hx-ai__chatnote">Illustrative preview · Not a live conversation.</p>
         </div>
       </div>
     </section>
