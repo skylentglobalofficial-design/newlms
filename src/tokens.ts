@@ -2,7 +2,7 @@
 // CSS custom properties live in src/styles/design-system.css; keep both in sync.
 //
 // Light workspaces (public site, login, dashboards, lesson reading, Career OS):
-//   white paper · near-black ink · #5142B5 for action · violet only on rails and the lesson stage.
+//   white paper · near-black ink · ocean blue for action · deep navy reserved for rails and the lesson stage.
 // Type: Inter (headings + body), DM Mono (labels, numbers, code). No serif.
 // Violet surfaces are product anchors: the shell rail, product top bars and the code workbench.
 
@@ -33,22 +33,22 @@ export const C = {
   warning: 'var(--skylent-color-warning)',
   information: 'var(--skylent-color-info)',
   danger: 'var(--skylent-color-error)',
-  surfaceProductDark: '#2E2470',
+  surfaceProductDark: '#10263D',
   textOnDark: '#F0EDFF',
-  mutedOnDark: '#B5AFE0',
+  mutedOnDark: '#B7C9D6',
   textOnAccent: '#FFFFFF',
-  // Frozen-system additions
-  navy: '#2E2470',
-  navyRaised: '#3A2F82',
-  navyLine: '#4A3F99',
-  onNavy: '#F0EDFF',
-  onNavyMuted: '#B5AFE0',
-  cobalt: '#5142B5',
-  cobaltTint: '#EAE6FF',
-  proof: '#F7F6FC',
-  proofInset: '#F2F0FC',
-  proofLine: '#DDD7FF',
-  cyan: '#6657E8',
+  // Shared brand accents
+  navy: '#10263D',
+  navyRaised: '#183750',
+  navyLine: '#294B63',
+  onNavy: '#EDF5FA',
+  onNavyMuted: '#B7C9D6',
+  cobalt: '#1769AA',
+  cobaltTint: '#E8F4FA',
+  proof: '#F5F9FC',
+  proofInset: '#EDF5FA',
+  proofLine: '#D8E8F1',
+  cyan: '#00A5C8',
 } as const
 
 /** Public surfaces — mirrors --skylent-surface-* in design-system.css */
@@ -89,7 +89,7 @@ export const colors = {
   orange: {
     default: C.orange,
     soft: '#EAF0FF',
-    strong: '#43349F',
+    strong: '#105786',
   },
   state: {
     success: { fg: C.success, soft: '#EAF0FF', border: '#BFD0FF' },
