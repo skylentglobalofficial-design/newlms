@@ -2,9 +2,9 @@
 // CSS custom properties live in src/styles/design-system.css; keep both in sync.
 //
 // Light workspaces (public site, login, dashboards, lesson reading, Career OS):
-//   white paper · near-black ink · ocean blue for action · deep navy reserved for rails and the lesson stage.
+//   white paper · near-black ink · violet #5142B5 for action · deep navy reserved for rails and the lesson stage.
 // Type: Inter (headings + body), DM Mono (labels, numbers, code). No serif.
-// Violet surfaces are product anchors: the shell rail, product top bars and the code workbench.
+// Deep navy is reserved for the shell rail, product top bars and the code workbench.
 
 export const C = {
   // Themeable tokens resolve through the CSS custom properties in
@@ -37,18 +37,18 @@ export const C = {
   textOnDark: '#EDF5FA',
   mutedOnDark: '#B7C9D6',
   textOnAccent: '#FFFFFF',
-  // Shared brand accents
+  // Shared brand accents. `cyan` is the lighter violet AI mark, not a second hue.
   navy: '#10263D',
   navyRaised: '#183750',
   navyLine: '#294B63',
   onNavy: '#EDF5FA',
   onNavyMuted: '#B7C9D6',
-  cobalt: '#1769AA',
-  cobaltTint: '#E8F4FA',
-  proof: '#F5F9FC',
-  proofInset: '#EDF5FA',
-  proofLine: '#D8E8F1',
-  cyan: '#00A5C8',
+  cobalt: '#5142B5',
+  cobaltTint: '#EAE6FF',
+  proof: '#F7F6FC',
+  proofInset: '#F2F0FC',
+  proofLine: '#DDD7FF',
+  cyan: '#6657E8',
 } as const
 
 /** Public surfaces — mirrors --skylent-surface-* in design-system.css */
@@ -89,7 +89,7 @@ export const colors = {
   orange: {
     default: C.orange,
     soft: '#EAF0FF',
-    strong: '#105786',
+    strong: '#43349F',
   },
   state: {
     success: { fg: C.success, soft: '#EAF0FF', border: '#BFD0FF' },

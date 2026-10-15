@@ -1,7 +1,7 @@
 /* /education — light-first page, scoped under .edx (repolish) */
 .edx { background: hsl(var(--site-paper)); }
 .edx .edx-hero {
-  background: linear-gradient(180deg, #ffffff 0%, #f5faff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #F7F6FC 100%);
   color: hsl(var(--site-on-navy));
   padding: clamp(2.75rem, 6vw, 4.5rem) 0 clamp(2.25rem, 5vw, 3.25rem);
 }
@@ -92,7 +92,7 @@
 
 /* Light-first education hero: premium comes from hierarchy and restraint, not a dark banner. */
 .edx .edx-hero {
-  background: radial-gradient(50% 100% at 88% 0%, hsl(195 90% 42% / .09), transparent 62%), linear-gradient(180deg, #ffffff 0%, #f5faff 100%);
+  background: radial-gradient(50% 100% at 88% 0%, hsl(249 76% 62% / .09), transparent 62%), linear-gradient(180deg, #ffffff 0%, #F7F6FC 100%);
   color: hsl(var(--site-ink));
   border-bottom: 1px solid hsl(var(--site-border));
 }

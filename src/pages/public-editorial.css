@@ -1,5 +1,5 @@
 /* Public editorial surfaces — /universities, /stories.
-   Scoped to .pe-page. Same dark Aurora ink, hairline and ocean-blue mark as the rest of the public site. */
+   Scoped to .pe-page. Light paper, ink, and the shared violet accent. */
 
 .pe-page {
   --pe-ink: var(--skylent-color-ink);

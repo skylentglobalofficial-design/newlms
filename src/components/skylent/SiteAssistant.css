@@ -93,7 +93,7 @@
 .sia-suggest__card svg { grid-column: 2; grid-row: 1 / span 2; color: hsl(var(--site-deep)); }
 .sia-suggest__title { font-weight: 650; font-size: 14.5px; }
 .sia-suggest__note { font-size: 12.5px; color: hsl(var(--site-dim)); }
-.sia-suggest__note--open { color: hsl(152 45% 72%); font-weight: 600; }
+.sia-suggest__note--open { color: hsl(var(--site-green)); font-weight: 600; }
 
 .sia-feedback { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13.5px; color: hsl(var(--site-dim)); }
 .sia-feedback button { min-height: 36px; padding: 0 12px; border: 1px solid hsl(var(--site-border-strong)); border-radius: 999px; background: hsl(var(--site-white)); font: inherit; font-size: 13.5px; cursor: pointer; }

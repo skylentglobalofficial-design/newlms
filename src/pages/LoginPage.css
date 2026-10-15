@@ -424,7 +424,7 @@
   }
 }
 
-/* ── Skylent system: navy page, raised frame, ocean-blue action ── */
+/* ── Skylent system: light page, navy frame bar, violet action ── */
 .entry { background: var(--skylent-surface-paper); }
 .entry-back { min-height: 44px; }
 .entry-mark { color: var(--skylent-color-ink); font: 700 20px/1.1 var(--skylent-font-heading); letter-spacing: 0.14em; text-transform: uppercase; }

@@ -35,13 +35,13 @@ import photoCampusPg from "@/assets/site/home/degree-management-960.webp"
 import photoCampusPgAvatar from "@/assets/site/home/degree-management-96.webp"
 import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice"
 
-/* ── Hero (light-first; restrained ocean-blue accent) ───────
-   Left: category labels, four-line headline (last line in ocean blue), supporting copy,
+/* ── Hero (light-first; violet accent) ───────
+   Left: category labels, four-line headline (last line in violet), supporting copy,
    two CTAs, community avatars. Right: large student photo with floating offering cards.
    Ocean-blue badge "Real projects / Real experience" on the image. */
 
 function OfferingIcon({ type }: { type: string }) {
-  const iconColor = "#1769AA"
+  const iconColor = "#5142B5"
   switch (type) {
     case "graduation":
       return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 10-10-5L2 10l10 5z"/><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/><path d="M22 10v6"/></svg>

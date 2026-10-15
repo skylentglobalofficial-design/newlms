@@ -18,9 +18,9 @@ const labTypeLabels: Record<LabType, string> = {
 
 const labTypeColors: Record<LabType, { bg: string; text: string; border: string }> = {
   coding: { bg: 'rgba(79,70,229,0.08)', text: '#4F46E5', border: 'rgba(79,70,229,0.28)' },
-  data: { bg: 'rgba(37,99,235,0.08)', text: '#2563EB', border: 'rgba(37,99,235,0.28)' },
+  data: { bg: 'rgba(81,66,181,0.08)', text: '#5142B5', border: 'rgba(81,66,181,0.28)' },
   business: { bg: 'rgba(21,23,26,0.04)', text: '#15171A', border: 'rgba(21,23,26,0.14)' },
-  simulation: { bg: 'rgba(37,99,235,0.08)', text: '#2563EB', border: 'rgba(37,99,235,0.22)' },
+  simulation: { bg: 'rgba(81,66,181,0.08)', text: '#5142B5', border: 'rgba(81,66,181,0.22)' },
 }
 
 // ── Workspace panels ───────────────────────────────────────────────────────────
