@@ -85,7 +85,7 @@ body:has(.skylent-public-canvas) {
   --skylent-color-border: hsl(var(--site-border));
   --skylent-color-border-strong: hsl(var(--site-border-strong));
 
-  /* Accent — brand violet for actions, links, focus and state */
+  /* Accent — ocean blue for actions, links, focus and state */
   --skylent-color-accent: hsl(var(--site-deep));
   --skylent-color-accent-hover: hsl(var(--site-ocean));
   --skylent-color-accent-text: #105786;
