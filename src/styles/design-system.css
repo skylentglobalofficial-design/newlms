@@ -1,7 +1,7 @@
 /**
  * Skylent design system foundation
- * Signed-in product tokens (:root). White reading surfaces, near-black ink, brand blue action.
- * Navy is reserved for rails, top bars, and the lesson stage. JS inline styles: keep src/tokens.ts in sync.
+ * Signed-in product tokens (:root). White reading surfaces, near-black ink, brand violet action.
+ * Deep navy is reserved for rails, top bars, and the lesson stage. JS inline styles: keep src/tokens.ts in sync.
  *
  * The public shell (.skylent-public-canvas, src/skylent-public.css) re-declares the same light
  * palette, so public pages and signed-in workspaces share one brand. Dark regions set their own
@@ -11,30 +11,30 @@
 :root {
   color-scheme: light;
   /*
-   * Skylent light-first ocean-blue design system, Oct 2026:
+   * Skylent light-first violet design system, recovered Oct 2026:
    *   Paper  #FFFFFF
-   *   Soft   #F5FAFD
+   *   Soft   #F7F6FC
    *   Ink    #171717
    *   Muted  #6B7280
-   *   Accent #1769AA
-   *   Hover  #105786
+   *   Accent #5142B5
+   *   Hover  #43349F
    *   Deep navy structure #10263D for rails and the lesson stage only
-   *   AI accent #00A5C8
+   *   AI mark #6657E8 (lighter violet, not a second brand)
    */
 
   /* ── Surfaces ── */
   --skylent-surface-paper: #ffffff;
   --skylent-surface-cream: #ffffff;
-  --skylent-surface-cream-warm: #f5f9fc;
-  --skylent-surface-soft: #f5f9fc;
-  --skylent-surface-sand: #e8f3f9;
+  --skylent-surface-cream-warm: #f7f6fc;
+  --skylent-surface-soft: #f7f6fc;
+  --skylent-surface-sand: #eae6ff;
   --skylent-surface-elevated: #ffffff;
   --skylent-surface-inverse: #10263d;
 
   /* Proof surfaces — evidence and certificates only */
-  --skylent-surface-proof: #f5f9fc;
-  --skylent-surface-proof-2: #edf5fa;
-  --skylent-color-proof-line: #d8e8f1;
+  --skylent-surface-proof: #f7f6fc;
+  --skylent-surface-proof-2: #f2f0fc;
+  --skylent-color-proof-line: #ddd7ff;
 
   /* Violet anchors — shell rail, product top bars, workbench */
   --skylent-navy: #10263d;
@@ -47,7 +47,7 @@
   --skylent-code-string: #e9dfc6;
 
   /* Skylent AI mark */
-  --skylent-color-cyan: #00a5c8;
+  --skylent-color-cyan: #6657e8;
 
   /* Canonical aliases (keep imports stable) */
   --skylent-color-paper: var(--skylent-surface-paper);
@@ -68,18 +68,18 @@
   --skylent-color-text-inverse: #ffffff;
   --skylent-color-text-inverse-muted: #b7c9d6;
 
-  /* ── Borders (cool-blue hairlines on white) ── */
-  --skylent-color-border-subtle: #e1edf3;
+  /* ── Borders (lavender hairlines on white) ── */
+  --skylent-color-border-subtle: #eae6ff;
   --skylent-color-border: #e5e7eb;
-  --skylent-color-border-strong: #c9dce7;
+  --skylent-color-border-strong: #ddd7ff;
 
-  /* ── Action — ocean blue, with deep-blue hover ── */
-  --skylent-color-accent: #1769aa;
-  --skylent-color-accent-hover: #105786;
-  --skylent-color-accent-text: #105786;
-  --skylent-color-accent-soft: #e8f4fa;
-  --skylent-color-accent-border: #c9e2ef;
-  --skylent-color-accent-strong: #105786;
+  /* ── Action — brand violet #5142B5, hover #43349F ── */
+  --skylent-color-accent: #5142b5;
+  --skylent-color-accent-hover: #43349f;
+  --skylent-color-accent-text: #43349f;
+  --skylent-color-accent-soft: #eae6ff;
+  --skylent-color-accent-border: #ddd7ff;
+  --skylent-color-accent-strong: #43349f;
   --skylent-color-text-on-accent: #ffffff;
 
   /* Legacy "orange" names resolve to violet: there is no second accent. */
@@ -90,27 +90,27 @@
 
   /* ── Semantic states. Ink carries success and warning; error is a dark red on white. ── */
   --skylent-color-success: #171717;
-  --skylent-color-success-soft: #e8f4fa;
-  --skylent-color-success-border: #c9e2ef;
+  --skylent-color-success-soft: #eae6ff;
+  --skylent-color-success-border: #ddd7ff;
   --skylent-color-warning: #171717;
-  --skylent-color-warning-soft: #f5f9fc;
+  --skylent-color-warning-soft: #f7f6fc;
   --skylent-color-warning-border: #c5cedd;
   --skylent-color-error: #9f2a24;
   --skylent-color-error-soft: rgba(182, 37, 32, 0.08);
   --skylent-color-error-border: rgba(159, 42, 36, 0.35);
-  --skylent-color-info: #1769aa;
-  --skylent-color-info-soft: rgba(23, 105, 170, 0.12);
-  --skylent-color-info-border: rgba(23, 105, 170, 0.35);
+  --skylent-color-info: #5142b5;
+  --skylent-color-info-soft: rgba(81, 66, 181, 0.12);
+  --skylent-color-info-border: rgba(81, 66, 181, 0.35);
   --skylent-color-information: var(--skylent-color-info);
   --skylent-color-information-soft: var(--skylent-color-info-soft);
   --skylent-color-information-border: var(--skylent-color-info-border);
 
-  /* ── Product / application UI on dark violet ── */
+  /* ── Product / application UI on deep navy ── */
   --skylent-product-dark: #10263d;
   --skylent-product-dark-surface: #183750;
   --skylent-product-dark-muted: #9aa6bf;
   --skylent-product-dark-border: #26304a;
-  --skylent-product-dark-accent: #00a5c8;
+  --skylent-product-dark-accent: #6657e8;
   --skylent-color-surface-product-dark: var(--skylent-product-dark);
   --skylent-color-text-on-dark: #e8ecf5;
   --skylent-color-muted-on-dark: var(--skylent-product-dark-muted);

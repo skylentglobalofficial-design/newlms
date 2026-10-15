@@ -1,7 +1,7 @@
 /* /programmes catalogue. Scoped to .pgx. */
 .pgx {
-  --pgx-violet: #1769aa;
-  --pgx-ocean: #2878d0;
+  --pgx-violet: #5142b5;
+  --pgx-ocean: #43349f;
   --pgx-lavender: #e8f4fa;
   --pgx-paper: #ffffff;
   --pgx-ink: #22212b;
@@ -44,7 +44,7 @@
   background: #fff;
   color: #6b7280;
 }
-.pgx .pgx-search:focus-within { border-color: var(--pgx-violet); box-shadow: 0 0 0 3px rgba(23, 105, 170, .16); }
+.pgx .pgx-search:focus-within { border-color: var(--pgx-violet); box-shadow: 0 0 0 3px rgba(81, 66, 181, .16); }
 .pgx .pgx-search input {
   flex: 1;
   min-width: 0;

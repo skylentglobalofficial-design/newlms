@@ -27,9 +27,9 @@ export type AuroraTheme = {
   strength: string
 }
 
-// Shared light-first palette: ocean-blue primary, deeper-blue secondary.
-const INDIGO = '#1769AA'
-const BLUE = '#105786'
+// Shared light-first palette: violet primary, deeper violet for pressed states.
+const INDIGO = '#5142B5'
+const BLUE = '#43349F'
 
 export const AURORA_THEMES: Record<AuroraThemeId, AuroraTheme> = {
   general: { id: 'general', primary: INDIGO, secondary: BLUE, strength: '08' },

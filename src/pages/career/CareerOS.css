@@ -644,16 +644,16 @@
   --skylent-color-text-subtle: #6b7280;
   --skylent-color-border-subtle: #eae6ff;
   --skylent-color-border: #e5e7eb;
-  --skylent-color-border-strong: #c9dce7;
-  --skylent-color-accent: #1769aa;
-  --skylent-color-accent-hover: #105786;
+  --skylent-color-border-strong: #ddd7ff;
+  --skylent-color-accent: #5142b5;
+  --skylent-color-accent-hover: #43349f;
   --skylent-color-accent-text: #43349f;
   --skylent-color-accent-soft: #eae6ff;
   --skylent-color-accent-border: #ddd7ff;
   --skylent-color-accent-strong: #43349f;
   --skylent-color-text-on-accent: #ffffff;
-  --skylent-color-mark: #1769aa;
-  --skylent-color-info: #1769aa;
+  --skylent-color-mark: #5142b5;
+  --skylent-color-info: #5142b5;
   --skylent-color-info-soft: #eae6ff;
   --skylent-color-info-border: #ddd7ff;
   --skylent-color-error: #9f2a24;
@@ -721,7 +721,7 @@
 .cos-pagenav a:hover { color: #171717; }
 .cos-pagenav a[aria-current="page"] {
   color: #171717;
-  border-bottom-color: #1769aa;
+  border-bottom-color: #5142b5;
 }
 .cos-pagenav a:focus-visible {
   outline: 2px solid #6657e8;
