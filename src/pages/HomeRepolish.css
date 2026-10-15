@@ -757,3 +757,34 @@
 @media (max-width: 520px) {
   .hx-page--home .hx-career__steps { grid-template-columns: minmax(0, 1fr); }
 }
+
+
+/* Light-first brand pass — public homepage. Keep white/near-white canvases;
+   use ocean blue for actions and deep navy only for compact product surfaces. */
+.hx-page .hx-hero, .hx-page .hx-close, .hx-page .hx-learn, .hx-page .hx-journey {
+  background: linear-gradient(180deg, #ffffff 0%, #f5faff 100%);
+  color: hsl(var(--site-ink));
+}
+.hx-page .hx-hero__glow, .hx-page .hx-close__glow, .hx-page .hx-journey::before {
+  background: radial-gradient(50% 75% at 84% 0%, hsl(195 90% 42% / .10), transparent 65%), radial-gradient(38% 55% at 10% 100%, hsl(207 82% 36% / .045), transparent 70%);
+}
+.hx-page .hx-hero__title, .hx-page .hx-close__title, .hx-page .hx-h2--light { color: hsl(var(--site-ink)) !important; }
+.hx-page .hx-hero__title em, .hx-page .hx-close__title em, .hx-page .hx-h2--light em { color: hsl(var(--site-deep)); }
+.hx-page .hx-hero__lead, .hx-page .hx-learn__lead, .hx-page .hx-close__lead, .hx-page .hx-head--dark .hx-head__aside, .hx-page .hx-journey__note { color: hsl(var(--site-muted)); }
+.hx-page .hx-eyebrow--dark, .hx-page .hx-career__label { color: hsl(var(--site-deep)); }
+.hx-page .hx-entry { background: #fff; color: hsl(var(--site-ink)); border-color: hsl(var(--site-border)); box-shadow: 0 12px 28px -24px rgba(16, 38, 61, .28); }
+.hx-page .hx-entry__text { color: hsl(var(--site-muted)); }
+.hx-page .hx-entry__go { color: hsl(var(--site-deep)); }
+.hx-page .hx-entry:hover { background: #fff; border-color: hsl(var(--site-light-blue)); }
+.hx-page .hx-learn .sk-btn-secondary, .hx-page .hx-hero .hx-btn--ghost, .hx-page .hx-close .hx-btn--ghost { background: #fff; border-color: hsl(var(--site-border-strong)); color: hsl(var(--site-ink)); }
+.hx-page .hx-learn .sk-btn-secondary:hover, .hx-page .hx-hero .hx-btn--ghost:hover, .hx-page .hx-close .hx-btn--ghost:hover { background: hsl(var(--site-soft-blue)); }
+.hx-page .hx-journey .hx-step__title, .hx-page .hx-journey .hx-step__text, .hx-page .hx-journey .hx-step__meta, .hx-page .hx-journey .hx-window__title, .hx-page .hx-journey .hx-window__label { color: hsl(var(--site-ink)); }
+.hx-page .hx-journey .hx-step { border-color: hsl(var(--site-border)); }
+.hx-page .hx-journey .hx-step.is-on, .hx-page .hx-journey .hx-step.is-done { background: hsl(var(--site-soft-blue)); border-color: hsl(var(--site-light-blue)); }
+.hx-page .hx-close__link { color: hsl(var(--site-deep)); text-decoration-color: hsl(var(--site-light-blue)); }
+.hx-page .hx-close__link:focus-visible { outline-color: hsl(var(--site-highlight)); }
+.hx-page .hx-ai__card--dark { background: #fff; color: hsl(var(--site-ink)); border: 1px solid hsl(var(--site-border)); }
+.hx-page .hx-ai__card--dark h3, .hx-page .hx-ai__mode, .hx-page .hx-ai__chatbar { color: hsl(var(--site-ink)) !important; }
+.hx-page .hx-ai__chat .hx-chat__options span { color: hsl(var(--site-deep)); border-color: hsl(var(--site-light-blue)); }
+.hx-page--home .hx-close--final { background: linear-gradient(180deg, #fff 0%, #f1f9fd 100%); border-top: 1px solid hsl(var(--site-border)); border-bottom: 1px solid hsl(var(--site-border)); }
+.hx-page--home .hx-close__link:hover { text-decoration-color: hsl(var(--site-deep)); }
