@@ -66,10 +66,10 @@
   --skylent-color-muted: #6b7280;
   --skylent-color-text-subtle: #6b7280;
   --skylent-color-text-inverse: #ffffff;
-  --skylent-color-text-inverse-muted: #b5afe0;
+  --skylent-color-text-inverse-muted: #b7c9d6;
 
-  /* ── Borders (lavender hairlines on white) ── */
-  --skylent-color-border-subtle: #eae6ff;
+  /* ── Borders (cool-blue hairlines on white) ── */
+  --skylent-color-border-subtle: #e1edf3;
   --skylent-color-border: #e5e7eb;
   --skylent-color-border-strong: #c9dce7;
 
@@ -106,8 +106,8 @@
   --skylent-color-information-border: var(--skylent-color-info-border);
 
   /* ── Product / application UI on dark violet ── */
-  --skylent-product-dark: #2e2470;
-  --skylent-product-dark-surface: #3a2f82;
+  --skylent-product-dark: #10263d;
+  --skylent-product-dark-surface: #183750;
   --skylent-product-dark-muted: #9aa6bf;
   --skylent-product-dark-border: #26304a;
   --skylent-product-dark-accent: #00a5c8;
