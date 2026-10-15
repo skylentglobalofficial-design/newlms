@@ -882,8 +882,8 @@ body:has(.skylent-public-canvas) {
   justify-content: space-between;
 }
 .skylent-public-canvas .skf__top {
-  gap: 40px 64px;
-  padding-block: clamp(40px, 5vw, 64px) clamp(28px, 3vw, 40px);
+  gap: 28px 40px;
+  padding-block: clamp(28px, 3.2vw, 40px) clamp(18px, 2vw, 24px);
   align-items: flex-start;
 }
 .skylent-public-canvas .skf__brand {
@@ -918,24 +918,25 @@ body:has(.skylent-public-canvas) {
 .skylent-public-canvas .skf__journey span { display: inline-flex; gap: 8px; }
 .skylent-public-canvas .skf__journey i { font-style: normal; color: hsl(var(--site-deep)); }
 .skylent-public-canvas .skf__nav {
-  flex: 2 1 480px;
+  flex: 2 1 520px;
   min-width: 0;
-  max-width: 680px;
+  max-width: 720px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
-  gap: 28px 24px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px 28px;
+  align-items: start;
 }
 .skylent-public-canvas .skf__title {
-  margin: 0 0 6px;
-  padding-bottom: 10px;
+  margin: 0 0 4px;
+  padding-bottom: 8px;
   border-bottom: 1px solid hsl(var(--site-border));
-  font-family: var(--sk-font-mono) !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
-  line-height: 1.4 !important;
-  letter-spacing: 0.08em !important;
+  font-family: var(--sk-font-body);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: hsl(var(--site-ink)) !important;
+  color: hsl(var(--site-ink));
 }
 .skylent-public-canvas .skf__links {
   display: flex;
@@ -947,11 +948,16 @@ body:has(.skylent-public-canvas) {
 .skylent-public-canvas .skf__links a {
   display: inline-flex;
   align-items: center;
-  min-height: 36px;
+  min-height: 32px;
   color: hsl(var(--site-muted));
   font-size: 14.5px;
+  line-height: 1.35;
   text-decoration: none;
   transition: color var(--sk-fast) var(--sk-ease);
+}
+@media (max-width: 720px) {
+  .skylent-public-canvas .skf__nav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 20px; }
+  .skylent-public-canvas .skf__links a { min-height: 40px; }
 }
 .skylent-public-canvas .skf__links a:hover {
   color: hsl(var(--site-deep));
@@ -964,13 +970,13 @@ body:has(.skylent-public-canvas) {
 .skylent-public-canvas .skf__meta {
   gap: 4px 24px;
   align-items: center;
-  padding-block: 16px 28px;
+  padding-block: 12px 20px;
   border-top: 1px solid hsl(var(--site-border));
   color: hsl(var(--site-dim));
-  font-family: var(--sk-font-mono);
-  font-size: 11px;
-  line-height: 1.55;
-  letter-spacing: 0.04em;
+  font-family: var(--sk-font-body);
+  font-size: 13px;
+  line-height: 1.45;
+  letter-spacing: 0;
 }
 .skylent-public-canvas .skf__meta p {
   margin: 0;

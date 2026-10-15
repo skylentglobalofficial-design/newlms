@@ -423,7 +423,12 @@
 .hx-page--home .hx-prog__kind { font-size: 12.5px; font-weight: 600; color: hsl(var(--site-deep)); }
 
 /* Keep the next section close enough to be discovered from the first view. */
-.hx-page--home .hx-inside { padding-top: clamp(40px, 5vw, 64px); }
+.hx-page--home .hx-inside {
+  padding-top: clamp(28px, 3vw, 40px);
+  padding-bottom: clamp(28px, 3vw, 40px);
+}
+.hx-page--home .hx-inside .hx-head,
+.hx-page--home .hx-degrees .hx-head { margin-bottom: clamp(18px, 2.2vw, 28px); }
 
 /* Hero secondary button styling is now in the hero block above. */
 
@@ -431,6 +436,8 @@
    Section surfaces alternate on purpose: navy hero → white (how learning works) → soft (programmes)
    → white (degrees) → white (Skylent AI) → navy (closing) → white footer. Heights follow content. */
 .hx-page--home .hx-programmes, .hx-page--home .hx-inst { background: hsl(var(--site-proof)); border-block: 1px solid hsl(var(--site-border)); }
+.hx-page--home .hx-programmes { padding-block: clamp(40px, 4.5vw, 64px); }
+.hx-page--home .hx-degrees { padding-block: clamp(36px, 4vw, 56px); }
 .hx-page--home .hx-inside, .hx-page--home .hx-degrees, .hx-page--home .hx-ai { background: hsl(var(--site-paper)); }
 
 /* Walkthrough controls (Career OS) */
@@ -527,7 +534,7 @@
 .hx-page .hx-journey__actions { justify-content: space-between; }
 
 /* ── Skylent AI: identity, what it helps with, its first question ── */
-.hx-page--home .hx-ai--id { padding-block: var(--hx-y); border-top: 0; }
+.hx-page--home .hx-ai--id { padding-block: clamp(40px, 5vw, 72px); border-top: 0; }
 .hx-page--home .hx-ai__layout { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
 .hx-page--home .hx-ai__id { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
 .hx-page--home .hx-ai__avatar { display: grid; place-items: center; width: 68px; height: 68px; flex: none; border-radius: 20px; background: hsl(var(--site-navy)); background-image: radial-gradient(70% 70% at 50% 40%, hsl(var(--site-cyan) / .28), transparent 70%); color: #fff; box-shadow: 0 0 0 1px hsl(var(--site-navy-line)), 0 16px 32px -18px hsl(var(--site-navy) / .7); }
@@ -537,7 +544,7 @@
 .hx-page--home .hx-ai__helps li { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 4px 16px; padding: 12px 0; border-top: 1px solid hsl(var(--site-border)); }
 .hx-page--home .hx-ai__help-title { font-weight: 650; font-size: 15.5px; color: hsl(var(--site-ink)); }
 .hx-page--home .hx-ai__help-text { font-size: 15px; line-height: 1.5; color: hsl(var(--site-muted)); }
-.hx-page--home .hx-ai__chat { padding: 18px; border-radius: 22px; background: hsl(var(--site-navy)); background-image: radial-gradient(60% 80% at 100% 0%, hsl(252 76% 62% / .2), transparent 60%); color: hsl(var(--site-on-navy)); box-shadow: 0 40px 80px -40px hsl(var(--site-navy) / .6); }
+.hx-page--home .hx-ai__chat { padding: 16px; border-radius: 22px; background: hsl(var(--site-navy)); background-image: radial-gradient(60% 80% at 100% 0%, hsl(252 76% 62% / .2), transparent 60%); color: hsl(var(--site-on-navy)); box-shadow: 0 40px 80px -40px hsl(var(--site-navy) / .6); }
 .hx-page--home .hx-ai__chatbar { display: flex; align-items: center; gap: 10px; padding: 0 4px 14px; font-weight: 600; font-size: 14px; color: #fff; border-bottom: 1px solid hsl(var(--site-navy-line)); margin-bottom: 16px; }
 .hx-page--home .hx-ai__chat .hx-chat { background: hsl(var(--site-navy-2)); }
 .hx-page--home .hx-ai__chat .hx-chat__options span { background: transparent; border-color: hsl(var(--site-cyan) / .5); color: #fff; }
@@ -558,11 +565,11 @@
 /* ── Closing: one final statement ── */
 .hx-page--home .hx-close--final { position: relative; overflow: hidden; background: linear-gradient(135deg, #2e2470 0%, #5142b5 100%); }
 .hx-page--home .hx-close__glow { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(45% 90% at 85% 100%, hsl(252 76% 62% / .3), transparent 65%), radial-gradient(30% 60% at 0% 0%, hsl(252 60% 72% / .08), transparent 65%); }
-.hx-page--home .hx-close__layout { position: relative; display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 28px 48px; padding-block: clamp(72px, 9vw, 128px); }
-.hx-page--home .hx-close__title { margin: 0; max-width: 13em; font-size: clamp(34px, 4.6vw, 60px); text-align: left; }
-.hx-page--home .hx-close__lead { margin: 18px 0 0; max-width: 34em; font-size: 17px; line-height: 1.6; color: hsl(var(--site-on-navy-muted)); }
-.hx-page--home .hx-close__layout > div:first-child { flex: 1 1 520px; max-width: 760px; }
-.hx-page--home .hx-close__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; }
+.hx-page--home .hx-close__layout { position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px 40px; padding-block: clamp(40px, 4.5vw, 56px); }
+.hx-page--home .hx-close__title { margin: 0; max-width: 12em; font-size: clamp(32px, 3.6vw, 48px); text-align: left; }
+.hx-page--home .hx-close__lead { margin: 12px 0 0; max-width: 34em; font-size: 16.5px; line-height: 1.55; color: hsl(var(--site-on-navy-muted)); }
+.hx-page--home .hx-close__layout > div:first-child { flex: 1 1 420px; max-width: 680px; }
+.hx-page--home .hx-close__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; }
 .hx-page--home .hx-close__link { display: inline-flex; align-items: center; min-height: 44px; color: #fff; font-weight: 600; font-size: 15px; text-decoration: underline; text-decoration-color: hsl(var(--site-navy-line-2)); text-underline-offset: 4px; }
 .hx-page--home .hx-close__link:hover { text-decoration-color: hsl(var(--site-cyan)); }
 .hx-page--home .hx-close__link:focus-visible { outline: 2px solid hsl(var(--site-cyan)); outline-offset: 3px; border-radius: 4px; }
@@ -717,7 +724,8 @@
 .hx-page--home .hx-chat__measure .hx-stable__pane,
 .hx-page--home .hx-chat__live {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   align-content: start;
 }
+.hx-page--home .hx-ai__chat .hx-chat { padding: 12px 14px; }
 .hx-page--home .hx-chat__live { z-index: 1; }
