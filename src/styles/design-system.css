@@ -90,17 +90,17 @@
 
   /* ── Semantic states. Ink carries success and warning; error is a dark red on white. ── */
   --skylent-color-success: #171717;
-  --skylent-color-success-soft: #eae6ff;
-  --skylent-color-success-border: #ddd7ff;
+  --skylent-color-success-soft: #e8f4fa;
+  --skylent-color-success-border: #c9e2ef;
   --skylent-color-warning: #171717;
-  --skylent-color-warning-soft: #f7f6fc;
+  --skylent-color-warning-soft: #f5f9fc;
   --skylent-color-warning-border: #c5cedd;
   --skylent-color-error: #9f2a24;
   --skylent-color-error-soft: rgba(182, 37, 32, 0.08);
   --skylent-color-error-border: rgba(159, 42, 36, 0.35);
   --skylent-color-info: #1769aa;
   --skylent-color-info-soft: rgba(23, 105, 170, 0.12);
-  --skylent-color-info-border: rgba(37, 99, 255, 0.45);
+  --skylent-color-info-border: rgba(23, 105, 170, 0.35);
   --skylent-color-information: var(--skylent-color-info);
   --skylent-color-information-soft: var(--skylent-color-info-soft);
   --skylent-color-information-border: var(--skylent-color-info-border);
