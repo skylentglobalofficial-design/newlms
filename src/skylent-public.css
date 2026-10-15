@@ -32,7 +32,7 @@ body:has(.skylent-public-canvas) {
    element would not reach the aliases computed on :root.
    --------------------------------------------------------------------- */
 .skylent-public-canvas {
-  /* Violet design system, redeclared here so the signed-in dark :root stays intact. */
+  /* Light-first ocean-blue tokens, redeclared here so signed-in tokens remain consistent. */
   --site-paper: 0 0% 100%;
   --site-white: 0 0% 100%;
   --site-soft: 205 35% 97.5%;
