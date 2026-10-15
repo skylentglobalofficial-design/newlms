@@ -837,3 +837,23 @@
   color: #fff;
 }
 .hx-page--home .hx-ai__chatnote { color: hsl(var(--site-dim)); }
+
+
+/* Final brand-consistency pass: violet is the public action colour.
+   Keep sufficient contrast on dark hero bands and light content surfaces. */
+.hx-page .hx-more,
+.hx-page .hx-chip,
+.hx-page .hx-chat__options span,
+.hx-page--home .hx-mini__chips span,
+.hx-page--home .hx-door__modes span,
+.hx-page .hx-screen__tag,
+.hx-page--home .hx-app__side button.is-on span,
+.hx-page--home .hx-app__bar span:last-child { color: #43349F; }
+.hx-page .hx-hero__title em,
+.hx-page .hx-close__title em,
+.hx-page .hx-h2--light em { color: #C4B8FF; }
+.hx-page .hx-entry__go,
+.hx-page--home .hx-mini__sql,
+.hx-page--home .hx-chat__typing span,
+.hx-page--home .hx-app__side button:focus-visible { color: #5142B5; }
+.hx-page--home .hx-app__side button:focus-visible { outline-color: #5142B5; }

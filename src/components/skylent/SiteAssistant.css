@@ -149,3 +149,14 @@
 
 /* Keep the footer's last line clear of the launcher when the page is scrolled to the end. */
 .skylent-public-canvas footer.skf .skf__meta { padding-bottom: max(84px, calc(68px + env(safe-area-inset-bottom))); }
+
+
+/* Brand consistency: public assistant actions use Skylent violet, not ocean blue. */
+.sia-option { color: #43349F; border-color: rgb(81 66 181 / 45%); }
+.sia-option:hover { background: #F0EDFF; border-color: #5142B5; }
+.sia-suggest__card:hover { border-color: #5142B5; }
+.sia-suggest__card svg, .sia-msg__action { color: #43349F; }
+.sia-form textarea:focus { border-color: #5142B5; box-shadow: 0 0 0 3px rgb(81 66 181 / 15%); }
+.sia-send { background: #5142B5; }
+.sia-send:hover:not(:disabled) { background: #43349F; }
+.sia :is(a, button, textarea, input):focus-visible { outline-color: #5142B5; }
