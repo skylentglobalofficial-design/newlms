@@ -11,43 +11,43 @@
 :root {
   color-scheme: light;
   /*
-   * Skylent violet design system, Oct 2026:
+   * Skylent light-first ocean-blue design system, Oct 2026:
    *   Paper  #FFFFFF
-   *   Soft   #F7F6FC
+   *   Soft   #F5FAFD
    *   Ink    #171717
    *   Muted  #6B7280
-   *   Accent #5142B5
-   *   Hover  #43349F
-   *   Violet structure #5142B5 / #2E2470 for rails and the lesson stage only
-   *   AI accent #6657E8
+   *   Accent #1769AA
+   *   Hover  #105786
+   *   Deep navy structure #10263D for rails and the lesson stage only
+   *   AI accent #00A5C8
    */
 
   /* ── Surfaces ── */
   --skylent-surface-paper: #ffffff;
   --skylent-surface-cream: #ffffff;
-  --skylent-surface-cream-warm: #f7f6fc;
-  --skylent-surface-soft: #f7f6fc;
-  --skylent-surface-sand: #eae6ff;
+  --skylent-surface-cream-warm: #f5f9fc;
+  --skylent-surface-soft: #f5f9fc;
+  --skylent-surface-sand: #e8f3f9;
   --skylent-surface-elevated: #ffffff;
   --skylent-surface-inverse: #2e2470;
 
   /* Proof surfaces — evidence and certificates only */
-  --skylent-surface-proof: #f7f6fc;
-  --skylent-surface-proof-2: #f2f0fc;
-  --skylent-color-proof-line: #ddd7ff;
+  --skylent-surface-proof: #f5f9fc;
+  --skylent-surface-proof-2: #edf5fa;
+  --skylent-color-proof-line: #d8e8f1;
 
   /* Violet anchors — shell rail, product top bars, workbench */
-  --skylent-navy: #2e2470;
-  --skylent-navy-2: #3a2f82;
-  --skylent-navy-line: #4a3f99;
-  --skylent-navy-line-2: #6b5fba;
-  --skylent-on-navy: #f0edff;
-  --skylent-on-navy-muted: #b5afe0;
+  --skylent-navy: #10263d;
+  --skylent-navy-2: #183750;
+  --skylent-navy-line: #294b63;
+  --skylent-navy-line-2: #52738a;
+  --skylent-on-navy: #edf5fa;
+  --skylent-on-navy-muted: #b7c9d6;
   --skylent-code-keyword: #c4b8ff;
   --skylent-code-string: #e9dfc6;
 
   /* Skylent AI mark */
-  --skylent-color-cyan: #6657e8;
+  --skylent-color-cyan: #00a5c8;
 
   /* Canonical aliases (keep imports stable) */
   --skylent-color-paper: var(--skylent-surface-paper);
@@ -71,15 +71,15 @@
   /* ── Borders (lavender hairlines on white) ── */
   --skylent-color-border-subtle: #eae6ff;
   --skylent-color-border: #e5e7eb;
-  --skylent-color-border-strong: #ddd7ff;
+  --skylent-color-border-strong: #c9dce7;
 
-  /* ── Action — brand violet #5142B5, hover #43349F ── */
-  --skylent-color-accent: #5142b5;
-  --skylent-color-accent-hover: #43349f;
-  --skylent-color-accent-text: #43349f;
-  --skylent-color-accent-soft: #eae6ff;
-  --skylent-color-accent-border: #ddd7ff;
-  --skylent-color-accent-strong: #43349f;
+  /* ── Action — ocean blue, with deep-blue hover ── */
+  --skylent-color-accent: #1769aa;
+  --skylent-color-accent-hover: #105786;
+  --skylent-color-accent-text: #105786;
+  --skylent-color-accent-soft: #e8f4fa;
+  --skylent-color-accent-border: #c9e2ef;
+  --skylent-color-accent-strong: #105786;
   --skylent-color-text-on-accent: #ffffff;
 
   /* Legacy "orange" names resolve to violet: there is no second accent. */
@@ -98,8 +98,8 @@
   --skylent-color-error: #9f2a24;
   --skylent-color-error-soft: rgba(182, 37, 32, 0.08);
   --skylent-color-error-border: rgba(159, 42, 36, 0.35);
-  --skylent-color-info: #5142b5;
-  --skylent-color-info-soft: rgba(81, 66, 181, 0.16);
+  --skylent-color-info: #1769aa;
+  --skylent-color-info-soft: rgba(23, 105, 170, 0.12);
   --skylent-color-info-border: rgba(37, 99, 255, 0.45);
   --skylent-color-information: var(--skylent-color-info);
   --skylent-color-information-soft: var(--skylent-color-info-soft);
@@ -110,7 +110,7 @@
   --skylent-product-dark-surface: #3a2f82;
   --skylent-product-dark-muted: #9aa6bf;
   --skylent-product-dark-border: #26304a;
-  --skylent-product-dark-accent: #6657e8;
+  --skylent-product-dark-accent: #00a5c8;
   --skylent-color-surface-product-dark: var(--skylent-product-dark);
   --skylent-color-text-on-dark: #e8ecf5;
   --skylent-color-muted-on-dark: var(--skylent-product-dark-muted);
