@@ -729,3 +729,28 @@
 }
 .hx-page--home .hx-ai__chat .hx-chat { padding: 12px 14px; }
 .hx-page--home .hx-chat__live { z-index: 1; }
+
+/* Homepage Career OS: the six real steps, on the light page, beside one stable preview. */
+.hx-page--home .hx-career { padding-block: clamp(36px, 4vw, 56px); background: hsl(var(--site-proof)); }
+.hx-page--home .hx-career__grid { display: grid; grid-template-columns: minmax(240px, 340px) minmax(0, 1fr); gap: clamp(20px, 3vw, 36px); align-items: start; }
+.hx-page--home .hx-career__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.hx-page--home .hx-career__steps button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 8px 12px; border: 1px solid transparent; border-radius: 12px; background: transparent; color: #3c425c; font: inherit; font-size: 15px; font-weight: 650; text-align: left; cursor: pointer; }
+.hx-page--home .hx-career__steps button span { flex: none; width: 1.8em; color: #6b7280; font-size: 12px; font-weight: 750; }
+.hx-page--home .hx-career__steps button.is-on { background: #fff; border-color: #e6e3f2; color: #171717; box-shadow: inset 3px 0 0 #5142B5; }
+.hx-page--home .hx-career__steps button.is-on span { color: #5142B5; }
+.hx-page--home .hx-career__steps button:focus-visible { outline: 2px solid #5142B5; outline-offset: 2px; }
+.hx-page--home .hx-career__live { margin: 10px 0 0 12px; }
+.hx-page--home .hx-career__live p { margin: 0; font-size: 14.5px; line-height: 1.45; color: #555b7d; }
+.hx-page--home .hx-career__stage { min-width: 0; }
+.hx-page--home .hx-career__label { margin: 0 0 10px; font-size: 12.5px; font-weight: 650; letter-spacing: .04em; text-transform: uppercase; color: #5142B5; }
+.hx-page--home .hx-career .hx-window { box-shadow: 0 24px 50px -36px rgba(23, 21, 31, .45); }
+.hx-page--home .hx-career__limits { margin: 16px 0 0; max-width: 46em; font-size: 14.5px; line-height: 1.5; color: #555b7d; }
+.hx-page--home .hx-career .hx-more { margin-top: 8px; }
+@media (max-width: 800px) {
+  .hx-page--home .hx-career__grid { grid-template-columns: minmax(0, 1fr); }
+  .hx-page--home .hx-career__steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hx-page--home .hx-career__live { margin-left: 0; }
+}
+@media (max-width: 520px) {
+  .hx-page--home .hx-career__steps { grid-template-columns: minmax(0, 1fr); }
+}
