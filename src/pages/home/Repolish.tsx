@@ -2,13 +2,13 @@
  * Homepage sections for the repolish (prefix hx-, styles in HomeRepolish.css).
  *
  * Order: hero (white/lavender) → ways to start → goals → how learning works → programmes →
- * degrees → after you enrol → Career OS → Skylent AI → institutions → closing.
+ * degrees → Career OS → Skylent AI → institutions → closing.
  *
  * Facts come from the authored course data, the catalogue (or its published list) and lib/degrees.
  * Nothing here states a learner count, outcome, partner or placement. Previews are drawn from the
  * authored Data Analytics programme and are labelled as product previews, not account data.
  */
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { Link } from "react-router-dom"
 import { ArrowRight } from "@/components/skylent/primitives"
 import { Reveal } from "@/components/skylent/Reveal"
@@ -397,32 +397,129 @@ function prefersReducedMotion(): boolean {
   return typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches)
 }
 
-/** Advances a product demo while the section is on screen. A click changes the frame; it does not stop the loop. */
+/**
+ * One timeout chain for a product demo.
+ * Playback pauses only while the section is off screen, the tab is hidden, reduced motion is on,
+ * or the caller is holding it. Choosing a stage restarts the dwell; it does not stop the loop.
+ * Visibility is measured from the element's box on tab return, so a missed observer callback cannot leave it stuck.
+ */
 function useProductDemo(delays: readonly number[]) {
   const ref = useRef<HTMLElement>(null)
-  const [index, setIndex] = useState(0)
-  const [reduced] = useState(prefersReducedMotion)
-  const [seen, setSeen] = useState(false)
-  const [holding, setHolding] = useState(false)
+  const [index, setIndexState] = useState(0)
+  const [reduced, setReduced] = useState(prefersReducedMotion)
+  const indexRef = useRef(0)
+  const visibleRef = useRef(false)
+  const holdingRef = useRef(false)
+  const reducedRef = useRef(reduced)
+  const timerRef = useRef<number | null>(null)
+  const count = delays.length
+
+  const clearTimer = useCallback(() => {
+    if (timerRef.current != null) {
+      window.clearTimeout(timerRef.current)
+      timerRef.current = null
+    }
+  }, [])
+
+  const arm = useCallback(() => {
+    clearTimer()
+    if (reducedRef.current || holdingRef.current || !visibleRef.current || document.hidden || count < 1) return
+    const wait = delays[indexRef.current] ?? 1700
+    const timer = window.setTimeout(() => {
+      if (timerRef.current !== timer) return
+      timerRef.current = null
+      if (reducedRef.current || holdingRef.current || !visibleRef.current || document.hidden) return
+      const next = (indexRef.current + 1) % count
+      indexRef.current = next
+      setIndexState(next)
+      arm()
+    }, wait)
+    timerRef.current = timer
+  }, [clearTimer, count, delays])
 
   useEffect(() => {
-    const node = ref.current
-    if (!node || reduced || typeof IntersectionObserver === "undefined") return
-    const observer = new IntersectionObserver(([entry]) => setSeen(entry.isIntersecting), { threshold: 0.28 })
-    observer.observe(node)
-    return () => observer.disconnect()
+    reducedRef.current = reduced
   }, [reduced])
 
   useEffect(() => {
-    if (reduced || !seen || holding) return
-    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % delays.length), delays[index] ?? 1650)
-    return () => window.clearTimeout(timer)
-  }, [delays, holding, index, reduced, seen])
+    const media = window.matchMedia?.("(prefers-reduced-motion: reduce)")
+    if (!media) return
+    const onChange = () => {
+      reducedRef.current = media.matches
+      setReduced(media.matches)
+      if (media.matches) clearTimer()
+      else arm()
+    }
+    media.addEventListener("change", onChange)
+    return () => media.removeEventListener("change", onChange)
+  }, [arm, clearTimer])
+
+  useEffect(() => {
+    const node = ref.current
+    if (!node || reduced) {
+      clearTimer()
+      return
+    }
+    const sync = () => {
+      if (document.hidden) {
+        if (visibleRef.current) visibleRef.current = false
+        clearTimer()
+        return
+      }
+      const rect = node.getBoundingClientRect()
+      const viewportH = window.innerHeight || 0
+      const viewportW = window.innerWidth || 0
+      const visibleY = Math.min(rect.bottom, viewportH) - Math.max(rect.top, 0)
+      const visibleX = Math.min(rect.right, viewportW) - Math.max(rect.left, 0)
+      const onScreen = visibleY >= 140 && visibleX >= 24
+      if (onScreen === visibleRef.current) return
+      visibleRef.current = onScreen
+      if (onScreen) arm()
+      else clearTimer()
+    }
+    const observer = typeof IntersectionObserver === "undefined" ? null : new IntersectionObserver(sync, { threshold: [0, 0.05, 0.2, 0.6] })
+    observer?.observe(node)
+    let frame = 0
+    const onVisible = () => {
+      if (document.hidden) sync()
+      else {
+        window.cancelAnimationFrame(frame)
+        frame = window.requestAnimationFrame(sync)
+      }
+    }
+    document.addEventListener("visibilitychange", onVisible)
+    window.addEventListener("resize", sync)
+    window.addEventListener("scroll", sync, { passive: true })
+    sync()
+    return () => {
+      window.cancelAnimationFrame(frame)
+      observer?.disconnect()
+      document.removeEventListener("visibilitychange", onVisible)
+      window.removeEventListener("resize", sync)
+      window.removeEventListener("scroll", sync)
+      visibleRef.current = false
+      clearTimer()
+    }
+  }, [arm, clearTimer, reduced])
+
+  const setIndex = useCallback((next: number) => {
+    if (count < 1) return
+    const safe = ((next % count) + count) % count
+    indexRef.current = safe
+    setIndexState(safe)
+    arm()
+  }, [arm, count])
+
+  const setHolding = useCallback((holding: boolean) => {
+    holdingRef.current = holding
+    if (holding) clearTimer()
+    else arm()
+  }, [arm, clearTimer])
 
   return { ref, index, setIndex, reduced, setHolding }
 }
 
-const LMS_BEATS = [1650, 1650, 1650, 1650, 1650] as const
+const LMS_BEATS = [1700, 1700, 1700, 1700, 1700] as const
 
 export function InsideProgramme() {
   const demo = useProductDemo(LMS_BEATS)
@@ -432,12 +529,6 @@ export function InsideProgramme() {
       ref={demo.ref}
       className="hx-inside"
       aria-labelledby="hx-inside-title"
-      onMouseEnter={() => demo.setHolding(true)}
-      onMouseLeave={() => demo.setHolding(false)}
-      onFocus={() => demo.setHolding(true)}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) demo.setHolding(false)
-      }}
     >
       <div className="sky-container">
         <header className="hx-head">

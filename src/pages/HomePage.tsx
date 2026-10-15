@@ -1,12 +1,11 @@
 /**
  * HomePage — the public homepage.
  *
- * Hero → How learning works → Programmes → Degrees → After you enrol → Skylent AI → Closing.
+ * Hero → How learning works → Programmes → Degrees → Skylent AI → Closing.
  * Navigation and footer come from PageShell. Career OS and institutions stay on their own pages.
  */
 import { PageShell } from "@/components/shared"
 import { useCatalogPrograms } from "@/hooks/useCatalog"
-import { Learn } from "./home/Learn"
 import {
   HomeAi,
   HomeClosing,
@@ -27,7 +26,6 @@ export default function HomePage() {
         <InsideProgramme />
         <HomeProgrammes programmes={catalog.data ?? []} loading={catalog.loading} confirmed={!catalog.offline} />
         <HomeDegrees />
-        <Learn />
         <HomeAi />
         <HomeClosing />
       </div>
