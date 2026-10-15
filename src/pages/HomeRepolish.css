@@ -788,3 +788,12 @@
 .hx-page .hx-ai__chat .hx-chat__options span { color: hsl(var(--site-deep)); border-color: hsl(var(--site-light-blue)); }
 .hx-page--home .hx-close--final { background: linear-gradient(180deg, #fff 0%, #f1f9fd 100%); border-top: 1px solid hsl(var(--site-border)); border-bottom: 1px solid hsl(var(--site-border)); }
 .hx-page--home .hx-close__link:hover { text-decoration-color: hsl(var(--site-deep)); }
+
+
+/* Contrast correction for the light walkthrough surface and its active step. */
+.hx-page .hx-journey .hx-step.is-on .hx-step__title,
+.hx-page .hx-journey .hx-step.is-done .hx-step__title { color: hsl(var(--site-ink)); }
+.hx-page .hx-journey .hx-step__live p { color: hsl(var(--site-muted)); }
+.hx-page .hx-journey .hx-step.is-on,
+.hx-page .hx-journey .hx-step.is-done { background: hsl(var(--site-soft-blue)); }
+.hx-page .hx-journey .hx-step__dot { border-color: hsl(var(--site-light-blue)); }
