@@ -1,7 +1,7 @@
-/* /education — prefix edx-, scoped under .edx (repolish) */
+/* /education — light-first page, scoped under .edx (repolish) */
 .edx { background: hsl(var(--site-paper)); }
 .edx .edx-hero {
-  background: radial-gradient(55% 120% at 88% 0%, hsl(252 76% 62% / .16), transparent 60%), linear-gradient(135deg, #2e2470 0%, #5142b5 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f5faff 100%);
   color: hsl(var(--site-on-navy));
   padding: clamp(2.75rem, 6vw, 4.5rem) 0 clamp(2.25rem, 5vw, 3.25rem);
 }
