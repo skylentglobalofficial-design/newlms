@@ -1,7 +1,7 @@
 /**
  * Homepage sections for the repolish (prefix hx-, styles in HomeRepolish.css).
  *
- * Order: hero (white/lavender) → ways to start → goals → how learning works → programmes →
+ * Order: hero (white/cool blue) → ways to start → goals → how learning works → programmes →
  * degrees → Career OS → Skylent AI → institutions → closing.
  *
  * Facts come from the authored course data, the catalogue (or its published list) and lib/degrees.
@@ -35,13 +35,13 @@ import photoCampusPg from "@/assets/site/home/degree-management-960.webp"
 import photoCampusPgAvatar from "@/assets/site/home/degree-management-96.webp"
 import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice"
 
-/* ── Hero (white/lavender; composition after the approved violet reference) ───────
-   Left: category labels, four-line headline (last line in violet), supporting copy,
+/* ── Hero (light-first; restrained ocean-blue accent) ───────
+   Left: category labels, four-line headline (last line in ocean blue), supporting copy,
    two CTAs, community avatars. Right: large student photo with floating offering cards.
-   Violet badge "Real projects / Real experience" on the image. */
+   Ocean-blue badge "Real projects / Real experience" on the image. */
 
 function OfferingIcon({ type }: { type: string }) {
-  const iconColor = "#5142B5"
+  const iconColor = "#1769AA"
   switch (type) {
     case "graduation":
       return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 10-10-5L2 10l10 5z"/><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/><path d="M22 10v6"/></svg>

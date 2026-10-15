@@ -1415,10 +1415,10 @@
 .lx-question { position: relative; }
 
 /* ── Repolish: dark outline on the left, white workspace, black lesson slide ── */
-.os-rail { background: #2e2470; border-right-color: #3a2f82; color: #e0dbf5; }
+.os-rail { background: #10263d; border-right-color: #183750; color: #edf5fa; }
 .os-rail .os-eyebrow, .os-rail .os-rail-kicker { color: #8f9bb5; }
-.os-rail .os-module { border-top-color: #3a2f82; }
-.os-rail .os-module-toggle { color: #e0dbf5; }
+.os-rail .os-module { border-top-color: #183750; }
+.os-rail .os-module-toggle { color: #edf5fa; }
 .os-rail .os-module-toggle:hover .os-module-label { color: #c4b8ff; }
 .os-rail .os-module-num, .os-rail .os-module-meta, .os-rail .os-lesson-num { color: #9e97c7; }
 .os-rail .os-module.is-current .os-module-num { color: #6657e8; }

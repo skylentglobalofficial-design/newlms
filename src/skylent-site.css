@@ -12,23 +12,23 @@
    values on .skylent-public-canvas. Navy text tokens below are for dark bands only.
    ===================================================================== */
 
-/* ---------- Brand palette (raw HSL channels) — Violet design system ---------- */
+/* ---------- Brand palette (raw HSL channels) — light-first, ocean-blue identity ---------- */
 :root {
   --site-paper: 0 0% 100%;             /* #FFFFFF page canvas */
   --site-white: 0 0% 100%;             /* panels / cards */
-  --site-soft: 252 40% 97.5%;          /* #F7F6FC small UI fills */
-  --site-raised: 252 28% 93%;          /* muted fill, progress track */
+  --site-soft: 205 35% 97.5%;          /* cool, near-white UI fills */
+  --site-raised: 205 22% 94%;           /* muted fill, progress track */
   --site-border: 220 14% 90%;          /* #E5E7EB hairline */
-  --site-border-strong: 252 30% 85.5%; /* #DDD7FF inputs, secondary buttons */
+  --site-border-strong: 205 24% 83%;    /* inputs, secondary buttons */
   --site-ink: 0 0% 9%;                 /* #171717 ink */
-  --site-navy: 252 42% 48%;            /* #5142B5 brand violet (structure) */
-  --site-deep: 252 42% 48%;            /* #5142B5 brand action */
-  --site-ocean: 252 48% 44%;           /* #43349F hover / pressed */
-  --site-highlight: 249 76% 62%;       /* #6657E8 focus ring */
-  --site-soft-blue: 252 100% 96%;      /* #EAE6FF lavender quiet accent fill */
-  --site-light-blue: 252 62% 87.5%;    /* #DDD7FF quiet accent rules */
-  --site-orange: 252 42% 48%;          /* legacy alias, same violet */
-  --site-warm: 252 42% 48%;            /* legacy alias, same violet */
+  --site-navy: 210 60% 20%;             /* deep navy for compact product surfaces */
+  --site-deep: 207 82% 36%;             /* primary ocean-blue action */
+  --site-ocean: 210 88% 29%;            /* deeper ocean-blue hover / pressed */
+  --site-highlight: 195 90% 42%;        /* restrained cyan-blue focus ring */
+  --site-soft-blue: 202 100% 96%;       /* quiet ocean-blue accent fill */
+  --site-light-blue: 202 62% 86%;       /* quiet blue accent rules */
+  --site-orange: 207 82% 36%;           /* legacy alias to primary blue */
+  --site-warm: 207 82% 36%;             /* legacy alias to primary blue */
   --site-muted: 227 16% 41%;           /* #555B7D body text */
   --site-dim: 220 9% 46%;              /* #6B7280 labels and metadata */
   --site-green: 152 55% 30%;           /* success */
@@ -55,16 +55,16 @@
   --sk-font-body: "Inter", system-ui, sans-serif;
 
   /* Skylent v2: proof surfaces, violet product surfaces, intelligence accent */
-  --site-proof: 252 40% 97.5%;          /* #F7F6FC evidence surface */
-  --site-proof-2: 252 38% 95%;          /* #F2F0FC inset panel */
-  --site-proof-line: 252 30% 90%;       /* hairline on a light band */
-  --site-navy-2: 252 38% 18%;           /* raised on dark violet */
-  --site-navy-line: 252 32% 28%;        /* hairline on dark violet */
-  --site-navy-line-2: 252 24% 42%;      /* outline controls on dark violet */
-  --site-on-navy: 252 30% 93.5%;        /* text on dark violet */
-  --site-on-navy-muted: 252 18% 68%;    /* labels on dark violet */
-  --site-cyan: 249 76% 62%;             /* #6657E8 lighter violet for AI mark */
-  --site-data-rest: 252 20% 80%;        /* receded chart marks */
+  --site-proof: 205 35% 97.5%;          /* evidence surface */
+  --site-proof-2: 205 28% 94.5%;        /* inset panel */
+  --site-proof-line: 205 24% 89%;       /* hairline on a light band */
+  --site-navy-2: 207 55% 18%;           /* raised deep-navy surface */
+  --site-navy-line: 207 38% 29%;        /* hairline on deep navy */
+  --site-navy-line-2: 207 28% 43%;     /* outline controls on deep navy */
+  --site-on-navy: 205 35% 96%;          /* text on deep navy */
+  --site-on-navy-muted: 205 22% 76%;   /* labels on deep navy */
+  --site-cyan: 190 88% 39%;             /* cyan accent reserved for AI */
+  --site-data-rest: 205 16% 78%;        /* receded chart marks */
   --sk-font-mono: "DM Mono", ui-monospace, monospace;
   --sk-radius-plate: 16px;
   --sk-radius-mat: 22px;
@@ -276,13 +276,13 @@
 .sk-btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
 .sk-btn-primary,
 .site-cta-primary {
-  background: linear-gradient(135deg, #5142B5 0%, #6657E8 100%);
+  background: linear-gradient(135deg, #1769AA 0%, #00A5C8 100%);
   color: #fff !important;
   border-radius: 10px;
   box-shadow: 0 2px 8px -2px rgba(81,66,181,.25);
 }
 .sk-btn-primary:hover,
-.site-cta-primary:hover { background: linear-gradient(135deg, #43349F 0%, #5142B5 100%); }
+.site-cta-primary:hover { background: linear-gradient(135deg, #105786 0%, #1769AA 100%); }
 .sk-btn-secondary {
   background: transparent;
   color: hsl(var(--site-navy));
