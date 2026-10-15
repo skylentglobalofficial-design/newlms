@@ -41,7 +41,7 @@ import { STATUS_NOT_CONFIRMED } from "../../components/programme/CatalogueNotice
    Violet badge "Real projects / Real experience" on the image. */
 
 function OfferingIcon({ type }: { type: string }) {
-  const iconColor = "#5142B5"
+  const iconColor = "#1769AA"
   switch (type) {
     case "graduation":
       return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={iconColor} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 10-10-5L2 10l10 5z"/><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/><path d="M22 10v6"/></svg>
