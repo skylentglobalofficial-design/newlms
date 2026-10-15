@@ -88,3 +88,16 @@
   .edx .edx-degree__go { grid-column: 1; grid-row: auto; }
   .edx .edx-help__actions > * { flex: 1 1 100%; justify-content: center; }
 }
+
+
+/* Light-first education hero: premium comes from hierarchy and restraint, not a dark banner. */
+.edx .edx-hero {
+  background: radial-gradient(50% 100% at 88% 0%, hsl(195 90% 42% / .09), transparent 62%), linear-gradient(180deg, #ffffff 0%, #f5faff 100%);
+  color: hsl(var(--site-ink));
+  border-bottom: 1px solid hsl(var(--site-border));
+}
+.edx .edx-h1 { color: hsl(var(--site-ink)) !important; }
+.edx .edx-h1 em { color: hsl(var(--site-deep)); }
+.edx .edx-lede, .edx .edx-filter__label { color: hsl(var(--site-muted)); }
+.edx .edx-filter a { border-color: hsl(var(--site-border-strong)); color: hsl(var(--site-ink)); }
+.edx .edx-eyebrow { color: hsl(var(--site-deep)); }
