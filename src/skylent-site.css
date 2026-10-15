@@ -58,11 +58,11 @@
   --site-proof: 205 35% 97.5%;          /* evidence surface */
   --site-proof-2: 205 28% 94.5%;        /* inset panel */
   --site-proof-line: 205 24% 89%;       /* hairline on a light band */
-  --site-navy-2: 252 38% 18%;           /* raised on dark violet */
-  --site-navy-line: 252 32% 28%;        /* hairline on dark violet */
-  --site-navy-line-2: 252 24% 42%;      /* outline controls on dark violet */
-  --site-on-navy: 252 30% 93.5%;        /* text on dark violet */
-  --site-on-navy-muted: 252 18% 68%;    /* labels on dark violet */
+  --site-navy-2: 207 55% 18%;           /* raised deep-navy surface */
+  --site-navy-line: 207 38% 29%;        /* hairline on deep navy */
+  --site-navy-line-2: 207 28% 43%;     /* outline controls on deep navy */
+  --site-on-navy: 205 35% 96%;          /* text on deep navy */
+  --site-on-navy-muted: 205 22% 76%;   /* labels on deep navy */
   --site-cyan: 190 88% 39%;             /* cyan accent reserved for AI */
   --site-data-rest: 205 16% 78%;        /* receded chart marks */
   --sk-font-mono: "DM Mono", ui-monospace, monospace;
@@ -276,13 +276,13 @@
 .sk-btn[aria-disabled="true"] { opacity: .5; pointer-events: none; }
 .sk-btn-primary,
 .site-cta-primary {
-  background: linear-gradient(135deg, #5142B5 0%, #6657E8 100%);
+  background: linear-gradient(135deg, #1769AA 0%, #00A5C8 100%);
   color: #fff !important;
   border-radius: 10px;
   box-shadow: 0 2px 8px -2px rgba(81,66,181,.25);
 }
 .sk-btn-primary:hover,
-.site-cta-primary:hover { background: linear-gradient(135deg, #43349F 0%, #5142B5 100%); }
+.site-cta-primary:hover { background: linear-gradient(135deg, #105786 0%, #1769AA 100%); }
 .sk-btn-secondary {
   background: transparent;
   color: hsl(var(--site-navy));
