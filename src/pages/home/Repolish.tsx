@@ -19,6 +19,7 @@ import { programmeTruth } from "@/components/programme/programme-truth"
 import { programmeDiscoveryFor } from "@/lib/programme-discovery"
 import type { CatalogProgramSummary } from "@/lib/catalog-api"
 import { deliveryModeLabel, listDegrees } from "@/lib/degrees"
+import { truthOf } from "@/lib/truth"
 import { courseFacts } from "./course-facts"
 import { useWalkthrough } from "./useWalkthrough"
 import heroStudent720 from "@/assets/site/home/hero-student-720.webp"
@@ -755,7 +756,7 @@ export function HomeDegrees() {
               Undergraduate or <em>postgraduate.</em>
             </h2>
           </div>
-          <p className="hx-head__aside">These are planned degree areas. No institution is confirmed yet, so you can register interest but not apply.</p>
+          <p className="hx-head__aside">These are planned degree areas. No institution, accreditation or admission process is confirmed, and applications are not open. You can register interest. Career OS is not connected to these listings.</p>
         </Reveal>
         <ul className="hx-doors">
           {DEGREE_DOORS.map((door) => {
@@ -999,6 +1000,188 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
             </div>
           </div>
         </div>
+      </div>
+    </section>
+  )
+}
+
+/* ── Homepage Career OS ───────────────────────────────────────────────────
+   The same six steps as /career-os, without repeating the learning workspace.
+   Status lines follow truth.ts so a planned degree or an unreleased record is not described as live. */
+
+function careerLimits(): string {
+  const lines = ["After you enrol in a skill programme, lessons from that programme can appear in Career OS."]
+  if (truthOf("projectsAndEvidence") !== "live") lines.push("Project evidence records are not released yet.")
+  if (truthOf("openings") !== "live") lines.push("No roles are published, and Career OS does not apply for you.")
+  if (truthOf("degrees") !== "live") lines.push("Planned degree listings are not connected. You can record education on the profile you write.")
+  return lines.join(" ")
+}
+
+/** Homepage-only plates. They explain each step. They do not show a filled record, a role, or the visitor's progress. */
+function HomeCareerPlate({ step }: { step: JourneyKey }) {
+  const content = authoredProgrammeContent(DA_SLUG)
+  const facts = courseFacts()
+  const programme = facts?.title ?? "Data Analytics"
+  const capstone = content?.capstoneTitle ?? facts?.capstoneTitle ?? "Capstone"
+  if (step === "enrol") {
+    return (
+      <div className="hx-screen">
+        <p className="hx-screen__label">What enrolment does</p>
+        <div className="hx-screen__card">
+          <span className="hx-screen__row"><b>Profile</b><span className="hx-screen__tag">Starts when you enrol</span></span>
+          <span className="hx-screen__item"><span className="hx-screen__k">Programme</span><span>{programme} · professional programme</span></span>
+          <span className="hx-screen__hint">Joining a skill programme is what opens Career OS. You choose who can see the profile. This is not your account.</span>
+        </div>
+      </div>
+    )
+  }
+  if (step === "learn") {
+    return (
+      <div className="hx-screen">
+        <p className="hx-screen__label">What learning shows</p>
+        <div className="hx-screen__card">
+          <span className="hx-screen__row"><b>Lesson in the programme</b><span className="hx-screen__tag">Example</span></span>
+          <span className="hx-screen__item"><span className="hx-screen__k">Title</span><span>{facts ? facts.current.title : "The lesson you have open"}</span></span>
+          <span className="hx-screen__hint">Career OS can show the lesson you are taking in an enrolled programme. It is not a count of lessons you have finished.</span>
+        </div>
+      </div>
+    )
+  }
+  if (step === "build") {
+    return (
+      <div className="hx-screen">
+        <p className="hx-screen__label">Where project work lives</p>
+        <div className="hx-screen__card">
+          <span className="hx-screen__row"><b>{capstone}</b><span className="hx-screen__tag">Programme capstone</span></span>
+          {["Read the brief", "Explore the data", "Build the analysis", "Write the recommendation"].map((task) => (
+            <span key={task} className="hx-screen__task">
+              <span className="hx-tick" aria-hidden="true" />
+              {task}
+            </span>
+          ))}
+          <span className="hx-screen__hint">These are the parts of the capstone. Nothing here is a finished project in an account.</span>
+        </div>
+      </div>
+    )
+  }
+  if (step === "evidence") {
+    return (
+      <div className="hx-screen">
+        <p className="hx-screen__label">What a record would hold</p>
+        <div className="hx-screen__card">
+          <span className="hx-screen__row"><b>Evidence record</b><span className="hx-screen__tag">Not released</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">The work</span><span>The project it came from</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">What it shows</span><span>Written when a record exists</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Reflection</span><span>Yours, when a record exists</span></span>
+          <span className="hx-screen__hint">Records you can share are not released. This is the shape of one, not a completed record.</span>
+        </div>
+      </div>
+    )
+  }
+  if (step === "profile") {
+    return (
+      <div className="hx-screen">
+        <p className="hx-screen__label">What you write</p>
+        <div className="hx-screen__card">
+          <span className="hx-screen__item"><span className="hx-screen__k">Target role</span><span>You write this</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Skills</span><span>You add them. Skylent does not score them.</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Education</span><span>You record it. Degree listings are not connected.</span></span>
+          <span className="hx-screen__item hx-screen__item--rule"><span className="hx-screen__k">Projects</span><span>Added only after you finish one</span></span>
+        </div>
+      </div>
+    )
+  }
+  return (
+    <div className="hx-screen">
+      <p className="hx-screen__label">How you prepare</p>
+      <div className="hx-screen__cols">
+        {[
+          ["Saved", "None yet"],
+          ["Applied", "None yet"],
+          ["Interview", "None yet"],
+        ].map(([col, card]) => (
+          <div key={col} className="hx-screen__col">
+            <span className="hx-screen__k">{col}</span>
+            <span className="hx-screen__mini">{card}</span>
+          </div>
+        ))}
+      </div>
+      <p className="hx-screen__hint">You file the applications. Career OS can keep them in order. It does not publish roles or apply for you.</p>
+    </div>
+  )
+}
+
+export function HomeCareer() {
+  const [active, setActive] = useState(0)
+  const step = JOURNEY[active]
+  return (
+    <section className="hx-career" aria-labelledby="hx-career-title">
+      <div className="sky-container">
+        <header className="hx-head">
+          <div>
+            <p className="hx-eyebrow hx-eyebrow--dark">Career OS</p>
+            <h2 id="hx-career-title" className="hx-h2 hx-h2--sm">One profile for what you learn and keep.</h2>
+          </div>
+          <p className="hx-head__aside">Skill programmes can feed learning into Career OS after you enrol. A degree pathway is not connected, and nothing here is your account.</p>
+        </header>
+        <div className="hx-career__grid">
+          <div>
+            <ol className="hx-career__steps" aria-label="Career OS steps">
+              {JOURNEY.map((item, index) => (
+                <li key={item.key}>
+                  <button
+                    type="button"
+                    className={index === active ? "is-on" : undefined}
+                    aria-current={index === active ? "step" : undefined}
+                    aria-describedby={index === active ? `hx-home-step-${item.key}` : undefined}
+                    onClick={() => setActive(index)}
+                  >
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    {item.title}
+                  </button>
+                </li>
+              ))}
+            </ol>
+            <div className="hx-career__live hx-stable">
+              {JOURNEY.map((item, index) => (
+                <p id={`hx-home-step-${item.key}`} key={item.key} className={index === active ? "hx-stable__pane is-on" : "hx-stable__pane"} aria-hidden={index !== active}>
+                  {item.text}
+                </p>
+              ))}
+            </div>
+          </div>
+          <div className="hx-career__stage">
+            <p className="hx-career__label">Illustrative preview · Not connected</p>
+            <div className="hx-window">
+              <div className="hx-window__bar" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+                <em>Career OS</em>
+              </div>
+              <div className="hx-window__body">
+                <p className="hx-sr">Illustrative preview, not connected. {step.title}. {step.text}</p>
+                <div className="hx-stable">
+                  {JOURNEY.map((item) => (
+                    <div key={item.key} className={item.key === step.key ? "hx-stable__pane is-on" : "hx-stable__pane"} aria-hidden={item.key !== step.key}>
+                      <HomeCareerPlate step={item.key} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="hx-window__progress" aria-hidden="true">
+                {JOURNEY.map((item, index) => (
+                  <span key={item.key} className={index <= active ? "is-on" : undefined} />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        <p className="hx-career__limits">{careerLimits()}</p>
+        <Link className="hx-more" to="/career-os">
+          How Career OS works
+          <ArrowRight />
+        </Link>
       </div>
     </section>
   )
