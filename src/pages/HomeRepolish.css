@@ -6,7 +6,7 @@
 /* Shared type */
 .hx-page .hx-eyebrow { margin: 0 0 14px; font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: #5142B5; }
 .hx-page .hx-eyebrow--dark { color: #5142B5; }
-:is(.hx-hero, .hx-close, .cpx-hero) .hx-eyebrow--dark { color: #0E709F; }
+:is(.hx-hero, .hx-close, .cpx-hero) .hx-eyebrow--dark { color: #5142B5; }
 .hx-page .hx-h2 {
   margin: 0;
   font-family: var(--sk-font-heading);
@@ -19,7 +19,7 @@
 }
 .hx-page .hx-h2 em { font-style: normal; color: #5142B5; }
 .hx-page .hx-h2--light { color: #fff !important; }
-.hx-page .hx-h2--light em { color: #0E709F; }
+.hx-page .hx-h2--light em { color: #C4B8FF; }
 .hx-page .hx-h2--sm { font-size: clamp(24px, 2.6vw, 32px); }
 .hx-page .hx-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px; margin-bottom: clamp(28px, 4vw, 48px); }
 .hx-page .hx-head__aside { margin: 0; max-width: 30em; font-size: 16.5px; line-height: 1.6; color: hsl(var(--site-muted)); }
