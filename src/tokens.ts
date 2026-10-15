@@ -34,7 +34,7 @@ export const C = {
   information: 'var(--skylent-color-info)',
   danger: 'var(--skylent-color-error)',
   surfaceProductDark: '#10263D',
-  textOnDark: '#F0EDFF',
+  textOnDark: '#EDF5FA',
   mutedOnDark: '#B7C9D6',
   textOnAccent: '#FFFFFF',
   // Shared brand accents
