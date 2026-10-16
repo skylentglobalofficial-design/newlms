@@ -286,9 +286,9 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
     ],
   },
   {
-    label: 'Education',
+    label: 'Degree pathways',
     to: '/education',
-    tagline: 'Undergraduate and postgraduate degrees',
+    tagline: 'Undergraduate and postgraduate degrees, separate from skill programmes',
     match: ['/education', '/exams'],
     items: [],
     sections: [
@@ -467,10 +467,12 @@ export function Nav() {
   const location = useLocation()
   const { user, logout } = useAuth()
 
-  // Primary action: sign up when signed out, back to learning when signed in. Find My Path is no
-  // longer a header destination; path discovery happens inside Skylent AI.
+  // Learning workspace is the signed-in product. Signed-out visitors sign in first.
+  // Skill programmes and degree pathways stay separate destinations.
   const pathCta = useMemo(
-    () => (user ? { to: dashRoute(user.role), label: 'My learning' } : { to: '/signup', label: 'Get started' }),
+    () => (user
+      ? { to: dashRoute(user.role), label: 'Learning workspace', state: undefined }
+      : { to: '/login', label: 'Learning workspace', state: { returnTo: '/dashboard/student' } as const }),
     [user],
   )
 
@@ -750,7 +752,7 @@ export function Nav() {
             </Link>
           )}
 
-          <Link to={pathCta.to} className="skn__cta sk-btn sk-btn-primary">
+          <Link to={pathCta.to} state={pathCta.state} className="skn__cta sk-btn sk-btn-primary">
             {pathCta.label}
             <ArrowRight />
           </Link>
@@ -846,7 +848,7 @@ export function Nav() {
           </ul>
 
           <div className="skn-sheet__actions">
-            <Link to={pathCta.to} onClick={closeSheet} className="sk-btn sk-btn-primary">
+            <Link to={pathCta.to} state={pathCta.state} onClick={closeSheet} className="sk-btn sk-btn-primary">
               {pathCta.label}
               <ArrowRight />
             </Link>

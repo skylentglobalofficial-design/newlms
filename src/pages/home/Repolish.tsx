@@ -62,25 +62,21 @@ export function HomeHero() {
       <div className="hxw-hero__bg" aria-hidden="true" />
       <div className="sky-container hxw-hero__grid">
         <div className="hxw-hero__copy">
-          <p className="hxw-eyebrow hx-rise">
-            <span>Skills</span> <span className="hxw-eyebrow__dot">&middot;</span> <span>Education</span> <span className="hxw-eyebrow__dot">&middot;</span> <span>Career</span> <span className="hxw-eyebrow__dot">&middot;</span> <span>AI</span>
-          </p>
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
             <span>Learn skills.</span>
-            <span>Explore education.</span>
-            <span>Build real experience.</span>
-            <em>Find what comes next.</em>
+            <span>Build real work.</span>
+            <em>Find your next step.</em>
           </h1>
           <p className="hxw-hero__lead hx-rise">
-            Skylent brings together programmes, courses, real projects and career opportunities to help you go from learning to doing.
+            Explore programmes, practise through projects, and build skills you can demonstrate.
           </p>
           <div className="hxw-hero__actions hx-rise">
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
-              Explore Skylent
+              Explore programmes
               <ArrowRight />
             </Link>
-            <Link className="sk-btn sk-btn-secondary hx-btn" to="/path">
-              Find My Path
+            <Link className="sk-btn sk-btn-secondary hx-btn" to="/education">
+              Explore degree pathways
             </Link>
           </div>
           <div className="hxw-hero__community hx-rise">

@@ -37,7 +37,8 @@
   .sia-launcher__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 @media (max-width: 640px) {
-  .sia-launcher { padding: 6px; min-height: 44px; }
+  .sia-invite { display: none; }
+  .sia-launcher { width: 44px; height: 44px; min-height: 44px; padding: 0; justify-content: center; }
   .sia-launcher__label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
 
