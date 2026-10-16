@@ -37,7 +37,7 @@ export const C = {
   textOnDark: '#EDF5FA',
   mutedOnDark: '#B7C9D6',
   textOnAccent: '#FFFFFF',
-  // Shared brand accents. `cyan` is the lighter violet AI mark, not a second hue.
+  // `cyan` is the sky-blue secondary accent. Purple stays the action colour.
   navy: '#10263D',
   navyRaised: '#183750',
   navyLine: '#294B63',
@@ -48,7 +48,9 @@ export const C = {
   proof: '#F7F6FC',
   proofInset: '#F2F0FC',
   proofLine: '#DDD7FF',
-  cyan: '#6657E8',
+  sky: '#3E96D6',
+  skySoft: '#E7F4FC',
+  cyan: '#3E96D6',
 } as const
 
 /** Public surfaces — mirrors --skylent-surface-* in design-system.css */

@@ -63,7 +63,7 @@
   --site-navy-line-2: 207 28% 43%;     /* outline controls on deep navy */
   --site-on-navy: 205 35% 96%;          /* text on deep navy */
   --site-on-navy-muted: 205 22% 76%;   /* labels on deep navy */
-  --site-cyan: 249 76% 62%;             /* #6657E8 lighter violet for the AI mark */
+  --site-cyan: 205 65% 54%;             /* #3E96D6 sky blue, secondary to violet */
   --site-data-rest: 252 20% 80%;        /* receded chart marks */
   --sk-font-mono: "DM Mono", ui-monospace, monospace;
   --sk-radius-plate: 16px;

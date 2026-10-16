@@ -428,7 +428,7 @@
 .entry { background: var(--skylent-surface-paper); }
 .entry-back { min-height: 44px; }
 .entry-mark { color: var(--skylent-color-ink); font: 700 20px/1.1 var(--skylent-font-heading); letter-spacing: 0.14em; text-transform: uppercase; }
-.entry-frame { border-color: var(--skylent-color-border); border-radius: 12px; }
+.entry-frame { border-color: var(--skylent-color-border); border-radius: 12px; box-shadow: inset 0 3px 0 var(--skylent-color-sky, #3e96d6); }
 .entry-frame-bar { padding: 12px 16px; border-bottom: 0; background: var(--skylent-navy); }
 .entry-frame-bar b { color: #ffffff; font-weight: 500; }
 .entry-frame-bar span { color: var(--skylent-on-navy-muted); }
