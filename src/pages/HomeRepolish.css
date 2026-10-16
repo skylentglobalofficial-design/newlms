@@ -19,7 +19,7 @@
 }
 .hx-page .hx-h2 em { font-style: normal; color: #5142B5; }
 .hx-page .hx-h2--light { color: #fff !important; }
-.hx-page .hx-h2--light em { color: #C4B8FF; }
+.hx-page .hx-h2--light em { color: #5142B5; }
 .hx-page .hx-h2--sm { font-size: clamp(24px, 2.6vw, 32px); }
 .hx-page .hx-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px; margin-bottom: clamp(28px, 4vw, 48px); }
 .hx-page .hx-head__aside { margin: 0; max-width: 30em; font-size: 16.5px; line-height: 1.6; color: hsl(var(--site-muted)); }
@@ -748,6 +748,7 @@
 .hx-page--home .hx-career__limits { margin: 16px 0 0; max-width: 46em; font-size: 14.5px; line-height: 1.5; color: #555b7d; }
 .hx-page--home .hx-career .hx-more { margin-top: 8px; }
 @media (max-width: 800px) {
+  .hx-page .hx-journey__stage { padding-bottom: 72px; }
   .hx-page--home .hx-career__grid { grid-template-columns: minmax(0, 1fr); }
   .hx-page--home .hx-career__steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hx-page--home .hx-career__live { margin-left: 0; }
@@ -851,7 +852,7 @@
 .hx-page--home .hx-app__bar span:last-child { color: #43349F; }
 .hx-page .hx-hero__title em,
 .hx-page .hx-close__title em,
-.hx-page .hx-h2--light em { color: #C4B8FF; }
+.hx-page .hx-h2--light em { color: #5142B5; }
 .hx-page .hx-entry__go,
 .hx-page--home .hx-mini__sql,
 .hx-page--home .hx-chat__typing span,

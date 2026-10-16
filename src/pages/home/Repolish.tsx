@@ -978,7 +978,7 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
                 <div className="hx-stable">
                   {JOURNEY.map((item) => (
                     <div key={item.key} className={item.key === step.key ? "hx-stable__pane is-on" : "hx-stable__pane"} aria-hidden={item.key !== step.key}>
-                      <JourneyScreen step={item.key} />
+                      <HomeCareerPlate step={item.key} />
                     </div>
                   ))}
                 </div>
@@ -990,7 +990,7 @@ export function CareerJourney({ eyebrow = "Career OS", showLink = true }: { eyeb
               </div>
             </div>
             <div className="hx-journey__actions">
-              <WalkControls active={active} count={JOURNEY.length} title={step.title} playing={walk.playing} onPrev={walk.prev} onNext={walk.next} onToggle={walk.toggle} tone="dark" />
+              <WalkControls active={active} count={JOURNEY.length} title={step.title} playing={walk.playing} onPrev={walk.prev} onNext={walk.next} onToggle={walk.toggle} />
               {showLink ? (
                 <Link className="sk-btn sk-btn-primary" to="/career-os">
                   How Career OS works
