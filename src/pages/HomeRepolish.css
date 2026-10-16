@@ -19,7 +19,7 @@
 }
 .hx-page .hx-h2 em { font-style: normal; color: #5142B5; }
 .hx-page .hx-h2--light { color: #fff !important; }
-.hx-page .hx-h2--light em { color: #C4B8FF; }
+.hx-page .hx-h2--light em { color: #5142B5; }
 .hx-page .hx-h2--sm { font-size: clamp(24px, 2.6vw, 32px); }
 .hx-page .hx-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px 48px; margin-bottom: clamp(28px, 4vw, 48px); }
 .hx-page .hx-head__aside { margin: 0; max-width: 30em; font-size: 16.5px; line-height: 1.6; color: hsl(var(--site-muted)); }
@@ -307,11 +307,11 @@
 .hx-page--home .hxw-ws__mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: #5142B5; color: #fff; font-weight: 800; }
 .hx-page--home .hxw-ws__title, .hx-page--home .hxw-ws__note { display: block; }
 .hx-page--home .hxw-ws__title { font-weight: 750; font-size: 14px; color: #22212B; }
-.hx-page--home .hxw-ws__note { font-size: 11px; color: #6B7280; }
+.hx-page--home .hxw-ws__note { font-size: 12.5px; line-height: 1.35; color: #3c425c; }
 .hx-page--home .hxw-ws__row { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; font-size: 12px; color: #555B7D; }
 .hx-page--home .hxw-ws__pill { color: #5142B5; font-weight: 700; }
-.hx-page--home .hxw-ws__track { display: block; height: 4px; margin-top: 8px; border-radius: 4px; background: #EAE6FF; overflow: hidden; }
-.hx-page--home .hxw-ws__track span { display: block; width: 42%; height: 100%; background: #5142B5; }
+.hx-page--home .hxw-ws__track { display: block; height: 6px; margin-top: 8px; border-radius: 4px; background: #E7F4FC; overflow: hidden; }
+.hx-page--home .hxw-ws__track span { display: block; width: 42%; height: 100%; background: #3E96D6; }
 .hx-page--home .hxw-ws__item { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 8px; margin-top: 10px; padding: 8px; border-radius: 12px; background: #FAF9FF; color: #22212B; text-decoration: none; }
 .hx-page--home .hxw-ws__item strong, .hx-page--home .hxw-ws__item em { display: block; }
 .hx-page--home .hxw-ws__item strong { font-size: 14px; }
@@ -319,7 +319,7 @@
 .hx-page--home .hxw-ws__item:focus-visible { outline: 2px solid #5142B5; outline-offset: 2px; }
 .hx-page--home .hxw-ws__plus { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: #EAE6FF; color: #5142B5; font-weight: 700; }
 .hx-page--home .hxw-ws__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-.hx-page--home .hxw-ws__pair span { display: grid; gap: 2px; font-size: 11px; color: #6B7280; }
+.hx-page--home .hxw-ws__pair span { display: grid; gap: 2px; font-size: 12px; line-height: 1.35; color: #3c425c; }
 .hx-page--home .hxw-ws__pair b { font-size: 13px; color: #22212B; }
 
 /* Community portraits from existing site photography */
@@ -347,6 +347,10 @@
   .hx-page--home .hxw-hero__title { font-size: clamp(32px, 9vw, 40px); line-height: 1.1; }
   .hx-page--home .hxw-hero__actions .sk-btn { flex: 1 1 100%; justify-content: center; }
   .hx-page--home .hxw-hero__photo { aspect-ratio: 1 / 0.92; }
+}
+@media (max-width: 640px) {
+  .hx-page--home .hxw-stage { display: grid; gap: 12px; padding: 12px; }
+  .hx-page--home .hxw-ws { position: static; width: auto; left: auto; bottom: auto; }
 }
 @media (max-width: 480px) {
   .hx-page--home .hxw-hero__community { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -748,6 +752,7 @@
 .hx-page--home .hx-career__limits { margin: 16px 0 0; max-width: 46em; font-size: 14.5px; line-height: 1.5; color: #555b7d; }
 .hx-page--home .hx-career .hx-more { margin-top: 8px; }
 @media (max-width: 800px) {
+  .hx-page .hx-journey__stage { padding-bottom: 72px; }
   .hx-page--home .hx-career__grid { grid-template-columns: minmax(0, 1fr); }
   .hx-page--home .hx-career__steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hx-page--home .hx-career__live { margin-left: 0; }
@@ -851,7 +856,7 @@
 .hx-page--home .hx-app__bar span:last-child { color: #43349F; }
 .hx-page .hx-hero__title em,
 .hx-page .hx-close__title em,
-.hx-page .hx-h2--light em { color: #C4B8FF; }
+.hx-page .hx-h2--light em { color: #5142B5; }
 .hx-page .hx-entry__go,
 .hx-page--home .hx-mini__sql,
 .hx-page--home .hx-chat__typing span,

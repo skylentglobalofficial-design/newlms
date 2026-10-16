@@ -714,14 +714,17 @@ body:has(.skylent-public-canvas) {
   margin: 12px 0 0;
 }
 .skylent-public-canvas .skn-sheet__search input {
-  flex: 1;
+  flex: 1 1 0;
+  width: auto;
   min-width: 0;
-  min-height: 48px;
+  max-width: 100%;
+  min-height: 44px;
   font-size: 16px;
 }
 .skylent-public-canvas .skn-sheet__search button {
-  min-height: 48px;
-  padding: 0 16px;
+  flex: none;
+  min-height: 44px;
+  padding: 0 14px;
   border: 0;
   border-radius: 8px;
   background: hsl(var(--site-navy));

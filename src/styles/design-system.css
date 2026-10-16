@@ -19,7 +19,8 @@
    *   Accent #5142B5
    *   Hover  #43349F
    *   Deep navy structure #10263D for rails and the lesson stage only
-   *   AI mark #6657E8 (lighter violet, not a second brand)
+   *   Sky blue #3E96D6 is the secondary accent (AI mark and supporting details)
+   *   Red #9F2A24 is reserved for errors and alerts
    */
 
   /* ── Surfaces ── */
@@ -46,8 +47,10 @@
   --skylent-code-keyword: #c4b8ff;
   --skylent-code-string: #e9dfc6;
 
-  /* Skylent AI mark */
-  --skylent-color-cyan: #6657e8;
+  /* Secondary sky blue. The token name stays `cyan` so existing call sites keep working. */
+  --skylent-color-sky: #3e96d6;
+  --skylent-color-sky-soft: #e7f4fc;
+  --skylent-color-cyan: var(--skylent-color-sky);
 
   /* Canonical aliases (keep imports stable) */
   --skylent-color-paper: var(--skylent-surface-paper);
@@ -110,7 +113,7 @@
   --skylent-product-dark-surface: #183750;
   --skylent-product-dark-muted: #9aa6bf;
   --skylent-product-dark-border: #26304a;
-  --skylent-product-dark-accent: #6657e8;
+  --skylent-product-dark-accent: #3e96d6;
   --skylent-color-surface-product-dark: var(--skylent-product-dark);
   --skylent-color-text-on-dark: #e8ecf5;
   --skylent-color-muted-on-dark: var(--skylent-product-dark-muted);

@@ -789,7 +789,7 @@ export function Nav() {
             <input
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Search programmes, degrees, Career OS"
+              placeholder="Search Skylent"
               aria-label="Search Skylent"
               autoComplete="off"
             />
