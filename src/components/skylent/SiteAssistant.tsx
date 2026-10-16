@@ -345,7 +345,7 @@ export default function SiteAssistant() {
       frame = 0
       const box = launcher.getBoundingClientRect()
       const keep = { left: box.left - 16, right: box.right + 8, top: box.top - 16, bottom: box.bottom + 8 }
-      const zones = document.querySelectorAll("[data-clear-launcher], .hx-page--home .hxw-goals, .hx-page--home .hxw-goal, .hx-page--home .hx-prog, .hx-page--home .hx-door, .hx-page--home .sk-btn, .hx-page--home .hxw-offering")
+      const zones = document.querySelectorAll("[data-clear-launcher], .sk-btn, .pa-lab, .pa-lab__chart, .pp-evtable, .pp-jump a, .pp-step, .pp-mod, .hx-page--home .hxw-goals, .hx-page--home .hxw-goal, .hx-page--home .hx-prog, .hx-page--home .hx-door, .hx-page--home .hxw-offering")
       let blocked = false
       for (const node of zones) {
         const rect = node.getBoundingClientRect()
