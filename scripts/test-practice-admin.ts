@@ -70,8 +70,13 @@ async function main() {
   const adminId = await signup(adminJar, "admin")
   const studentId = await signup(studentJar, "student")
   await signup(outsiderJar, "outsider")
-  const role = await prisma.role.findUnique({ where: { name: "ADMIN" } })
-  assert(role, "ADMIN role is missing")
+  // Signup only creates STUDENT. Seed does not insert Role rows, so a fresh
+  // database has no ADMIN row until this suite creates the catalogue role.
+  const role = await prisma.role.upsert({
+    where: { name: "ADMIN" },
+    update: {},
+    create: { name: "ADMIN" },
+  })
   await prisma.userRole.create({ data: { userId: adminId, roleId: role.id } })
 
   const course = await prisma.course.create({
