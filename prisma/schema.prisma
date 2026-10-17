@@ -198,6 +198,8 @@ model User {
   learnerProjects    LearnerProject[]
   policyAcceptances  PolicyAcceptance[]
   employerMemberships EmployerMembership[]
+  practiceApprovals PracticeWorkspace[] @relation("PracticeWorkspaceApprover")
+  practiceResponses PracticeWorkspaceResponse[]
 }
 
 model Role {
@@ -952,4 +954,67 @@ model PolicyAcceptance {
 
   @@index([userId, context])
   @@index([enquiryId])
+}
+
+enum PracticeWorkspaceStatus {
+  not_configured
+  needs_review
+  pending_infrastructure
+  ready
+  published
+}
+
+/// One practice configuration per course. Publication is a reviewed status, not a syllabus match.
+model PracticeWorkspace {
+  id            String                  @id @default(uuid()) @db.Uuid
+  courseSlug    String                  @unique
+  programmeSlug String?
+  syllabus      Json
+  manifest      Json
+  config        Json
+  status        PracticeWorkspaceStatus
+  adapterId     String?
+  revision      Int                     @default(1)
+  approvedById  String?                 @db.Uuid
+  approvedAt    DateTime?
+  publishedAt   DateTime?
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+  approvedBy    User?                   @relation("PracticeWorkspaceApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  revisions     PracticeWorkspaceRevision[]
+  responses     PracticeWorkspaceResponse[]
+
+  @@index([status])
+}
+
+model PracticeWorkspaceRevision {
+  id          String                  @id @default(uuid()) @db.Uuid
+  workspaceId String                  @db.Uuid
+  workspace   PracticeWorkspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  revision    Int
+  status      PracticeWorkspaceStatus
+  manifest    Json
+  config      Json
+  actorId     String?                 @db.Uuid
+  action      String
+  note        String?
+  createdAt   DateTime                @default(now())
+
+  @@unique([workspaceId, revision])
+  @@index([workspaceId, createdAt])
+}
+
+model PracticeWorkspaceResponse {
+  id          String            @id @default(uuid()) @db.Uuid
+  workspaceId String            @db.Uuid
+  workspace   PracticeWorkspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  userId      String            @db.Uuid
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId    String
+  body        String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([workspaceId, userId, lessonId])
+  @@index([userId])
 }

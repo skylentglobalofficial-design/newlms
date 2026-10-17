@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { PageShell } from '../components/shared'
 import { CapabilityRail, PracticePillarSubnav } from '../components/product/Architecture'
 import { LAB_PATHWAY } from '../lib/product-architecture'
+import { PRACTICE_ENVIRONMENTS, UNBUILT_PRACTICE } from '../lib/practice-environments'
 import './Catalog.css'
 
 export default function LabsPage() {
@@ -30,28 +31,30 @@ export default function LabsPage() {
 
         <section className="cat-section" aria-labelledby="labs-live-title">
           <div className="cat-rail">
-            <p className="cat-label">Where a lab exists today</p>
-            <h2 id="labs-live-title">One live lab, attached to one course.</h2>
-            <div className="cat-facts" style={{ marginTop: 20 }}>
-              <div className="cat-fact">
-                <span>Data Analytics</span>
-                <strong>SQL lab</strong>
-              </div>
-              <div className="cat-fact">
-                <span>Product Management</span>
-                <strong>No coding lab</strong>
-              </div>
-            </div>
+            <p className="cat-label">Where practice exists today</p>
+            <h2 id="labs-live-title">Each open programme has its own workspace.</h2>
+            <ul className="practice-env">
+              {PRACTICE_ENVIRONMENTS.map((environment) => (
+                <li key={environment.id}>
+                  <p className="cat-label">{environment.statusLabel}</p>
+                  <h3>{environment.title}</h3>
+                  <p className="cat-fine">{environment.summary}</p>
+                  <p className="cat-fine">{environment.tools.join(" · ")}</p>
+                  <p className="cat-fine">{environment.honesty}</p>
+                </li>
+              ))}
+            </ul>
             <p className="cat-fine" style={{ marginTop: 16 }}>
-              Data Analytics has a SQL lab against <code>northwind_sales.csv</code>. You open it from a lesson in
-              Skylent OS, not from this page.
+              You open the workspace from the lesson that uses it, after you enrol. Spreadsheet and dashboard lessons in Data Analytics do not open the SQL editor. Product Management never opens Northwind Lab.
             </p>
-            <p className="cat-fine">
-              Product Management has no coding lab. The work is research notes, framing, and a written specification.
-            </p>
-            <p className="cat-fine">
-              Sign in, enrol, then the lab chip appears on the relevant lesson. Progress belongs to the course.
-            </p>
+            <p className="cat-label" style={{ marginTop: 28 }}>Not built</p>
+            <ul className="practice-missing">
+              {UNBUILT_PRACTICE.map((row) => (
+                <li key={row.slug}>
+                  <strong>{row.title}.</strong> {row.note}
+                </li>
+              ))}
+            </ul>
             <p className="cat-label" style={{ marginTop: 28 }}>How a lab fits the path</p>
             <CapabilityRail
               items={[

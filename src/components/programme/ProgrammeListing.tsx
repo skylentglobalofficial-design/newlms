@@ -16,6 +16,7 @@ import { Reveal } from "../skylent/Reveal"
 import { ProgrammeThumb, programmeThumbInfo } from "./ProgrammeArtefacts"
 import { plural, type ProgrammeTruth } from "./programme-truth"
 import { effectiveProgrammePublicFacts } from "../../lib/public-catalogue-copy"
+import { practiceNoteForProgramme } from "../../lib/practice-environments"
 import "./ProfessionalProgrammeTemplate.css"
 import { openSkylentAi } from "../skylent/ai-events"
 import { STATUS_NOT_CONFIRMED } from "./CatalogueNotice"
@@ -106,6 +107,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                           : "Not open yet",
                 },
                 { label: "Format", value: facts.format },
+                { label: "Practice", value: practiceNoteForProgramme(program.slug) },
                 { label: "Level", value: program.level },
                 { label: "Length", value: program.duration },
                 {

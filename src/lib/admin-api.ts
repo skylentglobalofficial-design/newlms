@@ -135,6 +135,35 @@ export async function removeAdminEmployerMember(employerId: string, userId: stri
   return adminMutate<{ data: { removed: boolean } }>(`/admin/employers/${employerId}/members/${userId}`, "DELETE")
 }
 
+export type AdminPracticeWorkspace = {
+  id: string
+  courseSlug: string
+  status: string
+  adapterId: string | null
+  revision: number
+  manifest: { learnerNote: string; reasons: string[]; missing: string[]; lessonIds: string[] }
+  config: { caseTitle: string; caseNotes: string; lessonIds: string[]; datasetId: string | null }
+  scores: Array<{ id: string; label: string; score: number }>
+  approvedAt: string | null
+  publishedAt: string | null
+}
+
+export async function listAdminPracticeWorkspaces() {
+  return adminGet<{ data: AdminPracticeWorkspace[] }>("/admin/practice-workspaces")
+}
+
+export async function createAdminPracticeWorkspace(syllabus: Record<string, unknown>) {
+  return adminMutate<{ data: AdminPracticeWorkspace }>("/admin/practice-workspaces", "POST", syllabus)
+}
+
+export async function configureAdminPracticeWorkspace(id: string, config: Record<string, unknown>) {
+  return adminMutate<{ data: AdminPracticeWorkspace }>(`/admin/practice-workspaces/${id}`, "PATCH", config)
+}
+
+export async function actOnAdminPracticeWorkspace(id: string, action: "test" | "approve" | "publish" | "reject" | "unpublish" | "revalidate", body?: Record<string, unknown>) {
+  return adminMutate<{ data: AdminPracticeWorkspace | { ok: boolean; detail: string } }>(`/admin/practice-workspaces/${id}/${action}`, "POST", body)
+}
+
 export async function updateLessonPlayback(courseSlug: string, lessonKey: string, muxPlaybackId: string | null) {
   return adminMutate<{ data: { lessonKey: string; media: { provider: string; playbackId?: string } | null } }>(
     `/admin/courses/${encodeURIComponent(courseSlug)}/lessons/${encodeURIComponent(lessonKey)}/media`,
