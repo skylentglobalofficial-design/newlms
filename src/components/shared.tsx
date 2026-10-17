@@ -467,12 +467,13 @@ export function Nav() {
   const location = useLocation()
   const { user, logout } = useAuth()
 
-  // Learning workspace is the signed-in product. Signed-out visitors sign in first.
-  // Skill programmes and degree pathways stay separate destinations.
+  // Learning workspace is the signed-in product. Signed-out visitors sign in first,
+  // and login sends them to their own role home. A student return path would
+  // drop faculty, recruiters, and admins on a page they cannot open.
   const pathCta = useMemo(
     () => (user
-      ? { to: dashRoute(user.role), label: 'Learning workspace', state: undefined }
-      : { to: '/login', label: 'Learning workspace', state: { returnTo: '/dashboard/student' } as const }),
+      ? { to: dashRoute(user.role), label: 'Learning workspace' }
+      : { to: '/login', label: 'Learning workspace' }),
     [user],
   )
 
@@ -752,7 +753,7 @@ export function Nav() {
             </Link>
           )}
 
-          <Link to={pathCta.to} state={pathCta.state} className="skn__cta sk-btn sk-btn-primary">
+          <Link to={pathCta.to} className="skn__cta sk-btn sk-btn-primary">
             {pathCta.label}
             <ArrowRight />
           </Link>
@@ -848,7 +849,7 @@ export function Nav() {
           </ul>
 
           <div className="skn-sheet__actions">
-            <Link to={pathCta.to} state={pathCta.state} onClick={closeSheet} className="sk-btn sk-btn-primary">
+            <Link to={pathCta.to} onClick={closeSheet} className="sk-btn sk-btn-primary">
               {pathCta.label}
               <ArrowRight />
             </Link>
