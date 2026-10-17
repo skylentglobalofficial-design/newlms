@@ -1,6 +1,6 @@
-import type { CourseSyllabus } from "./types"
-import { provisionCourse } from "./provision"
-import type { WorkspaceManifest } from "./types"
+import type { CourseSyllabus } from "./types.js"
+import { provisionCourse } from "./provision.js"
+import type { WorkspaceManifest } from "./types.js"
 
 /** Syllabi the platform can classify today. These are authored inputs, not inferred marketing copy. */
 export const CATALOGUE_SYLLABI: readonly CourseSyllabus[] = [

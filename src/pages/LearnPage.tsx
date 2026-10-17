@@ -11,6 +11,7 @@ import { isAuthoredCourse } from '../lib/live-intents'
 import type { QuizQuestion } from '../components/lms/AssessmentSurface'
 import { courseProductProfile } from '../lib/course-product'
 import { lessonPracticeLink } from '../lib/practice-environments'
+import { fetchLearnerPracticeWorkspace, type LearnerPracticeWorkspace } from '../lib/practice-api'
 import {
   getAdjacentLessons,
   isLessonUnlocked,
@@ -102,6 +103,7 @@ export default function LearnPage() {
   const [actionError, setActionError] = useState<string | null>(null)
   const [completing, setCompleting] = useState(false)
   const [assignmentDraft, setAssignmentDraft] = useState<{ lessonId: string; text: string } | null>(null)
+  const [dynamicPractice, setDynamicPractice] = useState<LearnerPracticeWorkspace | null>(null)
   const menuBtnRef = useRef<HTMLButtonElement>(null)
   const stageRef = useRef<HTMLElement>(null)
   const draftTimer = useRef<number | null>(null)
@@ -125,6 +127,20 @@ export default function LearnPage() {
   useEffect(() => {
     if (lessonId) setSelectedLessonId(lessonId)
   }, [lessonId])
+
+  useEffect(() => {
+    if (!slug || !user) {
+      setDynamicPractice(null)
+      return
+    }
+    const controller = new AbortController()
+    fetchLearnerPracticeWorkspace(slug, controller.signal)
+      .then((workspace) => setDynamicPractice(workspace))
+      .catch(() => {
+        if (!controller.signal.aborted) setDynamicPractice(null)
+      })
+    return () => controller.abort()
+  }, [slug, user])
 
   useEffect(() => {
     stageRef.current?.scrollTo({ top: 0 })
@@ -571,11 +587,15 @@ export default function LearnPage() {
                     <span className={selectedState.locked ? 'os-status is-idle' : selectedState.complete ? 'os-status is-done' : 'os-status'}>
                       {selectedState.locked ? 'Locked' : selectedState.complete ? 'Completed' : 'In progress'}
                     </span>
-                    {profile && !selectedState.locked ? (
+                    {!selectedState.locked ? (
                       <div className="os-tools">
                         {(() => {
                           const practice = lessonPracticeLink(readyCourse.slug, selectedLesson.id)
-                          const projectIsPractice = Boolean(practice && profile.project && practice.href.startsWith(profile.project.href))
+                          const projectIsPractice = Boolean(practice && profile?.project && practice.href.startsWith(profile.project.href))
+                          const dynamic = !practice && dynamicPractice?.lessonIds.includes(selectedLesson.id)
+                            ? dynamicPractice
+                            : null
+                          if (!practice && !dynamic && !profile?.project) return null
                           return (
                             <>
                               {practice ? (
@@ -583,7 +603,12 @@ export default function LearnPage() {
                                   {practice.label}
                                 </Link>
                               ) : null}
-                              {profile.project && !projectIsPractice ? (
+                              {dynamic?.href ? (
+                                <Link className="os-chip" to={`${dynamic.href}?lesson=${encodeURIComponent(selectedLesson.id)}`} title={dynamic.learnerNote}>
+                                  Open practice
+                                </Link>
+                              ) : null}
+                              {profile?.project && !projectIsPractice ? (
                                 <Link className="os-chip" to={profile.project.href} title={profile.project.note}>
                                   {profile.project.label}
                                 </Link>

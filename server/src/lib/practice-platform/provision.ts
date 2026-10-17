@@ -1,13 +1,13 @@
-import { missingCapabilities } from "./capabilities"
-import { defaultWorkspaceAdapters } from "./adapters"
-import { publishedBindingFor } from "./bindings"
+import { missingCapabilities } from "./capabilities.js"
+import { defaultWorkspaceAdapters } from "./adapters.js"
+import { publishedBindingFor } from "./bindings.js"
 import {
   WORKSPACE_MANIFEST_VERSION,
   type CourseSyllabus,
   type WorkspaceAdapter,
   type WorkspaceManifest,
   type WorkspaceStatus,
-} from "./types"
+} from "./types.js"
 
 function blank(syllabus: CourseSyllabus, status: WorkspaceStatus, reasons: string[], missing: string[] = []): WorkspaceManifest {
   return {
@@ -33,6 +33,10 @@ function ranked(syllabus: CourseSyllabus, adapters: readonly WorkspaceAdapter[])
     .map((adapter) => ({ adapter, score: adapter.score(syllabus) }))
     .filter((row) => row.score > 0)
     .sort((a, b) => b.score - a.score || a.adapter.id.localeCompare(b.adapter.id))
+}
+
+export function rankWorkspaceAdapters(syllabus: CourseSyllabus, adapters: readonly WorkspaceAdapter[] = defaultWorkspaceAdapters()) {
+  return ranked(syllabus, adapters).map((row) => ({ id: row.adapter.id, label: row.adapter.label, score: row.score }))
 }
 
 /**

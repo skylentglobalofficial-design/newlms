@@ -1,4 +1,4 @@
-import type { PublishedBinding } from "./types"
+import type { PublishedBinding } from "./types.js"
 
 const HARBOR_TASK_BY_LESSON: Record<string, string> = {
   l4: "read_case",

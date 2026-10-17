@@ -5,7 +5,6 @@ import { AuthDashboardShell, type AuthNavItem } from '../components/AuthDashboar
 import { getRoleAccent } from '../role-themes'
 import { useRequireRole } from '../hooks/useRequireRole'
 import { useAuth } from '../context/AuthContext'
-import { provisionCatalogue } from '../lib/practice-platform'
 import {
   assignAdminUserRole,
   createAdminOrganisation,
@@ -18,7 +17,12 @@ import {
   listAdminUsers,
   removeAdminEmployerMember,
   resetAdminUserToStudent,
+  actOnAdminPracticeWorkspace,
+  configureAdminPracticeWorkspace,
+  createAdminPracticeWorkspace,
+  listAdminPracticeWorkspaces,
   updateLessonPlayback,
+  type AdminPracticeWorkspace,
   type AdminEmployer,
   type AdminEmployerMember,
   type AdminEnquiry,
@@ -460,19 +464,91 @@ function AdminEmployersSection() {
 }
 
 function AdminPracticeSection() {
-  const rows = provisionCatalogue()
+  const [rows, setRows] = useState<AdminPracticeWorkspace[]>([])
+  const [slug, setSlug] = useState("")
+  const [title, setTitle] = useState("")
+  const [notes, setNotes] = useState("")
+  const [message, setMessage] = useState<string | null>(null)
+  const [pending, setPending] = useState(false)
+
+  async function reload() {
+    const result = await listAdminPracticeWorkspaces()
+    setRows(result.data)
+  }
+
+  useEffect(() => {
+    void reload().catch((error: unknown) => setMessage(error instanceof Error ? error.message : "Practice workspaces could not be loaded."))
+  }, [])
+
+  async function createWorkspace(event: FormEvent) {
+    event.preventDefault()
+    setPending(true)
+    setMessage(null)
+    try {
+      const created = await createAdminPracticeWorkspace({
+        courseSlug: slug.trim(),
+        title: title.trim(),
+        outcomes: ["Frame the problem from the course notes"],
+        tools: ["case notes"],
+        lessons: [{ id: "l1", title: "Read the notes", type: "notes", exercise: "case" }],
+      })
+      const configured = await configureAdminPracticeWorkspace(created.data.id, {
+        adapterId: "case-studio",
+        lessonIds: ["l1"],
+        caseTitle: title.trim(),
+        caseNotes: notes.trim(),
+      })
+      setMessage(`${configured.data.courseSlug} is ${configured.data.status}.`)
+      setSlug("")
+      setTitle("")
+      setNotes("")
+      await reload()
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "The workspace could not be created.")
+    } finally {
+      setPending(false)
+    }
+  }
+
+  async function act(id: string, action: "test" | "approve" | "publish" | "unpublish" | "revalidate") {
+    setMessage(null)
+    try {
+      const result = await actOnAdminPracticeWorkspace(id, action)
+      const detail = result.data && "detail" in result.data ? result.data.detail : null
+      setMessage(detail ?? "Updated.")
+      await reload()
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : "The workspace could not be updated.")
+    }
+  }
+
   return (
     <div id="admin-practice" style={canvasRow}>
       <div style={{ color: C.slate, fontSize: 11, marginBottom: 12 }}>Practice workspaces</div>
       <p style={{ color: C.slate, fontSize: 13, lineHeight: 1.6, marginTop: 0, maxWidth: 680 }}>
-        Each course is classified from its syllabus. A workspace is published only when an approved binding exists. A missing runtime stays unpublished, and another course&apos;s lab is not used instead.
+        A syllabus is classified on the server. Publication happens only after validation and approval. Another course&apos;s dataset or case is refused.
       </p>
-      <ul style={{ listStyle: 'none', padding: 0, margin: '16px 0 0', display: 'grid', gap: 10 }}>
+      <form onSubmit={(event) => void createWorkspace(event)} style={{ display: "grid", gap: 8, maxWidth: 640, marginTop: 12 }}>
+        <input value={slug} onChange={(event) => setSlug(event.target.value)} placeholder="course-slug" aria-label="Practice course slug" required style={adminFieldStyle} />
+        <input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="Case title" aria-label="Case title" required style={adminFieldStyle} />
+        <textarea value={notes} onChange={(event) => setNotes(event.target.value)} placeholder="Case notes for this course" aria-label="Case notes" required minLength={40} rows={4} style={{ ...adminFieldStyle, minHeight: 96 }} />
+        <button type="submit" className="os-btn os-btn-primary" disabled={pending} style={{ justifySelf: "start" }}>Recommend workspace</button>
+      </form>
+      {message ? <p style={{ color: C.slate, fontSize: 13 }}>{message}</p> : null}
+      <ul style={{ listStyle: "none", padding: 0, margin: "16px 0 0", display: "grid", gap: 10 }}>
         {rows.map((row) => (
-          <li key={row.courseSlug} style={{ minWidth: 0, padding: '14px 16px', border: `1px solid ${T.lineLight}`, borderRadius: 12, background: 'var(--skylent-surface-elevated)' }}>
-            <strong style={{ color: C.ink, fontSize: 15 }}>{row.title}</strong>
-            <div style={{ color: C.slate, fontSize: 12, marginTop: 4 }}>{row.status}{row.adapterId ? ` · ${row.adapterId}` : ''}</div>
-            <p style={{ color: C.ink, fontSize: 13, lineHeight: 1.5, margin: '8px 0 0' }}>{row.learnerNote}</p>
+          <li key={row.id} style={{ minWidth: 0, padding: "14px 16px", border: `1px solid ${T.lineLight}`, borderRadius: 12, background: "var(--skylent-surface-elevated)" }}>
+            <strong style={{ color: C.ink, fontSize: 15 }}>{row.courseSlug}</strong>
+            <div style={{ color: C.slate, fontSize: 12, marginTop: 4 }}>{row.status}{row.adapterId ? ` · ${row.adapterId}` : ""} · revision {row.revision}</div>
+            <p style={{ color: C.ink, fontSize: 13, lineHeight: 1.5, margin: "8px 0" }}>{row.manifest.learnerNote}</p>
+            <p style={{ color: C.slate, fontSize: 12, margin: "0 0 8px" }}>{row.scores.map((score) => `${score.label} ${score.score}`).join(" · ")}</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <button type="button" className="os-btn os-btn-ghost" onClick={() => void act(row.id, "test")}>Test</button>
+              <button type="button" className="os-btn os-btn-ghost" onClick={() => void act(row.id, "approve")}>Approve</button>
+              <button type="button" className="os-btn os-btn-primary" onClick={() => void act(row.id, "publish")}>Publish</button>
+              <button type="button" className="os-btn os-btn-ghost" onClick={() => void act(row.id, "unpublish")}>Unpublish</button>
+              <button type="button" className="os-btn os-btn-ghost" onClick={() => void act(row.id, "revalidate")}>Revalidate</button>
+            </div>
           </li>
         ))}
       </ul>

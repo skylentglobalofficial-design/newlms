@@ -1,3 +1,7 @@
+/**
+ * Learner and test entry. The canonical module lives with the API so publication
+ * checks and the admin workflow share one implementation.
+ */
 export type {
   CourseSyllabus,
   ExerciseKind,
@@ -6,9 +10,9 @@ export type {
   WorkspaceAdapter,
   WorkspaceManifest,
   WorkspaceStatus,
-} from "./types"
-export { WORKSPACE_MANIFEST_VERSION } from "./types"
-export { PRACTICE_CAPABILITIES, capabilityById, missingCapabilities } from "./capabilities"
+} from "../../../server/src/lib/practice-platform/types.ts"
+export { WORKSPACE_MANIFEST_VERSION } from "../../../server/src/lib/practice-platform/types.ts"
+export { PRACTICE_CAPABILITIES, capabilityById, missingCapabilities } from "../../../server/src/lib/practice-platform/capabilities.ts"
 export {
   CASE_STUDIO_ADAPTER,
   EXAM_ADAPTER,
@@ -17,7 +21,7 @@ export {
   PROMPT_ADAPTER,
   SQL_LAB_ADAPTER,
   defaultWorkspaceAdapters,
-} from "./adapters"
-export { PUBLISHED_BINDINGS, publishedBindingFor, publishedBindingForProgramme } from "./bindings"
-export { provisionCourse, validateManifest } from "./provision"
-export { CATALOGUE_SYLLABI, provisionCatalogue } from "./catalogue"
+} from "../../../server/src/lib/practice-platform/adapters.ts"
+export { PUBLISHED_BINDINGS, publishedBindingFor, publishedBindingForProgramme } from "../../../server/src/lib/practice-platform/bindings.ts"
+export { provisionCourse, rankWorkspaceAdapters, validateManifest } from "../../../server/src/lib/practice-platform/provision.ts"
+export { CATALOGUE_SYLLABI, provisionCatalogue } from "../../../server/src/lib/practice-platform/catalogue.ts"

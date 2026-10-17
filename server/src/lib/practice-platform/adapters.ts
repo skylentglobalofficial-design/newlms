@@ -1,4 +1,4 @@
-import type { CourseSyllabus, WorkspaceAdapter } from "./types"
+import type { CourseSyllabus, WorkspaceAdapter } from "./types.js"
 
 function textOf(syllabus: CourseSyllabus): string {
   return [syllabus.title, ...syllabus.outcomes, ...syllabus.tools, ...syllabus.lessons.map((lesson) => `${lesson.title} ${lesson.exercise ?? ""}`)]
