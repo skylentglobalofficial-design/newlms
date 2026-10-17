@@ -1,7 +1,6 @@
 /**
- * /about (repolish). What Skylent is, now that the homepage no longer carries a "What Skylent is"
- * block: the products, how they connect, who they are for and how we work. No partner names,
- * learner counts or outcomes are stated.
+ * /about — company profile for the public Skylent site.
+ * Keep product descriptions accurate; do not invent partners, learner counts or outcomes.
  */
 import { Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
@@ -12,25 +11,25 @@ import "./HomeRepolish.css"
 import "./AboutRepolish.css"
 
 const PRODUCTS = [
-  { title: "Degrees", text: "Undergraduate and postgraduate degree pathways, online or on campus. Institutions are not confirmed yet.", to: "/education" },
-  { title: "Programmes", text: "Certification and professional programmes with lessons, labs and a capstone project.", to: "/programmes" },
-  { title: "Career OS", text: "One workspace for your profile, projects, evidence and applications.", to: "/career-os" },
-  { title: "Skylent AI", text: "A helper that suggests where to start and explains lessons as you learn.", to: "/#skylent-ai" },
+  { title: "Education", text: "Explore degree pathways and structured learning options. Degree availability depends on confirmed institutional arrangements.", to: "/education" },
+  { title: "Programmes", text: "Build practical skills through structured programmes, lessons and project-based work.", to: "/programmes" },
+  { title: "Career OS", text: "Bring your professional profile, projects, evidence and career activity into one workspace.", to: "/career-os" },
+  { title: "Skylent AI", text: "Get help navigating learning and understanding lessons through the tools available on the platform.", to: "/#skylent-ai" },
 ]
 
-const FLOW = ["Learn", "Practise", "Build proof", "Show what you can do", "Get career support"]
+const FLOW = ["Learn", "Practise", "Build work", "Show your skills", "Take the next step"]
 
 const AUDIENCES = [
-  { title: "Students", text: "Choose a UG or PG degree and add practical skills alongside it.", to: "/education" },
-  { title: "Working learners", text: "Pick up a job skill with a programme you can take at your own pace.", to: "/programmes" },
-  { title: "Career changers", text: "Build projects and a profile that show what you can do now.", to: "/career-os" },
-  { title: "Institutions", text: "Bring programmes, labs and Career OS to your own learners.", to: "/institutions" },
+  { title: "Students", text: "Explore education options and build practical skills alongside your studies.", to: "/education" },
+  { title: "Working learners", text: "Develop skills through structured programmes built around practical work.", to: "/programmes" },
+  { title: "Career changers", text: "Organise projects and professional evidence in one place.", to: "/career-os" },
+  { title: "Institutions", text: "Discuss learning programmes and digital learning support for your learners.", to: "/institutions" },
 ]
 
 const PRINCIPLES = [
-  { title: "Practice over slides", text: "Every programme asks you to do the work: queries, cases, projects." },
-  { title: "Your work stays yours", text: "What you build is kept in your profile, ready to show." },
-  { title: "Claims we can back", text: "We do not publish learner counts, placement rates or partner logos we cannot verify." },
+  { title: "Learning should lead to doing", text: "Lessons matter more when learners can apply ideas through exercises, cases and projects." },
+  { title: "Show the work, not just the claim", text: "We want learners to build a clearer record of what they have learned and made." },
+  { title: "Be clear about what is ready", text: "We avoid publishing learner counts, placement rates or partner logos that we cannot verify." },
 ]
 
 export default function AboutPage() {
@@ -42,11 +41,10 @@ export default function AboutPage() {
           <div className="sky-container hx-hero__inner">
             <p className="hx-eyebrow">About Skylent</p>
             <h1 id="abx-title" className="hx-hero__title">
-              Education, practice and careers, <em>built as one system.</em>
+              Education should lead somewhere. <em>We’re building the path.</em>
             </h1>
             <p className="hx-hero__lead">
-              Most learning stops at the lesson. Skylent carries it on: what you study becomes practice, practice becomes a finished piece
-              of work, and that work stays in a profile you can show.
+              Skylent brings education, practical learning and career tools into one connected experience. The idea is simple: learn something, put it to work, and keep a clearer record of what you can do.
             </p>
             <div className="hx-hero__actions">
               <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
@@ -54,7 +52,7 @@ export default function AboutPage() {
                 <ArrowRight />
               </Link>
               <Link className="sk-btn hx-btn hx-btn--ghost" to="/contact">
-                Contact us
+                Talk to Skylent
               </Link>
             </div>
           </div>
@@ -64,12 +62,12 @@ export default function AboutPage() {
           <div className="sky-container">
             <div className="hx-head">
               <div>
-                <p className="hx-eyebrow hx-eyebrow--dark">What we do</p>
+                <p className="hx-eyebrow hx-eyebrow--dark">What we’re building</p>
                 <h2 id="abx-products" className="hx-h2">
-                  Four parts, <em>one platform.</em>
+                  Education, skills and careers. <em>Connected.</em>
                 </h2>
               </div>
-              <p className="hx-head__aside">Each part works on its own. Together they take a learner from a first lesson to a profile they can show.</p>
+              <p className="hx-head__aside">Skylent is being built as a connected learning platform—not just a place to browse courses. Explore the parts that are available today.</p>
             </div>
             <ul className="abx-products">
               {PRODUCTS.map((product) => (
@@ -93,12 +91,12 @@ export default function AboutPage() {
         <section className="abx-section abx-section--tint" aria-labelledby="abx-who">
           <div className="sky-container abx-who">
             <div className="abx-who__media">
-              <img src={teamPhoto} alt="A team around a table with laptops and notebooks, working through a review together." loading="lazy" decoding="async" />
+              <img src={teamPhoto} alt="People working together around a table with laptops and notebooks." loading="lazy" decoding="async" />
             </div>
             <div>
               <p className="hx-eyebrow hx-eyebrow--dark">Who it is for</p>
               <h2 id="abx-who" className="hx-h2 hx-h2--sm">
-                Built for learners and the institutions that teach them.
+                For people learning, and the institutions that support them.
               </h2>
               <ul className="abx-audiences">
                 {AUDIENCES.map((item) => (
@@ -116,8 +114,8 @@ export default function AboutPage() {
 
         <section className="abx-section" aria-labelledby="abx-how">
           <div className="sky-container">
-            <p className="hx-eyebrow hx-eyebrow--dark">How we work</p>
-            <h2 id="abx-how" className="hx-h2 hx-h2--sm">Three things we hold to.</h2>
+            <p className="hx-eyebrow hx-eyebrow--dark">What guides us</p>
+            <h2 id="abx-how" className="hx-h2 hx-h2--sm">Build with purpose. Be honest about progress.</h2>
             <ul className="abx-principles">
               {PRINCIPLES.map((item) => (
                 <li key={item.title}>
@@ -133,15 +131,15 @@ export default function AboutPage() {
           <div className="hx-hero__glow" aria-hidden="true" />
           <div className="sky-container hx-close__inner">
             <h2 id="abx-close" className="hx-close__title">
-              Learn with Skylent, <em>or partner with us.</em>
+              See what’s taking shape. <em>Let’s talk.</em>
             </h2>
             <div className="hx-hero__actions">
               <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
                 Explore programmes
                 <ArrowRight />
               </Link>
-              <Link className="sk-btn hx-btn hx-btn--ghost" to="/institutions">
-                For institutions
+              <Link className="sk-btn hx-btn hx-btn--ghost" to="/contact?for=institution">
+                Partner with us
               </Link>
             </div>
           </div>
