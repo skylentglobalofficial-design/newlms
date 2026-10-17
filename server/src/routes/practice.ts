@@ -2,6 +2,7 @@ import { Router } from "express"
 import { z } from "zod"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { PracticeWorkspaceError, learnerPracticeWorkspace, saveLearnerPracticeResponse } from "../lib/practice-workspaces/service.js"
+import { PythonRuntimeUnavailable, pythonRuntime } from "../lib/practice-runtime/python.js"
 
 export const practiceRouter = Router()
 
@@ -27,6 +28,37 @@ practiceRouter.get("/workspaces/:courseSlug", requireAuth, async (req: Authentic
     res.json({ data: await learnerPracticeWorkspace(req.auth!.user.id, slug.data, lesson.data) })
   } catch (error) {
     sendError(res, error)
+  }
+})
+
+practiceRouter.post("/runtimes/python/execute", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const parsed = z.object({
+    courseSlug: slugSchema,
+    lessonId: z.string().min(1).max(40),
+    source: z.string().max(20000),
+  }).safeParse(req.body)
+  if (!parsed.success) {
+    res.status(400).json({ error: "Validation failed" })
+    return
+  }
+  const probe = await pythonRuntime.probe()
+  if (!probe.available) {
+    res.status(503).json({ error: probe.reason, code: "runtime_unavailable" })
+    return
+  }
+  try {
+    const result = await pythonRuntime.execute({
+      courseSlug: parsed.data.courseSlug,
+      lessonId: parsed.data.lessonId,
+      source: parsed.data.source,
+    })
+    res.json({ data: result })
+  } catch (error) {
+    if (error instanceof PythonRuntimeUnavailable) {
+      res.status(503).json({ error: error.message, code: error.code })
+      return
+    }
+    res.status(503).json({ error: "The Python runtime could not run that exercise.", code: "runtime_unavailable" })
   }
 })
 

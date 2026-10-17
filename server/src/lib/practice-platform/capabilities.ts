@@ -34,7 +34,7 @@ export const PRACTICE_CAPABILITIES: readonly PracticeCapability[] = [
   {
     id: "runtime.python",
     available: false,
-    detail: "No isolated Python runtime is configured. Notebooks and model training stay unpublished.",
+    detail: "No isolated Python runtime is configured. This environment has no container or sandbox runtime. Notebooks stay unpublished.",
   },
   {
     id: "runtime.javascript",
