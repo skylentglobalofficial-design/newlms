@@ -24,12 +24,17 @@ import {
   mapCatalogProgramDetail,
   type CatalogProgramSummary,
 } from "../src/lib/catalog-api.ts"
-import { partitionCatalogPrograms } from "../src/lib/programme-catalogue.ts"
+import { partitionCatalogPrograms, programmeSectionFromHash } from "../src/lib/programme-catalogue.ts"
 import { hasAuthoredProgrammePath } from "../src/lib/programme-discovery.ts"
 
 function assert(condition: unknown, message: string) {
   if (!condition) throw new Error(message)
 }
+
+assert(programmeSectionFromHash("#professional") === "professional", "Professional footer hash maps to the professional section")
+assert(programmeSectionFromHash("#certification") === "certification", "Certification footer hash maps to the certification section")
+assert(programmeSectionFromHash("#missing") === null, "Unknown programme hashes are not sections")
+assert(programmeSectionFromHash("") === null, "An empty hash is not a programme section")
 
 const da = courses.find((course) => course.slug === AUTHORED_COURSE_SLUG)
 assert(da, "Data Analytics must exist")
