@@ -485,6 +485,8 @@
   .pp-evtable tr,
   .pp-evtable th,
   .pp-evtable td { display: block; width: auto; min-width: 0; }
+  .pp-evtable :is(th, td):first-child,
+  .pp-evtable :is(th, td):nth-child(2) { width: 100%; }
   .pp-evtable tr { padding: 16px 0; border-bottom: 1px solid hsl(var(--site-proof-line)); }
   .pp-evtable th,
   .pp-evtable td { padding: 0; border-bottom: 0; }
