@@ -1,7 +1,12 @@
 import { Router } from "express"
 import { z } from "zod"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
-import { PracticeWorkspaceError, learnerPracticeWorkspace, saveLearnerPracticeResponse } from "../lib/practice-workspaces/service.js"
+import {
+  PracticeWorkspaceError,
+  authorizePythonExecution,
+  learnerPracticeWorkspace,
+  saveLearnerPracticeResponse,
+} from "../lib/practice-workspaces/service.js"
 import { PythonRuntimeUnavailable, pythonRuntime } from "../lib/practice-runtime/python.js"
 
 export const practiceRouter = Router()
@@ -10,7 +15,7 @@ const slugSchema = z.string().min(1).max(120).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
 function sendError(res: import("express").Response, error: unknown) {
   if (error instanceof PracticeWorkspaceError) {
-    res.status(error.status).json({ error: error.message })
+    res.status(error.status).json(error.body ?? { error: error.message })
     return
   }
   console.error("Learner practice workspace failed:", error instanceof Error ? error.message : "unknown")
@@ -41,12 +46,18 @@ practiceRouter.post("/runtimes/python/execute", requireAuth, requireCsrf, async 
     res.status(400).json({ error: "Validation failed" })
     return
   }
-  const probe = await pythonRuntime.probe()
-  if (!probe.available) {
-    res.status(503).json({ error: probe.reason, code: "runtime_unavailable" })
+  try {
+    await authorizePythonExecution(req.auth!.user.id, parsed.data.courseSlug, parsed.data.lessonId)
+  } catch (error) {
+    sendError(res, error)
     return
   }
   try {
+    const probe = await pythonRuntime.probe()
+    if (!probe.available) {
+      res.status(503).json({ error: probe.reason, code: "runtime_unavailable" })
+      return
+    }
     const result = await pythonRuntime.execute({
       courseSlug: parsed.data.courseSlug,
       lessonId: parsed.data.lessonId,

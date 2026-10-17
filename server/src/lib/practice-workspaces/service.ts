@@ -1,6 +1,12 @@
 import { Prisma, type PracticeWorkspaceStatus } from "@prisma/client"
 import { prisma } from "../prisma.js"
-import { findCourseBySlug, findNodeByLessonKey, loadLessonStates, resolveCourseEnrollment } from "../lms.js"
+import {
+  assertLessonUnlocked,
+  findCourseBySlug,
+  findNodeByLessonKey,
+  loadLessonStates,
+  resolveCourseEnrollment,
+} from "../lms.js"
 import {
   provisionCourse,
   publishedBindingFor,
@@ -32,6 +38,7 @@ export class PracticeWorkspaceError extends Error {
   constructor(
     message: string,
     readonly status: number,
+    readonly body?: Record<string, unknown>,
   ) {
     super(message)
   }
@@ -491,6 +498,42 @@ async function publishedWorkspaceForLearner(userId: string, courseSlug: string, 
     }
   }
   return { course, row, manifest, config: asConfig(row.config), userId }
+}
+
+/**
+ * Server-side gate for the closed Python route.
+ * Publication, enrolment, and the lesson lock come from the database.
+ * A client body cannot claim any of them. Nothing is executed here.
+ */
+export async function authorizePythonExecution(userId: string, courseSlug: string, lessonId: string) {
+  const course = await findCourseBySlug(courseSlug)
+  if (!course) throw new PracticeWorkspaceError("Course not found", 404)
+  const enrollment = await resolveCourseEnrollment(userId, course.id)
+  if (!enrollment) throw new PracticeWorkspaceError("Enrol in this course to open its workspace.", 403)
+  const located = await findNodeByLessonKey(course, lessonId)
+  if (!located) throw new PracticeWorkspaceError("Lesson not found", 404)
+  const states = await loadLessonStates(enrollment, course)
+  const unlock = assertLessonUnlocked(course, lessonId, states)
+  if (!unlock.ok) throw new PracticeWorkspaceError(unlock.body.error, unlock.status, unlock.body)
+
+  const binding = publishedBindingFor(courseSlug)
+  if (binding && binding.lessonIds.includes(lessonId)) {
+    if (binding.adapterId !== "python-notebook") {
+      throw new PracticeWorkspaceError("This workspace does not run Python.", 403)
+    }
+    return
+  }
+
+  const row = await prisma.practiceWorkspace.findUnique({ where: { courseSlug } })
+  const manifest = row ? asManifest(row.manifest) : null
+  const listed = Boolean(manifest?.lessonIds.includes(lessonId))
+  if (row?.status === "published" && listed && row.adapterId === "python-notebook" && manifest?.status === "published") {
+    return
+  }
+  if (row?.status === "published" && listed) {
+    throw new PracticeWorkspaceError("This workspace does not run Python.", 403)
+  }
+  throw new PracticeWorkspaceError("This course has no published workspace.", 404)
 }
 
 export async function learnerPracticeWorkspace(userId: string, courseSlug: string, lessonId?: string) {
