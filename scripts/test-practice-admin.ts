@@ -82,7 +82,7 @@ async function main() {
       level: "Beginner",
       duration: "1 week",
       mode: "Self-paced",
-      lessonCount: 1,
+      lessonCount: 2,
       projectCount: 0,
       rating: 0,
       reviews: 0,
@@ -97,7 +97,12 @@ async function main() {
           sourceId: "m1",
           order: 0,
           title: "Case",
-          nodes: { create: { sourceId: "l1", order: 0, title: "Read the store notes", nodeType: "NOTES" } },
+          nodes: {
+            create: [
+              { sourceId: "l1", order: 0, title: "Read the store notes", nodeType: "NOTES" },
+              { sourceId: "l2", order: 1, title: "Write the recommendation", nodeType: "NOTES" },
+            ],
+          },
         },
       },
     },
@@ -119,7 +124,10 @@ async function main() {
       title: "Store operations brief",
       outcomes: ["Frame one operations problem"],
       tools: ["case notes"],
-      lessons: [{ id: "l1", title: "Read the store notes", type: "notes", exercise: "case" }],
+      lessons: [
+        { id: "l1", title: "Read the store notes", type: "notes", exercise: "case" },
+        { id: "l2", title: "Write the recommendation", type: "notes", exercise: "case" },
+      ],
     },
   })
   assert(created.response.status === 201, `Create failed: ${JSON.stringify(created.data)}`)
@@ -139,7 +147,7 @@ async function main() {
   const configured = await request(adminJar, `/admin/practice-workspaces/${id}`, {
     method: "PATCH",
     csrf: true,
-    body: { adapterId: "case-studio", lessonIds: ["l1"], caseTitle: "Store operations brief", caseNotes: notes, datasetId: null },
+    body: { adapterId: "case-studio", lessonIds: ["l1", "l2"], caseTitle: "Store operations brief", caseNotes: notes, datasetId: null },
   })
   assert(configured.response.status === 200 && configured.data.data.status === "ready", `Configuration should be ready: ${JSON.stringify(configured.data)}`)
 
@@ -167,6 +175,41 @@ async function main() {
     body: { body: "The store needs a written owner for weekend delivery failures." },
   })
   assert(saved.response.status === 200, `Saving the written response failed: ${JSON.stringify(saved.data)}`)
+  const reloaded = await request(studentJar, `/practice/workspaces/${slug}?lesson=l1`)
+  assert(reloaded.data.data.savedBody === "The store needs a written owner for weekend delivery failures.", "The learner sees only their saved writing")
+  const locked = await request(studentJar, `/practice/workspaces/${slug}/responses/l2`, {
+    method: "PUT",
+    csrf: true,
+    body: { body: "This lesson is still locked." },
+  })
+  assert(locked.response.status === 403, `A locked lesson must not accept writing: ${JSON.stringify(locked.data)}`)
+  const lockedRead = await request(studentJar, `/practice/workspaces/${slug}?lesson=l2`)
+  assert(lockedRead.response.status === 403, "A locked lesson must not open the workspace")
+
+  const duplicate = await request(adminJar, "/admin/practice-workspaces", {
+    method: "POST",
+    csrf: true,
+    body: {
+      courseSlug: slug,
+      title: "Store operations brief",
+      outcomes: ["Frame one operations problem"],
+      tools: ["case notes"],
+      lessons: [{ id: "l1", title: "Read the store notes", type: "notes", exercise: "case" }],
+    },
+  })
+  assert(duplicate.response.status === 409, `A second workspace for the same course must be refused: ${duplicate.response.status}`)
+
+  const missingCsrf = await request(adminJar, `/admin/practice-workspaces/${id}/publish`, { method: "POST", body: {} })
+  assert(missingCsrf.response.status === 403, "Publication without a CSRF token is refused")
+  const badId = await request(adminJar, "/admin/practice-workspaces/not-a-uuid")
+  assert(badId.response.status === 404, "A malformed workspace id is not found")
+
+  const removed = await request(adminJar, `/admin/practice-workspaces/${id}/unpublish`, { method: "POST", csrf: true, body: {} })
+  assert(removed.response.status === 200 && removed.data.data.status === "ready", "Unpublish returns the workspace to ready")
+  const kept = await prisma.practiceWorkspaceResponse.count({ where: { workspaceId: id, userId: studentId } })
+  assert(kept === 1, "Unpublishing keeps the learner's saved writing")
+  const closed = await request(studentJar, `/practice/workspaces/${slug}`)
+  assert(closed.response.status === 404, "An unpublished workspace is closed to learners")
 
   const replaced = await request(adminJar, "/admin/practice-workspaces", {
     method: "POST",

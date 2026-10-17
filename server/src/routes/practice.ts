@@ -18,12 +18,13 @@ function sendError(res: import("express").Response, error: unknown) {
 
 practiceRouter.get("/workspaces/:courseSlug", requireAuth, async (req: AuthenticatedRequest, res) => {
   const slug = slugSchema.safeParse(req.params.courseSlug)
-  if (!slug.success) {
+  const lesson = z.string().min(1).max(40).optional().safeParse(typeof req.query.lesson === "string" ? req.query.lesson : undefined)
+  if (!slug.success || !lesson.success) {
     res.status(400).json({ error: "Invalid course" })
     return
   }
   try {
-    res.json({ data: await learnerPracticeWorkspace(req.auth!.user.id, slug.data) })
+    res.json({ data: await learnerPracticeWorkspace(req.auth!.user.id, slug.data, lesson.data) })
   } catch (error) {
     sendError(res, error)
   }

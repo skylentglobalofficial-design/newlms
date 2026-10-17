@@ -134,13 +134,13 @@ export default function LearnPage() {
       return
     }
     const controller = new AbortController()
-    fetchLearnerPracticeWorkspace(slug, controller.signal)
+    fetchLearnerPracticeWorkspace(slug, selectedLessonId || undefined, controller.signal)
       .then((workspace) => setDynamicPractice(workspace))
       .catch(() => {
         if (!controller.signal.aborted) setDynamicPractice(null)
       })
     return () => controller.abort()
-  }, [slug, user])
+  }, [slug, user, selectedLessonId])
 
   useEffect(() => {
     stageRef.current?.scrollTo({ top: 0 })

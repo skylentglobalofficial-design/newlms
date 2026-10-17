@@ -1,6 +1,6 @@
 import { Prisma, type PracticeWorkspaceStatus } from "@prisma/client"
 import { prisma } from "../prisma.js"
-import { resolveCourseEnrollment } from "../lms.js"
+import { findCourseBySlug, findNodeByLessonKey, loadLessonStates, resolveCourseEnrollment } from "../lms.js"
 import {
   provisionCourse,
   publishedBindingFor,
@@ -189,6 +189,28 @@ export function evaluateWorkspace(syllabus: CourseSyllabus, config: WorkspaceCon
   }
 }
 
+function isUniqueConstraint(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002"
+}
+
+async function updateCurrent(
+  tx: Prisma.TransactionClient,
+  id: string,
+  revision: number,
+  data: Prisma.PracticeWorkspaceUncheckedUpdateManyInput,
+) {
+  const updated = await tx.practiceWorkspace.updateMany({
+    where: { id, revision },
+    data: { ...data, revision: revision + 1 },
+  })
+  if (updated.count !== 1) {
+    throw new PracticeWorkspaceError("This workspace was updated. Review the latest revision before trying again.", 409)
+  }
+  const row = await tx.practiceWorkspace.findUnique({ where: { id } })
+  if (!row) throw new PracticeWorkspaceError("Workspace not found", 404)
+  return row
+}
+
 async function writeRevision(
   tx: Prisma.TransactionClient,
   workspaceId: string,
@@ -257,23 +279,30 @@ export async function createPracticeWorkspace(actorId: string, syllabus: CourseS
     throw new PracticeWorkspaceError("A syllabus match cannot publish a workspace.", 409)
   }
   const config = emptyConfig()
-  const created = await prisma.$transaction(async (tx) => {
-    const row = await tx.practiceWorkspace.create({
-      data: {
-        courseSlug: syllabus.courseSlug,
-        programmeSlug: syllabus.programmeSlug ?? null,
-        syllabus: json(syllabus),
-        manifest: json(recommendation),
-        config: json(config),
-        status: recommendation.status,
-        adapterId: recommendation.adapterId,
-        revision: 1,
-      },
+  try {
+    const created = await prisma.$transaction(async (tx) => {
+      const row = await tx.practiceWorkspace.create({
+        data: {
+          courseSlug: syllabus.courseSlug,
+          programmeSlug: syllabus.programmeSlug ?? null,
+          syllabus: json(syllabus),
+          manifest: json(recommendation),
+          config: json(config),
+          status: recommendation.status,
+          adapterId: recommendation.adapterId,
+          revision: 1,
+        },
+      })
+      await writeRevision(tx, row.id, 1, recommendation.status, recommendation, config, actorId, "recommend")
+      return row
     })
-    await writeRevision(tx, row.id, 1, recommendation.status, recommendation, config, actorId, "recommend")
-    return row
-  })
-  return present(created)
+    return present(created)
+  } catch (error) {
+    if (isUniqueConstraint(error)) {
+      throw new PracticeWorkspaceError("A workspace for this course already exists.", 409)
+    }
+    throw error
+  }
 }
 
 export async function listPracticeWorkspaces() {
@@ -297,22 +326,17 @@ export async function configurePracticeWorkspace(actorId: string, id: string, pa
   const manifest = evaluateWorkspace(current.syllabus as unknown as CourseSyllabus, config)
   const errors = validateManifest({ ...manifest, status: manifest.status === "ready" ? "needs_review" : manifest.status })
   if (errors.length) throw new PracticeWorkspaceError(errors[0], 400)
-  const revision = current.revision + 1
   const updated = await prisma.$transaction(async (tx) => {
-    const row = await tx.practiceWorkspace.update({
-      where: { id },
-      data: {
-        manifest: json(manifest),
-        config: json(config),
-        status: manifest.status,
-        adapterId: manifest.adapterId,
-        revision,
-        approvedAt: null,
-        approvedById: null,
-        publishedAt: null,
-      },
+    const row = await updateCurrent(tx, id, current.revision, {
+      manifest: json(manifest),
+      config: json(config),
+      status: manifest.status,
+      adapterId: manifest.adapterId,
+      approvedAt: null,
+      approvedById: null,
+      publishedAt: null,
     })
-    await writeRevision(tx, id, revision, manifest.status, manifest, config, actorId, "configure")
+    await writeRevision(tx, id, row.revision, manifest.status, manifest, config, actorId, "configure")
     return row
   })
   return present(updated)
@@ -328,13 +352,13 @@ export async function approvePracticeWorkspace(actorId: string, id: string) {
   if (manifest.status !== "ready") {
     throw new PracticeWorkspaceError(manifest.learnerNote, 409)
   }
-  const revision = current.revision + 1
   const updated = await prisma.$transaction(async (tx) => {
-    const row = await tx.practiceWorkspace.update({
-      where: { id },
-      data: { approvedAt: new Date(), approvedById: actorId, revision, manifest: json(manifest) },
+    const row = await updateCurrent(tx, id, current.revision, {
+      approvedAt: new Date(),
+      approvedById: actorId,
+      manifest: json(manifest),
     })
-    await writeRevision(tx, id, revision, "ready", manifest, asConfig(current.config), actorId, "approve")
+    await writeRevision(tx, id, row.revision, "ready", manifest, asConfig(current.config), actorId, "approve")
     return row
   })
   return present(updated)
@@ -344,7 +368,7 @@ export async function publishPracticeWorkspace(actorId: string, id: string) {
   return prisma.$transaction(async (tx) => {
     const current = await tx.practiceWorkspace.findUnique({ where: { id } })
     if (!current) throw new PracticeWorkspaceError("Workspace not found", 404)
-    if (!current.approvedAt || !current.approvedById) {
+    if (current.status !== "ready" || !current.approvedAt || !current.approvedById) {
       throw new PracticeWorkspaceError("Approve the validated workspace before publishing it.", 409)
     }
     const config = asConfig(current.config)
@@ -358,17 +382,12 @@ export async function publishPracticeWorkspace(actorId: string, id: string) {
     }
     const errors = validateManifest(published)
     if (errors.length) throw new PracticeWorkspaceError(errors[0], 400)
-    const revision = current.revision + 1
-    const row = await tx.practiceWorkspace.update({
-      where: { id },
-      data: {
-        status: "published",
-        manifest: json(published),
-        publishedAt: new Date(),
-        revision,
-      },
+    const row = await updateCurrent(tx, id, current.revision, {
+      status: "published",
+      manifest: json(published),
+      publishedAt: new Date(),
     })
-    await writeRevision(tx, id, revision, "published", published, config, actorId, "publish")
+    await writeRevision(tx, id, row.revision, "published", published, config, actorId, "publish")
     return present(row)
   })
 }
@@ -378,20 +397,15 @@ export async function rejectPracticeWorkspace(actorId: string, id: string, note:
   if (!current) throw new PracticeWorkspaceError("Workspace not found", 404)
   if (current.status === "published") throw new PracticeWorkspaceError("Unpublish this workspace before rejecting it.", 409)
   const manifest = { ...asManifest(current.manifest), status: "needs_review" as const, href: null, learnerNote: note }
-  const revision = current.revision + 1
   const updated = await prisma.$transaction(async (tx) => {
-    const row = await tx.practiceWorkspace.update({
-      where: { id },
-      data: {
-        status: "needs_review",
-        manifest: json(manifest),
-        approvedAt: null,
-        approvedById: null,
-        publishedAt: null,
-        revision,
-      },
+    const row = await updateCurrent(tx, id, current.revision, {
+      status: "needs_review",
+      manifest: json(manifest),
+      approvedAt: null,
+      approvedById: null,
+      publishedAt: null,
     })
-    await writeRevision(tx, id, revision, "needs_review", manifest, asConfig(current.config), actorId, "reject", note)
+    await writeRevision(tx, id, row.revision, "needs_review", manifest, asConfig(current.config), actorId, "reject", note)
     return row
   })
   return present(updated)
@@ -402,13 +416,13 @@ export async function unpublishPracticeWorkspace(actorId: string, id: string) {
   if (!current) throw new PracticeWorkspaceError("Workspace not found", 404)
   if (current.status !== "published") throw new PracticeWorkspaceError("This workspace is not published.", 409)
   const manifest = { ...asManifest(current.manifest), status: "ready" as const, href: null }
-  const revision = current.revision + 1
   const updated = await prisma.$transaction(async (tx) => {
-    const row = await tx.practiceWorkspace.update({
-      where: { id },
-      data: { status: "ready", publishedAt: null, manifest: json(manifest), revision },
+    const row = await updateCurrent(tx, id, current.revision, {
+      status: "ready",
+      publishedAt: null,
+      manifest: json(manifest),
     })
-    await writeRevision(tx, id, revision, "ready", manifest, asConfig(current.config), actorId, "unpublish")
+    await writeRevision(tx, id, row.revision, "ready", manifest, asConfig(current.config), actorId, "unpublish")
     return row
   })
   return present(updated)
@@ -425,21 +439,16 @@ export async function revalidatePracticeWorkspace(actorId: string, id: string) {
     const errors = validateManifest(stored)
     if (errors.length) throw new PracticeWorkspaceError(errors[0], 400)
   }
-  const revision = current.revision + 1
   const updated = await prisma.$transaction(async (tx) => {
-    const row = await tx.practiceWorkspace.update({
-      where: { id },
-      data: {
-        status: nextStatus,
-        manifest: json(stored),
-        adapterId: stored.adapterId,
-        publishedAt: nextStatus === "published" ? current.publishedAt : null,
-        approvedAt: nextStatus === "ready" || nextStatus === "published" ? current.approvedAt : null,
-        approvedById: nextStatus === "ready" || nextStatus === "published" ? current.approvedById : null,
-        revision,
-      },
+    const row = await updateCurrent(tx, id, current.revision, {
+      status: nextStatus,
+      manifest: json(stored),
+      adapterId: stored.adapterId,
+      publishedAt: nextStatus === "published" ? current.publishedAt : null,
+      approvedAt: nextStatus === "ready" || nextStatus === "published" ? current.approvedAt : null,
+      approvedById: nextStatus === "ready" || nextStatus === "published" ? current.approvedById : null,
     })
-    await writeRevision(tx, id, revision, nextStatus, stored, config, actorId, "revalidate")
+    await writeRevision(tx, id, row.revision, nextStatus, stored, config, actorId, "revalidate")
     return row
   })
   return present(updated)
@@ -458,15 +467,39 @@ export function testPracticeWorkspace(row: ReturnType<typeof present>) {
   return { ok: false, detail: row.manifest.learnerNote }
 }
 
-export async function learnerPracticeWorkspace(userId: string, courseSlug: string) {
-  const course = await prisma.course.findUnique({ where: { slug: courseSlug } })
+async function publishedWorkspaceForLearner(userId: string, courseSlug: string, lessonId?: string) {
+  const course = await findCourseBySlug(courseSlug)
   if (!course) throw new PracticeWorkspaceError("Course not found", 404)
   const enrollment = await resolveCourseEnrollment(userId, course.id)
   if (!enrollment) throw new PracticeWorkspaceError("Enrol in this course to open its workspace.", 403)
   const row = await prisma.practiceWorkspace.findUnique({ where: { courseSlug } })
   if (!row || row.status !== "published") throw new PracticeWorkspaceError("This course has no published workspace.", 404)
-  const config = asConfig(row.config)
+  const states = await loadLessonStates(enrollment, course)
   const manifest = asManifest(row.manifest)
+  const openLesson = async (id: string) => {
+    const located = await findNodeByLessonKey(course, id)
+    return Boolean(located && states[id] && !states[id].locked)
+  }
+  if (lessonId) {
+    if (!manifest.lessonIds.includes(lessonId) || !(await openLesson(lessonId))) {
+      throw new PracticeWorkspaceError("That lesson is not open for this workspace.", 403)
+    }
+  } else {
+    const opened = await Promise.all(manifest.lessonIds.map((id) => openLesson(id)))
+    if (!opened.some(Boolean)) {
+      throw new PracticeWorkspaceError("That lesson is not open for this workspace.", 403)
+    }
+  }
+  return { course, row, manifest, config: asConfig(row.config), userId }
+}
+
+export async function learnerPracticeWorkspace(userId: string, courseSlug: string, lessonId?: string) {
+  const { course, row, manifest, config } = await publishedWorkspaceForLearner(userId, courseSlug, lessonId)
+  const saved = lessonId
+    ? await prisma.practiceWorkspaceResponse.findUnique({
+        where: { workspaceId_userId_lessonId: { workspaceId: row.id, userId, lessonId } },
+      })
+    : null
   return {
     courseSlug,
     courseTitle: course.title,
@@ -477,19 +510,17 @@ export async function learnerPracticeWorkspace(userId: string, courseSlug: strin
     href: manifest.href,
     caseTitle: config.caseTitle,
     caseNotes: config.caseNotes,
+    savedBody: saved?.body ?? null,
   }
 }
 
 export async function saveLearnerPracticeResponse(userId: string, courseSlug: string, lessonId: string, body: string) {
-  const visible = await learnerPracticeWorkspace(userId, courseSlug)
+  const visible = await learnerPracticeWorkspace(userId, courseSlug, lessonId)
   if (visible.adapterId !== "case-studio") {
     throw new PracticeWorkspaceError("This workspace does not save a written response.", 409)
   }
-  if (!visible.lessonIds.includes(lessonId)) {
-    throw new PracticeWorkspaceError("That lesson is not part of this workspace.", 403)
-  }
   const workspace = await prisma.practiceWorkspace.findUnique({ where: { courseSlug } })
-  if (!workspace) throw new PracticeWorkspaceError("This course has no published workspace.", 404)
+  if (!workspace || workspace.status !== "published") throw new PracticeWorkspaceError("This course has no published workspace.", 404)
   const saved = await prisma.practiceWorkspaceResponse.upsert({
     where: { workspaceId_userId_lessonId: { workspaceId: workspace.id, userId, lessonId } },
     create: { workspaceId: workspace.id, userId, lessonId, body },

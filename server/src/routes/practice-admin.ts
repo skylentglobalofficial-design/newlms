@@ -49,7 +49,11 @@ const configSchema = z.object({
 })
 
 function routeId(value: string | string[]): string {
-  return Array.isArray(value) ? value[0] : value
+  const id = Array.isArray(value) ? value[0] : value
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)) {
+    throw new PracticeWorkspaceError("Workspace not found", 404)
+  }
+  return id
 }
 
 function sendError(res: import("express").Response, error: unknown) {

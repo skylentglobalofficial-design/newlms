@@ -16,9 +16,10 @@ export default function PracticeWorkspacePage() {
   useEffect(() => {
     const controller = new AbortController()
     setStatus("loading")
-    fetchLearnerPracticeWorkspace(courseSlug, controller.signal)
+    fetchLearnerPracticeWorkspace(courseSlug, lessonId || undefined, controller.signal)
       .then((data) => {
         setWorkspace(data)
+        setDraft(data.savedBody ?? "")
         setStatus("ready")
       })
       .catch((error: unknown) => {
@@ -27,7 +28,7 @@ export default function PracticeWorkspacePage() {
         setStatus("error")
       })
     return () => controller.abort()
-  }, [courseSlug])
+  }, [courseSlug, lessonId])
 
   async function onSave() {
     if (!workspace || !lessonId) return
@@ -77,7 +78,7 @@ export default function PracticeWorkspacePage() {
         </div>
       </header>
       <div className="lab-body">
-        <section className="lab-workspace" style={{ maxWidth: 820 }}>
+        <section className="lab-workspace" style={{ maxWidth: 820, minWidth: 0 }}>
           <p className="os-eyebrow">Practice</p>
           <h1>{workspace.caseTitle || workspace.title}</h1>
           <p>{workspace.learnerNote}</p>
@@ -85,7 +86,7 @@ export default function PracticeWorkspacePage() {
           {lessonAllowed ? (
             <>
               <label htmlFor="practice-response">Your notes for this lesson</label>
-              <textarea id="practice-response" value={draft} onChange={(event) => setDraft(event.target.value)} rows={6} maxLength={8000} />
+              <textarea id="practice-response" value={draft} onChange={(event) => setDraft(event.target.value)} rows={6} maxLength={8000} style={{ width: "100%", maxWidth: "100%", boxSizing: "border-box" }} />
               <button type="button" className="os-btn os-btn-primary" disabled={saving || draft.trim().length === 0} onClick={() => void onSave()}>
                 {saving ? "Saving…" : "Save"}
               </button>
