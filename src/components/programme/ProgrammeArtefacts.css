@@ -123,7 +123,10 @@
   tab-size: 2;
 }
 
-.pa-lab__out { display: flex; flex-wrap: wrap; overflow: hidden; }
+.pa-lab { min-width: 0; max-width: 100%; }
+.pa-lab__code { min-width: 0; max-width: 100%; }
+.pa-lab__sql { max-width: 100%; overflow-x: auto; }
+.pa-lab__out { display: flex; flex-wrap: wrap; min-width: 0; max-width: 100%; }
 .pa-lab__result,
 .pa-lab__chart {
   min-width: 0;
@@ -133,6 +136,12 @@
 }
 .pa-lab__result { flex: 1 1 230px; padding-bottom: 14px; }
 .pa-lab__chart { flex: 1.35 1 280px; border-left: 1px solid hsl(var(--site-border)); margin-left: -1px; }
+@media (max-width: 1099px) {
+  .pa-lab__out { flex-direction: column; }
+  .pa-lab__result,
+  .pa-lab__chart { flex: none; width: 100%; }
+  .pa-lab__chart { border-left: 0; margin-left: 0; }
+}
 .pa-lab__result .sky-label { margin: 0; }
 .pa-lab__rows {
   margin: 10px 0 0;
