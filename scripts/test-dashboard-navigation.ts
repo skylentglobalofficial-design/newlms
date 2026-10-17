@@ -51,4 +51,13 @@ if (!dashboard.includes('to="/courses"')) {
   throw new Error("Empty-state call to action should point to /courses")
 }
 
+const publicNav = readFileSync(new URL("../src/components/shared.tsx", import.meta.url), "utf8")
+const pathCta = publicNav.slice(publicNav.indexOf("const pathCta"), publicNav.indexOf("const pathCta") + 500)
+if (!pathCta.includes("label: 'Learning workspace'")) {
+  throw new Error("The header action should name the learning workspace")
+}
+if (pathCta.includes("returnTo")) {
+  throw new Error("The header sign-in action must not force the student dashboard")
+}
+
 console.log("dashboard-navigation ok")
