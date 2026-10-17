@@ -36,6 +36,27 @@ assert(notebook.missing.some((row) => /isolated Python runtime/i.test(row)), "Th
 const prisma = new PrismaClient()
 const slug = `py-auth-${Date.now().toString(36)}`
 const secret = `print('learner-secret-marker-${Date.now().toString(36)}')`
+const temporaryEnrollmentIds: string[] = []
+let temporaryProgramId: string | null = null
+
+async function completeLessonsBefore(enrollmentId: string, courseSlug: string, lessonId: string) {
+  const course = await prisma.course.findUnique({
+    where: { slug: courseSlug },
+    include: { curriculum: { orderBy: { order: "asc" }, include: { nodes: { orderBy: { order: "asc" } } } } },
+  })
+  assert(course, `${courseSlug} must exist in this database`)
+  const nodes = course.curriculum.flatMap((module) => module.nodes)
+  const index = nodes.findIndex((node) => node.sourceId === lessonId)
+  assert(index > 0, `${courseSlug} lesson ${lessonId} was not found after earlier lessons`)
+  const now = new Date()
+  for (const node of nodes.slice(0, index)) {
+    await prisma.lessonProgress.upsert({
+      where: { enrollmentId_nodeId: { enrollmentId, nodeId: node.id } },
+      create: { enrollmentId, nodeId: node.id, completedAt: now, lastAccessedAt: now },
+      update: { completedAt: now },
+    })
+  }
+}
 
 function manifest(adapterId: string, status: "pending_infrastructure" | "published") {
   return {
@@ -217,6 +238,69 @@ async function main() {
   assert(!closed.body.includes("learner-secret-marker"), "The closed runtime echoed learner source")
   assert(!/"stdout"|stderr|durationMs/.test(closed.body), "The closed runtime invented execution output")
 
+  await prisma.practiceWorkspace.update({
+    where: { id: workspace.id },
+    data: {
+      status: "published",
+      adapterId: "python-notebook",
+      manifest: manifest("case-studio", "published"),
+    },
+  })
+  const mismatched = await execute(learner, slug, "l1")
+  refuse(mismatched, 403, "Mismatched notebook manifest")
+  assert(mismatched.data?.error === "This workspace does not run Python.", "A python-notebook column cannot override a different manifest adapter")
+
+  const analytics = await prisma.course.findUnique({ where: { slug: "data-analytics" }, select: { id: true } })
+  assert(analytics, "Data Analytics must exist in this database")
+  const product = await prisma.course.findUnique({ where: { slug: "product-management" }, select: { id: true } })
+  assert(product, "Product Management must exist in this database")
+
+  const analyticsJar: Jar = new Map()
+  const analyticsId = await signup(analyticsJar, "analytics")
+  const analyticsEnrollment = await prisma.userEnrollment.create({ data: { userId: analyticsId, courseId: analytics.id, status: "active" } })
+  temporaryEnrollmentIds.push(analyticsEnrollment.id)
+  await completeLessonsBefore(analyticsEnrollment.id, "data-analytics", "l7")
+  const analyticsPython = await execute(analyticsJar, "data-analytics", "l7")
+  refuse(analyticsPython, 403, "Unlocked Data Analytics l7")
+  assert(analyticsPython.data?.error === "This workspace does not run Python.", "Northwind SQL is not a Python workspace")
+
+  const harborJar: Jar = new Map()
+  const harborId = await signup(harborJar, "harbor")
+  const harborEnrollment = await prisma.userEnrollment.create({ data: { userId: harborId, courseId: product.id, status: "active" } })
+  temporaryEnrollmentIds.push(harborEnrollment.id)
+  await completeLessonsBefore(harborEnrollment.id, "product-management", "l6")
+  const harborPython = await execute(harborJar, "product-management", "l6")
+  refuse(harborPython, 403, "Unlocked Harbor Desk l6")
+  assert(harborPython.data?.error === "This workspace does not run Python.", "Harbor Desk is not a Python workspace")
+
+  const programmeJar: Jar = new Map()
+  const programmeUserId = await signup(programmeJar, "programme")
+  const program = await prisma.program.create({
+    data: {
+      slug: `${slug}-program`,
+      name: "Unlinked programme",
+      duration: "1 week",
+      moduleCount: 0,
+      projectCount: 0,
+      format: "Self-paced",
+      cert: "None",
+      outcome: "Test only",
+      desc: "Disposable programme. It does not link Data Analytics.",
+      upcomingBatch: "None",
+      programType: "PROFESSIONAL",
+      level: "Beginner",
+      whoIsItFor: ["Test"],
+      whatYouWillLearn: ["Nothing"],
+      learningExperience: ["Test"],
+      programCourses: { create: { courseId: course.id, sortOrder: 0 } },
+    },
+  })
+  temporaryProgramId = program.id
+  await prisma.userEnrollment.create({ data: { userId: programmeUserId, programId: program.id, status: "active" } })
+  const unlinked = await execute(programmeJar, "data-analytics", "l1")
+  refuse(unlinked, 403, "Programme enrolment without the requested course")
+  assert(unlinked.data?.error === "Enrol in this course to open its workspace.", "An unlinked programme enrolment does not open another course")
+
   console.log("python runtime: closed")
 }
 
@@ -226,6 +310,8 @@ main()
     process.exitCode = 1
   })
   .finally(async () => {
+    if (temporaryProgramId) await prisma.program.delete({ where: { id: temporaryProgramId } }).catch(() => undefined)
+    if (temporaryEnrollmentIds.length) await prisma.userEnrollment.deleteMany({ where: { id: { in: temporaryEnrollmentIds } } })
     const row = await prisma.practiceWorkspace.findUnique({ where: { courseSlug: slug } })
     if (row) await prisma.practiceWorkspace.delete({ where: { id: row.id } })
     const course = await prisma.course.findUnique({ where: { slug } })

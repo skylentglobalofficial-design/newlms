@@ -526,8 +526,16 @@ export async function authorizePythonExecution(userId: string, courseSlug: strin
 
   const row = await prisma.practiceWorkspace.findUnique({ where: { courseSlug } })
   const manifest = row ? asManifest(row.manifest) : null
-  const listed = Boolean(manifest?.lessonIds.includes(lessonId))
-  if (row?.status === "published" && listed && row.adapterId === "python-notebook" && manifest?.status === "published") {
+  const lessonIds = Array.isArray(manifest?.lessonIds) ? manifest.lessonIds : []
+  const listed = lessonIds.includes(lessonId)
+  const manifestAdapter = typeof manifest?.adapterId === "string" ? manifest.adapterId : null
+  if (
+    row?.status === "published" &&
+    listed &&
+    row.adapterId === "python-notebook" &&
+    manifestAdapter === "python-notebook" &&
+    manifest?.status === "published"
+  ) {
     return
   }
   if (row?.status === "published" && listed) {

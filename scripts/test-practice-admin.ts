@@ -182,6 +182,13 @@ async function main() {
   assert(saved.response.status === 200, `Saving the written response failed: ${JSON.stringify(saved.data)}`)
   const reloaded = await request(studentJar, `/practice/workspaces/${slug}?lesson=l1`)
   assert(reloaded.data.data.savedBody === "The store needs a written owner for weekend delivery failures.", "The learner sees only their saved writing")
+  const peerJar: Jar = new Map()
+  const peerId = await signup(peerJar, "peer")
+  await prisma.userEnrollment.create({ data: { userId: peerId, courseId: course.id, status: "active" } })
+  const peerRead = await request(peerJar, `/practice/workspaces/${slug}?lesson=l1`)
+  assert(peerRead.response.status === 200, `A second enrolled learner should open the workspace: ${JSON.stringify(peerRead.data)}`)
+  assert(peerRead.data.data.savedBody == null, "A second learner cannot read the first learner's saved writing")
+  assert(!JSON.stringify(peerRead.data).includes("written owner"), "The saved writing is not included anywhere in the second learner's payload")
   const locked = await request(studentJar, `/practice/workspaces/${slug}/responses/l2`, {
     method: "PUT",
     csrf: true,
