@@ -117,6 +117,12 @@ export function partitionCatalogPrograms(catalogue: CatalogProgramSummary[]): {
   return { live, later }
 }
 
+/** Deep links used by the public nav and footer. Unknown hashes are not sections. */
+export function programmeSectionFromHash(hash: string): "professional" | "certification" | null {
+  if (hash === "#professional" || hash === "#certification") return hash.slice(1) as "professional" | "certification"
+  return null
+}
+
 export function programmeBuildLine(row: ProgrammeDiscoveryCard): string {
   if (row.visual === "northwind") {
     return row.capstone ? `Northwind Lab, then ${row.capstone}` : "Northwind Lab"
