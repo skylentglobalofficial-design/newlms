@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useParams, useSearchParams } from "react-router-dom"
 import { workspaceErrorMessage } from "../lib/http"
 import { isSignInError, learnerErrorMessage } from "../components/lms/lms-utils"
 import {
@@ -17,6 +17,7 @@ import {
   fetchCareerLinkForLearnerProject,
   type CareerProjectLink,
 } from "../lib/career-api"
+import HarborDeskStudio from "../components/labs/HarborDeskStudio"
 import LabSqlChart from "../components/labs/LabSqlChart"
 import { ProductSlice } from "../components/skylent/primitives"
 import "./LearnWorkspace.css"
@@ -29,6 +30,8 @@ function firstOpenTask(project: ProjectWorkspace) {
 
 export default function LearnerProjectPage() {
   const { courseSlug, projectType } = useParams<{ courseSlug: string; projectType: string }>()
+  const [searchParams] = useSearchParams()
+  const requestedTask = searchParams.get("task")
   const [project, setProject] = useState<ProjectWorkspace | null>(null)
   const [selectedKey, setSelectedKey] = useState<string | null>(null)
   const [finding, setFinding] = useState("")
@@ -63,7 +66,8 @@ export default function LearnerProjectPage() {
         setFinding(next.reflection.finding)
         setWhyItMatters(next.reflection.whyItMatters)
         setRecommendation(next.reflection.recommendation)
-        setSelectedKey(firstOpenTask(next)?.key ?? next.tasks[0]?.key ?? null)
+        const requested = requestedTask && next.tasks.some((task) => task.key === requestedTask) ? requestedTask : null
+        setSelectedKey(requested ?? firstOpenTask(next)?.key ?? next.tasks[0]?.key ?? null)
         setStatus("ready")
         setCareerLinkStatus("loading")
         void fetchCareerLinkForLearnerProject(next.id, controller.signal)
@@ -95,7 +99,7 @@ export default function LearnerProjectPage() {
         setError(learnerErrorMessage(err))
       })
     return () => controller.abort()
-  }, [courseSlug, projectType, attempt])
+  }, [courseSlug, projectType, attempt, requestedTask])
 
   const selected = useMemo(
     () => project?.tasks.find((task) => task.key === selectedKey) ?? project?.tasks[0] ?? null,
@@ -341,6 +345,7 @@ export default function LearnerProjectPage() {
           </aside>
 
           <section className="lab-workspace">
+            {project.projectType === "harbor-desk-case" ? <HarborDeskStudio /> : null}
             {selected ? (
               <>
                 <p className="os-eyebrow">

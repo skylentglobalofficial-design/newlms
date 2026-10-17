@@ -1230,6 +1230,50 @@
   font-size: 13px;
 }
 
+.practice-env {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.practice-env li,
+.practice-missing li {
+  min-width: 0;
+}
+
+.practice-env li {
+  padding: 16px;
+  border: 1px solid hsl(var(--site-ink) / 0.08);
+  border-radius: 12px;
+  background: var(--skylent-surface-elevated);
+}
+
+.practice-env h3 {
+  margin: 4px 0 0;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+}
+
+.practice-missing {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  max-width: 42em;
+  color: var(--skylent-color-slate);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.practice-missing li + li {
+  margin-top: 8px;
+}
+
+@media (max-width: 720px) {
+  .practice-env { grid-template-columns: 1fr; }
+}
+
 .cat-facts {
   display: flex;
   flex-wrap: wrap;

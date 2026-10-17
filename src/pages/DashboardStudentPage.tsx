@@ -19,6 +19,7 @@ import { fetchMyCertificates, issueCertificate, type SkylentCertificate } from '
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
 import { truthOf } from '../lib/truth'
 import { courseProductProfile } from '../lib/course-product'
+import { lessonPracticeLink, practiceEnvironmentForCourse } from '../lib/practice-environments'
 import { isAuthoredCourse } from '../lib/authored-courses'
 import { AiMark, AI_NAME, ArrowRight, ProductSlice, TruthChip } from '../components/skylent/primitives'
 import './LearnWorkspace.css'
@@ -738,19 +739,38 @@ export default function DashboardStudentPage() {
               ) : (
                 <p className="sh-empty">This course has no separate project workspace. Assignments stay in the lesson path.</p>
               )}
-              {profile?.lab ? (
-                <div className="sh-row" id="student-practice">
-                  <div className="sh-row-main">
-                    <strong>Practice lab</strong>
-                    <span className="sh-note">{profile.lab.note}</span>
-                  </div>
-                  <Link className="os-link sh-row-link" to={profile.lab.href(resume.lessonId)}>
-                    {profile.lab.label} <ArrowRight />
-                  </Link>
-                </div>
-              ) : (
-                <span id="student-practice" />
-              )}
+              {(() => {
+                const environment = practiceEnvironmentForCourse(course.slug)
+                const lessonLink = lessonPracticeLink(course.slug, resume.lessonId)
+                if (environment?.status === "runs") {
+                  const href = lessonLink?.status === "runs" ? lessonLink.href : environment.href
+                  return (
+                    <div className="sh-row" id="student-practice">
+                      <div className="sh-row-main">
+                        <strong>Northwind Lab</strong>
+                        <span className="sh-note">{environment.honesty}</span>
+                      </div>
+                      <Link className="os-link sh-row-link" to={href}>
+                        Open <ArrowRight />
+                      </Link>
+                    </div>
+                  )
+                }
+                if (environment?.status === "written") {
+                  return (
+                    <div className="sh-row" id="student-practice">
+                      <div className="sh-row-main">
+                        <strong>Harbor Desk</strong>
+                        <span className="sh-note">{environment.honesty}</span>
+                      </div>
+                      <Link className="os-link sh-row-link" to={environment.href}>
+                        Open <ArrowRight />
+                      </Link>
+                    </div>
+                  )
+                }
+                return <span id="student-practice" />
+              })()}
             </section>
           </div>
 

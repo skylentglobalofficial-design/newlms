@@ -10,6 +10,7 @@ import { getLessonMeta } from '../content/course-lookups'
 import { isAuthoredCourse } from '../lib/live-intents'
 import type { QuizQuestion } from '../components/lms/AssessmentSurface'
 import { courseProductProfile } from '../lib/course-product'
+import { lessonPracticeLink } from '../lib/practice-environments'
 import {
   getAdjacentLessons,
   isLessonUnlocked,
@@ -572,18 +573,24 @@ export default function LearnPage() {
                     </span>
                     {profile && !selectedState.locked ? (
                       <div className="os-tools">
-                        {profile.lab ? (
-                          <Link className="os-chip" to={profile.lab.href(selectedLesson.id)} title={profile.lab.note}>
-                            {profile.lab.label}
-                          </Link>
-                        ) : profile.labOmission ? (
-                          <span className="os-chip is-mute" title={profile.labOmission}>No lab in this course</span>
-                        ) : null}
-                        {profile.project ? (
-                          <Link className="os-chip" to={profile.project.href} title={profile.project.note}>
-                            {profile.project.label}
-                          </Link>
-                        ) : null}
+                        {(() => {
+                          const practice = lessonPracticeLink(readyCourse.slug, selectedLesson.id)
+                          const projectIsPractice = Boolean(practice && profile.project && practice.href.startsWith(profile.project.href))
+                          return (
+                            <>
+                              {practice ? (
+                                <Link className="os-chip" to={practice.href} title={practice.note}>
+                                  {practice.label}
+                                </Link>
+                              ) : null}
+                              {profile.project && !projectIsPractice ? (
+                                <Link className="os-chip" to={profile.project.href} title={profile.project.note}>
+                                  {profile.project.label}
+                                </Link>
+                              ) : null}
+                            </>
+                          )
+                        })()}
                       </div>
                     ) : null}
                   </div>
