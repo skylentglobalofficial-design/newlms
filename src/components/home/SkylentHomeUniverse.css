@@ -1,0 +1,146 @@
+/* Scroll 18 — architectural constellation, SKYLENT as the right-side anchor */
+
+.hp-ch.hp-eco {
+  --eco-ink: #15171a;
+  --eco-muted: #8a8f96;
+  --eco-line: rgba(21, 23, 26, 0.08);
+  --eco-accent: #4f46e5;
+  background: #ffffff;
+  border-top: 1px solid var(--eco-line);
+}
+
+.hp-eco-map {
+  position: relative;
+  width: min(100%, 560px);
+  aspect-ratio: 560 / 420;
+  height: auto;
+  justify-self: end;
+  overflow: visible;
+}
+
+.hp-eco-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.hp-eco-lines .is-field {
+  fill: none;
+  stroke: rgba(21, 23, 26, 0.07);
+  stroke-width: 0.85;
+  stroke-linecap: round;
+}
+
+.hp-eco-lines .is-quiet {
+  fill: none;
+  stroke: rgba(21, 23, 26, 0.18);
+  stroke-width: 1.05;
+  stroke-linecap: round;
+}
+
+.hp-eco-lines .is-live {
+  fill: none;
+  stroke: var(--eco-accent);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
+
+.hp-eco-core {
+  position: absolute;
+  left: 75.4%;
+  top: 47.1%;
+  z-index: 1;
+  margin: 0;
+  color: var(--eco-ink);
+  font: 600 clamp(28px, 2.6vw, 36px) / 1 var(--font-brand);
+  letter-spacing: -0.045em;
+  transform: translate(-50%, -50%);
+}
+
+.hp-eco-arm {
+  position: absolute;
+  z-index: 1;
+  color: var(--eco-ink);
+  font: 600 14px / 1.2 var(--font-body);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.hp-eco-arm.is-education {
+  top: 4.2%;
+  left: 14.2%;
+  font-size: 13px;
+  color: var(--eco-muted);
+}
+
+.hp-eco-arm.is-learning {
+  top: 39%;
+  left: 0;
+  font-size: 15px;
+}
+
+.hp-eco-arm.is-exams {
+  top: 6.4%;
+  right: 0;
+  text-align: right;
+  font-size: 13px;
+  color: var(--eco-muted);
+}
+
+.hp-eco-arm.is-career {
+  bottom: 14.8%;
+  left: 5.8%;
+  font-size: 15px;
+}
+
+.hp-eco-arm.is-workshops {
+  bottom: 2.2%;
+  right: 4.6%;
+  font-size: 13px;
+  color: var(--eco-muted);
+}
+
+.hp-eco-arm.is-live {
+  color: var(--eco-accent);
+}
+
+.hp-eco-arm:hover {
+  color: var(--eco-accent);
+}
+
+@media (max-width: 1024px) {
+  .hp-eco-map {
+    width: min(100%, 500px);
+  }
+}
+
+@media (max-width: 768px) {
+  .hp-eco-map {
+    justify-self: start;
+    width: min(100%, 520px);
+  }
+}
+
+@media (max-width: 430px) {
+  .hp-eco-map {
+    width: 100%;
+  }
+
+  .hp-eco-core {
+    font-size: 26px;
+  }
+
+  .hp-eco-arm.is-education,
+  .hp-eco-arm.is-exams,
+  .hp-eco-arm.is-workshops {
+    font-size: 12px;
+  }
+
+  .hp-eco-arm.is-learning,
+  .hp-eco-arm.is-career {
+    font-size: 13.5px;
+  }
+}

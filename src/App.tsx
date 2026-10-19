@@ -64,6 +64,7 @@ function AppRoutes() {
         <Route path="/education/undergraduate" element={<UndergraduatePage />} />
         <Route path="/education/postgraduate" element={<PostgraduatePage />} />
         <Route path="/education/exams" element={<ExamsPage />} />
+        <Route path="/exams" element={<Navigate to="/education/exams" replace />} />
         <Route path="/exams/:slug" element={<PathComingPage />} />
         <Route path="/skills" element={<SkillsPage />} />
         <Route path="/career-os" element={<CareerOSLayout />}>

@@ -1,0 +1,162 @@
+/* /education — academic product architecture in the approved editorial system. */
+
+.arch-academic-shell {
+  background: #fff !important;
+  color: #15171a !important;
+  min-height: 100vh;
+}
+
+.arch-academic-shell .arch-academic-inner {
+  width: var(--rail) !important;
+  margin-inline: auto;
+}
+
+.arch-academic-shell .arch-line-header {
+  padding: clamp(62px,9vh,105px) 0 72px;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid rgba(21,23,26,.12);
+}
+
+.arch-academic-shell .arch-line-header .skylent-label {
+  color: #8a8f96 !important;
+  font: 600 10px/1.3 var(--font-mono) !important;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.arch-academic-shell .arch-line-header .skylent-display-md {
+  max-width: 900px !important;
+  margin: 22px 0 0 !important;
+  font-family: var(--font-brand) !important;
+  font-size: clamp(52px,6.5vw,90px) !important;
+  font-weight: 600 !important;
+  letter-spacing: -.065em !important;
+  line-height: .95 !important;
+}
+
+.arch-academic-shell .arch-line-header .skylent-body-lg {
+  max-width: 650px !important;
+  margin-top: 28px !important;
+  color: #62676d !important;
+  font-size: clamp(16px,1.3vw,19px) !important;
+  line-height: 1.6 !important;
+}
+
+.arch-academic-shell .arch-section {
+  padding: clamp(78px,10vw,135px) 0 !important;
+  border-bottom: 1px solid rgba(21,23,26,.12);
+}
+
+.arch-academic-shell .edu-start-row {
+  display: grid !important;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  margin-top: 34px;
+  border-top: 1px solid rgba(21,23,26,.12);
+  border-bottom: 1px solid rgba(21,23,26,.12);
+}
+
+.arch-academic-shell .edu-start-row a {
+  display: grid;
+  gap: 5px;
+  min-height: 112px;
+  align-content: center;
+  padding: 18px 22px;
+  color: #15171a !important;
+  text-decoration: none;
+  border-right: 1px solid rgba(21,23,26,.12);
+}
+
+.arch-academic-shell .edu-start-row a:last-child {
+  border-right: 0;
+}
+
+.arch-academic-shell .edu-start-row a:hover {
+  background: #f5f2e9;
+}
+
+.arch-academic-shell .edu-start-row strong {
+  font-family: var(--font-brand);
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -.035em;
+}
+
+.arch-academic-shell .edu-start-row span {
+  color: #62676d;
+  font: 500 10px/1.3 var(--font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.arch-academic-shell .arch-section > .skylent-label {
+  color: #8a8f96 !important;
+  font: 600 10px/1.3 var(--font-mono) !important;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.arch-academic-shell .arch-section > p {
+  color: #62676d !important;
+  max-width: 700px !important;
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+}
+
+.arch-academic-shell .arch-section > div[style] {
+  gap: 0 !important;
+  margin-top: 26px !important;
+}
+
+.arch-academic-shell .arch-section > div[style] a {
+  color: #15171a !important;
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  padding: 0 15px;
+  border: 1px solid rgba(21,23,26,.18);
+  text-decoration: none !important;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.arch-academic-shell .arch-section > div[style] a:first-child {
+  background: #f36f21;
+  border-color: #f36f21;
+  color: #fff !important;
+}
+
+.arch-academic-shell .arch-section > div[style] span {
+  color: #62676d !important;
+  font-size: 13px !important;
+}
+
+@media (max-width: 720px) {
+  .arch-academic-shell {
+    padding-top: var(--nav-h) !important;
+  }
+
+  .arch-academic-shell .arch-line-header {
+    padding-block: 54px 72px;
+  }
+
+  .arch-academic-shell .arch-line-header .skylent-display-md {
+    font-size: clamp(48px,14vw,72px) !important;
+  }
+
+  .arch-academic-shell .arch-section {
+    padding-block: 72px !important;
+  }
+
+  .arch-academic-shell .edu-start-row {
+    grid-template-columns: 1fr;
+  }
+
+  .arch-academic-shell .edu-start-row a {
+    border-right: 0;
+    border-bottom: 1px solid rgba(21,23,26,.12);
+  }
+
+  .arch-academic-shell .edu-start-row a:last-child {
+    border-bottom: 0;
+  }
+}
