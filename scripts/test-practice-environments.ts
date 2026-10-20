@@ -2,9 +2,11 @@
  * Practice environments stay attached to the programme that owns them.
  * Run: npx tsx scripts/test-practice-environments.ts
  */
+import { readFileSync } from "node:fs"
 import {
   PRACTICE_ENVIRONMENTS,
   UNBUILT_PRACTICE,
+  dashboardSqlLabHref,
   lessonPracticeLink,
   practiceNoteForProgramme,
 } from "../src/lib/practice-environments"
@@ -25,7 +27,16 @@ for (const lessonId of ["l1", "l4", "l6", "l10", "l12", "l15"]) {
 for (const lessonId of ["l7", "l8", "l9", "l13", "l14"]) {
   const link = lessonPracticeLink("data-analytics", lessonId)
   assert(link?.status === "runs" && link.href.includes("northwind") && link.href.includes(`lesson=${lessonId}`), `Data Analytics ${lessonId} must open Northwind SQL`)
+  const dashboardHref = dashboardSqlLabHref("data-analytics", lessonId)
+  assert(dashboardHref === link.href, `Dashboard resume ${lessonId} must keep the Northwind lesson link`)
 }
+for (const lessonId of ["l1", "l4", "l6", "l10", "l12", "l15", null, undefined]) {
+  assert(dashboardSqlLabHref("data-analytics", lessonId) === null, `Dashboard resume ${lessonId ?? "empty"} must not open Northwind`)
+}
+assert(dashboardSqlLabHref("product-management", "l6") === null, "Harbor Desk resume must not be sent to the SQL lab")
+const dashboardSource = readFileSync(new URL("../src/pages/DashboardStudentPage.tsx", import.meta.url), "utf8")
+assert(dashboardSource.includes("dashboardSqlLabHref"), "The learner dashboard must use the SQL-lesson gate")
+assert(!dashboardSource.includes("lessonLink?.status"), "The dashboard must not fall back to the lab root")
 
 assert(lessonPracticeLink("product-management", "l1") === null, "Product thinking lessons do not open the case workspace")
 assert(lessonPracticeLink("product-management", "l3") === null, "Product quizzes do not open the case workspace")

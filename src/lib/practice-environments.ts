@@ -87,6 +87,17 @@ export function practiceNoteForProgramme(programmeSlug: string): string {
   return "This programme does not have its own practical environment, and it does not use another programme's lab."
 }
 
+/**
+ * Dashboard link into the running SQL lab.
+ * Spreadsheet, dashboard, and other non-SQL lessons do not get the lab root.
+ */
+export function dashboardSqlLabHref(courseSlug: string, lessonId: string | null | undefined): string | null {
+  if (!lessonId) return null
+  if (practiceEnvironmentForCourse(courseSlug)?.status !== "runs") return null
+  const link = lessonPracticeLink(courseSlug, lessonId)
+  return link?.status === "runs" ? link.href : null
+}
+
 export function lessonPracticeLink(courseSlug: string, lessonId: string): LessonPracticeLink | null {
   const binding = publishedBindingFor(courseSlug)
   if (!binding || !binding.lessonIds.includes(lessonId)) return null
