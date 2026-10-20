@@ -19,7 +19,7 @@ import { fetchMyCertificates, issueCertificate, type SkylentCertificate } from '
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
 import { truthOf } from '../lib/truth'
 import { courseProductProfile } from '../lib/course-product'
-import { lessonPracticeLink, practiceEnvironmentForCourse } from '../lib/practice-environments'
+import { dashboardSqlLabHref, practiceEnvironmentForCourse } from '../lib/practice-environments'
 import { isAuthoredCourse } from '../lib/authored-courses'
 import { AiMark, AI_NAME, ArrowRight, ProductSlice, TruthChip } from '../components/skylent/primitives'
 import './LearnWorkspace.css'
@@ -741,16 +741,16 @@ export default function DashboardStudentPage() {
               )}
               {(() => {
                 const environment = practiceEnvironmentForCourse(course.slug)
-                const lessonLink = lessonPracticeLink(course.slug, resume.lessonId)
+                const sqlLabHref = dashboardSqlLabHref(course.slug, resume.lessonId)
                 if (environment?.status === "runs") {
-                  const href = lessonLink?.status === "runs" ? lessonLink.href : environment.href
+                  if (!sqlLabHref) return <span id="student-practice" />
                   return (
                     <div className="sh-row" id="student-practice">
                       <div className="sh-row-main">
                         <strong>Northwind Lab</strong>
                         <span className="sh-note">{environment.honesty}</span>
                       </div>
-                      <Link className="os-link sh-row-link" to={href}>
+                      <Link className="os-link sh-row-link" to={sqlLabHref}>
                         Open <ArrowRight />
                       </Link>
                     </div>
