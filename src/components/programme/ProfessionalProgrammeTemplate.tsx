@@ -546,8 +546,8 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
                         shortTitle(lessonTitle(row.lessonId))
                       )}
                     </th>
-                    <td>{row.produce}</td>
-                    <td>{row.reviewer}</td>
+                    <td data-label="What you produce">{row.produce}</td>
+                    <td data-label="What a reviewer can see">{row.reviewer}</td>
                   </tr>
                 ))}
               </tbody>

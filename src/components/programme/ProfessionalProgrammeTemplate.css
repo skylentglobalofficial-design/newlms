@@ -470,6 +470,39 @@
 }
 
 /* ── Phone ────────────────────────────────────────────────────────────────── */
+@media (max-width: 800px) {
+  .pp-evtable { overflow: visible; }
+  .pp-evtable table { min-width: 0; }
+  .pp-evtable thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .pp-evtable tbody,
+  .pp-evtable tr,
+  .pp-evtable th,
+  .pp-evtable td { display: block; width: auto; min-width: 0; }
+  .pp-evtable :is(th, td):first-child,
+  .pp-evtable :is(th, td):nth-child(2) { width: 100%; }
+  .pp-evtable tr { padding: 16px 0; border-bottom: 1px solid hsl(var(--site-proof-line)); }
+  .pp-evtable th,
+  .pp-evtable td { padding: 0; border-bottom: 0; }
+  .pp-evtable td { padding-top: 10px; }
+  .pp-evtable td::before {
+    content: attr(data-label);
+    display: block;
+    margin-bottom: 2px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: hsl(var(--site-dim));
+  }
+}
+
 @media (max-width: 640px) {
   .pp-page { font-size: 1rem; }
   .pp-lede { font-size: 1.0625rem; }
