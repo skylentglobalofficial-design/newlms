@@ -133,7 +133,7 @@ const PRODUCT_MANAGEMENT_PROFILE: CourseProductProfile = {
     href: "/os/projects/product-management/harbor-desk-case",
     note: "Harbor Desk product case — a written recommendation, not a SQL lab.",
   },
-  labOmission: "This course does not use Northwind Lab. Product work here is research notes, framing, and a written specification — not query execution.",
+  labOmission: "This course does not use Northwind Lab. Practice is the Harbor Desk case: interview notes, an exception log, and a written product case saved in the project workspace.",
   afterEnrol: "Skylent OS opens Product Management at the first lesson.",
   ctaTitle: "Start Product Management",
 }

@@ -77,6 +77,7 @@ jobs:
           test -d prisma/migrations/20261004000000_skylent_additions
           test -d prisma/migrations/20261004180000_backfill_program_course_links
           test -d prisma/migrations/20261009000000_policy_acceptance
+          test -d prisma/migrations/20261017120000_practice_workspaces
           npx prisma migrate deploy
           npx prisma migrate status
       - name: Seed QA content (courses, lessons, quizzes)
@@ -105,6 +106,14 @@ jobs:
           npm run test:certificate-verify
           npx tsx scripts/test-google-link.ts
           npm run test:oauth-redirect
+
+      # In-process practice checks. They do not open a database connection or execute learner code.
+      - name: test-practice-platform
+        if: always()
+        run: npx tsx scripts/test-practice-platform.ts
+      - name: test-practice-environments
+        if: always()
+        run: npx tsx scripts/test-practice-environments.ts
 
       # Every suite signs up its own users. The sign-in rate limit is held in memory at its production
       # default (20 per 15 minutes), so each suite gets a freshly started API instead of a raised limit.
@@ -185,6 +194,22 @@ jobs:
         run: |
           "$RUNNER_TEMP/restart-api.sh"
           npm run test:projects
+      # Python stays fail-closed: this step does not install a runner. It expects HTTP 503.
+      - name: test-python-runtime
+        if: always()
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npx tsx scripts/test-python-runtime.ts
+      - name: test-practice-admin
+        if: always()
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npx tsx scripts/test-practice-admin.ts
+      - name: test:second-flagship
+        if: always()
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:second-flagship
       - name: test:career
         if: always()
         run: |
