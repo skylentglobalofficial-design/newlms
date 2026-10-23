@@ -59,6 +59,12 @@ const stuck = classifyMigrationHistory(local, [
 ])
 assert(stuck.failed.includes(OCTOBER[0]), "a started-but-unfinished migration must be reported as failed")
 
+const stuckBesideFinished = classifyMigrationHistory(local, [
+  ...productionRows,
+  { migration_name: september[0], finished_at: null, rolled_back_at: null },
+])
+assert(stuckBesideFinished.failed.includes(september[0]), "an unfinished row blocks deploy (P3009) even if the same name also finished")
+
 const stray = classifyMigrationHistory(local, [...productionRows, { migration_name: "20261001000000_manual", finished_at: at, rolled_back_at: null }])
 assert(stray.dbOnlyUnknown.includes("20261001000000_manual"), "an unexpected applied migration must be flagged")
 

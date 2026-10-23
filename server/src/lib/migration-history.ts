@@ -77,8 +77,8 @@ export function classifyMigrationHistory(
     local: [...local].sort(),
     applied: [...applied].filter((name) => localSet.has(name)).sort(),
     pending: local.filter((name) => !applied.has(name)).sort(),
-    // A later successful retry of the same name supersedes an earlier failed attempt.
-    failed: [...startedOnly].filter((name) => !applied.has(name)).sort(),
+    // Prisma raises P3009 for any such row, even when another row with the same name finished.
+    failed: [...startedOnly].sort(),
     rolledBack: [...rolledBack].filter((name) => !applied.has(name)).sort(),
     dbOnlyKnown: dbOnly.filter((name) => known.has(name)),
     dbOnlyUnknown: dbOnly.filter((name) => !known.has(name)),
