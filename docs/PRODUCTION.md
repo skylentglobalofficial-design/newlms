@@ -74,6 +74,16 @@ Optional:
 pnpm exec prisma migrate deploy
 ```
 
+Before deploying to an existing database, run the read-only preflight with the production connection in the environment:
+
+```sh
+npm run db:preflight
+```
+
+It opens one `READ ONLY` transaction, prints only the host and database name, and exits `0` (ready), `1` (blocked) or `2` (could not check). It blocks on a failed migration, an unrecognised applied migration, destructive SQL in a pending migration, or a pending migration that creates a table or enum that already exists. After the deploy, `npm run db:preflight -- --expect-none` must exit `0`.
+
+Production has four applied migrations that are not in `prisma/migrations` (`20260906190000_lesson_materials`, `20260907100000_lesson_material_upload_status`, `20260907120000_curriculum_node_notes_body`, `20260907140000_assignment_attachment_upload_status`). Their SQL is kept, for reference and tests only, in `scripts/fixtures/production-only-migrations/`. Do not delete, rename, re-create or `migrate resolve` them. Because of them, `prisma migrate status` exits `1` against production. That is expected and is not a blocker. `migrate deploy` ignores them and applies only the pending local migrations. `npm run test:migration-replay` proves this against a local scratch database.
+
 First catalog load (empty database):
 
 ```sh
@@ -96,10 +106,12 @@ pnpm build
 ## 5. Production start
 
 ```sh
-NODE_ENV=production node server/dist/index.js
+NODE_ENV=production npm start   # node server.js
 ```
 
-On Railway, `scripts/railway-start.sh` is the start command.
+`server.js` runs `prisma migrate deploy` and exits without starting the API if it fails. `node server/dist/index.js` starts the API **without** migrating; with that start command, migrations must be run separately before the restart. On Railway, `scripts/railway-start.sh` is the start command (it also migrates first).
+
+Because `server.js` migrates on every start, a restart on a host that uses it is a production migration. Take and verify the database backup before any restart that ships new migrations.
 
 The process binds `0.0.0.0:$PORT`, serves `/api/v1/*`, then the client `dist/` with SPA fallback for non-file GET routes.
 
@@ -107,7 +119,9 @@ The process binds `0.0.0.0:$PORT`, serves `/api/v1/*`, then the client `dist/` w
 
 `GET /api/v1/health`
 
-- `200` `{ "status": "ok", "db": "ok" }` — process and Postgres responded.
+- `200` `{ "status": "ok", "db": "ok", "migrations": "ok" }` — process and Postgres responded, and every local migration is applied.
+- `200` with `"migrations": "unknown"` — the migration table could not be read; the database itself answered.
+- `503` `{ "status": "error", "db": "ok", "migrations": "pending", "pendingMigrations": N, "failedMigrations": N }` — the running code is newer than the schema (for example the API was started with `node server/dist/index.js` and nothing migrated). Do not send traffic. Names are listed only outside production; the startup log names them in every environment.
 - `503` `{ "status": "error", "db": "error" }` — do not send traffic.
 
 A `503` that is an HTML page from the host (on Hostinger: "The server is temporarily busy") is different: the Node process is not running at all. `server.js` runs `prisma migrate deploy` before it starts the API and exits if that fails, so a database that cannot be reached or that rejects the password stops the whole API, not only the database routes. The reason is in the application's error log.
@@ -153,6 +167,14 @@ Idempotent: an existing email is elevated to `ADMIN` without changing the passwo
 8. Run `pnpm bootstrap:superadmin` once.
 9. Attach the public hostname to this service. Set `FRONTEND_URL` (and `CORS_ALLOWED_ORIGINS` if it differs) to that origin. Do not change DNS from this repository.
 
+## 8a. Upgrading an existing production database (Hostinger)
+
+1. Confirm a restorable backup exists: Supabase → Database → Backups shows a backup newer than the last schema change, or a `pg_dump -Fc` was taken through the session pooler and `pg_restore --list` reads it. Without this, stop.
+2. In hPanel → Node.js, record the current start command or entry file, Node version, and the deployed commit. Record whether `DIRECT_URL` points at the session pooler (host only, never the password). Note whether `COOKIE_SECURE` is set.
+3. From a trusted machine with the production URLs in the environment (not pasted into chat or files), run `npm run db:preflight`. Expect `READY`, five pending October migrations, and the four lesson-material migrations listed as expected production-only. Anything else: stop.
+4. Deploy the new build. If the start command is `server.js` / `npm start`, the restart applies the migrations; otherwise run `npx prisma migrate deploy` first with the same environment.
+5. `GET /api/v1/health` must return `200` with `"migrations": "ok"`. Then run `npm run db:preflight -- --expect-none` and the smoke tests below.
+
 ## 9. Smoke-test sequence
 
 Against the **production** process (not `vite dev`):
@@ -166,6 +188,7 @@ Against the **production** process (not `vite dev`):
 ## 10. Rollback
 
 - **Code:** redeploy the previous image/commit. `dist/` is not in git; the previous build artifact is the rollback unit.
+- **Code after the October migrations:** the five October migrations only add tables, columns, enums and indexes, and fill `ProgramCourse` links. The previous build ignores them, so rolling back the code does not need a schema restore.
 - **Database:** Prisma migrations are forward-only here. Do not restore a newer schema onto an older build. Restore a Postgres snapshot taken before a failing migrate if a migration must be undone.
 - **Catalog seed:** never roll forward by re-seeding a live database. That deletes curriculum nodes and cascaded lesson/quiz/assignment progress.
 
