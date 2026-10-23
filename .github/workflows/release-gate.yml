@@ -77,9 +77,19 @@ jobs:
           test -d prisma/migrations/20261004000000_skylent_additions
           test -d prisma/migrations/20261004180000_backfill_program_course_links
           test -d prisma/migrations/20261009000000_policy_acceptance
+          test -d prisma/migrations/20261011000000_employer_membership_and_shared_applications
           test -d prisma/migrations/20261017120000_practice_workspaces
           npx prisma migrate deploy
           npx prisma migrate status
+          npm run db:preflight -- --expect-none
+      - name: test:migration-history (release migrations versus recorded production history)
+        if: always()
+        run: npm run test:migration-history
+      # Replays production's recorded history (September plus the four production-only lesson-material
+      # migrations) into a scratch database on the throwaway service, then applies this release on top.
+      - name: test:migration-replay
+        if: always()
+        run: npm run test:migration-replay
       - name: Seed QA content (courses, lessons, quizzes)
         if: always()
         run: npm run db:seed
