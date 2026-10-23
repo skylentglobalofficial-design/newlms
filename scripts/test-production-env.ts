@@ -1,4 +1,4 @@
-import { missingProductionEnv } from "../server/src/lib/env.ts"
+import { missingProductionEnv, productionEnvWarnings } from "../server/src/lib/env.ts"
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message)
@@ -26,5 +26,26 @@ const shortSecret = missingProductionEnv({
   FRONTEND_URL: "https://example.invalid",
 })
 assert(shortSecret.includes("SESSION_SECRET"), "short SESSION_SECRET must fail")
+
+const safe = productionEnvWarnings({
+  NODE_ENV: "production",
+  FRONTEND_URL: "https://skylent.live",
+  DATABASE_URL: "postgresql://u:p@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres?pgbouncer=true",
+  DIRECT_URL: "postgresql://u:p@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres",
+})
+assert(safe.length === 0, `expected no warnings for pooler + https, got ${safe.join(" | ")}`)
+
+const unsafe = productionEnvWarnings({
+  NODE_ENV: "production",
+  COOKIE_SECURE: "false",
+  FRONTEND_URL: "http://skylent.live",
+  DIRECT_URL: "postgresql://u:secret-value@db.abcdref.supabase.co:5432/postgres",
+})
+assert(unsafe.some((w) => w.startsWith("COOKIE_SECURE=false")), "COOKIE_SECURE=false must warn in production")
+assert(unsafe.some((w) => w.startsWith("FRONTEND_URL")), "http FRONTEND_URL must warn")
+assert(unsafe.some((w) => w.startsWith("DIRECT_URL uses the Supabase direct host")), "IPv6-only direct host must warn")
+assert(!unsafe.join(" ").includes("secret-value"), "warnings must never echo credentials")
+
+assert(productionEnvWarnings({ NODE_ENV: "test", COOKIE_SECURE: "false" }).length === 0, "warnings are production-only")
 
 console.log("production-env ok")
