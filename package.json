@@ -20,6 +20,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "prisma db seed",
+    "db:preflight": "tsx scripts/check-migration-history.ts",
     "test:auth": "tsx scripts/test-auth.ts",
     "test:consent": "tsx scripts/test-consent.ts",
     "test:certificate-verify": "tsx scripts/test-certificate-verify.ts",
@@ -47,6 +48,8 @@
     "test:integration": "tsx scripts/run-integration-tests.ts",
     "test:security-middleware": "tsx scripts/test-security-middleware.ts",
     "test:production-env": "tsx scripts/test-production-env.ts",
+    "test:migration-history": "tsx scripts/test-migration-history.ts",
+    "test:migration-replay": "tsx scripts/test-production-migration-replay.ts",
     "bootstrap:superadmin": "tsx scripts/bootstrap-superadmin.ts"
   },
   "engines": {
