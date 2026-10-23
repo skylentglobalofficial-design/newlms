@@ -7,6 +7,7 @@ import express from "express"
 
 import { assertProductionEnv } from "./lib/env.js"
 import { apexRedirectLocation, injectCanonicalLink } from "./lib/public-host.js"
+import { logMigrationStateOnStartup } from "./lib/migration-guard.js"
 import { prisma } from "./lib/prisma.js"
 import {
   authCredentialsRateLimit,
@@ -148,6 +149,9 @@ app.use((error: unknown, _request: express.Request, response: express.Response, 
 
 const server = app.listen(port, "0.0.0.0", () => {
   console.log(`API listening on port ${port}`)
+  void logMigrationStateOnStartup().catch((error) => {
+    console.warn("Migration check failed:", error instanceof Error ? error.message : error)
+  })
 })
 
 let shuttingDown = false
