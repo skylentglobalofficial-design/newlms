@@ -38,6 +38,7 @@ const PAGE_TITLES: Array<[string, string]> = [
   ["/skills", "Skills"],
   ["/courses", "Courses"],
   ["/workshops", "Workshops"],
+  ["/events", "Events"],
   ["/institutions", "Institutions"],
   ["/universities", "Universities"],
   ["/labs", "Labs"],
@@ -100,6 +101,8 @@ const CoursesPage = lazy(() => import('./pages/CoursesPage'))
 const CourseDetailPage = lazy(() => import('./pages/CourseDetailPage'))
 const WorkshopsPage = lazy(() => import('./pages/WorkshopsPage'))
 const WorkshopDetailPage = lazy(() => import('./pages/WorkshopDetailPage'))
+const EventsPage = lazy(() => import('./pages/EventsPage'))
+const EventDetailPage = lazy(() => import('./pages/EventDetailPage'))
 const CareerOSLayout = lazy(() => import('./pages/career/CareerOSLayout'))
 const CareerOSOverviewPage = lazy(() => import('./pages/career/CareerOSOverviewPage'))
 const CareerOSProfilePage = lazy(() => import('./pages/career/CareerOSProfilePage'))
@@ -186,6 +189,8 @@ function AppRoutes() {
         <Route path="/courses/:slug" element={<CourseDetailPage />} />
         <Route path="/workshops" element={<WorkshopsPage />} />
         <Route path="/workshops/:slug" element={<WorkshopDetailPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/events/:slug" element={<EventDetailPage />} />
         <Route path="/stories" element={<StoriesPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/blog" element={<BlogPage />} />

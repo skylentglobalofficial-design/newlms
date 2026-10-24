@@ -73,9 +73,10 @@ curl -s https://skylent.live/api/v1/health | jq
 - [ ] Save a job
 
 ### Events (NEW)
-- [ ] View events at `/api/v1/events`
-- [ ] As admin, create an event via API
-- [ ] Register for an event
+- [ ] View events at `/events` (frontend page)
+- [ ] View event detail at `/events/:slug`
+- [ ] Register for an event (requires login)
+- [ ] As admin, create an event via API POST `/api/v1/events`
 
 ---
 
@@ -204,8 +205,9 @@ npm run build
 
 ### Branch Status
 - Branch: `cursor/product-completion-f670`
-- PR: #203 (Open, CI passed)
+- PR: #203 (Open, CI pending)
 - Base: `main` at `2714f5e2`
+- Total pending migrations: 6
 
 ### Test Commands
 ```bash

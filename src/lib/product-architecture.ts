@@ -478,6 +478,13 @@ export const LEARN_DESTINATIONS: readonly PillarDestinationLine[] = [
     job: "Planned sessions — registration and payment not built.",
     maturity: "coming_soon",
   },
+  {
+    id: "events",
+    label: "Events",
+    to: "/events",
+    job: "Webinars and live sessions with registration.",
+    maturity: "live",
+  },
 ] as const
 
 /** Practice pillar destinations — /labs and public /os entry. */
