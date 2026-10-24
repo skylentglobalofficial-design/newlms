@@ -1,7 +1,9 @@
 # Skylent — Requirements Matrix
 
 **Last Updated:** 2026-10-24
-**Source:** Codebase inspection, test results, PR #203 verification
+**Branch:** `cursor/product-completion-f670`
+**PR:** #203
+**Source:** Codebase inspection and local regression tests on this branch
 
 ---
 
@@ -9,12 +11,10 @@
 
 | Status | Meaning |
 |--------|---------|
-| VERIFIED | Implemented in code, tested locally, CI passed |
-| PARTIAL | Core implemented, documented gaps remain |
-| UI-ONLY | Frontend exists, no backend support |
-| MISSING | Not implemented |
-| BLOCKED | Requires external configuration/service |
-| DEFERRED | Intentionally not implemented this cycle |
+| GREEN | Implemented with appropriate test evidence on this branch |
+| AMBER | Implementation exists; external configuration or operator action remains |
+| RED | Broken, unsafe, or missing a required capability that was claimed |
+| UNVERIFIED | Not confirmed with current authorized evidence (especially production) |
 
 ---
 
@@ -24,158 +24,108 @@
 
 | Requirement | Status | Evidence | Notes |
 |-------------|--------|----------|-------|
-| Email/password signup | VERIFIED | `server/src/routes/auth.ts:152-206` | Full validation |
-| Email/password login | VERIFIED | `server/src/routes/auth.ts:209-248` | Session-based |
-| Logout | VERIFIED | `server/src/routes/auth.ts:250-261` | Clears session |
-| CSRF protection | VERIFIED | `server/src/lib/auth.ts:201-216` | Double-submit cookie |
-| Google OAuth | BLOCKED | `server/src/lib/google-oauth.ts` | Needs credentials |
-| Password reset | DEFERRED | - | Requires email service (Mailgun/SES) |
-| Email verification | DEFERRED | - | Requires email service |
+| Email/password signup | GREEN | `server/src/routes/auth.ts`, `test:auth` | Full validation |
+| Email/password login | GREEN | `server/src/routes/auth.ts` | Session-based |
+| Logout | GREEN | `server/src/routes/auth.ts` | Clears session |
+| CSRF protection | GREEN | `server/src/lib/auth.ts` | Double-submit cookie |
+| Google OAuth | AMBER | `server/src/lib/google-oauth.ts` | Needs credentials |
+| Password reset (backend) | AMBER | `password-reset.ts`, `email.ts`, `test:password-reset` | Tokens/rate limits GREEN; email delivery needs Mailgun/SendGrid credentials |
+| Email verification | RED | — | Not implemented |
 
 ### LMS and Learning
 
 | Requirement | Status | Evidence | Notes |
 |-------------|--------|----------|-------|
-| Explicit enrolment | VERIFIED | `server/src/routes/lms.ts:161` | POST to enrol, no auto-enrol |
-| Course workspace | VERIFIED | `server/src/routes/lms.ts` | Full curriculum access |
-| Sequential unlock | VERIFIED | `server/src/lib/lms.ts` | Prerequisites enforced |
-| Quiz server-side scoring | VERIFIED | `server/src/lib/quiz-attempts.ts` | Answers never exposed |
-| Quiz rate limiting | VERIFIED | `quiz-attempts.ts:4-5` | 5 attempts/15 min |
-| **Quiz explanations** | VERIFIED | `QuizQuestion.explanation` field | Shows after passing |
-| **Quiz attempt limits** | VERIFIED | `CurriculumNode.maxAttempts` | Configurable per quiz |
-| **Quiz passing score** | VERIFIED | `CurriculumNode.passingScore` | Configurable threshold |
-| Assignment submission | VERIFIED | `server/src/routes/lms.ts:702-870` | Text + attachments |
-| **Assignment grading** | VERIFIED | `server/src/routes/faculty.ts` | Grade, feedback, instructor |
-| Certificates | VERIFIED | `server/src/routes/skylent/certificates.ts` | Issue, list, verify |
-| Lesson progress | VERIFIED | `LessonProgress` model | Completion tracking |
+| Explicit enrolment | GREEN | `server/src/routes/lms.ts` | POST to enrol, no auto-enrol |
+| Course workspace | GREEN | `server/src/routes/lms.ts` | Full curriculum access |
+| Sequential unlock | GREEN | `server/src/lib/lms.ts` | Prerequisites enforced |
+| Quiz server-side scoring | GREEN | `server/src/lib/quiz-attempts.ts` | Answers never exposed |
+| Quiz rate limiting | GREEN | `quiz-attempts.ts` | 5 attempts/15 min |
+| Quiz explanations | GREEN | `QuizQuestion.explanation` | After passing |
+| Quiz attempt limits | GREEN | `CurriculumNode.maxAttempts` | Configurable |
+| Quiz passing score | GREEN | `CurriculumNode.passingScore` | Configurable |
+| Assignment submission | GREEN | `server/src/routes/lms.ts` | Text + attachment metadata |
+| Assignment grading | GREEN | `server/src/routes/faculty.ts` | Grade, feedback |
+| Certificates | GREEN | `server/src/routes/skylent/certificates.ts` | Issue, list, verify |
+| Lesson progress | GREEN | `LessonProgress` model | Completion tracking |
 
-### Events and Webinars (NEW)
+### Events and Webinars
 
 | Requirement | Status | Evidence | Notes |
 |-------------|--------|----------|-------|
-| **Event model** | VERIFIED | `prisma/schema.prisma:Event` | Full model with status |
-| **Event listing** | VERIFIED | `GET /api/v1/events` | Filters, pagination |
-| **Event detail** | VERIFIED | `GET /api/v1/events/:slug` | Registration status |
-| **Event registration** | VERIFIED | `POST /api/v1/events/:slug/register` | Capacity enforcement |
-| **Registration cancel** | VERIFIED | `POST /api/v1/events/:slug/cancel` | Before event starts |
-| **My registrations** | VERIFIED | `GET /api/v1/events/my/registrations` | User's events |
-| **Admin create** | VERIFIED | `POST /api/v1/events` | Faculty/superadmin only |
-| **Admin publish** | VERIFIED | `POST /api/v1/events/:slug/publish` | Draft → Published |
-| **Frontend pages** | VERIFIED | `src/pages/EventsPage.tsx`, `EventDetailPage.tsx` | Full UI |
-| Live video/conferencing | NOT CLAIMED | - | Not implemented |
-| Attendance tracking | NOT CLAIMED | - | Not implemented |
+| Event model + API | GREEN | `server/src/routes/events.ts`, `test:events` | Registration, capacity |
+| Frontend pages | GREEN | `EventsPage.tsx`, `EventDetailPage.tsx` | Full UI |
+| Live video/conferencing | RED | — | Not implemented |
+| Attendance tracking | RED | — | Not implemented |
 
 ### Career OS
 
 | Requirement | Status | Evidence | Notes |
 |-------------|--------|----------|-------|
-| Career profile | VERIFIED | `server/src/routes/career/profile.ts` | Full CRUD |
-| Education entries | VERIFIED | Profile router | Institution, degree, dates |
-| Experience entries | VERIFIED | Profile router | Company, role, type |
-| Skills | VERIFIED | Profile router | Proficiency levels |
-| Job listings | VERIFIED | `server/src/routes/career/jobs.ts` | Filter, search |
-| Job applications | VERIFIED | `server/src/routes/career/applications.ts` | Apply, track |
-| Saved jobs | VERIFIED | `server/src/routes/career/saved-jobs.ts` | Save/unsave |
-| Sample job data | VERIFIED | `prisma/seed-career.ts` | Seed script |
+| Career profile | GREEN | `server/src/routes/career/profile.ts` | Full CRUD |
+| Job listings / applications | GREEN | career routes | Filter, apply, save |
+| Sample job data in production | UNVERIFIED | `prisma/seed-career.ts` | Seed script exists; production population not verified |
 
 ### Education and Degrees
 
 | Requirement | Status | Evidence | Notes |
 |-------------|--------|----------|-------|
-| Degree listing | UI-ONLY | `src/lib/degrees.ts` | Static data |
-| Degree detail | UI-ONLY | `src/pages/education/DegreeDetailPage.tsx` | Sample labels |
-| Degrees backend | DEFERRED | - | No institution data to populate |
+| Degree/Institution models | GREEN | `prisma/schema.prisma`, migration `20261024140000` | Normalized |
+| Degrees backend API | GREEN | `server/src/routes/degrees.ts`, `test:degrees-auth` | Public + admin; unpublished forced hidden |
+| Frontend degrees catalogue | AMBER | `src/lib/degrees.ts`, `src/data/education.ts` | Still static sample data — does **not** call `/api/v1/degrees` |
+| Real institution content | AMBER | Empty DB by design | No fictitious seed; populate via admin API when confirmed |
 
 ### File Uploads
 
 | Requirement | Status | Evidence | Notes |
 |-------------|--------|----------|-------|
-| Assignment attachments | PARTIAL | `AssignmentAttachment` model | Metadata stored |
-| Actual file storage | BLOCKED | `storageProvider: pending` | Needs S3/R2/GCS config |
+| Attachment metadata | AMBER | `AssignmentAttachment` | Metadata only |
+| Storage abstraction | AMBER | `server/src/lib/storage.ts`, `test:storage` | Only `local` implemented (dev); refused in production. S3/GCS/Azure **not** implemented |
+| Production object storage | RED | — | No production-ready provider implemented |
 
 ### Role-Based Access Control
 
 | Requirement | Status | Evidence | Notes |
 |-------------|--------|----------|-------|
-| Role definitions | VERIFIED | `UserRole` enum | STUDENT, FACULTY, ADMIN, RECRUITER |
-| Route guards | VERIFIED | `requireRoles()` middleware | Backend enforcement |
-| Frontend guards | VERIFIED | `RoleRouteGuard` component | Dashboard access |
-| Faculty grading | VERIFIED | `server/src/routes/faculty.ts` | Faculty/superadmin only |
-| Admin events | VERIFIED | `server/src/routes/events.ts` | Faculty/superadmin only |
+| Role definitions / guards | GREEN | `requireRoles()`, faculty/admin routes | Backend enforcement |
+| Degrees admin mutations | GREEN | `requireRoles("superadmin")` + CSRF | `test:degrees-auth` |
 
 ---
 
-## Migration Status
+## Migration Inventory (this release tree)
 
-| Migration | Status | Content |
-|-----------|--------|---------|
-| `20261004000000_skylent_additions` | PENDING | Core additions |
-| `20261004180000_backfill_program_course_links` | PENDING | Programme links |
-| `20261009000000_policy_acceptance` | PENDING | Terms acceptance |
-| `20261011000000_employer_membership` | PENDING | Career features |
-| `20261017120000_practice_workspaces` | PENDING | Practice platform |
-| `20261024120000_quiz_grading_events` | PENDING | Quiz, grading, events |
+Seven additive October migrations ship in `prisma/migrations` after the September baseline:
 
-All 6 migrations are additive and backward-compatible.
+1. `20261004000000_skylent_additions`
+2. `20261004180000_backfill_program_course_links`
+3. `20261009000000_policy_acceptance`
+4. `20261011000000_employer_membership_and_shared_applications`
+5. `20261017120000_practice_workspaces`
+6. `20261024120000_quiz_grading_events`
+7. `20261024140000_password_reset_and_degrees`
 
----
+This count is the **release tree expectation**, not evidence of current production state. Production application status is **UNVERIFIED** without an authorized read-only preflight against production.
 
-## Test Results
-
-| Test | Status | File |
-|------|--------|------|
-| Migration history | PASS | `scripts/test-migration-history.ts` |
-| Enrollment access | PASS | `scripts/test-enrollment-access.ts` |
-| Quiz limits | PASS | `scripts/test-quiz-limits.ts` |
-| Events schema | PASS | `scripts/test-events.ts` |
-| Quiz comprehensive | PASS | `scripts/test-quiz-attempts-comprehensive.ts` |
-| Grading authorization | PASS | `scripts/test-grading-authorization.ts` |
-| Events comprehensive | PASS | `scripts/test-events-comprehensive.ts` |
-| Frontend TypeScript | PASS | `npx tsc --noEmit` |
-| Production build | PASS | `npm run build` |
+Four production-only migrations (lesson materials) remain expected outside this tree — see `docs/PRODUCTION.md`.
 
 ---
 
-## CI Status
+## Local Test Results (this verification pass)
 
-| Check | Status |
-|-------|--------|
-| release-gate / gate | Needs update (test expected 5 migrations, now 6) |
-| Supabase Preview | SKIPPED |
+| Test | Command | Result |
+|------|---------|--------|
+| Migration history | `npm run test:migration-history` | Recorded in delivery report |
+| Password reset security | `npm run test:password-reset` | Recorded in delivery report |
+| Degrees authorization | `npm run test:degrees-auth` | Recorded in delivery report |
+| Storage validation | `npm run test:storage` | Recorded in delivery report |
+| Frontend TypeScript | `npx tsc --noEmit` | Recorded in delivery report |
+| Backend TypeScript | `npm run backend:typecheck` | Recorded in delivery report |
+| Production build | `npm run build` | Recorded in delivery report |
 
----
-
-## What Is NOT Implemented
-
-The following are explicitly NOT claimed or implemented:
-
-1. **Password reset** — Requires email service configuration
-2. **Email verification** — Requires email service configuration
-3. **File upload storage** — Requires S3/R2/GCS configuration
-4. **Degrees backend** — No institution data available
-5. **Live video conferencing** — Not in scope
-6. **Event attendance tracking** — Not in scope
-7. **Payment processing** — Not in scope
-8. **Course builder UI** — Admin creates via database/seed
+CI `release-gate` on PR #203 is separate evidence — do not equate a local pass with CI.
 
 ---
 
-## Production Deployment Checklist
+## Production Status
 
-Before deploying:
-1. [ ] Run `npm run db:preflight` to verify migration safety
-2. [ ] Backup production database
-3. [ ] Apply migrations with `npx prisma migrate deploy`
-4. [ ] Verify health endpoint returns 200
-5. [ ] Test critical flows: login, enrol, quiz, events
-
----
-
-## Verification Methodology
-
-Each feature was verified by:
-1. Reading source code
-2. Checking Prisma schema
-3. Running TypeScript compilation
-4. Running unit tests
-5. Building for production
+**UNVERIFIED.** Do not claim health, pending migration counts, or incident resolution without a current authorized probe. See `docs/PRODUCTION.md` section 8a for the operator sequence.

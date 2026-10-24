@@ -54,6 +54,9 @@
     "test:enrollment-access": "tsx scripts/test-enrollment-access.ts",
     "test:events": "tsx scripts/test-events.ts",
     "test:quiz-limits": "tsx scripts/test-quiz-limits.ts",
+    "test:password-reset": "tsx scripts/test-password-reset-security.ts",
+    "test:degrees-auth": "tsx scripts/test-degrees-authorization.ts",
+    "test:storage": "tsx scripts/test-storage-validation.ts",
     "bootstrap:superadmin": "tsx scripts/bootstrap-superadmin.ts"
   },
   "engines": {

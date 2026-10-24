@@ -1,35 +1,33 @@
 /**
  * Email service abstraction.
- * 
- * BLOCKED: No email provider is currently configured. This module provides
- * the interface and validation but cannot send emails until credentials are set.
- * 
- * Required environment variables (none configured):
+ *
+ * Implemented providers: mailgun, sendgrid.
+ * Stubbed (not sendable): ses, smtp — reported as unconfigured until implemented.
+ *
+ * Required environment variables:
  * - EMAIL_PROVIDER: "mailgun" | "sendgrid" | "ses" | "smtp"
  * - EMAIL_FROM: Sender email address (e.g., "noreply@skylent.live")
- * 
+ *
  * Provider-specific variables:
- * 
+ *
  * Mailgun:
  * - MAILGUN_API_KEY
  * - MAILGUN_DOMAIN
- * 
+ *
  * SendGrid:
  * - SENDGRID_API_KEY
- * 
- * AWS SES:
- * - AWS_ACCESS_KEY_ID
- * - AWS_SECRET_ACCESS_KEY
- * - AWS_SES_REGION
- * 
- * SMTP:
- * - SMTP_HOST
- * - SMTP_PORT
- * - SMTP_USER
- * - SMTP_PASS
+ *
+ * AWS SES / SMTP: not implemented — setting EMAIL_PROVIDER to these values
+ * does not mark the service as configured.
  */
 
 export type EmailProvider = "mailgun" | "sendgrid" | "ses" | "smtp" | "none"
+
+/** Providers with a working send path in this codebase. */
+export const IMPLEMENTED_EMAIL_PROVIDERS: ReadonlySet<EmailProvider> = new Set([
+  "mailgun",
+  "sendgrid",
+])
 
 export interface EmailMessage {
   to: string
@@ -46,7 +44,7 @@ export interface EmailConfig {
 export class EmailServiceError extends Error {
   constructor(
     message: string,
-    public readonly code: "NOT_CONFIGURED" | "SEND_FAILED" | "INVALID_CONFIG"
+    public readonly code: "NOT_CONFIGURED" | "SEND_FAILED" | "INVALID_CONFIG",
   ) {
     super(message)
     this.name = "EmailServiceError"
@@ -57,7 +55,7 @@ function getEmailConfig(): EmailConfig | null {
   const provider = (process.env.EMAIL_PROVIDER || "none") as EmailProvider
   const from = process.env.EMAIL_FROM
 
-  if (provider === "none" || !from) {
+  if (!IMPLEMENTED_EMAIL_PROVIDERS.has(provider) || !from) {
     return null
   }
 
@@ -65,17 +63,22 @@ function getEmailConfig(): EmailConfig | null {
 }
 
 export function isEmailConfigured(): boolean {
-  return getEmailConfig() !== null
+  const status = getEmailConfigStatus()
+  return status.configured
 }
 
 export function getEmailConfigStatus(): {
   configured: boolean
   provider: EmailProvider
+  implemented: boolean
   requiredVariables: string[]
   missingVariables: string[]
 } {
-  const provider = (process.env.EMAIL_PROVIDER || "none") as EmailProvider
-  
+  const raw = (process.env.EMAIL_PROVIDER || "none").toLowerCase()
+  const provider = (
+    ["mailgun", "sendgrid", "ses", "smtp", "none"].includes(raw) ? raw : "none"
+  ) as EmailProvider
+
   const providerVars: Record<EmailProvider, string[]> = {
     none: [],
     mailgun: ["MAILGUN_API_KEY", "MAILGUN_DOMAIN", "EMAIL_FROM"],
@@ -86,10 +89,12 @@ export function getEmailConfigStatus(): {
 
   const required = providerVars[provider] || []
   const missing = required.filter((v) => !process.env[v])
+  const implemented = IMPLEMENTED_EMAIL_PROVIDERS.has(provider)
 
   return {
-    configured: provider !== "none" && missing.length === 0,
+    configured: implemented && missing.length === 0,
     provider,
+    implemented,
     requiredVariables: required,
     missingVariables: missing,
   }
@@ -100,8 +105,8 @@ export async function sendEmail(message: EmailMessage): Promise<void> {
 
   if (!config) {
     throw new EmailServiceError(
-      "Email service is not configured. Set EMAIL_PROVIDER and EMAIL_FROM environment variables.",
-      "NOT_CONFIGURED"
+      "Email service is not configured. Set EMAIL_PROVIDER to mailgun or sendgrid with the required credentials.",
+      "NOT_CONFIGURED",
     )
   }
 
@@ -112,14 +117,8 @@ export async function sendEmail(message: EmailMessage): Promise<void> {
     case "sendgrid":
       await sendSendGrid(config, message)
       break
-    case "ses":
-      await sendSES(config, message)
-      break
-    case "smtp":
-      await sendSMTP(config, message)
-      break
     default:
-      throw new EmailServiceError(`Unknown email provider: ${config.provider}`, "INVALID_CONFIG")
+      throw new EmailServiceError(`Email provider is not implemented: ${config.provider}`, "INVALID_CONFIG")
   }
 }
 
@@ -181,20 +180,6 @@ async function sendSendGrid(config: EmailConfig, message: EmailMessage): Promise
   }
 }
 
-async function sendSES(_config: EmailConfig, _message: EmailMessage): Promise<void> {
-  throw new EmailServiceError(
-    "AWS SES integration not yet implemented. Use Mailgun or SendGrid.",
-    "INVALID_CONFIG"
-  )
-}
-
-async function sendSMTP(_config: EmailConfig, _message: EmailMessage): Promise<void> {
-  throw new EmailServiceError(
-    "SMTP integration not yet implemented. Use Mailgun or SendGrid.",
-    "INVALID_CONFIG"
-  )
-}
-
 export function buildPasswordResetEmail(resetUrl: string): Omit<EmailMessage, "to"> {
   return {
     subject: "Reset your Skylent password",
@@ -216,7 +201,7 @@ If you did not request this password reset, you can safely ignore this email.
     <h2 style="color: #1a1a1a;">Reset your password</h2>
     <p>You requested a password reset for your Skylent account.</p>
     <p>
-      <a href="${resetUrl}" style="display: inline-block; padding: 12px 24px; background: #4F46E5; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;">
+      <a href="${resetUrl}" style="display: inline-block; padding: 12px 24px; background: #1a1a1a; color: white; text-decoration: none; border-radius: 6px; font-weight: 600;">
         Reset Password
       </a>
     </p>

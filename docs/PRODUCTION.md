@@ -15,7 +15,8 @@ Optional:
 
 - OpenAI-compatible API for Skylent AI (the rest of the product works if this is unset; the lesson assistant shows as unavailable).
 - Google OAuth client for “Continue with Google”.
-- Object storage for assignment file bytes (today only metadata is stored with `storageProvider: pending`).
+- Object storage for assignment file bytes (today only metadata is stored with `storageProvider: pending`). `server/src/lib/storage.ts` implements **local filesystem only** (refused when `NODE_ENV=production`). S3/GCS/Azure are not implemented — do not set `STORAGE_PROVIDER` to those values expecting uploads to work.
+- Email delivery for password reset: `EMAIL_PROVIDER=mailgun` or `sendgrid` plus `EMAIL_FROM` and provider keys. `ses` / `smtp` are not implemented and will not report as configured.
 
 ## 2. Environment variables
 
@@ -50,6 +51,10 @@ Optional:
 | `SKYLENT_RUN_SEED` | Set to `1` on **first** deploy only so predeploy loads catalog. |
 | `SKYLENT_ALLOW_DESTRUCTIVE_SEED` | Required to re-run seed after catalog exists. Re-seeding deletes curriculum nodes and **learner progress**. |
 | `SKYLENT_AI_ALLOW_GROUNDED` | Do not set in production. Allows the preview `lesson-grounded` provider. |
+| `EMAIL_PROVIDER` / `EMAIL_FROM` | Password reset mail. Only `mailgun` and `sendgrid` are implemented. |
+| `MAILGUN_API_KEY` / `MAILGUN_DOMAIN` | When `EMAIL_PROVIDER=mailgun`. |
+| `SENDGRID_API_KEY` | When `EMAIL_PROVIDER=sendgrid`. |
+| `STORAGE_PROVIDER` / `STORAGE_BUCKET` | Do not enable in production until a cloud provider is implemented. `local` is refused when `NODE_ENV=production`. |
 
 ### Development only
 
@@ -169,11 +174,22 @@ Idempotent: an existing email is elevated to `ADMIN` without changing the passwo
 
 ## 8a. Upgrading an existing production database (Hostinger)
 
-1. Confirm a restorable backup exists: Supabase → Database → Backups shows a backup newer than the last schema change, or a `pg_dump -Fc` was taken through the session pooler and `pg_restore --list` reads it. Without this, stop.
-2. In hPanel → Node.js, record the current start command or entry file, Node version, and the deployed commit. Record whether `DIRECT_URL` points at the session pooler (host only, never the password). Note whether `COOKIE_SECURE` is set.
-3. From a trusted machine with the production URLs in the environment (not pasted into chat or files), run `npm run db:preflight`. Expect `READY`, five pending October migrations, and the four lesson-material migrations listed as expected production-only. Anything else: stop.
-4. Deploy the new build. If the start command is `server.js` / `npm start`, the restart applies the migrations; otherwise run `npx prisma migrate deploy` first with the same environment.
-5. `GET /api/v1/health` must return `200` with `"migrations": "ok"`. Then run `npm run db:preflight -- --expect-none` and the smoke tests below.
+Mandatory sequence — do not skip steps. Do not use `prisma db push`, `migrate reset`, `migrate resolve`, destructive seed, or ad-hoc DROP/DELETE SQL.
+
+1. **Verified backup and recovery path.** Supabase → Database → Backups shows a backup newer than the last schema change, **or** a `pg_dump -Fc` was taken through the session pooler and `pg_restore --list` reads it. Confirm who can restore and how. Without this, stop.
+2. **Confirm runtime and direct URLs target the same intended database.** In hPanel → Node.js, record start command, Node version, and deployed commit. Confirm `DATABASE_URL` and `DIRECT_URL` resolve to the same logical Postgres database (Hostinger: both via session/transaction pooler — never the IPv6-only direct host). Record host + database name from preflight output only (never passwords).
+3. **Read-only preflight with the exact expected migration set.** From a trusted machine with production URLs in the environment (not pasted into chat or committed files):
+
+   ```sh
+   npm run db:preflight
+   ```
+
+   Against the historical production baseline used by `npm run test:migration-replay`, expect: ready to deploy, **seven** pending October migrations (through `20261024140000_password_reset_and_degrees`), four lesson-material migrations as expected production-only, zero failed. **If the report differs from that expectation, stop and reconcile — do not treat the number seven as proof of live state without this output.**
+4. **Explicit operator approval.** Named approver records go/no-go after reviewing backup evidence and preflight output.
+5. **Migration execution by an authorized operator.** Deploy the new build. If the start command is `server.js` / `npm start`, the restart applies migrations; otherwise run `npx prisma migrate deploy` with the same environment **before** restarting a non-migrating entrypoint.
+6. **Post-migration verification.** `GET /api/v1/health` must return `200` with `"migrations": "ok"`. Run `npm run db:preflight -- --expect-none`. Run the smoke tests in section 9.
+
+Local proof that this deploy path works against a **simulated** production history (not live production): `npm run test:migration-replay` on localhost Postgres only.
 
 ## 9. Smoke-test sequence
 
@@ -188,13 +204,15 @@ Against the **production** process (not `vite dev`):
 ## 10. Rollback
 
 - **Code:** redeploy the previous image/commit. `dist/` is not in git; the previous build artifact is the rollback unit.
-- **Code after the October migrations:** the five October migrations only add tables, columns, enums and indexes, and fill `ProgramCourse` links. The previous build ignores them, so rolling back the code does not need a schema restore.
+- **Code after the October migrations:** the seven October migrations only add tables, columns, enums and indexes, and fill `ProgramCourse` links. The previous build ignores them, so rolling back the code does not need a schema restore.
 - **Database:** Prisma migrations are forward-only here. Do not restore a newer schema onto an older build. Restore a Postgres snapshot taken before a failing migrate if a migration must be undone.
 - **Catalog seed:** never roll forward by re-seeding a live database. That deletes curriculum nodes and cascaded lesson/quiz/assignment progress.
 
 ## Known production limits (not blockers for the written LMS)
 
-- Assignment attachments are metadata only (`pending/…` keys). Learners submit text in the assignment workspace.
+- Assignment attachments are metadata only (`pending/…` keys). Learners submit text in the assignment workspace. Local filesystem storage must not be enabled in production; cloud providers are not implemented yet.
+- Password reset API is present; emails send only when Mailgun or SendGrid is fully configured. Until then, request endpoints still return a generic success body.
+- Degrees backend API is present; the public education UI may still show static sample listings until wired to `/api/v1/degrees`.
 - Skylent AI stays unavailable until `SKYLENT_AI_API_KEY` is set. That is intentional.
 - Google sign-in stays 503 until `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set. In production the callback is the public https `/api/v1/auth/google/callback` on the request host, or on `FRONTEND_URL` when that value is already public https. Register that exact URI in Google Cloud Console.
 - `lesson-grounded` is a preview provider and is ignored when `NODE_ENV=production`.

@@ -1,8 +1,11 @@
 # Skylent — Product Completion Audit
 
-**Release:** `2714f5e2a7c7e387511d136b4741ad04efe91ac2` (main at audit time)
-**Date:** 2026-10-23
-**Auditor:** Cursor Agent (CTO handoff preparation)
+**Initial audit:** 2026-10-23 against main `2714f5e2…`
+**Updated:** 2026-10-24 on branch `cursor/product-completion-f670` (PR #203)
+**Auditor:** Cursor Agent
+
+Canonical statuses for handoff: **GREEN** / **AMBER** / **RED** / **UNVERIFIED**.
+Legacy A–F codes below map roughly as A→GREEN, B/C→AMBER, D/F→RED, E→AMBER (config).
 
 ---
 
@@ -10,12 +13,13 @@
 
 | Status | Meaning |
 |--------|---------|
-| **A** VERIFIED | Implemented with frontend → API → database → authorization chain working |
-| **B** PARTIAL | Core flow exists but has documented gaps |
-| **C** UI-ONLY | Page/button exists but no backend or data behind it |
-| **D** MISSING | Not implemented |
-| **E** BLOCKED | Requires external configuration (credentials, services) |
-| **F** BROKEN | Code exists but fails in normal use |
+| **A** / GREEN | Implemented with frontend → API → database → authorization chain working |
+| **B** / AMBER | Core flow exists but has documented gaps |
+| **C** / AMBER | Page/button exists but incomplete backend wiring |
+| **D** / RED | Not implemented |
+| **E** / AMBER | Requires external configuration (credentials, services) |
+| **F** / RED | Code exists but fails in normal use |
+| **UNVERIFIED** | Not confirmed with current authorized evidence |
 
 ---
 
@@ -63,9 +67,9 @@ This is intentional: `/courses` is a public catalogue page, not part of the auth
 | Logout | A | `server/src/routes/auth.ts:250-261` clears cookies |
 | Session persistence | A | `server/src/lib/auth.ts:81-101` 30-day cookie, `httpOnly`, `Secure` in production |
 | CSRF protection | A | Double-submit cookie pattern `auth.ts:201-216` |
-| Google OAuth | E | `server/src/lib/google-oauth.ts` implemented but requires `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` |
-| Password reset | D | Not implemented |
-| Email verification | D | Not implemented |
+| Google OAuth | E / AMBER | `server/src/lib/google-oauth.ts` implemented but requires `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` |
+| Password reset | B / AMBER | Backend + security tests; Mailgun/SendGrid credentials required for delivery |
+| Email verification | D / RED | Not implemented |
 | Rate limiting | A | `server/src/lib/security-middleware.ts:50-70` auth rate limit |
 
 ### Critical Finding: Signup Does NOT Auto-Enroll
@@ -126,26 +130,20 @@ Verified in code:
 
 ## 5. Education and Degrees
 
-### Status: C (UI-ONLY)
+### Status: AMBER (backend GREEN; frontend still static)
 
 | Feature | Status | Evidence |
 |---------|--------|----------|
-| Degree listing page | C | `src/pages/EducationPage.tsx` renders from static `src/lib/degrees.ts` |
-| Degree detail page | C | `src/pages/education/DegreeDetailPage.tsx` |
-| Backend API | D | No `/catalog/degrees` endpoint exists |
-| Database model | D | No `Degree` or `Institution` table in schema |
+| Degree listing page | C / AMBER | `EducationPage.tsx` still uses static `src/lib/degrees.ts` / `src/data/education.ts` |
+| Degree detail page | C / AMBER | Does not call the new API |
+| Backend API | A / GREEN | `GET /api/v1/degrees`, institutions, admin CRUD; unpublished degrees cannot be listed via `?status=` |
+| Database model | A / GREEN | `Institution`, `Degree` + migration `20261024140000_password_reset_and_degrees` |
 
 **Current state:**
-- 4 sample degrees in `src/data/education.ts` (all `sample: true`)
-- Every listing shows "Sample listing · not open for applications"
-- "Register interest" links to `/contact` enquiry form
-- No university names, fees, or intake dates are shown
-
-**Required for completion:**
-1. Add `Degree` and `Institution` models to Prisma schema
-2. Create `GET /catalog/degrees[/:slug]` endpoints
-3. Seed real degree data when institutions are confirmed
-4. Update frontend to fetch from API instead of static source
+- Backend supports empty catalogue (`/degrees/setup-status`) and admin population
+- Frontend still shows 4 sample routes from `src/data/education.ts` (all `sample: true`)
+- No fictitious institutions were seeded
+- Wire frontend to `/api/v1/degrees` only when real content exists
 
 ---
 
@@ -188,7 +186,7 @@ Verified in code:
 | Attachment metadata | A | `AssignmentAttachment` records created |
 | **Assignment grading** | A | `AssignmentProgress.grade/feedback/gradedById/gradedAt` |
 | **Instructor grading UI** | A | `GET/POST /faculty/submissions[/:id][/grade]` |
-| **File upload** | E | Metadata stored but actual upload requires storage integration |
+| **File upload** | E / AMBER→RED | Metadata + `storage.ts` local-only; S3/GCS/Azure not implemented; local refused in production |
 
 ---
 
@@ -307,19 +305,19 @@ Verified in code:
 ## Severity-Ranked Gaps
 
 ### P0 — Production Incident
-1. **Production migrations not applied** — 6 pending migrations, health returns 503
+1. **Production migrations / health** — **UNVERIFIED** in this update. Historical reports of 503 must be reconfirmed. Release tree expects **7** October migrations including `20261024140000_password_reset_and_degrees`.
 
-### P1 — Critical for Product (RESOLVED)
-1. ~~No quiz explanations or attempt limits~~ — **IMPLEMENTED** (migration `20261024120000`)
-2. ~~No assignment grading~~ — **IMPLEMENTED** (faculty grading routes)
-3. ~~No events/webinars system~~ — **IMPLEMENTED** (full Event/EventRegistration system)
-4. No degree/university backend (UI-only) — **DEFERRED** (no institution data)
+### P1 — Critical for Product
+1. ~~No quiz explanations or attempt limits~~ — GREEN
+2. ~~No assignment grading~~ — GREEN
+3. ~~No events/webinars system~~ — GREEN
+4. ~~No degree/university backend~~ — backend GREEN; frontend AMBER (still static)
 
 ### P2 — Important
-1. ~~No job data seeded~~ — seed script exists (`npm run db:seed:career`)
-2. No password reset flow — requires email service configuration
-3. No email verification — requires email service configuration
-4. File upload requires storage integration
+1. Career job seed script exists — production population UNVERIFIED
+2. Password reset — AMBER (email credentials)
+3. Email verification — RED
+4. File upload production provider — RED
 
 ### P3 — Nice to Have
 1. No leaderboards/XP/streaks
@@ -355,11 +353,11 @@ Verified in code:
 3. ✅ Events/webinar system
 
 ### Remaining Work
-1. Apply production migrations (operator task)
-2. Seed job data for Career OS (`npm run db:seed:career`)
-3. Backend for degrees (when institutions confirm)
-4. Password reset flow (requires email service)
-5. File upload integration (requires storage config)
+1. Apply production migrations via PRODUCTION.md §8a (operator) — UNVERIFIED until done
+2. Seed job data only in approved environments (`npm run db:seed:career`)
+3. Wire degrees frontend to API when real institutions exist
+4. Configure Mailgun/SendGrid for password reset
+5. Implement a production object-storage provider (S3/R2/etc.) — not present today
 
 ---
 
@@ -387,22 +385,10 @@ All tests documented in `scripts/*.ts` have been reviewed.
 
 ## Production Incident Status
 
-**Current state:** Release `2714f5e2` is live on `skylent.live` but:
-- `/health` returns HTTP 503
-- Database is reachable (`db: ok`)
-- 6 migrations pending (5 October + 1 October 24), 0 failed
+**UNVERIFIED.** This audit no longer asserts live `/health` results or pending counts. An authorized operator must run PRODUCTION.md §8a.
 
-**Required actions (for CTO/operator):**
-1. Confirm production backup exists
-2. Record hPanel start command
-3. Run `npm run db:preflight` against production
-4. Apply migrations with explicit approval: `npx prisma migrate deploy`
-5. Verify `/health` returns 200
+**Release-tree migrations relevant to this PR (additive):**
+- `20261024120000_quiz_grading_events` — quiz limits, grading, events
+- `20261024140000_password_reset_and_degrees` — PasswordResetToken, Institution, Degree
 
-See `docs/PRODUCTION.md` section 8a for full runbook.
-
-**New migration added:** `20261024120000_quiz_grading_events` adds:
-- Quiz explanations (`QuizQuestion.explanation`)
-- Quiz attempt limits (`CurriculumNode.maxAttempts`, `passingScore`)
-- Assignment grading (`AssignmentProgress.grade`, `feedback`, `gradedById`, `gradedAt`)
-- Events system (`Event`, `EventRegistration` tables)
+Total October migrations in tree: **7**. That number is not proof of production state.

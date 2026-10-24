@@ -51,12 +51,13 @@ import {
   validatePasswordResetToken,
   resetPasswordWithToken,
   PasswordResetError,
+  genericPasswordResetRequestResponse,
+  isValidPasswordResetTokenFormat,
 } from "../lib/password-reset.js"
 import {
   isEmailConfigured,
   sendEmail,
   buildPasswordResetEmail,
-  EmailServiceError,
 } from "../lib/email.js"
 import rateLimit from "express-rate-limit"
 
@@ -333,6 +334,8 @@ authRouter.post("/password-reset/request", passwordResetRateLimit, async (req, r
     return res.status(400).json({ error: "Invalid email address" })
   }
 
+  // Always return the same body shape for known and unknown accounts.
+  // Never include token material in the HTTP response or logs.
   try {
     const result = await createPasswordResetToken(parsed.data.email)
 
@@ -340,30 +343,26 @@ authRouter.post("/password-reset/request", passwordResetRateLimit, async (req, r
       const frontendUrl = process.env.FRONTEND_URL || "http://localhost:8443"
       const resetUrl = `${frontendUrl}/reset-password?token=${result.token}`
       const emailContent = buildPasswordResetEmail(resetUrl)
-      
+
       try {
         await sendEmail({
-          to: parsed.data.email,
+          to: normalizeEmail(parsed.data.email),
           ...emailContent,
         })
-      } catch (emailError) {
-        console.error("Failed to send password reset email:", emailError)
+      } catch {
+        // Do not log the reset URL or token. Do not change the response —
+        // a send failure must not reveal whether the account exists.
+        console.error("Failed to send password reset email")
       }
     }
 
-    res.json({
-      message: "If an account exists with that email, you will receive a password reset link.",
-      emailConfigured: isEmailConfigured(),
-    })
+    res.json(genericPasswordResetRequestResponse(isEmailConfigured()))
   } catch (error) {
     if (error instanceof PasswordResetError && error.code === "RATE_LIMITED") {
       return res.status(429).json({ error: "Too many password reset requests. Try again later." })
     }
-    console.error("Password reset request failed:", error)
-    res.json({
-      message: "If an account exists with that email, you will receive a password reset link.",
-      emailConfigured: isEmailConfigured(),
-    })
+    console.error("Password reset request failed")
+    res.json(genericPasswordResetRequestResponse(isEmailConfigured()))
   }
 })
 
@@ -371,9 +370,9 @@ const passwordResetVerifySchema = z.object({
   token: z.string().min(64).max(128),
 })
 
-authRouter.post("/password-reset/verify", async (req, res) => {
+authRouter.post("/password-reset/verify", passwordResetRateLimit, async (req, res) => {
   const parsed = passwordResetVerifySchema.safeParse(req.body)
-  if (!parsed.success) {
+  if (!parsed.success || !isValidPasswordResetTokenFormat(parsed.data.token)) {
     return res.status(400).json({ error: "Invalid token format", valid: false })
   }
 
@@ -390,19 +389,20 @@ authRouter.post("/password-reset/verify", async (req, res) => {
 
 const passwordResetCompleteSchema = z.object({
   token: z.string().min(64).max(128),
-  password: z
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(128, "Password must be at most 128 characters"),
+  password: passwordSchema,
 })
 
-authRouter.post("/password-reset/complete", async (req, res) => {
+authRouter.post("/password-reset/complete", passwordResetRateLimit, async (req, res) => {
   const parsed = passwordResetCompleteSchema.safeParse(req.body)
   if (!parsed.success) {
     return res.status(400).json({
       error: "Validation failed",
       details: parsed.error.flatten().fieldErrors,
     })
+  }
+
+  if (!isValidPasswordResetTokenFormat(parsed.data.token)) {
+    return res.status(400).json({ error: "Invalid token format", code: "INVALID_TOKEN", success: false })
   }
 
   try {
@@ -412,7 +412,7 @@ authRouter.post("/password-reset/complete", async (req, res) => {
     if (error instanceof PasswordResetError) {
       return res.status(400).json({ error: error.message, code: error.code, success: false })
     }
-    console.error("Password reset failed:", error)
+    console.error("Password reset failed")
     res.status(500).json({ error: "Failed to reset password", success: false })
   }
 })
