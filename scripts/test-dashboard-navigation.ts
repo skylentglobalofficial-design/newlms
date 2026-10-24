@@ -25,7 +25,7 @@ const expected = [
   "Dashboard",
   "My Courses",
   "Projects",
-  "Explore Courses",
+  "Explore Programmes",
   "Career OS",
 ]
 
@@ -47,8 +47,8 @@ if (
   throw new Error("Career OS must stay inside the learner shell")
 }
 
-if (!dashboard.includes('to="/courses"')) {
-  throw new Error("Empty-state call to action should point to /courses")
+if (!dashboard.includes('to="/programmes"')) {
+  throw new Error("Empty-state call to action should point to /programmes")
 }
 
 console.log("dashboard-navigation ok")
