@@ -12,9 +12,9 @@ const ECOSYSTEM = [
   },
   {
     id: "data" as const,
-    title: "Courses",
+    title: "Programmes",
     copy: "Authored teaching you progress through in Skylent OS.",
-    to: "/courses",
+    to: "/programmes",
   },
   {
     id: "growth" as const,

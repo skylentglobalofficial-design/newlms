@@ -12,7 +12,7 @@ const STEPS = [
 ]
 
 const SYSTEM_CHAIN = [
-  { label: "Learn", detail: "Structured lessons and teaching in Skylent OS.", to: "/courses" },
+  { label: "Learn", detail: "Structured lessons and teaching in Skylent OS.", to: "/programmes" },
   { label: "Practice", detail: "Quizzes, labs, and checks after you learn.", to: "/labs" },
   { label: "Build", detail: "Projects and applied work on real briefs.", to: "/career-os/projects" },
   { label: "Evidence", detail: "Artifacts you keep and can showcase.", to: "/career-os/projects" },

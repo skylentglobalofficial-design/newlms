@@ -34,7 +34,7 @@ const DESTINATIONS: Array<{
     title: "Subject",
     copy: "Go deeper on a topic with lessons, examples, and checks as you go.",
     node: "Subject",
-    to: "/courses",
+    to: "/programmes",
   },
   {
     id: "skill",

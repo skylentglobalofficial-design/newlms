@@ -51,4 +51,17 @@ if (!dashboard.includes('to="/programmes"')) {
   throw new Error("Empty-state call to action should point to /programmes")
 }
 
+// Verify /courses redirects to /programmes in the router
+const appSource = readFileSync(
+  new URL("../src/App.tsx", import.meta.url),
+  "utf8",
+)
+if (!appSource.includes('path="/courses"') || !appSource.includes('Navigate to="/programmes"')) {
+  throw new Error("/courses must redirect to /programmes via Navigate")
+}
+// Verify course detail routes still work
+if (!appSource.includes('path="/courses/:slug"')) {
+  throw new Error("/courses/:slug detail route must remain intact")
+}
+
 console.log("dashboard-navigation ok")
