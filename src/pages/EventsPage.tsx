@@ -71,20 +71,14 @@ export default function EventsPage() {
         <section className="cat-hero">
           <div className="cat-rail">
             <p className="cat-label">Events &amp; Webinars</p>
-            <h1 className="cat-h1--display">
-              Live sessions. Expert speakers. Industry insights.
-            </h1>
+            <h1 className="cat-h1--display">Events &amp; Webinars</h1>
             <p className="cat-lead">
-              Join live webinars, workshops, and interactive sessions led by
-              industry experts. Register for upcoming events or catch up on past
-              sessions.
+              Register for upcoming sessions or browse past events. Filter by
+              date to find what you need.
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/programmes">
                 Explore programmes
-              </Link>
-              <Link className="cat-btn cat-btn-ghost" to="/programmes">
-                Browse courses
               </Link>
             </div>
           </div>

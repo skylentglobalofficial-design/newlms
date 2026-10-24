@@ -22,10 +22,10 @@ export const LEARNER_NAV: AuthNavItem[] = [
     href: "/dashboard/student#student-projects",
   },
   {
-    id: "explore-courses",
-    label: "Explore Courses",
+    id: "explore-programmes",
+    label: "Explore Programmes",
     short: "Explore",
-    href: "/courses",
+    href: "/programmes",
   },
   { id: "career-os", label: "Career OS", short: "Career", href: "/career-os" },
 ]
@@ -56,7 +56,7 @@ export function LearnerNavIcon({ id }: { id: string }): ReactNode {
       </svg>
     )
   }
-  if (id === "explore-courses") {
+  if (id === "explore-programmes") {
     return (
       <svg {...s}>
         <circle cx="12" cy="12" r="8" />
