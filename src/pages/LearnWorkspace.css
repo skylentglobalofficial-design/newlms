@@ -393,7 +393,7 @@
   flex: none;
   display: flex;
   flex-direction: column;
-  width: 264px;
+  width: 248px;
   min-width: 0;
   border-right: 1px solid var(--skylent-color-border);
   background: var(--skylent-surface-elevated);
@@ -586,7 +586,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   box-sizing: border-box;
-  padding: clamp(28px, 3.4vw, 48px) clamp(20px, 4vw, 56px) 32px;
+  padding: clamp(24px, 3vw, 40px) clamp(20px, 3.5vw, 48px) 28px;
 }
 
 .os-workspace {

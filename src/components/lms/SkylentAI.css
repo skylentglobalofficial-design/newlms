@@ -7,14 +7,14 @@
   flex: none;
   display: flex;
   flex-direction: column;
-  width: 348px;
+  width: 320px;
   min-width: 0;
   min-height: 0;
   box-sizing: border-box;
   border-left: 1px solid var(--skylent-color-border);
   background: var(--skylent-surface-paper);
   color: var(--skylent-color-ink);
-  font-size: 15px;
+  font-size: 14px;
   line-height: 1.55;
 }
 
