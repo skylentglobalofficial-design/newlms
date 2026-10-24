@@ -172,34 +172,20 @@ export const ILLUSTRATIVE_WEEK: WeekSession[] = [
 
 export function LearningWeek({ compact = false }: { compact?: boolean }) {
   const week = ILLUSTRATIVE_WEEK
-  const done = week.filter((s) => s.state === "done").length
-  const todayIndex = week.findIndex((s) => s.state === "today")
   return (
     <div className={`dg-week${compact ? " dg-week--compact" : ""}`}>
       <div className="dg-week__head sky-on-navy">
         <div className="dg-week__headrow">
           <div>
             <div className="dg-week__kicker">Online learning environment</div>
-            <div className="dg-week__title">A study week</div>
+            <div className="dg-week__title">Example of a study week</div>
           </div>
           {compact ? null : (
-            <ProductSlice steps={["Learn", "Practice", "Prove"]} current="Learn" label="Where this week sits in the product model" />
+            <ProductSlice steps={["Learn", "Practice", "Prove"]} current="Learn" label="Where a future degree week would sit in the product model" />
           )}
         </div>
         <div className="dg-week__progress">
-          <div
-            className="dg-progress"
-            role="progressbar"
-            aria-label="Sessions done this week"
-            aria-valuemin={0}
-            aria-valuemax={week.length}
-            aria-valuenow={done}
-          >
-            <span style={{ width: `${(done / week.length) * 100}%` }} />
-          </div>
-          <span className="dg-week__count">
-            {done} of {week.length} done
-          </span>
+          <span className="dg-week__count">Example only. This is not your progress.</span>
         </div>
       </div>
 
@@ -210,19 +196,14 @@ export function LearningWeek({ compact = false }: { compact?: boolean }) {
 
       <ol className="dg-week__list">
         {week.map((session, i) => {
-          const reached = i <= todayIndex
           const last = i === week.length - 1
           return (
-            <li key={session.day} className="dg-week__item" aria-current={session.state === "today" ? "step" : undefined}>
+            <li key={session.day} className="dg-week__item">
               <span className="dg-week__day">{session.day}</span>
               <span className="dg-week__rail" aria-hidden="true">
-                <span className={`dg-week__seg ${i === 0 ? "dg-week__seg--none" : reached ? "dg-week__seg--on" : ""}`.trim()} />
-                <span className={`dg-week__node ${reached ? "dg-week__node--on" : ""}`.trim()} />
-                <span
-                  className={`dg-week__seg dg-week__seg--grow ${
-                    last ? "dg-week__seg--none" : i < todayIndex ? "dg-week__seg--on" : i === todayIndex ? "dg-week__seg--rest" : ""
-                  }`.trim()}
-                />
+                <span className={`dg-week__seg ${i === 0 ? "dg-week__seg--none" : ""}`.trim()} />
+                <span className="dg-week__node" />
+                <span className={`dg-week__seg dg-week__seg--grow ${last ? "dg-week__seg--none" : ""}`.trim()} />
               </span>
               <div className="dg-week__body">
                 <div>
@@ -231,19 +212,7 @@ export function LearningWeek({ compact = false }: { compact?: boolean }) {
                     {session.format} · {session.timing.toLowerCase()}
                   </div>
                 </div>
-                {session.state === "done" ? (
-                  <span className="dg-week__state dg-week__state--done">
-                    <Tick />
-                    Done
-                  </span>
-                ) : session.state === "today" ? (
-                  <span className="dg-week__state dg-week__state--today">
-                    <span className="dg-dot" aria-hidden="true" />
-                    Today
-                  </span>
-                ) : (
-                  <span className="dg-week__state">Upcoming</span>
-                )}
+                <span className="dg-week__state">Example</span>
               </div>
             </li>
           )
@@ -254,15 +223,15 @@ export function LearningWeek({ compact = false }: { compact?: boolean }) {
         <div className="dg-week__rooms">
           <div className="dg-week__room">
             <span className="sky-label">Classroom</span>
-            <b>Thu, set time</b>
+            <b>Example, set time</b>
           </div>
           <div className="dg-week__room">
             <span className="sky-label">Resources</span>
-            <b>{week.length} this week</b>
+            <b>Not assigned</b>
           </div>
           <div className="dg-week__room">
             <span className="sky-label">Assessment</span>
-            <b>Due Fri</b>
+            <b>Not scheduled</b>
           </div>
         </div>
       )}

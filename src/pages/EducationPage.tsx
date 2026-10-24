@@ -168,9 +168,9 @@ export default function EducationPage() {
             <div>
               <p className="edx-eyebrow">Degrees</p>
               <h1 id="edx-title" className="edx-h1">
-                UG and PG degrees, <em>online or on campus.</em>
+                Degree areas, <em>not open yet.</em>
               </h1>
-              <p className="edx-lede">Choose your level, then how you want to study. These are planned degree areas: no institution is confirmed yet, so you can register interest but not apply.</p>
+              <p className="edx-lede">These are sample areas for a future undergraduate or postgraduate degree, online or on campus. Skylent does not award degrees. No institution is confirmed, so you can register interest but not apply.</p>
             </div>
             <nav className="edx-filters" aria-label="Filter degrees">
               <div className="edx-filter" role="group" aria-label="Level">

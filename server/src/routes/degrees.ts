@@ -12,8 +12,31 @@ import {
   buildPublicDegreeWhere,
   isPubliclyVisibleDegreeStatus,
 } from "../lib/degrees-public.js"
+import { readSchemaCapabilities } from "../lib/schema-capabilities.js"
 
 export const degreesRouter = Router()
+
+degreesRouter.use(async (req, res, next) => {
+  try {
+    const caps = await readSchemaCapabilities()
+    if (caps.degrees) {
+      next()
+      return
+    }
+    if (req.path === "/setup-status") {
+      res.json({
+        isEmpty: true,
+        unavailable: true,
+        stats: { totalDegrees: 0, publishedDegrees: 0, draftDegrees: 0, institutions: 0 },
+        nextSteps: ["Apply the degrees database update before creating institutions or degree programmes."],
+      })
+      return
+    }
+    res.status(503).json({ error: "Degree programmes are not available yet.", code: "unavailable" })
+  } catch (error) {
+    next(error)
+  }
+})
 
 const slugSchema = z
   .string()

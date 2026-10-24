@@ -4,6 +4,7 @@ import { AssignmentStatus } from "@prisma/client"
 import { prisma } from "../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { hasApiRole, requireRoles } from "../lib/roles.js"
+import { readSchemaCapabilities } from "../lib/schema-capabilities.js"
 
 export const facultyRouter = Router()
 
@@ -41,7 +42,7 @@ async function loadSuperadminFacultyDashboard() {
       include: {
         curriculum: {
           orderBy: { order: "asc" },
-          include: { nodes: { orderBy: { order: "asc" } } },
+          include: { nodes: { select: { id: true } } },
         },
       },
       take: 6,
@@ -50,17 +51,19 @@ async function loadSuperadminFacultyDashboard() {
       where: { status: "submitted" },
       orderBy: { submittedAt: "desc" },
       take: 20,
-      include: {
+      select: {
+        id: true,
+        submittedAt: true,
         user: { select: { displayName: true, email: true } },
         node: { select: { title: true, sourceId: true } },
         enrollment: {
-          include: {
+          select: {
             course: { select: { slug: true, title: true } },
             program: { select: { slug: true, name: true } },
           },
         },
         attachments: {
-          select: { id: true, fileName: true, mimeType: true, byteSize: true, storageProvider: true },
+          select: { id: true },
         },
       },
     }),
@@ -124,9 +127,15 @@ facultyRouter.get(
     }
 
     try {
+      const grading = (await readSchemaCapabilities()).assignmentGrading
       const submission = await prisma.assignmentProgress.findUnique({
         where: { id: parsed.data.submissionId },
-        include: {
+        select: {
+          id: true,
+          status: true,
+          responseText: true,
+          submittedAt: true,
+          ...(grading ? { grade: true, feedback: true, gradedAt: true } : {}),
           user: { select: { id: true, displayName: true, email: true } },
           node: {
             select: {
@@ -142,7 +151,7 @@ facultyRouter.get(
             },
           },
           enrollment: {
-            include: {
+            select: {
               course: { select: { slug: true, title: true } },
               program: { select: { slug: true, name: true } },
             },
@@ -163,9 +172,9 @@ facultyRouter.get(
           status: submission.status,
           responseText: submission.responseText,
           submittedAt: submission.submittedAt?.toISOString() ?? null,
-          grade: submission.grade,
-          feedback: submission.feedback,
-          gradedAt: submission.gradedAt?.toISOString() ?? null,
+          grade: "grade" in submission ? submission.grade : null,
+          feedback: "feedback" in submission ? submission.feedback : null,
+          gradedAt: "gradedAt" in submission && submission.gradedAt ? submission.gradedAt.toISOString() : null,
           student: {
             id: submission.user.id,
             name: submission.user.displayName ?? submission.user.email,
@@ -209,8 +218,14 @@ facultyRouter.post(
     }
 
     try {
+      const grading = (await readSchemaCapabilities()).assignmentGrading
+      if (!grading) {
+        return res.status(503).json({ error: "Assignment grading is not available yet.", code: "unavailable" })
+      }
+
       const submission = await prisma.assignmentProgress.findUnique({
         where: { id: idParsed.data.submissionId },
+        select: { id: true, status: true },
       })
 
       if (!submission) {
@@ -230,6 +245,7 @@ facultyRouter.post(
           gradedById: req.auth!.user.id,
           gradedAt: new Date(),
         },
+        select: { id: true, status: true, grade: true, feedback: true, gradedAt: true },
       })
 
       res.json({
@@ -272,17 +288,28 @@ facultyRouter.get(
     }
 
     try {
+      const grading = (await readSchemaCapabilities()).assignmentGrading
+      if (!grading && status === "graded") {
+        return res.status(503).json({ error: "Assignment grading is not available yet.", code: "unavailable" })
+      }
+      if (!grading) {
+        where.status = AssignmentStatus.submitted
+      }
       const [submissions, total] = await Promise.all([
         prisma.assignmentProgress.findMany({
           where,
           orderBy: { submittedAt: "desc" },
           take: limit,
           skip: offset,
-          include: {
+          select: {
+            id: true,
+            status: true,
+            submittedAt: true,
+            ...(grading ? { grade: true, gradedAt: true } : {}),
             user: { select: { displayName: true, email: true } },
             node: { select: { title: true, sourceId: true } },
             enrollment: {
-              include: {
+              select: {
                 course: { select: { slug: true, title: true } },
                 program: { select: { slug: true, name: true } },
               },
@@ -304,8 +331,8 @@ facultyRouter.get(
           courseTitle: row.enrollment.course?.title ?? null,
           programName: row.enrollment.program?.name ?? null,
           submittedAt: row.submittedAt?.toISOString() ?? null,
-          grade: row.grade,
-          gradedAt: row.gradedAt?.toISOString() ?? null,
+          grade: "grade" in row ? row.grade : null,
+          gradedAt: "gradedAt" in row && row.gradedAt ? row.gradedAt.toISOString() : null,
         })),
         meta: { total, limit, offset },
       })

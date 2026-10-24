@@ -6,6 +6,7 @@ import { z } from "zod"
 import { prisma } from "../../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../../lib/auth.js"
 import { computeProgress, findCourseBySlug, loadLessonStates, resolveCourseEnrollment } from "../../lib/lms.js"
+import { readSchemaCapabilities } from "../../lib/schema-capabilities.js"
 
 export const skylentCertificatesRouter = Router()
 
@@ -67,7 +68,14 @@ async function markDirectCourseIssued(enrollment: { id: string; courseId: string
 }
 
 /** Learner claims a certificate. Eligibility is this course's lessons, not the whole programme. */
+async function certificatesReady() {
+  return (await readSchemaCapabilities()).skylentCertificates
+}
+
 skylentCertificatesRouter.post("/issue", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
+  if (!(await certificatesReady())) {
+    return void res.status(503).json({ error: "Certificates are not available yet.", code: "unavailable" })
+  }
   const body = z.object({ courseSlug: z.string().min(1).max(120) }).safeParse(req.body ?? {})
   if (!body.success) return void res.status(400).json({ error: "Invalid request" })
   const user = req.auth!.user
@@ -110,6 +118,9 @@ skylentCertificatesRouter.post("/issue", requireAuth, requireCsrf, async (req: A
 })
 
 skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedRequest, res) => {
+  if (!(await certificatesReady())) {
+    return void res.status(503).json({ error: "Certificates are not available yet.", code: "unavailable" })
+  }
   try {
     const rows = await prisma.skylentCertificate.findMany({
       where: { userId: req.auth!.user.id },
@@ -140,6 +151,9 @@ skylentCertificatesRouter.get("/verify/:code", verifyLimit, async (req, res) => 
   const normalized = (Array.isArray(rawCode) ? rawCode[0] : rawCode)?.toUpperCase()
   const code = z.string().regex(/^SKL-\d{4}-[A-Z0-9]{1,6}-[A-Z0-9]{4,8}$/).safeParse(normalized)
   if (!code.success) return void res.status(400).json({ error: "Invalid certificate ID" })
+  if (!(await certificatesReady())) {
+    return void res.status(503).json({ error: "Certificate check is unavailable right now. Try again later.", code: "unavailable" })
+  }
   // A failed lookup (database down, or a schema that is behind) is not "no such certificate":
   // say the check could not be made, so nobody reads an outage as an invalid certificate.
   let cert: Awaited<ReturnType<typeof prisma.skylentCertificate.findUnique>>

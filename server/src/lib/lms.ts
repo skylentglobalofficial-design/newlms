@@ -1,5 +1,4 @@
 import type {
-  AssignmentProgress,
   Course,
   CurriculumModule,
   CurriculumNode,
@@ -11,6 +10,11 @@ import type {
 import { isMuxPlaybackId } from "./media/playback-id.js"
 import { ensureProgramCourseLinks } from "./program-course-links.js"
 import { prisma } from "./prisma.js"
+import {
+  assignmentProgressSelect,
+  courseCurriculumInclude,
+  readSchemaCapabilities,
+} from "./schema-capabilities.js"
 
 export type LessonKey = string
 
@@ -115,13 +119,20 @@ type CourseWithCurriculum = Course & {
   curriculum: (CurriculumModule & { nodes: CurriculumNode[] })[]
 }
 
-const courseInclude = {
-  curriculum: {
-    orderBy: { order: "asc" as const },
-    include: {
-      nodes: { orderBy: { order: "asc" as const } },
-    },
-  },
+async function currentCourseInclude() {
+  const caps = await readSchemaCapabilities()
+  return courseCurriculumInclude(caps.curriculumNodeQuizLimits)
+}
+
+/** Quiz-limit columns are absent until that migration is applied. Treat them as unset. */
+function normalizeLoadedCourse<T extends CourseWithCurriculum>(course: T): T {
+  for (const module of course.curriculum) {
+    for (const node of module.nodes) {
+      if (node.maxAttempts === undefined) node.maxAttempts = null
+      if (node.passingScore === undefined) node.passingScore = null
+    }
+  }
+  return course
 }
 
 function nodeTypeKey(nodeType: CurriculumNodeType): string {
@@ -193,10 +204,11 @@ export function flattenNodes(course: CourseWithCurriculum): Array<{
 }
 
 export async function findCourseBySlug(slug: string) {
-  return prisma.course.findUnique({
+  const course = await prisma.course.findUnique({
     where: { slug },
-    include: courseInclude,
+    include: await currentCourseInclude(),
   })
+  return course ? normalizeLoadedCourse(course as CourseWithCurriculum) : null
 }
 
 export async function findNodeByLessonKey(course: CourseWithCurriculum, key: LessonKey) {
@@ -246,6 +258,7 @@ export async function getActiveEnrollment(userId: string, courseId: string) {
 }
 
 async function loadProgramEnrollment(userId: string) {
+  const include = await currentCourseInclude()
   return prisma.userEnrollment.findFirst({
     where: {
       userId,
@@ -258,11 +271,10 @@ async function loadProgramEnrollment(userId: string) {
         include: {
           programCourses: {
             orderBy: { sortOrder: "asc" },
-            include: { course: { include: courseInclude } },
+            include: { course: { include } },
           },
         },
       },
-      lastAccessedNode: true,
     },
   })
 }
@@ -276,8 +288,7 @@ async function loadDirectCourseEnrollment(userId: string) {
     },
     orderBy: { updatedAt: "desc" },
     include: {
-      course: { include: courseInclude },
-      lastAccessedNode: true,
+      course: { include: await currentCourseInclude() },
     },
   })
 }
@@ -316,7 +327,7 @@ function buildLessonState(
   node: CurriculumNode,
   progress: LessonProgress | undefined,
   quizAttempts: QuizAttempt[],
-  assignment: AssignmentProgress | undefined,
+  assignment: { status: string } | undefined,
   lock: { locked: boolean; requiredLessonKey?: string | null },
 ): LessonStatePayload {
   const complete = Boolean(progress?.completedAt)
@@ -444,6 +455,7 @@ export async function loadLessonStates(
 ): Promise<Record<LessonKey, LessonStatePayload>> {
   const nodeIds = flattenNodes(course).map((item) => item.node.id)
 
+  const grading = (await readSchemaCapabilities()).assignmentGrading
   const [progressRows, quizAttempts, assignments] = await Promise.all([
     prisma.lessonProgress.findMany({
       where: { enrollmentId: enrollment.id, nodeId: { in: nodeIds } },
@@ -454,6 +466,7 @@ export async function loadLessonStates(
     }),
     prisma.assignmentProgress.findMany({
       where: { enrollmentId: enrollment.id, nodeId: { in: nodeIds } },
+      select: assignmentProgressSelect(grading),
     }),
   ])
 
@@ -520,15 +533,16 @@ export async function buildCourseWorkspace(
 }
 
 export async function syncCertificateState(enrollmentId: string, courseId?: string) {
+  const include = await currentCourseInclude()
   const enrollment = await prisma.userEnrollment.findUnique({
     where: { id: enrollmentId },
     include: {
-      course: { include: courseInclude },
+      course: { include },
       program: {
         include: {
           programCourses: {
             orderBy: { sortOrder: "asc" },
-            include: { course: { include: courseInclude } },
+            include: { course: { include } },
           },
         },
       },
@@ -554,7 +568,7 @@ export async function syncCertificateState(enrollmentId: string, courseId?: stri
   const course =
     enrollment.course ??
     (courseId
-      ? await prisma.course.findUnique({ where: { id: courseId }, include: courseInclude })
+      ? await prisma.course.findUnique({ where: { id: courseId }, include: await currentCourseInclude() })
       : null)
   if (!course) return
 
@@ -592,7 +606,7 @@ export async function findProgramBySlug(slug: string) {
     include: {
       programCourses: {
         orderBy: { sortOrder: "asc" },
-        include: { course: { include: courseInclude } },
+        include: { course: { include: await currentCourseInclude() } },
       },
     },
   })
@@ -701,7 +715,7 @@ export async function findProgramWorkspaceForCourse(userId: string, courseId: st
         include: {
           programCourses: {
             orderBy: { sortOrder: "asc" },
-            include: { course: { include: courseInclude } },
+            include: { course: { include: await currentCourseInclude() } },
           },
         },
       },
@@ -763,15 +777,16 @@ export type EnrollmentCourseSummary = {
 
 /** Per-course progress for one enrolment. Programme rows report each linked course, not one blended flag. */
 export async function summarizeEnrollmentCourses(enrollmentId: string): Promise<EnrollmentCourseSummary[]> {
+  const include = await currentCourseInclude()
   const enrollment = await prisma.userEnrollment.findUnique({
     where: { id: enrollmentId },
     include: {
-      course: { include: courseInclude },
+      course: { include },
       program: {
         include: {
           programCourses: {
             orderBy: { sortOrder: "asc" },
-            include: { course: { include: courseInclude } },
+            include: { course: { include } },
           },
         },
       },
