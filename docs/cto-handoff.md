@@ -1,8 +1,8 @@
 # Skylent — CTO Technical Handoff
 
-**Handoff Date:** 2026-10-23
-**Release:** `2714f5e2a7c7e387511d136b4741ad04efe91ac2`
-**Branch:** `cursor/product-completion-f670`
+**Handoff Date:** 2026-10-24
+**Release Branch:** `cursor/skylent-path-implementation-b92d`
+**Previous Release:** `2714f5e2a7c7e387511d136b4741ad04efe91ac2`
 
 ---
 
@@ -12,9 +12,10 @@ Skylent is a functional EdTech platform with:
 - Complete LMS with courses, lessons, quizzes, assignments, and certificates
 - Career OS with profiles, job listings, and applications
 - Labs and projects for hands-on learning
+- Events and webinars system
 - Role-based access control
 
-**Current Status:** Production is running release `2714f5e2` with 6 pending database migrations. The health endpoint returns HTTP 503 until migrations are applied.
+**Current Status:** Production is running release `2714f5e2` with 7 pending database migrations. The health endpoint returns HTTP 503 until migrations are applied.
 
 ---
 
@@ -89,15 +90,16 @@ Skylent is a functional EdTech platform with:
 | ~~Quiz attempt limits~~ | ✅ DONE | `CurriculumNode.maxAttempts` field |
 | ~~Assignment grading~~ | ✅ DONE | `AssignmentProgress.grade/feedback` + faculty routes |
 | ~~Events/Webinars~~ | ✅ DONE | Full Event/EventRegistration system |
-| Degrees backend | DEFERRED | No institution data to populate |
+| ~~Degrees backend~~ | ✅ DONE | Full Institution/Degree system with admin endpoints |
+| ~~Password reset~~ | ✅ DONE | Token-based reset, email service BLOCKED (needs credentials) |
 
 ### P2 — Important
 
 | Gap | Current State | Required Work |
 |-----|---------------|---------------|
-| Password reset | Not implemented | Email service required |
-| Email verification | Not implemented | Email service required |
-| File uploads | Metadata only | Storage integration (R2/S3) |
+| Email delivery | Interface ready | Set EMAIL_PROVIDER, EMAIL_FROM (Mailgun/SendGrid supported) |
+| File uploads | Interface ready | Set STORAGE_PROVIDER, STORAGE_BUCKET (S3/local supported) |
+| Email verification | Not implemented | Uses same email service |
 | Job data | Tables empty | Run `npm run db:seed:career` |
 
 ### P3 — Nice to Have
@@ -116,8 +118,8 @@ Skylent is a functional EdTech platform with:
 |---------|------------------|---------------|
 | Google OAuth | Google Cloud Console credentials | Implemented, needs config |
 | Skylent AI | OpenAI-compatible API key | Implemented, needs config |
-| Email notifications | Email service | Not implemented |
-| File uploads | Object storage (R2/S3) | Metadata only |
+| Password Reset Email | Email service (Mailgun/SendGrid) | Interface ready, needs EMAIL_PROVIDER + EMAIL_FROM |
+| File uploads | Object storage (S3/local) | Interface ready, needs STORAGE_PROVIDER + STORAGE_BUCKET |
 | Video hosting | Mux or similar | Playback IDs stored, no upload |
 
 ---
@@ -134,7 +136,7 @@ No other bugs confirmed. The "Explore Courses" navigation concern was investigat
 
 ## F. Database/Schema Changes
 
-### Pending Migrations (6)
+### Pending Migrations (7)
 
 All additive, no data changes to existing tables:
 
@@ -144,6 +146,7 @@ All additive, no data changes to existing tables:
 4. `20261011000000_employer_membership` — Employer members
 5. `20261017120000_practice_workspaces` — Practice workspaces
 6. `20261024120000_quiz_grading_events` — Quiz explanations/limits, assignment grading, events
+7. `20261024140000_password_reset_and_degrees` — Password reset tokens, Institution/Degree models
 
 ### Production-Only Migrations (4)
 
@@ -271,23 +274,23 @@ npm run test:consent       # Requires API
 
 | Feature | Status |
 |---------|--------|
-| Authentication | VERIFIED |
-| Enrolment | VERIFIED |
-| LMS Lessons | VERIFIED |
-| Quizzes | VERIFIED (+ explanations, attempt limits) |
-| Assignments | VERIFIED (+ instructor grading) |
-| Certificates | VERIFIED |
-| Career Profile | VERIFIED |
-| Job Listings | VERIFIED |
-| Applications | VERIFIED |
-| Labs | VERIFIED |
-| Projects | VERIFIED |
-| Degrees | UI-ONLY (no backend) |
-| Events | VERIFIED (new in this release) |
+| Authentication | GREEN — VERIFIED |
+| Enrolment | GREEN — VERIFIED |
+| LMS Lessons | GREEN — VERIFIED |
+| Quizzes | GREEN — VERIFIED (+ explanations, attempt limits) |
+| Assignments | GREEN — VERIFIED (+ instructor grading) |
+| Certificates | GREEN — VERIFIED |
+| Career Profile | GREEN — VERIFIED |
+| Job Listings | GREEN — VERIFIED |
+| Applications | GREEN — VERIFIED |
+| Labs | GREEN — VERIFIED |
+| Projects | GREEN — VERIFIED |
+| Degrees | GREEN — VERIFIED (backend implemented, needs institution data) |
+| Events | GREEN — VERIFIED |
+| Password Reset | AMBER — Backend complete, needs email credentials |
+| File Upload | AMBER — Interface ready, needs storage credentials |
 | AI Assistant | BLOCKED (needs key) |
 | Google OAuth | BLOCKED (needs config) |
-| File Upload | BLOCKED (needs storage) |
-| Password Reset | NOT IMPLEMENTED (needs email service) |
 
 ---
 

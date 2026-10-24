@@ -32,6 +32,23 @@ enum EnrollmentStatus {
   COMING_SOON
 }
 
+enum DegreeDeliveryMode {
+  ONLINE
+  CAMPUS
+}
+
+enum DegreeLevel {
+  UNDERGRADUATE
+  POSTGRADUATE
+}
+
+enum DegreeStatus {
+  DRAFT
+  PUBLISHED
+  COMING_SOON
+  ARCHIVED
+}
+
 enum CurriculumNodeType {
   VIDEO
   NOTES
@@ -176,32 +193,33 @@ enum AuthProvider {
 }
 
 model User {
-  id                 String                   @id @default(uuid()) @db.Uuid
-  email              String                   @unique
-  passwordHash       String?
-  displayName        String?
-  createdAt          DateTime                 @default(now())
-  updatedAt          DateTime                 @updatedAt
-  roles              UserRole[]
-  sessions           Session[]
-  identities         UserIdentity[]
-  memberships        OrganisationMembership[]
-  enrollments        UserEnrollment[]
-  quizAttempts       QuizAttempt[]
-  assignmentProgress AssignmentProgress[]
-  careerProfile      CareerProfile?
-  savedJobs          SavedJob[]
-  jobApplications    JobApplication[]
-  interviewRounds    InterviewRound[]
-  interviewPractice  InterviewPractice[]
-  supportRequests    CareerSupportRequest[]
-  labWorks           LabWork[]
-  learnerProjects    LearnerProject[]
-  policyAcceptances  PolicyAcceptance[]
+  id                  String                      @id @default(uuid()) @db.Uuid
+  email               String                      @unique
+  passwordHash        String?
+  displayName         String?
+  createdAt           DateTime                    @default(now())
+  updatedAt           DateTime                    @updatedAt
+  roles               UserRole[]
+  sessions            Session[]
+  identities          UserIdentity[]
+  memberships         OrganisationMembership[]
+  enrollments         UserEnrollment[]
+  quizAttempts        QuizAttempt[]
+  assignmentProgress  AssignmentProgress[]
+  careerProfile       CareerProfile?
+  savedJobs           SavedJob[]
+  jobApplications     JobApplication[]
+  interviewRounds     InterviewRound[]
+  interviewPractice   InterviewPractice[]
+  supportRequests     CareerSupportRequest[]
+  labWorks            LabWork[]
+  learnerProjects     LearnerProject[]
+  policyAcceptances   PolicyAcceptance[]
   employerMemberships EmployerMembership[]
-  practiceApprovals PracticeWorkspace[] @relation("PracticeWorkspaceApprover")
-  practiceResponses PracticeWorkspaceResponse[]
-  eventRegistrations EventRegistration[]
+  practiceApprovals   PracticeWorkspace[]         @relation("PracticeWorkspaceApprover")
+  practiceResponses   PracticeWorkspaceResponse[]
+  eventRegistrations  EventRegistration[]
+  passwordResetTokens PasswordResetToken[]
 }
 
 model Role {
@@ -229,6 +247,19 @@ model Session {
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @db.Uuid
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([expiresAt])
@@ -301,40 +332,40 @@ model Program {
 }
 
 model PricingTier {
-  id            String  @id @default(uuid()) @db.Uuid
-  programId     String  @db.Uuid
+  id            String   @id @default(uuid()) @db.Uuid
+  programId     String   @db.Uuid
   name          String
   price         Int
   originalPrice Int
   features      String[]
-  highlight     Boolean @default(false)
-  program       Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  highlight     Boolean  @default(false)
+  program       Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
 
   @@unique([programId, name])
 }
 
 model Course {
-  id            String             @id @default(uuid()) @db.Uuid
-  slug          String             @unique
-  title         String
-  category      String
-  level         String
-  duration      String
-  mode          String
-  lessonCount   Int
-  projectCount  Int
-  rating        Float
-  reviews       Int
-  price         Int
-  originalPrice Int
-  desc          String
-  longDesc      String
-  outcomes      String[]
-  forWhom       String[]
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
-  curriculum    CurriculumModule[]
-  enrollments   UserEnrollment[]
+  id             String             @id @default(uuid()) @db.Uuid
+  slug           String             @unique
+  title          String
+  category       String
+  level          String
+  duration       String
+  mode           String
+  lessonCount    Int
+  projectCount   Int
+  rating         Float
+  reviews        Int
+  price          Int
+  originalPrice  Int
+  desc           String
+  longDesc       String
+  outcomes       String[]
+  forWhom        String[]
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  curriculum     CurriculumModule[]
+  enrollments    UserEnrollment[]
   programCourses ProgramCourse[]
 
   @@index([category])
@@ -342,7 +373,7 @@ model Course {
 }
 
 model CurriculumModule {
-  id          String             @id @default(uuid()) @db.Uuid
+  id          String           @id @default(uuid()) @db.Uuid
   sourceId    String?
   order       Int
   number      String?
@@ -350,10 +381,10 @@ model CurriculumModule {
   description String?
   duration    String?
   topics      String[]
-  programId   String?            @db.Uuid
-  courseId    String?            @db.Uuid
-  program     Program?           @relation(fields: [programId], references: [id], onDelete: Cascade)
-  course      Course?            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  programId   String?          @db.Uuid
+  courseId    String?          @db.Uuid
+  program     Program?         @relation(fields: [programId], references: [id], onDelete: Cascade)
+  course      Course?          @relation(fields: [courseId], references: [id], onDelete: Cascade)
   nodes       CurriculumNode[]
 
   @@unique([courseId, sourceId])
@@ -363,23 +394,23 @@ model CurriculumModule {
 }
 
 model CurriculumNode {
-  id                    String               @id @default(uuid()) @db.Uuid
-  sourceId              String?
-  order                 Int
-  title                 String
-  nodeType              CurriculumNodeType
-  duration              String?
-  completed             Boolean              @default(false)
-  muxPlaybackId         String?
-  maxAttempts           Int?
-  passingScore          Int?
-  moduleId              String               @db.Uuid
-  module                CurriculumModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
-  lessonProgress        LessonProgress[]
-  quizQuestions         QuizQuestion[]
-  quizAttempts          QuizAttempt[]
-  assignmentProgress    AssignmentProgress[]
-  lastAccessedEnrollments UserEnrollment[]   @relation("LastAccessedNode")
+  id                      String               @id @default(uuid()) @db.Uuid
+  sourceId                String?
+  order                   Int
+  title                   String
+  nodeType                CurriculumNodeType
+  duration                String?
+  completed               Boolean              @default(false)
+  muxPlaybackId           String?
+  maxAttempts             Int?
+  passingScore            Int?
+  moduleId                String               @db.Uuid
+  module                  CurriculumModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  lessonProgress          LessonProgress[]
+  quizQuestions           QuizQuestion[]
+  quizAttempts            QuizAttempt[]
+  assignmentProgress      AssignmentProgress[]
+  lastAccessedEnrollments UserEnrollment[]     @relation("LastAccessedNode")
 
   @@unique([moduleId, sourceId])
   @@index([moduleId, order])
@@ -503,6 +534,51 @@ model ProgramCourse {
   @@index([courseId])
 }
 
+model Institution {
+  id           String   @id @default(uuid()) @db.Uuid
+  slug         String   @unique
+  name         String
+  awardingBody String?
+  city         String?
+  country      String?
+  logoUrl      String?
+  websiteUrl   String?
+  description  String?  @db.Text
+  verified     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  degrees      Degree[]
+}
+
+model Degree {
+  id            String             @id @default(uuid()) @db.Uuid
+  slug          String             @unique
+  title         String
+  institutionId String?            @db.Uuid
+  deliveryMode  DegreeDeliveryMode
+  level         DegreeLevel
+  discipline    String
+  status        DegreeStatus       @default(DRAFT)
+  duration      String?
+  description   String?            @db.Text
+  eligibility   String?            @db.Text
+  curriculum    Json?
+  skills        String[]
+  careerRoles   String[]
+  tuitionFee    String?
+  intake        String?
+  sample        Boolean            @default(true)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  institution Institution? @relation(fields: [institutionId], references: [id], onDelete: SetNull)
+
+  @@index([institutionId])
+  @@index([deliveryMode])
+  @@index([level])
+  @@index([status])
+}
+
 model AssignmentAttachment {
   id                   String   @id @default(uuid()) @db.Uuid
   assignmentProgressId String   @db.Uuid
@@ -543,18 +619,18 @@ model CareerProfile {
 }
 
 model CareerEducation {
-  id               String    @id @default(uuid()) @db.Uuid
-  profileId        String    @db.Uuid
-  institution      String
-  degree           String
-  fieldOfStudy     String?
-  startDate        DateTime?
-  endDate          DateTime?
-  currentlyStudying Boolean  @default(false)
-  grade            String?
-  sortOrder        Int       @default(0)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id                String    @id @default(uuid()) @db.Uuid
+  profileId         String    @db.Uuid
+  institution       String
+  degree            String
+  fieldOfStudy      String?
+  startDate         DateTime?
+  endDate           DateTime?
+  currentlyStudying Boolean   @default(false)
+  grade             String?
+  sortOrder         Int       @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   profile CareerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
@@ -582,14 +658,14 @@ model CareerExperience {
 }
 
 model CareerSkill {
-  id          String                 @id @default(uuid()) @db.Uuid
-  profileId   String                 @db.Uuid
+  id          String                  @id @default(uuid()) @db.Uuid
+  profileId   String                  @db.Uuid
   name        String
   category    String?
   proficiency CareerSkillProficiency?
-  sortOrder   Int                    @default(0)
-  createdAt   DateTime               @default(now())
-  updatedAt   DateTime               @updatedAt
+  sortOrder   Int                     @default(0)
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
 
   profile CareerProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
 
@@ -688,26 +764,26 @@ model EmployerMembership {
 }
 
 model Job {
-  id              String               @id @default(uuid()) @db.Uuid
-  employerId      String               @db.Uuid
-  title           String
-  slug            String               @unique
-  description     String               @db.Text
-  employmentType  CareerEmploymentType?
-  workMode        CareerWorkMode?
-  location        String?
-  experienceMin   Int?
-  experienceMax   Int?
-  salaryMin       Int?
-  salaryMax       Int?
-  skills          String[]
-  category        String?
-  status          JobStatus            @default(DRAFT)
-  applicationUrl  String?
-  postedAt        DateTime?
-  expiresAt       DateTime?
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
+  id             String                @id @default(uuid()) @db.Uuid
+  employerId     String                @db.Uuid
+  title          String
+  slug           String                @unique
+  description    String                @db.Text
+  employmentType CareerEmploymentType?
+  workMode       CareerWorkMode?
+  location       String?
+  experienceMin  Int?
+  experienceMax  Int?
+  salaryMin      Int?
+  salaryMax      Int?
+  skills         String[]
+  category       String?
+  status         JobStatus             @default(DRAFT)
+  applicationUrl String?
+  postedAt       DateTime?
+  expiresAt      DateTime?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
 
   employer     Employer         @relation(fields: [employerId], references: [id], onDelete: Cascade)
   savedBy      SavedJob[]
@@ -736,19 +812,19 @@ model SavedJob {
 }
 
 model JobApplication {
-  id           String               @id @default(uuid()) @db.Uuid
-  userId       String               @db.Uuid
-  jobId        String?              @db.Uuid
-  employerId   String?              @db.Uuid
-  roleTitle    String?
-  status       JobApplicationStatus @default(APPLIED)
-  appliedAt    DateTime?
-  nextActionAt DateTime?
+  id                 String               @id @default(uuid()) @db.Uuid
+  userId             String               @db.Uuid
+  jobId              String?              @db.Uuid
+  employerId         String?              @db.Uuid
+  roleTitle          String?
+  status             JobApplicationStatus @default(APPLIED)
+  appliedAt          DateTime?
+  nextActionAt       DateTime?
   notes              String?              @db.Text
   source             String?
-  sharedWithEmployer Boolean             @default(false)
+  sharedWithEmployer Boolean              @default(false)
   createdAt          DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
+  updatedAt          DateTime             @updatedAt
 
   user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   job             Job?               @relation(fields: [jobId], references: [id], onDelete: SetNull)
@@ -827,7 +903,7 @@ model InterviewPractice {
 
   user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   question       InterviewQuestion? @relation(fields: [questionId], references: [id], onDelete: SetNull)
-  interviewRound InterviewRound?  @relation(fields: [interviewRoundId], references: [id], onDelete: SetNull)
+  interviewRound InterviewRound?    @relation(fields: [interviewRoundId], references: [id], onDelete: SetNull)
 
   @@index([userId, practicedAt])
   @@index([questionId])
@@ -846,7 +922,7 @@ model CareerSupportRequest {
   createdAt   DateTime                   @default(now())
   updatedAt   DateTime                   @updatedAt
 
-  user  User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   tasks CareerSupportTask[]
 
   @@index([userId, status])
@@ -874,8 +950,8 @@ model LabWork {
 }
 
 model LearnerProject {
-  id          String   @id @default(uuid()) @db.Uuid
-  userId      String   @db.Uuid
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @db.Uuid
   projectType String
   courseSlug  String
   title       String
@@ -883,8 +959,8 @@ model LearnerProject {
   tasks       Json
   reflection  Json
   savedAt     DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   careerProject CareerProject?
@@ -915,14 +991,14 @@ model CareerSupportTask {
 
 /// One certificate per learner per course, minted only by the server at 100% progress.
 model SkylentCertificate {
-  id           String   @id @default(uuid()) @db.Uuid
-  code         String   @unique /// SKL-<year>-<course code>-<random>
-  userId       String   @db.Uuid
-  courseId     String   @db.Uuid
-  learnerName  String
-  courseTitle  String
-  issuedAt     DateTime @default(now())
-  revoked      Boolean  @default(false)
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique /// SKL-<year>-<course code>-<random>
+  userId      String   @db.Uuid
+  courseId    String   @db.Uuid
+  learnerName String
+  courseTitle String
+  issuedAt    DateTime @default(now())
+  revoked     Boolean  @default(false)
 
   @@unique([userId, courseId])
   @@index([code])
@@ -930,8 +1006,8 @@ model SkylentCertificate {
 
 /// Counselling calls and programme/degree enquiries from the public website.
 model SkylentEnquiry {
-  id            String   @id @default(uuid()) @db.Uuid
-  kind          String   @default("enquiry") /// enquiry | counselling | degree | institution
+  id            String    @id @default(uuid()) @db.Uuid
+  kind          String    @default("enquiry") /// enquiry | counselling | degree | institution
   name          String
   email         String
   phone         String?
@@ -939,8 +1015,8 @@ model SkylentEnquiry {
   preferredDate DateTime?
   preferredSlot String?
   message       String?
-  status        String   @default("new") /// new | contacted | closed
-  createdAt     DateTime @default(now())
+  status        String    @default("new") /// new | contacted | closed
+  createdAt     DateTime  @default(now())
 
   policyAcceptances PolicyAcceptance[]
 
@@ -993,25 +1069,25 @@ enum EventRegistrationStatus {
 }
 
 model Event {
-  id            String      @id @default(uuid()) @db.Uuid
-  slug          String      @unique
-  title         String
-  description   String      @db.Text
-  eventType     EventType   @default(WEBINAR)
-  status        EventStatus @default(DRAFT)
-  hostName      String?
-  hostId        String?     @db.Uuid
-  startTime     DateTime
-  endTime       DateTime
-  timezone      String      @default("Asia/Kolkata")
-  capacity      Int?
-  meetingUrl    String?
-  location      String?
-  isOnline      Boolean     @default(true)
-  programSlug   String?
-  courseSlug    String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id          String      @id @default(uuid()) @db.Uuid
+  slug        String      @unique
+  title       String
+  description String      @db.Text
+  eventType   EventType   @default(WEBINAR)
+  status      EventStatus @default(DRAFT)
+  hostName    String?
+  hostId      String?     @db.Uuid
+  startTime   DateTime
+  endTime     DateTime
+  timezone    String      @default("Asia/Kolkata")
+  capacity    Int?
+  meetingUrl  String?
+  location    String?
+  isOnline    Boolean     @default(true)
+  programSlug String?
+  courseSlug  String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   registrations EventRegistration[]
 
@@ -1049,21 +1125,21 @@ enum PracticeWorkspaceStatus {
 
 /// One practice configuration per course. Publication is a reviewed status, not a syllabus match.
 model PracticeWorkspace {
-  id            String                  @id @default(uuid()) @db.Uuid
-  courseSlug    String                  @unique
+  id            String                      @id @default(uuid()) @db.Uuid
+  courseSlug    String                      @unique
   programmeSlug String?
   syllabus      Json
   manifest      Json
   config        Json
   status        PracticeWorkspaceStatus
   adapterId     String?
-  revision      Int                     @default(1)
-  approvedById  String?                 @db.Uuid
+  revision      Int                         @default(1)
+  approvedById  String?                     @db.Uuid
   approvedAt    DateTime?
   publishedAt   DateTime?
-  createdAt     DateTime                @default(now())
-  updatedAt     DateTime                @updatedAt
-  approvedBy    User?                   @relation("PracticeWorkspaceApprover", fields: [approvedById], references: [id], onDelete: SetNull)
+  createdAt     DateTime                    @default(now())
+  updatedAt     DateTime                    @updatedAt
+  approvedBy    User?                       @relation("PracticeWorkspaceApprover", fields: [approvedById], references: [id], onDelete: SetNull)
   revisions     PracticeWorkspaceRevision[]
   responses     PracticeWorkspaceResponse[]
 

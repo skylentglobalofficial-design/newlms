@@ -1,7 +1,7 @@
 # Skylent — CTO First 48 Hours Guide
 
 **Date:** 2026-10-24
-**Branch:** `cursor/product-completion-f670`
+**Branch:** `cursor/skylent-path-implementation-b92d`
 **PR:** #203
 
 ---
@@ -27,7 +27,7 @@ curl -s https://skylent.live/api/v1/health | jq
    # From local machine with production DATABASE_URL
    npm run db:preflight
    ```
-   - Expected: 6 pending migrations (October + October 24)
+   - Expected: 7 pending migrations (October + October 24)
    - Expected: 4 production-only migrations (lesson materials)
    - Expected: 0 failed migrations
 
@@ -118,6 +118,9 @@ VALUES
 | Quiz attempt limits | Complete | `CurriculumNode.maxAttempts` field |
 | Assignment grading | Complete | `AssignmentProgress.grade/feedback` fields |
 | Events/Webinars | Complete | `server/src/routes/events.ts` |
+| Password reset | Complete | `server/src/lib/password-reset.ts`, `server/src/lib/email.ts` |
+| Degrees/Education | Complete | `server/src/routes/degrees.ts`, Institution/Degree models |
+| File uploads | Interface | `server/src/lib/storage.ts` |
 
 ### New API Endpoints
 
@@ -134,6 +137,22 @@ VALUES
 | GET | `/faculty/submissions` | Faculty | List submissions |
 | GET | `/faculty/submissions/:id` | Faculty | Submission detail |
 | POST | `/faculty/submissions/:id/grade` | Faculty | Grade submission |
+| POST | `/auth/password-reset/request` | Public | Request password reset |
+| POST | `/auth/password-reset/verify` | Public | Verify reset token |
+| POST | `/auth/password-reset/complete` | Public | Complete password reset |
+| GET | `/auth/password-reset/config` | Public | Check email config status |
+| GET | `/degrees` | Public | List published degrees |
+| GET | `/degrees/:slug` | Public | Degree detail |
+| GET | `/degrees/disciplines` | Public | List disciplines |
+| GET | `/degrees/institutions` | Public | List institutions |
+| GET | `/degrees/institutions/:slug` | Public | Institution detail |
+| GET | `/degrees/setup-status` | Public | Check empty state |
+| POST | `/degrees/admin` | Admin | Create degree |
+| PATCH | `/degrees/admin/:slug` | Admin | Update degree |
+| DELETE | `/degrees/admin/:slug` | Admin | Delete degree |
+| POST | `/degrees/admin/institutions` | Admin | Create institution |
+| PATCH | `/degrees/admin/institutions/:slug` | Admin | Update institution |
+| DELETE | `/degrees/admin/institutions/:slug` | Admin | Delete institution |
 
 ### Schema Changes
 
@@ -152,6 +171,23 @@ ALTER TABLE "AssignmentProgress" ADD COLUMN "gradedAt" TIMESTAMP(3);
 -- Events system
 CREATE TABLE "Event" (...)
 CREATE TABLE "EventRegistration" (...)
+
+-- Password reset (20261024140000)
+CREATE TABLE "PasswordResetToken" (
+  id UUID PRIMARY KEY,
+  userId UUID REFERENCES "User",
+  tokenHash TEXT UNIQUE,
+  expiresAt TIMESTAMP,
+  usedAt TIMESTAMP,
+  createdAt TIMESTAMP
+);
+
+-- Degrees/Education (20261024140000)
+CREATE TYPE "DegreeDeliveryMode" AS ENUM ('ONLINE', 'CAMPUS');
+CREATE TYPE "DegreeLevel" AS ENUM ('UNDERGRADUATE', 'POSTGRADUATE');
+CREATE TYPE "DegreeStatus" AS ENUM ('DRAFT', 'PUBLISHED', 'COMING_SOON', 'ARCHIVED');
+CREATE TABLE "Institution" (...);
+CREATE TABLE "Degree" (...);
 ```
 
 ---
@@ -182,14 +218,14 @@ npm run build
 | Google OAuth | Social login | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` |
 | Skylent AI | Lesson assistant | `SKYLENT_AI_API_KEY` |
 
-### Known Gaps (Not Yet Implemented)
+### Known Gaps (Require External Credentials)
 
-| Feature | Status | Reason |
-|---------|--------|--------|
-| Password reset | Not implemented | Requires email service |
-| Email verification | Not implemented | Requires email service |
-| File uploads | Metadata only | Requires storage configuration |
-| Degrees backend | UI-only | No institution data confirmed |
+| Feature | Status | Required Configuration |
+|---------|--------|------------------------|
+| Password reset | Backend complete | EMAIL_PROVIDER, EMAIL_FROM (Mailgun/SendGrid) |
+| Email verification | Not implemented | Same email service |
+| File uploads | Interface ready | STORAGE_PROVIDER, STORAGE_BUCKET (S3/local) |
+| Degrees backend | Complete | Empty until institutions are added via admin API |
 
 ---
 
@@ -204,10 +240,10 @@ npm run build
 ## Quick Reference
 
 ### Branch Status
-- Branch: `cursor/product-completion-f670`
+- Branch: `cursor/skylent-path-implementation-b92d`
 - PR: #203 (Open, CI pending)
 - Base: `main` at `2714f5e2`
-- Total pending migrations: 6
+- Total pending migrations: 7
 
 ### Test Commands
 ```bash
