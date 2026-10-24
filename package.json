@@ -57,6 +57,7 @@
     "test:password-reset": "tsx scripts/test-password-reset-security.ts",
     "test:degrees-auth": "tsx scripts/test-degrees-authorization.ts",
     "test:storage": "tsx scripts/test-storage-validation.ts",
+    "test:data-isolation": "tsx scripts/test-data-isolation.ts",
     "bootstrap:superadmin": "tsx scripts/bootstrap-superadmin.ts"
   },
   "engines": {

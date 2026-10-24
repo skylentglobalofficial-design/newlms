@@ -82,7 +82,7 @@ export default function LearnPage() {
   const navigate = useNavigate()
   const location = useLocation()
   const { user, ready: authReady } = useAuth()
-  const { access, lessonStates, reload, enroll } = useLmsCourse(slug)
+  const { access, lessonStates, reload, enroll, patchLessonStates } = useLmsCourse(slug)
 
   const course = access.status === 'ready' ? access.course : null
   const allLessons = course ? course.modules.flatMap((module) => module.lessons) : []
@@ -383,8 +383,12 @@ export default function LearnPage() {
     if (!slug || !selectedLesson) return false
     setActionError(null)
     try {
-      await markLessonComplete(slug, selectedLesson.id)
-      await refreshWorkspace()
+      const result = await markLessonComplete(slug, selectedLesson.id)
+      if (result.data.lessonStates) {
+        patchLessonStates(result.data.lessonStates)
+      } else {
+        await refreshWorkspace()
+      }
       return true
     } catch (err) {
       setActionError(learnerErrorMessage(err, 'Your progress could not be saved. Try again in a moment.'))
@@ -410,10 +414,15 @@ export default function LearnPage() {
     try {
       const ordered = quizQuestions.map((_, index) => answers[index] ?? -1)
       const result = await submitQuizAttempt(slug, selectedLesson.id, ordered)
-      if (result.passed) await refreshWorkspace()
+      if (result.passed) {
+        if (result.lessonStates) {
+          patchLessonStates(result.lessonStates)
+        } else {
+          await refreshWorkspace()
+        }
+      }
       return result.passed
     } catch (err) {
-      // A failed request is not a failed attempt: rethrow so the check keeps the learner's answers.
       setActionError(learnerErrorMessage(err, 'Your answers could not be submitted. They have not been graded. Try again.'))
       throw err
     }

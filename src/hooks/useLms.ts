@@ -128,5 +128,27 @@ export function useLmsCourse(slug: string | undefined) {
     })
   }, [])
 
-  return { access, lessonStates, getLessonState, reload, enroll, patchWorkspace }
+  const patchLessonStates = useCallback((updates: Record<string, ApiCourseWorkspace["lessonStates"][string]>) => {
+    setAccess((current) => {
+      if (current.status !== "ready") return current
+      const newLessonStates = { ...current.workspace.lessonStates, ...updates }
+      const newWorkspace = { ...current.workspace, lessonStates: newLessonStates }
+      const completedCount = Object.values(newLessonStates).filter((s) => s.complete).length
+      const totalLessons = Object.keys(newLessonStates).length
+      const progressPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
+      newWorkspace.progress = {
+        ...newWorkspace.progress,
+        completedCount,
+        progressPct,
+        allComplete: completedCount === totalLessons,
+      }
+      return {
+        status: "ready",
+        workspace: newWorkspace,
+        course: workspaceToCourse(newWorkspace),
+      }
+    })
+  }, [])
+
+  return { access, lessonStates, getLessonState, reload, enroll, patchWorkspace, patchLessonStates }
 }

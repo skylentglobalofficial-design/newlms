@@ -222,8 +222,17 @@ export async function markLessonAccess(slug: string, lessonKey: string) {
   )
 }
 
+export type MarkLessonCompleteResponse = {
+  data: {
+    lessonKey: string
+    state: ApiLessonState
+    lessonStates?: Record<string, ApiLessonState>
+    progress: { completedAt?: string; lastAccessedAt?: string }
+  }
+}
+
 export async function markLessonComplete(slug: string, lessonKey: string) {
-  return lmsMutate<{ data: { lessonKey: string; state: ApiLessonState } }>(
+  return lmsMutate<MarkLessonCompleteResponse>(
     `/lms/courses/${slug}/lessons/${lessonKey}/progress`,
     { action: "complete" },
   )
@@ -236,17 +245,21 @@ export async function fetchQuizQuestions(slug: string, lessonKey: string) {
   return result.data.questions
 }
 
+export type QuizAttemptResponse = {
+  attemptId: string
+  attemptNumber: number
+  score?: number
+  totalQuestions: number
+  passed: boolean
+  submittedAt: string
+  lessonStates?: Record<string, ApiLessonState>
+}
+
 export async function submitQuizAttempt(slug: string, lessonKey: string, answers: number[]) {
-  const result = await lmsMutate<{
-    data: {
-      attemptId: string
-      attemptNumber: number
-      score?: number
-      totalQuestions: number
-      passed: boolean
-      submittedAt: string
-    }
-  }>(`/lms/courses/${slug}/lessons/${lessonKey}/quiz/attempts`, { answers })
+  const result = await lmsMutate<{ data: QuizAttemptResponse }>(
+    `/lms/courses/${slug}/lessons/${lessonKey}/quiz/attempts`,
+    { answers },
+  )
   return result.data
 }
 

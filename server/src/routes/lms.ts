@@ -555,6 +555,7 @@ lmsRouter.post(
         data: {
           lessonKey: lessonParsed.data.lessonKey,
           state: updatedStates[lessonParsed.data.lessonKey],
+          lessonStates: isComplete ? updatedStates : undefined,
           progress: progress.completedAt
             ? { completedAt: progress.completedAt.toISOString() }
             : { lastAccessedAt: progress.lastAccessedAt.toISOString() },
@@ -693,6 +694,8 @@ lmsRouter.post(
         explanation: recorded.passed ? q.explanation : undefined,
       }))
 
+      const updatedLessonStates = recorded.passed ? await loadLessonStates(enrollment, course) : undefined
+
       res.status(201).json({
         data: {
           attemptId: recorded.attempt.id,
@@ -702,6 +705,7 @@ lmsRouter.post(
           passed: recorded.passed,
           submittedAt: recorded.attempt.submittedAt.toISOString(),
           review: recorded.passed ? review : review.map(({ questionId, yourAnswer }) => ({ questionId, yourAnswer })),
+          lessonStates: updatedLessonStates,
         },
       })
     } catch (error) {
