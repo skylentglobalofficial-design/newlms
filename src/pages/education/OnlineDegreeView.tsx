@@ -18,7 +18,6 @@ import {
   ListingChips,
   Photo,
   QuietLink,
-  Tick,
   Unpublished,
   orUnpublished,
 } from "./DegreeParts"
@@ -49,7 +48,6 @@ const RESOURCES: { kind: string; name: string; note: string; state: "opened" | "
 export default function OnlineDegreeView({ degree }: { degree: Degree }) {
   const level = degreeLevelName(degree.level)
   const photo = degree.heroAsset ?? ONLINE_STAND_IN
-  const opened = RESOURCES.filter((r) => r.state === "opened").length
 
   return (
     <DegreeShell>
@@ -241,7 +239,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                   <span>Tutorial · Thu</span>
                   <span className="dg-room__live">
                     <i aria-hidden="true" />
-                    In session
+                    Example
                   </span>
                 </div>
                 <div className="dg-slide" role="img" aria-label="Shared slide area with a title placeholder, four lines of text and a figure block">
@@ -315,33 +313,12 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
                       <b>{r.name}</b>
                       <span>{r.note}</span>
                     </span>
-                    {r.state === "opened" ? (
-                      <Tick label="Opened" />
-                    ) : r.state === "today" ? (
-                      <span className="dg-res__today">
-                        <span className="dg-dot" aria-hidden="true" />
-                        Today
-                      </span>
-                    ) : (
-                      <span className="dg-ring" role="img" aria-label="Not opened" />
-                    )}
+                    <span className="dg-res__kind">Example</span>
                   </li>
                 ))}
               </ul>
               <div className="dg-res__foot">
-                <span>
-                  {opened} of {RESOURCES.length} opened
-                </span>
-                <div
-                  className="dg-progress"
-                  role="progressbar"
-                  aria-label="Resources opened this week"
-                  aria-valuemin={0}
-                  aria-valuemax={RESOURCES.length}
-                  aria-valuenow={opened}
-                >
-                  <span style={{ width: `${(opened / RESOURCES.length) * 100}%` }} />
-                </div>
+                <span>Example only. These files are not assigned to you.</span>
               </div>
             </Plate>
             </Reveal>
@@ -355,14 +332,11 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
               </div>
               <div className="dg-exam__head sky-on-navy">
                 <div className="dg-exam__meta">
-                  <b>Attempt 1</b>
-                  <span>Timed by the institution</span>
+                  <b>Example</b>
+                  <span>Not a live assessment</span>
                 </div>
                 <div className="dg-exam__progress">
-                  <div className="dg-progress" role="progressbar" aria-label="Position in the assessment" aria-valuemin={0} aria-valuemax={100} aria-valuenow={25}>
-                    <span style={{ width: "25%" }} />
-                  </div>
-                  <span>Question 2</span>
+                  <span>Placeholder question</span>
                 </div>
               </div>
               <div className="dg-exam__body">

@@ -12,6 +12,7 @@ import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
 import { isAuthoredCourse, isAuthoredProgramme } from "../lib/authored-courses.js"
 import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import { answersInOptionRange, QuizAttemptThrottled, QuizMaxAttemptsExceeded, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
+import { quizQuestionSelect, readSchemaCapabilities } from "../lib/schema-capabilities.js"
 import {
   assertLessonUnlocked,
   buildCourseWorkspace,
@@ -86,6 +87,19 @@ const assignmentPatchSchema = z.object({
 
 async function requireEnrollment(userId: string, courseId: string) {
   return resolveCourseEnrollment(userId, courseId)
+}
+
+async function loadQuizQuestions(nodeId: string) {
+  const explanations = (await readSchemaCapabilities()).quizExplanations
+  const rows = await prisma.quizQuestion.findMany({
+    where: { nodeId },
+    orderBy: { sortOrder: "asc" },
+    select: quizQuestionSelect(explanations),
+  })
+  return rows.map((row) => ({
+    ...row,
+    explanation: "explanation" in row && row.explanation ? row.explanation : null,
+  }))
 }
 
 async function loadCourseContext(userId: string, courseSlug: string) {
@@ -594,10 +608,7 @@ lmsRouter.get(
       const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
       if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
 
-      const questions = await prisma.quizQuestion.findMany({
-        where: { nodeId: located.node.id },
-        orderBy: { sortOrder: "asc" },
-      })
+      const questions = await loadQuizQuestions(located.node.id)
 
       const attemptCount = await prisma.quizAttempt.count({
         where: { enrollmentId: enrollment.id, nodeId: located.node.id },
@@ -655,10 +666,7 @@ lmsRouter.post(
       const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
       if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
 
-      const questions = await prisma.quizQuestion.findMany({
-        where: { nodeId: located.node.id },
-        orderBy: { sortOrder: "asc" },
-      })
+      const questions = await loadQuizQuestions(located.node.id)
 
       if (questions.length === 0) {
         return res.status(400).json({ error: "Quiz has no questions" })
@@ -755,11 +763,18 @@ lmsRouter.get(
       const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
       if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
 
+      const grading = (await readSchemaCapabilities()).assignmentGrading
       const assignment = await prisma.assignmentProgress.findUnique({
         where: {
           enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
         },
-        include: { attachments: true },
+        select: {
+          status: true,
+          responseText: true,
+          submittedAt: true,
+          ...(grading ? { grade: true, feedback: true, gradedAt: true } : {}),
+          attachments: true,
+        },
       })
 
       res.json({
@@ -768,9 +783,9 @@ lmsRouter.get(
           status: assignment?.status ?? "not_started",
           responseText: assignment?.responseText ?? null,
           submittedAt: assignment?.submittedAt?.toISOString() ?? null,
-          grade: assignment?.grade ?? null,
-          feedback: assignment?.feedback ?? null,
-          gradedAt: assignment?.gradedAt?.toISOString() ?? null,
+          grade: assignment && "grade" in assignment ? assignment.grade ?? null : null,
+          feedback: assignment && "feedback" in assignment ? assignment.feedback ?? null : null,
+          gradedAt: assignment && "gradedAt" in assignment && assignment.gradedAt ? assignment.gradedAt.toISOString() : null,
           attachments: assignment?.attachments.map((file) => ({
             id: file.id,
             fileName: file.fileName,
@@ -840,6 +855,7 @@ lmsRouter.post(
           responseText: bodyParsed.data.responseText ?? undefined,
           submittedAt: isSubmit ? now : undefined,
         },
+        select: { id: true, status: true, submittedAt: true },
       })
 
       if (isSubmit && bodyParsed.data.attachments?.length) {

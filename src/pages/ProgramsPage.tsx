@@ -186,7 +186,7 @@ export default function ProgramsPage() {
           <div className="sky-container pgx-intro__inner">
             <p className="pgx-eyebrow">Skylent programmes</p>
             <h1 id="pgx-title">Find the right programme for your next step.</h1>
-            <p className="pgx-lede">Explore learning opportunities designed to help you build knowledge and practical skills.</p>
+            <p className="pgx-lede">Open programmes you can enrol in, and listings that are not open yet.</p>
           </div>
         </section>
 

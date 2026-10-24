@@ -7,6 +7,7 @@ import { requireRoles } from "../../lib/roles.js"
 import { employerIdsForUser } from "../../lib/career/employer-access.js"
 import { serializeEmployer, serializeJob } from "../../lib/career/serializers.js"
 import { slugSchema, validationError } from "../../lib/career/shared.js"
+import { readSchemaCapabilities } from "../../lib/schema-capabilities.js"
 
 export const employerJobsRouter = Router()
 
@@ -236,6 +237,11 @@ employerJobsRouter.get("/jobs/:id/applications", ...guards, async (req: Authenti
   try {
     const job = await ownedJob(req.auth!.user.id, id.data)
     if (!job) return res.status(404).json({ error: "Job not found" })
+    const sharing = (await readSchemaCapabilities()).jobApplicationSharing
+    if (!sharing) {
+      res.json({ data: [] })
+      return
+    }
     const apps = await prisma.jobApplication.findMany({
       where: { jobId: job.id, sharedWithEmployer: true },
       include: { user: { select: { displayName: true } } },

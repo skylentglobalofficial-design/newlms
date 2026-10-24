@@ -13,6 +13,19 @@ import {
   serializeApplicationEvent,
 } from "../../lib/career/serializers.js"
 import { parseOptionalDate, validationError } from "../../lib/career/shared.js"
+import { jobApplicationSelect, readSchemaCapabilities } from "../../lib/schema-capabilities.js"
+
+function applicationRead(sharing: boolean) {
+  return {
+    ...jobApplicationSelect(sharing),
+    job: true,
+    employer: true,
+  } as const
+}
+
+function withShareFlag<T extends { sharedWithEmployer?: boolean }>(row: T, sharing: boolean) {
+  return { ...row, sharedWithEmployer: sharing ? Boolean(row.sharedWithEmployer) : false }
+}
 
 export const applicationsRouter = Router()
 
@@ -64,15 +77,16 @@ function assertValidStatusTransition(from: JobApplicationStatus, to: JobApplicat
 applicationsRouter.get("/", requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
     const statusFilter = z.nativeEnum(JobApplicationStatus).optional().safeParse(req.query.status)
+    const sharing = (await readSchemaCapabilities()).jobApplicationSharing
     const apps = await prisma.jobApplication.findMany({
       where: {
         userId: req.auth!.user.id,
         ...(statusFilter.success && statusFilter.data ? { status: statusFilter.data } : {}),
       },
       orderBy: { updatedAt: "desc" },
-      include: { job: true, employer: true },
+      select: applicationRead(sharing),
     })
-    res.json({ data: apps.map(serializeApplication) })
+    res.json({ data: apps.map((app) => serializeApplication(withShareFlag(app, sharing))) })
   } catch (error) {
     console.error("Failed to list applications:", error)
     res.status(500).json({ error: "Failed to list applications" })
@@ -88,6 +102,9 @@ applicationsRouter.post("/share", requireAuth, requireCsrf, async (req: Authenti
   if (!parsed.success) return validationError(res, parsed.error)
 
   try {
+    const sharing = (await readSchemaCapabilities()).jobApplicationSharing
+    if (!sharing) return res.status(503).json({ error: "Sharing an application with an employer is not available yet.", code: "unavailable" })
+
     const job = await prisma.job.findUnique({ where: { id: parsed.data.jobId } })
     if (!job || job.status !== JobStatus.OPEN) return res.status(404).json({ error: "Job not found" })
 
@@ -110,7 +127,7 @@ applicationsRouter.post("/share", requireAuth, requireCsrf, async (req: Authenti
             roleTitle: existing.roleTitle ?? job.title,
             appliedAt: existing.appliedAt ?? new Date(),
           },
-          include: { job: true, employer: true },
+          select: applicationRead(true),
         })
       : await prisma.jobApplication.create({
           data: {
@@ -123,10 +140,10 @@ applicationsRouter.post("/share", requireAuth, requireCsrf, async (req: Authenti
             source: "career-os-share",
             sharedWithEmployer: true,
           },
-          include: { job: true, employer: true },
+          select: applicationRead(true),
         })
 
-    res.status(existing ? 200 : 201).json({ data: serializeApplication(app) })
+    res.status(existing ? 200 : 201).json({ data: serializeApplication(withShareFlag(app, true)) })
   } catch (error) {
     console.error("Failed to share application:", error)
     res.status(500).json({ error: "Failed to share application" })
@@ -152,6 +169,7 @@ applicationsRouter.post("/", requireAuth, requireCsrf, async (req: Authenticated
     }
 
     const status = parsed.data.status ?? JobApplicationStatus.APPLIED
+    const sharing = (await readSchemaCapabilities()).jobApplicationSharing
     const app = await prisma.jobApplication.create({
       data: {
         userId: req.auth!.user.id,
@@ -164,10 +182,10 @@ applicationsRouter.post("/", requireAuth, requireCsrf, async (req: Authenticated
         notes: parsed.data.notes ?? null,
         source: parsed.data.source ?? null,
       },
-      include: { job: true, employer: true },
+      select: applicationRead(sharing),
     })
 
-    res.status(201).json({ data: serializeApplication(app) })
+    res.status(201).json({ data: serializeApplication(withShareFlag(app, sharing)) })
   } catch (error) {
     console.error("Failed to create application:", error)
     res.status(500).json({ error: "Failed to create application" })
@@ -182,11 +200,12 @@ applicationsRouter.get("/:id", requireAuth, async (req: AuthenticatedRequest, re
   if (!app) return res.status(404).json({ error: "Application not found" })
 
   try {
+    const sharing = (await readSchemaCapabilities()).jobApplicationSharing
     const full = await prisma.jobApplication.findUnique({
       where: { id: app.id },
-      include: { job: true, employer: true },
+      select: applicationRead(sharing),
     })
-    res.json({ data: serializeApplication(full!) })
+    res.json({ data: serializeApplication(withShareFlag(full!, sharing)) })
   } catch (error) {
     res.status(500).json({ error: "Failed to load application" })
   }
@@ -206,6 +225,7 @@ applicationsRouter.patch("/:id", requireAuth, requireCsrf, async (req: Authentic
   }
 
   try {
+    const sharing = (await readSchemaCapabilities()).jobApplicationSharing
     const updated = await prisma.jobApplication.update({
       where: { id: app.id },
       data: {
@@ -216,9 +236,9 @@ applicationsRouter.patch("/:id", requireAuth, requireCsrf, async (req: Authentic
         notes: parsed.data.notes,
         source: parsed.data.source,
       },
-      include: { job: true, employer: true },
+      select: applicationRead(sharing),
     })
-    res.json({ data: serializeApplication(updated) })
+    res.json({ data: serializeApplication(withShareFlag(updated, sharing)) })
   } catch (error) {
     res.status(500).json({ error: "Failed to update application" })
   }
@@ -232,12 +252,14 @@ applicationsRouter.post("/:id/unshare", requireAuth, requireCsrf, async (req: Au
   if (!app) return res.status(404).json({ error: "Application not found" })
 
   try {
+    const sharing = (await readSchemaCapabilities()).jobApplicationSharing
+    if (!sharing) return res.status(503).json({ error: "Sharing an application with an employer is not available yet.", code: "unavailable" })
     const updated = await prisma.jobApplication.update({
       where: { id: app.id },
       data: { sharedWithEmployer: false },
-      include: { job: true, employer: true },
+      select: applicationRead(true),
     })
-    res.json({ data: serializeApplication(updated) })
+    res.json({ data: serializeApplication(withShareFlag(updated, true)) })
   } catch (error) {
     res.status(500).json({ error: "Failed to stop sharing application" })
   }

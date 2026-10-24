@@ -237,7 +237,10 @@ export async function assertOwnedResumeVersion(userId: string, id: string) {
 }
 
 export async function assertOwnedApplication(userId: string, id: string) {
-  const entry = await prisma.jobApplication.findUnique({ where: { id } })
+  const entry = await prisma.jobApplication.findUnique({
+    where: { id },
+    select: { id: true, userId: true, status: true },
+  })
   return entry?.userId === userId ? entry : null
 }
 

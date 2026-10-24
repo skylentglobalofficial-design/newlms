@@ -3,7 +3,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom'
 import { AuthDashboardShell } from '../components/AuthDashboardShell'
 import { LEARNER_NAV, LearnerNavIcon, learnerNavId } from '../components/learner/learner-nav'
 import { useAuth } from '../context/AuthContext'
-import { isCapstoneLesson, learnerErrorMessage, lessonTypeLabel, SERVICE_UNREACHABLE } from '../components/lms/lms-utils'
+import { isCapstoneLesson, learnerErrorMessage, lessonTypeLabel } from '../components/lms/lms-utils'
 import { useLmsDashboard } from '../hooks/useLms'
 import {
   canOpenEnrollment,
@@ -300,7 +300,7 @@ export default function DashboardStudentPage() {
           ) : (
             <>
               <h1>Your learning could not be loaded</h1>
-              <p className="os-lead">{SERVICE_UNREACHABLE}</p>
+              <p className="os-lead">{learnerErrorMessage(new Error(error))}</p>
               <div className="os-actions">
                 <button type="button" className="os-btn os-btn-primary" onClick={() => void reload()}>Try again</button>
               </div>
