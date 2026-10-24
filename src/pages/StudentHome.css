@@ -82,10 +82,10 @@
 
 /* The one next step */
 .sh-next {
-  padding: 22px 22px 24px;
-  border: 1px solid var(--skylent-color-accent);
-  border-radius: 12px;
-  background: var(--skylent-color-accent-soft);
+  padding: 24px 24px 26px;
+  border: 1px solid hsl(252 48% 84%);
+  border-radius: 14px;
+  background: hsl(252 40% 97%);
 }
 
 .sh-next-label {
@@ -159,8 +159,8 @@
 /* Dense ruled card */
 .sh-card {
   min-width: 0;
-  border: 1px solid var(--skylent-color-border);
-  border-radius: 12px;
+  border: 1px solid hsl(240 6% 88%);
+  border-radius: 14px;
   background: var(--skylent-surface-elevated);
 }
 
@@ -170,18 +170,19 @@
   align-items: center;
   justify-content: space-between;
   gap: 6px 14px;
-  min-height: 48px;
+  min-height: 50px;
   box-sizing: border-box;
-  padding: 10px 18px;
-  border-bottom: 1px solid var(--skylent-color-border-strong);
+  padding: 12px 18px;
+  border-bottom: 1px solid hsl(240 6% 90%);
 }
 
 .sh-card-head h2 {
   margin: 0;
   font-family: var(--skylent-font-heading);
-  font-size: 17px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 650;
   line-height: 1.3;
+  letter-spacing: -0.01em;
 }
 
 .sh-rows {
@@ -196,7 +197,7 @@
   align-items: center;
   gap: 8px 16px;
   padding: 14px 18px;
-  border-bottom: 1px solid var(--skylent-color-border);
+  border-bottom: 1px solid hsl(240 6% 92%);
 }
 
 .sh-card > .sh-row:last-child,
@@ -374,7 +375,7 @@
 
 /* Visual pass: the resume card is the one object that lifts off the page */
 .sh-next {
-  box-shadow: 0 1px 2px rgba(11, 18, 32, 0.04), 0 14px 32px -20px rgba(11, 18, 32, 0.22);
+  box-shadow: 0 1px 2px rgba(81, 66, 181, 0.04), 0 10px 28px -18px rgba(81, 66, 181, 0.18);
 }
 
 /* Certificate name (DashboardStudentPage CertificateName) */

@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom"
-import { HarborDeskWorkspace, LearnFlow, NorthwindWorkspace } from "../components/product/ProductLanguage"
+import {
+  HarborDeskWorkspace,
+  LearnFlow,
+  NorthwindWorkspace,
+} from "../components/product/ProductLanguage"
 import { stories } from "../data"
 import { CAREER_OS_IA } from "../lib/product-architecture"
 import { liveProgrammeCatalogue } from "../lib/programme-catalogue"
@@ -73,12 +77,14 @@ export default function StoriesPage() {
               <span>behind learning.</span>
             </h1>
             <p className="pe-lead">
-              This page will publish verified learner, programme, and institution stories — not marketing
-              testimonials. Until those experiences are reviewed and approved, the page states that fact and shows the
-              product work stories will eventually document.
+              This page will publish verified learner, programme, and
+              institution stories — not marketing testimonials. Until those
+              experiences are reviewed and approved, the page states that fact
+              and shows the product work stories will eventually document.
             </p>
             <p className="pe-note">
-              We do not publish names, salaries, placement rates, or sample narratives from the codebase.
+              We do not publish names, salaries, placement rates, or sample
+              narratives from the codebase.
             </p>
           </div>
           <figure className="pe-figure">
@@ -105,22 +111,35 @@ export default function StoriesPage() {
         </div>
       </nav>
 
-      <section className="pe-section is-warm" id="work" aria-labelledby="stories-work-title">
+      <section
+        className="pe-section is-warm"
+        id="work"
+        aria-labelledby="stories-work-title"
+      >
         <div className="cat-rail">
           <p className="pe-kicker">Editorial</p>
-          <h2 id="stories-work-title" className="is-quiet">The work comes first.</h2>
+          <h2 id="stories-work-title" className="is-quiet">
+            The work comes first.
+          </h2>
           <p className="pe-lead">
-            Skylent is documenting how learning becomes work you can show: written lessons, practice, projects, and
-            evidence in Career OS. A story here will be a reviewed account of that work — never a fabricated outcome.
+            Skylent is documenting how learning becomes work you can show:
+            written lessons, practice, projects, and evidence in Career OS. A
+            story here will be a reviewed account of that work — never a
+            fabricated outcome.
           </p>
           <p className="pe-note">
-            Editorial writing that is not a learner story lives on the <Link to="/blog">blog</Link>.
+            Editorial writing that is not a learner story lives on the{" "}
+            <Link to="/blog">blog</Link>.
           </p>
           <LearnFlow steps={WORK_STEPS} />
         </div>
       </section>
 
-      <section className="pe-section is-paper is-void" id="status" aria-labelledby="stories-status-title">
+      <section
+        className="pe-section is-paper is-void"
+        id="status"
+        aria-labelledby="stories-status-title"
+      >
         <div className="cat-rail">
           <p className="pe-kicker">Story</p>
           <h2 id="stories-status-title" className="pe-display">
@@ -147,21 +166,31 @@ export default function StoriesPage() {
         </div>
       </section>
 
-      <section className="pe-section is-soft" id="learning" aria-labelledby="stories-evidence-title">
+      <section
+        className="pe-section is-soft"
+        id="learning"
+        aria-labelledby="stories-evidence-title"
+      >
         <div className="cat-rail">
           <p className="pe-kicker">Product evidence</p>
-          <h2 id="stories-evidence-title" className="is-quiet">The work first. The story later.</h2>
+          <h2 id="stories-evidence-title" className="is-quiet">
+            The work first. The story later.
+          </h2>
           <p className="pe-lead">
-            This is not a story. It is live programme work already in the product: a project workspace, a Career OS
-            workflow, an application when a role is published. When a verified story exists, it will point at work like
-            this — not at a testimonial.
+            This is not a story. It is live programme work already in the
+            product: a project workspace, a Career OS workflow, an application
+            when a role is published. When a verified story exists, it will
+            point at work like this — not at a testimonial.
           </p>
 
           {live.length > 0 ? (
             <div className="pe-specimens">
               {harbor ? (
                 <div>
-                  <HarborDeskWorkspace compact meta="harbor-desk-case.md · 4 interviews" />
+                  <HarborDeskWorkspace
+                    compact
+                    meta="harbor-desk-case.md · 4 interviews"
+                  />
                   <div className="pe-attr">
                     <p>
                       {harbor.courseTitle || harbor.title}
@@ -186,11 +215,14 @@ export default function StoriesPage() {
             </div>
           ) : (
             <p className="pe-note">
-              Live programme workspaces will appear here when the catalogue has authored programmes.
+              Live programme workspaces will appear here when the catalogue has
+              authored programmes.
             </p>
           )}
 
-          <p className="pe-kicker is-spaced">Career OS — product workflow, not a published story</p>
+          <p className="pe-kicker is-spaced">
+            Career OS — product workflow, not a published story
+          </p>
           <ul className="pe-plain">
             {CAREER_OS_IA.map((item) => (
               <li key={item.to}>
@@ -212,9 +244,12 @@ export default function StoriesPage() {
       <section className="pe-close" aria-labelledby="stories-close-title">
         <div className="cat-rail">
           <p className="pe-kicker">Explore Skylent</p>
-          <h2 id="stories-close-title">See the product stories will document.</h2>
+          <h2 id="stories-close-title">
+            See the product stories will document.
+          </h2>
           <p className="pe-lead">
-            Programmes and courses are the live learning surfaces. Open them while verified stories are prepared.
+            Programmes and courses are the live learning surfaces. Open them
+            while verified stories are prepared.
           </p>
           <p className="pe-actions">
             <Link className="pe-cta" to="/programs">
@@ -223,8 +258,8 @@ export default function StoriesPage() {
                 →
               </span>
             </Link>
-            <Link className="pe-cta-ghost" to="/courses">
-              Explore courses
+            <Link className="pe-cta-ghost" to="/programmes">
+              Explore programmes
             </Link>
           </p>
         </div>

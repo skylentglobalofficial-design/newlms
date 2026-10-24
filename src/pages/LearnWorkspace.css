@@ -393,7 +393,7 @@
   flex: none;
   display: flex;
   flex-direction: column;
-  width: 264px;
+  width: 248px;
   min-width: 0;
   border-right: 1px solid var(--skylent-color-border);
   background: var(--skylent-surface-elevated);
@@ -586,7 +586,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   box-sizing: border-box;
-  padding: clamp(28px, 3.4vw, 48px) clamp(20px, 4vw, 56px) 32px;
+  padding: clamp(28px, 3.5vw, 44px) clamp(24px, 4vw, 56px) 32px;
 }
 
 .os-workspace {
@@ -615,13 +615,13 @@
 }
 
 .os-lesson-head h1 {
-  margin: 14px 0 0;
+  margin: 12px 0 0;
   color: var(--skylent-color-ink);
   font-family: var(--skylent-font-heading);
-  font-size: 28px;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: -0.01em;
+  font-size: 26px;
+  font-weight: 650;
+  line-height: 1.22;
+  letter-spacing: -0.015em;
   overflow-wrap: anywhere;
 }
 
@@ -1414,26 +1414,26 @@
 .lx-option { position: relative; }
 .lx-question { position: relative; }
 
-/* ── Repolish: dark outline on the left, white workspace, black lesson slide ── */
-.os-rail { background: #10263d; border-right-color: #183750; color: #edf5fa; }
-.os-rail .os-eyebrow, .os-rail .os-rail-kicker { color: #8f9bb5; }
-.os-rail .os-module { border-top-color: #183750; }
-.os-rail .os-module-toggle { color: #edf5fa; }
-.os-rail .os-module-toggle:hover .os-module-label { color: #c4b8ff; }
-.os-rail .os-module-num, .os-rail .os-module-meta, .os-rail .os-lesson-num { color: #9e97c7; }
-.os-rail .os-module.is-current .os-module-num { color: #6657e8; }
-.os-rail .os-module.is-ahead .os-module-label { color: #b5afe0; }
-.os-rail .os-module-track { background: #3a2f82; }
-.os-rail .os-module-track > span { background: #6657e8; }
-.os-rail .os-lesson { color: #c8c3e5; }
-.os-rail .os-lesson:not(:disabled):hover { background: #3a2f82; color: #ffffff; }
-.os-rail .os-lesson.is-current, .os-rail .os-lesson.is-current:not(:disabled):hover { background: #342a7a; color: #ffffff; box-shadow: inset 2px 0 0 #6657e8; }
+/* ── Repolish: purple sidebar using Skylent cobalt identity ── */
+.os-rail { background: #5142B5; border-right-color: #4232A0; color: #F7F6FC; }
+.os-rail .os-eyebrow, .os-rail .os-rail-kicker { color: #C4B8FF; }
+.os-rail .os-module { border-top-color: #4232A0; }
+.os-rail .os-module-toggle { color: #F7F6FC; }
+.os-rail .os-module-toggle:hover .os-module-label { color: #EAE6FF; }
+.os-rail .os-module-num, .os-rail .os-module-meta, .os-rail .os-lesson-num { color: #C4B8FF; }
+.os-rail .os-module.is-current .os-module-num { color: #EAE6FF; }
+.os-rail .os-module.is-ahead .os-module-label { color: #C4B8FF; }
+.os-rail .os-module-track { background: #433AA5; }
+.os-rail .os-module-track > span { background: #EAE6FF; }
+.os-rail .os-lesson { color: #DDD7FF; }
+.os-rail .os-lesson:not(:disabled):hover { background: #4232A0; color: #ffffff; }
+.os-rail .os-lesson.is-current, .os-rail .os-lesson.is-current:not(:disabled):hover { background: #3D2E9A; color: #ffffff; box-shadow: inset 2px 0 0 #EAE6FF; }
 .os-rail .os-lesson.is-current .os-lesson-num { color: #ffffff; }
-.os-rail .os-lesson.is-locked, .os-rail .os-lesson:disabled { color: #5f6b85; }
-.os-rail .os-state-glyph { color: #4f86ff; }
-.os-rail .os-lesson.is-locked .os-state-glyph { color: #3a4560; }
-.os-rail .os-rail-close { color: #e0dbf5; }
-.os-rail :focus-visible { outline-color: #6657e8; }
+.os-rail .os-lesson.is-locked, .os-rail .os-lesson:disabled { color: #7B6AC8; }
+.os-rail .os-state-glyph { color: #EAE6FF; }
+.os-rail .os-lesson.is-locked .os-state-glyph { color: #6555B0; }
+.os-rail .os-rail-close { color: #EAE6FF; }
+.os-rail :focus-visible { outline-color: #EAE6FF; }
 
 .os-slide { margin: 0 0 28px; }
 .os-slide__frame {

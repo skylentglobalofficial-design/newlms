@@ -56,7 +56,7 @@ const FAILURE_COPY: Record<Failure, string> = {
 const KNOWN_ROUTES: Record<string, string> = {
   "/": "Go to the home page",
   "/programmes": "Open programmes",
-  "/courses": "Open courses",
+  "/courses": "Open programmes (redirects)",
   "/education": "Open degrees",
   "/career-os": "Open Career OS",
   "/verify": "Check a certificate",
@@ -226,7 +226,7 @@ type Message =
 type NewMessage = Message extends infer M ? (M extends { id: number } ? Omit<M, "id"> : never) : never
 
 const INVITE_KEY = "skylent-ai-invited"
-const INVITE_PAGES = ["/", "/programmes", "/education", "/courses", "/career-os"]
+const INVITE_PAGES = ["/", "/programmes", "/education", "/career-os"]
 const FOCUSABLE = 'a[href], button:not([disabled]), textarea:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
 function readFlag(key: string): boolean {

@@ -33,6 +33,8 @@ import { careerRouter } from "./routes/career/index.js"
 import { skylentCertificatesRouter } from "./routes/skylent/certificates.js"
 import { skylentEnquiriesRouter } from "./routes/skylent/enquiries.js"
 import { revaRouter } from "./routes/skylent/reva.js"
+import { eventsRouter } from "./routes/events.js"
+import { degreesRouter } from "./routes/degrees.js"
 
 assertProductionEnv()
 
@@ -78,6 +80,8 @@ app.use("/api/v1/admin", adminMediaRouter)
 app.use("/api/v1/certificates", skylentCertificatesRouter)
 app.use("/api/v1/enquiries", skylentEnquiriesRouter)
 app.use("/api/v1/reva", revaRouter)
+app.use("/api/v1/events", eventsRouter)
+app.use("/api/v1/degrees", degreesRouter)
 app.use("/api", (_request, response) => {
   response.status(404).json({ error: "Not found" })
 })

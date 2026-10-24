@@ -100,7 +100,7 @@ async function main() {
   const before = preflight()
   assert(before.status === 0, `preflight must allow the deploy:\n${before.output}`)
   for (const name of KNOWN_PRODUCTION_ONLY_MIGRATIONS) assert(before.output.includes(`production-only, expected  ${name}`), `preflight must report ${name}`)
-  assert(before.output.includes("pending: 5"), `exactly five migrations must be pending:\n${before.output}`)
+  assert(before.output.includes("pending: 7"), `exactly seven migrations must be pending:\n${before.output}`)
   assert(preflight("--expect-none").status === 1, "--expect-none must fail while migrations are pending")
 
   const deploy = run(["migrate", "deploy"])

@@ -11,7 +11,7 @@ import {
 import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
 import { isAuthoredCourse, isAuthoredProgramme } from "../lib/authored-courses.js"
 import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
-import { answersInOptionRange, QuizAttemptThrottled, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
+import { answersInOptionRange, QuizAttemptThrottled, QuizMaxAttemptsExceeded, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
 import {
   assertLessonUnlocked,
   buildCourseWorkspace,
@@ -555,6 +555,7 @@ lmsRouter.post(
         data: {
           lessonKey: lessonParsed.data.lessonKey,
           state: updatedStates[lessonParsed.data.lessonKey],
+          lessonStates: isComplete ? updatedStates : undefined,
           progress: progress.completedAt
             ? { completedAt: progress.completedAt.toISOString() }
             : { lastAccessedAt: progress.lastAccessedAt.toISOString() },
@@ -598,6 +599,13 @@ lmsRouter.get(
         orderBy: { sortOrder: "asc" },
       })
 
+      const attemptCount = await prisma.quizAttempt.count({
+        where: { enrollmentId: enrollment.id, nodeId: located.node.id },
+      })
+
+      const maxAttempts = located.node.maxAttempts
+      const attemptsRemaining = maxAttempts ? Math.max(0, maxAttempts - attemptCount) : null
+
       res.json({
         data: {
           lessonKey: lessonParsed.data.lessonKey,
@@ -606,6 +614,10 @@ lmsRouter.get(
             q: q.question,
             options: Array.isArray(q.options) ? q.options.filter((option): option is string => typeof option === "string") : [],
           })),
+          attemptCount,
+          maxAttempts,
+          attemptsRemaining,
+          passingScore: located.node.passingScore,
         },
       })
     } catch (error) {
@@ -666,21 +678,34 @@ lmsRouter.post(
         nodeId: located.node.id,
         answers: bodyParsed.data.answers,
         questions,
+        maxAttempts: located.node.maxAttempts,
+        passingScore: located.node.passingScore,
       })
 
       if (recorded.passed) {
         await syncCertificateState(enrollment.id, course.id)
       }
 
+      const review = questions.map((q, index) => ({
+        questionId: q.id,
+        yourAnswer: bodyParsed.data.answers[index],
+        correct: bodyParsed.data.answers[index] === q.correctIndex,
+        correctAnswer: recorded.passed ? q.correctIndex : undefined,
+        explanation: recorded.passed ? q.explanation : undefined,
+      }))
+
+      const updatedLessonStates = recorded.passed ? await loadLessonStates(enrollment, course) : undefined
+
       res.status(201).json({
         data: {
           attemptId: recorded.attempt.id,
           attemptNumber: recorded.attempt.attemptNumber,
-          // A failed attempt must not return the score. The score is the count of correct answers.
-          ...(recorded.passed ? { score: recorded.score } : {}),
+          score: recorded.passed ? recorded.score : undefined,
           totalQuestions: recorded.totalQuestions,
           passed: recorded.passed,
           submittedAt: recorded.attempt.submittedAt.toISOString(),
+          review: recorded.passed ? review : review.map(({ questionId, yourAnswer }) => ({ questionId, yourAnswer })),
+          lessonStates: updatedLessonStates,
         },
       })
     } catch (error) {
@@ -689,6 +714,13 @@ lmsRouter.post(
         return res.status(429).json({
           error: "Too many quiz attempts. Try again later.",
           retryAfterSeconds: error.retryAfterSeconds,
+        })
+      }
+      if (error instanceof QuizMaxAttemptsExceeded) {
+        return res.status(403).json({
+          error: `Maximum ${error.maxAttempts} attempts allowed for this quiz`,
+          maxAttempts: error.maxAttempts,
+          currentAttempts: error.currentAttempts,
         })
       }
       console.error("Failed to submit quiz attempt:", error)
@@ -736,6 +768,9 @@ lmsRouter.get(
           status: assignment?.status ?? "not_started",
           responseText: assignment?.responseText ?? null,
           submittedAt: assignment?.submittedAt?.toISOString() ?? null,
+          grade: assignment?.grade ?? null,
+          feedback: assignment?.feedback ?? null,
+          gradedAt: assignment?.gradedAt?.toISOString() ?? null,
           attachments: assignment?.attachments.map((file) => ({
             id: file.id,
             fileName: file.fileName,

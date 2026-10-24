@@ -12,11 +12,22 @@ export const MATURITY_LABEL: Record<ProductMaturity, string> = {
 }
 
 export const LIVE_CORE = [
-  { label: "Courses", to: "/courses", note: "Focused learning units" },
-  { label: "Programmes", to: "/programs", note: "Structured learning pathways" },
-  { label: "Skills", to: "/skills", note: "Choose what you want to be able to do" },
+  {
+    label: "Programmes",
+    to: "/programmes",
+    note: "Structured learning pathways",
+  },
+  {
+    label: "Skills",
+    to: "/skills",
+    note: "Choose what you want to be able to do",
+  },
   { label: "Skylent OS", to: "/os", note: "Your learning workspace" },
-  { label: "Career OS", to: "/career-os", note: "Profile and learning evidence" },
+  {
+    label: "Career OS",
+    to: "/career-os",
+    note: "Profile and learning evidence",
+  },
 ] as const
 
 export const ACADEMIC_LINES = [
@@ -103,14 +114,46 @@ export const EXAM_PATHWAY = [
 ] as const
 
 export const INSTITUTION_OS_LAYERS = [
-  { label: "Institution", status: "direction" as const, note: "Organisation accounts exist; no full OS yet" },
-  { label: "Programmes", status: "live" as const, note: "Professional catalogue can be offered to learners" },
-  { label: "Cohorts / batches", status: "coming_soon" as const, note: "Not in the database schema" },
-  { label: "Learners", status: "live" as const, note: "Enrollment and LMS progress for open programmes" },
-  { label: "Faculty", status: "coming_soon" as const, note: "Role exists; assignment is not modeled" },
-  { label: "Assessments", status: "live" as const, note: "Quizzes and assignments inside enrolled courses" },
-  { label: "Progress", status: "live" as const, note: "Lesson progress in the LMS" },
-  { label: "Reporting", status: "coming_soon" as const, note: "Institution analytics are not shipping" },
+  {
+    label: "Institution",
+    status: "direction" as const,
+    note: "Organisation accounts exist; no full OS yet",
+  },
+  {
+    label: "Programmes",
+    status: "live" as const,
+    note: "Professional catalogue can be offered to learners",
+  },
+  {
+    label: "Cohorts / batches",
+    status: "coming_soon" as const,
+    note: "Not in the database schema",
+  },
+  {
+    label: "Learners",
+    status: "live" as const,
+    note: "Enrollment and LMS progress for open programmes",
+  },
+  {
+    label: "Faculty",
+    status: "coming_soon" as const,
+    note: "Role exists; assignment is not modeled",
+  },
+  {
+    label: "Assessments",
+    status: "live" as const,
+    note: "Quizzes and assignments inside enrolled courses",
+  },
+  {
+    label: "Progress",
+    status: "live" as const,
+    note: "Lesson progress in the LMS",
+  },
+  {
+    label: "Reporting",
+    status: "coming_soon" as const,
+    note: "Institution analytics are not shipping",
+  },
 ] as const
 
 export const LAB_PATHWAY = [
@@ -146,27 +189,54 @@ export type MegaNavGroup = {
 }
 
 export const COURSES_NAV: MegaNavGroup = {
-  label: "Courses",
-  to: "/courses",
-  tagline: "Focused courses you can start",
+  label: "Programmes",
+  to: "/programmes",
+  tagline: "Structured professional learning pathways",
   items: [
-    { label: "All courses", sub: "Ready courses and catalogue listings.", to: "/courses" },
-    { label: "Data Analytics", sub: "SQL, spreadsheets, and a dashboard you keep.", to: "/courses/data-analytics" },
-    { label: "Product Management", sub: "Evidence → spec on a live case.", to: "/courses/product-management" },
-    { label: "Skills", sub: "Not sure where to start? Pick a skill.", to: "/skills" },
+    {
+      label: "All programmes",
+      sub: "Professional learning pathways.",
+      to: "/programmes",
+    },
+    {
+      label: "Data Analytics",
+      sub: "SQL, spreadsheets, and a dashboard you keep.",
+      to: "/courses/data-analytics",
+    },
+    {
+      label: "Product Management",
+      sub: "Evidence → spec on a live case.",
+      to: "/courses/product-management",
+    },
+    {
+      label: "Skills",
+      sub: "Not sure where to start? Pick a skill.",
+      to: "/skills",
+    },
   ],
 }
 
 /** Primary pillar: professional catalogue and short-form learning. */
 export const LEARN_NAV: MegaNavGroup = {
   label: "Learn",
-  to: "/courses",
-  tagline: "Programs, courses, skills, and workshops",
+  to: "/programmes",
+  tagline: "Programmes, skills, and workshops",
   items: [
-    { label: "Courses", sub: "Focused units you can start today.", to: "/courses" },
-    { label: "Skills", sub: "Choose what you want to be able to do.", to: "/skills" },
-    { label: "Workshops", sub: "Short, focused live sessions.", to: "/workshops" },
-    { label: "Programs", sub: "Structured professional learning pathways.", to: "/programs" },
+    {
+      label: "Programmes",
+      sub: "Structured professional learning pathways.",
+      to: "/programmes",
+    },
+    {
+      label: "Skills",
+      sub: "Choose what you want to be able to do.",
+      to: "/skills",
+    },
+    {
+      label: "Workshops",
+      sub: "Short, focused live sessions.",
+      to: "/workshops",
+    },
   ],
 }
 
@@ -175,8 +245,16 @@ export const PROGRAMS_NAV: MegaNavGroup = {
   label: "Programs",
   tagline: "Professional learning and short sessions",
   items: [
-    { label: "Professional Certificate Programs", sub: "Structured professional learning", to: "/programs" },
-    { label: "Workshops", sub: "Short, focused live sessions", to: "/workshops" },
+    {
+      label: "Professional Certificate Programs",
+      sub: "Structured professional learning",
+      to: "/programs",
+    },
+    {
+      label: "Workshops",
+      sub: "Short, focused live sessions",
+      to: "/workshops",
+    },
   ],
 }
 
@@ -186,7 +264,11 @@ export const PRACTICE_NAV: MegaNavGroup = {
   to: "/labs",
   tagline: "Labs and hands-on project work",
   items: [
-    { label: "Labs", sub: "Subject workbenches and browser experiments.", to: "/labs" },
+    {
+      label: "Labs",
+      sub: "Subject workbenches and browser experiments.",
+      to: "/labs",
+    },
     {
       label: "Projects",
       sub: "Course projects inside Skylent OS when you are enrolled.",
@@ -196,28 +278,63 @@ export const PRACTICE_NAV: MegaNavGroup = {
 }
 
 const EDUCATION_EXAM_SECTIONS: MegaNavSection[] = [
-    {
-      heading: "UG",
-      items: [
-        { label: "JEE", sub: "Catalogue outline — not a live engine.", to: "/programs/jee-advanced-prep", mark: "coming_soon" },
-        { label: "NEET", sub: "Specified path — not built yet.", to: "/exams/neet", mark: "coming_soon" },
-      ],
-    },
-    {
-      heading: "PG",
-      items: [
-        { label: "IIT JAM", sub: "Specified path — not built yet.", to: "/exams/iit-jam", mark: "coming_soon" },
-        { label: "GATE", sub: "Specified path — not built yet.", to: "/exams/gate", mark: "coming_soon" },
-        { label: "CAT", sub: "Catalogue outline — not a live engine.", to: "/programs/cat-prep", mark: "coming_soon" },
-      ],
-    },
-    {
-      heading: "Government",
-      items: [
-        { label: "SSC", sub: "Specified path — not built yet.", to: "/exams/ssc", mark: "coming_soon" },
-        { label: "UPSC", sub: "Specified path — not built yet.", to: "/exams/upsc", mark: "coming_soon" },
-      ],
-    },
+  {
+    heading: "UG",
+    items: [
+      {
+        label: "JEE",
+        sub: "Catalogue outline — not a live engine.",
+        to: "/programs/jee-advanced-prep",
+        mark: "coming_soon",
+      },
+      {
+        label: "NEET",
+        sub: "Specified path — not built yet.",
+        to: "/exams/neet",
+        mark: "coming_soon",
+      },
+    ],
+  },
+  {
+    heading: "PG",
+    items: [
+      {
+        label: "IIT JAM",
+        sub: "Specified path — not built yet.",
+        to: "/exams/iit-jam",
+        mark: "coming_soon",
+      },
+      {
+        label: "GATE",
+        sub: "Specified path — not built yet.",
+        to: "/exams/gate",
+        mark: "coming_soon",
+      },
+      {
+        label: "CAT",
+        sub: "Catalogue outline — not a live engine.",
+        to: "/programs/cat-prep",
+        mark: "coming_soon",
+      },
+    ],
+  },
+  {
+    heading: "Government",
+    items: [
+      {
+        label: "SSC",
+        sub: "Specified path — not built yet.",
+        to: "/exams/ssc",
+        mark: "coming_soon",
+      },
+      {
+        label: "UPSC",
+        sub: "Specified path — not built yet.",
+        to: "/exams/upsc",
+        mark: "coming_soon",
+      },
+    ],
+  },
 ]
 
 /** Primary pillar: academic pathways and competitive exam prep under one hub. */
@@ -226,9 +343,24 @@ export const EDUCATION_NAV: MegaNavGroup = {
   to: "/education",
   tagline: "School, degrees, and competitive exam preparation",
   items: [
-    { label: "Schooling", sub: "Grade, subject, practice, assessment.", to: "/education/schooling", mark: "coming_soon" },
-    { label: "Undergraduate", sub: "Degree, semester, modules, projects.", to: "/education?level=ug", mark: "coming_soon" },
-    { label: "Postgraduate", sub: "Programme, specialisation, case, project.", to: "/education?level=pg", mark: "coming_soon" },
+    {
+      label: "Schooling",
+      sub: "Grade, subject, practice, assessment.",
+      to: "/education/schooling",
+      mark: "coming_soon",
+    },
+    {
+      label: "Undergraduate",
+      sub: "Degree, semester, modules, projects.",
+      to: "/education?level=ug",
+      mark: "coming_soon",
+    },
+    {
+      label: "Postgraduate",
+      sub: "Programme, specialisation, case, project.",
+      to: "/education?level=pg",
+      mark: "coming_soon",
+    },
     {
       label: "Competitive Exams",
       sub: "JEE, NEET, CAT, and related prep paths.",
@@ -240,10 +372,29 @@ export const EDUCATION_NAV: MegaNavGroup = {
     {
       heading: "Academic pathways",
       items: [
-        { label: "Education hub", sub: "Overview of academic lines on Skylent.", to: "/education" },
-        { label: "Schooling", sub: "Grade, subject, practice, assessment.", to: "/education/schooling", mark: "coming_soon" },
-        { label: "Undergraduate", sub: "Degree, semester, modules, projects.", to: "/education?level=ug", mark: "coming_soon" },
-        { label: "Postgraduate", sub: "Programme, specialisation, case, project.", to: "/education?level=pg", mark: "coming_soon" },
+        {
+          label: "Education hub",
+          sub: "Overview of academic lines on Skylent.",
+          to: "/education",
+        },
+        {
+          label: "Schooling",
+          sub: "Grade, subject, practice, assessment.",
+          to: "/education/schooling",
+          mark: "coming_soon",
+        },
+        {
+          label: "Undergraduate",
+          sub: "Degree, semester, modules, projects.",
+          to: "/education?level=ug",
+          mark: "coming_soon",
+        },
+        {
+          label: "Postgraduate",
+          sub: "Programme, specialisation, case, project.",
+          to: "/education?level=pg",
+          mark: "coming_soon",
+        },
         {
           label: "Competitive Exams",
           sub: "Diagnostic → mastery → practice → mocks.",
@@ -263,41 +414,85 @@ export const EXAMS_NAV: MegaNavGroup = {
   tagline: "UG, PG, and government exam paths",
   sections: EDUCATION_EXAM_SECTIONS,
   items: [
-    { label: "JEE", sub: "Catalogue outline — not a live engine.", to: "/programs/jee-advanced-prep", mark: "coming_soon" },
-    { label: "NEET", sub: "Specified path — not built yet.", to: "/exams/neet", mark: "coming_soon" },
-    { label: "IIT JAM", sub: "Specified path — not built yet.", to: "/exams/iit-jam", mark: "coming_soon" },
-    { label: "GATE", sub: "Specified path — not built yet.", to: "/exams/gate", mark: "coming_soon" },
-    { label: "CAT", sub: "Catalogue outline — not a live engine.", to: "/programs/cat-prep", mark: "coming_soon" },
-    { label: "SSC", sub: "Specified path — not built yet.", to: "/exams/ssc", mark: "coming_soon" },
-    { label: "UPSC", sub: "Specified path — not built yet.", to: "/exams/upsc", mark: "coming_soon" },
+    {
+      label: "JEE",
+      sub: "Catalogue outline — not a live engine.",
+      to: "/programs/jee-advanced-prep",
+      mark: "coming_soon",
+    },
+    {
+      label: "NEET",
+      sub: "Specified path — not built yet.",
+      to: "/exams/neet",
+      mark: "coming_soon",
+    },
+    {
+      label: "IIT JAM",
+      sub: "Specified path — not built yet.",
+      to: "/exams/iit-jam",
+      mark: "coming_soon",
+    },
+    {
+      label: "GATE",
+      sub: "Specified path — not built yet.",
+      to: "/exams/gate",
+      mark: "coming_soon",
+    },
+    {
+      label: "CAT",
+      sub: "Catalogue outline — not a live engine.",
+      to: "/programs/cat-prep",
+      mark: "coming_soon",
+    },
+    {
+      label: "SSC",
+      sub: "Specified path — not built yet.",
+      to: "/exams/ssc",
+      mark: "coming_soon",
+    },
+    {
+      label: "UPSC",
+      sub: "Specified path — not built yet.",
+      to: "/exams/upsc",
+      mark: "coming_soon",
+    },
   ],
 }
 
-export const EXAM_STUBS: Record<string, { title: string; group: string; summary: string }> = {
+export const EXAM_STUBS: Record<string, {
+  title: string
+  group: string
+  summary: string
+}> = {
   neet: {
     title: "NEET",
     group: "UG",
-    summary: "NEET is a named undergraduate medical entrance path on Skylent. There is no live question bank, mock engine, or classroom behind this page yet.",
+    summary:
+      "NEET is a named undergraduate medical entrance path on Skylent. There is no live question bank, mock engine, or classroom behind this page yet.",
   },
   "iit-jam": {
     title: "IIT JAM",
     group: "PG",
-    summary: "IIT JAM is a named postgraduate science entrance path on Skylent. Diagnostics, topic practice, and mocks are not built yet.",
+    summary:
+      "IIT JAM is a named postgraduate science entrance path on Skylent. Diagnostics, topic practice, and mocks are not built yet.",
   },
   gate: {
     title: "GATE",
     group: "PG",
-    summary: "GATE is a named postgraduate engineering entrance path on Skylent. There is no live GATE engine on this product today.",
+    summary:
+      "GATE is a named postgraduate engineering entrance path on Skylent. There is no live GATE engine on this product today.",
   },
   ssc: {
     title: "SSC",
     group: "Government",
-    summary: "SSC is a named government exam path on Skylent. It is specified in the information architecture, not as a live prep product.",
+    summary:
+      "SSC is a named government exam path on Skylent. It is specified in the information architecture, not as a live prep product.",
   },
   upsc: {
     title: "UPSC",
     group: "Government",
-    summary: "UPSC is a named government exam path on Skylent. It is specified in the information architecture, not as a live prep product.",
+    summary:
+      "UPSC is a named government exam path on Skylent. It is specified in the information architecture, not as a live prep product.",
   },
 }
 
@@ -307,17 +502,48 @@ export const CAREER_NAV: MegaNavGroup = {
   to: "/career-os",
   tagline: "Profile, evidence, opportunities, and support in Career OS.",
   items: [
-    { label: "Career OS", sub: "Overview of the career workflow on Skylent.", to: "/career-os" },
-    { label: "Profile", sub: "Identity, skills, and evidence.", to: "/career-os/profile" },
-    { label: "Projects", sub: "Learner work kept as evidence.", to: "/career-os/projects" },
-    { label: "Opportunities", sub: "Job board when roles are published.", to: "/career-os/jobs" },
-    { label: "Applications", sub: "Track what you submitted.", to: "/career-os/applications" },
-    { label: "Interviews", sub: "Rounds and practice.", to: "/career-os/interviews" },
-    { label: "Support", sub: "Help on the career workflow.", to: "/career-os/support" },
+    {
+      label: "Career OS",
+      sub: "Overview of the career workflow on Skylent.",
+      to: "/career-os",
+    },
+    {
+      label: "Profile",
+      sub: "Identity, skills, and evidence.",
+      to: "/career-os/profile",
+    },
+    {
+      label: "Projects",
+      sub: "Learner work kept as evidence.",
+      to: "/career-os/projects",
+    },
+    {
+      label: "Opportunities",
+      sub: "Job board when roles are published.",
+      to: "/career-os/jobs",
+    },
+    {
+      label: "Applications",
+      sub: "Track what you submitted.",
+      to: "/career-os/applications",
+    },
+    {
+      label: "Interviews",
+      sub: "Rounds and practice.",
+      to: "/career-os/interviews",
+    },
+    {
+      label: "Support",
+      sub: "Help on the career workflow.",
+      to: "/career-os/support",
+    },
   ],
 }
 
-export function studyNavGroup(session: { signedIn: boolean; isStudent: boolean }): MegaNavGroup {
+export function studyNavGroup(session: {
+  signedIn: boolean
+  isStudent: boolean
+}): MegaNavGroup {
   if (session.isStudent) {
     return {
       label: "Study",
@@ -336,11 +562,19 @@ export function studyNavGroup(session: { signedIn: boolean; isStudent: boolean }
   if (session.signedIn) {
     return {
       label: "Study",
-      to: "/courses",
-      tagline: "The learner workspace for enrolled courses",
+      to: "/programmes",
+      tagline: "The learner workspace for enrolled programmes",
       items: [
-        { label: "Browse courses", sub: "Find a course to study", to: "/courses" },
-        { label: "Skylent OS", sub: "How the learning workspace works", to: "/os" },
+        {
+          label: "Browse programmes",
+          sub: "Find a programme to study",
+          to: "/programmes",
+        },
+        {
+          label: "Skylent OS",
+          sub: "How the learning workspace works",
+          to: "/os",
+        },
       ],
     }
   }
@@ -349,23 +583,45 @@ export function studyNavGroup(session: { signedIn: boolean; isStudent: boolean }
     label: "Study",
     tagline: "Continue what you are learning",
     items: [
-      { label: "Sign in", sub: "Continue your enrolled courses", to: "/login" },
-      { label: "Start learning", sub: "Browse courses", to: "/courses" },
+      {
+        label: "Sign in",
+        sub: "Continue your enrolled programmes",
+        to: "/login",
+      },
+      { label: "Start learning", sub: "Browse programmes", to: "/programmes" },
     ],
   }
 }
 
-export function buildPrimaryNav(_session?: { signedIn: boolean; isStudent: boolean }): MegaNavGroup[] {
+export function buildPrimaryNav(_session?: {
+  signedIn: boolean
+  isStudent: boolean
+}): MegaNavGroup[] {
   return [LEARN_NAV, PRACTICE_NAV, EDUCATION_NAV, CAREER_NAV]
 }
 
 /** Canonical four-pillar public primary navigation. */
-export const MEGA_NAV: MegaNavGroup[] = [LEARN_NAV, PRACTICE_NAV, EDUCATION_NAV, CAREER_NAV]
+export const MEGA_NAV: MegaNavGroup[] = [
+  LEARN_NAV,
+  PRACTICE_NAV,
+  EDUCATION_NAV,
+  CAREER_NAV,
+]
 
 /** Secondary discovery — footer and mobile More only. Not first-row nav. */
 export const MORE_NAV: MegaNavItem[] = [
-  { label: "Institutions", sub: "Institution tools — not the student product", to: "/institutions", mark: "direction" },
-  { label: "Universities", sub: "University partnerships and pathways", to: "/universities", mark: "direction" },
+  {
+    label: "Institutions",
+    sub: "Institution tools — not the student product",
+    to: "/institutions",
+    mark: "direction",
+  },
+  {
+    label: "Universities",
+    sub: "University partnerships and pathways",
+    to: "/universities",
+    mark: "direction",
+  },
   { label: "Stories", sub: "Learner and builder stories", to: "/stories" },
   { label: "Blog", sub: "Product and learning notes", to: "/blog" },
   { label: "About", sub: "What Skylent is building", to: "/about" },
@@ -384,8 +640,7 @@ export const FOOTER_COLS = [
   {
     heading: "Learn",
     links: [
-      ["Programs", "/programs"],
-      ["Courses", "/courses"],
+      ["Programmes", "/programmes"],
       ["Skills", "/skills"],
       ["Workshops", "/workshops"],
     ],
@@ -436,9 +691,19 @@ export const FOOTER_COLS = [
 export const FOOTER_LEGAL_LABELS = ["Privacy", "Terms", "Cookies"] as const
 
 /** Career OS workspace areas (signed-in nav minus Overview), from src/lib/product-manifest.ts. */
-export const CAREER_OS_IA: readonly { id: string; label: string; to: string; sub: string; empty: string }[] = CAREER_OS_NAV.filter(
-  (item) => item.id !== "overview",
-).map((item) => ({ id: item.id, label: item.label, to: item.route, sub: item.summary, empty: item.empty }))
+export const CAREER_OS_IA: readonly {
+  id: string
+  label: string
+  to: string
+  sub: string
+  empty: string
+}[] = CAREER_OS_NAV.filter((item) => item.id !== "overview").map((item) => ({
+  id: item.id,
+  label: item.label,
+  to: item.route,
+  sub: item.summary,
+  empty: item.empty,
+}))
 
 export type PillarDestinationLine = {
   id: string
@@ -448,20 +713,13 @@ export type PillarDestinationLine = {
   maturity: ProductMaturity
 }
 
-/** Learn pillar destinations — shared subnav across /programs, /courses, /skills, /workshops. */
+/** Learn pillar destinations — shared subnav across /programs, /skills, /workshops. */
 export const LEARN_DESTINATIONS: readonly PillarDestinationLine[] = [
   {
     id: "programs",
-    label: "Programs",
-    to: "/programs",
+    label: "Programmes",
+    to: "/programmes",
     job: "Structured pathways with honest live vs later rows.",
-    maturity: "live",
-  },
-  {
-    id: "courses",
-    label: "Courses",
-    to: "/courses",
-    job: "API-backed catalogue with ready vs listing courses.",
     maturity: "live",
   },
   {
@@ -477,6 +735,13 @@ export const LEARN_DESTINATIONS: readonly PillarDestinationLine[] = [
     to: "/workshops",
     job: "Planned sessions — registration and payment not built.",
     maturity: "coming_soon",
+  },
+  {
+    id: "events",
+    label: "Events",
+    to: "/events",
+    job: "Webinars and live sessions with registration.",
+    maturity: "live",
   },
 ] as const
 
@@ -499,7 +764,11 @@ export const PRACTICE_DESTINATIONS: readonly PillarDestinationLine[] = [
 ] as const
 
 /** Career OS public subnav — overview plus workspace areas (sign-in required for data). */
-export const CAREER_PUBLIC_DESTINATIONS: readonly { id: string; label: string; to: string }[] = CAREER_OS_NAV.map((item) => ({
+export const CAREER_PUBLIC_DESTINATIONS: readonly {
+  id: string
+  label: string
+  to: string
+}[] = CAREER_OS_NAV.map((item) => ({
   id: item.id,
   label: item.label,
   to: item.route,

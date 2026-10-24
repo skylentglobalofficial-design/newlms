@@ -379,7 +379,7 @@ export default function DashboardStudentPage() {
       ) : enrollments.status === 'error' ? (
         <ListError what="Your enrolments" onRetry={retryLists} />
       ) : enrolmentRows.length === 0 ? (
-        <p className="sh-empty">You are not enrolled in anything yet. <Link className="os-link" to="/courses">Browse courses</Link></p>
+        <p className="sh-empty">You are not enrolled in anything yet. <Link className="os-link" to="/programmes">Browse programmes</Link></p>
       ) : (
         <ul className="sh-rows">
           {enrolmentRows.map((item) => {
@@ -460,7 +460,7 @@ export default function DashboardStudentPage() {
     <section className="sh-card sh-proof" id="student-evidence" aria-labelledby="sh-evidence">
       <header className="sh-card-head">
         <h2 id="sh-evidence">Evidence and certificates</h2>
-        <TruthChip state={truthOf('certificates')} />
+        {certificates.status === 'ready' ? <TruthChip state={truthOf('certificates')} /> : null}
       </header>
       {certificates.status === 'loading' ? (
         <div className="sh-row"><span className="os-skeleton" style={{ width: '50%' }} /></div>
@@ -542,7 +542,7 @@ export default function DashboardStudentPage() {
             <h2>Choose what to learn first</h2>
             <p className="sh-body">You are signed in and have no lessons open yet. Pick a course and its first lesson opens here.</p>
             <div className="os-actions">
-              <Link className="os-btn os-btn-primary os-btn-lg" to="/courses">Explore courses <ArrowRight /></Link>
+              <Link className="os-btn os-btn-primary os-btn-lg" to="/programmes">Explore programmes <ArrowRight /></Link>
             </div>
           </div>
           {enrolmentRows.length > 0 ? <div className="sh-stack">{myLearning}{evidence}</div> : null}

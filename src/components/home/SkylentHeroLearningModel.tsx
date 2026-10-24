@@ -900,8 +900,8 @@ export default function SkylentHeroLearningModel() {
               <Link className="hp-lpb-cta hp-lpb-cta-primary" to="/programs">
                 Browse programmes
               </Link>
-              <Link className="hp-lpb-cta hp-lpb-cta-secondary" to="/courses">
-                View courses
+              <Link className="hp-lpb-cta hp-lpb-cta-secondary" to="/programmes">
+                View programmes
               </Link>
             </div>
           </header>

@@ -1,7 +1,10 @@
 import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
-import { AcademicSubnav, LiveCoreRail } from "../../components/product/Architecture"
+import {
+  AcademicSubnav,
+  LiveCoreRail,
+} from "../../components/product/Architecture"
 import { C } from "../../tokens"
 import "./AcademicPages.css"
 
@@ -30,9 +33,25 @@ export default function AcademicPageShell({
                 <span>Ready written course</span>
               </Link>
             </div>
-            <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginTop: 18 }}>
-              <Link to="/programs" style={{ color: C.indigo, fontSize: 14, fontWeight: 600, textDecoration: "none" }}>Browse live programmes →</Link>
-              <Link to="/courses" style={{ color: C.slate, fontSize: 14, textDecoration: "none" }}>Browse courses</Link>
+            <div
+              style={{
+                display: "flex",
+                gap: 16,
+                flexWrap: "wrap",
+                marginTop: 18,
+              }}
+            >
+              <Link
+                to="/programmes"
+                style={{
+                  color: C.indigo,
+                  fontSize: 14,
+                  fontWeight: 600,
+                  textDecoration: "none",
+                }}
+              >
+                Browse live programmes →
+              </Link>
             </div>
           </div>
         </div>

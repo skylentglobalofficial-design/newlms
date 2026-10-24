@@ -96,15 +96,15 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
+  border: 1px solid hsl(240 6% 90%);
+  border-radius: 14px;
   background: #fff;
   color: inherit;
   text-decoration: none;
   overflow: hidden;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
-.pgx .pgx-card__link:hover { border-color: #ddd7ff; box-shadow: 0 12px 28px -18px rgba(81, 66, 181, .45); }
+.pgx .pgx-card__link:hover { border-color: hsl(252 50% 82%); box-shadow: 0 8px 24px -12px rgba(81, 66, 181, .35); transform: translateY(-2px); }
 .pgx .pgx-card__link:focus-visible { outline: 2px solid var(--pgx-ocean); outline-offset: 3px; }
 .pgx .pgx-card__media { position: relative; display: block; aspect-ratio: 16 / 10; background: var(--pgx-lavender); }
 .pgx .pgx-card__media img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -124,11 +124,11 @@
   font-weight: 700;
 }
 .pgx .pgx-status--open { color: #16865b; }
-.pgx .pgx-card__body { display: flex; flex-direction: column; gap: 8px; padding: 16px 16px 18px; flex: 1; }
-.pgx .pgx-card__kicker { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--pgx-violet); }
-.pgx .pgx-card__title { font-family: var(--sk-font-heading); font-size: 22px; font-weight: 750; letter-spacing: -0.02em; line-height: 1.15; }
-.pgx .pgx-card__line { font-size: 15px; line-height: 1.5; color: #555b7d; }
-.pgx .pgx-card__go { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 8px; color: var(--pgx-violet); font-weight: 700; font-size: 15px; }
+.pgx .pgx-card__body { display: flex; flex-direction: column; gap: 6px; padding: 18px 18px 20px; flex: 1; }
+.pgx .pgx-card__kicker { font-size: 11.5px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: hsl(252 36% 45%); }
+.pgx .pgx-card__title { font-family: var(--sk-font-heading); font-size: 21px; font-weight: 700; letter-spacing: -0.018em; line-height: 1.2; }
+.pgx .pgx-card__line { font-size: 14.5px; line-height: 1.55; color: hsl(230 10% 42%); margin-top: 2px; }
+.pgx .pgx-card__go { display: inline-flex; align-items: center; gap: 6px; margin-top: auto; padding-top: 10px; color: var(--pgx-violet); font-weight: 600; font-size: 14px; }
 
 .pgx .pgx-loading, .pgx .pgx-empty { padding: 28px 0 12px; }
 .pgx .pgx-loading { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }

@@ -8,8 +8,8 @@ export function courseEnrollments(items: ApiEnrollmentSummary[]): ApiEnrollmentS
 
 export default function EnrollmentEvidence({
   items,
-  emptyHref = "/courses",
-  emptyLabel = "Browse courses",
+  emptyHref = "/programmes",
+  emptyLabel = "Browse programmes",
 }: {
   items: ApiEnrollmentSummary[]
   emptyHref?: string

@@ -21,10 +21,13 @@ import type { CatalogCurriculumModule } from "../lib/catalog-api"
 import { effectiveAuthoredCourseCopy } from "../lib/public-catalogue-copy"
 import { useCatalogCourse } from "../hooks/useCatalog"
 import { TruthChip } from "../components/skylent/primitives"
-import CatalogueNotice, { STATUS_NOT_CONFIRMED } from "../components/programme/CatalogueNotice"
+import CatalogueNotice, {
+  STATUS_NOT_CONFIRMED,
+} from "../components/programme/CatalogueNotice"
 import "./Catalog.css"
 
-const LISTING_HONESTY = "This course is not open for enrolment yet. Its outline is shown below."
+const LISTING_HONESTY =
+  "This course is not open for enrolment yet. Its outline is shown below."
 
 export default function CourseDetailPage() {
   const { slug } = useParams()
@@ -41,7 +44,9 @@ export default function CourseDetailPage() {
         <div className="cat-page">
           <section className="cat-hero">
             <div className="cat-rail">
-              <Link className="cat-back" to="/courses">← Courses</Link>
+              <Link className="cat-back" to="/programmes">
+                ← Programmes
+              </Link>
               <h1>Loading this course</h1>
               <p className="cat-lead">Fetching the current catalogue record.</p>
             </div>
@@ -57,16 +62,26 @@ export default function CourseDetailPage() {
         <div className="cat-page">
           <section className="cat-hero">
             <div className="cat-rail">
-              <Link className="cat-back" to="/courses">← Courses</Link>
+              <Link className="cat-back" to="/programmes">
+                ← Programmes
+              </Link>
               <h1>This course could not be loaded</h1>
               <p className="cat-lead">
                 The catalogue request failed. This is not a missing course.
               </p>
               <div className="cat-actions">
-                <button type="button" className="cat-btn cat-btn-primary" onClick={() => { void catalog.reload() }}>
+                <button
+                  type="button"
+                  className="cat-btn cat-btn-primary"
+                  onClick={() => {
+                    void catalog.reload()
+                  }}
+                >
                   Try again
                 </button>
-                <Link className="cat-btn cat-btn-ghost" to="/courses">Back to courses</Link>
+                <Link className="cat-btn cat-btn-ghost" to="/programmes">
+                  Back to programmes
+                </Link>
               </div>
             </div>
           </section>
@@ -83,7 +98,9 @@ export default function CourseDetailPage() {
           <section className="cat-hero">
             <div className="cat-rail">
               <h1>Course not found</h1>
-              <Link className="cat-btn cat-btn-ghost" to="/courses">Back to courses</Link>
+              <Link className="cat-btn cat-btn-ghost" to="/programmes">
+                Back to programmes
+              </Link>
             </div>
           </section>
         </div>
@@ -98,7 +115,9 @@ export default function CourseDetailPage() {
   // Drawn from the published record while the catalogue API is unreachable: enrolment is paused.
   const confirmed = !catalog.offline
   const enrollable = authored && confirmed
-  const authoredStats = authoredRecord ? courseLessonStats(authoredRecord) : null
+  const authoredStats = authoredRecord
+    ? courseLessonStats(authoredRecord)
+    : null
   const modules = authoredRecord
     ? courseModuleCards(authoredRecord, showLiveCurriculum)
     : catalogOutlineCards(course.curriculum)
@@ -140,19 +159,43 @@ export default function CourseDetailPage() {
           <div className="cat-rail">
             <div className="cat-intro">
               <div className="cat-intro-crumb">
-                {confirmed ? null : <CatalogueNotice bare what="This course" onRetry={() => void catalog.reload()} />}
-                <Link className="cat-back" to="/courses">← Courses</Link>
+                {confirmed ? null : (
+                  <CatalogueNotice
+                    bare
+                    what="This course"
+                    onRetry={() => void catalog.reload()}
+                  />
+                )}
+                <Link className="cat-back" to="/programmes">
+                  ← Programmes
+                </Link>
               </div>
               <div className="cat-intro-copy">
                 <div className="cat-title-row">
                   <h1>{course.title}</h1>
-                  {confirmed ? <TruthChip state={authored ? "live" : "development"} /> : <TruthChip state="development" label={STATUS_NOT_CONFIRMED} />}
+                  {confirmed ? (
+                    <TruthChip state={authored ? "live" : "development"} />
+                  ) : (
+                    <TruthChip
+                      state="development"
+                      label={STATUS_NOT_CONFIRMED}
+                    />
+                  )}
                 </div>
                 <p className="cat-lead">{summary}</p>
               </div>
               <aside className="cat-intro-meta" aria-label="Course details">
                 <div className="cat-metrics">
-                  <VisualStat label="Status" value={!confirmed ? STATUS_NOT_CONFIRMED : authored ? "Open" : "Opening soon"} />
+                  <VisualStat
+                    label="Status"
+                    value={
+                      !confirmed
+                        ? STATUS_NOT_CONFIRMED
+                        : authored
+                          ? "Open"
+                          : "Opening soon"
+                    }
+                  />
                   <VisualStat label="Level" value={course.level} />
                   <VisualStat
                     label={showLiveCurriculum ? "Lessons" : "Outline"}
@@ -160,25 +203,56 @@ export default function CourseDetailPage() {
                   />
                   <VisualStat
                     label="Practice"
-                    value={showLiveCurriculum && authoredStats ? `${authoredStats.quizCount} quizzes` : "Outline only"}
+                    value={
+                      showLiveCurriculum && authoredStats
+                        ? `${authoredStats.quizCount} quizzes`
+                        : "Outline only"
+                    }
                   />
                 </div>
                 <p className="cat-statline">
-                  <span>{authored ? "Written lessons + practice" : "Outline"}</span>
+                  <span>
+                    {authored ? "Written lessons + practice" : "Outline"}
+                  </span>
                   <span>{authored ? presented.mode : course.mode}</span>
-                  <span>{showLiveCurriculum ? duration : duration || "Duration to be confirmed"}</span>
+                  <span>
+                    {showLiveCurriculum
+                      ? duration
+                      : duration || "Duration to be confirmed"}
+                  </span>
                   <span>{course.category}</span>
                   <span>{moduleCount} modules</span>
-                  {showLiveCurriculum && authoredStats ? <span>{authoredStats.assignmentCount} assignments</span> : null}
+                  {showLiveCurriculum && authoredStats ? (
+                    <span>{authoredStats.assignmentCount} assignments</span>
+                  ) : null}
                 </p>
               </aside>
               <div className="cat-intro-actions">
                 <div className="cat-actions">
                   {listingClosed ? (
                     <>
-                      <a className="cat-btn cat-btn-ghost cat-btn-lg" href="#course-outline">View outline</a>
-                      <Link className="cat-btn cat-btn-primary cat-btn-lg" to="/courses/data-analytics">{confirmed ? "Start Data Analytics" : "View Data Analytics"}</Link>
-                      <Link className="cat-btn cat-btn-ghost cat-btn-lg" to="/courses/product-management">{confirmed ? "Start Product Management" : "View Product Management"}</Link>
+                      <a
+                        className="cat-btn cat-btn-ghost cat-btn-lg"
+                        href="#course-outline"
+                      >
+                        View outline
+                      </a>
+                      <Link
+                        className="cat-btn cat-btn-primary cat-btn-lg"
+                        to="/courses/data-analytics"
+                      >
+                        {confirmed
+                          ? "Start Data Analytics"
+                          : "View Data Analytics"}
+                      </Link>
+                      <Link
+                        className="cat-btn cat-btn-ghost cat-btn-lg"
+                        to="/courses/product-management"
+                      >
+                        {confirmed
+                          ? "Start Product Management"
+                          : "View Product Management"}
+                      </Link>
                     </>
                   ) : (
                     <>
@@ -190,12 +264,18 @@ export default function CourseDetailPage() {
                       >
                         {cta}
                       </button>
-                      <Link className="cat-btn cat-btn-ghost cat-btn-lg" to="/courses">Browse courses</Link>
+                      <Link
+                        className="cat-btn cat-btn-ghost cat-btn-lg"
+                        to="/programmes"
+                      >
+                        Browse programmes
+                      </Link>
                     </>
                   )}
                 </div>
                 <p className="cat-honesty">
-                  Payment is not collected in this pilot. A certificate for this course is issued when every lesson in it is complete.
+                  Payment is not collected in this pilot. A certificate for this
+                  course is issued when every lesson in it is complete.
                 </p>
               </div>
             </div>
@@ -234,9 +314,16 @@ export default function CourseDetailPage() {
         {outcomes.length > 0 ? (
           <section className="cat-band">
             <div className="cat-rail">
-              <h2>{showLiveCurriculum ? "What you will be able to do" : "Listed capabilities"}</h2>
+              <h2>
+                {showLiveCurriculum
+                  ? "What you will be able to do"
+                  : "Listed capabilities"}
+              </h2>
               {!showLiveCurriculum ? (
-                <p className="cat-fine">These statements come from the catalogue listing, not a full authored course.</p>
+                <p className="cat-fine">
+                  These statements come from the catalogue listing, not a full
+                  authored course.
+                </p>
               ) : null}
               <div className="cat-caps">
                 {outcomes.map((item) => (
@@ -254,32 +341,41 @@ export default function CourseDetailPage() {
             <div className="cat-rail">
               <h2>What you will practise and build</h2>
               <p className="cat-fine">
-                {profile?.practiceIntro ?? "Practice is written work in Skylent OS. There is no live classroom and no video stream."}
+                {profile?.practiceIntro ??
+                  "Practice is written work in Skylent OS. There is no live classroom and no video stream."}
               </p>
               <div className="cat-practice">
                 <article>
                   <h3>Learning</h3>
-                  <p>{practice.learning.length} written lessons in Skylent OS.</p>
+                  <p>
+                    {practice.learning.length} written lessons in Skylent OS.
+                  </p>
                 </article>
                 <article>
                   <h3>Practice</h3>
                   <p>{practice.practice.length} short checks.</p>
                   <ul>
-                    {practice.practice.map((item) => <li key={item.id}>{item.title}</li>)}
+                    {practice.practice.map((item) => (
+                      <li key={item.id}>{item.title}</li>
+                    ))}
                   </ul>
                 </article>
                 <article>
                   <h3>Assignment</h3>
                   <p>{practice.assignments.length} applied briefs.</p>
                   <ul>
-                    {practice.assignments.map((item) => <li key={item.id}>{item.title}</li>)}
+                    {practice.assignments.map((item) => (
+                      <li key={item.id}>{item.title}</li>
+                    ))}
                   </ul>
                 </article>
                 <article>
                   <h3>Capstone</h3>
                   <p>A work sample you keep.</p>
                   <ul>
-                    {practice.capstone.map((item) => <li key={item.id}>{item.title}</li>)}
+                    {practice.capstone.map((item) => (
+                      <li key={item.id}>{item.title}</li>
+                    ))}
                   </ul>
                 </article>
               </div>
@@ -298,7 +394,9 @@ export default function CourseDetailPage() {
                   <ul className="cat-tools">
                     {profile?.tools.map((item) => <li key={item}>{item}</li>)}
                   </ul>
-                  <p className="cat-label" style={{ marginTop: 18 }}>Source material</p>
+                  <p className="cat-label" style={{ marginTop: 18 }}>
+                    Source material
+                  </p>
                   <div className="cat-datasets">
                     {profile?.datasets.map((item) => (
                       <article key={item.filename}>
@@ -307,10 +405,14 @@ export default function CourseDetailPage() {
                       </article>
                     ))}
                   </div>
-                  {profile?.labOmission ? <p className="cat-fine">{profile.labOmission}</p> : null}
+                  {profile?.labOmission ? (
+                    <p className="cat-fine">{profile.labOmission}</p>
+                  ) : null}
                 </div>
                 <div className="cat-stage-visual">
-                  {profile ? <CourseProductVisual visual={profile.visual} /> : null}
+                  {profile ? (
+                    <CourseProductVisual visual={profile.visual} />
+                  ) : null}
                 </div>
               </div>
             </div>
@@ -321,10 +423,14 @@ export default function CourseDetailPage() {
           <div className="cat-rail">
             <h2>What happens when you enrol</h2>
             <ol className="cat-numbered">
-              {afterEnrol.map((item) => <li key={item}>{item}</li>)}
+              {afterEnrol.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ol>
             <p className="cat-fine">
-              Progress and submitted work stay on your enrolment. You can carry learning evidence into Career OS. Career OS is a workspace — not a job guarantee.
+              Progress and submitted work stay on your enrolment. You can carry
+              learning evidence into Career OS. Career OS is a workspace — not a
+              job guarantee.
             </p>
             {showLiveCurriculum ? (
               <>
@@ -347,7 +453,11 @@ export default function CourseDetailPage() {
           <div className="cat-rail">
             <div className="cat-final-card">
               <div>
-                <h2>{showLiveCurriculum ? profile?.ctaTitle ?? `Start ${course.title}` : `Open ${course.title}`}</h2>
+                <h2>
+                  {showLiveCurriculum
+                    ? (profile?.ctaTitle ?? `Start ${course.title}`)
+                    : `Open ${course.title}`}
+                </h2>
                 <p>
                   {showLiveCurriculum
                     ? "Enrolment does not collect payment. It opens the written course in Skylent OS."
@@ -356,11 +466,28 @@ export default function CourseDetailPage() {
               </div>
               {listingClosed ? (
                 <div className="cat-enrol-actions">
-                  <Link className="cat-btn cat-btn-primary" to="/courses/data-analytics">{confirmed ? "Start Data Analytics" : "View Data Analytics"}</Link>
-                  <Link className="cat-btn cat-btn-ghost" to="/courses/product-management">{confirmed ? "Start Product Management" : "View Product Management"}</Link>
+                  <Link
+                    className="cat-btn cat-btn-primary"
+                    to="/courses/data-analytics"
+                  >
+                    {confirmed ? "Start Data Analytics" : "View Data Analytics"}
+                  </Link>
+                  <Link
+                    className="cat-btn cat-btn-ghost"
+                    to="/courses/product-management"
+                  >
+                    {confirmed
+                      ? "Start Product Management"
+                      : "View Product Management"}
+                  </Link>
                 </div>
               ) : (
-                <button type="button" className="cat-btn cat-btn-primary cat-btn-lg" disabled={!enrollable} onClick={openEnrol}>
+                <button
+                  type="button"
+                  className="cat-btn cat-btn-primary cat-btn-lg"
+                  disabled={!enrollable}
+                  onClick={openEnrol}
+                >
                   {cta}
                 </button>
               )}
@@ -371,7 +498,13 @@ export default function CourseDetailPage() {
 
       {enrollOpen ? (
         <EnrollmentModal
-          item={{ kind: "course", slug: course.slug, title: course.title, price: course.price, enrollable }}
+          item={{
+            kind: "course",
+            slug: course.slug,
+            title: course.title,
+            price: course.price,
+            enrollable,
+          }}
           onClose={() => setEnrollOpen(false)}
           themeId="professional"
         />
@@ -385,19 +518,25 @@ function enrollCta(enrollable: boolean, primaryCta: string): string {
   return "View outline"
 }
 
-function catalogOutlineCards(curriculum: CatalogCurriculumModule[]): ModuleLaneItem[] {
+function catalogOutlineCards(
+  curriculum: CatalogCurriculumModule[],
+): ModuleLaneItem[] {
   return curriculum.map((module, index) => {
     const nodeCount = module.nodes.length
     const nodeLine = module.nodes
-      .map((node) => (node.duration ? `${node.title} (${node.duration})` : node.title))
+      .map((node) =>
+        node.duration ? `${node.title} (${node.duration})` : node.title,
+      )
       .filter(Boolean)
       .join(" · ")
     return {
       id: module.sourceId ?? `module-${module.order}-${index}`,
       index: index + 1,
       title: module.title,
-      workLine: nodeLine || "Outline titles only — not a finished teaching path.",
-      countsLabel: nodeCount === 1 ? "1 outline item" : `${nodeCount} outline items`,
+      workLine:
+        nodeLine || "Outline titles only — not a finished teaching path.",
+      countsLabel:
+        nodeCount === 1 ? "1 outline item" : `${nodeCount} outline items`,
     }
   })
 }

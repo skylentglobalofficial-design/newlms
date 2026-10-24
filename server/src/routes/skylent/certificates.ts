@@ -110,25 +110,28 @@ skylentCertificatesRouter.post("/issue", requireAuth, requireCsrf, async (req: A
 })
 
 skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedRequest, res) => {
-  const rows = await prisma.skylentCertificate.findMany({
-    where: { userId: req.auth!.user.id },
-    orderBy: { issuedAt: "desc" },
-  })
-  const courses = rows.length
-    ? await prisma.course.findMany({
-        where: { id: { in: [...new Set(rows.map((row) => row.courseId))] } },
-        select: { id: true, slug: true },
-      })
-    : []
-  const slugById = new Map(courses.map((course) => [course.id, course.slug]))
-  // The learner's own list also says whether a certificate was revoked, so the UI never offers
-  // "Verify" for one the public check will reject. The public verify response is unchanged.
-  res.json({
-    data: rows.map((row) => ({
-      ...issuedLearnerView(row, slugById.get(row.courseId) ?? null),
-      revoked: row.revoked,
-    })),
-  })
+  try {
+    const rows = await prisma.skylentCertificate.findMany({
+      where: { userId: req.auth!.user.id },
+      orderBy: { issuedAt: "desc" },
+    })
+    const courses = rows.length
+      ? await prisma.course.findMany({
+          where: { id: { in: [...new Set(rows.map((row) => row.courseId))] } },
+          select: { id: true, slug: true },
+        })
+      : []
+    const slugById = new Map(courses.map((course) => [course.id, course.slug]))
+    res.json({
+      data: rows.map((row) => ({
+        ...issuedLearnerView(row, slugById.get(row.courseId) ?? null),
+        revoked: row.revoked,
+      })),
+    })
+  } catch (error) {
+    console.error("Failed to load certificates:", error instanceof Error ? error.message : error)
+    res.status(500).json({ error: "Your certificates could not be loaded. Try again later." })
+  }
 })
 
 /** Public check. Returns only name, course, and date. */

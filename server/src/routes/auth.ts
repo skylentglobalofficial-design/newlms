@@ -46,6 +46,20 @@ import {
   parseEnrollTarget,
   sanitizeReturnTo,
 } from "../lib/safe-redirect.js"
+import {
+  createPasswordResetToken,
+  validatePasswordResetToken,
+  resetPasswordWithToken,
+  PasswordResetError,
+  genericPasswordResetRequestResponse,
+  isValidPasswordResetTokenFormat,
+} from "../lib/password-reset.js"
+import {
+  isEmailConfigured,
+  sendEmail,
+  buildPasswordResetEmail,
+} from "../lib/email.js"
+import rateLimit from "express-rate-limit"
 
 export const authRouter = Router()
 
@@ -298,4 +312,116 @@ authRouter.patch("/me", requireAuth, requireCsrf, async (req: AuthenticatedReque
     console.error("Failed to update profile:", error)
     res.status(500).json({ error: "Failed to update profile" })
   }
+})
+
+const passwordResetRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler(_request, response) {
+    response.status(429).json({ error: "Too many password reset attempts. Try again later." })
+  },
+})
+
+const passwordResetRequestSchema = z.object({
+  email: z.string().trim().email("Enter a valid email address"),
+})
+
+authRouter.post("/password-reset/request", passwordResetRateLimit, async (req, res) => {
+  const parsed = passwordResetRequestSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Invalid email address" })
+  }
+
+  // Always return the same body shape for known and unknown accounts.
+  // Never include token material in the HTTP response or logs.
+  try {
+    const result = await createPasswordResetToken(parsed.data.email)
+
+    if (result && isEmailConfigured()) {
+      const frontendUrl = process.env.FRONTEND_URL || "http://localhost:8443"
+      const resetUrl = `${frontendUrl}/reset-password?token=${result.token}`
+      const emailContent = buildPasswordResetEmail(resetUrl)
+
+      try {
+        await sendEmail({
+          to: normalizeEmail(parsed.data.email),
+          ...emailContent,
+        })
+      } catch {
+        // Do not log the reset URL or token. Do not change the response —
+        // a send failure must not reveal whether the account exists.
+        console.error("Failed to send password reset email")
+      }
+    }
+
+    res.json(genericPasswordResetRequestResponse(isEmailConfigured()))
+  } catch (error) {
+    if (error instanceof PasswordResetError && error.code === "RATE_LIMITED") {
+      return res.status(429).json({ error: "Too many password reset requests. Try again later." })
+    }
+    console.error("Password reset request failed")
+    res.json(genericPasswordResetRequestResponse(isEmailConfigured()))
+  }
+})
+
+const passwordResetVerifySchema = z.object({
+  token: z.string().min(64).max(128),
+})
+
+authRouter.post("/password-reset/verify", passwordResetRateLimit, async (req, res) => {
+  const parsed = passwordResetVerifySchema.safeParse(req.body)
+  if (!parsed.success || !isValidPasswordResetTokenFormat(parsed.data.token)) {
+    return res.status(400).json({ error: "Invalid token format", valid: false })
+  }
+
+  try {
+    await validatePasswordResetToken(parsed.data.token)
+    res.json({ valid: true })
+  } catch (error) {
+    if (error instanceof PasswordResetError) {
+      return res.status(400).json({ error: error.message, code: error.code, valid: false })
+    }
+    res.status(400).json({ error: "Invalid or expired token", valid: false })
+  }
+})
+
+const passwordResetCompleteSchema = z.object({
+  token: z.string().min(64).max(128),
+  password: passwordSchema,
+})
+
+authRouter.post("/password-reset/complete", passwordResetRateLimit, async (req, res) => {
+  const parsed = passwordResetCompleteSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({
+      error: "Validation failed",
+      details: parsed.error.flatten().fieldErrors,
+    })
+  }
+
+  if (!isValidPasswordResetTokenFormat(parsed.data.token)) {
+    return res.status(400).json({ error: "Invalid token format", code: "INVALID_TOKEN", success: false })
+  }
+
+  try {
+    await resetPasswordWithToken(parsed.data.token, parsed.data.password)
+    res.json({ success: true, message: "Password has been reset. You can now sign in." })
+  } catch (error) {
+    if (error instanceof PasswordResetError) {
+      return res.status(400).json({ error: error.message, code: error.code, success: false })
+    }
+    console.error("Password reset failed")
+    res.status(500).json({ error: "Failed to reset password", success: false })
+  }
+})
+
+authRouter.get("/password-reset/config", (_req, res) => {
+  res.json({
+    emailConfigured: isEmailConfigured(),
+    message: isEmailConfigured()
+      ? "Password reset emails are enabled."
+      : "Password reset emails are not configured. Contact an administrator.",
+  })
 })
