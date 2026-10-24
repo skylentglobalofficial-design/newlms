@@ -1,6 +1,8 @@
 import { Router } from "express"
+import { z } from "zod"
+import { AssignmentStatus } from "@prisma/client"
 import { prisma } from "../lib/prisma.js"
-import { requireAuth, type AuthenticatedRequest } from "../lib/auth.js"
+import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { hasApiRole, requireRoles } from "../lib/roles.js"
 
 export const facultyRouter = Router()
@@ -101,3 +103,215 @@ facultyRouter.get("/dashboard", requireAuth, requireRoles("faculty", "superadmin
     res.status(500).json({ error: "Failed to load faculty dashboard" })
   }
 })
+
+const gradeSchema = z.object({
+  grade: z.number().int().min(0).max(100),
+  feedback: z.string().max(10000).optional(),
+})
+
+const submissionIdSchema = z.object({
+  submissionId: z.string().uuid(),
+})
+
+facultyRouter.get(
+  "/submissions/:submissionId",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  async (req: AuthenticatedRequest, res) => {
+    const parsed = submissionIdSchema.safeParse(req.params)
+    if (!parsed.success) {
+      return res.status(400).json({ error: "Invalid submission ID" })
+    }
+
+    try {
+      const submission = await prisma.assignmentProgress.findUnique({
+        where: { id: parsed.data.submissionId },
+        include: {
+          user: { select: { id: true, displayName: true, email: true } },
+          node: {
+            select: {
+              id: true,
+              title: true,
+              sourceId: true,
+              module: {
+                select: {
+                  title: true,
+                  course: { select: { slug: true, title: true } },
+                },
+              },
+            },
+          },
+          enrollment: {
+            include: {
+              course: { select: { slug: true, title: true } },
+              program: { select: { slug: true, name: true } },
+            },
+          },
+          attachments: {
+            select: { id: true, fileName: true, mimeType: true, byteSize: true, storageProvider: true },
+          },
+        },
+      })
+
+      if (!submission) {
+        return res.status(404).json({ error: "Submission not found" })
+      }
+
+      res.json({
+        data: {
+          id: submission.id,
+          status: submission.status,
+          responseText: submission.responseText,
+          submittedAt: submission.submittedAt?.toISOString() ?? null,
+          grade: submission.grade,
+          feedback: submission.feedback,
+          gradedAt: submission.gradedAt?.toISOString() ?? null,
+          student: {
+            id: submission.user.id,
+            name: submission.user.displayName ?? submission.user.email,
+            email: submission.user.email,
+          },
+          lesson: {
+            id: submission.node.id,
+            title: submission.node.title,
+            key: submission.node.sourceId,
+            moduleTitle: submission.node.module.title,
+          },
+          course: submission.enrollment.course
+            ? { slug: submission.enrollment.course.slug, title: submission.enrollment.course.title }
+            : null,
+          program: submission.enrollment.program
+            ? { slug: submission.enrollment.program.slug, name: submission.enrollment.program.name }
+            : null,
+          attachments: submission.attachments,
+        },
+      })
+    } catch (error) {
+      console.error("Failed to get submission:", error)
+      res.status(500).json({ error: "Failed to get submission" })
+    }
+  },
+)
+
+facultyRouter.post(
+  "/submissions/:submissionId/grade",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const idParsed = submissionIdSchema.safeParse(req.params)
+    const bodyParsed = gradeSchema.safeParse(req.body)
+    if (!idParsed.success || !bodyParsed.success) {
+      return res.status(400).json({
+        error: "Validation failed",
+        details: bodyParsed.success ? undefined : bodyParsed.error.flatten().fieldErrors,
+      })
+    }
+
+    try {
+      const submission = await prisma.assignmentProgress.findUnique({
+        where: { id: idParsed.data.submissionId },
+      })
+
+      if (!submission) {
+        return res.status(404).json({ error: "Submission not found" })
+      }
+
+      if (submission.status !== AssignmentStatus.submitted && submission.status !== AssignmentStatus.graded) {
+        return res.status(400).json({ error: "Only submitted assignments can be graded" })
+      }
+
+      const updated = await prisma.assignmentProgress.update({
+        where: { id: submission.id },
+        data: {
+          status: AssignmentStatus.graded,
+          grade: bodyParsed.data.grade,
+          feedback: bodyParsed.data.feedback ?? null,
+          gradedById: req.auth!.user.id,
+          gradedAt: new Date(),
+        },
+      })
+
+      res.json({
+        data: {
+          id: updated.id,
+          status: updated.status,
+          grade: updated.grade,
+          feedback: updated.feedback,
+          gradedAt: updated.gradedAt?.toISOString() ?? null,
+        },
+      })
+    } catch (error) {
+      console.error("Failed to grade submission:", error)
+      res.status(500).json({ error: "Failed to grade submission" })
+    }
+  },
+)
+
+facultyRouter.get(
+  "/submissions",
+  requireAuth,
+  requireRoles("faculty", "superadmin"),
+  async (req: AuthenticatedRequest, res) => {
+    const status = req.query.status as string | undefined
+    const courseSlug = req.query.courseSlug as string | undefined
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20))
+    const offset = Math.max(0, parseInt(req.query.offset as string) || 0)
+
+    const where: Record<string, unknown> = {}
+    if (status === "submitted") {
+      where.status = AssignmentStatus.submitted
+    } else if (status === "graded") {
+      where.status = AssignmentStatus.graded
+    } else {
+      where.status = { in: [AssignmentStatus.submitted, AssignmentStatus.graded] }
+    }
+
+    if (courseSlug) {
+      where.enrollment = { course: { slug: courseSlug } }
+    }
+
+    try {
+      const [submissions, total] = await Promise.all([
+        prisma.assignmentProgress.findMany({
+          where,
+          orderBy: { submittedAt: "desc" },
+          take: limit,
+          skip: offset,
+          include: {
+            user: { select: { displayName: true, email: true } },
+            node: { select: { title: true, sourceId: true } },
+            enrollment: {
+              include: {
+                course: { select: { slug: true, title: true } },
+                program: { select: { slug: true, name: true } },
+              },
+            },
+          },
+        }),
+        prisma.assignmentProgress.count({ where }),
+      ])
+
+      res.json({
+        data: submissions.map((row) => ({
+          id: row.id,
+          status: row.status,
+          studentName: row.user.displayName ?? row.user.email,
+          studentEmail: row.user.email,
+          lessonTitle: row.node.title,
+          lessonKey: row.node.sourceId,
+          courseSlug: row.enrollment.course?.slug ?? null,
+          courseTitle: row.enrollment.course?.title ?? null,
+          programName: row.enrollment.program?.name ?? null,
+          submittedAt: row.submittedAt?.toISOString() ?? null,
+          grade: row.grade,
+          gradedAt: row.gradedAt?.toISOString() ?? null,
+        })),
+        meta: { total, limit, offset },
+      })
+    } catch (error) {
+      console.error("Failed to list submissions:", error)
+      res.status(500).json({ error: "Failed to list submissions" })
+    }
+  },
+)

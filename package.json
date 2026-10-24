@@ -51,6 +51,9 @@
     "test:production-env": "tsx scripts/test-production-env.ts",
     "test:migration-history": "tsx scripts/test-migration-history.ts",
     "test:migration-replay": "tsx scripts/test-production-migration-replay.ts",
+    "test:enrollment-access": "tsx scripts/test-enrollment-access.ts",
+    "test:events": "tsx scripts/test-events.ts",
+    "test:quiz-limits": "tsx scripts/test-quiz-limits.ts",
     "bootstrap:superadmin": "tsx scripts/bootstrap-superadmin.ts"
   },
   "engines": {

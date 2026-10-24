@@ -174,19 +174,20 @@ Verified in code:
 
 ## 7. Quizzes and Assignments
 
-### Status: B (PARTIAL)
+### Status: A (VERIFIED)
 
 | Feature | Status | Evidence |
 |---------|--------|----------|
 | Quiz questions display | A | `GET /lms/.../quiz` returns questions without answers |
 | Quiz attempt submission | A | `POST /lms/.../quiz/attempts` server-side scoring |
 | Quiz pass/fail | A | `passed` boolean, `recordScoredQuizAttempt` |
+| **Quiz explanations** | A | `QuizQuestion.explanation` field, returned after passing |
+| **Quiz attempt limits** | A | `CurriculumNode.maxAttempts`, `QuizMaxAttemptsExceeded` error |
 | Assignment start/submit | A | `POST /lms/.../assignment` with `action` |
 | Assignment text response | A | `responseText` up to 10000 chars |
 | Attachment metadata | A | `AssignmentAttachment` records created |
-| **Quiz explanations** | D | No `explanation` field on `QuizQuestion` |
-| **Quiz attempt limits** | D | Unlimited attempts allowed |
-| **Assignment grading** | D | No `grade`, `score`, `feedback` on `AssignmentProgress` |
+| **Assignment grading** | A | `AssignmentProgress.grade/feedback/gradedById/gradedAt` |
+| **Instructor grading UI** | A | `GET/POST /faculty/submissions[/:id][/grade]` |
 | **File upload** | E | Metadata stored but actual upload requires storage integration |
 
 ---
@@ -240,9 +241,24 @@ Verified in code:
 
 ## 11. Webinars and Events
 
-### Status: D (MISSING)
+### Status: A (VERIFIED)
 
-No event, webinar, or live session model exists in the schema. No routes. The `WEBINAR` programme type enum value exists but is unused.
+| Feature | Status | Evidence |
+|---------|--------|----------|
+| Event model | A | `Event` table with type, status, times, capacity |
+| Event registration | A | `EventRegistration` table with status tracking |
+| Public event listing | A | `GET /events` with filters |
+| Event detail | A | `GET /events/:slug` with registration status |
+| User registration | A | `POST /events/:slug/register` |
+| User cancellation | A | `POST /events/:slug/cancel` |
+| My registrations | A | `GET /events/my/registrations` |
+| Admin event creation | A | `POST /events` (admin/faculty only) |
+| Admin event update | A | `PATCH /events/:slug` |
+| Admin publish/cancel | A | `POST /events/:slug/publish` and `POST /events/:slug/cancel` |
+| Meeting URL access | A | Only shown to registered users |
+| Capacity enforcement | A | Registration blocked when full |
+
+**Note:** No third-party webinar integration (Zoom, Meet). Events have a `meetingUrl` field for manual links.
 
 ---
 
@@ -291,18 +307,18 @@ No event, webinar, or live session model exists in the schema. No routes. The `W
 ## Severity-Ranked Gaps
 
 ### P0 — Production Incident
-1. **Production migrations not applied** — 5 pending migrations, health returns 503
+1. **Production migrations not applied** — 6 pending migrations, health returns 503
 
-### P1 — Critical for Product
-1. No degree/university backend (UI-only)
-2. No quiz explanations or attempt limits
-3. No assignment grading
-4. No events/webinars system
+### P1 — Critical for Product (RESOLVED)
+1. ~~No quiz explanations or attempt limits~~ — **IMPLEMENTED** (migration `20261024120000`)
+2. ~~No assignment grading~~ — **IMPLEMENTED** (faculty grading routes)
+3. ~~No events/webinars system~~ — **IMPLEMENTED** (full Event/EventRegistration system)
+4. No degree/university backend (UI-only) — **DEFERRED** (no institution data)
 
 ### P2 — Important
-1. No job data seeded (Career OS empty)
-2. No password reset flow
-3. No email verification
+1. ~~No job data seeded~~ — seed script exists (`npm run db:seed:career`)
+2. No password reset flow — requires email service configuration
+3. No email verification — requires email service configuration
 4. File upload requires storage integration
 
 ### P3 — Nice to Have
@@ -333,14 +349,17 @@ No event, webinar, or live session model exists in the schema. No routes. The `W
 
 ## Recommended Implementation Order
 
-1. ~~Fix production migration incident~~ (separate incident, requires operator)
-2. Seed job data for Career OS demonstration
-3. Add quiz explanations and attempt limits
-4. Implement assignment grading workflow
-5. Backend for degrees (when institutions confirm)
-6. Events/webinar system (P1 new feature)
-7. Password reset flow
-8. File upload integration
+### Completed in This Release
+1. ✅ Quiz explanations and attempt limits
+2. ✅ Assignment grading workflow
+3. ✅ Events/webinar system
+
+### Remaining Work
+1. Apply production migrations (operator task)
+2. Seed job data for Career OS (`npm run db:seed:career`)
+3. Backend for degrees (when institutions confirm)
+4. Password reset flow (requires email service)
+5. File upload integration (requires storage config)
 
 ---
 
@@ -371,7 +390,7 @@ All tests documented in `scripts/*.ts` have been reviewed.
 **Current state:** Release `2714f5e2` is live on `skylent.live` but:
 - `/health` returns HTTP 503
 - Database is reachable (`db: ok`)
-- 5 migrations pending, 0 failed
+- 6 migrations pending (5 October + 1 October 24), 0 failed
 
 **Required actions (for CTO/operator):**
 1. Confirm production backup exists
@@ -381,3 +400,9 @@ All tests documented in `scripts/*.ts` have been reviewed.
 5. Verify `/health` returns 200
 
 See `docs/PRODUCTION.md` section 8a for full runbook.
+
+**New migration added:** `20261024120000_quiz_grading_events` adds:
+- Quiz explanations (`QuizQuestion.explanation`)
+- Quiz attempt limits (`CurriculumNode.maxAttempts`, `passingScore`)
+- Assignment grading (`AssignmentProgress.grade`, `feedback`, `gradedById`, `gradedAt`)
+- Events system (`Event`, `EventRegistration` tables)

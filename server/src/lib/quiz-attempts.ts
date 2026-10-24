@@ -14,6 +14,18 @@ export class QuizAttemptThrottled extends Error {
   }
 }
 
+export class QuizMaxAttemptsExceeded extends Error {
+  readonly maxAttempts: number
+  readonly currentAttempts: number
+
+  constructor(maxAttempts: number, currentAttempts: number) {
+    super(`Maximum ${maxAttempts} attempts allowed for this quiz`)
+    this.name = "QuizMaxAttemptsExceeded"
+    this.maxAttempts = maxAttempts
+    this.currentAttempts = currentAttempts
+  }
+}
+
 type ScorableQuestion = {
   id: string
   options: unknown
@@ -50,15 +62,26 @@ export async function recordScoredQuizAttempt(input: {
   nodeId: string
   answers: number[]
   questions: ScorableQuestion[]
+  maxAttempts?: number | null
+  passingScore?: number | null
 }) {
   const lockKey = `skylent-quiz:${input.userId}:${input.nodeId}`
   const score = scoreAnswers(input.answers, input.questions)
-  const passed = score === input.questions.length
+  const requiredScore = input.passingScore ?? input.questions.length
+  const passed = score >= requiredScore
   const now = new Date()
   const windowStart = new Date(now.getTime() - QUIZ_ATTEMPT_WINDOW_MS)
 
   return prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtextextended(${lockKey}, 0))::text AS locked`
+
+    const priorAttempts = await tx.quizAttempt.count({
+      where: { enrollmentId: input.enrollmentId, nodeId: input.nodeId },
+    })
+
+    if (input.maxAttempts && priorAttempts >= input.maxAttempts) {
+      throw new QuizMaxAttemptsExceeded(input.maxAttempts, priorAttempts)
+    }
 
     const recent = await tx.quizAttempt.findMany({
       where: {
@@ -76,10 +99,6 @@ export async function recordScoredQuizAttempt(input: {
       const retryAfterSeconds = Math.max(1, Math.ceil((retryAt - now.getTime()) / 1000))
       throw new QuizAttemptThrottled(retryAfterSeconds)
     }
-
-    const priorAttempts = await tx.quizAttempt.count({
-      where: { enrollmentId: input.enrollmentId, nodeId: input.nodeId },
-    })
 
     const attempt = await tx.quizAttempt.create({
       data: {

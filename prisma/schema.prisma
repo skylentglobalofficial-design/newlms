@@ -50,6 +50,7 @@ enum AssignmentStatus {
   not_started
   in_progress
   submitted
+  graded
 }
 
 enum CertificateStatus {
@@ -200,6 +201,7 @@ model User {
   employerMemberships EmployerMembership[]
   practiceApprovals PracticeWorkspace[] @relation("PracticeWorkspaceApprover")
   practiceResponses PracticeWorkspaceResponse[]
+  eventRegistrations EventRegistration[]
 }
 
 model Role {
@@ -369,6 +371,8 @@ model CurriculumNode {
   duration              String?
   completed             Boolean              @default(false)
   muxPlaybackId         String?
+  maxAttempts           Int?
+  passingScore          Int?
   moduleId              String               @db.Uuid
   module                CurriculumModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   lessonProgress        LessonProgress[]
@@ -425,12 +429,13 @@ model LessonProgress {
 }
 
 model QuizQuestion {
-  id           String @id @default(uuid()) @db.Uuid
-  nodeId       String @db.Uuid
+  id           String  @id @default(uuid()) @db.Uuid
+  nodeId       String  @db.Uuid
   sortOrder    Int
-  question     String @db.Text
+  question     String  @db.Text
   options      Json
   correctIndex Int
+  explanation  String? @db.Text
 
   node CurriculumNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
 
@@ -465,6 +470,10 @@ model AssignmentProgress {
   status       AssignmentStatus @default(not_started)
   responseText String?          @db.Text
   submittedAt  DateTime?
+  grade        Int?
+  feedback     String?          @db.Text
+  gradedById   String?          @db.Uuid
+  gradedAt     DateTime?
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 
@@ -475,6 +484,7 @@ model AssignmentProgress {
 
   @@unique([enrollmentId, nodeId])
   @@index([userId])
+  @@index([nodeId, status])
 }
 
 model ProgramCourse {
@@ -954,6 +964,79 @@ model PolicyAcceptance {
 
   @@index([userId, context])
   @@index([enquiryId])
+}
+
+// ---------------------------------------------------------------------------
+// Events and Webinars
+// ---------------------------------------------------------------------------
+
+enum EventType {
+  WEBINAR
+  WORKSHOP
+  LIVE_SESSION
+  INFO_SESSION
+  OTHER
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  COMPLETED
+}
+
+enum EventRegistrationStatus {
+  REGISTERED
+  CANCELLED
+  ATTENDED
+  NO_SHOW
+}
+
+model Event {
+  id            String      @id @default(uuid()) @db.Uuid
+  slug          String      @unique
+  title         String
+  description   String      @db.Text
+  eventType     EventType   @default(WEBINAR)
+  status        EventStatus @default(DRAFT)
+  hostName      String?
+  hostId        String?     @db.Uuid
+  startTime     DateTime
+  endTime       DateTime
+  timezone      String      @default("Asia/Kolkata")
+  capacity      Int?
+  meetingUrl    String?
+  location      String?
+  isOnline      Boolean     @default(true)
+  programSlug   String?
+  courseSlug    String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  registrations EventRegistration[]
+
+  @@index([status, startTime])
+  @@index([programSlug])
+  @@index([courseSlug])
+}
+
+model EventRegistration {
+  id           String                  @id @default(uuid()) @db.Uuid
+  eventId      String                  @db.Uuid
+  userId       String                  @db.Uuid
+  status       EventRegistrationStatus @default(REGISTERED)
+  registeredAt DateTime                @default(now())
+  cancelledAt  DateTime?
+  attendedAt   DateTime?
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+  @@index([userId])
+  @@index([eventId, status])
 }
 
 enum PracticeWorkspaceStatus {

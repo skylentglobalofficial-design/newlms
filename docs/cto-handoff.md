@@ -14,7 +14,7 @@ Skylent is a functional EdTech platform with:
 - Labs and projects for hands-on learning
 - Role-based access control
 
-**Current Status:** Production is running release `2714f5e2` with 5 pending database migrations. The health endpoint returns HTTP 503 until migrations are applied.
+**Current Status:** Production is running release `2714f5e2` with 6 pending database migrations. The health endpoint returns HTTP 503 until migrations are applied.
 
 ---
 
@@ -81,21 +81,21 @@ Skylent is a functional EdTech platform with:
 
 ## C. What Remains Incomplete
 
-### P1 — Critical for Product
+### P1 — Critical for Product (All Resolved)
 
-| Gap | Current State | Required Work |
-|-----|---------------|---------------|
-| Degrees backend | UI-only from static data | Add Prisma model, API endpoints |
-| Quiz explanations | No explanation field | Add column, update frontend |
-| Quiz attempt limits | Unlimited attempts | Add attempt limit logic |
-| Assignment grading | No grades | Add grade/feedback fields |
-| Events/Webinars | Not implemented | New feature build |
+| Gap | Status | Notes |
+|-----|--------|-------|
+| ~~Quiz explanations~~ | ✅ DONE | `QuizQuestion.explanation` field |
+| ~~Quiz attempt limits~~ | ✅ DONE | `CurriculumNode.maxAttempts` field |
+| ~~Assignment grading~~ | ✅ DONE | `AssignmentProgress.grade/feedback` + faculty routes |
+| ~~Events/Webinars~~ | ✅ DONE | Full Event/EventRegistration system |
+| Degrees backend | DEFERRED | No institution data to populate |
 
 ### P2 — Important
 
 | Gap | Current State | Required Work |
 |-----|---------------|---------------|
-| Password reset | Not implemented | Email flow required |
+| Password reset | Not implemented | Email service required |
 | Email verification | Not implemented | Email service required |
 | File uploads | Metadata only | Storage integration (R2/S3) |
 | Job data | Tables empty | Run `npm run db:seed:career` |
@@ -134,7 +134,7 @@ No other bugs confirmed. The "Explore Courses" navigation concern was investigat
 
 ## F. Database/Schema Changes
 
-### Pending Migrations (5)
+### Pending Migrations (6)
 
 All additive, no data changes to existing tables:
 
@@ -143,6 +143,7 @@ All additive, no data changes to existing tables:
 3. `20261009000000_policy_acceptance` — Terms consent tracking
 4. `20261011000000_employer_membership` — Employer members
 5. `20261017120000_practice_workspaces` — Practice workspaces
+6. `20261024120000_quiz_grading_events` — Quiz explanations/limits, assignment grading, events
 
 ### Production-Only Migrations (4)
 
@@ -273,19 +274,20 @@ npm run test:consent       # Requires API
 | Authentication | VERIFIED |
 | Enrolment | VERIFIED |
 | LMS Lessons | VERIFIED |
-| Quizzes | VERIFIED |
-| Assignments | PARTIAL (no grading) |
+| Quizzes | VERIFIED (+ explanations, attempt limits) |
+| Assignments | VERIFIED (+ instructor grading) |
 | Certificates | VERIFIED |
 | Career Profile | VERIFIED |
 | Job Listings | VERIFIED |
 | Applications | VERIFIED |
 | Labs | VERIFIED |
 | Projects | VERIFIED |
-| Degrees | UI-ONLY |
-| Events | MISSING |
+| Degrees | UI-ONLY (no backend) |
+| Events | VERIFIED (new in this release) |
 | AI Assistant | BLOCKED (needs key) |
 | Google OAuth | BLOCKED (needs config) |
 | File Upload | BLOCKED (needs storage) |
+| Password Reset | NOT IMPLEMENTED (needs email service) |
 
 ---
 

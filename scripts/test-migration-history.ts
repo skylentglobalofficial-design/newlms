@@ -17,6 +17,7 @@ const OCTOBER = [
   "20261009000000_policy_acceptance",
   "20261011000000_employer_membership_and_shared_applications",
   "20261017120000_practice_workspaces",
+  "20261024120000_quiz_grading_events",
 ]
 
 const local = listLocalMigrations()
@@ -41,7 +42,7 @@ const productionRows = [
 ]
 
 const report = classifyMigrationHistory(local, productionRows)
-assert(JSON.stringify(report.pending) === JSON.stringify(OCTOBER), `pending must be exactly the five October migrations, got ${report.pending.join(",")}`)
+assert(JSON.stringify(report.pending) === JSON.stringify(OCTOBER), `pending must be exactly the six October migrations, got ${report.pending.join(",")}`)
 assert(report.failed.length === 0, "a rolled-back attempt superseded by a finished one is not a failure")
 assert(report.dbOnlyKnown.length === 4, "the four lesson-material migrations are reported as expected production-only")
 assert(report.dbOnlyUnknown.length === 0, "rolled-back phase7a must not count as an unknown applied migration")
