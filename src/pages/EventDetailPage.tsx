@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useParams, Link } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { useAuth } from "../context/AuthContext"
+import { ensureCsrfToken } from "../lib/auth-api"
 import "./Catalog.css"
 
 type EventDetail = {
@@ -29,7 +30,7 @@ type EventDetail = {
 
 export default function EventDetailPage() {
   const { slug } = useParams<{ slug: string }>()
-  const { user, csrfToken } = useAuth()
+  const { user } = useAuth()
   const [event, setEvent] = useState<EventDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -57,11 +58,12 @@ export default function EventDetailPage() {
     setError(null)
 
     try {
+      const token = await ensureCsrfToken()
       const res = await fetch(`/api/v1/events/${slug}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-csrf-token": csrfToken || "",
+          "X-CSRF-Token": token,
         },
         credentials: "include",
       })
@@ -95,11 +97,12 @@ export default function EventDetailPage() {
     setError(null)
 
     try {
+      const token = await ensureCsrfToken()
       const res = await fetch(`/api/v1/events/${slug}/cancel`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-csrf-token": csrfToken || "",
+          "X-CSRF-Token": token,
         },
         credentials: "include",
       })
