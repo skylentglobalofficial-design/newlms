@@ -530,8 +530,8 @@ export default function CareerOSOverviewPage() {
       key: "learn",
       title: "Continue learning",
       detail: "You are not enrolled in a course yet.",
-      href: "/courses",
-      cta: "Explore courses",
+      href: "/programmes",
+      cta: "Explore programmes",
     })
   }
 

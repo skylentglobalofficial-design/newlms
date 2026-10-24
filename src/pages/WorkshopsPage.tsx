@@ -9,7 +9,10 @@ export default function WorkshopsPage() {
   const [category, setCategory] = useState("All")
   const [mode, setMode] = useState("Any mode")
 
-  const categories = ["All", ...Array.from(new Set(workshops.map((workshop) => workshop.category)))]
+  const categories = [
+    "All",
+    ...Array.from(new Set(workshops.map((workshop) => workshop.category))),
+  ]
   const modes = ["Any mode", "Online", "Offline", "Hybrid"]
 
   const filtered = workshops.filter((workshop) => {
@@ -29,17 +32,20 @@ export default function WorkshopsPage() {
         <section className="cat-hero">
           <div className="cat-rail">
             <p className="cat-label">Workshops · coming soon</p>
-            <h1 className="cat-h1--display">Short sessions. Planned subjects. Registration not open.</h1>
+            <h1 className="cat-h1--display">
+              Short sessions. Planned subjects. Registration not open.
+            </h1>
             <p className="cat-lead">
-              A workshop is a short session on a single skill. None of these sessions are scheduled for delivery
-              yet, and nothing on this page can be booked.
+              A workshop is a short session on a single skill. None of these
+              sessions are scheduled for delivery yet, and nothing on this page
+              can be booked.
             </p>
             <p className="cat-honesty">
-              These are planned subjects only. Dates and prices are not set, and attendance, payment, and
-              certificates are not built.
+              These are planned subjects only. Dates and prices are not set, and
+              attendance, payment, and certificates are not built.
             </p>
             <div className="cat-actions">
-              <Link className="cat-btn cat-btn-primary" to="/courses">
+              <Link className="cat-btn cat-btn-primary" to="/programmes">
                 Start with a live course
               </Link>
               <Link className="cat-btn cat-btn-ghost" to="/programs">
@@ -51,8 +57,15 @@ export default function WorkshopsPage() {
 
         <section className="cat-section" aria-labelledby="ws-list-title">
           <div className="cat-rail">
-            <h2 id="ws-list-title">{filtered.length} planned workshop{filtered.length === 1 ? "" : "s"}</h2>
-            <div className="cat-filters" role="group" aria-label="Workshop filters">
+            <h2 id="ws-list-title">
+              {filtered.length} planned workshop
+              {filtered.length === 1 ? "" : "s"}
+            </h2>
+            <div
+              className="cat-filters"
+              role="group"
+              aria-label="Workshop filters"
+            >
               {categories.map((item) => (
                 <button
                   key={item}
@@ -65,7 +78,11 @@ export default function WorkshopsPage() {
                 </button>
               ))}
             </div>
-            <div className="cat-filters" role="group" aria-label="Delivery mode">
+            <div
+              className="cat-filters"
+              role="group"
+              aria-label="Delivery mode"
+            >
               {modes.map((item) => (
                 <button
                   key={item}
@@ -99,7 +116,9 @@ export default function WorkshopsPage() {
                 ))}
               </ul>
             )}
-            <p className="cat-fine">No dates or prices are set. Payment is not collected.</p>
+            <p className="cat-fine">
+              No dates or prices are set. Payment is not collected.
+            </p>
           </div>
         </section>
       </div>

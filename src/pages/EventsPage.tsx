@@ -71,16 +71,19 @@ export default function EventsPage() {
         <section className="cat-hero">
           <div className="cat-rail">
             <p className="cat-label">Events &amp; Webinars</p>
-            <h1 className="cat-h1--display">Live sessions. Expert speakers. Industry insights.</h1>
+            <h1 className="cat-h1--display">
+              Live sessions. Expert speakers. Industry insights.
+            </h1>
             <p className="cat-lead">
-              Join live webinars, workshops, and interactive sessions led by industry experts.
-              Register for upcoming events or catch up on past sessions.
+              Join live webinars, workshops, and interactive sessions led by
+              industry experts. Register for upcoming events or catch up on past
+              sessions.
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/programmes">
                 Explore programmes
               </Link>
-              <Link className="cat-btn cat-btn-ghost" to="/courses">
+              <Link className="cat-btn cat-btn-ghost" to="/programmes">
                 Browse courses
               </Link>
             </div>
@@ -90,9 +93,15 @@ export default function EventsPage() {
         <section className="cat-section" aria-labelledby="events-list-title">
           <div className="cat-rail">
             <h2 id="events-list-title">
-              {loading ? "Loading events..." : `${events.length} event${events.length === 1 ? "" : "s"}`}
+              {loading
+                ? "Loading events..."
+                : `${events.length} event${events.length === 1 ? "" : "s"}`}
             </h2>
-            <div className="cat-filters" role="group" aria-label="Event filters">
+            <div
+              className="cat-filters"
+              role="group"
+              aria-label="Event filters"
+            >
               {(["upcoming", "past", "all"] as const).map((item) => (
                 <button
                   key={item}
@@ -101,7 +110,11 @@ export default function EventsPage() {
                   aria-pressed={filter === item}
                   onClick={() => setFilter(item)}
                 >
-                  {item === "upcoming" ? "Upcoming" : item === "past" ? "Past" : "All events"}
+                  {item === "upcoming"
+                    ? "Upcoming"
+                    : item === "past"
+                      ? "Past"
+                      : "All events"}
                 </button>
               ))}
             </div>
@@ -115,13 +128,19 @@ export default function EventsPage() {
                 {events.map((event) => (
                   <li key={event.id}>
                     <Link className="ws-row" to={`/events/${event.slug}`}>
-                      <span className="ws-date">{formatDate(event.startTime)}</span>
+                      <span className="ws-date">
+                        {formatDate(event.startTime)}
+                      </span>
                       <span className="ws-body">
                         <strong>{event.title}</strong>
                         <em>{event.eventType.replace("_", " ")}</em>
                       </span>
-                      <span className="ws-meta">{formatTime(event.startTime)}</span>
-                      <span className="ws-meta">{event.isOnline ? "Online" : event.location || "TBD"}</span>
+                      <span className="ws-meta">
+                        {formatTime(event.startTime)}
+                      </span>
+                      <span className="ws-meta">
+                        {event.isOnline ? "Online" : event.location || "TBD"}
+                      </span>
                       <span className="ws-state">
                         {event.spotsRemaining === 0
                           ? "Full"
@@ -135,7 +154,8 @@ export default function EventsPage() {
               </ul>
             )}
             <p className="cat-fine">
-              Events are subject to change. Registration is required for all sessions.
+              Events are subject to change. Registration is required for all
+              sessions.
             </p>
           </div>
         </section>
