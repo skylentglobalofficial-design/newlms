@@ -10,6 +10,7 @@ import {
 } from "./google-link.js"
 import { resolveGoogleRedirectUri, type OAuthRequestOrigin } from "./oauth-redirect.js"
 import { recordPolicyAcceptance } from "./policy.js"
+import { PolicyStorageUnavailableError, readSchemaCapabilities } from "./schema-capabilities.js"
 
 export { ConsentOutdatedError, ConsentRequiredError, GoogleEmailLinkBlockedError } from "./google-link.js"
 
@@ -382,6 +383,10 @@ export async function resolveGoogleAccount(
   if (decision.action === "consent_outdated") throw new ConsentOutdatedError()
   if (decision.action !== "create") throw new ConsentRequiredError()
   const policyVersion = decision.policyVersion
+
+  if (!(await readSchemaCapabilities()).policyAcceptance) {
+    throw new PolicyStorageUnavailableError()
+  }
 
   const studentRole = await ensureRole(RoleName.STUDENT)
   const displayName = claims.name?.trim() || email.split("@")[0] || "User"

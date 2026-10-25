@@ -39,6 +39,13 @@ import {
   verifySignedOAuthState,
 } from "../lib/oauth-state.js"
 import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
+import {
+  isMissingSchemaError,
+  PolicyStorageUnavailableError,
+  readSchemaCapabilities,
+  UNAVAILABLE_MESSAGES,
+  unavailableBody,
+} from "../lib/schema-capabilities.js"
 import { ConsentRequiredError } from "../lib/google-oauth.js"
 import {
   oauthErrorRedirect,
@@ -158,6 +165,10 @@ authRouter.get("/google/callback", async (req, res) => {
     if (error instanceof GoogleEmailLinkBlockedError) {
       return res.redirect(oauthErrorRedirect("oauth_email_in_use", req))
     }
+    if (error instanceof PolicyStorageUnavailableError) {
+      console.error("Google sign-up blocked: policy acceptance storage is unavailable")
+      return res.redirect(oauthErrorRedirect("oauth_failed", req))
+    }
     console.error("Google OAuth callback failed:", error instanceof Error ? error.message : error)
     return res.redirect(oauthErrorRedirect("oauth_failed", req))
   }
@@ -181,6 +192,10 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
     return res.status(409).json({ error: "An account with this email already exists" })
+  }
+
+  if (!(await readSchemaCapabilities()).policyAcceptance) {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
   }
 
   try {
@@ -215,6 +230,10 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
       csrfToken: issuedCsrf,
     })
   } catch (error) {
+    if (isMissingSchemaError(error)) {
+      console.error("Signup rolled back: policy acceptance storage is unavailable")
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
     console.error("Signup failed:", error)
     res.status(500).json({ error: "Failed to create account" })
   }

@@ -8,8 +8,21 @@ import {
   saveLearnerPracticeResponse,
 } from "../lib/practice-workspaces/service.js"
 import { PythonRuntimeUnavailable, pythonRuntime } from "../lib/practice-runtime/python.js"
+import { readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
 
 export const practiceRouter = Router()
+
+practiceRouter.use(async (_req, res, next) => {
+  try {
+    if ((await readSchemaCapabilities()).practiceWorkspaces) {
+      next()
+      return
+    }
+    res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.practice))
+  } catch (error) {
+    next(error)
+  }
+})
 
 const slugSchema = z.string().min(1).max(120).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
 

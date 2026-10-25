@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client"
 import { prisma } from "./prisma.js"
 
 /**
@@ -14,6 +15,8 @@ export type SchemaCapabilities = {
   events: boolean
   degrees: boolean
   jobApplicationSharing: boolean
+  practiceWorkspaces: boolean
+  policyAcceptance: boolean
 }
 
 const REQUIRED: Record<keyof SchemaCapabilities, { table: string; columns: string[] }> = {
@@ -24,6 +27,32 @@ const REQUIRED: Record<keyof SchemaCapabilities, { table: string; columns: strin
   events: { table: "Event", columns: ["id"] },
   degrees: { table: "Degree", columns: ["id"] },
   jobApplicationSharing: { table: "JobApplication", columns: ["sharedWithEmployer"] },
+  practiceWorkspaces: { table: "PracticeWorkspace", columns: ["id"] },
+  policyAcceptance: { table: "PolicyAcceptance", columns: ["id"] },
+}
+
+export const UNAVAILABLE_MESSAGES = {
+  degrees: "Degree programmes are not available yet.",
+  employerApplications: "Sharing applications with employers is not available yet.",
+  practice: "Practice workspaces are not available yet.",
+  accounts: "Accounts cannot be created until the database update is applied.",
+  enrolment: "Enrolment is not available until the database update is applied.",
+} as const
+
+export function unavailableBody(error: string) {
+  return { error, code: "unavailable" as const }
+}
+
+/** Prisma reports a missing table as P2021 and a missing column as P2022. */
+export function isMissingSchemaError(error: unknown): boolean {
+  return error instanceof Prisma.PrismaClientKnownRequestError && (error.code === "P2021" || error.code === "P2022")
+}
+
+export class PolicyStorageUnavailableError extends Error {
+  constructor() {
+    super(UNAVAILABLE_MESSAGES.accounts)
+    this.name = "PolicyStorageUnavailableError"
+  }
 }
 
 type ColumnRow = { table_name: string; column_name: string }
@@ -40,6 +69,11 @@ export function capabilitiesFromColumns(rows: readonly ColumnRow[]): SchemaCapab
     events: has("Event", "id"),
     degrees: has("Degree", "id"),
     jobApplicationSharing: has("JobApplication", "sharedWithEmployer"),
+    practiceWorkspaces:
+      has("PracticeWorkspace", "id") &&
+      has("PracticeWorkspaceRevision", "id") &&
+      has("PracticeWorkspaceResponse", "id"),
+    policyAcceptance: has("PolicyAcceptance", "id"),
   }
 }
 
@@ -63,7 +97,11 @@ export async function readSchemaCapabilities(): Promise<SchemaCapabilities> {
         'skylentcertificate',
         'event',
         'degree',
-        'jobapplication'
+        'jobapplication',
+        'practiceworkspace',
+        'practiceworkspacerevision',
+        'practiceworkspaceresponse',
+        'policyacceptance'
       )
   `
   const value = capabilitiesFromColumns(rows)

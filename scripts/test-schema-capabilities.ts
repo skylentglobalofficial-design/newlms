@@ -1,12 +1,17 @@
 import "dotenv/config"
+import { readFileSync } from "node:fs"
+import { Prisma, PrismaClient } from "@prisma/client"
 import { TEST_CONSENT } from "./test-consent-payload.ts"
 import {
   assignmentProgressSelect,
   capabilitiesFromColumns,
   courseCurriculumInclude,
   curriculumNodeSelect,
+  isMissingSchemaError,
   jobApplicationSelect,
   quizQuestionSelect,
+  UNAVAILABLE_MESSAGES,
+  unavailableBody,
 } from "../server/src/lib/schema-capabilities.ts"
 
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
@@ -34,6 +39,12 @@ assert(legacy.events === false, "missing Event table stays off")
 assert(legacy.degrees === false, "missing Degree table stays off")
 assert(legacy.skylentCertificates === false, "missing certificate table stays off")
 assert(legacy.jobApplicationSharing === false, "missing share column stays off")
+assert(legacy.practiceWorkspaces === false, "missing practice tables stay off")
+assert(legacy.policyAcceptance === false, "missing policy table stays off")
+assert(capabilitiesFromColumns([
+  { table_name: "PracticeWorkspace", column_name: "id" },
+  { table_name: "PracticeWorkspaceRevision", column_name: "id" },
+]).practiceWorkspaces === false, "practice stays unavailable until every practice table exists")
 
 const current = capabilitiesFromColumns([
   { table_name: "CurriculumNode", column_name: "maxAttempts" },
@@ -47,8 +58,49 @@ const current = capabilitiesFromColumns([
   { table_name: "Degree", column_name: "id" },
   { table_name: "SkylentCertificate", column_name: "id" },
   { table_name: "JobApplication", column_name: "sharedWithEmployer" },
+  { table_name: "PracticeWorkspace", column_name: "id" },
+  { table_name: "PracticeWorkspaceRevision", column_name: "id" },
+  { table_name: "PracticeWorkspaceResponse", column_name: "id" },
+  { table_name: "PolicyAcceptance", column_name: "id" },
 ])
 assert(Object.values(current).every(Boolean), "a fully migrated schema enables every capability")
+assert(current.practiceWorkspaces && current.policyAcceptance, "practice and policy storage are enabled together")
+
+const missingTable = new Prisma.PrismaClientKnownRequestError("missing", { code: "P2021", clientVersion: "test" })
+const missingColumn = new Prisma.PrismaClientKnownRequestError("missing", { code: "P2022", clientVersion: "test" })
+assert(isMissingSchemaError(missingTable) && isMissingSchemaError(missingColumn), "missing relations are schema errors")
+assert(!isMissingSchemaError(new Error("Failed to enroll")), "ordinary failures are not schema errors")
+for (const message of Object.values(UNAVAILABLE_MESSAGES)) {
+  const body = unavailableBody(message)
+  assert(body.code === "unavailable" && body.error === message && !("data" in body), "unavailable responses name the gap and do not invent an empty list")
+}
+
+const employerRoute = readFileSync(new URL("../server/src/routes/career/employer-jobs.ts", import.meta.url), "utf8")
+assert(employerRoute.includes("UNAVAILABLE_MESSAGES.employerApplications"), "employer applications name the missing share column")
+assert(employerRoute.includes("res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerApplications))"), "employer applications return 503 when sharing is unavailable")
+assert(!employerRoute.includes("res.json({ data: [] })"), "a missing share column must not look like zero applicants")
+
+const degreeRoute = readFileSync(new URL("../server/src/routes/degrees.ts", import.meta.url), "utf8")
+assert(degreeRoute.includes("unavailableBody(UNAVAILABLE_MESSAGES.degrees)"), "degree routes share one unavailable response")
+assert(!degreeRoute.includes('req.path === "/setup-status"'), "a missing Degree table must not be reported as an empty catalogue")
+
+const mediaRoute = readFileSync(new URL("../server/src/routes/admin-media.ts", import.meta.url), "utf8")
+assert(mediaRoute.includes("select: curriculumNodeSelect(quizLimits)"), "lesson media updates select only columns that exist")
+assert(!("maxAttempts" in curriculumNodeSelect(false)), "that select omits grading columns before the quiz migration")
+
+const practiceRoute = readFileSync(new URL("../server/src/routes/practice.ts", import.meta.url), "utf8")
+const practiceAdminRoute = readFileSync(new URL("../server/src/routes/practice-admin.ts", import.meta.url), "utf8")
+assert(practiceRoute.includes("unavailableBody(UNAVAILABLE_MESSAGES.practice)"), "learner practice is unavailable without its tables")
+assert(practiceAdminRoute.includes('"/practice-workspaces"') && practiceAdminRoute.includes("unavailableBody(UNAVAILABLE_MESSAGES.practice)"), "admin practice is gated without catching other admin routes")
+
+const authRoute = readFileSync(new URL("../server/src/routes/auth.ts", import.meta.url), "utf8")
+const lmsRoute = readFileSync(new URL("../server/src/routes/lms.ts", import.meta.url), "utf8")
+const signupAt = authRoute.indexOf("if (!(await readSchemaCapabilities()).policyAcceptance)")
+const createUserAt = authRoute.indexOf("tx.user.create")
+assert(signupAt > 0 && createUserAt > signupAt, "signup checks policy storage before creating a user")
+assert(authRoute.includes("recordPolicyAcceptance"), "signup still records acceptance inside the account transaction")
+assert(lmsRoute.includes("UNAVAILABLE_MESSAGES.enrolment"), "new enrolment stops when policy storage is missing")
+assert(lmsRoute.includes("recordPolicyAcceptance"), "enrolment still records acceptance in the same transaction")
 
 const nodeSelect = curriculumNodeSelect(false)
 assert(!("maxAttempts" in nodeSelect) && !("passingScore" in nodeSelect), "legacy node select omits quiz limits")
@@ -118,6 +170,27 @@ async function main() {
   const enrollments = await request(jar, "/lms/enrollments")
   assert(enrollments.response.status === 200, `enrollments failed: ${enrollments.response.status}`)
   assert(Array.isArray(enrollments.data?.data) && enrollments.data.data.length === 0, "a new account must have zero enrolments")
+
+  const prisma = new PrismaClient()
+  try {
+    const created = await prisma.user.findUnique({ where: { email }, select: { id: true } })
+    assert(created, "signup must persist the account when policy storage exists")
+    const acceptances = await prisma.policyAcceptance.count({ where: { userId: created.id, context: "signup" } })
+    const enrolmentRows = await prisma.userEnrollment.count({ where: { userId: created.id } })
+    assert(acceptances === 1, "signup must record one policy acceptance and not skip it")
+    assert(enrolmentRows === 0, "signup must not create an enrolment")
+  } finally {
+    await prisma.$disconnect()
+  }
+
+  const setup = await request(new Map(), "/degrees/setup-status")
+  assert(setup.response.status === 200, `setup-status on a migrated database failed: ${setup.response.status}`)
+  assert(setup.data?.unavailable !== true, "an existing Degree table must not be described as unavailable")
+  assert(typeof setup.data?.isEmpty === "boolean", "setup-status reports emptiness only after the table can be read")
+
+  const practice = await request(new Map(), "/practice/workspaces/data-analytics")
+  assert(practice.response.status === 401, `practice with its tables present must ask for sign-in, got ${practice.response.status}`)
+  assert(practice.data?.code !== "unavailable", "practice must not claim the tables are missing when they exist")
 
   const events = await request(jar, "/events")
   assert(events.response.ok, `events list failed on a migrated database: ${events.response.status} ${JSON.stringify(events.data)}`)

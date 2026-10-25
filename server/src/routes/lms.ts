@@ -12,7 +12,13 @@ import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
 import { isAuthoredCourse, isAuthoredProgramme } from "../lib/authored-courses.js"
 import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import { answersInOptionRange, QuizAttemptThrottled, QuizMaxAttemptsExceeded, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
-import { quizQuestionSelect, readSchemaCapabilities } from "../lib/schema-capabilities.js"
+import {
+  isMissingSchemaError,
+  quizQuestionSelect,
+  readSchemaCapabilities,
+  UNAVAILABLE_MESSAGES,
+  unavailableBody,
+} from "../lib/schema-capabilities.js"
 import {
   assertLessonUnlocked,
   buildCourseWorkspace,
@@ -226,6 +232,9 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
       // A new enrolment needs the terms accepted in this request. Opening an existing one (above) does not.
       const consent = readConsent(req.body)
       if (!consent.ok) return res.status(consent.status).json(consent.body)
+      if (!(await readSchemaCapabilities()).policyAcceptance) {
+        return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
+      }
       const enrollment = await prisma.$transaction(async (tx) => {
         const created = await tx.userEnrollment.create({
           data: { userId, programId: program.id, status: "active" },
@@ -262,6 +271,9 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
 
     const consent = readConsent(req.body)
     if (!consent.ok) return res.status(consent.status).json(consent.body)
+    if (!(await readSchemaCapabilities()).policyAcceptance) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
+    }
     const enrollment = await prisma.$transaction(async (tx) => {
       const created = await tx.userEnrollment.create({
         data: { userId, courseId: course.id, status: "active" },
@@ -277,6 +289,10 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
     const workspace = await buildCourseWorkspace({ ...enrollment, course })
     return res.status(201).json({ data: await attachProgramWorkspace(userId, workspace, null, course.id) })
   } catch (error) {
+    if (isMissingSchemaError(error)) {
+      console.error("Enrolment rolled back: policy acceptance storage is unavailable")
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
+    }
     console.error("Failed to enroll:", error)
     res.status(500).json({ error: "Failed to enroll" })
   }

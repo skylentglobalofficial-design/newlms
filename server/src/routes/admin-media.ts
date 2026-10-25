@@ -5,6 +5,7 @@ import { prisma } from "../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { requireRoles } from "../lib/roles.js"
 import { findCourseBySlug, findNodeByLessonKey, formatVideoMedia } from "../lib/lms.js"
+import { curriculumNodeSelect, readSchemaCapabilities } from "../lib/schema-capabilities.js"
 import { isMuxPlaybackId, muxPlaybackIdSchemaMessage } from "../lib/media/playback-id.js"
 import { validationError } from "../lib/career/shared.js"
 
@@ -39,9 +40,11 @@ adminMediaRouter.patch(
       if (!located || located.node.nodeType !== CurriculumNodeType.VIDEO) {
         return res.status(404).json({ error: "Video lesson not found" })
       }
+      const quizLimits = (await readSchemaCapabilities()).curriculumNodeQuizLimits
       const node = await prisma.curriculumNode.update({
         where: { id: located.node.id },
         data: { muxPlaybackId: body.data.muxPlaybackId },
+        select: curriculumNodeSelect(quizLimits),
       })
       res.json({
         data: {
