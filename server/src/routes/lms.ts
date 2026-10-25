@@ -13,6 +13,7 @@ import { isAuthoredCourse, isAuthoredProgramme } from "../lib/authored-courses.j
 import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import { answersInOptionRange, QuizAttemptThrottled, QuizMaxAttemptsExceeded, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
 import {
+  isDatabaseUnavailableError,
   isMissingSchemaError,
   quizQuestionSelect,
   readSchemaCapabilities,
@@ -93,6 +94,19 @@ const assignmentPatchSchema = z.object({
 
 async function requireEnrollment(userId: string, courseId: string) {
   return resolveCourseEnrollment(userId, courseId)
+}
+
+/** New enrolments only. Returns false after sending 503. Does not create a row. */
+async function newEnrolmentPolicyReady(res: import("express").Response): Promise<boolean> {
+  try {
+    if ((await readSchemaCapabilities()).policyAcceptance) return true
+  } catch (error) {
+    console.error("Enrolment blocked: policy storage could not be checked:", error instanceof Error ? error.message : "schema check failed")
+    res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
+    return false
+  }
+  res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
+  return false
 }
 
 async function loadQuizQuestions(nodeId: string) {
@@ -232,9 +246,7 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
       // A new enrolment needs the terms accepted in this request. Opening an existing one (above) does not.
       const consent = readConsent(req.body)
       if (!consent.ok) return res.status(consent.status).json(consent.body)
-      if (!(await readSchemaCapabilities()).policyAcceptance) {
-        return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
-      }
+      if (!(await newEnrolmentPolicyReady(res))) return
       const enrollment = await prisma.$transaction(async (tx) => {
         const created = await tx.userEnrollment.create({
           data: { userId, programId: program.id, status: "active" },
@@ -271,9 +283,7 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
 
     const consent = readConsent(req.body)
     if (!consent.ok) return res.status(consent.status).json(consent.body)
-    if (!(await readSchemaCapabilities()).policyAcceptance) {
-      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
-    }
+    if (!(await newEnrolmentPolicyReady(res))) return
     const enrollment = await prisma.$transaction(async (tx) => {
       const created = await tx.userEnrollment.create({
         data: { userId, courseId: course.id, status: "active" },
@@ -289,8 +299,8 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
     const workspace = await buildCourseWorkspace({ ...enrollment, course })
     return res.status(201).json({ data: await attachProgramWorkspace(userId, workspace, null, course.id) })
   } catch (error) {
-    if (isMissingSchemaError(error)) {
-      console.error("Enrolment rolled back: policy acceptance storage is unavailable")
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      console.error("Enrolment blocked: policy storage could not be checked:", error instanceof Error ? error.message : "schema check failed")
       return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
     }
     console.error("Failed to enroll:", error)

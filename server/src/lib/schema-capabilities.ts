@@ -48,6 +48,12 @@ export function isMissingSchemaError(error: unknown): boolean {
   return error instanceof Prisma.PrismaClientKnownRequestError && (error.code === "P2021" || error.code === "P2022")
 }
 
+/** The capability probe could not reach Postgres. This is not a rejected enrolment. */
+export function isDatabaseUnavailableError(error: unknown): boolean {
+  if (error instanceof Prisma.PrismaClientInitializationError) return true
+  return error instanceof Prisma.PrismaClientKnownRequestError && (error.code === "P1001" || error.code === "P1017")
+}
+
 export class PolicyStorageUnavailableError extends Error {
   constructor() {
     super(UNAVAILABLE_MESSAGES.accounts)
