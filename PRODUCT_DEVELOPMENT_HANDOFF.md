@@ -1,8 +1,8 @@
 # Product development handoff
 
-Date: 25 October 2026, about 22:00 IST (Asia/Calcutta, UTC+5:30).
+Date: 25 October 2026, about 22:00 IST (Asia/Calcutta, UTC+5:30). Operator checks below were confirmed from the repository and a public read at 23:14 IST the same day.
 
-This work is not a production deployment. Production release remains **BLOCKED**. Do not restart Hostinger. Do not run `npm start` or `node server.js` against production. Do not run production migrations.
+This work is not a production deployment. Production release remains **BLOCKED**. Do not restart Hostinger. Do not run `npm start` or `node server.js` against production. Do not run production migrations. Backup investigation was deferred by the owner. It is still required before any migration, and this update does not add backup steps.
 
 ## What a founder can use
 
@@ -134,14 +134,99 @@ Use a local database, not production.
 6. Refund the payment. Confirm the balance does not go negative and the ledger still shows the reversal.
 7. Open an enrolled lesson. With no AI key, the ask is HTTP 503 `not_configured`. With a key, an enrolled unlocked lesson returns an answer and a locked lesson does not.
 
+## Operator checks, 25 October 2026, 23:14 IST
+
+`origin/main` is merge commit `209f43b5b12b5fd383aa4eca72f80b0f6fb2674f`. Its tree matches `fc10eeac42134943fe70594e0deb21439da3bf13`. The working tree used for this note was clean. Production credentials are not configured in this environment: both the process and `.env` point at local database `skylent_agent_tmp` on port 5432, not a Supabase pooler. `npm run db:preflight` was not run.
+
+Public reads, no login and no database connection:
+
+- `GET https://skylent.live/api/v1/health` returned HTTP 503 `{"status":"error","db":"ok","migrations":"pending","pendingMigrations":8,"failedMigrations":0}`. Names were omitted. Headers said Hostinger.
+- `GET https://skylent.live/` returned HTTP 200 and `/assets/index-DI03b6xv.js`. That hash is not in git, so it does not prove the SHA.
+- `GET /api/v1/elixir` and `GET /api/v1/admin/elixir/rules` returned HTTP 503 `code: unavailable`. The Elixir tables are not visible to the running app.
+- `GET /api/v1/admin/ai` without a session returned HTTP 401. The route exists and does not show configuration to an anonymous caller.
+- `GET https://api.skylent.live/api/v1/health` returned Hostinger’s HTML 503, “The server is temporarily busy.”
+
+### Read-only production preflight
+
+`npm run db:preflight` runs `tsx scripts/check-migration-history.ts`. It opens one `READ ONLY` transaction, reads `_prisma_migrations`, and prints host, database name, pending names, failed rows, and production-only rows. The error path replaces the URL text with `<DATABASE_URL>`. It does not print the user or password. It does not check the port. `READY` is not approval to migrate, and it does not flag the `ProgramCourse` insert.
+
+`import "dotenv/config"` loads a local `.env` only for variables that are not already set. An exported `DIRECT_URL` wins. If the operator forgets to export it, a checkout that contains `.env` will inspect that file’s database.
+
+An authorized operator, on a trusted machine, from commit `209f43b5b12b5fd383aa4eca72f80b0f6fb2674f`:
+
+1. Put the production session-pooler URL in the shell as `DIRECT_URL`. Take it from the host’s secret store. Do not paste it into chat, a ticket, or a shell history that is shared. The shape is `postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres`. The user is `postgres.<ref>`. The port is **5432**.
+2. Before the preflight, print only host, port, and database name. Stop unless the host ends with `.pooler.supabase.com`, the port is `5432`, and the database name is the intended project. Stop for `localhost`, `127.0.0.1`, port `6543`, or host `db.<ref>.supabase.co`.
+3. Run `npm run db:preflight` and record the exit code.
+4. Keep the host line, the database name, every `pending`, `FAILED`, and `production-only` line, and the final `READY`, `OK`, or `BLOCKED` line. Discard the URL.
+
+Stop the release if the exit code is not 0, any row is `FAILED`, any row is `production-only, UNKNOWN`, or the pending names are not exactly:
+
+1. `20261004000000_skylent_additions`
+2. `20261004180000_backfill_program_course_links`
+3. `20261009000000_policy_acceptance`
+4. `20261011000000_employer_membership_and_shared_applications`
+5. `20261017120000_practice_workspaces`
+6. `20261024120000_quiz_grading_events`
+7. `20261024140000_password_reset_and_degrees`
+8. `20261025180000_elixir_ledger_and_admin_audit`
+
+The four history rows that should appear as `production-only, expected`, and must not be deleted or resolved, are `20260906190000_lesson_materials`, `20260907100000_lesson_material_upload_status`, `20260907120000_curriculum_node_notes_body`, and `20260907140000_assignment_attachment_upload_status`.
+
+After a later approved migrate, the same command with `--expect-none` must exit 0 and print `OK: database schema matches this release.`
+
+### Hostinger startup command
+
+Repository evidence is not the live setting. `package.json` `"start"` is `node server.js`. `server.js` runs `prisma migrate deploy` and exits without starting the API if migrate fails. `node server/dist/index.js` does not migrate. `railway.json` is Railway, not Hostinger.
+
+What proves the live command is a screenshot of the Node.js application that serves `https://skylent.live`, with every environment value covered. Record only:
+
+- The startup command or entry file, character for character.
+- The selected Node.js version. This repository expects Node.js 22 or newer.
+- The deployed git commit, branch, or upload time, whichever the panel shows.
+
+The panel is hPanel → the Node.js app for `skylent.live`. Do the same if a separate app exists for `api.skylent.live`. At 23:14 IST that hostname was not serving the Node health JSON.
+
+If the command is `npm start` or `node server.js`, the next restart applies migrations. The process that answered at 23:14 IST was already running with 8 pending migrations, so that boot did not finish `prisma migrate deploy`. That does not identify the command configured for the next start.
+
+### Skylent AI configuration, without the key
+
+`GET /api/v1/admin/ai` is limited to a signed-in super admin. The JSON from `readAiDiagnostics()` is only:
+
+- `configured`: boolean from `isAiConfigured()`
+- `provider`: the lowercase `SKYLENT_AI_PROVIDER`, or `unset`
+- `keyPresent`: true when `SKYLENT_AI_API_KEY` is non-empty
+- `lastFailure`: a code and time for this process, or null
+
+The key, base URL, and model are not in that response. An anonymous call is 401, which was observed. It does not say whether a key is set.
+
+A super admin, in a browser already signed in on `https://skylent.live`, opens the admin dashboard’s Skylent AI section or requests `GET /api/v1/admin/ai` with the existing session. Record those four fields. Do not copy any value that looks like a key. In hPanel, with the value covered, also record whether `SKYLENT_AI_API_KEY` is non-empty, the provider string, and that `SKYLENT_AI_BASE_URL` is an `https` URL. The model name is not a secret. Do not set `SKYLENT_AI_ALLOW_GROUNDED`.
+
+How to read the result:
+
+- `provider` `off` or `none`: not configured, even if a key is present.
+- `provider` `lesson-grounded`: configured in production only when `SKYLENT_AI_ALLOW_GROUNDED=1`. Leave that unset. Lesson AI then stays off.
+- Any other provider, including `unset`: `configured` is true only when `keyPresent` is true. A key with an invalid base URL can still show `configured: true`, because `isAiConfigured()` checks the key and `resolveAiProvider()` rejects the URL later. Confirm the base URL in the panel without copying it.
+- The public site chat at `POST /api/v1/reva/chat` requires a key even when the lesson assistant is on `lesson-grounded`. A working programme finder does not mean the lesson model is configured.
+
+### CI coverage for Elixir
+
+[Release-gate run 40212150967](https://github.com/skylentglobalofficial-design/newlms/actions/runs/40212150967) succeeded for `fc10eea`. The merge commit has no Actions run, because the workflow does not run on a push to `main`. The gate applies every migration folder, including the Elixir migration, to throwaway Postgres, then runs `db:preflight --expect-none`. It does not run `npm run test:elixir`.
+
+Minimum addition, in `.github/workflows/release-gate.yml`, after the API is up on port 3099:
+
+- Assert `prisma/migrations/20261025180000_elixir_ledger_and_admin_audit` exists beside the other October folders.
+- Run `npm run test:elixir` with the workflow’s existing `DATABASE_URL` and `API_BASE=http://127.0.0.1:3099/api/v1`.
+
+That script checks the ₹100 → 10 formula, duplicate payment references, the quiz threshold, cooldown, one concurrent purchase, a refund that does not go negative, a student forbidden from admin Elixir routes, and lesson AI access before and after enrolment. It is not in the gate today. This note does not change the workflow.
+
 ## Production prerequisites
 
 Still required before any production use:
 
-1. Do not deploy this branch until a human has a restorable backup, a read-only production preflight, the Hostinger start command, and a written decision on the `ProgramCourse` backfill. See `PRODUCTION_HANDOFF.md` on PR #205.
-2. Apply `20261025180000_elixir_ledger_and_admin_audit` only after that preflight includes this new name and the operator approves it.
-3. Confirm the Hostinger start command. `npm start` runs migrations.
-4. Set `SKYLENT_AI_PROVIDER` and `SKYLENT_AI_API_KEY` on the server if lesson AI should call a model. Do not paste the key into chat. Do not set `SKYLENT_AI_ALLOW_GROUNDED` in production.
+1. Do not restart Hostinger and do not migrate until the read-only preflight above has been recorded, the startup command is known, and a person has approved the `ProgramCourse` backfill. The owner deferred backup investigation. A restorable backup is still required before the migrate itself.
+2. Apply `20261025180000_elixir_ledger_and_admin_audit` only after that preflight lists it as pending and the operator approves the set.
+3. Confirm the Hostinger start command from the hPanel screenshot described above. `npm start` and `node server.js` run migrations.
+4. Verify Skylent AI with `GET /api/v1/admin/ai` as a super admin. Record `configured`, `provider`, and `keyPresent` only. Do not paste the key. Do not set `SKYLENT_AI_ALLOW_GROUNDED` in production.
 5. Create the first super admin with the existing bootstrap script. Do not promote a normal learner by hand in the database.
 6. Leave learning-reward amounts at 0 until someone chooses them.
 7. Do not start A/B tests.
