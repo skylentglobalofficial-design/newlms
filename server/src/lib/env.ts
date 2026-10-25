@@ -28,6 +28,25 @@ function urlHost(value: string | undefined): string | null {
   }
 }
 
+function urlPort(value: string | undefined): string | null {
+  if (!value?.trim()) return null
+  try {
+    return new URL(value).port || "5432"
+  } catch {
+    return null
+  }
+}
+
+/** Replace known secret values before a message is logged. Never returns the original URL. */
+export function redactSecrets(message: string, env: NodeJS.ProcessEnv = process.env): string {
+  let redacted = message
+  for (const key of ["DATABASE_URL", "DIRECT_URL", "SKYLENT_AI_API_KEY", "SESSION_SECRET"] as const) {
+    const value = env[key]?.trim()
+    if (value && value.length >= 8) redacted = redacted.split(value).join(`<${key}>`)
+  }
+  return redacted
+}
+
 /** Settings that start fine but are unsafe or unreachable on the public HTTPS host. Values are never echoed. */
 export function productionEnvWarnings(env: NodeJS.ProcessEnv = process.env): string[] {
   if (!isProduction(env)) return []
@@ -44,6 +63,9 @@ export function productionEnvWarnings(env: NodeJS.ProcessEnv = process.env): str
     if (host && /^db\.[^.]+\.supabase\.co$/i.test(host)) {
       warnings.push(`${key} uses the Supabase direct host, which is IPv6-only. Hosts without IPv6 (Hostinger) need the session pooler.`)
     }
+  }
+  if (urlPort(env.DIRECT_URL) === "6543") {
+    warnings.push("DIRECT_URL uses port 6543, the transaction pooler. Migrations need the session pooler on port 5432.")
   }
   return warnings
 }

@@ -22,6 +22,7 @@
     "db:seed": "prisma db seed",
     "db:seed:career": "tsx prisma/seed-career.ts",
     "db:preflight": "tsx scripts/check-migration-history.ts",
+    "smoke:public": "tsx scripts/smoke-public.ts",
     "test:auth": "tsx scripts/test-auth.ts",
     "test:consent": "tsx scripts/test-consent.ts",
     "test:certificate-verify": "tsx scripts/test-certificate-verify.ts",

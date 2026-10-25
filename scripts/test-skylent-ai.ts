@@ -54,6 +54,7 @@ import {
 import {
   answerLessonQuestion,
   completeLessonAsk,
+  describeAiReadiness,
   isAiConfigured,
   readProviderTimeoutMs,
   resolveAiProvider,
@@ -356,6 +357,8 @@ async function main() {
     SKYLENT_AI_ALLOW_GROUNDED: "1",
   }, () => {
     assert(isAiConfigured(), "explicit grounded override is allowed")
+    const preview = describeAiReadiness()
+    assert(preview.reason === "grounded_preview" && preview.publicStatus === "preview", "production grounded override is labelled preview, not a vendor model")
   })
   withEnv({ SKYLENT_AI_PROVIDER: "openai-compatible", SKYLENT_AI_API_KEY: undefined }, () => {
     assert(!isAiConfigured(), "openai-compatible without a key must stay unavailable")
@@ -369,6 +372,9 @@ async function main() {
     () => {
       assert(isAiConfigured(), "a key means configured even if the URL is later rejected")
       assert(resolveAiProvider() === null, "invalid base URL must not build a provider")
+      const readiness = describeAiReadiness()
+      assert(readiness.providerReady === false && readiness.reason === "invalid_base_url", "diagnostics must not call an invalid URL ready")
+      assert(!JSON.stringify(readiness).includes("sk-test"), "diagnostics must not include the key")
     },
   )
   withEnv({ SKYLENT_AI_TIMEOUT_MS: "15000" }, () => {

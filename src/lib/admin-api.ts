@@ -202,7 +202,7 @@ export function fetchAdminReports() {
 }
 
 export function fetchAdminAi() {
-  return adminGet<{ data: { configured: boolean; provider: string; keyPresent: boolean; lastFailure: { at: string; code: string } | null } }>("/admin/ai")
+  return adminGet<{ data: { configured: boolean; provider: string; keyPresent: boolean; reason: string; lastFailure: { at: string; code: string } | null } }>("/admin/ai")
 }
 
 export function fetchAdminAudit() {

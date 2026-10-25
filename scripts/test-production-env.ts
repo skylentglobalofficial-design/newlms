@@ -46,6 +46,14 @@ assert(unsafe.some((w) => w.startsWith("FRONTEND_URL")), "http FRONTEND_URL must
 assert(unsafe.some((w) => w.startsWith("DIRECT_URL uses the Supabase direct host")), "IPv6-only direct host must warn")
 assert(!unsafe.join(" ").includes("secret-value"), "warnings must never echo credentials")
 
+const transactionDirect = productionEnvWarnings({
+  NODE_ENV: "production",
+  FRONTEND_URL: "https://skylent.live",
+  DIRECT_URL: "postgresql://u:p@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres",
+})
+assert(transactionDirect.some((w) => w.includes("port 6543")), "DIRECT_URL on the transaction pooler must warn")
+assert(!transactionDirect.join(" ").includes("postgresql://"), "port warning must not echo the URL")
+
 assert(productionEnvWarnings({ NODE_ENV: "test", COOKIE_SECURE: "false" }).length === 0, "warnings are production-only")
 
 console.log("production-env ok")

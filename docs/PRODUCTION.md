@@ -85,7 +85,7 @@ Before deploying to an existing database, run the read-only preflight with the p
 npm run db:preflight
 ```
 
-It opens one `READ ONLY` transaction, prints only the host and database name, and exits `0` (ready), `1` (blocked) or `2` (could not check). It blocks on a failed migration, an unrecognised applied migration, destructive SQL in a pending migration, or a pending migration that creates a table or enum that already exists. After the deploy, `npm run db:preflight -- --expect-none` must exit `0`.
+It opens one `READ ONLY` transaction, prints the host, database name, target class, and migration names, and ends with `DECISION: PASS` or `DECISION: BLOCKED`. It exits `0` (pass), `1` (blocked) or `2` (could not check). It blocks on a failed migration, an unrecognised applied migration, destructive SQL in a pending migration, or a pending migration that creates a table or enum that already exists. `npm run db:preflight -- --production` refuses every target except the Supabase session pooler on port 5432, and it does not connect when the target is wrong. A pending `ProgramCourse` backfill is printed as `REVIEW`; with `--production` it blocks until `--approve-backfill` is also passed. After the deploy, `npm run db:preflight -- --expect-none` must exit `0`.
 
 Production has four applied migrations that are not in `prisma/migrations` (`20260906190000_lesson_materials`, `20260907100000_lesson_material_upload_status`, `20260907120000_curriculum_node_notes_body`, `20260907140000_assignment_attachment_upload_status`). Their SQL is kept, for reference and tests only, in `scripts/fixtures/production-only-migrations/`. Do not delete, rename, re-create or `migrate resolve` them. Because of them, `prisma migrate status` exits `1` against production. That is expected and is not a blocker. `migrate deploy` ignores them and applies only the pending local migrations. `npm run test:migration-replay` proves this against a local scratch database.
 
@@ -124,8 +124,8 @@ The process binds `0.0.0.0:$PORT`, serves `/api/v1/*`, then the client `dist/` w
 
 `GET /api/v1/health`
 
-- `200` `{ "status": "ok", "db": "ok", "migrations": "ok" }` — process and Postgres responded, and every local migration is applied.
-- `200` with `"migrations": "unknown"` — the migration table could not be read; the database itself answered.
+- `200` `{ "status": "ok", "db": "ok", "migrations": "ok", "ai": "configured"|"preview"|"not_configured", "release": "<sha>|unknown" }` — process and Postgres responded, and every local migration is applied. `ai` is separate: `not_configured` does not by itself fail this check. `release` is `SKYLENT_RELEASE_SHA` when that value is a git SHA, otherwise `unknown`.
+- `503` with `"migrations": "unknown"` — Postgres answered `SELECT 1`, but the migration table could not be read. Do not treat the process as ready.
 - `503` `{ "status": "error", "db": "ok", "migrations": "pending", "pendingMigrations": N, "failedMigrations": N }` — the running code is newer than the schema (for example the API was started with `node server/dist/index.js` and nothing migrated). Do not send traffic. Names are listed only outside production; the startup log names them in every environment.
 - `503` `{ "status": "error", "db": "error" }` — do not send traffic.
 

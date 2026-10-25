@@ -3,6 +3,7 @@
  *
  *   npm run db:preflight                 # before: exit 0 when pending migrations can be applied safely
  *   npm run db:preflight -- --expect-none  # after: exit 0 only when nothing is pending
+ *   npm run db:preflight -- --production   # refuse any target except the session pooler on port 5432
  *
  * Uses DIRECT_URL (falls back to DATABASE_URL) inside a READ ONLY transaction.
  * Prints the database host only, never credentials. Never resolves, deletes or edits migration history.
@@ -10,6 +11,7 @@
 import "dotenv/config"
 import { PrismaClient } from "@prisma/client"
 
+import { classifyDatabaseTarget } from "../server/src/lib/database-target.ts"
 import {
   classifyMigrationHistory,
   createdObjects,
@@ -20,19 +22,27 @@ import {
 } from "../server/src/lib/migration-history.ts"
 
 const expectNone = process.argv.includes("--expect-none")
+const requireProduction = process.argv.includes("--production")
+const approveBackfill = process.argv.includes("--approve-backfill")
+const BACKFILL = "20261004180000_backfill_program_course_links"
 const url = process.env.DIRECT_URL?.trim() || process.env.DATABASE_URL?.trim()
 if (!url) {
   console.error("Set DIRECT_URL or DATABASE_URL to the database to inspect.")
+  console.log("\nDECISION: BLOCKED")
   process.exit(2)
 }
 
-let host = "unknown"
-let database = "unknown"
-try {
-  const parsed = new URL(url)
-  host = parsed.host
-  database = parsed.pathname.replace(/^\//, "") || "unknown"
-} catch {}
+const target = classifyDatabaseTarget(url)
+const host = target.host
+const database = target.database
+if (requireProduction && !target.sessionPooler) {
+  console.log(`Database host: ${host}  database: ${database}`)
+  console.log(`Target: ${target.class}  port: ${target.port}`)
+  console.log("\nBLOCKED:")
+  console.log("  - Production preflight requires the Supabase session pooler on port 5432.")
+  console.log("\nDECISION: BLOCKED")
+  process.exit(1)
+}
 
 const prisma = new PrismaClient({ datasources: { db: { url } } })
 
@@ -66,7 +76,9 @@ async function main() {
   const blockers: string[] = []
 
   console.log(`Database host: ${host}  database: ${database}`)
+  console.log(`Target: ${target.class}  port: ${target.port}`)
   console.log(`Release migrations: ${report.local.length}  applied: ${report.applied.length}  pending: ${report.pending.length}`)
+  for (const name of report.applied) console.log(`  applied  ${name}`)
 
   if (rows.length === 0) blockers.push('"_prisma_migrations" is missing or empty. This is not the production database, or it was never migrated.')
 
@@ -90,10 +102,16 @@ async function main() {
   }
 
   if (expectNone && report.pending.length > 0) blockers.push(`${report.pending.length} migration(s) still pending after deploy.`)
+  if (report.pending.includes(BACKFILL)) {
+    const review = `${BACKFILL} inserts ProgramCourse rows and can widen access for existing programme enrolments.`
+    if (requireProduction && !approveBackfill) blockers.push(`${review} Re-run with --approve-backfill only after a person accepts that.`)
+    else console.log(`  REVIEW   ${review} PASS does not approve it.`)
+  }
 
   if (blockers.length > 0) {
     console.log("\nBLOCKED:")
     for (const b of blockers) console.log(`  - ${b}`)
+    console.log("\nDECISION: BLOCKED")
     process.exitCode = 1
     return
   }
@@ -102,12 +120,14 @@ async function main() {
       ? "\nOK: database schema matches this release."
       : `\nREADY: ${report.pending.length} additive migration(s) can be applied with \`npx prisma migrate deploy\`.`,
   )
+  console.log("\nDECISION: PASS")
 }
 
 main()
   .catch((error) => {
     const message = error instanceof Error ? error.message : String(error)
     console.error(`Preflight failed against host ${host}: ${message.split(url).join("<DATABASE_URL>")}`)
+    console.log("\nDECISION: BLOCKED")
     process.exitCode = 2
   })
   .finally(() => prisma.$disconnect())

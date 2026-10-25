@@ -40,7 +40,7 @@ export default function AdminPlatform() {
     } else setReports("Reports could not be loaded.")
     if (aiResult.status === "fulfilled") {
       const data = aiResult.value.data
-      setAi(`Provider ${data.provider}. Configured: ${data.configured ? "yes" : "no"}. Key present: ${data.keyPresent ? "yes" : "no"}. Last failure: ${data.lastFailure ? `${data.lastFailure.code} at ${data.lastFailure.at}` : "none in this process"}.`)
+      setAi(`Provider ${data.provider}. Ready: ${data.configured ? "yes" : "no"} (${data.reason}). Key present: ${data.keyPresent ? "yes" : "no"}. Last failure: ${data.lastFailure ? `${data.lastFailure.code} at ${data.lastFailure.at}` : "none in this process"}.`)
     } else setAi("Skylent AI status could not be loaded.")
     if (auditResult.status === "fulfilled") {
       setAudit(auditResult.value.data.slice(0, 8).map((row) => `${row.createdAt} ${row.action}: ${row.summary}`).join("\n") || "No audit rows yet.")

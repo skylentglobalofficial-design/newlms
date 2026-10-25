@@ -1,4 +1,5 @@
 import { prisma } from "./prisma.js"
+import { redactSecrets } from "./env.js"
 import { classifyMigrationHistory, listLocalMigrations, type MigrationRow } from "./migration-history.js"
 
 export type MigrationGuardState =
@@ -45,7 +46,7 @@ export async function logMigrationStateOnStartup(): Promise<void> {
   const state = await checkMigrationState()
   if (state.status === "ok") return
   if (state.status === "unknown") {
-    console.warn(`Migration check skipped: ${state.reason}`)
+    console.warn(`Migration check skipped: ${redactSecrets(state.reason)}`)
     return
   }
   console.error(
