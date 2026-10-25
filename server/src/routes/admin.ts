@@ -13,6 +13,7 @@ import {
   type AuthenticatedRequest,
 } from "../lib/auth.js"
 import { requireRoles } from "../lib/roles.js"
+import { recordAdminAudit } from "../lib/admin-audit.js"
 
 export const adminRouter = Router()
 
@@ -277,6 +278,13 @@ adminRouter.patch("/users/:id/role", ...guards, requireCsrf, async (req: Authent
     console.log(
       `[role-change] actor=${actor.id} target=${target.id} from=${heldRoleNames.join(",") || "none"} to=${nextRoleName}`,
     )
+    await recordAdminAudit({
+      actorId: actor.id,
+      action: "user.role.replace",
+      targetType: "User",
+      targetId: target.id,
+      summary: `Role set to ${parsed.data.role}`,
+    })
 
     const updated = await loadUser(target.id)
     res.json({ data: serializeUser(updated!) })
@@ -333,6 +341,13 @@ adminRouter.delete("/users/:id/role", ...guards, requireCsrf, async (req: Authen
     console.log(
       `[role-change] actor=${actor.id} target=${target.id} from=${heldRoleNames.join(",") || "none"} to=${RoleName.STUDENT}`,
     )
+    await recordAdminAudit({
+      actorId: actor.id,
+      action: "user.role.reset_student",
+      targetType: "User",
+      targetId: target.id,
+      summary: "Role reset to student",
+    })
 
     const updated = await loadUser(target.id)
     res.json({ data: serializeUser(updated!) })

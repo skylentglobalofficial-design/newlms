@@ -17,6 +17,7 @@ import {
 import { findProjectForCourse, listLearnerProjects, learnerProjectPath, projectStatusLabel, type ProjectSummary } from '../lib/projects-api'
 import { fetchMyCertificates, issueCertificate, type SkylentCertificate } from '../lib/skylent-api'
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
+import ElixirWalletPanel from '../components/learner/ElixirWallet'
 import { truthOf } from '../lib/truth'
 import { courseProductProfile } from '../lib/course-product'
 import { dashboardSqlLabHref, practiceEnvironmentForCourse } from '../lib/practice-environments'
@@ -537,6 +538,7 @@ export default function DashboardStudentPage() {
         <div className="sh" id="student-learning">
           <p className="os-eyebrow">My Courses</p>
           <h1>Start with a course</h1>
+          <section className="sh-card" aria-label="Elixir wallet"><ElixirWalletPanel /></section>
           <div className="sh-next">
             <p className="sh-next-label"><span aria-hidden="true" />Next step</p>
             <h2>Choose what to learn first</h2>
@@ -602,6 +604,7 @@ export default function DashboardStudentPage() {
       <div className="sh">
         <p className="os-eyebrow">My Courses</p>
         <h1>What to do next</h1>
+        <section className="sh-card" aria-label="Elixir wallet"><ElixirWalletPanel /></section>
         <ul className="sh-facts">
           <li>
             {enrollments.status === 'ready' ? (

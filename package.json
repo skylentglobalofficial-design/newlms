@@ -29,6 +29,7 @@
     "test:oauth-redirect": "tsx scripts/test-oauth-redirect.ts",
     "test:lms": "tsx scripts/test-lms.ts",
     "test:ai": "tsx scripts/test-skylent-ai.ts",
+    "test:elixir": "tsx scripts/test-elixir.ts",
     "test:ai-policy": "tsx scripts/test-ai-policy.ts",
     "test:quiz-guard": "tsx scripts/test-quiz-guard.ts",
     "test:ai:live": "tsx scripts/test-skylent-ai-live.ts",

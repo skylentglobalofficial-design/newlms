@@ -12,6 +12,7 @@ import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
 import { isAuthoredCourse, isAuthoredProgramme } from "../lib/authored-courses.js"
 import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import { answersInOptionRange, QuizAttemptThrottled, QuizMaxAttemptsExceeded, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
+import { awardVerifiedLearning } from "../lib/elixir.js"
 import {
   isDatabaseUnavailableError,
   isMissingSchemaError,
@@ -588,6 +589,15 @@ lmsRouter.post(
 
       if (isComplete) {
         await syncCertificateState(enrollment.id, course.id)
+        if (located.node.nodeType === CurriculumNodeType.NOTES || located.node.nodeType === CurriculumNodeType.VIDEO || located.node.nodeType === CurriculumNodeType.TOPIC) {
+          await awardVerifiedLearning({
+            userId: req.auth!.user.id,
+            activity: "lesson_complete",
+            sourceId: located.node.id,
+            courseSlug: course.slug,
+            lessonKey: lessonParsed.data.lessonKey,
+          })
+        }
       }
 
       const updatedStates = await loadLessonStates(enrollment, course)
@@ -718,6 +728,22 @@ lmsRouter.post(
 
       if (recorded.passed) {
         await syncCertificateState(enrollment.id, course.id)
+        const scorePercent = recorded.totalQuestions > 0 ? Math.floor((recorded.score / recorded.totalQuestions) * 100) : null
+        await awardVerifiedLearning({
+          userId: req.auth!.user.id,
+          activity: "quiz_complete",
+          sourceId: located.node.id,
+          courseSlug: course.slug,
+          lessonKey: lessonParsed.data.lessonKey,
+        })
+        await awardVerifiedLearning({
+          userId: req.auth!.user.id,
+          activity: "quiz_score",
+          sourceId: located.node.id,
+          scorePercent,
+          courseSlug: course.slug,
+          lessonKey: lessonParsed.data.lessonKey,
+        })
       }
 
       const review = questions.map((q, index) => ({
@@ -916,6 +942,13 @@ lmsRouter.post(
           data: { lastAccessedNodeId: located.node.id },
         })
         await syncCertificateState(enrollment.id, course.id)
+        await awardVerifiedLearning({
+          userId: req.auth!.user.id,
+          activity: "assignment_complete",
+          sourceId: located.node.id,
+          courseSlug: course.slug,
+          lessonKey: lessonParsed.data.lessonKey,
+        })
       } else {
         await prisma.lessonProgress.upsert({
           where: {

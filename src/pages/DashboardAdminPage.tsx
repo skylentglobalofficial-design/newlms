@@ -30,6 +30,7 @@ import {
   type AdminRole,
   type AdminUser,
 } from '../lib/admin-api'
+import AdminPlatform from '../components/admin/AdminPlatform'
 
 const NAV_ITEMS: AuthNavItem[] = [
   { id: 'overview', label: 'Overview', short: 'Home', sectionId: 'admin-overview' },
@@ -653,8 +654,7 @@ export default function DashboardAdminPage() {
           <AdminEnquiriesSection />
           <AdminPracticeSection />
           <AdminLessonMediaSection />
-          <AdminSection id="admin-payments" title="Payments" description="Revenue reporting, refunds, and payment gateway operations require the protected payments API." />
-          <AdminSection id="admin-system" title="System" description="Service health and uptime must come from live monitoring rather than placeholder values." last />
+          <AdminPlatform />
         </div>
       </div>
     </AuthDashboardShell>

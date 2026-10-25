@@ -164,6 +164,55 @@ export async function actOnAdminPracticeWorkspace(id: string, action: "test" | "
   return adminMutate<{ data: AdminPracticeWorkspace | { ok: boolean; detail: string } }>(`/admin/practice-workspaces/${id}/${action}`, "POST", body)
 }
 
+export type ElixirRule = {
+  id: string
+  activity: string
+  amount: number
+  enabled: boolean
+  quizScorePercent: number | null
+  cooldownSeconds: number
+}
+
+export function listElixirRules() {
+  return adminGet<{ data: ElixirRule[] }>("/admin/elixir/rules")
+}
+
+export function updateElixirRule(activity: string, body: { amount: number; enabled: boolean; quizScorePercent: number | null; cooldownSeconds: number }) {
+  return adminMutate<{ data: ElixirRule }>(`/admin/elixir/rules/${activity}`, "PATCH", body)
+}
+
+export function recordVerifiedPayment(body: { userId: string; externalRef: string; eligibleNetRupees: number; status: string }) {
+  return adminMutate<{ data: { id: string; elixirAwarded: number; duplicate: boolean; status: string } }>("/admin/payments", "POST", body)
+}
+
+export function refundVerifiedPayment(id: string) {
+  return adminMutate<{ data: { status: string; reversed: number; unrecovered: number; duplicate: boolean } }>(`/admin/payments/${id}/refund`, "POST", {})
+}
+
+export function adjustLearnerElixir(body: { userId: string; amount: number; reason: string; idempotencyKey: string }) {
+  return adminMutate<{ data: { amount: number; duplicate: boolean; balance: number | null } }>("/admin/elixir/adjustments", "POST", body)
+}
+
+export function createLearningResource(body: { slug: string; kind: "notes" | "case_study"; title: string; elixirPrice: number; published: boolean; summary?: string; courseSlug?: string; lessonKey?: string }) {
+  return adminMutate<{ data: { slug: string } }>("/admin/resources", "POST", body)
+}
+
+export function fetchAdminReports() {
+  return adminGet<{ data: { users: number; enrolments: number; elixir: { issued: number; spent: number; unrecovered: number } | null } }>("/admin/reports")
+}
+
+export function fetchAdminAi() {
+  return adminGet<{ data: { configured: boolean; provider: string; keyPresent: boolean; lastFailure: { at: string; code: string } | null } }>("/admin/ai")
+}
+
+export function fetchAdminAudit() {
+  return adminGet<{ data: Array<{ id: string; action: string; summary: string; createdAt: string; actor: { email: string } | null }> }>("/admin/audit")
+}
+
+export function fetchAdminCatalogue() {
+  return adminGet<{ data: { enrolmentCount: number; courses: Array<{ slug: string; title: string; enrolments: number }>; programs: Array<{ slug: string; name: string; enrolments: number; linkedCourses: number }> } }>("/admin/catalogue")
+}
+
 export async function updateLessonPlayback(courseSlug: string, lessonKey: string, muxPlaybackId: string | null) {
   return adminMutate<{ data: { lessonKey: string; media: { provider: string; playbackId?: string } | null } }>(
     `/admin/courses/${encodeURIComponent(courseSlug)}/lessons/${encodeURIComponent(lessonKey)}/media`,

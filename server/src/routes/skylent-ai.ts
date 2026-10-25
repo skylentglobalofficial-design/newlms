@@ -10,9 +10,11 @@ import {
   resolveCourseEnrollment,
 } from "../lib/lms.js"
 import { prisma } from "../lib/prisma.js"
+import { noteAiFailure } from "../lib/ai-diagnostics.js"
 import { deriveAcademicPolicy } from "../lib/skylent-ai/integrity.js"
 import { answerLessonQuestion, isAiConfigured } from "../lib/skylent-ai/service.js"
 import type { AcademicPolicy, AiAction, ChatTurn } from "../lib/skylent-ai/types.js"
+import { isDatabaseUnavailableError, isMissingSchemaError, quizQuestionSelect, readSchemaCapabilities } from "../lib/schema-capabilities.js"
 
 export const skylentAiRouter = Router()
 
@@ -106,6 +108,7 @@ async function respondToLessonAsk(
   }
   const enrollment = await resolveCourseEnrollment(req.auth!.user.id, course.id)
   if (!enrollment) {
+    noteAiFailure("enrolment_required")
     res.status(403).json({ error: "Enrolment required" })
     return
   }
@@ -117,11 +120,13 @@ async function respondToLessonAsk(
   }
   const lock = assertLessonUnlocked(course, lessonKey, lessonStates)
   if (!lock.ok) {
+    noteAiFailure("lesson_locked")
     res.status(lock.status).json(lock.body)
     return
   }
 
   if (!isAiConfigured()) {
+    noteAiFailure("not_configured")
     res.status(503).json({ error: "Skylent AI isn't available yet.", code: "not_configured" })
     return
   }
@@ -135,11 +140,12 @@ async function respondToLessonAsk(
     assignmentSubmitted: Boolean(lessonState?.assignmentSubmitted),
   })
   // Open quiz only: load the questions to recognise a pasted one. They are never sent to a provider or returned.
+  const explanations = (await readSchemaCapabilities()).quizExplanations
   const quizRows =
     policy === "open_quiz"
       ? await prisma.quizQuestion.findMany({
           where: { nodeId: located.node.id },
-          select: { question: true, options: true, correctIndex: true },
+          select: quizQuestionSelect(explanations),
         })
       : []
   const quizGuard = quizRows.map((row) => ({
@@ -184,12 +190,67 @@ async function respondToLessonAsk(
   })
 }
 
-skylentAiRouter.get("/ai/status", requireAuth, async (_req, res) => {
-  res.json({
-    data: {
-      available: isAiConfigured(),
-    },
-  })
+function aiErrorResponse(error: unknown) {
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+    noteAiFailure("unavailable")
+    return { status: 503, body: { error: "Skylent AI isn't available yet.", code: "unavailable" } }
+  }
+  const message = error instanceof Error ? error.message : ""
+  if (message.startsWith("provider_") || message === "empty_provider_response") {
+    noteAiFailure("provider_error")
+    return { status: 502, body: { error: "Skylent AI couldn't answer right now. Try again.", code: "provider_error" } }
+  }
+  noteAiFailure("provider_error")
+  return { status: 502, body: { error: "Skylent AI couldn't answer right now. Try again.", code: "provider_error" } }
+}
+
+skylentAiRouter.get("/ai/status", requireAuth, async (req: AuthenticatedRequest, res) => {
+  const configured = isAiConfigured()
+  const courseSlug = typeof req.query.courseSlug === "string" ? req.query.courseSlug : ""
+  const lessonId = typeof req.query.lessonId === "string" ? req.query.lessonId : ""
+  if (!courseSlug) {
+    res.json({ data: { available: configured, configured } })
+    return
+  }
+  if (!slugParam.safeParse(courseSlug).success || (lessonId && !lessonKeyParam.safeParse(lessonId).success)) {
+    res.status(400).json({ error: "Invalid lesson" })
+    return
+  }
+  try {
+    const course = await findCourseBySlug(courseSlug)
+    if (!course) {
+      res.json({ data: { available: false, configured, access: "not_found", code: "not_found" } })
+      return
+    }
+    const enrollment = await resolveCourseEnrollment(req.auth!.user.id, course.id)
+    if (!enrollment) {
+      noteAiFailure("enrolment_required")
+      res.json({ data: { available: false, configured, access: "enrolment_required", code: "enrolment_required" } })
+      return
+    }
+    if (lessonId) {
+      const lessonStates = await loadLessonStates(enrollment, course)
+      const lock = assertLessonUnlocked(course, lessonId, lessonStates)
+      if (!lock.ok) {
+        noteAiFailure("lesson_locked")
+        res.json({ data: { available: false, configured, access: "locked", code: "lesson_locked" } })
+        return
+      }
+    }
+    if (!configured) noteAiFailure("not_configured")
+    res.json({
+      data: {
+        available: configured,
+        configured,
+        access: "ok",
+        code: configured ? "ready" : "not_configured",
+      },
+    })
+  } catch (error) {
+    const failure = aiErrorResponse(error)
+    console.error("Skylent AI status failed:", error instanceof Error ? error.name : "unknown")
+    res.status(failure.status).json(failure.body)
+  }
 })
 
 skylentAiRouter.post("/ai/ask", requireAuth, requireCsrf, aiRateLimit, async (req: AuthenticatedRequest, res) => {
@@ -211,7 +272,8 @@ skylentAiRouter.post("/ai/ask", requireAuth, requireCsrf, aiRateLimit, async (re
     })
   } catch (error) {
     console.error("Skylent AI failed:", error instanceof Error ? error.name : "unknown")
-    res.status(502).json({ error: "Skylent AI couldn't answer right now. Try again." })
+    const failure = aiErrorResponse(error)
+    res.status(failure.status).json(failure.body)
   }
 })
 
@@ -243,7 +305,8 @@ skylentAiRouter.post(
       })
     } catch (error) {
       console.error("Skylent AI failed:", error instanceof Error ? error.name : "unknown")
-      res.status(502).json({ error: "Skylent AI couldn't answer right now. Try again." })
+      const failure = aiErrorResponse(error)
+      res.status(failure.status).json(failure.body)
     }
   },
 )

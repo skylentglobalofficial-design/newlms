@@ -18,6 +18,8 @@ import {
 import catalogRouter from "./routes/catalog.js"
 import healthRouter from "./routes/health.js"
 import { adminRouter } from "./routes/admin.js"
+import { adminPlatformRouter } from "./routes/admin-platform.js"
+import { elixirRouter } from "./routes/elixir.js"
 import { practiceAdminRouter } from "./routes/practice-admin.js"
 import { practiceRouter } from "./routes/practice.js"
 import { adminEmployersRouter } from "./routes/admin-employers.js"
@@ -73,6 +75,8 @@ app.use("/api/v1/faculty", facultyRouter)
 app.use("/api/v1/organisation", organisationRouter)
 app.use("/api/v1/career", careerRouter)
 app.use("/api/v1/admin", adminRouter)
+app.use("/api/v1/admin", adminPlatformRouter)
+app.use("/api/v1/elixir", elixirRouter)
 app.use("/api/v1/admin", practiceAdminRouter)
 app.use("/api/v1/practice", practiceRouter)
 app.use("/api/v1/admin", adminEmployersRouter)
