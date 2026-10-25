@@ -9,8 +9,22 @@ import {
   type AuthenticatedRequest,
 } from "../lib/auth.js"
 import { requireRoles } from "../lib/roles.js"
+import { readSchemaCapabilities } from "../lib/schema-capabilities.js"
 
 export const eventsRouter = Router()
+
+eventsRouter.use(async (_req, res, next) => {
+  try {
+    const caps = await readSchemaCapabilities()
+    if (!caps.events) {
+      res.status(503).json({ error: "Events are not available yet.", code: "unavailable" })
+      return
+    }
+    next()
+  } catch (error) {
+    next(error)
+  }
+})
 
 const slugSchema = z.object({
   slug: z.string().min(1).max(120).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),

@@ -12,8 +12,22 @@ import {
   buildPublicDegreeWhere,
   isPubliclyVisibleDegreeStatus,
 } from "../lib/degrees-public.js"
+import { readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
 
 export const degreesRouter = Router()
+
+degreesRouter.use(async (_req, res, next) => {
+  try {
+    const caps = await readSchemaCapabilities()
+    if (caps.degrees) {
+      next()
+      return
+    }
+    res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.degrees))
+  } catch (error) {
+    next(error)
+  }
+})
 
 const slugSchema = z
   .string()

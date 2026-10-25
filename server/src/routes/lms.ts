@@ -13,6 +13,14 @@ import { isAuthoredCourse, isAuthoredProgramme } from "../lib/authored-courses.j
 import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import { answersInOptionRange, QuizAttemptThrottled, QuizMaxAttemptsExceeded, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
 import {
+  isDatabaseUnavailableError,
+  isMissingSchemaError,
+  quizQuestionSelect,
+  readSchemaCapabilities,
+  UNAVAILABLE_MESSAGES,
+  unavailableBody,
+} from "../lib/schema-capabilities.js"
+import {
   assertLessonUnlocked,
   buildCourseWorkspace,
   computeResume,
@@ -86,6 +94,32 @@ const assignmentPatchSchema = z.object({
 
 async function requireEnrollment(userId: string, courseId: string) {
   return resolveCourseEnrollment(userId, courseId)
+}
+
+/** New enrolments only. Returns false after sending 503. Does not create a row. */
+async function newEnrolmentPolicyReady(res: import("express").Response): Promise<boolean> {
+  try {
+    if ((await readSchemaCapabilities()).policyAcceptance) return true
+  } catch (error) {
+    console.error("Enrolment blocked: policy storage could not be checked:", error instanceof Error ? error.message : "schema check failed")
+    res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
+    return false
+  }
+  res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
+  return false
+}
+
+async function loadQuizQuestions(nodeId: string) {
+  const explanations = (await readSchemaCapabilities()).quizExplanations
+  const rows = await prisma.quizQuestion.findMany({
+    where: { nodeId },
+    orderBy: { sortOrder: "asc" },
+    select: quizQuestionSelect(explanations),
+  })
+  return rows.map((row) => ({
+    ...row,
+    explanation: "explanation" in row && row.explanation ? row.explanation : null,
+  }))
 }
 
 async function loadCourseContext(userId: string, courseSlug: string) {
@@ -212,6 +246,7 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
       // A new enrolment needs the terms accepted in this request. Opening an existing one (above) does not.
       const consent = readConsent(req.body)
       if (!consent.ok) return res.status(consent.status).json(consent.body)
+      if (!(await newEnrolmentPolicyReady(res))) return
       const enrollment = await prisma.$transaction(async (tx) => {
         const created = await tx.userEnrollment.create({
           data: { userId, programId: program.id, status: "active" },
@@ -248,6 +283,7 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
 
     const consent = readConsent(req.body)
     if (!consent.ok) return res.status(consent.status).json(consent.body)
+    if (!(await newEnrolmentPolicyReady(res))) return
     const enrollment = await prisma.$transaction(async (tx) => {
       const created = await tx.userEnrollment.create({
         data: { userId, courseId: course.id, status: "active" },
@@ -263,6 +299,10 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
     const workspace = await buildCourseWorkspace({ ...enrollment, course })
     return res.status(201).json({ data: await attachProgramWorkspace(userId, workspace, null, course.id) })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      console.error("Enrolment blocked: policy storage could not be checked:", error instanceof Error ? error.message : "schema check failed")
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
+    }
     console.error("Failed to enroll:", error)
     res.status(500).json({ error: "Failed to enroll" })
   }
@@ -594,10 +634,7 @@ lmsRouter.get(
       const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
       if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
 
-      const questions = await prisma.quizQuestion.findMany({
-        where: { nodeId: located.node.id },
-        orderBy: { sortOrder: "asc" },
-      })
+      const questions = await loadQuizQuestions(located.node.id)
 
       const attemptCount = await prisma.quizAttempt.count({
         where: { enrollmentId: enrollment.id, nodeId: located.node.id },
@@ -655,10 +692,7 @@ lmsRouter.post(
       const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
       if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
 
-      const questions = await prisma.quizQuestion.findMany({
-        where: { nodeId: located.node.id },
-        orderBy: { sortOrder: "asc" },
-      })
+      const questions = await loadQuizQuestions(located.node.id)
 
       if (questions.length === 0) {
         return res.status(400).json({ error: "Quiz has no questions" })
@@ -755,11 +789,18 @@ lmsRouter.get(
       const unlock = assertLessonUnlocked(course, lessonParsed.data.lessonKey, lessonStates)
       if (!unlock.ok) return res.status(unlock.status).json(unlock.body)
 
+      const grading = (await readSchemaCapabilities()).assignmentGrading
       const assignment = await prisma.assignmentProgress.findUnique({
         where: {
           enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
         },
-        include: { attachments: true },
+        select: {
+          status: true,
+          responseText: true,
+          submittedAt: true,
+          ...(grading ? { grade: true, feedback: true, gradedAt: true } : {}),
+          attachments: true,
+        },
       })
 
       res.json({
@@ -768,9 +809,9 @@ lmsRouter.get(
           status: assignment?.status ?? "not_started",
           responseText: assignment?.responseText ?? null,
           submittedAt: assignment?.submittedAt?.toISOString() ?? null,
-          grade: assignment?.grade ?? null,
-          feedback: assignment?.feedback ?? null,
-          gradedAt: assignment?.gradedAt?.toISOString() ?? null,
+          grade: assignment && "grade" in assignment ? assignment.grade ?? null : null,
+          feedback: assignment && "feedback" in assignment ? assignment.feedback ?? null : null,
+          gradedAt: assignment && "gradedAt" in assignment && assignment.gradedAt ? assignment.gradedAt.toISOString() : null,
           attachments: assignment?.attachments.map((file) => ({
             id: file.id,
             fileName: file.fileName,
@@ -840,6 +881,7 @@ lmsRouter.post(
           responseText: bodyParsed.data.responseText ?? undefined,
           submittedAt: isSubmit ? now : undefined,
         },
+        select: { id: true, status: true, submittedAt: true },
       })
 
       if (isSubmit && bodyParsed.data.attachments?.length) {

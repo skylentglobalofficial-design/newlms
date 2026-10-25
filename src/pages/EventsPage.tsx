@@ -25,21 +25,38 @@ type EventData = {
 export default function EventsPage() {
   const [events, setEvents] = useState<EventData[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState<string | null>(null)
   const [filter, setFilter] = useState<"upcoming" | "past" | "all">("upcoming")
+  const [reloadKey, setReloadKey] = useState(0)
 
   useEffect(() => {
     const params = new URLSearchParams()
     if (filter === "upcoming") params.set("upcoming", "true")
     else if (filter === "past") params.set("upcoming", "false")
+    const controller = new AbortController()
+    setLoading(true)
+    setLoadError(null)
 
-    fetch(`/api/v1/events?${params}`)
-      .then((res) => res.json())
-      .then((json) => {
-        setEvents(json.data ?? [])
+    fetch(`/api/v1/events?${params}`, { signal: controller.signal })
+      .then(async (res) => {
+        const json = await res.json().catch(() => null)
+        if (!res.ok) {
+          const message = json && typeof json.error === "string" ? json.error : "Events could not be loaded."
+          throw new Error(message)
+        }
+        if (!controller.signal.aborted) {
+          setEvents(Array.isArray(json?.data) ? json.data : [])
+          setLoading(false)
+        }
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return
+        setEvents([])
+        setLoadError(error instanceof Error ? error.message : "Events could not be loaded.")
         setLoading(false)
       })
-      .catch(() => setLoading(false))
-  }, [filter])
+    return () => controller.abort()
+  }, [filter, reloadKey])
 
   const formatDate = (iso: string) => {
     const d = new Date(iso)
@@ -89,7 +106,9 @@ export default function EventsPage() {
             <h2 id="events-list-title">
               {loading
                 ? "Loading events..."
-                : `${events.length} event${events.length === 1 ? "" : "s"}`}
+                : loadError
+                  ? "Events"
+                  : `${events.length} event${events.length === 1 ? "" : "s"}`}
             </h2>
             <div
               className="cat-filters"
@@ -115,8 +134,15 @@ export default function EventsPage() {
 
             {loading ? (
               <p className="cat-empty">Loading events...</p>
+            ) : loadError ? (
+              <p className="cat-empty" role="alert">
+                {loadError}{" "}
+                <button type="button" className="cat-chip" onClick={() => setReloadKey((value) => value + 1)}>
+                  Try again
+                </button>
+              </p>
             ) : events.length === 0 ? (
-              <p className="cat-empty">No events found.</p>
+              <p className="cat-empty">No events are scheduled.</p>
             ) : (
               <ul className="ws-list">
                 {events.map((event) => (

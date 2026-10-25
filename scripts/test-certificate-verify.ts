@@ -16,11 +16,22 @@ function assert(condition: unknown, message: string): asserts condition {
 async function main() {
   const { prisma } = await import("../server/src/lib/prisma.ts")
   const { skylentCertificatesRouter } = await import("../server/src/routes/skylent/certificates.ts")
+  const { clearSchemaCapabilityCache } = await import("../server/src/lib/schema-capabilities.ts")
 
   type Lookup = (args: { where: { code: string } }) => Promise<unknown>
   let lookup: Lookup = async () => null
-  // Replace the one query this route makes. Nothing else on the client is used by the test.
+  // The certificate row lookup is stubbed. The capability probe is stubbed only for the
+  // lookup cases below; the unreachable-database case calls the real query.
   ;(prisma.skylentCertificate as unknown as { findUnique: Lookup }).findUnique = (args) => lookup(args)
+
+  const originalQueryRaw = prisma.$queryRaw.bind(prisma)
+  let capabilityQuery: "present" | "missing-table" | "real" = "present"
+  ;(prisma as unknown as { $queryRaw: (strings: TemplateStringsArray, ...values: unknown[]) => Promise<unknown> }).$queryRaw =
+    (strings, ...values) => {
+      if (capabilityQuery === "real") return originalQueryRaw(strings, ...values)
+      if (capabilityQuery === "missing-table") return Promise.resolve([{ table_name: "User", column_name: "id" }])
+      return Promise.resolve([{ table_name: "SkylentCertificate", column_name: "id" }])
+    }
 
   const app = express()
   app.use("/certificates", skylentCertificatesRouter)
@@ -43,6 +54,8 @@ async function main() {
     assert(malformed.status === 400 && !called, `malformed should be 400 without a lookup, got ${malformed.status}`)
 
     console.log("2. An unknown certificate is 404 valid:false")
+    clearSchemaCapabilityCache()
+    capabilityQuery = "present"
     const unknown = await get("SKL-2026-DA-000000")
     assert(unknown.status === 404 && (unknown.body.data as { valid?: boolean })?.valid === false, `unknown should be 404, got ${unknown.status}`)
 
@@ -69,6 +82,33 @@ async function main() {
     assert(down.status === 503, `a failed lookup should be 503, got ${down.status}`)
     assert(down.type.includes("application/json") && down.body.code === "unavailable", "a failed lookup should answer JSON with code unavailable")
     assert(!JSON.stringify(down.body).includes("SkylentCertificate"), "the database error must not be sent to the client")
+
+    console.log("6. A missing certificate table is 503 and is not reported as an invalid certificate")
+    clearSchemaCapabilityCache()
+    capabilityQuery = "missing-table"
+    let missingLookup = false
+    lookup = async () => {
+      missingLookup = true
+      return null
+    }
+    const missingTable = await get("SKL-2026-DA-DDDDDD")
+    assert(missingTable.status === 503 && missingTable.body.code === "unavailable", `missing table should be 503, got ${missingTable.status}`)
+    assert(missingTable.body.data === undefined, "a missing table must not be returned as an invalid certificate")
+    assert(!missingLookup, "the certificate lookup must not run when the table is absent")
+
+    console.log("7. An unreachable database probe is 503 JSON and leaks nothing")
+    clearSchemaCapabilityCache()
+    capabilityQuery = "real"
+    let probeLookup = false
+    lookup = async () => {
+      probeLookup = true
+      return null
+    }
+    const unreachable = await get("SKL-2026-DA-EEEEEE")
+    const leaked = JSON.stringify(unreachable.body)
+    assert(unreachable.status === 503 && unreachable.type.includes("application/json") && unreachable.body.code === "unavailable", `unreachable probe should be 503 JSON, got ${unreachable.status}`)
+    assert(unreachable.body.data === undefined && !probeLookup, "a failed probe must not be treated as an invalid certificate")
+    assert(!/127\.0\.0\.1|unused|password|SkylentCertificate|Can't reach|prisma/i.test(leaked), "the probe error must not be sent to the client")
 
     console.log("Certificate verification checks passed")
   } finally {

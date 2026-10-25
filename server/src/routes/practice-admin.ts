@@ -16,8 +16,21 @@ import {
   unpublishPracticeWorkspace,
 } from "../lib/practice-workspaces/service.js"
 import type { CourseSyllabus } from "../lib/practice-platform/types.js"
+import { readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
 
 export const practiceAdminRouter = Router()
+
+practiceAdminRouter.use("/practice-workspaces", async (_req, res, next) => {
+  try {
+    if ((await readSchemaCapabilities()).practiceWorkspaces) {
+      next()
+      return
+    }
+    res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.practice))
+  } catch (error) {
+    next(error)
+  }
+})
 
 const guards = [requireAuth, requireRoles("superadmin"), requireCsrf] as const
 
