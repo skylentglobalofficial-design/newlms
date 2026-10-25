@@ -68,13 +68,26 @@ async function markDirectCourseIssued(enrollment: { id: string; courseId: string
 }
 
 /** Learner claims a certificate. Eligibility is this course's lessons, not the whole programme. */
+const CERTIFICATE_UNAVAILABLE = {
+  error: "Certificate check is unavailable right now. Try again later.",
+  code: "unavailable" as const,
+}
+
 async function certificatesReady() {
   return (await readSchemaCapabilities()).skylentCertificates
 }
 
+/** A failed probe is not a missing certificate. The client only sees the fixed unavailable sentence. */
+function sendCertificateUnavailable(res: import("express").Response, error: unknown) {
+  console.error("Certificate check unavailable:", error instanceof Error ? error.message : "schema check failed")
+  res.status(503).json(CERTIFICATE_UNAVAILABLE)
+}
+
 skylentCertificatesRouter.post("/issue", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
-  if (!(await certificatesReady())) {
-    return void res.status(503).json({ error: "Certificates are not available yet.", code: "unavailable" })
+  try {
+    if (!(await certificatesReady())) return void res.status(503).json(CERTIFICATE_UNAVAILABLE)
+  } catch (error) {
+    return void sendCertificateUnavailable(res, error)
   }
   const body = z.object({ courseSlug: z.string().min(1).max(120) }).safeParse(req.body ?? {})
   if (!body.success) return void res.status(400).json({ error: "Invalid request" })
@@ -118,8 +131,10 @@ skylentCertificatesRouter.post("/issue", requireAuth, requireCsrf, async (req: A
 })
 
 skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedRequest, res) => {
-  if (!(await certificatesReady())) {
-    return void res.status(503).json({ error: "Certificates are not available yet.", code: "unavailable" })
+  try {
+    if (!(await certificatesReady())) return void res.status(503).json(CERTIFICATE_UNAVAILABLE)
+  } catch (error) {
+    return void sendCertificateUnavailable(res, error)
   }
   try {
     const rows = await prisma.skylentCertificate.findMany({
@@ -151,17 +166,14 @@ skylentCertificatesRouter.get("/verify/:code", verifyLimit, async (req, res) => 
   const normalized = (Array.isArray(rawCode) ? rawCode[0] : rawCode)?.toUpperCase()
   const code = z.string().regex(/^SKL-\d{4}-[A-Z0-9]{1,6}-[A-Z0-9]{4,8}$/).safeParse(normalized)
   if (!code.success) return void res.status(400).json({ error: "Invalid certificate ID" })
-  if (!(await certificatesReady())) {
-    return void res.status(503).json({ error: "Certificate check is unavailable right now. Try again later.", code: "unavailable" })
-  }
-  // A failed lookup (database down, or a schema that is behind) is not "no such certificate":
-  // say the check could not be made, so nobody reads an outage as an invalid certificate.
+  // A failed probe or lookup is not "no such certificate". Both stay inside this try
+  // so a dead database cannot escape as an HTML error or a 404.
   let cert: Awaited<ReturnType<typeof prisma.skylentCertificate.findUnique>>
   try {
+    if (!(await certificatesReady())) return void res.status(503).json(CERTIFICATE_UNAVAILABLE)
     cert = await prisma.skylentCertificate.findUnique({ where: { code: code.data } })
   } catch (error) {
-    console.error("Certificate verification lookup failed:", error instanceof Error ? error.message : error)
-    return void res.status(503).json({ error: "Certificate check is unavailable right now. Try again later.", code: "unavailable" })
+    return void sendCertificateUnavailable(res, error)
   }
   if (!cert || cert.revoked) return void res.status(404).json({ data: { valid: false } })
   res.json({

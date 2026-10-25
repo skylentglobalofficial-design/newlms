@@ -189,16 +189,24 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
   }
 
   const email = normalizeEmail(parsed.data.email)
-  const existing = await prisma.user.findUnique({ where: { email } })
-  if (existing) {
-    return res.status(409).json({ error: "An account with this email already exists" })
-  }
-
-  if (!(await readSchemaCapabilities()).policyAcceptance) {
-    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
-  }
 
   try {
+    const existing = await prisma.user.findUnique({ where: { email } })
+    if (existing) {
+      return res.status(409).json({ error: "An account with this email already exists" })
+    }
+
+    let policyReady = false
+    try {
+      policyReady = (await readSchemaCapabilities()).policyAcceptance
+    } catch (error) {
+      console.error("Signup blocked: policy storage could not be checked:", error instanceof Error ? error.message : "schema check failed")
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
+    if (!policyReady) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
+
     const displayName = (parsed.data.displayName ?? parsed.data.name)!.trim()
     const passwordHash = await bcrypt.hash(parsed.data.password, BCRYPT_ROUNDS)
     const studentRole = await ensureRole(RoleName.STUDENT)

@@ -1,5 +1,6 @@
 import "dotenv/config"
 import { readFileSync } from "node:fs"
+import { spawnSync } from "node:child_process"
 import { Prisma, PrismaClient } from "@prisma/client"
 import { TEST_CONSENT } from "./test-consent-payload.ts"
 import {
@@ -95,9 +96,10 @@ assert(practiceAdminRoute.includes('"/practice-workspaces"') && practiceAdminRou
 
 const authRoute = readFileSync(new URL("../server/src/routes/auth.ts", import.meta.url), "utf8")
 const lmsRoute = readFileSync(new URL("../server/src/routes/lms.ts", import.meta.url), "utf8")
-const signupAt = authRoute.indexOf("if (!(await readSchemaCapabilities()).policyAcceptance)")
+const signupAt = authRoute.indexOf("readSchemaCapabilities()).policyAcceptance")
 const createUserAt = authRoute.indexOf("tx.user.create")
 assert(signupAt > 0 && createUserAt > signupAt, "signup checks policy storage before creating a user")
+assert(authRoute.includes("Signup blocked: policy storage could not be checked"), "a failed policy probe is caught before signup continues")
 assert(authRoute.includes("recordPolicyAcceptance"), "signup still records acceptance inside the account transaction")
 assert(lmsRoute.includes("UNAVAILABLE_MESSAGES.enrolment"), "new enrolment stops when policy storage is missing")
 assert(lmsRoute.includes("recordPolicyAcceptance"), "enrolment still records acceptance in the same transaction")
@@ -199,6 +201,16 @@ async function main() {
   const degrees = await request(jar, "/degrees")
   assert(degrees.response.ok, `degrees list failed on a migrated database: ${degrees.response.status} ${JSON.stringify(degrees.data)}`)
   assert(Array.isArray(degrees.data?.data), "degrees list must return data when the table exists")
+
+  const probe = spawnSync(process.execPath, ["--import", "tsx", new URL("./test-signup-schema-probe.ts", import.meta.url).pathname], {
+    cwd: new URL("..", import.meta.url).pathname,
+    encoding: "utf8",
+  })
+  if (probe.stdout) process.stdout.write(probe.stdout)
+  if (probe.status !== 0) {
+    if (probe.stderr) process.stderr.write(probe.stderr)
+    throw new Error(`signup schema probe failed with status ${probe.status}`)
+  }
 
   console.log("schema-capabilities ok")
 }
