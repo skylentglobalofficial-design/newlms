@@ -220,6 +220,12 @@ model User {
   practiceResponses   PracticeWorkspaceResponse[]
   eventRegistrations  EventRegistration[]
   passwordResetTokens PasswordResetToken[]
+  elixirAccount       ElixirAccount?
+  elixirTransactions  ElixirTransaction[]
+  elixirAdjustments   ElixirTransaction[]          @relation("ElixirActor")
+  verifiedPayments    VerifiedPayment[]
+  resourceEntitlements LearningResourceEntitlement[]
+  adminAuditLogs      AdminAuditLog[]              @relation("AuditActor")
 }
 
 model Role {
@@ -1176,4 +1182,137 @@ model PracticeWorkspaceResponse {
 
   @@unique([workspaceId, userId, lessonId])
   @@index([userId])
+}
+
+enum ElixirTransactionType {
+  purchase_reward
+  learning_reward
+  resource_spend
+  admin_adjustment
+  reversal
+}
+
+enum ElixirActivity {
+  lesson_complete
+  quiz_complete
+  quiz_score
+  assignment_complete
+  case_study_complete
+}
+
+enum LearningResourceKind {
+  notes
+  case_study
+}
+
+enum VerifiedPaymentStatus {
+  pending
+  succeeded
+  failed
+  cancelled
+  refunded
+}
+
+/// Integer Elixir balance. The ledger is the source of truth; this row is the locked cache.
+model ElixirAccount {
+  userId    String   @id @db.Uuid
+  balance   Int      @default(0)
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model ElixirTransaction {
+  id              String                @id @default(uuid()) @db.Uuid
+  userId          String                @db.Uuid
+  amount          Int
+  type            ElixirTransactionType
+  idempotencyKey  String                @unique
+  sourceType      String?
+  sourceId        String?
+  activity        ElixirActivity?
+  note            String?
+  actorId         String?               @db.Uuid
+  reversalOfId    String?               @db.Uuid
+  unrecovered     Int                   @default(0)
+  createdAt       DateTime              @default(now())
+
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actor      User?              @relation("ElixirActor", fields: [actorId], references: [id], onDelete: SetNull)
+  reversalOf ElixirTransaction? @relation("ElixirReversal", fields: [reversalOfId], references: [id], onDelete: SetNull)
+  reversals  ElixirTransaction[] @relation("ElixirReversal")
+
+  @@index([userId, createdAt])
+  @@index([sourceType, sourceId])
+}
+
+/// Disabled until a super admin sets an amount. No default learning schedule is implied.
+model ElixirRewardRule {
+  id               String         @id @default(uuid()) @db.Uuid
+  activity         ElixirActivity @unique
+  amount           Int            @default(0)
+  enabled          Boolean        @default(false)
+  quizScorePercent Int?
+  cooldownSeconds  Int            @default(0)
+  updatedAt        DateTime       @updatedAt
+  updatedById      String?        @db.Uuid
+}
+
+/// Operator-attested net rupees. This app does not collect card or UPI payments.
+model VerifiedPayment {
+  id                 String                @id @default(uuid()) @db.Uuid
+  userId             String                @db.Uuid
+  externalRef        String                @unique
+  eligibleNetRupees  Int
+  status             VerifiedPaymentStatus
+  elixirAwarded      Int                   @default(0)
+  recordedById       String?               @db.Uuid
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  user               User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+}
+
+model LearningResource {
+  id          String               @id @default(uuid()) @db.Uuid
+  slug        String               @unique
+  kind        LearningResourceKind
+  title       String
+  summary     String?
+  elixirPrice Int
+  published   Boolean              @default(false)
+  courseSlug  String?
+  lessonKey   String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  entitlements LearningResourceEntitlement[]
+
+  @@index([published, kind])
+}
+
+model LearningResourceEntitlement {
+  id            String           @id @default(uuid()) @db.Uuid
+  userId        String           @db.Uuid
+  resourceId    String           @db.Uuid
+  transactionId String           @unique @db.Uuid
+  createdAt     DateTime         @default(now())
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resource      LearningResource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, resourceId])
+  @@index([userId])
+}
+
+model AdminAuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  actorId    String?  @db.Uuid
+  action     String
+  targetType String?
+  targetId   String?
+  summary    String
+  createdAt  DateTime @default(now())
+  actor      User?    @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([actorId])
 }

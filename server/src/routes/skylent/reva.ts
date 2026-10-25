@@ -121,14 +121,20 @@ revaRouter.post("/chat", limit, async (req, res) => {
 
   let context = `${SITE}\nCourses: ${courses.map((course) => `${course.title} (/courses/${course.slug})`).join("; ")}`
   if (user) {
-    const mine = await prisma.userEnrollment.findMany({
-      where: { userId: user.id },
-      include: { course: { select: { title: true } }, program: { select: { name: true } } },
-    })
-    const names = mine
-      .map((row) => row.course?.title ?? row.program?.name)
-      .filter((name): name is string => Boolean(name))
-    context += `\nScope: learner. Signed-in learner name: ${user.displayName ?? "student"}. Enrolled in: ${names.join(", ") || "nothing yet"}. Lesson progress is not included. If asked, say so.`
+    let enrolled = "nothing yet"
+    try {
+      const mine = await prisma.userEnrollment.findMany({
+        where: { userId: user.id },
+        include: { course: { select: { title: true } }, program: { select: { name: true } } },
+      })
+      const names = mine
+        .map((row) => row.course?.title ?? row.program?.name)
+        .filter((name): name is string => Boolean(name))
+      if (names.length > 0) enrolled = names.join(", ")
+    } catch (error) {
+      console.error("Site assistant skipped enrolment names:", error instanceof Error ? error.name : "unknown")
+    }
+    context += `\nScope: learner. Signed-in learner name: ${user.displayName ?? "student"}. Enrolled in: ${enrolled}. Lesson progress is not included. If asked, say so.`
   } else {
     context += "\nScope: visitor. Do not mention any learner enrolment, progress, or private account data."
   }

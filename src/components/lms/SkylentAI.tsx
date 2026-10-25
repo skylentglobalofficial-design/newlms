@@ -71,6 +71,7 @@ function integrityNotice(kind: string | null | undefined, open: boolean): string
 function friendlyError(err: unknown): { message: string; unavailable: boolean } {
   const raw = workspaceErrorMessage(err)
   if (/isn't available/i.test(raw)) return { message: UNAVAILABLE, unavailable: true }
+  if (/couldn't answer right now/i.test(raw)) return { message: `${AI_NAME} couldn't answer. Try again.`, unavailable: false }
   if (/sign in to continue/i.test(raw)) return { message: "Your session has ended. Sign in again to ask.", unavailable: false }
   if (/Enrolment required|Lesson locked|do not have access/i.test(raw)) {
     return { message: `${AI_NAME} cannot open this lesson yet.`, unavailable: false }
@@ -152,10 +153,24 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
     let cancelled = false
     const controller = new AbortController()
     setUi("checking")
-    void fetchSkylentAiStatus(controller.signal)
+    void fetchSkylentAiStatus({ courseSlug, lessonId, signal: controller.signal })
       .then((status) => {
         if (cancelled) return
-        setUi(status.available ? "ready" : "unavailable")
+        if (status.access === "enrolment_required" || status.access === "not_found") {
+          setError(`${AI_NAME} cannot open this lesson yet.`)
+          setUi("error")
+          return
+        }
+        if (status.access === "locked") {
+          setError("Finish the previous lesson before asking about this one.")
+          setUi("error")
+          return
+        }
+        if (status.configured === false || status.available === false) {
+          setUi("unavailable")
+          return
+        }
+        setUi("ready")
       })
       .catch((err) => {
         if (cancelled || (err instanceof DOMException && err.name === "AbortError")) return
@@ -165,7 +180,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
       cancelled = true
       controller.abort()
     }
-  }, [lessonId])
+  }, [courseSlug, lessonId])
 
   useEffect(() => {
     const root = listRef.current

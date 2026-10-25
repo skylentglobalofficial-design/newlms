@@ -184,7 +184,7 @@ Mandatory sequence — do not skip steps. Do not use `prisma db push`, `migrate 
    npm run db:preflight
    ```
 
-   Against the historical production baseline used by `npm run test:migration-replay`, expect: ready to deploy, **seven** pending October migrations (through `20261024140000_password_reset_and_degrees`), four lesson-material migrations as expected production-only, zero failed. **If the report differs from that expectation, stop and reconcile — do not treat the number seven as proof of live state without this output.**
+   Against the historical production baseline used by `npm run test:migration-replay`, expect: ready to deploy, **eight** pending release migrations (the seven October migrations through `20261024140000_password_reset_and_degrees`, plus `20261025180000_elixir_ledger_and_admin_audit`), four lesson-material migrations as expected production-only, zero failed. **If the report differs from that expectation, stop and reconcile — do not treat the number eight as proof of live state without this output.** Live production history has not been verified.
 4. **Explicit operator approval.** Named approver records go/no-go after reviewing backup evidence and preflight output.
 5. **Migration execution by an authorized operator.** Deploy the new build. If the start command is `server.js` / `npm start`, the restart applies migrations; otherwise run `npx prisma migrate deploy` with the same environment **before** restarting a non-migrating entrypoint.
 6. **Post-migration verification.** `GET /api/v1/health` must return `200` with `"migrations": "ok"`. Run `npm run db:preflight -- --expect-none`. Run the smoke tests in section 9.
@@ -204,7 +204,7 @@ Against the **production** process (not `vite dev`):
 ## 10. Rollback
 
 - **Code:** redeploy the previous image/commit. `dist/` is not in git; the previous build artifact is the rollback unit.
-- **Code after the October migrations:** the seven October migrations only add tables, columns, enums and indexes, and fill `ProgramCourse` links. The previous build ignores them, so rolling back the code does not need a schema restore.
+- **Code after the October migrations:** those migrations add tables, columns, enums and indexes, and fill `ProgramCourse` links. `20261025180000_elixir_ledger_and_admin_audit` adds the Elixir ledger and audit log and does not rewrite existing rows. The previous build ignores unknown tables, so rolling back the code does not need a schema restore. Enum additions and inserted `ProgramCourse` rows are not undone by a code rollback.
 - **Database:** Prisma migrations are forward-only here. Do not restore a newer schema onto an older build. Restore a Postgres snapshot taken before a failing migrate if a migration must be undone.
 - **Catalog seed:** never roll forward by re-seeding a live database. That deletes curriculum nodes and cascaded lesson/quiz/assignment progress.
 
