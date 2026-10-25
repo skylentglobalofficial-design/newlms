@@ -79,6 +79,7 @@ jobs:
           test -d prisma/migrations/20261009000000_policy_acceptance
           test -d prisma/migrations/20261011000000_employer_membership_and_shared_applications
           test -d prisma/migrations/20261017120000_practice_workspaces
+          test -d prisma/migrations/20261025180000_elixir_ledger_and_admin_audit
           npx prisma migrate deploy
           npx prisma migrate status
           npm run db:preflight -- --expect-none
@@ -178,6 +179,13 @@ jobs:
         run: |
           "$RUNNER_TEMP/restart-api.sh"
           npm run test:ai
+      - name: test:elixir (ledger, admin authorization, and AI access)
+        if: always()
+        env:
+          API_BASE: http://127.0.0.1:3099/api/v1
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:elixir
       - name: test-product-manifest
         if: always()
         run: npx tsx scripts/test-product-manifest.ts
