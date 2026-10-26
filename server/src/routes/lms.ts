@@ -884,6 +884,22 @@ lmsRouter.post(
 
       const now = new Date()
       const isSubmit = bodyParsed.data.action === "submit"
+      const existingAssignment = await prisma.assignmentProgress.findUnique({
+        where: {
+          enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
+        },
+        select: { status: true, submittedAt: true },
+      })
+      // A late autosave ("start") must not undo a submission that already landed.
+      if (!isSubmit && existingAssignment && (existingAssignment.status === "submitted" || existingAssignment.status === "graded")) {
+        return res.json({
+          data: {
+            lessonKey: lessonParsed.data.lessonKey,
+            status: existingAssignment.status,
+            submittedAt: existingAssignment.submittedAt?.toISOString() ?? null,
+          },
+        })
+      }
       const hasText = Boolean(bodyParsed.data.responseText?.trim())
       const hasAttachments = Boolean(bodyParsed.data.attachments?.length)
       if (isSubmit && !hasText && !hasAttachments) {

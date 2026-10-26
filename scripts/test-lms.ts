@@ -350,6 +350,13 @@ async function main() {
   })
   assert(assignmentSubmit.response.ok, "Assignment submit should succeed")
   assert(assignmentSubmit.data.data.status === "submitted", "Assignment should be submitted")
+  const lateDraft = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "start", responseText: "A draft that arrived after submit." },
+  })
+  assert(lateDraft.response.ok, "A late draft save should not error")
+  assert(lateDraft.data.data.status === "submitted", "A late draft must not reopen a submitted assignment")
 
   const userARow = await prisma.user.findUnique({ where: { email: userA.email } })
   assert(userARow, "User A should exist")
