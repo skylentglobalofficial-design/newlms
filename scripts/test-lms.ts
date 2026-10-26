@@ -369,10 +369,55 @@ async function main() {
     include: { attachments: true },
   })
   assert(assignmentRow, "Assignment progress should exist in database")
+  assert(assignmentRow.responseText === "My Excel analysis submission.", "A late draft must not replace the submitted text")
   assert(assignmentRow.attachments.length === 1, "Attachment metadata should be stored")
   assert(assignmentRow.attachments[0].storageProvider === "pending", "Storage provider should be server-controlled pending")
   assert(assignmentRow.attachments[0].storageKey.startsWith("pending/"), "Storage key should be server-generated")
   assert(!assignmentRow.attachments[0].storageKey.includes("data-analytics/l6"), "Client must not choose storage key")
+
+  console.log("13b. A draft racing a submit cannot reopen the assignment")
+  const submittedText = "Concurrent final submission."
+  const draftText = "Concurrent late draft that must not win."
+  for (let round = 0; round < 5; round += 1) {
+    await prisma.assignmentProgress.update({
+      where: { id: assignmentRow.id },
+      data: { status: "in_progress", responseText: "open draft", submittedAt: null },
+    })
+    await Promise.all([
+      request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+        method: "POST",
+        csrf: true,
+        body: { action: "submit", responseText: submittedText },
+      }),
+      ...Array.from({ length: 6 }, () =>
+        request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+          method: "POST",
+          csrf: true,
+          body: { action: "start", responseText: draftText },
+        }),
+      ),
+    ])
+    const raced = await prisma.assignmentProgress.findUnique({ where: { id: assignmentRow.id } })
+    assert(raced?.status === "submitted", `Round ${round} stored status ${raced?.status}, expected submitted`)
+    assert(raced.responseText === submittedText, `Round ${round} stored the draft text`)
+  }
+
+  await prisma.assignmentProgress.update({
+    where: { id: assignmentRow.id },
+    data: { status: "graded", responseText: "Graded response.", submittedAt: new Date() },
+  })
+  const gradedDraft = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "start", responseText: draftText },
+  })
+  assert(gradedDraft.response.ok && gradedDraft.data.data.status === "graded", "A draft must not reopen a graded assignment")
+  const gradedRow = await prisma.assignmentProgress.findUnique({ where: { id: assignmentRow.id } })
+  assert(gradedRow?.status === "graded" && gradedRow.responseText === "Graded response.", "Graded text must stay stored")
+  await prisma.assignmentProgress.update({
+    where: { id: assignmentRow.id },
+    data: { status: "submitted", responseText: "My Excel analysis submission." },
+  })
 
   console.log("14. Program enrollment resolves course access correctly")
   const programJar: CookieJar = new Map()

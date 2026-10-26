@@ -42,9 +42,17 @@ Facts from that reading:
 
 ## Confirmed bug and fix
 
-A draft save uses `action: "start"`. Submit uses `action: "submit"`. The editor waits 700ms and then sends the draft. If that request reaches the server after submit, the old update set the status back to `in_progress`. Marking the lesson complete then fails because completion requires status `submitted`. The screen could also say the submission was recorded while the stored status was no longer submitted.
+A draft save uses `action: "start"`. Submit uses `action: "submit"`. The editor waits 700ms and then sends the draft. If that request reaches the server after submit, the old update set the status back to `in_progress`. Marking the lesson complete then fails because completion requires status `submitted`.
 
-The server now leaves a `submitted` or `graded` assignment unchanged when a later `start` arrives. A new submit can still replace the text. `scripts/test-lms.ts` submits lesson `l6`, then sends a late `start`, and expects the status to stay `submitted`.
+Reading the status and then saving it were two separate steps. A submit and a draft could both read “in progress” and the draft’s save could land last.
+
+The handler now takes the same Postgres transaction lock already used for quiz attempts (`pg_advisory_xact_lock` on the enrolment and lesson). The second request waits until the first commits, then reads the status that request stored. A `start` that sees `submitted` or `graded` does not write. A new `submit` still replaces the response text. Attachments and lesson progress for that request are written in the same transaction.
+
+`scripts/test-lms.ts` checks three stored outcomes, not only the HTTP body:
+
+- A `start` after submit leaves status `submitted` and keeps the submitted text.
+- Five rounds of one submit racing six drafts each end with status `submitted` and the submit text.
+- A `start` after `graded` leaves status `graded` and keeps the graded text.
 
 No other core-learning defect was clear enough to change. Questions that were not guessed:
 
@@ -57,8 +65,8 @@ Run against the local API on port 3000 and the local database. Not production.
 
 | Command | Result |
 |---|---|
-| `npx tsc -p tsconfig.backend.json --noEmit` | Pass |
-| `npx tsx scripts/test-lms.ts` | Pass. Includes the new late-draft check, enrolment locks, quiz pass, progress, and programme links. |
+| `npx tsc -p tsconfig.backend.json --noEmit` | Pass, after the lock change |
+| `npx tsx scripts/test-lms.ts` | Pass, after the API reloaded the lock. Step 13b ran five racing rounds and the graded case, and each round read the stored row. |
 
 Not re-run in this phase: `test:auth`, `test:consent`, `test:quiz-guard`, and the learner journey. They passed on the throwaway database in the PR #209 gate. They were not needed to prove this assignment change, and they were not pointed at production.
 
@@ -73,8 +81,8 @@ The first `test:lms` attempt failed because the shell still had `API_BASE` point
 
 ## Files and risk
 
-- `server/src/routes/lms.ts` — ignore a draft save after an assignment is already submitted.
-- `scripts/test-lms.ts` — regression for that case.
+- `server/src/routes/lms.ts` — decide and save the assignment inside the quiz-attempt Postgres lock so a draft cannot overwrite a submit.
+- `scripts/test-lms.ts` — stored-row checks for a late draft, a submit racing several drafts, and a graded assignment.
 - `docs/PHASE_2_CORE_LEARNING.md` — this report.
 
-Risk: a learner can no longer use "start" to reopen a submitted assignment. Sending `submit` again still updates it. Lesson progress behaviour is unchanged.
+Risk: a learner can no longer use "start" to reopen a submitted or graded assignment. Sending `submit` again still updates the text. The lock is held only for that save.
