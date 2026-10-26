@@ -1,6 +1,6 @@
 import { spawnSync } from "node:child_process"
 import { fileURLToPath } from "node:url"
-import { classifyDatabaseTarget } from "../server/src/lib/database-target.ts"
+import { classifyDatabaseTarget, redactConnectionSecrets } from "../server/src/lib/database-target.ts"
 import {
   KNOWN_PRODUCTION_ONLY_MIGRATIONS,
   classifyMigrationHistory,
@@ -95,20 +95,33 @@ const localTarget = classifyDatabaseTarget("postgresql://skylent:secret@127.0.0.
 assert(localTarget.class === "local" && !localTarget.sessionPooler, "localhost is not production")
 
 const databaseUrl = process.env.DIRECT_URL || process.env.DATABASE_URL
-assert(databaseUrl, "DATABASE_URL is required to prove --production refuses a local database")
+assert(databaseUrl, "DATABASE_URL is required to prove the configured test database is local")
 const configured = classifyDatabaseTarget(databaseUrl)
 assert(configured.class === "local", `refusing to run the local preflight check against ${configured.class}`)
+
+const encodedUrl = "postgresql://operator:p%40ss%2Fword@127.0.0.1:5432/appdb"
+const decodedPassword = "p@ss/word"
+const encodedUserinfo = "operator:p%40ss%2Fword"
+const leaked = `host ${encodedUrl} password ${decodedPassword} userinfo ${encodedUserinfo}`
+const redacted = redactConnectionSecrets(leaked, encodedUrl)
+assert(!redacted.includes(encodedUrl), "redaction removes the full connection string")
+assert(!redacted.includes(decodedPassword), "redaction removes the decoded password")
+assert(!redacted.includes(encodedUserinfo), "redaction removes the encoded userinfo")
+assert(!redacted.includes("p%40ss%2Fword"), "redaction removes the encoded password")
+
 const refused = spawnSync("npx", ["tsx", "scripts/check-migration-history.ts", "--production"], {
   cwd: fileURLToPath(new URL("..", import.meta.url)),
-  env: process.env,
+  env: { ...process.env, DIRECT_URL: encodedUrl },
   encoding: "utf8",
 })
 const refusedOutput = `${refused.stdout ?? ""}\n${refused.stderr ?? ""}`
 assert(refused.status === 1, `--production must block a local database, got ${refused.status}: ${refusedOutput}`)
 assert(refusedOutput.includes("DECISION: BLOCKED"), "local production preflight must say BLOCKED")
 assert(refusedOutput.includes("session pooler"), "the refusal must name the required target")
+assert(refusedOutput.includes("database: appdb"), "the database name is still reported")
 assert(!refusedOutput.includes("postgresql://"), "preflight output must not contain a connection string")
-const password = new URL(databaseUrl).password
-if (password) assert(!refusedOutput.includes(password), "preflight output must not contain the password")
+assert(!refusedOutput.includes(decodedPassword), "preflight output must not contain the decoded password")
+assert(!refusedOutput.includes(encodedUserinfo), "preflight output must not contain the encoded userinfo")
+assert(!refusedOutput.includes("p%40ss%2Fword"), "preflight output must not contain the encoded password")
 
 console.log("migration-history ok")

@@ -42,3 +42,24 @@ export function classifyDatabaseTarget(raw: string): DatabaseTarget {
     sessionPooler: kind === "session-pooler",
   }
 }
+
+/** Remove a URL, its userinfo, and both the encoded and decoded password. */
+export function redactConnectionSecrets(text: string, rawUrl: string): string {
+  let redacted = text
+  if (rawUrl) redacted = redacted.split(rawUrl).join("<DATABASE_URL>")
+  const userinfo = rawUrl.match(/^[a-z][a-z0-9+.-]*:\/\/([^@/\s]+)@/i)?.[1]
+  if (!userinfo) return redacted
+  redacted = redacted.split(userinfo).join("<userinfo>")
+  const encodedPassword = userinfo.includes(":") ? userinfo.slice(userinfo.indexOf(":") + 1) : ""
+  if (encodedPassword) redacted = redacted.split(encodedPassword).join("<password>")
+  let decoded = userinfo
+  try {
+    decoded = decodeURIComponent(userinfo)
+  } catch {
+    decoded = userinfo
+  }
+  if (decoded !== userinfo) redacted = redacted.split(decoded).join("<userinfo>")
+  const password = decoded.includes(":") ? decoded.slice(decoded.indexOf(":") + 1) : ""
+  if (password && password !== encodedPassword) redacted = redacted.split(password).join("<password>")
+  return redacted
+}

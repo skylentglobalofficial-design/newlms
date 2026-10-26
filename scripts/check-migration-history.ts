@@ -11,7 +11,7 @@
 import "dotenv/config"
 import { PrismaClient } from "@prisma/client"
 
-import { classifyDatabaseTarget } from "../server/src/lib/database-target.ts"
+import { classifyDatabaseTarget, redactConnectionSecrets } from "../server/src/lib/database-target.ts"
 import {
   classifyMigrationHistory,
   createdObjects,
@@ -126,7 +126,7 @@ async function main() {
 main()
   .catch((error) => {
     const message = error instanceof Error ? error.message : String(error)
-    console.error(`Preflight failed against host ${host}: ${message.split(url).join("<DATABASE_URL>")}`)
+    console.error(`Preflight failed against host ${host}: ${redactConnectionSecrets(message, url)}`)
     console.log("\nDECISION: BLOCKED")
     process.exitCode = 2
   })
