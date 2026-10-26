@@ -13,7 +13,7 @@ Statuses: **GREEN** / **AMBER** / **RED** / **UNVERIFIED**.
 
 Skylent is an EdTech platform with LMS, Career OS, Labs, Events, and a degrees backend API.
 
-**Production status:** **UNVERIFIED** in this document. Historical notes about HTTP 503 / pending migrations must be reconfirmed by an authorized operator via health + `db:preflight`. This release tree ships **7** additive October migrations (including `20261024140000_password_reset_and_degrees`); that is a tree expectation, not a live production count.
+**Production status:** **UNVERIFIED** in this document. Historical notes about HTTP 503 / pending migrations must be reconfirmed by an authorized operator via health + `db:preflight`. This release tree ships **8** additive migrations after September (through `20261025180000_elixir_ledger_and_admin_audit`); that is a tree expectation, not a live production count.
 
 ---
 

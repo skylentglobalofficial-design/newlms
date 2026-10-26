@@ -1,4 +1,4 @@
-import { isAiConfigured } from "./skylent-ai/service.js"
+import { describeAiReadiness } from "./skylent-ai/service.js"
 
 export type AiFailureCode = "not_configured" | "provider_error" | "unavailable" | "enrolment_required" | "lesson_locked"
 
@@ -11,12 +11,12 @@ export function noteAiFailure(code: AiFailureCode) {
 }
 
 export function readAiDiagnostics() {
-  const providerName = (process.env.SKYLENT_AI_PROVIDER ?? "").trim().toLowerCase()
-  const keyPresent = Boolean(process.env.SKYLENT_AI_API_KEY?.trim())
+  const readiness = describeAiReadiness()
   return {
-    configured: isAiConfigured(),
-    provider: providerName || "unset",
-    keyPresent,
+    configured: readiness.providerReady,
+    provider: readiness.provider,
+    keyPresent: readiness.keyPresent,
+    reason: readiness.reason,
     lastFailure,
   }
 }

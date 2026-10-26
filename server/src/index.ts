@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url"
 
 import express from "express"
 
-import { assertProductionEnv } from "./lib/env.js"
+import { assertProductionEnv, redactSecrets } from "./lib/env.js"
+import { describeAiReadiness } from "./lib/skylent-ai/service.js"
 import { apexRedirectLocation, injectCanonicalLink } from "./lib/public-host.js"
 import { logMigrationStateOnStartup } from "./lib/migration-guard.js"
 import { prisma } from "./lib/prisma.js"
@@ -156,9 +157,12 @@ app.use((error: unknown, _request: express.Request, response: express.Response, 
 })
 
 const server = app.listen(port, "0.0.0.0", () => {
+  const ai = describeAiReadiness()
+  const release = process.env.SKYLENT_RELEASE_SHA?.trim()
   console.log(`API listening on port ${port}`)
+  console.log(`AI readiness: ${ai.publicStatus} (${ai.reason}). Release: ${release && /^[0-9a-f]{7,40}$/i.test(release) ? release : "unknown"}`)
   void logMigrationStateOnStartup().catch((error) => {
-    console.warn("Migration check failed:", error instanceof Error ? error.message : error)
+    console.warn("Migration check failed:", redactSecrets(error instanceof Error ? error.message : String(error)))
   })
 })
 

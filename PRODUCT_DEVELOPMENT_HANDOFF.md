@@ -136,7 +136,7 @@ Use a local database, not production.
 
 ## Operator checks, 25 October 2026, 23:14 IST
 
-`origin/main` is merge commit `209f43b5b12b5fd383aa4eca72f80b0f6fb2674f`. Its tree matches `fc10eeac42134943fe70594e0deb21439da3bf13`. The working tree used for this note was clean. Production credentials are not configured in this environment: both the process and `.env` point at local database `skylent_agent_tmp` on port 5432, not a Supabase pooler. `npm run db:preflight` was not run.
+`origin/main` moved to `7aa7450989bf827de45f1f1fdf4d115b94ef90a7` when PR #208 merged (25 October 2026, 23:23 IST). That commit adds Elixir to the release gate. Production credentials are not configured for an agent checkout: a local `.env` must not be treated as production. `npm run db:preflight -- --production` refuses that local target before it connects.
 
 Public reads, no login and no database connection:
 
@@ -148,7 +148,9 @@ Public reads, no login and no database connection:
 
 ### Read-only production preflight
 
-`npm run db:preflight` runs `tsx scripts/check-migration-history.ts`. It opens one `READ ONLY` transaction, reads `_prisma_migrations`, and prints host, database name, pending names, failed rows, and production-only rows. The error path replaces the URL text with `<DATABASE_URL>`. It does not print the user or password. It does not check the port. `READY` is not approval to migrate, and it does not flag the `ProgramCourse` insert.
+`npm run db:preflight` runs `tsx scripts/check-migration-history.ts`. It opens one `READ ONLY` transaction, reads `_prisma_migrations`, and prints host, database name, target class, port, applied names, pending names, failed rows, and production-only rows. It ends with `DECISION: PASS` or `DECISION: BLOCKED`. The error path replaces the URL text with `<DATABASE_URL>`. It does not print the user or password. `PASS` is not approval to migrate.
+
+`npm run db:preflight -- --production` connects only when `DIRECT_URL` (or `DATABASE_URL` if that is empty) is the Supabase session pooler on port 5432. Any other target, including localhost and port 6543, is `BLOCKED` before a connection is opened. If `20261004180000_backfill_program_course_links` is pending, `--production` stays blocked until the same command also includes `--approve-backfill`.
 
 `import "dotenv/config"` loads a local `.env` only for variables that are not already set. An exported `DIRECT_URL` wins. If the operator forgets to export it, a checkout that contains `.env` will inspect that file’s database.
 
@@ -156,7 +158,7 @@ An authorized operator, on a trusted machine, from commit `209f43b5b12b5fd383aa4
 
 1. Put the production session-pooler URL in the shell as `DIRECT_URL`. Take it from the host’s secret store. Do not paste it into chat, a ticket, or a shell history that is shared. The shape is `postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:5432/postgres`. The user is `postgres.<ref>`. The port is **5432**.
 2. Before the preflight, print only host, port, and database name. Stop unless the host ends with `.pooler.supabase.com`, the port is `5432`, and the database name is the intended project. Stop for `localhost`, `127.0.0.1`, port `6543`, or host `db.<ref>.supabase.co`.
-3. Run `npm run db:preflight` and record the exit code.
+3. Run `npm run db:preflight -- --production` and record the exit code. Add `--approve-backfill` only after a person has accepted the `ProgramCourse` insert.
 4. Keep the host line, the database name, every `pending`, `FAILED`, and `production-only` line, and the final `READY`, `OK`, or `BLOCKED` line. Discard the URL.
 
 Stop the release if the exit code is not 0, any row is `FAILED`, any row is `production-only, UNKNOWN`, or the pending names are not exactly:
@@ -192,9 +194,10 @@ If the command is `npm start` or `node server.js`, the next restart applies migr
 
 `GET /api/v1/admin/ai` is limited to a signed-in super admin. The JSON from `readAiDiagnostics()` is only:
 
-- `configured`: boolean from `isAiConfigured()`
+- `configured`: true only when a provider can actually be built. A key with an invalid base URL is false, reason `invalid_base_url`.
 - `provider`: the lowercase `SKYLENT_AI_PROVIDER`, or `unset`
 - `keyPresent`: true when `SKYLENT_AI_API_KEY` is non-empty
+- `reason`: `ready`, `grounded_preview`, `provider_off`, `grounded_blocked`, `missing_key`, or `invalid_base_url`
 - `lastFailure`: a code and time for this process, or null
 
 The key, base URL, and model are not in that response. An anonymous call is 401, which was observed. It does not say whether a key is set.
@@ -204,20 +207,14 @@ A super admin, in a browser already signed in on `https://skylent.live`, opens t
 How to read the result:
 
 - `provider` `off` or `none`: not configured, even if a key is present.
-- `provider` `lesson-grounded`: configured in production only when `SKYLENT_AI_ALLOW_GROUNDED=1`. Leave that unset. Lesson AI then stays off.
-- Any other provider, including `unset`: `configured` is true only when `keyPresent` is true. A key with an invalid base URL can still show `configured: true`, because `isAiConfigured()` checks the key and `resolveAiProvider()` rejects the URL later. Confirm the base URL in the panel without copying it.
+- `provider` `lesson-grounded` without `SKYLENT_AI_ALLOW_GROUNDED=1` in production: `reason` `grounded_blocked`. Leave that flag unset.
+- `provider` `lesson-grounded` with the flag set: `reason` `grounded_preview`. That is the test provider, not a vendor model.
+- Any other provider: `configured` is true only for `reason` `ready`. `missing_key` and `invalid_base_url` are not ready. Confirm the base URL is `https` in the panel without copying it.
 - The public site chat at `POST /api/v1/reva/chat` requires a key even when the lesson assistant is on `lesson-grounded`. A working programme finder does not mean the lesson model is configured.
 
 ### CI coverage for Elixir
 
-[Release-gate run 40212150967](https://github.com/skylentglobalofficial-design/newlms/actions/runs/40212150967) succeeded for `fc10eea`. The merge commit has no Actions run, because the workflow does not run on a push to `main`. The gate applies every migration folder, including the Elixir migration, to throwaway Postgres, then runs `db:preflight --expect-none`. It does not run `npm run test:elixir`.
-
-Minimum addition, in `.github/workflows/release-gate.yml`, after the API is up on port 3099:
-
-- Assert `prisma/migrations/20261025180000_elixir_ledger_and_admin_audit` exists beside the other October folders.
-- Run `npm run test:elixir` with the workflow’s existing `DATABASE_URL` and `API_BASE=http://127.0.0.1:3099/api/v1`.
-
-That script checks the ₹100 → 10 formula, duplicate payment references, the quiz threshold, cooldown, one concurrent purchase, a refund that does not go negative, a student forbidden from admin Elixir routes, and lesson AI access before and after enrolment. It is not in the gate today. This note does not change the workflow.
+PR #208 added `npm run test:elixir` to the release gate, with `API_BASE` on port 3099, and asserts the Elixir migration folder exists. That run is on the pull request for `fc10eea`’s follow-up, not a production check. The workflow still does not run on a push to `main`, so a merge commit has no Actions run unless a pull request triggered it. `scripts/test-smoke-decision.ts` checks the public smoke rules without calling production. `npm run smoke:public` is the live probe and fails closed when health is not fully ready.
 
 ## Production prerequisites
 

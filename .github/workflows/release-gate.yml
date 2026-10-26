@@ -104,6 +104,7 @@ jobs:
       - name: Content and path checks (no database)
         if: always()
         run: |
+          npx tsx scripts/test-smoke-decision.ts
           npm run test:da-content
           npm run test:pm-content
           npm run test:live-intents

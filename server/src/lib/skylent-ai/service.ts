@@ -32,6 +32,36 @@ export function isAiConfigured(): boolean {
   return Boolean(process.env.SKYLENT_AI_API_KEY?.trim())
 }
 
+export type AiReadinessReason =
+  | "ready"
+  | "grounded_preview"
+  | "provider_off"
+  | "grounded_blocked"
+  | "missing_key"
+  | "invalid_base_url"
+
+/** Safe for logs and the admin API. Does not include the key, URL, or model. */
+export function describeAiReadiness(): {
+  provider: string
+  keyPresent: boolean
+  providerReady: boolean
+  reason: AiReadinessReason
+  publicStatus: "configured" | "preview" | "not_configured"
+} {
+  const provider = (process.env.SKYLENT_AI_PROVIDER ?? "").trim().toLowerCase() || "unset"
+  const keyPresent = Boolean(process.env.SKYLENT_AI_API_KEY?.trim())
+  let reason: AiReadinessReason
+  if (provider === "off" || provider === "none") reason = "provider_off"
+  else if (provider === "lesson-grounded" && !lessonGroundedAllowed()) reason = "grounded_blocked"
+  else if (provider === "lesson-grounded") reason = "grounded_preview"
+  else if (!keyPresent) reason = "missing_key"
+  else if (!readOpenAiCompatibleConfig()) reason = "invalid_base_url"
+  else reason = "ready"
+  const providerReady = reason === "ready" || reason === "grounded_preview"
+  const publicStatus = reason === "ready" ? "configured" : reason === "grounded_preview" ? "preview" : "not_configured"
+  return { provider, keyPresent, providerReady, reason, publicStatus }
+}
+
 /** Factory only — routes must not branch on provider.id. */
 export function resolveAiProvider(): AiProvider | null {
   if (!isAiConfigured()) return null

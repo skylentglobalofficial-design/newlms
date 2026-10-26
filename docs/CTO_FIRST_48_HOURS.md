@@ -26,7 +26,7 @@ Follow `docs/PRODUCTION.md` section **8a** in full:
 
 1. Verified backup and recovery path
 2. Confirm `DATABASE_URL` and `DIRECT_URL` target the same intended database
-3. Read-only `npm run db:preflight` — expect the seven October migrations pending (if production matches the historical baseline used in replay tests) **or** stop and reconcile if the report differs
+3. Read-only `npm run db:preflight -- --production` from a shell where `DIRECT_URL` is already the session pooler on port 5432. Expect the eight post-September migrations pending (if production matches the historical baseline used in replay tests) **or** stop and reconcile if the report differs. `PASS` still requires a separate yes for the `ProgramCourse` backfill (`--approve-backfill`).
 4. Explicit operator approval
 5. Authorized operator runs `npx prisma migrate deploy` (or restart via `server.js` if that is the documented start command)
 6. Post-migration preflight (`--expect-none`), health check, and smoke tests
