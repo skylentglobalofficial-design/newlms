@@ -16,7 +16,7 @@ Phase 0 is on `main`. Phase 1 preflight is still incomplete: the Hostinger start
 | Lesson navigation and content | GREEN in code and the LMS test | Later lessons stay locked until the previous one is complete. |
 | Lesson completion and progress | GREEN in code and the LMS test | Progress is stored on the enrolment and is still there after another read. |
 | Quizzes | GREEN in code and the LMS test | The server scores answers. A correct set passed. The separate quiz-guard suite was not re-run in this phase. |
-| Assignments | GREEN after the fix below | A late draft no longer reopens a submitted assignment. Covered by the LMS test. |
+| Assignments | GREEN after the fixes below | A late draft no longer reopens a submitted or graded assignment. A learner may submit again after a grade, and that resubmit clears the current grade. Covered by the LMS test. |
 | Student dashboard | AMBER | The page loads enrolments from the API and has small-screen CSS. A phone-sized pass was not done. |
 | Production of these flows | UNVERIFIED | No live learner session was used. |
 
@@ -46,25 +46,29 @@ A draft save uses `action: "start"`. Submit uses `action: "submit"`. The editor 
 
 Reading the status and then saving it were two separate steps. A submit and a draft could both read “in progress” and the draft’s save could land last.
 
-The handler now takes the same Postgres transaction lock already used for quiz attempts (`pg_advisory_xact_lock` on the enrolment and lesson). The second request waits until the first commits, then reads the status that request stored. A `start` that sees `submitted` or `graded` does not write. A new `submit` still replaces the response text. Attachments and lesson progress for that request are written in the same transaction.
+The handler now takes the same Postgres transaction lock already used for quiz attempts (`pg_advisory_xact_lock` on the enrolment and lesson). The second request waits until the first commits, then reads the status that request stored. A `start` that sees `submitted` or `graded` does not write. A new `submit` replaces the response text. Attachments and lesson progress for that request are written in the same transaction.
 
-`scripts/test-lms.ts` checks three stored outcomes, not only the HTTP body:
+### Resubmit after a grade
+
+A learner may submit again after an assignment is graded. The new submit sets status back to `submitted`, replaces `responseText`, and sets a new `submittedAt`. When the locked row is `graded` and the grading columns exist, that same update sets `grade`, `feedback`, `gradedById`, and `gradedAt` to null. A draft does not do this.
+
+There is no assignment grading-history table. Faculty grading (`POST /api/v1/faculty/submissions/:id/grade`) writes those four columns on the current `AssignmentProgress` row and does not append a history record. Admin audit is not written for a grade. Clearing the current columns is the reset. It does not delete a historical record, because none is stored. No history table was added.
+
+The nulls are included only when `assignmentGrading` is true, so a database that has not applied `20261024120000_quiz_grading_events` is not asked to write columns it does not have. The capability read stays outside the transaction. The advisory lock, the early return for drafts, and the rest of the transaction are unchanged.
+
+The lesson workspace still shows "Submission recorded" once the lesson is complete, so this rule is the server save. The page does not yet offer a second submit button.
+
+`scripts/test-lms.ts` checks the stored row, not only the HTTP body:
 
 - A `start` after submit leaves status `submitted` and keeps the submitted text.
 - Five rounds of one submit racing six drafts each end with status `submitted` and the submit text.
-- A `start` after `graded` leaves status `graded` and keeps the graded text.
+- A `start` after `graded` leaves status `graded`, keeps the graded text, and keeps grade 80, the feedback, the grader id, and the grading time.
+- A `submit` after that grade stores status `submitted`, the new text, a new submission time, and null grade, feedback, grader id, and grading time.
 
 No other core-learning defect was clear enough to change.
 
-### Submit after a grade — decision needed
-
-A new `submit` on an assignment that is already `graded` does change the stored status back to `submitted`. The upsert sets `status`, `responseText`, and `submittedAt`. It does not clear `grade`, `feedback`, `gradedById`, or `gradedAt`, so those grade fields can remain on a row whose status is `submitted` again. A draft (`start`) does not do this. That path leaves `graded` unchanged.
-
-No product rule or test says a learner may or may not submit again after a grade. Faculty grading accepts both `submitted` and `graded` rows (`server/src/routes/faculty.ts`). `docs/CURSOR-HANDOFF.md` only records that resubmitting after a submit is how the code works today, and leaves that as an open question. It does not mention a grade. This review does not add a new rule.
-
 Questions that were not guessed:
 
-- May a learner submit again after an assignment is graded, and should that clear the grade? Unspecified. Left unchanged.
 - Whether production mail is configured for password reset. The API can return success when mail is not set. No reset page was found in `src/`.
 - Whether a phone layout of the dashboard is acceptable. CSS breakpoints exist. They were not opened in a phone viewport.
 
@@ -74,12 +78,12 @@ Run against the local API on port 3000 and the local database. Not production.
 
 | Command | Result |
 |---|---|
-| `npx tsc -p tsconfig.backend.json --noEmit` | Pass, after the lock change |
-| `npx tsx scripts/test-lms.ts` | Pass, after the API reloaded the lock. Step 13b ran five racing rounds and the graded case, and each round read the stored row. |
+| `npx tsc -p tsconfig.backend.json --noEmit` | Pass, 26 October 2026, 19:59 IST. Exit 0. |
+| `npx tsx scripts/test-lms.ts` | Pass, 26 October 2026, 19:59 IST, against the local API on port 3000 after it reloaded this change. Exit 0. "All LMS integration checks passed." Step 13b covered the late draft, five racing rounds, and a draft after a grade (status, text, grade 80, feedback, grader, and grading time stayed). Step 13c resubmitted that graded row and the stored grade, feedback, grader id, and grading time were null. |
 
 Not re-run in this phase: `test:auth`, `test:consent`, `test:quiz-guard`, and the learner journey. They passed on the throwaway database in the PR #209 gate. They were not needed to prove this assignment change, and they were not pointed at production.
 
-The first `test:lms` attempt failed because the shell still had `API_BASE` pointed at port 3011, which was down. That was an environment mistake, not a product failure. The retry with that variable unset passed.
+During the earlier lock change, the first `test:lms` attempt failed because the shell still had `API_BASE` pointed at port 3011, which was down. That was an environment mistake, not a product failure. The retry with that variable unset passed. This resubmit run used port 3000 with `API_BASE` unset.
 
 ## Remaining blockers
 
@@ -90,8 +94,8 @@ The first `test:lms` attempt failed because the shell still had `API_BASE` point
 
 ## Files and risk
 
-- `server/src/routes/lms.ts` — decide and save the assignment inside the quiz-attempt Postgres lock so a draft cannot overwrite a submit.
-- `scripts/test-lms.ts` — stored-row checks for a late draft, a submit racing several drafts, and a graded assignment.
+- `server/src/routes/lms.ts` — decide and save the assignment inside the quiz-attempt Postgres lock so a draft cannot overwrite a submit. A submit of a graded row clears the current grade fields in that same update.
+- `scripts/test-lms.ts` — stored-row checks for a late draft, a submit racing several drafts, a draft after a grade, and a resubmit that clears the grade.
 - `docs/PHASE_2_CORE_LEARNING.md` — this report.
 
-Risk: a learner can no longer use "start" to reopen a submitted or graded assignment. A new `submit` still updates the text, including when the current status is `graded`. Whether that should stay allowed is an open decision, not a rule added here. The lock is held only for that save.
+Risk: a learner can no longer use "start" to reopen a submitted or graded assignment. A new `submit` after a grade replaces the text and clears the current grade, feedback, grader, and grading time. The previous grade is not archived. The lock is held only for that save. The lesson page still does not show a resubmit control after the lesson is complete.

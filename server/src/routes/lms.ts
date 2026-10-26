@@ -890,6 +890,10 @@ lmsRouter.post(
         return res.status(400).json({ error: "Response text or attachment metadata is required to submit" })
       }
 
+      // Read before the lock. A database without the grading columns must not
+      // be asked to null them. Graded status only exists once those columns do.
+      const grading = (await readSchemaCapabilities()).assignmentGrading
+
       // Same transaction-scoped lock as quiz attempts. The second request waits
       // until the first commits, then reads the status that request stored.
       const assignment = await prisma.$transaction(async (tx) => {
@@ -904,6 +908,11 @@ lmsRouter.post(
         })
         const alreadyFinal = existing?.status === AssignmentStatus.submitted || existing?.status === AssignmentStatus.graded
         if (!isSubmit && alreadyFinal) return existing
+
+        // Faculty grading stores the current grade on this row. There is no
+        // grading-history table to keep. A new submit after graded clears
+        // those four fields so the old grade is not attached to the new text.
+        const clearGrade = isSubmit && existing?.status === AssignmentStatus.graded && grading
 
         const saved = await tx.assignmentProgress.upsert({
           where: {
@@ -921,6 +930,9 @@ lmsRouter.post(
             status: isSubmit ? AssignmentStatus.submitted : AssignmentStatus.in_progress,
             responseText: bodyParsed.data.responseText ?? undefined,
             submittedAt: isSubmit ? now : undefined,
+            ...(clearGrade
+              ? { grade: null, feedback: null, gradedById: null, gradedAt: null }
+              : {}),
           },
           select: { id: true, status: true, submittedAt: true },
         })
