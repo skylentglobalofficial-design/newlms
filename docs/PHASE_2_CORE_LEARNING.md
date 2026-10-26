@@ -54,8 +54,17 @@ The handler now takes the same Postgres transaction lock already used for quiz a
 - Five rounds of one submit racing six drafts each end with status `submitted` and the submit text.
 - A `start` after `graded` leaves status `graded` and keeps the graded text.
 
-No other core-learning defect was clear enough to change. Questions that were not guessed:
+No other core-learning defect was clear enough to change.
 
+### Submit after a grade — decision needed
+
+A new `submit` on an assignment that is already `graded` does change the stored status back to `submitted`. The upsert sets `status`, `responseText`, and `submittedAt`. It does not clear `grade`, `feedback`, `gradedById`, or `gradedAt`, so those grade fields can remain on a row whose status is `submitted` again. A draft (`start`) does not do this. That path leaves `graded` unchanged.
+
+No product rule or test says a learner may or may not submit again after a grade. Faculty grading accepts both `submitted` and `graded` rows (`server/src/routes/faculty.ts`). `docs/CURSOR-HANDOFF.md` only records that resubmitting after a submit is how the code works today, and leaves that as an open question. It does not mention a grade. This review does not add a new rule.
+
+Questions that were not guessed:
+
+- May a learner submit again after an assignment is graded, and should that clear the grade? Unspecified. Left unchanged.
 - Whether production mail is configured for password reset. The API can return success when mail is not set. No reset page was found in `src/`.
 - Whether a phone layout of the dashboard is acceptable. CSS breakpoints exist. They were not opened in a phone viewport.
 
@@ -85,4 +94,4 @@ The first `test:lms` attempt failed because the shell still had `API_BASE` point
 - `scripts/test-lms.ts` — stored-row checks for a late draft, a submit racing several drafts, and a graded assignment.
 - `docs/PHASE_2_CORE_LEARNING.md` — this report.
 
-Risk: a learner can no longer use "start" to reopen a submitted or graded assignment. Sending `submit` again still updates the text. The lock is held only for that save.
+Risk: a learner can no longer use "start" to reopen a submitted or graded assignment. A new `submit` still updates the text, including when the current status is `graded`. Whether that should stay allowed is an open decision, not a rule added here. The lock is held only for that save.
