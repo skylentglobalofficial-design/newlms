@@ -263,8 +263,18 @@ export async function submitQuizAttempt(slug: string, lessonKey: string, answers
   return result.data
 }
 
+export type AssignmentState = {
+  lessonKey: string
+  status: string
+  responseText: string | null
+  submittedAt: string | null
+  grade: number | null
+  feedback: string | null
+  gradedAt: string | null
+}
+
 export async function fetchAssignmentState(slug: string, lessonKey: string) {
-  const result = await lmsGet<{ data: { lessonKey: string; status: string; responseText: string | null; submittedAt: string | null } }>(
+  const result = await lmsGet<{ data: AssignmentState }>(
     `/lms/courses/${slug}/lessons/${lessonKey}/assignment`,
   )
   return result.data

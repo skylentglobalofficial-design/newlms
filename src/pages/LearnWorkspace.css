@@ -1312,6 +1312,79 @@
   outline-offset: 2px;
 }
 
+.lx-assignment-status {
+  display: inline-block;
+  margin: 0 0 10px;
+  padding: 2px 8px;
+  border: 1px solid var(--skylent-color-border-strong);
+  border-radius: 999px;
+  color: var(--skylent-color-ink);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.lx-assignment-grade {
+  margin: 0 0 8px;
+  color: var(--skylent-color-ink);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.lx-assignment-feedback {
+  margin: 0 0 8px;
+  color: var(--skylent-color-ink);
+  font-size: 15px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.lx-submitted .as-fine,
+.lms-assignment-workspace .as-fine {
+  margin: 0 0 8px;
+}
+
+.lx-assignment-response-label {
+  margin: 14px 0 8px;
+  color: var(--skylent-color-muted);
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lx-assignment-response {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--skylent-color-border);
+  border-radius: 8px;
+  background: var(--skylent-surface-elevated);
+  color: var(--skylent-color-ink);
+  font-size: 15px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.lx-assignment-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* The compact Skylent AI bar is fixed over the bottom of the lesson. */
+.lx-submitted,
+.lx-assignment-actions,
+.lx-assignment-actions .os-btn {
+  scroll-margin-bottom: 120px;
+}
+
+.lx-submitted .os-link {
+  margin-top: 14px;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 
 /* Below 1200 the Skylent AI panel docks as a sheet; leave room for its bar. */

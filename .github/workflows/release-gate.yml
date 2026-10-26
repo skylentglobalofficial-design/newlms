@@ -175,6 +175,9 @@ jobs:
         run: |
           "$RUNNER_TEMP/restart-api.sh"
           npm run test:lms
+      - name: test:assignment-flow
+        if: always()
+        run: npm run test:assignment-flow
       - name: test:ai
         if: always()
         run: |

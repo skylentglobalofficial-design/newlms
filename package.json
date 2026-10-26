@@ -29,6 +29,7 @@
     "test:google-oauth": "tsx scripts/test-google-oauth.ts",
     "test:oauth-redirect": "tsx scripts/test-oauth-redirect.ts",
     "test:lms": "tsx scripts/test-lms.ts",
+    "test:assignment-flow": "tsx scripts/test-assignment-flow.ts",
     "test:ai": "tsx scripts/test-skylent-ai.ts",
     "test:elixir": "tsx scripts/test-elixir.ts",
     "test:ai-policy": "tsx scripts/test-ai-policy.ts",

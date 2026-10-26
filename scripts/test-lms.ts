@@ -428,6 +428,13 @@ async function main() {
   assert(gradedRow.feedback === "Solid analysis.", "A draft must not clear the feedback")
   assert(gradedRow.gradedById === userARow.id, "A draft must not clear the grader")
   assert(gradedRow.gradedAt?.toISOString() === gradedAt.toISOString(), "A draft must not clear the grading time")
+  const gradedView = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`)
+  assert(gradedView.response.ok, "The learner assignment view should load while graded")
+  assert(gradedView.data.data.status === "graded", "The learner view should say graded")
+  assert(gradedView.data.data.grade === 80, "The learner view should include the grade")
+  assert(gradedView.data.data.feedback === "Solid analysis.", "The learner view should include the feedback")
+  assert(gradedView.data.data.gradedAt === gradedAt.toISOString(), "The learner view should include the grading time")
+  assert(gradedView.data.data.responseText === "Graded response.", "The learner view should keep the graded text after a draft")
 
   console.log("13c. Resubmitting a graded assignment clears the current grade")
   const revisedText = "Revised analysis after the grade."
@@ -447,6 +454,13 @@ async function main() {
   assert(resubmitted.gradedById === null, "The previous grader must be cleared")
   assert(resubmitted.gradedAt === null, "The previous grading time must be cleared")
   assert(resubmitted.submittedAt !== null && resubmitted.submittedAt.getTime() !== gradedAt.getTime(), "Resubmit must record a new submission time")
+  const revisedView = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`)
+  assert(revisedView.response.ok, "The learner assignment view should load after resubmit")
+  assert(revisedView.data.data.status === "submitted", "The learner view should say submitted after resubmit")
+  assert(revisedView.data.data.responseText === revisedText, "The learner view should show the revised text")
+  assert(revisedView.data.data.grade === null, "The learner view should not keep the old grade")
+  assert(revisedView.data.data.feedback === null, "The learner view should not keep the old feedback")
+  assert(revisedView.data.data.gradedAt === null, "The learner view should not keep the old grading time")
   await prisma.assignmentProgress.update({
     where: { id: assignmentRow.id },
     data: {

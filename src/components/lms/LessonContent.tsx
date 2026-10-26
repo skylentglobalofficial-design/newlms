@@ -7,6 +7,7 @@ import LessonVideoPlayer from './LessonVideoPlayer'
 import LessonDocument from './LessonDocument'
 import type { VideoPlaybackSource } from '../../lib/media/types'
 import { AssessmentSurface, type QuizQuestion } from './AssessmentSurface'
+import { AssignmentResponse, type AssignmentRecord } from './AssignmentResponse'
 import { lessonTypeLabel } from './lms-utils'
 
 type Accent = { primary: string; subtle: string; border: string; text: string }
@@ -123,7 +124,7 @@ export function LessonContentView({
   onQuizRetry,
   onQuizSubmit,
   onAssignmentSubmit,
-  assignmentDraft,
+  assignment,
   onAssignmentDraft,
   lessonMedia,
   courseSlug,
@@ -138,7 +139,8 @@ export function LessonContentView({
   onQuizSubmit?: (answers: Record<number, number>) => Promise<boolean>
   /** Resolves true only once the server has recorded the submission. */
   onAssignmentSubmit?: (text: string) => Promise<boolean>
-  assignmentDraft?: string
+  /** Null while the assignment request is still loading. */
+  assignment?: AssignmentRecord | null
   onAssignmentDraft?: (text: string) => void
   lessonMedia?: VideoPlaybackSource
   courseSlug?: string
@@ -241,15 +243,11 @@ export function LessonContentView({
           A structured brief has not been authored for this assignment. Paste the work you can defend. There is no grading in this pilot.
         </p>
       )}
-      <AssessmentSurface
-        mode="assignment"
-        title={lesson.title}
+      <AssignmentResponse
+        record={assignment === undefined ? null : assignment}
         subtitle={material?.assignment ? 'Paste your work below. Submission records progress; it is not a grade.' : 'Apply concepts from this module. Submission records progress; it is not a grade.'}
-        accent={accent}
-        passed={lessonState.complete || lessonState.assignmentSubmitted}
-        initialText={assignmentDraft}
         onDraft={onAssignmentDraft}
-        onSubmitAssignment={onAssignmentSubmit}
+        onSubmit={onAssignmentSubmit ?? (async () => false)}
         completionNote={
           evidence
             ? `Submission recorded. There is no grading in this pilot. Add “${evidence.artifact}” to Career OS → Projects yourself if you want it as portfolio evidence.`
