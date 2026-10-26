@@ -8,17 +8,17 @@
  *   /education?level=ug|pg          → one level
  *   /education?mode=online|campus   → one mode (old links keep working)
  *
- * Cards come only from listDegrees() (src/lib/degrees.ts, backed by src/data/education.ts).
- * Degrees are not in the backend and no institution is confirmed yet, so every listing says
- * "Sample listing · not open for applications" and offers an enquiry instead of an application. Nothing names a
- * university, fee, date or campus. Schooling and exam preparation are not foregrounded here.
+ * Cards start from the sample listings in src/data/education.ts. A published degree from
+ * GET /api/v1/degrees is added, or replaces the sample with the same slug. An empty or
+ * unavailable catalogue leaves the samples. Sample cards say they are not open for applications.
  */
 import { useEffect } from "react"
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { ArrowRight } from "../components/skylent/primitives"
 import { openSkylentAi } from "../components/skylent/ai-events"
-import { degreePath, deliveryModeFromParam, listDegrees, type Degree, type DeliveryMode } from "../lib/degrees"
+import { degreePath, deliveryModeFromParam, type Degree, type DeliveryMode } from "../lib/degrees"
+import { useDegreeCatalogue } from "../hooks/useDegreeCatalogue"
 import { EDUCATION_HASH_REDIRECTS } from "../lib/product-architecture"
 import photoOnlineUg from "@/assets/site/degree-computing.jpg"
 import photoCampusUg from "@/assets/site/hero-classroom.jpg"
@@ -71,7 +71,13 @@ function DegreeRow({ degree }: { degree: Degree }) {
       <Link to={degreePath(degree)} className="edx-degree">
         <span className="edx-degree__title">{degree.title}</span>
         <span className="edx-degree__meta">
-          <span className="edx-soon">Sample listing · not open for applications</span>
+          {degree.sample ? (
+            <span className="edx-soon">Sample listing · not open for applications</span>
+          ) : degree.institution?.name ? (
+            <span>{degree.institution.name}</span>
+          ) : (
+            <span>Published degree</span>
+          )}
           <span>{degree.discipline}</span>
         </span>
         <span className="edx-degree__go">
@@ -147,7 +153,7 @@ export default function EducationPage() {
     document.title = `${label} · Skylent`
   }, [level, mode])
 
-  const all = listDegrees()
+  const { degrees: all } = useDegreeCatalogue()
   const levels = level ? LEVELS.filter((item) => item.id === level) : LEVELS
   const modes: DeliveryMode[] = mode ? [mode] : ["ONLINE", "CAMPUS"]
   const href = (next: { level?: string | null; mode?: string | null }) => {

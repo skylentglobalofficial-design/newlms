@@ -160,6 +160,11 @@ jobs:
         run: |
           "$RUNNER_TEMP/restart-api.sh"
           npm run test:auth
+      - name: test:password-reset-http
+        if: always()
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:password-reset-http
       - name: test:consent (terms acceptance enforced and recorded by the server)
         if: always()
         run: |
@@ -175,6 +180,12 @@ jobs:
         run: |
           "$RUNNER_TEMP/restart-api.sh"
           npm run test:lms
+      - name: test:assignment-flow
+        if: always()
+        run: npm run test:assignment-flow
+      - name: test:degree-catalogue
+        if: always()
+        run: npx tsx scripts/test-degree-catalogue.ts
       - name: test:ai
         if: always()
         run: |

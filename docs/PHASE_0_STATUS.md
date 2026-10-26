@@ -137,6 +137,10 @@ A backup was deferred by the owner and was not rechecked. It is still required b
 - Did not install packages.
 - Did not re-run the release-gate suite. The gate result cited above is the GitHub run on the merged pull request, which used a throwaway database.
 
+## Later note
+
+On 26 October 2026, after this report, `/reset-password` was added so the existing reset email has a page. The sentence above that no reset page was found was true when this report was written. Mail delivery is still not confirmed.
+
 ## Stop line
 
 Phase 1 should not start by migrating or restarting production. The next product work can proceed in the repository. Production use of Elixir, and any restart that might apply migrations, stays blocked until a person records the real Hostinger start command, runs the read-only preflight, and approves the migration set, including the programme-course backfill.

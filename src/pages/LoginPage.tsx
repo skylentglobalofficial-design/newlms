@@ -354,9 +354,12 @@ export default function LoginPage() {
                       disabled={submitting}
                     />
                   </div>
-                  <button className="entry-submit" type="submit" disabled={submitting}>
+                    <button className="entry-submit" type="submit" disabled={submitting}>
                     {submitting ? 'Signing in…' : 'Sign in'}
                   </button>
+                  <p className="entry-forgot">
+                    <Link to="/reset-password">Forgot password?</Link>
+                  </p>
 
                   <div className="entry-or"><span>or</span></div>
 
@@ -444,8 +447,8 @@ export default function LoginPage() {
 
           <p className="entry-note">
             Signing in opens your lessons, practice, projects, and the evidence you keep.
-            Password resets are handled by hand for now, so <Link to="/contact">contact us</Link> if you
-            cannot get in. Read the <Link to="/terms">Terms &amp; Conditions</Link> and{' '}
+            If you cannot get in, <Link to="/reset-password">reset your password</Link> or{' '}
+            <Link to="/contact">contact us</Link>. Read the <Link to="/terms">Terms &amp; Conditions</Link> and{' '}
             <Link to="/privacy">Privacy Policy</Link>.
           </p>
 

@@ -890,57 +890,103 @@ lmsRouter.post(
         return res.status(400).json({ error: "Response text or attachment metadata is required to submit" })
       }
 
-      const assignment = await prisma.assignmentProgress.upsert({
-        where: {
-          enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
-        },
-        create: {
-          userId: req.auth!.user.id,
-          enrollmentId: enrollment.id,
-          nodeId: located.node.id,
-          status: isSubmit ? AssignmentStatus.submitted : AssignmentStatus.in_progress,
-          responseText: bodyParsed.data.responseText ?? null,
-          submittedAt: isSubmit ? now : null,
-        },
-        update: {
-          status: isSubmit ? AssignmentStatus.submitted : AssignmentStatus.in_progress,
-          responseText: bodyParsed.data.responseText ?? undefined,
-          submittedAt: isSubmit ? now : undefined,
-        },
-        select: { id: true, status: true, submittedAt: true },
-      })
+      // Read before the lock. A database without the grading columns must not
+      // be asked to null them. Graded status only exists once those columns do.
+      const grading = (await readSchemaCapabilities()).assignmentGrading
 
-      if (isSubmit && bodyParsed.data.attachments?.length) {
-        await prisma.assignmentAttachment.deleteMany({ where: { assignmentProgressId: assignment.id } })
-        await prisma.assignmentAttachment.createMany({
-          data: bodyParsed.data.attachments.map((file) => ({
-            assignmentProgressId: assignment.id,
-            ...buildPendingAttachmentRecord(assignment.id, file),
-          })),
+      // Same transaction-scoped lock as quiz attempts. The second request waits
+      // until the first commits, then reads the status that request stored.
+      const assignment = await prisma.$transaction(async (tx) => {
+        const lockKey = `skylent-assignment:${enrollment.id}:${located.node.id}`
+        await tx.$queryRaw`SELECT pg_advisory_xact_lock(hashtextextended(${lockKey}, 0))::text AS locked`
+
+        const existing = await tx.assignmentProgress.findUnique({
+          where: {
+            enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
+          },
+          select: { id: true, status: true, submittedAt: true },
         })
-      }
+        const alreadyFinal = existing?.status === AssignmentStatus.submitted || existing?.status === AssignmentStatus.graded
+        if (!isSubmit && alreadyFinal) return existing
 
-      if (isSubmit) {
-        await prisma.lessonProgress.upsert({
+        // Faculty grading stores the current grade on this row. There is no
+        // grading-history table to keep. A new submit after graded clears
+        // those four fields so the old grade is not attached to the new text.
+        const clearGrade = isSubmit && existing?.status === AssignmentStatus.graded && grading
+
+        const saved = await tx.assignmentProgress.upsert({
           where: {
             enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
           },
           create: {
+            userId: req.auth!.user.id,
             enrollmentId: enrollment.id,
             nodeId: located.node.id,
-            startedAt: now,
-            lastAccessedAt: now,
-            completedAt: now,
+            status: isSubmit ? AssignmentStatus.submitted : AssignmentStatus.in_progress,
+            responseText: bodyParsed.data.responseText ?? null,
+            submittedAt: isSubmit ? now : null,
           },
           update: {
-            lastAccessedAt: now,
-            completedAt: now,
+            status: isSubmit ? AssignmentStatus.submitted : AssignmentStatus.in_progress,
+            responseText: bodyParsed.data.responseText ?? undefined,
+            submittedAt: isSubmit ? now : undefined,
+            ...(clearGrade
+              ? { grade: null, feedback: null, gradedById: null, gradedAt: null }
+              : {}),
           },
+          select: { id: true, status: true, submittedAt: true },
         })
-        await prisma.userEnrollment.update({
-          where: { id: enrollment.id },
-          data: { lastAccessedNodeId: located.node.id },
-        })
+
+        if (isSubmit && bodyParsed.data.attachments?.length) {
+          await tx.assignmentAttachment.deleteMany({ where: { assignmentProgressId: saved.id } })
+          await tx.assignmentAttachment.createMany({
+            data: bodyParsed.data.attachments.map((file) => ({
+              assignmentProgressId: saved.id,
+              ...buildPendingAttachmentRecord(saved.id, file),
+            })),
+          })
+        }
+
+        if (isSubmit) {
+          await tx.lessonProgress.upsert({
+            where: {
+              enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
+            },
+            create: {
+              enrollmentId: enrollment.id,
+              nodeId: located.node.id,
+              startedAt: now,
+              lastAccessedAt: now,
+              completedAt: now,
+            },
+            update: {
+              lastAccessedAt: now,
+              completedAt: now,
+            },
+          })
+          await tx.userEnrollment.update({
+            where: { id: enrollment.id },
+            data: { lastAccessedNodeId: located.node.id },
+          })
+        } else {
+          await tx.lessonProgress.upsert({
+            where: {
+              enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
+            },
+            create: {
+              enrollmentId: enrollment.id,
+              nodeId: located.node.id,
+              startedAt: now,
+              lastAccessedAt: now,
+            },
+            update: { lastAccessedAt: now },
+          })
+        }
+
+        return saved
+      })
+
+      if (isSubmit) {
         await syncCertificateState(enrollment.id, course.id)
         await awardVerifiedLearning({
           userId: req.auth!.user.id,
@@ -948,19 +994,6 @@ lmsRouter.post(
           sourceId: located.node.id,
           courseSlug: course.slug,
           lessonKey: lessonParsed.data.lessonKey,
-        })
-      } else {
-        await prisma.lessonProgress.upsert({
-          where: {
-            enrollmentId_nodeId: { enrollmentId: enrollment.id, nodeId: located.node.id },
-          },
-          create: {
-            enrollmentId: enrollment.id,
-            nodeId: located.node.id,
-            startedAt: now,
-            lastAccessedAt: now,
-          },
-          update: { lastAccessedAt: now },
         })
       }
 

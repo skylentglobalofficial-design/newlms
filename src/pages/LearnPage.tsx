@@ -32,6 +32,8 @@ import {
   submitQuizAttempt,
   updateAssignment,
 } from '../lib/lms-api'
+import { assignmentLearnerView } from '../lib/assignment-flow'
+import type { AssignmentRecord } from '../components/lms/AssignmentResponse'
 import { TermsConsent } from '../components/legal/TermsConsent'
 import LessonSlide from '../components/lms/LessonSlide'
 import './LearnWorkspace.css'
@@ -102,11 +104,16 @@ export default function LearnPage() {
   const [enrollError, setEnrollError] = useState<string | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
   const [completing, setCompleting] = useState(false)
-  const [assignmentDraft, setAssignmentDraft] = useState<{ lessonId: string; text: string } | null>(null)
+  const [assignmentRecord, setAssignmentRecord] = useState<(AssignmentRecord & { lessonId: string }) | null>(null)
   const [dynamicPractice, setDynamicPractice] = useState<LearnerPracticeWorkspace | null>(null)
   const menuBtnRef = useRef<HTMLButtonElement>(null)
   const stageRef = useRef<HTMLElement>(null)
   const draftTimer = useRef<number | null>(null)
+  const assignmentStatusRef = useRef('unavailable')
+  const lessonClosedRef = useRef(false)
+  lessonClosedRef.current = Boolean(
+    selectedLessonId && (lessonStates[selectedLessonId]?.complete || lessonStates[selectedLessonId]?.assignmentSubmitted),
+  )
 
   const selectedLessonType = allLessons.find((lesson) => lesson.id === selectedLessonId)?.type ?? null
   const selectedLessonLocked = Boolean(selectedLessonId && lessonStates[selectedLessonId]?.locked)
@@ -148,19 +155,47 @@ export default function LearnPage() {
 
   useEffect(() => {
     if (!slug || access.status !== 'ready' || !selectedLessonId || selectedLessonType !== 'assignment' || selectedLessonLocked) {
-      setAssignmentDraft(null)
+      assignmentStatusRef.current = 'unavailable'
+      setAssignmentRecord(null)
       return
     }
     let cancelled = false
-    setAssignmentDraft(null)
-    void fetchAssignmentState(slug, selectedLessonId)
+    assignmentStatusRef.current = 'unavailable'
+    setAssignmentRecord(null)
+    const lessonKey = selectedLessonId
+    void fetchAssignmentState(slug, lessonKey)
       .then((data) => {
-        if (!cancelled) setAssignmentDraft({ lessonId: selectedLessonId, text: data.responseText ?? '' })
+        if (cancelled) return
+        const next = {
+          lessonId: lessonKey,
+          status: data.status,
+          responseText: data.responseText ?? '',
+          grade: data.grade ?? null,
+          feedback: data.feedback ?? null,
+          gradedAt: data.gradedAt ?? null,
+          submittedAt: data.submittedAt ?? null,
+        }
+        assignmentStatusRef.current = next.status
+        setAssignmentRecord(next)
       })
       .catch(() => {
-        if (!cancelled) setAssignmentDraft({ lessonId: selectedLessonId, text: '' })
+        if (cancelled) return
+        const status = lessonClosedRef.current ? 'unavailable' : 'in_progress'
+        assignmentStatusRef.current = status
+        setAssignmentRecord({
+          lessonId: lessonKey,
+          status,
+          responseText: '',
+          grade: null,
+          feedback: null,
+          gradedAt: null,
+          submittedAt: null,
+        })
       })
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+      if (draftTimer.current) window.clearTimeout(draftTimer.current)
+    }
   }, [slug, access.status, selectedLessonId, selectedLessonType, selectedLessonLocked])
 
   useEffect(() => {
@@ -430,10 +465,12 @@ export default function LearnPage() {
 
   function handleAssignmentDraft(text: string) {
     if (!slug || !selectedLessonId) return
+    if (!assignmentLearnerView(assignmentStatusRef.current, false).allowDraftSave) return
     if (draftTimer.current) window.clearTimeout(draftTimer.current)
     const lessonKey = selectedLessonId
     const courseSlug = slug
     draftTimer.current = window.setTimeout(() => {
+      if (!assignmentLearnerView(assignmentStatusRef.current, false).allowDraftSave) return
       void updateAssignment(courseSlug, lessonKey, 'start', text).catch(() => undefined)
     }, 700)
   }
@@ -443,8 +480,34 @@ export default function LearnPage() {
     if (!slug || !selectedLesson) return false
     setActionError(null)
     if (draftTimer.current) window.clearTimeout(draftTimer.current)
+    const lessonKey = selectedLesson.id
     try {
-      await updateAssignment(slug, selectedLesson.id, 'submit', text)
+      const saved = await updateAssignment(slug, lessonKey, 'submit', text)
+      let next = {
+        lessonId: lessonKey,
+        status: saved.status,
+        responseText: text,
+        grade: null as number | null,
+        feedback: null as string | null,
+        gradedAt: null as string | null,
+        submittedAt: saved.submittedAt,
+      }
+      try {
+        const fresh = await fetchAssignmentState(slug, lessonKey)
+        next = {
+          lessonId: lessonKey,
+          status: fresh.status,
+          responseText: fresh.responseText ?? text,
+          grade: fresh.grade ?? null,
+          feedback: fresh.feedback ?? null,
+          gradedAt: fresh.gradedAt ?? null,
+          submittedAt: fresh.submittedAt,
+        }
+      } catch {
+        // The submit already succeeded. Keep the saved status and drop the old grade.
+      }
+      assignmentStatusRef.current = next.status
+      setAssignmentRecord(next)
     } catch (err) {
       setActionError(learnerErrorMessage(err, 'Your assignment could not be submitted. Your text is still here. Try again.'))
       return false
@@ -669,7 +732,11 @@ export default function LearnPage() {
                       onQuizRetry={() => setQuizAttempt((value) => value + 1)}
                       onQuizSubmit={selectedLesson.type === 'quiz' ? handleQuizSubmit : undefined}
                       onAssignmentSubmit={selectedLesson.type === 'assignment' ? handleAssignmentSubmit : undefined}
-                      assignmentDraft={assignmentDraft?.lessonId === selectedLesson.id ? assignmentDraft.text : undefined}
+                      assignment={
+                        selectedLesson.type === 'assignment' && assignmentRecord?.lessonId === selectedLesson.id
+                          ? assignmentRecord
+                          : null
+                      }
                       onAssignmentDraft={selectedLesson.type === 'assignment' ? handleAssignmentDraft : undefined}
                       lessonMedia={lessonMedia}
                       courseSlug={readyCourse.slug}

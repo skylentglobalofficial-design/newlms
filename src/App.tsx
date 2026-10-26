@@ -56,6 +56,7 @@ const PAGE_TITLES: Array<[string, string]> = [
   ["/verify", "Verify a certificate"],
   ["/login", "Sign in"],
   ["/signup", "Create an account"],
+  ["/reset-password", "Reset password"],
   ["/path/result", "Path result"],
   ["/path", "Find a path"],
   ["/os", "Skylent OS"],
@@ -148,6 +149,7 @@ const BlogPostPage = lazy(() => import("./pages/BlogPostPage"))
 const ContactPage = lazy(() => import("./pages/ContactPage"))
 const VerifyPage = lazy(() => import("./pages/VerifyPage"))
 const LoginPage = lazy(() => import("./pages/LoginPage"))
+const ResetPasswordPage = lazy(() => import("./pages/ResetPasswordPage"))
 const PathComingPage = lazy(() => import("./pages/PathComingPage"))
 const DashboardStudentPage = lazy(() => import("./pages/DashboardStudentPage"))
 const DashboardFacultyPage = lazy(() => import("./pages/DashboardFacultyPage"))
@@ -273,6 +275,7 @@ function AppRoutes() {
         <Route path="/verify/:code" element={<VerifyPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup" element={<LoginPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
 
         {/* /app is the authenticated workspace entry. Existing role-specific dashboards remain the source of truth. */}
         <Route

@@ -350,6 +350,13 @@ async function main() {
   })
   assert(assignmentSubmit.response.ok, "Assignment submit should succeed")
   assert(assignmentSubmit.data.data.status === "submitted", "Assignment should be submitted")
+  const lateDraft = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "start", responseText: "A draft that arrived after submit." },
+  })
+  assert(lateDraft.response.ok, "A late draft save should not error")
+  assert(lateDraft.data.data.status === "submitted", "A late draft must not reopen a submitted assignment")
 
   const userARow = await prisma.user.findUnique({ where: { email: userA.email } })
   assert(userARow, "User A should exist")
@@ -362,10 +369,109 @@ async function main() {
     include: { attachments: true },
   })
   assert(assignmentRow, "Assignment progress should exist in database")
+  assert(assignmentRow.responseText === "My Excel analysis submission.", "A late draft must not replace the submitted text")
   assert(assignmentRow.attachments.length === 1, "Attachment metadata should be stored")
   assert(assignmentRow.attachments[0].storageProvider === "pending", "Storage provider should be server-controlled pending")
   assert(assignmentRow.attachments[0].storageKey.startsWith("pending/"), "Storage key should be server-generated")
   assert(!assignmentRow.attachments[0].storageKey.includes("data-analytics/l6"), "Client must not choose storage key")
+
+  console.log("13b. A draft racing a submit cannot reopen the assignment")
+  const submittedText = "Concurrent final submission."
+  const draftText = "Concurrent late draft that must not win."
+  for (let round = 0; round < 5; round += 1) {
+    await prisma.assignmentProgress.update({
+      where: { id: assignmentRow.id },
+      data: { status: "in_progress", responseText: "open draft", submittedAt: null },
+    })
+    await Promise.all([
+      request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+        method: "POST",
+        csrf: true,
+        body: { action: "submit", responseText: submittedText },
+      }),
+      ...Array.from({ length: 6 }, () =>
+        request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+          method: "POST",
+          csrf: true,
+          body: { action: "start", responseText: draftText },
+        }),
+      ),
+    ])
+    const raced = await prisma.assignmentProgress.findUnique({ where: { id: assignmentRow.id } })
+    assert(raced?.status === "submitted", `Round ${round} stored status ${raced?.status}, expected submitted`)
+    assert(raced.responseText === submittedText, `Round ${round} stored the draft text`)
+  }
+
+  const gradedAt = new Date("2026-10-26T06:30:00.000Z")
+  await prisma.assignmentProgress.update({
+    where: { id: assignmentRow.id },
+    data: {
+      status: "graded",
+      responseText: "Graded response.",
+      submittedAt: gradedAt,
+      grade: 80,
+      feedback: "Solid analysis.",
+      gradedById: userARow.id,
+      gradedAt,
+    },
+  })
+  const gradedDraft = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "start", responseText: draftText },
+  })
+  assert(gradedDraft.response.ok && gradedDraft.data.data.status === "graded", "A draft must not reopen a graded assignment")
+  const gradedRow = await prisma.assignmentProgress.findUnique({ where: { id: assignmentRow.id } })
+  if (!gradedRow) throw new Error("Graded row should still exist")
+  assert(gradedRow.status === "graded" && gradedRow.responseText === "Graded response.", "Graded text must stay stored")
+  assert(gradedRow.grade === 80, "A draft must not clear the grade")
+  assert(gradedRow.feedback === "Solid analysis.", "A draft must not clear the feedback")
+  assert(gradedRow.gradedById === userARow.id, "A draft must not clear the grader")
+  assert(gradedRow.gradedAt?.toISOString() === gradedAt.toISOString(), "A draft must not clear the grading time")
+  const gradedView = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`)
+  assert(gradedView.response.ok, "The learner assignment view should load while graded")
+  assert(gradedView.data.data.status === "graded", "The learner view should say graded")
+  assert(gradedView.data.data.grade === 80, "The learner view should include the grade")
+  assert(gradedView.data.data.feedback === "Solid analysis.", "The learner view should include the feedback")
+  assert(gradedView.data.data.gradedAt === gradedAt.toISOString(), "The learner view should include the grading time")
+  assert(gradedView.data.data.responseText === "Graded response.", "The learner view should keep the graded text after a draft")
+
+  console.log("13c. Resubmitting a graded assignment clears the current grade")
+  const revisedText = "Revised analysis after the grade."
+  const resubmit = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`, {
+    method: "POST",
+    csrf: true,
+    body: { action: "submit", responseText: revisedText },
+  })
+  assert(resubmit.response.ok, "A learner may resubmit after a grade")
+  assert(resubmit.data.data.status === "submitted", "A resubmit after a grade returns submitted")
+  const resubmitted = await prisma.assignmentProgress.findUnique({ where: { id: assignmentRow.id } })
+  if (!resubmitted) throw new Error("Resubmitted row should still exist")
+  assert(resubmitted.status === "submitted", "Stored status after a graded resubmit must be submitted")
+  assert(resubmitted.responseText === revisedText, "The new submission text must replace the graded text")
+  assert(resubmitted.grade === null, "The previous grade must be cleared")
+  assert(resubmitted.feedback === null, "The previous feedback must be cleared")
+  assert(resubmitted.gradedById === null, "The previous grader must be cleared")
+  assert(resubmitted.gradedAt === null, "The previous grading time must be cleared")
+  assert(resubmitted.submittedAt !== null && resubmitted.submittedAt.getTime() !== gradedAt.getTime(), "Resubmit must record a new submission time")
+  const revisedView = await request(userAJar, `/lms/courses/${courseSlug}/lessons/l6/assignment`)
+  assert(revisedView.response.ok, "The learner assignment view should load after resubmit")
+  assert(revisedView.data.data.status === "submitted", "The learner view should say submitted after resubmit")
+  assert(revisedView.data.data.responseText === revisedText, "The learner view should show the revised text")
+  assert(revisedView.data.data.grade === null, "The learner view should not keep the old grade")
+  assert(revisedView.data.data.feedback === null, "The learner view should not keep the old feedback")
+  assert(revisedView.data.data.gradedAt === null, "The learner view should not keep the old grading time")
+  await prisma.assignmentProgress.update({
+    where: { id: assignmentRow.id },
+    data: {
+      status: "submitted",
+      responseText: "My Excel analysis submission.",
+      grade: null,
+      feedback: null,
+      gradedById: null,
+      gradedAt: null,
+    },
+  })
 
   console.log("14. Program enrollment resolves course access correctly")
   const programJar: CookieJar = new Map()
