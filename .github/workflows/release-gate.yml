@@ -183,6 +183,9 @@ jobs:
       - name: test:assignment-flow
         if: always()
         run: npm run test:assignment-flow
+      - name: test:degree-catalogue
+        if: always()
+        run: npx tsx scripts/test-degree-catalogue.ts
       - name: test:ai
         if: always()
         run: |

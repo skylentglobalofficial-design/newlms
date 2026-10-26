@@ -73,7 +73,7 @@
 |-------------|--------|----------|-------|
 | Degree/Institution models | GREEN | `prisma/schema.prisma`, migration `20261024140000` | Normalized |
 | Degrees backend API | GREEN | `server/src/routes/degrees.ts`, `test:degrees-auth` | Public + admin; unpublished forced hidden |
-| Frontend degrees catalogue | AMBER | `src/lib/degrees.ts`, `src/data/education.ts` | Still static sample data — does **not** call `/api/v1/degrees` |
+| Frontend degrees catalogue | AMBER | `src/lib/degrees.ts`, `src/hooks/useDegreeCatalogue.ts` | Sample listings stay. `GET /api/v1/degrees` adds or replaces a row only when a published degree is returned. An empty or unavailable API leaves the samples. |
 | Real institution content | AMBER | Empty DB by design | No fictitious seed; populate via admin API when confirmed |
 
 ### File Uploads

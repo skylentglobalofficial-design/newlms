@@ -52,7 +52,7 @@ Skylent is an EdTech platform with LMS, Career OS, Labs, Events, and a degrees b
 | Gap | Status | Notes |
 |-----|--------|-------|
 | Password reset email delivery | AMBER | Mailgun/SendGrid vars |
-| Degrees frontend API wiring | AMBER | Static samples remain |
+| Degrees frontend API wiring | AMBER | Sample listings remain. Published rows from `GET /api/v1/degrees` are merged in when the API returns them. |
 | Institution content | AMBER | Empty by design — no fictitious seed |
 | Production object storage | RED | No implemented cloud provider |
 | Email verification | RED | Not built |

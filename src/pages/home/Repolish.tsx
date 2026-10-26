@@ -18,7 +18,8 @@ import { HARBOR, NORTHWIND, NORTHWIND_CATEGORY_SQL_EXCERPT, authoredProgrammeCon
 import { programmeTruth } from "@/components/programme/programme-truth"
 import { programmeDiscoveryFor } from "@/lib/programme-discovery"
 import type { CatalogProgramSummary } from "@/lib/catalog-api"
-import { deliveryModeLabel, listDegrees } from "@/lib/degrees"
+import { deliveryModeLabel } from "@/lib/degrees"
+import { useDegreeCatalogue } from "@/hooks/useDegreeCatalogue"
 import { truthOf } from "@/lib/truth"
 import { courseFacts } from "./course-facts"
 import { useWalkthrough } from "./useWalkthrough"
@@ -745,7 +746,7 @@ const DEGREE_DOORS = [
 ] as const
 
 export function HomeDegrees() {
-  const degrees = listDegrees()
+  const { degrees } = useDegreeCatalogue()
   return (
     <section id="degrees" className="hx-degrees" aria-labelledby="hx-degrees-title">
       <div className="sky-container">
@@ -763,12 +764,13 @@ export function HomeDegrees() {
             const items = degrees.filter((degree) => degree.level === door.level)
             const areas = [...new Set(items.map((degree) => degree.discipline))]
             const modes = [...new Set(items.map((degree) => deliveryModeLabel(degree.deliveryMode)))]
+            const plannedOnly = items.every((degree) => degree.sample)
             return (
               <li key={door.short}>
                 <Link to={`/education?level=${door.param}`} className="hx-door">
                   <span className="hx-door__media">
                     <img src={door.img} alt={door.alt} width={door.width} height={door.height} loading="lazy" decoding="async" />
-                    <span className="hx-door__tag">Planned · not open for applications</span>
+                    <span className="hx-door__tag">{plannedOnly ? "Planned · not open for applications" : "Includes a published degree"}</span>
                   </span>
                   <span className="hx-door__body">
                     <span className="hx-door__title">
