@@ -30,6 +30,7 @@
 | CSRF protection | GREEN | `server/src/lib/auth.ts` | Double-submit cookie |
 | Google OAuth | AMBER | `server/src/lib/google-oauth.ts` | Needs credentials |
 | Password reset (backend) | AMBER | `password-reset.ts`, `email.ts`, `test:password-reset` | Tokens/rate limits GREEN; email delivery needs Mailgun/SendGrid credentials |
+| Password reset page | GREEN in code | `/reset-password`, `ResetPasswordPage.tsx` | The email link lands here. Mail delivery is still AMBER until a provider is configured. |
 | Email verification | RED | — | Not implemented |
 
 ### LMS and Learning

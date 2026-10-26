@@ -38,6 +38,7 @@ const ALLOWED_EXACT = new Set([
   "/contact",
   "/login",
   "/signup",
+  "/reset-password",
   "/dashboard/student",
   "/path",
   "/path/result",
@@ -45,7 +46,7 @@ const ALLOWED_EXACT = new Set([
 ])
 
 const SITE = `SKYLENT connects skill programmes and Career OS.
-Real pages only: / , /programmes, /programs, /courses, /education, /career-os, /about, /contact, /login, /signup, /dashboard/student, /path, /verify.
+Real pages only: / , /programmes, /programs, /courses, /education, /career-os, /about, /contact, /login, /signup, /reset-password, /dashboard/student, /path, /verify.
 Programme pages are /programmes/<slug> (the /programs/<slug> alias is the same page). Course pages are /courses/<slug>.
 Human support: phone 6370044001, email support@skylent.live.
 Fees and discounts are not published — send people to /contact.

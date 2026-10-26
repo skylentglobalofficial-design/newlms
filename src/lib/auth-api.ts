@@ -194,3 +194,62 @@ export async function updateProfileRequest(input: { displayName: string }): Prom
 export function clearAuthClientState() {
   csrfToken = null
 }
+
+async function readAuthJson(response: Response): Promise<Record<string, unknown>> {
+  const data = (await readJsonBody(response).catch(() => null)) as Record<string, unknown> | null
+  return data && typeof data === "object" ? data : {}
+}
+
+function authErrorMessage(data: Record<string, unknown>, fallback: string): string {
+  const details = data.details
+  if (details && typeof details === "object") {
+    for (const value of Object.values(details as Record<string, unknown>)) {
+      const first = Array.isArray(value) ? value[0] : null
+      if (typeof first === "string" && first.length > 0 && first.length <= 160) return first
+    }
+  }
+  return typeof data.error === "string" && data.error.length > 0 && data.error.length <= 160 ? data.error : fallback
+}
+
+/** Same sentence for known and unknown accounts. `emailConfigured` says whether mail can send the link. */
+export async function requestPasswordReset(email: string): Promise<{ message: string; emailConfigured: boolean }> {
+  const response = await fetch(`${API_BASE}/auth/password-reset/request`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  })
+  const data = await readAuthJson(response)
+  if (!response.ok) throw new Error(authErrorMessage(data, "The reset request could not be sent. Try again."))
+  return {
+    message: typeof data.message === "string" ? data.message : "If an account exists with that email, you will receive a password reset link.",
+    emailConfigured: data.emailConfigured === true,
+  }
+}
+
+export async function verifyPasswordResetToken(token: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/auth/password-reset/verify`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  })
+  const data = await readAuthJson(response)
+  if (!response.ok || data.valid === false) {
+    throw new Error(authErrorMessage(data, "This reset link is invalid or has expired."))
+  }
+}
+
+export async function completePasswordReset(token: string, password: string): Promise<string> {
+  const response = await fetch(`${API_BASE}/auth/password-reset/complete`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, password }),
+  })
+  const data = await readAuthJson(response)
+  if (!response.ok || data.success === false) {
+    throw new Error(authErrorMessage(data, "The password could not be reset. Try again."))
+  }
+  return typeof data.message === "string" ? data.message : "Password has been reset. You can now sign in."
+}

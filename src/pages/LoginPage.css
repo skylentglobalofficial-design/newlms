@@ -312,8 +312,21 @@
   line-height: 1.5;
 }
 
-/* Honest footnote: what happens next, and where to get help, since there is
-   no self-service password reset yet. */
+.entry-forgot {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.entry-forgot a {
+  color: var(--skylent-color-accent-text);
+  text-decoration: none;
+}
+
+.entry-forgot a:hover {
+  text-decoration: underline;
+}
+
 .entry-note {
   margin: 16px 0 0;
   max-width: 62ch;

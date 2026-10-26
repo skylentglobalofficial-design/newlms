@@ -29,7 +29,7 @@ Skylent is an EdTech platform with LMS, Career OS, Labs, Events, and a degrees b
 | Events | GREEN | API + frontend pages |
 | Degrees backend | GREEN | Models, public + admin routes, `test:degrees-auth` |
 | Degrees frontend | AMBER | Still static `src/data/education.ts` |
-| Password reset | AMBER | Secure token flow + `test:password-reset`; email credentials required |
+| Password reset | AMBER | Token flow, `/reset-password` page, `test:password-reset`; email credentials required for delivery |
 | File storage | AMBER→RED for prod | `local` only (dev); S3/GCS/Azure not implemented |
 | Google OAuth / AI | AMBER | Code present; credentials required |
 

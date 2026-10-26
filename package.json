@@ -58,6 +58,7 @@
     "test:events": "tsx scripts/test-events.ts",
     "test:quiz-limits": "tsx scripts/test-quiz-limits.ts",
     "test:password-reset": "tsx scripts/test-password-reset-security.ts",
+    "test:password-reset-http": "tsx scripts/test-password-reset-http.ts",
     "test:degrees-auth": "tsx scripts/test-degrees-authorization.ts",
     "test:storage": "tsx scripts/test-storage-validation.ts",
     "test:data-isolation": "tsx scripts/test-data-isolation.ts",

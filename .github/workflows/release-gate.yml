@@ -160,6 +160,11 @@ jobs:
         run: |
           "$RUNNER_TEMP/restart-api.sh"
           npm run test:auth
+      - name: test:password-reset-http
+        if: always()
+        run: |
+          "$RUNNER_TEMP/restart-api.sh"
+          npm run test:password-reset-http
       - name: test:consent (terms acceptance enforced and recorded by the server)
         if: always()
         run: |
