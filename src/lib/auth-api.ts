@@ -4,7 +4,7 @@ import { POLICY_VERSION, consentPayload } from "./policy"
 
 const API_BASE = apiV1()
 
-export type ApiRole = "student" | "faculty" | "organisation" | "recruiter" | "admin" | "superadmin"
+export type ApiRole = "student" | "faculty" | "organisation" | "college" | "recruiter" | "admin" | "superadmin"
 
 export type GoogleOAuthStartOptions = {
   returnTo?: string

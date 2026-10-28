@@ -12,6 +12,8 @@ export function roleRoute(role: UserRole): string {
       return "/dashboard/faculty"
     case "organisation":
       return "/dashboard/organisation"
+    case "college":
+      return "/dashboard/college"
     case "recruiter":
       return "/dashboard/recruiter"
     case "admin":

@@ -64,7 +64,8 @@ CREATE INDEX "FacultyCourseAssignment_courseId_idx" ON "FacultyCourseAssignment"
 ALTER TABLE "FacultyCourseAssignment" ADD CONSTRAINT "FacultyCourseAssignment_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE "FacultyCourseAssignment" ADD CONSTRAINT "FacultyCourseAssignment_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "Course"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
-CREATE TABLE "LessonMaterial" (
+-- Production already has LessonMaterial from 20260906190000. Create it only when absent.
+CREATE TABLE IF NOT EXISTS "LessonMaterial" (
     "id" UUID NOT NULL,
     "nodeId" UUID NOT NULL,
     "fileName" TEXT NOT NULL,
@@ -72,9 +73,13 @@ CREATE TABLE "LessonMaterial" (
     "byteSize" INTEGER NOT NULL,
     "storageProvider" TEXT NOT NULL,
     "storageKey" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "LessonMaterial_pkey" PRIMARY KEY ("id")
 );
--- createdAt added below to keep the column list aligned with Prisma's default timestamp.
-ALTER TABLE "LessonMaterial" ADD COLUMN "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP;
-CREATE INDEX "LessonMaterial_nodeId_idx" ON "LessonMaterial"("nodeId");
-ALTER TABLE "LessonMaterial" ADD CONSTRAINT "LessonMaterial_nodeId_fkey" FOREIGN KEY ("nodeId") REFERENCES "CurriculumNode"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+CREATE INDEX IF NOT EXISTS "LessonMaterial_nodeId_idx" ON "LessonMaterial"("nodeId");
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'LessonMaterial_nodeId_fkey') THEN
+    ALTER TABLE "LessonMaterial" ADD CONSTRAINT "LessonMaterial_nodeId_fkey" FOREIGN KEY ("nodeId") REFERENCES "CurriculumNode"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+  END IF;
+END $$;

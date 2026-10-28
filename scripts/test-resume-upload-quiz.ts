@@ -164,7 +164,7 @@ async function run(): Promise<string> {
     body: { fileName: "notes.pdf", contentType: "application/pdf", dataBase64: pdf },
   })
   assert(material.response.status === 201, `material upload failed ${material.response.status} ${JSON.stringify(material.data)}`)
-  const materialRow = await prisma.lessonMaterial.findFirst({ where: { nodeId: lecture!.id }, select: { storageKey: true, fileName: true } })
+  const materialRow = await prisma.lessonMaterial.findFirst({ where: { nodeId: lecture!.id }, select: { id: true, storageKey: true, fileName: true } })
   assert(materialRow?.fileName === "notes.pdf" && materialRow.storageKey, "material row must point at storage")
 
   const published = await request(adminJar, `/admin/curriculum/courses/${courseId}/publish`, {
@@ -213,7 +213,18 @@ async function run(): Promise<string> {
   assert(resume.data.data.lessonId === lessonKey, `resume must return the opened lesson, got ${resume.data.data.lessonId}`)
   assert(resume.data.data.lessonTitle === "Opening notes", "resume title must match the opened lesson")
 
-  console.log("PASS quiz authoring, local file upload, sign-out, and resume")
+  const outsider = await signup("outsider")
+  const denied = await fetch(`${API_BASE}/lms/materials/${materialRow!.id}`, {
+    headers: { Cookie: Array.from(outsider.jar.entries()).map(([key, value]) => `${key}=${value}`).join("; ") },
+  })
+  assert(denied.status === 403, `unenrolled download must be forbidden, got ${denied.status}`)
+  const allowed = await fetch(`${API_BASE}/lms/materials/${materialRow!.id}`, {
+    headers: { Cookie: Array.from(fresh.entries()).map(([key, value]) => `${key}=${value}`).join("; ") },
+  })
+  assert(allowed.status === 200, `enrolled learner must download the material, got ${allowed.status}`)
+  assert((allowed.headers.get("content-type") ?? "").includes("pdf"), "download must return the PDF")
+
+  console.log("PASS quiz authoring, local file upload, sign-out, resume, and material access")
   return courseId
 }
 

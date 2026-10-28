@@ -24,6 +24,8 @@ const OCTOBER = [
   "20261024140000_password_reset_and_degrees",
   "20261025180000_elixir_ledger_and_admin_audit",
   "20261028143000_career_rise_os_lock_and_authoring",
+  "20261028160000_college_membership",
+  "20261028161000_lesson_material_compat",
 ]
 
 const local = listLocalMigrations()

@@ -8,12 +8,13 @@ export const CSRF_COOKIE = "csrf"
 export const BCRYPT_ROUNDS = 12
 export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30
 
-export type ApiRole = "student" | "faculty" | "organisation" | "recruiter" | "admin" | "superadmin"
+export type ApiRole = "student" | "faculty" | "organisation" | "college" | "recruiter" | "admin" | "superadmin"
 
 const ROLE_NAME_TO_API: Record<RoleName, ApiRole> = {
   STUDENT: "student",
   FACULTY: "faculty",
   ORGANISATION_ADMIN: "organisation",
+  COLLEGE_ADMIN: "college",
   RECRUITER: "recruiter",
   PLATFORM_ADMIN: "admin",
   ADMIN: "superadmin",
@@ -230,7 +231,7 @@ export function requireCsrf(req: Request, res: Response, next: NextFunction) {
 }
 
 export function primaryRole(roles: Role[]): ApiRole {
-  const priority: RoleName[] = ["ADMIN", "PLATFORM_ADMIN", "ORGANISATION_ADMIN", "RECRUITER", "FACULTY", "STUDENT"]
+  const priority: RoleName[] = ["ADMIN", "PLATFORM_ADMIN", "ORGANISATION_ADMIN", "COLLEGE_ADMIN", "RECRUITER", "FACULTY", "STUDENT"]
   for (const roleName of priority) {
     const match = roles.find((role) => role.name === roleName)
     if (match) return toApiRole(match)

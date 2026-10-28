@@ -7,6 +7,7 @@ import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth
 import { requireRoles } from "../lib/roles.js"
 import { recordAdminAudit } from "../lib/admin-audit.js"
 import { generateStorageKey, uploadFile, validateFile, StorageServiceError } from "../lib/storage.js"
+import { describeLiveLesson } from "../lib/live-lesson.js"
 
 export const adminCurriculumRouter = Router()
 
@@ -125,7 +126,7 @@ function serializeCourse(course: NonNullable<Awaited<ReturnType<typeof loadCours
         summary: node.summary,
         nodeType: node.nodeType,
         referenceUrl: node.referenceUrl,
-        liveStreaming: false,
+        liveLesson: describeLiveLesson(node.referenceUrl),
         materials: node.lessonMaterials,
       })),
     })),

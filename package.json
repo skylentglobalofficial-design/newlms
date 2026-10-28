@@ -51,6 +51,7 @@
     "test:curriculum-authoring": "tsx scripts/test-curriculum-authoring.ts",
     "test:my-courses": "tsx scripts/test-my-courses.ts",
     "test:resume-upload-quiz": "tsx scripts/test-resume-upload-quiz.ts",
+    "test:college-isolation": "tsx scripts/test-college-isolation.ts",
     "test:employer": "tsx scripts/test-employer-jobs.ts",
     "test:lesson-media": "tsx scripts/test-lesson-media.ts",
     "test:catalog-parity": "tsx scripts/test-catalog-truth.ts && tsx scripts/test-public-catalogue-copy.ts && tsx scripts/check-catalog-parity.ts",

@@ -16,6 +16,8 @@ enum RoleName {
   ORGANISATION_ADMIN
   /// Platform admin. Not Super Admin. Cannot change roles or platform configuration.
   PLATFORM_ADMIN
+  /// College-scoped operator. Not a platform admin and not an organisation admin.
+  COLLEGE_ADMIN
 }
 
 enum ProgramType {
@@ -231,6 +233,7 @@ model User {
   careerOsAccess      CareerOsAccess?
   careerRiseEnrolments CareerRiseEnrolment[]
   facultyAssignments  FacultyCourseAssignment[]
+  collegeMemberships  CollegeMembership[]
   elixirAccount       ElixirAccount?
   elixirTransactions  ElixirTransaction[]
   elixirAdjustments   ElixirTransaction[]          @relation("ElixirActor")
@@ -292,6 +295,27 @@ model UserIdentity {
   user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model College {
+  id          String             @id @default(uuid()) @db.Uuid
+  name        String
+  slug        String             @unique
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  memberships CollegeMembership[]
+}
+
+model CollegeMembership {
+  id        String   @id @default(uuid()) @db.Uuid
+  collegeId String   @db.Uuid
+  userId    String   @db.Uuid
+  createdAt DateTime @default(now())
+  college   College  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([collegeId, userId])
   @@index([userId])
 }
 
@@ -585,14 +609,17 @@ model FacultyCourseAssignment {
 }
 
 model LessonMaterial {
-  id              String   @id @default(uuid()) @db.Uuid
-  nodeId          String   @db.Uuid
+  id              String    @id @default(uuid()) @db.Uuid
+  nodeId          String    @db.Uuid
   fileName        String
   mimeType        String
   byteSize        Int
   storageProvider String
   storageKey      String
-  createdAt       DateTime @default(now())
+  published       Boolean   @default(false)
+  uploadedById    String?   @db.Uuid
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   node            CurriculumNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
 
   @@index([nodeId])

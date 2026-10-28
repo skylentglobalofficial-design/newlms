@@ -21,6 +21,7 @@ const PAGE_TITLES: Array<[string, string]> = [
   ["/dashboard/student", "Learner home"],
   ["/dashboard/faculty", "Teaching"],
   ["/dashboard/organisation", "Organisation"],
+  ["/dashboard/college", "College"],
   ["/dashboard/recruiter", "Recruiter"],
   ["/dashboard/admin", "Admin"],
   ["/dashboard/curriculum", "Course builder"],
@@ -158,6 +159,7 @@ const PathComingPage = lazy(() => import("./pages/PathComingPage"))
 const DashboardStudentPage = lazy(() => import("./pages/DashboardStudentPage"))
 const DashboardFacultyPage = lazy(() => import("./pages/DashboardFacultyPage"))
 const DashboardOrgPage = lazy(() => import("./pages/DashboardOrgPage"))
+const DashboardCollegePage = lazy(() => import("./pages/DashboardCollegePage"))
 const DashboardRecruiterPage = lazy(
   () => import("./pages/DashboardRecruiterPage"),
 )
@@ -335,6 +337,14 @@ function AppRoutes() {
           element={
             <RoleRouteGuard allowedRoles={["organisation"]}>
               <DashboardOrgPage />
+            </RoleRouteGuard>
+          }
+        />
+        <Route
+          path="/dashboard/college"
+          element={
+            <RoleRouteGuard allowedRoles={["college"]}>
+              <DashboardCollegePage />
             </RoleRouteGuard>
           }
         />

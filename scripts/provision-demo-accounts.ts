@@ -37,8 +37,8 @@ const ACCOUNTS = [
   {
     key: "college",
     email: "demo-college@skylent.invalid",
-    name: "Demo College (no college role exists)",
-    role: null,
+    name: "Demo College (not a real institution)",
+    role: RoleName.COLLEGE_ADMIN,
   },
   {
     key: "teacher",
@@ -56,6 +56,10 @@ async function ensureUser(email: string, displayName: string, role: RoleName | n
     include: { roles: true },
   })
   if (existing) {
+    await prisma.user.update({
+      where: { id: existing.id },
+      data: { passwordHash, displayName },
+    })
     return { id: existing.id, email: existing.email, created: false }
   }
   const roleRow = role
@@ -110,6 +114,30 @@ export async function provisionDemoAccounts(env: NodeJS.ProcessEnv = process.env
       where: { organisationId_userId: { organisationId: org.id, userId: orgAdmin.id } },
       update: {},
       create: { organisationId: org.id, userId: orgAdmin.id },
+    })
+  }
+
+  const collegeUser = results.find((row) => row.key === "college")
+  if (collegeUser) {
+    const collegeRole = await prisma.role.upsert({
+      where: { name: RoleName.COLLEGE_ADMIN },
+      update: {},
+      create: { name: RoleName.COLLEGE_ADMIN },
+    })
+    await prisma.userRole.upsert({
+      where: { userId_roleId: { userId: collegeUser.id, roleId: collegeRole.id } },
+      update: {},
+      create: { userId: collegeUser.id, roleId: collegeRole.id },
+    })
+    const college = await prisma.college.upsert({
+      where: { slug: "demo-college" },
+      update: {},
+      create: { slug: "demo-college", name: "Demo College (not a real institution)" },
+    })
+    await prisma.collegeMembership.upsert({
+      where: { collegeId_userId: { collegeId: college.id, userId: collegeUser.id } },
+      update: {},
+      create: { collegeId: college.id, userId: collegeUser.id },
     })
   }
 

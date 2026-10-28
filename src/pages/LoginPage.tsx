@@ -37,6 +37,7 @@ function roleRoute(role: UserRole): string {
     case 'student': return '/dashboard/student'
     case 'faculty': return '/dashboard/faculty'
     case 'organisation': return '/dashboard/organisation'
+    case 'college': return '/dashboard/college'
     case 'recruiter': return '/dashboard/recruiter'
     case 'admin': return '/dashboard/curriculum'
     case 'superadmin': return '/dashboard/admin'

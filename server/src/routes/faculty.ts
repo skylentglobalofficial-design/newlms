@@ -6,6 +6,8 @@ import { prisma } from "../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { hasApiRole, requireRoles } from "../lib/roles.js"
 import { readSchemaCapabilities } from "../lib/schema-capabilities.js"
+import { decodeUpload, LESSON_MATERIAL_TYPES, uploadBodySchema } from "../lib/upload-payload.js"
+import { generateStorageKey, uploadFile, StorageServiceError } from "../lib/storage.js"
 
 export const facultyRouter = Router()
 
@@ -508,5 +510,48 @@ facultyRouter.delete(
   requireCsrf,
   async (_req, res) => {
     res.status(403).json({ error: "Teachers cannot delete modules" })
+  },
+)
+
+facultyRouter.post(
+  "/courses/:courseId/lectures/:lectureId/materials",
+  requireAuth,
+  requireRoles("faculty"),
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const params = z.object({ courseId: z.string().uuid(), lectureId: z.string().uuid() }).safeParse(req.params)
+    const body = uploadBodySchema.safeParse(req.body)
+    if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
+    if (!(await facultyMayReadCourse(req, params.data.courseId))) {
+      return res.status(403).json({ error: "This course is outside your teaching assignment" })
+    }
+    const lecture = await prisma.curriculumNode.findFirst({
+      where: { id: params.data.lectureId, module: { courseId: params.data.courseId } },
+      select: { id: true },
+    })
+    if (!lecture) return res.status(404).json({ error: "Lecture not found on this course" })
+    const decoded = decodeUpload(body.data, LESSON_MATERIAL_TYPES)
+    if ("error" in decoded) return res.status(400).json({ error: decoded.error })
+    try {
+      const key = generateStorageKey(`courses/${params.data.courseId}/materials`, body.data.fileName)
+      const stored = await uploadFile(key, decoded.data, { contentType: body.data.contentType })
+      const row = await prisma.lessonMaterial.create({
+        data: {
+          nodeId: lecture.id,
+          fileName: body.data.fileName,
+          mimeType: body.data.contentType,
+          byteSize: decoded.data.length,
+          storageProvider: stored.provider,
+          storageKey: stored.key,
+        },
+      })
+      res.status(201).json({ data: { id: row.id, fileName: row.fileName, byteSize: row.byteSize } })
+    } catch (error) {
+      if (error instanceof StorageServiceError) {
+        return res.status(503).json({ error: "File storage is not configured. The file was not saved." })
+      }
+      console.error("Failed to store faculty lesson material:", error)
+      res.status(500).json({ error: "Failed to store lesson material" })
+    }
   },
 )

@@ -217,7 +217,7 @@ async function main() {
   assert(roleCatalog.response.ok, "Role catalog failed")
   const catalogRoles = roleCatalog.data.data.map((row: { role: string }) => row.role).sort()
   assert(
-    JSON.stringify(catalogRoles) === JSON.stringify(["admin", "faculty", "organisation", "recruiter", "student", "superadmin"]),
+    JSON.stringify(catalogRoles) === JSON.stringify(["admin", "college", "faculty", "organisation", "recruiter", "student", "superadmin"]),
     `Role catalog should list platform admin separately from superadmin, got ${catalogRoles.join(",")}`,
   )
 
