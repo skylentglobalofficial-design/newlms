@@ -2,7 +2,6 @@ import { Router } from 'express'
 import { z } from 'zod'
 
 import { prisma } from '../lib/prisma.js'
-import { ensureProgramCourseLinks } from '../lib/program-course-links.js'
 import { overlayPublicCourse, overlayPublicProgramme, PUBLIC_COURSE_COPY } from '../lib/public-catalogue-copy.js'
 
 const router = Router()
@@ -124,7 +123,6 @@ router.get('/courses', async (_request, response, next) => {
 
 router.get('/programs', async (_request, response, next) => {
   try {
-    await ensureProgramCourseLinks()
     const programs = await prisma.program.findMany({
       orderBy: { name: 'asc' },
       include: { pricing: true, ...programCourseInclude },
