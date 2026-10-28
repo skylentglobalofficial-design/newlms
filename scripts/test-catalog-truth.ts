@@ -157,8 +157,14 @@ assert(
 )
 assert(
   /isAuthoredProgramme\(program\.slug\)/.test(lmsRoutes) &&
-    /program\.programCourses\.every\(\(link\) => isAuthoredCourse\(link\.course\.slug\)\)/.test(lmsRoutes),
-  "A new programme enrolment requires an approved authored programme and every linked course to be authored",
+    /program\.programCourses\.every\(\(link\) => courseIsEnrolable\(link\.course\)\)/.test(lmsRoutes),
+  "A new programme enrolment requires an approved authored programme and every linked course to be enrolable",
+)
+const publication = readFileSync(new URL("../server/src/lib/course-publication.ts", import.meta.url), "utf8")
+assert(
+  /publicationStatus !== CoursePublicationStatus\.PUBLISHED/.test(publication) &&
+    /isAuthoredCourse\(course\.slug\) \|\| course\.authoredInApp/.test(publication),
+  "Enrolment stays closed for drafts and for courses that are neither authored nor published from the builder",
 )
 assert(
   lmsRoutes.indexOf("if (existing)") !== -1 &&

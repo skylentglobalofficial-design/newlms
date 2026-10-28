@@ -1,6 +1,6 @@
 # Skylent master final report
 
-28 October 2026, 8:13 PM IST.
+28 October 2026, 8:50 PM IST. Post-merge verification is included below. The production decision is still `NO-GO`.
 
 This report covers the local implementation pass on branch `cursor/master-stabilisation-cd19`. It does not approve production.
 
@@ -202,6 +202,47 @@ Do not restart or redeploy Hostinger from this report.
 | `test:lms`, `test:ai`, `test:elixir`, `test:labs`, `test:projects`, `test:migration-replay`, `test:integration`, `test:catalog-parity`, `test:employer`, `test:password-reset-http` | NOT RUN |
 
 Career OS lock and Career Rise eligibility were not changed in this recheck.
+
+## Post-merge verification
+
+PR #212 merged into `cursor/phase-2-core-learning-cd19` at 8:47 PM IST on 28 October 2026. The merge commit is `9dbdc03d0bd5f9dadd146f87e3be53c4ecf08fcf`. Its tree is the implementation commit `8bcb942fad67d37d3ff0305a6e3fbada71399aea`. That merge is not on `main`.
+
+CI for the merge commit is not a pass. The only check run is `Supabase Preview`, skipped. There are no GitHub Actions runs for `9dbdc03` or `8bcb942`. `release-gate` does not trigger on a merge to `cursor/phase-2-core-learning-cd19`. The last successful release-gate runs on that branch name are from 26 October 2026.
+
+At 8:50 PM IST, `https://skylent.live/api/v1/health` returned HTTP 503:
+
+```json
+{"status":"error","db":"ok","migrations":"pending","pendingMigrations":8,"failedMigrations":0,"ai":"not_configured","release":"unknown"}
+```
+
+The homepage returned HTTP 200 and does not contain either SHA. Deployed release SHA: unknown. This merge is not shown to be deployed.
+
+Disposable database `skylent_postmerge_128743` on localhost: typecheck, backend typecheck, production build, Prisma validate, `migrate deploy`, `migrate status`, `db:preflight -- --expect-none`, `test:migration-history`, and `test:migration-replay` passed. The database was dropped afterward. `db:preflight:backfill` on that database, before seed, saw zero of the six programmes and courses. That is not a production reading.
+
+Two suite failures on that database were fixed and re-run on the local application database:
+
+- `test:catalog-parity` failed because the source check still required `isAuthoredCourse` on every linked course. The server rule is `courseIsEnrolable`: published, and either an authored slug or a course published from the builder. Drafts stay closed. The check now locks that rule. Re-run: PASS.
+- `test:employer` failed because a recruiter without Career OS received 403 on unshare before the ownership check. The test now grants Career OS to that recruiter explicitly, then expects 404. Re-run: PASS.
+
+The other disposable-database commands passed, including `test:integration`'s covered scripts from the earlier local API run and, on the disposable database, `test:auth`, `test:lms`, `test:ai`, `test:elixir`, `test:labs`, `test:projects`, `test:career-rise`, `test:career-os-lock`, `test:college-isolation`, `test:resume-upload-quiz`, and `test:security-middleware`.
+
+## Exact next operator actions
+
+Do these in order. Do not restart Hostinger. Do not run `migrate deploy` yet.
+
+1. In hPanel, open the Node.js app for `skylent.live` and copy the entry file, Node version, build script, output directory, and package manager. Do not click restart or deploy.
+2. Record a backup newer than the last production write: Supabase backup timestamp and scope, or `pg_dump -Fc` through the session pooler and `pg_restore --list`. Name the person who can restore it.
+3. In a trusted shell, with the session-pooler URL only in that environment:
+
+```bash
+npm run db:preflight -- --production
+npm run db:preflight:backfill -- --production
+```
+
+Keep the host, port, database name, pending migration names, and the six pair counts. Stop unless the target class is `session-pooler` and the port is 5432.
+
+4. Write a decision for each backfill pair, especially Data Science & AI → Data Analytics. This repository does not approve them.
+5. After those four gates, the commit to deploy is `9dbdc03d0bd5f9dadd146f87e3be53c4ecf08fcf` on `cursor/phase-2-core-learning-cd19`, not `main`. If the entry file is `server.js`, starting the app runs `prisma migrate deploy`.
 
 ## Section I — Final readiness decision
 

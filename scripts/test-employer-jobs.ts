@@ -263,6 +263,7 @@ async function main() {
 
     console.log("8. Learners can stop sharing, and only the owner can do so")
     const applicationId = tracked.data.data.id as string
+    await grantCareerOsForTest(prisma, recruiterB.userId)
     const foreignUnshare = await request(jarB, `/career/applications/${applicationId}/unshare`, { method: "POST", csrf: true, body: {} })
     assert(foreignUnshare.response.status === 404, `Another user must not unshare, got ${foreignUnshare.response.status}`)
     const unshared = await request(studentJar, `/career/applications/${applicationId}/unshare`, { method: "POST", csrf: true, body: {} })
