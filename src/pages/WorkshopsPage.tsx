@@ -46,9 +46,6 @@ export default function WorkshopsPage() {
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/programmes">
-                Start with a live course
-              </Link>
-              <Link className="cat-btn cat-btn-ghost" to="/programmes">
                 Browse programmes
               </Link>
             </div>

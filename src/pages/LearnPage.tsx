@@ -65,7 +65,9 @@ function dashRoute(role?: string) {
   switch (role) {
     case 'faculty': return '/dashboard/faculty'
     case 'organisation': return '/dashboard/organisation'
+    case 'college': return '/dashboard/college'
     case 'recruiter': return '/dashboard/recruiter'
+    case 'admin': return '/dashboard/curriculum'
     case 'superadmin': return '/dashboard/admin'
     default: return '/dashboard/student'
   }

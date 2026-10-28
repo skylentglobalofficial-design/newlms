@@ -100,7 +100,8 @@ async function main() {
   const before = preflight()
   assert(before.status === 0, `preflight must allow the deploy:\n${before.output}`)
   for (const name of KNOWN_PRODUCTION_ONLY_MIGRATIONS) assert(before.output.includes(`production-only, expected  ${name}`), `preflight must report ${name}`)
-  assert(before.output.includes("pending: 8"), `exactly eight release migrations must be pending on the historical baseline:\n${before.output}`)
+  const releasePending = listLocalMigrations().filter((name) => name >= "20261000000000")
+  assert(before.output.includes(`pending: ${releasePending.length}`), `historical baseline must leave every 202610 migration pending:\n${before.output}`)
   assert(preflight("--expect-none").status === 1, "--expect-none must fail while migrations are pending")
 
   const deploy = run(["migrate", "deploy"])

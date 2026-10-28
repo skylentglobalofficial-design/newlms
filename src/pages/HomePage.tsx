@@ -5,12 +5,14 @@
  * Navigation and footer come from PageShell. Career OS and institutions stay on their own pages.
  */
 import { PageShell } from "@/components/shared"
+import { homeCataloguePhase } from "@/lib/catalogue-availability"
 import { useCatalogPrograms } from "@/hooks/useCatalog"
 import {
   HomeAi,
   HomeCareer,
   HomeClosing,
   HomeDegrees,
+  confirmedOpenTitles,
   HomeHero,
   HomeProgrammes,
   InsideProgramme,
@@ -20,12 +22,16 @@ import "./HomeRepolish.css"
 
 export default function HomePage() {
   const catalog = useCatalogPrograms()
+  const catalogue = homeCataloguePhase(catalog.loading, catalog.offline)
   return (
     <PageShell aurora={false}>
       <div className="site-light hm-page hx-page hx-page--home">
-        <HomeHero />
+        <HomeHero
+          catalogue={catalogue}
+          openTitles={catalogue === "confirmed" ? confirmedOpenTitles(catalog.data ?? []) : []}
+        />
         <InsideProgramme />
-        <HomeProgrammes programmes={catalog.data ?? []} loading={catalog.loading} confirmed={!catalog.offline} />
+        <HomeProgrammes programmes={catalog.data ?? []} loading={catalogue === "loading"} confirmed={catalogue === "confirmed"} />
         <HomeDegrees />
         <HomeCareer />
         <HomeAi />

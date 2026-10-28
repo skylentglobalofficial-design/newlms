@@ -292,14 +292,16 @@
 .hx-page--home .hxw-hero__copy { align-self: center; }
 .hx-page--home .hxw-eyebrow { margin: 0 0 18px; font-family: var(--sk-font-body); font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: #555B7D; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .hx-page--home .hxw-eyebrow__dot { color: #DDD7FF; font-size: 16px; }
-.hx-page--home .hxw-hero__title { margin: 0; max-width: 11.2em; font-family: var(--sk-font-heading); font-size: clamp(34px, 3.35vw, 54px); font-weight: 800; line-height: 1.04; letter-spacing: -0.034em; color: #171717; overflow-wrap: break-word; }
+.hx-page--home .hxw-hero__title { margin: 0; max-width: 12em; font-family: var(--sk-font-heading); font-size: clamp(34px, 3.35vw, 54px); font-weight: 800; line-height: 1.04; letter-spacing: -0.034em; color: #171717; overflow-wrap: break-word; }
 .hx-page--home .hxw-hero__title span { display: block; }
 .hx-page--home .hxw-hero__title em { display: block; font-style: normal; color: #5142B5; }
 .hx-page--home .hxw-hero__lead { margin: 16px 0 0; max-width: 32em; font-size: clamp(16.5px, 1.2vw, 18px); line-height: 1.6; color: #3c425c; }
 .hx-page--home .hxw-hero__today { margin: 12px 0 0; max-width: 34em; font-size: 15px; line-height: 1.5; font-weight: 650; color: #5142B5; }
 .hx-page--home .hxw-hero__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 22px; }
+.hx-page--home .hxw-hero__path { color: #5142B5; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.hx-page--home .hxw-hero__limit { margin: 14px 0 0; max-width: 36em; font-size: 14px; line-height: 1.5; color: #555B7D; }
 .hx-page--home .hxw-hero__visual { position: relative; align-self: center; justify-self: stretch; width: 100%; min-width: 0; max-width: 100%; }
-.hx-page--home .hxw-stage { position: relative; width: 100%; padding: 18px 18px 143px; border-radius: 28px; background: #EAE6FF; }
+.hx-page--home .hxw-stage { position: relative; width: 100%; padding: 18px; border-radius: 28px; background: #EAE6FF; }
 .hx-page--home .hxw-hero__photo { width: 100%; border-radius: 20px; overflow: hidden; background: #F2F0FC; aspect-ratio: 5 / 4; }
 .hx-page--home .hxw-hero__photo img { display: block; width: 100%; height: 100%; max-width: 100%; object-fit: cover; object-position: 68% 18%; }
 .hx-page--home .hxw-ws { position: absolute; left: 28px; bottom: 22px; z-index: 2; width: min(280px, calc(100% - 56px)); padding: 14px; border-radius: 18px; background: #fff; border: 1px solid #E5E7EB; box-shadow: 0 18px 40px -24px rgba(32, 37, 68, .45); }
@@ -376,7 +378,9 @@
 }
 
 .hx-page--home .hx-programmes__lead { margin: 12px 0 0; max-width: 36em; font-size: 16px; line-height: 1.55; color: #3c425c; }
-.hx-page--home .hx-focus { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.hx-page--home .hx-focus-group { margin-top: 22px; }
+.hx-page--home .hx-focus-group__title { margin: 0 0 10px; font-size: 13px; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; color: #6B7280; }
+.hx-page--home .hx-focus { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
 .hx-page--home .hx-focus__card { display: flex; flex-direction: column; height: 100%; border: 1px solid #E5E7EB; border-radius: 14px; overflow: hidden; background: #fff; color: #22212B; text-decoration: none; }
 .hx-page--home .hx-focus__card.is-open { border-color: #CDEADB; }
 .hx-page--home .hx-focus__card.is-soon { border-color: #E4E0D6; }
@@ -539,6 +543,7 @@
 
 /* ── Skylent AI: identity, what it helps with, its first question ── */
 .hx-page--home .hx-ai--id { padding-block: clamp(40px, 5vw, 72px); border-top: 0; }
+.hx-page--home .hx-ai--id .hx-ai__layout { grid-template-columns: minmax(0, 40rem); }
 .hx-page--home .hx-ai__layout { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
 .hx-page--home .hx-ai__id { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
 .hx-page--home .hx-ai__avatar { display: grid; place-items: center; width: 68px; height: 68px; flex: none; border-radius: 20px; background: hsl(var(--site-navy)); background-image: radial-gradient(70% 70% at 50% 40%, hsl(var(--site-cyan) / .28), transparent 70%); color: #fff; box-shadow: 0 0 0 1px hsl(var(--site-navy-line)), 0 16px 32px -18px hsl(var(--site-navy) / .7); }

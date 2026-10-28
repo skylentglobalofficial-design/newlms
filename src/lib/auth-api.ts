@@ -4,7 +4,7 @@ import { POLICY_VERSION, consentPayload } from "./policy"
 
 const API_BASE = apiV1()
 
-export type ApiRole = "student" | "faculty" | "organisation" | "recruiter" | "superadmin"
+export type ApiRole = "student" | "faculty" | "organisation" | "college" | "recruiter" | "admin" | "superadmin"
 
 export type GoogleOAuthStartOptions = {
   returnTo?: string
@@ -40,6 +40,7 @@ export type AuthResponse = {
   user: ApiAuthUser
   roles: ApiRole[]
   role: ApiRole
+  mustChangePassword?: boolean
 }
 
 let csrfToken: string | null = null

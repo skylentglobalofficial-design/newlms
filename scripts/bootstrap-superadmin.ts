@@ -2,28 +2,31 @@ import "dotenv/config"
 import bcrypt from "bcrypt"
 import { RoleName, PrismaClient } from "@prisma/client"
 import { BCRYPT_ROUNDS, normalizeEmail } from "../server/src/lib/auth.js"
+import { classifyDatabaseTarget } from "../server/src/lib/database-target.js"
 
 const prisma = new PrismaClient()
 
 /**
- * Provisions the first superadmin from environment variables.
+ * Provisions the real Super Admin from environment variables.
  *
- * SUPERADMIN_EMAIL     required
- * SUPERADMIN_PASSWORD  required only when the account does not exist yet
- * SUPERADMIN_NAME      optional display name
+ * SUPERADMIN_EMAIL              required
+ * SUPERADMIN_PASSWORD           required only when the account does not exist yet (min 12)
+ * SUPERADMIN_NAME               optional display name
+ * SUPERADMIN_ALLOW_ELEVATION    must be "yes" to add ADMIN to an existing non-admin account
+ * SUPERADMIN_ALLOW_PRODUCTION   must be "yes" before this script will touch a non-local database
  *
- * The script is idempotent: an existing account is elevated to ADMIN without
- * touching its password. Passwords are never logged.
+ * An existing ADMIN account is left unchanged, including its password.
+ * The script never prints the password or the password hash.
  */
-async function main() {
-  const rawEmail = process.env.SUPERADMIN_EMAIL
-  if (!rawEmail) {
-    throw new Error("SUPERADMIN_EMAIL is required")
-  }
-
+export async function provisionSuperadmin(env: NodeJS.ProcessEnv = process.env) {
+  const rawEmail = env.SUPERADMIN_EMAIL
+  if (!rawEmail) throw new Error("SUPERADMIN_EMAIL is required")
   const email = normalizeEmail(rawEmail)
-  const password = process.env.SUPERADMIN_PASSWORD
-  const displayName = process.env.SUPERADMIN_NAME?.trim() || email.split("@")[0]
+  const databaseUrl = env.DIRECT_URL || env.DATABASE_URL || ""
+  const target = classifyDatabaseTarget(databaseUrl)
+  if (target.class !== "local" && env.SUPERADMIN_ALLOW_PRODUCTION !== "yes") {
+    throw new Error("Refusing to provision a superadmin outside a local database without SUPERADMIN_ALLOW_PRODUCTION=yes")
+  }
 
   const adminRole = await prisma.role.upsert({
     where: { name: RoleName.ADMIN },
@@ -37,46 +40,80 @@ async function main() {
   })
 
   if (!existing) {
-    if (!password) {
-      throw new Error("SUPERADMIN_PASSWORD is required to create a new superadmin account")
-    }
-    if (password.length < 12) {
-      throw new Error("SUPERADMIN_PASSWORD must be at least 12 characters")
-    }
-
+    const password = env.SUPERADMIN_PASSWORD
+    if (!password) throw new Error("SUPERADMIN_PASSWORD is required to create a new superadmin account")
+    if (password.length < 12) throw new Error("SUPERADMIN_PASSWORD must be at least 12 characters")
     const passwordHash = await bcrypt.hash(password, BCRYPT_ROUNDS)
     const created = await prisma.user.create({
       data: {
         email,
-        displayName,
+        displayName: env.SUPERADMIN_NAME?.trim() || email.split("@")[0],
         passwordHash,
+        mustChangePassword: true,
         roles: { create: { roleId: adminRole.id } },
       },
     })
-    console.log(`Created superadmin ${created.email} (${created.id})`)
-    return
+    await prisma.adminAuditLog.create({
+      data: {
+        actorId: created.id,
+        action: "auth.superadmin.created",
+        targetType: "User",
+        targetId: created.id,
+        summary: `Provisioned superadmin ${created.email}`,
+      },
+    }).catch(() => undefined)
+    return { status: "created" as const, email: created.email, id: created.id, mustChangePassword: true }
   }
 
-  const alreadyAdmin = existing.roles.some((entry) => entry.role.name === RoleName.ADMIN)
+  const roleNames = existing.roles.map((entry) => entry.role.name)
+  const alreadyAdmin = roleNames.includes(RoleName.ADMIN)
   if (alreadyAdmin) {
-    console.log(`Superadmin already provisioned: ${existing.email} (${existing.id})`)
-    return
+    await prisma.adminAuditLog.create({
+      data: {
+        actorId: existing.id,
+        action: "auth.superadmin.already_present",
+        targetType: "User",
+        targetId: existing.id,
+        summary: `Superadmin already provisioned for ${existing.email}`,
+      },
+    }).catch(() => undefined)
+    return { status: "already_present" as const, email: existing.email, id: existing.id, mustChangePassword: existing.mustChangePassword }
+  }
+
+  if (env.SUPERADMIN_ALLOW_ELEVATION !== "yes") {
+    throw new Error("An account with this email already exists and is not an admin. Refusing to change its roles. Set SUPERADMIN_ALLOW_ELEVATION=yes only after confirming the identity.")
   }
 
   await prisma.$transaction(async (tx) => {
     await tx.userRole.deleteMany({ where: { userId: existing.id, roleId: { not: adminRole.id } } })
     await tx.userRole.create({ data: { userId: existing.id, roleId: adminRole.id } })
+    await tx.adminAuditLog.create({
+      data: {
+        actorId: existing.id,
+        action: "auth.superadmin.elevated",
+        targetType: "User",
+        targetId: existing.id,
+        summary: `Elevated ${existing.email} after SUPERADMIN_ALLOW_ELEVATION=yes. Previous roles: ${roleNames.join(",") || "none"}`,
+      },
+    })
   })
-
-  console.log(`Elevated existing account to superadmin: ${existing.email} (${existing.id})`)
+  return { status: "elevated" as const, email: existing.email, id: existing.id, mustChangePassword: existing.mustChangePassword }
 }
 
-main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (error) => {
-    console.error(error instanceof Error ? error.message : error)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+async function main() {
+  const result = await provisionSuperadmin()
+  console.log(`Superadmin ${result.status}: ${result.email} (${result.id})`)
+}
+
+const isDirectRun = process.argv[1] && process.argv[1].includes("bootstrap-superadmin")
+if (isDirectRun) {
+  main()
+    .then(async () => {
+      await prisma.$disconnect()
+    })
+    .catch(async (error) => {
+      console.error(error instanceof Error ? error.message : error)
+      await prisma.$disconnect()
+      process.exit(1)
+    })
+}

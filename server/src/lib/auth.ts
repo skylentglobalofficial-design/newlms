@@ -8,13 +8,15 @@ export const CSRF_COOKIE = "csrf"
 export const BCRYPT_ROUNDS = 12
 export const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30
 
-export type ApiRole = "student" | "faculty" | "organisation" | "recruiter" | "superadmin"
+export type ApiRole = "student" | "faculty" | "organisation" | "college" | "recruiter" | "admin" | "superadmin"
 
 const ROLE_NAME_TO_API: Record<RoleName, ApiRole> = {
   STUDENT: "student",
   FACULTY: "faculty",
   ORGANISATION_ADMIN: "organisation",
+  COLLEGE_ADMIN: "college",
   RECRUITER: "recruiter",
+  PLATFORM_ADMIN: "admin",
   ADMIN: "superadmin",
 }
 
@@ -200,6 +202,19 @@ export async function requireAuth(req: AuthenticatedRequest, res: Response, next
   if (!auth) {
     return res.status(401).json({ error: "Unauthorized" })
   }
+  if (auth.user.mustChangePassword) {
+    const path = req.originalUrl.split("?")[0].replace(/\/$/, "")
+    const allowed =
+      (path === "/api/v1/auth/change-password" && req.method === "POST") ||
+      (path === "/api/v1/auth/logout" && req.method === "POST") ||
+      (path === "/api/v1/auth/me" && req.method === "GET")
+    if (!allowed) {
+      return res.status(403).json({
+        error: "Change your password before continuing",
+        code: "PASSWORD_CHANGE_REQUIRED",
+      })
+    }
+  }
   next()
 }
 
@@ -216,7 +231,7 @@ export function requireCsrf(req: Request, res: Response, next: NextFunction) {
 }
 
 export function primaryRole(roles: Role[]): ApiRole {
-  const priority: RoleName[] = ["ADMIN", "ORGANISATION_ADMIN", "RECRUITER", "FACULTY", "STUDENT"]
+  const priority: RoleName[] = ["ADMIN", "PLATFORM_ADMIN", "ORGANISATION_ADMIN", "COLLEGE_ADMIN", "RECRUITER", "FACULTY", "STUDENT"]
   for (const roleName of priority) {
     const match = roles.find((role) => role.name === roleName)
     if (match) return toApiRole(match)

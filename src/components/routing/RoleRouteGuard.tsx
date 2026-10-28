@@ -23,6 +23,9 @@ export function RoleRouteGuard({
       />
     )
   }
+  if (user.mustChangePassword) {
+    return <Navigate to="/account/password" replace />
+  }
   if (!allowedRoles.includes(user.role)) {
     return <Navigate to={roleRoute(user.role)} replace />
   }

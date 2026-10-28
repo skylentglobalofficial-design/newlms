@@ -150,6 +150,9 @@
 /* What you will build: the capstone and the counts, on navy */
 .pp-build { margin-top: clamp(40px, 5vw, 68px); padding-top: 24px; border-top: 1px solid hsl(var(--site-navy-line)); }
 .pp-build__lead { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.pp-practice { margin: 0; max-width: 40em; color: hsl(var(--site-on-navy-muted)); font-size: 1rem; line-height: 1.55; }
+.pp-practice__wait { margin: 0; color: hsl(var(--site-on-navy-muted)); font-size: 0.9375rem; }
+.pp-practice__link { display: inline-flex; align-items: center; gap: 8px; color: hsl(var(--site-white)); font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
 .pp-page .pp-build__title {
   font-family: var(--sk-font-heading);
   font-weight: 600;

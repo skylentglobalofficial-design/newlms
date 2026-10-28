@@ -9,7 +9,8 @@ import {
   type AuthenticatedRequest,
 } from "../lib/auth.js"
 import { buildPendingAttachmentRecord } from "../lib/assignment-attachments.js"
-import { isAuthoredCourse, isAuthoredProgramme } from "../lib/authored-courses.js"
+import { isAuthoredProgramme } from "../lib/authored-courses.js"
+import { courseIsEnrolable } from "../lib/course-publication.js"
 import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import { answersInOptionRange, QuizAttemptThrottled, QuizMaxAttemptsExceeded, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
 import { awardVerifiedLearning } from "../lib/elixir.js"
@@ -219,7 +220,7 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
         return res.status(400).json({ error: "Program has no linked courses" })
       }
 
-      const hasAuthoredCourse = program.programCourses.some((link) => isAuthoredCourse(link.course.slug))
+      const hasAuthoredCourse = program.programCourses.some((link) => courseIsEnrolable(link.course))
       if (!hasAuthoredCourse) {
         return res.status(400).json({ error: "Program has no authored courses available for enrollment" })
       }
@@ -239,7 +240,7 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
 
       // New programme enrolments only. An existing row above still reopens its workspace.
       const approvedProgramme = isAuthoredProgramme(program.slug)
-      const everyLinkedCourseAuthored = program.programCourses.every((link) => isAuthoredCourse(link.course.slug))
+      const everyLinkedCourseAuthored = program.programCourses.every((link) => courseIsEnrolable(link.course))
       if (!approvedProgramme || !everyLinkedCourseAuthored) {
         return res.status(400).json({ error: "This programme is not open for enrollment" })
       }
@@ -270,7 +271,7 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
 
     const course = await findCourseBySlug(parsed.data.courseSlug!)
     if (!course) return res.status(404).json({ error: "Course not found" })
-    if (!isAuthoredCourse(course.slug)) {
+    if (!courseIsEnrolable(course)) {
       return res.status(400).json({ error: "This course is not open for enrollment yet" })
     }
 

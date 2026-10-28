@@ -18,7 +18,6 @@ import { plural, type ProgrammeTruth } from "./programme-truth"
 import { effectiveProgrammePublicFacts } from "../../lib/public-catalogue-copy"
 import { practiceNoteForProgramme } from "../../lib/practice-environments"
 import "./ProfessionalProgrammeTemplate.css"
-import { openSkylentAi } from "../skylent/ai-events"
 import { STATUS_NOT_CONFIRMED } from "./CatalogueNotice"
 
 type Props = {
@@ -79,7 +78,7 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
               ) : null}
               {firstLinked ? (
                 <Link className="sk-btn sk-btn-secondary" to={firstLinked.to}>
-                  View {firstLinked.title}
+                  View {firstLinked.title === program.name ? `${firstLinked.title} course` : firstLinked.title}
                 </Link>
               ) : (
                 <Link className="sk-btn sk-btn-secondary" to="/programmes">
@@ -180,9 +179,6 @@ export default function ProgrammeListing({ program, truth, cta, honesty, afterEn
                   <ArrowRight />
                 </Link>
               )}
-              <button type="button" className="sk-btn sk-btn-secondary" onClick={() => openSkylentAi("finder")}>
-                Ask Skylent AI
-              </button>
             </div>
           </Reveal>
         </div>

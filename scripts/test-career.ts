@@ -8,6 +8,7 @@ import {
   PrismaClient,
 } from "@prisma/client"
 import { TEST_CONSENT } from "./test-consent-payload.ts"
+import { grantCareerOsForTest } from "./career-os-test-grant.ts"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? `http://localhost:${process.env.PORT ?? 3000}/api/v1`
@@ -124,6 +125,15 @@ async function main() {
   const jarB: CookieJar = new Map()
   await signupUser(jarA, "owner")
   await signupUser(jarB, "other")
+
+  const meA = await request(jarA, "/auth/me")
+  const lockedProfile = await request(jarA, "/career/profile")
+  assert(lockedProfile.response.status === 403, "A new account must not receive Career OS")
+  const lockedAccess = await request(jarA, "/career/access")
+  assert(lockedAccess.response.ok && lockedAccess.data.data.locked === true && lockedAccess.data.data.entitled === false, "Career OS access must report locked")
+  await grantCareerOsForTest(prisma, meA.data.user.id)
+  const meB = await request(jarB, "/auth/me")
+  await grantCareerOsForTest(prisma, meB.data.user.id)
 
   const { employer, job } = await createTestJobFixture()
   const question = await createTestQuestionFixture()

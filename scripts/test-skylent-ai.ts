@@ -1,4 +1,6 @@
 import "dotenv/config"
+import { PrismaClient } from "@prisma/client"
+import { grantCareerOsForTest } from "./career-os-test-grant.ts"
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http"
 import { DA_LESSON_META } from "../src/content/data-analytics/lessons.ts"
 import { PM_LESSON_META } from "../src/content/product-management/lessons.ts"
@@ -856,6 +858,10 @@ async function main() {
   assert(quizLocked.response.status === 403, "AI must not unlock the foundations quiz")
   const assignmentLocked = await request(jar, "/lms/courses/data-analytics/lessons/l6/assignment")
   assert(assignmentLocked.response.status === 403, "AI must not unlock the spreadsheet assignment")
+  const careerMe = await request(jar, "/auth/me")
+  const careerDb = new PrismaClient()
+  await grantCareerOsForTest(careerDb, careerMe.data.user.id)
+  await careerDb.$disconnect()
   const careerBefore = await request(jar, "/career/profile")
   assert(careerBefore.response.ok, "career profile readable")
   if (status.data.data.available) {

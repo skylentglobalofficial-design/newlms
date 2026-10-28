@@ -5,8 +5,8 @@
  * see useCatalogPrograms). Readiness uses programmeTruth, the same helper as the programme page.
  * Nothing here states a fee, a learner count, or a placement outcome.
  */
-import { useMemo, useState } from "react"
-import { Link } from "react-router-dom"
+import { useEffect, useMemo, useState } from "react"
+import { Link, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { ArrowRight } from "../components/skylent/primitives"
 import { authoredProgrammeContent } from "../components/programme/programme-content"
@@ -15,7 +15,8 @@ import { programs as publishedProgrammes } from "../data"
 import { useCatalogPrograms } from "../hooks/useCatalog"
 import { STATUS_NOT_CONFIRMED } from "../components/programme/CatalogueNotice"
 import type { CatalogProgramSummary } from "../lib/catalog-api"
-import { isPublicProgrammeIndexRow } from "../lib/programme-catalogue"
+import { AVAILABILITY_UNKNOWN, programmesIndexIntro, publicCatalogueState, publicCatalogueStatus } from "../lib/catalogue-availability"
+import { catalogueProgrammeIsOpen, isPublicProgrammeIndexRow } from "../lib/programme-catalogue"
 import { programmeDiscoveryFor } from "../lib/programme-discovery"
 import analyticsVisual from "@/assets/site/program-analytics.jpg"
 import productVisual from "@/assets/site/program-product.jpg"
@@ -35,7 +36,7 @@ type Row = {
   search: string
 }
 
-const PROFESSIONAL_ORDER = ["data-analytics-pro", "product-management", "data-science-ai"] as const
+const PROFESSIONAL_ORDER = ["data-analytics-pro", "product-management", "data-science-ai", "full-stack", "generative-ai-program"] as const
 
 const CARD_FACE: Record<string, { title: string; line: string; category: string; image: string; alt: string }> = {
   "data-analytics-pro": {
@@ -102,13 +103,12 @@ function toRow(program: CatalogProgramSummary): Row | null {
   if (!isPublicProgrammeIndexRow(program)) return null
   const kind = kindOf(program)
   if (!kind) return null
-  if (kind === "professional" && !PROFESSIONAL_ORDER.includes(program.slug as (typeof PROFESSIONAL_ORDER)[number])) return null
   const truth = programmeTruth(program)
   const face = CARD_FACE[program.slug]
   const content = truth.state === "live" ? authoredProgrammeContent(program.slug) : null
   const discovery = content ? programmeDiscoveryFor(program.slug) : null
   const title = face?.title || discovery?.courseTitle || program.name
-  const line = face?.line || content?.cardLine || (truth.comingLater ? "This programme is not open yet." : "A catalogue direction. A full taught pathway is not open yet.")
+  const line = face?.line || content?.cardLine || program.desc || (truth.comingLater ? "This programme is not open yet." : "A catalogue direction. A full taught pathway is not open yet.")
   const category = face?.category || KIND_COPY[kind].label
   return {
     program,
@@ -123,42 +123,65 @@ function toRow(program: CatalogProgramSummary): Row | null {
   }
 }
 
+function presentedOpen(row: Row): boolean {
+  return catalogueProgrammeIsOpen(row.program) && row.truth.state === "live"
+}
+
 function statusText(row: Row, confirmed: boolean): string {
-  if (row.truth.state === "live") return confirmed ? "Open for enrolment" : STATUS_NOT_CONFIRMED
+  const state = publicCatalogueState(confirmed, presentedOpen(row))
+  if (state === "unknown" || state === "open") return confirmed ? "Open for enrolment" : STATUS_NOT_CONFIRMED
   if (row.truth.state === "soon") return "Coming soon"
-  return "In development"
+  return publicCatalogueStatus("closed")
 }
 
 function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
   const to = `/programmes/${row.program.slug}`
   const status = statusText(row, confirmed)
-  const live = row.truth.state === "live"
-  return (
-    <li className="pgx-card">
-      <Link to={to} className="pgx-card__link" data-clear-launcher>
-        <span className="pgx-card__media">
-          {row.image ? <img src={row.image} alt={row.alt} /> : <span className="pgx-card__fallback" aria-hidden="true" />}
-          <span className={live && confirmed ? "pgx-status pgx-status--open" : "pgx-status"}>{status}</span>
-        </span>
-        <span className="pgx-card__body">
-          <span className="pgx-card__kicker">{row.category}</span>
-          <span className="pgx-card__title">{row.title}</span>
-          <span className="pgx-card__line">{row.line}</span>
+  const live = presentedOpen(row) && confirmed
+  const showStatus = status !== STATUS_NOT_CONFIRMED
+  const face = (
+    <>
+      <span className="pgx-card__media">
+        {row.image ? <img src={row.image} alt={row.alt} /> : <span className="pgx-card__fallback" aria-hidden="true" />}
+        {showStatus ? <span className={live ? "pgx-status pgx-status--open" : "pgx-status"}>{status}</span> : null}
+      </span>
+      <span className="pgx-card__body">
+        <span className="pgx-card__kicker">{row.category}</span>
+        <span className="pgx-card__title">{row.title}</span>
+        <span className="pgx-card__line">{row.line}</span>
+        {live ? (
           <span className="pgx-card__go">
-            {live ? "View programme" : "See the listing"}
+            View programme
             <ArrowRight />
           </span>
-        </span>
-      </Link>
+        ) : null}
+      </span>
+    </>
+  )
+  return (
+    <li className="pgx-card">
+      {live ? (
+        <Link to={to} className="pgx-card__link" data-clear-launcher>
+          {face}
+        </Link>
+      ) : (
+        <div className="pgx-card__static">{face}</div>
+      )}
     </li>
   )
 }
 
 export default function ProgramsPage() {
   const catalog = useCatalogPrograms()
-  const [query, setQuery] = useState("")
+  const [params, setParams] = useSearchParams()
+  const urlQuery = params.get("q") ?? ""
+  const [query, setQuery] = useState(urlQuery)
   const [kind, setKind] = useState<"all" | Kind>("all")
   const [category, setCategory] = useState("All")
+
+  useEffect(() => {
+    setQuery(urlQuery)
+  }, [urlQuery])
 
   const rows = useMemo(() => (catalog.data ?? []).map(toRow).filter((row): row is Row => row !== null), [catalog.data])
   const categories = useMemo(() => ["All", ...Array.from(new Set(rows.map((row) => row.category)))], [rows])
@@ -169,7 +192,18 @@ export default function ProgramsPage() {
     return !needle || row.search.includes(needle)
   })
   const confirmed = !catalog.offline
-  const professional = shown.filter((row) => row.kind === "professional").sort((a, b) => PROFESSIONAL_ORDER.indexOf(a.program.slug as (typeof PROFESSIONAL_ORDER)[number]) - PROFESSIONAL_ORDER.indexOf(b.program.slug as (typeof PROFESSIONAL_ORDER)[number]))
+  const catalogueKnown = confirmed && !catalog.loading
+  const openTitles = catalogueKnown
+    ? rows.filter((row) => row.kind === "professional" && presentedOpen(row)).map((row) => row.title)
+    : []
+  const intro = catalog.loading ? "Checking which programmes are open." : programmesIndexIntro(catalogueKnown, openTitles)
+  const professional = shown.filter((row) => row.kind === "professional").sort((a, b) => {
+    const rank = (slug: string) => {
+      const index = PROFESSIONAL_ORDER.indexOf(slug as (typeof PROFESSIONAL_ORDER)[number])
+      return index === -1 ? PROFESSIONAL_ORDER.length : index
+    }
+    return rank(a.program.slug) - rank(b.program.slug)
+  })
   const certification = shown.filter((row) => row.kind === "certification")
   const filtersActive = Boolean(needle) || kind !== "all" || category !== "All"
 
@@ -177,6 +211,11 @@ export default function ProgramsPage() {
     setQuery("")
     setKind("all")
     setCategory("All")
+    if (params.has("q")) {
+      const next = new URLSearchParams(params)
+      next.delete("q")
+      setParams(next, { replace: true })
+    }
   }
 
   return (
@@ -186,7 +225,7 @@ export default function ProgramsPage() {
           <div className="sky-container pgx-intro__inner">
             <p className="pgx-eyebrow">Skylent programmes</p>
             <h1 id="pgx-title">Find the right programme for your next step.</h1>
-            <p className="pgx-lede">Open programmes you can enrol in, and listings that are not open yet.</p>
+            <p className="pgx-lede">{intro}</p>
           </div>
         </section>
 
@@ -265,19 +304,54 @@ export default function ProgramsPage() {
             ) : (
               <>
                 {professional.length ? (
-                  <section id="professional" className="pgx-section" aria-labelledby="pgx-professional">
-                    <div className="sky-container">
-                      <header className="pgx-section__head">
-                        <h2 id="pgx-professional">{KIND_COPY.professional.title}</h2>
-                        <p>{KIND_COPY.professional.lead}</p>
-                      </header>
-                      <ul className="pgx-grid">
-                        {professional.map((row) => (
-                          <ProgrammeCard key={row.program.slug} row={row} confirmed={!catalog.offline} />
-                        ))}
-                      </ul>
-                    </div>
-                  </section>
+                  confirmed ? (
+                    <>
+                      {professional.filter((row) => presentedOpen(row)).length ? (
+                        <section id="professional" className="pgx-section" aria-labelledby="pgx-professional">
+                          <div className="sky-container">
+                            <header className="pgx-section__head">
+                              <h2 id="pgx-professional">Open now</h2>
+                              <p>These programmes are open for enrolment and have a linked course.</p>
+                            </header>
+                            <ul className="pgx-grid">
+                              {professional.filter((row) => presentedOpen(row)).map((row) => (
+                                <ProgrammeCard key={row.program.slug} row={row} confirmed />
+                              ))}
+                            </ul>
+                          </div>
+                        </section>
+                      ) : null}
+                      {professional.filter((row) => !presentedOpen(row)).length ? (
+                        <section id="professional-later" className="pgx-section" aria-labelledby="pgx-professional-later">
+                          <div className="sky-container">
+                            <header className="pgx-section__head">
+                              <h2 id="pgx-professional-later">Not open yet</h2>
+                              <p>These listings can be read. New enrolment is not available.</p>
+                            </header>
+                            <ul className="pgx-grid">
+                              {professional.filter((row) => !presentedOpen(row)).map((row) => (
+                                <ProgrammeCard key={row.program.slug} row={row} confirmed />
+                              ))}
+                            </ul>
+                          </div>
+                        </section>
+                      ) : null}
+                    </>
+                  ) : (
+                    <section id="professional" className="pgx-section" aria-labelledby="pgx-professional">
+                      <div className="sky-container">
+                        <header className="pgx-section__head">
+                          <h2 id="pgx-professional">Availability could not be confirmed</h2>
+                          <p>{AVAILABILITY_UNKNOWN}</p>
+                        </header>
+                        <ul className="pgx-grid">
+                          {professional.map((row) => (
+                            <ProgrammeCard key={row.program.slug} row={row} confirmed={false} />
+                          ))}
+                        </ul>
+                      </div>
+                    </section>
+                  )
                 ) : null}
                 {certification.length ? (
                   <section id="certification" className="pgx-section" aria-labelledby="pgx-certification">

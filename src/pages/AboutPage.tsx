@@ -14,7 +14,7 @@ const PRODUCTS = [
   { title: "Education", text: "Explore degree pathways and structured learning options. Degree availability depends on confirmed institutional arrangements.", to: "/education" },
   { title: "Programmes", text: "Build practical skills through structured programmes, lessons and project-based work.", to: "/programmes" },
   { title: "Career OS", text: "Bring your professional profile, projects, evidence and career activity into one workspace.", to: "/career-os" },
-  { title: "Skylent AI", text: "Get help navigating learning and understanding lessons through the tools available on the platform.", to: "/#skylent-ai" },
+  { title: "Skylent AI", text: "Lesson help inside an open lesson, when it is switched on. Find My Path is a separate questionnaire.", to: "/#skylent-ai" },
 ]
 
 const FLOW = ["Learn", "Practise", "Build work", "Show your skills", "Take the next step"]

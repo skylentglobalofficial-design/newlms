@@ -28,7 +28,7 @@ const DEMO_USERS: DemoEntry[] = DEMO_MODE
       { id: 'demo-student', role: 'student', name: 'Demo Learner', email: 'learner@demo.skylent.in', avatar: 'DL', label: 'Learner' },
       { id: 'demo-faculty', role: 'faculty', name: 'Demo Faculty', email: 'faculty@demo.skylent.in', avatar: 'DF', label: 'Faculty' },
       { id: 'demo-org', role: 'organisation', name: 'Demo Institution', email: 'institution@demo.skylent.in', avatar: 'DI', label: 'Institution' },
-      { id: 'demo-admin', role: 'superadmin', name: 'Demo Admin', email: 'admin@demo.skylent.in', avatar: 'DA', label: 'Admin' },
+      { id: 'demo-admin', role: 'admin', name: 'Demo Admin', email: 'admin@demo.skylent.in', avatar: 'DA', label: 'Admin' },
     ]
   : []
 
@@ -37,7 +37,9 @@ function roleRoute(role: UserRole): string {
     case 'student': return '/dashboard/student'
     case 'faculty': return '/dashboard/faculty'
     case 'organisation': return '/dashboard/organisation'
+    case 'college': return '/dashboard/college'
     case 'recruiter': return '/dashboard/recruiter'
+    case 'admin': return '/dashboard/curriculum'
     case 'superadmin': return '/dashboard/admin'
   }
 }

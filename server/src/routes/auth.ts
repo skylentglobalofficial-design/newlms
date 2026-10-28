@@ -3,6 +3,7 @@ import bcrypt from "bcrypt"
 import { z } from "zod"
 import { RoleName } from "@prisma/client"
 import { prisma } from "../lib/prisma.js"
+import { recordAdminAudit } from "../lib/admin-audit.js"
 import {
   BCRYPT_ROUNDS,
   clearSessionCookies,
@@ -235,6 +236,7 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
       user: toSafeUser(user),
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
+      mustChangePassword: user.mustChangePassword,
       csrfToken: issuedCsrf,
     })
   } catch (error) {
@@ -280,6 +282,7 @@ authRouter.post("/login", requireCsrf, async (req, res) => {
       user: toSafeUser(user),
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
+      mustChangePassword: user.mustChangePassword,
       csrfToken: issuedCsrf,
     })
   } catch (error) {
@@ -311,7 +314,42 @@ authRouter.get("/me", requireAuth, async (req: AuthenticatedRequest, res) => {
     user: toSafeUser(auth.user),
     roles: auth.roles.map(toApiRole),
     role: primaryRole(auth.roles),
+    mustChangePassword: auth.user.mustChangePassword,
   })
+})
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1).max(200),
+  newPassword: z.string().min(12).max(200),
+})
+
+authRouter.post("/change-password", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const parsed = changePasswordSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Use a new password of at least 12 characters" })
+  }
+  if (parsed.data.newPassword === parsed.data.currentPassword) {
+    return res.status(400).json({ error: "Choose a password that is different from the current one" })
+  }
+  const user = req.auth!.user
+  if (!user.passwordHash) {
+    return res.status(400).json({ error: "This account has no password to change" })
+  }
+  const valid = await bcrypt.compare(parsed.data.currentPassword, user.passwordHash)
+  if (!valid) return res.status(401).json({ error: "The current password is wrong" })
+  const passwordHash = await bcrypt.hash(parsed.data.newPassword, BCRYPT_ROUNDS)
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordHash, mustChangePassword: false },
+  })
+  await recordAdminAudit({
+    actorId: user.id,
+    action: "auth.password.changed",
+    targetType: "User",
+    targetId: user.id,
+    summary: "Password changed",
+  })
+  res.json({ ok: true, mustChangePassword: false })
 })
 
 authRouter.patch("/me", requireAuth, requireCsrf, async (req: AuthenticatedRequest, res) => {
@@ -334,6 +372,7 @@ authRouter.patch("/me", requireAuth, requireCsrf, async (req: AuthenticatedReque
       user: toSafeUser(user),
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
+      mustChangePassword: user.mustChangePassword,
     })
   } catch (error) {
     console.error("Failed to update profile:", error)

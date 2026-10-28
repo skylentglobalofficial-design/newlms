@@ -22,6 +22,7 @@
     "db:seed": "prisma db seed",
     "db:seed:career": "tsx prisma/seed-career.ts",
     "db:preflight": "tsx scripts/check-migration-history.ts",
+    "db:preflight:backfill": "tsx scripts/preflight-program-course-backfill.ts",
     "smoke:public": "tsx scripts/smoke-public.ts",
     "test:auth": "tsx scripts/test-auth.ts",
     "test:consent": "tsx scripts/test-consent.ts",
@@ -42,8 +43,15 @@
     "test:career-evidence": "tsx scripts/test-career-evidence.ts",
     "test:da-content": "tsx scripts/test-da-content.ts",
     "test:pm-content": "tsx scripts/test-pm-content.ts",
+    "test:programme-positioning": "tsx scripts/test-programme-positioning.ts",
     "test:second-flagship": "tsx scripts/test-second-flagship.ts",
     "test:career": "tsx scripts/test-career.ts",
+    "test:career-rise": "tsx scripts/test-career-rise.ts",
+    "test:career-os-lock": "tsx scripts/test-career-os-lock.ts",
+    "test:curriculum-authoring": "tsx scripts/test-curriculum-authoring.ts",
+    "test:my-courses": "tsx scripts/test-my-courses.ts",
+    "test:resume-upload-quiz": "tsx scripts/test-resume-upload-quiz.ts",
+    "test:college-isolation": "tsx scripts/test-college-isolation.ts",
     "test:employer": "tsx scripts/test-employer-jobs.ts",
     "test:lesson-media": "tsx scripts/test-lesson-media.ts",
     "test:catalog-parity": "tsx scripts/test-catalog-truth.ts && tsx scripts/test-public-catalogue-copy.ts && tsx scripts/check-catalog-parity.ts",
@@ -62,7 +70,8 @@
     "test:degrees-auth": "tsx scripts/test-degrees-authorization.ts",
     "test:storage": "tsx scripts/test-storage-validation.ts",
     "test:data-isolation": "tsx scripts/test-data-isolation.ts",
-    "bootstrap:superadmin": "tsx scripts/bootstrap-superadmin.ts"
+    "bootstrap:superadmin": "tsx scripts/bootstrap-superadmin.ts",
+    "provision:demo": "tsx scripts/provision-demo-accounts.ts"
   },
   "engines": {
     "node": ">=22"

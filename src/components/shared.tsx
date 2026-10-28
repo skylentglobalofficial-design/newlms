@@ -288,22 +288,22 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
   {
     label: 'Education',
     to: '/education',
-    tagline: 'Undergraduate and postgraduate degrees',
+    tagline: 'Sample degree areas. Applications are not open.',
     match: ['/education', '/exams'],
     items: [],
     sections: [
       {
         heading: 'Undergraduate (UG)',
         items: [
-          { label: 'Online', sub: 'Study on screen, on your own schedule.', to: '/education?level=ug&mode=online' },
-          { label: 'On campus', sub: 'Attend lectures and labs in person.', to: '/education?level=ug&mode=campus' },
+          { label: 'Online', sub: 'A planned way to study on screen. Not open.', to: '/education?level=ug&mode=online' },
+          { label: 'On campus', sub: 'A planned way to study in person. Not open.', to: '/education?level=ug&mode=campus' },
         ],
       },
       {
         heading: 'Postgraduate (PG)',
         items: [
-          { label: 'Online', sub: 'Specialise while you work.', to: '/education?level=pg&mode=online' },
-          { label: 'On campus', sub: 'Full-time study at an institution.', to: '/education?level=pg&mode=campus' },
+          { label: 'Online', sub: 'A planned way to study on screen. Not open.', to: '/education?level=pg&mode=online' },
+          { label: 'On campus', sub: 'A planned way to study in person. Not open.', to: '/education?level=pg&mode=campus' },
         ],
       },
     ],
@@ -311,13 +311,13 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
   {
     label: 'Career OS',
     to: '/career-os',
-    tagline: 'Your profile, projects and applications in one workspace',
+    tagline: 'A workspace after you sign in. It starts empty.',
     match: ['/career-os'],
     items: [
-      { label: 'How Career OS works', sub: 'From enrolment to opportunities.', to: '/career-os' },
-      { label: 'Career profile', sub: 'Role, skills, education and links.', to: '/career-os/profile' },
-      { label: 'Projects', sub: 'Work from your programmes.', to: '/career-os/projects' },
-      { label: 'Applications', sub: 'Track the roles you apply to.', to: '/career-os/applications' },
+      { label: 'How Career OS works', sub: 'What is available, and what is still planned.', to: '/career-os' },
+      { label: 'Career profile', sub: 'You write the role, skills and education.', to: '/career-os/profile' },
+      { label: 'Projects', sub: 'Work from a programme, after you enrol.', to: '/career-os/projects' },
+      { label: 'Applications', sub: 'The applications you record after you sign in.', to: '/career-os/applications' },
     ],
   },
   // Institutions is reached from the footer, the search and the homepage partner section, not the top bar.
@@ -369,7 +369,9 @@ function dashRoute(role: UserRole): string {
     case 'student': return '/dashboard/student'
     case 'faculty': return '/dashboard/faculty'
     case 'organisation': return '/dashboard/organisation'
+    case 'college': return '/dashboard/college'
     case 'recruiter': return '/dashboard/recruiter'
+    case 'admin': return '/dashboard/curriculum'
     case 'superadmin': return '/dashboard/admin'
   }
 }
@@ -385,7 +387,7 @@ const SEARCH_INDEX: readonly SearchEntry[] = [
   { label: 'Certification programmes', to: '/programmes#certification', group: 'Programmes', keywords: 'certificate short' },
   { label: 'Professional programmes', to: '/programmes#professional', group: 'Programmes', keywords: 'capstone career' },
   { label: 'Undergraduate degrees', to: '/education?level=ug', group: 'Degrees', keywords: 'ug bachelor degree' },
-  { label: 'Postgraduate degrees', to: '/education?level=pg', group: 'Degrees', keywords: 'pg masters mba degree' },
+  { label: 'Postgraduate degrees', to: '/education?level=pg', group: 'Degrees', keywords: 'pg postgraduate degree' },
   { label: 'Online degrees', to: '/education?mode=online', group: 'Degrees', keywords: 'distance remote' },
   { label: 'Campus degrees', to: '/education?mode=campus', group: 'Degrees', keywords: 'offline in person college' },
   { label: 'Career OS', to: '/career-os', group: 'Explore', keywords: 'career profile resume jobs projects evidence' },
@@ -404,7 +406,7 @@ function searchSuggestionsFor(query: string): SearchEntry[] {
 function searchPathFor(query: string) {
   const q = query.trim()
   const first = searchSuggestionsFor(q)[0]
-  return first ? first.to : `/courses?q=${encodeURIComponent(q)}`
+  return first ? first.to : `/programmes?q=${encodeURIComponent(q)}`
 }
 
 function groupedHints(hints: SearchEntry[]): [string, SearchEntry[]][] {
@@ -701,7 +703,7 @@ export function Nav() {
                     </div>
                   ))
                 ) : (
-                  <p className="skn-search__empty">No match. Press Enter to search courses.</p>
+                  <p className="skn-search__empty">No match in the menu. Press Enter to search programmes.</p>
                 )}
               </form>
             ) : null}
@@ -899,7 +901,7 @@ export function Footer() {
           <Link to="/" className="skf__mark" aria-label="Skylent home">
             Skylent
           </Link>
-          <p className="skf__line">Degrees, programmes and Career OS in one place.</p>
+          <p className="skf__line">Programmes you can start, and a place to keep the work you do.</p>
         </div>
         <nav aria-label="Footer" className="skf__nav">
           {FOOTER_COLUMNS.map((column) => (

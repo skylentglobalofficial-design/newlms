@@ -44,7 +44,7 @@ export default function LearnerProjectPage() {
   const [error, setError] = useState<string | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [careerLink, setCareerLink] = useState<CareerProjectLink | null>(null)
-  const [careerLinkStatus, setCareerLinkStatus] = useState<"loading" | "ready" | "error">("loading")
+  const [careerLinkStatus, setCareerLinkStatus] = useState<"loading" | "ready" | "error" | "locked">("loading")
   const [careerBusy, setCareerBusy] = useState(false)
   const [careerNotice, setCareerNotice] = useState<string | null>(null)
 
@@ -75,11 +75,12 @@ export default function LearnerProjectPage() {
             setCareerLink(link)
             setCareerLinkStatus("ready")
           })
-          .catch(() => {
+          .catch((err: unknown) => {
             // Unknown, not "not added": the page must not offer to add it again on a failed check.
             if (!controller.signal.aborted) {
               setCareerLink(null)
-              setCareerLinkStatus("error")
+              const message = err instanceof Error ? err.message : ""
+              setCareerLinkStatus(/locked/i.test(message) ? "locked" : "error")
             }
           })
       })
@@ -296,6 +297,8 @@ export default function LearnerProjectPage() {
           <p>Checking Career OS…</p>
         ) : careerLinkStatus === "error" ? (
           <p>Career OS could not be checked for this project. Reload the page to try again.</p>
+        ) : careerLinkStatus === "locked" ? (
+          <p>Career OS is locked. Finishing this project does not unlock it.</p>
         ) : project.progress.complete === project.progress.total ? (
           <button
             type="button"

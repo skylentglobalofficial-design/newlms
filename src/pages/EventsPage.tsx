@@ -90,8 +90,13 @@ export default function EventsPage() {
             <p className="cat-label">Events &amp; Webinars</p>
             <h1 className="cat-h1--display">Events &amp; Webinars</h1>
             <p className="cat-lead">
-              Register for upcoming sessions or browse past events. Filter by
-              date to find what you need.
+              {loading
+                ? "Checking which sessions are published."
+                : loadError
+                  ? "The events list could not be loaded. You can try again below."
+                  : events.length === 0
+                    ? "No sessions are scheduled. Nothing on this page can be booked."
+                    : "These are the sessions currently published. Open one to see whether you can register."}
             </p>
             <div className="cat-actions">
               <Link className="cat-btn cat-btn-primary" to="/programmes">
@@ -173,10 +178,11 @@ export default function EventsPage() {
                 ))}
               </ul>
             )}
-            <p className="cat-fine">
-              Events are subject to change. Registration is required for all
-              sessions.
-            </p>
+            {events.length > 0 ? (
+              <p className="cat-fine">
+                A published session can change. Registration, when it is open, is on that session’s page.
+              </p>
+            ) : null}
           </div>
         </section>
       </div>

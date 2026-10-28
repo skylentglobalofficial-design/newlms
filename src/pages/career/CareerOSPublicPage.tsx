@@ -10,31 +10,44 @@
 import { Link } from "react-router-dom"
 import { PageShell } from "../../components/shared"
 import { ArrowRight } from "../../components/skylent/primitives"
-import { CAREER_OS_FEATURES, type ProductFeature } from "../../lib/product-manifest"
+import { CAREER_OS_FEATURES, publicFeatures, type ProductFeature } from "../../lib/product-manifest"
 import { CareerJourney } from "../home/Repolish"
 import "../HomePage.v2.css"
 import "../HomeRepolish.css"
 import "./CareerOSPublicRepolish.css"
 
-type Part = { id: string; title: string; text: string }
-
-const PARTS: Part[] = [
-  { id: "profile", title: "Career profile", text: "Your target role, education, experience and links, written by you." },
-  { id: "skills", title: "Skills", text: "The skills you can show, with the level you choose for each." },
-  { id: "learning", title: "Learning", text: "Your programmes, progress and the next lesson, read from your enrolments." },
-  { id: "projects", title: "Projects and evidence", text: "Capstones from your programmes, kept with what they show and your reflection." },
-  { id: "certificates", title: "Certificates", text: "Issued when every lesson of a course is complete, with a code anyone can check." },
-  { id: "opportunities", title: "Applications", text: "Track the roles you apply to and prepare for interviews." },
-]
+function FeatureCard({ feature }: { feature: ProductFeature }) {
+  const body = (
+    <>
+      <span className="cpx-card__icon" aria-hidden="true" />
+      <h3>{feature.label}</h3>
+      <p>{feature.summary}</p>
+      <span className={feature.status === "live" ? "cpx-soon cpx-soon--live" : "cpx-soon"}>{statusLabel(feature.status)}</span>
+    </>
+  )
+  if (!feature.route || feature.route.includes(":")) {
+    return <li className="cpx-card">{body}</li>
+  }
+  return (
+    <li className="cpx-card">
+      <Link to={feature.route}>{body}</Link>
+    </li>
+  )
+}
 
 const SOURCES = [
-  { title: "Degrees", text: "Add your UG or PG study to your profile.", to: "/education" },
-  { title: "Programmes", text: "Lessons and progress flow in as you learn.", to: "/programmes" },
-  { title: "Labs and projects", text: "Finished work becomes evidence.", to: "/programmes#professional" },
+  { title: "Programmes", text: "After you enrol, lessons from that programme can appear in Career OS.", to: "/programmes" },
+  { title: "Profile", text: "You write the target role, skills, and education. Nothing is filled in for you.", to: "/career-os/profile" },
+  { title: "Degrees", text: "Degree areas are samples. You can record education yourself. They are not connected.", to: "/education" },
 ]
 
-function statusOf(id: string): ProductFeature["status"] | null {
-  return CAREER_OS_FEATURES.find((feature) => feature.id === id)?.status ?? null
+const FEATURES = publicFeatures(CAREER_OS_FEATURES).filter((feature) => feature.id !== "next-step")
+
+function statusLabel(status: ProductFeature["status"]): string {
+  if (status === "live") return "Locked until a separate entitlement is granted"
+  if (status === "soon") return "Coming soon"
+  if (status === "sample") return "Sample"
+  return "In development"
 }
 
 export default function CareerOSPublicPage() {
@@ -48,8 +61,8 @@ export default function CareerOSPublicPage() {
               Your learning, projects and profile, <em>in one place.</em>
             </h1>
             <p className="cpx-lead">
-              Career OS starts the day you enrol. It keeps what you learn and build, turns it into a profile you can show, and helps
-              you prepare for what comes next.
+              Career OS is locked. Creating an account does not open it, and neither does finishing a course or joining Career Rise.
+              It does not fill a portfolio for you, publish jobs, or promise a placement.
             </p>
             <div className="hx-hero__actions">
               <Link className="sk-btn sk-btn-primary hx-btn" to="/signup">
@@ -71,23 +84,14 @@ export default function CareerOSPublicPage() {
               <div>
                 <p className="hx-eyebrow hx-eyebrow--dark">What's inside</p>
                 <h2 id="cpx-parts-title" className="hx-h2">
-                  Everything about your progress, <em>together.</em>
+                  What you can use, <em>and what is not ready.</em>
                 </h2>
               </div>
             </div>
             <ul className="cpx-grid">
-              {PARTS.map((part) => {
-                const status = statusOf(part.id)
-                const soon = status !== null && status !== "live"
-                return (
-                  <li key={part.id} className="cpx-card">
-                    <span className="cpx-card__icon" aria-hidden="true" />
-                    <h3>{part.title}</h3>
-                    <p>{part.text}</p>
-                    {soon ? <span className="cpx-soon">{status === "development" ? "In development" : "Coming soon"}</span> : null}
-                  </li>
-                )
-              })}
+              {FEATURES.map((feature) => (
+                <FeatureCard key={feature.id} feature={feature} />
+              ))}
             </ul>
           </div>
         </section>
@@ -95,7 +99,7 @@ export default function CareerOSPublicPage() {
         <section className="cpx-flow" aria-labelledby="cpx-flow-title">
           <div className="sky-container">
             <h2 id="cpx-flow-title" className="hx-h2 hx-h2--sm">
-              Whatever you study, it feeds <em>one profile.</em>
+              What can sit beside <em>the profile you write.</em>
             </h2>
             <div className="cpx-flow__row">
               <ul className="cpx-sources">
@@ -113,7 +117,7 @@ export default function CareerOSPublicPage() {
               </div>
               <div className="cpx-hub">
                 <b>Career OS</b>
-                <span>Profile · Projects · Evidence · Applications</span>
+                <span>Profile · Learning · The work you record</span>
               </div>
             </div>
             <p className="cpx-note">Career OS helps you prepare. It does not promise interviews, jobs or salaries.</p>
@@ -124,7 +128,7 @@ export default function CareerOSPublicPage() {
           <div className="hx-hero__glow" aria-hidden="true" />
           <div className="sky-container hx-close__inner">
             <h2 id="cpx-close-title" className="hx-close__title">
-              Enrol once. <em>Keep everything you build.</em>
+              Sign in to write <em>your profile.</em>
             </h2>
             <div className="hx-hero__actions">
               <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">

@@ -1,7 +1,9 @@
 import "dotenv/config"
 import { NORTHWIND_PROJECT_TYPE, PROJECT_REFLECTION_MAX } from "../server/src/lib/skylent-projects/catalog.ts"
 import { NORTHWIND_SQL_EXAMPLES as SQL_EXAMPLES } from "../server/src/lib/skylent-labs/sql/examples.ts"
+import { PrismaClient } from "@prisma/client"
 import { TEST_CONSENT } from "./test-consent-payload.ts"
+import { grantCareerOsForTest } from "./career-os-test-grant.ts"
 
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 
@@ -143,6 +145,10 @@ async function main() {
   console.log("2. Task completion, evidence, reflection")
   const before = await request(jar, "/lms/courses/data-analytics")
   const completeBefore = before.data.data.lessonStates.l1?.complete === true
+  const careerMe = await request(jar, "/auth/me")
+  const careerDb = new PrismaClient()
+  await grantCareerOsForTest(careerDb, careerMe.data.user.id)
+  await careerDb.$disconnect()
   const careerBefore = await request(jar, "/career/profile")
   const workBefore = await request(jar, "/labs/data-analytics/northwind/work")
   const workCountBefore = (workBefore.data.data as unknown[]).length
