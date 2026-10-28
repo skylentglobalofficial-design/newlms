@@ -141,7 +141,6 @@ router.get('/programs/:slug', async (request, response, next) => {
   }
 
   try {
-    await ensureProgramCourseLinks()
     const program = await prisma.program.findUnique({
       where: { slug: parsed.data.slug },
       // The programme's own curriculum is brochure material. withProgramFacts

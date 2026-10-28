@@ -8,7 +8,6 @@ import type {
   UserEnrollment,
 } from "@prisma/client"
 import { isMuxPlaybackId } from "./media/playback-id.js"
-import { ensureProgramCourseLinks } from "./program-course-links.js"
 import { prisma } from "./prisma.js"
 import {
   assignmentProgressSelect,
@@ -600,7 +599,6 @@ export async function syncCertificateState(enrollmentId: string, courseId?: stri
 }
 
 export async function findProgramBySlug(slug: string) {
-  await ensureProgramCourseLinks()
   return prisma.program.findUnique({
     where: { slug },
     include: {
