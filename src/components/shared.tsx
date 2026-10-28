@@ -286,9 +286,9 @@ const PUBLIC_NAV: readonly PublicNavGroup[] = [
     ],
   },
   {
-    label: 'Education',
+    label: 'Degree pathways',
     to: '/education',
-    tagline: 'Undergraduate and postgraduate degrees',
+    tagline: 'Undergraduate and postgraduate degrees, separate from skill programmes',
     match: ['/education', '/exams'],
     items: [],
     sections: [
@@ -467,10 +467,13 @@ export function Nav() {
   const location = useLocation()
   const { user, logout } = useAuth()
 
-  // Primary action: sign up when signed out, back to learning when signed in. Find My Path is no
-  // longer a header destination; path discovery happens inside Skylent AI.
+  // Learning workspace is the signed-in product. Signed-out visitors sign in first,
+  // and login sends them to their own role home. A student return path would
+  // drop faculty, recruiters, and admins on a page they cannot open.
   const pathCta = useMemo(
-    () => (user ? { to: dashRoute(user.role), label: 'My learning' } : { to: '/signup', label: 'Get started' }),
+    () => (user
+      ? { to: dashRoute(user.role), label: 'Learning workspace' }
+      : { to: '/login', label: 'Learning workspace' }),
     [user],
   )
 

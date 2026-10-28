@@ -64,4 +64,13 @@ if (!appSource.includes('path="/courses/:slug"')) {
   throw new Error("/courses/:slug detail route must remain intact")
 }
 
+const publicNav = readFileSync(new URL("../src/components/shared.tsx", import.meta.url), "utf8")
+const pathCta = publicNav.slice(publicNav.indexOf("const pathCta"), publicNav.indexOf("const pathCta") + 500)
+if (!pathCta.includes("label: 'Learning workspace'")) {
+  throw new Error("The header action should name the learning workspace")
+}
+if (pathCta.includes("returnTo")) {
+  throw new Error("The header sign-in action must not force the student dashboard")
+}
+
 console.log("dashboard-navigation ok")
