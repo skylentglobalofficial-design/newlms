@@ -5,8 +5,8 @@
  * see useCatalogPrograms). Readiness uses programmeTruth, the same helper as the programme page.
  * Nothing here states a fee, a learner count, or a placement outcome.
  */
-import { useMemo, useState } from "react"
-import { Link } from "react-router-dom"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { Link, useLocation } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { ArrowRight } from "../components/skylent/primitives"
 import { authoredProgrammeContent } from "../components/programme/programme-content"
@@ -15,7 +15,7 @@ import { programs as publishedProgrammes } from "../data"
 import { useCatalogPrograms } from "../hooks/useCatalog"
 import { STATUS_NOT_CONFIRMED } from "../components/programme/CatalogueNotice"
 import type { CatalogProgramSummary } from "../lib/catalog-api"
-import { isPublicProgrammeIndexRow } from "../lib/programme-catalogue"
+import { isPublicProgrammeIndexRow, programmeSectionFromHash } from "../lib/programme-catalogue"
 import { programmeDiscoveryFor } from "../lib/programme-discovery"
 import analyticsVisual from "@/assets/site/program-analytics.jpg"
 import productVisual from "@/assets/site/program-product.jpg"
@@ -156,6 +156,7 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
 
 export default function ProgramsPage() {
   const catalog = useCatalogPrograms()
+  const location = useLocation()
   const [query, setQuery] = useState("")
   const [kind, setKind] = useState<"all" | Kind>("all")
   const [category, setCategory] = useState("All")
@@ -172,6 +173,29 @@ export default function ProgramsPage() {
   const professional = shown.filter((row) => row.kind === "professional").sort((a, b) => PROFESSIONAL_ORDER.indexOf(a.program.slug as (typeof PROFESSIONAL_ORDER)[number]) - PROFESSIONAL_ORDER.indexOf(b.program.slug as (typeof PROFESSIONAL_ORDER)[number]))
   const certification = shown.filter((row) => row.kind === "certification")
   const filtersActive = Boolean(needle) || kind !== "all" || category !== "All"
+  const sectionId = programmeSectionFromHash(location.hash)
+  const landedHash = useRef("")
+
+  useEffect(() => {
+    if (!sectionId || catalog.loading) return
+    const available = sectionId === "professional" ? professional.length > 0 : certification.length > 0
+    if (!available) {
+      if (filtersActive) {
+        setQuery("")
+        setKind("all")
+        setCategory("All")
+      }
+      return
+    }
+    if (landedHash.current === `${location.key}:${sectionId}`) return
+    const el = document.getElementById(sectionId)
+    if (!el) return
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" })
+    const headingId = sectionId === "professional" ? "pgx-professional" : "pgx-certification"
+    document.getElementById(headingId)?.focus({ preventScroll: true })
+    landedHash.current = `${location.key}:${sectionId}`
+  }, [sectionId, catalog.loading, professional.length, certification.length, filtersActive, location.key])
 
   function clearFilters() {
     setQuery("")
@@ -268,7 +292,7 @@ export default function ProgramsPage() {
                   <section id="professional" className="pgx-section" aria-labelledby="pgx-professional">
                     <div className="sky-container">
                       <header className="pgx-section__head">
-                        <h2 id="pgx-professional">{KIND_COPY.professional.title}</h2>
+                        <h2 id="pgx-professional" tabIndex={-1}>{KIND_COPY.professional.title}</h2>
                         <p>{KIND_COPY.professional.lead}</p>
                       </header>
                       <ul className="pgx-grid">
@@ -283,7 +307,7 @@ export default function ProgramsPage() {
                   <section id="certification" className="pgx-section" aria-labelledby="pgx-certification">
                     <div className="sky-container">
                       <header className="pgx-section__head">
-                        <h2 id="pgx-certification">{KIND_COPY.certification.title}</h2>
+                        <h2 id="pgx-certification" tabIndex={-1}>{KIND_COPY.certification.title}</h2>
                         <p>{KIND_COPY.certification.lead}</p>
                       </header>
                       <ul className="pgx-grid">
