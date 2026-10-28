@@ -207,7 +207,9 @@ Career OS lock and Career Rise eligibility were not changed in this recheck.
 
 PR #212 merged into `cursor/phase-2-core-learning-cd19` at 8:47 PM IST on 28 October 2026. The merge commit is `9dbdc03d0bd5f9dadd146f87e3be53c4ecf08fcf`. Its tree is the implementation commit `8bcb942fad67d37d3ff0305a6e3fbada71399aea`. That merge is not on `main`.
 
-CI for the merge commit is not a pass. The only check run is `Supabase Preview`, skipped. There are no GitHub Actions runs for `9dbdc03` or `8bcb942`. `release-gate` does not trigger on a merge to `cursor/phase-2-core-learning-cd19`. The last successful release-gate runs on that branch name are from 26 October 2026.
+CI for the merge commit is not a pass. The only check run on `9dbdc03` is `Supabase Preview`, skipped. There are no GitHub Actions runs for `9dbdc03` or `8bcb942`. `release-gate` did not trigger on that merge. The last successful release-gate runs on the phase-2 branch name before this merge are from 26 October 2026.
+
+PR #213 then started `release-gate` run `40715931754`. The `gate` job passed in 3 minutes 7 seconds for commit `2c0ed1e36a914f52820378e5d72dedf98a728019`. Supabase Preview was skipped. That pass is for the verification commit, not for `9dbdc03`.
 
 At 8:50 PM IST, `https://skylent.live/api/v1/health` returned HTTP 503:
 

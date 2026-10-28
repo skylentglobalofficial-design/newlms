@@ -12,6 +12,7 @@ Updated: 28 October 2026, 8:50 PM IST.
 - Live `GET https://skylent.live/api/v1/health` at 8:50 PM IST: HTTP 503, `db: ok`, `pendingMigrations: 8`, `failedMigrations: 0`, `release: unknown`. Homepage HTTP 200, title `Skylent — Learn. Practise. Build.`, and the HTML does not contain `9dbdc03` or `8bcb942`. The running release was not verified as this merge.
 - A disposable local database `skylent_postmerge_128743` was created, migrated, tested, and dropped. It was not production. `db:preflight -- --expect-none` passed after migrate. `db:preflight:backfill` on that empty migrated database found none of the six programmes or courses, so it would insert nothing. That does not describe production.
 - Recommendation remains `NO-GO`.
+- After this verification branch opened PR #213, GitHub Actions run `40715931754` (`release-gate` job `gate`) completed with conclusion `success` in 3m7s for commit `2c0ed1e36a914f52820378e5d72dedf98a728019`. Supabase Preview was skipped. That run is not a run of merged SHA `9dbdc03`.
 
 This file is the progress register for the master stabilisation pass. Statuses mean what they say. A local test is not production verification.
 
