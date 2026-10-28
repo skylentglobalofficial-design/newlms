@@ -30,4 +30,11 @@ if (migrate.status !== 0) {
   process.exit(migrate.status ?? 1)
 }
 
-await import("./server/dist/index.js")
+// Hostinger's LiteSpeed launcher loads this ESM entrypoint via require().
+// Keep top-level await out of the module graph; dynamic import runs inside an async function.
+void (async () => {
+  await import("./server/dist/index.js")
+})().catch((error) => {
+  console.error("Failed to start compiled Skylent API:", error)
+  process.exitCode = 1
+})
