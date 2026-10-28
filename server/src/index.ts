@@ -32,7 +32,11 @@ import { labsRouter } from "./routes/labs.js"
 import { projectsRouter } from "./routes/projects.js"
 import { facultyRouter } from "./routes/faculty.js"
 import { organisationRouter } from "./routes/organisation.js"
+import { collegeRouter } from "./routes/college.js"
+import { lmsMaterialsRouter } from "./routes/lms-materials.js"
 import { careerRouter } from "./routes/career/index.js"
+import { careerRiseRouter } from "./routes/career-rise.js"
+import { adminCurriculumRouter } from "./routes/admin-curriculum.js"
 import { skylentCertificatesRouter } from "./routes/skylent/certificates.js"
 import { skylentEnquiriesRouter } from "./routes/skylent/enquiries.js"
 import { revaRouter } from "./routes/skylent/reva.js"
@@ -74,7 +78,11 @@ app.use("/api/v1/lms", lmsRouter)
 app.use("/api/v1/labs", labsRouter)
 app.use("/api/v1/faculty", facultyRouter)
 app.use("/api/v1/organisation", organisationRouter)
+app.use("/api/v1/college", collegeRouter)
+app.use("/api/v1/lms", lmsMaterialsRouter)
 app.use("/api/v1/career", careerRouter)
+app.use("/api/v1/career-rise", careerRiseRouter)
+app.use("/api/v1/admin/curriculum", adminCurriculumRouter)
 app.use("/api/v1/admin", adminRouter)
 app.use("/api/v1/admin", adminPlatformRouter)
 app.use("/api/v1/elixir", elixirRouter)

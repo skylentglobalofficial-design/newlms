@@ -11,9 +11,9 @@ name: release-gate
 on:
   workflow_dispatch:
   push:
-    branches: [skylent/product-truth]
+    branches: [skylent/product-truth, cursor/phase-2-core-learning-cd19]
   pull_request:
-    branches: [main]
+    branches: [main, cursor/phase-2-core-learning-cd19]
 
 jobs:
   gate:

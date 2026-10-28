@@ -11,6 +11,7 @@
 import "dotenv/config"
 import { PrismaClient } from "@prisma/client"
 import { TEST_CONSENT } from "./test-consent-payload.ts"
+import { grantCareerOsForTest } from "./career-os-test-grant.ts"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
@@ -155,6 +156,10 @@ async function main() {
 
     // Test 4: Career profile starts empty for new user
     console.log("\n4. Testing career profile starts empty...")
+    const lockedCareer = await request(jarA, "/career/profile")
+    assert(lockedCareer.response.status === 403, "Career OS must be locked before an explicit test grant")
+    const meA = await request(jarA, "/auth/me")
+    await grantCareerOsForTest(prisma, meA.data.user.id)
     const careerA = await request(jarA, "/career/profile")
     assert(careerA.response.ok, "Failed to fetch career profile")
     const profile = careerA.data.data
@@ -183,6 +188,8 @@ async function main() {
       `User B should have 0 certificates`
     )
 
+    const meB = await request(jarB, "/auth/me")
+    await grantCareerOsForTest(prisma, meB.data.user.id)
     const careerB = await request(jarB, "/career/profile")
     assert(careerB.response.ok, "Failed to fetch career profile for user B")
     assert(careerB.data.data.education.length === 0, "User B should have 0 education entries")

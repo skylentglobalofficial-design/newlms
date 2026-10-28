@@ -56,6 +56,15 @@ export function laterProgrammeCatalogue(): LaterProgrammeRow[] {
   })
 }
 
+/** Public "open" presentation. The slug list is not enough, and neither is an API flag on its own. */
+export function catalogueProgrammeIsOpen(
+  program: Pick<CatalogProgramSummary, "slug" | "enrollmentStatus" | "linkedCourseSlugs">,
+): boolean {
+  return (LIVE_PROGRAMME_SLUGS as readonly string[]).includes(program.slug)
+    && program.enrollmentStatus === "open"
+    && program.linkedCourseSlugs.length > 0
+}
+
 export function isPublicProgrammeIndexRow(program: Pick<CatalogProgramSummary, "programType">): boolean {
   const type = program.programType.toUpperCase()
   if (!type) return true

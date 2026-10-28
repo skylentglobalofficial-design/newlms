@@ -1,4 +1,6 @@
 import { Router } from "express"
+import { requireAuth, type AuthenticatedRequest } from "../../lib/auth.js"
+import { hasCareerOsAccess, requireCareerOsAccess } from "../../lib/career-os-access.js"
 import { profileRouter } from "./profile.js"
 import { employerJobsRouter } from "./employer-jobs.js"
 import { jobsRouter } from "./jobs.js"
@@ -12,13 +14,26 @@ import { careerProjectsRouter } from "./projects.js"
 
 export const careerRouter = Router()
 
-careerRouter.use("/profile", profileRouter)
-careerRouter.use("/projects", careerProjectsRouter)
+careerRouter.get("/access", requireAuth, async (req: AuthenticatedRequest, res) => {
+  const entitled = await hasCareerOsAccess(req.auth!.user.id)
+  res.json({
+    data: {
+      locked: !entitled,
+      entitled,
+      note: entitled
+        ? "This account has an explicit Career OS entitlement."
+        : "Career OS is locked. Signing in, finishing a course, or joining Career Rise does not unlock it.",
+    },
+  })
+})
+
+careerRouter.use("/profile", requireCareerOsAccess, profileRouter)
+careerRouter.use("/projects", requireCareerOsAccess, careerProjectsRouter)
 careerRouter.use("/employer", employerJobsRouter)
 careerRouter.use("/jobs", jobsRouter)
-careerRouter.use("/saved-jobs", savedJobsRouter)
-careerRouter.use("/applications", applicationsRouter)
-careerRouter.use("/interviews", interviewsRouter)
-careerRouter.use("/questions", questionsRouter)
-careerRouter.use("/practice", practiceRouter)
-careerRouter.use("/support", supportRouter)
+careerRouter.use("/saved-jobs", requireCareerOsAccess, savedJobsRouter)
+careerRouter.use("/applications", requireCareerOsAccess, applicationsRouter)
+careerRouter.use("/interviews", requireCareerOsAccess, interviewsRouter)
+careerRouter.use("/questions", requireCareerOsAccess, questionsRouter)
+careerRouter.use("/practice", requireCareerOsAccess, practiceRouter)
+careerRouter.use("/support", requireCareerOsAccess, supportRouter)

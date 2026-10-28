@@ -215,7 +215,11 @@ async function main() {
 
   const roleCatalog = await request(adminSession.jar, "/admin/roles")
   assert(roleCatalog.response.ok, "Role catalog failed")
-  assert(roleCatalog.data.data.length === 5, "Role catalog should list all five roles")
+  const catalogRoles = roleCatalog.data.data.map((row: { role: string }) => row.role).sort()
+  assert(
+    JSON.stringify(catalogRoles) === JSON.stringify(["admin", "college", "faculty", "organisation", "recruiter", "student", "superadmin"]),
+    `Role catalog should list platform admin separately from superadmin, got ${catalogRoles.join(",")}`,
+  )
 
   console.log("6. CSRF still enforced on mutations")
   const noCsrf = await request(adminSession.jar, `/admin/users/${target.userId}/role`, {

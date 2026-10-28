@@ -7,13 +7,11 @@ import { isCapstoneLesson, learnerErrorMessage, lessonTypeLabel } from '../compo
 import { useLmsDashboard } from '../hooks/useLms'
 import {
   canOpenEnrollment,
-  fetchCourseWorkspace,
   fetchLmsEnrollments,
-  fetchProgramWorkspace,
-  type ApiCourseProgress,
   type ApiEnrollmentSummary,
-  type ApiProgramWorkspace,
 } from '../lib/lms-api'
+import { myCourseRows } from '../lib/my-courses'
+import CareerRiseCard from '../components/learner/CareerRiseCard'
 import { findProjectForCourse, listLearnerProjects, learnerProjectPath, projectStatusLabel, type ProjectSummary } from '../lib/projects-api'
 import { fetchMyCertificates, issueCertificate, type SkylentCertificate } from '../lib/skylent-api'
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
@@ -94,18 +92,7 @@ const SLICE = ['Learn', 'Practice', 'Build', 'Prove'] as const
 /** A list the page loads beside the dashboard. `null` data with an error means it could not be loaded. */
 type Loaded<T> = { status: 'loading' } | { status: 'ready'; data: T } | { status: 'error' }
 
-/** Progress for one enrolment row, read from GET /lms/courses/:slug or GET /lms/programs/:slug. */
-type RowProgress =
-  | { status: 'loading' }
-  | { status: 'error' }
-  | { status: 'course'; progress: ApiCourseProgress; resumeHref: string | null }
-  | { status: 'program'; progress: ApiProgramWorkspace['progress']; resumeHref: string | null }
-
 type AiAvailability = 'checking' | 'available' | 'unavailable' | 'unknown'
-
-function resumeHrefFor(courseSlug: string, lessonId?: string | null) {
-  return lessonId ? `/learn/${courseSlug}/${lessonId}` : `/learn/${courseSlug}`
-}
 
 function ListError({ what, onRetry }: { what: string; onRetry: () => void }) {
   return (
@@ -153,7 +140,6 @@ export default function DashboardStudentPage() {
   const [certificates, setCertificates] = useState<Loaded<SkylentCertificate[]>>({ status: 'loading' })
   const [claiming, setClaiming] = useState<string | null>(null)
   const [claimError, setClaimError] = useState<{ slug: string; message: string } | null>(null)
-  const [rowProgress, setRowProgress] = useState<Record<string, RowProgress>>({})
   const [aiStatus, setAiStatus] = useState<AiAvailability>('checking')
   const [listsKey, setListsKey] = useState(0)
 
@@ -194,7 +180,6 @@ export default function DashboardStudentPage() {
     setEnrollments({ status: 'loading' })
     setProjects({ status: 'loading' })
     setCertificates({ status: 'loading' })
-    setRowProgress({})
     setListsKey((value) => value + 1)
   }, [])
 
@@ -207,44 +192,6 @@ export default function DashboardStudentPage() {
       .catch(() => { if (!controller.signal.aborted) setAiStatus('unknown') })
     return () => controller.abort()
   }, [user])
-
-  // Progress for enrolments the dashboard workspace does not already cover. Each row reads its own
-  // course or programme workspace; nothing is estimated in the browser.
-  useEffect(() => {
-    if (enrollments.status !== 'ready') return
-    let cancelled = false
-    const covered = (item: ApiEnrollmentSummary) => {
-      if (item.courses && item.courses.length > 0) return true
-      if (!workspace) return false
-      if (item.programSlug) return workspace.program?.slug === item.programSlug
-      if (!item.courseSlug) return false
-      return item.courseSlug === workspace.course.slug || Boolean(workspace.program?.courses.some((linked) => linked.slug === item.courseSlug))
-    }
-    const pending = enrollments.data.filter((item) => !covered(item) && (item.programSlug || item.courseSlug))
-    if (pending.length === 0) return
-    setRowProgress((current) => {
-      const next = { ...current }
-      for (const item of pending) if (!next[item.id]) next[item.id] = { status: 'loading' }
-      return next
-    })
-    for (const item of pending) {
-      const request: Promise<RowProgress> = item.programSlug
-        ? fetchProgramWorkspace(item.programSlug).then((program) => ({
-            status: 'program' as const,
-            progress: program.progress,
-            resumeHref: program.resume?.courseSlug ? resumeHrefFor(program.resume.courseSlug, program.resume.lessonId) : null,
-          }))
-        : fetchCourseWorkspace(item.courseSlug as string).then((course) => ({
-            status: 'course' as const,
-            progress: course.progress,
-            resumeHref: resumeHrefFor(course.course.slug, course.resume?.lessonId),
-          }))
-      void request
-        .then((value) => { if (!cancelled) setRowProgress((current) => ({ ...current, [item.id]: value })) })
-        .catch(() => { if (!cancelled) setRowProgress((current) => ({ ...current, [item.id]: { status: 'error' } })) })
-    }
-    return () => { cancelled = true }
-  }, [enrollments, workspace])
 
   async function claimCertificate(courseSlug: string) {
     setClaiming(courseSlug)
@@ -325,87 +272,33 @@ export default function DashboardStudentPage() {
 
   /* ── Sections shared by the loaded and the empty state ── */
 
-  /** Progress and resume point for one enrolment row, only from server responses. */
-  const progressFor = (item: ApiEnrollmentSummary): RowProgress | null => {
-    if (item.courses && item.courses.length > 0) {
-      if (item.programSlug) {
-        const completedCourses = item.courses.filter((courseRow) => courseRow.progress.allComplete).length
-        const completedCount = item.courses.reduce((sum, courseRow) => sum + courseRow.progress.completedCount, 0)
-        const totalLessons = item.courses.reduce((sum, courseRow) => sum + courseRow.progress.totalLessons, 0)
-        const resumeCourse = item.courses.find((courseRow) => !courseRow.progress.allComplete) ?? item.courses[0]
-        return {
-          status: 'program',
-          progress: {
-            completedCount,
-            totalLessons,
-            progressPct: totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0,
-            allComplete: completedCourses === item.courses.length,
-            completedCourses,
-            totalCourses: item.courses.length,
-          },
-          resumeHref: resumeHrefFor(resumeCourse.slug),
-        }
-      }
-      const courseRow = item.courses.find((row) => row.slug === item.courseSlug) ?? item.courses[0]
-      return {
-        status: 'course',
-        progress: courseRow.progress,
-        resumeHref: resumeHrefFor(courseRow.slug),
-      }
-    }
-    if (workspace) {
-      if (item.programSlug && workspace.program?.slug === item.programSlug) {
-        const program = workspace.program
-        return { status: 'program', progress: program.progress, resumeHref: resumeHrefFor(program.resume.courseSlug, program.resume.lessonId) }
-      }
-      if (!item.programSlug && item.courseSlug === workspace.course.slug) {
-        return { status: 'course', progress: workspace.progress, resumeHref: resumeHrefFor(workspace.course.slug, workspace.resume.lessonId) }
-      }
-      const linked = !item.programSlug ? workspace.program?.courses.find((course) => course.slug === item.courseSlug) : undefined
-      if (linked) return { status: 'course', progress: linked.progress, resumeHref: resumeHrefFor(linked.slug, linked.resume?.lessonId) }
-    }
-    return rowProgress[item.id] ?? null
-  }
-
   const myLearning = (
     <section className="sh-card" aria-labelledby="sh-my-learning">
       <header className="sh-card-head">
         <h2 id="sh-my-learning">My learning</h2>
         {enrollments.status === 'ready' ? (
-          <span className="sh-note">{enrolmentRows.length} {enrolmentRows.length === 1 ? 'enrolment' : 'enrolments'}</span>
+          <span className="sh-note">{myCourseRows(enrollments.data).length} {myCourseRows(enrollments.data).length === 1 ? 'course' : 'courses'}</span>
         ) : null}
       </header>
       {enrollments.status === 'loading' ? (
         <div className="sh-row"><span className="os-skeleton" style={{ width: '60%' }} /></div>
       ) : enrollments.status === 'error' ? (
         <ListError what="Your enrolments" onRetry={retryLists} />
-      ) : enrolmentRows.length === 0 ? (
+      ) : myCourseRows(enrollments.data).length === 0 ? (
         <p className="sh-empty">You are not enrolled in anything yet. <Link className="os-link" to="/programmes">Browse programmes</Link></p>
       ) : (
         <ul className="sh-rows">
-          {enrolmentRows.map((item) => {
-            const row = progressFor(item)
-            const title = item.programName ?? item.courseTitle ?? 'Enrolment'
-            const progress = row && (row.status === 'course' || row.status === 'program') ? row.progress : null
-            const openHref = canOpenEnrollment(item.status)
-              ? row && (row.status === 'course' || row.status === 'program') && row.resumeHref
-                ? row.resumeHref
-                : item.courseSlug ? `/learn/${item.courseSlug}` : null
-              : null
-            let note: string
-            if (row?.status === 'program') {
-              note = `${row.progress.completedCourses} of ${row.progress.totalCourses} courses · ${row.progress.completedCount} of ${row.progress.totalLessons} lessons`
-            } else if (row?.status === 'course') {
-              note = `${item.programName && item.courseTitle ? `${item.courseTitle} · ` : ''}${row.progress.completedCount} of ${row.progress.totalLessons} lessons`
-            } else if (row?.status === 'loading') {
-              note = 'Loading progress…'
-            } else if (row?.status === 'error') {
-              note = `Enrolled ${formatDate(item.createdAt)} · progress could not be loaded`
-            } else {
-              note = `Enrolled ${formatDate(item.createdAt)}`
-            }
+          {myCourseRows(enrollments.data).map((item) => {
+            const title = item.title
+            const progress = item.progressPct == null || item.completedCount == null || item.totalLessons == null
+              ? null
+              : { progressPct: item.progressPct, completedCount: item.completedCount, totalLessons: item.totalLessons }
+            const openHref = canOpenEnrollment(item.status) && item.slug ? `/learn/${item.slug}` : null
+            const note = progress
+              ? `${item.programmeName ? `${item.programmeName} · ` : ''}${progress.completedCount} of ${progress.totalLessons} lessons`
+              : `Enrolled ${formatDate(item.createdAt)}`
             return (
-              <li key={item.id} className="sh-row">
+              <li key={item.key} className="sh-row">
                 <div className="sh-row-main">
                   <strong>{title}</strong>
                   <span className="sh-note">{note}</span>
@@ -417,8 +310,8 @@ export default function DashboardStudentPage() {
                 </div>
                 <span className={item.status === 'completed' ? 'os-status is-done' : 'os-status'}>{enrolmentStatusLabel(item.status)}</span>
                 {openHref ? (
-                  <Link className="os-link sh-row-link" to={openHref} aria-label={`Open ${title}`}>
-                    {progress && progress.completedCount > 0 && !progress.allComplete ? 'Resume' : 'Open'} <ArrowRight />
+                  <Link className="os-link sh-row-link" to={openHref} aria-label={`Continue ${title}`}>
+                    {progress && progress.completedCount > 0 && progress.completedCount < progress.totalLessons ? 'Resume' : 'Open'} <ArrowRight />
                   </Link>
                 ) : null}
               </li>
@@ -547,7 +440,7 @@ export default function DashboardStudentPage() {
               <Link className="os-btn os-btn-primary os-btn-lg" to="/programmes">Explore programmes <ArrowRight /></Link>
             </div>
           </div>
-          {enrolmentRows.length > 0 ? <div className="sh-stack">{myLearning}{evidence}</div> : null}
+          {enrolmentRows.length > 0 ? <div className="sh-stack">{myLearning}<CareerRiseCard />{evidence}</div> : null}
         </div>
       </AuthDashboardShell>
     )
@@ -700,6 +593,7 @@ export default function DashboardStudentPage() {
             ) : null}
 
             {myLearning}
+            <CareerRiseCard />
 
             <section className="sh-card" id="student-projects" aria-labelledby="sh-project">
               <header className="sh-card-head">
@@ -791,11 +685,13 @@ export default function DashboardStudentPage() {
               </header>
               <h2 id="sh-ai" className="sr-only">{AI_NAME}</h2>
               <p className="sh-body">
-                {aiStatus === 'unavailable'
-                  ? `${AI_NAME} is not switched on yet. Lessons work as normal without it.`
-                  : aiStatus === 'unknown'
-                    ? `${AI_NAME} availability could not be checked. Lessons work as normal without it.`
-                    : `${AI_NAME} works inside lessons. It answers from the lesson you have open and cannot see your progress, projects or career data.`}
+                {aiStatus === 'checking'
+                  ? `Checking whether ${AI_NAME} is switched on.`
+                  : aiStatus === 'unavailable'
+                    ? `${AI_NAME} is not switched on yet. Lessons work as normal without it.`
+                    : aiStatus === 'unknown'
+                      ? `${AI_NAME} availability could not be checked. Lessons work as normal without it.`
+                      : `${AI_NAME} can help inside a lesson you can open. What it uses depends on that lesson. It does not see your progress, projects, or career profile. During an open quiz it withholds the quiz answers.`}
               </p>
               {allComplete || aiStatus === 'unavailable' ? null : (
                 <p className="sh-foot"><Link className="os-link" to={resumeHref}>Open the current lesson <ArrowRight /></Link></p>

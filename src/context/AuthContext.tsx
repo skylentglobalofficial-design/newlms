@@ -19,6 +19,7 @@ export type AuthUser = {
   email: string
   role: UserRole
   avatar: string
+  mustChangePassword?: boolean
   program?: string
   progress?: number
   course?: string
@@ -34,6 +35,7 @@ type AuthContextValue = {
   login: (email: string, password: string) => Promise<UserRole>
   signup: (name: string, email: string, password: string, acceptedTerms: boolean) => Promise<UserRole>
   updateDisplayName: (displayName: string) => Promise<void>
+  markPasswordChanged: () => void
   loginDemo: (user: AuthUser) => void
   logout: () => Promise<void>
 }
@@ -46,6 +48,7 @@ const isDemoMode = import.meta.env.VITE_DEMO_MODE === "true"
 function toAuthUser(response: {
   user: { id: string; name: string; displayName?: string; email: string; avatar: string }
   role: UserRole
+  mustChangePassword?: boolean
 }): AuthUser {
   const name = response.user.displayName ?? response.user.name
   return {
@@ -54,6 +57,7 @@ function toAuthUser(response: {
     email: response.user.email,
     avatar: response.user.avatar,
     role: response.role,
+    mustChangePassword: response.mustChangePassword === true,
   }
 }
 
@@ -114,6 +118,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return nextUser.role
   }, [])
 
+  const markPasswordChanged = useCallback(() => {
+    setUser((current) => current ? { ...current, mustChangePassword: false } : current)
+  }, [])
+
   const updateDisplayName = useCallback(async (displayName: string) => {
     const session = await updateProfileRequest({ displayName })
     setUser(toAuthUser(session))
@@ -141,7 +149,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, roles, ready, login, signup, updateDisplayName, loginDemo, logout }}>
+    <AuthContext.Provider value={{ user, roles, ready, login, signup, updateDisplayName, markPasswordChanged, loginDemo, logout }}>
       {children}
     </AuthContext.Provider>
   )
@@ -155,6 +163,7 @@ const SAFE_DEFAULT: AuthContextValue = {
   login: async () => "student",
   signup: async () => "student",
   updateDisplayName: async () => {},
+  markPasswordChanged: () => {},
   loginDemo: () => {},
   logout: async () => {},
 }

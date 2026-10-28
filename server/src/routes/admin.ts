@@ -21,11 +21,13 @@ const API_ROLE_TO_NAME: Record<ApiRole, RoleName> = {
   student: RoleName.STUDENT,
   faculty: RoleName.FACULTY,
   organisation: RoleName.ORGANISATION_ADMIN,
+  college: RoleName.COLLEGE_ADMIN,
   recruiter: RoleName.RECRUITER,
+  admin: RoleName.PLATFORM_ADMIN,
   superadmin: RoleName.ADMIN,
 }
 
-const apiRoleSchema = z.enum(["student", "faculty", "organisation", "recruiter", "superadmin"])
+const apiRoleSchema = z.enum(["student", "faculty", "organisation", "college", "recruiter", "admin", "superadmin"])
 
 const listQuerySchema = z.object({
   query: z.string().trim().max(200).optional(),
@@ -39,6 +41,7 @@ const userIdSchema = z.string().uuid("Expected a user id")
 const assignRoleSchema = z.object({
   role: apiRoleSchema,
   organisationId: z.string().uuid().optional(),
+  collegeId: z.string().uuid().optional(),
 })
 
 const organisationSchema = z.object({
@@ -88,16 +91,28 @@ const ASSIGNABLE_ROLES: Array<{
 }> = [
   { role: "student", roleName: RoleName.STUDENT, requiresOrganisation: false, unavailableCapability: null },
   {
+    role: "admin",
+    roleName: RoleName.PLATFORM_ADMIN,
+    requiresOrganisation: false,
+    unavailableCapability: null,
+  },
+  {
     role: "faculty",
     roleName: RoleName.FACULTY,
     requiresOrganisation: false,
     unavailableCapability:
-      "Faculty↔course/programme assignment is not modeled in the schema, so teaching assignments cannot be provisioned yet.",
+      "Changing someone to faculty does not assign a course. Course assignment is a separate record.",
   },
   {
     role: "organisation",
     roleName: RoleName.ORGANISATION_ADMIN,
     requiresOrganisation: true,
+    unavailableCapability: null,
+  },
+  {
+    role: "college",
+    roleName: RoleName.COLLEGE_ADMIN,
+    requiresOrganisation: false,
     unavailableCapability: null,
   },
   {
@@ -235,6 +250,7 @@ adminRouter.patch("/users/:id/role", ...guards, requireCsrf, async (req: Authent
     }
 
     let organisationId = parsed.data.organisationId ?? null
+    let collegeId = parsed.data.collegeId ?? null
 
     if (nextRoleName === RoleName.ORGANISATION_ADMIN) {
       if (!organisationId) {
@@ -254,6 +270,18 @@ adminRouter.patch("/users/:id/role", ...guards, requireCsrf, async (req: Authent
       return res.status(400).json({ error: "organisationId is only accepted for the organisation role" })
     }
 
+    if (nextRoleName === RoleName.COLLEGE_ADMIN) {
+      if (!collegeId) {
+        return res.status(422).json({
+          error: "A college is required for the college role. Create the college first, then pass collegeId.",
+        })
+      }
+      const college = await prisma.college.findUnique({ where: { id: collegeId } })
+      if (!college) return res.status(404).json({ error: "College not found" })
+    } else if (collegeId) {
+      return res.status(400).json({ error: "collegeId is only accepted for the college role" })
+    }
+
     const role = await ensureRole(nextRoleName)
 
     await prisma.$transaction(async (tx) => {
@@ -271,6 +299,13 @@ adminRouter.patch("/users/:id/role", ...guards, requireCsrf, async (req: Authent
           where: { organisationId_userId: { organisationId, userId: target.id } },
           update: {},
           create: { organisationId, userId: target.id },
+        })
+      }
+      if (collegeId) {
+        await tx.collegeMembership.upsert({
+          where: { collegeId_userId: { collegeId, userId: target.id } },
+          update: {},
+          create: { collegeId, userId: target.id },
         })
       }
     })
@@ -414,4 +449,22 @@ adminRouter.post("/organisations", ...guards, requireCsrf, async (req: Authentic
     console.error("Failed to create organisation:", error)
     res.status(500).json({ error: "Failed to create organisation" })
   }
+})
+
+adminRouter.post("/colleges", ...guards, requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const parsed = organisationSchema.safeParse(req.body)
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Validation failed", details: parsed.error.flatten().fieldErrors })
+  }
+  const existing = await prisma.college.findUnique({ where: { slug: parsed.data.slug } })
+  if (existing) return res.status(409).json({ error: "A college with this slug already exists" })
+  const college = await prisma.college.create({ data: { name: parsed.data.name, slug: parsed.data.slug } })
+  await recordAdminAudit({
+    actorId: req.auth!.user.id,
+    action: "college.create",
+    targetType: "College",
+    targetId: college.id,
+    summary: `Created college ${college.slug}`,
+  })
+  res.status(201).json({ data: { id: college.id, slug: college.slug, name: college.name } })
 })

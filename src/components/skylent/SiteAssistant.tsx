@@ -1,13 +1,15 @@
 /**
- * Site-wide Skylent AI: a small robot-dot launcher and a docked panel (a sheet on small screens).
+ * Site help: a small launcher and a docked panel (a sheet on small screens).
  * Mounted once in the public shell (<SiteAssistant />).
  *
- * Two ways to use it:
- *  - "Find a programme": a short guided conversation (goal, level or area, study mode). The
- *    suggestions are fixed rules over the real catalogue (src/data.ts, the records the catalogue
- *    is seeded from) and the degree routes in src/data/education.ts. Nothing is generated.
- *  - "Ask a question": free text sent to the real site assistant, POST /reva/chat. When the
- *    server has no AI configured (503) or fails, the panel says so and offers the enquiry form.
+ * Two separate tools share the panel:
+ *  - A short questionnaire (goal, level or area, study mode). Suggestions are fixed rules over
+ *    the catalogue in src/data.ts and the degree routes in src/data/education.ts. Nothing is
+ *    generated. This is not Find My Path (/path) and it is not lesson help.
+ *  - A site question box. Free text goes to POST /reva/chat. When the server has no AI
+ *    configured (503), the box is switched off and the enquiry form is offered. A 429 or other
+ *    failure is shown as a failure. Signed-in requests can include the learner's name and
+ *    enrolled course names; lesson progress, projects, and the career profile are not sent.
  * After a suggestion the visitor can say it did not help; the panel then offers a short enquiry
  * (POST /enquiries, kind "counselling") with the terms-acceptance checkbox.
  *
@@ -48,9 +50,9 @@ export function SkylentBot({ size = 40, className }: { size?: number; className?
 
 type Failure = "unavailable" | "rate" | "failed"
 const FAILURE_COPY: Record<Failure, string> = {
-  unavailable: "I can't answer free-text questions right now.",
+  unavailable: "Free-text answers are switched off right now.",
   rate: "Too many questions from this connection. Wait a few minutes, then ask again.",
-  failed: "I couldn't answer that right now.",
+  failed: "That question could not be answered right now.",
 }
 
 const KNOWN_ROUTES: Record<string, string> = {
@@ -148,7 +150,7 @@ function programmeSuggestions(slugs: string[]): Suggestion[] {
     const program = catalogue.find((item) => item.slug === slug)
     if (!program) return []
     const open = programmeIsOpen(slug)
-    return [{ title: program.name, to: `/programmes/${slug}`, note: open ? `Status shown on its page · ${program.duration}` : `Opening soon · ${program.duration}`, open }]
+    return [{ title: program.name, to: `/programmes/${slug}`, note: open ? `See this page for enrolment · ${program.duration}` : `Not open yet · ${program.duration}`, open }]
   }).sort((a, b) => Number(b.open) - Number(a.open))
 }
 
@@ -166,7 +168,7 @@ function suggestionsFor(answers: Answers): Suggestion[] {
     list.push({
       title: `All ${level === "PG" ? "postgraduate" : "undergraduate"} degrees`,
       to: `/education?level=${(level ?? "UG").toLowerCase()}&mode=${answers.mode ?? "online"}`,
-      note: "Compare online and campus options",
+      note: "Sample listings. Applications are not open.",
       open: false,
     })
     return list
@@ -184,7 +186,7 @@ function nextStep(answers: Answers): Step | null {
       key: "goal",
       question: "What are you looking for?",
       options: [
-        { value: "skill", label: "Learn a job skill" },
+        { value: "skill", label: "Learn a skill" },
         { value: "degree", label: "Study for a degree" },
         { value: "unsure", label: "I'm not sure yet" },
       ],
@@ -198,7 +200,7 @@ function nextStep(answers: Answers): Step | null {
   if (!answers.area) {
     return {
       key: "area",
-      question: answers.goal === "unsure" ? "Which kind of work sounds most interesting?" : "Which area do you want to work in?",
+      question: answers.goal === "unsure" ? "Which subject sounds most interesting?" : "Which area do you want to study?",
       options: [
         { value: "data", label: "Data and analysis" },
         { value: "product", label: "Product and business" },
@@ -221,7 +223,7 @@ type Message =
   | { id: number; from: "bot"; kind: "suggestions"; items: Suggestion[] }
   | { id: number; from: "bot"; kind: "answer"; text: string; generated: boolean; action: { to: string; label: string } | null }
   | { id: number; from: "bot"; kind: "failure"; failure: Failure; question: string }
-  | { id: number; from: "user"; kind: "text"; text: string }
+  | { id: number; from: "user"; kind: "text"; text: string; typed?: boolean }
 
 type NewMessage = Message extends infer M ? (M extends { id: number } ? Omit<M, "id"> : never) : never
 
@@ -254,6 +256,7 @@ export default function SiteAssistant() {
   const [feedback, setFeedback] = useState<"none" | "helpful" | "unhelpful">("none")
   const [draft, setDraft] = useState("")
   const [sending, setSending] = useState(false)
+  const [siteOff, setSiteOff] = useState(false)
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" })
   const [formState, setFormState] = useState<"idle" | "sending" | "sent" | "failed">("idle")
   const [formError, setFormError] = useState("")
@@ -279,8 +282,7 @@ export default function SiteAssistant() {
     setFeedback("none")
     setMessages([])
     nextId.current = 1
-    push({ from: "bot", kind: "text", text: "Hi, I'm Skylent AI. Answer two or three quick questions and I'll suggest where to start." })
-  }, [push])
+  }, [])
 
   const openPanel = useCallback(
     (mode: SkylentAiMode = "chat") => {
@@ -385,12 +387,41 @@ export default function SiteAssistant() {
 
   useEffect(() => {
     const thread = threadRef.current
-    if (thread) thread.scrollTop = thread.scrollHeight
+    if (!thread) return
+    const replies = thread.querySelectorAll<HTMLElement>(".sia-msg--bot")
+    const latest = thread.querySelector<HTMLElement>(".sia-msg--failure, .sia-typing")
+      ?? replies[replies.length - 1]
+      ?? thread.querySelector<HTMLElement>(".sia-suggest, .sia-step")
+    if (!latest) {
+      thread.scrollTop = thread.scrollHeight
+      return
+    }
+    const top = latest.getBoundingClientRect().top - thread.getBoundingClientRect().top + thread.scrollTop
+    thread.scrollTop = Math.max(0, top - 8)
   }, [messages, feedback, formState])
 
   useEffect(() => {
     if (open) requestAnimationFrame(() => panelRef.current?.querySelector<HTMLElement>(".sia-option, .sia-input")?.focus())
   }, [open])
+
+  useEffect(() => {
+    if (!open) return
+    function onKey(event: KeyboardEvent) {
+      if (event.key !== "Escape") return
+      event.preventDefault()
+      close()
+    }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [open, close])
+
+  useEffect(() => {
+    if (!open || !siteOff) return
+    const active = document.activeElement
+    if (active instanceof HTMLElement && panelRef.current?.contains(active) && (active.matches(":disabled") || active.getAttribute("aria-disabled") === "true")) {
+      panelRef.current.querySelector<HTMLElement>(".sia-close")?.focus()
+    }
+  }, [open, siteOff])
 
   function dismissInvite() {
     setInvite(false)
@@ -406,7 +437,9 @@ export default function SiteAssistant() {
       push({
         from: "bot",
         kind: "text",
-        text: next.goal === "degree" ? "These degree routes match what you told me:" : "Based on your answers, these programmes fit best:",
+        text: next.goal === "degree"
+          ? "These degree samples match your answers. Applications are not open."
+          : "These programmes match your answers. Each page states whether enrolment is open.",
       })
       push({ from: "bot", kind: "suggestions", items })
       setFinderDone(true)
@@ -415,11 +448,15 @@ export default function SiteAssistant() {
 
   async function ask(question: string) {
     const text = question.trim()
-    if (!text || sending) return
+    if (!text || sending || siteOff) return
     setDraft("")
-    push({ from: "user", kind: "text", text })
+    push({ from: "user", kind: "text", text, typed: true })
     const history: SiteAiTurn[] = messages.flatMap((message): SiteAiTurn[] =>
-      message.kind === "answer" ? [{ role: "assistant", content: message.text }] : message.from === "user" && message.kind === "text" ? [{ role: "user", content: message.text }] : [],
+      message.kind === "answer"
+        ? [{ role: "assistant", content: message.text }]
+        : message.from === "user" && message.kind === "text" && message.typed
+          ? [{ role: "user", content: message.text }]
+          : [],
     )
     setSending(true)
     const controller = new AbortController()
@@ -427,7 +464,10 @@ export default function SiteAssistant() {
     try {
       const result = await askWithStatus([...history, { role: "user", content: text.slice(0, 4000) }], controller.signal)
       if (result.ok) push({ from: "bot", kind: "answer", text: displayAiText(result.answer), generated: result.generated, action: mapAssistantPath(result.goTo) })
-      else push({ from: "bot", kind: "failure", failure: result.failure, question: text })
+      else {
+        if (result.failure === "unavailable") setSiteOff(true)
+        push({ from: "bot", kind: "failure", failure: result.failure, question: text })
+      }
     } catch {
       /* aborted */
     } finally {
@@ -462,7 +502,7 @@ export default function SiteAssistant() {
         name: form.name,
         email: form.email,
         phone: form.phone || undefined,
-        message: [form.message, summary ? `(From Skylent AI: ${summary})` : ""].filter(Boolean).join("\n"),
+        message: [form.message, summary ? `(From the programme questionnaire: ${summary})` : ""].filter(Boolean).join("\n"),
       })
       setFormRef(result.id)
       setFormState("sent")
@@ -496,7 +536,7 @@ export default function SiteAssistant() {
   }
 
   const step = finderDone ? null : nextStep(answers)
-  const showForm = feedback === "unhelpful" || messages.some((m) => m.kind === "failure" && m.failure === "unavailable")
+  const showForm = siteOff || feedback === "unhelpful" || messages.some((m) => m.kind === "failure" && m.failure === "unavailable")
 
   return (
     <div className="sia">
@@ -507,9 +547,9 @@ export default function SiteAssistant() {
               <path d="M6 6l12 12M18 6L6 18" />
             </svg>
           </button>
-          <p className="sia-invite__text">Not sure where to start? I can help you find a programme that fits.</p>
+          <p className="sia-invite__text">Not sure where to start? A short questionnaire can suggest a programme from the catalogue.</p>
           <button type="button" className="sia-invite__go" onClick={() => openPanel("finder")}>
-            Help me choose
+            Start questionnaire
             <ArrowRight />
           </button>
         </div>
@@ -521,13 +561,13 @@ export default function SiteAssistant() {
         className={open || !clearOfContent ? "sia-launcher sia-launcher--hidden" : "sia-launcher"}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label={`Ask ${AI_NAME}`}
+        aria-label="Open the programme questionnaire"
         aria-hidden={open || !clearOfContent ? true : undefined}
         tabIndex={open || !clearOfContent ? -1 : undefined}
-        onClick={() => openPanel("chat")}
+        onClick={() => openPanel("finder")}
       >
         <SkylentBot size={34} />
-        <span className="sia-launcher__label">Ask {AI_NAME}</span>
+        <span className="sia-launcher__label">Find a programme</span>
       </button>
 
       {open ? (
@@ -537,17 +577,22 @@ export default function SiteAssistant() {
             <div className="sia-head">
               <SkylentBot size={36} className="sia-head__bot" />
               <div className="sia-head__text">
-                <span id={titleId} className="sia-head__title">{AI_NAME}</span>
-                <span className="sia-head__sub">Helps you choose a programme or degree</span>
+                <span id={titleId} className="sia-head__title">Find a programme</span>
+                <span className="sia-head__sub">A questionnaire</span>
               </div>
               <button type="button" className="sia-restart" onClick={startFinder}>
                 Start over
               </button>
-              <button type="button" className="sia-close" onClick={close} aria-label={`Close ${AI_NAME}`}>
+              <button type="button" className="sia-close" onClick={close} aria-label="Close the programme questionnaire">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                   <path d="M6 6l12 12M18 6L6 18" />
                 </svg>
               </button>
+            </div>
+
+            <div className="sia-scope">
+              <p>This questionnaire matches your choices to programmes and degree samples. The matches are fixed rules.</p>
+              <p>Lesson help is inside an open lesson, and only when {AI_NAME} is switched on. During an open quiz it withholds the quiz answers. <Link to="/path" onClick={close}>Find My Path</Link> is a separate, longer questionnaire.</p>
             </div>
 
             <div className="sia-thread" ref={threadRef} aria-live="polite" aria-busy={sending}>
@@ -581,7 +626,11 @@ export default function SiteAssistant() {
                         <ArrowRight />
                       </Link>
                     ) : null}
-                    {message.generated ? <p className="sia-source">AI-generated answer. Check important details with the Skylent team.</p> : null}
+                    {message.generated ? (
+                      <p className="sia-source">AI-generated answer. Check important details with the Skylent team.</p>
+                    ) : (
+                      <p className="sia-source">Fixed reply from the site assistant.</p>
+                    )}
                   </div>
                 ) : message.kind === "failure" ? (
                   <div key={message.id} className="sia-msg sia-msg--bot sia-msg--failure" role="alert">
@@ -596,14 +645,14 @@ export default function SiteAssistant() {
                     ) : null}
                   </div>
                 ) : (
-                  <p key={message.id} className="sia-msg sia-msg--bot">
+                  <p key={message.id} className="sia-note">
                     {message.text}
                   </p>
                 ),
               )}
 
               {sending ? (
-                <p className="sia-msg sia-msg--bot sia-typing" aria-label="Skylent AI is answering">
+                <p className="sia-msg sia-msg--bot sia-typing" aria-label="Waiting for the site assistant">
                   <span />
                   <span />
                   <span />
@@ -612,7 +661,7 @@ export default function SiteAssistant() {
 
               {step ? (
                 <div className="sia-step">
-                  <p className="sia-msg sia-msg--bot">{step.question}</p>
+                  <p className="sia-prompt">{step.question}</p>
                   <div className="sia-options" role="group" aria-label={step.question}>
                     {step.options.map((option) => (
                       <button key={option.value} type="button" className="sia-option" onClick={() => choose(step, option.value)}>
@@ -634,8 +683,8 @@ export default function SiteAssistant() {
                   </button>
                 </div>
               ) : null}
-              {feedback === "helpful" ? <p className="sia-msg sia-msg--bot">Great. Ask me anything else about a programme below.</p> : null}
-              {feedback === "unhelpful" ? <p className="sia-msg sia-msg--bot">Sorry about that. Leave your details and a Skylent counsellor will get back to you.</p> : null}
+              {feedback === "helpful" ? <p className="sia-note">The box below sends a question to the site assistant. If it is switched off, this panel says so.</p> : null}
+              {feedback === "unhelpful" ? <p className="sia-note">Leave your details and the Skylent team will reply by email.</p> : null}
 
               {showForm ? (
                 formState === "sent" ? (
@@ -674,14 +723,15 @@ export default function SiteAssistant() {
             </div>
 
             <form
-              className="sia-form"
+              className={siteOff ? "sia-form is-off" : "sia-form"}
               onSubmit={(event) => {
                 event.preventDefault()
                 void ask(draft)
               }}
             >
+              <p className="sia-form__kicker">Site assistant</p>
               <label className="sia-sr" htmlFor={`${titleId}-q`}>
-                Ask about programmes, degrees or the platform
+                Ask about the public site
               </label>
               <div className="sia-form__row">
                 <textarea
@@ -691,6 +741,7 @@ export default function SiteAssistant() {
                   rows={1}
                   maxLength={2000}
                   value={draft}
+                  disabled={sending || siteOff}
                   onChange={(event) => setDraft(event.target.value)}
                   onKeyDown={(event) => {
                     if (event.key === "Enter" && !event.shiftKey) {
@@ -698,13 +749,17 @@ export default function SiteAssistant() {
                       void ask(draft)
                     }
                   }}
-                  placeholder="Ask a question about Skylent"
+                  placeholder={siteOff ? "Site assistant is switched off" : "Ask about the public site"}
                 />
-                <button type="submit" className="sia-send" disabled={sending || draft.trim() === ""} aria-label="Send question">
+                <button type="submit" className="sia-send" disabled={sending || siteOff || draft.trim() === ""} aria-label="Send question">
                   <ArrowRight />
                 </button>
               </div>
-              <p className="sia-foot">Answers come from the Skylent website and catalogue and can be wrong.</p>
+              <p className="sia-foot">
+                {siteOff
+                  ? "Free-text answers are switched off. The form above sends a message to the Skylent team."
+                  : "This box may be switched off. When you are signed in, a question can include your name and the names of courses you are enrolled in. Lesson progress, projects, and your career profile stay out of the request. Generated answers can be wrong."}
+              </p>
             </form>
           </div>
         </>

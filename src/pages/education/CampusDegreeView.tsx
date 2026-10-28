@@ -31,8 +31,9 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
             </div>
             <h1 className="dg-h1 dg-h1--campus cine-in cine-d1">{degree.title}</h1>
             <p className="dg-lead cine-in cine-d2">
-              A degree you attend in person, taught on campus by the institution that awards it.
-              {degree.institution ? null : " Campus, dates and fees are published once an institution is confirmed."}
+              {degree.sample || !degree.institution
+                ? "This page describes a planned on-campus degree area. Skylent does not award the degree, and applications are not open. Campus, dates and fees are published only once an institution is confirmed."
+                : "A degree you attend in person, taught on campus by the institution that awards it."}
             </p>
             <div className="dg-actions cine-in cine-d3">
               <Link to="#taught" className="sk-btn sk-btn-primary">
@@ -77,14 +78,14 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
                 <dt>Mode</dt>
                 <dd>
                   <b>{deliveryModeLabel(degree.deliveryMode)}</b>
-                  <span>In person, at the institution's campus</span>
+                  <span>{degree.sample || !degree.institution ? "Planned in-person study. No campus is confirmed." : "In person, at the institution's campus"}</span>
                 </dd>
               </div>
               <div>
                 <dt>Level</dt>
                 <dd>
                   <b>{level}</b>
-                  <span>Awarded by the partner institution, not by Skylent</span>
+                  <span>{degree.sample || !degree.institution ? "No awarding institution is confirmed. Skylent does not award this degree." : "Awarded by the partner institution, not by Skylent"}</span>
                 </dd>
               </div>
               <div>
@@ -269,7 +270,7 @@ export default function CampusDegreeView({ degree }: { degree: Degree }) {
 
       <ClosingBand
         label="Next step"
-        title="Not sure this degree fits? Ask Skylent AI."
+        title="Not sure this degree fits? Try the questionnaire."
         secondary={{ to: "/education", label: "Explore degrees" }}
       />
     </DegreeShell>

@@ -125,6 +125,8 @@ export function curriculumNodeSelect(quizLimits: boolean) {
     duration: true,
     completed: true,
     muxPlaybackId: true,
+    summary: true,
+    referenceUrl: true,
     moduleId: true,
     ...(quizLimits ? { maxAttempts: true, passingScore: true } : {}),
   }

@@ -238,7 +238,8 @@
 .dg .dg-res__name span { display: block; margin-top: 1px; font-family: var(--dg-mono); font-size: 11px; color: var(--dg-dim); }
 .dg .dg-res__today { flex: none; display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; color: var(--dg-ink); }
 .dg .dg-res__today .dg-dot { width: 7px; height: 7px; }
-.dg .dg-res__foot { display: flex; align-items: center; gap: 12px; padding: 11px 14px 12px; border-top: 1px solid var(--dg-line); background: var(--dg-soft); font-family: var(--dg-mono); font-size: 11.5px; color: var(--dg-dim); white-space: nowrap; }
+.dg .dg-res__foot { display: flex; align-items: center; gap: 12px; padding: 11px 14px 12px; border-top: 1px solid var(--dg-line); background: var(--dg-soft); font-family: var(--dg-mono); font-size: 11.5px; line-height: 1.45; color: var(--dg-dim); white-space: normal; }
+.dg .dg-res__foot > span { min-width: 0; }
 
 .dg .dg-exam__head { padding: 12px 14px 14px; }
 .dg .dg-exam__meta { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 12px; font-family: var(--dg-mono); font-size: 11.5px; color: hsl(var(--site-on-navy-muted)); }
