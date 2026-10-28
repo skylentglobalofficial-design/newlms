@@ -2,6 +2,7 @@ import "dotenv/config"
 import { PrismaClient, CurriculumNodeType } from "@prisma/client"
 import { NORTHWIND_SQL_EXAMPLES } from "../server/src/lib/skylent-labs/sql/examples.ts"
 import { TEST_CONSENT } from "./test-consent-payload.ts"
+import { grantCareerOsForTest } from "./career-os-test-grant.ts"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://127.0.0.1:3099/api/v1"
@@ -286,6 +287,8 @@ async function main() {
     task.response.ok && evidence.response.ok && monthlyEvidence.response.ok && reflection.response.ok,
     `status ${reflection.data?.data?.status} complete ${reflection.data?.data?.progress?.complete}`,
   )
+  const careerMe = await request(sessionJar, "/auth/me")
+  if (careerMe.data?.user?.id) await grantCareerOsForTest(prisma, careerMe.data.user.id)
   const career = await request(sessionJar, "/career/projects/from-learner-project", {
     method: "POST",
     csrf: true,

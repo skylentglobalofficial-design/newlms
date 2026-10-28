@@ -173,6 +173,56 @@ export async function fetchCourseAccess(slug: string): Promise<ApiCourseAccess> 
   return result.data
 }
 
+export type ApiProgramAccess = {
+  authenticated: boolean
+  enrolled: boolean
+  canAccess: boolean
+  reason?: "login_required" | "not_enrolled"
+  programSlug?: string
+  programName?: string
+  enrollmentId?: string
+}
+
+const PROGRAM_ACCESS_REASONS = new Set(["login_required", "not_enrolled"])
+
+/**
+ * Accepts the programme access payloads the server actually returns, including a
+ * signed-out body that omits `programSlug`. A 200 with no `data` object, or with
+ * non-boolean enrolment flags, is incomplete and must not be read as a denial.
+ */
+export function parseProgramAccess(body: unknown): ApiProgramAccess {
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new Error("Programme access response was incomplete.")
+  }
+  const data = (body as { data?: unknown }).data
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    throw new Error("Programme access response was incomplete.")
+  }
+  const row = data as Record<string, unknown>
+  if (typeof row.authenticated !== "boolean" || typeof row.enrolled !== "boolean" || typeof row.canAccess !== "boolean") {
+    throw new Error("Programme access response was incomplete.")
+  }
+  if (row.programSlug !== undefined && typeof row.programSlug !== "string") {
+    throw new Error("Programme access response was incomplete.")
+  }
+  if (row.programName !== undefined && typeof row.programName !== "string") {
+    throw new Error("Programme access response was incomplete.")
+  }
+  if (row.enrollmentId !== undefined && typeof row.enrollmentId !== "string") {
+    throw new Error("Programme access response was incomplete.")
+  }
+  if (row.reason !== undefined && (typeof row.reason !== "string" || !PROGRAM_ACCESS_REASONS.has(row.reason))) {
+    throw new Error("Programme access response was incomplete.")
+  }
+  return data as ApiProgramAccess
+}
+
+/** Programme enrolment for this slug. A linked course on another programme does not count. */
+export async function fetchProgramAccess(slug: string): Promise<ApiProgramAccess> {
+  const result = await lmsGet<unknown>(`/lms/programs/${encodeURIComponent(slug)}/access`)
+  return parseProgramAccess(result)
+}
+
 export async function fetchCourseWorkspace(slug: string): Promise<ApiCourseWorkspace> {
   const result = await lmsGet<{ data: ApiCourseWorkspace }>(`/lms/courses/${slug}`)
   return result.data

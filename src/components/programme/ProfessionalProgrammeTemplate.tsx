@@ -12,7 +12,15 @@
  * must not change those counts. Artefacts and capstone steps are the
  * programme's own authored material.
  */
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { useAuth } from "../../context/AuthContext"
+import { fetchLmsEnrollments, fetchProgramAccess } from "../../lib/lms-api"
+import {
+  practiceWorkspaceHref,
+  programmeAccessAllowsWorkspace,
+  programmeEnrollmentAllowsWorkspace,
+} from "../../lib/practice-workspace-access"
 import type { CatalogCurriculumModule, CatalogCurriculumNode, CatalogProgramDetail } from "../../lib/catalog-api"
 import { courseBySlug, courseLessonStats } from "../../lib/catalog-maturity"
 import { courseProductProfile } from "../../lib/course-product"
@@ -28,6 +36,34 @@ import "./ProfessionalProgrammeTemplate.css"
 import "../../pages/cine.css"
 import { openSkylentAi } from "../skylent/ai-events"
 import CatalogueNotice, { STATUS_NOT_CONFIRMED } from "./CatalogueNotice"
+
+function useProgrammeWorkspaceAccess(programSlug: string): "unknown" | "allowed" | "denied" {
+  const { user, ready } = useAuth()
+  const [state, setState] = useState<"unknown" | "allowed" | "denied">("unknown")
+  useEffect(() => {
+    if (!ready) return
+    if (!user) {
+      setState("denied")
+      return
+    }
+    let cancel = false
+    setState("unknown")
+    void Promise.all([fetchProgramAccess(programSlug), fetchLmsEnrollments()])
+      .then(([access, enrollments]) => {
+        if (cancel) return
+        const allowed = programmeAccessAllowsWorkspace(programSlug, access)
+          && programmeEnrollmentAllowsWorkspace(enrollments, programSlug)
+        setState(allowed ? "allowed" : "denied")
+      })
+      .catch(() => {
+        if (!cancel) setState("unknown")
+      })
+    return () => {
+      cancel = true
+    }
+  }, [user, ready, programSlug])
+  return state
+}
 
 type Props = {
   program: CatalogProgramDetail
@@ -171,6 +207,12 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
     return fallback?.title ?? lessonId
   }
 
+  const workspaceAccess = useProgrammeWorkspaceAccess(program.slug)
+  const practiceHref = practiceWorkspaceHref(content.artefact)
+  const practiceCopy = content.artefact === "northwind"
+    ? "Northwind is a fictional sales extract. Enrolled learners write and run the SQL in the lab. Completing it does not guarantee a job."
+    : "Harbor Desk is a written case about a fictional support queue. You work in a case workspace, not a SQL lab. Completing it does not guarantee a job."
+
   const primaryAction = canEnrol ? (
     <button type="button" className="sk-btn sk-btn-primary" onClick={onEnrol}>
       {cta}
@@ -232,6 +274,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               {confirmed && courseUnconfirmed ? `${STATUS_NOT_CONFIRMED}. Enrolment is paused until the catalogue can be checked. ` : ""}
               {afterEnrol}
             </p>
+            <p className="pp-note">{practiceCopy}</p>
           </div>
         </div>
         <SpecSheet
@@ -262,6 +305,15 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
               <h2 id="pp-build-title" className="pp-build__title">
                 {content.capstoneTitle}
               </h2>
+              <p className="pp-practice">{practiceCopy}</p>
+              {workspaceAccess === "allowed" ? (
+                <Link className="pp-practice__link" to={practiceHref}>
+                  {content.artefact === "northwind" ? "Open the SQL lab" : "Open the case workspace"}
+                  <ArrowRight />
+                </Link>
+              ) : workspaceAccess === "denied" ? (
+                <p className="pp-practice__wait">Enrol in this programme to open the workspace. A new learner starts at Not started.</p>
+              ) : null}
             </div>
             <dl className="pp-build__grid">
               {moduleCount > 0 ? (
@@ -592,7 +644,7 @@ export default function ProfessionalProgrammeTemplate({ program, content, truth,
           <Reveal delay={180} className="pp-actions">
             {primaryAction}
             <button type="button" className="sk-btn sk-btn-secondary" onClick={() => openSkylentAi("finder")}>
-              {canEnrol ? "Not sure yet? Ask Skylent AI" : "Ask Skylent AI"}
+              {canEnrol ? "Not sure yet? Try the questionnaire" : "Try the questionnaire"}
             </button>
           </Reveal>
         </Reveal>

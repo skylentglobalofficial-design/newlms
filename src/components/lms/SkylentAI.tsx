@@ -289,12 +289,12 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
   const head = (
     <header className="os-ai-head">
       {compact ? null : <AiMark />}
-      <p className="os-ai-label">Context in use</p>
+      <p className="os-ai-label">{off || ui === "checking" ? "Lesson context" : "Context in use"}</p>
       <p className="os-ai-context">
         {lessonNumber ? `Lesson ${lessonNumber} · ` : ""}
         {lessonTitle}
       </p>
-      <ul className="os-ai-chips" aria-label={`What ${AI_NAME} can see`}>
+      <ul className="os-ai-chips" aria-label={off ? `What ${AI_NAME} would use in this lesson when it is switched on` : `What ${AI_NAME} can see`}>
         {chips.map((chip) => (
           <li key={chip.label} className={chip.off ? "is-off" : undefined}>{chip.label}</li>
         ))}
@@ -454,7 +454,17 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
           }}
         >
           <AiMark />
-          <span>{open ? "Close" : "Ask about this lesson"}</span>
+          <span>
+            {open
+              ? "Close"
+              : ui === "checking"
+                ? "Checking lesson help"
+                : ui === "unavailable"
+                  ? "Lesson help is off"
+                  : ui === "unreachable"
+                    ? "Lesson help unreachable"
+                    : "Ask about this lesson"}
+          </span>
         </button>
         {open ? (
           <div className="os-ai-sheet" id={sheetId}>

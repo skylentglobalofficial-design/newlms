@@ -7,6 +7,7 @@ export const ROLE_THEME_MAP: Record<UserRole, AuroraThemeId> = {
   faculty: 'data-analytics',
   organisation: 'institution',
   recruiter: 'career',
+  admin: 'superadmin',
   superadmin: 'superadmin',
 }
 
@@ -15,6 +16,7 @@ export const ROLE_LABELS: Record<UserRole, string> = {
   faculty: 'Faculty',
   organisation: 'Institution',
   recruiter: 'Recruiter',
+  admin: 'Admin',
   superadmin: 'Super Admin',
 }
 

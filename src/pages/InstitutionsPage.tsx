@@ -18,7 +18,7 @@ const PROVIDES = [
   { title: "Labs and capstones", text: "Hands-on practice on realistic data and cases, finished with a project." },
   { title: "Learning platform", text: "Lessons, checks, assignments and progress for every enrolled learner." },
   { title: "Career OS", text: "Each learner keeps a profile of skills, projects and certificates." },
-  { title: "Skylent AI", text: "Lesson help that explains ideas without giving away assessment answers." },
+  { title: "Skylent AI", text: "Lesson help inside an open lesson, when it is switched on. It explains ideas and does not answer an open quiz or write an open assignment." },
 ]
 
 const PARTNERS = [

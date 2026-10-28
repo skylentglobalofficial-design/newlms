@@ -3,6 +3,7 @@ import crypto from "node:crypto"
 import { PrismaClient, RoleName } from "@prisma/client"
 import { ensureRole } from "../server/src/lib/auth.js"
 import { TEST_CONSENT } from "./test-consent-payload.ts"
+import { grantCareerOsForTest } from "./career-os-test-grant.ts"
 
 const prisma = new PrismaClient()
 const API_BASE = process.env.API_BASE ?? "http://127.0.0.1:3000/api/v1"
@@ -100,6 +101,7 @@ async function main() {
   await setRoleDirectly(recruiterB.userId, RoleName.RECRUITER)
   await setRoleDirectly(admin.userId, RoleName.ADMIN)
 
+  await grantCareerOsForTest(prisma, student.userId)
   const studentJar = await login(student.email)
   const jarA = await login(recruiterA.email)
   const jarB = await login(recruiterB.email)
@@ -274,6 +276,7 @@ async function main() {
 
     console.log("9. Saved rows become applications when shared, closed rows cannot be shared")
     const saver = await signup(`employer-saver-${stamp}@example.com`, "Saved Learner")
+    await grantCareerOsForTest(prisma, saver.userId)
     extraUsers.push(saver.userId)
     const saverJar = await login(saver.email)
     const savedRow = await request(saverJar, "/career/applications", { method: "POST", csrf: true, body: { jobId, status: "SAVED" } })

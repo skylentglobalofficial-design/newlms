@@ -16,7 +16,6 @@ import { useEffect } from "react"
 import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom"
 import { PageShell } from "../components/shared"
 import { ArrowRight } from "../components/skylent/primitives"
-import { openSkylentAi } from "../components/skylent/ai-events"
 import { degreePath, deliveryModeFromParam, type Degree, type DeliveryMode } from "../lib/degrees"
 import { useDegreeCatalogue } from "../hooks/useDegreeCatalogue"
 import { EDUCATION_HASH_REDIRECTS } from "../lib/product-architecture"
@@ -29,14 +28,14 @@ import "./EducationRepolish.css"
 type Level = "UNDERGRADUATE" | "POSTGRADUATE"
 
 const LEVELS: { id: Level; param: "ug" | "pg"; title: string; short: string; lead: string }[] = [
-  { id: "UNDERGRADUATE", param: "ug", title: "Undergraduate degrees", short: "UG", lead: "Your first degree after school, studied over several years." },
-  { id: "POSTGRADUATE", param: "pg", title: "Postgraduate degrees", short: "PG", lead: "A specialised degree after graduation, often alongside work." },
+  { id: "UNDERGRADUATE", param: "ug", title: "Undergraduate areas", short: "UG", lead: "Sample areas for a first degree after school. None are open for applications." },
+  { id: "POSTGRADUATE", param: "pg", title: "Postgraduate areas", short: "PG", lead: "Sample areas for study after a first degree. None are open for applications." },
 ]
 
 const MODE_COPY: Record<DeliveryMode, { label: string; line: string; photos: Record<Level, { src: string; alt: string }> }> = {
   ONLINE: {
     label: "Online",
-    line: "Learn on screen: recorded lectures, live sessions and assessed work, on a weekly rhythm you can fit around life.",
+    line: "A planned way to study on screen. No online degree is open, and no institution has been confirmed.",
     photos: {
       UNDERGRADUATE: { src: photoOnlineUg, alt: "A student in a video lesson on a laptop at home." },
       POSTGRADUATE: { src: photoOnlinePg, alt: "A learner taking notes beside a laptop." },
@@ -44,7 +43,7 @@ const MODE_COPY: Record<DeliveryMode, { label: string; line: string; photos: Rec
   },
   CAMPUS: {
     label: "On campus",
-    line: "Attend in person: lectures, labs and tutorials on a timetable, at the institution that awards the degree.",
+    line: "A planned way to study in person. No campus or awarding institution has been confirmed.",
     photos: {
       UNDERGRADUATE: { src: photoCampusUg, alt: "Students at long benches in a lecture hall." },
       POSTGRADUATE: { src: photoCampusPg, alt: "Two students studying together outdoors on a campus lawn." },
@@ -81,7 +80,7 @@ function DegreeRow({ degree }: { degree: Degree }) {
           <span>{degree.discipline}</span>
         </span>
         <span className="edx-degree__go">
-          View degree
+          {degree.sample ? "See planned area" : "View degree"}
           <ArrowRight />
         </span>
       </Link>
@@ -153,7 +152,7 @@ export default function EducationPage() {
     document.title = `${label} · Skylent`
   }, [level, mode])
 
-  const { degrees: all } = useDegreeCatalogue()
+  const { degrees: all, settled, unavailable } = useDegreeCatalogue()
   const levels = level ? LEVELS.filter((item) => item.id === level) : LEVELS
   const modes: DeliveryMode[] = mode ? [mode] : ["ONLINE", "CAMPUS"]
   const href = (next: { level?: string | null; mode?: string | null }) => {
@@ -177,6 +176,9 @@ export default function EducationPage() {
                 Degree areas, <em>not open yet.</em>
               </h1>
               <p className="edx-lede">These are sample areas for a future undergraduate or postgraduate degree, online or on campus. Skylent does not award degrees. No institution is confirmed, so you can register interest but not apply.</p>
+              {settled && unavailable ? (
+                <p className="edx-lede" role="status">The degree list could not be checked just now. The areas below remain samples, and applications are not open.</p>
+              ) : null}
             </div>
             <nav className="edx-filters" aria-label="Filter degrees">
               <div className="edx-filter" role="group" aria-label="Level">
@@ -230,7 +232,8 @@ export default function EducationPage() {
         {!mode ? (
           <section className="edx-compare" aria-labelledby="edx-compare-title">
             <div className="sky-container">
-              <h2 id="edx-compare-title" className="edx-h2">Online or on campus?</h2>
+              <h2 id="edx-compare-title" className="edx-h2">How the two planned modes would differ</h2>
+              <p className="edx-compare__note">Nothing here is a current choice. An institution would have to confirm a mode before anyone could apply.</p>
               <div className="edx-table" role="table" aria-label="Online and on-campus study compared">
                 <div className="edx-table__row edx-table__row--head" role="row">
                   <span role="columnheader" />
@@ -252,16 +255,16 @@ export default function EducationPage() {
         <section className="edx-help" aria-labelledby="edx-help-title">
           <div className="sky-container edx-help__inner">
             <div>
-              <h2 id="edx-help-title">Not sure which degree fits?</h2>
-              <p>Answer a few questions with Skylent AI, or ask the Skylent team directly.</p>
+              <h2 id="edx-help-title">Questions about a planned area</h2>
+              <p>Applications are not open. Write to the team to register interest, or use Find My Path for programmes that are separate from these degree areas.</p>
             </div>
             <div className="edx-help__actions">
-              <button type="button" className="sk-btn sk-btn-primary" onClick={() => openSkylentAi("finder")}>
-                Ask Skylent AI
+              <Link className="sk-btn sk-btn-primary" to="/contact">
+                Register interest
                 <ArrowRight />
-              </button>
-              <Link className="sk-btn sk-btn-secondary" to="/contact">
-                Talk to the team
+              </Link>
+              <Link className="sk-btn sk-btn-secondary" to="/path">
+                Find My Path
               </Link>
             </div>
           </div>

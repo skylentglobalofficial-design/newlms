@@ -46,6 +46,7 @@ const programCourseInclude = {
       course: {
         select: {
           slug: true,
+          publicationStatus: true,
           curriculum: {
             select: { id: true },
           },
@@ -74,12 +75,14 @@ function withProgramFacts<
     programCourses: Array<{
       course: {
         slug: string
+        publicationStatus: string
         curriculum: Array<{ id: string }>
       }
     }>
   },
 >(program: T) {
-  const { programCourses, curriculum, ...rest } = program
+  const { programCourses: linked, curriculum, ...rest } = program
+  const programCourses = linked.filter((link) => link.course.publicationStatus === 'PUBLISHED')
   void curriculum
   const moduleCountFromCourses = programCourses.reduce(
     (sum, link) => sum + link.course.curriculum.length,
@@ -98,6 +101,7 @@ function withProgramFacts<
 router.get('/courses', async (_request, response, next) => {
   try {
     const courses = await prisma.course.findMany({
+      where: { publicationStatus: 'PUBLISHED' },
       orderBy: { title: 'asc' },
       include: curriculumInclude,
     })
@@ -172,7 +176,7 @@ router.get('/courses/:slug', async (request, response, next) => {
       where: { slug: parsed.data.slug },
       include: curriculumInclude,
     })
-    if (!course) {
+    if (!course || course.publicationStatus !== 'PUBLISHED') {
       response.status(404).json({ error: 'Course not found' })
       return
     }

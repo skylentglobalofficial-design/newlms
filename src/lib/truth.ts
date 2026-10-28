@@ -24,7 +24,7 @@ export type Capability =
   | "enquiries"
 
 export const TRUTH: Record<Capability, { state: TruthState; note: string }> = {
-  careerProfile: { state: "live", note: "Career profile endpoints exist and are used by Career OS." },
+  careerProfile: { state: "live", note: "Career profile endpoints exist, but Career OS stays locked unless a CareerOsAccess row is granted. Signup does not create one." },
   // The LMS: enrolment, lessons, checks, assignments and progress, and the lab and project inside the flagship course.
   lessons: { state: "live", note: "Enrolment, lessons and lesson progress in the LMS; the Data Analytics flagship runs end to end." },
   // No role catalogue or required-skill data exists in the backend, so nothing can be compared.

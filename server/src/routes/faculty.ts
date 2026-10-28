@@ -1,6 +1,7 @@
+import crypto from "node:crypto"
 import { Router } from "express"
 import { z } from "zod"
-import { AssignmentStatus } from "@prisma/client"
+import { AssignmentStatus, CurriculumNodeType } from "@prisma/client"
 import { prisma } from "../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { hasApiRole, requireRoles } from "../lib/roles.js"
@@ -10,6 +11,26 @@ export const facultyRouter = Router()
 
 const TEACHING_SCOPE_UNAVAILABLE =
   "Faculty-to-program/course assignment is not modeled in the database yet. Teaching data and learner submissions cannot be scoped safely for this account."
+
+async function facultyAssignedCourseIds(userId: string): Promise<string[] | null> {
+  try {
+    const rows = await prisma.facultyCourseAssignment.findMany({
+      where: { userId },
+      select: { courseId: true },
+    })
+    return rows.map((row) => row.courseId)
+  } catch {
+    return null
+  }
+}
+
+async function facultyMayReadCourse(req: AuthenticatedRequest, courseId: string | null): Promise<boolean> {
+  if (hasApiRole(req, "superadmin")) return true
+  if (!courseId) return false
+  if (!hasApiRole(req, "faculty")) return false
+  const assigned = await facultyAssignedCourseIds(req.auth!.user.id)
+  return Boolean(assigned?.includes(courseId))
+}
 
 function emptyFacultyDashboard() {
   return {
@@ -97,9 +118,79 @@ async function loadSuperadminFacultyDashboard() {
   }
 }
 
+async function loadAssignedFacultyDashboard(userId: string) {
+  const assigned = await facultyAssignedCourseIds(userId)
+  if (!assigned || assigned.length === 0) return emptyFacultyDashboard()
+  const courses = await prisma.course.findMany({
+    where: { id: { in: assigned } },
+    orderBy: { title: "asc" },
+    include: {
+      curriculum: {
+        orderBy: { order: "asc" },
+        include: { nodes: { select: { id: true, title: true, moduleId: true } } },
+      },
+    },
+  })
+  const submissions = await prisma.assignmentProgress.findMany({
+    where: {
+      status: "submitted",
+      node: { module: { courseId: { in: assigned } } },
+    },
+    orderBy: { submittedAt: "desc" },
+    take: 20,
+    select: {
+      id: true,
+      submittedAt: true,
+      user: { select: { displayName: true, email: true } },
+      node: { select: { title: true, sourceId: true } },
+      enrollment: {
+        select: {
+          course: { select: { slug: true, title: true } },
+          program: { select: { slug: true, name: true } },
+        },
+      },
+      attachments: { select: { id: true } },
+    },
+  })
+  return {
+    programs: [],
+    courses: courses.map((course) => ({
+      slug: course.slug,
+      title: course.title,
+      moduleCount: course.curriculum.length,
+      lessonCount: course.curriculum.reduce((sum, mod) => sum + mod.nodes.length, 0),
+    })),
+    submissions: submissions.map((row) => ({
+      id: row.id,
+      studentName: row.user.displayName ?? row.user.email,
+      studentEmail: row.user.email,
+      lessonTitle: row.node.title,
+      lessonKey: row.node.sourceId,
+      courseSlug: row.enrollment.course?.slug ?? null,
+      courseTitle: row.enrollment.course?.title ?? null,
+      programName: row.enrollment.program?.name ?? null,
+      submittedAt: row.submittedAt?.toISOString() ?? null,
+      attachmentCount: row.attachments.length,
+    })),
+    pendingReviewCount: submissions.length,
+    curriculumSummary: courses.flatMap((course) =>
+      course.curriculum.map((module) => ({
+        label: module.title,
+        detail: `${course.title} · ${module.nodes.length} lectures`,
+        status: "current",
+      })),
+    ),
+    teachingScopeAvailable: true,
+    teachingScopeMessage: null,
+    cohortAnalyticsAvailable: false,
+  }
+}
+
 facultyRouter.get("/dashboard", requireAuth, requireRoles("faculty", "superadmin"), async (req: AuthenticatedRequest, res) => {
   try {
-    const data = hasApiRole(req, "superadmin") ? await loadSuperadminFacultyDashboard() : emptyFacultyDashboard()
+    const data = hasApiRole(req, "superadmin")
+      ? await loadSuperadminFacultyDashboard()
+      : await loadAssignedFacultyDashboard(req.auth!.user.id)
     res.json({ data })
   } catch (error) {
     console.error("Failed to load faculty dashboard:", error)
@@ -145,7 +236,7 @@ facultyRouter.get(
               module: {
                 select: {
                   title: true,
-                  course: { select: { slug: true, title: true } },
+                  course: { select: { id: true, slug: true, title: true } },
                 },
               },
             },
@@ -164,6 +255,10 @@ facultyRouter.get(
 
       if (!submission) {
         return res.status(404).json({ error: "Submission not found" })
+      }
+      const courseId = submission.node.module.course?.id ?? null
+      if (!(await facultyMayReadCourse(req, courseId))) {
+        return res.status(403).json({ error: "This submission is outside your teaching assignment" })
       }
 
       res.json({
@@ -225,11 +320,14 @@ facultyRouter.post(
 
       const submission = await prisma.assignmentProgress.findUnique({
         where: { id: idParsed.data.submissionId },
-        select: { id: true, status: true },
+        select: { id: true, status: true, node: { select: { module: { select: { courseId: true } } } } },
       })
 
       if (!submission) {
         return res.status(404).json({ error: "Submission not found" })
+      }
+      if (!(await facultyMayReadCourse(req, submission.node.module.courseId))) {
+        return res.status(403).json({ error: "This submission is outside your teaching assignment" })
       }
 
       if (submission.status !== AssignmentStatus.submitted && submission.status !== AssignmentStatus.graded) {
@@ -286,6 +384,13 @@ facultyRouter.get(
     if (courseSlug) {
       where.enrollment = { course: { slug: courseSlug } }
     }
+    if (!hasApiRole(req, "superadmin")) {
+      const assigned = await facultyAssignedCourseIds(req.auth!.user.id)
+      if (!assigned || assigned.length === 0) {
+        return res.json({ data: [], meta: { total: 0, limit, offset } })
+      }
+      where.node = { module: { courseId: { in: assigned } } }
+    }
 
     try {
       const grading = (await readSchemaCapabilities()).assignmentGrading
@@ -340,5 +445,68 @@ facultyRouter.get(
       console.error("Failed to list submissions:", error)
       res.status(500).json({ error: "Failed to list submissions" })
     }
+  },
+)
+
+const facultyLectureSchema = z.object({
+  moduleId: z.string().uuid(),
+  title: z.string().trim().min(1).max(160),
+  summary: z.string().trim().max(8000).optional(),
+  nodeType: z.nativeEnum(CurriculumNodeType).default(CurriculumNodeType.NOTES),
+})
+
+facultyRouter.post(
+  "/courses/:courseId/lectures",
+  requireAuth,
+  requireRoles("faculty"),
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const params = z.object({ courseId: z.string().uuid() }).safeParse(req.params)
+    const body = facultyLectureSchema.safeParse(req.body)
+    if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
+    if (!(await facultyMayReadCourse(req, params.data.courseId))) {
+      return res.status(403).json({ error: "This course is outside your teaching assignment" })
+    }
+    const module = await prisma.curriculumModule.findFirst({
+      where: { id: body.data.moduleId, courseId: params.data.courseId },
+      include: { nodes: { select: { id: true } } },
+    })
+    if (!module) return res.status(404).json({ error: "Module not found on this course" })
+    if (body.data.nodeType === CurriculumNodeType.QUIZ) {
+      return res.status(403).json({ error: "Teachers cannot configure quizzes from this action" })
+    }
+    const created = await prisma.curriculumNode.create({
+      data: {
+        moduleId: module.id,
+        title: body.data.title,
+        summary: body.data.summary ?? null,
+        nodeType: body.data.nodeType,
+        order: module.nodes.length,
+        sourceId: `lec-${crypto.randomUUID()}`,
+      },
+    })
+    res.status(201).json({
+      data: { id: created.id, moduleId: module.id, title: created.title, nodeType: created.nodeType },
+    })
+  },
+)
+
+facultyRouter.post(
+  "/courses",
+  requireAuth,
+  requireRoles("faculty"),
+  requireCsrf,
+  async (_req, res) => {
+    res.status(403).json({ error: "Teachers cannot create courses" })
+  },
+)
+
+facultyRouter.delete(
+  "/courses/:courseId/modules/:moduleId",
+  requireAuth,
+  requireRoles("faculty"),
+  requireCsrf,
+  async (_req, res) => {
+    res.status(403).json({ error: "Teachers cannot delete modules" })
   },
 )

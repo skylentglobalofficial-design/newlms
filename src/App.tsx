@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
   useLocation,
+  useSearchParams,
 } from "react-router-dom"
 import { globalCSS } from "./components/shared"
 
@@ -22,6 +23,8 @@ const PAGE_TITLES: Array<[string, string]> = [
   ["/dashboard/organisation", "Organisation"],
   ["/dashboard/recruiter", "Recruiter"],
   ["/dashboard/admin", "Admin"],
+  ["/dashboard/curriculum", "Course builder"],
+  ["/account/password", "Change password"],
   ["/learn", "Lesson"],
   ["/os/labs", "Lab"],
   ["/os/projects", "Project"],
@@ -89,6 +92,7 @@ function DocumentTitle() {
 }
 
 const HomePage = lazy(() => import("./pages/HomePage"))
+const HomeDirectionPreview = lazy(() => import("./pages/home/HomeDirectionPreview"))
 const LegalPage = lazy(() => import("./pages/LegalPage"))
 const PathPage = lazy(() => import("./pages/path/PathPage"))
 const PathResultPage = lazy(() => import("./pages/path/PathResultPage"))
@@ -158,6 +162,8 @@ const DashboardRecruiterPage = lazy(
   () => import("./pages/DashboardRecruiterPage"),
 )
 const DashboardAdminPage = lazy(() => import("./pages/DashboardAdminPage"))
+const CourseBuilderPage = lazy(() => import("./pages/CourseBuilderPage"))
+const ChangePasswordPage = lazy(() => import("./pages/ChangePasswordPage"))
 const LearnPage = lazy(() => import("./pages/LearnPage"))
 const NorthwindLabPage = lazy(() => import("./pages/NorthwindLabPage"))
 const NorthwindProjectPage = lazy(() => import("./pages/NorthwindProjectPage"))
@@ -166,12 +172,20 @@ const PracticeWorkspacePage = lazy(
 )
 const NotFoundPage = lazy(() => import("./pages/NotFoundPage"))
 
+function CoursesIndexRedirect() {
+  const [params] = useSearchParams()
+  const q = params.get("q")
+  if (q) return <Navigate to={`/programmes?q=${encodeURIComponent(q)}`} replace />
+  return <Navigate to="/programmes" replace />
+}
+
 function AppRoutes() {
   return (
     <Suspense fallback={<RouteFallback />}>
       <DocumentTitle />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/preview/homepage" element={<HomeDirectionPreview />} />
 
         {/* Core Skylent path product */}
         <Route path="/path" element={<PathPage />} />
@@ -255,10 +269,7 @@ function AppRoutes() {
         <Route path="/universities" element={<UniversitiesPage />} />
         <Route path="/labs" element={<LabsPage />} />
         <Route path="/os" element={<OSPage />} />
-        <Route
-          path="/courses"
-          element={<Navigate to="/programmes" replace />}
-        />
+        <Route path="/courses" element={<CoursesIndexRedirect />} />
         <Route path="/courses/:slug" element={<CourseDetailPage />} />
         <Route path="/workshops" element={<WorkshopsPage />} />
         <Route path="/workshops/:slug" element={<WorkshopDetailPage />} />
@@ -343,6 +354,15 @@ function AppRoutes() {
             </RoleRouteGuard>
           }
         />
+        <Route
+          path="/dashboard/curriculum"
+          element={
+            <RoleRouteGuard allowedRoles={["superadmin", "admin"]}>
+              <CourseBuilderPage />
+            </RoleRouteGuard>
+          }
+        />
+        <Route path="/account/password" element={<ChangePasswordPage />} />
         <Route
           path="/learn/:slug"
           element={

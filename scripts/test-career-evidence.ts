@@ -1,7 +1,9 @@
 import "dotenv/config"
 import { NORTHWIND_PROJECT_TYPE } from "../server/src/lib/skylent-projects/catalog.ts"
 import { NORTHWIND_SQL_EXAMPLES as SQL_EXAMPLES } from "../server/src/lib/skylent-labs/sql/examples.ts"
+import { PrismaClient } from "@prisma/client"
 import { TEST_CONSENT } from "./test-consent-payload.ts"
+import { grantCareerOsForTest } from "./career-os-test-grant.ts"
 
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
 
@@ -153,6 +155,12 @@ async function main() {
   const aiBefore = await request(jar, "/lms/ai/status")
 
   console.log("1. Incomplete project rejected")
+  const careerDb = new PrismaClient()
+  const me = await request(jar, "/auth/me")
+  const otherMe = await request(other, "/auth/me")
+  await grantCareerOsForTest(careerDb, me.data.user.id)
+  await grantCareerOsForTest(careerDb, otherMe.data.user.id)
+  await careerDb.$disconnect()
   const incomplete = await request(jar, "/career/projects/from-learner-project", {
     method: "POST",
     csrf: true,

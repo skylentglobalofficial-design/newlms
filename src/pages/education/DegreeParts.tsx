@@ -270,7 +270,7 @@ export function ClosingBand({
         </div>
         <Reveal delay={180} className="dg-close__actions">
           <button type="button" className="sk-btn sk-btn-primary" onClick={() => openSkylentAi("finder")}>
-            Ask Skylent AI
+            Start the questionnaire
             <ArrowRight />
           </button>
           <Link to={secondary.to} className="sk-btn sk-btn-secondary">

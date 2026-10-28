@@ -92,7 +92,8 @@
 
 .pgx .pgx-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
 .pgx .pgx-card { min-width: 0; }
-.pgx .pgx-card__link {
+.pgx .pgx-card__link,
+.pgx .pgx-card__static {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -102,8 +103,9 @@
   color: inherit;
   text-decoration: none;
   overflow: hidden;
-  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
 }
+.pgx .pgx-card__link { transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease; }
+.pgx .pgx-card__static { cursor: default; }
 .pgx .pgx-card__link:hover { border-color: hsl(252 50% 82%); box-shadow: 0 8px 24px -12px rgba(81, 66, 181, .35); transform: translateY(-2px); }
 .pgx .pgx-card__link:focus-visible { outline: 2px solid var(--pgx-ocean); outline-offset: 3px; }
 .pgx .pgx-card__media { position: relative; display: block; aspect-ratio: 16 / 10; background: var(--pgx-lavender); }

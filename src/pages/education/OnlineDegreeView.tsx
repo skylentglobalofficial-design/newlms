@@ -62,9 +62,9 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
         <h1 className="dg-h1 cine-in cine-d1">{degree.title}</h1>
         <div className="dg-hero__row">
           <p className="dg-lead cine-in cine-d2">
-            Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the
-            week runs on a laptop and not on a campus.
-            {degree.institution ? null : " Timetable, fees and entry details are published once an institution is confirmed."}
+            {degree.sample || !degree.institution
+              ? "This page describes a planned online degree area. Skylent does not award the degree, and applications are not open. Timetable, fees and entry details are published only once an institution is confirmed."
+              : "Live sessions, recorded lectures, reading and assessed work all happen in one online learning environment, so the week runs on a laptop and not on a campus."}
           </p>
           <div className="dg-actions cine-in cine-d3">
             <Link to="#week" className="sk-btn sk-btn-primary">
@@ -397,7 +397,11 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
             <div className="dg-prove__lead">
               <SectionIndex n="05" label="What you can prove" />
               <h2 className="dg-h2 dg-h2--sm">Your Career OS profile, alongside the degree.</h2>
-              <p>The degree is awarded by the partner institution. Skylent programmes, labs and projects you take while you study are kept in Career OS.</p>
+              <p>
+                {degree.sample || !degree.institution
+                  ? "Skylent does not award this degree. No institution is confirmed, and applications are not open."
+                  : "The degree is awarded by the partner institution. Skylent programmes, labs and projects you take while you study are kept in Career OS."}
+              </p>
             </div>
             <dl className="dg-prove__rows dg-rows">
               <div>
@@ -421,7 +425,7 @@ export default function OnlineDegreeView({ degree }: { degree: Degree }) {
 
       <ClosingBand
         label="Next step"
-        title="Not sure this degree fits? Ask Skylent AI."
+        title="Not sure this degree fits? Try the questionnaire."
         secondary={{ to: "/programmes", label: "Explore programmes" }}
       />
     </DegreeShell>

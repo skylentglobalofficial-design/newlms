@@ -22,10 +22,11 @@ const API_ROLE_TO_NAME: Record<ApiRole, RoleName> = {
   faculty: RoleName.FACULTY,
   organisation: RoleName.ORGANISATION_ADMIN,
   recruiter: RoleName.RECRUITER,
+  admin: RoleName.PLATFORM_ADMIN,
   superadmin: RoleName.ADMIN,
 }
 
-const apiRoleSchema = z.enum(["student", "faculty", "organisation", "recruiter", "superadmin"])
+const apiRoleSchema = z.enum(["student", "faculty", "organisation", "recruiter", "admin", "superadmin"])
 
 const listQuerySchema = z.object({
   query: z.string().trim().max(200).optional(),
@@ -88,11 +89,17 @@ const ASSIGNABLE_ROLES: Array<{
 }> = [
   { role: "student", roleName: RoleName.STUDENT, requiresOrganisation: false, unavailableCapability: null },
   {
+    role: "admin",
+    roleName: RoleName.PLATFORM_ADMIN,
+    requiresOrganisation: false,
+    unavailableCapability: null,
+  },
+  {
     role: "faculty",
     roleName: RoleName.FACULTY,
     requiresOrganisation: false,
     unavailableCapability:
-      "Faculty↔course/programme assignment is not modeled in the schema, so teaching assignments cannot be provisioned yet.",
+      "Changing someone to faculty does not assign a course. Course assignment is a separate record.",
   },
   {
     role: "organisation",

@@ -33,6 +33,8 @@ import { projectsRouter } from "./routes/projects.js"
 import { facultyRouter } from "./routes/faculty.js"
 import { organisationRouter } from "./routes/organisation.js"
 import { careerRouter } from "./routes/career/index.js"
+import { careerRiseRouter } from "./routes/career-rise.js"
+import { adminCurriculumRouter } from "./routes/admin-curriculum.js"
 import { skylentCertificatesRouter } from "./routes/skylent/certificates.js"
 import { skylentEnquiriesRouter } from "./routes/skylent/enquiries.js"
 import { revaRouter } from "./routes/skylent/reva.js"
@@ -75,6 +77,8 @@ app.use("/api/v1/labs", labsRouter)
 app.use("/api/v1/faculty", facultyRouter)
 app.use("/api/v1/organisation", organisationRouter)
 app.use("/api/v1/career", careerRouter)
+app.use("/api/v1/career-rise", careerRiseRouter)
+app.use("/api/v1/admin/curriculum", adminCurriculumRouter)
 app.use("/api/v1/admin", adminRouter)
 app.use("/api/v1/admin", adminPlatformRouter)
 app.use("/api/v1/elixir", elixirRouter)

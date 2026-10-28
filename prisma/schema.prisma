@@ -14,6 +14,8 @@ enum RoleName {
   STUDENT
   RECRUITER
   ORGANISATION_ADMIN
+  /// Platform admin. Not Super Admin. Cannot change roles or platform configuration.
+  PLATFORM_ADMIN
 }
 
 enum ProgramType {
@@ -30,6 +32,11 @@ enum EnrollmentStatus {
   OPEN
   WAITLIST
   COMING_SOON
+}
+
+enum CoursePublicationStatus {
+  DRAFT
+  PUBLISHED
 }
 
 enum DegreeDeliveryMode {
@@ -220,6 +227,10 @@ model User {
   practiceResponses   PracticeWorkspaceResponse[]
   eventRegistrations  EventRegistration[]
   passwordResetTokens PasswordResetToken[]
+  mustChangePassword  Boolean                     @default(false)
+  careerOsAccess      CareerOsAccess?
+  careerRiseEnrolments CareerRiseEnrolment[]
+  facultyAssignments  FacultyCourseAssignment[]
   elixirAccount       ElixirAccount?
   elixirTransactions  ElixirTransaction[]
   elixirAdjustments   ElixirTransaction[]          @relation("ElixirActor")
@@ -332,6 +343,7 @@ model Program {
   curriculum         CurriculumModule[]
   enrollments        UserEnrollment[]
   programCourses     ProgramCourse[]
+  careerRiseEnrolments CareerRiseEnrolment[]
 
   @@index([programType])
   @@index([enrollmentStatus])
@@ -361,18 +373,25 @@ model Course {
   lessonCount    Int
   projectCount   Int
   rating         Float
-  reviews        Int
-  price          Int
-  originalPrice  Int
-  desc           String
-  longDesc       String
-  outcomes       String[]
-  forWhom        String[]
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-  curriculum     CurriculumModule[]
-  enrollments    UserEnrollment[]
-  programCourses ProgramCourse[]
+  reviews           Int
+  price             Int
+  originalPrice     Int
+  desc              String
+  longDesc          String
+  outcomes          String[]
+  forWhom           String[]
+  publicationStatus CoursePublicationStatus @default(PUBLISHED)
+  authoredInApp     Boolean                 @default(false)
+  coverStorageKey   String?
+  coverContentType  String?
+  coverFileName     String?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  curriculum        CurriculumModule[]
+  enrollments       UserEnrollment[]
+  programCourses    ProgramCourse[]
+  careerRiseEnrolments CareerRiseEnrolment[]
+  facultyAssignments FacultyCourseAssignment[]
 
   @@index([category])
   @@index([level])
@@ -410,8 +429,11 @@ model CurriculumNode {
   muxPlaybackId           String?
   maxAttempts             Int?
   passingScore            Int?
+  summary                 String?              @db.Text
+  referenceUrl            String?
   moduleId                String               @db.Uuid
   module                  CurriculumModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  lessonMaterials         LessonMaterial[]
   lessonProgress          LessonProgress[]
   quizQuestions           QuizQuestion[]
   quizAttempts            QuizAttempt[]
@@ -522,6 +544,58 @@ model AssignmentProgress {
   @@unique([enrollmentId, nodeId])
   @@index([userId])
   @@index([nodeId, status])
+}
+
+/// Explicit Career OS entitlement. No row is created by signup, demo provisioning, course completion, or Career Rise.
+model CareerOsAccess {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @unique @db.Uuid
+  grantedAt DateTime @default(now())
+  reason    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// Learner opted in after the backend confirmed at least 60% of the relevant curriculum.
+model CareerRiseEnrolment {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  scopeKey  String
+  courseId  String?  @db.Uuid
+  programId String?  @db.Uuid
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course?  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  program   Program? @relation(fields: [programId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, scopeKey])
+  @@index([userId])
+  @@index([courseId])
+  @@index([programId])
+}
+
+model FacultyCourseAssignment {
+  userId    String   @db.Uuid
+  courseId  String   @db.Uuid
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@id([userId, courseId])
+  @@index([courseId])
+}
+
+model LessonMaterial {
+  id              String   @id @default(uuid()) @db.Uuid
+  nodeId          String   @db.Uuid
+  fileName        String
+  mimeType        String
+  byteSize        Int
+  storageProvider String
+  storageKey      String
+  createdAt       DateTime @default(now())
+  node            CurriculumNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@index([nodeId])
 }
 
 model ProgramCourse {
