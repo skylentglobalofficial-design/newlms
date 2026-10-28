@@ -1,8 +1,19 @@
 # Skylent master implementation tracker
 
-Updated: 28 October 2026, 8:13 PM IST.
+Updated: 28 October 2026, 8:20 PM IST.
 
 This file is the progress register for the master stabilisation pass. Statuses mean what they say. A local test is not production verification.
+
+## Deployment readiness recheck — 28 October 2026, 8:20 PM IST
+
+- Recommendation: `NO-GO`.
+- Production health, read at 8:20 PM IST: `GET https://skylent.live/api/v1/health` returned HTTP 503. Body: `status: error`, `db: ok`, `migrations: pending`, `pendingMigrations: 8`, `failedMigrations: 0`, `ai: not_configured`, `release: unknown`. Headers: `platform: hostinger`, `panel: hpanel`, `server: hcdn`.
+- Same minute: Elixir HTTP 503, degrees HTTP 503, events HTTP 503, each with the existing unavailable sentence.
+- No production database query was run. This workspace's database target is local class, database `skylent_agent_tmp`, port 5432. `npm run db:preflight:backfill -- --production` exited 1 with `DECISION BLOCKED` and did not connect as production.
+- The eight pending names were not returned by production. Production hides them when `NODE_ENV=production` (`server/src/routes/health.ts`). The count of 8 matches the eight `202610*` migration folders that existed before `20261028143000_career_rise_os_lock_and_authoring`. That newer migration is on this branch and is not what the live process is counting, because this branch has not been deployed and `release` is `unknown`. This is an inference from the live count and the repository history, not a reading of `_prisma_migrations`.
+- The process serving that JSON did not apply those eight migrations on boot. `server.js` runs `prisma migrate deploy` and exits if it fails, so a successful boot of `server.js` would not still report eight pending and zero failed. Hostinger's documented entry file for Express is a path such as `server.js` relative to the repo root (docs.hostinger.com/node.js/build-settings, page updated 23 September 2026). An empty entry file is a static site, which would not return this JSON. The hPanel value itself was not opened.
+- Local read-only backfill preflight on `skylent_agent_tmp`: all six pairs already linked, so `pairsThatWouldInsert` was 0. Those enrolment counts are local test rows, not production learners.
+- Backup evidence: still missing. No Supabase backup timestamp and no `pg_restore --list` output are in this workspace.
 
 Live read-only check at 8:13 PM IST on 28 October 2026: `GET https://skylent.live/api/v1/health` returned HTTP 503, `db: ok`, `migrations: pending`, `pendingMigrations: 8`, `failedMigrations: 0`, `ai: not_configured`. `GET /api/v1/elixir/account` returned HTTP 503 with the existing unavailable sentence. No production write, migration, restart, or deployment was performed.
 
@@ -26,7 +37,7 @@ Live read-only check at 8:13 PM IST on 28 October 2026: `GET https://skylent.liv
 ## Phase 1 — Production and database safety
 
 - Status: `BLOCKED`
-- Relevant files inspected: `server.js`, `server/src/routes/health.ts`, `server/src/lib/database-target.ts`, `scripts/check-migration-history.ts`, `docs/ENGINEERING_HANDOFF_2026-10-28.md`, migration SQL through `20261028143000`.
+- Relevant files inspected: `server.js`, `server/src/routes/health.ts`, `server/src/lib/migration-guard.ts`, `server/src/lib/database-target.ts`, `scripts/check-migration-history.ts`, `scripts/preflight-program-course-backfill.ts`, `docs/ENGINEERING_HANDOFF_2026-10-28.md`, migration SQL through `20261028143000`, Hostinger build-settings documentation.
 - Files changed: `scripts/test-migration-history.ts` so the new migration is part of the local history check. `prisma/migrations/20261028143000_career_rise_os_lock_and_authoring/migration.sql`.
 - Database changes: applied only to the local database `skylent_agent_tmp` on `127.0.0.1`. `npx prisma migrate deploy` reported 17 local migrations applied, including the new one. Production was not migrated.
 - Startup: `npm start` is `node server.js`, which runs `prisma migrate deploy` and then imports `server/dist/index.js`. Running `node server/dist/index.js` directly does not migrate. Hostinger's real entry file was not readable from this environment.
@@ -34,7 +45,7 @@ Live read-only check at 8:13 PM IST on 28 October 2026: `GET https://skylent.liv
 - October migrations already in the repo remain additive except `20261004180000_backfill_program_course_links`, which inserts six programme-course links and has no clean undo. That backfill is still not approved and was not executed against production.
 - The new migration adds `PLATFORM_ADMIN`, draft-course columns (existing rows stay `PUBLISHED` and `authoredInApp = false`), `mustChangePassword` default false, Career OS access, Career Rise enrolment, faculty assignment, and lesson materials. It inserts no access rows and no Career Rise rows.
 - Backup: not verified. No restore was attempted.
-- Tests executed: `npm run test:migration-history` — PASS (`migration-history ok`). Live health GET — recorded above.
+- Tests executed: `npm run test:migration-history` — PASS (`migration-history ok`). Live health GET at 8:20 PM IST — HTTP 503, 8 pending, 0 failed. `npm run db:preflight:backfill` — PASS as a local read. `npm run db:preflight:backfill -- --production` — BLOCKED on the local target, exit 1.
 - Manual verification required: Hostinger entry file, read-only migration table, backup evidence, written backfill decision.
 - Production verification required: all of the above, on the real pooler, before any deploy.
 - Known risks: deploying this branch applies every pending migration, including the backfill, because `migrate deploy` cannot skip it.

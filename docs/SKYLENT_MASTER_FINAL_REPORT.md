@@ -18,7 +18,7 @@ Major improvements: Career OS default lock, Career Rise threshold, curriculum AP
 
 Critical risks: the live health check still shows eight pending migrations and HTTP 503. Deploying this branch would also apply the new migration and the unapproved programme-course backfill, because startup runs `prisma migrate deploy`. There is no verified backup.
 
-Production decision: `NOT READY FOR APPROVAL`.
+Production decision: `NO-GO`. `NOT READY FOR APPROVAL`.
 
 ## Section B — Phase-by-phase results
 
@@ -93,15 +93,36 @@ The Career Rise workspace does not claim coaching, placements, or mentorship. Th
 
 ## Section F — Production status
 
-Checked: yes, read-only, at 8:13 PM IST on 28 October 2026.
+Checked again at 8:20 PM IST on 28 October 2026. No production database query was performed.
 
-`https://skylent.live/api/v1/health` returned HTTP 503. The JSON said the database connection was ok, 8 migrations pending, 0 failed, and AI not configured. Elixir returned HTTP 503 with the existing unavailable sentence. Response headers identified Hostinger (`platform: hostinger`, `server: hcdn`).
+`GET https://skylent.live/api/v1/health` returned HTTP 503:
 
-The eight pending names were not listed, because production hides them. They are the October migrations already documented in the engineering handoff, not the new Career Rise migration. This branch has not been deployed, so production is not running it.
+```json
+{"status":"error","db":"ok","migrations":"pending","pendingMigrations":8,"failedMigrations":0,"ai":"not_configured","release":"unknown"}
+```
 
-Backup: not verified.
+Headers included `platform: hostinger`, `panel: hpanel`, and `server: hcdn`. Elixir, degrees, and events each returned HTTP 503 with their existing unavailable sentences.
 
-Hostinger entry file: not visible from this environment. `package.json` `start` is `node server.js`, which migrates. That is not proof of the hPanel entry file.
+The eight names are not in that response. Production omits them when `NODE_ENV` is production. The count matches these repository migrations, in apply order, which are the `202610*` folders other than the Career Rise migration added on this branch:
+
+| Order | Migration | Effect verified from the SQL file |
+| --- | --- | --- |
+| 1 | `20261004000000_skylent_additions` | Creates `SkylentCertificate` and `SkylentEnquiry`. No data rewrite. |
+| 2 | `20261004180000_backfill_program_course_links` | Inserts missing `ProgramCourse` rows for six slug pairs. See the backfill section below. |
+| 3 | `20261009000000_policy_acceptance` | Creates `PolicyAcceptance`. Account creation and new enrolment depend on it. |
+| 4 | `20261011000000_employer_membership_and_shared_applications` | Creates `EmployerMembership`. Adds `JobApplication.sharedWithEmployer`, default false. |
+| 5 | `20261017120000_practice_workspaces` | Creates the practice workspace tables and status enum. |
+| 6 | `20261024120000_quiz_grading_events` | Adds quiz explanation, attempt limits, assignment grade fields, the `graded` status value, and event tables. |
+| 7 | `20261024140000_password_reset_and_degrees` | Creates password-reset tokens, `Institution`, and `Degree`. No sample rows are inserted. |
+| 8 | `20261025180000_elixir_ledger_and_admin_audit` | Creates the Elixir, payment, learning-resource, and audit tables. Inserts five reward rules with amount 0 and `enabled = false`. |
+
+None of those eight files runs `DROP`, `DELETE`, or `UPDATE` as an executed statement. `ON DELETE` appears only inside foreign keys, and `DROP` appears only in comments. `ALTER TYPE ... ADD VALUE 'graded'` cannot be undone by a down migration. The Elixir file says rollback is a backup restore.
+
+`20261028143000_career_rise_os_lock_and_authoring` is a ninth migration on this branch. The live count of 8 means the running build is not this branch. Deploying this branch would add that ninth migration after the eight.
+
+Backup: not verified. No backup timestamp, scope, or `pg_restore --list` output is in this workspace.
+
+Hostinger entry file: the panel was not opened. Hostinger's build-settings page, updated 23 September 2026, says an Express entry file is a `.js` path relative to the repo root, and an empty entry file serves a static site. The live health body is JSON, so the entry file is not empty. `server.js` migrates and then listens, and it exits when migrate fails. A process that is serving JSON with eight pending migrations and zero failed rows did not complete `prisma migrate deploy` on this boot. That is consistent with the running entry file being `server/dist/index.js`, which does not migrate. It is not a copy of the hPanel field.
 
 Production changes made by this pass: none.
 
@@ -109,14 +130,30 @@ Production changes made by this pass: none.
 
 | Blocker | Impact | Needed from | Next action | Role |
 | --- | --- | --- | --- | --- |
-| Hostinger entry file unknown | Cannot prove whether boot migrates | A person who can open hPanel without restarting | Copy the entry file, Node version, and build command | Operator |
+| Hostinger entry file not read from hPanel | The live JSON health response is inconsistent with a successful `server.js` boot, but the panel value is still unread | A person who can open hPanel without restarting | Copy the entry file exactly. Do not restart to discover it | Operator |
 | Production pooler URL not in this workspace | Cannot read `_prisma_migrations` | The session-pooler URL in a trusted shell | `npm run db:preflight -- --production`, share only host, port, database, and the decision | Operator |
 | Backup not verified | A failed migration has no proven restore | Supabase backup timestamp or `pg_restore --list` | Record who would restore it | Operator |
-| Programme-course backfill not approved | `migrate deploy` would insert the six links, including Data Science & AI to Data Analytics | Written approval after the read-only pair query in the handoff | Keep `--approve-backfill` unset | Product owner |
+| Programme-course backfill not approved | `migrate deploy` would insert any missing pair, and a programme enrolment then opens every linked course | Written approval after `npm run db:preflight:backfill -- --production` | Keep `--approve-backfill` unset. This report is not approval | Product owner |
 | `CEO@skylent.in` password not available here | Super Admin was not created or signed in | Password via environment, not chat or git | Run bootstrap on an approved database | Product owner |
 | No college role or membership | College dashboard cannot be honest | A product decision and a schema for a college tenant | Do not invent the role | Product owner |
 | Object storage not configured for a tested upload | Covers and PDFs are not verified | `STORAGE_*` for an implemented provider | Local provider is the only implemented one, and it is refused in production | Operator |
 | Career OS unlock policy not specified | The product stays locked, which is intended | A separate written policy | Do not grant access from signup or completion | Product owner |
+
+## Backfill risk — not approved
+
+The backfill is one `INSERT ... SELECT` into `ProgramCourse`. It joins `Program` and `Course` on slug and skips a pair that already has that programme and course (`WHERE NOT EXISTS`). A missing programme or course drops that pair. It does not change an existing link's `sortOrder`, and it does not delete rows.
+
+The six pairs are Data Analytics Pro → Data Analytics, Data Science & AI → Data Analytics, Data Science & AI → Python, Full Stack → Full Stack Web, Generative AI → Generative AI, and Product Management → Product Management.
+
+`resolveCourseEnrollment` treats an active or completed programme enrolment as access to every course linked from that programme. Linking Data Science & AI to Data Analytics would let those learners open the Data Analytics course without a separate course enrolment. The same is true for the other new links. That is an access change, not a schema drop.
+
+The statement is one transaction. If it is interrupted before commit, Postgres keeps no new rows and Prisma leaves the migration unfinished (`finished_at` null, which health reports as failed). A later `migrate deploy` runs it again. If it has already committed, Prisma will not run it again. Running the SQL by hand a second time inserts nothing for pairs that exist. It is idempotent for existing links. New rows use random ids, so they cannot later be distinguished from links created another way. Undo is a backup restore.
+
+`npm run db:preflight:backfill` runs only `SELECT` inside `SET TRANSACTION READ ONLY`. It refuses a non-local database unless `--production` is passed, and `--production` refuses anything that is not the session pooler. On 28 October 2026 it was run against local `skylent_agent_tmp` only. All six links were already present there, so nothing would be inserted. The local enrolment counts on that database are test data. They are not production learner counts. The production query was not run.
+
+Post-migration check, after an approved deploy and not before: run the same preflight against the session pooler and expect `pairsThatWouldInsert: 0` for every pair whose programme and course both exist. Then confirm health is HTTP 200 with `migrations: ok`, and that Elixir, degrees, and events are no longer HTTP 503 because of a missing table.
+
+This report does not approve the backfill.
 
 ## Section H — Deployment and recovery
 
@@ -130,8 +167,44 @@ Rollback: there is no down migration. Recovery is a restore of a backup taken be
 
 Do not restart or redeploy Hostinger from this report.
 
+## Deployment sequence — do not start it
+
+`NO-GO` until every gate below is true.
+
+1. An operator copies the Hostinger entry file, Node version, build script, and output directory from hPanel without restarting. Record whether it is `server.js` or `server/dist/index.js`.
+2. A restorable backup is taken after the last production write and before any migration. Evidence is a Supabase backup timestamp and scope, or `pg_dump -Fc` through the session pooler followed by `pg_restore --list`. Name the person who would restore it. No restore is performed as a drill against production.
+3. In a trusted shell, with the session-pooler URL only in that shell, run `npm run db:preflight -- --production` and `npm run db:preflight:backfill -- --production`. Keep host, port, database name, pending names, and the pair counts. Stop if the target is not the session pooler on port 5432.
+4. The product owner writes approval for the six backfill pairs after reading those counts, especially how many Data Science & AI learners would gain Data Analytics. This report is not that approval.
+5. Only then may an operator deploy. If the entry file is `server.js`, the boot itself runs `prisma migrate deploy` in folder order: the eight migrations above, then `20261028143000_career_rise_os_lock_and_authoring` if this branch is what was deployed. If the entry file does not migrate, the operator runs `prisma migrate deploy` once, deliberately, against the reviewed target. Do not use `migrate resolve` on the four production-only lesson-material migrations.
+6. Afterward: health HTTP 200, `migrations: ok`, `failedMigrations` absent or 0, backfill preflight shows no remaining insert for pairs whose slugs exist, and Elixir, degrees, and events no longer 503 for a missing table. Signup and new enrolment should no longer 503 for missing policy storage.
+7. Rollback: if migrate stops with a failed row, or health stays 503, or learners gain a course the approval did not accept, restore the backup taken in step 2. Do not mark a failed migration as finished. There is no down migration for the Elixir ledger, the `graded` enum value, or the backfill.
+
+## Local verification added on 28 October 2026
+
+| Command | Result |
+| --- | --- |
+| `npm run test:resume-upload-quiz` against a local API with `STORAGE_PROVIDER=local` | PASS. Quiz question persisted, a bad answer index returned 400, cover and PDF bytes were stored, sign-out returned 401, and the next login resumed the opened lesson. Opening the lesson left `completedAt` null. |
+| `npm run test:storage` | PASS |
+| `npm run test:security-middleware` | PASS |
+| `npm run test:production-env` | PASS |
+| `npm run test:password-reset` | PASS |
+| `npm run test:enrollment-access` | PASS |
+| `npm run test:quiz-limits` | PASS |
+| `npm run test:assignment-flow` | PASS |
+| `npm run test:degrees-auth` | PASS |
+| `npm run test:events` | PASS |
+| `npm run test:quiz-guard` | PASS after a local API restart. An earlier attempt returned HTTP 429 from the local auth limiter. |
+| `npm run test:roles` | PASS after the catalog assertion was updated for the separate platform-admin role and the local API was restarted. Earlier attempts returned HTTP 429. |
+| Headless Chrome, signed out, `http://127.0.0.1:5174/dashboard/curriculum` | Rendered the sign-in page. The course builder was not shown. |
+| Signed-in browser pass of the builder, My Courses, and Career Rise button | NOT RUN |
+| `test:lms`, `test:ai`, `test:elixir`, `test:labs`, `test:projects`, `test:migration-replay`, `test:integration`, `test:catalog-parity`, `test:employer`, `test:password-reset-http` | NOT RUN |
+
+Career OS lock and Career Rise eligibility were not changed in this recheck.
+
 ## Section I — Final readiness decision
+
+`NO-GO`
 
 `NOT READY FOR APPROVAL`
 
-The local build and the tests named above passed. Production is still returning HTTP 503 with eight pending migrations. Backup, the Hostinger entry file, the pooler read, and the backfill decision are not done. The real Super Admin account was not created.
+Production health is HTTP 503 with eight pending migrations and zero failed. The backup is not verified. The backfill has no written approval. The Hostinger entry file has not been read from hPanel. No production migration or deployment was performed.
