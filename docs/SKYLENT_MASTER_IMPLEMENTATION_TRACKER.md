@@ -1,6 +1,18 @@
 # Skylent master implementation tracker
 
-Updated: 28 October 2026, 8:41 PM IST.
+Updated: 28 October 2026, 8:50 PM IST.
+
+## Post-merge verification — 28 October 2026, 8:50 PM IST
+
+- PR #212 merged at 8:47 PM IST (`mergedAt` `2026-10-28T15:17:32Z`).
+- Merge commit `9dbdc03d0bd5f9dadd146f87e3be53c4ecf08fcf` is the head of `origin/cursor/phase-2-core-learning-cd19`. It is not on `origin/main`. `origin/main` is still `d38424e`, the merge of PR #211.
+- The merge commit's tree matches implementation commit `8bcb942fad67d37d3ff0305a6e3fbada71399aea` (`git diff` between them is empty).
+- GitHub checks on the merge commit: one check run, `Supabase Preview`, conclusion `skipped`. Commit status state `pending` with zero statuses. `gh run list --commit 9dbdc03` and `--commit 8bcb942` returned no workflow runs. That is not a successful CI run.
+- `release-gate` is active and triggers on pull requests to `main`, pushes to `skylent/product-truth`, and `workflow_dispatch`. The merge into `cursor/phase-2-core-learning-cd19` did not match those events. Older successful release-gate runs on that branch are from 26 October 2026 and are not this commit.
+- Live `GET https://skylent.live/api/v1/health` at 8:50 PM IST: HTTP 503, `db: ok`, `pendingMigrations: 8`, `failedMigrations: 0`, `release: unknown`. Homepage HTTP 200, title `Skylent — Learn. Practise. Build.`, and the HTML does not contain `9dbdc03` or `8bcb942`. The running release was not verified as this merge.
+- A disposable local database `skylent_postmerge_128743` was created, migrated, tested, and dropped. It was not production. `db:preflight -- --expect-none` passed after migrate. `db:preflight:backfill` on that empty migrated database found none of the six programmes or courses, so it would insert nothing. That does not describe production.
+- Recommendation remains `NO-GO`.
+- After this verification branch opened PR #213, GitHub Actions run `40715931754` (`release-gate` job `gate`) completed with conclusion `success` in 3m7s for commit `2c0ed1e36a914f52820378e5d72dedf98a728019`. Supabase Preview was skipped. That run is not a run of merged SHA `9dbdc03`.
 
 This file is the progress register for the master stabilisation pass. Statuses mean what they say. A local test is not production verification.
 
