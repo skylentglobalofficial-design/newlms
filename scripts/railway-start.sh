@@ -33,6 +33,7 @@ if [ -z "${CORS_ALLOWED_ORIGINS:-}" ]; then
   export CORS_ALLOWED_ORIGINS
 fi
 
+# Migrations stay on this explicit deploy path. server.js does not run them.
 pnpm exec prisma migrate deploy
 
 exec node server/dist/index.js
