@@ -177,6 +177,12 @@ async function request(jar: CookieJar, path: string, options: { method?: string;
 }
 
 async function main() {
+  if (!process.argv.includes("--http")) {
+    console.log("schema-capabilities mapping ok")
+    console.log("HTTP section skipped. Pass --http only when a fully migrated local API is already running. The September fixture is not that API.")
+    return
+  }
+  console.log(`HTTP section using API_BASE=${API_BASE}. This script does not start that server.`)
   const anon = await request(new Map(), "/lms/dashboard")
   assert(anon.response.status === 401, `signed-out dashboard must be 401, got ${anon.response.status}`)
   assert(anon.data?.error === "Unauthorized", "signed-out dashboard must not leak a server error")

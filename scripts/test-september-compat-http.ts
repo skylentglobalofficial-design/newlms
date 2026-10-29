@@ -38,6 +38,7 @@ async function main() {
 
   ;(prisma as unknown as { $queryRaw: (strings: TemplateStringsArray) => Promise<unknown> }).$queryRaw = (strings) => {
     const sql = strings.join(" ")
+    if (mode === "down") return Promise.reject(new Error("probe down"))
     if (sql.includes("pg_enum")) {
       return Promise.resolve(mode === "current" ? [{ enumlabel: "PLATFORM_ADMIN" }, { enumlabel: "COLLEGE_ADMIN" }] : [])
     }
@@ -251,7 +252,19 @@ async function main() {
     })
     assert(authoring.status === 503 && authoring.body.error === UNAVAILABLE_MESSAGES.authoring, `authoring ${authoring.status}`)
 
-    console.log("5. A signed-out college request stays 401")
+    console.log("5. A failed capability probe does not change the password")
+    clearSchemaCapabilityCache()
+    mode = "down"
+    seenPasswordUpdate.data = null
+    const probeDown = await call("/api/v1/auth/change-password", {
+      method: "POST",
+      cookie: authCookie,
+      body: { currentPassword: "test-password-123", newPassword: "yet-another-password-123" },
+    })
+    assert(probeDown.status === 401 && probeDown.body.error === "Unauthorized" && seenPasswordUpdate.data === null, `probe down ${probeDown.status}`)
+    mode = "september"
+
+    console.log("6. A signed-out college request stays 401")
     const signedOut = await call("/api/v1/college/dashboard")
     assert(signedOut.status === 401 && signedOut.body.error === "Unauthorized", `signed-out college ${signedOut.status}`)
 

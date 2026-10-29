@@ -356,7 +356,12 @@ authRouter.post("/change-password", requireAuth, requireCsrf, async (req: Authen
   const valid = await bcrypt.compare(parsed.data.currentPassword, user.passwordHash)
   if (!valid) return res.status(401).json({ error: "The current password is wrong" })
   const passwordHash = await bcrypt.hash(parsed.data.newPassword, BCRYPT_ROUNDS)
-  const mustChangePassword = await capabilityAvailable("userMustChangePassword")
+  let mustChangePassword = false
+  try {
+    mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
+  } catch {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+  }
   try {
     await prisma.user.update({
       where: { id: user.id },
@@ -389,7 +394,12 @@ authRouter.patch("/me", requireAuth, requireCsrf, async (req: AuthenticatedReque
     })
   }
 
-  const mustChangePassword = await capabilityAvailable("userMustChangePassword")
+  let mustChangePassword = false
+  try {
+    mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
+  } catch {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+  }
   try {
     const user = await prisma.user.update({
       where: { id: req.auth!.user.id },
