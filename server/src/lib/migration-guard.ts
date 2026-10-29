@@ -7,6 +7,49 @@ export type MigrationGuardState =
   | { status: "pending"; pending: string[]; failed: string[] }
   | { status: "unknown"; pending: string[]; failed: string[]; reason: string }
 
+/** Exact opt-in value. "true", "yes", and any other string do not enable this path. */
+export const SEPTEMBER_COMPAT_FLAG = "SKYLENT_SEPTEMBER_COMPAT"
+export const SEPTEMBER_COMPAT_VALUE = "1"
+
+/**
+ * The 11 October migrations observed pending on the September fixture.
+ * Startup may listen with them unfinished only when the flag is exactly "1"
+ * and the pending set matches this list with nothing else pending or failed.
+ */
+export const SEPTEMBER_COMPAT_PENDING = [
+  "20261004000000_skylent_additions",
+  "20261004180000_backfill_program_course_links",
+  "20261009000000_policy_acceptance",
+  "20261011000000_employer_membership_and_shared_applications",
+  "20261017120000_practice_workspaces",
+  "20261024120000_quiz_grading_events",
+  "20261024140000_password_reset_and_degrees",
+  "20261025180000_elixir_ledger_and_admin_audit",
+  "20261028143000_career_rise_os_lock_and_authoring",
+  "20261028160000_college_membership",
+  "20261028161000_lesson_material_compat",
+] as const
+
+export type StartupDecision = "listen" | "refuse"
+
+/**
+ * Default path listens only when every shipped migration is finished.
+ * The September flag adds one extra allowlist. It never marks that state ready
+ * and it does not run migrations.
+ */
+export function decideStartup(state: MigrationGuardState, flag: string | undefined): StartupDecision {
+  if (state.status === "ok") return "listen"
+  if (flag !== SEPTEMBER_COMPAT_VALUE) return "refuse"
+  if (state.status !== "pending") return "refuse"
+  if (state.failed.length !== 0) return "refuse"
+  if (state.pending.length !== SEPTEMBER_COMPAT_PENDING.length) return "refuse"
+  const pending = [...state.pending].sort()
+  for (let index = 0; index < SEPTEMBER_COMPAT_PENDING.length; index += 1) {
+    if (pending[index] !== SEPTEMBER_COMPAT_PENDING[index]) return "refuse"
+  }
+  return "listen"
+}
+
 let confirmed = false
 
 /**

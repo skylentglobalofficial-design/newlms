@@ -27,6 +27,7 @@
     "test:september-fixture": "tsx scripts/test-september-schema-fixture.ts",
     "test:september-compat": "tsx scripts/test-september-compat-http.ts",
     "test:september-coverage": "tsx scripts/test-september-fixture-coverage.ts",
+    "test:september-startup": "tsx scripts/test-september-startup-decision.ts",
     "smoke:public": "tsx scripts/smoke-public.ts",
     "test:auth": "tsx scripts/test-auth.ts",
     "test:consent": "tsx scripts/test-consent.ts",
