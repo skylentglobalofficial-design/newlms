@@ -176,6 +176,17 @@ async function main() {
   const rows = await prisma.careerRiseEnrolment.count({ where: { userId: learner.userId, courseId: course.id } })
   assert(rows === 1, `Expected one Career Rise row, found ${rows}`)
 
+  const stolen = await request(other.jar, "/career-rise/enrolments", {
+    method: "POST",
+    csrf: true,
+    body: { courseSlug: course.slug },
+  })
+  assert(stolen.response.status === 403, "Another learner must not enrol from someone else's progress")
+  const outsiderRows = await prisma.careerRiseEnrolment.count({ where: { userId: other.userId } })
+  assert(outsiderRows === 0, "A refused enrolment must not create a row")
+  const osGrants = await prisma.careerOsAccess.count({ where: { userId: { in: [learner.userId, other.userId] } } })
+  assert(osGrants === 0, "Career Rise enrolment must not grant Career OS access")
+
   const outsider = await request(other.jar, `/career-rise/workspace?courseSlug=${course.slug}`)
   assert(outsider.response.status === 403, "Another learner must not open the Career Rise workspace")
   const workspace = await request(learner.jar, `/career-rise/workspace?courseSlug=${course.slug}`)
@@ -194,12 +205,25 @@ async function main() {
   })
   assert(atFiftyNine.response.status === 403 && atFiftyNine.data.percent === 59, `59% API must refuse, got ${JSON.stringify(atFiftyNine.data)}`)
   await completeModules(wideEnrollment.id, wide, 60)
-  const atExact = await request(learner.jar, "/career-rise/enrolments", {
-    method: "POST",
-    csrf: true,
-    body: { courseSlug: wide.slug },
-  })
-  assert(atExact.response.status === 201, "60 of 100 modules must allow enrolment")
+  const [firstEnrol, secondEnrol] = await Promise.all([
+    request(learner.jar, "/career-rise/enrolments", {
+      method: "POST",
+      csrf: true,
+      body: { courseSlug: wide.slug },
+    }),
+    request(learner.jar, "/career-rise/enrolments", {
+      method: "POST",
+      csrf: true,
+      body: { courseSlug: wide.slug },
+    }),
+  ])
+  const pair = [firstEnrol, secondEnrol]
+  assert(pair.every((result) => result.data?.data?.enrolled === true), "Both Career Rise responses must say enrolled")
+  const created = pair.filter((result) => result.response.status === 201)
+  const repeated = pair.filter((result) => result.response.status === 200 && result.data?.data?.duplicate === true)
+  assert(created.length === 1 && repeated.length === 1, `Concurrent enrolment must create one row, got ${pair.map((result) => result.response.status).join(",")}`)
+  const wideRows = await prisma.careerRiseEnrolment.count({ where: { userId: learner.userId, courseId: wide.id } })
+  assert(wideRows === 1, `Concurrent enrolment stored ${wideRows} rows`)
 
   console.log("PASS Career Rise eligibility, explicit enrol, duplicate prevention, and workspace lock")
   await prisma.course.deleteMany({ where: { id: { in: [course.id, wide.id] } } })
