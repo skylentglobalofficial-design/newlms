@@ -357,6 +357,7 @@ export default function SiteAssistant() {
         ".hx-page--home .hxw-offering",
         ".hx-focus__card",
         ".pgx-card__link",
+        ".pgx-card__static",
         ".pgx-section__head",
         ".pa-lab__result",
         ".pa-case__log",
