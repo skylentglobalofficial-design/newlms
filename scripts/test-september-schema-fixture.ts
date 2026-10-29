@@ -9,10 +9,14 @@ import { fileURLToPath } from "node:url"
 import { listLocalMigrations, repoRoot } from "../server/src/lib/migration-history.ts"
 import {
   DEDICATED_URL_ENV,
+  LOCAL_SOCKET_DIR,
   SEPTEMBER_FIXTURE_MIGRATIONS,
   SEPTEMBER_RELEASE_MIGRATIONS,
   SEPTEMBER_SAMPLE_SQL,
+  SOCKET_FLAG,
+  assertLocalSocketUrl,
   assertNoOctoberMigrations,
+  localSocketUrl,
   newSeptemberDatabaseName,
   quotedOctoberObjectsInSql,
   refusalBeforeConnect,
@@ -98,6 +102,62 @@ const ready = refusalBeforeConnect({
   nodeEnv: "development",
 })
 assert(ready === null, "a confirmed local URL is allowed to proceed to the connection step")
+
+const socketReady = refusalBeforeConnect({
+  argv: ["--confirm-local-test-db", SOCKET_FLAG],
+  dedicatedUrl: undefined,
+  nodeEnv: "development",
+  osUser: "postgres",
+})
+assert(socketReady === null, "socket mode with the postgres OS user can proceed")
+
+const socketWrongUser = refusalBeforeConnect({
+  argv: ["--confirm-local-test-db", SOCKET_FLAG],
+  dedicatedUrl: "  ",
+  nodeEnv: "development",
+  osUser: "ubuntu",
+})
+assert(socketWrongUser?.includes("OS user postgres"), "socket mode must require the peer OS user")
+assert(socketWrongUser?.includes("No database was contacted"), "a wrong OS user must not imply a connection")
+
+const socketWithUrl = refusalBeforeConnect({
+  argv: ["--confirm-local-test-db", SOCKET_FLAG],
+  dedicatedUrl: remote,
+  nodeEnv: "development",
+  osUser: "postgres",
+})
+assert(socketWithUrl?.includes("does not accept"), "socket mode must reject a dedicated URL")
+assert(!socketWithUrl?.includes(secret), "socket refusal leaked a password")
+assert(!socketWithUrl?.includes("postgresql://"), "socket refusal leaked a URL")
+
+const maintenanceSocket = localSocketUrl("postgres")
+assertLocalSocketUrl(maintenanceSocket, "postgres")
+const parsedSocket = new URL(maintenanceSocket)
+assert(parsedSocket.hostname === "localhost", "the placeholder host is localhost")
+assert(parsedSocket.port === "", "socket mode must not set a TCP port")
+assert(parsedSocket.searchParams.get("host") === LOCAL_SOCKET_DIR, "the effective host is the socket directory")
+assert(parsedSocket.searchParams.get("host")?.startsWith("/"), "the socket host is a path")
+assert(!parsedSocket.password, "socket mode has no password")
+
+const fixtureSocket = localSocketUrl("skylent_september_0123456789abcdef")
+assertLocalSocketUrl(fixtureSocket, "skylent_september_0123456789abcdef")
+
+for (const unsafe of [
+  "postgresql://postgres@127.0.0.1:5432/postgres?host=/var/run/postgresql&sslmode=disable",
+  "postgresql://postgres@localhost:5432/postgres?host=/var/run/postgresql&sslmode=disable",
+  `postgresql://postgres@localhost/postgres?host=${LOCAL_SOCKET_DIR}`,
+  "postgresql://postgres@aws-0-ap-northeast-1.pooler.supabase.com/postgres?host=/var/run/postgresql&sslmode=disable",
+  "postgresql://postgres@localhost/postgres?host=localhost&sslmode=disable",
+  "postgresql://postgres@localhost/postgres?host=/tmp&sslmode=disable",
+]) {
+  let rejected = false
+  try {
+    assertLocalSocketUrl(unsafe, "postgres")
+  } catch {
+    rejected = true
+  }
+  assert(rejected, "socket checks must reject a TCP or remote target")
+}
 
 const root = repoRoot()
 const release = listLocalMigrations(join(root, "prisma", "migrations"))

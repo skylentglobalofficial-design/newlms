@@ -7,14 +7,20 @@
  *   SKYLENT_SEPTEMBER_TEST_DATABASE_URL='postgresql://127.0.0.1:5432/postgres' \
  *     npx tsx scripts/create-september-schema-fixture.ts --confirm-local-test-db
  *
+ * Peer authentication over the local Unix socket, with no TCP password:
+ *
+ *   sudo -u postgres npx tsx scripts/create-september-schema-fixture.ts \
+ *     --confirm-local-test-db --local-socket
+ *
  * The dedicated URL is only a local maintenance connection (usually the
- * `postgres` database). The script creates a new uniquely named database and
- * migrates that database alone. DATABASE_URL and DIRECT_URL are never read.
+ * `postgres` database). Socket mode does not read it. The script creates a
+ * new uniquely named database and migrates that database alone.
+ * DATABASE_URL and DIRECT_URL are never read.
  */
 import { spawnSync } from "node:child_process"
 import { randomBytes } from "node:crypto"
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync } from "node:fs"
-import { tmpdir } from "node:os"
+import { tmpdir, userInfo } from "node:os"
 import { join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { Prisma, PrismaClient } from "@prisma/client"
@@ -23,8 +29,14 @@ import { redactConnectionSecrets } from "../server/src/lib/database-target.ts"
 import { listLocalMigrations, repoRoot } from "../server/src/lib/migration-history.ts"
 
 export const CONFIRM_FLAG = "--confirm-local-test-db"
+export const SOCKET_FLAG = "--local-socket"
 export const DEDICATED_URL_ENV = "SKYLENT_SEPTEMBER_TEST_DATABASE_URL"
 export const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"])
+/** Cluster 16/main listens here. A directory, not a hostname. */
+export const LOCAL_SOCKET_DIR = "/var/run/postgresql"
+export const LOCAL_SOCKET_FILE = "/var/run/postgresql/.s.PGSQL.5432"
+export const SOCKET_ROLE = "postgres"
+export const SOCKET_MAINTENANCE_DB = "postgres"
 
 /** The eight September folders shipped in prisma/migrations. October is absent on purpose. */
 export const SEPTEMBER_RELEASE_MIGRATIONS = [
@@ -111,12 +123,22 @@ export function refusalBeforeConnect(input: {
   argv: readonly string[]
   dedicatedUrl: string | undefined
   nodeEnv: string | undefined
+  osUser?: string
 }): string | null {
   if (!input.argv.includes(CONFIRM_FLAG)) {
     return "Refusing to create a database without --confirm-local-test-db. No database was contacted."
   }
   if (input.nodeEnv === "production") {
     return "Refusing to create a test database when NODE_ENV is production. No database was contacted."
+  }
+  if (input.argv.includes(SOCKET_FLAG)) {
+    if (input.dedicatedUrl?.trim()) {
+      return `Socket mode does not accept ${DEDICATED_URL_ENV}. Unset it so a TCP URL cannot be selected. No database was contacted.`
+    }
+    if (input.osUser !== SOCKET_ROLE) {
+      return "Socket mode must run as the OS user postgres, for example sudo -u postgres. No database was contacted."
+    }
+    return null
   }
   const raw = input.dedicatedUrl?.trim() ?? ""
   if (!raw) {
@@ -125,6 +147,53 @@ export function refusalBeforeConnect(input: {
   const parsed = validateSeptemberTestUrl(raw)
   if (!parsed.ok) return `${parsed.reason} No database was contacted.`
   return null
+}
+
+/**
+ * URL shape consumed by Prisma 6.19.3's Quaint parser.
+ *
+ * Quaint uses the `host` query parameter when it is set, and passes that
+ * single value to tokio-postgres. A value that starts with `/` is a Unix
+ * socket directory, not a TCP address. `localhost` is only a placeholder so
+ * the URL has a user name; it is not added as a second host. No port is set,
+ * so the engine uses 5432 and opens `.s.PGSQL.5432` in that directory.
+ */
+export function localSocketUrl(database: string): string {
+  if (database !== SOCKET_MAINTENANCE_DB && !FIXTURE_NAME.test(database)) {
+    throw new Error("Refusing to build a socket URL for this database name.")
+  }
+  const url = `postgresql://${SOCKET_ROLE}@localhost/${database}?host=${LOCAL_SOCKET_DIR}&sslmode=disable`
+  assertLocalSocketUrl(url, database)
+  return url
+}
+
+export function assertLocalSocketUrl(raw: string, database: string): void {
+  if (/supabase|pooler\.supabase|hostinger|127\.0\.0\.1|\[::1\]/i.test(raw)) {
+    throw new Error("Socket URL contains a TCP or remote target.")
+  }
+  let parsed: URL
+  try {
+    parsed = new URL(raw)
+  } catch {
+    throw new Error("Socket URL could not be parsed.")
+  }
+  if (parsed.protocol !== "postgresql:") throw new Error("Socket URL must use the postgresql scheme.")
+  if (parsed.username !== SOCKET_ROLE) throw new Error("Socket URL must use the peer role postgres.")
+  if (parsed.password) throw new Error("Socket URL must not contain a password.")
+  if (parsed.hostname !== "localhost") throw new Error("Socket URL must not name a TCP host.")
+  if (parsed.port !== "") throw new Error("Socket URL must not include a TCP port.")
+  if (parsed.pathname !== `/${database}`) throw new Error("Socket URL database does not match.")
+  if (parsed.searchParams.get("host") !== LOCAL_SOCKET_DIR) {
+    throw new Error("Socket URL must set host to the local socket directory.")
+  }
+  if (!parsed.searchParams.get("host")?.startsWith("/")) {
+    throw new Error("Socket host must be a directory path, not a hostname.")
+  }
+  if (parsed.searchParams.get("sslmode") !== "disable") {
+    throw new Error("Socket URL must disable TLS so the connection stays on the socket.")
+  }
+  const keys = [...parsed.searchParams.keys()].sort().join(",")
+  if (keys !== "host,sslmode") throw new Error("Socket URL has unexpected query parameters.")
 }
 
 export function validateSeptemberTestUrl(raw: string): UrlRejection | UrlAcceptance {
@@ -246,8 +315,9 @@ function safeError(error: unknown, secretUrl: string): string {
   return redactConnectionSecrets(message, secretUrl).replace(/postgres(?:ql)?:\/\/\S+/gi, "[redacted]")
 }
 
-function cleanupCommand(target: SeptemberTestTarget, database: string): string {
-  return `dropdb --host='${target.host}' --port=${target.port} ${database}`
+function cleanupCommand(target: SeptemberTestTarget, database: string, socketMode: boolean): string {
+  const user = socketMode ? ` --username=${SOCKET_ROLE}` : ""
+  return `dropdb --host='${target.host}' --port=${target.port}${user} ${database}`
 }
 
 function isDirectExecution(): boolean {
@@ -257,10 +327,12 @@ function isDirectExecution(): boolean {
 }
 
 async function main(): Promise<void> {
+  const socketMode = process.argv.includes(SOCKET_FLAG)
   const refusal = refusalBeforeConnect({
     argv: process.argv,
     dedicatedUrl: process.env[DEDICATED_URL_ENV],
     nodeEnv: process.env.NODE_ENV,
+    osUser: socketMode ? userInfo().username : undefined,
   })
   if (refusal) {
     console.error(refusal)
@@ -268,10 +340,28 @@ async function main(): Promise<void> {
     return
   }
 
-  const dedicatedUrl = process.env[DEDICATED_URL_ENV]?.trim() ?? ""
-  const parsed = validateSeptemberTestUrl(dedicatedUrl)
-  if (!parsed.ok) {
-    console.error(`${parsed.reason} No database was contacted.`)
+  let dedicatedUrl = ""
+  let cleanupTarget: SeptemberTestTarget | null = null
+  if (socketMode) {
+    if (!existsSync(LOCAL_SOCKET_FILE)) {
+      console.error("The local PostgreSQL Unix socket is not present. No database was contacted.")
+      process.exitCode = 1
+      return
+    }
+    dedicatedUrl = localSocketUrl(SOCKET_MAINTENANCE_DB)
+    cleanupTarget = { host: LOCAL_SOCKET_DIR, port: "5432", database: SOCKET_MAINTENANCE_DB }
+  } else {
+    dedicatedUrl = process.env[DEDICATED_URL_ENV]?.trim() ?? ""
+    const parsed = validateSeptemberTestUrl(dedicatedUrl)
+    if (!parsed.ok) {
+      console.error(`${parsed.reason} No database was contacted.`)
+      process.exitCode = 1
+      return
+    }
+    cleanupTarget = parsed.target
+  }
+  if (!cleanupTarget) {
+    console.error("No local target was selected. No database was contacted.")
     process.exitCode = 1
     return
   }
@@ -364,7 +454,7 @@ async function main(): Promise<void> {
 
     if (!created) return
 
-    const migratedUrl = withDatabaseName(dedicatedUrl, created)
+    const migratedUrl = socketMode ? localSocketUrl(created) : withDatabaseName(dedicatedUrl, created)
     const childEnv: NodeJS.ProcessEnv = { ...process.env }
     delete childEnv.DATABASE_URL
     delete childEnv.DIRECT_URL
@@ -379,7 +469,7 @@ async function main(): Promise<void> {
       console.error("September migrate failed. October migrations were not part of this command.")
       console.error(safeError(new Error(`${deploy.stdout ?? ""}\n${deploy.stderr ?? ""}`), migratedUrl))
       console.error(`Database left in place: ${created}`)
-      console.error(`Cleanup: ${cleanupCommand(parsed.target, created)}`)
+      console.error(`Cleanup: ${cleanupCommand(cleanupTarget, created, socketMode)}`)
       process.exitCode = 1
       return
     }
@@ -437,16 +527,17 @@ async function main(): Promise<void> {
       }
 
       console.log("September fixture ready.")
+      console.log(socketMode ? "Transport: unix-socket" : "Transport: tcp")
       console.log(`Database: ${created}`)
       console.log(`Migrations applied: ${names.length}`)
       console.log("October migration rows: 0")
       console.log("October objects present: 0")
       console.log(`Sample catalogue: ${counts.programs} programmes, ${counts.courses} courses, ${counts.materials} lesson material`)
-      console.log(`Cleanup: ${cleanupCommand(parsed.target, created)}`)
+      console.log(`Cleanup: ${cleanupCommand(cleanupTarget, created, socketMode)}`)
     } catch (error) {
       console.error(`September verification failed: ${safeError(error, migratedUrl)}`)
       console.error(`Database left in place: ${created}`)
-      console.error(`Cleanup: ${cleanupCommand(parsed.target, created)}`)
+      console.error(`Cleanup: ${cleanupCommand(cleanupTarget, created, socketMode)}`)
       process.exitCode = 1
     } finally {
       await fixture.$disconnect()
