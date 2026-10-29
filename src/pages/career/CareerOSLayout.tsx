@@ -7,15 +7,12 @@ import CareerOSPublicPage from "./CareerOSPublicPage"
 import CareerOSPublicAreaPage from "./CareerOSPublicAreaPage"
 import "./CareerOS.css"
 
-function CareerOsLocked() {
+function CareerOsStatus({ title, body }: { title: string; body: string }) {
   return (
     <main style={{ maxWidth: 640, margin: "64px auto", padding: 24 }}>
       <p className="os-eyebrow">Career OS</p>
-      <h1>Career OS is locked</h1>
-      <p>
-        Signing in does not open Career OS. Finishing a course, reaching Career Rise eligibility, or holding a staff role does not open it either.
-        Access needs a separate entitlement, and none is on this account.
-      </p>
+      <h1>{title}</h1>
+      <p>{body}</p>
       <p><Link to="/dashboard/student">Back to My Courses</Link></p>
     </main>
   )
@@ -24,25 +21,26 @@ function CareerOsLocked() {
 export default function CareerOSLayout() {
   const { user, ready } = useAuth()
   const { pathname } = useLocation()
-  const [access, setAccess] = useState<"loading" | "open" | "locked">("loading")
+  const [access, setAccess] = useState<"loading" | "open" | "locked" | "unavailable">("loading")
 
   useEffect(() => {
-    if (!user) return
+    if (!user?.id) return
     const controller = new AbortController()
+    setAccess("loading")
     void fetch(`${apiV1()}/career/access`, { credentials: "include", signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) {
-          setAccess("locked")
+          setAccess("unavailable")
           return
         }
         const body = await response.json() as { data?: { entitled?: boolean } }
-        setAccess(body.data?.entitled ? "open" : "locked")
+        setAccess(body.data?.entitled === true ? "open" : "locked")
       })
       .catch(() => {
-        if (!controller.signal.aborted) setAccess("locked")
+        if (!controller.signal.aborted) setAccess("unavailable")
       })
     return () => controller.abort()
-  }, [user])
+  }, [user?.id])
 
   if (!ready) {
     return (
@@ -58,7 +56,32 @@ export default function CareerOSLayout() {
     return <CareerOSPublicAreaPage />
   }
 
-  if (access !== "open") return <CareerOsLocked />
+  if (access === "loading") {
+    return (
+      <CareerOsStatus
+        title="Checking Career OS access"
+        body="Career OS stays closed until the entitlement check for this account finishes."
+      />
+    )
+  }
+
+  if (access === "unavailable") {
+    return (
+      <CareerOsStatus
+        title="Career OS cannot be checked"
+        body="The entitlement check did not finish, so Career OS stays closed."
+      />
+    )
+  }
+
+  if (access !== "open") {
+    return (
+      <CareerOsStatus
+        title="Career OS is locked"
+        body="Signing in does not open Career OS. Finishing a course, reaching Career Rise eligibility, or holding a staff role does not open it either. Access needs a separate entitlement, and none is on this account."
+      />
+    )
+  }
 
   return (
     <CareerOSShell>

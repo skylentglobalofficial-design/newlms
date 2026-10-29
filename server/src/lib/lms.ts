@@ -1,4 +1,5 @@
 import type {
+  Prisma,
   Course,
   CurriculumModule,
   CurriculumNode,
@@ -8,7 +9,6 @@ import type {
   UserEnrollment,
 } from "@prisma/client"
 import { isMuxPlaybackId } from "./media/playback-id.js"
-import { ensureProgramCourseLinks } from "./program-course-links.js"
 import { prisma } from "./prisma.js"
 import {
   assignmentProgressSelect,
@@ -119,17 +119,50 @@ type CourseWithCurriculum = Course & {
   curriculum: (CurriculumModule & { nodes: CurriculumNode[] })[]
 }
 
-async function currentCourseInclude() {
+/** Columns added after the September schema. Omit them until those migrations exist. */
+async function courseReadSelect() {
   const caps = await readSchemaCapabilities()
-  return courseCurriculumInclude(caps.curriculumNodeQuizLimits)
+  return {
+    id: true,
+    slug: true,
+    title: true,
+    category: true,
+    level: true,
+    duration: true,
+    mode: true,
+    lessonCount: true,
+    projectCount: true,
+    rating: true,
+    reviews: true,
+    price: true,
+    originalPrice: true,
+    desc: true,
+    longDesc: true,
+    outcomes: true,
+    forWhom: true,
+    createdAt: true,
+    updatedAt: true,
+    ...(caps.coursePublication
+      ? {
+          publicationStatus: true,
+          authoredInApp: true,
+          coverStorageKey: true,
+          coverContentType: true,
+          coverFileName: true,
+        }
+      : {}),
+    ...courseCurriculumInclude(caps.curriculumNodeQuizLimits, caps.curriculumNodeNotes),
+  }
 }
 
-/** Quiz-limit columns are absent until that migration is applied. Treat them as unset. */
+/** Quiz-limit and note columns are absent until their migrations are applied. Treat them as unset. */
 function normalizeLoadedCourse<T extends CourseWithCurriculum>(course: T): T {
   for (const module of course.curriculum) {
     for (const node of module.nodes) {
       if (node.maxAttempts === undefined) node.maxAttempts = null
       if (node.passingScore === undefined) node.passingScore = null
+      if (node.summary === undefined) node.summary = null
+      if (node.referenceUrl === undefined) node.referenceUrl = null
     }
   }
   return course
@@ -206,7 +239,7 @@ export function flattenNodes(course: CourseWithCurriculum): Array<{
 export async function findCourseBySlug(slug: string) {
   const course = await prisma.course.findUnique({
     where: { slug },
-    include: await currentCourseInclude(),
+    select: await courseReadSelect(),
   })
   return course ? normalizeLoadedCourse(course as CourseWithCurriculum) : null
 }
@@ -252,13 +285,156 @@ export async function resolveCourseEnrollment(userId: string, courseId: string) 
   return getProgramEnrollmentForCourse(userId, courseId)
 }
 
+const ASSIGNMENT_STATUS_RANK: Record<string, number> = {
+  graded: 3,
+  submitted: 2,
+  in_progress: 1,
+  not_started: 0,
+}
+
+function partitionOwnedRows<T extends { id: string; nodeId: string }>(
+  rows: T[],
+  occupiedNodeIds: Set<string>,
+  better: (candidate: T, current: T) => boolean,
+) {
+  const groups = new Map<string, T[]>()
+  for (const row of rows) {
+    if (occupiedNodeIds.has(row.nodeId)) continue
+    const list = groups.get(row.nodeId) ?? []
+    list.push(row)
+    groups.set(row.nodeId, list)
+  }
+  const winners: string[] = []
+  const losers: string[] = []
+  for (const list of groups.values()) {
+    const winner = list.reduce((best, row) => (better(row, best) ? row : best))
+    winners.push(winner.id)
+    for (const row of list) {
+      if (row.id !== winner.id) losers.push(row.id)
+    }
+  }
+  return { winners, losers }
+}
+
+/**
+ * Lesson, quiz, and assignment rows are stored on whichever enrolment was active
+ * when the learner submitted them. A later direct course enrolment is the row
+ * later reads use. Move this course's existing programme rows onto that new
+ * enrolment so completion stays with the same learner.
+ */
+export async function adoptProgrammeCourseProgress(
+  tx: Prisma.TransactionClient,
+  userId: string,
+  courseId: string,
+  targetEnrollmentId: string,
+): Promise<boolean> {
+  const nodes = await tx.curriculumNode.findMany({
+    where: { module: { courseId } },
+    select: { id: true },
+  })
+  const nodeIds = nodes.map((node) => node.id)
+  if (nodeIds.length === 0) return false
+
+  const sources = await tx.userEnrollment.findMany({
+    where: {
+      userId,
+      id: { not: targetEnrollmentId },
+      status: { in: ["active", "completed"] },
+      programId: { not: null },
+      program: { programCourses: { some: { courseId } } },
+    },
+    orderBy: { updatedAt: "desc" },
+    select: { id: true, lastAccessedNodeId: true },
+  })
+  if (sources.length === 0) return false
+  const sourceIds = sources.map((source) => source.id)
+  const nodeIdSet = new Set(nodeIds)
+
+  const [occupiedLessons, occupiedAssignments] = await Promise.all([
+    tx.lessonProgress.findMany({
+      where: { enrollmentId: targetEnrollmentId, nodeId: { in: nodeIds } },
+      select: { nodeId: true },
+    }),
+    tx.assignmentProgress.findMany({
+      where: { enrollmentId: targetEnrollmentId, nodeId: { in: nodeIds } },
+      select: { nodeId: true },
+    }),
+  ])
+  const occupiedLessonNodes = new Set(occupiedLessons.map((row) => row.nodeId))
+  const occupiedAssignmentNodes = new Set(occupiedAssignments.map((row) => row.nodeId))
+
+  const lessonRows = await tx.lessonProgress.findMany({
+    where: { enrollmentId: { in: sourceIds }, nodeId: { in: nodeIds } },
+    select: { id: true, nodeId: true, completedAt: true, lastAccessedAt: true },
+  })
+  const lessons = partitionOwnedRows(lessonRows, occupiedLessonNodes, (candidate, current) => {
+    if (Boolean(candidate.completedAt) !== Boolean(current.completedAt)) return Boolean(candidate.completedAt)
+    return candidate.lastAccessedAt > current.lastAccessedAt
+  })
+
+  const assignmentRows = await tx.assignmentProgress.findMany({
+    where: { enrollmentId: { in: sourceIds }, nodeId: { in: nodeIds } },
+    select: { id: true, nodeId: true, status: true, updatedAt: true },
+  })
+  const assignments = partitionOwnedRows(assignmentRows, occupiedAssignmentNodes, (candidate, current) => {
+    const rankDelta = (ASSIGNMENT_STATUS_RANK[candidate.status] ?? 0) - (ASSIGNMENT_STATUS_RANK[current.status] ?? 0)
+    if (rankDelta !== 0) return rankDelta > 0
+    return candidate.updatedAt > current.updatedAt
+  })
+
+  let moved = false
+  if (lessons.winners.length > 0) {
+    await tx.lessonProgress.updateMany({
+      where: { id: { in: lessons.winners } },
+      data: { enrollmentId: targetEnrollmentId },
+    })
+    moved = true
+  }
+  if (lessons.losers.length > 0) {
+    await tx.lessonProgress.deleteMany({ where: { id: { in: lessons.losers } } })
+  }
+  if (assignments.winners.length > 0) {
+    await tx.assignmentProgress.updateMany({
+      where: { id: { in: assignments.winners } },
+      data: { enrollmentId: targetEnrollmentId },
+    })
+    moved = true
+  }
+  if (assignments.losers.length > 0) {
+    await tx.assignmentProgress.deleteMany({ where: { id: { in: assignments.losers } } })
+  }
+
+  const movedAttempts = await tx.quizAttempt.updateMany({
+    where: { enrollmentId: { in: sourceIds }, nodeId: { in: nodeIds } },
+    data: { enrollmentId: targetEnrollmentId },
+  })
+  if (movedAttempts.count > 0) moved = true
+
+  const remembered = sources.find((source) => source.lastAccessedNodeId && nodeIdSet.has(source.lastAccessedNodeId))
+  if (remembered?.lastAccessedNodeId) {
+    const target = await tx.userEnrollment.findUnique({
+      where: { id: targetEnrollmentId },
+      select: { lastAccessedNodeId: true },
+    })
+    if (target && !target.lastAccessedNodeId) {
+      await tx.userEnrollment.update({
+        where: { id: targetEnrollmentId },
+        data: { lastAccessedNodeId: remembered.lastAccessedNodeId },
+      })
+      moved = true
+    }
+  }
+
+  return moved
+}
+
 /** @deprecated use resolveCourseEnrollment */
 export async function getActiveEnrollment(userId: string, courseId: string) {
   return resolveCourseEnrollment(userId, courseId)
 }
 
 async function loadProgramEnrollment(userId: string) {
-  const include = await currentCourseInclude()
+  const courseSelect = await courseReadSelect()
   return prisma.userEnrollment.findFirst({
     where: {
       userId,
@@ -271,7 +447,7 @@ async function loadProgramEnrollment(userId: string) {
         include: {
           programCourses: {
             orderBy: { sortOrder: "asc" },
-            include: { course: { include } },
+            include: { course: { select: courseSelect } },
           },
         },
       },
@@ -288,7 +464,7 @@ async function loadDirectCourseEnrollment(userId: string) {
     },
     orderBy: { updatedAt: "desc" },
     include: {
-      course: { include: await currentCourseInclude() },
+      course: { select: await courseReadSelect() },
     },
   })
 }
@@ -533,16 +709,16 @@ export async function buildCourseWorkspace(
 }
 
 export async function syncCertificateState(enrollmentId: string, courseId?: string) {
-  const include = await currentCourseInclude()
+  const courseSelect = await courseReadSelect()
   const enrollment = await prisma.userEnrollment.findUnique({
     where: { id: enrollmentId },
     include: {
-      course: { include },
+      course: { select: courseSelect },
       program: {
         include: {
           programCourses: {
             orderBy: { sortOrder: "asc" },
-            include: { course: { include } },
+            include: { course: { select: courseSelect } },
           },
         },
       },
@@ -568,7 +744,7 @@ export async function syncCertificateState(enrollmentId: string, courseId?: stri
   const course =
     enrollment.course ??
     (courseId
-      ? await prisma.course.findUnique({ where: { id: courseId }, include: await currentCourseInclude() })
+      ? await prisma.course.findUnique({ where: { id: courseId }, select: await courseReadSelect() })
       : null)
   if (!course) return
 
@@ -600,13 +776,12 @@ export async function syncCertificateState(enrollmentId: string, courseId?: stri
 }
 
 export async function findProgramBySlug(slug: string) {
-  await ensureProgramCourseLinks()
   return prisma.program.findUnique({
     where: { slug },
     include: {
       programCourses: {
         orderBy: { sortOrder: "asc" },
-        include: { course: { include: await currentCourseInclude() } },
+        include: { course: { select: await courseReadSelect() } },
       },
     },
   })
@@ -715,7 +890,7 @@ export async function findProgramWorkspaceForCourse(userId: string, courseId: st
         include: {
           programCourses: {
             orderBy: { sortOrder: "asc" },
-            include: { course: { include: await currentCourseInclude() } },
+            include: { course: { select: await courseReadSelect() } },
           },
         },
       },
@@ -777,16 +952,16 @@ export type EnrollmentCourseSummary = {
 
 /** Per-course progress for one enrolment. Programme rows report each linked course, not one blended flag. */
 export async function summarizeEnrollmentCourses(enrollmentId: string): Promise<EnrollmentCourseSummary[]> {
-  const include = await currentCourseInclude()
+  const courseSelect = await courseReadSelect()
   const enrollment = await prisma.userEnrollment.findUnique({
     where: { id: enrollmentId },
     include: {
-      course: { include },
+      course: { select: courseSelect },
       program: {
         include: {
           programCourses: {
             orderBy: { sortOrder: "asc" },
-            include: { course: { include } },
+            include: { course: { select: courseSelect } },
           },
         },
       },

@@ -8,7 +8,7 @@ import express from "express"
 import { assertProductionEnv, redactSecrets } from "./lib/env.js"
 import { describeAiReadiness } from "./lib/skylent-ai/service.js"
 import { apexRedirectLocation, injectCanonicalLink } from "./lib/public-host.js"
-import { logMigrationStateOnStartup } from "./lib/migration-guard.js"
+import { checkMigrationState } from "./lib/migration-guard.js"
 import { prisma } from "./lib/prisma.js"
 import {
   authCredentialsRateLimit,
@@ -164,26 +164,47 @@ app.use((error: unknown, _request: express.Request, response: express.Response, 
   response.status(500).json({ error: "Internal server error" })
 })
 
-const server = app.listen(port, "0.0.0.0", () => {
-  const ai = describeAiReadiness()
-  const release = process.env.SKYLENT_RELEASE_SHA?.trim()
-  console.log(`API listening on port ${port}`)
-  console.log(`AI readiness: ${ai.publicStatus} (${ai.reason}). Release: ${release && /^[0-9a-f]{7,40}$/i.test(release) ? release : "unknown"}`)
-  void logMigrationStateOnStartup().catch((error) => {
-    console.warn("Migration check failed:", redactSecrets(error instanceof Error ? error.message : String(error)))
+let server: ReturnType<typeof app.listen> | undefined
+
+async function start(): Promise<void> {
+  const state = await checkMigrationState()
+  if (state.status !== "ok") {
+    const detail =
+      state.status === "unknown"
+        ? redactSecrets(state.reason)
+        : `Pending: ${state.pending.join(", ") || "none"}. Failed: ${state.failed.join(", ") || "none"}.`
+    console.error(
+      `Refusing to listen. Database schema is not ready for this release. ${detail} Run \`npx prisma migrate deploy\` before starting the API.`,
+    )
+    await prisma.$disconnect()
+    process.exit(1)
+  }
+
+  server = app.listen(port, "0.0.0.0", () => {
+    const ai = describeAiReadiness()
+    const release = process.env.SKYLENT_RELEASE_SHA?.trim()
+    console.log(`API listening on port ${port}`)
+    console.log(`AI readiness: ${ai.publicStatus} (${ai.reason}). Release: ${release && /^[0-9a-f]{7,40}$/i.test(release) ? release : "unknown"}`)
   })
-})
+}
+
+void start()
 
 let shuttingDown = false
 function shutdown(signal: string) {
   if (shuttingDown) return
   shuttingDown = true
   console.log(`Received ${signal}, shutting down`)
-  server.close((closeError) => {
+  const finish = (closeError?: Error | null) => {
     void prisma.$disconnect().finally(() => {
       process.exit(closeError ? 1 : 0)
     })
-  })
+  }
+  if (!server) {
+    finish()
+    return
+  }
+  server.close((closeError) => finish(closeError))
   setTimeout(() => process.exit(1), 10_000).unref()
 }
 

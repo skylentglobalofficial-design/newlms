@@ -46,6 +46,7 @@ import {
   readSchemaCapabilities,
   UNAVAILABLE_MESSAGES,
   unavailableBody,
+  userCredentialSelect,
 } from "../lib/schema-capabilities.js"
 import { ConsentRequiredError } from "../lib/google-oauth.js"
 import {
@@ -259,33 +260,47 @@ authRouter.post("/login", requireCsrf, async (req, res) => {
   }
 
   const email = normalizeEmail(parsed.data.email)
-  const user = await prisma.user.findUnique({
-    where: { email },
-    include: { roles: { include: { role: true } } },
-  })
-
-  if (!user?.passwordHash) {
-    return res.status(401).json(AUTH_FAILURE)
-  }
-
-  const valid = await bcrypt.compare(parsed.data.password, user.passwordHash)
-  if (!valid) {
-    return res.status(401).json(AUTH_FAILURE)
+  let mustChangePassword = false
+  try {
+    mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
+  } catch (error) {
+    console.error("Login blocked: account columns could not be checked")
+    return res.status(503).json({ error: "Failed to sign in" })
   }
 
   try {
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        ...userCredentialSelect(mustChangePassword),
+        roles: { include: { role: true } },
+      },
+    })
+
+    if (!user?.passwordHash) {
+      return res.status(401).json(AUTH_FAILURE)
+    }
+
+    const valid = await bcrypt.compare(parsed.data.password, user.passwordHash)
+    if (!valid) {
+      return res.status(401).json(AUTH_FAILURE)
+    }
+
     const { sessionToken, csrfToken } = await createSession(user.id)
     const issuedCsrf = setSessionCookies(res, req, sessionToken, csrfToken)
-
     const roles = user.roles.map((entry) => entry.role)
     res.json({
-      user: toSafeUser(user),
+      user: toSafeUser(user as Parameters<typeof toSafeUser>[0]),
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
-      mustChangePassword: user.mustChangePassword,
+      mustChangePassword: "mustChangePassword" in user ? user.mustChangePassword : false,
       csrfToken: issuedCsrf,
     })
   } catch (error) {
+    if (isMissingSchemaError(error)) {
+      console.error("Login blocked: account columns are missing")
+      return res.status(503).json({ error: "Failed to sign in" })
+    }
     console.error("Login failed:", error)
     res.status(500).json({ error: "Failed to sign in" })
   }

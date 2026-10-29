@@ -1,6 +1,6 @@
 import "dotenv/config"
 import crypto from "node:crypto"
-import { PrismaClient, RoleName } from "@prisma/client"
+import { Prisma, PrismaClient, RoleName } from "@prisma/client"
 import { ensureRole } from "../server/src/lib/auth.ts"
 import { TEST_CONSENT } from "./test-consent-payload.ts"
 import { promises as fs } from "node:fs"
@@ -68,7 +68,34 @@ async function expectLocked(jar: CookieJar, label: string) {
   assert(projects.response.status === 403, `${label} projects must be locked`)
 }
 
+async function assertAccessStates() {
+  const { prisma: appPrisma } = await import("../server/src/lib/prisma.ts")
+  const { readCareerOsAccess } = await import("../server/src/lib/career-os-access.ts")
+  const original = appPrisma.careerOsAccess.findUnique
+  try {
+    appPrisma.careerOsAccess.findUnique = (async () => {
+      throw new Prisma.PrismaClientKnownRequestError("missing table", { code: "P2021", clientVersion: "test" })
+    }) as typeof original
+    assert(await readCareerOsAccess("missing-table") === "unavailable", "A missing Career OS table must not be reported as an entitlement or a lock decision")
+
+    appPrisma.careerOsAccess.findUnique = (async () => {
+      throw new Prisma.PrismaClientInitializationError("database unreachable", "test", "P1001")
+    }) as typeof original
+    assert(await readCareerOsAccess("database-down") === "unavailable", "A database failure must not be reported as locked or entitled")
+
+    appPrisma.careerOsAccess.findUnique = (async () => null) as typeof original
+    assert(await readCareerOsAccess("no-row") === "locked", "A missing entitlement row stays locked")
+
+    appPrisma.careerOsAccess.findUnique = (async () => ({ id: "row" })) as typeof original
+    assert(await readCareerOsAccess("has-row") === "entitled", "An explicit row is the only entitled state")
+  } finally {
+    appPrisma.careerOsAccess.findUnique = original
+  }
+  console.log("PASS Career OS check distinguishes entitled, locked, and unavailable")
+}
+
 async function main() {
+  await assertAccessStates()
   const student = await signup("student")
   const teacher = await signup("teacher")
   const organisation = await signup("organisation")

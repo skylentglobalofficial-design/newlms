@@ -34,6 +34,7 @@ import {
   flattenNodes,
   formatVideoMedia,
   loadLearnerDashboard,
+  adoptProgrammeCourseProgress,
   loadLessonStates,
   resolveCourseEnrollment,
   summarizeEnrollmentCourses,
@@ -286,7 +287,7 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
     const consent = readConsent(req.body)
     if (!consent.ok) return res.status(consent.status).json(consent.body)
     if (!(await newEnrolmentPolicyReady(res))) return
-    const enrollment = await prisma.$transaction(async (tx) => {
+    const enrolled = await prisma.$transaction(async (tx) => {
       const created = await tx.userEnrollment.create({
         data: { userId, courseId: course.id, status: "active" },
       })
@@ -296,8 +297,14 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
         userId,
         reference: created.id,
       })
-      return created
+      const moved = await adoptProgrammeCourseProgress(tx, userId, course.id, created.id)
+      return { created, moved }
     })
+    let enrollment = enrolled.created
+    if (enrolled.moved) {
+      await syncCertificateState(enrollment.id, course.id)
+      enrollment = await prisma.userEnrollment.findUniqueOrThrow({ where: { id: enrollment.id } })
+    }
     const workspace = await buildCourseWorkspace({ ...enrollment, course })
     return res.status(201).json({ data: await attachProgramWorkspace(userId, workspace, null, course.id) })
   } catch (error) {

@@ -2,6 +2,7 @@ import crypto from "node:crypto"
 import type { Request, Response, NextFunction } from "express"
 import type { Role, RoleName, User } from "@prisma/client"
 import { prisma } from "./prisma.js"
+import { readSchemaCapabilities, userCredentialSelect } from "./schema-capabilities.js"
 
 export const SESSION_COOKIE = "sid"
 export const CSRF_COOKIE = "csrf"
@@ -166,11 +167,18 @@ export async function resolveSession(sessionToken: string | undefined) {
   if (!sessionToken) return null
 
   const secretHash = hashSessionToken(sessionToken)
+  let mustChangePassword = false
+  try {
+    mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
+  } catch {
+    return null
+  }
   const session = await prisma.session.findUnique({
     where: { secretHash },
     include: {
       user: {
-        include: {
+        select: {
+          ...userCredentialSelect(mustChangePassword),
           roles: { include: { role: true } },
         },
       },
@@ -183,9 +191,10 @@ export async function resolveSession(sessionToken: string | undefined) {
     return null
   }
 
+  const mustChange = "mustChangePassword" in session.user ? session.user.mustChangePassword : false
   return {
     sessionId: session.id,
-    user: session.user,
+    user: { ...session.user, mustChangePassword: mustChange } as User,
     roles: session.user.roles.map((entry) => entry.role),
   }
 }

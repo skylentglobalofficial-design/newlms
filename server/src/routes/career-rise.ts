@@ -1,8 +1,10 @@
+import { Prisma } from "@prisma/client"
 import { Router } from "express"
 import { z } from "zod"
 import { prisma } from "../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { recordAdminAudit } from "../lib/admin-audit.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../lib/schema-capabilities.js"
 import {
   careerRiseScopeKey,
   findCareerRiseEnrolment,
@@ -10,6 +12,19 @@ import {
 } from "../lib/career-rise.js"
 
 export const careerRiseRouter = Router()
+
+const CAREER_RISE_UNAVAILABLE = {
+  error: "Career Rise cannot be checked right now.",
+  code: "unavailable" as const,
+}
+
+function sendCareerRiseFailure(res: import("express").Response, error: unknown, fallback: string) {
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+    return res.status(503).json(CAREER_RISE_UNAVAILABLE)
+  }
+  console.error(fallback, error instanceof Error ? error.name : "unknown")
+  return res.status(500).json({ error: fallback })
+}
 
 const slugSchema = z.string().trim().min(1).max(120).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
 
@@ -83,8 +98,7 @@ careerRiseRouter.get("/", async (req: AuthenticatedRequest, res) => {
     }
     res.json({ data })
   } catch (error) {
-    console.error("Failed to read Career Rise eligibility:", error)
-    res.status(500).json({ error: "Failed to read Career Rise eligibility" })
+    sendCareerRiseFailure(res, error, "Failed to read Career Rise eligibility")
   }
 })
 
@@ -144,14 +158,32 @@ careerRiseRouter.post("/enrolments", requireCsrf, async (req: AuthenticatedReque
       })
     }
 
-    const created = await prisma.careerRiseEnrolment.create({
-      data: {
-        userId,
-        scopeKey: careerRiseScopeKey(scope),
-        courseId: course?.id ?? null,
-        programId: program?.id ?? null,
-      },
-    })
+    let created: Awaited<ReturnType<typeof prisma.careerRiseEnrolment.create>>
+    try {
+      created = await prisma.careerRiseEnrolment.create({
+        data: {
+          userId,
+          scopeKey: careerRiseScopeKey(scope),
+          courseId: course?.id ?? null,
+          programId: program?.id ?? null,
+        },
+      })
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+        const raced = await findCareerRiseEnrolment(userId, scope)
+        if (raced) {
+          return res.json({
+            data: {
+              id: raced.id,
+              enrolled: true,
+              createdAt: raced.createdAt.toISOString(),
+              duplicate: true,
+            },
+          })
+        }
+      }
+      throw error
+    }
     await recordAdminAudit({
       actorId: userId,
       action: "career_rise.enrol",
@@ -163,8 +195,7 @@ careerRiseRouter.post("/enrolments", requireCsrf, async (req: AuthenticatedReque
       data: { id: created.id, enrolled: true, createdAt: created.createdAt.toISOString(), duplicate: false },
     })
   } catch (error) {
-    console.error("Failed to enrol in Career Rise:", error)
-    res.status(500).json({ error: "Failed to enrol in Career Rise" })
+    sendCareerRiseFailure(res, error, "Failed to enrol in Career Rise")
   }
 })
 
@@ -203,7 +234,6 @@ careerRiseRouter.get("/workspace", async (req: AuthenticatedRequest, res) => {
       },
     })
   } catch (error) {
-    console.error("Failed to open Career Rise:", error)
-    res.status(500).json({ error: "Failed to open Career Rise" })
+    sendCareerRiseFailure(res, error, "Failed to open Career Rise")
   }
 })

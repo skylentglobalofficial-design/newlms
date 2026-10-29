@@ -23,8 +23,8 @@ export default function CareerRiseCard() {
     const controller = new AbortController()
     void fetch(`${apiV1()}/career-rise`, { credentials: "include", signal: controller.signal })
       .then(async (response) => {
-        if (!response.ok) throw new Error("Career Rise could not be loaded")
-        const body = await response.json() as { data: RiseRow[] }
+        const body = await response.json().catch(() => ({})) as { data?: RiseRow[]; error?: string }
+        if (!response.ok) throw new Error(body.error || "Career Rise could not be loaded")
         setRows(body.data ?? [])
       })
       .catch((err: unknown) => {
