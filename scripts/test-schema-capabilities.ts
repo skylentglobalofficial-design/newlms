@@ -45,6 +45,7 @@ assert(legacy.practiceWorkspaces === false, "missing practice tables stay off")
 assert(legacy.policyAcceptance === false, "missing policy table stays off")
 assert(legacy.userMustChangePassword === false, "missing password-change column stays off")
 assert(legacy.coursePublication === false, "missing publication column stays off")
+assert(legacy.curriculumNodeNotes === false, "missing lesson note columns stay off")
 assert(!("mustChangePassword" in userCredentialSelect(false)) && "passwordHash" in userCredentialSelect(false), "login select omits mustChangePassword before that column exists")
 assert("mustChangePassword" in userCredentialSelect(true), "login select keeps mustChangePassword after the column exists")
 assert(capabilitiesFromColumns([
@@ -70,6 +71,8 @@ const current = capabilitiesFromColumns([
   { table_name: "PolicyAcceptance", column_name: "id" },
   { table_name: "User", column_name: "mustChangePassword" },
   { table_name: "Course", column_name: "publicationStatus" },
+  { table_name: "CurriculumNode", column_name: "summary" },
+  { table_name: "CurriculumNode", column_name: "referenceUrl" },
 ])
 assert(Object.values(current).every(Boolean), "a fully migrated schema enables every capability")
 assert(current.practiceWorkspaces && current.policyAcceptance, "practice and policy storage are enabled together")
@@ -113,6 +116,12 @@ assert(lmsRoute.includes("recordPolicyAcceptance"), "enrolment still records acc
 
 const nodeSelect = curriculumNodeSelect(false)
 assert(!("maxAttempts" in nodeSelect) && !("passingScore" in nodeSelect), "legacy node select omits quiz limits")
+assert(!("summary" in nodeSelect) && !("referenceUrl" in nodeSelect), "legacy node select omits summary and referenceUrl")
+assert("summary" in curriculumNodeSelect(false, true) && "referenceUrl" in curriculumNodeSelect(false, true), "note columns stay available once the migration exists")
+const lmsLib = readFileSync(new URL("../server/src/lib/lms.ts", import.meta.url), "utf8")
+const programRead = lmsLib.slice(lmsLib.indexOf("export async function findProgramBySlug"))
+const programReadBody = programRead.slice(0, programRead.indexOf("\nexport ", 10))
+assert(!programReadBody.includes("ensureProgramCourseLinks"), "reading a programme must not insert programme-course links")
 assert("title" in curriculumNodeSelect(false) && "muxPlaybackId" in curriculumNodeSelect(false), "legacy node select keeps lesson fields")
 assert("maxAttempts" in curriculumNodeSelect(true), "current node select keeps quiz limits")
 

@@ -21,6 +21,8 @@ export type SchemaCapabilities = {
   userMustChangePassword: boolean
   /** Course.publicationStatus from 20261028143000. Absent on the pre-October schema. */
   coursePublication: boolean
+  /** CurriculumNode.summary and referenceUrl from 20261028143000. */
+  curriculumNodeNotes: boolean
 }
 
 const REQUIRED: Record<keyof SchemaCapabilities, { table: string; columns: string[] }> = {
@@ -35,6 +37,7 @@ const REQUIRED: Record<keyof SchemaCapabilities, { table: string; columns: strin
   policyAcceptance: { table: "PolicyAcceptance", columns: ["id"] },
   userMustChangePassword: { table: "User", columns: ["mustChangePassword"] },
   coursePublication: { table: "Course", columns: ["publicationStatus"] },
+  curriculumNodeNotes: { table: "CurriculumNode", columns: ["summary", "referenceUrl"] },
 }
 
 export const UNAVAILABLE_MESSAGES = {
@@ -88,6 +91,7 @@ export function capabilitiesFromColumns(rows: readonly ColumnRow[]): SchemaCapab
     policyAcceptance: has("PolicyAcceptance", "id"),
     userMustChangePassword: has("User", "mustChangePassword"),
     coursePublication: has("Course", "publicationStatus"),
+    curriculumNodeNotes: has("CurriculumNode", "summary") && has("CurriculumNode", "referenceUrl"),
   }
 }
 
@@ -138,7 +142,7 @@ export function userCredentialSelect(mustChangePassword: boolean) {
   }
 }
 
-export function curriculumNodeSelect(quizLimits: boolean) {
+export function curriculumNodeSelect(quizLimits: boolean, notes = false) {
   return {
     id: true,
     sourceId: true,
@@ -148,21 +152,20 @@ export function curriculumNodeSelect(quizLimits: boolean) {
     duration: true,
     completed: true,
     muxPlaybackId: true,
-    summary: true,
-    referenceUrl: true,
     moduleId: true,
+    ...(notes ? { summary: true as const, referenceUrl: true as const } : {}),
     ...(quizLimits ? { maxAttempts: true, passingScore: true } : {}),
   }
 }
 
-export function courseCurriculumInclude(quizLimits: boolean) {
+export function courseCurriculumInclude(quizLimits: boolean, notes = false) {
   return {
     curriculum: {
       orderBy: { order: "asc" as const },
       include: {
         nodes: {
           orderBy: { order: "asc" as const },
-          select: curriculumNodeSelect(quizLimits),
+          select: curriculumNodeSelect(quizLimits, notes),
         },
       },
     },

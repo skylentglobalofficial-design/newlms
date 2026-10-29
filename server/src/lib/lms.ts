@@ -8,7 +8,6 @@ import type {
   UserEnrollment,
 } from "@prisma/client"
 import { isMuxPlaybackId } from "./media/playback-id.js"
-import { ensureProgramCourseLinks } from "./program-course-links.js"
 import { prisma } from "./prisma.js"
 import {
   assignmentProgressSelect,
@@ -119,17 +118,50 @@ type CourseWithCurriculum = Course & {
   curriculum: (CurriculumModule & { nodes: CurriculumNode[] })[]
 }
 
-async function currentCourseInclude() {
+/** Columns added after the September schema. Omit them until those migrations exist. */
+async function courseReadSelect() {
   const caps = await readSchemaCapabilities()
-  return courseCurriculumInclude(caps.curriculumNodeQuizLimits)
+  return {
+    id: true,
+    slug: true,
+    title: true,
+    category: true,
+    level: true,
+    duration: true,
+    mode: true,
+    lessonCount: true,
+    projectCount: true,
+    rating: true,
+    reviews: true,
+    price: true,
+    originalPrice: true,
+    desc: true,
+    longDesc: true,
+    outcomes: true,
+    forWhom: true,
+    createdAt: true,
+    updatedAt: true,
+    ...(caps.coursePublication
+      ? {
+          publicationStatus: true,
+          authoredInApp: true,
+          coverStorageKey: true,
+          coverContentType: true,
+          coverFileName: true,
+        }
+      : {}),
+    ...courseCurriculumInclude(caps.curriculumNodeQuizLimits, caps.curriculumNodeNotes),
+  }
 }
 
-/** Quiz-limit columns are absent until that migration is applied. Treat them as unset. */
+/** Quiz-limit and note columns are absent until their migrations are applied. Treat them as unset. */
 function normalizeLoadedCourse<T extends CourseWithCurriculum>(course: T): T {
   for (const module of course.curriculum) {
     for (const node of module.nodes) {
       if (node.maxAttempts === undefined) node.maxAttempts = null
       if (node.passingScore === undefined) node.passingScore = null
+      if (node.summary === undefined) node.summary = null
+      if (node.referenceUrl === undefined) node.referenceUrl = null
     }
   }
   return course
@@ -206,7 +238,7 @@ export function flattenNodes(course: CourseWithCurriculum): Array<{
 export async function findCourseBySlug(slug: string) {
   const course = await prisma.course.findUnique({
     where: { slug },
-    include: await currentCourseInclude(),
+    select: await courseReadSelect(),
   })
   return course ? normalizeLoadedCourse(course as CourseWithCurriculum) : null
 }
@@ -258,7 +290,7 @@ export async function getActiveEnrollment(userId: string, courseId: string) {
 }
 
 async function loadProgramEnrollment(userId: string) {
-  const include = await currentCourseInclude()
+  const courseSelect = await courseReadSelect()
   return prisma.userEnrollment.findFirst({
     where: {
       userId,
@@ -271,7 +303,7 @@ async function loadProgramEnrollment(userId: string) {
         include: {
           programCourses: {
             orderBy: { sortOrder: "asc" },
-            include: { course: { include } },
+            include: { course: { select: courseSelect } },
           },
         },
       },
@@ -288,7 +320,7 @@ async function loadDirectCourseEnrollment(userId: string) {
     },
     orderBy: { updatedAt: "desc" },
     include: {
-      course: { include: await currentCourseInclude() },
+      course: { select: await courseReadSelect() },
     },
   })
 }
@@ -533,16 +565,16 @@ export async function buildCourseWorkspace(
 }
 
 export async function syncCertificateState(enrollmentId: string, courseId?: string) {
-  const include = await currentCourseInclude()
+  const courseSelect = await courseReadSelect()
   const enrollment = await prisma.userEnrollment.findUnique({
     where: { id: enrollmentId },
     include: {
-      course: { include },
+      course: { select: courseSelect },
       program: {
         include: {
           programCourses: {
             orderBy: { sortOrder: "asc" },
-            include: { course: { include } },
+            include: { course: { select: courseSelect } },
           },
         },
       },
@@ -568,7 +600,7 @@ export async function syncCertificateState(enrollmentId: string, courseId?: stri
   const course =
     enrollment.course ??
     (courseId
-      ? await prisma.course.findUnique({ where: { id: courseId }, include: await currentCourseInclude() })
+      ? await prisma.course.findUnique({ where: { id: courseId }, select: await courseReadSelect() })
       : null)
   if (!course) return
 
@@ -600,13 +632,12 @@ export async function syncCertificateState(enrollmentId: string, courseId?: stri
 }
 
 export async function findProgramBySlug(slug: string) {
-  await ensureProgramCourseLinks()
   return prisma.program.findUnique({
     where: { slug },
     include: {
       programCourses: {
         orderBy: { sortOrder: "asc" },
-        include: { course: { include: await currentCourseInclude() } },
+        include: { course: { select: await courseReadSelect() } },
       },
     },
   })
@@ -715,7 +746,7 @@ export async function findProgramWorkspaceForCourse(userId: string, courseId: st
         include: {
           programCourses: {
             orderBy: { sortOrder: "asc" },
-            include: { course: { include: await currentCourseInclude() } },
+            include: { course: { select: await courseReadSelect() } },
           },
         },
       },
@@ -777,16 +808,16 @@ export type EnrollmentCourseSummary = {
 
 /** Per-course progress for one enrolment. Programme rows report each linked course, not one blended flag. */
 export async function summarizeEnrollmentCourses(enrollmentId: string): Promise<EnrollmentCourseSummary[]> {
-  const include = await currentCourseInclude()
+  const courseSelect = await courseReadSelect()
   const enrollment = await prisma.userEnrollment.findUnique({
     where: { id: enrollmentId },
     include: {
-      course: { include },
+      course: { select: courseSelect },
       program: {
         include: {
           programCourses: {
             orderBy: { sortOrder: "asc" },
-            include: { course: { include } },
+            include: { course: { select: courseSelect } },
           },
         },
       },
