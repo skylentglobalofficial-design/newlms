@@ -116,6 +116,7 @@ jobs:
           npx tsx scripts/test-path-execution.ts
           npx tsx scripts/test-path-evidence.ts
           npm run test:certificate-verify
+          npx tsx scripts/test-server-entry.ts
           npx tsx scripts/test-google-link.ts
           npm run test:oauth-redirect
 
