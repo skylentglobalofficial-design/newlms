@@ -23,6 +23,8 @@
     "db:seed:career": "tsx prisma/seed-career.ts",
     "db:preflight": "tsx scripts/check-migration-history.ts",
     "db:preflight:backfill": "tsx scripts/preflight-program-course-backfill.ts",
+    "db:september-fixture": "tsx scripts/create-september-schema-fixture.ts",
+    "test:september-fixture": "tsx scripts/test-september-schema-fixture.ts",
     "smoke:public": "tsx scripts/smoke-public.ts",
     "test:auth": "tsx scripts/test-auth.ts",
     "test:consent": "tsx scripts/test-consent.ts",
