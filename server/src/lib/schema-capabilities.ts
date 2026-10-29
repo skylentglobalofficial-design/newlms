@@ -23,21 +23,26 @@ export type SchemaCapabilities = {
   coursePublication: boolean
   /** CurriculumNode.summary and referenceUrl from 20261028143000. */
   curriculumNodeNotes: boolean
+  /** PasswordResetToken from 20261024140000. */
+  passwordReset: boolean
+  /** SkylentEnquiry from 20261004000000. */
+  skylentEnquiries: boolean
+  /** EmployerMembership from 20261011000000. */
+  employerMembership: boolean
+  /** College and CollegeMembership from 20261028160000. */
+  collegeMembership: boolean
+  /** RoleName.PLATFORM_ADMIN from 20261028143000. */
+  platformAdminRole: boolean
+  /** RoleName.COLLEGE_ADMIN from 20261028160000. */
+  collegeAdminRole: boolean
 }
 
-const REQUIRED: Record<keyof SchemaCapabilities, { table: string; columns: string[] }> = {
+const REQUIRED: {
+  curriculumNodeQuizLimits: { table: string; columns: string[] }
+  assignmentGrading: { table: string; columns: string[] }
+} = {
   curriculumNodeQuizLimits: { table: "CurriculumNode", columns: ["maxAttempts", "passingScore"] },
   assignmentGrading: { table: "AssignmentProgress", columns: ["grade", "feedback", "gradedById", "gradedAt"] },
-  quizExplanations: { table: "QuizQuestion", columns: ["explanation"] },
-  skylentCertificates: { table: "SkylentCertificate", columns: ["id"] },
-  events: { table: "Event", columns: ["id"] },
-  degrees: { table: "Degree", columns: ["id"] },
-  jobApplicationSharing: { table: "JobApplication", columns: ["sharedWithEmployer"] },
-  practiceWorkspaces: { table: "PracticeWorkspace", columns: ["id"] },
-  policyAcceptance: { table: "PolicyAcceptance", columns: ["id"] },
-  userMustChangePassword: { table: "User", columns: ["mustChangePassword"] },
-  coursePublication: { table: "Course", columns: ["publicationStatus"] },
-  curriculumNodeNotes: { table: "CurriculumNode", columns: ["summary", "referenceUrl"] },
 }
 
 export const UNAVAILABLE_MESSAGES = {
@@ -46,6 +51,13 @@ export const UNAVAILABLE_MESSAGES = {
   practice: "Practice workspaces are not available yet.",
   accounts: "Accounts cannot be created until the database update is applied.",
   enrolment: "Enrolment is not available until the database update is applied.",
+  passwordReset: "Password reset is not available until the database update is applied.",
+  enquiries: "Enquiries are not available until the database update is applied.",
+  college: "College administration is not available until the database update is applied.",
+  employerMembership: "Employer membership is not available until the database update is applied.",
+  authoring: "Course authoring is not available until the database update is applied.",
+  role: "That role is not available until the database update is applied.",
+  certificates: "Certificate check is unavailable right now. Try again later.",
 } as const
 
 export function unavailableBody(error: string) {
@@ -73,9 +85,13 @@ export class PolicyStorageUnavailableError extends Error {
 type ColumnRow = { table_name: string; column_name: string }
 
 /** Pure mapping so tests can prove a missing column disables only that feature. */
-export function capabilitiesFromColumns(rows: readonly ColumnRow[]): SchemaCapabilities {
+export function capabilitiesFromColumns(
+  rows: readonly ColumnRow[],
+  enumLabels: readonly string[] = [],
+): SchemaCapabilities {
   const present = new Set(rows.map((row) => `${row.table_name.toLowerCase()}.${row.column_name.toLowerCase()}`))
   const has = (table: string, column: string) => present.has(`${table.toLowerCase()}.${column.toLowerCase()}`)
+  const labels = new Set(enumLabels.map((label) => label.toUpperCase()))
   return {
     curriculumNodeQuizLimits: REQUIRED.curriculumNodeQuizLimits.columns.every((column) => has("CurriculumNode", column)),
     assignmentGrading: REQUIRED.assignmentGrading.columns.every((column) => has("AssignmentProgress", column)),
@@ -92,6 +108,22 @@ export function capabilitiesFromColumns(rows: readonly ColumnRow[]): SchemaCapab
     userMustChangePassword: has("User", "mustChangePassword"),
     coursePublication: has("Course", "publicationStatus"),
     curriculumNodeNotes: has("CurriculumNode", "summary") && has("CurriculumNode", "referenceUrl"),
+    passwordReset: has("PasswordResetToken", "id"),
+    skylentEnquiries: has("SkylentEnquiry", "id"),
+    employerMembership: has("EmployerMembership", "id"),
+    collegeMembership: has("College", "id") && has("CollegeMembership", "id"),
+    platformAdminRole: labels.has("PLATFORM_ADMIN"),
+    collegeAdminRole: labels.has("COLLEGE_ADMIN"),
+  }
+}
+
+/** Missing storage and a failed probe are both unavailable. Callers answer HTTP 503. */
+export async function capabilityAvailable(key: keyof SchemaCapabilities): Promise<boolean> {
+  try {
+    return (await readSchemaCapabilities())[key]
+  } catch (error) {
+    console.error("Schema capability check failed:", error instanceof Error ? error.name : "unknown")
+    return false
   }
 }
 
@@ -121,10 +153,24 @@ export async function readSchemaCapabilities(): Promise<SchemaCapabilities> {
         'practiceworkspaceresponse',
         'policyacceptance',
         'user',
-        'course'
+        'course',
+        'passwordresettoken',
+        'skylentenquiry',
+        'employermembership',
+        'college',
+        'collegemembership'
       )
   `
-  const value = capabilitiesFromColumns(rows)
+  const enumRows = await prisma.$queryRaw<{ enumlabel: string }[]>`
+    SELECT e.enumlabel
+      FROM pg_enum e
+      JOIN pg_type t ON t.oid = e.enumtypid
+     WHERE t.typname = 'RoleName'
+       AND e.enumlabel IN ('PLATFORM_ADMIN', 'COLLEGE_ADMIN')`
+  const value = capabilitiesFromColumns(
+    rows,
+    enumRows.map((row) => row.enumlabel).filter((label): label is string => typeof label === "string"),
+  )
   cached = { at: Date.now(), value }
   return value
 }

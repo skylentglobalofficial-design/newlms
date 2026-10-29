@@ -15,6 +15,7 @@ import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import { answersInOptionRange, QuizAttemptThrottled, QuizMaxAttemptsExceeded, recordScoredQuizAttempt } from "../lib/quiz-attempts.js"
 import { awardVerifiedLearning } from "../lib/elixir.js"
 import {
+  capabilityAvailable,
   isDatabaseUnavailableError,
   isMissingSchemaError,
   quizQuestionSelect,
@@ -1066,6 +1067,10 @@ lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: Authenticat
     return res.status(400).json({ error: "Invalid slug" })
   }
 
+  if (!(await capabilityAvailable("skylentCertificates"))) {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.certificates))
+  }
+
   try {
     const course = await findCourseBySlug(parsed.data.slug)
     if (!course) return res.status(404).json({ error: "Course not found" })
@@ -1081,9 +1086,18 @@ lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: Authenticat
       complete: lessonStates[item.lessonKey]?.complete ?? false,
     }))
     const allComplete = requirements.length > 0 && requirements.every((item) => item.complete)
-    const issued = await prisma.skylentCertificate.findUnique({
-      where: { userId_courseId: { userId: req.auth!.user.id, courseId: course.id } },
-    })
+    let issued: { revoked: boolean } | null = null
+    try {
+      issued = await prisma.skylentCertificate.findUnique({
+        where: { userId_courseId: { userId: req.auth!.user.id, courseId: course.id } },
+        select: { revoked: true },
+      })
+    } catch (error) {
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.certificates))
+      }
+      throw error
+    }
     const certificateStatus = issued && !issued.revoked ? "issued" : allComplete ? "eligible" : "locked"
 
     res.json({

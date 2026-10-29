@@ -14,6 +14,15 @@ import {
 } from "../lib/auth.js"
 import { requireRoles } from "../lib/roles.js"
 import { recordAdminAudit } from "../lib/admin-audit.js"
+import {
+  capabilityAvailable,
+  isDatabaseUnavailableError,
+  isMissingSchemaError,
+  readSchemaCapabilities,
+  UNAVAILABLE_MESSAGES,
+  unavailableBody,
+  userCredentialSelect,
+} from "../lib/schema-capabilities.js"
 
 export const adminRouter = Router()
 
@@ -62,7 +71,18 @@ const userInclude = {
 type AdminUser = Awaited<ReturnType<typeof loadUser>>
 
 async function loadUser(id: string) {
-  return prisma.user.findUnique({ where: { id }, include: userInclude })
+  const caps = await readSchemaCapabilities()
+  return prisma.user.findUnique({
+    where: { id },
+    select: {
+      ...userCredentialSelect(caps.userMustChangePassword),
+      ...userInclude,
+    },
+  })
+}
+
+function schemaUnavailable(error: unknown) {
+  return isMissingSchemaError(error) || isDatabaseUnavailableError(error)
 }
 
 function serializeUser(user: NonNullable<AdminUser>) {
@@ -153,11 +173,15 @@ adminRouter.get("/users", ...guards, async (req: AuthenticatedRequest, res) => {
       ...(role ? { roles: { some: { role: { name: API_ROLE_TO_NAME[role] } } } } : {}),
     }
 
+    const caps = await readSchemaCapabilities()
     const [total, users] = await Promise.all([
       prisma.user.count({ where }),
       prisma.user.findMany({
         where,
-        include: userInclude,
+        select: {
+          ...userCredentialSelect(caps.userMustChangePassword),
+          ...userInclude,
+        },
         orderBy: { createdAt: "desc" },
         take: limit,
         skip: offset,
@@ -169,7 +193,10 @@ adminRouter.get("/users", ...guards, async (req: AuthenticatedRequest, res) => {
       pagination: { total, limit, offset },
     })
   } catch (error) {
-    console.error("Failed to list users:", error)
+    if (schemaUnavailable(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
+    console.error("Failed to list users:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list users" })
   }
 })
@@ -187,7 +214,10 @@ adminRouter.get("/users/:id", ...guards, async (req: AuthenticatedRequest, res) 
     }
     res.json({ data: serializeUser(user) })
   } catch (error) {
-    console.error("Failed to load user:", error)
+    if (schemaUnavailable(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
+    console.error("Failed to load user:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to load user" })
   }
 })
@@ -270,6 +300,13 @@ adminRouter.patch("/users/:id/role", ...guards, requireCsrf, async (req: Authent
       return res.status(400).json({ error: "organisationId is only accepted for the organisation role" })
     }
 
+    if (nextRoleName === RoleName.PLATFORM_ADMIN && !(await capabilityAvailable("platformAdminRole"))) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.role))
+    }
+    if (nextRoleName === RoleName.COLLEGE_ADMIN && (!(await capabilityAvailable("collegeAdminRole")) || !(await capabilityAvailable("collegeMembership")))) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.role))
+    }
+
     if (nextRoleName === RoleName.COLLEGE_ADMIN) {
       if (!collegeId) {
         return res.status(422).json({
@@ -291,7 +328,11 @@ adminRouter.patch("/users/:id/role", ...guards, requireCsrf, async (req: Authent
         update: {},
         create: { userId: target.id, roleId: role.id },
       })
-      if (nextRoleName !== RoleName.RECRUITER && nextRoleName !== RoleName.ADMIN) {
+      if (
+        nextRoleName !== RoleName.RECRUITER &&
+        nextRoleName !== RoleName.ADMIN &&
+        (await capabilityAvailable("employerMembership"))
+      ) {
         await tx.employerMembership.deleteMany({ where: { userId: target.id } })
       }
       if (organisationId) {
@@ -324,7 +365,10 @@ adminRouter.patch("/users/:id/role", ...guards, requireCsrf, async (req: Authent
     const updated = await loadUser(target.id)
     res.json({ data: serializeUser(updated!) })
   } catch (error) {
-    console.error("Failed to assign role:", error)
+    if (schemaUnavailable(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.role))
+    }
+    console.error("Failed to assign role:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to assign role" })
   }
 })
@@ -370,7 +414,9 @@ adminRouter.delete("/users/:id/role", ...guards, requireCsrf, async (req: Authen
         update: {},
         create: { userId: target.id, roleId: studentRole.id },
       })
-      await tx.employerMembership.deleteMany({ where: { userId: target.id } })
+      if (await capabilityAvailable("employerMembership")) {
+        await tx.employerMembership.deleteMany({ where: { userId: target.id } })
+      }
     })
 
     console.log(
@@ -387,7 +433,10 @@ adminRouter.delete("/users/:id/role", ...guards, requireCsrf, async (req: Authen
     const updated = await loadUser(target.id)
     res.json({ data: serializeUser(updated!) })
   } catch (error) {
-    console.error("Failed to revoke role:", error)
+    if (schemaUnavailable(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.role))
+    }
+    console.error("Failed to revoke role:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to revoke role" })
   }
 })
@@ -455,6 +504,9 @@ adminRouter.post("/colleges", ...guards, requireCsrf, async (req: AuthenticatedR
   const parsed = organisationSchema.safeParse(req.body)
   if (!parsed.success) {
     return res.status(400).json({ error: "Validation failed", details: parsed.error.flatten().fieldErrors })
+  }
+  if (!(await capabilityAvailable("collegeMembership"))) {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.college))
   }
   const existing = await prisma.college.findUnique({ where: { slug: parsed.data.slug } })
   if (existing) return res.status(409).json({ error: "A college with this slug already exists" })

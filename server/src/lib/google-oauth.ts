@@ -10,7 +10,7 @@ import {
 } from "./google-link.js"
 import { resolveGoogleRedirectUri, type OAuthRequestOrigin } from "./oauth-redirect.js"
 import { recordPolicyAcceptance } from "./policy.js"
-import { PolicyStorageUnavailableError, readSchemaCapabilities } from "./schema-capabilities.js"
+import { PolicyStorageUnavailableError, readSchemaCapabilities, userCredentialSelect } from "./schema-capabilities.js"
 
 export { ConsentOutdatedError, ConsentRequiredError, GoogleEmailLinkBlockedError } from "./google-link.js"
 
@@ -327,6 +327,17 @@ export async function resolveGoogleAccount(
 ) {
   const email = normalizeEmail(claims.email)
   const providerAccountId = claims.sub
+  let mustChangePassword = false
+  try {
+    mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
+  } catch (error) {
+    console.error("Google sign-in blocked: account columns could not be checked")
+    throw new PolicyStorageUnavailableError()
+  }
+  const userSelect = {
+    ...userCredentialSelect(mustChangePassword),
+    roles: { include: { role: true } },
+  }
 
   const existingIdentity = await prisma.userIdentity.findUnique({
     where: {
@@ -336,11 +347,7 @@ export async function resolveGoogleAccount(
       },
     },
     include: {
-      user: {
-        include: {
-          roles: { include: { role: true } },
-        },
-      },
+      user: { select: userSelect },
     },
   })
 
@@ -350,8 +357,8 @@ export async function resolveGoogleAccount(
 
   const existingUser = await prisma.user.findUnique({
     where: { email },
-    include: {
-      roles: { include: { role: true } },
+    select: {
+      ...userSelect,
       identities: true,
     },
   })
@@ -406,9 +413,7 @@ export async function resolveGoogleAccount(
           create: { roleId: studentRole.id },
         },
       },
-      include: {
-        roles: { include: { role: true } },
-      },
+      select: userSelect,
     })
     await recordPolicyAcceptance(tx, { context: "google_signup", policyVersion, userId: created.id })
     return created
