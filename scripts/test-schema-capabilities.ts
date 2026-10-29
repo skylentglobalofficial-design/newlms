@@ -13,6 +13,7 @@ import {
   quizQuestionSelect,
   UNAVAILABLE_MESSAGES,
   unavailableBody,
+  userCredentialSelect,
 } from "../server/src/lib/schema-capabilities.ts"
 
 const API_BASE = process.env.API_BASE ?? "http://localhost:3000/api/v1"
@@ -42,6 +43,10 @@ assert(legacy.skylentCertificates === false, "missing certificate table stays of
 assert(legacy.jobApplicationSharing === false, "missing share column stays off")
 assert(legacy.practiceWorkspaces === false, "missing practice tables stay off")
 assert(legacy.policyAcceptance === false, "missing policy table stays off")
+assert(legacy.userMustChangePassword === false, "missing password-change column stays off")
+assert(legacy.coursePublication === false, "missing publication column stays off")
+assert(!("mustChangePassword" in userCredentialSelect(false)) && "passwordHash" in userCredentialSelect(false), "login select omits mustChangePassword before that column exists")
+assert("mustChangePassword" in userCredentialSelect(true), "login select keeps mustChangePassword after the column exists")
 assert(capabilitiesFromColumns([
   { table_name: "PracticeWorkspace", column_name: "id" },
   { table_name: "PracticeWorkspaceRevision", column_name: "id" },
@@ -63,6 +68,8 @@ const current = capabilitiesFromColumns([
   { table_name: "PracticeWorkspaceRevision", column_name: "id" },
   { table_name: "PracticeWorkspaceResponse", column_name: "id" },
   { table_name: "PolicyAcceptance", column_name: "id" },
+  { table_name: "User", column_name: "mustChangePassword" },
+  { table_name: "Course", column_name: "publicationStatus" },
 ])
 assert(Object.values(current).every(Boolean), "a fully migrated schema enables every capability")
 assert(current.practiceWorkspaces && current.policyAcceptance, "practice and policy storage are enabled together")

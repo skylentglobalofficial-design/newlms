@@ -2,7 +2,7 @@ import { Router } from 'express'
 import { z } from 'zod'
 
 import { prisma } from '../lib/prisma.js'
-import { ensureProgramCourseLinks } from '../lib/program-course-links.js'
+import { readSchemaCapabilities } from '../lib/schema-capabilities.js'
 import { overlayPublicCourse, overlayPublicProgramme, PUBLIC_COURSE_COPY } from '../lib/public-catalogue-copy.js'
 
 const router = Router()
@@ -39,21 +39,23 @@ const curriculumInclude = {
  * Linked-course module rows only. The public programme response uses the row
  * count, never the lesson nodes, so those nodes are not loaded.
  */
-const programCourseInclude = {
-  programCourses: {
-    orderBy: { sortOrder: 'asc' as const },
-    include: {
-      course: {
-        select: {
-          slug: true,
-          publicationStatus: true,
-          curriculum: {
-            select: { id: true },
+function programCourseInclude(publication: boolean) {
+  return {
+    programCourses: {
+      orderBy: { sortOrder: 'asc' as const },
+      include: {
+        course: {
+          select: {
+            slug: true,
+            ...(publication ? { publicationStatus: true } : {}),
+            curriculum: {
+              select: { id: true },
+            },
           },
         },
       },
     },
-  },
+  }
 }
 
 function countLearnableNodes(
@@ -75,14 +77,14 @@ function withProgramFacts<
     programCourses: Array<{
       course: {
         slug: string
-        publicationStatus: string
+        publicationStatus?: string
         curriculum: Array<{ id: string }>
       }
     }>
   },
 >(program: T) {
   const { programCourses: linked, curriculum, ...rest } = program
-  const programCourses = linked.filter((link) => link.course.publicationStatus === 'PUBLISHED')
+  const programCourses = linked.filter((link) => (link.course.publicationStatus ?? 'PUBLISHED') === 'PUBLISHED')
   void curriculum
   const moduleCountFromCourses = programCourses.reduce(
     (sum, link) => sum + link.course.curriculum.length,
@@ -100,10 +102,23 @@ function withProgramFacts<
 
 router.get('/courses', async (_request, response, next) => {
   try {
+    const publication = (await readSchemaCapabilities()).coursePublication
     const courses = await prisma.course.findMany({
-      where: { publicationStatus: 'PUBLISHED' },
+      ...(publication ? { where: { publicationStatus: 'PUBLISHED' as const } } : {}),
       orderBy: { title: 'asc' },
-      include: curriculumInclude,
+      select: {
+        slug: true,
+        title: true,
+        category: true,
+        level: true,
+        duration: true,
+        mode: true,
+        price: true,
+        originalPrice: true,
+        projectCount: true,
+        ...(publication ? { publicationStatus: true } : {}),
+        ...curriculumInclude,
+      },
     })
 
     response.json({
@@ -128,10 +143,10 @@ router.get('/courses', async (_request, response, next) => {
 
 router.get('/programs', async (_request, response, next) => {
   try {
-    await ensureProgramCourseLinks()
+    const publication = (await readSchemaCapabilities()).coursePublication
     const programs = await prisma.program.findMany({
       orderBy: { name: 'asc' },
-      include: { pricing: true, ...programCourseInclude },
+      include: { pricing: true, ...programCourseInclude(publication) },
     })
     response.json({ data: programs.map(withProgramFacts) })
   } catch (error) {
@@ -147,12 +162,12 @@ router.get('/programs/:slug', async (request, response, next) => {
   }
 
   try {
-    await ensureProgramCourseLinks()
+    const publication = (await readSchemaCapabilities()).coursePublication
     const program = await prisma.program.findUnique({
       where: { slug: parsed.data.slug },
       // The programme's own curriculum is brochure material. withProgramFacts
       // discards it, so the detail query does not load it.
-      include: { pricing: true, ...programCourseInclude },
+      include: { pricing: true, ...programCourseInclude(publication) },
     })
     if (!program) {
       response.status(404).json({ error: 'Program not found' })
@@ -172,11 +187,28 @@ router.get('/courses/:slug', async (request, response, next) => {
   }
 
   try {
+    const publication = (await readSchemaCapabilities()).coursePublication
     const course = await prisma.course.findUnique({
       where: { slug: parsed.data.slug },
-      include: curriculumInclude,
+      select: {
+        slug: true,
+        title: true,
+        category: true,
+        level: true,
+        duration: true,
+        mode: true,
+        price: true,
+        originalPrice: true,
+        desc: true,
+        longDesc: true,
+        outcomes: true,
+        forWhom: true,
+        projectCount: true,
+        ...(publication ? { publicationStatus: true } : {}),
+        ...curriculumInclude,
+      },
     })
-    if (!course || course.publicationStatus !== 'PUBLISHED') {
+    if (!course || (publication && course.publicationStatus !== 'PUBLISHED')) {
       response.status(404).json({ error: 'Course not found' })
       return
     }

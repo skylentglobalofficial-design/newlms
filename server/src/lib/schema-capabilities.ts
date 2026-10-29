@@ -17,6 +17,10 @@ export type SchemaCapabilities = {
   jobApplicationSharing: boolean
   practiceWorkspaces: boolean
   policyAcceptance: boolean
+  /** User.mustChangePassword from 20261028143000. Absent on the pre-October schema. */
+  userMustChangePassword: boolean
+  /** Course.publicationStatus from 20261028143000. Absent on the pre-October schema. */
+  coursePublication: boolean
 }
 
 const REQUIRED: Record<keyof SchemaCapabilities, { table: string; columns: string[] }> = {
@@ -29,6 +33,8 @@ const REQUIRED: Record<keyof SchemaCapabilities, { table: string; columns: strin
   jobApplicationSharing: { table: "JobApplication", columns: ["sharedWithEmployer"] },
   practiceWorkspaces: { table: "PracticeWorkspace", columns: ["id"] },
   policyAcceptance: { table: "PolicyAcceptance", columns: ["id"] },
+  userMustChangePassword: { table: "User", columns: ["mustChangePassword"] },
+  coursePublication: { table: "Course", columns: ["publicationStatus"] },
 }
 
 export const UNAVAILABLE_MESSAGES = {
@@ -80,6 +86,8 @@ export function capabilitiesFromColumns(rows: readonly ColumnRow[]): SchemaCapab
       has("PracticeWorkspaceRevision", "id") &&
       has("PracticeWorkspaceResponse", "id"),
     policyAcceptance: has("PolicyAcceptance", "id"),
+    userMustChangePassword: has("User", "mustChangePassword"),
+    coursePublication: has("Course", "publicationStatus"),
   }
 }
 
@@ -107,12 +115,27 @@ export async function readSchemaCapabilities(): Promise<SchemaCapabilities> {
         'practiceworkspace',
         'practiceworkspacerevision',
         'practiceworkspaceresponse',
-        'policyacceptance'
+        'policyacceptance',
+        'user',
+        'course'
       )
   `
   const value = capabilitiesFromColumns(rows)
   cached = { at: Date.now(), value }
   return value
+}
+
+/** Credential fields that exist before User.mustChangePassword. */
+export function userCredentialSelect(mustChangePassword: boolean) {
+  return {
+    id: true,
+    email: true,
+    passwordHash: true,
+    displayName: true,
+    createdAt: true,
+    updatedAt: true,
+    ...(mustChangePassword ? { mustChangePassword: true as const } : {}),
+  }
 }
 
 export function curriculumNodeSelect(quizLimits: boolean) {
