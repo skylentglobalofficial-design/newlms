@@ -46,6 +46,11 @@ assert(legacy.policyAcceptance === false, "missing policy table stays off")
 assert(legacy.userMustChangePassword === false, "missing password-change column stays off")
 assert(legacy.coursePublication === false, "missing publication column stays off")
 assert(legacy.curriculumNodeNotes === false, "missing lesson note columns stay off")
+assert(legacy.passwordReset === false, "missing password reset table stays off")
+assert(legacy.skylentEnquiries === false, "missing enquiry table stays off")
+assert(legacy.employerMembership === false, "missing employer membership table stays off")
+assert(legacy.collegeMembership === false, "missing college tables stay off")
+assert(legacy.platformAdminRole === false && legacy.collegeAdminRole === false, "missing role labels stay off")
 assert(!("mustChangePassword" in userCredentialSelect(false)) && "passwordHash" in userCredentialSelect(false), "login select omits mustChangePassword before that column exists")
 assert("mustChangePassword" in userCredentialSelect(true), "login select keeps mustChangePassword after the column exists")
 assert(capabilitiesFromColumns([
@@ -73,7 +78,12 @@ const current = capabilitiesFromColumns([
   { table_name: "Course", column_name: "publicationStatus" },
   { table_name: "CurriculumNode", column_name: "summary" },
   { table_name: "CurriculumNode", column_name: "referenceUrl" },
-])
+  { table_name: "PasswordResetToken", column_name: "id" },
+  { table_name: "SkylentEnquiry", column_name: "id" },
+  { table_name: "EmployerMembership", column_name: "id" },
+  { table_name: "College", column_name: "id" },
+  { table_name: "CollegeMembership", column_name: "id" },
+], ["PLATFORM_ADMIN", "COLLEGE_ADMIN"])
 assert(Object.values(current).every(Boolean), "a fully migrated schema enables every capability")
 assert(current.practiceWorkspaces && current.policyAcceptance, "practice and policy storage are enabled together")
 
@@ -167,6 +177,12 @@ async function request(jar: CookieJar, path: string, options: { method?: string;
 }
 
 async function main() {
+  if (!process.argv.includes("--http")) {
+    console.log("schema-capabilities mapping ok")
+    console.log("HTTP section skipped. Pass --http only when a fully migrated local API is already running. The September fixture is not that API.")
+    return
+  }
+  console.log(`HTTP section using API_BASE=${API_BASE}. This script does not start that server.`)
   const anon = await request(new Map(), "/lms/dashboard")
   assert(anon.response.status === 401, `signed-out dashboard must be 401, got ${anon.response.status}`)
   assert(anon.data?.error === "Unauthorized", "signed-out dashboard must not leak a server error")

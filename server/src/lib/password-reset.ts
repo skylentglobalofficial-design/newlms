@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt"
 import { prisma } from "./prisma.js"
 import { BCRYPT_ROUNDS, normalizeEmail } from "./auth.js"
+import { isMissingSchemaError, UNAVAILABLE_MESSAGES } from "./schema-capabilities.js"
 import {
   generatePasswordResetToken,
   hashPasswordResetToken,
@@ -19,9 +20,21 @@ export {
   responseContainsTokenMaterial,
 }
 
+function rethrowIfSchemaMissing(error: unknown): never {
+  if (isMissingSchemaError(error)) throw new PasswordResetStorageUnavailableError()
+  throw error
+}
+
 const TOKEN_EXPIRY_MINUTES = 60
 const MAX_TOKENS_PER_USER_WINDOW = 3
 const USER_RATE_WINDOW_MS = 15 * 60 * 1000
+
+export class PasswordResetStorageUnavailableError extends Error {
+  constructor() {
+    super(UNAVAILABLE_MESSAGES.passwordReset)
+    this.name = "PasswordResetStorageUnavailableError"
+  }
+}
 
 export class PasswordResetError extends Error {
   constructor(
@@ -55,7 +68,7 @@ export async function createPasswordResetToken(email: string): Promise<{
   const user = await prisma.user.findUnique({
     where: { email: normalized },
     select: { id: true, passwordHash: true },
-  })
+  }).catch(rethrowIfSchemaMissing)
 
   if (!user || !user.passwordHash) {
     return null
@@ -66,7 +79,7 @@ export async function createPasswordResetToken(email: string): Promise<{
       userId: user.id,
       createdAt: { gte: new Date(Date.now() - USER_RATE_WINDOW_MS) },
     },
-  })
+  }).catch(rethrowIfSchemaMissing)
 
   if (recentTokens >= MAX_TOKENS_PER_USER_WINDOW) {
     throw new PasswordResetError("Too many password reset requests", "RATE_LIMITED")
@@ -82,7 +95,7 @@ export async function createPasswordResetToken(email: string): Promise<{
       tokenHash,
       expiresAt,
     },
-  })
+  }).catch(rethrowIfSchemaMissing)
 
   return { token, userId: user.id, expiresAt }
 }
@@ -101,7 +114,7 @@ export async function validatePasswordResetToken(token: string): Promise<{
   const resetToken = await prisma.passwordResetToken.findUnique({
     where: { tokenHash },
     select: { id: true, userId: true, expiresAt: true, usedAt: true },
-  })
+  }).catch(rethrowIfSchemaMissing)
 
   if (!resetToken) {
     throw new PasswordResetError("Invalid password reset token", "INVALID_TOKEN")
@@ -131,6 +144,7 @@ export async function resetPasswordWithToken(token: string, newPassword: string)
   const now = new Date()
   const passwordHash = await bcrypt.hash(newPassword, BCRYPT_ROUNDS)
 
+  try {
   await prisma.$transaction(async (tx) => {
     const claimed = await tx.passwordResetToken.updateMany({
       where: {
@@ -181,6 +195,9 @@ export async function resetPasswordWithToken(token: string, newPassword: string)
       data: { usedAt: now },
     })
   })
+  } catch (error) {
+    rethrowIfSchemaMissing(error)
+  }
 }
 
 export async function cleanupExpiredTokens(): Promise<number> {

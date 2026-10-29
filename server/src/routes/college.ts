@@ -3,8 +3,17 @@ import { z } from "zod"
 import { prisma } from "../lib/prisma.js"
 import { requireAuth, type AuthenticatedRequest } from "../lib/auth.js"
 import { hasApiRole, requireRoles } from "../lib/roles.js"
+import { capabilityAvailable, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
 
 export const collegeRouter = Router()
+
+collegeRouter.use(requireAuth, requireRoles("college", "superadmin"), async (_req, res, next) => {
+  if (!(await capabilityAvailable("collegeMembership"))) {
+    res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.college))
+    return
+  }
+  next()
+})
 
 async function membershipFor(userId: string) {
   return prisma.collegeMembership.findFirst({

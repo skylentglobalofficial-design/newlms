@@ -8,7 +8,7 @@ import express from "express"
 import { assertProductionEnv, redactSecrets } from "./lib/env.js"
 import { describeAiReadiness } from "./lib/skylent-ai/service.js"
 import { apexRedirectLocation, injectCanonicalLink } from "./lib/public-host.js"
-import { checkMigrationState } from "./lib/migration-guard.js"
+import { checkMigrationState, decideStartup } from "./lib/migration-guard.js"
 import { prisma } from "./lib/prisma.js"
 import {
   authCredentialsRateLimit,
@@ -168,7 +168,7 @@ let server: ReturnType<typeof app.listen> | undefined
 
 async function start(): Promise<void> {
   const state = await checkMigrationState()
-  if (state.status !== "ok") {
+  if (decideStartup(state, process.env.SKYLENT_SEPTEMBER_COMPAT) !== "listen") {
     const detail =
       state.status === "unknown"
         ? redactSecrets(state.reason)
@@ -178,6 +178,9 @@ async function start(): Promise<void> {
     )
     await prisma.$disconnect()
     process.exit(1)
+  }
+  if (state.status === "pending") {
+    console.error("September compatibility listen. Migrations remain pending. Health stays unavailable.")
   }
 
   server = app.listen(port, "0.0.0.0", () => {

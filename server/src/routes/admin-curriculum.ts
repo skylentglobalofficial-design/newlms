@@ -6,6 +6,7 @@ import { prisma } from "../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { requireRoles } from "../lib/roles.js"
 import { recordAdminAudit } from "../lib/admin-audit.js"
+import { capabilityAvailable, isDatabaseUnavailableError, isMissingSchemaError, readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
 import { generateStorageKey, uploadFile, validateFile, StorageServiceError } from "../lib/storage.js"
 import { describeLiveLesson } from "../lib/live-lesson.js"
 
@@ -81,20 +82,55 @@ function decodeFile(input: z.infer<typeof fileSchema>, allowed: string[]) {
 }
 
 async function loadCourse(id: string) {
+  const caps = await readSchemaCapabilities()
   return prisma.course.findUnique({
     where: { id },
-    include: {
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      desc: true,
+      category: true,
+      level: true,
+      duration: true,
+      mode: true,
+      price: true,
+      originalPrice: true,
+      outcomes: true,
+      forWhom: true,
+      ...(caps.coursePublication
+        ? { publicationStatus: true, authoredInApp: true, coverFileName: true }
+        : {}),
       curriculum: {
-        orderBy: { order: "asc" },
-        include: {
+        orderBy: { order: "asc" as const },
+        select: {
+          id: true,
+          title: true,
+          description: true,
           nodes: {
-            orderBy: { order: "asc" },
-            include: { lessonMaterials: { select: { id: true, fileName: true, mimeType: true, byteSize: true } } },
+            orderBy: { order: "asc" as const },
+            select: {
+              id: true,
+              title: true,
+              nodeType: true,
+              ...(caps.curriculumNodeNotes ? { summary: true, referenceUrl: true } : {}),
+              lessonMaterials: { select: { id: true, fileName: true, mimeType: true, byteSize: true } },
+            },
           },
         },
       },
     },
   })
+}
+
+function optionalField<T>(row: object, key: string): T | null {
+  return key in row ? (row as Record<string, T | null>)[key] ?? null : null
+}
+
+async function refuseAuthoring(res: import("express").Response): Promise<boolean> {
+  if (await capabilityAvailable("coursePublication")) return false
+  res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+  return true
 }
 
 function serializeCourse(course: NonNullable<Awaited<ReturnType<typeof loadCourse>>>) {
@@ -111,9 +147,9 @@ function serializeCourse(course: NonNullable<Awaited<ReturnType<typeof loadCours
     originalPrice: course.originalPrice,
     outcomes: course.outcomes,
     forWhom: course.forWhom,
-    publicationStatus: course.publicationStatus,
-    authoredInApp: course.authoredInApp,
-    coverFileName: course.coverFileName,
+    publicationStatus: optionalField<string>(course, "publicationStatus"),
+    authoredInApp: optionalField<boolean>(course, "authoredInApp") ?? false,
+    coverFileName: optionalField<string>(course, "coverFileName"),
     modules: course.curriculum.map((module, index) => ({
       id: module.id,
       position: index + 1,
@@ -123,9 +159,9 @@ function serializeCourse(course: NonNullable<Awaited<ReturnType<typeof loadCours
         id: node.id,
         position: nodeIndex + 1,
         title: node.title,
-        summary: node.summary,
+        summary: optionalField<string>(node, "summary"),
         nodeType: node.nodeType,
-        referenceUrl: node.referenceUrl,
+        referenceUrl: optionalField<string>(node, "referenceUrl"),
         liveLesson: describeLiveLesson(node.referenceUrl),
         materials: node.lessonMaterials,
       })),
@@ -134,24 +170,47 @@ function serializeCourse(course: NonNullable<Awaited<ReturnType<typeof loadCours
 }
 
 adminCurriculumRouter.get("/courses", ...readGuards, async (_req, res) => {
+  const caps = await readSchemaCapabilities().catch(() => null)
+  if (!caps) return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
   const courses = await prisma.course.findMany({
     orderBy: { updatedAt: "desc" },
-    select: { id: true, slug: true, title: true, publicationStatus: true, authoredInApp: true, category: true },
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      category: true,
+      ...(caps.coursePublication ? { publicationStatus: true, authoredInApp: true } : {}),
+    },
   })
-  res.json({ data: courses })
+  res.json({
+    data: courses.map((course) => ({
+      ...course,
+      publicationStatus: optionalField<string>(course, "publicationStatus"),
+      authoredInApp: optionalField<boolean>(course, "authoredInApp") ?? false,
+    })),
+  })
 })
 
 adminCurriculumRouter.get("/courses/:courseId", ...readGuards, async (req, res) => {
   const parsed = z.object({ courseId: uuidSchema }).safeParse(req.params)
   if (!parsed.success) return res.status(400).json({ error: "Invalid course" })
-  const course = await loadCourse(parsed.data.courseId)
-  if (!course) return res.status(404).json({ error: "Course not found" })
-  res.json({ data: serializeCourse(course) })
+  try {
+    const course = await loadCourse(parsed.data.courseId)
+    if (!course) return res.status(404).json({ error: "Course not found" })
+    res.json({ data: serializeCourse(course) })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+    }
+    console.error("Failed to load authored course:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to load course" })
+  }
 })
 
 adminCurriculumRouter.post("/courses", ...guards, async (req: AuthenticatedRequest, res) => {
   const parsed = courseSchema.safeParse(req.body)
   if (!parsed.success) return res.status(400).json({ error: "Validation failed", details: parsed.error.flatten().fieldErrors })
+  if (await refuseAuthoring(res)) return
   try {
     const created = await prisma.course.create({
       data: {
@@ -315,6 +374,15 @@ adminCurriculumRouter.post("/modules/:moduleId/lectures", ...guards, async (req:
   if (body.data.nodeType === CurriculumNodeType.QUIZ && !body.data.questions?.length) {
     return res.status(400).json({ error: "A quiz needs at least one question" })
   }
+  if (!(await capabilityAvailable("curriculumNodeNotes"))) {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+  }
+  if ((body.data.maxAttempts != null || body.data.passingScore != null) && !(await capabilityAvailable("curriculumNodeQuizLimits"))) {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+  }
+  if (body.data.questions?.some((question) => question.explanation) && !(await capabilityAvailable("quizExplanations"))) {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+  }
   const index = body.data.position == null ? module.nodes.length : Math.min(module.nodes.length, body.data.position - 1)
   const created = await prisma.curriculumNode.create({
     data: {
@@ -406,6 +474,7 @@ adminCurriculumRouter.post("/courses/:courseId/cover", ...guards, async (req: Au
   if ("error" in decoded) return res.status(400).json({ error: decoded.error })
   const course = await prisma.course.findUnique({ where: { id: params.data.courseId }, select: { id: true } })
   if (!course) return res.status(404).json({ error: "Course not found" })
+  if (await refuseAuthoring(res)) return
   try {
     const key = generateStorageKey(`courses/${course.id}/cover`, body.data.fileName)
     const stored = await uploadFile(key, decoded.data, { contentType: body.data.contentType })
@@ -427,6 +496,7 @@ adminCurriculumRouter.post("/courses/:courseId/cover", ...guards, async (req: Au
 adminCurriculumRouter.post("/courses/:courseId/publish", ...guards, async (req: AuthenticatedRequest, res) => {
   const params = z.object({ courseId: uuidSchema }).safeParse(req.params)
   if (!params.success) return res.status(400).json({ error: "Invalid course" })
+  if (await refuseAuthoring(res)) return
   const course = await loadCourse(params.data.courseId)
   if (!course) return res.status(404).json({ error: "Course not found" })
   const lectures = course.curriculum.reduce((sum, module) => sum + module.nodes.length, 0)

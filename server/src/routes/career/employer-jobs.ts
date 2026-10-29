@@ -7,11 +7,19 @@ import { requireRoles } from "../../lib/roles.js"
 import { employerIdsForUser } from "../../lib/career/employer-access.js"
 import { serializeEmployer, serializeJob } from "../../lib/career/serializers.js"
 import { slugSchema, validationError } from "../../lib/career/shared.js"
-import { readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../../lib/schema-capabilities.js"
+import { capabilityAvailable, readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../../lib/schema-capabilities.js"
 
 export const employerJobsRouter = Router()
 
 const guards = [requireAuth, requireRoles("recruiter", "superadmin")] as const
+
+employerJobsRouter.use(...guards, async (_req, res, next) => {
+  if (!(await capabilityAvailable("employerMembership"))) {
+    res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+    return
+  }
+  next()
+})
 
 const jobFields = {
   title: z.string().trim().min(2).max(160),

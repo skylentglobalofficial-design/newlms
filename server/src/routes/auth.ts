@@ -41,6 +41,8 @@ import {
 } from "../lib/oauth-state.js"
 import { readConsent, recordPolicyAcceptance } from "../lib/policy.js"
 import {
+  capabilityAvailable,
+  isDatabaseUnavailableError,
   isMissingSchemaError,
   PolicyStorageUnavailableError,
   readSchemaCapabilities,
@@ -57,6 +59,7 @@ import {
 } from "../lib/safe-redirect.js"
 import {
   createPasswordResetToken,
+  PasswordResetStorageUnavailableError,
   validatePasswordResetToken,
   resetPasswordWithToken,
   PasswordResetError,
@@ -353,10 +356,25 @@ authRouter.post("/change-password", requireAuth, requireCsrf, async (req: Authen
   const valid = await bcrypt.compare(parsed.data.currentPassword, user.passwordHash)
   if (!valid) return res.status(401).json({ error: "The current password is wrong" })
   const passwordHash = await bcrypt.hash(parsed.data.newPassword, BCRYPT_ROUNDS)
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { passwordHash, mustChangePassword: false },
-  })
+  let mustChangePassword = false
+  try {
+    mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
+  } catch {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+  }
+  try {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: mustChangePassword ? { passwordHash, mustChangePassword: false } : { passwordHash },
+      select: { id: true },
+    })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
+    console.error("Password change failed:", error instanceof Error ? error.name : "unknown")
+    return res.status(500).json({ error: "Failed to change password" })
+  }
   await recordAdminAudit({
     actorId: user.id,
     action: "auth.password.changed",
@@ -376,21 +394,33 @@ authRouter.patch("/me", requireAuth, requireCsrf, async (req: AuthenticatedReque
     })
   }
 
+  let mustChangePassword = false
+  try {
+    mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
+  } catch {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+  }
   try {
     const user = await prisma.user.update({
       where: { id: req.auth!.user.id },
       data: { displayName: parsed.data.displayName },
-      include: { roles: { include: { role: true } } },
+      select: {
+        ...userCredentialSelect(mustChangePassword),
+        roles: { include: { role: true } },
+      },
     })
     const roles = user.roles.map((entry) => entry.role)
     res.json({
-      user: toSafeUser(user),
+      user: toSafeUser(user as Parameters<typeof toSafeUser>[0]),
       roles: roles.map(toApiRole),
       role: primaryRole(roles),
-      mustChangePassword: user.mustChangePassword,
+      mustChangePassword: "mustChangePassword" in user ? user.mustChangePassword : false,
     })
   } catch (error) {
-    console.error("Failed to update profile:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    }
+    console.error("Failed to update profile:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to update profile" })
   }
 })
@@ -413,6 +443,10 @@ authRouter.post("/password-reset/request", passwordResetRateLimit, async (req, r
   const parsed = passwordResetRequestSchema.safeParse(req.body)
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid email address" })
+  }
+
+  if (!(await capabilityAvailable("passwordReset"))) {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.passwordReset))
   }
 
   // Always return the same body shape for known and unknown accounts.
@@ -439,6 +473,9 @@ authRouter.post("/password-reset/request", passwordResetRateLimit, async (req, r
 
     res.json(genericPasswordResetRequestResponse(isEmailConfigured()))
   } catch (error) {
+    if (error instanceof PasswordResetStorageUnavailableError || isMissingSchemaError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.passwordReset))
+    }
     if (error instanceof PasswordResetError && error.code === "RATE_LIMITED") {
       return res.status(429).json({ error: "Too many password reset requests. Try again later." })
     }
@@ -457,10 +494,17 @@ authRouter.post("/password-reset/verify", passwordResetRateLimit, async (req, re
     return res.status(400).json({ error: "Invalid token format", valid: false })
   }
 
+  if (!(await capabilityAvailable("passwordReset"))) {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.passwordReset))
+  }
+
   try {
     await validatePasswordResetToken(parsed.data.token)
     res.json({ valid: true })
   } catch (error) {
+    if (error instanceof PasswordResetStorageUnavailableError || isMissingSchemaError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.passwordReset))
+    }
     if (error instanceof PasswordResetError) {
       return res.status(400).json({ error: error.message, code: error.code, valid: false })
     }
@@ -486,10 +530,17 @@ authRouter.post("/password-reset/complete", passwordResetRateLimit, async (req, 
     return res.status(400).json({ error: "Invalid token format", code: "INVALID_TOKEN", success: false })
   }
 
+  if (!(await capabilityAvailable("passwordReset"))) {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.passwordReset))
+  }
+
   try {
     await resetPasswordWithToken(parsed.data.token, parsed.data.password)
     res.json({ success: true, message: "Password has been reset. You can now sign in." })
   } catch (error) {
+    if (error instanceof PasswordResetStorageUnavailableError || isMissingSchemaError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.passwordReset))
+    }
     if (error instanceof PasswordResetError) {
       return res.status(400).json({ error: error.message, code: error.code, success: false })
     }

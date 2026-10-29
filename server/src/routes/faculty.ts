@@ -5,7 +5,7 @@ import { AssignmentStatus, CurriculumNodeType } from "@prisma/client"
 import { prisma } from "../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { hasApiRole, requireRoles } from "../lib/roles.js"
-import { readSchemaCapabilities } from "../lib/schema-capabilities.js"
+import { capabilityAvailable, readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
 import { decodeUpload, LESSON_MATERIAL_TYPES, uploadBodySchema } from "../lib/upload-payload.js"
 import { generateStorageKey, uploadFile, StorageServiceError } from "../lib/storage.js"
 
@@ -62,7 +62,9 @@ async function loadSuperadminFacultyDashboard() {
     }),
     prisma.course.findMany({
       orderBy: { title: "asc" },
-      include: {
+      select: {
+        slug: true,
+        title: true,
         curriculum: {
           orderBy: { order: "asc" },
           include: { nodes: { select: { id: true } } },
@@ -126,10 +128,16 @@ async function loadAssignedFacultyDashboard(userId: string) {
   const courses = await prisma.course.findMany({
     where: { id: { in: assigned } },
     orderBy: { title: "asc" },
-    include: {
+    select: {
+      slug: true,
+      title: true,
       curriculum: {
         orderBy: { order: "asc" },
-        include: { nodes: { select: { id: true, title: true, moduleId: true } } },
+        select: {
+          id: true,
+          title: true,
+          nodes: { select: { id: true, title: true, moduleId: true } },
+        },
       },
     },
   })
@@ -476,6 +484,9 @@ facultyRouter.post(
     if (!module) return res.status(404).json({ error: "Module not found on this course" })
     if (body.data.nodeType === CurriculumNodeType.QUIZ) {
       return res.status(403).json({ error: "Teachers cannot configure quizzes from this action" })
+    }
+    if (!(await capabilityAvailable("curriculumNodeNotes"))) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
     }
     const created = await prisma.curriculumNode.create({
       data: {

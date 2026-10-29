@@ -4,6 +4,7 @@ import { z } from "zod"
 import { prisma } from "../../lib/prisma.js"
 import { requireAuth, type AuthenticatedRequest } from "../../lib/auth.js"
 import { readConsent, recordPolicyAcceptance } from "../../lib/policy.js"
+import { capabilityAvailable, UNAVAILABLE_MESSAGES, unavailableBody } from "../../lib/schema-capabilities.js"
 
 export const skylentEnquiriesRouter = Router()
 
@@ -34,6 +35,9 @@ skylentEnquiriesRouter.post("/", limit, async (req, res) => {
   if (!body.success) return void res.status(400).json({ error: "Please check your details." })
   const consent = readConsent(req.body)
   if (!consent.ok) return void res.status(consent.status).json(consent.body)
+  if (!(await capabilityAvailable("skylentEnquiries")) || !(await capabilityAvailable("policyAcceptance"))) {
+    return void res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enquiries))
+  }
   const { preferredDate, ...rest } = body.data
   // The enquiry and the record of what was accepted are written together or not at all.
   const row = await prisma.$transaction(async (tx) => {
@@ -47,6 +51,9 @@ skylentEnquiriesRouter.post("/", limit, async (req, res) => {
 /** Admin only: list enquiries. */
 skylentEnquiriesRouter.get("/", requireAuth, async (req: AuthenticatedRequest, res) => {
   if (!req.auth!.roles.some((r) => r.name === "ADMIN")) return void res.status(403).json({ error: "Admins only" })
+  if (!(await capabilityAvailable("skylentEnquiries"))) {
+    return void res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enquiries))
+  }
   const rows = await prisma.skylentEnquiry.findMany({ orderBy: { createdAt: "desc" }, take: 200 })
   res.json({ data: rows })
 })

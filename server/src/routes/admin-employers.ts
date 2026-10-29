@@ -6,6 +6,7 @@ import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth
 import { requireRoles } from "../lib/roles.js"
 import { validationError } from "../lib/career/shared.js"
 import { serializeEmployer } from "../lib/career/serializers.js"
+import { capabilityAvailable, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
 
 export const adminEmployersRouter = Router()
 
@@ -20,6 +21,9 @@ const employerSchema = z.object({
 })
 
 adminEmployersRouter.get("/employers", ...guards, async (_req: AuthenticatedRequest, res) => {
+  if (!(await capabilityAvailable("employerMembership"))) {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+  }
   try {
     const employers = await prisma.employer.findMany({
       orderBy: { name: "asc" },
@@ -61,9 +65,16 @@ adminEmployersRouter.post("/employers", ...guards, requireCsrf, async (req: Auth
   }
 })
 
+async function membershipReady(res: import("express").Response) {
+  if (await capabilityAvailable("employerMembership")) return true
+  res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+  return false
+}
+
 adminEmployersRouter.get("/employers/:id/members", ...guards, async (req: AuthenticatedRequest, res) => {
   const id = z.string().uuid().safeParse(req.params.id)
   if (!id.success) return res.status(400).json({ error: "Invalid employer id" })
+  if (!(await membershipReady(res))) return
   try {
     const employer = await prisma.employer.findUnique({ where: { id: id.data }, select: { id: true } })
     if (!employer) return res.status(404).json({ error: "Employer not found" })
@@ -90,6 +101,7 @@ adminEmployersRouter.delete("/employers/:id/members/:userId", ...guards, require
   const id = z.string().uuid().safeParse(req.params.id)
   const userId = z.string().uuid().safeParse(req.params.userId)
   if (!id.success || !userId.success) return res.status(400).json({ error: "Invalid employer or user id" })
+  if (!(await membershipReady(res))) return
   try {
     const removed = await prisma.employerMembership.deleteMany({
       where: { employerId: id.data, userId: userId.data },
@@ -107,13 +119,14 @@ adminEmployersRouter.post("/employers/:id/members", ...guards, requireCsrf, asyn
   const body = z.object({ userId: z.string().uuid() }).safeParse(req.body)
   if (!id.success) return res.status(400).json({ error: "Invalid employer id" })
   if (!body.success) return validationError(res, body.error)
+  if (!(await membershipReady(res))) return
 
   try {
     const employer = await prisma.employer.findUnique({ where: { id: id.data } })
     if (!employer) return res.status(404).json({ error: "Employer not found" })
     const user = await prisma.user.findUnique({
       where: { id: body.data.userId },
-      include: { roles: { include: { role: true } } },
+      select: { id: true, roles: { include: { role: true } } },
     })
     if (!user) return res.status(404).json({ error: "User not found" })
     const allowed = user.roles.some((entry) => entry.role.name === RoleName.RECRUITER || entry.role.name === RoleName.ADMIN)
