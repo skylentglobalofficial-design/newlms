@@ -39,3 +39,13 @@ This project uses **Tailwind CSS v4** through the `@tailwindcss/vite` plugin con
 - Use double quotes for strings containing apostrophes (`"We're here to help"`), or escape them in single-quoted strings. An unescaped apostrophe in a single-quoted string breaks the build.
 - Ensure JSX tags are closed and braces are balanced.
 - Export components as default exports.
+
+## Cursor Cloud specific instructions
+
+The app is a Vite client plus an Express API on PostgreSQL. Google OAuth and `SKYLENT_AI_API_KEY` are optional; signup, the catalogue, and the learner dashboard work without them.
+
+- Install dependencies with `npm ci`, the same command as `.github/workflows/release-gate.yml`. `postinstall` runs `prisma generate` and needs `DATABASE_URL` and `DIRECT_URL` in a gitignored `.env`.
+- PostgreSQL 16 is installed on the image, but this VM blocks service autostart. Bring the cluster up with `sudo pg_ctlcluster 16 main start`, then wait for `pg_isready`. The local role and database are both named `skylent`.
+- Apply schema with `npx prisma migrate deploy`. Seed an empty database with `npm run db:seed`. In development, running the seed again deletes and recreates curriculum rows.
+- Run the API as `PORT=3000 npm run dev:api`. Run Vite as `PORT=8443 npm run dev`. Vite proxies `/api` to port 3000. Both scripts read `PORT`, so they must not share one value.
+- `GET http://127.0.0.1:3000/api/v1/health` returns `{ "status": "ok", "db": "ok" }` when the API can reach Postgres. The site is at `http://127.0.0.1:8443/`.
