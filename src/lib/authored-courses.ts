@@ -23,8 +23,9 @@
 
 export const FLAGSHIP_COURSE_SLUG = "data-analytics"
 export const PRODUCT_MANAGEMENT_SLUG = "product-management"
+export const PYTHON_PROGRAMMING_SLUG = "python-programming"
 
-export const AUTHORED_COURSE_SLUGS = [FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG] as const
+export const AUTHORED_COURSE_SLUGS = [FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, PYTHON_PROGRAMMING_SLUG] as const
 
 /**
  * Programmes a new learner can enter through POST /lms/enrollments.

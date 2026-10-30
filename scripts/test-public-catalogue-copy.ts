@@ -45,7 +45,7 @@ function poisonCourse(slug: string) {
   }
 }
 
-for (const slug of ["data-analytics", "product-management"] as const) {
+for (const slug of ["data-analytics", "product-management", "python-programming"] as const) {
   const source = courses.find((course) => course.slug === slug)
   assert(source, `${slug} authored course missing`)
   const poisoned = poisonCourse(slug)
@@ -60,7 +60,9 @@ for (const slug of ["data-analytics", "product-management"] as const) {
   assert(JSON.stringify(shown.forWhom) === JSON.stringify(source.forWhom), `${slug} audience must be the authored audience`)
   assert(!/power\s*bi/i.test(surface), `${slug} effective public copy still claims Power BI`)
   assert(!/live classes|live \+/i.test(surface), `${slug} effective public copy still claims live classes`)
-  assert(!/with Python|and Python|Python to/i.test(surface), `${slug} effective public copy still claims Python is taught`)
+  if (slug !== "python-programming") {
+    assert(!/with Python|and Python|Python to/i.test(surface), `${slug} effective public copy still claims Python is taught`)
+  }
   assert(shown.desc !== poisoned.desc && shown.outcomes[0] !== poisoned.outcomes[0], `${slug} still shows the stale API copy`)
   assert(served.desc === shown.desc, `${slug} API description must match the page`)
   assert(served.longDesc === shown.longDesc, `${slug} API long description must match the page`)
@@ -70,10 +72,10 @@ for (const slug of ["data-analytics", "product-management"] as const) {
 }
 
 const untouched = effectiveAuthoredCourseCopy({
-  ...poisonCourse("python-programming"),
-  desc: "Python outline: variables, pandas, and visualisation. Catalogue listing — thinner than Data Analytics.",
+  ...poisonCourse("generative-ai"),
+  desc: "Generative AI outline: prompting and models. Catalogue listing — thinner than Data Analytics.",
 })
-assert(untouched.desc.startsWith("Python outline"), "Non-authored course descriptions stay on the catalogue row")
+assert(untouched.desc.startsWith("Generative AI outline"), "Non-authored course descriptions stay on the catalogue row")
 
 const daProgramme = programs.find((program) => program.slug === "data-analytics-pro")
 const pmProgramme = programs.find((program) => program.slug === "product-management")

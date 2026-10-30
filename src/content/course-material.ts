@@ -1,9 +1,11 @@
-import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, isAuthoredCourse } from "../lib/authored-courses"
+import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, PYTHON_PROGRAMMING_SLUG, isAuthoredCourse } from "../lib/authored-courses"
 import { getDaAssignment, type AssignmentBrief } from "./data-analytics/assignments"
 import { DATA_ANALYTICS_DATASETS } from "./data-analytics/datasets"
 import { DA_LESSON_BODIES } from "./data-analytics/lesson-bodies"
 import { getPmAssignment } from "./product-management/assignments"
 import { PM_LESSON_BODIES } from "./product-management/lesson-bodies"
+import { getPythonAssignment } from "./python-programming/assignments"
+import { PYTHON_LESSON_BODIES } from "./python-programming/lesson-bodies"
 import { getCareerEvidence, getLessonMeta, type WrittenLessonMeta } from "./course-lookups"
 
 export type LessonResource = {
@@ -27,6 +29,11 @@ const HARBOR_CASE: LessonResource = {
   href: "/content/product-management/harbor-desk-case.md",
 }
 
+const PYTHON_WORKSPACE_RESOURCE: LessonResource = {
+  filename: "python-starter-suite.py",
+  href: "/content/python-programming/python-starter-suite.py",
+}
+
 export function getCourseLessonContent(courseSlug: string | undefined, lessonId: string | undefined): CourseLessonContent | null {
   if (!courseSlug || !lessonId || !isAuthoredCourse(courseSlug)) return null
   const meta = getLessonMeta(courseSlug, lessonId)
@@ -35,7 +42,9 @@ export function getCourseLessonContent(courseSlug: string | undefined, lessonId:
       ? DA_LESSON_BODIES[lessonId]
       : courseSlug === PRODUCT_MANAGEMENT_SLUG
         ? PM_LESSON_BODIES[lessonId]
-        : undefined
+        : courseSlug === PYTHON_PROGRAMMING_SLUG
+          ? PYTHON_LESSON_BODIES[lessonId]
+          : undefined
   if (!meta || !body) return null
 
   if (courseSlug === FLAGSHIP_COURSE_SLUG) {
@@ -51,11 +60,21 @@ export function getCourseLessonContent(courseSlug: string | undefined, lessonId:
     }
   }
 
+  if (courseSlug === PRODUCT_MANAGEMENT_SLUG) {
+    return {
+      slug: courseSlug,
+      meta,
+      body,
+      assignment: getPmAssignment(lessonId),
+      datasets: [HARBOR_CASE],
+    }
+  }
+
   return {
     slug: courseSlug,
     meta,
     body,
-    assignment: getPmAssignment(lessonId),
-    datasets: [HARBOR_CASE],
+    assignment: getPythonAssignment(lessonId),
+    datasets: [PYTHON_WORKSPACE_RESOURCE],
   }
 }

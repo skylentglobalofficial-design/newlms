@@ -1,5 +1,5 @@
 import { courses } from "../data"
-import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, isAuthoredCourse } from "./authored-courses"
+import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, PYTHON_PROGRAMMING_SLUG, isAuthoredCourse } from "./authored-courses"
 
 export type CourseDataset = {
   filename: string
@@ -138,9 +138,48 @@ const PRODUCT_MANAGEMENT_PROFILE: CourseProductProfile = {
   ctaTitle: "Start Product Management",
 }
 
+const PYTHON_PROGRAMMING_PROFILE: CourseProductProfile = {
+  slug: PYTHON_PROGRAMMING_SLUG,
+  tools: ["Python 3.11+", "A text editor or IDE", "The Python Starter Suite in this course"],
+  prerequisite: "None. You do not need prior programming experience.",
+  datasets: [
+    {
+      filename: "python-starter-suite.py",
+      href: "/content/python-programming/python-starter-suite.py",
+      detail: "Starter automation scripts, log stream models, and generator pipelines.",
+    },
+  ],
+  learningSteps: [
+    { label: "Learning", detail: "Written lessons in Skylent OS. Self-paced. No video stream and no live classroom." },
+    { label: "Practice", detail: "Syntax and architecture checks after a block of lessons." },
+    { label: "Assignment", detail: "Applied stream parsing, batch ETL automation, and modular utility design." },
+    { label: "Capstone", detail: "A complete production CLI automation package with pytest test suite." },
+  ],
+  faq: [
+    {
+      q: "Are there videos or live classes?",
+      a: "No. Python Programming is written lessons, quizzes, and hands-on coding assignments in Skylent OS. You work at your own pace.",
+    },
+    SHARED_FAQ_PAYMENT,
+    SHARED_FAQ_CERT,
+    {
+      q: "What do I actually work on?",
+      a: "Real-world engineering scripts: CPython bytecode inspection, constant-memory stream processors, immutable dataclasses, batch file ETL pipelines, and a production CLI utility.",
+    },
+  ],
+  practiceIntro: "Practice uses real-world automation scripts and stream parsing. There is no live classroom and no video stream.",
+  visual: "northwind",
+  lab: null,
+  project: null,
+  labOmission: "This course focuses on backend Python automation scripts and test suites.",
+  afterEnrol: "Skylent OS opens Python Programming & Automation at the first lesson.",
+  ctaTitle: "Start Python Programming",
+}
+
 const PROFILES: Record<string, CourseProductProfile> = {
   [FLAGSHIP_COURSE_SLUG]: DATA_ANALYTICS_PROFILE,
   [PRODUCT_MANAGEMENT_SLUG]: PRODUCT_MANAGEMENT_PROFILE,
+  [PYTHON_PROGRAMMING_SLUG]: PYTHON_PROGRAMMING_PROFILE,
 }
 
 export function courseProductProfile(slug: string): CourseProductProfile | null {
@@ -151,4 +190,4 @@ export function authoredCourseList() {
   return courses.filter((course) => isAuthoredCourse(course.slug))
 }
 
-export { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG }
+export { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, PYTHON_PROGRAMMING_SLUG }

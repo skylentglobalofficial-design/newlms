@@ -60,6 +60,24 @@ export const PUBLIC_COURSE_COPY: Record<string, CourseCopy> = {
     ],
     mode: "Self-paced",
   },
+  "python-programming": {
+    desc: "Learn core Python syntax, idiomatic data structures, object-oriented design, workflow automation, and production testing on real-world engineering scripts.",
+    longDesc:
+      "A hands-on, practice-first Python Programming course. You build from the Python execution model and memory layout to robust stream processing, automated CLI utilities, and pytest-driven engineering packages. There is no hand-waving theory and no passive video watching. You write and test real code with concrete error handling and type hints.",
+    outcomes: [
+      "Write idiomatic, PEP 8-compliant Python code with strong typing",
+      "Master data structures, generator pipelines, and memory efficiency",
+      "Architect clean object-oriented systems with dataclasses and protocols",
+      "Automate file I/O, tabular stream processing, and CLI utilities",
+      "Ship production-ready Python modules with pytest unit test suites",
+    ],
+    forWhom: [
+      "Engineers and analysts transitioning to professional Python software development",
+      "Data professionals who need clean scripting, automation, and ETL pipelines",
+      "Learners who want verified proof-of-work code samples rather than generic certificate claims",
+    ],
+    mode: "Self-paced",
+  },
 }
 
 export const PUBLIC_PROGRAMME_COPY: Record<string, ProgrammeCopy> = {

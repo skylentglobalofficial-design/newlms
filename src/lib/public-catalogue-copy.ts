@@ -36,6 +36,10 @@ export function productManagementModuleSummary(moduleCount: number): string {
   return `${modulePhrase(moduleCount)} on one fictional retail operations case. You read the notes, frame a problem that can be tested, choose one bet under a stated constraint and specify it.`
 }
 
+export function pythonProgrammingModuleSummary(moduleCount: number): string {
+  return `${modulePhrase(moduleCount)} on core Python engineering, stream processing, object-oriented architecture, and production automation testing.`
+}
+
 const HONEST_PROGRAMME_SLUGS = ["data-analytics-pro", "product-management", "sql-certificate"] as const
 
 const LIVE_FORMAT = /live classes|live \+/i
