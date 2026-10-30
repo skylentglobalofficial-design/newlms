@@ -1138,6 +1138,26 @@ lmsRouter.post(
         lessonTitle: body.data.lessonTitle ?? found.node.title,
         question: body.data.question,
       })
+      const caps = await readSchemaCapabilities().catch(() => null)
+      if (caps?.facultyDoubtTickets) {
+        await prisma.facultyDoubtTicket.upsert({
+          where: { id: ticket.id },
+          create: {
+            id: ticket.id,
+            userId: ticket.userId,
+            learnerName: ticket.learnerName,
+            courseSlug: ticket.courseSlug,
+            lessonKey: ticket.lessonKey,
+            lessonTitle: ticket.lessonTitle,
+            question: ticket.question,
+            status: ticket.status,
+            slaMinutes: ticket.slaMinutes,
+          },
+          update: {
+            question: ticket.question,
+          },
+        }).catch((err) => console.error("Failed to persist doubt to DB:", err instanceof Error ? err.name : "unknown"))
+      }
       res.status(201).json({ data: ticket })
     } catch (error) {
       sendLmsFailure(res, error, "Failed to escalate doubt")

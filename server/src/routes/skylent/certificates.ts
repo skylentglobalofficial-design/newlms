@@ -201,16 +201,34 @@ skylentCertificatesRouter.get("/mine", requireAuth, async (req: AuthenticatedReq
         })
       : []
     const slugById = new Map(courses.map((course) => [course.id, course.slug]))
-    const cachedProgs = [...issuedProgrammeCertCache.values()]
-      .filter((item) => item.userId === req.auth!.user.id && !item.revoked)
-      .map((item) => ({
-        ...issuedLearnerView(item, item.courseSlug),
-        programSlug: item.programSlug,
-        revoked: false,
-      }))
+    const caps = await readSchemaCapabilities()
+    let dbProgCerts: Array<{ code: string; learnerName: string; programTitle: string; programSlug: string; issuedAt: Date; revoked: boolean; evidenceSummary: string | null }> = []
+    if (caps.programmeCertificates) {
+      dbProgCerts = await prisma.programmeCertificate.findMany({
+        where: { userId: req.auth!.user.id },
+        orderBy: { issuedAt: "desc" },
+      })
+    }
+    const progMap = new Map<string, any>()
+    for (const cp of issuedProgrammeCertCache.values()) {
+      if (cp.userId === req.auth!.user.id && !cp.revoked) {
+        progMap.set(cp.code, {
+          ...issuedLearnerView(cp, cp.courseSlug),
+          programSlug: cp.programSlug,
+          revoked: false,
+        })
+      }
+    }
+    for (const dp of dbProgCerts) {
+      progMap.set(dp.code, {
+        ...issuedLearnerView({ code: dp.code, learnerName: dp.learnerName, courseTitle: dp.programTitle, issuedAt: dp.issuedAt }, null),
+        programSlug: dp.programSlug,
+        revoked: dp.revoked,
+      })
+    }
     res.json({
       data: [
-        ...cachedProgs,
+        ...progMap.values(),
         ...rows.map((row) => ({
           ...issuedLearnerView(row, slugById.get(row.courseId) ?? null),
           revoked: row.revoked,
@@ -234,12 +252,28 @@ skylentCertificatesRouter.get("/verify/:code", verifyLimit, async (req, res) => 
   if (!code.success) return void res.status(400).json({ error: "Invalid certificate ID" })
   // A failed probe or lookup is not "no such certificate". Both stay inside this try
   // so a dead database cannot escape as an HTML error or a 404.
-  let cert: { code: string; learnerName: string; courseTitle: string; issuedAt: Date; revoked?: boolean } | null =
+  let cert: { code: string; learnerName: string; courseTitle: string; issuedAt: Date; revoked?: boolean; evidenceSummary?: string } | null =
     issuedProgrammeCertCache.get(code.data) ?? null
   if (!cert) {
     try {
       if (!(await certificatesReady())) return void res.status(503).json(CERTIFICATE_UNAVAILABLE)
-      cert = await prisma.skylentCertificate.findUnique({ where: { code: code.data } })
+      const caps = await readSchemaCapabilities()
+      if (caps.programmeCertificates) {
+        const dbProg = await prisma.programmeCertificate.findUnique({ where: { code: code.data } })
+        if (dbProg) {
+          cert = {
+            code: dbProg.code,
+            learnerName: dbProg.learnerName,
+            courseTitle: dbProg.programTitle,
+            issuedAt: dbProg.issuedAt,
+            evidenceSummary: dbProg.evidenceSummary ?? undefined,
+            revoked: dbProg.revoked,
+          }
+        }
+      }
+      if (!cert) {
+        cert = await prisma.skylentCertificate.findUnique({ where: { code: code.data } })
+      }
     } catch (error) {
       return void sendCertificateUnavailable(res, error)
     }
@@ -286,11 +320,42 @@ skylentCertificatesRouter.post("/issue-programme", requireAuth, requireCsrf, asy
       }
     }
     const primaryCourse = program.programCourses[0].course
-    const existingProg = [...issuedProgrammeCertCache.values()].find(
-      (item) => item.userId === user.id && item.programSlug === program.slug && !item.revoked,
-    )
-    const code = existingProg?.code ?? buildProgrammeCertificateCode(program.slug)
-    const issuedAt = existingProg?.issuedAt ?? new Date()
+    const caps = await readSchemaCapabilities()
+    let code: string
+    let issuedAt: Date
+    let isExisting = false
+
+    if (caps.programmeCertificates) {
+      const dbExisting = await prisma.programmeCertificate.findUnique({
+        where: { userId_programSlug: { userId: user.id, programSlug: program.slug } },
+      })
+      if (dbExisting) {
+        code = dbExisting.code
+        issuedAt = dbExisting.issuedAt
+        isExisting = true
+      } else {
+        code = buildProgrammeCertificateCode(program.slug)
+        const created = await prisma.programmeCertificate.create({
+          data: {
+            code,
+            userId: user.id,
+            programSlug: program.slug,
+            learnerName: publicLearnerName(learnerName),
+            programTitle: program.name,
+            evidenceSummary: "Verified completion of all linked programme courses, modules, and applied case assessments.",
+          },
+        })
+        issuedAt = created.issuedAt
+      }
+    } else {
+      const existingProg = [...issuedProgrammeCertCache.values()].find(
+        (item) => item.userId === user.id && item.programSlug === program.slug && !item.revoked,
+      )
+      code = existingProg?.code ?? buildProgrammeCertificateCode(program.slug)
+      issuedAt = existingProg?.issuedAt ?? new Date()
+      isExisting = Boolean(existingProg)
+    }
+
     issuedProgrammeCertCache.set(code, {
       code,
       userId: user.id,

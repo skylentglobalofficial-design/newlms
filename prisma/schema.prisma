@@ -1111,6 +1111,42 @@ model SkylentCertificate {
   @@index([code])
 }
 
+/// Programme Master Certificate issued upon 100% completion of all linked courses in a professional programme.
+model ProgrammeCertificate {
+  id              String   @id @default(uuid()) @db.Uuid
+  code            String   @unique /// SKL-<year>-PGM<prog code>-<random>
+  userId          String   @db.Uuid
+  programSlug     String
+  learnerName     String
+  programTitle    String
+  evidenceSummary String?
+  issuedAt        DateTime @default(now())
+  revoked         Boolean  @default(false)
+
+  @@unique([userId, programSlug])
+  @@index([code])
+}
+
+/// Live 20-minute SLA Faculty TA doubt tickets for learner lesson assistance.
+model FacultyDoubtTicket {
+  id             String    @id @default(uuid()) @db.Uuid
+  userId         String    @db.Uuid
+  learnerName    String
+  courseSlug     String
+  lessonKey      String
+  lessonTitle    String?
+  question       String
+  status         String    @default("open") /// open | resolved
+  slaMinutes     Int       @default(20)
+  resolvedById   String?   @db.Uuid
+  resolutionNote String?
+  createdAt      DateTime  @default(now())
+  resolvedAt     DateTime?
+
+  @@index([courseSlug, status])
+  @@index([userId])
+}
+
 /// Counselling calls and programme/degree enquiries from the public website.
 model SkylentEnquiry {
   id            String    @id @default(uuid()) @db.Uuid

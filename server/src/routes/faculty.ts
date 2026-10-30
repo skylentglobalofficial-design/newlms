@@ -605,7 +605,35 @@ facultyRouter.get("/doubts", requireAuth, requireRoles("faculty", "superadmin"),
       })
       courseSlugs = courses.map((c) => c.slug)
     }
-    const tickets = listFacultyDoubtTickets(courseSlugs)
+    const caps = await readSchemaCapabilities()
+    let tickets: import("../lib/doubt-sla.js").FacultyDoubtTicket[]
+    if (caps.facultyDoubtTickets) {
+      const whereClause: { courseSlug?: { in: string[] } } = {}
+      if (courseSlugs && courseSlugs.length > 0) {
+        whereClause.courseSlug = { in: courseSlugs }
+      }
+      const dbTickets = await prisma.facultyDoubtTicket.findMany({
+        where: whereClause,
+        orderBy: { createdAt: "desc" },
+      })
+      tickets = dbTickets.map((t) => ({
+        id: t.id,
+        userId: t.userId,
+        learnerName: t.learnerName,
+        courseSlug: t.courseSlug,
+        lessonKey: t.lessonKey,
+        lessonTitle: t.lessonTitle ?? t.lessonKey,
+        question: t.question,
+        status: t.status as "open" | "resolved",
+        slaMinutes: t.slaMinutes,
+        createdAt: t.createdAt.toISOString(),
+        resolvedAt: t.resolvedAt?.toISOString() ?? null,
+        resolvedById: t.resolvedById ?? null,
+        resolutionNote: t.resolutionNote ?? null,
+      }))
+    } else {
+      tickets = listFacultyDoubtTickets(courseSlugs)
+    }
     const openCount = tickets.filter((t) => t.status === "open").length
     res.json({ data: tickets, meta: { slaMinutes: FACULTY_DOUBT_SLA_MINUTES, openCount } })
   } catch (error) {
@@ -622,6 +650,38 @@ facultyRouter.post("/doubts/:id/resolve", requireAuth, requireRoles("faculty", "
   const body = z.object({ resolutionNote: z.string().trim().max(1000).optional() }).safeParse(req.body ?? {})
   if (!id || !body.success) return res.status(400).json({ error: "Invalid request" })
   try {
+    const caps = await readSchemaCapabilities()
+    if (caps.facultyDoubtTickets) {
+      const updated = await prisma.facultyDoubtTicket.update({
+        where: { id },
+        data: {
+          status: "resolved",
+          resolvedAt: new Date(),
+          resolvedById: req.auth!.user.id,
+          resolutionNote: body.data.resolutionNote?.trim() || "Resolved by Faculty TA.",
+        },
+      }).catch(() => null)
+      if (updated) {
+        resolveFacultyDoubtTicket(id, req.auth!.user.id, body.data.resolutionNote)
+        return res.json({
+          data: {
+            id: updated.id,
+            userId: updated.userId,
+            learnerName: updated.learnerName,
+            courseSlug: updated.courseSlug,
+            lessonKey: updated.lessonKey,
+            lessonTitle: updated.lessonTitle ?? updated.lessonKey,
+            question: updated.question,
+            status: updated.status,
+            slaMinutes: updated.slaMinutes,
+            createdAt: updated.createdAt.toISOString(),
+            resolvedAt: updated.resolvedAt?.toISOString() ?? null,
+            resolvedById: updated.resolvedById ?? null,
+            resolutionNote: updated.resolutionNote ?? null,
+          },
+        })
+      }
+    }
     const resolved = resolveFacultyDoubtTicket(id, req.auth!.user.id, body.data.resolutionNote)
     if (!resolved) return res.status(404).json({ error: "Doubt ticket not found" })
     res.json({ data: resolved })
