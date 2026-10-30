@@ -372,7 +372,7 @@ skylentCertificatesRouter.post("/issue-programme", requireAuth, requireCsrf, asy
       courseTitle: program.name,
       issuedAt,
     })
-    return void res.status(existingProg ? 200 : 201).json({
+    return void res.status(isExisting ? 200 : 201).json({
       data: {
         ...summary,
         programSlug: program.slug,
