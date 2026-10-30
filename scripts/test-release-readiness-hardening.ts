@@ -693,6 +693,17 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
     "career-rise.ts and CareerRiseCard.tsx must expose and render the 3-step Career Rise readiness milestones",
   )
 
+  console.log("16. Phase 2B Faculty Doubt SLA Queue UI in DashboardFacultyPage.tsx and faculty-api.ts")
+  const facApiSrc = readFileSync(resolve(process.cwd(), "src/lib/faculty-api.ts"), "utf8")
+  const facPageUpdated = readFileSync(resolve(process.cwd(), "src/pages/DashboardFacultyPage.tsx"), "utf8")
+  assert(
+    facApiSrc.includes("fetchFacultyDoubts") &&
+      facApiSrc.includes("resolveFacultyDoubt") &&
+      facPageUpdated.includes("FacultyDoubtQueue") &&
+      facPageUpdated.includes("20-Minute Faculty TA Doubt Queue"),
+    "faculty-api.ts and DashboardFacultyPage.tsx must wire the live 20-Minute Faculty TA Doubt Queue UI",
+  )
+
   console.log("release-readiness-hardening ok")
 }
 

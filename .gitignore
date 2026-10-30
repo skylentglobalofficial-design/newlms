@@ -14,3 +14,8 @@ logs/
 *.log
 .claude-replay.*
 .tmp-*
+
+# Local release patch and helper scripts
+*.patch
+*.bundle
+fix-skylent-*.ps1
