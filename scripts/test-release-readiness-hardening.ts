@@ -683,7 +683,7 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
   assert(resolvedTicket?.status === "resolved" && resolvedTicket.resolvedById === "u-faculty-1", "resolveFacultyDoubtTicket must mark ticket resolved")
   clearFacultyDoubtStoreForTests()
 
-  const { socraticQuickPromptsFor } = await import("../src/components/lms/SkylentAI.tsx")
+  const { socraticQuickPromptsFor } = await import("../src/lib/socratic-prompts.ts")
   for (const track of ["data-analytics", "product-management", "python-programming", "data-science-ai", "generative-ai", "full-stack-web"]) {
     const prompts = socraticQuickPromptsFor(track, "reading", false)
     assert(prompts.length === 5 && Boolean(prompts.at(-1)?.question), `socraticQuickPromptsFor must include a custom track-specific Socratic prompt for ${track}`)
