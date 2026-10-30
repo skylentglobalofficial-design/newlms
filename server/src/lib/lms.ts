@@ -157,6 +157,8 @@ async function courseReadSelect() {
 
 /** Quiz-limit and note columns are absent until their migrations are applied. Treat them as unset. */
 function normalizeLoadedCourse<T extends CourseWithCurriculum>(course: T): T {
+  if (course.publicationStatus === undefined) course.publicationStatus = "PUBLISHED" as Course["publicationStatus"]
+  if (course.authoredInApp === undefined) course.authoredInApp = false
   for (const module of course.curriculum) {
     for (const node of module.nodes) {
       if (node.maxAttempts === undefined) node.maxAttempts = null
@@ -499,7 +501,7 @@ export async function getPrimaryEnrollment(userId: string) {
   return loadDirectCourseEnrollment(userId)
 }
 
-function buildLessonState(
+export function buildLessonState(
   node: CurriculumNode,
   progress: LessonProgress | undefined,
   quizAttempts: QuizAttempt[],
@@ -508,7 +510,7 @@ function buildLessonState(
 ): LessonStatePayload {
   const complete = Boolean(progress?.completedAt)
   const quizPassed = quizAttempts.some((a) => a.passed)
-  const assignmentSubmitted = assignment?.status === "submitted"
+  const assignmentSubmitted = assignment?.status === "submitted" || assignment?.status === "graded"
 
   return {
     started: Boolean(progress?.startedAt),
@@ -659,7 +661,8 @@ export async function loadLessonStates(
   for (const item of flattenNodes(course)) {
     const progress = progressByNode.get(item.node.id)
     const quizPassed = (attemptsByNode.get(item.node.id) ?? []).some((a) => a.passed)
-    const assignmentSubmitted = assignmentByNode.get(item.node.id)?.status === "submitted"
+    const assignmentStatus = assignmentByNode.get(item.node.id)?.status
+    const assignmentSubmitted = assignmentStatus === "submitted" || assignmentStatus === "graded"
     const complete = Boolean(progress?.completedAt) || quizPassed || assignmentSubmitted
     baseStates[item.lessonKey] = { complete }
   }

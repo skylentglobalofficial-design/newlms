@@ -56,4 +56,18 @@ assert(!transactionDirect.join(" ").includes("postgresql://"), "port warning mus
 
 assert(productionEnvWarnings({ NODE_ENV: "test", COOKIE_SECURE: "false" }).length === 0, "warnings are production-only")
 
+const invalidCompat = productionEnvWarnings({
+  NODE_ENV: "production",
+  FRONTEND_URL: "https://skylent.live",
+  SKYLENT_SEPTEMBER_COMPAT: "true",
+})
+assert(invalidCompat.some((w) => w.startsWith("SKYLENT_SEPTEMBER_COMPAT")), "non-1 SKYLENT_SEPTEMBER_COMPAT must warn")
+
+const validCompat = productionEnvWarnings({
+  NODE_ENV: "production",
+  FRONTEND_URL: "https://skylent.live",
+  SKYLENT_SEPTEMBER_COMPAT: "1",
+})
+assert(validCompat.length === 0, "SKYLENT_SEPTEMBER_COMPAT=1 must not warn")
+
 console.log("production-env ok")

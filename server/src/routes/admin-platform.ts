@@ -17,6 +17,7 @@ import {
   updateRewardRule,
 } from "../lib/elixir.js"
 import { prisma } from "../lib/prisma.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../lib/schema-capabilities.js"
 
 export const adminPlatformRouter = Router()
 
@@ -32,6 +33,7 @@ const paymentStatusSchema = z.enum(["pending", "succeeded", "failed", "cancelled
 function ruleError(res: import("express").Response, error: unknown) {
   if (error instanceof ElixirRuleError) return res.status(400).json({ error: error.message })
   if (error instanceof InsufficientElixirError) return res.status(409).json({ error: error.message })
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) return res.status(503).json(unavailable)
   console.error("Elixir admin action failed:", error instanceof Error ? error.name : "unknown")
   return res.status(500).json({ error: "The Elixir action could not be completed" })
 }
@@ -65,94 +67,109 @@ adminPlatformRouter.get("/audit", ...guards, async (_req, res) => {
 })
 
 adminPlatformRouter.get("/catalogue", ...guards, async (_req, res) => {
-  const [courses, programs, enrolmentCount] = await Promise.all([
-    prisma.course.findMany({
-      orderBy: { title: "asc" },
-      select: { slug: true, title: true, _count: { select: { enrollments: true, curriculum: true } } },
-    }),
-    prisma.program.findMany({
-      orderBy: { name: "asc" },
-      select: { slug: true, name: true, enrollmentStatus: true, _count: { select: { enrollments: true, programCourses: true } } },
-    }),
-    prisma.userEnrollment.count(),
-  ])
-  res.json({
-    data: {
-      enrolmentCount,
-      courses: courses.map((course) => ({
-        slug: course.slug,
-        title: course.title,
-        enrolments: course._count.enrollments,
-        modules: course._count.curriculum,
-      })),
-      programs: programs.map((program) => ({
-        slug: program.slug,
-        name: program.name,
-        enrollmentStatus: program.enrollmentStatus,
-        enrolments: program._count.enrollments,
-        linkedCourses: program._count.programCourses,
-      })),
-    },
-  })
+  try {
+    const [courses, programs, enrolmentCount] = await Promise.all([
+      prisma.course.findMany({
+        orderBy: { title: "asc" },
+        select: { slug: true, title: true, _count: { select: { enrollments: true, curriculum: true } } },
+      }),
+      prisma.program.findMany({
+        orderBy: { name: "asc" },
+        select: { slug: true, name: true, enrollmentStatus: true, _count: { select: { enrollments: true, programCourses: true } } },
+      }),
+      prisma.userEnrollment.count(),
+    ])
+    res.json({
+      data: {
+        enrolmentCount,
+        courses: courses.map((course) => ({
+          slug: course.slug,
+          title: course.title,
+          enrolments: course._count.enrollments,
+          modules: course._count.curriculum,
+        })),
+        programs: programs.map((program) => ({
+          slug: program.slug,
+          name: program.name,
+          enrollmentStatus: program.enrollmentStatus,
+          enrolments: program._count.enrollments,
+          linkedCourses: program._count.programCourses,
+        })),
+      },
+    })
+  } catch (error) {
+    console.error("Failed to load admin catalogue:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to load catalogue summary" })
+  }
 })
 
 adminPlatformRouter.get("/enrolments", ...guards, async (req, res) => {
   const parsedLimit = z.coerce.number().int().min(1).max(50).safeParse(req.query.limit)
   const limit = parsedLimit.success ? parsedLimit.data : 25
-  const rows = await prisma.userEnrollment.findMany({
-    orderBy: { createdAt: "desc" },
-    take: limit,
-    select: {
-      id: true,
-      status: true,
-      createdAt: true,
-      user: { select: { id: true, email: true, displayName: true } },
-      course: { select: { slug: true, title: true } },
-      program: { select: { slug: true, name: true } },
-    },
-  })
-  res.json({
-    data: rows.map((row) => ({
-      id: row.id,
-      status: row.status,
-      createdAt: row.createdAt.toISOString(),
-      user: row.user,
-      course: row.course,
-      program: row.program,
-    })),
-  })
+  try {
+    const rows = await prisma.userEnrollment.findMany({
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      select: {
+        id: true,
+        status: true,
+        createdAt: true,
+        user: { select: { id: true, email: true, displayName: true } },
+        course: { select: { slug: true, title: true } },
+        program: { select: { slug: true, name: true } },
+      },
+    })
+    res.json({
+      data: rows.map((row) => ({
+        id: row.id,
+        status: row.status,
+        createdAt: row.createdAt.toISOString(),
+        user: row.user,
+        course: row.course,
+        program: row.program,
+      })),
+    })
+  } catch (error) {
+    console.error("Failed to list admin enrolments:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to list enrolments" })
+  }
 })
 
 adminPlatformRouter.get("/reports", ...guards, async (_req, res) => {
-  if (!(await elixirReady())) {
-    const [users, enrolments] = await Promise.all([prisma.user.count(), prisma.userEnrollment.count()])
-    return res.json({ data: { users, enrolments, elixir: null } })
-  }
-  const [users, enrolments, issued, spent, shortfall, payments] = await Promise.all([
-    prisma.user.count(),
-    prisma.userEnrollment.count(),
-    prisma.elixirTransaction.aggregate({ where: { amount: { gt: 0 } }, _sum: { amount: true } }),
-    prisma.elixirTransaction.aggregate({ where: { type: "resource_spend" }, _sum: { amount: true } }),
-    prisma.elixirTransaction.aggregate({ _sum: { unrecovered: true } }),
-    prisma.verifiedPayment.groupBy({ by: ["status"], _count: { _all: true }, _sum: { eligibleNetRupees: true, elixirAwarded: true } }),
-  ])
-  res.json({
-    data: {
-      users,
-      enrolments,
-      elixir: {
-        issued: issued._sum.amount ?? 0,
-        spent: Math.abs(spent._sum.amount ?? 0),
-        unrecovered: shortfall._sum.unrecovered ?? 0,
-        payments: payments.map((row) => ({
-          status: row.status,
-          count: row._count._all,
-          eligibleNetRupees: row._sum.eligibleNetRupees ?? 0,
-          elixirAwarded: row._sum.elixirAwarded ?? 0,
-        })),
+  try {
+    if (!(await elixirReady().catch(() => false))) {
+      const [users, enrolments] = await Promise.all([prisma.user.count(), prisma.userEnrollment.count()])
+      return res.json({ data: { users, enrolments, elixir: null } })
+    }
+    const [users, enrolments, issued, spent, shortfall, payments] = await Promise.all([
+      prisma.user.count(),
+      prisma.userEnrollment.count(),
+      prisma.elixirTransaction.aggregate({ where: { amount: { gt: 0 } }, _sum: { amount: true } }),
+      prisma.elixirTransaction.aggregate({ where: { type: "resource_spend" }, _sum: { amount: true } }),
+      prisma.elixirTransaction.aggregate({ _sum: { unrecovered: true } }),
+      prisma.verifiedPayment.groupBy({ by: ["status"], _count: { _all: true }, _sum: { eligibleNetRupees: true, elixirAwarded: true } }),
+    ])
+    res.json({
+      data: {
+        users,
+        enrolments,
+        elixir: {
+          issued: issued._sum.amount ?? 0,
+          spent: Math.abs(spent._sum.amount ?? 0),
+          unrecovered: shortfall._sum.unrecovered ?? 0,
+          payments: payments.map((row) => ({
+            status: row.status,
+            count: row._count._all,
+            eligibleNetRupees: row._sum.eligibleNetRupees ?? 0,
+            elixirAwarded: row._sum.elixirAwarded ?? 0,
+          })),
+        },
       },
-    },
-  })
+    })
+  } catch (error) {
+    console.error("Failed to load admin reports:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to load reports" })
+  }
 })
 
 adminPlatformRouter.use("/elixir", async (_req, res, next) => {
@@ -164,8 +181,12 @@ adminPlatformRouter.use("/elixir", async (_req, res, next) => {
 })
 
 adminPlatformRouter.get("/elixir/rules", ...guards, async (_req, res) => {
-  const rules = await prisma.elixirRewardRule.findMany({ orderBy: { activity: "asc" } })
-  res.json({ data: rules })
+  try {
+    const rules = await prisma.elixirRewardRule.findMany({ orderBy: { activity: "asc" } })
+    res.json({ data: rules })
+  } catch (error) {
+    ruleError(res, error)
+  }
 })
 
 adminPlatformRouter.patch("/elixir/rules/:activity", ...writeGuards, async (req: AuthenticatedRequest, res) => {
@@ -202,19 +223,23 @@ adminPlatformRouter.patch("/elixir/rules/:activity", ...writeGuards, async (req:
 adminPlatformRouter.get("/elixir/users/:userId", ...guards, async (req, res) => {
   const userId = z.string().uuid().safeParse(req.params.userId)
   if (!userId.success) return res.status(400).json({ error: "Invalid user" })
-  const user = await prisma.user.findUnique({ where: { id: userId.data }, select: { id: true, email: true, displayName: true } })
-  if (!user) return res.status(404).json({ error: "User not found" })
-  const [reconciliation, transactions] = await Promise.all([
-    reconcileElixir(user.id),
-    listElixirTransactions(user.id, 50),
-  ])
-  res.json({
-    data: {
-      user,
-      ...reconciliation,
-      transactions: transactions.map((row) => ({ ...row, createdAt: row.createdAt.toISOString() })),
-    },
-  })
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId.data }, select: { id: true, email: true, displayName: true } })
+    if (!user) return res.status(404).json({ error: "User not found" })
+    const [reconciliation, transactions] = await Promise.all([
+      reconcileElixir(user.id),
+      listElixirTransactions(user.id, 50),
+    ])
+    res.json({
+      data: {
+        user,
+        ...reconciliation,
+        transactions: transactions.map((row) => ({ ...row, createdAt: row.createdAt.toISOString() })),
+      },
+    })
+  } catch (error) {
+    ruleError(res, error)
+  }
 })
 
 adminPlatformRouter.post("/elixir/adjustments", ...writeGuards, async (req: AuthenticatedRequest, res) => {
@@ -250,10 +275,10 @@ adminPlatformRouter.post("/payments", ...writeGuards, async (req: AuthenticatedR
     status: paymentStatusSchema,
   }).safeParse(req.body)
   if (!body.success) return res.status(400).json({ error: "Invalid payment record" })
-  if (!(await elixirReady())) return res.status(503).json(unavailable)
-  const learner = await prisma.user.findUnique({ where: { id: body.data.userId }, select: { id: true } })
-  if (!learner) return res.status(404).json({ error: "User not found" })
+  if (!(await elixirReady().catch(() => false))) return res.status(503).json(unavailable)
   try {
+    const learner = await prisma.user.findUnique({ where: { id: body.data.userId }, select: { id: true } })
+    if (!learner) return res.status(404).json({ error: "User not found" })
     const result = await recordVerifiedPayment({
       ...body.data,
       status: body.data.status as VerifiedPaymentStatus,
@@ -283,7 +308,7 @@ adminPlatformRouter.post("/payments", ...writeGuards, async (req: AuthenticatedR
 adminPlatformRouter.post("/payments/:id/refund", ...writeGuards, async (req: AuthenticatedRequest, res) => {
   const id = z.string().uuid().safeParse(req.params.id)
   if (!id.success) return res.status(400).json({ error: "Invalid payment" })
-  if (!(await elixirReady())) return res.status(503).json(unavailable)
+  if (!(await elixirReady().catch(() => false))) return res.status(503).json(unavailable)
   try {
     const result = await refundVerifiedPayment(id.data, req.auth!.user.id)
     if (!result) return res.status(404).json({ error: "Payment not found" })
@@ -311,9 +336,13 @@ adminPlatformRouter.post("/payments/:id/refund", ...writeGuards, async (req: Aut
 })
 
 adminPlatformRouter.get("/resources", ...guards, async (_req, res) => {
-  if (!(await elixirReady())) return res.status(503).json(unavailable)
-  const rows = await prisma.learningResource.findMany({ orderBy: { title: "asc" } })
-  res.json({ data: rows })
+  if (!(await elixirReady().catch(() => false))) return res.status(503).json(unavailable)
+  try {
+    const rows = await prisma.learningResource.findMany({ orderBy: { title: "asc" } })
+    res.json({ data: rows })
+  } catch (error) {
+    ruleError(res, error)
+  }
 })
 
 adminPlatformRouter.post("/resources", ...writeGuards, async (req: AuthenticatedRequest, res) => {
@@ -328,7 +357,7 @@ adminPlatformRouter.post("/resources", ...writeGuards, async (req: Authenticated
     lessonKey: slugSchema.optional(),
   }).safeParse(req.body)
   if (!body.success) return res.status(400).json({ error: "Invalid resource" })
-  if (!(await elixirReady())) return res.status(503).json(unavailable)
+  if (!(await elixirReady().catch(() => false))) return res.status(503).json(unavailable)
   try {
     const resource = await prisma.learningResource.create({
       data: {

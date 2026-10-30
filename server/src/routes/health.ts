@@ -1,4 +1,4 @@
-import { Router } from "express"
+import { Router, type Request, type Response } from "express"
 import { prisma } from "../lib/prisma.js"
 import { checkMigrationState } from "../lib/migration-guard.js"
 import { redactSecrets } from "../lib/env.js"
@@ -18,7 +18,7 @@ function readinessFields() {
   }
 }
 
-router.get("/", async (_request, response) => {
+async function handleReadiness(_request: Request, response: Response) {
   const exposeDetail = process.env.NODE_ENV !== "production"
   try {
     await prisma.$queryRaw`SELECT 1`
@@ -54,6 +54,13 @@ router.get("/", async (_request, response) => {
   }
 
   response.json({ status: "ok", db: "ok", migrations: "ok", ...readinessFields() })
+}
+
+router.get("/live", (_request, response) => {
+  response.json({ status: "ok", live: true, ...readinessFields() })
 })
+
+router.get("/ready", handleReadiness)
+router.get("/", handleReadiness)
 
 export default router

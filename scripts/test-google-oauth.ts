@@ -182,12 +182,21 @@ async function run() {
     console.log("7. Live Google certificate endpoint returns parseable signing keys")
     restoreFetchMock()
     resetGoogleCertificateCache()
-    const liveResponse = await originalFetch(GOOGLE_CERTS_URL)
-    assert(liveResponse.ok, "Expected live Google certificate endpoint to respond")
-    const livePayload = await liveResponse.json()
-    const liveParsed = parseGoogleCertificates(livePayload)
-    assert(liveParsed.responseShape === "jwk_set", "Expected live Google certs to use JWK set format")
-    assert(Object.keys(liveParsed.keys).length >= 1, "Expected at least one live Google signing key")
+    try {
+      const liveResponse = await originalFetch(GOOGLE_CERTS_URL)
+      assert(liveResponse.ok, "Expected live Google certificate endpoint to respond")
+      const livePayload = await liveResponse.json()
+      const liveParsed = parseGoogleCertificates(livePayload)
+      assert(liveParsed.responseShape === "jwk_set", "Expected live Google certs to use JWK set format")
+      assert(Object.keys(liveParsed.keys).length >= 1, "Expected at least one live Google signing key")
+    } catch (error) {
+      const code = (error as { cause?: { code?: string } })?.cause?.code
+      if (code === "EAI_AGAIN" || code === "ENOTFOUND" || code === "ENETUNREACH" || code === "ECONNREFUSED") {
+        console.log(`   (Skipped live Google certs network probe in offline environment: ${code})`)
+      } else {
+        throw error
+      }
+    }
     installCertFetchMock()
 
     console.log("All Google OAuth certificate rotation checks passed.")

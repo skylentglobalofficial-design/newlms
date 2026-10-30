@@ -69,10 +69,10 @@ supportRouter.get("/:id", requireAuth, async (req: AuthenticatedRequest, res) =>
   const idParsed = uuidSchema.safeParse(req.params.id)
   if (!idParsed.success) return res.status(400).json({ error: "Invalid support request id" })
 
-  const owned = await assertOwnedSupportRequest(req.auth!.user.id, idParsed.data)
-  if (!owned) return res.status(404).json({ error: "Support request not found" })
-
   try {
+    const owned = await assertOwnedSupportRequest(req.auth!.user.id, idParsed.data)
+    if (!owned) return res.status(404).json({ error: "Support request not found" })
+
     const request = await prisma.careerSupportRequest.findUnique({
       where: { id: owned.id },
       include: { tasks: { orderBy: { createdAt: "asc" } } },
@@ -89,10 +89,10 @@ supportRouter.patch("/:id", requireAuth, requireCsrf, async (req: AuthenticatedR
   const parsed = patchSchema.safeParse(req.body)
   if (!parsed.success) return validationError(res, parsed.error)
 
-  const owned = await assertOwnedSupportRequest(req.auth!.user.id, idParsed.data)
-  if (!owned) return res.status(404).json({ error: "Support request not found" })
-
   try {
+    const owned = await assertOwnedSupportRequest(req.auth!.user.id, idParsed.data)
+    if (!owned) return res.status(404).json({ error: "Support request not found" })
+
     const updated = await prisma.careerSupportRequest.update({
       where: { id: owned.id },
       data: {

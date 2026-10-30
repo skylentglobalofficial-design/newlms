@@ -37,13 +37,22 @@ function urlPort(value: string | undefined): string | null {
   }
 }
 
-/** Replace known secret values before a message is logged. Never returns the original URL. */
+/** Replace known secret values and inline URI passwords before a message is logged. Never returns the original URL. */
 export function redactSecrets(message: string, env: NodeJS.ProcessEnv = process.env): string {
   let redacted = message
-  for (const key of ["DATABASE_URL", "DIRECT_URL", "SKYLENT_AI_API_KEY", "SESSION_SECRET"] as const) {
+  for (const key of [
+    "DATABASE_URL",
+    "DIRECT_URL",
+    "SKYLENT_AI_API_KEY",
+    "SESSION_SECRET",
+    "GOOGLE_CLIENT_SECRET",
+    "MAILGUN_API_KEY",
+    "SENDGRID_API_KEY",
+  ] as const) {
     const value = env[key]?.trim()
     if (value && value.length >= 8) redacted = redacted.split(value).join(`<${key}>`)
   }
+  redacted = redacted.replace(/(postgres(?:ql)?:\/\/[^:/@\s]+:)([^@\s]+)(@)/gi, "$1<REDACTED>$3")
   return redacted
 }
 
@@ -66,6 +75,9 @@ export function productionEnvWarnings(env: NodeJS.ProcessEnv = process.env): str
   }
   if (urlPort(env.DIRECT_URL) === "6543") {
     warnings.push("DIRECT_URL uses port 6543, the transaction pooler. Migrations need the session pooler on port 5432.")
+  }
+  if (env.SKYLENT_SEPTEMBER_COMPAT !== undefined && env.SKYLENT_SEPTEMBER_COMPAT !== "" && env.SKYLENT_SEPTEMBER_COMPAT !== "1") {
+    warnings.push("SKYLENT_SEPTEMBER_COMPAT is set to a value other than 1. Only the exact string 1 enables September compatibility mode.")
   }
   return warnings
 }

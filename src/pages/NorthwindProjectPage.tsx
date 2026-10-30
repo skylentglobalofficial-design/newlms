@@ -17,6 +17,14 @@ import {
   fetchCareerLinkForLearnerProject,
   type CareerProjectLink,
 } from "../lib/career-api"
+import {
+  buildProjectReflectionDraftKey,
+  clearLocalDraft,
+  readLocalDraft,
+  reconcileProjectReflectionDraft,
+  writeLocalDraft,
+  type ProjectReflectionDraft,
+} from "../lib/draft-storage"
 import HarborDeskStudio from "../components/labs/HarborDeskStudio"
 import LabSqlChart from "../components/labs/LabSqlChart"
 import { ProductSlice } from "../components/skylent/primitives"
@@ -48,6 +56,8 @@ export default function LearnerProjectPage() {
   const [careerBusy, setCareerBusy] = useState(false)
   const [careerNotice, setCareerNotice] = useState<string | null>(null)
 
+  const draftKey = projectType ? buildProjectReflectionDraftKey(projectType) : ""
+
   useEffect(() => {
     const controller = new AbortController()
     setStatus("loading")
@@ -57,15 +67,25 @@ export default function LearnerProjectPage() {
       setError("This project could not be opened.")
       return () => controller.abort()
     }
+    const localKey = buildProjectReflectionDraftKey(projectType)
     void ensureLearnerProject(projectType, controller.signal)
       .then((next) => {
         if (next.courseSlug !== courseSlug) {
           throw new Error("This project does not belong to that course.")
         }
         setProject(next)
-        setFinding(next.reflection.finding)
-        setWhyItMatters(next.reflection.whyItMatters)
-        setRecommendation(next.reflection.recommendation)
+        const reconciled = reconcileProjectReflectionDraft(
+          next.reflection,
+          readLocalDraft<ProjectReflectionDraft>(localKey),
+        )
+        setFinding(reconciled.finding)
+        setWhyItMatters(reconciled.whyItMatters)
+        setRecommendation(reconciled.recommendation)
+        if (reconciled.restoredFromLocal) {
+          setNotice("Unsaved local draft restored. Click Save project to save to your account.")
+        } else {
+          clearLocalDraft(localKey)
+        }
         const requested = requestedTask && next.tasks.some((task) => task.key === requestedTask) ? requestedTask : null
         setSelectedKey(requested ?? firstOpenTask(next)?.key ?? next.tasks[0]?.key ?? null)
         setStatus("ready")
@@ -107,12 +127,31 @@ export default function LearnerProjectPage() {
     [project, selectedKey],
   )
 
+  function persistLocalReflection(nextFinding: string, nextWhy: string, nextRec: string) {
+    if (!draftKey || !project) return
+    if (
+      nextFinding === project.reflection.finding &&
+      nextWhy === project.reflection.whyItMatters &&
+      nextRec === project.reflection.recommendation
+    ) {
+      clearLocalDraft(draftKey)
+      return
+    }
+    writeLocalDraft<ProjectReflectionDraft>(draftKey, {
+      finding: nextFinding,
+      whyItMatters: nextWhy,
+      recommendation: nextRec,
+      savedAt: new Date().toISOString(),
+    })
+  }
+
   function applyProject(next: ProjectWorkspace, syncReflection = false) {
     setProject(next)
     if (syncReflection) {
       setFinding(next.reflection.finding)
       setWhyItMatters(next.reflection.whyItMatters)
       setRecommendation(next.reflection.recommendation)
+      if (draftKey) clearLocalDraft(draftKey)
     }
   }
 
@@ -172,6 +211,7 @@ export default function LearnerProjectPage() {
       applyProject(await saveProject(project.id, { finding, whyItMatters, recommendation }), true)
       setNotice("Project saved.")
     } catch (err) {
+      persistLocalReflection(finding, whyItMatters, recommendation)
       setError(learnerErrorMessage(err, "Your project could not be saved. Your text is still here. Try again."))
     } finally {
       setBusy(null)
@@ -453,7 +493,11 @@ export default function LearnerProjectPage() {
             <textarea
               id="proj-finding"
               value={finding}
-              onChange={(event) => setFinding(event.target.value)}
+              onChange={(event) => {
+                const nextFinding = event.target.value
+                setFinding(nextFinding)
+                persistLocalReflection(nextFinding, whyItMatters, recommendation)
+              }}
               maxLength={1500}
               rows={4}
               disabled={busy !== null}
@@ -463,7 +507,11 @@ export default function LearnerProjectPage() {
             <textarea
               id="proj-why"
               value={whyItMatters}
-              onChange={(event) => setWhyItMatters(event.target.value)}
+              onChange={(event) => {
+                const nextWhy = event.target.value
+                setWhyItMatters(nextWhy)
+                persistLocalReflection(finding, nextWhy, recommendation)
+              }}
               maxLength={1500}
               rows={4}
               disabled={busy !== null}
@@ -473,7 +521,11 @@ export default function LearnerProjectPage() {
             <textarea
               id="proj-rec"
               value={recommendation}
-              onChange={(event) => setRecommendation(event.target.value)}
+              onChange={(event) => {
+                const nextRec = event.target.value
+                setRecommendation(nextRec)
+                persistLocalReflection(finding, whyItMatters, nextRec)
+              }}
               maxLength={1500}
               rows={4}
               disabled={busy !== null}

@@ -4,7 +4,7 @@ import { z } from "zod"
 import { prisma } from "../../lib/prisma.js"
 import { requireAuth, type AuthenticatedRequest } from "../../lib/auth.js"
 import { readConsent, recordPolicyAcceptance } from "../../lib/policy.js"
-import { capabilityAvailable, UNAVAILABLE_MESSAGES, unavailableBody } from "../../lib/schema-capabilities.js"
+import { capabilityAvailable, isDatabaseUnavailableError, isMissingSchemaError, UNAVAILABLE_MESSAGES, unavailableBody } from "../../lib/schema-capabilities.js"
 
 export const skylentEnquiriesRouter = Router()
 
@@ -39,13 +39,21 @@ skylentEnquiriesRouter.post("/", limit, async (req, res) => {
     return void res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enquiries))
   }
   const { preferredDate, ...rest } = body.data
-  // The enquiry and the record of what was accepted are written together or not at all.
-  const row = await prisma.$transaction(async (tx) => {
-    const created = await tx.skylentEnquiry.create({ data: { ...rest, preferredDate: preferredDate ? new Date(preferredDate) : null } })
-    await recordPolicyAcceptance(tx, { context: "enquiry", policyVersion: consent.policyVersion, enquiryId: created.id })
-    return created
-  })
-  res.status(201).json({ data: { id: row.id } })
+  try {
+    // The enquiry and the record of what was accepted are written together or not at all.
+    const row = await prisma.$transaction(async (tx) => {
+      const created = await tx.skylentEnquiry.create({ data: { ...rest, preferredDate: preferredDate ? new Date(preferredDate) : null } })
+      await recordPolicyAcceptance(tx, { context: "enquiry", policyVersion: consent.policyVersion, enquiryId: created.id })
+      return created
+    })
+    res.status(201).json({ data: { id: row.id } })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return void res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enquiries))
+    }
+    console.error("Failed to create enquiry:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Could not submit your enquiry right now. Try again later." })
+  }
 })
 
 /** Admin only: list enquiries. */
@@ -54,6 +62,14 @@ skylentEnquiriesRouter.get("/", requireAuth, async (req: AuthenticatedRequest, r
   if (!(await capabilityAvailable("skylentEnquiries"))) {
     return void res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enquiries))
   }
-  const rows = await prisma.skylentEnquiry.findMany({ orderBy: { createdAt: "desc" }, take: 200 })
-  res.json({ data: rows })
+  try {
+    const rows = await prisma.skylentEnquiry.findMany({ orderBy: { createdAt: "desc" }, take: 200 })
+    res.json({ data: rows })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return void res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enquiries))
+    }
+    console.error("Failed to list enquiries:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to load enquiries" })
+  }
 })

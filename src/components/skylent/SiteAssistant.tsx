@@ -6,8 +6,9 @@
  *  - A short questionnaire (goal, level or area, study mode). Suggestions are fixed rules over
  *    the catalogue in src/data.ts and the degree routes in src/data/education.ts. Nothing is
  *    generated. This is not Find My Path (/path) and it is not lesson help.
- *  - A site question box. Free text goes to POST /reva/chat. When the server has no AI
- *    configured (503), the box is switched off and the enquiry form is offered. A 429 or other
+ *  - A site question box. Free text goes to POST /reva/chat. When the panel opens, GET /reva/status
+ *    checks whether free-text AI is configured; when it is switched off (or returns 503), the box is
+ *    switched off before the visitor types and the enquiry form is offered. A 429 or other
  *    failure is shown as a failure. Signed-in requests can include the learner's name and
  *    enrolled course names; lesson progress, projects, and the career profile are not sent.
  * After a suggestion the visitor can say it did not help; the panel then offers a short enquiry
@@ -93,6 +94,21 @@ export function mapAssistantPath(path: string | null): { to: string; label: stri
 }
 
 type AskResult = { ok: true; answer: string; goTo: string | null; generated: boolean } | { ok: false; failure: Failure }
+
+async function checkSiteAssistantAvailable(signal: AbortSignal): Promise<boolean | null> {
+  try {
+    const response = await fetch(`${API_ROOT}/reva/status`, {
+      method: "GET",
+      credentials: "include",
+      signal,
+    })
+    if (!response.ok) return null
+    const parsed = (await response.json()) as { data?: { available?: boolean } }
+    return typeof parsed.data?.available === "boolean" ? parsed.data.available : null
+  } catch {
+    return null
+  }
+}
 
 async function askWithStatus(messages: SiteAiTurn[], signal: AbortSignal): Promise<AskResult> {
   let response: Response
@@ -298,6 +314,17 @@ export default function SiteAssistant() {
     setOpen(false)
     requestAnimationFrame(() => launcherRef.current?.focus())
   }, [])
+
+  // Check whether free-text site assistant is configured when the panel opens so visitors never type into a disabled box.
+  useEffect(() => {
+    if (!open) return
+    const controller = new AbortController()
+    void checkSiteAssistantAvailable(controller.signal).then((available) => {
+      if (controller.signal.aborted || available === null) return
+      setSiteOff(!available)
+    })
+    return () => controller.abort()
+  }, [open])
 
   // Open from anywhere: openSkylentAi() in ai-events.ts.
   useEffect(() => {

@@ -1,8 +1,24 @@
+import crypto from "node:crypto"
 import cors from "cors"
 import express, { type NextFunction, type Request, type Response } from "express"
 import rateLimit from "express-rate-limit"
 
 export const JSON_BODY_LIMIT = process.env.JSON_BODY_LIMIT ?? "512kb"
+
+const SAFE_REQUEST_ID = /^[a-zA-Z0-9._-]{1,64}$/
+
+export function resolveRequestId(headerValue: string | string[] | undefined): string {
+  const raw = Array.isArray(headerValue) ? headerValue[0] : headerValue
+  const trimmed = raw?.trim() ?? ""
+  return SAFE_REQUEST_ID.test(trimmed) ? trimmed : crypto.randomUUID()
+}
+
+export function requestCorrelationId(request: Request, response: Response, next: NextFunction) {
+  const id = resolveRequestId(request.headers["x-request-id"])
+  response.locals.requestId = id
+  response.setHeader("X-Request-Id", id)
+  next()
+}
 
 export function getAllowedOrigins(): string[] {
   const explicit = process.env.CORS_ALLOWED_ORIGINS
@@ -74,7 +90,10 @@ export function jsonBodyParser() {
   return express.json({ limit: JSON_BODY_LIMIT })
 }
 
-export function securityHeaders(_request: Request, response: Response, next: NextFunction) {
+export function securityHeaders(request: Request, response: Response, next: NextFunction) {
+  const id = resolveRequestId(request.headers["x-request-id"])
+  response.locals.requestId = id
+  response.setHeader("X-Request-Id", id)
   response.setHeader("X-Content-Type-Options", "nosniff")
   response.setHeader("X-Frame-Options", "DENY")
   response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin")

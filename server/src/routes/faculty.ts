@@ -5,7 +5,7 @@ import { AssignmentStatus, CurriculumNodeType } from "@prisma/client"
 import { prisma } from "../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { hasApiRole, requireRoles } from "../lib/roles.js"
-import { capabilityAvailable, readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
+import { capabilityAvailable, isDatabaseUnavailableError, isMissingSchemaError, readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
 import { decodeUpload, LESSON_MATERIAL_TYPES, uploadBodySchema } from "../lib/upload-payload.js"
 import { generateStorageKey, uploadFile, StorageServiceError } from "../lib/storage.js"
 
@@ -474,33 +474,41 @@ facultyRouter.post(
     const params = z.object({ courseId: z.string().uuid() }).safeParse(req.params)
     const body = facultyLectureSchema.safeParse(req.body)
     if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
-    if (!(await facultyMayReadCourse(req, params.data.courseId))) {
-      return res.status(403).json({ error: "This course is outside your teaching assignment" })
+    try {
+      if (!(await facultyMayReadCourse(req, params.data.courseId))) {
+        return res.status(403).json({ error: "This course is outside your teaching assignment" })
+      }
+      const module = await prisma.curriculumModule.findFirst({
+        where: { id: body.data.moduleId, courseId: params.data.courseId },
+        include: { nodes: { select: { id: true } } },
+      })
+      if (!module) return res.status(404).json({ error: "Module not found on this course" })
+      if (body.data.nodeType === CurriculumNodeType.QUIZ) {
+        return res.status(403).json({ error: "Teachers cannot configure quizzes from this action" })
+      }
+      if (!(await capabilityAvailable("curriculumNodeNotes"))) {
+        return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+      }
+      const created = await prisma.curriculumNode.create({
+        data: {
+          moduleId: module.id,
+          title: body.data.title,
+          summary: body.data.summary ?? null,
+          nodeType: body.data.nodeType,
+          order: module.nodes.length,
+          sourceId: `lec-${crypto.randomUUID()}`,
+        },
+      })
+      res.status(201).json({
+        data: { id: created.id, moduleId: module.id, title: created.title, nodeType: created.nodeType },
+      })
+    } catch (error) {
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+      }
+      console.error("Failed to create faculty lecture:", error instanceof Error ? error.name : "unknown")
+      res.status(500).json({ error: "Failed to create lecture" })
     }
-    const module = await prisma.curriculumModule.findFirst({
-      where: { id: body.data.moduleId, courseId: params.data.courseId },
-      include: { nodes: { select: { id: true } } },
-    })
-    if (!module) return res.status(404).json({ error: "Module not found on this course" })
-    if (body.data.nodeType === CurriculumNodeType.QUIZ) {
-      return res.status(403).json({ error: "Teachers cannot configure quizzes from this action" })
-    }
-    if (!(await capabilityAvailable("curriculumNodeNotes"))) {
-      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
-    }
-    const created = await prisma.curriculumNode.create({
-      data: {
-        moduleId: module.id,
-        title: body.data.title,
-        summary: body.data.summary ?? null,
-        nodeType: body.data.nodeType,
-        order: module.nodes.length,
-        sourceId: `lec-${crypto.randomUUID()}`,
-      },
-    })
-    res.status(201).json({
-      data: { id: created.id, moduleId: module.id, title: created.title, nodeType: created.nodeType },
-    })
   },
 )
 

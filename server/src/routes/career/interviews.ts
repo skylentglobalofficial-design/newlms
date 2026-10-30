@@ -70,15 +70,15 @@ interviewsRouter.patch("/:id", requireAuth, requireCsrf, async (req: Authenticat
   const parsed = patchSchema.safeParse(req.body)
   if (!parsed.success) return validationError(res, parsed.error)
 
-  const round = await assertOwnedInterviewRound(req.auth!.user.id, idParsed.data)
-  if (!round) return res.status(404).json({ error: "Interview round not found" })
-
-  if (parsed.data.applicationId) {
-    const app = await assertOwnedApplication(req.auth!.user.id, parsed.data.applicationId)
-    if (!app) return res.status(404).json({ error: "Application not found" })
-  }
-
   try {
+    const round = await assertOwnedInterviewRound(req.auth!.user.id, idParsed.data)
+    if (!round) return res.status(404).json({ error: "Interview round not found" })
+
+    if (parsed.data.applicationId) {
+      const app = await assertOwnedApplication(req.auth!.user.id, parsed.data.applicationId)
+      if (!app) return res.status(404).json({ error: "Application not found" })
+    }
+
     const updated = await prisma.interviewRound.update({
       where: { id: round.id },
       data: {
@@ -100,10 +100,10 @@ interviewsRouter.delete("/:id", requireAuth, requireCsrf, async (req: Authentica
   const idParsed = uuidSchema.safeParse(req.params.id)
   if (!idParsed.success) return res.status(400).json({ error: "Invalid interview round id" })
 
-  const round = await assertOwnedInterviewRound(req.auth!.user.id, idParsed.data)
-  if (!round) return res.status(404).json({ error: "Interview round not found" })
-
   try {
+    const round = await assertOwnedInterviewRound(req.auth!.user.id, idParsed.data)
+    if (!round) return res.status(404).json({ error: "Interview round not found" })
+
     await prisma.interviewRound.delete({ where: { id: round.id } })
     res.json({ data: { deleted: true } })
   } catch (error) {

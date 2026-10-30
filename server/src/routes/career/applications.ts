@@ -196,10 +196,10 @@ applicationsRouter.get("/:id", requireAuth, async (req: AuthenticatedRequest, re
   const idParsed = uuidSchema.safeParse(req.params.id)
   if (!idParsed.success) return res.status(400).json({ error: "Invalid application id" })
 
-  const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
-  if (!app) return res.status(404).json({ error: "Application not found" })
-
   try {
+    const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
+    if (!app) return res.status(404).json({ error: "Application not found" })
+
     const sharing = (await readSchemaCapabilities()).jobApplicationSharing
     const full = await prisma.jobApplication.findUnique({
       where: { id: app.id },
@@ -217,14 +217,14 @@ applicationsRouter.patch("/:id", requireAuth, requireCsrf, async (req: Authentic
   const parsed = patchSchema.safeParse(req.body)
   if (!parsed.success) return validationError(res, parsed.error)
 
-  const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
-  if (!app) return res.status(404).json({ error: "Application not found" })
-
-  if (parsed.data.status && !assertValidStatusTransition(app.status, parsed.data.status)) {
-    return res.status(400).json({ error: `Invalid status transition from ${app.status} to ${parsed.data.status}` })
-  }
-
   try {
+    const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
+    if (!app) return res.status(404).json({ error: "Application not found" })
+
+    if (parsed.data.status && !assertValidStatusTransition(app.status, parsed.data.status)) {
+      return res.status(400).json({ error: `Invalid status transition from ${app.status} to ${parsed.data.status}` })
+    }
+
     const sharing = (await readSchemaCapabilities()).jobApplicationSharing
     const updated = await prisma.jobApplication.update({
       where: { id: app.id },
@@ -248,10 +248,10 @@ applicationsRouter.post("/:id/unshare", requireAuth, requireCsrf, async (req: Au
   const idParsed = uuidSchema.safeParse(req.params.id)
   if (!idParsed.success) return res.status(400).json({ error: "Invalid application id" })
 
-  const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
-  if (!app) return res.status(404).json({ error: "Application not found" })
-
   try {
+    const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
+    if (!app) return res.status(404).json({ error: "Application not found" })
+
     const sharing = (await readSchemaCapabilities()).jobApplicationSharing
     if (!sharing) return res.status(503).json({ error: "Sharing an application with an employer is not available yet.", code: "unavailable" })
     const updated = await prisma.jobApplication.update({
@@ -269,10 +269,10 @@ applicationsRouter.delete("/:id", requireAuth, requireCsrf, async (req: Authenti
   const idParsed = uuidSchema.safeParse(req.params.id)
   if (!idParsed.success) return res.status(400).json({ error: "Invalid application id" })
 
-  const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
-  if (!app) return res.status(404).json({ error: "Application not found" })
-
   try {
+    const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
+    if (!app) return res.status(404).json({ error: "Application not found" })
+
     await prisma.jobApplication.delete({ where: { id: app.id } })
     res.json({ data: { deleted: true } })
   } catch (error) {
@@ -284,10 +284,10 @@ applicationsRouter.get("/:id/events", requireAuth, async (req: AuthenticatedRequ
   const idParsed = uuidSchema.safeParse(req.params.id)
   if (!idParsed.success) return res.status(400).json({ error: "Invalid application id" })
 
-  const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
-  if (!app) return res.status(404).json({ error: "Application not found" })
-
   try {
+    const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
+    if (!app) return res.status(404).json({ error: "Application not found" })
+
     const events = await prisma.applicationEvent.findMany({
       where: { applicationId: app.id },
       orderBy: { occurredAt: "desc" },
@@ -304,13 +304,13 @@ applicationsRouter.post("/:id/events", requireAuth, requireCsrf, async (req: Aut
   const parsed = eventSchema.safeParse(req.body)
   if (!parsed.success) return validationError(res, parsed.error)
 
-  const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
-  if (!app) return res.status(404).json({ error: "Application not found" })
-
   const occurredAt = parseOptionalDate(parsed.data.occurredAt)
   if (!occurredAt) return res.status(400).json({ error: "Invalid occurredAt date" })
 
   try {
+    const app = await assertOwnedApplication(req.auth!.user.id, idParsed.data)
+    if (!app) return res.status(404).json({ error: "Application not found" })
+
     const event = await prisma.applicationEvent.create({
       data: {
         applicationId: app.id,

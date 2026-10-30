@@ -169,26 +169,38 @@ function serializeCourse(course: NonNullable<Awaited<ReturnType<typeof loadCours
   }
 }
 
+function sendAuthoringError(res: import("express").Response, error: unknown, fallback: string) {
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+  }
+  console.error(fallback, error instanceof Error ? error.name : "unknown")
+  return res.status(500).json({ error: fallback })
+}
+
 adminCurriculumRouter.get("/courses", ...readGuards, async (_req, res) => {
   const caps = await readSchemaCapabilities().catch(() => null)
   if (!caps) return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
-  const courses = await prisma.course.findMany({
-    orderBy: { updatedAt: "desc" },
-    select: {
-      id: true,
-      slug: true,
-      title: true,
-      category: true,
-      ...(caps.coursePublication ? { publicationStatus: true, authoredInApp: true } : {}),
-    },
-  })
-  res.json({
-    data: courses.map((course) => ({
-      ...course,
-      publicationStatus: optionalField<string>(course, "publicationStatus"),
-      authoredInApp: optionalField<boolean>(course, "authoredInApp") ?? false,
-    })),
-  })
+  try {
+    const courses = await prisma.course.findMany({
+      orderBy: { updatedAt: "desc" },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        category: true,
+        ...(caps.coursePublication ? { publicationStatus: true, authoredInApp: true } : {}),
+      },
+    })
+    res.json({
+      data: courses.map((course) => ({
+        ...course,
+        publicationStatus: optionalField<string>(course, "publicationStatus"),
+        authoredInApp: optionalField<boolean>(course, "authoredInApp") ?? false,
+      })),
+    })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to list authored courses")
+  }
 })
 
 adminCurriculumRouter.get("/courses/:courseId", ...readGuards, async (req, res) => {
@@ -247,8 +259,7 @@ adminCurriculumRouter.post("/courses", ...guards, async (req: AuthenticatedReque
     if (typeof error === "object" && error && "code" in error && error.code === "P2002") {
       return res.status(409).json({ error: "A course with that slug already exists" })
     }
-    console.error("Failed to create course:", error)
-    res.status(500).json({ error: "Failed to create course" })
+    sendAuthoringError(res, error, "Failed to create course")
   }
 })
 
@@ -256,173 +267,193 @@ adminCurriculumRouter.post("/courses/:courseId/modules", ...guards, async (req: 
   const params = z.object({ courseId: uuidSchema }).safeParse(req.params)
   const body = moduleSchema.safeParse(req.body)
   if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
-  const course = await prisma.course.findUnique({ where: { id: params.data.courseId }, select: { id: true, slug: true } })
-  if (!course) return res.status(404).json({ error: "Course not found" })
-  const existing = await prisma.curriculumModule.findMany({
-    where: { courseId: course.id },
-    orderBy: { order: "asc" },
-    select: { id: true },
-  })
-  const index = body.data.position == null ? existing.length : Math.min(existing.length, body.data.position - 1)
-  const created = await prisma.curriculumModule.create({
-    data: {
-      courseId: course.id,
-      title: body.data.title,
-      description: body.data.description ?? null,
-      order: existing.length + 1,
-      sourceId: `mod-${crypto.randomUUID()}`,
-      topics: [],
-    },
-  })
-  const ordered = [...existing.slice(0, index).map((row) => row.id), created.id, ...existing.slice(index).map((row) => row.id)]
-  await prisma.$transaction(ordered.map((id, order) => prisma.curriculumModule.update({ where: { id }, data: { order } })))
-  await recordAdminAudit({
-    actorId: req.auth!.user.id,
-    action: "curriculum.module.create",
-    targetType: "CurriculumModule",
-    targetId: created.id,
-    summary: `Added module at position ${index + 1} on ${course.slug}`,
-  })
-  const loaded = await loadCourse(course.id)
-  res.status(201).json({ data: serializeCourse(loaded!) })
+  try {
+    const course = await prisma.course.findUnique({ where: { id: params.data.courseId }, select: { id: true, slug: true } })
+    if (!course) return res.status(404).json({ error: "Course not found" })
+    const existing = await prisma.curriculumModule.findMany({
+      where: { courseId: course.id },
+      orderBy: { order: "asc" },
+      select: { id: true },
+    })
+    const index = body.data.position == null ? existing.length : Math.min(existing.length, body.data.position - 1)
+    const created = await prisma.curriculumModule.create({
+      data: {
+        courseId: course.id,
+        title: body.data.title,
+        description: body.data.description ?? null,
+        order: existing.length + 1,
+        sourceId: `mod-${crypto.randomUUID()}`,
+        topics: [],
+      },
+    })
+    const ordered = [...existing.slice(0, index).map((row) => row.id), created.id, ...existing.slice(index).map((row) => row.id)]
+    await prisma.$transaction(ordered.map((id, order) => prisma.curriculumModule.update({ where: { id }, data: { order } })))
+    await recordAdminAudit({
+      actorId: req.auth!.user.id,
+      action: "curriculum.module.create",
+      targetType: "CurriculumModule",
+      targetId: created.id,
+      summary: `Added module at position ${index + 1} on ${course.slug}`,
+    })
+    const loaded = await loadCourse(course.id)
+    res.status(201).json({ data: serializeCourse(loaded!) })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to create module")
+  }
 })
 
 adminCurriculumRouter.patch("/modules/:moduleId", ...guards, async (req: AuthenticatedRequest, res) => {
   const params = z.object({ moduleId: uuidSchema }).safeParse(req.params)
   const body = moduleSchema.partial().safeParse(req.body)
   if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
-  const module = await prisma.curriculumModule.findUnique({ where: { id: params.data.moduleId }, select: { id: true, courseId: true } })
-  if (!module?.courseId) return res.status(404).json({ error: "Module not found" })
-  await prisma.curriculumModule.update({
-    where: { id: module.id },
-    data: {
-      ...(body.data.title ? { title: body.data.title } : {}),
-      ...(body.data.description !== undefined ? { description: body.data.description } : {}),
-    },
-  })
-  if (body.data.position) {
-    const siblings = await prisma.curriculumModule.findMany({
-      where: { courseId: module.courseId },
-      orderBy: { order: "asc" },
-      select: { id: true },
+  try {
+    const module = await prisma.curriculumModule.findUnique({ where: { id: params.data.moduleId }, select: { id: true, courseId: true } })
+    if (!module?.courseId) return res.status(404).json({ error: "Module not found" })
+    await prisma.curriculumModule.update({
+      where: { id: module.id },
+      data: {
+        ...(body.data.title ? { title: body.data.title } : {}),
+        ...(body.data.description !== undefined ? { description: body.data.description } : {}),
+      },
     })
-    const rest = siblings.map((row) => row.id).filter((id) => id !== module.id)
-    const index = Math.min(rest.length, body.data.position - 1)
-    const ordered = [...rest.slice(0, index), module.id, ...rest.slice(index)]
-    await prisma.$transaction(ordered.map((id, order) => prisma.curriculumModule.update({ where: { id }, data: { order } })))
+    if (body.data.position) {
+      const siblings = await prisma.curriculumModule.findMany({
+        where: { courseId: module.courseId },
+        orderBy: { order: "asc" },
+        select: { id: true },
+      })
+      const rest = siblings.map((row) => row.id).filter((id) => id !== module.id)
+      const index = Math.min(rest.length, body.data.position - 1)
+      const ordered = [...rest.slice(0, index), module.id, ...rest.slice(index)]
+      await prisma.$transaction(ordered.map((id, order) => prisma.curriculumModule.update({ where: { id }, data: { order } })))
+    }
+    const loaded = await loadCourse(module.courseId)
+    res.json({ data: serializeCourse(loaded!) })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to update module")
   }
-  const loaded = await loadCourse(module.courseId)
-  res.json({ data: serializeCourse(loaded!) })
 })
 
 adminCurriculumRouter.post("/modules/order", ...guards, async (req: AuthenticatedRequest, res) => {
   const body = z.object({ courseId: uuidSchema, moduleIds: z.array(uuidSchema).min(1).max(500) }).safeParse(req.body)
   if (!body.success) return res.status(400).json({ error: "Validation failed" })
-  const modules = await prisma.curriculumModule.findMany({
-    where: { courseId: body.data.courseId },
-    select: { id: true },
-  })
-  const current = new Set(modules.map((row) => row.id))
-  if (current.size !== body.data.moduleIds.length || body.data.moduleIds.some((id) => !current.has(id))) {
-    return res.status(400).json({ error: "Module order must list every module of this course once" })
+  try {
+    const modules = await prisma.curriculumModule.findMany({
+      where: { courseId: body.data.courseId },
+      select: { id: true },
+    })
+    const current = new Set(modules.map((row) => row.id))
+    if (current.size !== body.data.moduleIds.length || body.data.moduleIds.some((id) => !current.has(id))) {
+      return res.status(400).json({ error: "Module order must list every module of this course once" })
+    }
+    await prisma.$transaction(body.data.moduleIds.map((id, order) => prisma.curriculumModule.update({ where: { id }, data: { order } })))
+    const loaded = await loadCourse(body.data.courseId)
+    res.json({ data: serializeCourse(loaded!) })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to reorder modules")
   }
-  await prisma.$transaction(body.data.moduleIds.map((id, order) => prisma.curriculumModule.update({ where: { id }, data: { order } })))
-  const loaded = await loadCourse(body.data.courseId)
-  res.json({ data: serializeCourse(loaded!) })
 })
 
 adminCurriculumRouter.delete("/modules/:moduleId", ...guards, async (req: AuthenticatedRequest, res) => {
   const params = z.object({ moduleId: uuidSchema }).safeParse(req.params)
   const body = z.object({ confirm: z.boolean().optional(), confirmDestroyProgress: z.boolean().optional() }).safeParse(req.body ?? {})
   if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
-  const module = await prisma.curriculumModule.findUnique({
-    where: { id: params.data.moduleId },
-    include: { nodes: { select: { id: true } } },
-  })
-  if (!module?.courseId) return res.status(404).json({ error: "Module not found" })
-  if (module.nodes.length > 0 && !body.data.confirm) {
-    return res.status(409).json({ error: "This module has lectures. Confirm deletion to continue." })
+  try {
+    const module = await prisma.curriculumModule.findUnique({
+      where: { id: params.data.moduleId },
+      include: { nodes: { select: { id: true } } },
+    })
+    if (!module?.courseId) return res.status(404).json({ error: "Module not found" })
+    if (module.nodes.length > 0 && !body.data.confirm) {
+      return res.status(409).json({ error: "This module has lectures. Confirm deletion to continue." })
+    }
+    const progress = await prisma.lessonProgress.count({ where: { node: { moduleId: module.id } } })
+    if (progress > 0 && !body.data.confirmDestroyProgress) {
+      return res.status(409).json({ error: "Learners have progress in this module. Deletion would remove it." })
+    }
+    await prisma.curriculumModule.delete({ where: { id: module.id } })
+    await recordAdminAudit({
+      actorId: req.auth!.user.id,
+      action: "curriculum.module.delete",
+      targetType: "CurriculumModule",
+      targetId: module.id,
+      summary: `Deleted module ${module.title}`,
+    })
+    const loaded = await loadCourse(module.courseId)
+    res.json({ data: serializeCourse(loaded!) })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to delete module")
   }
-  const progress = await prisma.lessonProgress.count({ where: { node: { moduleId: module.id } } })
-  if (progress > 0 && !body.data.confirmDestroyProgress) {
-    return res.status(409).json({ error: "Learners have progress in this module. Deletion would remove it." })
-  }
-  await prisma.curriculumModule.delete({ where: { id: module.id } })
-  await recordAdminAudit({
-    actorId: req.auth!.user.id,
-    action: "curriculum.module.delete",
-    targetType: "CurriculumModule",
-    targetId: module.id,
-    summary: `Deleted module ${module.title}`,
-  })
-  const loaded = await loadCourse(module.courseId)
-  res.json({ data: serializeCourse(loaded!) })
 })
 
 adminCurriculumRouter.post("/modules/:moduleId/lectures", ...guards, async (req: AuthenticatedRequest, res) => {
   const params = z.object({ moduleId: uuidSchema }).safeParse(req.params)
   const body = lectureSchema.safeParse(req.body)
   if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
-  const module = await prisma.curriculumModule.findUnique({
-    where: { id: params.data.moduleId },
-    include: { nodes: { select: { id: true }, orderBy: { order: "asc" } } },
-  })
-  if (!module?.courseId) return res.status(404).json({ error: "Module not found" })
-  if (body.data.questions?.some((question) => question.correctIndex >= question.options.length)) {
-    return res.status(400).json({ error: "Quiz answer is outside the options" })
+  try {
+    const module = await prisma.curriculumModule.findUnique({
+      where: { id: params.data.moduleId },
+      include: { nodes: { select: { id: true }, orderBy: { order: "asc" } } },
+    })
+    if (!module?.courseId) return res.status(404).json({ error: "Module not found" })
+    if (body.data.questions?.some((question) => question.correctIndex >= question.options.length)) {
+      return res.status(400).json({ error: "Quiz answer is outside the options" })
+    }
+    if (body.data.nodeType === CurriculumNodeType.QUIZ && !body.data.questions?.length) {
+      return res.status(400).json({ error: "A quiz needs at least one question" })
+    }
+    if (!(await capabilityAvailable("curriculumNodeNotes"))) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+    }
+    if ((body.data.maxAttempts != null || body.data.passingScore != null) && !(await capabilityAvailable("curriculumNodeQuizLimits"))) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+    }
+    if (body.data.questions?.some((question) => question.explanation) && !(await capabilityAvailable("quizExplanations"))) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+    }
+    const index = body.data.position == null ? module.nodes.length : Math.min(module.nodes.length, body.data.position - 1)
+    const created = await prisma.curriculumNode.create({
+      data: {
+        moduleId: module.id,
+        title: body.data.title,
+        summary: body.data.summary ?? null,
+        nodeType: body.data.nodeType,
+        referenceUrl: body.data.referenceUrl ?? null,
+        order: module.nodes.length + 1,
+        sourceId: `lec-${crypto.randomUUID()}`,
+        maxAttempts: body.data.maxAttempts,
+        passingScore: body.data.passingScore,
+        quizQuestions: body.data.questions
+          ? {
+              create: body.data.questions.map((question, sortOrder) => ({
+                sortOrder,
+                question: question.question,
+                options: question.options,
+                correctIndex: question.correctIndex,
+                explanation: question.explanation,
+              })),
+            }
+          : undefined,
+      },
+    })
+    const ordered = [
+      ...module.nodes.slice(0, index).map((row) => row.id),
+      created.id,
+      ...module.nodes.slice(index).map((row) => row.id),
+    ]
+    await prisma.$transaction(ordered.map((id, order) => prisma.curriculumNode.update({ where: { id }, data: { order } })))
+    await recordAdminAudit({
+      actorId: req.auth!.user.id,
+      action: "curriculum.lecture.create",
+      targetType: "CurriculumNode",
+      targetId: created.id,
+      summary: `Added ${body.data.nodeType} lecture to module ${module.id}`,
+    })
+    const loaded = await loadCourse(module.courseId)
+    res.status(201).json({ data: serializeCourse(loaded!) })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to create lecture")
   }
-  if (body.data.nodeType === CurriculumNodeType.QUIZ && !body.data.questions?.length) {
-    return res.status(400).json({ error: "A quiz needs at least one question" })
-  }
-  if (!(await capabilityAvailable("curriculumNodeNotes"))) {
-    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
-  }
-  if ((body.data.maxAttempts != null || body.data.passingScore != null) && !(await capabilityAvailable("curriculumNodeQuizLimits"))) {
-    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
-  }
-  if (body.data.questions?.some((question) => question.explanation) && !(await capabilityAvailable("quizExplanations"))) {
-    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
-  }
-  const index = body.data.position == null ? module.nodes.length : Math.min(module.nodes.length, body.data.position - 1)
-  const created = await prisma.curriculumNode.create({
-    data: {
-      moduleId: module.id,
-      title: body.data.title,
-      summary: body.data.summary ?? null,
-      nodeType: body.data.nodeType,
-      referenceUrl: body.data.referenceUrl ?? null,
-      order: module.nodes.length + 1,
-      sourceId: `lec-${crypto.randomUUID()}`,
-      maxAttempts: body.data.maxAttempts,
-      passingScore: body.data.passingScore,
-      quizQuestions: body.data.questions
-        ? {
-            create: body.data.questions.map((question, sortOrder) => ({
-              sortOrder,
-              question: question.question,
-              options: question.options,
-              correctIndex: question.correctIndex,
-              explanation: question.explanation,
-            })),
-          }
-        : undefined,
-    },
-  })
-  const ordered = [
-    ...module.nodes.slice(0, index).map((row) => row.id),
-    created.id,
-    ...module.nodes.slice(index).map((row) => row.id),
-  ]
-  await prisma.$transaction(ordered.map((id, order) => prisma.curriculumNode.update({ where: { id }, data: { order } })))
-  await recordAdminAudit({
-    actorId: req.auth!.user.id,
-    action: "curriculum.lecture.create",
-    targetType: "CurriculumNode",
-    targetId: created.id,
-    summary: `Added ${body.data.nodeType} lecture to module ${module.id}`,
-  })
-  const loaded = await loadCourse(module.courseId)
-  res.status(201).json({ data: serializeCourse(loaded!) })
 })
 
 adminCurriculumRouter.post("/lectures/:lectureId/materials", ...guards, async (req: AuthenticatedRequest, res) => {
@@ -437,12 +468,12 @@ adminCurriculumRouter.post("/lectures/:lectureId/materials", ...guards, async (r
     "text/markdown",
   ])
   if ("error" in decoded) return res.status(400).json({ error: decoded.error })
-  const lecture = await prisma.curriculumNode.findUnique({
-    where: { id: params.data.lectureId },
-    select: { id: true, module: { select: { courseId: true } } },
-  })
-  if (!lecture?.module.courseId) return res.status(404).json({ error: "Lecture not found" })
   try {
+    const lecture = await prisma.curriculumNode.findUnique({
+      where: { id: params.data.lectureId },
+      select: { id: true, module: { select: { courseId: true } } },
+    })
+    if (!lecture?.module.courseId) return res.status(404).json({ error: "Lecture not found" })
     const key = generateStorageKey(`courses/${lecture.module.courseId}/materials`, body.data.fileName)
     const stored = await uploadFile(key, decoded.data, { contentType: body.data.contentType })
     await prisma.lessonMaterial.create({
@@ -461,8 +492,7 @@ adminCurriculumRouter.post("/lectures/:lectureId/materials", ...guards, async (r
     if (error instanceof StorageServiceError) {
       return res.status(503).json({ error: "File storage is not configured. The file was not saved." })
     }
-    console.error("Failed to store lesson material:", error)
-    res.status(500).json({ error: "Failed to store lesson material" })
+    sendAuthoringError(res, error, "Failed to store lesson material")
   }
 })
 
@@ -472,10 +502,10 @@ adminCurriculumRouter.post("/courses/:courseId/cover", ...guards, async (req: Au
   if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
   const decoded = decodeFile(body.data, ["image/jpeg", "image/png", "image/webp", "image/gif"])
   if ("error" in decoded) return res.status(400).json({ error: decoded.error })
-  const course = await prisma.course.findUnique({ where: { id: params.data.courseId }, select: { id: true } })
-  if (!course) return res.status(404).json({ error: "Course not found" })
-  if (await refuseAuthoring(res)) return
   try {
+    const course = await prisma.course.findUnique({ where: { id: params.data.courseId }, select: { id: true } })
+    if (!course) return res.status(404).json({ error: "Course not found" })
+    if (await refuseAuthoring(res)) return
     const key = generateStorageKey(`courses/${course.id}/cover`, body.data.fileName)
     const stored = await uploadFile(key, decoded.data, { contentType: body.data.contentType })
     await prisma.course.update({
@@ -488,8 +518,7 @@ adminCurriculumRouter.post("/courses/:courseId/cover", ...guards, async (req: Au
     if (error instanceof StorageServiceError) {
       return res.status(503).json({ error: "File storage is not configured. The image was not saved." })
     }
-    console.error("Failed to store course cover:", error)
-    res.status(500).json({ error: "Failed to store course cover" })
+    sendAuthoringError(res, error, "Failed to store course cover")
   }
 })
 
@@ -497,23 +526,27 @@ adminCurriculumRouter.post("/courses/:courseId/publish", ...guards, async (req: 
   const params = z.object({ courseId: uuidSchema }).safeParse(req.params)
   if (!params.success) return res.status(400).json({ error: "Invalid course" })
   if (await refuseAuthoring(res)) return
-  const course = await loadCourse(params.data.courseId)
-  if (!course) return res.status(404).json({ error: "Course not found" })
-  const lectures = course.curriculum.reduce((sum, module) => sum + module.nodes.length, 0)
-  if (course.curriculum.length === 0 || lectures === 0) {
-    return res.status(400).json({ error: "Publish needs at least one module and one lecture" })
+  try {
+    const course = await loadCourse(params.data.courseId)
+    if (!course) return res.status(404).json({ error: "Course not found" })
+    const lectures = course.curriculum.reduce((sum, module) => sum + module.nodes.length, 0)
+    if (course.curriculum.length === 0 || lectures === 0) {
+      return res.status(400).json({ error: "Publish needs at least one module and one lecture" })
+    }
+    await prisma.course.update({
+      where: { id: course.id },
+      data: { publicationStatus: CoursePublicationStatus.PUBLISHED, lessonCount: lectures },
+    })
+    await recordAdminAudit({
+      actorId: req.auth!.user.id,
+      action: "curriculum.course.publish",
+      targetType: "Course",
+      targetId: course.id,
+      summary: `Published course ${course.slug}`,
+    })
+    const loaded = await loadCourse(course.id)
+    res.json({ data: serializeCourse(loaded!) })
+  } catch (error) {
+    sendAuthoringError(res, error, "Failed to publish course")
   }
-  await prisma.course.update({
-    where: { id: course.id },
-    data: { publicationStatus: CoursePublicationStatus.PUBLISHED, lessonCount: lectures },
-  })
-  await recordAdminAudit({
-    actorId: req.auth!.user.id,
-    action: "curriculum.course.publish",
-    targetType: "Course",
-    targetId: course.id,
-    summary: `Published course ${course.slug}`,
-  })
-  const loaded = await loadCourse(course.id)
-  res.json({ data: serializeCourse(loaded!) })
 })

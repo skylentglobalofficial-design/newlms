@@ -6,7 +6,7 @@ import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth
 import { requireRoles } from "../lib/roles.js"
 import { validationError } from "../lib/career/shared.js"
 import { serializeEmployer } from "../lib/career/serializers.js"
-import { capabilityAvailable, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
+import { capabilityAvailable, isDatabaseUnavailableError, isMissingSchemaError, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
 
 export const adminEmployersRouter = Router()
 
@@ -45,6 +45,9 @@ adminEmployersRouter.get("/employers", ...guards, async (_req: AuthenticatedRequ
 adminEmployersRouter.post("/employers", ...guards, requireCsrf, async (req: AuthenticatedRequest, res) => {
   const parsed = employerSchema.safeParse(req.body)
   if (!parsed.success) return validationError(res, parsed.error)
+  if (!(await capabilityAvailable("employerMembership"))) {
+    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+  }
   try {
     const employer = await prisma.employer.create({
       data: {
@@ -59,6 +62,9 @@ adminEmployersRouter.post("/employers", ...guards, requireCsrf, async (req: Auth
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return res.status(409).json({ error: "An employer with that slug already exists" })
+    }
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
     }
     console.error("Failed to create employer:", error)
     res.status(500).json({ error: "Failed to create employer" })

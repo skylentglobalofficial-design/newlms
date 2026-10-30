@@ -156,12 +156,14 @@ app.use((error: unknown, _request: express.Request, response: express.Response, 
     response.status(413).json({ error: "Request body too large" })
     return
   }
-  console.error(error)
+  const requestId = typeof response.locals?.requestId === "string" ? response.locals.requestId : undefined
+  const detail = redactSecrets(error instanceof Error ? error.message : String(error))
+  console.error("Unhandled request error:", requestId ? `[requestId=${requestId}] ${detail}` : detail)
   if (response.headersSent) {
     next(error)
     return
   }
-  response.status(500).json({ error: "Internal server error" })
+  response.status(500).json({ error: "Internal server error", ...(requestId ? { requestId } : {}) })
 })
 
 let server: ReturnType<typeof app.listen> | undefined

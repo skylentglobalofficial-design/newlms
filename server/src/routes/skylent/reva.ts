@@ -12,6 +12,13 @@ import { readProviderTimeoutMs } from "../../lib/skylent-ai/service.js"
  */
 export const revaRouter = Router()
 
+export function isRevaModelConfigured(env: NodeJS.ProcessEnv = process.env): { available: boolean; configured: boolean } {
+  const providerName = (env.SKYLENT_AI_PROVIDER ?? "").trim().toLowerCase()
+  const apiKey = env.SKYLENT_AI_API_KEY?.trim() ?? ""
+  const configured = providerName !== "off" && providerName !== "none" && apiKey.length > 0
+  return { available: configured, configured }
+}
+
 const limit = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 60,
@@ -88,73 +95,82 @@ async function signedInUser(req: Parameters<typeof parseCookies>[0]) {
   return session ? prisma.user.findUnique({ where: { id: session.userId } }) : null
 }
 
+revaRouter.get("/status", (_req, res) => {
+  res.json({ data: isRevaModelConfigured() })
+})
+
 revaRouter.post("/chat", limit, async (req, res) => {
-  const parsed = body.safeParse(req.body ?? {})
-  if (!parsed.success) return void res.status(400).json({ error: "Invalid request" })
-  const userMessages = parsed.data.messages.filter((message) => message.role === "user")
-  const last = userMessages.at(-1)?.content ?? parsed.data.messages.at(-1)!.content
-  const user = await signedInUser(req).catch(() => null)
-  const scope = user ? "learner" : "visitor"
+  try {
+    const parsed = body.safeParse(req.body ?? {})
+    if (!parsed.success) return void res.status(400).json({ error: "Invalid request" })
+    const userMessages = parsed.data.messages.filter((message) => message.role === "user")
+    const last = userMessages.at(-1)?.content ?? parsed.data.messages.at(-1)!.content
+    const user = await signedInUser(req).catch(() => null)
+    const scope = user ? "learner" : "visitor"
 
-  if (isIdentityQuestion(last)) {
-    return void res.json({ data: { answer: REVA_IDENTITY_REPLY, scope, source: "rule" } })
-  }
-
-  if (asksForProgress(last)) {
-    const answer = user
-      ? "I can see that you are signed in, but this assistant does not have your lesson-by-lesson progress. Open My Learning to see what is saved on your account. [[go:/dashboard/student]]"
-      : "Sign in to see your own learning. This assistant does not have progress for a visitor. [[go:/login]]"
-    return void res.json({ data: { answer: sanitizeAssistantActions(answer), scope, source: "rule" } })
-  }
-
-  // Site chat always calls the configured model. A missing key, or an explicit off switch, is not ready.
-  const providerName = (process.env.SKYLENT_AI_PROVIDER ?? "").trim().toLowerCase()
-  const apiKey = process.env.SKYLENT_AI_API_KEY?.trim()
-  if (providerName === "off" || providerName === "none" || !apiKey) {
-    return void res.status(503).json({ error: "Skylent AI isn't available yet.", code: "not_configured" })
-  }
-
-  const courses = await prisma.course.findMany({
-    select: { slug: true, title: true },
-    orderBy: { title: "asc" },
-    take: 80,
-  })
-
-  let context = `${SITE}\nCourses: ${courses.map((course) => `${course.title} (/courses/${course.slug})`).join("; ")}`
-  if (user) {
-    let enrolled = "nothing yet"
-    try {
-      const mine = await prisma.userEnrollment.findMany({
-        where: { userId: user.id },
-        include: { course: { select: { title: true } }, program: { select: { name: true } } },
-      })
-      const names = mine
-        .map((row) => row.course?.title ?? row.program?.name)
-        .filter((name): name is string => Boolean(name))
-      if (names.length > 0) enrolled = names.join(", ")
-    } catch (error) {
-      console.error("Site assistant skipped enrolment names:", error instanceof Error ? error.name : "unknown")
+    if (isIdentityQuestion(last)) {
+      return void res.json({ data: { answer: REVA_IDENTITY_REPLY, scope, source: "rule" } })
     }
-    context += `\nScope: learner. Signed-in learner name: ${user.displayName ?? "student"}. Enrolled in: ${enrolled}. Lesson progress is not included. If asked, say so.`
-  } else {
-    context += "\nScope: visitor. Do not mention any learner enrolment, progress, or private account data."
-  }
 
-  const base = (process.env.SKYLENT_AI_BASE_URL?.trim() || "https://api.openai.com/v1").replace(/\/+$/, "")
-  const r = await fetch(`${base}/chat/completions`, {
-    method: "POST",
-    signal: AbortSignal.timeout(readProviderTimeoutMs()),
-    headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: process.env.SKYLENT_AI_MODEL?.trim() || "gpt-4o-mini",
-      messages: [
-        { role: "system", content: `${SYSTEM}\n\nCONTEXT:\n${context}` },
-        ...userMessages.map((message) => ({ role: "user" as const, content: message.content })),
-      ],
-    }),
-  }).catch(() => null)
-  if (!r?.ok) return void res.status(502).json({ error: "SKYLENT AI couldn't answer right now. Try again." })
-  const json = (await r.json()) as { choices?: Array<{ message?: { content?: string } }> }
-  const answer = sanitizeAssistantActions(json.choices?.[0]?.message?.content ?? "")
-  res.json({ data: { answer, scope, source: "model" } })
+    if (asksForProgress(last)) {
+      const answer = user
+        ? "I can see that you are signed in, but this assistant does not have your lesson-by-lesson progress. Open My Learning to see what is saved on your account. [[go:/dashboard/student]]"
+        : "Sign in to see your own learning. This assistant does not have progress for a visitor. [[go:/login]]"
+      return void res.json({ data: { answer: sanitizeAssistantActions(answer), scope, source: "rule" } })
+    }
+
+    // Site chat always calls the configured model. A missing key, or an explicit off switch, is not ready.
+    const status = isRevaModelConfigured()
+    if (!status.available) {
+      return void res.status(503).json({ error: "Skylent AI isn't available yet.", code: "not_configured" })
+    }
+    const apiKey = process.env.SKYLENT_AI_API_KEY?.trim() ?? ""
+
+    const courses = await prisma.course.findMany({
+      select: { slug: true, title: true },
+      orderBy: { title: "asc" },
+      take: 80,
+    }).catch(() => [])
+
+    let context = `${SITE}\nCourses: ${courses.map((course) => `${course.title} (/courses/${course.slug})`).join("; ")}`
+    if (user) {
+      let enrolled = "nothing yet"
+      try {
+        const mine = await prisma.userEnrollment.findMany({
+          where: { userId: user.id },
+          include: { course: { select: { title: true } }, program: { select: { name: true } } },
+        })
+        const names = mine
+          .map((row) => row.course?.title ?? row.program?.name)
+          .filter((name): name is string => Boolean(name))
+        if (names.length > 0) enrolled = names.join(", ")
+      } catch (error) {
+        console.error("Site assistant skipped enrolment names:", error instanceof Error ? error.name : "unknown")
+      }
+      context += `\nScope: learner. Signed-in learner name: ${user.displayName ?? "student"}. Enrolled in: ${enrolled}. Lesson progress is not included. If asked, say so.`
+    } else {
+      context += "\nScope: visitor. Do not mention any learner enrolment, progress, or private account data."
+    }
+
+    const base = (process.env.SKYLENT_AI_BASE_URL?.trim() || "https://api.openai.com/v1").replace(/\/+$/, "")
+    const r = await fetch(`${base}/chat/completions`, {
+      method: "POST",
+      signal: AbortSignal.timeout(readProviderTimeoutMs()),
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: process.env.SKYLENT_AI_MODEL?.trim() || "gpt-4o-mini",
+        messages: [
+          { role: "system", content: `${SYSTEM}\n\nCONTEXT:\n${context}` },
+          ...userMessages.map((message) => ({ role: "user" as const, content: message.content })),
+        ],
+      }),
+    }).catch(() => null)
+    if (!r?.ok) return void res.status(502).json({ error: "SKYLENT AI couldn't answer right now. Try again." })
+    const json = (await r.json()) as { choices?: Array<{ message?: { content?: string } }> }
+    const answer = sanitizeAssistantActions(json.choices?.[0]?.message?.content ?? "")
+    res.json({ data: { answer, scope, source: "model" } })
+  } catch (error) {
+    console.error("Site assistant request failed:", error instanceof Error ? error.name : "unknown")
+    res.status(502).json({ error: "SKYLENT AI couldn't answer right now. Try again." })
+  }
 })

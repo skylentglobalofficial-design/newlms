@@ -274,8 +274,7 @@ export default function CourseDetailPage() {
                   )}
                 </div>
                 <p className="cat-honesty">
-                  Payment is not collected in this pilot. A certificate for this
-                  course is issued when every lesson in it is complete.
+                  Payment is not collected in this pilot. A certificate for this course is issued when every lesson in it is complete.
                 </p>
               </div>
             </div>

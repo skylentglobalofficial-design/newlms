@@ -566,7 +566,7 @@ lmsRouter.post(
             },
             select: { status: true },
           })
-          if (submission?.status !== "submitted") {
+          if (submission?.status !== "submitted" && submission?.status !== "graded") {
             return res.status(400).json({
               error: "Assignment must be submitted before it can be completed",
             })

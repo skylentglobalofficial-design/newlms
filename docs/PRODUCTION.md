@@ -55,6 +55,8 @@ Optional:
 | `MAILGUN_API_KEY` / `MAILGUN_DOMAIN` | When `EMAIL_PROVIDER=mailgun`. |
 | `SENDGRID_API_KEY` | When `EMAIL_PROVIDER=sendgrid`. |
 | `STORAGE_PROVIDER` / `STORAGE_BUCKET` | Do not enable in production until a cloud provider is implemented. `local` is refused when `NODE_ENV=production`. |
+| `SKYLENT_RELEASE_SHA` | Deployed git commit SHA (7–40 hex characters) reported by `GET /api/v1/health`, `/api/v1/health/live`, and `/api/v1/health/ready`. |
+| `SKYLENT_SEPTEMBER_COMPAT` | Emergency opt-in (`1` only) allowing startup when the exact 11 October 2026 migrations (`SEPTEMBER_COMPAT_PENDING`) are pending and 0 failed. `GET /api/v1/health` still returns 503 until migrations are deployed. |
 
 ### Development only
 
@@ -114,22 +116,24 @@ pnpm build
 NODE_ENV=production npm start   # node server.js
 ```
 
-`server.js` runs `prisma migrate deploy` and exits without starting the API if it fails. `node server/dist/index.js` starts the API **without** migrating; with that start command, migrations must be run separately before the restart. On Railway, `scripts/railway-start.sh` is the start command (it also migrates first).
+`server.js` is a synchronous CommonJS shim (`import("./server/dist/index.js")`) for Hostinger and **does not** run `prisma migrate deploy`. Both `node server.js` and `node server/dist/index.js` check `_prisma_migrations` on startup via `checkMigrationState()` and `decideStartup()`:
 
-Because `server.js` migrates on every start, a restart on a host that uses it is a production migration. Take and verify the database backup before any restart that ships new migrations.
+- **Default startup (`SKYLENT_SEPTEMBER_COMPAT` unset):** The process listens only when all 19 repository migrations are applied (`status: "ok"`). If any migration is pending, failed, or unreadable, the process logs `Refusing to listen. Database schema is not ready for this release` and exits with code `1`.
+- **September compatibility mode (`SKYLENT_SEPTEMBER_COMPAT=1`):** Allows the server to listen while the exact 11 October 2026 migrations (`SEPTEMBER_COMPAT_PENDING`) are pending and 0 failed. `GET /api/v1/health` still returns HTTP 503 (`migrations: "pending"`).
+- **Explicit migration paths:** Run `npx prisma migrate deploy` explicitly (after preflight and backup verification) before restarting, or use `scripts/railway-start.sh` on Railway.
 
-The process binds `0.0.0.0:$PORT`, serves `/api/v1/*`, then the client `dist/` with SPA fallback for non-file GET routes.
+The process binds `0.0.0.0:$PORT`, serves `/api/v1/*`, then the client `dist/` with SPA fallback for non-file GET routes. Every response includes an `X-Request-Id` correlation header, and unhandled server errors log and return `requestId` with secrets redacted.
 
-## 6. Health check
+## 6. Health check (liveness vs. readiness)
 
-`GET /api/v1/health`
+- **Liveness (`GET /api/v1/health/live`):** Returns HTTP `200` `{ "status": "ok", "live": true, "ai": "configured"|"preview"|"not_configured", "release": "<sha>|unknown" }` whenever the Node process is responsive, without failing on pending migrations.
+- **Readiness (`GET /api/v1/health` and `GET /api/v1/health/ready`):**
+  - `200` `{ "status": "ok", "db": "ok", "migrations": "ok", "ai": "configured"|"preview"|"not_configured", "release": "<sha>|unknown" }` — process and Postgres responded, and every local migration is applied. `ai` is separate: `not_configured` does not by itself fail this check. `release` is `SKYLENT_RELEASE_SHA` when that value is a git SHA, otherwise `unknown`.
+  - `503` with `"migrations": "unknown"` — Postgres answered `SELECT 1`, but the migration table could not be read. Do not treat the process as ready.
+  - `503` `{ "status": "error", "db": "ok", "migrations": "pending", "pendingMigrations": N, "failedMigrations": N }` — the running code is newer than the schema (for example the API was started with `node server/dist/index.js` and nothing migrated). Do not send traffic. Names are listed only outside production; the startup log names them in every environment.
+  - `503` `{ "status": "error", "db": "error" }` — do not send traffic.
 
-- `200` `{ "status": "ok", "db": "ok", "migrations": "ok", "ai": "configured"|"preview"|"not_configured", "release": "<sha>|unknown" }` — process and Postgres responded, and every local migration is applied. `ai` is separate: `not_configured` does not by itself fail this check. `release` is `SKYLENT_RELEASE_SHA` when that value is a git SHA, otherwise `unknown`.
-- `503` with `"migrations": "unknown"` — Postgres answered `SELECT 1`, but the migration table could not be read. Do not treat the process as ready.
-- `503` `{ "status": "error", "db": "ok", "migrations": "pending", "pendingMigrations": N, "failedMigrations": N }` — the running code is newer than the schema (for example the API was started with `node server/dist/index.js` and nothing migrated). Do not send traffic. Names are listed only outside production; the startup log names them in every environment.
-- `503` `{ "status": "error", "db": "error" }` — do not send traffic.
-
-A `503` that is an HTML page from the host (on Hostinger: "The server is temporarily busy") is different: the Node process is not running at all. `server.js` runs `prisma migrate deploy` before it starts the API and exits if that fails, so a database that cannot be reached or that rejects the password stops the whole API, not only the database routes. The reason is in the application's error log.
+A `503` that is an HTML page from the host (on Hostinger: "The server is temporarily busy") is different: the Node process is not running at all. `server/src/index.ts` checks migration readiness before `app.listen` and exits with `Refusing to listen` if the database cannot be reached, rejects credentials, or has unapplied migrations without `SKYLENT_SEPTEMBER_COMPAT=1`. The reason is in the application's error log.
 
 ### Supabase on a host without IPv6 (Hostinger)
 
@@ -181,12 +185,12 @@ Mandatory sequence — do not skip steps. Do not use `prisma db push`, `migrate 
 3. **Read-only preflight with the exact expected migration set.** From a trusted machine with production URLs in the environment (not pasted into chat or committed files):
 
    ```sh
-   npm run db:preflight
+   npm run db:preflight -- --production
    ```
 
-   Against the historical production baseline used by `npm run test:migration-replay`, expect: ready to deploy, **eight** pending release migrations (the seven October migrations through `20261024140000_password_reset_and_degrees`, plus `20261025180000_elixir_ledger_and_admin_audit`), four lesson-material migrations as expected production-only, zero failed. **If the report differs from that expectation, stop and reconcile — do not treat the number eight as proof of live state without this output.** Live production history has not been verified.
-4. **Explicit operator approval.** Named approver records go/no-go after reviewing backup evidence and preflight output.
-5. **Migration execution by an authorized operator.** Deploy the new build. If the start command is `server.js` / `npm start`, the restart applies migrations; otherwise run `npx prisma migrate deploy` with the same environment **before** restarting a non-migrating entrypoint.
+   Against the historical September production baseline used by `npm run test:migration-replay`, expect: **eleven** pending October 2026 release migrations (`20261004000000_skylent_additions`, `20261004180000_backfill_program_course_links`, `20261009000000_policy_acceptance`, `20261011000000_employer_membership_and_shared_applications`, `20261017120000_practice_workspaces`, `20261024120000_quiz_grading_events`, `20261024140000_password_reset_and_degrees`, `20261025180000_elixir_ledger_and_admin_audit`, `20261028143000_career_rise_os_lock_and_authoring`, `20261028160000_college_membership`, `20261028161000_lesson_material_compat`), four lesson-material migrations as expected production-only, and zero failed. Because `20261004180000_backfill_program_course_links` is in the pending set, `--production` blocks until `--approve-backfill` is passed after human approval.
+4. **Explicit operator approval.** Named approver records go/no-go after reviewing backup evidence, preflight output, and the `ProgramCourse` backfill pairs.
+5. **Migration execution by an authorized operator.** Neither `server.js` nor `server/dist/index.js` runs migrations automatically. Run `npx prisma migrate deploy` explicitly against the session-pooler `DIRECT_URL` **before** restarting the application (or set `SKYLENT_SEPTEMBER_COMPAT=1` only as a temporary compatibility bridge while migrations remain pending).
 6. **Post-migration verification.** `GET /api/v1/health` must return `200` with `"migrations": "ok"`. Run `npm run db:preflight -- --expect-none`. Run the smoke tests in section 9.
 
 Local proof that this deploy path works against a **simulated** production history (not live production): `npm run test:migration-replay` on localhost Postgres only.

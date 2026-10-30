@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react"
 import { Link, useParams, useSearchParams } from "react-router-dom"
 import { fetchLearnerPracticeWorkspace, saveLearnerPracticeResponse, type LearnerPracticeWorkspace } from "../lib/practice-api"
+import {
+  buildPracticeWorkspaceDraftKey,
+  clearLocalDraft,
+  readLocalDraft,
+  reconcilePracticeTextDraft,
+  writeLocalDraft,
+  type PracticeWorkspaceDraft,
+} from "../lib/draft-storage"
 import "./LabsWorkspace.css"
 
 export default function PracticeWorkspacePage() {
@@ -10,16 +18,31 @@ export default function PracticeWorkspacePage() {
   const [workspace, setWorkspace] = useState<LearnerPracticeWorkspace | null>(null)
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading")
   const [message, setMessage] = useState<string | null>(null)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [draft, setDraft] = useState("")
   const [saving, setSaving] = useState(false)
+
+  const draftKey = courseSlug && lessonId ? buildPracticeWorkspaceDraftKey(courseSlug, lessonId) : ""
 
   useEffect(() => {
     const controller = new AbortController()
     setStatus("loading")
+    setMessage(null)
+    setSaveError(null)
+    const localKey = courseSlug && lessonId ? buildPracticeWorkspaceDraftKey(courseSlug, lessonId) : ""
     fetchLearnerPracticeWorkspace(courseSlug, lessonId || undefined, controller.signal)
       .then((data) => {
         setWorkspace(data)
-        setDraft(data.savedBody ?? "")
+        const reconciled = reconcilePracticeTextDraft(
+          data.savedBody,
+          localKey ? readLocalDraft<PracticeWorkspaceDraft>(localKey) : null,
+        )
+        setDraft(reconciled.body)
+        if (reconciled.restoredFromLocal) {
+          setMessage("Unsaved local notes restored. Click Save to save them to your account.")
+        } else if (localKey) {
+          clearLocalDraft(localKey)
+        }
         setStatus("ready")
       })
       .catch((error: unknown) => {
@@ -30,15 +53,37 @@ export default function PracticeWorkspacePage() {
     return () => controller.abort()
   }, [courseSlug, lessonId])
 
+  function onDraftChange(nextBody: string) {
+    setDraft(nextBody)
+    if (!draftKey || !workspace) return
+    if (nextBody === (workspace.savedBody ?? "")) {
+      clearLocalDraft(draftKey)
+      return
+    }
+    writeLocalDraft<PracticeWorkspaceDraft>(draftKey, {
+      body: nextBody,
+      savedAt: new Date().toISOString(),
+    })
+  }
+
   async function onSave() {
     if (!workspace || !lessonId) return
     setSaving(true)
     setMessage(null)
+    setSaveError(null)
     try {
       await saveLearnerPracticeResponse(courseSlug, lessonId, draft)
+      setWorkspace((current) => (current ? { ...current, savedBody: draft } : current))
+      if (draftKey) clearLocalDraft(draftKey)
       setMessage("Saved.")
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "The response could not be saved.")
+      if (draftKey) {
+        writeLocalDraft<PracticeWorkspaceDraft>(draftKey, {
+          body: draft,
+          savedAt: new Date().toISOString(),
+        })
+      }
+      setSaveError(error instanceof Error ? error.message : "The response could not be saved.")
     } finally {
       setSaving(false)
     }
@@ -86,7 +131,7 @@ export default function PracticeWorkspacePage() {
           {lessonAllowed ? (
             <>
               <label htmlFor="practice-response">Your notes for this lesson</label>
-              <textarea id="practice-response" value={draft} onChange={(event) => setDraft(event.target.value)} rows={6} maxLength={8000} style={{ width: "100%", maxWidth: "100%", boxSizing: "border-box" }} />
+              <textarea id="practice-response" value={draft} onChange={(event) => onDraftChange(event.target.value)} rows={6} maxLength={8000} style={{ width: "100%", maxWidth: "100%", boxSizing: "border-box" }} />
               <button type="button" className="os-btn os-btn-primary" disabled={saving || draft.trim().length === 0} onClick={() => void onSave()}>
                 {saving ? "Saving…" : "Save"}
               </button>
@@ -94,7 +139,12 @@ export default function PracticeWorkspacePage() {
           ) : (
             <p>Open this workspace from one of its lessons to save notes.</p>
           )}
-          {message ? <p className="lab-note">{message}</p> : null}
+          {saveError ? (
+            <div className="lab-error" role="alert">
+              <p>{saveError}</p>
+            </div>
+          ) : null}
+          {message ? <p className="lab-note" role="status">{message}</p> : null}
         </section>
       </div>
     </div>

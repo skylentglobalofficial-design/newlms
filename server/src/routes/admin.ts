@@ -508,15 +508,26 @@ adminRouter.post("/colleges", ...guards, requireCsrf, async (req: AuthenticatedR
   if (!(await capabilityAvailable("collegeMembership"))) {
     return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.college))
   }
-  const existing = await prisma.college.findUnique({ where: { slug: parsed.data.slug } })
-  if (existing) return res.status(409).json({ error: "A college with this slug already exists" })
-  const college = await prisma.college.create({ data: { name: parsed.data.name, slug: parsed.data.slug } })
-  await recordAdminAudit({
-    actorId: req.auth!.user.id,
-    action: "college.create",
-    targetType: "College",
-    targetId: college.id,
-    summary: `Created college ${college.slug}`,
-  })
-  res.status(201).json({ data: { id: college.id, slug: college.slug, name: college.name } })
+  try {
+    const existing = await prisma.college.findUnique({ where: { slug: parsed.data.slug } })
+    if (existing) return res.status(409).json({ error: "A college with this slug already exists" })
+    const college = await prisma.college.create({ data: { name: parsed.data.name, slug: parsed.data.slug } })
+    await recordAdminAudit({
+      actorId: req.auth!.user.id,
+      action: "college.create",
+      targetType: "College",
+      targetId: college.id,
+      summary: `Created college ${college.slug}`,
+    })
+    res.status(201).json({ data: { id: college.id, slug: college.slug, name: college.name } })
+  } catch (error) {
+    if (typeof error === "object" && error && "code" in error && (error as { code?: string }).code === "P2002") {
+      return res.status(409).json({ error: "A college with this slug already exists" })
+    }
+    if (schemaUnavailable(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.college))
+    }
+    console.error("Failed to create college:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to create college" })
+  }
 })

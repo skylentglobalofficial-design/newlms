@@ -112,7 +112,7 @@ check(!/\.jpg/.test(files.home), "Homepage must not import the original JPEG pho
 check(/srcSet=\{`\$\{heroStudent720\} 720w, \$\{heroStudent1024\} 1024w`\}/.test(files.home), "Hero uses a responsive srcset")
 check(/fetchPriority="high"/.test(files.home), "The hero photograph stays eligible for LCP")
 check(/loading="lazy"/.test(files.home), "Below-the-fold homepage photographs stay lazy")
-check(/width=\{96\}/.test(files.home), "Avatar images declare intrinsic dimensions")
+check(/width=\{(?:96|1024)\}/.test(files.home) && /width=\{face\.width\}/.test(files.home) && /width=\{door\.width\}/.test(files.home), "Homepage images declare intrinsic dimensions")
 const homeImages = readdirSync(new URL("../src/assets/site/home", import.meta.url))
 const homeBytes = homeImages.reduce((sum, name) => sum + statSync(new URL(`../src/assets/site/home/${name}`, import.meta.url)).size, 0)
 check(homeImages.every((name) => name.endsWith(".webp")), "Homepage variants are WebP")

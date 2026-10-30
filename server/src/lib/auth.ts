@@ -171,19 +171,21 @@ export async function resolveSession(sessionToken: string | undefined) {
   try {
     mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
   } catch {
-    return null
+    mustChangePassword = false
   }
-  const session = await prisma.session.findUnique({
-    where: { secretHash },
-    include: {
-      user: {
-        select: {
-          ...userCredentialSelect(mustChangePassword),
-          roles: { include: { role: true } },
+  const session = await prisma.session
+    .findUnique({
+      where: { secretHash },
+      include: {
+        user: {
+          select: {
+            ...userCredentialSelect(mustChangePassword),
+            roles: { include: { role: true } },
+          },
         },
       },
-    },
-  })
+    })
+    .catch(() => null)
 
   if (!session) return null
   if (session.expiresAt <= new Date()) {
