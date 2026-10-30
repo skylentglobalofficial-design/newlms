@@ -7,6 +7,13 @@ type CollegeDashboard = {
   college: { id: string; slug: string; name: string; sample: boolean }
   members: Array<{ id: string; name: string }>
   enrolments: Array<{ id: string; courseTitle: string | null; programName: string | null }>
+  cohortSummary?: {
+    totalMembers: number
+    totalEnrolments: number
+    activeEnrolments: number
+    completedEnrolments: number
+    completionRatePercent: number
+  }
   note: string
 }
 
@@ -51,7 +58,32 @@ export default function DashboardCollegePage() {
         {data ? (
           <>
             <p>{data.note}</p>
-            <p>{data.members.length} {data.members.length === 1 ? "person" : "people"} in this college.</p>
+            {data.cohortSummary ? (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12 }} aria-label="College cohort summary">
+                <div style={{ padding: 12, border: "1px solid var(--skylent-color-border, #e2e8f0)", borderRadius: 8 }}>
+                  <span style={{ fontSize: 12, display: "block" }}>Members</span>
+                  <strong style={{ fontSize: 20 }}>{data.cohortSummary.totalMembers}</strong>
+                </div>
+                <div style={{ padding: 12, border: "1px solid var(--skylent-color-border, #e2e8f0)", borderRadius: 8 }}>
+                  <span style={{ fontSize: 12, display: "block" }}>Active enrolments</span>
+                  <strong style={{ fontSize: 20 }}>{data.cohortSummary.activeEnrolments}</strong>
+                </div>
+                <div style={{ padding: 12, border: "1px solid var(--skylent-color-border, #e2e8f0)", borderRadius: 8 }}>
+                  <span style={{ fontSize: 12, display: "block" }}>Completed</span>
+                  <strong style={{ fontSize: 20 }}>{data.cohortSummary.completedEnrolments}</strong>
+                </div>
+                <div style={{ padding: 12, border: "1px solid var(--skylent-color-border, #e2e8f0)", borderRadius: 8 }}>
+                  <span style={{ fontSize: 12, display: "block" }}>Completion rate</span>
+                  <strong style={{ fontSize: 20 }}>{data.cohortSummary.completionRatePercent}%</strong>
+                </div>
+              </div>
+            ) : null}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+              <p style={{ margin: 0 }}>{data.members.length} {data.members.length === 1 ? "person" : "people"} in this college.</p>
+              <a className="os-btn os-btn-ghost" href={`${apiV1()}/college/dashboard/export.csv`} download>
+                Export Cohort CSV
+              </a>
+            </div>
             {data.enrolments.length === 0 ? <p>No enrolments are recorded for this college.</p> : (
               <ul>
                 {data.enrolments.map((row) => (

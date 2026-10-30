@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { Link, useParams, useSearchParams } from "react-router-dom"
 import { workspaceErrorMessage } from "../lib/http"
 import { isSignInError, learnerErrorMessage } from "../components/lms/lms-utils"
@@ -55,8 +55,10 @@ export default function LearnerProjectPage() {
   const [careerLinkStatus, setCareerLinkStatus] = useState<"loading" | "ready" | "error" | "locked">("loading")
   const [careerBusy, setCareerBusy] = useState(false)
   const [careerNotice, setCareerNotice] = useState<string | null>(null)
+  const editVersionRef = useRef(0)
 
-  const draftKey = projectType ? buildProjectReflectionDraftKey(projectType) : ""
+  const draftKey = projectType ? buildProjectReflectionDraftKey(projectType, project?.id) : ""
+  const fallbackTypeKey = projectType ? buildProjectReflectionDraftKey(projectType) : ""
 
   useEffect(() => {
     const controller = new AbortController()
@@ -67,24 +69,29 @@ export default function LearnerProjectPage() {
       setError("This project could not be opened.")
       return () => controller.abort()
     }
-    const localKey = buildProjectReflectionDraftKey(projectType)
+    const loadVersion = editVersionRef.current
     void ensureLearnerProject(projectType, controller.signal)
       .then((next) => {
         if (next.courseSlug !== courseSlug) {
           throw new Error("This project does not belong to that course.")
         }
         setProject(next)
-        const reconciled = reconcileProjectReflectionDraft(
-          next.reflection,
-          readLocalDraft<ProjectReflectionDraft>(localKey),
-        )
-        setFinding(reconciled.finding)
-        setWhyItMatters(reconciled.whyItMatters)
-        setRecommendation(reconciled.recommendation)
-        if (reconciled.restoredFromLocal) {
-          setNotice("Unsaved local draft restored. Click Save project to save to your account.")
-        } else {
-          clearLocalDraft(localKey)
+        const scopedKey = buildProjectReflectionDraftKey(projectType, next.id)
+        const legacyKey = buildProjectReflectionDraftKey(projectType)
+        const storedDraft =
+          readLocalDraft<ProjectReflectionDraft>(scopedKey) ??
+          readLocalDraft<ProjectReflectionDraft>(legacyKey)
+        const reconciled = reconcileProjectReflectionDraft(next.reflection, storedDraft, next.id)
+        if (editVersionRef.current === loadVersion) {
+          setFinding(reconciled.finding)
+          setWhyItMatters(reconciled.whyItMatters)
+          setRecommendation(reconciled.recommendation)
+          if (reconciled.restoredFromLocal) {
+            setNotice("Unsaved local draft restored. Click Save project to save to your account.")
+          } else {
+            clearLocalDraft(scopedKey)
+            clearLocalDraft(legacyKey)
+          }
         }
         const requested = requestedTask && next.tasks.some((task) => task.key === requestedTask) ? requestedTask : null
         setSelectedKey(requested ?? firstOpenTask(next)?.key ?? next.tasks[0]?.key ?? null)
@@ -135,9 +142,12 @@ export default function LearnerProjectPage() {
       nextRec === project.reflection.recommendation
     ) {
       clearLocalDraft(draftKey)
+      if (fallbackTypeKey) clearLocalDraft(fallbackTypeKey)
       return
     }
     writeLocalDraft<ProjectReflectionDraft>(draftKey, {
+      projectId: project.id,
+      baseUpdatedAt: project.reflection.updatedAt,
       finding: nextFinding,
       whyItMatters: nextWhy,
       recommendation: nextRec,
@@ -145,13 +155,14 @@ export default function LearnerProjectPage() {
     })
   }
 
-  function applyProject(next: ProjectWorkspace, syncReflection = false) {
+  function applyProject(next: ProjectWorkspace, syncReflection = false, saveStartVersion?: number) {
     setProject(next)
-    if (syncReflection) {
+    if (syncReflection && (saveStartVersion === undefined || editVersionRef.current === saveStartVersion)) {
       setFinding(next.reflection.finding)
       setWhyItMatters(next.reflection.whyItMatters)
       setRecommendation(next.reflection.recommendation)
       if (draftKey) clearLocalDraft(draftKey)
+      if (fallbackTypeKey) clearLocalDraft(fallbackTypeKey)
     }
   }
 
@@ -204,14 +215,16 @@ export default function LearnerProjectPage() {
 
   async function onSave() {
     if (!project) return
+    const saveStartVersion = editVersionRef.current
+    const payload = { finding, whyItMatters, recommendation }
     setBusy("save")
     setError(null)
     setNotice(null)
     try {
-      applyProject(await saveProject(project.id, { finding, whyItMatters, recommendation }), true)
+      applyProject(await saveProject(project.id, payload), true, saveStartVersion)
       setNotice("Project saved.")
     } catch (err) {
-      persistLocalReflection(finding, whyItMatters, recommendation)
+      persistLocalReflection(payload.finding, payload.whyItMatters, payload.recommendation)
       setError(learnerErrorMessage(err, "Your project could not be saved. Your text is still here. Try again."))
     } finally {
       setBusy(null)
@@ -494,6 +507,7 @@ export default function LearnerProjectPage() {
               id="proj-finding"
               value={finding}
               onChange={(event) => {
+                editVersionRef.current += 1
                 const nextFinding = event.target.value
                 setFinding(nextFinding)
                 persistLocalReflection(nextFinding, whyItMatters, recommendation)
@@ -508,6 +522,7 @@ export default function LearnerProjectPage() {
               id="proj-why"
               value={whyItMatters}
               onChange={(event) => {
+                editVersionRef.current += 1
                 const nextWhy = event.target.value
                 setWhyItMatters(nextWhy)
                 persistLocalReflection(finding, nextWhy, recommendation)
@@ -522,6 +537,7 @@ export default function LearnerProjectPage() {
               id="proj-rec"
               value={recommendation}
               onChange={(event) => {
+                editVersionRef.current += 1
                 const nextRec = event.target.value
                 setRecommendation(nextRec)
                 persistLocalReflection(finding, whyItMatters, nextRec)

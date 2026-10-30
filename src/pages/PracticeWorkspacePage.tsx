@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link, useParams, useSearchParams } from "react-router-dom"
 import { fetchLearnerPracticeWorkspace, saveLearnerPracticeResponse, type LearnerPracticeWorkspace } from "../lib/practice-api"
 import {
@@ -21,6 +21,7 @@ export default function PracticeWorkspacePage() {
   const [saveError, setSaveError] = useState<string | null>(null)
   const [draft, setDraft] = useState("")
   const [saving, setSaving] = useState(false)
+  const editVersionRef = useRef(0)
 
   const draftKey = courseSlug && lessonId ? buildPracticeWorkspaceDraftKey(courseSlug, lessonId) : ""
 
@@ -29,6 +30,7 @@ export default function PracticeWorkspacePage() {
     setStatus("loading")
     setMessage(null)
     setSaveError(null)
+    const loadVersion = editVersionRef.current
     const localKey = courseSlug && lessonId ? buildPracticeWorkspaceDraftKey(courseSlug, lessonId) : ""
     fetchLearnerPracticeWorkspace(courseSlug, lessonId || undefined, controller.signal)
       .then((data) => {
@@ -37,11 +39,13 @@ export default function PracticeWorkspacePage() {
           data.savedBody,
           localKey ? readLocalDraft<PracticeWorkspaceDraft>(localKey) : null,
         )
-        setDraft(reconciled.body)
-        if (reconciled.restoredFromLocal) {
-          setMessage("Unsaved local notes restored. Click Save to save them to your account.")
-        } else if (localKey) {
-          clearLocalDraft(localKey)
+        if (editVersionRef.current === loadVersion) {
+          setDraft(reconciled.body)
+          if (reconciled.restoredFromLocal) {
+            setMessage("Unsaved local notes restored. Click Save to save them to your account.")
+          } else if (localKey) {
+            clearLocalDraft(localKey)
+          }
         }
         setStatus("ready")
       })
@@ -54,13 +58,16 @@ export default function PracticeWorkspacePage() {
   }, [courseSlug, lessonId])
 
   function onDraftChange(nextBody: string) {
+    editVersionRef.current += 1
     setDraft(nextBody)
     if (!draftKey || !workspace) return
-    if (nextBody === (workspace.savedBody ?? "")) {
+    const currentServerBody = workspace.savedBody ?? ""
+    if (nextBody === currentServerBody) {
       clearLocalDraft(draftKey)
       return
     }
     writeLocalDraft<PracticeWorkspaceDraft>(draftKey, {
+      baseServerBody: currentServerBody,
       body: nextBody,
       savedAt: new Date().toISOString(),
     })
@@ -68,18 +75,23 @@ export default function PracticeWorkspacePage() {
 
   async function onSave() {
     if (!workspace || !lessonId) return
+    const saveStartVersion = editVersionRef.current
+    const bodyToSave = draft
     setSaving(true)
     setMessage(null)
     setSaveError(null)
     try {
-      await saveLearnerPracticeResponse(courseSlug, lessonId, draft)
-      setWorkspace((current) => (current ? { ...current, savedBody: draft } : current))
-      if (draftKey) clearLocalDraft(draftKey)
+      await saveLearnerPracticeResponse(courseSlug, lessonId, bodyToSave)
+      setWorkspace((current) => (current ? { ...current, savedBody: bodyToSave } : current))
+      if (draftKey && editVersionRef.current === saveStartVersion) {
+        clearLocalDraft(draftKey)
+      }
       setMessage("Saved.")
     } catch (error) {
       if (draftKey) {
         writeLocalDraft<PracticeWorkspaceDraft>(draftKey, {
-          body: draft,
+          baseServerBody: workspace.savedBody ?? "",
+          body: bodyToSave,
           savedAt: new Date().toISOString(),
         })
       }

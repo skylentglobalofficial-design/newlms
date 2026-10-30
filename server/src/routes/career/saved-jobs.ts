@@ -5,6 +5,7 @@ import { prisma } from "../../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../../lib/auth.js"
 import { serializeSavedJob } from "../../lib/career/serializers.js"
 import { validationError } from "../../lib/career/shared.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../../lib/schema-capabilities.js"
 
 export const savedJobsRouter = Router()
 
@@ -21,7 +22,10 @@ savedJobsRouter.get("/", requireAuth, async (req: AuthenticatedRequest, res) => 
     })
     res.json({ data: entries.map(serializeSavedJob) })
   } catch (error) {
-    console.error("Failed to list saved jobs:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Saved jobs are not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to list saved jobs:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list saved jobs" })
   }
 })
@@ -45,7 +49,10 @@ savedJobsRouter.post("/", requireAuth, requireCsrf, async (req: AuthenticatedReq
 
     res.status(201).json({ data: serializeSavedJob(entry) })
   } catch (error) {
-    console.error("Failed to save job:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Saved jobs are not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to save job:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to save job" })
   }
 })
@@ -63,7 +70,10 @@ savedJobsRouter.delete("/:jobId", requireAuth, requireCsrf, async (req: Authenti
     await prisma.savedJob.delete({ where: { id: entry.id } })
     res.json({ data: { removed: true } })
   } catch (error) {
-    console.error("Failed to unsave job:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Saved jobs are not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to unsave job:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to unsave job" })
   }
 })

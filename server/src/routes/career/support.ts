@@ -6,6 +6,7 @@ import {
   CareerSupportRequestType,
 } from "@prisma/client"
 import { prisma } from "../../lib/prisma.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../../lib/schema-capabilities.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../../lib/auth.js"
 import { assertOwnedSupportRequest } from "../../lib/career/profile.js"
 import { serializeSupportRequest } from "../../lib/career/serializers.js"
@@ -38,7 +39,10 @@ supportRouter.get("/", requireAuth, async (req: AuthenticatedRequest, res) => {
     })
     res.json({ data: requests.map(serializeSupportRequest) })
   } catch (error) {
-    console.error("Failed to list support requests:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to list support requests:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list support requests" })
   }
 })
@@ -60,7 +64,10 @@ supportRouter.post("/", requireAuth, requireCsrf, async (req: AuthenticatedReque
     })
     res.status(201).json({ data: serializeSupportRequest(request) })
   } catch (error) {
-    console.error("Failed to create support request:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to create support request:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to create support request" })
   }
 })
@@ -79,6 +86,10 @@ supportRouter.get("/:id", requireAuth, async (req: AuthenticatedRequest, res) =>
     })
     res.json({ data: serializeSupportRequest(request!) })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to load support request:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to load support request" })
   }
 })
@@ -105,6 +116,10 @@ supportRouter.patch("/:id", requireAuth, requireCsrf, async (req: AuthenticatedR
     })
     res.json({ data: serializeSupportRequest(updated) })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to update support request:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to update support request" })
   }
 })

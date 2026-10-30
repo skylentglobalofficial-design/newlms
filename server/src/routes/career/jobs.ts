@@ -3,8 +3,9 @@ import { z } from "zod"
 import { CareerEmploymentType, CareerWorkMode, JobStatus, Prisma } from "@prisma/client"
 import { prisma } from "../../lib/prisma.js"
 import { attachAuth, type AuthenticatedRequest } from "../../lib/auth.js"
-import { serializeJob } from "../../lib/career/serializers.js"
+import { computeJobSkillMatch, serializeJob } from "../../lib/career/serializers.js"
 import { slugSchema } from "../../lib/career/shared.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../../lib/schema-capabilities.js"
 
 export const jobsRouter = Router()
 
@@ -21,6 +22,23 @@ const listQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).optional(),
   offset: z.coerce.number().int().min(0).max(10_000).optional(),
 })
+
+async function loadLearnerVerifiedSkills(userId: string): Promise<string[]> {
+  const [profile, projects] = await Promise.all([
+    prisma.careerProfile.findUnique({ where: { userId }, select: { skills: true } }).catch(() => null),
+    prisma.careerProject.findMany({ where: { userId }, select: { skills: true } }).catch(() => []),
+  ])
+  const combined = new Set<string>()
+  for (const s of profile?.skills ?? []) {
+    if (typeof s === "string" && s.trim()) combined.add(s.trim())
+  }
+  for (const p of projects ?? []) {
+    for (const s of p.skills ?? []) {
+      if (typeof s === "string" && s.trim()) combined.add(s.trim())
+    }
+  }
+  return [...combined]
+}
 
 jobsRouter.get("/", async (req: AuthenticatedRequest, res) => {
   const parsed = listQuerySchema.safeParse(req.query)
@@ -63,20 +81,34 @@ jobsRouter.get("/", async (req: AuthenticatedRequest, res) => {
     ])
 
     let savedJobIds = new Set<string>()
+    let learnerSkills: string[] | null = null
     if (auth) {
-      const saved = await prisma.savedJob.findMany({
-        where: { userId: auth.user.id, jobId: { in: jobs.map((j) => j.id) } },
-        select: { jobId: true },
-      })
+      const [saved, skills] = await Promise.all([
+        prisma.savedJob.findMany({
+          where: { userId: auth.user.id, jobId: { in: jobs.map((j) => j.id) } },
+          select: { jobId: true },
+        }),
+        loadLearnerVerifiedSkills(auth.user.id),
+      ])
       savedJobIds = new Set(saved.map((s) => s.jobId))
+      learnerSkills = skills
     }
 
     res.json({
-      data: jobs.map((job) => serializeJob(job, savedJobIds.has(job.id))),
+      data: jobs.map((job) =>
+        serializeJob(
+          job,
+          savedJobIds.has(job.id),
+          learnerSkills ? computeJobSkillMatch(job.skills, learnerSkills) : undefined,
+        ),
+      ),
       meta: { total, limit, offset },
     })
   } catch (error) {
-    console.error("Failed to list jobs:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Jobs are not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to list jobs:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list jobs" })
   }
 })
@@ -102,16 +134,30 @@ jobsRouter.get("/:idOrSlug", async (req: AuthenticatedRequest, res) => {
     }
 
     let saved = false
+    let learnerSkills: string[] | null = null
     if (auth) {
-      const entry = await prisma.savedJob.findUnique({
-        where: { userId_jobId: { userId: auth.user.id, jobId: job.id } },
-      })
+      const [entry, skills] = await Promise.all([
+        prisma.savedJob.findUnique({
+          where: { userId_jobId: { userId: auth.user.id, jobId: job.id } },
+        }),
+        loadLearnerVerifiedSkills(auth.user.id),
+      ])
       saved = Boolean(entry)
+      learnerSkills = skills
     }
 
-    res.json({ data: serializeJob(job, saved) })
+    res.json({
+      data: serializeJob(
+        job,
+        saved,
+        learnerSkills ? computeJobSkillMatch(job.skills, learnerSkills) : undefined,
+      ),
+    })
   } catch (error) {
-    console.error("Failed to load job:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Jobs are not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to load job:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to load job" })
   }
 })

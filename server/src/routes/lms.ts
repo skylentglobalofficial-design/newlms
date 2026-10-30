@@ -1,3 +1,4 @@
+import { createFacultyDoubtTicket } from "../lib/doubt-sla.js"
 import { Router } from "express"
 import { z } from "zod"
 import { AssignmentStatus, CurriculumNodeType } from "@prisma/client"
@@ -43,6 +44,14 @@ import {
 } from "../lib/lms.js"
 
 export const lmsRouter = Router()
+
+function sendLmsFailure(res: import("express").Response, error: unknown, fallback: string) {
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+    return res.status(503).json({ error: `${fallback} right now.`, code: "unavailable" })
+  }
+  console.error(fallback, error instanceof Error ? error.name : "unknown")
+  return res.status(500).json({ error: fallback })
+}
 
 const slugParamSchema = z.object({
   slug: z
@@ -105,7 +114,7 @@ async function newEnrolmentPolicyReady(res: import("express").Response): Promise
   try {
     if ((await readSchemaCapabilities()).policyAcceptance) return true
   } catch (error) {
-    console.error("Enrolment blocked: policy storage could not be checked:", error instanceof Error ? error.message : "schema check failed")
+    console.error("Enrolment blocked: policy storage could not be checked:", error instanceof Error ? error.name : "schema check failed")
     res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
     return false
   }
@@ -140,8 +149,7 @@ lmsRouter.get("/dashboard", requireAuth, async (req: AuthenticatedRequest, res) 
     const workspace = await loadLearnerDashboard(req.auth!.user.id)
     res.json({ data: workspace })
   } catch (error) {
-    console.error("Failed to load LMS dashboard:", error)
-    res.status(500).json({ error: "Failed to load dashboard" })
+    sendLmsFailure(res, error, "Failed to load dashboard")
   }
 })
 
@@ -191,8 +199,7 @@ lmsRouter.get("/enrollments", requireAuth, async (req: AuthenticatedRequest, res
     }))
     res.json({ data })
   } catch (error) {
-    console.error("Failed to list enrollments:", error)
-    res.status(500).json({ error: "Failed to list enrollments" })
+    sendLmsFailure(res, error, "Failed to list enrollments")
   }
 })
 
@@ -310,10 +317,10 @@ lmsRouter.post("/enrollments", requireAuth, requireCsrf, async (req: Authenticat
     return res.status(201).json({ data: await attachProgramWorkspace(userId, workspace, null, course.id) })
   } catch (error) {
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
-      console.error("Enrolment blocked: policy storage could not be checked:", error instanceof Error ? error.message : "schema check failed")
+      console.error("Enrolment blocked: policy storage could not be checked:", error instanceof Error ? error.name : "schema check failed")
       return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.enrolment))
     }
-    console.error("Failed to enroll:", error)
+    console.error("Failed to enroll:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to enroll" })
   }
 })
@@ -373,13 +380,7 @@ lmsRouter.get("/courses/:slug/access", async (req, res) => {
       },
     })
   } catch (error) {
-    console.error("Failed to check course access:", error)
-    res.status(500).json({
-      error: "Failed to check access",
-      ...(process.env.NODE_ENV !== "production"
-        ? { detail: error instanceof Error ? error.message : String(error) }
-        : {}),
-    })
+    sendLmsFailure(res, error, "Failed to check access")
   }
 })
 
@@ -403,8 +404,7 @@ lmsRouter.get("/courses/:slug", requireAuth, async (req: AuthenticatedRequest, r
     const workspace = await buildCourseWorkspace({ ...enrollment, course })
     res.json({ data: await attachProgramWorkspace(req.auth!.user.id, workspace, null, course.id) })
   } catch (error) {
-    console.error("Failed to load course workspace:", error)
-    res.status(500).json({ error: "Failed to load course" })
+    sendLmsFailure(res, error, "Failed to load course")
   }
 })
 
@@ -457,8 +457,7 @@ lmsRouter.get("/programs/:slug/access", async (req, res) => {
       },
     })
   } catch (error) {
-    console.error("Failed to check program access:", error)
-    res.status(500).json({ error: "Failed to check access" })
+    sendLmsFailure(res, error, "Failed to check access")
   }
 })
 
@@ -481,8 +480,7 @@ lmsRouter.get("/programs/:slug", requireAuth, async (req: AuthenticatedRequest, 
 
     res.json({ data: workspace })
   } catch (error) {
-    console.error("Failed to load programme workspace:", error)
-    res.status(500).json({ error: "Failed to load programme" })
+    sendLmsFailure(res, error, "Failed to load programme")
   }
 })
 
@@ -507,8 +505,7 @@ lmsRouter.get("/courses/:slug/resume", requireAuth, async (req: AuthenticatedReq
     const resume = computeResume(course, lessonStates, enrollment.lastAccessedNodeId)
     res.json({ data: resume })
   } catch (error) {
-    console.error("Failed to compute resume:", error)
-    res.status(500).json({ error: "Failed to compute resume" })
+    sendLmsFailure(res, error, "Failed to compute resume")
   }
 })
 
@@ -621,8 +618,7 @@ lmsRouter.post(
         },
       })
     } catch (error) {
-      console.error("Failed to update lesson progress:", error)
-      res.status(500).json({ error: "Failed to update progress" })
+      sendLmsFailure(res, error, "Failed to update progress")
     }
   },
 )
@@ -677,8 +673,7 @@ lmsRouter.get(
         },
       })
     } catch (error) {
-      console.error("Failed to load quiz:", error)
-      res.status(500).json({ error: "Failed to load quiz" })
+      sendLmsFailure(res, error, "Failed to load quiz")
     }
   },
 )
@@ -792,8 +787,7 @@ lmsRouter.post(
           currentAttempts: error.currentAttempts,
         })
       }
-      console.error("Failed to submit quiz attempt:", error)
-      res.status(500).json({ error: "Failed to submit quiz attempt" })
+      sendLmsFailure(res, error, "Failed to submit quiz attempt")
     }
   },
 )
@@ -857,8 +851,7 @@ lmsRouter.get(
         },
       })
     } catch (error) {
-      console.error("Failed to load assignment:", error)
-      res.status(500).json({ error: "Failed to load assignment" })
+      sendLmsFailure(res, error, "Failed to load assignment")
     }
   },
 )
@@ -1014,8 +1007,7 @@ lmsRouter.post(
         },
       })
     } catch (error) {
-      console.error("Failed to update assignment:", error)
-      res.status(500).json({ error: "Failed to update assignment" })
+      sendLmsFailure(res, error, "Failed to update assignment")
     }
   },
 )
@@ -1055,8 +1047,7 @@ lmsRouter.get(
         },
       })
     } catch (error) {
-      console.error("Failed to load lesson media:", error)
-      res.status(500).json({ error: "Failed to load lesson media" })
+      sendLmsFailure(res, error, "Failed to load lesson media")
     }
   },
 )
@@ -1067,11 +1058,11 @@ lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: Authenticat
     return res.status(400).json({ error: "Invalid slug" })
   }
 
-  if (!(await capabilityAvailable("skylentCertificates"))) {
-    return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.certificates))
-  }
-
   try {
+    if (!(await capabilityAvailable("skylentCertificates"))) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.certificates))
+    }
+
     const course = await findCourseBySlug(parsed.data.slug)
     if (!course) return res.status(404).json({ error: "Course not found" })
 
@@ -1109,7 +1100,47 @@ lmsRouter.get("/courses/:slug/certificate", requireAuth, async (req: Authenticat
       },
     })
   } catch (error) {
-    console.error("Failed to load certificate state:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.certificates))
+    }
+    console.error("Failed to load certificate state:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to load certificate state" })
   }
 })
+
+
+lmsRouter.post(
+  "/courses/:slug/lessons/:lessonKey/doubt",
+  requireAuth,
+  requireCsrf,
+  async (req: AuthenticatedRequest, res) => {
+    const parsed = lessonParamSchema.safeParse(req.params)
+    if (!parsed.success) return res.status(400).json({ error: "Invalid request" })
+    const body = z
+      .object({
+        question: z.string().trim().max(1000).optional(),
+        lessonTitle: z.string().trim().max(240).optional(),
+      })
+      .safeParse(req.body ?? {})
+    if (!body.success) return res.status(400).json({ error: "Invalid request" })
+    try {
+      const course = await findCourseBySlug(parsed.data.slug)
+      if (!course) return res.status(404).json({ error: "Course not found" })
+      const enrollment = await resolveCourseEnrollment(req.auth!.user.id, course.id)
+      if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
+      const found = findNodeByLessonKey(course, parsed.data.lessonKey)
+      if (!found) return res.status(404).json({ error: "Lesson not found" })
+      const ticket = createFacultyDoubtTicket({
+        userId: req.auth!.user.id,
+        learnerName: req.auth!.user.displayName ?? req.auth!.user.email,
+        courseSlug: course.slug,
+        lessonKey: parsed.data.lessonKey,
+        lessonTitle: body.data.lessonTitle ?? found.node.title,
+        question: body.data.question,
+      })
+      res.status(201).json({ data: ticket })
+    } catch (error) {
+      sendLmsFailure(res, error, "Failed to escalate doubt")
+    }
+  },
+)

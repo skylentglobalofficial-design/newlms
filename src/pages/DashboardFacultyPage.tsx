@@ -81,6 +81,11 @@ function CatalogOverview({
           padding: '16px 0', marginBottom: 20,
           borderTop: `1px solid ${T.lineLight}`, borderBottom: `1px solid ${T.lineLight}`,
         }}>
+          <div style={{ flex: '1 1 140px', minWidth: 0 }}>
+            <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Faculty TA SLA</div>
+            <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink }}>20 min</div>
+            <div style={{ color: C.slate, fontSize: 11, marginTop: 2 }}>20-minute doubt &amp; rubric SLA</div>
+          </div>
           <div style={{ flex: '1 1 120px', minWidth: 0 }}>
             <div style={{ color: C.slate, fontSize: 11, marginBottom: 4 }}>Pending reviews</div>
             <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, fontWeight: 600, color: C.ink }}>

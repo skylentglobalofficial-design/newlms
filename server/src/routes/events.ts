@@ -9,19 +9,44 @@ import {
   type AuthenticatedRequest,
 } from "../lib/auth.js"
 import { requireRoles } from "../lib/roles.js"
-import { readSchemaCapabilities } from "../lib/schema-capabilities.js"
+import { awardWorkshopRegistrationCashback, DEFAULT_WORKSHOP_FEE_RUPEES, workshopCoinCashbackForRupees } from "../lib/elixir.js"
+import { isDatabaseUnavailableError, isMissingSchemaError, readSchemaCapabilities } from "../lib/schema-capabilities.js"
 
 export const eventsRouter = Router()
+
+export function workshopRewardMetadata(feeRupees = DEFAULT_WORKSHOP_FEE_RUPEES) {
+  return {
+    feeRupees,
+    elixirCashback: workshopCoinCashbackForRupees(feeRupees),
+    cashbackPercent: 100,
+    redeemableFor: "Case studies & guided workspaces",
+  }
+}
+
+
+const EVENTS_UNAVAILABLE = { error: "Events are not available yet.", code: "unavailable" as const }
+
+function sendEventsFailure(res: import("express").Response, error: unknown, fallback: string) {
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+    return res.status(503).json(EVENTS_UNAVAILABLE)
+  }
+  console.error(fallback, error instanceof Error ? error.name : "unknown")
+  return res.status(500).json({ error: fallback })
+}
 
 eventsRouter.use(async (_req, res, next) => {
   try {
     const caps = await readSchemaCapabilities()
     if (!caps.events) {
-      res.status(503).json({ error: "Events are not available yet.", code: "unavailable" })
+      res.status(503).json(EVENTS_UNAVAILABLE)
       return
     }
     next()
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      res.status(503).json(EVENTS_UNAVAILABLE)
+      return
+    }
     next(error)
   }
 })
@@ -110,12 +135,12 @@ eventsRouter.get("/", async (req, res) => {
         courseSlug: event.courseSlug,
         registrationCount: event._count.registrations,
         spotsRemaining: event.capacity ? Math.max(0, event.capacity - event._count.registrations) : null,
+        elixirReward: workshopRewardMetadata(),
       })),
       meta: { total, limit, offset },
     })
   } catch (error) {
-    console.error("Failed to list events:", error)
-    res.status(500).json({ error: "Failed to list events" })
+    sendEventsFailure(res, error, "Failed to list events")
   }
 })
 
@@ -176,12 +201,12 @@ eventsRouter.get("/:slug", async (req, res) => {
         courseSlug: event.courseSlug,
         registrationCount: event._count.registrations,
         spotsRemaining: event.capacity ? Math.max(0, event.capacity - event._count.registrations) : null,
+        elixirReward: workshopRewardMetadata(),
         userRegistration,
       },
     })
   } catch (error) {
-    console.error("Failed to get event:", error)
-    res.status(500).json({ error: "Failed to get event" })
+    sendEventsFailure(res, error, "Failed to get event")
   }
 })
 
@@ -247,15 +272,23 @@ eventsRouter.post(
         },
       })
 
+      const cashback = await awardWorkshopRegistrationCashback({
+        userId: req.auth!.user.id,
+        eventId: event.id,
+        eventSlug: event.slug,
+        eventTitle: event.title,
+      })
+
       res.status(201).json({
         data: {
           status: registration.status,
           registeredAt: registration.registeredAt.toISOString(),
+          elixirReward: workshopRewardMetadata(),
+          elixirAwarded: cashback.amount,
         },
       })
     } catch (error) {
-      console.error("Failed to register for event:", error)
-      res.status(500).json({ error: "Failed to register" })
+      sendEventsFailure(res, error, "Failed to register")
     }
   },
 )
@@ -306,8 +339,7 @@ eventsRouter.post(
         },
       })
     } catch (error) {
-      console.error("Failed to cancel registration:", error)
-      res.status(500).json({ error: "Failed to cancel registration" })
+      sendEventsFailure(res, error, "Failed to cancel registration")
     }
   },
 )
@@ -352,8 +384,7 @@ eventsRouter.get("/my/registrations", requireAuth, async (req: AuthenticatedRequ
       })),
     })
   } catch (error) {
-    console.error("Failed to list registrations:", error)
-    res.status(500).json({ error: "Failed to list registrations" })
+    sendEventsFailure(res, error, "Failed to list registrations")
   }
 })
 
@@ -401,8 +432,7 @@ eventsRouter.post("/", ...adminGuards, requireCsrf, async (req: AuthenticatedReq
       },
     })
   } catch (error) {
-    console.error("Failed to create event:", error)
-    res.status(500).json({ error: "Failed to create event" })
+    sendEventsFailure(res, error, "Failed to create event")
   }
 })
 
@@ -442,8 +472,7 @@ eventsRouter.patch("/:slug", ...adminGuards, requireCsrf, async (req: Authentica
       },
     })
   } catch (error) {
-    console.error("Failed to update event:", error)
-    res.status(500).json({ error: "Failed to update event" })
+    sendEventsFailure(res, error, "Failed to update event")
   }
 })
 
@@ -470,8 +499,7 @@ eventsRouter.post("/:slug/publish", ...adminGuards, requireCsrf, async (req: Aut
 
     res.json({ data: { slug: updated.slug, status: updated.status } })
   } catch (error) {
-    console.error("Failed to publish event:", error)
-    res.status(500).json({ error: "Failed to publish event" })
+    sendEventsFailure(res, error, "Failed to publish event")
   }
 })
 
@@ -494,7 +522,6 @@ eventsRouter.post("/:slug/cancel", ...adminGuards, requireCsrf, async (req: Auth
 
     res.json({ data: { slug: updated.slug, status: updated.status } })
   } catch (error) {
-    console.error("Failed to cancel event:", error)
-    res.status(500).json({ error: "Failed to cancel event" })
+    sendEventsFailure(res, error, "Failed to cancel event")
   }
 })

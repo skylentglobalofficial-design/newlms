@@ -79,7 +79,12 @@ jobs:
           test -d prisma/migrations/20261009000000_policy_acceptance
           test -d prisma/migrations/20261011000000_employer_membership_and_shared_applications
           test -d prisma/migrations/20261017120000_practice_workspaces
+          test -d prisma/migrations/20261024120000_quiz_grading_events
+          test -d prisma/migrations/20261024140000_password_reset_and_degrees
           test -d prisma/migrations/20261025180000_elixir_ledger_and_admin_audit
+          test -d prisma/migrations/20261028143000_career_rise_os_lock_and_authoring
+          test -d prisma/migrations/20261028160000_college_membership
+          test -d prisma/migrations/20261028161000_lesson_material_compat
           npx prisma migrate deploy
           npx prisma migrate status
           npm run db:preflight -- --expect-none
@@ -98,6 +103,9 @@ jobs:
       - name: test:production-env
         if: always()
         run: npm run test:production-env
+      - name: test:release-readiness-hardening
+        if: always()
+        run: npm run test:release-readiness-hardening
       - name: test:catalog-parity (catalogue truth and seeded catalogue parity)
         if: always()
         run: npm run test:catalog-parity
@@ -105,16 +113,31 @@ jobs:
         if: always()
         run: |
           npx tsx scripts/test-smoke-decision.ts
+          npm run test:september-startup
+          npm run test:google-oauth
           npm run test:da-content
           npm run test:pm-content
+          npm run test:programme-positioning
           npm run test:live-intents
+          npx tsx scripts/test-catalogue-fallback.ts
           npx tsx scripts/test-dashboard-navigation.ts
           npx tsx scripts/test-dashboard-project-selection.ts
           npx tsx scripts/test-enrollment-access.ts
+          npx tsx scripts/test-enrolment-schema-probe.ts
+          npx tsx scripts/test-signup-schema-probe.ts
+          npx tsx scripts/test-schema-capabilities.ts
           npx tsx scripts/test-career-job-eligibility.ts
           npx tsx scripts/test-path-roadmap.ts
           npx tsx scripts/test-path-execution.ts
           npx tsx scripts/test-path-evidence.ts
+          npm run test:quiz-limits
+          npx tsx scripts/test-quiz-attempts-comprehensive.ts
+          npm run test:password-reset
+          npm run test:degrees-auth
+          npm run test:events
+          npx tsx scripts/test-events-comprehensive.ts
+          npx tsx scripts/test-grading-authorization.ts
+          npm run test:storage
           npm run test:certificate-verify
           npx tsx scripts/test-server-entry.ts
           npx tsx scripts/test-google-link.ts

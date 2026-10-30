@@ -6,6 +6,7 @@ import {
   getOrganisationScopedEnrollmentStats,
   requireOrganisationMembership,
 } from "../lib/dashboard-scope.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../lib/schema-capabilities.js"
 
 export const organisationRouter = Router()
 
@@ -83,7 +84,10 @@ organisationRouter.get("/dashboard", requireAuth, requireRoles("organisation", "
       },
     })
   } catch (error) {
-    console.error("Failed to load organisation dashboard:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Organisation dashboard is not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to load organisation dashboard:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to load organisation dashboard" })
   }
 })

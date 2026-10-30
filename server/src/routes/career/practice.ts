@@ -5,6 +5,7 @@ import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../../lib/a
 import { assertOwnedInterviewRound } from "../../lib/career/profile.js"
 import { serializeInterviewPractice } from "../../lib/career/serializers.js"
 import { parseOptionalDate, validationError } from "../../lib/career/shared.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../../lib/schema-capabilities.js"
 
 export const practiceRouter = Router()
 
@@ -25,7 +26,10 @@ practiceRouter.get("/", requireAuth, async (req: AuthenticatedRequest, res) => {
     })
     res.json({ data: records.map(serializeInterviewPractice) })
   } catch (error) {
-    console.error("Failed to list practice records:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Interview practice is not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to list practice records:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list practice records" })
   }
 })
@@ -61,7 +65,10 @@ practiceRouter.post("/", requireAuth, requireCsrf, async (req: AuthenticatedRequ
     })
     res.status(201).json({ data: serializeInterviewPractice(record) })
   } catch (error) {
-    console.error("Failed to create practice record:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Interview practice is not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to create practice record:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to create practice record" })
   }
 })

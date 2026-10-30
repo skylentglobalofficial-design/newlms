@@ -1,6 +1,6 @@
 /**
  * Clients for the Skylent additions on the existing backend (server/src/routes/skylent/*):
- *   /api/v1/certificates  — issue (learner), mine (learner), verify (public)
+ *   /api/v1/certificates  — issue (learner), issue-programme (learner), mine (learner), verify (public)
  *   /api/v1/enquiries     — public enquiry / counselling / degree enquiry
  *   /api/v1/reva/chat     — site-wide assistant (legacy internal route name; the UI name is "Skylent AI")
  * No mock data and no fallbacks: a failed request throws, and the caller shows an honest error state.
@@ -26,13 +26,26 @@ export type SkylentCertificate = {
   verifyPath?: string
   issuedAt: string
   revoked?: boolean
+  issuer?: string
+  verificationStandard?: string
+  evidenceSummary?: string
+  credentialLevel?: "course" | "programme"
   id?: string
   userId?: string
   courseId?: string
 }
 
 export type CertificateVerification =
-  | { valid: true; code: string; learnerName: string; courseTitle: string; issuedAt: string }
+  | {
+      valid: true
+      code: string
+      learnerName: string
+      courseTitle: string
+      issuedAt: string
+      issuer?: string
+      verificationStandard?: string
+      evidenceSummary?: string
+    }
   | { valid: false }
 
 /** Matches the server's validation in routes/skylent/certificates.ts. */
@@ -53,6 +66,19 @@ export async function issueCertificate(courseSlug: string): Promise<SkylentCerti
     credentials: "include",
     headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
     body: JSON.stringify({ courseSlug }),
+  })
+  const parsed = await parseApiJson<{ data: SkylentCertificate }>(response)
+  return parsed.data
+}
+
+/** POST /certificates/issue-programme — issues a Programme Master Certificate when all courses in the programme are complete. */
+export async function issueProgrammeCertificate(programSlug: string): Promise<SkylentCertificate> {
+  const token = await ensureCsrfToken()
+  const response = await fetch(`${API_BASE}/certificates/issue-programme`, {
+    method: "POST",
+    credentials: "include",
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": token },
+    body: JSON.stringify({ programSlug }),
   })
   const parsed = await parseApiJson<{ data: SkylentCertificate }>(response)
   return parsed.data

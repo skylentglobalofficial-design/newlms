@@ -1,11 +1,27 @@
 import { Router } from "express"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
-import { elixirReady, listElixirTransactions, reconcileElixir, spendOnResource } from "../lib/elixir.js"
+import {
+  elixirReady,
+  listElixirTransactions,
+  mergeStarterElixirResources,
+  reconcileElixir,
+  spendOnResource,
+  VERIFIED_ACADEMIC_ELIXIR_SCHEDULE,
+} from "../lib/elixir.js"
 import { prisma } from "../lib/prisma.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../lib/schema-capabilities.js"
 
 export const elixirRouter = Router()
 
 const unavailable = { error: "Elixir is not available until the database update is applied.", code: "unavailable" as const }
+
+function sendElixirRouteError(res: import("express").Response, error: unknown, fallback: string) {
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+    return res.status(503).json(unavailable)
+  }
+  console.error(fallback, error instanceof Error ? error.name : "unknown")
+  return res.status(500).json({ error: fallback })
+}
 
 elixirRouter.use(async (_req, res, next) => {
   try {
@@ -18,16 +34,6 @@ elixirRouter.use(async (_req, res, next) => {
   }
   res.status(503).json(unavailable)
 })
-
-import { isDatabaseUnavailableError, isMissingSchemaError } from "../lib/schema-capabilities.js"
-
-function sendElixirRouteError(res: import("express").Response, error: unknown, fallback: string) {
-  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
-    return res.status(503).json(unavailable)
-  }
-  console.error(fallback, error instanceof Error ? error.name : "unknown")
-  return res.status(500).json({ error: fallback })
-}
 
 elixirRouter.get("/", requireAuth, async (req: AuthenticatedRequest, res) => {
   try {
@@ -46,6 +52,7 @@ elixirRouter.get("/", requireAuth, async (req: AuthenticatedRequest, res) => {
         ...reconciliation,
         transactions: transactions.map((row) => ({ ...row, createdAt: row.createdAt.toISOString() })),
         entitlements: entitlements.map((row) => row.resource),
+        rewardSchedule: VERIFIED_ACADEMIC_ELIXIR_SCHEDULE,
       },
     })
   } catch (error) {
@@ -69,7 +76,7 @@ elixirRouter.get("/resources", requireAuth, async (req: AuthenticatedRequest, re
     ])
     const ownedSlugs = new Set(owned.map((row) => row.resource.slug))
     res.json({
-      data: resources.map((resource) => ({ ...resource, owned: ownedSlugs.has(resource.slug) })),
+      data: mergeStarterElixirResources(resources, ownedSlugs),
     })
   } catch (error) {
     sendElixirRouteError(res, error, "Failed to load learning resources")

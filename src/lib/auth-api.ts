@@ -28,6 +28,19 @@ export function buildGoogleOAuthStartUrl(options: GoogleOAuthStartOptions = {}):
   return `${API_BASE}/auth/google${query ? `?${query}` : ""}`
 }
 
+export async function checkGoogleOAuthAvailable(): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE}/auth/google/status`, { credentials: "include" })
+    if (!response.ok) return false
+    const body = (await readJsonBody(response).catch(() => null)) as
+      | { data?: { available?: boolean; configured?: boolean } }
+      | null
+    return Boolean(body?.data?.available ?? body?.data?.configured)
+  } catch {
+    return true
+  }
+}
+
 export type ApiAuthUser = {
   id: string
   email: string

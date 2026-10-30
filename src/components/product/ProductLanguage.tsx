@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 import { getLessonMeta } from "../../content/course-lookups"
 import { PRODUCT_MANAGEMENT_SLUG } from "../../lib/authored-courses"
 import { formatInr, NORTHWIND_PREVIEW as NW } from "../../lib/northwind-preview"
@@ -669,6 +669,153 @@ export function ModuleLane({ modules }: { modules: ModuleLaneItem[] }) {
 }
 
 /** Objective, why it matters and what the learner produces, as a ruled spec above the lesson text. */
+
+export type ColdCallScenario = {
+  kicker: string
+  prompt: string
+  options: Array<{ id: string; label: string; peerPercent: number; takeaway: string }>
+}
+
+export const COLD_CALL_SCENARIOS: Record<string, ColdCallScenario> = {
+  "data-analytics": {
+    kicker: "Case Cold Call · Northwind Commercial Review",
+    prompt: "Before writing your SQL query: Which metric isolates margin erosion from promotional discounting without being skewed by order volume?",
+    options: [
+      {
+        id: "net-margin",
+        label: "Net revenue after discount grouped by category",
+        peerPercent: 68,
+        takeaway: "Strong choice (chosen by 68% of learners). Comparing net revenue after discount against gross unit volume exposes categories where high order counts mask heavy discount leakage.",
+      },
+      {
+        id: "raw-orders",
+        label: "Total order count per category",
+        peerPercent: 32,
+        takeaway: "Chosen by 32% of learners. Order count alone hides unit-price discounting — pair order volume with net revenue after discount (UnitPrice * Quantity * (1 - Discount)) to see true contribution.",
+      },
+    ],
+  },
+  "product-management": {
+    kicker: "Case Cold Call · Harbor Desk Product Spec",
+    prompt: "With 2 engineers and a 6-week constraint, 9 of 12 stores hit weekend exception bottlenecks. Which bet do you scope first?",
+    options: [
+      {
+        id: "exception-queue",
+        label: "Single weekend exception queue with explicit triage states",
+        peerPercent: 74,
+        takeaway: "Strong choice (chosen by 74% of learners). Scoping one focused exception queue directly addresses the 9-store weekend bottleneck within the 2-engineer, 6-week constraint.",
+      },
+      {
+        id: "custom-webhooks",
+        label: "Configurable multi-store webhook rule builder",
+        peerPercent: 26,
+        takeaway: "Chosen by 26% of learners. A custom rule builder blows past the 2-engineer, 6-week constraint and leaves unlogged weekend exceptions unresolved.",
+      },
+    ],
+  },
+  "python-programming": {
+    kicker: "Case Cold Call · Python Data Pipeline",
+    prompt: "When cleaning 500,000 transaction rows in Python, which transformation pattern keeps memory and runtime predictable?",
+    options: [
+      {
+        id: "vectorized-ops",
+        label: "Vectorized column operations with explicit dtype validation",
+        peerPercent: 71,
+        takeaway: "Strong choice (chosen by 71% of learners). Vectorized operations avoid Python-level row iteration overhead and catch malformed types before aggregation.",
+      },
+      {
+        id: "row-loops",
+        label: "Row-by-row Python for-loops mutating dictionaries in place",
+        peerPercent: 29,
+        takeaway: "Chosen by 29% of learners. Row-by-row loops degrade rapidly on large extracts and make schema errors harder to isolate.",
+      },
+    ],
+  },
+  "data-science-ai": {
+    kicker: "Case Cold Call · Churn Model Validation",
+    prompt: "You are training a 90-day customer churn classifier on longitudinal billing logs. How do you split train and validation sets?",
+    options: [
+      {
+        id: "temporal-split",
+        label: "Out-of-time cutoff split (train on earlier cohorts, validate on later cohorts)",
+        peerPercent: 64,
+        takeaway: "Strong choice (chosen by 64% of learners). Temporal splitting prevents future macro signals from leaking into historical training windows.",
+      },
+      {
+        id: "random-kfold",
+        label: "Random 80/20 shuffle across all billing timestamps",
+        peerPercent: 36,
+        takeaway: "Chosen by 36% of learners. Random shuffling across time leaks future cohort behavior into training and inflates offline AUC.",
+      },
+    ],
+  },
+  "generative-ai": {
+    kicker: "Case Cold Call · Enterprise RAG Reliability",
+    prompt: "An enterprise policy assistant occasionally fabricates refund clauses. What is your first engineering safeguard?",
+    options: [
+      {
+        id: "citation-grounding",
+        label: "Strict retrieval chunk grounding with citation verification before response",
+        peerPercent: 77,
+        takeaway: "Strong choice (chosen by 77% of learners). Enforcing retrieval grounding and refusing ungrounded claims eliminates hallucinated policy terms.",
+      },
+      {
+        id: "prompt-adjective",
+        label: "Adding \"be very accurate\" to the system prompt without retrieval checks",
+        peerPercent: 23,
+        takeaway: "Chosen by 23% of learners. Prompt adjectives alone cannot guarantee factual grounding when retrieval context is missing.",
+      },
+    ],
+  },
+  "full-stack-web": {
+    kicker: "Case Cold Call · Payment & Ledger Idempotency",
+    prompt: "A user double-clicks the Unlock Case Study button on a slow mobile connection. What prevents a double coin deduction?",
+    options: [
+      {
+        id: "db-idempotency",
+        label: "Server-side database transaction with a unique idempotency key",
+        peerPercent: 79,
+        takeaway: "Strong choice (chosen by 79% of learners). Only a database-enforced unique idempotency key inside a transaction guarantees exactly-once deduction under concurrent retries.",
+      },
+      {
+        id: "client-disable",
+        label: "Disabling the submit button in React state only",
+        peerPercent: 21,
+        takeaway: "Chosen by 21% of learners. Client UI state improves UX but cannot stop duplicate network retries or multi-tab requests.",
+      },
+    ],
+  },
+}
+
+export function BoardroomColdCallCard({ courseSlug }: { courseSlug: string }) {
+  const scenario = COLD_CALL_SCENARIOS[courseSlug]
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+  if (!scenario) return null
+  const chosen = scenario.options.find((opt) => opt.id === selectedId) ?? null
+  return (
+    <aside className="os-cold-call" aria-label={scenario.kicker}>
+      <p className="pl-kicker">{scenario.kicker}</p>
+      <p className="os-cold-call__prompt"><strong>{scenario.prompt}</strong></p>
+      <div className="os-cold-call__actions" role="group" aria-label="Decision options">
+        {scenario.options.map((opt) => (
+          <button
+            key={opt.id}
+            type="button"
+            className={selectedId === opt.id ? "os-chip is-active" : "os-chip"}
+            aria-pressed={selectedId === opt.id}
+            onClick={() => setSelectedId(opt.id)}
+          >
+            {opt.label}{chosen ? ` (${opt.peerPercent}%)` : ""}
+          </button>
+        ))}
+      </div>
+      {chosen ? (
+        <p className="os-cold-call__takeaway" role="status">{chosen.takeaway}</p>
+      ) : null}
+    </aside>
+  )
+}
+
 export function LessonContextPanel({ courseSlug, lessonId }: { courseSlug: string; lessonId: string }) {
   const meta = getLessonMeta(courseSlug, lessonId)
   if (!meta) return null
@@ -679,13 +826,16 @@ export function LessonContextPanel({ courseSlug, lessonId }: { courseSlug: strin
   ].filter((row) => Boolean(row.value))
   if (rows.length === 0) return null
   return (
-    <dl className="os-spec">
+    <>
+      <dl className="os-spec">
       {rows.map((row) => (
         <div key={row.label}>
           <dt>{row.label}</dt>
           <dd>{row.value}</dd>
         </div>
       ))}
-    </dl>
+      </dl>
+      <BoardroomColdCallCard courseSlug={courseSlug} />
+    </>
   )
 }

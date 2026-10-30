@@ -13,7 +13,7 @@ import {
   serializeApplicationEvent,
 } from "../../lib/career/serializers.js"
 import { parseOptionalDate, validationError } from "../../lib/career/shared.js"
-import { jobApplicationSelect, readSchemaCapabilities } from "../../lib/schema-capabilities.js"
+import { isDatabaseUnavailableError, isMissingSchemaError, jobApplicationSelect, readSchemaCapabilities } from "../../lib/schema-capabilities.js"
 
 function applicationRead(sharing: boolean) {
   return {
@@ -88,7 +88,10 @@ applicationsRouter.get("/", requireAuth, async (req: AuthenticatedRequest, res) 
     })
     res.json({ data: apps.map((app) => serializeApplication(withShareFlag(app, sharing))) })
   } catch (error) {
-    console.error("Failed to list applications:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to list applications:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list applications" })
   }
 })
@@ -145,7 +148,10 @@ applicationsRouter.post("/share", requireAuth, requireCsrf, async (req: Authenti
 
     res.status(existing ? 200 : 201).json({ data: serializeApplication(withShareFlag(app, true)) })
   } catch (error) {
-    console.error("Failed to share application:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to share application:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to share application" })
   }
 })
@@ -187,7 +193,10 @@ applicationsRouter.post("/", requireAuth, requireCsrf, async (req: Authenticated
 
     res.status(201).json({ data: serializeApplication(withShareFlag(app, sharing)) })
   } catch (error) {
-    console.error("Failed to create application:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to create application:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to create application" })
   }
 })
@@ -207,6 +216,10 @@ applicationsRouter.get("/:id", requireAuth, async (req: AuthenticatedRequest, re
     })
     res.json({ data: serializeApplication(withShareFlag(full!, sharing)) })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to load application:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to load application" })
   }
 })
@@ -240,6 +253,10 @@ applicationsRouter.patch("/:id", requireAuth, requireCsrf, async (req: Authentic
     })
     res.json({ data: serializeApplication(withShareFlag(updated, sharing)) })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to update application:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to update application" })
   }
 })
@@ -261,6 +278,10 @@ applicationsRouter.post("/:id/unshare", requireAuth, requireCsrf, async (req: Au
     })
     res.json({ data: serializeApplication(withShareFlag(updated, true)) })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to stop sharing application:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to stop sharing application" })
   }
 })
@@ -276,6 +297,10 @@ applicationsRouter.delete("/:id", requireAuth, requireCsrf, async (req: Authenti
     await prisma.jobApplication.delete({ where: { id: app.id } })
     res.json({ data: { deleted: true } })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to delete application:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to delete application" })
   }
 })
@@ -294,6 +319,10 @@ applicationsRouter.get("/:id/events", requireAuth, async (req: AuthenticatedRequ
     })
     res.json({ data: events.map(serializeApplicationEvent) })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to list application events:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list application events" })
   }
 })
@@ -323,6 +352,10 @@ applicationsRouter.post("/:id/events", requireAuth, requireCsrf, async (req: Aut
     })
     res.status(201).json({ data: serializeApplicationEvent(event) })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to create application event:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to create application event" })
   }
 })

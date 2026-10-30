@@ -2,6 +2,7 @@ import { Router } from "express"
 import { z } from "zod"
 import rateLimit, { ipKeyGenerator } from "express-rate-limit"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../lib/schema-capabilities.js"
 import {
   executeLabOperation,
   executeNorthwindSql,
@@ -98,7 +99,11 @@ function sendLabError(res: import("express").Response, error: unknown) {
       return
     }
   }
-  console.error("Skylent Labs failed:", error instanceof Error ? `${error.name}: ${error.message}` : "unknown")
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+    res.status(503).json({ error: "Skylent Labs is not available right now.", code: "unavailable" })
+    return
+  }
+  console.error("Skylent Labs failed:", error instanceof Error ? error.name : "unknown")
   res.status(500).json({ error: "Skylent Labs could not finish that request. Try again." })
 }
 

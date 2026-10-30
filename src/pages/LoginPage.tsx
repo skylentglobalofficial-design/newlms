@@ -5,7 +5,7 @@ import type { AuthUser, UserRole } from '../context/AuthContext'
 import { cataloguePathForTarget, fulfillCatalogEnrollment, learnPathForWorkspace, type CatalogEnrollTarget, type LoginRedirectState } from '../lib/catalog-enrollment'
 import { takeEnrolConsent } from '../lib/policy'
 import { sanitizeReturnTo } from '../lib/safe-return'
-import { buildGoogleOAuthStartUrl } from '../lib/auth-api'
+import { buildGoogleOAuthStartUrl, checkGoogleOAuthAvailable } from '../lib/auth-api'
 import { courseBySlug } from '../lib/catalog-maturity'
 import { programmeDiscoveryFor } from '../lib/programme-discovery'
 import './LoginPage.css'
@@ -128,10 +128,21 @@ export default function LoginPage() {
   const pendingFocus = useRef<HTMLElement | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [googleAvailable, setGoogleAvailable] = useState<boolean | null>(null)
   const [oauthHandled, setOauthHandled] = useState(false)
 
   const redirectState = (location.state ?? null) as LoginRedirectState | null
   const pendingTitle = enrollTargetTitle(redirectState?.enrollTarget)
+
+  useEffect(() => {
+    let cancelled = false
+    void checkGoogleOAuthAvailable().then((available) => {
+      if (!cancelled) setGoogleAvailable(available)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     if (location.pathname === '/signup') setTab('signup')
@@ -157,6 +168,12 @@ export default function LoginPage() {
       setTab('signin')
       setError("That email already has a Skylent account. Google was not connected. Sign in with email and password.")
       navigate('/login', { replace: true, state: location.state })
+      return
+    }
+    if (errorParam === 'oauth_not_configured') {
+      setGoogleAvailable(false)
+      setError('Google sign-in is not enabled on this server yet. Please sign in with your email and password.')
+      navigate(location.pathname, { replace: true, state: location.state })
       return
     }
     if (errorParam?.startsWith('oauth')) {
@@ -191,6 +208,10 @@ export default function LoginPage() {
   }, [error])
 
   function startGoogleAuth(acceptedTerms = false) {
+    if (googleAvailable === false) {
+      reportError('Google sign-in is not enabled on this server yet. Please use email and password above.')
+      return
+    }
     setError(null)
     setGoogleLoading(true)
     window.location.assign(buildGoogleOAuthStartUrl({
@@ -369,9 +390,13 @@ export default function LoginPage() {
                     className="entry-google"
                     type="button"
                     onClick={() => startGoogleAuth()}
-                    disabled={submitting || googleLoading}
+                    disabled={submitting || googleLoading || googleAvailable === false}
                   >
-                    {googleLoading ? 'Redirecting to Google…' : 'Continue with Google'}
+                    {googleLoading
+                      ? 'Redirecting to Google…'
+                      : googleAvailable === false
+                        ? 'Google sign-in unavailable — use email above'
+                        : 'Continue with Google'}
                   </button>
 
                   <p className="entry-alt">
@@ -430,9 +455,13 @@ export default function LoginPage() {
                     className="entry-google"
                     type="button"
                     onClick={() => { if (!suTerms) { setSuTermsTried(true); reportError('Accept the Terms & Conditions and Privacy Policy to create an account.', termsRef.current); return } startGoogleAuth(true) }}
-                    disabled={submitting || googleLoading}
+                    disabled={submitting || googleLoading || googleAvailable === false}
                   >
-                    {googleLoading ? 'Redirecting to Google…' : 'Continue with Google'}
+                    {googleLoading
+                      ? 'Redirecting to Google…'
+                      : googleAvailable === false
+                        ? 'Google sign-in unavailable — use email above'
+                        : 'Continue with Google'}
                   </button>
 
                   <p className="entry-alt">

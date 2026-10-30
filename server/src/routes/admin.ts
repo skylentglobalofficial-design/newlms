@@ -462,7 +462,8 @@ adminRouter.get("/organisations", ...guards, async (_req: AuthenticatedRequest, 
       })),
     })
   } catch (error) {
-    console.error("Failed to list organisations:", error)
+    if (schemaUnavailable(error)) return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    console.error("Failed to list organisations:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list organisations" })
   }
 })
@@ -495,7 +496,11 @@ adminRouter.post("/organisations", ...guards, requireCsrf, async (req: Authentic
       },
     })
   } catch (error) {
-    console.error("Failed to create organisation:", error)
+    if (typeof error === "object" && error && "code" in error && (error as { code?: string }).code === "P2002") {
+      return res.status(409).json({ error: "An organisation with this slug already exists" })
+    }
+    if (schemaUnavailable(error)) return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
+    console.error("Failed to create organisation:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to create organisation" })
   }
 })

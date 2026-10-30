@@ -4,6 +4,7 @@ import { z } from "zod"
 import { prisma } from "../../lib/prisma.js"
 import { parseCookies, hashSessionToken, SESSION_COOKIE } from "../../lib/auth.js"
 import { REVA_IDENTITY_REPLY, REVA_IDENTITY_RULE, isIdentityQuestion } from "../../lib/reva-identity.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../../lib/schema-capabilities.js"
 import { readProviderTimeoutMs } from "../../lib/skylent-ai/service.js"
 
 /**
@@ -12,11 +13,15 @@ import { readProviderTimeoutMs } from "../../lib/skylent-ai/service.js"
  */
 export const revaRouter = Router()
 
-export function isRevaModelConfigured(env: NodeJS.ProcessEnv = process.env): { available: boolean; configured: boolean } {
+export function isRevaModelConfigured(env: NodeJS.ProcessEnv = process.env): {
+  available: boolean
+  configured: boolean
+  rulesAvailable: boolean
+} {
   const providerName = (env.SKYLENT_AI_PROVIDER ?? "").trim().toLowerCase()
   const apiKey = env.SKYLENT_AI_API_KEY?.trim() ?? ""
   const configured = providerName !== "off" && providerName !== "none" && apiKey.length > 0
-  return { available: configured, configured }
+  return { available: configured, configured, rulesAvailable: true }
 }
 
 const limit = rateLimit({
@@ -170,7 +175,10 @@ revaRouter.post("/chat", limit, async (req, res) => {
     const answer = sanitizeAssistantActions(json.choices?.[0]?.message?.content ?? "")
     res.json({ data: { answer, scope, source: "model" } })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return void res.status(503).json({ error: "Skylent AI isn't available yet.", code: "unavailable" })
+    }
     console.error("Site assistant request failed:", error instanceof Error ? error.name : "unknown")
-    res.status(502).json({ error: "SKYLENT AI couldn't answer right now. Try again." })
+    res.status(500).json({ error: "SKYLENT AI couldn't answer right now. Try again." })
   }
 })

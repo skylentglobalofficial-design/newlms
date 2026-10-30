@@ -5,7 +5,12 @@ import { prisma } from "../lib/prisma.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
 import { requireRoles } from "../lib/roles.js"
 import { findCourseBySlug, findNodeByLessonKey, formatVideoMedia } from "../lib/lms.js"
-import { curriculumNodeSelect, readSchemaCapabilities } from "../lib/schema-capabilities.js"
+import {
+  curriculumNodeSelect,
+  isDatabaseUnavailableError,
+  isMissingSchemaError,
+  readSchemaCapabilities,
+} from "../lib/schema-capabilities.js"
 import { isMuxPlaybackId, muxPlaybackIdSchemaMessage } from "../lib/media/playback-id.js"
 import { validationError } from "../lib/career/shared.js"
 
@@ -53,7 +58,10 @@ adminMediaRouter.patch(
         },
       })
     } catch (error) {
-      console.error("Failed to update lesson media:", error)
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json({ error: "Lesson media is not available right now.", code: "unavailable" })
+      }
+      console.error("Failed to update lesson media:", error instanceof Error ? error.name : "unknown")
       res.status(500).json({ error: "Failed to update lesson media" })
     }
   },

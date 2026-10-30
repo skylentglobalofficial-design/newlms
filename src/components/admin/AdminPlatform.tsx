@@ -10,6 +10,7 @@ import {
   recordVerifiedPayment,
   refundVerifiedPayment,
   updateElixirRule,
+  type AdminUnitEconomics,
   type ElixirRule,
 } from "../../lib/admin-api"
 
@@ -19,6 +20,7 @@ export default function AdminPlatform() {
   const [message, setMessage] = useState<string | null>(null)
   const [rules, setRules] = useState<ElixirRule[]>([])
   const [reports, setReports] = useState<string>("Loading reports…")
+  const [unitEconomics, setUnitEconomics] = useState<AdminUnitEconomics | null>(null)
   const [ai, setAi] = useState<string>("Loading Skylent AI status…")
   const [audit, setAudit] = useState<string>("Loading audit log…")
   const [catalogue, setCatalogue] = useState<string>("Loading catalogue…")
@@ -34,10 +36,14 @@ export default function AdminPlatform() {
     if (ruleResult.status === "fulfilled") setRules(ruleResult.value.data)
     if (reportResult.status === "fulfilled") {
       const data = reportResult.value.data
+      setUnitEconomics(data.unitEconomics ?? null)
       setReports(data.elixir
         ? `${data.users} users, ${data.enrolments} enrolments. Elixir issued ${data.elixir.issued}, spent ${data.elixir.spent}, unrecovered ${data.elixir.unrecovered}.`
         : `${data.users} users, ${data.enrolments} enrolments. Elixir ledger is not available yet.`)
-    } else setReports("Reports could not be loaded.")
+    } else {
+      setReports("Reports could not be loaded.")
+      setUnitEconomics(null)
+    }
     if (aiResult.status === "fulfilled") {
       const data = aiResult.value.data
       setAi(`Provider ${data.provider}. Ready: ${data.configured ? "yes" : "no"} (${data.reason}). Key present: ${data.keyPresent ? "yes" : "no"}. Last failure: ${data.lastFailure ? `${data.lastFailure.code} at ${data.lastFailure.at}` : "none in this process"}.`)
@@ -149,13 +155,32 @@ export default function AdminPlatform() {
       <div>
         <div style={{ fontSize: 11, marginBottom: 8 }}>Elixir, payments, and reports</div>
         <p style={{ margin: 0, fontSize: 13, maxWidth: 680 }}>
-          Elixir is internal learning credit. Purchase rewards use a verified net amount in whole rupees: floor(rupees / 10).
+          Elixir is internal learning credit. Purchase rewards use a verified net amount in whole rupees: floor(rupees / 10), while ₹99 workshops grant 100% coin cashback (99 Elixir Coins).
           This site does not take card or UPI payments. A super admin records a payment only after it is verified outside Skylent.
           Learning rewards stay off until you set an amount here.
         </p>
       </div>
       {message ? <p role="status">{message}</p> : null}
       <p style={{ margin: 0, fontSize: 13 }}>{reports}</p>
+      {unitEconomics ? (
+        <section aria-label="C-Suite unit economics" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 12 }}>
+          <div style={{ padding: "12px 14px", borderRadius: 10, border: "1px solid var(--skylent-line, #e4e4e7)" }}>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", opacity: 0.72 }}>Learner activation rate</div>
+            <strong style={{ fontSize: 20, display: "block", marginTop: 4 }}>{unitEconomics.activationRatePercent}%</strong>
+            <span style={{ fontSize: 12, opacity: 0.8 }}>Enrolments per registered user</span>
+          </div>
+          <div style={{ padding: "12px 14px", borderRadius: 10, border: "1px solid var(--skylent-line, #e4e4e7)" }}>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", opacity: 0.72 }}>Elixir redemption velocity</div>
+            <strong style={{ fontSize: 20, display: "block", marginTop: 4 }}>{unitEconomics.elixirRedemptionRatePercent}%</strong>
+            <span style={{ fontSize: 12, opacity: 0.8 }}>Share of issued Elixir redeemed on case studies</span>
+          </div>
+          <div style={{ padding: "12px 14px", borderRadius: 10, border: "1px solid var(--skylent-line, #e4e4e7)" }}>
+            <div style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.04em", opacity: 0.72 }}>Net unredeemed Elixir liability</div>
+            <strong style={{ fontSize: 20, display: "block", marginTop: 4 }}>{unitEconomics.netUnredeemedElixirLiability} Elixir</strong>
+            <span style={{ fontSize: 12, opacity: 0.8 }}>Outstanding coin balance available for unlocks</span>
+          </div>
+        </section>
+      ) : null}
       <p style={{ margin: 0, fontSize: 13 }}>{catalogue}</p>
       <section id="admin-system">
         <h2 style={{ fontSize: 16 }}>Skylent AI</h2>

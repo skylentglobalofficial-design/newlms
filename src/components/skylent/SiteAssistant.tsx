@@ -265,6 +265,7 @@ function writeFlag(key: string) {
 export default function SiteAssistant() {
   const location = useLocation()
   const [open, setOpen] = useState(false)
+  const [panelMode, setPanelMode] = useState<SkylentAiMode>("finder")
   const [invite, setInvite] = useState(false)
   const [messages, setMessages] = useState<Message[]>([])
   const [answers, setAnswers] = useState<Answers>({})
@@ -304,6 +305,7 @@ export default function SiteAssistant() {
     (mode: SkylentAiMode = "chat") => {
       setInvite(false)
       writeFlag(INVITE_KEY)
+      setPanelMode(mode)
       setOpen(true)
       if (mode === "finder" || messages.length === 0) startFinder()
     },
@@ -584,7 +586,10 @@ export default function SiteAssistant() {
   }
 
   const step = finderDone ? null : nextStep(answers)
-  const showForm = siteOff || feedback === "unhelpful" || messages.some((m) => m.kind === "failure" && m.failure === "unavailable")
+  const showForm =
+    feedback === "unhelpful" ||
+    messages.some((m) => m.kind === "failure" && m.failure === "unavailable") ||
+    (siteOff && (panelMode === "chat" || finderDone))
 
   return (
     <div className="sia">
@@ -805,7 +810,9 @@ export default function SiteAssistant() {
               </div>
               <p className="sia-foot">
                 {siteOff
-                  ? "Free-text answers are switched off. The form above sends a message to the Skylent team."
+                  ? showForm
+                    ? "Free-text answers are switched off. The form above sends a message to the Skylent team."
+                    : "Free-text answers are switched off. Use the programme questionnaire above, or finish it to send a message to the Skylent team."
                   : "This box may be switched off. When you are signed in, a question can include your name and the names of courses you are enrolled in. Lesson progress, projects, and your career profile stay out of the request. Generated answers can be wrong."}
               </p>
             </form>

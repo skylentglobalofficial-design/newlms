@@ -4,6 +4,103 @@ import { prisma } from "./prisma.js"
 /** Founder rule: every eligible ₹100 of net purchase value earns 10 Elixir. */
 export const RUPEES_PER_ELIXIR = 10
 
+/**
+ * Founder Zero-to-One Workshop Flywheel rule:
+ * Every ₹99 workshop/webinar awards 100% (1:1) Elixir Coin cashback (99 Elixir Coins)
+ * redeemable for Case Studies and practical notes inside Skylent.
+ */
+export const DEFAULT_WORKSHOP_FEE_RUPEES = 99
+export const WORKSHOP_ELIXIR_PER_RUPEE = 1
+
+export const VERIFIED_ACADEMIC_ELIXIR_SCHEDULE = [
+  { activity: "workshop_99_cashback", label: "₹99 Live Workshop / Webinar Registration", elixir: 99, rule: "100% 1:1 Elixir Coin cashback" },
+  { activity: "lesson_complete", label: "Verified Lesson Completion", elixir: 5, rule: "First completion of an unlocked lesson" },
+  { activity: "quiz_score", label: "Module Quiz High Score (>=80%)", elixir: 10, rule: "Server-graded quiz attempt >= 80%" },
+  { activity: "assignment_complete", label: "Written Case / Assignment Submission", elixir: 15, rule: "Verified submission of course assignment" },
+  { activity: "case_study_complete", label: "Elixir Case Study Completion", elixir: 25, rule: "Completion of an unlocked Case Study lesson" },
+] as const
+
+
+export type StarterElixirResource = {
+  slug: string
+  kind: "notes" | "case_study"
+  title: string
+  summary: string
+  elixirPrice: number
+  courseSlug: string
+  lessonKey: string
+}
+
+export const STARTER_ELIXIR_CASE_STUDIES: readonly StarterElixirResource[] = [
+  {
+    slug: "northwind-discount-leakage-case",
+    kind: "case_study",
+    title: "Northwind Margin & Discount Leakage Case Study",
+    summary: "SQL & commercial margin investigation: uncover why high-volume categories lose net revenue to promotional discounting.",
+    elixirPrice: 49,
+    courseSlug: "data-analytics",
+    lessonKey: "l1",
+  },
+  {
+    slug: "harbor-desk-weekend-triage-case",
+    kind: "case_study",
+    title: "Harbor Desk Weekend Exception Queue PRD Case",
+    summary: "Product scoping & board memo case: scope a 2-engineer, 6-week solution for 9 retail stores hitting weekend support bottlenecks.",
+    elixirPrice: 49,
+    courseSlug: "product-management",
+    lessonKey: "l1",
+  },
+  {
+    slug: "saas-onboarding-churn-teardown",
+    kind: "case_study",
+    title: "Enterprise B2B SaaS Onboarding & Churn Case Study",
+    summary: "Full 99-Elixir flagship case study: diagnose enterprise onboarding handoff delays, cohort retention, and 90-day churn.",
+    elixirPrice: 99,
+    courseSlug: "product-management",
+    lessonKey: "l2",
+  },
+  {
+    slug: "ecommerce-sql-cohort-playbook",
+    kind: "notes",
+    title: "E-Commerce SQL Cohort & Retention Playbook",
+    summary: "Step-by-step SQL query patterns for repeat-purchase cohorts, category contribution, and executive reporting.",
+    elixirPrice: 39,
+    courseSlug: "data-analytics",
+    lessonKey: "l2",
+  },
+] as const
+
+export function workshopCoinCashbackForRupees(workshopFeeRupees: number): number {
+  if (!Number.isInteger(workshopFeeRupees) || workshopFeeRupees <= 0) return 0
+  return workshopFeeRupees * WORKSHOP_ELIXIR_PER_RUPEE
+}
+
+export function mergeStarterElixirResources<
+  T extends {
+    slug: string
+    kind: string
+    title: string
+    summary: string | null
+    elixirPrice: number
+    courseSlug: string | null
+    lessonKey: string | null
+  },
+>(dbResources: readonly T[], ownedSlugs: ReadonlySet<string>) {
+  const bySlug = new Map<string, T & { owned: boolean }>()
+  for (const r of dbResources) {
+    bySlug.set(r.slug, { ...r, owned: ownedSlugs.has(r.slug) })
+  }
+  for (const starter of STARTER_ELIXIR_CASE_STUDIES) {
+    if (!bySlug.has(starter.slug)) {
+      bySlug.set(starter.slug, {
+        ...(starter as unknown as T),
+        owned: ownedSlugs.has(starter.slug),
+      })
+    }
+  }
+  return [...bySlug.values()]
+}
+
 const READY_CACHE_MS = 20_000
 let readyCache: { at: number; ready: boolean } | null = null
 
@@ -134,6 +231,42 @@ export async function listElixirTransactions(userId: string, limit = 30) {
   })
 }
 
+export async function awardWorkshopRegistrationCashback(input: {
+  userId: string
+  eventId: string
+  eventSlug: string
+  eventTitle: string
+  feeRupees?: number
+}) {
+  try {
+    if (!(await elixirReady())) return { awarded: false as const, amount: 0 }
+    const fee = input.feeRupees ?? DEFAULT_WORKSHOP_FEE_RUPEES
+    const amount = workshopCoinCashbackForRupees(fee)
+    if (amount <= 0) return { awarded: false as const, amount: 0 }
+    const idempotencyKey = `workshop-cashback:${input.userId}:${input.eventId}`
+    const written = await prisma.$transaction(async (tx) =>
+      writeLedger(tx, {
+        userId: input.userId,
+        amount,
+        type: "purchase_reward",
+        idempotencyKey,
+        sourceType: "workshop_registration",
+        sourceId: input.eventId,
+        note: `100% Elixir Coin cashback (${amount} Elixir) for workshop: ${input.eventTitle}`,
+      }),
+    )
+    return {
+      awarded: !written.duplicate,
+      duplicate: written.duplicate,
+      amount,
+      balance: written.balance,
+    }
+  } catch (error) {
+    if (isUniqueConflict(error)) return { awarded: false as const, duplicate: true, amount: 0 }
+    return { awarded: false as const, amount: 0 }
+  }
+}
+
 export async function recordVerifiedPayment(input: {
   userId: string
   externalRef: string
@@ -235,7 +368,7 @@ export async function refundVerifiedPayment(paymentId: string, actorId: string) 
       where: { id: payment.id },
       data: { status: "refunded" },
     })
-    return { payment: updated, reversal, duplicate: false }
+    return { payment, reversal, duplicate: false }
   })
 }
 
@@ -368,7 +501,26 @@ export async function awardVerifiedLearning(input: {
 }
 
 export async function spendOnResource(userId: string, slug: string) {
-  const resource = await prisma.learningResource.findUnique({ where: { slug } })
+  let resource = await prisma.learningResource.findUnique({ where: { slug } })
+  if (!resource) {
+    const starter = STARTER_ELIXIR_CASE_STUDIES.find((item) => item.slug === slug)
+    if (starter) {
+      resource = await prisma.learningResource.upsert({
+        where: { slug: starter.slug },
+        create: {
+          slug: starter.slug,
+          kind: starter.kind,
+          title: starter.title,
+          summary: starter.summary,
+          elixirPrice: starter.elixirPrice,
+          courseSlug: starter.courseSlug,
+          lessonKey: starter.lessonKey,
+          published: true,
+        },
+        update: {},
+      })
+    }
+  }
   if (!resource || !resource.published) return { error: "not_found" as const }
   try {
     return await prisma.$transaction(async (tx) => {

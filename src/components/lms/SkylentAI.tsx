@@ -30,6 +30,66 @@ const QUICK: Array<{ action: SkylentAiAction; label: string }> = [
   { action: "practice", label: "Practice question" },
 ]
 
+
+const TRACK_SOCRATIC_PROMPTS: Record<string, { label: string; question: string }> = {
+  "data-analytics": {
+    label: "Debug my SQL logic",
+    question: "How should I verify my SQL join and aggregation logic on this lesson without giving me the final query?",
+  },
+  "product-management": {
+    label: "Pressure-test my PRD scope",
+    question: "What trade-offs or edge cases should I check in my product scope for this lesson without writing the memo for me?",
+  },
+  "python-programming": {
+    label: "Check my Python edge cases",
+    question: "What data-type or boundary edge cases should I test in my Python logic for this lesson without giving me the code?",
+  },
+  "data-science-ai": {
+    label: "Check for data leakage",
+    question: "How do I verify my feature engineering and validation split on this lesson to avoid data leakage?",
+  },
+  "generative-ai": {
+    label: "Verify RAG grounding",
+    question: "How should I evaluate retrieval grounding and citation accuracy for this lesson step?",
+  },
+  "full-stack-web": {
+    label: "Audit API idempotency",
+    question: "What request validation and idempotency checks should I verify for this backend/frontend step?",
+  },
+}
+
+export function socraticQuickPromptsFor(
+  courseSlug: string,
+  lessonKind?: string | null,
+  assessmentOpen = false,
+): Array<{ action: SkylentAiAction; label: string; question?: string }> {
+  const base: Array<{ action: SkylentAiAction; label: string; question?: string }> = QUICK.filter(
+    (item) => !(assessmentOpen && item.action === "quiz"),
+  )
+  if (lessonKind === "assignment") {
+    return [
+      ...base,
+      {
+        action: "ask",
+        label: "Check rubric criteria",
+        question: "What are the key criteria my response should cover for this lesson, without writing the answer for me?",
+      },
+    ]
+  }
+  const trackPrompt = TRACK_SOCRATIC_PROMPTS[courseSlug]
+  if (trackPrompt) {
+    return [
+      ...base,
+      {
+        action: "ask",
+        label: trackPrompt.label,
+        question: trackPrompt.question,
+      },
+    ]
+  }
+  return base
+}
+
 const UNAVAILABLE = `${AI_NAME} isn't switched on yet.`
 const UNREACHABLE = `${AI_NAME} could not be reached.`
 
@@ -112,6 +172,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
   const [ui, setUi] = useState<UiState>("checking")
   const [error, setError] = useState<string | null>(null)
   const [dockBottom, setDockBottom] = useState(12)
+  const [doubtEscalated, setDoubtEscalated] = useState(false)
 
   useEffect(() => {
     abortRef.current?.abort()
@@ -119,6 +180,7 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
     setTurns([])
     setDraft("")
     setError(null)
+    setDoubtEscalated(false)
     setCaseLabel(caseChipFor(courseSlug))
   }, [courseSlug, lessonId, lessonTitle])
 
@@ -383,13 +445,13 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
 
       <div className="os-ai-foot">
         <div className="os-ai-quick" role="group" aria-label="Quick help for this lesson">
-          {QUICK.filter((item) => !(assessmentOpen && item.action === "quiz")).map((item) => (
+          {socraticQuickPromptsFor(courseSlug, lessonKind, assessmentOpen).map((item) => (
             <button
-              key={item.action}
+              key={item.label}
               type="button"
               className="os-btn os-btn-ghost"
               disabled={inputDisabled}
-              onClick={() => void submit(item.action)}
+              onClick={() => void submit(item.action, item.question)}
             >
               {item.label}
             </button>
@@ -427,6 +489,29 @@ export default function SkylentAI({ courseSlug, lessonId, lessonTitle, lessonNum
             </button>
           </div>
         </form>
+        <div className="os-ai-sla" style={{ marginTop: 8, fontSize: 12 }}>
+          {doubtEscalated ? (
+            <p role="status" style={{ margin: 0, color: "var(--skylent-color-slate, #5c6570)" }}>
+              ✓ Flagged for Faculty TA review (target 20-min doubt SLA during cohort hours).
+            </p>
+          ) : (
+            <button
+              type="button"
+              className="os-link"
+              onClick={() => {
+                setDoubtEscalated(true)
+                void fetch(`/api/v1/lms/courses/${encodeURIComponent(courseSlug)}/lessons/${encodeURIComponent(lessonId)}/doubt`, {
+                  method: "POST",
+                  credentials: "include",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ lessonTitle, question: draft.trim() || undefined }),
+                }).catch(() => undefined)
+              }}
+            >
+              Stuck on this step? Flag for Faculty TA review (20-min SLA)
+            </button>
+          )}
+        </div>
       </div>
     </>
   )

@@ -1,6 +1,40 @@
 import type { Employer, Job, JobApplication, ApplicationEvent, InterviewRound, InterviewQuestion, InterviewPractice, CareerSupportRequest, CareerSupportTask, SavedJob } from "@prisma/client"
 import { isoDate, isoDateTime } from "./shared.js"
 
+export type JobSkillMatch = {
+  matchScore: number
+  matchedSkills: string[]
+  missingSkills: string[]
+}
+
+/**
+ * Deterministic skill-gap and job-match calculator (Scaler/AlmaX benchmark).
+ * Compares a job's required skills against a learner's verified profile and project skills.
+ */
+export function computeJobSkillMatch(
+  jobSkills: readonly string[] | null | undefined,
+  learnerSkills: readonly string[] | null | undefined,
+): JobSkillMatch {
+  const required = (jobSkills ?? []).map((s) => s.trim()).filter(Boolean)
+  if (required.length === 0) {
+    return { matchScore: 100, matchedSkills: [], missingSkills: [] }
+  }
+  const normalizedLearner = new Set(
+    (learnerSkills ?? []).map((s) => s.trim().toLowerCase()).filter(Boolean),
+  )
+  const matchedSkills: string[] = []
+  const missingSkills: string[] = []
+  for (const skill of required) {
+    if (normalizedLearner.has(skill.toLowerCase())) {
+      matchedSkills.push(skill)
+    } else {
+      missingSkills.push(skill)
+    }
+  }
+  const matchScore = Math.round((matchedSkills.length / required.length) * 100)
+  return { matchScore, matchedSkills, missingSkills }
+}
+
 export function serializeEmployer(employer: Employer) {
   return {
     id: employer.id,
@@ -16,7 +50,11 @@ export function serializeEmployer(employer: Employer) {
   }
 }
 
-export function serializeJob(job: Job & { employer?: Employer }, saved?: boolean) {
+export function serializeJob(
+  job: Job & { employer?: Employer },
+  saved?: boolean,
+  skillMatch?: JobSkillMatch,
+) {
   return {
     id: job.id,
     employerId: job.employerId,
@@ -38,6 +76,7 @@ export function serializeJob(job: Job & { employer?: Employer }, saved?: boolean
     postedAt: isoDateTime(job.postedAt),
     expiresAt: isoDateTime(job.expiresAt),
     saved: saved ?? false,
+    ...(skillMatch ? { skillMatch } : {}),
     createdAt: job.createdAt.toISOString(),
     updatedAt: job.updatedAt.toISOString(),
   }
@@ -118,38 +157,38 @@ export function serializeInterviewPractice(p: InterviewPractice) {
     interviewRoundId: p.interviewRoundId,
     answer: p.answer,
     score: p.score,
-    practicedAt: p.practicedAt.toISOString(),
     feedback: p.feedback,
+    practicedAt: p.practicedAt.toISOString(),
     createdAt: p.createdAt.toISOString(),
     updatedAt: p.updatedAt.toISOString(),
   }
 }
 
-export function serializeSupportRequest(req: CareerSupportRequest & { tasks?: CareerSupportTask[] }) {
+export function serializeSupportRequest(r: CareerSupportRequest & { tasks?: CareerSupportTask[] }) {
   return {
-    id: req.id,
-    type: req.type,
-    subject: req.subject,
-    description: req.description,
-    status: req.status,
-    priority: req.priority,
-    assignedTo: req.assignedTo,
-    tasks: req.tasks?.map(serializeSupportTask) ?? [],
-    createdAt: req.createdAt.toISOString(),
-    updatedAt: req.updatedAt.toISOString(),
+    id: r.id,
+    type: r.type,
+    subject: r.subject,
+    details: r.details,
+    status: r.status,
+    priority: r.priority,
+    resolvedAt: isoDateTime(r.resolvedAt),
+    tasks: r.tasks ? r.tasks.map(serializeSupportTask) : undefined,
+    createdAt: r.createdAt.toISOString(),
+    updatedAt: r.updatedAt.toISOString(),
   }
 }
 
-export function serializeSupportTask(task: CareerSupportTask) {
+export function serializeSupportTask(t: CareerSupportTask) {
   return {
-    id: task.id,
-    requestId: task.requestId,
-    title: task.title,
-    description: task.description,
-    status: task.status,
-    dueAt: isoDateTime(task.dueAt),
-    completedAt: isoDateTime(task.completedAt),
-    createdAt: task.createdAt.toISOString(),
-    updatedAt: task.updatedAt.toISOString(),
+    id: t.id,
+    requestId: t.requestId,
+    title: t.title,
+    description: t.description,
+    status: t.status,
+    dueDate: isoDate(t.dueDate),
+    completedAt: isoDateTime(t.completedAt),
+    createdAt: t.createdAt.toISOString(),
+    updatedAt: t.updatedAt.toISOString(),
   }
 }

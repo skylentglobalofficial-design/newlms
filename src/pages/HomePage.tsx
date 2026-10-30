@@ -12,6 +12,7 @@ import {
   HomeCareer,
   HomeClosing,
   HomeDegrees,
+  HomeElixirFlywheel,
   confirmedOpenTitles,
   HomeHero,
   HomeProgrammes,
@@ -31,7 +32,13 @@ export default function HomePage() {
           openTitles={catalogue === "confirmed" ? confirmedOpenTitles(catalog.data ?? []) : []}
         />
         <InsideProgramme />
-        <HomeProgrammes programmes={catalog.data ?? []} loading={catalogue === "loading"} confirmed={catalogue === "confirmed"} />
+        <HomeProgrammes
+          programmes={catalog.data ?? []}
+          loading={catalogue === "loading"}
+          confirmed={catalogue === "confirmed"}
+          onRetry={() => void catalog.reload()}
+        />
+        <HomeElixirFlywheel />
         <HomeDegrees />
         <HomeCareer />
         <HomeAi />

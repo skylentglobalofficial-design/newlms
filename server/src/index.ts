@@ -10,6 +10,7 @@ import { describeAiReadiness } from "./lib/skylent-ai/service.js"
 import { apexRedirectLocation, injectCanonicalLink } from "./lib/public-host.js"
 import { checkMigrationState, decideStartup } from "./lib/migration-guard.js"
 import { prisma } from "./lib/prisma.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "./lib/schema-capabilities.js"
 import {
   authCredentialsRateLimit,
   createCorsMiddleware,
@@ -163,6 +164,14 @@ app.use((error: unknown, _request: express.Request, response: express.Response, 
     next(error)
     return
   }
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+    response.status(503).json({
+      error: "This service is temporarily unavailable.",
+      code: "unavailable",
+      ...(requestId ? { requestId } : {}),
+    })
+    return
+  }
   response.status(500).json({ error: "Internal server error", ...(requestId ? { requestId } : {}) })
 })
 
@@ -209,11 +218,10 @@ function shutdown(signal: string) {
     finish()
     return
   }
-  server.close((closeError) => finish(closeError))
-  setTimeout(() => process.exit(1), 10_000).unref()
+  const timer = setTimeout(() => finish(new Error("shutdown timeout")), 10_000)
+  timer.unref()
+  server.close((error) => finish(error))
 }
 
 process.on("SIGTERM", () => shutdown("SIGTERM"))
 process.on("SIGINT", () => shutdown("SIGINT"))
-
-export default app

@@ -1,3 +1,4 @@
+import { listFacultyDoubtTickets, resolveFacultyDoubtTicket, FACULTY_DOUBT_SLA_MINUTES } from "../lib/doubt-sla.js"
 import crypto from "node:crypto"
 import { Router } from "express"
 import { z } from "zod"
@@ -203,7 +204,10 @@ facultyRouter.get("/dashboard", requireAuth, requireRoles("faculty", "superadmin
       : await loadAssignedFacultyDashboard(req.auth!.user.id)
     res.json({ data })
   } catch (error) {
-    console.error("Failed to load faculty dashboard:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Faculty dashboard is not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to load faculty dashboard:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to load faculty dashboard" })
   }
 })
@@ -301,7 +305,10 @@ facultyRouter.get(
         },
       })
     } catch (error) {
-      console.error("Failed to get submission:", error)
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json({ error: "Assignment grading is not available yet.", code: "unavailable" })
+      }
+      console.error("Failed to get submission:", error instanceof Error ? error.name : "unknown")
       res.status(500).json({ error: "Failed to get submission" })
     }
   },
@@ -366,7 +373,10 @@ facultyRouter.post(
         },
       })
     } catch (error) {
-      console.error("Failed to grade submission:", error)
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json({ error: "Assignment grading is not available yet.", code: "unavailable" })
+      }
+      console.error("Failed to grade submission:", error instanceof Error ? error.name : "unknown")
       res.status(500).json({ error: "Failed to grade submission" })
     }
   },
@@ -394,15 +404,14 @@ facultyRouter.get(
     if (courseSlug) {
       where.enrollment = { course: { slug: courseSlug } }
     }
-    if (!hasApiRole(req, "superadmin")) {
-      const assigned = await facultyAssignedCourseIds(req.auth!.user.id)
-      if (!assigned || assigned.length === 0) {
-        return res.json({ data: [], meta: { total: 0, limit, offset } })
-      }
-      where.node = { module: { courseId: { in: assigned } } }
-    }
-
     try {
+      if (!hasApiRole(req, "superadmin")) {
+        const assigned = await facultyAssignedCourseIds(req.auth!.user.id)
+        if (!assigned || assigned.length === 0) {
+          return res.json({ data: [], meta: { total: 0, limit, offset } })
+        }
+        where.node = { module: { courseId: { in: assigned } } }
+      }
       const grading = (await readSchemaCapabilities()).assignmentGrading
       if (!grading && status === "graded") {
         return res.status(503).json({ error: "Assignment grading is not available yet.", code: "unavailable" })
@@ -452,7 +461,10 @@ facultyRouter.get(
         meta: { total, limit, offset },
       })
     } catch (error) {
-      console.error("Failed to list submissions:", error)
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json({ error: "Assignment grading is not available yet.", code: "unavailable" })
+      }
+      console.error("Failed to list submissions:", error instanceof Error ? error.name : "unknown")
       res.status(500).json({ error: "Failed to list submissions" })
     }
   },
@@ -541,17 +553,17 @@ facultyRouter.post(
     const params = z.object({ courseId: z.string().uuid(), lectureId: z.string().uuid() }).safeParse(req.params)
     const body = uploadBodySchema.safeParse(req.body)
     if (!params.success || !body.success) return res.status(400).json({ error: "Validation failed" })
-    if (!(await facultyMayReadCourse(req, params.data.courseId))) {
-      return res.status(403).json({ error: "This course is outside your teaching assignment" })
-    }
-    const lecture = await prisma.curriculumNode.findFirst({
-      where: { id: params.data.lectureId, module: { courseId: params.data.courseId } },
-      select: { id: true },
-    })
-    if (!lecture) return res.status(404).json({ error: "Lecture not found on this course" })
     const decoded = decodeUpload(body.data, LESSON_MATERIAL_TYPES)
     if ("error" in decoded) return res.status(400).json({ error: decoded.error })
     try {
+      if (!(await facultyMayReadCourse(req, params.data.courseId))) {
+        return res.status(403).json({ error: "This course is outside your teaching assignment" })
+      }
+      const lecture = await prisma.curriculumNode.findFirst({
+        where: { id: params.data.lectureId, module: { courseId: params.data.courseId } },
+        select: { id: true },
+      })
+      if (!lecture) return res.status(404).json({ error: "Lecture not found on this course" })
       const key = generateStorageKey(`courses/${params.data.courseId}/materials`, body.data.fileName)
       const stored = await uploadFile(key, decoded.data, { contentType: body.data.contentType })
       const row = await prisma.lessonMaterial.create({
@@ -569,8 +581,55 @@ facultyRouter.post(
       if (error instanceof StorageServiceError) {
         return res.status(503).json({ error: "File storage is not configured. The file was not saved." })
       }
-      console.error("Failed to store faculty lesson material:", error)
+      if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+        return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.authoring))
+      }
+      console.error("Failed to store faculty lesson material:", error instanceof Error ? error.name : "unknown")
       res.status(500).json({ error: "Failed to store lesson material" })
     }
   },
 )
+
+
+facultyRouter.get("/doubts", requireAuth, requireRoles("faculty", "superadmin"), async (req: AuthenticatedRequest, res) => {
+  try {
+    let courseSlugs: string[] | null = null
+    if (!hasApiRole(req, "superadmin")) {
+      const assignedIds = await facultyAssignedCourseIds(req.auth!.user.id)
+      if (!assignedIds || assignedIds.length === 0) {
+        return res.json({ data: [], meta: { slaMinutes: FACULTY_DOUBT_SLA_MINUTES, openCount: 0 } })
+      }
+      const courses = await prisma.course.findMany({
+        where: { id: { in: assignedIds } },
+        select: { slug: true },
+      })
+      courseSlugs = courses.map((c) => c.slug)
+    }
+    const tickets = listFacultyDoubtTickets(courseSlugs)
+    const openCount = tickets.filter((t) => t.status === "open").length
+    res.json({ data: tickets, meta: { slaMinutes: FACULTY_DOUBT_SLA_MINUTES, openCount } })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Faculty doubts queue is not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to list faculty doubts:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to list faculty doubts" })
+  }
+})
+
+facultyRouter.post("/doubts/:id/resolve", requireAuth, requireRoles("faculty", "superadmin"), requireCsrf, async (req: AuthenticatedRequest, res) => {
+  const id = typeof req.params.id === "string" ? req.params.id.trim() : ""
+  const body = z.object({ resolutionNote: z.string().trim().max(1000).optional() }).safeParse(req.body ?? {})
+  if (!id || !body.success) return res.status(400).json({ error: "Invalid request" })
+  try {
+    const resolved = resolveFacultyDoubtTicket(id, req.auth!.user.id, body.data.resolutionNote)
+    if (!resolved) return res.status(404).json({ error: "Doubt ticket not found" })
+    res.json({ data: resolved })
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Faculty doubts queue is not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to resolve faculty doubt:", error instanceof Error ? error.name : "unknown")
+    res.status(500).json({ error: "Failed to resolve faculty doubt" })
+  }
+})

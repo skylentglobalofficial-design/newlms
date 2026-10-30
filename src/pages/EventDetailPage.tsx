@@ -218,6 +218,10 @@ export default function EventDetailPage() {
                     </strong>
                   </div>
                   <div className="cat-fact">
+                    <span>Coin Cashback</span>
+                    <strong>₹99 → 99 Elixir Coins (100%)</strong>
+                  </div>
+                  <div className="cat-fact">
                     <span>Location</span>
                     <strong>{event.isOnline ? "Online" : event.location || "TBD"}</strong>
                   </div>
@@ -243,8 +247,15 @@ export default function EventDetailPage() {
                   ) : isRegistered ? (
                     <>
                       <p className="cat-note" style={{ marginBottom: 12 }}>
-                        ✓ You are registered for this event
+                        ✓ You are registered! +99 Elixir Coins (100% Coin Cashback) credited to your wallet for Case Studies.
                       </p>
+                      <Link
+                        className="cat-btn cat-btn-ghost"
+                        to="/dashboard/student"
+                        style={{ marginBottom: 8 }}
+                      >
+                        Go to Elixir Case Study Store →
+                      </Link>
                       {event.meetingUrl && (
                         <a
                           className="cat-btn cat-btn-primary cat-btn-lg"

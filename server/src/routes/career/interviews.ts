@@ -2,6 +2,7 @@ import { Router } from "express"
 import { z } from "zod"
 import { InterviewRoundStatus, InterviewRoundType } from "@prisma/client"
 import { prisma } from "../../lib/prisma.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../../lib/schema-capabilities.js"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../../lib/auth.js"
 import { assertOwnedApplication, assertOwnedInterviewRound } from "../../lib/career/profile.js"
 import { serializeInterviewRound } from "../../lib/career/serializers.js"
@@ -30,7 +31,10 @@ interviewsRouter.get("/", requireAuth, async (req: AuthenticatedRequest, res) =>
     })
     res.json({ data: rounds.map(serializeInterviewRound) })
   } catch (error) {
-    console.error("Failed to list interview rounds:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to list interview rounds:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list interview rounds" })
   }
 })
@@ -59,7 +63,10 @@ interviewsRouter.post("/", requireAuth, requireCsrf, async (req: AuthenticatedRe
     })
     res.status(201).json({ data: serializeInterviewRound(round) })
   } catch (error) {
-    console.error("Failed to create interview round:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to create interview round:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to create interview round" })
   }
 })
@@ -92,6 +99,10 @@ interviewsRouter.patch("/:id", requireAuth, requireCsrf, async (req: Authenticat
     })
     res.json({ data: serializeInterviewRound(updated) })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to update interview round:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to update interview round" })
   }
 })
@@ -107,6 +118,10 @@ interviewsRouter.delete("/:id", requireAuth, requireCsrf, async (req: Authentica
     await prisma.interviewRound.delete({ where: { id: round.id } })
     res.json({ data: { deleted: true } })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Career OS is temporarily unavailable.", code: "unavailable" })
+    }
+    console.error("Failed to delete interview round:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to delete interview round" })
   }
 })

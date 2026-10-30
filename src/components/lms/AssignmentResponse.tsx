@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import {
   assignmentLearnerView,
@@ -141,6 +141,10 @@ function AssignmentEditor({
 }) {
   const [text, setText] = useState(initialText)
   const [submitting, setSubmitting] = useState(false)
+
+  useEffect(() => {
+    setText(initialText)
+  }, [initialText])
 
   return (
     <div className="lms-assignment-workspace as-block">

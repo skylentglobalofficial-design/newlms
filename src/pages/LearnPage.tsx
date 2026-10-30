@@ -33,6 +33,14 @@ import {
   updateAssignment,
 } from '../lib/lms-api'
 import { assignmentLearnerView } from '../lib/assignment-flow'
+import {
+  buildAssignmentDraftKey,
+  clearLocalDraft,
+  readLocalDraft,
+  reconcileAssignmentDraft,
+  writeLocalDraft,
+  type AssignmentDraft,
+} from '../lib/draft-storage'
 import type { AssignmentRecord } from '../components/lms/AssignmentResponse'
 import { TermsConsent } from '../components/legal/TermsConsent'
 import LessonSlide from '../components/lms/LessonSlide'
@@ -112,6 +120,7 @@ export default function LearnPage() {
   const stageRef = useRef<HTMLElement>(null)
   const draftTimer = useRef<number | null>(null)
   const assignmentStatusRef = useRef('unavailable')
+  const assignmentServerBaseRef = useRef('')
   const lessonClosedRef = useRef(false)
   lessonClosedRef.current = Boolean(
     selectedLessonId && (lessonStates[selectedLessonId]?.complete || lessonStates[selectedLessonId]?.assignmentSubmitted),
@@ -158,20 +167,30 @@ export default function LearnPage() {
   useEffect(() => {
     if (!slug || access.status !== 'ready' || !selectedLessonId || selectedLessonType !== 'assignment' || selectedLessonLocked) {
       assignmentStatusRef.current = 'unavailable'
+      assignmentServerBaseRef.current = ''
       setAssignmentRecord(null)
       return
     }
     let cancelled = false
     assignmentStatusRef.current = 'unavailable'
+    assignmentServerBaseRef.current = ''
     setAssignmentRecord(null)
     const lessonKey = selectedLessonId
+    const draftKey = buildAssignmentDraftKey(slug, lessonKey)
     void fetchAssignmentState(slug, lessonKey)
       .then((data) => {
         if (cancelled) return
+        const serverText = data.responseText ?? ''
+        assignmentServerBaseRef.current = serverText
+        const localDraft = readLocalDraft<AssignmentDraft>(draftKey)
+        const reconciled = reconcileAssignmentDraft(serverText, data.status, localDraft)
+        if (!reconciled.restoredFromLocal && localDraft) {
+          clearLocalDraft(draftKey)
+        }
         const next = {
           lessonId: lessonKey,
           status: data.status,
-          responseText: data.responseText ?? '',
+          responseText: reconciled.responseText,
           grade: data.grade ?? null,
           feedback: data.feedback ?? null,
           gradedAt: data.gradedAt ?? null,
@@ -183,11 +202,14 @@ export default function LearnPage() {
       .catch(() => {
         if (cancelled) return
         const status = lessonClosedRef.current ? 'unavailable' : 'in_progress'
+        const localDraft = readLocalDraft<AssignmentDraft>(draftKey)
+        const reconciled = reconcileAssignmentDraft(null, status, localDraft)
         assignmentStatusRef.current = status
+        assignmentServerBaseRef.current = ''
         setAssignmentRecord({
           lessonId: lessonKey,
           status,
-          responseText: '',
+          responseText: reconciled.responseText,
           grade: null,
           feedback: null,
           gradedAt: null,
@@ -468,12 +490,23 @@ export default function LearnPage() {
   function handleAssignmentDraft(text: string) {
     if (!slug || !selectedLessonId) return
     if (!assignmentLearnerView(assignmentStatusRef.current, false).allowDraftSave) return
-    if (draftTimer.current) window.clearTimeout(draftTimer.current)
     const lessonKey = selectedLessonId
     const courseSlug = slug
+    const draftKey = buildAssignmentDraftKey(courseSlug, lessonKey)
+    writeLocalDraft<AssignmentDraft>(draftKey, {
+      baseServerText: assignmentServerBaseRef.current,
+      responseText: text,
+      savedAt: new Date().toISOString(),
+    })
+    if (draftTimer.current) window.clearTimeout(draftTimer.current)
     draftTimer.current = window.setTimeout(() => {
       if (!assignmentLearnerView(assignmentStatusRef.current, false).allowDraftSave) return
-      void updateAssignment(courseSlug, lessonKey, 'start', text).catch(() => undefined)
+      void updateAssignment(courseSlug, lessonKey, 'start', text)
+        .then(() => {
+          assignmentServerBaseRef.current = text
+          clearLocalDraft(draftKey)
+        })
+        .catch(() => undefined)
     }, 700)
   }
 
@@ -483,8 +516,11 @@ export default function LearnPage() {
     setActionError(null)
     if (draftTimer.current) window.clearTimeout(draftTimer.current)
     const lessonKey = selectedLesson.id
+    const draftKey = buildAssignmentDraftKey(slug, lessonKey)
     try {
       const saved = await updateAssignment(slug, lessonKey, 'submit', text)
+      clearLocalDraft(draftKey)
+      assignmentServerBaseRef.current = text
       let next = {
         lessonId: lessonKey,
         status: saved.status,

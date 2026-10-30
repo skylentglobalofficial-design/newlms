@@ -2,7 +2,7 @@ import crypto from "node:crypto"
 import type { Request, Response, NextFunction } from "express"
 import type { Role, RoleName, User } from "@prisma/client"
 import { prisma } from "./prisma.js"
-import { readSchemaCapabilities, userCredentialSelect } from "./schema-capabilities.js"
+import { isDatabaseUnavailableError, isMissingSchemaError, readSchemaCapabilities, userCredentialSelect } from "./schema-capabilities.js"
 
 export const SESSION_COOKIE = "sid"
 export const CSRF_COOKIE = "csrf"
@@ -163,37 +163,60 @@ export async function createSession(userId: string) {
   return { session, sessionToken, csrfToken }
 }
 
+async function querySessionByHash(secretHash: string, includeMustChangePassword: boolean) {
+  return prisma.session.findUnique({
+    where: { secretHash },
+    include: {
+      user: {
+        select: {
+          ...userCredentialSelect(includeMustChangePassword),
+          roles: { include: { role: true } },
+        },
+      },
+    },
+  })
+}
+
 export async function resolveSession(sessionToken: string | undefined) {
   if (!sessionToken) return null
 
   const secretHash = hashSessionToken(sessionToken)
-  let mustChangePassword = false
+  let mustChangePassword = true
+  let probeFailed = false
+  let probeDbUnavailable = false
   try {
     mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
-  } catch {
-    mustChangePassword = false
+  } catch (probeError) {
+    // Fail-safe: request mustChangePassword=true when capability probe fails so
+    // forced password resets cannot be bypassed on the October schema.
+    probeFailed = true
+    probeDbUnavailable = isDatabaseUnavailableError(probeError)
+    mustChangePassword = true
   }
-  const session = await prisma.session
-    .findUnique({
-      where: { secretHash },
-      include: {
-        user: {
-          select: {
-            ...userCredentialSelect(mustChangePassword),
-            roles: { include: { role: true } },
-          },
-        },
-      },
-    })
-    .catch(() => null)
+
+  let session = null
+  let retriedWithoutMustChange = false
+  try {
+    session = await querySessionByHash(secretHash, mustChangePassword)
+  } catch (error) {
+    if (mustChangePassword && isMissingSchemaError(error)) {
+      retriedWithoutMustChange = true
+      session = await querySessionByHash(secretHash, false).catch(() => null)
+    } else {
+      return null
+    }
+  }
 
   if (!session) return null
+  if (probeFailed && !probeDbUnavailable && !retriedWithoutMustChange && !("mustChangePassword" in session.user)) {
+    return null
+  }
   if (session.expiresAt <= new Date()) {
     await prisma.session.delete({ where: { id: session.id } }).catch(() => undefined)
     return null
   }
 
-  const mustChange = "mustChangePassword" in session.user ? session.user.mustChangePassword : false
+  const mustChange = "mustChangePassword" in session.user ? Boolean(session.user.mustChangePassword) : false
   return {
     sessionId: session.id,
     user: { ...session.user, mustChangePassword: mustChange } as User,

@@ -16,7 +16,13 @@ import {
   unpublishPracticeWorkspace,
 } from "../lib/practice-workspaces/service.js"
 import type { CourseSyllabus } from "../lib/practice-platform/types.js"
-import { readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
+import {
+  isDatabaseUnavailableError,
+  isMissingSchemaError,
+  readSchemaCapabilities,
+  UNAVAILABLE_MESSAGES,
+  unavailableBody,
+} from "../lib/schema-capabilities.js"
 
 export const practiceAdminRouter = Router()
 
@@ -28,6 +34,10 @@ practiceAdminRouter.use("/practice-workspaces", async (_req, res, next) => {
     }
     res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.practice))
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.practice))
+      return
+    }
     next(error)
   }
 })
@@ -74,7 +84,11 @@ function sendError(res: import("express").Response, error: unknown) {
     res.status(error.status).json({ error: error.message })
     return
   }
-  console.error("Practice workspace failed:", error instanceof Error ? error.message : "unknown")
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+    res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.practice))
+    return
+  }
+  console.error("Practice workspace failed:", error instanceof Error ? error.name : "unknown")
   res.status(500).json({ error: "The practice workspace could not be updated." })
 }
 

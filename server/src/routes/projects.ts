@@ -2,6 +2,7 @@ import { Router } from "express"
 import { z } from "zod"
 import rateLimit, { ipKeyGenerator } from "express-rate-limit"
 import { requireAuth, requireCsrf, type AuthenticatedRequest } from "../lib/auth.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../lib/schema-capabilities.js"
 import { PROJECT_REFLECTION_MAX } from "../lib/skylent-projects/catalog.js"
 import {
   attachProjectEvidence,
@@ -71,7 +72,11 @@ function sendProjectError(res: import("express").Response, error: unknown) {
     res.status(400).json({ error: error.message })
     return
   }
-  console.error("Skylent project failed:", error instanceof Error ? `${error.name}: ${error.message}` : "unknown")
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+    res.status(503).json({ error: "Projects are not available right now.", code: "unavailable" })
+    return
+  }
+  console.error("Skylent project failed:", error instanceof Error ? error.name : "unknown")
   res.status(500).json({ error: "Could not open that project. Try again." })
 }
 

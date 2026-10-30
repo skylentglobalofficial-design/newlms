@@ -197,8 +197,21 @@ export function createLearningResource(body: { slug: string; kind: "notes" | "ca
   return adminMutate<{ data: { slug: string } }>("/admin/resources", "POST", body)
 }
 
+export type AdminUnitEconomics = {
+  activationRatePercent: number
+  elixirRedemptionRatePercent: number
+  netUnredeemedElixirLiability: number
+}
+
 export function fetchAdminReports() {
-  return adminGet<{ data: { users: number; enrolments: number; elixir: { issued: number; spent: number; unrecovered: number } | null } }>("/admin/reports")
+  return adminGet<{
+    data: {
+      users: number
+      enrolments: number
+      elixir: { issued: number; spent: number; unrecovered: number } | null
+      unitEconomics?: AdminUnitEconomics | null
+    }
+  }>("/admin/reports")
 }
 
 export function fetchAdminAi() {

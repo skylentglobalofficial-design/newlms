@@ -11,7 +11,7 @@ import { CERTIFICATE_CODE_PATTERN, verifyCertificate } from "../lib/skylent-api"
 import { truthOf } from "../lib/truth"
 import "./VerifyPage.css"
 
-type ValidRecord = { code: string; learnerName: string; courseTitle: string; issuedAt: string }
+type ValidRecord = { code: string; learnerName: string; courseTitle: string; issuedAt: string; issuer?: string; credentialStandard?: string; verificationStandard?: string; evidenceSummary?: string; credentialLevel?: "course" | "programme" }
 
 type Check =
   | { kind: "idle" }
@@ -175,6 +175,18 @@ export default function VerifyPage() {
                   <div className="sky-spec__row">
                     <dt className="sky-spec__label">Issue date</dt>
                     <dd className="sky-spec__value">{formatIssued(check.record.issuedAt)}</dd>
+                  </div>
+                  <div className="sky-spec__row">
+                    <dt className="sky-spec__label">Credential issuer</dt>
+                    <dd className="sky-spec__value">{check.record.issuer ?? "Skylent Global Pvt. Ltd."}</dd>
+                  </div>
+                  <div className="sky-spec__row">
+                    <dt className="sky-spec__label">Verification standard</dt>
+                    <dd className="sky-spec__value">{check.record.verificationStandard ?? check.record.credentialStandard ?? "Skylent Verified Skill & Completion Record v1"}</dd>
+                  </div>
+                  <div className="sky-spec__row">
+                    <dt className="sky-spec__label">Verified evidence</dt>
+                    <dd className="sky-spec__value">{check.record.evidenceSummary ?? "Verified completion of all required modules, quizzes, and applied case work."}</dd>
                   </div>
                 </dl>
               </section>

@@ -3,6 +3,7 @@ import { z } from "zod"
 import { InterviewQuestionDifficulty } from "@prisma/client"
 import { prisma } from "../../lib/prisma.js"
 import { serializeInterviewQuestion } from "../../lib/career/serializers.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../../lib/schema-capabilities.js"
 
 export const questionsRouter = Router()
 
@@ -45,7 +46,10 @@ questionsRouter.get("/", async (req, res) => {
       meta: { total, limit, offset },
     })
   } catch (error) {
-    console.error("Failed to list interview questions:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Interview questions are not available right now.", code: "unavailable" })
+    }
+    console.error("Failed to list interview questions:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list interview questions" })
   }
 })

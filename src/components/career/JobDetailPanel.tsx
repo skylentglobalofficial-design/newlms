@@ -150,6 +150,25 @@ export default function JobDetailPanel({ job, onToggleSave, savePending, already
           </p>
         </div>
 
+
+        {job.skillMatch && (
+          <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: T.rControl, border: `1px solid ${accent.border}`, background: C.cream }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: C.ink }}>
+              Verified Skill-Gap Match: {job.skillMatch.matchScore}%
+            </div>
+            {job.skillMatch.matchedSkills.length > 0 && (
+              <div style={{ fontSize: 12, color: C.slate, marginTop: 4 }}>
+                Matched: {job.skillMatch.matchedSkills.join(", ")}
+              </div>
+            )}
+            {job.skillMatch.missingSkills.length > 0 && (
+              <div style={{ fontSize: 12, color: C.slate, marginTop: 2 }}>
+                Skills to build next: {job.skillMatch.missingSkills.join(", ")}
+              </div>
+            )}
+          </div>
+        )}
+
         {job.skills.length > 0 && (
           <div style={{ marginBottom: 8 }}>
             <div style={{ fontSize: 11, color: C.slate, marginBottom: 8 }}>Skills</div>

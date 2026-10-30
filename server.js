@@ -9,6 +9,6 @@ if (!process.env.DIRECT_URL && process.env.DATABASE_URL) {
 void (async () => {
   await import("./server/dist/index.js")
 })().catch((error) => {
-  console.error("Failed to start compiled Skylent API:", error)
+  console.error("Failed to start compiled Skylent API:", error instanceof Error ? error.name : "unknown")
   process.exit(1)
 })

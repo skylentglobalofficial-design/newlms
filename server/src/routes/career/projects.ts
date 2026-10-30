@@ -11,6 +11,7 @@ import {
   listCareerEvidenceProjects,
   unlinkCareerEvidenceProject,
 } from "../../lib/career/evidence.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../../lib/schema-capabilities.js"
 
 export const careerProjectsRouter = Router()
 
@@ -51,7 +52,11 @@ function sendCareerEvidenceError(res: import("express").Response, error: unknown
     res.status(400).json({ error: error.message })
     return
   }
-  console.error("Career OS evidence failed:", error instanceof Error ? `${error.name}: ${error.message}` : "unknown")
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+    res.status(503).json({ error: "Career OS evidence is not available right now.", code: "unavailable" })
+    return
+  }
+  console.error("Career OS evidence failed:", error instanceof Error ? error.name : "unknown")
   res.status(500).json({ error: "Could not update Career OS. Try again." })
 }
 

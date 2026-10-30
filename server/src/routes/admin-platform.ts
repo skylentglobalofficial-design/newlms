@@ -21,6 +21,23 @@ import { isDatabaseUnavailableError, isMissingSchemaError } from "../lib/schema-
 
 export const adminPlatformRouter = Router()
 
+export function computeExecutiveUnitEconomics(input: {
+  users: number
+  enrolments: number
+  elixirIssued: number
+  elixirSpent: number
+  elixirUnrecovered: number
+}) {
+  const activationRatePercent = input.users > 0 ? Math.min(100, Math.round((input.enrolments / input.users) * 100)) : 0
+  const elixirRedemptionRatePercent = input.elixirIssued > 0 ? Math.min(100, Math.round((input.elixirSpent / input.elixirIssued) * 100)) : 0
+  const netUnredeemedElixirLiability = Math.max(0, input.elixirIssued - input.elixirSpent - input.elixirUnrecovered)
+  return {
+    activationRatePercent,
+    elixirRedemptionRatePercent,
+    netUnredeemedElixirLiability,
+  }
+}
+
 const guards = [requireAuth, requireRoles("superadmin")] as const
 const writeGuards = [...guards, requireCsrf] as const
 
@@ -61,8 +78,11 @@ adminPlatformRouter.get("/audit", ...guards, async (_req, res) => {
       })),
     })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json({ error: "Audit log is not available until the database update is applied.", code: "unavailable" })
+    }
     console.error("Audit log read failed:", error instanceof Error ? error.name : "unknown")
-    res.status(503).json({ error: "Audit log is not available until the database update is applied.", code: "unavailable" })
+    res.status(500).json({ error: "Failed to load audit log" })
   }
 })
 
@@ -98,6 +118,7 @@ adminPlatformRouter.get("/catalogue", ...guards, async (_req, res) => {
       },
     })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) return res.status(503).json(unavailable)
     console.error("Failed to load admin catalogue:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to load catalogue summary" })
   }
@@ -130,6 +151,7 @@ adminPlatformRouter.get("/enrolments", ...guards, async (req, res) => {
       })),
     })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) return res.status(503).json(unavailable)
     console.error("Failed to list admin enrolments:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list enrolments" })
   }
@@ -153,6 +175,13 @@ adminPlatformRouter.get("/reports", ...guards, async (_req, res) => {
       data: {
         users,
         enrolments,
+        unitEconomics: computeExecutiveUnitEconomics({
+          users,
+          enrolments,
+          elixirIssued: issued._sum.amount ?? 0,
+          elixirSpent: Math.abs(spent._sum.amount ?? 0),
+          elixirUnrecovered: shortfall._sum.unrecovered ?? 0,
+        }),
         elixir: {
           issued: issued._sum.amount ?? 0,
           spent: Math.abs(spent._sum.amount ?? 0),
@@ -167,6 +196,7 @@ adminPlatformRouter.get("/reports", ...guards, async (_req, res) => {
       },
     })
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) return res.status(503).json(unavailable)
     console.error("Failed to load admin reports:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to load reports" })
   }

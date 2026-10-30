@@ -1,16 +1,31 @@
-export type DraftStorageLike = Pick<Storage, "getItem" | "setItem" | "removeItem">
+export interface DraftStorageLike {
+  getItem(key: string): string | null
+  setItem(key: string, value: string): void
+  removeItem(key: string): void
+}
 
-export type ProjectReflectionDraft = {
+export interface ProjectReflectionDraft {
+  projectId?: string
+  baseUpdatedAt?: string | null
   finding: string
   whyItMatters: string
   recommendation: string
   savedAt: string
 }
 
-export type PracticeWorkspaceDraft = {
+export interface PracticeWorkspaceDraft {
+  baseServerBody?: string
   body: string
   savedAt: string
 }
+
+export interface AssignmentDraft {
+  baseServerText: string
+  responseText: string
+  savedAt: string
+}
+
+const DRAFT_PREFIX = "skylent:draft:v1"
 
 function defaultStorage(): DraftStorageLike | null {
   try {
@@ -18,17 +33,23 @@ function defaultStorage(): DraftStorageLike | null {
       return window.sessionStorage
     }
   } catch {
-    // Storage access may be blocked in restricted browser contexts.
+    // sessionStorage may be blocked in restricted browser contexts
   }
   return null
 }
 
-export function buildProjectReflectionDraftKey(projectType: string): string {
-  return `skylent:draft:project:${projectType.trim()}`
+export function buildProjectReflectionDraftKey(projectType: string, projectId?: string | null): string {
+  const cleanType = projectType.trim().toLowerCase()
+  const cleanId = projectId?.trim() || "default"
+  return `${DRAFT_PREFIX}:project:${cleanType}:${cleanId}`
 }
 
 export function buildPracticeWorkspaceDraftKey(courseSlug: string, lessonId: string): string {
-  return `skylent:draft:practice:${courseSlug.trim()}:${lessonId.trim()}`
+  return `${DRAFT_PREFIX}:practice:${courseSlug.trim().toLowerCase()}:${lessonId.trim().toLowerCase()}`
+}
+
+export function buildAssignmentDraftKey(courseSlug: string, lessonKey: string): string {
+  return `${DRAFT_PREFIX}:assignment:${courseSlug.trim().toLowerCase()}:${lessonKey.trim().toLowerCase()}`
 }
 
 export function readLocalDraft<T>(key: string, storage: DraftStorageLike | null = defaultStorage()): T | null {
@@ -36,7 +57,8 @@ export function readLocalDraft<T>(key: string, storage: DraftStorageLike | null 
   try {
     const raw = storage.getItem(key)
     if (!raw) return null
-    return JSON.parse(raw) as T
+    const parsed = JSON.parse(raw) as T
+    return parsed && typeof parsed === "object" ? parsed : null
   } catch {
     return null
   }
@@ -57,71 +79,136 @@ export function clearLocalDraft(key: string, storage: DraftStorageLike | null = 
   try {
     storage.removeItem(key)
   } catch {
-    // Ignore storage removal errors.
+    // Ignore storage removal errors
   }
 }
 
 export function reconcileProjectReflectionDraft(
-  serverReflection: { finding: string; whyItMatters: string; recommendation: string; updatedAt: string | null },
-  localDraft: Partial<ProjectReflectionDraft> | null,
-): { finding: string; whyItMatters: string; recommendation: string; restoredFromLocal: boolean } {
+  serverState: {
+    finding: string | null | undefined
+    whyItMatters: string | null | undefined
+    recommendation: string | null | undefined
+    updatedAt?: string | null
+  },
+  localDraft: ProjectReflectionDraft | null,
+  expectedProjectId?: string | null,
+): {
+  finding: string
+  whyItMatters: string
+  recommendation: string
+  restoredFromLocal: boolean
+} {
+  const serverFinding = serverState.finding ?? ""
+  const serverWhy = serverState.whyItMatters ?? ""
+  const serverRec = serverState.recommendation ?? ""
+
   if (!localDraft) {
     return {
-      finding: serverReflection.finding,
-      whyItMatters: serverReflection.whyItMatters,
-      recommendation: serverReflection.recommendation,
+      finding: serverFinding,
+      whyItMatters: serverWhy,
+      recommendation: serverRec,
       restoredFromLocal: false,
     }
   }
 
-  const localFinding = typeof localDraft.finding === "string" ? localDraft.finding : serverReflection.finding
-  const localWhy = typeof localDraft.whyItMatters === "string" ? localDraft.whyItMatters : serverReflection.whyItMatters
-  const localRec = typeof localDraft.recommendation === "string" ? localDraft.recommendation : serverReflection.recommendation
-
-  const hasNonEmptyLocal = Boolean(localFinding.trim() || localWhy.trim() || localRec.trim())
-  const differsFromServer =
-    localFinding !== serverReflection.finding ||
-    localWhy !== serverReflection.whyItMatters ||
-    localRec !== serverReflection.recommendation
-
-  if (!hasNonEmptyLocal || !differsFromServer) {
+  if (expectedProjectId && localDraft.projectId && localDraft.projectId !== expectedProjectId) {
     return {
-      finding: serverReflection.finding,
-      whyItMatters: serverReflection.whyItMatters,
-      recommendation: serverReflection.recommendation,
+      finding: serverFinding,
+      whyItMatters: serverWhy,
+      recommendation: serverRec,
       restoredFromLocal: false,
     }
   }
 
-  if (serverReflection.updatedAt && localDraft.savedAt) {
-    const serverTime = Date.parse(serverReflection.updatedAt)
+  const hasLocalDiff =
+    localDraft.finding !== serverFinding ||
+    localDraft.whyItMatters !== serverWhy ||
+    localDraft.recommendation !== serverRec
+
+  if (!hasLocalDiff) {
+    return {
+      finding: serverFinding,
+      whyItMatters: serverWhy,
+      recommendation: serverRec,
+      restoredFromLocal: false,
+    }
+  }
+
+  if (
+    localDraft.baseUpdatedAt !== undefined &&
+    (serverState.updatedAt ?? null) !== (localDraft.baseUpdatedAt ?? null)
+  ) {
+    return {
+      finding: serverFinding,
+      whyItMatters: serverWhy,
+      recommendation: serverRec,
+      restoredFromLocal: false,
+    }
+  }
+
+  if (serverState.updatedAt && localDraft.savedAt) {
+    const serverTime = Date.parse(serverState.updatedAt)
     const localTime = Date.parse(localDraft.savedAt)
     if (Number.isFinite(serverTime) && Number.isFinite(localTime) && serverTime > localTime) {
       return {
-        finding: serverReflection.finding,
-        whyItMatters: serverReflection.whyItMatters,
-        recommendation: serverReflection.recommendation,
+        finding: serverFinding,
+        whyItMatters: serverWhy,
+        recommendation: serverRec,
         restoredFromLocal: false,
       }
     }
   }
 
   return {
-    finding: localFinding,
-    whyItMatters: localWhy,
-    recommendation: localRec,
+    finding: localDraft.finding,
+    whyItMatters: localDraft.whyItMatters,
+    recommendation: localDraft.recommendation,
     restoredFromLocal: true,
   }
 }
 
 export function reconcilePracticeTextDraft(
   serverBody: string | null | undefined,
-  localDraft: Partial<PracticeWorkspaceDraft> | null,
-): { body: string; restoredFromLocal: boolean } {
+  localDraft: PracticeWorkspaceDraft | null,
+): {
+  body: string
+  restoredFromLocal: boolean
+} {
   const cleanServer = serverBody ?? ""
-  const localBody = typeof localDraft?.body === "string" ? localDraft.body : ""
-  if (!localBody.trim() || localBody === cleanServer) {
+  if (!localDraft || typeof localDraft.body !== "string") {
     return { body: cleanServer, restoredFromLocal: false }
   }
-  return { body: localBody, restoredFromLocal: true }
+  if (localDraft.body === cleanServer || !localDraft.body.trim()) {
+    return { body: cleanServer, restoredFromLocal: false }
+  }
+  if (localDraft.baseServerBody !== undefined && localDraft.baseServerBody !== cleanServer) {
+    return { body: cleanServer, restoredFromLocal: false }
+  }
+  return { body: localDraft.body, restoredFromLocal: true }
+}
+
+export function reconcileAssignmentDraft(
+  serverText: string | null | undefined,
+  serverStatus: string | null | undefined,
+  localDraft: AssignmentDraft | null,
+): {
+  responseText: string
+  restoredFromLocal: boolean
+} {
+  const cleanServer = serverText ?? ""
+  const status = serverStatus ?? "not_started"
+  if (status !== "not_started" && status !== "in_progress" && status !== "draft") {
+    return { responseText: cleanServer, restoredFromLocal: false }
+  }
+  if (!localDraft || typeof localDraft.responseText !== "string") {
+    return { responseText: cleanServer, restoredFromLocal: false }
+  }
+  if (localDraft.responseText === cleanServer || !localDraft.responseText.trim()) {
+    return { responseText: cleanServer, restoredFromLocal: false }
+  }
+  // When serverText is null/undefined (e.g. transient fetch failure), preserve local draft regardless of baseServerText
+  if (serverText != null && localDraft.baseServerText !== undefined && localDraft.baseServerText !== cleanServer) {
+    return { responseText: cleanServer, restoredFromLocal: false }
+  }
+  return { responseText: localDraft.responseText, restoredFromLocal: true }
 }

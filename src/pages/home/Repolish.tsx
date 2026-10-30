@@ -692,7 +692,7 @@ export function confirmedOpenTitles(programmes: CatalogProgramSummary[]): string
     .map((row) => FOCUS_FACE[row.program.slug]?.title || row.title)
 }
 
-export function HomeProgrammes({ programmes, loading, confirmed }: { programmes: CatalogProgramSummary[]; loading: boolean; confirmed: boolean }) {
+export function HomeProgrammes({ programmes, loading, confirmed, onRetry }: { programmes: CatalogProgramSummary[]; loading: boolean; confirmed: boolean; onRetry?: () => void }) {
   const rows = homeRows(programmes).filter((row) => FOCUS_SLUGS.includes(row.program.slug as (typeof FOCUS_SLUGS)[number]))
   const ordered = [...rows].sort((a, b) => FOCUS_SLUGS.indexOf(a.program.slug as (typeof FOCUS_SLUGS)[number]) - FOCUS_SLUGS.indexOf(b.program.slug as (typeof FOCUS_SLUGS)[number]))
   return (
@@ -726,6 +726,12 @@ export function HomeProgrammes({ programmes, loading, confirmed }: { programmes:
             {confirmed ? null : (
               <p className="hx-prog-note" role="status">
                 <strong>{STATUS_NOT_CONFIRMED}.</strong> {AVAILABILITY_UNKNOWN}{" "}
+                {onRetry ? (
+                  <>
+                    <button type="button" onClick={onRetry}>Try again</button>
+                    {" · "}
+                  </>
+                ) : null}
                 <Link to="/programmes">See programmes</Link>
               </p>
             )}
@@ -1327,6 +1333,63 @@ export function HomeClosing() {
           <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
             Explore programmes
             <ArrowRight />
+          </Link>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+
+export function HomeElixirFlywheel() {
+  const steps = [
+    {
+      step: "01 · Workshop Entry",
+      title: "Register for a ₹99 Live Workshop or Webinar",
+      copy: "Receive 99 Elixir Coins (100% 1:1 learning credit cashback) in your Skylent wallet when you register for a scheduled session.",
+    },
+    {
+      step: "02 · Case Study Store",
+      title: "Unlock Applied SQL & Product Case Studies",
+      copy: "Redeem your 99 Elixir Coins to unlock focused case studies (49 or 99 Elixir), including the Northwind Margin Leakage and Harbor Desk Triage cases.",
+    },
+    {
+      step: "03 · Proof of Work",
+      title: "Solve in the Workspace & Keep Verified Evidence",
+      copy: "Execute real SQL queries, write structured case memos with Socratic AI guidance, and carry completed work into Career OS.",
+    },
+  ] as const
+
+  return (
+    <section className="hxw-goals" aria-labelledby="hx-flywheel-title">
+      <div className="sky-container">
+        <div className="hxw-goals__head">
+          <div>
+            <p className="hxw-goals__eyebrow">Zero-risk way to start · Elixir learning credit</p>
+            <h2 id="hx-flywheel-title" className="hxw-goals__title">Start with a ₹99 Workshop. Get 99 Elixir Coins for Case Studies.</h2>
+          </div>
+          <p className="hxw-goals__aside">
+            Every rupee of a ₹99 workshop registration comes back as 99 Elixir Coins inside Skylent so you can unlock practical case studies before committing to a full programme.
+          </p>
+        </div>
+        <div className="hxw-goals__grid">
+          {steps.map((item) => (
+            <div key={item.step} className="hxw-goal">
+              <span className="hxw-goal__content">
+                <span className="hxw-goals__eyebrow">{item.step}</span>
+                <span className="hxw-goal__name">{item.title}</span>
+                <span className="hxw-goal__text">{item.copy}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <Link className="sk-btn sk-btn-primary hx-btn" to="/events">
+            Explore ₹99 Workshops &amp; Webinars
+            <ArrowRight />
+          </Link>
+          <Link className="sk-btn sk-btn-secondary hx-btn" to="/dashboard/student">
+            Open Elixir Case Study Store
           </Link>
         </div>
       </div>

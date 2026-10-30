@@ -7,18 +7,33 @@ import { requireRoles } from "../../lib/roles.js"
 import { employerIdsForUser } from "../../lib/career/employer-access.js"
 import { serializeEmployer, serializeJob } from "../../lib/career/serializers.js"
 import { slugSchema, validationError } from "../../lib/career/shared.js"
-import { capabilityAvailable, readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../../lib/schema-capabilities.js"
+import {
+  capabilityAvailable,
+  isDatabaseUnavailableError,
+  isMissingSchemaError,
+  readSchemaCapabilities,
+  UNAVAILABLE_MESSAGES,
+  unavailableBody,
+} from "../../lib/schema-capabilities.js"
 
 export const employerJobsRouter = Router()
 
 const guards = [requireAuth, requireRoles("recruiter", "superadmin")] as const
 
 employerJobsRouter.use(...guards, async (_req, res, next) => {
-  if (!(await capabilityAvailable("employerMembership"))) {
-    res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
-    return
+  try {
+    if (!(await capabilityAvailable("employerMembership"))) {
+      res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+      return
+    }
+    next()
+  } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+      return
+    }
+    next(error)
   }
-  next()
 })
 
 const jobFields = {
@@ -106,7 +121,10 @@ employerJobsRouter.get("/jobs", ...guards, async (req: AuthenticatedRequest, res
       meta: { linked: employerIds.length > 0 },
     })
   } catch (error) {
-    console.error("Failed to list employer jobs:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+    }
+    console.error("Failed to list employer jobs:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list jobs" })
   }
 })
@@ -155,7 +173,10 @@ employerJobsRouter.post("/jobs", ...guards, requireCsrf, async (req: Authenticat
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return res.status(409).json({ error: "A job with that slug already exists" })
     }
-    console.error("Failed to create job:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+    }
+    console.error("Failed to create job:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to create job" })
   }
 })
@@ -194,7 +215,10 @@ employerJobsRouter.patch("/jobs/:id", ...guards, requireCsrf, async (req: Authen
     })
     res.json({ data: serializeJob(updated) })
   } catch (error) {
-    console.error("Failed to update job:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+    }
+    console.error("Failed to update job:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to update job" })
   }
 })
@@ -214,7 +238,10 @@ employerJobsRouter.post("/jobs/:id/publish", ...guards, requireCsrf, async (req:
         })
     res.json({ data: serializeJob(updated) })
   } catch (error) {
-    console.error("Failed to publish job:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+    }
+    console.error("Failed to publish job:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to publish job" })
   }
 })
@@ -234,7 +261,10 @@ employerJobsRouter.post("/jobs/:id/close", ...guards, requireCsrf, async (req: A
         })
     res.json({ data: serializeJob(updated) })
   } catch (error) {
-    console.error("Failed to close job:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+    }
+    console.error("Failed to close job:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to close job" })
   }
 })
@@ -265,7 +295,10 @@ employerJobsRouter.get("/jobs/:id/applications", ...guards, async (req: Authenti
       })),
     })
   } catch (error) {
-    console.error("Failed to list job applications:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerApplications))
+    }
+    console.error("Failed to list job applications:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list applications" })
   }
 })

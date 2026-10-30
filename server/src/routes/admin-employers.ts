@@ -37,7 +37,10 @@ adminEmployersRouter.get("/employers", ...guards, async (_req: AuthenticatedRequ
       })),
     })
   } catch (error) {
-    console.error("Failed to list employers:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+    }
+    console.error("Failed to list employers:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list employers" })
   }
 })
@@ -66,7 +69,7 @@ adminEmployersRouter.post("/employers", ...guards, requireCsrf, async (req: Auth
     if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
       return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
     }
-    console.error("Failed to create employer:", error)
+    console.error("Failed to create employer:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to create employer" })
   }
 })
@@ -98,7 +101,10 @@ adminEmployersRouter.get("/employers/:id/members", ...guards, async (req: Authen
       })),
     })
   } catch (error) {
-    console.error("Failed to list employer members:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+    }
+    console.error("Failed to list employer members:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to list employer members" })
   }
 })
@@ -115,7 +121,10 @@ adminEmployersRouter.delete("/employers/:id/members/:userId", ...guards, require
     if (removed.count === 0) return res.status(404).json({ error: "Membership not found" })
     res.json({ data: { removed: true } })
   } catch (error) {
-    console.error("Failed to remove employer member:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+    }
+    console.error("Failed to remove employer member:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to remove employer member" })
   }
 })
@@ -146,7 +155,10 @@ adminEmployersRouter.post("/employers/:id/members", ...guards, requireCsrf, asyn
     })
     res.status(201).json({ data: { id: membership.id, userId: user.id, employerId: employer.id } })
   } catch (error) {
-    console.error("Failed to link employer member:", error)
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.employerMembership))
+    }
+    console.error("Failed to link employer member:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to link employer member" })
   }
 })

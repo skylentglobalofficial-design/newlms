@@ -8,7 +8,13 @@ import {
   saveLearnerPracticeResponse,
 } from "../lib/practice-workspaces/service.js"
 import { PythonRuntimeUnavailable, pythonRuntime } from "../lib/practice-runtime/python.js"
-import { readSchemaCapabilities, UNAVAILABLE_MESSAGES, unavailableBody } from "../lib/schema-capabilities.js"
+import {
+  isDatabaseUnavailableError,
+  isMissingSchemaError,
+  readSchemaCapabilities,
+  UNAVAILABLE_MESSAGES,
+  unavailableBody,
+} from "../lib/schema-capabilities.js"
 
 export const practiceRouter = Router()
 
@@ -20,6 +26,10 @@ practiceRouter.use(async (_req, res, next) => {
     }
     res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.practice))
   } catch (error) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+      res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.practice))
+      return
+    }
     next(error)
   }
 })
@@ -31,7 +41,11 @@ function sendError(res: import("express").Response, error: unknown) {
     res.status(error.status).json(error.body ?? { error: error.message })
     return
   }
-  console.error("Learner practice workspace failed:", error instanceof Error ? error.message : "unknown")
+  if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
+    res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.practice))
+    return
+  }
+  console.error("Learner practice workspace failed:", error instanceof Error ? error.name : "unknown")
   res.status(500).json({ error: "The practice workspace could not be opened." })
 }
 

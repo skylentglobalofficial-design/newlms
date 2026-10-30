@@ -144,6 +144,11 @@ export type JobListing = {
   postedAt: string | null
   expiresAt: string | null
   saved?: boolean
+  skillMatch?: {
+    matchScore: number
+    matchedSkills: string[]
+    missingSkills: string[]
+  }
   createdAt: string
   updatedAt: string
 }

@@ -107,12 +107,21 @@ authRouter.get("/csrf", (req, res) => {
   const existing = parseCookies(req)[CSRF_COOKIE]
   const csrfToken = existing || generateCsrfToken()
   res.cookie(CSRF_COOKIE, csrfToken, csrfCookieOptions(req))
-  res.json({ csrfToken })
+  res.json({ csrfToken, googleOAuthConfigured: Boolean(getGoogleOAuthConfig(req)) })
+})
+
+authRouter.get("/google/status", (req, res) => {
+  const configured = Boolean(getGoogleOAuthConfig(req))
+  res.json({ data: { available: configured, configured } })
 })
 
 authRouter.get("/google", (req, res) => {
   const config = getGoogleOAuthConfig(req)
   if (!config) {
+    const accept = req.get("accept") ?? ""
+    if (accept.includes("text/html")) {
+      return res.redirect(oauthErrorRedirect("oauth_not_configured", req))
+    }
     return res.status(503).json({ error: "Google OAuth is not configured" })
   }
 
@@ -127,7 +136,7 @@ authRouter.get("/google", (req, res) => {
     const authorizationUrl = buildGoogleAuthorizationUrl({ state, nonce, req })
     return res.redirect(authorizationUrl)
   } catch (error) {
-    console.error("Google OAuth start failed:", error instanceof Error ? error.message : error)
+    console.error("Google OAuth start failed:", error instanceof Error ? error.name : "unknown")
     return res.redirect(oauthErrorRedirect("oauth_start", req))
   }
 })
@@ -174,7 +183,7 @@ authRouter.get("/google/callback", async (req, res) => {
       console.error("Google sign-up blocked: policy acceptance storage is unavailable")
       return res.redirect(oauthErrorRedirect("oauth_failed", req))
     }
-    console.error("Google OAuth callback failed:", error instanceof Error ? error.message : error)
+    console.error("Google OAuth callback failed:", error instanceof Error ? error.name : "unknown")
     return res.redirect(oauthErrorRedirect("oauth_failed", req))
   }
 })
@@ -205,7 +214,7 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
     try {
       policyReady = (await readSchemaCapabilities()).policyAcceptance
     } catch (error) {
-      console.error("Signup blocked: policy storage could not be checked:", error instanceof Error ? error.message : "schema check failed")
+      console.error("Signup blocked: policy storage could not be checked:", error instanceof Error ? error.name : "schema check failed")
       return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
     }
     if (!policyReady) {
@@ -244,11 +253,11 @@ authRouter.post("/signup", requireCsrf, async (req, res) => {
       csrfToken: issuedCsrf,
     })
   } catch (error) {
-    if (isMissingSchemaError(error)) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
       console.error("Signup rolled back: policy acceptance storage is unavailable")
       return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.accounts))
     }
-    console.error("Signup failed:", error)
+    console.error("Signup failed:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to create account" })
   }
 })
@@ -266,7 +275,7 @@ authRouter.post("/login", requireCsrf, async (req, res) => {
   let mustChangePassword = false
   try {
     mustChangePassword = (await readSchemaCapabilities()).userMustChangePassword
-  } catch (error) {
+  } catch {
     console.error("Login blocked: account columns could not be checked")
     return res.status(503).json({ error: "Failed to sign in" })
   }
@@ -300,11 +309,11 @@ authRouter.post("/login", requireCsrf, async (req, res) => {
       csrfToken: issuedCsrf,
     })
   } catch (error) {
-    if (isMissingSchemaError(error)) {
+    if (isMissingSchemaError(error) || isDatabaseUnavailableError(error)) {
       console.error("Login blocked: account columns are missing")
       return res.status(503).json({ error: "Failed to sign in" })
     }
-    console.error("Login failed:", error)
+    console.error("Login failed:", error instanceof Error ? error.name : "unknown")
     res.status(500).json({ error: "Failed to sign in" })
   }
 })
@@ -473,7 +482,11 @@ authRouter.post("/password-reset/request", passwordResetRateLimit, async (req, r
 
     res.json(genericPasswordResetRequestResponse(isEmailConfigured()))
   } catch (error) {
-    if (error instanceof PasswordResetStorageUnavailableError || isMissingSchemaError(error)) {
+    if (
+      error instanceof PasswordResetStorageUnavailableError ||
+      isMissingSchemaError(error) ||
+      isDatabaseUnavailableError(error)
+    ) {
       return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.passwordReset))
     }
     if (error instanceof PasswordResetError && error.code === "RATE_LIMITED") {
@@ -502,7 +515,11 @@ authRouter.post("/password-reset/verify", passwordResetRateLimit, async (req, re
     await validatePasswordResetToken(parsed.data.token)
     res.json({ valid: true })
   } catch (error) {
-    if (error instanceof PasswordResetStorageUnavailableError || isMissingSchemaError(error)) {
+    if (
+      error instanceof PasswordResetStorageUnavailableError ||
+      isMissingSchemaError(error) ||
+      isDatabaseUnavailableError(error)
+    ) {
       return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.passwordReset))
     }
     if (error instanceof PasswordResetError) {
@@ -538,7 +555,11 @@ authRouter.post("/password-reset/complete", passwordResetRateLimit, async (req, 
     await resetPasswordWithToken(parsed.data.token, parsed.data.password)
     res.json({ success: true, message: "Password has been reset. You can now sign in." })
   } catch (error) {
-    if (error instanceof PasswordResetStorageUnavailableError || isMissingSchemaError(error)) {
+    if (
+      error instanceof PasswordResetStorageUnavailableError ||
+      isMissingSchemaError(error) ||
+      isDatabaseUnavailableError(error)
+    ) {
       return res.status(503).json(unavailableBody(UNAVAILABLE_MESSAGES.passwordReset))
     }
     if (error instanceof PasswordResetError) {

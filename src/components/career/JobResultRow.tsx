@@ -45,6 +45,11 @@ export default function JobResultRow({ job, selected, onSelect, onToggleSave, sa
             fontFamily: "var(--font-body)",
           }}
         >
+          {job.skillMatch ? (
+            <span style={{ display: "inline-block", fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 100, border: `1px solid ${accent.border}`, color: accent.text, marginBottom: 6 }}>
+              {job.skillMatch.matchScore}% Skill Match
+            </span>
+          ) : null}
           <h3 style={{
             margin: "0 0 6px",
             fontFamily: "var(--font-display)",

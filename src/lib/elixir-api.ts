@@ -20,6 +20,7 @@ export type ElixirWallet = {
   consistent: boolean
   transactions: ElixirTransaction[]
   entitlements: Array<{ slug: string; title: string; kind: string }>
+  rewardSchedule?: Array<{ activity: string; label: string; elixir: number; rule: string }>
 }
 
 export type ElixirResource = {

@@ -3,11 +3,10 @@ import { z } from "zod"
 import { prisma } from "../lib/prisma.js"
 import { requireAuth, type AuthenticatedRequest } from "../lib/auth.js"
 import { resolveCourseEnrollment } from "../lib/lms.js"
+import { isDatabaseUnavailableError, isMissingSchemaError } from "../lib/schema-capabilities.js"
 import { downloadFile, StorageServiceError } from "../lib/storage.js"
 
 export const lmsMaterialsRouter = Router()
-
-import { isDatabaseUnavailableError, isMissingSchemaError } from "../lib/schema-capabilities.js"
 
 lmsMaterialsRouter.get("/materials/:materialId", requireAuth, async (req: AuthenticatedRequest, res) => {
   const parsed = z.object({ materialId: z.string().uuid() }).safeParse(req.params)

@@ -94,6 +94,11 @@ careerRiseRouter.get("/", async (req: AuthenticatedRequest, res) => {
         thresholdPercent: completion.thresholdPercent,
         eligible: completion.eligible,
         enrolled: Boolean(enrolment),
+        milestones: {
+          curriculumGatePassed: completion.eligible,
+          caseEvidenceReady: completion.completedModules >= 1,
+          mockInterviewUnlocked: Boolean(enrolment),
+        },
       })
     }
     res.json({ data })

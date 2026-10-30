@@ -13,7 +13,7 @@ import {
 import { myCourseRows } from '../lib/my-courses'
 import CareerRiseCard from '../components/learner/CareerRiseCard'
 import { findProjectForCourse, listLearnerProjects, learnerProjectPath, projectStatusLabel, type ProjectSummary } from '../lib/projects-api'
-import { fetchMyCertificates, issueCertificate, type SkylentCertificate } from '../lib/skylent-api'
+import { fetchMyCertificates, issueCertificate, issueProgrammeCertificate, type SkylentCertificate } from '../lib/skylent-api'
 import { fetchSkylentAiStatus } from '../lib/skylent-ai-api'
 import ElixirWalletPanel from '../components/learner/ElixirWallet'
 import { truthOf } from '../lib/truth'
@@ -212,6 +212,23 @@ export default function DashboardStudentPage() {
     }
   }
 
+  async function claimProgrammeMasterCertificate(programSlug: string) {
+    const key = `programme:${programSlug}`
+    setClaiming(key)
+    setClaimError(null)
+    try {
+      const issued = await issueProgrammeCertificate(programSlug)
+      setCertificates((current) => ({
+        status: 'ready',
+        data: [issued, ...(current.status === 'ready' ? current.data.filter((item) => item.code !== issued.code) : [])],
+      }))
+    } catch (err) {
+      setClaimError({ slug: key, message: learnerErrorMessage(err, 'The programme master certificate could not be issued right now. Try again in a moment.') })
+    } finally {
+      setClaiming(null)
+    }
+  }
+
   const shell = {
     themeId: 'data-science' as const,
     workspace: 'learning' as const,
@@ -325,7 +342,9 @@ export default function DashboardStudentPage() {
   const issuedFor = (slug: string, title: string) =>
     certificateRows.some((cert) => (cert.courseSlug ? cert.courseSlug === slug : cert.courseTitle === title))
   const claimable: Array<{ key: string; courseSlug: string; courseTitle: string }> = []
+  const claimableProgrammes: Array<{ key: string; programSlug: string; programName: string }> = []
   const seenClaims = new Set<string>()
+  const seenProgrammeClaims = new Set<string>()
   for (const item of enrolmentRows) {
     const linked = item.courses ?? []
     if (linked.length > 0) {
@@ -334,6 +353,21 @@ export default function DashboardStudentPage() {
         if (issuedFor(courseRow.slug, courseRow.title) || seenClaims.has(courseRow.slug)) continue
         seenClaims.add(courseRow.slug)
         claimable.push({ key: `${item.id}:${courseRow.slug}`, courseSlug: courseRow.slug, courseTitle: courseRow.title })
+      }
+      const authoredLinked = linked.filter((courseRow) => isAuthoredCourse(courseRow.slug))
+      if (
+        item.programSlug &&
+        authoredLinked.length > 0 &&
+        authoredLinked.every((courseRow) => courseRow.progress.allComplete) &&
+        !seenProgrammeClaims.has(item.programSlug) &&
+        !certificateRows.some((cert) => (cert.code.includes('-PGM') || cert.code.includes('-PRG-')) && cert.courseTitle === (item.programName ?? item.programSlug))
+      ) {
+        seenProgrammeClaims.add(item.programSlug)
+        claimableProgrammes.push({
+          key: `prg:${item.id}:${item.programSlug}`,
+          programSlug: item.programSlug,
+          programName: item.programName ?? item.programSlug,
+        })
       }
       continue
     }
@@ -382,6 +416,28 @@ export default function DashboardStudentPage() {
             </ul>
           ) : null}
           <CertificateName />
+          {claimableProgrammes.map((prog) => {
+            const claimKey = `programme:${prog.programSlug}`
+            return (
+              <div key={prog.key} className="sh-row sh-claim">
+                <div className="sh-row-main">
+                  <strong>{prog.programName} · Programme Master Certificate</strong>
+                  <span className="sh-note">Every course in this programme is complete. Claim your Programme Master Certificate.</span>
+                  {claimError?.slug === claimKey ? (
+                    <span className="os-error" role="alert">{claimError.message}</span>
+                  ) : null}
+                </div>
+                <button
+                  type="button"
+                  className="os-btn os-btn-primary"
+                  disabled={claiming !== null}
+                  onClick={() => void claimProgrammeMasterCertificate(prog.programSlug)}
+                >
+                  {claiming === claimKey ? 'Issuing…' : 'Claim Master Certificate'}
+                </button>
+              </div>
+            )
+          })}
           {claimable.map((item) => (
             <div key={item.key} className="sh-row sh-claim">
               <div className="sh-row-main">
@@ -401,7 +457,7 @@ export default function DashboardStudentPage() {
               </button>
             </div>
           ))}
-          {certificateRows.length === 0 && claimable.length === 0 ? (
+          {certificateRows.length === 0 && claimable.length === 0 && claimableProgrammes.length === 0 ? (
             <p className="sh-empty">No certificates yet. You can claim one when every lesson in a course is complete.</p>
           ) : null}
         </>
@@ -510,7 +566,7 @@ export default function DashboardStudentPage() {
           </li>
           <li><strong>{completedCount}</strong> of {totalLessons} lessons complete in {course.title}</li>
           <li>
-            {certificates.status === 'ready' && claimable.length > 0
+            {certificates.status === 'ready' && (claimable.length > 0 || claimableProgrammes.length > 0)
               ? 'A certificate can be claimed below'
               : allComplete
                 ? 'Every lesson in this course is complete'
@@ -543,7 +599,7 @@ export default function DashboardStudentPage() {
               </h2>
               <p className="sh-body">
                 {allComplete
-                  ? certificates.status === 'ready' && claimable.length > 0
+                  ? certificates.status === 'ready' && (claimable.length > 0 || claimableProgrammes.length > 0)
                     ? 'Your certificate can be claimed below.'
                     : 'Every lesson in this course is complete.'
                   : `Module ${resume.moduleIndex} of ${resume.moduleTotal} · ${resume.moduleTitle}${resume.nextLessonTitle ? `. Next: ${resume.nextLessonTitle}` : ''}`}

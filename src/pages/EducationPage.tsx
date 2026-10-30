@@ -152,7 +152,7 @@ export default function EducationPage() {
     document.title = `${label} · Skylent`
   }, [level, mode])
 
-  const { degrees: all, settled, unavailable } = useDegreeCatalogue()
+  const { degrees: all, settled, unavailable, reload } = useDegreeCatalogue()
   const levels = level ? LEVELS.filter((item) => item.id === level) : LEVELS
   const modes: DeliveryMode[] = mode ? [mode] : ["ONLINE", "CAMPUS"]
   const href = (next: { level?: string | null; mode?: string | null }) => {
@@ -177,7 +177,7 @@ export default function EducationPage() {
               </h1>
               <p className="edx-lede">These are sample areas for a future undergraduate or postgraduate degree, online or on campus. Skylent does not award degrees. No institution is confirmed, so you can register interest but not apply.</p>
               {settled && unavailable ? (
-                <p className="edx-lede" role="status">The degree list could not be checked just now. The areas below remain samples, and applications are not open.</p>
+                <p className="edx-lede" role="status">The degree list could not be checked just now. The areas below remain samples, and applications are not open. <button type="button" className="edx-link" onClick={reload}>Try again</button></p>
               ) : null}
             </div>
             <nav className="edx-filters" aria-label="Filter degrees">
