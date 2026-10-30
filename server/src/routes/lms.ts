@@ -1114,7 +1114,7 @@ lmsRouter.post(
   requireAuth,
   requireCsrf,
   async (req: AuthenticatedRequest, res) => {
-    const parsed = lessonParamSchema.safeParse(req.params)
+    const parsed = slugParamSchema.merge(lessonKeySchema).safeParse(req.params)
     if (!parsed.success) return res.status(400).json({ error: "Invalid request" })
     const body = z
       .object({
@@ -1128,7 +1128,7 @@ lmsRouter.post(
       if (!course) return res.status(404).json({ error: "Course not found" })
       const enrollment = await resolveCourseEnrollment(req.auth!.user.id, course.id)
       if (!enrollment) return res.status(403).json({ error: "Not enrolled in this course" })
-      const found = findNodeByLessonKey(course, parsed.data.lessonKey)
+      const found = await findNodeByLessonKey(course, parsed.data.lessonKey)
       if (!found) return res.status(404).json({ error: "Lesson not found" })
       const ticket = createFacultyDoubtTicket({
         userId: req.auth!.user.id,

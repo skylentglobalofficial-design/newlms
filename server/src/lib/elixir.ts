@@ -368,7 +368,7 @@ export async function refundVerifiedPayment(paymentId: string, actorId: string) 
       where: { id: payment.id },
       data: { status: "refunded" },
     })
-    return { payment, reversal, duplicate: false }
+    return { payment: updated, reversal, duplicate: false }
   })
 }
 
@@ -522,10 +522,11 @@ export async function spendOnResource(userId: string, slug: string) {
     }
   }
   if (!resource || !resource.published) return { error: "not_found" as const }
+  const targetResource = resource
   try {
     return await prisma.$transaction(async (tx) => {
       const owned = await tx.learningResourceEntitlement.findUnique({
-        where: { userId_resourceId: { userId, resourceId: resource.id } },
+        where: { userId_resourceId: { userId, resourceId: targetResource.id } },
       })
       if (owned) return { error: "owned" as const }
       await ensureAccount(tx, userId)
@@ -533,27 +534,27 @@ export async function spendOnResource(userId: string, slug: string) {
         where: { userId },
         data: { balance: { increment: 0 } },
       })
-      if (locked.balance < resource.elixirPrice) throw new InsufficientElixirError()
-      const balance = locked.balance - resource.elixirPrice
+      if (locked.balance < targetResource.elixirPrice) throw new InsufficientElixirError()
+      const balance = locked.balance - targetResource.elixirPrice
       await tx.elixirAccount.update({
         where: { userId },
-        data: { balance: { decrement: resource.elixirPrice } },
+        data: { balance: { decrement: targetResource.elixirPrice } },
       })
       const transaction = await tx.elixirTransaction.create({
         data: {
           userId,
-          amount: -resource.elixirPrice,
+          amount: -targetResource.elixirPrice,
           type: "resource_spend",
-          idempotencyKey: `spend:${userId}:${resource.id}`,
+          idempotencyKey: `spend:${userId}:${targetResource.id}`,
           sourceType: "learning_resource",
-          sourceId: resource.id,
-          note: resource.title,
+          sourceId: targetResource.id,
+          note: targetResource.title,
         },
       })
       await tx.learningResourceEntitlement.create({
-        data: { userId, resourceId: resource.id, transactionId: transaction.id },
+        data: { userId, resourceId: targetResource.id, transactionId: transaction.id },
       })
-      return { error: null, balance, price: resource.elixirPrice, title: resource.title }
+      return { error: null, balance, price: targetResource.elixirPrice, title: targetResource.title }
     })
   } catch (error) {
     if (error instanceof InsufficientElixirError) return { error: "insufficient" as const }

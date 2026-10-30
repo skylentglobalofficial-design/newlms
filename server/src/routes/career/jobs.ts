@@ -24,17 +24,22 @@ const listQuerySchema = z.object({
 })
 
 async function loadLearnerVerifiedSkills(userId: string): Promise<string[]> {
-  const [profile, projects] = await Promise.all([
-    prisma.careerProfile.findUnique({ where: { userId }, select: { skills: true } }).catch(() => null),
-    prisma.careerProject.findMany({ where: { userId }, select: { skills: true } }).catch(() => []),
-  ])
+  const profile = await prisma.careerProfile
+    .findUnique({
+      where: { userId },
+      select: {
+        skills: { select: { name: true } },
+        projects: { select: { technologies: true } },
+      },
+    })
+    .catch(() => null)
   const combined = new Set<string>()
   for (const s of profile?.skills ?? []) {
-    if (typeof s === "string" && s.trim()) combined.add(s.trim())
+    if (typeof s.name === "string" && s.name.trim()) combined.add(s.name.trim())
   }
-  for (const p of projects ?? []) {
-    for (const s of p.skills ?? []) {
-      if (typeof s === "string" && s.trim()) combined.add(s.trim())
+  for (const p of profile?.projects ?? []) {
+    for (const tech of p.technologies ?? []) {
+      if (typeof tech === "string" && tech.trim()) combined.add(tech.trim())
     }
   }
   return [...combined]
