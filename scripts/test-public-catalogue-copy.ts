@@ -149,7 +149,7 @@ const mixed = effectiveProgrammePublicFacts({
   desc: "Listed as a data science direction.",
   format: "Self-paced",
   moduleCount: 7,
-  linkedCourseSlugs: ["data-analytics", "python-programming"],
+  linkedCourseSlugs: ["data-analytics", "generative-ai"],
 })
 assert(mixed.taughtModuleCount === 7, "A mixed programme keeps the linked-course count from the API")
 assert(mixed.desc === "Listed as a data science direction.", "Programmes outside the honest set keep their API description")
