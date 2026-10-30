@@ -270,28 +270,37 @@ async function main() {
     assert(rootHealthRes.status === 503 && rootHealthBody.migrations === "pending", "GET /api/v1/health must remain 503 while migrations are pending")
 
     console.log("5. Google OAuth pre-check status endpoint and browser redirect fallback")
-    const googleStatusRes = await fetch(`${baseUrl}/api/v1/auth/google/status`)
-    const googleStatusBody = (await googleStatusRes.json()) as { data?: { available?: boolean; configured?: boolean } }
-    assert(
-      googleStatusRes.status === 200 && googleStatusBody.data?.available === false && googleStatusBody.data?.configured === false,
-      "GET /api/v1/auth/google/status must report available=false when Google OAuth is unconfigured",
-    )
+    const savedClientId = process.env.GOOGLE_CLIENT_ID
+    const savedClientSecret = process.env.GOOGLE_CLIENT_SECRET
+    delete process.env.GOOGLE_CLIENT_ID
+    delete process.env.GOOGLE_CLIENT_SECRET
+    try {
+      const googleStatusRes = await fetch(`${baseUrl}/api/v1/auth/google/status`)
+      const googleStatusBody = (await googleStatusRes.json()) as { data?: { available?: boolean; configured?: boolean } }
+      assert(
+        googleStatusRes.status === 200 && googleStatusBody.data?.available === false && googleStatusBody.data?.configured === false,
+        "GET /api/v1/auth/google/status must report available=false when Google OAuth is unconfigured",
+      )
 
-    const googleApiRes = await fetch(`${baseUrl}/api/v1/auth/google`, {
-      headers: { Accept: "application/json" },
-      redirect: "manual",
-    })
-    assert(googleApiRes.status === 503, "API call to GET /api/v1/auth/google must return 503 JSON when unconfigured")
+      const googleApiRes = await fetch(`${baseUrl}/api/v1/auth/google`, {
+        headers: { Accept: "application/json" },
+        redirect: "manual",
+      })
+      assert(googleApiRes.status === 503, "API call to GET /api/v1/auth/google must return 503 JSON when unconfigured")
 
-    const googleHtmlRes = await fetch(`${baseUrl}/api/v1/auth/google`, {
-      headers: { Accept: "text/html,application/xhtml+xml" },
-      redirect: "manual",
-    })
-    const redirectLocation = googleHtmlRes.headers.get("location") ?? ""
-    assert(
-      googleHtmlRes.status === 302 && redirectLocation.includes("/login?error=oauth_not_configured"),
-      `Browser navigation to GET /api/v1/auth/google must redirect cleanly to /login?error=oauth_not_configured, got status=${googleHtmlRes.status} location=${redirectLocation}`,
-    )
+      const googleHtmlRes = await fetch(`${baseUrl}/api/v1/auth/google`, {
+        headers: { Accept: "text/html,application/xhtml+xml" },
+        redirect: "manual",
+      })
+      const redirectLocation = googleHtmlRes.headers.get("location") ?? ""
+      assert(
+        googleHtmlRes.status === 302 && redirectLocation.includes("/login?error=oauth_not_configured"),
+        `Browser navigation to GET /api/v1/auth/google must redirect cleanly to /login?error=oauth_not_configured, got status=${googleHtmlRes.status} location=${redirectLocation}`,
+      )
+    } finally {
+      if (savedClientId !== undefined) process.env.GOOGLE_CLIENT_ID = savedClientId
+      if (savedClientSecret !== undefined) process.env.GOOGLE_CLIENT_SECRET = savedClientSecret
+    }
   } finally {
     ;(prisma as unknown as { $queryRaw: unknown }).$queryRaw = origHealthQuery
     await new Promise<void>((r) => server.close(() => r()))
