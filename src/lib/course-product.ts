@@ -1,5 +1,5 @@
 import { courses } from "../data"
-import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, PYTHON_PROGRAMMING_SLUG, isAuthoredCourse } from "./authored-courses"
+import { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, PYTHON_PROGRAMMING_SLUG, DATA_SCIENCE_SLUG, GENERATIVE_AI_SLUG, FULL_STACK_WEB_SLUG, isAuthoredCourse } from "./authored-courses"
 
 export type CourseDataset = {
   filename: string
@@ -176,10 +176,109 @@ const PYTHON_PROGRAMMING_PROFILE: CourseProductProfile = {
   ctaTitle: "Start Python Programming",
 }
 
+const DATA_SCIENCE_PROFILE: CourseProductProfile = {
+  slug: DATA_SCIENCE_SLUG,
+  tools: ["Python 3.11+", "scikit-learn", "NumPy & pandas", "XGBoost"],
+  prerequisite: "Python fundamentals or basic data manipulation experience.",
+  datasets: [
+    {
+      filename: "credit_risk_dataset.csv",
+      href: "/content/data-analytics/northwind_sales.csv",
+      detail: "Tabular consumer records for feature engineering and churn modeling.",
+    },
+  ],
+  learningSteps: [
+    { label: "Learning", detail: "Written lessons in Skylent OS. Self-paced. No video stream." },
+    { label: "Practice", detail: "Mathematical and leakage prevention checks." },
+    { label: "Assignment", detail: "Feature engineering pipelines and gradient boosted ensembles." },
+    { label: "Capstone", detail: "End-to-end predictive machine learning pipeline with threshold tuning." },
+  ],
+  faq: [
+    { q: "Are there videos or live classes?", a: "No. Data Science & AI is written lessons, quizzes, and scikit-learn coding assignments in Skylent OS." },
+    SHARED_FAQ_PAYMENT,
+    SHARED_FAQ_CERT,
+    { q: "What do I actually work on?", a: "Leakage-free preprocessing pipelines, logistic regression regularization, XGBoost ensembles, and business threshold optimization." },
+  ],
+  practiceIntro: "Practice uses real tabular data and scikit-learn pipelines with zero data leakage.",
+  visual: "northwind",
+  lab: null,
+  project: null,
+  labOmission: "This course focuses on scikit-learn pipelines, cross-validation, and ensemble modeling.",
+  afterEnrol: "Skylent OS opens Data Science & AI at the first lesson.",
+  ctaTitle: "Start Data Science & AI",
+}
+
+const GENERATIVE_AI_PROFILE: CourseProductProfile = {
+  slug: GENERATIVE_AI_SLUG,
+  tools: ["Python 3.11+", "OpenAI API / Local LLMs", "Vector Embeddings & Chroma/FAISS", "RAGAS"],
+  prerequisite: "Python programming and basic API experience.",
+  datasets: [
+    {
+      filename: "rag_knowledge_base.md",
+      href: "/content/product-management/harbor-desk-case.md",
+      detail: "Enterprise documentation and architecture records for RAG indexing.",
+    },
+  ],
+  learningSteps: [
+    { label: "Learning", detail: "Written lessons in Skylent OS. Self-paced. No video stream." },
+    { label: "Practice", detail: "Prompt engineering, sampling parameter, and RAG architecture checks." },
+    { label: "Assignment", detail: "Semantic search engines and autonomous ReAct tool-calling agents." },
+    { label: "Capstone", detail: "Grounded enterprise RAG assistant with quantitative RAGAS evaluation." },
+  ],
+  faq: [
+    { q: "Are there videos or live classes?", a: "No. Generative AI is written lessons, quizzes, and LLM application coding in Skylent OS." },
+    SHARED_FAQ_PAYMENT,
+    SHARED_FAQ_CERT,
+    { q: "What do I actually work on?", a: "Prompt injection defense, HNSW vector search, hybrid re-ranking, autonomous ReAct loops, and automated faithfulness evaluations." },
+  ],
+  practiceIntro: "Practice uses live vector embeddings, two-stage re-ranking, and grounded RAG pipelines.",
+  visual: "harbor-desk",
+  lab: null,
+  project: null,
+  labOmission: "This course focuses on RAG pipelines, agent function calling, and automated evaluations.",
+  afterEnrol: "Skylent OS opens Generative AI & LLM Systems at the first lesson.",
+  ctaTitle: "Start Generative AI",
+}
+
+const FULL_STACK_WEB_PROFILE: CourseProductProfile = {
+  slug: FULL_STACK_WEB_SLUG,
+  tools: ["TypeScript & Node.js", "Express / Fastify", "PostgreSQL & Prisma", "React"],
+  prerequisite: "Basic programming concepts and HTML/CSS familiarity.",
+  datasets: [
+    {
+      filename: "schema.sql",
+      href: "/content/python-programming/python-starter-suite.py",
+      detail: "Relational database migration schemas and REST API test suites.",
+    },
+  ],
+  learningSteps: [
+    { label: "Learning", detail: "Written lessons in Skylent OS. Self-paced. No video stream." },
+    { label: "Practice", detail: "HTTP protocol, SQL constraint, and state architecture checks." },
+    { label: "Assignment", detail: "Validated RESTful backend APIs and optimistic UI dashboards." },
+    { label: "Capstone", detail: "Full-stack web application with relational persistence and security." },
+  ],
+  faq: [
+    { q: "Are there videos or live classes?", a: "No. Full Stack Web is written lessons, quizzes, and software engineering assignments in Skylent OS." },
+    SHARED_FAQ_PAYMENT,
+    SHARED_FAQ_CERT,
+    { q: "What do I actually work on?", a: "REST API lifecycle, Zod schema validation, PostgreSQL indexing, optimistic React UI updates, and CSRF/XSS security hardening." },
+  ],
+  practiceIntro: "Practice uses real relational database schemas, REST APIs, and modern component state.",
+  visual: "northwind",
+  lab: null,
+  project: null,
+  labOmission: "This course focuses on full-stack web applications, relational databases, and security.",
+  afterEnrol: "Skylent OS opens Full Stack Web Engineering at the first lesson.",
+  ctaTitle: "Start Full Stack Web",
+}
+
 const PROFILES: Record<string, CourseProductProfile> = {
   [FLAGSHIP_COURSE_SLUG]: DATA_ANALYTICS_PROFILE,
   [PRODUCT_MANAGEMENT_SLUG]: PRODUCT_MANAGEMENT_PROFILE,
   [PYTHON_PROGRAMMING_SLUG]: PYTHON_PROGRAMMING_PROFILE,
+  [DATA_SCIENCE_SLUG]: DATA_SCIENCE_PROFILE,
+  [GENERATIVE_AI_SLUG]: GENERATIVE_AI_PROFILE,
+  [FULL_STACK_WEB_SLUG]: FULL_STACK_WEB_PROFILE,
 }
 
 export function courseProductProfile(slug: string): CourseProductProfile | null {
@@ -190,4 +289,4 @@ export function authoredCourseList() {
   return courses.filter((course) => isAuthoredCourse(course.slug))
 }
 
-export { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, PYTHON_PROGRAMMING_SLUG }
+export { FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, PYTHON_PROGRAMMING_SLUG, DATA_SCIENCE_SLUG, GENERATIVE_AI_SLUG, FULL_STACK_WEB_SLUG }

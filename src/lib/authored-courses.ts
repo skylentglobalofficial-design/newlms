@@ -24,15 +24,26 @@
 export const FLAGSHIP_COURSE_SLUG = "data-analytics"
 export const PRODUCT_MANAGEMENT_SLUG = "product-management"
 export const PYTHON_PROGRAMMING_SLUG = "python-programming"
+export const DATA_SCIENCE_SLUG = "data-science-ai"
+export const GENERATIVE_AI_SLUG = "generative-ai"
+export const FULL_STACK_WEB_SLUG = "full-stack-web"
 
-export const AUTHORED_COURSE_SLUGS = [FLAGSHIP_COURSE_SLUG, PRODUCT_MANAGEMENT_SLUG, PYTHON_PROGRAMMING_SLUG] as const
+export const AUTHORED_COURSE_SLUGS = [
+  FLAGSHIP_COURSE_SLUG,
+  PRODUCT_MANAGEMENT_SLUG,
+  PYTHON_PROGRAMMING_SLUG,
+  DATA_SCIENCE_SLUG,
+  GENERATIVE_AI_SLUG,
+  FULL_STACK_WEB_SLUG,
+] as const
 
-/**
- * Programmes a new learner can enter through POST /lms/enrollments.
- * Keep this list identical to server/src/lib/authored-courses.ts.
- * Data Science stays off it while it is in development.
- */
-export const AUTHORED_PROGRAM_SLUGS = ["data-analytics-pro", "product-management"] as const
+export const AUTHORED_PROGRAM_SLUGS = [
+  "data-analytics-pro",
+  "product-management",
+  "data-science-ai",
+  "full-stack",
+  "generative-ai-program",
+] as const
 
 export type AuthoredCourseSlug = (typeof AUTHORED_COURSE_SLUGS)[number]
 

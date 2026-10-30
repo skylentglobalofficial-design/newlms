@@ -78,6 +78,42 @@ export const PUBLIC_COURSE_COPY: Record<string, CourseCopy> = {
     ],
     mode: "Self-paced",
   },
+  "generative-ai": {
+    desc: "Master prompt engineering, vector embeddings, grounded RAG pipelines, autonomous ReAct agents, and RAGAS benchmark evaluations.",
+    longDesc:
+      "A hands-on, practice-first Generative AI course. You build from token probability dynamics and prompt injection defense to dense vector search, hybrid re-ranking, function-calling agents, and quantitative faithfulness metrics. There is no passive video watching. You write and test real AI pipelines with strict grounding.",
+    outcomes: [
+      "Write hardened system prompts with injection boundaries and few-shot exemplars",
+      "Generate dense vector embeddings and index them with HNSW metadata filtering",
+      "Architect two-stage hybrid RAG pipelines with cross-encoder re-ranking",
+      "Build autonomous ReAct agent loops with deterministic tool calling",
+      "Quantify hallucination rates and answer relevance using automated RAGAS metrics",
+    ],
+    forWhom: [
+      "Software engineers and developers building LLM-powered applications",
+      "Product managers and architects deploying enterprise AI assistants",
+      "Data practitioners transitioning into generative AI engineering",
+    ],
+    mode: "Self-paced",
+  },
+  "full-stack-web": {
+    desc: "Learn HTTP/REST protocols, backend API architecture, relational database persistence, modern component state, and security hardening on production web services.",
+    longDesc:
+      "A thorough full-stack engineering course. You build from the HTTP request/response lifecycle and RESTful API design to relational PostgreSQL migrations, optimistic UI updates, and web security defenses (CSRF, XSS, HttpOnly auth). There is no hand-waving theory and no passive video watching. You build real full-stack services.",
+    outcomes: [
+      "Design RESTful resource hierarchies with idempotent verbs and normalized error envelopes",
+      "Enforce strict input validation using schema guards before database mutations",
+      "Model relational entity schemas with foreign keys, composite constraints, and connection pooling",
+      "Architect responsive frontend interfaces with optimistic updates and error rollback",
+      "Implement production web security defenses including HttpOnly cookies and CSRF safeguards",
+    ],
+    forWhom: [
+      "Software engineers transitioning into professional full-stack web development",
+      "Backend developers looking to master frontend component architecture and state",
+      "Frontend developers wanting robust backend API design, SQL persistence, and security skills",
+    ],
+    mode: "Self-paced",
+  },
 }
 
 export const PUBLIC_PROGRAMME_COPY: Record<string, ProgrammeCopy> = {
