@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { HeaderWalletAndNotifications } from './learner/HeaderWalletAndNotifications'
 import {
   courseEnrollmentMessage,
   programEnrollmentMessage,
@@ -710,6 +711,8 @@ export function Nav() {
           </div>
 
           {user ? (
+            <>
+            <HeaderWalletAndNotifications variant="public" />
             <div className="skn__account">
               <button
                 type="button"
@@ -746,6 +749,7 @@ export function Nav() {
                 </div>
               ) : null}
             </div>
+            </>
           ) : (
             <Link to="/login" className="skn__signin">
               Sign in

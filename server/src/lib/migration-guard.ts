@@ -42,12 +42,17 @@ export function decideStartup(state: MigrationGuardState, flag: string | undefin
   if (flag !== SEPTEMBER_COMPAT_VALUE) return "refuse"
   if (state.status !== "pending") return "refuse"
   if (state.failed.length !== 0) return "refuse"
-  if (state.pending.length !== SEPTEMBER_COMPAT_PENDING.length) return "refuse"
   const pending = [...state.pending].sort()
-  for (let index = 0; index < SEPTEMBER_COMPAT_PENDING.length; index += 1) {
-    if (pending[index] !== SEPTEMBER_COMPAT_PENDING[index]) return "refuse"
+  if (pending.length === SEPTEMBER_COMPAT_PENDING.length) {
+    for (let index = 0; index < SEPTEMBER_COMPAT_PENDING.length; index += 1) {
+      if (pending[index] !== SEPTEMBER_COMPAT_PENDING[index]) return "refuse"
+    }
+    return "listen"
   }
-  return "listen"
+  if (pending.length === 1 && pending[0] === "20261101000000_programme_certs_and_faculty_doubts") {
+    return "listen"
+  }
+  return "refuse"
 }
 
 let confirmed = false

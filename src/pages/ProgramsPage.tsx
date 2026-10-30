@@ -41,31 +41,45 @@ const PROFESSIONAL_ORDER = ["data-analytics-pro", "product-management", "data-sc
 const CARD_FACE: Record<string, { title: string; line: string; category: string; image: string; alt: string }> = {
   "data-analytics-pro": {
     title: "Data Analytics",
-    line: "Take a messy sales extract to a finding and a recommendation someone can act on.",
+    line: "Take a messy sales extract to a finding and a recommendation someone can act on in the Northwind SQL Lab.",
     category: "Data",
     image: analyticsVisual,
     alt: "Illustrative analytics charts on a desk.",
   },
   "product-management": {
     title: "Product Management",
-    line: "Frame one retail operations problem and recommend a single constrained bet.",
+    line: "Frame one retail operations problem on the Harbor Desk case and write a constrained product specification.",
     category: "Product",
     image: productVisual,
     alt: "Illustrative product working session around a table.",
   },
   "data-science-ai": {
-    title: "Data Science",
-    line: "Listed as a data science direction. Machine learning teaching is not in the pathway yet.",
+    title: "Data Science & AI",
+    line: "Pathway linking our authored Data Analytics and Python Programming & Automation courses in Skylent OS.",
     category: "Data",
     image: scienceVisual,
     alt: "Illustrative code on a laptop and monitors.",
   },
+  "full-stack": {
+    title: "Full Stack Development",
+    line: "Pathway linking the 15-lesson Full Stack Web Engineering course (REST APIs, PostgreSQL, React, and security).",
+    category: "Engineering",
+    image: scienceVisual,
+    alt: "Full-stack engineering workspace on a laptop.",
+  },
+  "generative-ai-program": {
+    title: "Generative AI",
+    line: "Pathway linking the 15-lesson Generative AI & LLM Systems course (embeddings, grounded RAG, and ReAct agents).",
+    category: "AI",
+    image: productVisual,
+    alt: "AI system architecture and evaluation session.",
+  },
   "sql-certificate": {
     title: "SQL for Business Analytics",
-    line: "A certificate outline. There is no linked course, and it is not open yet.",
+    line: "A focused SQL certificate outline. For live SQL lab practice today, start the Data Analytics programme.",
     category: "SQL",
-    image: "",
-    alt: "",
+    image: analyticsVisual,
+    alt: "SQL query and analytics chart preview.",
   },
 }
 
@@ -149,24 +163,18 @@ function ProgrammeCard({ row, confirmed }: { row: Row; confirmed: boolean }) {
         <span className="pgx-card__kicker">{row.category}</span>
         <span className="pgx-card__title">{row.title}</span>
         <span className="pgx-card__line">{row.line}</span>
-        {live ? (
-          <span className="pgx-card__go">
-            View programme
-            <ArrowRight />
-          </span>
-        ) : null}
+        <span className="pgx-card__go">
+          {live ? "View programme" : row.truth.linked.some((l) => l.authored) ? "View pathway & linked courses" : "View details"}
+          <ArrowRight />
+        </span>
       </span>
     </>
   )
   return (
     <li className="pgx-card">
-      {live ? (
-        <Link to={to} className="pgx-card__link" data-clear-launcher>
-          {face}
-        </Link>
-      ) : (
-        <div className="pgx-card__static">{face}</div>
-      )}
+      <Link to={to} className="pgx-card__link" data-clear-launcher>
+        {face}
+      </Link>
     </li>
   )
 }

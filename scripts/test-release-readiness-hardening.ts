@@ -713,6 +713,100 @@ console.log("14. Admin C-Suite Unit Economics UI and Student Programme Master Ce
     "faculty-api.ts and DashboardFacultyPage.tsx must wire the live 20-Minute Faculty TA Doubt Queue UI",
   )
 
+
+  console.log("17. Phases P1-P3 Verification: Homepage Learn. Practise. Build. Prove it., University Pathways, Header Elixir Wallet & Notifications, and Learner Doubts API")
+  const { listLearnerDoubtTickets } = await import("../server/src/lib/doubt-sla.ts")
+  const { buildNotificationItems, formatElixirReason } = await import("../src/lib/learner-notifications.ts")
+
+  clearFacultyDoubtStoreForTests()
+  const dTicket = createFacultyDoubtTicket({
+    userId: "u-notif-learner",
+    learnerName: "Riya Patel",
+    courseSlug: "python-programming",
+    lessonKey: "l5",
+    lessonTitle: "Generators, Iterators & Stream Processing",
+    question: "How does yield preserve local stack frame state?",
+  })
+  assert(listLearnerDoubtTickets("u-notif-learner").length === 1, "listLearnerDoubtTickets must return the learner's own doubt ticket")
+  assert(listLearnerDoubtTickets("u-other-learner").length === 0, "listLearnerDoubtTickets must isolate tickets by userId")
+  resolveFacultyDoubtTicket(dTicket.id, "u-fac-1", "CPython suspends the PyFrameObject instruction pointer until next().")
+  const resolvedList = listLearnerDoubtTickets("u-notif-learner")
+  assert(
+    resolvedList[0]?.status === "resolved" &&
+      resolvedList[0]?.resolutionNote?.includes("PyFrameObject"),
+    "listLearnerDoubtTickets must expose faculty resolutionNote to the learner",
+  )
+  clearFacultyDoubtStoreForTests()
+
+  const notifItems = buildNotificationItems({
+    transactions: [
+      {
+        id: "tx-99",
+        amount: 99,
+        type: "purchase_reward",
+        activity: null,
+        note: "100% Elixir Coin cashback (99 Elixir) for workshop: AI Systems",
+        unrecovered: 0,
+        createdAt: "2026-10-30T10:00:00.000Z",
+      },
+    ],
+    doubts: resolvedList,
+    certificates: [
+      {
+        code: "SKL-2026-PP-99887766",
+        learnerName: "Riya Patel",
+        courseTitle: "Python Programming & Automation",
+        courseSlug: "python-programming",
+        issuedAt: "2026-10-30T11:00:00.000Z",
+        verifyPath: "/verify/SKL-2026-PP-99887766",
+      },
+    ],
+  })
+  assert(
+    notifItems.length === 3 &&
+      notifItems.some((n) => n.kind === "elixir" && n.title.includes("+99 Elixir")) &&
+      notifItems.some((n) => n.kind === "faculty_reply" && n.detail.includes("PyFrameObject")) &&
+      notifItems.some((n) => n.kind === "certificate" && n.detail.includes("SKL-2026-PP-99887766")),
+    "buildNotificationItems must aggregate real Elixir credits, faculty doubt replies, and certificate unlocks",
+  )
+  assert(
+    formatElixirReason({
+      id: "tx-1",
+      amount: 5,
+      type: "learning_reward",
+      activity: "lesson_complete",
+      note: "lesson_complete",
+      unrecovered: 0,
+      createdAt: "2026-10-30T10:00:00.000Z",
+    }).includes("Verified lesson completion"),
+    "formatElixirReason must translate raw activity codes into human-readable earning reasons",
+  )
+
+  const sharedNavSrc = readFileSync(resolve(process.cwd(), "src/components/shared.tsx"), "utf8")
+  const authShellSrc = readFileSync(resolve(process.cwd(), "src/components/AuthDashboardShell.tsx"), "utf8")
+  const repolishUpdated = readFileSync(resolve(process.cwd(), "src/pages/home/Repolish.tsx"), "utf8")
+  const eduUpdated = readFileSync(resolve(process.cwd(), "src/pages/EducationPage.tsx"), "utf8")
+  const lmsUpdated = readFileSync(resolve(process.cwd(), "server/src/routes/lms.ts"), "utf8")
+
+  assert(
+    sharedNavSrc.includes("HeaderWalletAndNotifications") && authShellSrc.includes("HeaderWalletAndNotifications"),
+    "Both public Nav and AuthDashboardShell must mount HeaderWalletAndNotifications for signed-in users",
+  )
+  assert(
+    lmsUpdated.includes('"/doubts/mine"') && lmsUpdated.includes("listLearnerDoubtTickets"),
+    "server/src/routes/lms.ts must expose GET /api/v1/lms/doubts/mine for learner doubt notifications",
+  )
+  assert(
+    repolishUpdated.includes("Learn. Practise. Build. <em>Prove it.</em>") &&
+      repolishUpdated.includes("Interactive SQL &amp; Python practice"),
+    "Homepage hero must display Learn. Practise. Build. Prove it. and verified platform capabilities",
+  )
+  assert(
+    eduUpdated.includes("University &amp; Institutional Pathways") &&
+      eduUpdated.includes("Register learner or institutional interest"),
+    "EducationPage.tsx must be repositioned as University & Institutional Pathways with interest registration",
+  )
+
   console.log("release-readiness-hardening ok")
 }
 

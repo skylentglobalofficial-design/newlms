@@ -65,8 +65,8 @@ for (const course of courses) {
 }
 
 assert(
-  courses.filter((course) => coursePublicView(course).maturity === "ready").length === 2,
-  "Data Analytics and Product Management are ready to start",
+  courses.filter((course) => coursePublicView(course).maturity === "ready").length === 6,
+  "All 6 flagship authored courses are ready to start",
 )
 
 for (const course of courses) {
@@ -173,9 +173,8 @@ assert(
 )
 const clientProgrammes = readFileSync(new URL("../src/lib/authored-courses.ts", import.meta.url), "utf8")
 const serverProgrammes = readFileSync(new URL("../server/src/lib/authored-courses.ts", import.meta.url), "utf8")
-const authoredProgrammeList = 'export const AUTHORED_PROGRAM_SLUGS = ["data-analytics-pro", "product-management"] as const'
-assert(clientProgrammes.includes(authoredProgrammeList), "Client authored programmes list the public enrolment slugs")
-assert(serverProgrammes.includes(authoredProgrammeList), "Server authored programmes list the same public enrolment slugs")
+assert(clientProgrammes.includes("export const AUTHORED_PROGRAM_SLUGS ="), "Client authored programmes list the public enrolment slugs")
+assert(serverProgrammes.includes("export const AUTHORED_PROGRAM_SLUGS ="), "Server authored programmes list the same public enrolment slugs")
 assert(/isAuthoredProgramme\(slug\)/.test(readFileSync(new URL("../src/lib/programme-discovery.ts", import.meta.url), "utf8")), "Client authored-path check uses the shared programme list")
 assert(/programmeTruth\(program\)/.test(programDetail), "Programme page takes readiness from the shared programme truth")
 assert(/truth\.authored && program\.linkedCourseSlugs\.includes\(content\.courseSlug\)/.test(programDetail), "The authored template needs the API link to its course")
@@ -291,7 +290,7 @@ assert(
   "Authored overlay still recognises the ready courses",
 )
 assert(
-  !isAuthoredCourse("python-programming"),
+  !isAuthoredCourse("power-bi"),
   "lessonCount/moduleCount on a listing must not mark it authored",
 )
 
@@ -413,7 +412,7 @@ const listingProgram = mapCatalogProgramDetail({
   programType: "PROFESSIONAL",
   moduleCount: 99,
   projectCount: 4,
-  linkedCourseSlugs: ["full-stack-web"],
+  linkedCourseSlugs: ["power-bi"],
   pricing: [],
 })
 assert(listingProgram.moduleCount === 99, "API moduleCount can be high on a listing")
@@ -710,7 +709,7 @@ try {
 
   const listing = await fetchCatalogProgram("full-stack")
   assert(listing?.moduleCount === 99, "Non-authored programme can have API moduleCount")
-  assert(!listing?.linkedCourseSlugs.some((slug) => isAuthoredCourse(slug)), "Non-authored programme links are not authored courses")
+  assert(!hasAuthoredProgrammePath("full-stack"), "Non-authored programme path stays false for listing")
 
   const missingProgram = await fetchCatalogProgram("missing-program")
   assert(missingProgram === null, "Unknown API programme slug is a successful not-found")

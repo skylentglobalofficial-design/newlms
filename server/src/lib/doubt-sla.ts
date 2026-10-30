@@ -67,6 +67,12 @@ export function listFacultyDoubtTickets(courseSlugs?: readonly string[] | null):
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
 }
 
+export function listLearnerDoubtTickets(userId: string): FacultyDoubtTicket[] {
+  return [...doubtStore.values()]
+    .filter((t) => t.userId === userId)
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+}
+
 export function resolveFacultyDoubtTicket(
   id: string,
   actorId: string,

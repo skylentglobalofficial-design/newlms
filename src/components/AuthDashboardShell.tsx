@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import type { AuroraThemeId } from '../aurora-themes'
 import { useAuth } from '../context/AuthContext'
+import { HeaderWalletAndNotifications } from './learner/HeaderWalletAndNotifications'
 import './AuthDashboardShell.css'
 
 export type AuthNavItem = {
@@ -182,6 +183,9 @@ export function AuthDashboardShell({
           </button>
           <span className="auth-shell-wordmark">Skylent</span>
           <span className="auth-shell-workspace">{workspaceLabel}</span>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>
+            <HeaderWalletAndNotifications variant="dashboard" />
+          </div>
         </header>
 
         {bar ? <div className="auth-shell-bar">{bar}</div> : null}

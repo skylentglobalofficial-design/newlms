@@ -76,23 +76,44 @@ export function HomeHero({
       <div className="sky-container hxw-hero__grid">
         <div className="hxw-hero__copy">
           <h1 id="hx-hero-title" className="hxw-hero__title hx-rise">
-            Your education is just <em>the beginning.</em>
+            Learn. Practise. Build. <em>Prove it.</em>
           </h1>
-          <p className="hxw-hero__lead hx-rise">Learn something useful. Put it to work. Build a record of what you can do.</p>
+          <p className="hxw-hero__lead hx-rise">
+            Master practical skills through interactive SQL and Python practice, business case studies, graded assessments, and evidence-backed credentials.
+          </p>
           <p className="hxw-hero__today hx-rise">{availability}</p>
           <div className="hxw-hero__actions hx-rise">
             <Link className="sk-btn sk-btn-primary hx-btn" to="/programmes">
               Explore programmes
               <ArrowRight />
             </Link>
-            <a className="sk-btn sk-btn-secondary hx-btn" href="#how-it-works">
-              See how Skylent works
-            </a>
+            <Link className="sk-btn sk-btn-secondary hx-btn" to="/courses">
+              All 6 live courses
+            </Link>
             <Link className="hxw-hero__path" to="/path">
               Find My Path
             </Link>
           </div>
-          <p className="hxw-hero__limit hx-rise">Skylent does not award degrees, and finishing a programme does not promise a job.</p>
+          <ul
+            className="hxw-hero__limit hx-rise"
+            aria-label="Verified platform capabilities"
+            style={{
+              listStyle: "none",
+              padding: 0,
+              margin: "16px 0 0",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "8px 14px",
+              fontSize: 13,
+              fontWeight: 500,
+            }}
+          >
+            <li>✓ Interactive SQL &amp; Python practice</li>
+            <li>✓ Business case studies</li>
+            <li>✓ Practical assessments &amp; 20-min Faculty TA SLA</li>
+            <li>✓ Evidence-backed credentials</li>
+            <li>✓ Career development (60% Merit Gate)</li>
+          </ul>
         </div>
         <div className="hxw-hero__visual hx-rise">
           <div className="hxw-stage">
@@ -629,7 +650,7 @@ const FOCUS_FACE: Record<string, { title: string; image: string; width: number; 
     width: 800,
     height: 530,
     alt: "Illustrative analytics charts.",
-    line: "SQL practice on Northwind, a fictional sales extract. Finishing it does not promise a job.",
+    line: "Interactive SQL practice on the Northwind sales extract, 15 written lessons, and a commercial review capstone.",
   },
   "product-management": {
     title: "Product Management",
@@ -637,15 +658,15 @@ const FOCUS_FACE: Record<string, { title: string; image: string; width: number; 
     width: 800,
     height: 534,
     alt: "Illustrative product working session.",
-    line: "Harbor Desk is a written case workspace, not a SQL lab.",
+    line: "Harbor Desk operations case workspace, 15 written lessons, and a constrained product specification.",
   },
   "data-science-ai": {
-    title: "Data Science",
+    title: "Data Science & AI",
     image: photoScience,
     width: 800,
     height: 534,
     alt: "Illustrative code on a screen.",
-    line: "A listed direction. Machine learning teaching is not in the pathway yet.",
+    line: "Pathway linking our authored Data Analytics and Python Programming & Automation courses in Skylent OS.",
   },
 }
 
@@ -773,12 +794,12 @@ export function HomeDegrees() {
       <div className="sky-container">
         <Reveal className="hx-head" stagger>
           <div data-reveal-group>
-            <p className="hx-eyebrow hx-eyebrow--dark">Degrees</p>
+            <p className="hx-eyebrow hx-eyebrow--dark">University &amp; Institutional Pathways</p>
             <h2 id="hx-degrees-title" className="hx-h2">
-              Undergraduate or <em>postgraduate.</em>
+              Undergraduate &amp; <em>postgraduate pathways.</em>
             </h2>
           </div>
-          <p className="hx-head__aside">These are planned degree areas. Skylent does not award degrees. No institution, accreditation or admission process is confirmed, and applications are not open. You can register interest. Career OS is not connected to these listings.</p>
+          <p className="hx-head__aside">Planned curriculum tracks designed for university and institutional integration. Skylent does not directly award degrees, and no university partnership or academic credit transfer is confirmed yet. Learners and colleges can register interest.</p>
         </Reveal>
         <ul className="hx-doors">
           {DEGREE_DOORS.map((door) => {
@@ -1142,10 +1163,10 @@ export function HomeCareer() {
       <div className="sky-container">
         <header className="hx-head">
           <div>
-            <p className="hx-eyebrow hx-eyebrow--dark">Career OS</p>
-            <h2 id="hx-career-title" className="hx-h2 hx-h2--sm">One profile for what you learn and keep.</h2>
+            <p className="hx-eyebrow hx-eyebrow--dark">Career Development · Merit-Gated</p>
+            <h2 id="hx-career-title" className="hx-h2 hx-h2--sm">One profile for what you learn, build, and prove.</h2>
           </div>
-          <p className="hx-head__aside">Career OS stays locked. A programme enrolment does not open it, degree listings are not connected, and nothing here is your account.</p>
+          <p className="hx-head__aside">Career Rise unlocks at 60% curriculum completion, while full Career OS requires an explicit account entitlement. This interactive walkthrough is an illustrative preview of how your portfolio and applications are organised.</p>
         </header>
         <div className="hx-career__grid">
           <div>

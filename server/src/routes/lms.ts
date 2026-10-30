@@ -1,4 +1,4 @@
-import { createFacultyDoubtTicket } from "../lib/doubt-sla.js"
+import { createFacultyDoubtTicket, listLearnerDoubtTickets, type FacultyDoubtTicket } from "../lib/doubt-sla.js"
 import { Router } from "express"
 import { z } from "zod"
 import { AssignmentStatus, CurriculumNodeType } from "@prisma/client"
@@ -1164,3 +1164,42 @@ lmsRouter.post(
     }
   },
 )
+
+lmsRouter.get("/doubts/mine", requireAuth, async (req: AuthenticatedRequest, res) => {
+  try {
+    const userId = req.auth!.user.id
+    const byId = new Map<string, FacultyDoubtTicket>()
+    for (const mem of listLearnerDoubtTickets(userId)) {
+      byId.set(mem.id, mem)
+    }
+    const caps = await readSchemaCapabilities().catch(() => null)
+    if (caps?.facultyDoubtTickets) {
+      const dbRows = await prisma.facultyDoubtTicket.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        take: 30,
+      })
+      for (const row of dbRows) {
+        byId.set(row.id, {
+          id: row.id,
+          userId: row.userId,
+          learnerName: row.learnerName,
+          courseSlug: row.courseSlug,
+          lessonKey: row.lessonKey,
+          lessonTitle: row.lessonTitle,
+          question: row.question,
+          status: row.status === "resolved" ? "resolved" : "open",
+          slaMinutes: row.slaMinutes,
+          createdAt: row.createdAt.toISOString(),
+          resolvedAt: row.resolvedAt ? row.resolvedAt.toISOString() : null,
+          resolvedById: row.resolvedById ?? null,
+          resolutionNote: row.resolutionNote ?? null,
+        })
+      }
+    }
+    const sorted = [...byId.values()].sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    res.json({ data: sorted })
+  } catch (error) {
+    sendLmsFailure(res, error, "Failed to load learner doubts")
+  }
+})
