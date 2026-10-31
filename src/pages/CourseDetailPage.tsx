@@ -225,7 +225,25 @@ export default function CourseDetailPage() {
                   {showLiveCurriculum && authoredStats ? (
                     <span>{authoredStats.assignmentCount} assignments</span>
                   ) : null}
+                  {authored ? <span>1 capstone</span> : null}
+                  {authored ? <span className="cat-statline__elixir">💎 +50 Elixir Bonus</span> : null}
                 </p>
+                {showLiveCurriculum ? (
+                  <div className="cat-hero-rubric" aria-label="Course grading and proof-of-work weightage">
+                    <div className="cat-hero-rubric__pill">
+                      <strong>25% · Concept Checks</strong>
+                      <span>3 Module Quizzes (+10 Elixir @ 80%+)</span>
+                    </div>
+                    <div className="cat-hero-rubric__pill">
+                      <strong>35% · Applied Practice</strong>
+                      <span>Written Briefs &amp; In-Browser Lab (+15 Elixir)</span>
+                    </div>
+                    <div className="cat-hero-rubric__pill">
+                      <strong>40% · Executive Proof</strong>
+                      <span>Graded Capstone &amp; 60s Cold Call Defense</span>
+                    </div>
+                  </div>
+                ) : null}
               </aside>
               <div className="cat-intro-actions">
                 <div className="cat-actions">

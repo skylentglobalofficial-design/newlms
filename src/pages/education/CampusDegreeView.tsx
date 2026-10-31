@@ -2,7 +2,7 @@
  * Campus degree detail: /education/campus/:slug  (approved design: CampusDegree)
  * It looks physical on purpose: photographs lead and there are no product plates.
  * Photographs are generic until an institution supplies its own (they are never captioned as a
- * particular campus), and every fact the record does not carry reads "Published once an institution is confirmed".
+ * particular campus), and every fact the record does not carry reads "Shared in the partner university prospectus".
  */
 import { Link } from "react-router-dom"
 import { ArrowRight, SectionIndex } from "../../components/skylent/primitives"
